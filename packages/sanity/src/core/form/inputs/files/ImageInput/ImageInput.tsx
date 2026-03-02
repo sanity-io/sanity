@@ -44,7 +44,7 @@ import {ImageInputHotspotInput} from './ImageInputHotspotInput'
 import {ImageInputPreview} from './ImageInputPreview'
 import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
 import {InvalidImageWarning} from './InvalidImageWarning'
-import {type BaseImageInputProps, type BaseImageInputValue} from './types'
+import {type BaseImageInputProps} from './types'
 import {useAccessPolicy} from './useAccessPolicy'
 
 export {BaseImageInputProps}
