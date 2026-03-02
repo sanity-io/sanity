@@ -102,6 +102,55 @@ function normalizeIcon(
 
 const preparedWorkspaces = new WeakMap<SingleWorkspace | WorkspaceOptions, WorkspaceSummary>()
 
+/**
+ * Cache for deduplicating Schema objects across workspaces with identical schema types.
+ * Keyed by a content hash of the resolved schema type definitions.
+ */
+const schemaCache = new Map<string, Schema>()
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    schemaCache.clear()
+  })
+}
+
+/**
+ * Clear the schema cache. Intended for use in tests only.
+ * @internal
+ */
+export function _clearSchemaCache(): void {
+  schemaCache.clear()
+}
+
+/**
+ * Compute a content key for a set of schema type definitions.
+ * Uses JSON.stringify with a replacer that handles functions,
+ * so two identical type sets produce the same key.
+ *
+ * Note: Function serialization uses .toString() which captures source text but NOT
+ * closed-over variable values. Two closures with identical source code but different
+ * captured values will produce the same key. This is acceptable because schema type
+ * definitions rarely use closures in this way — they are typically static definitions.
+ *
+ * Returns `null` if serialization fails (e.g. circular references), in which case
+ * the caller should skip caching and create a new Schema every time.
+ *
+ * @internal
+ */
+export function getSchemaContentKey(schemaTypes: unknown[]): string | null {
+  try {
+    return JSON.stringify(schemaTypes, (_key, value) => {
+      if (typeof value === 'function') {
+        return `__fn:${value.toString()}`
+      }
+      return value
+    })
+  } catch {
+    // Circular references or other serialization failures — skip caching
+    return null
+  }
+}
+
 // Create media library sources with configuration
 const createMediaLibraryAssetSources = (config: PluginOptions) => {
   const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
@@ -225,10 +274,20 @@ export function prepareConfig(
         })
       }
 
-      const schema = createSchema({
-        name: source.name,
-        types: schemaTypes,
-      })
+      const contentKey = getSchemaContentKey(schemaTypes)
+      const schemaKey = contentKey !== null ? `${source.name}:${contentKey}` : null
+      let schema: Schema
+      if (schemaKey !== null && schemaCache.has(schemaKey)) {
+        schema = schemaCache.get(schemaKey)!
+      } else {
+        schema = createSchema({
+          name: source.name,
+          types: schemaTypes,
+        })
+        if (schemaKey !== null) {
+          schemaCache.set(schemaKey, schema)
+        }
+      }
 
       const schemaValidationProblemGroups = schema._validation
       const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
