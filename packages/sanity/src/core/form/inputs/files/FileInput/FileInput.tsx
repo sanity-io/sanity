@@ -22,8 +22,7 @@ import {type ObjectInputProps} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {AssetSourceDialog} from '../common/AssetSourceDialog'
 import {type FileInfo} from '../common/styles'
-import {useAssetSourceActionState} from '../common/useAssetSourceActionState'
-import {useAssetSourceUploader} from '../common/useAssetSourceUploader'
+import {useAssetSource} from '../common/useAssetSource'
 import {useUploadExternalFileToDataset} from '../common/useUploadExternalFileToDataset'
 import {useAccessPolicy} from '../ImageInput/useAccessPolicy'
 import {FileAsset as FileAssetComponent} from './FileAsset'
@@ -71,13 +70,10 @@ export function BaseFileInput(props: BaseFileInputProps) {
   const renderedMembers = useRenderMembers(schemaType, members)
 
   const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
-  const [isStale, setIsStale] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
   const [isBrowseMenuOpen, setIsBrowseMenuOpen] = useState(false)
   const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
   const browseButtonElementRef = useRef<HTMLButtonElement>(null)
 
-  const assetSourceState = useAssetSourceActionState<FileAsset>({setIsUploading})
   const {
     action: assetSourceAction,
     selectedAssetSource,
@@ -89,14 +85,16 @@ export function BaseFileInput(props: BaseFileInputProps) {
     changeAction: handleAssetSourceChangeAction,
     close: handleAssetSourceClosed,
     resetOnComplete: handleAssetSourceResetOnComplete,
-  } = assetSourceState
-
-  const {assetSourceUploader, handleSelectFilesToUpload} = useAssetSourceUploader({
+    isUploading,
+    setIsUploading,
+    isStale,
+    setIsStale,
+    onStale: handleStaleUpload,
+    assetSourceUploader,
+    handleSelectFilesToUpload,
+  } = useAssetSource<FileAsset>({
     onChange,
     schemaType,
-    handleOpenSourceForUpload: handleOpenSourceForUpload,
-    handleAssetSourceResetOnComplete,
-    setIsUploading,
     onAssetLimitError: () => handleAssetLimitUpsellDialog('field_action'),
   })
 
@@ -120,16 +118,13 @@ export function BaseFileInput(props: BaseFileInputProps) {
   const handleClearUploadStatus = useCallback(() => {
     if (value?._upload) {
       clearUploadStatus()
+      setIsStale(false)
     }
-  }, [clearUploadStatus, value?._upload])
+  }, [clearUploadStatus, setIsStale, value?._upload])
 
   const handleClearField = useCallback(() => {
     onChange([unset(['asset']), unset(['media'])])
   }, [onChange])
-
-  const handleStaleUpload = useCallback(() => {
-    setIsStale(true)
-  }, [])
 
   const handleSelectAssets = useCallback(
     (assetsFromSource: AssetFromSource[]) => {
@@ -202,6 +197,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
     props,
     selectedAssetSource,
     setBrowseButtonElement,
+    setIsUploading,
     setSelectedAssetSource,
   ])
 

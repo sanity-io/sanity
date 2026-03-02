@@ -4,31 +4,27 @@ import {useCallback, useState} from 'react'
 /**
  * Shared state and handlers for the asset source dialog (select, upload, openInSource).
  * Each user action explicitly sets the action—no defaulting.
+ * Owns isUploading and isStale (driven by upload flow and UploadProgress).
  *
  * @internal
  */
-export function useAssetSourceActionState<T = Asset>(options: {
-  setIsUploading: (uploading: boolean) => void
-}) {
-  const {setIsUploading} = options
-
+export function useAssetSourceActionState<T = Asset>() {
   const [action, setAction] = useState<AssetSourceComponentAction>()
   const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
   const [openInSourceAsset, setOpenInSourceAsset] = useState<T | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [isStale, setIsStale] = useState(false)
 
   const openForBrowse = useCallback((assetSource: AssetSource) => {
     setAction('select')
     setSelectedAssetSource(assetSource)
   }, [])
 
-  const openForUpload = useCallback(
-    (assetSource: AssetSource) => {
-      setAction('upload')
-      setSelectedAssetSource(assetSource)
-      setIsUploading(true)
-    },
-    [setIsUploading],
-  )
+  const openForUpload = useCallback((assetSource: AssetSource) => {
+    setAction('upload')
+    setSelectedAssetSource(assetSource)
+    setIsUploading(true)
+  }, [])
 
   const openInSource = useCallback((assetSource: AssetSource, asset: T) => {
     setAction('openInSource')
@@ -45,12 +41,15 @@ export function useAssetSourceActionState<T = Asset>(options: {
     setSelectedAssetSource(null)
     setOpenInSourceAsset(null)
     setIsUploading(false)
+    setIsStale(false)
     setAction(undefined)
-  }, [setIsUploading])
+  }, [])
 
   const close = useCallback(() => {
     resetOnComplete()
   }, [resetOnComplete])
+
+  const onStale = useCallback(() => setIsStale(true), [])
 
   return {
     action,
@@ -64,5 +63,10 @@ export function useAssetSourceActionState<T = Asset>(options: {
     changeAction,
     close,
     resetOnComplete,
+    isUploading,
+    setIsUploading,
+    isStale,
+    setIsStale,
+    onStale,
   }
 }

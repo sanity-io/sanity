@@ -6,8 +6,7 @@ import {type Observable} from 'rxjs'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../core/form/inputs/files/common/assetSource'
 import {AssetSourceDialog} from '../../../core/form/inputs/files/common/AssetSourceDialog'
 import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
-import {useAssetSourceActionState} from '../../../core/form/inputs/files/common/useAssetSourceActionState'
-import {useAssetSourceUploader} from '../../../core/form/inputs/files/common/useAssetSourceUploader'
+import {useAssetSource} from '../../../core/form/inputs/files/common/useAssetSource'
 import {useUploadExternalFileToDataset} from '../../../core/form/inputs/files/common/useUploadExternalFileToDataset'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../core/form/members'
 import {MemberDecoration} from '../../../core/form/members/object/MemberDecoration'
@@ -76,11 +75,10 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
   const {t} = useTranslation()
   const renderedMembers = useRenderMembers(schemaType, members)
   const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
-  const [isStale, setIsStale] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
   const [isBrowseMenuOpen, setIsBrowseMenuOpen] = useState(false)
 
-  const assetSourceState = useAssetSourceActionState({setIsUploading})
+  const browseButtonElementRef = useRef<HTMLButtonElement>(null)
+
   const {
     action: assetSourceAction,
     selectedAssetSource,
@@ -92,16 +90,16 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     close: handleAssetSourceClosed,
     resetOnComplete: handleAssetSourceResetOnComplete,
     setSelectedAssetSource,
-  } = assetSourceState
-
-  const browseButtonElementRef = useRef<HTMLButtonElement>(null)
-
-  const {assetSourceUploader, handleSelectFilesToUpload} = useAssetSourceUploader({
+    isUploading,
+    setIsUploading,
+    isStale,
+    setIsStale,
+    onStale: handleStaleUpload,
+    assetSourceUploader,
+    handleSelectFilesToUpload,
+  } = useAssetSource({
     onChange,
     schemaType,
-    handleOpenSourceForUpload: handleOpenSourceForUpload,
-    handleAssetSourceResetOnComplete,
-    setIsUploading,
   })
 
   const setBrowseButtonElement = useCallback(
@@ -124,16 +122,13 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
   const handleClearUploadStatus = useCallback(() => {
     if (value?._upload) {
       clearUploadStatus()
+      setIsStale(false)
     }
-  }, [clearUploadStatus, value?._upload])
+  }, [clearUploadStatus, setIsStale, value?._upload])
 
   const handleClearField = useCallback(() => {
     onChange([unset(['asset']), unset(['media'])])
   }, [onChange])
-
-  const handleStaleUpload = useCallback(() => {
-    setIsStale(true)
-  }, [])
 
   const handleSelectAssets = useCallback(
     (assetsFromSource: AssetFromSource[]) => {
@@ -198,6 +193,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     setSelectedAssetSource,
     browseButtonElementRef,
     setBrowseButtonElement,
+    setIsUploading,
   ])
 
   return (

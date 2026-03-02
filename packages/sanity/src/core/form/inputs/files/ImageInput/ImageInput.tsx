@@ -23,8 +23,7 @@ import {type InputProps} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {AssetSourceDialog} from '../common/AssetSourceDialog'
 import {UploadProgress} from '../common/UploadProgress'
-import {useAssetSourceActionState} from '../common/useAssetSourceActionState'
-import {useAssetSourceUploader} from '../common/useAssetSourceUploader'
+import {useAssetSource} from '../common/useAssetSource'
 import {ImageAccessPolicy} from './ImageAccessPolicy'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
@@ -68,8 +67,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   const {t} = useTranslation()
   const renderedMembers = useRenderMembers(schemaType, members)
 
-  const [isUploading, setIsUploading] = useState(false)
-  const [isStale, setIsStale] = useState(false)
   const [hotspotButtonElement, setHotspotButtonElement] = useState<HTMLButtonElement | null>(null)
   // Get the menu button element in `ImageActionsMenu` so that focus can be restored to
   // it when closing the dialog (see `handleAssetSourceClosed`)
@@ -77,7 +74,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   const [isMenuOpen, setMenuOpen] = useState(false)
   const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
 
-  const assetSourceState = useAssetSourceActionState<ImageAsset>({setIsUploading})
+  const uploadSubscription = useRef<null | Subscription>(null)
+
   const {
     action: assetSourceAction,
     selectedAssetSource,
@@ -88,16 +86,16 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     changeAction: handleAssetSourceChangeAction,
     close: assetSourceClose,
     resetOnComplete: handleAssetSourceResetOnComplete,
-  } = assetSourceState
-
-  const uploadSubscription = useRef<null | Subscription>(null)
-
-  const {assetSourceUploader, handleSelectFilesToUpload} = useAssetSourceUploader({
+    isUploading,
+    setIsUploading,
+    isStale,
+    setIsStale,
+    onStale: handleStaleUpload,
+    assetSourceUploader,
+    handleSelectFilesToUpload,
+  } = useAssetSource<ImageAsset>({
     onChange,
     schemaType,
-    handleOpenSourceForUpload: handleOpenSourceForUpload,
-    handleAssetSourceResetOnComplete,
-    setIsUploading,
     onAssetLimitError: () => handleAssetLimitUpsellDialog('field_action'),
     onAllComplete: () => setMenuOpen(false),
   })
@@ -171,7 +169,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         },
       })
     },
-    [cancelUpload, clearUploadStatus, client, onChange, push, schemaType, t],
+    [cancelUpload, clearUploadStatus, client, onChange, push, schemaType, setIsUploading, t],
   )
 
   const handleClearField = useCallback(() => {
@@ -231,11 +229,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   const handleClearUploadState = useCallback(() => {
     setIsStale(false)
     clearUploadStatus()
-  }, [clearUploadStatus])
-
-  const handleStaleUpload = useCallback(() => {
-    setIsStale(true)
-  }, [])
+  }, [clearUploadStatus, setIsStale])
 
   const handleAssetSourceClosed = useCallback(() => {
     assetSourceClose()
