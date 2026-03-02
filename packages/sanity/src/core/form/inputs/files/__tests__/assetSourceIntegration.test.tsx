@@ -120,12 +120,27 @@ describe.each(INPUT_CONFIGS)(
         render: (inputProps) => <BaseInput {...(inputProps as any)} />,
       })
 
-      const file = new File(['content'], 'test.pdf', {type: 'application/pdf'})
+      // Use a file type that matches each input's accept attribute (video/* for video, etc.)
+      const file =
+        _inputType === 'video'
+          ? new File(['content'], 'test.mp4', {type: 'video/mp4'})
+          : new File(['content'], 'test.pdf', {type: 'application/pdf'})
       const uploadButton = screen.getByTestId(uploadTestId)
-      const fileInput = uploadButton.querySelector('input[type="file"]')
+      let fileInput = uploadButton.querySelector('input[type="file"]') as HTMLInputElement | null
+      // Single source: FileInputButton has embedded input. Multiple sources: UploadDropDownMenu uses
+      // imperative openFilePicker - click button to open menu, then click menu item to create input.
+      if (!fileInput) {
+        await userEvent.click(uploadButton)
+        // If a dropdown opened, click the first upload menu item to trigger file picker
+        const menuItem = screen.queryByTestId('file-input-upload-button-0')
+        if (menuItem) {
+          await userEvent.click(menuItem)
+        }
+        fileInput = await screen.findByTestId('open-file-picker-input')
+      }
       expect(fileInput).toBeInTheDocument()
 
-      await userEvent.upload(fileInput as HTMLInputElement, file)
+      await userEvent.upload(fileInput, file)
 
       await waitFor(
         () => {
@@ -149,8 +164,21 @@ describe.each(INPUT_CONFIGS)(
       )
 
       // Verify reset: a second upload should work. Without signalCompletion the input would stay stuck.
-      const file2 = new File(['more content'], 'test2.pdf', {type: 'application/pdf'})
-      await userEvent.upload(fileInput as HTMLInputElement, file2)
+      const file2 =
+        _inputType === 'video'
+          ? new File(['more content'], 'test2.mp4', {type: 'video/mp4'})
+          : new File(['more content'], 'test2.pdf', {type: 'application/pdf'})
+      // Input may have been removed after first upload (imperative flow); click again to create new one
+      let fileInput2 = uploadButton.querySelector('input[type="file"]') as HTMLInputElement | null
+      if (!fileInput2) {
+        await userEvent.click(uploadButton)
+        const menuItem = screen.queryByTestId('file-input-upload-button-0')
+        if (menuItem) {
+          await userEvent.click(menuItem)
+        }
+        fileInput2 = await screen.findByTestId('open-file-picker-input')
+      }
+      await userEvent.upload(fileInput2, file2)
       await waitFor(
         () => {
           const hasSecondAssetPatch = onChange.mock.calls.some((call) => {
