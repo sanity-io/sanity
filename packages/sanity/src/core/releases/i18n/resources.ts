@@ -381,14 +381,14 @@ const releasesLocaleStrings = {
   'summary.validated-documents': '{{validatedCount}} of {{totalCount}} documents validated',
 
   /** Text for when the release has validated all documents */
-  'summary.all-documents-validated': 'All documents validated, no conflicts found',
+  'summary.all-documents-validated': 'All documents validated, no issues found',
 
   /** Text for when the release has no errors found */
-  'summary.all-documents-errors-found': 'All documents validated, conflicts found',
+  'summary.all-documents-errors-found': 'All documents validated, issues found',
 
   /** Text for when the release has some errors found */
   'summary.errors-found':
-    'In order to publish or schedule the release, please resolve the conflicts found in the documents',
+    'In order to publish or schedule the release, please resolve the issues found in the documents',
 
   /** add action type that will be shown in the table*/
   'table-body.action.add': 'Add',
