@@ -910,6 +910,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Unknown field found */
   'inputs.object.unknown-fields.warning.title_one': 'Unknown field found',
   'inputs.object.unknown-fields.warning.title_other': 'Unknown fields found',
+  /** Loading message shown while the portable text editor is loading */
+  'inputs.portable-text.loading': 'Loading…',
   /** Collapse the editor to save screen space  */
   'inputs.portable-text.action.collapse-editor': 'Collapse editor',
   /** Aria label for action to edit an existing annotation */

@@ -18,7 +18,7 @@ import {set, unset} from '../../../patch/patch'
 import {type StringInputProps} from '../../../types'
 import {DeletedSegment} from '../../common/diff/string/segments'
 import {stringDiffContainerStyles} from '../../common/diff/string/styles'
-import {UpdateReadOnlyPlugin} from '../../PortableText/PortableTextInput'
+import {UpdateReadOnlyPlugin} from '../../PortableText/plugins/UpdateReadOnlyPlugin'
 import {useOptimisticDiff} from './diff/useOptimisticDiff'
 import {packageValue} from './packageValue'
 import {

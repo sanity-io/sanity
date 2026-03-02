@@ -1,6 +1,13 @@
+import {lazy, Suspense} from 'react'
+
 import {type StringInputProps} from '../../types'
 import {StringInputBasic} from './StringInputBasic/StringInputBasic'
-import {StringInputPortableText} from './StringInputPortableText/StringInputPortableText'
+
+const LazyStringInputPortableText = lazy(() =>
+  import('./StringInputPortableText/StringInputPortableText').then((mod) => ({
+    default: mod.StringInputPortableText,
+  })),
+)
 
 /**
  * @hidden
@@ -8,7 +15,11 @@ import {StringInputPortableText} from './StringInputPortableText/StringInputPort
  */
 export function StringInput(props: StringInputProps) {
   if (props.displayInlineChanges) {
-    return <StringInputPortableText {...props} />
+    return (
+      <Suspense fallback={<StringInputBasic {...props} />}>
+        <LazyStringInputPortableText {...props} />
+      </Suspense>
+    )
   }
 
   return <StringInputBasic {...props} />

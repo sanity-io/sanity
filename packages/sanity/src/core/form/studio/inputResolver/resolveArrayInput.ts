@@ -4,7 +4,7 @@ import {type ComponentType} from 'react'
 import {ArrayOfObjectsInput} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {ArrayOfOptionsInput} from '../../inputs/arrays/ArrayOfOptionsInput'
 import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
-import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
+import {PortableTextInput} from '../../inputs/PortableText/PortableTextInputLazy'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import * as is from '../../utils/is'
 
