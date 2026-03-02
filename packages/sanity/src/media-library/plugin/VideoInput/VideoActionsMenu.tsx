@@ -116,7 +116,7 @@ export function VideoActionsMenu(props: Props) {
           }
         >
           {playbackId && (
-            <Suspense fallback={<VideoSkeleton />}>
+            <Suspense fallback={<VideoSkeleton aspectRatio={aspectRatio} />}>
               <VideoPlayer
                 customDomain={customDomain}
                 playbackId={playbackId}
