@@ -1,12 +1,12 @@
 import {route} from 'sanity/router'
 
+import {type DefaultPluginsWorkspaceOptions} from '../../config'
 import {definePlugin} from '../../config/definePlugin'
 import {releasesUsEnglishLocaleBundle} from '../../releases/i18n'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {ReleasesStudioLayout} from '../../releases/plugin/ReleasesStudioLayout'
 import {ReleasesTool} from '../../releases/tool/ReleasesTool'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
-import {useWorkspace} from '../../studio'
 
 /**
  * @internal
@@ -18,15 +18,10 @@ export const SCHEDULES_NAME = 'sanity/schedules'
  */
 export const SCHEDULES_TOOL_NAME = 'releases'
 
-const ToolTitle = () => {
-  const isReleasesEnabled = useWorkspace().releases?.enabled
-  return <div>{isReleasesEnabled ? 'Releases' : 'Scheduled Drafts'}</div>
-}
-
 /**
  * @internal
  */
-export const schedules = definePlugin({
+export const schedules = definePlugin((options: DefaultPluginsWorkspaceOptions) => ({
   name: SCHEDULES_NAME,
   studio: {
     components: {
@@ -36,8 +31,7 @@ export const schedules = definePlugin({
   tools: [
     {
       name: SCHEDULES_TOOL_NAME,
-      // @ts-expect-error - title expects a string, but it will render the Component.
-      title: <ToolTitle />,
+      title: options.releases.enabled ? 'Releases' : 'Scheduled Drafts',
       component: ReleasesTool,
       router: route.create('/', [route.create('/:releaseId')]),
       __internalApplicationType: 'sanity/schedules',
@@ -64,4 +58,4 @@ export const schedules = definePlugin({
   i18n: {
     bundles: [releasesUsEnglishLocaleBundle],
   },
-})
+}))
