@@ -6,6 +6,7 @@ import {RELEASES_INTENT} from '../../releases/plugin'
 import {ReleasesStudioLayout} from '../../releases/plugin/ReleasesStudioLayout'
 import {ReleasesTool} from '../../releases/tool/ReleasesTool'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
+import {useWorkspace} from '../../studio'
 
 /**
  * @internal
@@ -16,6 +17,11 @@ export const SCHEDULES_NAME = 'sanity/schedules'
  * @internal
  */
 export const SCHEDULES_TOOL_NAME = 'releases'
+
+const ToolTitle = () => {
+  const isReleasesEnabled = useWorkspace().releases?.enabled
+  return <div>{isReleasesEnabled ? 'Releases' : 'Scheduled Drafts'}</div>
+}
 
 /**
  * @internal
@@ -30,7 +36,8 @@ export const schedules = definePlugin({
   tools: [
     {
       name: SCHEDULES_TOOL_NAME,
-      title: 'Releases',
+      // @ts-expect-error - title expects a string, but it will render the Component.
+      title: <ToolTitle />,
       component: ReleasesTool,
       router: route.create('/', [route.create('/:releaseId')]),
       __internalApplicationType: 'sanity/schedules',
