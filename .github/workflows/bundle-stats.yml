@@ -19,11 +19,10 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
       - uses: ./.github/actions/setup
       - uses: rexxars/bundle-stats@v1
         with:
           packages: packages/sanity
           build-command: pnpm build
           only: "."
+          compare-npm: latest
