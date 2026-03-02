@@ -32,5 +32,6 @@ export function prefetchPortableTextInput(): void {
 
   requestIdleCallback(() => {
     import('./PortableTextInput')
+    import('../StringInput/StringInputPortableText/StringInputPortableText')
   })
 }

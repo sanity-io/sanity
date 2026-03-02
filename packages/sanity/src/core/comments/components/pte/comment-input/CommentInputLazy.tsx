@@ -16,7 +16,6 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
             avatarSize={props.avatarSize}
             currentUser={props.currentUser}
             onSubmit={props.onSubmit}
-            placeholder={props.placeholder}
             withAvatar={props.withAvatar}
           />
         }

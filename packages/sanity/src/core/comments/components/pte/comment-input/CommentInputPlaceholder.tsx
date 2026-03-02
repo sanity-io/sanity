@@ -1,6 +1,5 @@
 import {type CurrentUser} from '@sanity/types'
 import {type AvatarSize, Box, Flex, Stack, Text} from '@sanity/ui'
-import {type ReactNode} from 'react'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -14,12 +13,11 @@ interface CommentInputPlaceholderProps {
   avatarSize?: AvatarSize
   currentUser: CurrentUser
   onSubmit?: () => void
-  placeholder?: ReactNode
   withAvatar?: boolean
 }
 
 export function CommentInputPlaceholder(props: CommentInputPlaceholderProps) {
-  const {avatarSize = 1, currentUser, onSubmit, placeholder, withAvatar = true} = props
+  const {avatarSize = 1, currentUser, onSubmit, withAvatar = true} = props
 
   const [user] = useUser(currentUser.id)
   const {t} = useTranslation(commentsLocaleNamespace)

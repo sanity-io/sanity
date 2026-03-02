@@ -56,7 +56,6 @@ import {
 } from './presence-cursors'
 import {usePatches} from './usePatches'
 
-export {UpdateReadOnlyPlugin} from './plugins/UpdateReadOnlyPlugin'
 
 function keyGenerator() {
   return randomKey(12)

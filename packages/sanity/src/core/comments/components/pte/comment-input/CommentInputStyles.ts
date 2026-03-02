@@ -13,7 +13,7 @@ export const ButtonDivider = styled(MenuDivider)({
   width: 1,
 })
 
-export function focusRingBorderStyle(border: {color: string; width: number}): string {
+function focusRingBorderStyle(border: {color: string; width: number}): string {
   return `inset 0 0 0 ${border.width}px ${border.color}`
 }
 
