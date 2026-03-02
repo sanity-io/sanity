@@ -123,7 +123,7 @@
     "lint-staged": "^16.2.7",
     "npm-run-all2": "^6.2.6",
     "only-allow": "^1.2.2",
-    "oxfmt": "^0.28.0",
+    "oxfmt": "^0.36.0",
     "oxlint": "1.43.0",
     "oxlint-tsgolint": "0.11.4",
     "playwright": "catalog:",
@@ -144,6 +144,6 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@10.28.2",
+  "packageManager": "pnpm@10.30.3",
   "//": "pnpm settings moved to pnpm-workspace.yaml"
 }
