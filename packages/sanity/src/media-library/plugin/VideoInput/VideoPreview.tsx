@@ -6,6 +6,7 @@ import {useObservable} from 'react-rx'
 import {EMPTY} from 'rxjs'
 
 import {ActionsMenu} from '../../../core/form/inputs/files/common/ActionsMenu'
+import {getDataTestIdPrefix} from '../../../core/form/inputs/files/common/AssetSourceBrowser'
 import {
   getAssetSourceDisplayName,
   getAssetSourcesWithUpload,
@@ -69,7 +70,6 @@ export function VideoPreview(props: VideoAssetInputProps) {
     onSelectFiles,
     readOnly,
     schemaType,
-    setBrowseButtonElement,
     setSelectedAssetSource,
     value,
   } = props
@@ -117,11 +117,10 @@ export function VideoPreview(props: VideoAssetInputProps) {
       playbackId: playbackInfoState.result?.id,
       onMenuOpen: setIsMenuOpen,
       isMenuOpen: isMenuOpen,
-      setMenuButtonElement: setBrowseButtonElement,
     }
 
     return tokens ? {...baseProps, tokens} : baseProps
-  }, [isStaging, playbackInfoState, isMenuOpen, setBrowseButtonElement])
+  }, [isStaging, playbackInfoState, isMenuOpen])
 
   const assetSourcesWithUpload = getAssetSourcesWithUpload(assetSources)
 
@@ -210,6 +209,7 @@ export function VideoPreview(props: VideoAssetInputProps) {
     [onOpenSourceForUpload],
   )
 
+  const dataTestIdPrefix = getDataTestIdPrefix(schemaType)
   const browseMenuItem: ReactNode = useMemo(() => {
     // Legacy support for setting asset sources to an empty array through schema
     // Will still allow for uploading videos through the default studio asset source,
@@ -228,7 +228,7 @@ export function VideoPreview(props: VideoAssetInputProps) {
           text={t('asset-source.browse-button.text')}
           onClick={() => handleSelectAssetSourceForBrowse(assetSources[0])}
           disabled={readOnly}
-          data-testid={`video-input-browse-button-${assetSources[0].name}`}
+          data-testid={`${dataTestIdPrefix}-browse-button-${assetSources[0].name}`}
         />
       )
     }
@@ -240,11 +240,18 @@ export function VideoPreview(props: VideoAssetInputProps) {
           onClick={() => handleSelectAssetSourceForBrowse(assetSource)}
           icon={assetSource.icon || ImageIcon}
           disabled={readOnly}
-          data-testid={`video-input-browse-button-${assetSource.name}`}
+          data-testid={`${dataTestIdPrefix}-browse-button-${assetSource.name}`}
         />
       )
     })
-  }, [assetSources, handleSelectAssetSourceForBrowse, readOnly, sourcesFromSchema?.length, t])
+  }, [
+    assetSources,
+    dataTestIdPrefix,
+    handleSelectAssetSourceForBrowse,
+    readOnly,
+    sourcesFromSchema?.length,
+    t,
+  ])
 
   const uploadMenuItem = useUploadMenuItem({
     accept,

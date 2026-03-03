@@ -1,22 +1,26 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import {useCallback} from 'react'
+import {useCallback, useId} from 'react'
 
 import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {getAssetSourceDisplayName} from './assetSourceUtils'
 
+/** Derives data-testid prefix from schema type. e.g. file-object-input, image-object-input, video-object-input. */
+export function getDataTestIdPrefix(schemaType: {name?: string; jsonType?: string}): string {
+  const name = schemaType.name || 'file'
+  const jsonType = schemaType.jsonType || 'object'
+  const typePart = name === 'sanity.video' ? 'video' : name.replace(/\./g, '-')
+  return `${typePart}-${jsonType}-input`
+}
+
 export interface AssetSourceBrowserProps {
   assetSources: AssetSource[]
   readOnly?: boolean
-  id: string
-  browseButtonElementRef?: React.RefObject<HTMLButtonElement | null>
-  schemaType: {options?: {sources?: AssetSource[]}}
+  schemaType: {name?: string; jsonType?: string; options?: {sources?: AssetSource[]}}
   onSelectAssetSource: (assetSource: AssetSource) => void
   onCloseMenu?: () => void
-  /** Prefix for data-testid attributes. e.g. 'file-input' or 'video-input' */
-  dataTestIdPrefix?: string
 }
 
 /**
@@ -26,18 +30,12 @@ export interface AssetSourceBrowserProps {
  * @internal
  */
 export function AssetSourceBrowser(props: AssetSourceBrowserProps) {
-  const {
-    assetSources,
-    readOnly,
-    id,
-    browseButtonElementRef,
-    schemaType,
-    onSelectAssetSource,
-    onCloseMenu,
-    dataTestIdPrefix = 'file-input',
-  } = props
+  const {assetSources, readOnly, schemaType, onSelectAssetSource, onCloseMenu} = props
+
+  const dataTestIdPrefix = getDataTestIdPrefix(schemaType)
 
   const browseButtonText = 'asset-source.browse-button.text'
+  const menuButtonId = useId()
 
   const {t} = useTranslation()
   const sourcesFromSchema = schemaType.options?.sources
@@ -59,8 +57,7 @@ export function AssetSourceBrowser(props: AssetSourceBrowserProps) {
   if (assetSources.length > 1 && !readOnly) {
     return (
       <MenuButton
-        id={`${id}_assetFileButton`}
-        ref={browseButtonElementRef}
+        id={menuButtonId}
         button={
           <Button
             mode="bleed"
@@ -70,7 +67,7 @@ export function AssetSourceBrowser(props: AssetSourceBrowserProps) {
             iconRight={ChevronDownIcon}
           />
         }
-        data-testid="input-select-button"
+        data-testid={`${dataTestIdPrefix}-select-button-${menuButtonId.replace(/:/g, '-')}`}
         menu={
           <Menu>
             {assetSources.map((assetSource) => (
@@ -96,7 +93,6 @@ export function AssetSourceBrowser(props: AssetSourceBrowserProps) {
       onClick={() => handleSelect(assetSources[0])}
       data-testid={`${dataTestIdPrefix}-browse-button-${assetSources[0].name}`}
       disabled={readOnly}
-      ref={browseButtonElementRef}
     />
   )
 }

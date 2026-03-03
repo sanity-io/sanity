@@ -9,7 +9,6 @@ import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
 import {type BaseVideoInputProps} from './VideoInput'
 
 export interface VideoAssetInputProps extends Omit<BaseVideoInputProps, 'renderDefault'> {
-  browseButtonElementRef: React.RefObject<HTMLButtonElement | null>
   clearField: () => void
   hoveringFiles: FileInfo[]
   isBrowseMenuOpen: boolean
@@ -31,7 +30,6 @@ export interface VideoAssetInputProps extends Omit<BaseVideoInputProps, 'renderD
   onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   onStale: () => void
   selectedAssetSource: AssetSource | null
-  setBrowseButtonElement: (element: HTMLButtonElement | null) => void
   setHoveringFiles: (hoveringFiles: FileInfo[]) => void
   setIsBrowseMenuOpen: (isBrowseMenuOpen: boolean) => void
   setIsUploading: (isUploading: boolean) => void

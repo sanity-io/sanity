@@ -129,8 +129,6 @@ function FileUploadPlaceHolder(props: FileAssetProps & {disableNew?: boolean}) {
     onSelectFiles,
     schemaType,
     readOnly,
-    id,
-    browseButtonElementRef,
     setIsBrowseMenuOpen,
     onSelectAssetSourceForBrowse,
   } = props
@@ -139,14 +137,11 @@ function FileUploadPlaceHolder(props: FileAssetProps & {disableNew?: boolean}) {
     <AssetSourceBrowser
       assetSources={assetSources}
       readOnly={readOnly}
-      id={id}
-      browseButtonElementRef={browseButtonElementRef}
       schemaType={schemaType}
       onSelectAssetSource={(assetSource) => {
         setIsBrowseMenuOpen(false)
         onSelectAssetSourceForBrowse?.(assetSource)
       }}
-      dataTestIdPrefix="file-input"
     />
   )
 

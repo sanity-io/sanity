@@ -8,6 +8,7 @@ import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {ActionsMenu} from '../common/ActionsMenu'
+import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'
 import {getAssetSourceDisplayName, getAssetSourcesWithUpload} from '../common/assetSourceUtils'
 import {findOpenInSourceResult, getOpenInSourceName} from '../common/openInSource'
 import {useUploadMenuItem} from '../common/useUploadMenuItem'
@@ -29,7 +30,6 @@ export function FilePreview(props: FileAssetProps) {
     onSelectFiles,
     readOnly,
     schemaType,
-    setBrowseButtonElement,
     value,
   } = props
   const {t} = useTranslation()
@@ -100,6 +100,7 @@ export function FilePreview(props: FileAssetProps) {
       return null
     }
 
+    const dataTestIdPrefix = getDataTestIdPrefix(schemaType)
     if (assetSources.length === 1) {
       return (
         <MenuItem
@@ -107,7 +108,7 @@ export function FilePreview(props: FileAssetProps) {
           text={t('asset-source.browse-button.text')}
           onClick={handleSelectFileMenuItemClicked}
           disabled={readOnly}
-          data-testid={`file-input-browse-button-${assetSources[0].name}`}
+          data-testid={`${dataTestIdPrefix}-browse-button-${assetSources[0].name}`}
           data-asset-source-name={assetSources[0].name}
         />
       )
@@ -120,12 +121,19 @@ export function FilePreview(props: FileAssetProps) {
           onClick={handleSelectFileMenuItemClicked}
           icon={assetSource.icon || ImageIcon}
           disabled={readOnly}
-          data-testid={`file-input-browse-button-${assetSource.name}`}
+          data-testid={`${dataTestIdPrefix}-browse-button-${assetSource.name}`}
           data-asset-source-name={assetSource.name}
         />
       )
     })
-  }, [assetSources, handleSelectFileMenuItemClicked, readOnly, sourcesFromSchema?.length, t])
+  }, [
+    assetSources,
+    handleSelectFileMenuItemClicked,
+    readOnly,
+    schemaType,
+    sourcesFromSchema?.length,
+    t,
+  ])
 
   const uploadMenuItem = useUploadMenuItem({
     accept,
@@ -162,7 +170,6 @@ export function FilePreview(props: FileAssetProps) {
           onOpenInSource={onOpenInSource}
           readOnly={readOnly}
           setIsMenuOpen={setIsMenuOpen}
-          setBrowseButtonElement={setBrowseButtonElement}
           uploadMenuItem={uploadMenuItem}
           value={value}
         />
@@ -181,7 +188,6 @@ function FilePreviewContent({
   onOpenInSource,
   readOnly,
   setIsMenuOpen,
-  setBrowseButtonElement,
   uploadMenuItem,
   value,
 }: {
@@ -194,7 +200,6 @@ function FilePreviewContent({
   onOpenInSource: (assetSource: AssetSource, asset: FileAsset) => void
   readOnly?: boolean
   setIsMenuOpen: (isOpen: boolean) => void
-  setBrowseButtonElement: (element: HTMLButtonElement | null) => void
   uploadMenuItem: ReactNode
   value: FileAssetProps['value']
 }) {
@@ -240,7 +245,6 @@ function FilePreviewContent({
       muted={!readOnly}
       onMenuOpen={setIsMenuOpen}
       isMenuOpen={isMenuOpen}
-      setMenuButtonElement={setBrowseButtonElement}
     >
       <ActionsMenu
         browse={browseMenuItem}

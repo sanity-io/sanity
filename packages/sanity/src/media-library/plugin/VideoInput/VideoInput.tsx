@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type AssetFromSource, type AssetSource, type UploadState} from '@sanity/types'
-import {Fragment, useCallback, useRef, useState} from 'react'
+import {Fragment, useCallback, useState} from 'react'
 import {type Observable} from 'rxjs'
 
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../core/form/inputs/files/common/assetSource'
@@ -77,8 +77,6 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
   const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
   const [isBrowseMenuOpen, setIsBrowseMenuOpen] = useState(false)
 
-  const browseButtonElementRef = useRef<HTMLButtonElement>(null)
-
   const {
     action: assetSourceAction,
     selectedAssetSource,
@@ -101,15 +99,6 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     onChange,
     schemaType,
   })
-
-  const setBrowseButtonElement = useCallback(
-    (element: HTMLButtonElement | null) => {
-      if (element) {
-        browseButtonElementRef.current = element
-      }
-    },
-    [browseButtonElementRef],
-  )
 
   const {uploadWith: uploadExternalFileToDataset, clearUploadStatus} =
     useUploadExternalFileToDataset({
@@ -152,7 +141,6 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     return (
       <VideoAssetComponent
         {...props}
-        browseButtonElementRef={browseButtonElementRef}
         clearField={handleClearField}
         hoveringFiles={hoveringFiles}
         isBrowseMenuOpen={isBrowseMenuOpen}
@@ -167,7 +155,6 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
         onSelectFiles={handleSelectFilesToUpload}
         onStale={handleStaleUpload}
         selectedAssetSource={selectedAssetSource}
-        setBrowseButtonElement={setBrowseButtonElement}
         setHoveringFiles={setHoveringFiles}
         setIsBrowseMenuOpen={setIsBrowseMenuOpen}
         setIsUploading={setIsUploading}
@@ -191,8 +178,6 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     props,
     selectedAssetSource,
     setSelectedAssetSource,
-    browseButtonElementRef,
-    setBrowseButtonElement,
     setIsUploading,
   ])
 

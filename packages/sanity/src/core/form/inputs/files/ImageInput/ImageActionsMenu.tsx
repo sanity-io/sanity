@@ -1,6 +1,14 @@
 import {CropIcon} from '@sanity/icons'
 import {Inline, Menu, Skeleton, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {type MouseEventHandler, type ReactNode, useCallback, useEffect, useState} from 'react'
+import {
+  type MouseEventHandler,
+  type MutableRefObject,
+  type ReactNode,
+  type RefObject,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, Popover, TooltipDelayGroupProvider} from '../../../../../ui-components'
@@ -23,7 +31,7 @@ interface ImageActionsMenuProps {
   children: ReactNode
   onEdit: MouseEventHandler<HTMLButtonElement>
   setHotspotButtonElement: (element: HTMLButtonElement | null) => void
-  setMenuButtonElement: (element: HTMLButtonElement | null) => void
+  menuButtonRef: RefObject<HTMLButtonElement | null>
   showEdit: boolean
   isMenuOpen: boolean
   onMenuOpen: (flag: boolean) => void
@@ -35,7 +43,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
     children,
     showEdit,
     setHotspotButtonElement,
-    setMenuButtonElement,
+    menuButtonRef,
     onMenuOpen,
     isMenuOpen,
   } = props
@@ -70,13 +78,12 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
   const setOptionsButtonRef = useCallback(
     (el: HTMLButtonElement | null) => {
-      // Pass the button element to the parent component so that it can focus it when e.g. closing dialogs
-      setMenuButtonElement(el)
-
-      // Set focus back on the button when closing the menu
+      if (menuButtonRef) {
+        ;(menuButtonRef as MutableRefObject<HTMLButtonElement | null>).current = el
+      }
       setButtonElement(el)
     },
-    [setMenuButtonElement],
+    [menuButtonRef],
   )
 
   // When the popover is open, focus the menu to enable keyboard navigation

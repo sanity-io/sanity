@@ -7,7 +7,7 @@ import {
   type FileSchemaType,
   type UploadState,
 } from '@sanity/types'
-import {Fragment, useCallback, useRef, useState} from 'react'
+import {Fragment, useCallback, useState} from 'react'
 import {type Observable} from 'rxjs'
 
 import {useTranslation} from '../../../../i18n'
@@ -72,7 +72,6 @@ export function BaseFileInput(props: BaseFileInputProps) {
   const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
   const [isBrowseMenuOpen, setIsBrowseMenuOpen] = useState(false)
   const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
-  const browseButtonElementRef = useRef<HTMLButtonElement>(null)
 
   const {
     action: assetSourceAction,
@@ -97,15 +96,6 @@ export function BaseFileInput(props: BaseFileInputProps) {
     schemaType,
     onAssetLimitError: () => handleAssetLimitUpsellDialog('field_action'),
   })
-
-  const setBrowseButtonElement = useCallback(
-    (element: HTMLButtonElement | null) => {
-      if (element) {
-        browseButtonElementRef.current = element
-      }
-    },
-    [browseButtonElementRef],
-  )
 
   const {uploadWith: uploadExternalFileToDataset, clearUploadStatus} =
     useUploadExternalFileToDataset({
@@ -157,7 +147,6 @@ export function BaseFileInput(props: BaseFileInputProps) {
       <FileAssetComponent
         {...props}
         accessPolicy={accessPolicy}
-        browseButtonElementRef={browseButtonElementRef}
         clearField={handleClearField}
         hoveringFiles={hoveringFiles}
         isBrowseMenuOpen={isBrowseMenuOpen}
@@ -172,7 +161,6 @@ export function BaseFileInput(props: BaseFileInputProps) {
         onSelectFiles={handleSelectFilesToUpload}
         onStale={handleStaleUpload}
         selectedAssetSource={selectedAssetSource}
-        setBrowseButtonElement={setBrowseButtonElement}
         setHoveringFiles={setHoveringFiles}
         setIsBrowseMenuOpen={setIsBrowseMenuOpen}
         setIsUploading={setIsUploading}
@@ -196,7 +184,6 @@ export function BaseFileInput(props: BaseFileInputProps) {
     isUploading,
     props,
     selectedAssetSource,
-    setBrowseButtonElement,
     setIsUploading,
     setSelectedAssetSource,
   ])

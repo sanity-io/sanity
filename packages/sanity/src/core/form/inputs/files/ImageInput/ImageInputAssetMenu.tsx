@@ -2,13 +2,14 @@ import {isImageSource} from '@sanity/asset-utils'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
 import get from 'lodash-es/get.js'
-import {memo, type ReactNode, useCallback, useMemo} from 'react'
+import {memo, type ReactNode, type RefObject, useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {ActionsMenu} from '../common/ActionsMenu'
+import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'
 import {getAssetSourceDisplayName, getAssetSourcesWithUpload} from '../common/assetSourceUtils'
 import {findOpenInSourceResult, getOpenInSourceName} from '../common/openInSource'
 import {useUploadMenuItem} from '../common/useUploadMenuItem'
@@ -40,7 +41,7 @@ function ImageInputAssetMenuComponent(
     isImageToolEnabled: boolean
     isMenuOpen: boolean
     setHotspotButtonElement: (el: HTMLButtonElement | null) => void
-    setMenuButtonElement: (el: HTMLButtonElement | null) => void
+    menuButtonRef: RefObject<HTMLButtonElement | null>
     setMenuOpen: (isOpen: boolean) => void
     onOpenInSource: (assetSource: AssetSource, asset: ImageAsset) => void
   },
@@ -62,7 +63,7 @@ function ImageInputAssetMenuComponent(
     readOnly,
     schemaType,
     setHotspotButtonElement,
-    setMenuButtonElement,
+    menuButtonRef,
     setMenuOpen,
     value,
   } = props
@@ -77,6 +78,7 @@ function ImageInputAssetMenuComponent(
     return null
   }
 
+  const dataTestIdPrefix = getDataTestIdPrefix(schemaType)
   let browseMenuItem: ReactNode =
     assetSources && assetSources.length === 0 ? null : (
       <MenuItem
@@ -87,7 +89,7 @@ function ImageInputAssetMenuComponent(
           handleSelectImageFromAssetSource(assetSources[0])
         }}
         disabled={readOnly}
-        data-testid="file-input-browse-button"
+        data-testid={`${dataTestIdPrefix}-browse-button`}
       />
     )
   if (assetSources && assetSources.length > 1) {
@@ -101,7 +103,7 @@ function ImageInputAssetMenuComponent(
             handleSelectImageFromAssetSource(assetSource)
           }}
           icon={assetSource.icon || ImageIcon}
-          data-testid={`file-input-browse-button-${assetSource.name}`}
+          data-testid={`${dataTestIdPrefix}-browse-button-${assetSource.name}`}
           disabled={readOnly}
         />
       )
@@ -127,7 +129,7 @@ function ImageInputAssetMenuComponent(
       reference={asset}
       schemaType={schemaType}
       setHotspotButtonElement={setHotspotButtonElement}
-      setMenuButtonElement={setMenuButtonElement}
+      menuButtonRef={menuButtonRef}
       setMenuOpen={setMenuOpen}
       showAdvancedEditButton={!!showAdvancedEditButton}
       value={value}
@@ -154,7 +156,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     observeAsset: (assetId: string) => Observable<ImageAsset>
     reference: Reference
     setHotspotButtonElement: (el: HTMLButtonElement | null) => void
-    setMenuButtonElement: (el: HTMLButtonElement | null) => void
+    menuButtonRef: RefObject<HTMLButtonElement | null>
     setMenuOpen: (isOpen: boolean) => void
     showAdvancedEditButton: boolean
   },
@@ -176,7 +178,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     readOnly,
     reference,
     setHotspotButtonElement,
-    setMenuButtonElement,
+    menuButtonRef,
     setMenuOpen,
     showAdvancedEditButton,
     value,
@@ -277,7 +279,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
       onEdit={handleOpenDialog}
       onMenuOpen={setMenuOpen}
       setHotspotButtonElement={setHotspotButtonElement}
-      setMenuButtonElement={setMenuButtonElement}
+      menuButtonRef={menuButtonRef}
       showEdit={!!showAdvancedEditButton}
     >
       <ActionsMenu

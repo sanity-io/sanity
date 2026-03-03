@@ -44,7 +44,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     directUploads,
     elementProps,
     focusPath,
-    id,
+    id: _id,
     imageUrlBuilder,
     members,
     observeAsset,
@@ -68,9 +68,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   const renderedMembers = useRenderMembers(schemaType, members)
 
   const [hotspotButtonElement, setHotspotButtonElement] = useState<HTMLButtonElement | null>(null)
-  // Get the menu button element in `ImageActionsMenu` so that focus can be restored to
-  // it when closing the dialog (see `handleAssetSourceClosed`)
-  const [menuButtonElement, setMenuButtonElement] = useState<HTMLButtonElement | null>(null)
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null)
   const [isMenuOpen, setMenuOpen] = useState(false)
   const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
 
@@ -233,10 +231,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const handleAssetSourceClosed = useCallback(() => {
     assetSourceClose()
-
-    // Set focus on menu button in `ImageActionsMenu` when closing the dialog
-    menuButtonElement?.focus()
-  }, [assetSourceClose, menuButtonElement])
+    menuButtonRef.current?.focus()
+  }, [assetSourceClose])
 
   const accessPolicy = useAccessPolicy({
     client,
@@ -281,7 +277,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         readOnly={readOnly}
         schemaType={schemaType}
         setHotspotButtonElement={setHotspotButtonElement}
-        setMenuButtonElement={setMenuButtonElement}
+        menuButtonRef={menuButtonRef}
         setMenuOpen={setMenuOpen}
         value={value}
       />
@@ -310,13 +306,11 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       <AssetSourceBrowser
         assetSources={assetSources}
         readOnly={readOnly}
-        id={id}
         schemaType={schemaType}
         onSelectAssetSource={handleSelectImageFromAssetSource}
-        dataTestIdPrefix="file-input"
       />
     )
-  }, [assetSources, handleSelectImageFromAssetSource, id, readOnly, schemaType])
+  }, [assetSources, handleSelectImageFromAssetSource, readOnly, schemaType])
 
   const disableNew = schemaType.options?.disableNew === true
 

@@ -149,8 +149,6 @@ function FileUploadPlaceHolder(props: VideoAssetInputProps) {
     onSelectAssetSourceForBrowse,
     readOnly,
     schemaType,
-    id,
-    browseButtonElementRef,
     setIsBrowseMenuOpen,
     setSelectedAssetSource,
   } = props
@@ -159,14 +157,11 @@ function FileUploadPlaceHolder(props: VideoAssetInputProps) {
     <AssetSourceBrowser
       assetSources={assetSources}
       readOnly={readOnly}
-      id={id}
-      browseButtonElementRef={browseButtonElementRef}
       schemaType={schemaType}
       onSelectAssetSource={(assetSource) => {
         setIsBrowseMenuOpen(false)
         ;(onSelectAssetSourceForBrowse ?? setSelectedAssetSource)(assetSource)
       }}
-      dataTestIdPrefix="video-input"
     />
   )
 

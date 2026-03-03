@@ -11,7 +11,6 @@ import {type BaseFileInputProps} from './FileInput'
 
 export interface FileAssetProps extends Omit<BaseFileInputProps, 'renderDefault'> {
   accessPolicy?: AssetAccessPolicy
-  browseButtonElementRef: React.RefObject<HTMLButtonElement | null>
   clearField: () => void
   hoveringFiles: FileInfo[]
   isBrowseMenuOpen: boolean
@@ -33,7 +32,6 @@ export interface FileAssetProps extends Omit<BaseFileInputProps, 'renderDefault'
   onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   onStale: () => void
   selectedAssetSource: AssetSource | null
-  setBrowseButtonElement: (element: HTMLButtonElement | null) => void
   setHoveringFiles: (hoveringFiles: FileInfo[]) => void
   setIsBrowseMenuOpen: (isBrowseMenuOpen: boolean) => void
   setIsUploading: (isUploading: boolean) => void

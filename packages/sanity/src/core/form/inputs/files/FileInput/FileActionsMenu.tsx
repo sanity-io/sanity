@@ -28,7 +28,7 @@ type Props = {
   disabled?: boolean
   isMenuOpen: boolean
   onMenuOpen: (flag: boolean) => void
-  setMenuButtonElement: (element: HTMLButtonElement | null) => void
+  setMenuButtonElement?: (element: HTMLButtonElement | null) => void
 }
 
 export function FileActionsMenu(props: Props) {
@@ -74,10 +74,7 @@ export function FileActionsMenu(props: Props) {
 
   const setOptionsButtonRef = useCallback(
     (el: HTMLButtonElement | null) => {
-      // Pass the button element to the parent component so that it can focus it when e.g. closing dialogs
-      setMenuButtonElement(el)
-
-      // Set focus back on the button when closing the menu
+      setMenuButtonElement?.(el)
       setButtonElement(el)
     },
     [setMenuButtonElement],
