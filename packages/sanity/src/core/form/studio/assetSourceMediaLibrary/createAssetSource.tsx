@@ -13,7 +13,7 @@ import {MediaLibraryUploader} from './uploader'
 // This is used to identify assets created from the Media Library in the openInSource function,
 // so don't change it unless you know what you're doing (asset documents will have this source name).
 // The asset source plugin's name itself is still configurable by the user (props.name).
-const MEDIA_LIBRARY_SOURCE_NAME = 'sanity-media-library'
+export const sourceName = 'sanity-media-library'
 export interface CreateSanityMediaLibrarySourceProps {
   i18nKey?: string
   icon?: React.ComponentType
@@ -27,7 +27,7 @@ export interface CreateSanityMediaLibrarySourceProps {
  */
 function openInSource(asset: Asset): AssetSourceOpenInSourceResult {
   // Check if the asset's source name matches the Media Library source name
-  if (asset.source?.name === MEDIA_LIBRARY_SOURCE_NAME) {
+  if (asset.source?.name === sourceName) {
     return {type: 'component'}
   }
   return false
@@ -42,7 +42,7 @@ export function createSanityMediaLibraryImageSource(
   props: CreateSanityMediaLibrarySourceProps,
 ): AssetSource {
   return {
-    name: props.name || MEDIA_LIBRARY_SOURCE_NAME,
+    name: props.name || sourceName,
     i18nKey: props.i18nKey || 'asset-sources.media-library.image.title',
     component: (sourceProps: AssetSourceComponentProps) => (
       <MediaLibraryAssetSource {...sourceProps} libraryId={props.libraryId} />
@@ -62,7 +62,7 @@ export function createSanityMediaLibraryFileSource(
   props: CreateSanityMediaLibrarySourceProps,
 ): AssetSource {
   return {
-    name: props.name || MEDIA_LIBRARY_SOURCE_NAME,
+    name: props.name || sourceName,
     i18nKey: props.i18nKey || 'asset-sources.media-library.file.title',
     component: (sourceProps: AssetSourceComponentProps) => (
       <MediaLibraryAssetSource {...sourceProps} libraryId={props.libraryId} />
