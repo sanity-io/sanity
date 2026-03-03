@@ -7,8 +7,6 @@ import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '
 import {AssetSourceDialog} from '../../../core/form/inputs/files/common/AssetSourceDialog'
 import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
 import {useAssetSource} from '../../../core/form/inputs/files/common/useAssetSource'
-import {useAssetSourceFocusRestoration} from '../../../core/form/inputs/files/common/useAssetSourceFocusRestoration'
-import {useUploadExternalFileToDataset} from '../../../core/form/inputs/files/common/useUploadExternalFileToDataset'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../core/form/members'
 import {MemberDecoration} from '../../../core/form/members/object/MemberDecoration'
 import {useRenderMembers} from '../../../core/form/members/object/useRenderMembers'
@@ -86,9 +84,12 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     openForUpload: handleOpenSourceForUpload,
     openInSource: handleOpenInSource,
     changeAction: handleAssetSourceChangeAction,
-    close: assetSourceClose,
+    clearUploadStatus,
+    close: handleAssetSourceClosed,
+    menuButtonRef,
     resetOnComplete: handleAssetSourceResetOnComplete,
     setSelectedAssetSource,
+    uploadWith: uploadExternalFileToDataset,
     isUploading,
     setIsUploading,
     isStale,
@@ -97,19 +98,10 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     assetSourceUploader,
     handleSelectFilesToUpload,
   } = useAssetSource({
+    client,
     onChange,
     schemaType,
   })
-
-  const {menuButtonRef, handleAssetSourceClosed} = useAssetSourceFocusRestoration(assetSourceClose)
-
-  const {uploadWith: uploadExternalFileToDataset, clearUploadStatus} =
-    useUploadExternalFileToDataset({
-      client,
-      schemaType,
-      onChange,
-      setIsUploading,
-    })
 
   const handleClearUploadStatus = useCallback(() => {
     if (value?._upload) {

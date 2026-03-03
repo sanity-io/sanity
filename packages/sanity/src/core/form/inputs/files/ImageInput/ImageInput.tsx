@@ -25,7 +25,6 @@ import {AssetSourceBrowser} from '../common/AssetSourceBrowser'
 import {AssetSourceDialog} from '../common/AssetSourceDialog'
 import {UploadProgress} from '../common/UploadProgress'
 import {useAssetSource} from '../common/useAssetSource'
-import {useAssetSourceFocusRestoration} from '../common/useAssetSourceFocusRestoration'
 import {ImageAccessPolicy} from './ImageAccessPolicy'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
@@ -82,7 +81,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     openForUpload: handleOpenSourceForUpload,
     openInSource: handleOpenInSource,
     changeAction: handleAssetSourceChangeAction,
-    close: assetSourceClose,
+    close: handleAssetSourceClosed,
+    menuButtonRef,
     resetOnComplete: handleAssetSourceResetOnComplete,
     isUploading,
     setIsUploading,
@@ -92,13 +92,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     assetSourceUploader,
     handleSelectFilesToUpload,
   } = useAssetSource<ImageAsset>({
+    client,
     onChange,
     schemaType,
     onAssetLimitError: () => handleAssetLimitUpsellDialog('field_action'),
     onAllComplete: () => setMenuOpen(false),
   })
-
-  const {menuButtonRef, handleAssetSourceClosed} = useAssetSourceFocusRestoration(assetSourceClose)
 
   const handleSelectFileToUpload = useCallback(
     (assetSource: AssetSource, file: File) => {

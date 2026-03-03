@@ -23,8 +23,6 @@ import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '
 import {AssetSourceDialog} from '../common/AssetSourceDialog'
 import {type FileInfo} from '../common/styles'
 import {useAssetSource} from '../common/useAssetSource'
-import {useAssetSourceFocusRestoration} from '../common/useAssetSourceFocusRestoration'
-import {useUploadExternalFileToDataset} from '../common/useUploadExternalFileToDataset'
 import {useAccessPolicy} from '../ImageInput/useAccessPolicy'
 import {FileAsset as FileAssetComponent} from './FileAsset'
 import {FileSkeleton} from './FileSkeleton'
@@ -83,8 +81,11 @@ export function BaseFileInput(props: BaseFileInputProps) {
     openForUpload: handleOpenSourceForUpload,
     openInSource: handleOpenInSource,
     changeAction: handleAssetSourceChangeAction,
-    close: assetSourceClose,
+    clearUploadStatus,
+    close: handleAssetSourceClosed,
+    menuButtonRef,
     resetOnComplete: handleAssetSourceResetOnComplete,
+    uploadWith: uploadExternalFileToDataset,
     isUploading,
     setIsUploading,
     isStale,
@@ -93,20 +94,11 @@ export function BaseFileInput(props: BaseFileInputProps) {
     assetSourceUploader,
     handleSelectFilesToUpload,
   } = useAssetSource<FileAsset>({
+    client,
     onChange,
     schemaType,
     onAssetLimitError: () => handleAssetLimitUpsellDialog('field_action'),
   })
-
-  const {menuButtonRef, handleAssetSourceClosed} = useAssetSourceFocusRestoration(assetSourceClose)
-
-  const {uploadWith: uploadExternalFileToDataset, clearUploadStatus} =
-    useUploadExternalFileToDataset({
-      client,
-      schemaType,
-      onChange,
-      setIsUploading,
-    })
 
   const handleClearUploadStatus = useCallback(() => {
     if (value?._upload) {
