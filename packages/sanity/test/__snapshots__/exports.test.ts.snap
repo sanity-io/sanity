@@ -373,6 +373,7 @@ exports[`exports snapshot 1`] = `
     "isArrayOfObjectsSchemaType": "function",
     "isArrayOfPrimitivesInputProps": "function",
     "isArrayOfPrimitivesSchemaType": "function",
+    "isArrayOfStringsSchemaType": "function",
     "isArraySchemaType": "function",
     "isAssetAspect": "function",
     "isAuthStore": "function",
