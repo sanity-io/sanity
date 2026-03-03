@@ -73,8 +73,9 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
   }) => {
     // as string inputs become pte
 
-    await expect(page.getByTestId('pane-context-menu-button')).toBeVisible()
-    await page.getByTestId('pane-context-menu-button').click()
+    const documentPane = page.getByTestId('document-pane')
+    await expect(documentPane.getByTestId('pane-context-menu-button')).toBeVisible()
+    await documentPane.getByTestId('pane-context-menu-button').click()
     await expect(page.getByTestId('action-inlinechanges')).toBeVisible()
     await page.getByTestId('action-inlinechanges').click()
 

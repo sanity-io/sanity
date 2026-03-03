@@ -114,7 +114,8 @@ withDefaultClient((context) => {
     await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     // open the context menu
-    await page.getByTestId('pane-context-menu-button').first().click()
+    const documentPane = page.getByTestId('document-pane')
+    await documentPane.getByTestId('pane-context-menu-button').first().click()
     await page.getByTestId('action-inspect').click()
 
     /** Checks that the properties were added when a weak reference is added */
@@ -258,7 +259,8 @@ withDefaultClient((context) => {
     await expectPublishedStatus(documentStatus.first())
 
     // open the context menu
-    await page.getByTestId('pane-context-menu-button').first().click()
+    const documentPane = page.getByTestId('document-pane')
+    await documentPane.getByTestId('pane-context-menu-button').first().click()
     await page.getByTestId('action-inspect').click()
 
     /** Checks that the properties were added when a weak reference is added */
