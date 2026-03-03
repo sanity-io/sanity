@@ -3,7 +3,7 @@ name: "Cleanup E2E Datasets for Closed PRs"
 on:
   schedule:
     # Run every 6th hour
-    - 0 */6 * * *
+    - cron: "0 */6 * * *"
   workflow_dispatch: # Allow manual trigger
 
 permissions:
