@@ -107,7 +107,6 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/release-notes": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@repo/utils": "workspace:*",
     "@sanity/ui": "catalog:",
     "@types/node": "^24.6.1",
     "@typescript/native-preview": "catalog:",
