@@ -41,7 +41,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "pkg-utils build --strict --check --clean",
+    "build": "pkg-utils build --strict --check --clean && rimraf lib/groq.d.cts",
     "check:types": "(cd ../.. && tsgo --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
