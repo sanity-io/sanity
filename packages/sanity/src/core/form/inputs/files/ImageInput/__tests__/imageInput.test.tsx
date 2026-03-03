@@ -8,7 +8,11 @@ import {describe, expect, it} from 'vitest'
 
 import {observeImageAssetStub} from '../../../../../../../test/fixtures/assetSourceMocks'
 import {renderImageInput} from '../../../../../../../test/form'
+import {getDataTestIdPrefix} from '../../common/AssetSourceBrowser'
 import {BaseImageInput} from '../ImageInput'
+
+const imageBrowseTestId = (sourceName: string) =>
+  `${getDataTestIdPrefix({name: 'image', jsonType: 'object'})}-browse-button-${sourceName}`
 
 describe('ImageInput with empty state', () => {
   it('renders empty input with upload and browse', async () => {
@@ -20,7 +24,7 @@ describe('ImageInput with empty state', () => {
       render: (inputProps) => <BaseImageInput {...inputProps} />,
     })
     expect(screen.getByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
-    expect(screen.getByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
+    expect(screen.getByTestId(imageBrowseTestId('test-source'))).toBeInTheDocument()
   })
 
   it('shows invalid image warning when asset ref is not a valid image source', async () => {

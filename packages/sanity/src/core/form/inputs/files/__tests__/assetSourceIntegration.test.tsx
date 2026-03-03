@@ -15,8 +15,24 @@ import {
 } from '../../../../../../test/fixtures/assetSourceMocks'
 import {renderFileInput, renderImageInput, renderVideoInput} from '../../../../../../test/form'
 import {BaseVideoInput} from '../../../../../media-library/plugin/VideoInput/VideoInput'
+import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'
 import {BaseFileInput} from '../FileInput'
 import {BaseImageInput} from '../ImageInput'
+
+function getBrowseTestId(schemaTypeName: string, sourceName: string): string {
+  const prefix = getDataTestIdPrefix({name: schemaTypeName, jsonType: 'object'})
+  return `${prefix}-browse-button-${sourceName}`
+}
+
+function getBrowseTestIdSingleSource(schemaTypeName: string): string {
+  const prefix = getDataTestIdPrefix({name: schemaTypeName, jsonType: 'object'})
+  return `${prefix}-browse-button`
+}
+
+function getMultiBrowseTestId(schemaTypeName: string): string {
+  const prefix = getDataTestIdPrefix({name: schemaTypeName, jsonType: 'object'})
+  return `${prefix}-multi-browse-button`
+}
 
 // Mock useVideoPlaybackInfo so VideoPreview shows the options menu instead of waiting for API
 vi.mock('../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo', () => ({
@@ -45,7 +61,6 @@ const INPUT_CONFIGS = [
   {
     inputType: 'file',
     uploadTestId: 'file-input-upload-button-media-library-mock',
-    browseTestId: 'file-input-browse-button-media-library-mock',
     fieldDefinition: {
       name: 'someFile',
       title: 'A file',
@@ -58,7 +73,6 @@ const INPUT_CONFIGS = [
   {
     inputType: 'image',
     uploadTestId: 'file-input-upload-button-media-library-mock',
-    browseTestId: 'file-input-browse-button-media-library-mock',
     fieldDefinition: {
       name: 'mainImage',
       title: 'Main image',
@@ -71,7 +85,6 @@ const INPUT_CONFIGS = [
   {
     inputType: 'video',
     uploadTestId: 'file-input-upload-button-media-library-mock',
-    browseTestId: 'video-input-browse-button-media-library-mock',
     fieldDefinition: {
       name: 'someVideo',
       title: 'A video',
@@ -88,7 +101,6 @@ describe.each(INPUT_CONFIGS)(
   ({
     inputType: _inputType,
     uploadTestId,
-    browseTestId,
     fieldDefinition,
     render: renderFn,
     BaseInput,
@@ -106,7 +118,9 @@ describe.each(INPUT_CONFIGS)(
       })
 
       expect(screen.getByTestId(uploadTestId)).toBeInTheDocument()
-      expect(screen.getByTestId(browseTestId)).toBeInTheDocument()
+      expect(
+        screen.getByTestId(getBrowseTestId(fieldDefinition.type, assetSource.name)),
+      ).toBeInTheDocument()
     })
 
     it('completes upload and receives selection when asset source signals completion', async () => {
@@ -207,7 +221,9 @@ describe.each(INPUT_CONFIGS)(
         render: (inputProps) => <BaseInput {...(inputProps as any)} />,
       })
 
-      const browseButton = screen.getByTestId(browseTestId)
+      const browseButton = screen.getByTestId(
+        getBrowseTestId(fieldDefinition.type, assetSource.name),
+      )
       await userEvent.click(browseButton)
 
       await waitFor(
@@ -243,14 +259,8 @@ describe.each(INPUT_CONFIGS)(
         render: (inputProps) => <BaseInput {...(inputProps as any)} />,
       })
 
-      const multiBrowseTestId =
-        _inputType === 'video'
-          ? 'video-input-multi-browse-button'
-          : 'file-input-multi-browse-button'
-      const browseSourceATestId =
-        _inputType === 'video'
-          ? 'video-input-browse-button-source-a'
-          : 'file-input-browse-button-source-a'
+      const multiBrowseTestId = getMultiBrowseTestId(fieldDefinition.type)
+      const browseSourceATestId = getBrowseTestId(fieldDefinition.type, 'source-a')
 
       expect(screen.getByTestId(multiBrowseTestId)).toBeInTheDocument()
       await userEvent.click(screen.getByTestId(multiBrowseTestId))
@@ -320,7 +330,9 @@ describe.each(INPUT_CONFIGS)(
       })
 
       expect(screen.getByTestId('file-input-upload-button-sanity-default')).toBeInTheDocument()
-      expect(screen.queryByTestId(browseTestId)).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId(getBrowseTestId(fieldDefinition.type, 'media-library-mock')),
+      ).not.toBeInTheDocument()
     })
 
     it('renders the upload button as disabled when directUploads is false', async () => {
@@ -341,7 +353,6 @@ describe.each(INPUT_CONFIGS)(
 const BROWSE_AFTER_UPLOAD_CONFIGS = [
   {
     inputType: 'file',
-    browseTestId: 'file-input-browse-button-media-library-mock',
     uploadTestId: 'file-input-upload-button-media-library-mock',
     render: renderFileInput,
     BaseInput: BaseFileInput,
@@ -360,7 +371,6 @@ const BROWSE_AFTER_UPLOAD_CONFIGS = [
   },
   {
     inputType: 'image',
-    browseTestId: 'file-input-browse-button',
     uploadTestId: 'file-input-upload-button',
     render: renderImageInput,
     BaseInput: BaseImageInput,
@@ -379,7 +389,6 @@ const BROWSE_AFTER_UPLOAD_CONFIGS = [
   },
   {
     inputType: 'video',
-    browseTestId: 'video-input-browse-button-media-library-mock',
     uploadTestId: 'video-input-upload-button-media-library-mock',
     render: renderVideoInput,
     BaseInput: BaseVideoInput,
@@ -404,7 +413,6 @@ describe.each(BROWSE_AFTER_UPLOAD_CONFIGS)(
   'Asset source integration - browse after upload - $inputType',
   ({
     inputType: _inputType,
-    browseTestId,
     uploadTestId,
     render: renderFn,
     BaseInput,
@@ -413,6 +421,10 @@ describe.each(BROWSE_AFTER_UPLOAD_CONFIGS)(
     documentValue,
     imageUrlBuilder,
   }) => {
+    const getBrowseTestIdForConfig = () =>
+      _inputType === 'image'
+        ? getBrowseTestIdSingleSource(fieldDefinition.type)
+        : getBrowseTestId(fieldDefinition.type, 'media-library-mock')
     it('can open asset in source when asset source supports openInSource', async () => {
       const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
       try {
@@ -465,7 +477,11 @@ describe.each(BROWSE_AFTER_UPLOAD_CONFIGS)(
 
       const optionsButton = await screen.findByTestId('options-menu-button', {}, {timeout: 5000})
       await userEvent.click(optionsButton)
-      const browseButton = await screen.findByTestId(browseTestId, {}, {timeout: 5000})
+      const browseButton = await screen.findByTestId(
+        getBrowseTestIdForConfig(),
+        {},
+        {timeout: 5000},
+      )
       await userEvent.click(browseButton)
 
       await waitFor(
@@ -542,7 +558,7 @@ describe.each(BROWSE_AFTER_UPLOAD_CONFIGS)(
       const optionsButton = await screen.findByTestId('options-menu-button', {}, {timeout: 5000})
       await userEvent.click(optionsButton)
 
-      const browseButton = screen.getByTestId(browseTestId)
+      const browseButton = screen.getByTestId(getBrowseTestIdForConfig())
       const clearButton = screen.getByTestId('file-input-clear')
       expect(browseButton).toHaveAttribute('data-disabled')
       expect(clearButton).toHaveAttribute('data-disabled')
@@ -602,7 +618,7 @@ describe.each(BROWSE_AFTER_UPLOAD_CONFIGS)(
       await userEvent.click(optionsButton)
 
       expect(screen.getByTestId(uploadTestId)).toBeInTheDocument()
-      expect(screen.queryByTestId(browseTestId)).not.toBeInTheDocument()
+      expect(screen.queryByTestId(getBrowseTestIdForConfig())).not.toBeInTheDocument()
     }, 15000)
   },
 )

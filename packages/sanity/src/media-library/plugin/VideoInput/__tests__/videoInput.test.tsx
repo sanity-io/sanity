@@ -11,6 +11,7 @@ import {
   observeVideoAssetStub,
 } from '../../../../../test/fixtures/assetSourceMocks'
 import {renderVideoInput} from '../../../../../test/form'
+import {getDataTestIdPrefix} from '../../../../core/form/inputs/files/common/AssetSourceBrowser'
 import {BaseVideoInput} from '../VideoInput'
 
 // Mock useVideoPlaybackInfo so VideoPreview shows the options menu instead of waiting for API
@@ -48,7 +49,11 @@ describe('VideoInput - local tests', () => {
     })
 
     expect(screen.getByTestId('file-input-upload-button-media-library-mock')).toBeInTheDocument()
-    expect(screen.getByTestId('video-input-browse-button-media-library-mock')).toBeInTheDocument()
+    expect(
+      screen.getByTestId(
+        `${getDataTestIdPrefix({name: 'sanity.video', jsonType: 'object'})}-browse-button-media-library-mock`,
+      ),
+    ).toBeInTheDocument()
   })
 
   it('shows invalid video warning when asset ref is not a media-library ref', async () => {

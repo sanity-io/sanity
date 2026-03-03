@@ -5,7 +5,11 @@ import {type Observable, of} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 
 import {renderFileInput} from '../../../../../../../test/form'
+import {getDataTestIdPrefix} from '../../common/AssetSourceBrowser'
 import {BaseFileInput} from '../FileInput'
+
+const fileBrowseTestId = (sourceName: string) =>
+  `${getDataTestIdPrefix({name: 'file', jsonType: 'object'})}-browse-button-${sourceName}`
 
 const observeAssetStub = (): Observable<FileAsset> =>
   of({
@@ -77,7 +81,7 @@ describe('FileInput with empty state', () => {
     })
 
     expect(
-      screen.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+      screen.queryByTestId(fileBrowseTestId('test-source'))!.getAttribute('data-disabled'),
     ).toBe('true')
   })
 
@@ -93,7 +97,7 @@ describe('FileInput with empty state', () => {
     })
 
     expect(
-      screen.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+      screen.queryByTestId(fileBrowseTestId('test-source'))!.getAttribute('data-disabled'),
     ).toBe('true')
   })
 
@@ -162,7 +166,7 @@ describe('FileInput with asset', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+        screen.queryByTestId(fileBrowseTestId('test-source'))!.getAttribute('data-disabled'),
       ).toBe('')
     })
   })
@@ -181,9 +185,7 @@ describe('FileInput with asset', () => {
     await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(
-        screen.queryByTestId('file-input-browse-button-test-source')!.hasAttribute('data-disabled'),
-      )
+      expect(screen.queryByTestId(fileBrowseTestId('test-source'))!.hasAttribute('data-disabled'))
     })
   })
 
@@ -208,12 +210,8 @@ describe('FileInput with asset', () => {
     await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(
-        screen.queryByTestId('file-input-browse-button-source1')!.hasAttribute('data-disabled'),
-      )
-      expect(
-        screen.queryByTestId('file-input-browse-button-source2')!.hasAttribute('data-disabled'),
-      )
+      expect(screen.queryByTestId(fileBrowseTestId('source1'))!.hasAttribute('data-disabled'))
+      expect(screen.queryByTestId(fileBrowseTestId('source2'))!.hasAttribute('data-disabled'))
     })
   })
 
