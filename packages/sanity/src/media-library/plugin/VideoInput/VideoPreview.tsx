@@ -63,6 +63,7 @@ export function VideoPreview(props: VideoAssetInputProps) {
     assetSources,
     clearField,
     directUploads,
+    menuButtonRef,
     observeAsset,
     onOpenInSource,
     onOpenSourceForUpload,
@@ -117,10 +118,11 @@ export function VideoPreview(props: VideoAssetInputProps) {
       playbackId: playbackInfoState.result?.id,
       onMenuOpen: setIsMenuOpen,
       isMenuOpen: isMenuOpen,
+      menuButtonRef,
     }
 
     return tokens ? {...baseProps, tokens} : baseProps
-  }, [isStaging, playbackInfoState, isMenuOpen])
+  }, [isStaging, playbackInfoState, isMenuOpen, menuButtonRef])
 
   const assetSourcesWithUpload = getAssetSourcesWithUpload(assetSources)
 
@@ -265,6 +267,7 @@ export function VideoPreview(props: VideoAssetInputProps) {
     getSingleButtonTestId: (sourceName) => `video-input-upload-button-${sourceName}`,
     dropdownMenuTestId: 'video-input-upload-drop-down-menu-button',
     onCloseParentMenu: () => setIsMenuOpen(false),
+    onFilePickerCancel: () => menuButtonRef.current?.focus(),
   })
 
   if (!asset) {

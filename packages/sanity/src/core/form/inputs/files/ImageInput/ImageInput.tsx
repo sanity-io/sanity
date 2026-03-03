@@ -25,6 +25,7 @@ import {AssetSourceBrowser} from '../common/AssetSourceBrowser'
 import {AssetSourceDialog} from '../common/AssetSourceDialog'
 import {UploadProgress} from '../common/UploadProgress'
 import {useAssetSource} from '../common/useAssetSource'
+import {useAssetSourceFocusRestoration} from '../common/useAssetSourceFocusRestoration'
 import {ImageAccessPolicy} from './ImageAccessPolicy'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
@@ -68,7 +69,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   const renderedMembers = useRenderMembers(schemaType, members)
 
   const [hotspotButtonElement, setHotspotButtonElement] = useState<HTMLButtonElement | null>(null)
-  const menuButtonRef = useRef<HTMLButtonElement | null>(null)
   const [isMenuOpen, setMenuOpen] = useState(false)
   const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
 
@@ -97,6 +97,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     onAssetLimitError: () => handleAssetLimitUpsellDialog('field_action'),
     onAllComplete: () => setMenuOpen(false),
   })
+
+  const {menuButtonRef, handleAssetSourceClosed} = useAssetSourceFocusRestoration(assetSourceClose)
 
   const handleSelectFileToUpload = useCallback(
     (assetSource: AssetSource, file: File) => {
@@ -229,11 +231,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     clearUploadStatus()
   }, [clearUploadStatus, setIsStale])
 
-  const handleAssetSourceClosed = useCallback(() => {
-    assetSourceClose()
-    menuButtonRef.current?.focus()
-  }, [assetSourceClose])
-
   const accessPolicy = useAccessPolicy({
     client,
     source: value,
@@ -295,6 +292,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     imageUrlBuilder,
     isImageToolEnabled,
     isMenuOpen,
+    menuButtonRef,
     observeAsset,
     readOnly,
     schemaType,

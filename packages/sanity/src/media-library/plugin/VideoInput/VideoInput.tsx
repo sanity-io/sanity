@@ -7,6 +7,7 @@ import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '
 import {AssetSourceDialog} from '../../../core/form/inputs/files/common/AssetSourceDialog'
 import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
 import {useAssetSource} from '../../../core/form/inputs/files/common/useAssetSource'
+import {useAssetSourceFocusRestoration} from '../../../core/form/inputs/files/common/useAssetSourceFocusRestoration'
 import {useUploadExternalFileToDataset} from '../../../core/form/inputs/files/common/useUploadExternalFileToDataset'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../core/form/members'
 import {MemberDecoration} from '../../../core/form/members/object/MemberDecoration'
@@ -85,7 +86,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     openForUpload: handleOpenSourceForUpload,
     openInSource: handleOpenInSource,
     changeAction: handleAssetSourceChangeAction,
-    close: handleAssetSourceClosed,
+    close: assetSourceClose,
     resetOnComplete: handleAssetSourceResetOnComplete,
     setSelectedAssetSource,
     isUploading,
@@ -99,6 +100,8 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     onChange,
     schemaType,
   })
+
+  const {menuButtonRef, handleAssetSourceClosed} = useAssetSourceFocusRestoration(assetSourceClose)
 
   const {uploadWith: uploadExternalFileToDataset, clearUploadStatus} =
     useUploadExternalFileToDataset({
@@ -141,6 +144,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     return (
       <VideoAssetComponent
         {...props}
+        menuButtonRef={menuButtonRef}
         clearField={handleClearField}
         hoveringFiles={hoveringFiles}
         isBrowseMenuOpen={isBrowseMenuOpen}
@@ -175,6 +179,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     isBrowseMenuOpen,
     isStale,
     isUploading,
+    menuButtonRef,
     props,
     selectedAssetSource,
     setSelectedAssetSource,

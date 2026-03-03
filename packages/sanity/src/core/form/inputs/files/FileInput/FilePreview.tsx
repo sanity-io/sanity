@@ -23,6 +23,7 @@ export function FilePreview(props: FileAssetProps) {
     assetSources,
     clearField,
     directUploads,
+    menuButtonRef,
     observeAsset,
     onOpenInSource,
     onOpenSourceForUpload,
@@ -147,6 +148,7 @@ export function FilePreview(props: FileAssetProps) {
     getSingleButtonTestId: (sourceName) => `file-input-upload-button-${sourceName}`,
     dropdownMenuTestId: 'file-input-upload-drop-down-menu-button',
     onCloseParentMenu: () => setIsMenuOpen(false),
+    onFilePickerCancel: () => menuButtonRef.current?.focus(),
   })
 
   if (!asset) {
@@ -170,6 +172,7 @@ export function FilePreview(props: FileAssetProps) {
           onOpenInSource={onOpenInSource}
           readOnly={readOnly}
           setIsMenuOpen={setIsMenuOpen}
+          menuButtonRef={menuButtonRef}
           uploadMenuItem={uploadMenuItem}
           value={value}
         />
@@ -185,6 +188,7 @@ function FilePreviewContent({
   clearField,
   fileAsset,
   isMenuOpen,
+  menuButtonRef,
   onOpenInSource,
   readOnly,
   setIsMenuOpen,
@@ -197,6 +201,7 @@ function FilePreviewContent({
   clearField: () => void
   fileAsset: FileAsset
   isMenuOpen: boolean
+  menuButtonRef: React.RefObject<HTMLButtonElement | null>
   onOpenInSource: (assetSource: AssetSource, asset: FileAsset) => void
   readOnly?: boolean
   setIsMenuOpen: (isOpen: boolean) => void
@@ -245,6 +250,7 @@ function FilePreviewContent({
       muted={!readOnly}
       onMenuOpen={setIsMenuOpen}
       isMenuOpen={isMenuOpen}
+      menuButtonRef={menuButtonRef}
     >
       <ActionsMenu
         browse={browseMenuItem}

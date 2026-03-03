@@ -1,21 +1,10 @@
 import {BinaryDocumentIcon} from '@sanity/icons'
-import {
-  Box,
-  Card,
-  Flex,
-  Menu,
-  Stack,
-  Text,
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type ReactNode, type RefObject} from 'react'
 
-import {Popover} from '../../../../../ui-components'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../i18n'
 import {formatBytes} from '../../common/helper'
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
+import {OptionsMenuPopover} from '../common/OptionsMenuPopover'
 import {type AssetAccessPolicy} from '../types'
 
 type Props = {
@@ -28,7 +17,7 @@ type Props = {
   disabled?: boolean
   isMenuOpen: boolean
   onMenuOpen: (flag: boolean) => void
-  setMenuButtonElement?: (element: HTMLButtonElement | null) => void
+  menuButtonRef: RefObject<HTMLButtonElement | null>
 }
 
 export function FileActionsMenu(props: Props) {
@@ -42,52 +31,8 @@ export function FileActionsMenu(props: Props) {
     onClick,
     isMenuOpen,
     onMenuOpen,
-    setMenuButtonElement,
+    menuButtonRef,
   } = props
-  const [menuElement, setMenuElement] = useState<HTMLDivElement | null>(null)
-  const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
-
-  const handleClick = useCallback(() => onMenuOpen(true), [onMenuOpen])
-
-  useGlobalKeyDown(
-    useCallback(
-      (event) => {
-        if (isMenuOpen && (event.key === 'Escape' || event.key === 'Tab')) {
-          onMenuOpen(false)
-          buttonElement?.focus()
-        }
-      },
-      [isMenuOpen, onMenuOpen, buttonElement],
-    ),
-  )
-
-  // Close menu when clicking outside of it
-  // Not when clicking on the button
-  useClickOutsideEvent(
-    (event) => {
-      if (!buttonElement?.contains(event.target as Node)) {
-        onMenuOpen(false)
-      }
-    },
-    () => [menuElement],
-  )
-
-  const setOptionsButtonRef = useCallback(
-    (el: HTMLButtonElement | null) => {
-      setMenuButtonElement?.(el)
-      setButtonElement(el)
-    },
-    [setMenuButtonElement],
-  )
-
-  // When the popover is open, focus the menu to enable keyboard navigation
-  useEffect(() => {
-    if (isMenuOpen) {
-      menuElement?.focus()
-    }
-  }, [isMenuOpen, menuElement])
-
-  const {t} = useTranslation()
 
   return (
     <Flex wrap="nowrap" justify="space-between" align="center">
@@ -126,23 +71,15 @@ export function FileActionsMenu(props: Props) {
       <Box padding={2}>
         <Flex justify="center" gap={2}>
           {accessPolicy === 'private' && <AccessPolicyBadge />}
-          {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
-     and break replacing an uploaded file. */}
-          <Popover
-            content={<Menu ref={setMenuElement}>{children}</Menu>}
+          <OptionsMenuPopover
+            ariaLabelKey="inputs.file.actions-menu.file-options.aria-label"
             id="file-actions-menu"
-            portal
-            open={isMenuOpen}
-            constrainSize
-            animate={false}
+            isMenuOpen={isMenuOpen}
+            menuButtonRef={menuButtonRef}
+            onMenuOpen={onMenuOpen}
           >
-            <ContextMenuButton
-              aria-label={t('inputs.file.actions-menu.file-options.aria-label')}
-              data-testid="options-menu-button"
-              onClick={handleClick}
-              ref={setOptionsButtonRef}
-            />
-          </Popover>
+            {children}
+          </OptionsMenuPopover>
         </Flex>
       </Box>
     </Flex>

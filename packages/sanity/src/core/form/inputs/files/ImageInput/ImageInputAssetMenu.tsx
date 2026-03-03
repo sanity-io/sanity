@@ -252,6 +252,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     onSelectFilesSingle: handleSelectFilesFromAssetSourceSingle,
     getSingleButtonTestId: () => 'file-input-upload-button',
     onCloseParentMenu: () => setMenuOpen(false),
+    onFilePickerCancel: () => menuButtonRef.current?.focus(),
   })
 
   if (!documentId || !asset) {

@@ -28,6 +28,8 @@ export interface UseUploadMenuItemOptions {
    * Use to close the parent menu so both submenu and main menu close.
    */
   onCloseParentMenu?: () => void
+  /** Called when the user cancels the native file picker. Use to restore focus. */
+  onFilePickerCancel?: () => void
 }
 
 /**
@@ -49,6 +51,7 @@ export function useUploadMenuItem(options: UseUploadMenuItemOptions): ReactNode 
     getSingleButtonTestId,
     dropdownMenuTestId,
     onCloseParentMenu,
+    onFilePickerCancel,
   } = options
 
   const {t} = useTranslation()
@@ -78,6 +81,7 @@ export function useUploadMenuItem(options: UseUploadMenuItemOptions): ReactNode 
           <FileInputMenuItem
             icon={UploadIcon}
             onSelect={onSelectFilesSingle}
+            onFilePickerCancel={onFilePickerCancel}
             accept={accept}
             data-asset-source-name={singleSource.name}
             text={t('inputs.files.common.actions-menu.upload.label')}
@@ -95,6 +99,7 @@ export function useUploadMenuItem(options: UseUploadMenuItemOptions): ReactNode 
             onSelectFiles={onSelectFiles}
             onOpenSourceForUpload={onOpenSourceForUpload}
             onCloseParentMenu={onCloseParentMenu}
+            onFilePickerCancel={onFilePickerCancel}
             readOnly={readOnly}
             data-testid={dropdownMenuTestId}
             renderAsMenuGroup
@@ -108,6 +113,7 @@ export function useUploadMenuItem(options: UseUploadMenuItemOptions): ReactNode 
     dropdownMenuTestId,
     getSingleButtonTestId,
     onCloseParentMenu,
+    onFilePickerCancel,
     onOpenSourceForUpload,
     onOpenSourceForUploadSingle,
     onSelectFiles,

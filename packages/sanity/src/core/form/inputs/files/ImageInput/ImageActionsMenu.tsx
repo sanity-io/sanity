@@ -1,25 +1,11 @@
 import {CropIcon} from '@sanity/icons'
-import {Inline, Menu, Skeleton, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {
-  type MouseEventHandler,
-  type MutableRefObject,
-  type ReactNode,
-  type RefObject,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react'
-import {styled} from 'styled-components'
+import {Skeleton} from '@sanity/ui'
+import {type MouseEventHandler, type ReactNode, type RefObject} from 'react'
 
-import {Button, Popover, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
+import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-
-const MenuActionsWrapper = styled(Inline)`
-  position: absolute;
-  top: 0;
-  right: 0;
-`
+import {MenuActionsWrapper} from '../common/MenuActionsWrapper.styled'
+import {OptionsMenuPopover} from '../common/OptionsMenuPopover'
 
 export const ImageActionsMenuWaitPlaceholder = () => (
   <MenuActionsWrapper padding={2}>
@@ -48,52 +34,8 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
     isMenuOpen,
   } = props
 
-  const [menuElement, setMenuElement] = useState<HTMLDivElement | null>(null)
-  const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
-
-  const handleClick = useCallback(() => onMenuOpen(!isMenuOpen), [onMenuOpen, isMenuOpen])
-
-  useGlobalKeyDown(
-    useCallback(
-      (event) => {
-        if (isMenuOpen && (event.key === 'Escape' || event.key === 'Tab')) {
-          onMenuOpen(false)
-          buttonElement?.focus()
-        }
-      },
-      [isMenuOpen, onMenuOpen, buttonElement],
-    ),
-  )
-
-  // Close menu when clicking outside of it
-  // Not when clicking on the button
-  useClickOutsideEvent(
-    (event) => {
-      if (!buttonElement?.contains(event.target as Node)) {
-        onMenuOpen(false)
-      }
-    },
-    () => [menuElement],
-  )
-
-  const setOptionsButtonRef = useCallback(
-    (el: HTMLButtonElement | null) => {
-      if (menuButtonRef) {
-        ;(menuButtonRef as MutableRefObject<HTMLButtonElement | null>).current = el
-      }
-      setButtonElement(el)
-    },
-    [menuButtonRef],
-  )
-
-  // When the popover is open, focus the menu to enable keyboard navigation
-  useEffect(() => {
-    if (isMenuOpen) {
-      menuElement?.focus()
-    }
-  }, [isMenuOpen, menuElement])
-
   const {t} = useTranslation()
+
   return (
     <TooltipDelayGroupProvider>
       <MenuActionsWrapper data-buttons space={1} padding={2}>
@@ -108,24 +50,17 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
             tooltipProps={{content: t('inputs.image.actions-menu.crop-image-tooltip')}}
           />
         )}
-        {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
-     and break replacing an uploaded file. */}
-        <Popover
+        <OptionsMenuPopover
+          ariaLabelKey="inputs.image.actions-menu.options.aria-label"
+          buttonMode="ghost"
           id="image-actions-menu"
-          content={<Menu ref={setMenuElement}>{children}</Menu>}
-          portal
-          open={isMenuOpen}
-          constrainSize
-          animate={false}
+          isMenuOpen={isMenuOpen}
+          menuButtonRef={menuButtonRef}
+          onMenuOpen={onMenuOpen}
+          openOnClick="toggle"
         >
-          <ContextMenuButton
-            aria-label={t('inputs.image.actions-menu.options.aria-label')}
-            data-testid="options-menu-button"
-            mode="ghost"
-            onClick={handleClick}
-            ref={setOptionsButtonRef}
-          />
-        </Popover>
+          {children}
+        </OptionsMenuPopover>
       </MenuActionsWrapper>
     </TooltipDelayGroupProvider>
   )

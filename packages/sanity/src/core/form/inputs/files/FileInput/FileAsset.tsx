@@ -20,6 +20,7 @@ export function FileAsset(props: FileAssetProps) {
     assetSources,
     changed,
     clearField,
+    menuButtonRef,
     directUploads,
     elementProps,
     isStale,

@@ -36,6 +36,7 @@ export function VideoAsset(props: VideoAssetInputProps) {
     assetSources,
     changed,
     clearField,
+    menuButtonRef,
     directUploads,
     elementProps,
     isStale,

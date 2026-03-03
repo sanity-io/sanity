@@ -11,6 +11,7 @@ import {type BaseFileInputProps} from './FileInput'
 
 export interface FileAssetProps extends Omit<BaseFileInputProps, 'renderDefault'> {
   accessPolicy?: AssetAccessPolicy
+  menuButtonRef: React.RefObject<HTMLButtonElement | null>
   clearField: () => void
   hoveringFiles: FileInfo[]
   isBrowseMenuOpen: boolean

@@ -9,8 +9,10 @@ export function openFilePicker(options: {
   capture?: 'user' | 'environment'
   multiple?: boolean
   onSelect: (files: File[]) => void
+  /** Called when the user cancels the file picker (e.g. to restore focus). */
+  onCancel?: () => void
 }): void {
-  const {accept, capture, multiple, onSelect} = options
+  const {accept, capture, multiple, onSelect, onCancel} = options
 
   const input = document.createElement('input')
   input.type = 'file'
@@ -41,6 +43,7 @@ export function openFilePicker(options: {
 
   const handleCancel = () => {
     if (!handled) {
+      onCancel?.()
       cleanup()
     }
   }

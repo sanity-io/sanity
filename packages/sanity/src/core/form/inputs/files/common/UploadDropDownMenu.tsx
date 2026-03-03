@@ -40,6 +40,8 @@ interface UploadDropDownButtonComponentProps {
    * Use this to close the parent menu so both submenu and main menu close.
    */
   'onCloseParentMenu'?: () => void
+  /** Called when the user cancels the native file picker. */
+  'onFilePickerCancel'?: () => void
   'readOnly'?: boolean
   'renderAsMenuGroup'?: boolean
   'data-testid'?: string
@@ -58,6 +60,7 @@ function UploadDropDownMenuComponent(
     onSelectFiles,
     onOpenSourceForUpload,
     onCloseParentMenu,
+    onFilePickerCancel,
     readOnly,
     renderAsMenuGroup = false,
     'data-testid': dataTestId,
@@ -83,9 +86,10 @@ function UploadDropDownMenuComponent(
         onSelect: (files) => {
           onSelectFiles?.(assetSource, files)
         },
+        onCancel: onFilePickerCancel,
       })
     },
-    [accept, capture, multiple, onSelectFiles],
+    [accept, capture, multiple, onSelectFiles, onFilePickerCancel],
   )
 
   // Needed for keyboard navigation (arrow keys + enter/space)

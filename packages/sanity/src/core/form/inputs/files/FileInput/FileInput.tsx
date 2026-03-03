@@ -23,6 +23,7 @@ import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '
 import {AssetSourceDialog} from '../common/AssetSourceDialog'
 import {type FileInfo} from '../common/styles'
 import {useAssetSource} from '../common/useAssetSource'
+import {useAssetSourceFocusRestoration} from '../common/useAssetSourceFocusRestoration'
 import {useUploadExternalFileToDataset} from '../common/useUploadExternalFileToDataset'
 import {useAccessPolicy} from '../ImageInput/useAccessPolicy'
 import {FileAsset as FileAssetComponent} from './FileAsset'
@@ -82,7 +83,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
     openForUpload: handleOpenSourceForUpload,
     openInSource: handleOpenInSource,
     changeAction: handleAssetSourceChangeAction,
-    close: handleAssetSourceClosed,
+    close: assetSourceClose,
     resetOnComplete: handleAssetSourceResetOnComplete,
     isUploading,
     setIsUploading,
@@ -96,6 +97,8 @@ export function BaseFileInput(props: BaseFileInputProps) {
     schemaType,
     onAssetLimitError: () => handleAssetLimitUpsellDialog('field_action'),
   })
+
+  const {menuButtonRef, handleAssetSourceClosed} = useAssetSourceFocusRestoration(assetSourceClose)
 
   const {uploadWith: uploadExternalFileToDataset, clearUploadStatus} =
     useUploadExternalFileToDataset({
@@ -147,6 +150,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
       <FileAssetComponent
         {...props}
         accessPolicy={accessPolicy}
+        menuButtonRef={menuButtonRef}
         clearField={handleClearField}
         hoveringFiles={hoveringFiles}
         isBrowseMenuOpen={isBrowseMenuOpen}
@@ -171,6 +175,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
     accessPolicy,
     handleCancelUpload,
     handleClearField,
+    menuButtonRef,
     handleClearUploadStatus,
     handleOpenInSource,
     handleOpenSourceForUpload,
