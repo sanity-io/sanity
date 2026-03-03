@@ -1,6 +1,10 @@
 import execa, {type CommonOptions, type ExecaReturnValue} from 'execa'
 
-import {getPartialEnvWithNpmPath, type PackageManager} from './packageManagerChoice'
+import {
+  getPackageManagerVersion,
+  getPartialEnvWithNpmPath,
+  type PackageManager,
+} from './packageManagerChoice'
 
 export interface InstallOptions {
   packageManager: PackageManager
@@ -26,7 +30,8 @@ export async function upgradePackages(
     output.print(`Running 'npm ${npmArgs.join(' ')}'`)
     result = await execa('npm', npmArgs, execOptions)
   } else if (packageManager === 'yarn') {
-    const yarnArgs = ['upgrade ', ...upgradePackageArgs]
+    const upgradeCmd = (getPackageManagerVersion() ?? 0) >= 2 ? 'up' : 'upgrade'
+    const yarnArgs = [upgradeCmd, ...upgradePackageArgs]
     output.print(`Running 'yarn ${yarnArgs.join(' ')}'`)
     result = await execa('yarn', yarnArgs, execOptions)
   } else if (packageManager === 'pnpm') {

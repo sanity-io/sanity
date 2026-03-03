@@ -198,3 +198,9 @@ function getRunningPackageManager(): PackageManager | undefined {
 
   return undefined
 }
+
+export function getPackageManagerVersion(): number | undefined {
+  const agent = process.env.npm_config_user_agent || ''
+  const match = agent.match(/(?:yarn|npm|pnpm|bun)\/(\d+)/)
+  return match ? parseInt(match[1], 10) : undefined
+}
