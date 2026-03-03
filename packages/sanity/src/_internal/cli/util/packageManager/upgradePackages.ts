@@ -26,7 +26,7 @@ export async function upgradePackages(
     output.print(`Running 'npm ${npmArgs.join(' ')}'`)
     result = await execa('npm', npmArgs, execOptions)
   } else if (packageManager === 'yarn') {
-    const yarnArgs = ['upgrade ', ...upgradePackageArgs]
+    const yarnArgs = ['upgrade', ...upgradePackageArgs]
     output.print(`Running 'yarn ${yarnArgs.join(' ')}'`)
     result = await execa('yarn', yarnArgs, execOptions)
   } else if (packageManager === 'pnpm') {
