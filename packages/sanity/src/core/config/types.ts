@@ -75,6 +75,14 @@ export interface GroupableActionDescription<GroupType = unknown> extends BaseAct
 export const DECISION_PARAMETERS_SCHEMA = Symbol('__decisionParametersSchema')
 
 /**
+ * Symbol for enabling Portable Text Editor for release descriptions.
+ * When set to `true`, release descriptions use a rich text editor with formatting and release linking.
+ * When unset or `false`, release descriptions use a plain text textarea.
+ * @internal
+ */
+export const RELEASE_PTE_DESCRIPTION = Symbol('__releasePTEDescription')
+
+/**
  * Configuration for decision parameters
  * @beta
  */
@@ -1019,6 +1027,8 @@ export interface Source {
      * Returns an array of actions for the release.
      */
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
+    /** @internal */
+    [RELEASE_PTE_DESCRIPTION]?: boolean
   }
 
   /** @internal */
@@ -1217,6 +1227,8 @@ export type DefaultPluginsWorkspaceOptions = {
      * Actions for releases.
      */
     actions?: ReleaseActionComponent[] | ReleaseActionsResolver
+    /** @internal */
+    [RELEASE_PTE_DESCRIPTION]?: boolean
   }
   mediaLibrary?: MediaLibraryConfig
 }

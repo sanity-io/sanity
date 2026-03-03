@@ -1,14 +1,19 @@
 import {type EditableReleaseDocument} from '@sanity/client'
+import {type PortableTextBlock} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
+import {type ChangeEvent, useCallback, useEffect, useRef} from 'react'
 import {css, styled} from 'styled-components'
 
+import {RELEASE_PTE_DESCRIPTION} from '../../../config/types'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useWorkspace} from '../../../studio/workspace'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
-
-const MAX_DESCRIPTION_HEIGHT = 200
+import {isPTEDescription} from '../../types/releaseDescription'
+import {pteToString} from '../../util/descriptionConversion'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {ReleaseDescriptionInput} from '../input/ReleaseDescriptionInput'
 
 const TitleTextArea = styled.textarea((props) => {
   const {color, font} = getTheme_v2(props.theme)
@@ -50,9 +55,10 @@ const TitleTextArea = styled.textarea((props) => {
   `
 })
 
+const MAX_DESCRIPTION_HEIGHT = 200
+
 const DescriptionTextArea = styled.textarea((props) => {
   const {color, font} = getTheme_v2(props.theme)
-
   return css`
     resize: none;
     overflow: hidden;
@@ -75,15 +81,22 @@ const DescriptionTextArea = styled.textarea((props) => {
     z-index: 1;
     display: block;
     color: ${color.input.default.enabled.fg};
-
     &::placeholder {
       color: ${color.input.default.enabled.placeholder};
     }
   `
 })
 
-export const getIsReleaseOpen = (release: EditableReleaseDocument): boolean =>
-  release.state !== 'archived' && release.state !== 'published'
+function autoResizeTextArea(element: HTMLTextAreaElement | null): void {
+  if (element) {
+    element.style.height = 'auto'
+    element.style.height = `${element.scrollHeight}px`
+  }
+}
+
+export function getIsReleaseOpen(release: EditableReleaseDocument): boolean {
+  return release.state !== 'archived' && release.state !== 'published'
+}
 
 export function TitleDescriptionForm({
   release,
@@ -97,8 +110,9 @@ export function TitleDescriptionForm({
   const isReleaseOpen = getIsReleaseOpen(release)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
-  const [scrollHeight, setScrollHeight] = useState(46)
   const {t} = useTranslation()
+  const workspace = useWorkspace()
+  const isPTE = workspace.releases?.[RELEASE_PTE_DESCRIPTION] ?? false
 
   const {localData, updateLocalData, createFocusHandler, handleBlur} =
     useReleaseFormOptimisticUpdating({
@@ -106,76 +120,64 @@ export function TitleDescriptionForm({
       id: release._id,
       extractData: useCallback(
         ({metadata}: EditableReleaseDocument) => ({
-          title: metadata.title,
-          description: metadata.description,
+          title: metadata.title ?? '',
+          description: metadata.description ?? '',
         }),
         [],
       ),
     })
 
   useEffect(() => {
-    // make sure that the text area for the description has the right height initially
-    if (descriptionRef.current) {
-      setScrollHeight(descriptionRef.current.scrollHeight)
-    }
-    // Auto-resize title textarea
-    if (titleRef.current) {
-      titleRef.current.style.height = 'auto'
-      titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
-    }
-  }, [])
+    autoResizeTextArea(titleRef.current)
+  }, [release.metadata.title])
 
   useEffect(() => {
-    // Auto-resize title textarea when value changes
-    if (titleRef.current) {
-      titleRef.current.style.height = 'auto'
-      titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
-    }
-  }, [release.metadata.title])
+    autoResizeTextArea(descriptionRef.current)
+  }, [localData.description])
 
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       event.preventDefault()
       const title = event.target.value
-      // save the values to make input snappier while requests happen in the background
       updateLocalData({title})
       onChange({...release, metadata: {...release.metadata, title}})
-
-      // Auto-resize the textarea
-      if (titleRef.current) {
-        titleRef.current.style.height = 'auto'
-        titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
-      }
+      autoResizeTextArea(titleRef.current)
     },
     [onChange, release, updateLocalData],
   )
 
-  const handleDescriptionChange = useCallback(
-    (event: ChangeEvent<HTMLTextAreaElement>) => {
-      event.preventDefault()
-      if (!isReleaseOpen) return
-
-      const description = event.target.value
-      // save the values to make input snappier while requests happen in the background
-      updateLocalData({description})
-      onChange({...release, metadata: {...release.metadata, description}})
-
-      /** we must reset the height in order to make sure that if the text area shrinks,
-       * that the actual input will change height as well */
-      if (descriptionRef.current) {
-        descriptionRef.current.style.overflow = 'hidden'
-        descriptionRef.current.style.height = 'auto'
-        descriptionRef.current.style.height = `${descriptionRef.current.scrollHeight}px`
-
-        if (parseInt(descriptionRef.current.style.height, 10) > MAX_DESCRIPTION_HEIGHT) {
-          descriptionRef.current.style.overflow = 'auto'
-        }
+  const handlePTEDescriptionChange = useCallback(
+    (pteValue: PortableTextBlock[]) => {
+      if (isReleaseOpen) {
+        updateLocalData({description: pteValue})
+        onChange({
+          ...release,
+          metadata: {
+            ...release.metadata,
+            description: pteValue as unknown as string,
+          },
+        })
       }
-
-      setScrollHeight(event.currentTarget.scrollHeight)
     },
     [isReleaseOpen, onChange, release, updateLocalData],
   )
+
+  const handlePlainTextDescriptionChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      if (isReleaseOpen) {
+        const description = event.target.value
+        updateLocalData({description})
+        onChange({...release, metadata: {...release.metadata, description}})
+        autoResizeTextArea(descriptionRef.current)
+      }
+    },
+    [isReleaseOpen, onChange, release, updateLocalData],
+  )
+
+  const {description: releaseDescription} = localData
+  const plainTextDescription = isPTEDescription(releaseDescription)
+    ? pteToString(releaseDescription)
+    : releaseDescription
 
   const shouldShowDescription = isReleaseOpen || localData.description
 
@@ -192,24 +194,32 @@ export function TitleDescriptionForm({
         readOnly={!isReleaseOpen}
         disabled={disabled}
       />
-      {shouldShowDescription && (
-        <DescriptionTextArea
-          ref={descriptionRef}
-          autoFocus={!localData.title}
-          value={localData.description}
-          placeholder={t('release.form.placeholder-describe-release')}
-          onChange={handleDescriptionChange}
-          onFocus={createFocusHandler('description')}
-          onBlur={handleBlur}
-          style={{
-            height: `${scrollHeight}px`,
-            maxHeight: MAX_DESCRIPTION_HEIGHT,
-          }}
-          data-testid="release-form-description"
-          disabled={disabled}
-          readOnly={!isReleaseOpen}
-        />
-      )}
+      {shouldShowDescription &&
+        (isPTE ? (
+          <ReleaseDescriptionInput
+            value={localData.description}
+            onChange={handlePTEDescriptionChange}
+            onFocus={createFocusHandler('description')}
+            onBlur={handleBlur}
+            placeholder={t('release.form.placeholder-describe-release')}
+            disabled={disabled}
+            readOnly={!isReleaseOpen}
+            excludeReleaseId={getReleaseIdFromReleaseDocumentId(release._id)}
+          />
+        ) : (
+          <DescriptionTextArea
+            ref={descriptionRef}
+            onChange={handlePlainTextDescriptionChange}
+            onFocus={createFocusHandler('description')}
+            onBlur={handleBlur}
+            value={plainTextDescription}
+            placeholder={t('release.form.placeholder-describe-release')}
+            data-testid="release-form-description"
+            readOnly={!isReleaseOpen}
+            disabled={disabled}
+            style={{maxHeight: MAX_DESCRIPTION_HEIGHT, overflowY: 'auto'}}
+          />
+        ))}
     </Stack>
   )
 }

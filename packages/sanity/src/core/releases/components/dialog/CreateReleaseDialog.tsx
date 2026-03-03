@@ -1,11 +1,12 @@
-import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
 
 import {Button, Dialog} from '../../../../ui-components'
+import {RELEASE_PTE_DESCRIPTION} from '../../../config/types'
 import {useTranslation} from '../../../i18n'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
+import {useWorkspace} from '../../../studio/workspace'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLimitUpsell'
@@ -32,8 +33,10 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const telemetry = useTelemetry()
   const createReleaseMetadata = useCreateReleaseMetadata()
   const {clearReleaseDataFromStorage} = useReleaseFormStorage()
+  const workspace = useWorkspace()
+  const isPTE = workspace.releases?.[RELEASE_PTE_DESCRIPTION] ?? false
 
-  const [release, setRelease] = useState(getReleaseDefaults)
+  const [release, setRelease] = useState(() => getReleaseDefaults({pteDescription: isPTE}))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const invalid = getIsReleaseInvalid(release)
 
@@ -98,13 +101,6 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
     ],
   )
 
-  const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
-    setRelease(releaseMetadata)
-  }, [])
-
-  const dialogTitle = t('release.dialog.create.title')
-  const dialogConfirm = t('release.dialog.create.confirm')
-
   const handleOnClose = useCallback(() => {
     clearReleaseDataFromStorage()
     onCancel()
@@ -113,7 +109,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   return (
     <Dialog
       onClickOutside={onCancel}
-      header={dialogTitle}
+      header={t('release.dialog.create.title')}
       id="create-release-dialog"
       onClose={handleOnClose}
       width={1}
@@ -122,14 +118,14 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       <Card padding={4} borderTop>
         <form onSubmit={handleOnSubmit}>
           <Box paddingBottom={4}>
-            <ReleaseForm onChange={handleOnChange} value={release} />
+            <ReleaseForm onChange={setRelease} value={release} />
           </Box>
           <Flex justify="flex-end" paddingTop={5}>
             <Button
               size="large"
               disabled={isSubmitting || invalid}
               type="submit"
-              text={dialogConfirm}
+              text={t('release.dialog.create.confirm')}
               loading={isSubmitting}
               data-testid="submit-release-button"
             />

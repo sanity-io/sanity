@@ -1,7 +1,12 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-type ReleaseFormFields = Pick<EditableReleaseDocument['metadata'], 'title' | 'description'>
+import {type ReleaseDescription} from '../types/releaseDescription'
+
+type ReleaseFormFields = {
+  title: string
+  description: ReleaseDescription
+}
 
 interface UseReleaseFormOptimisticUpdatingOptions {
   /** The external value from props/server */
@@ -29,26 +34,20 @@ export function useReleaseFormOptimisticUpdating({
   const previousIdRef = useRef(id)
 
   const updateUnfocusedFields = useCallback(
-    (currentFormData: ReleaseFormFields) => {
-      const formFieldNames = Object.keys(incomingFormData) as Array<keyof ReleaseFormFields>
-      const unfocusedFieldUpdates = formFieldNames
-        .filter((field) => field !== focusedField)
-        .reduce<Partial<ReleaseFormFields>>((fieldUpdates, field) => {
-          fieldUpdates[field] = incomingFormData[field]
-
-          return fieldUpdates
-        }, {})
-
-      return {...currentFormData, ...unfocusedFieldUpdates}
-    },
+    (currentFormData: ReleaseFormFields) => ({
+      ...currentFormData,
+      ...Object.fromEntries(
+        (Object.keys(incomingFormData) as Array<keyof ReleaseFormFields>)
+          .filter((field) => field !== focusedField)
+          .map((field) => [field, incomingFormData[field]]),
+      ),
+    }),
     [incomingFormData, focusedField],
   )
 
   useEffect(() => {
     // New releases don't have _createdAt and should always sync to support local storage
     const isEditingExistingRelease = Boolean(externalValue._createdAt)
-
-    // if tracking a new ID
 
     if (previousIdRef.current === id) {
       setLocalData(isEditingExistingRelease ? updateUnfocusedFields : incomingFormData)

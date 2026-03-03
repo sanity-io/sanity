@@ -55,6 +55,7 @@ import {
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
   releaseActionsReducer,
+  releasePTEDescriptionReducer,
   resolveProductionUrlReducer,
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
@@ -74,6 +75,7 @@ import {
   type ConfigContext,
   DECISION_PARAMETERS_SCHEMA,
   type MissingConfigFile,
+  RELEASE_PTE_DESCRIPTION,
   type PluginOptions,
   type PreparedConfig,
   type SingleWorkspace,
@@ -795,8 +797,18 @@ function resolveSource({
               propertyName: 'releases.actions',
               reducer: releaseActionsReducer,
             }),
+          [RELEASE_PTE_DESCRIPTION]: releasePTEDescriptionReducer({
+            config,
+            initialValue: false,
+          }),
         }
-      : {enabled: true},
+      : {
+          enabled: true,
+          [RELEASE_PTE_DESCRIPTION]: releasePTEDescriptionReducer({
+            config,
+            initialValue: false,
+          }),
+        },
   }
 
   return source

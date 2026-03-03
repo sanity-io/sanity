@@ -31,9 +31,6 @@ export function getDocumentIsInPerspective(
 
   if (!perspective) return !isVersionId(documentId)
 
-  if (typeof perspective === 'undefined') return false
-  // perspective is `release.${releaseId}`
-
   if (releaseId === 'Published') return false
   return releaseId === perspective
 }
@@ -82,11 +79,13 @@ export function isReleaseScheduledOrScheduling(release: ReleaseDocument): boolea
 }
 
 /** @internal */
-export const getReleaseDefaults: () => EditableReleaseDocument = () => ({
+export const getReleaseDefaults = (options?: {
+  pteDescription?: boolean
+}): EditableReleaseDocument => ({
   _id: createReleaseId(),
   metadata: {
     title: '',
-    description: '',
+    description: options?.pteDescription ? ([] as unknown as string) : '',
     releaseType: DEFAULT_RELEASE_TYPE,
     cardinality: 'many',
   },
