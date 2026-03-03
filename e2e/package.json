@@ -7,7 +7,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "type": "module",
   "scripts": {
-    "cleanup:pr": "tsx -r dotenv-flow/config scripts/cleanupPr",
+    "cleanup": "tsx -r dotenv-flow/config scripts/cleanupDatasetsForClosedPrs",
     "codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
     "dev": "pnpm --filter studio-e2e-testing dev",
     "preview": "pnpm e2e:build && pnpm --filter studio-e2e-testing preview",

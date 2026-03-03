@@ -1,25 +1,28 @@
-name: "Cleanup: PR Merge/Closed"
+name: "Cleanup E2E Datasets for Closed PRs"
 
 on:
-  # Build on closed or merged PRs
-  pull_request:
-    types: [closed]
+  schedule:
+    # Run every 6th hour
+    - cron: "0 */6 * * *"
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  pull-requests: read
 
 jobs:
-  e2e-cleanup:
+  cleanup:
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
-      - name: Remove E2E datasets for closed PRs
+      - name: Delete E2E datasets for closed PRs
         env:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-          SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
-          PR_NUMBER: ${{ github.event.number }}
-        run: pnpm e2e:cleanup:pr
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: pnpm e2e:cleanup
