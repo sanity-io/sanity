@@ -1,3 +1,4 @@
+import {extractManifestSchemaTypes} from '@sanity/schema/_internal'
 import {
   defineArrayMember,
   defineField,
@@ -8,7 +9,6 @@ import {
 import pick from 'lodash-es/pick.js'
 import {describe, expect, test} from 'vitest'
 
-import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
 import {createSchema} from '../../src/core'
 import {mediaLibrarySchemas} from '../../src/media-library/plugin/schemas'
 

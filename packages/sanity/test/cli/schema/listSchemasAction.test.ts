@@ -1,4 +1,5 @@
 import {ClientError, type SanityClient} from '@sanity/client'
+import {SANITY_WORKSPACE_SCHEMA_TYPE, type StoredWorkspaceSchema} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -10,10 +11,6 @@ import {
 import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema/schemaStoreTypes'
 import {SCHEMA_PERMISSION_HELP_TEXT} from '../../../src/_internal/cli/actions/schema/utils/schemaStoreValidation'
 import {getWorkspaceSchemaId} from '../../../src/_internal/cli/actions/schema/utils/workspaceSchemaId'
-import {
-  SANITY_WORKSPACE_SCHEMA_TYPE,
-  type StoredWorkspaceSchema,
-} from '../../../src/_internal/manifest/manifestTypes'
 import {createSchemaStoreFixture} from './mocks/schemaStoreFixture'
 import {
   createMockJsonReader,

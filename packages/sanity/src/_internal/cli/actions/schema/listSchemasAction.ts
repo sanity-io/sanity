@@ -1,9 +1,8 @@
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
+import {isDefined, type CreateManifest, type StoredWorkspaceSchema} from '@sanity/schema/_internal'
 import chalk from 'chalk'
 import sortBy from 'lodash-es/sortBy.js'
 
-import {isDefined} from '../../../manifest/manifestTypeHelpers'
-import {type CreateManifest, type StoredWorkspaceSchema} from '../../../manifest/manifestTypes'
 import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'

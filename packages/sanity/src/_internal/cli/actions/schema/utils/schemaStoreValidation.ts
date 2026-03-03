@@ -1,7 +1,6 @@
+import {isDefined, SANITY_WORKSPACE_SCHEMA_ID_PREFIX} from '@sanity/schema/_internal'
 import uniqBy from 'lodash-es/uniqBy.js'
 
-import {isDefined} from '../../../../manifest/manifestTypeHelpers'
-import {SANITY_WORKSPACE_SCHEMA_ID_PREFIX} from '../../../../manifest/manifestTypes'
 import {type DeleteSchemaFlags} from '../deleteSchemaAction'
 import {type DeploySchemasFlags} from '../deploySchemasAction'
 import {type SchemaListFlags} from '../listSchemasAction'

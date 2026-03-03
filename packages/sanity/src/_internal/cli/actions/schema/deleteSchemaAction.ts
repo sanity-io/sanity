@@ -1,8 +1,8 @@
 import {type CliCommandContext} from '@sanity/cli'
+import {isDefined} from '@sanity/schema/_internal'
 import chalk from 'chalk'
 import uniq from 'lodash-es/uniq.js'
 
-import {isDefined} from '../../../manifest/manifestTypeHelpers'
 import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'

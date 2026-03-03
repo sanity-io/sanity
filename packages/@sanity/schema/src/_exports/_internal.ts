@@ -7,8 +7,26 @@ export {
   resolveSearchConfigForBaseFieldPaths,
 } from '../legacy/searchConfig/resolve'
 export {ALL_FIELDS_GROUP_NAME} from '../legacy/types/constants'
+export {createSchemaFromManifestTypes} from '../manifest/createSchemaFromManifestTypes'
+export {
+  extractCreateWorkspaceManifest,
+  extractManifestSchemaTypes,
+  type IconResolver,
+} from '../manifest/extractManifestSchemaTypes'
+export {isDefined} from '../manifest/manifestTypeHelpers'
+export {
+  type CreateManifest,
+  type CreateWorkspaceManifest,
+  CURRENT_WORKSPACE_SCHEMA_VERSION,
+  type DefaultWorkspaceSchemaId,
+  type ManifestSchemaType,
+  type ManifestWorkspaceFile,
+  SANITY_WORKSPACE_SCHEMA_ID_PREFIX,
+  SANITY_WORKSPACE_SCHEMA_TYPE,
+  type StoredWorkspaceSchema,
+  type WorkspaceSchemaId,
+} from '../manifest/manifestTypes'
 export {builtinTypes} from '../sanity/builtinTypes'
-export {createSchemaFromManifestTypes} from '../sanity/createSchemaFromManifestTypes'
 export {extractSchema} from '../sanity/extractSchema'
 export {groupProblems} from '../sanity/groupProblems'
 export {

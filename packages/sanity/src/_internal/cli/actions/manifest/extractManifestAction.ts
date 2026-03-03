@@ -5,14 +5,14 @@ import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {minutesToMilliseconds} from 'date-fns/minutesToMilliseconds'
-import readPkgUp from 'read-pkg-up'
-
 import {
   type CreateManifest,
   type CreateWorkspaceManifest,
   type ManifestWorkspaceFile,
-} from '../../../manifest/manifestTypes'
+} from '@sanity/schema/_internal'
+import {minutesToMilliseconds} from 'date-fns/minutesToMilliseconds'
+import readPkgUp from 'read-pkg-up'
+
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {getTimer} from '../../util/timing'

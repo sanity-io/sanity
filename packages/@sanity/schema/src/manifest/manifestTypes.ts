@@ -1,5 +1,10 @@
 import {type SanityDocumentLike} from '@sanity/types'
-import {type MediaLibraryConfig} from 'sanity'
+
+export interface MediaLibraryConfig {
+  enabled?: boolean
+  libraryId?: string
+  __internal?: {frontendHost?: string}
+}
 
 export const SANITY_WORKSPACE_SCHEMA_ID_PREFIX = '_.schemas'
 export const SANITY_WORKSPACE_SCHEMA_TYPE = 'system.schema'

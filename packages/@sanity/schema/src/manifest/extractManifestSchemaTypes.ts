@@ -1,12 +1,7 @@
-import DOMPurify from 'isomorphic-dompurify'
-import startCase from 'lodash-es/startCase.js'
-import {renderToString} from 'react-dom/server'
 import {
   type ArraySchemaType,
   type BlockDefinition,
   type BooleanSchemaType,
-  ConcreteRuleClass,
-  createSchema,
   type CrossDatasetReferenceSchemaType,
   type FileSchemaType,
   type GlobalDocumentReferenceSchemaType,
@@ -22,10 +17,13 @@ import {
   type SchemaValidationValue,
   type SpanSchemaType,
   type StringSchemaType,
-  type Workspace,
-} from 'sanity'
+} from '@sanity/types'
+import startCase from 'lodash-es/startCase.js'
+import {type ComponentType, type ReactNode} from 'react'
 
-import {SchemaIcon, type SchemaIconProps} from './Icon'
+import {Rule as ConcreteRuleClass} from '../legacy/Rule'
+import {Schema as SchemaBuilder} from '../legacy/Schema'
+import {builtinTypes} from '../sanity/builtinTypes'
 import {
   getCustomFields,
   getDefinedTypeName,
@@ -49,8 +47,34 @@ import {
   type ManifestTool,
   type ManifestValidationGroup,
   type ManifestValidationRule,
+  type MediaLibraryConfig,
 } from './manifestTypes'
-import {config} from './purifyConfig'
+
+export interface ManifestWorkspaceInput {
+  name: string
+  title?: string
+  subtitle?: string
+  basePath: string
+  projectId: string
+  dataset: string
+  icon?: ComponentType | ReactNode
+  mediaLibrary?: MediaLibraryConfig
+  schema: Schema
+  tools: ManifestToolInput[]
+}
+
+export interface ManifestToolInput {
+  title: string
+  name: string
+  icon?: ComponentType | ReactNode
+  __internalApplicationType?: string
+}
+
+export type IconResolver = (props: {
+  icon?: ComponentType | ReactNode
+  title: string
+  subtitle?: string
+}) => string | null | Promise<string | null>
 
 interface Context {
   schema: Schema
@@ -75,9 +99,14 @@ type ValidationRuleTransformer = (rule: RuleSpec) => ManifestValidationRule | un
 
 const MAX_CUSTOM_PROPERTY_DEPTH = 5
 
-export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWorkspaceManifest {
+const noopIconResolver: IconResolver = () => null
+
+export async function extractCreateWorkspaceManifest(
+  workspace: ManifestWorkspaceInput,
+  iconResolver: IconResolver = noopIconResolver,
+): Promise<CreateWorkspaceManifest> {
   const serializedSchema = extractManifestSchemaTypes(workspace.schema)
-  const serializedTools = extractManifestTools(workspace.tools)
+  const serializedTools = await extractManifestTools(workspace.tools, iconResolver)
 
   return {
     name: workspace.name,
@@ -86,9 +115,9 @@ export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWork
     basePath: workspace.basePath,
     projectId: workspace.projectId,
     dataset: workspace.dataset,
-    icon: resolveIcon({
+    icon: await iconResolver({
       icon: workspace.icon,
-      title: workspace.title,
+      title: workspace.title ?? workspace.name,
       subtitle: workspace.subtitle,
     }),
     mediaLibrary: workspace.mediaLibrary,
@@ -100,12 +129,15 @@ export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWork
 /**
  * Extracts all serializable properties from userland schema types,
  * so they best-effort can be used as definitions for Schema.compile
-. */
+ . */
 export function extractManifestSchemaTypes(schema: Schema): ManifestSchemaType[] {
   const typeNames = schema.getTypeNames()
   const context = {schema}
 
-  const studioDefaultTypeNames = createSchema({name: 'default', types: []}).getTypeNames()
+  const studioDefaultTypeNames = SchemaBuilder.compile({
+    name: 'default',
+    types: builtinTypes,
+  }).getTypeNames()
 
   return typeNames
     .filter((typeName) => !studioDefaultTypeNames.includes(typeName))
@@ -536,30 +568,21 @@ function resolveTitleValueArray(possibleArray: unknown): ManifestTitledValue[] |
   return titledValues
 }
 
-const extractManifestTools = (tools: Workspace['tools']): ManifestTool[] =>
-  tools.map((tool) => {
-    const {
-      title,
-      name,
-      icon,
-      __internalApplicationType: type,
-    } = tool as Workspace['tools'][number] & {__internalApplicationType: string}
-    return {
-      title,
-      name,
-      type: type || null,
-      icon: resolveIcon({
-        icon,
+const extractManifestTools = async (
+  tools: ManifestToolInput[],
+  iconResolver: IconResolver = noopIconResolver,
+): Promise<ManifestTool[]> =>
+  Promise.all(
+    tools.map(async (tool) => {
+      const {title, name, icon, __internalApplicationType: type} = tool
+      return {
         title,
-      }),
-    } satisfies ManifestTool
-  })
-
-export const resolveIcon = (props: SchemaIconProps): string | null => {
-  try {
-    const html = renderToString(<SchemaIcon {...props} />)
-    return DOMPurify.sanitize(html.trim(), config)
-  } catch {
-    return null
-  }
-}
+        name,
+        type: type || null,
+        icon: await iconResolver({
+          icon,
+          title,
+        }),
+      } satisfies ManifestTool
+    }),
+  )

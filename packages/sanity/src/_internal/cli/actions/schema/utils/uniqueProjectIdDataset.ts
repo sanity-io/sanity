@@ -1,6 +1,5 @@
+import {type ManifestWorkspaceFile} from '@sanity/schema/_internal'
 import uniqBy from 'lodash-es/uniqBy.js'
-
-import {type ManifestWorkspaceFile} from '../../../../manifest/manifestTypes'
 
 export function uniqueProjectIdDataset(workspaces: ManifestWorkspaceFile[]) {
   return uniqBy(

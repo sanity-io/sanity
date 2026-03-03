@@ -1,13 +1,13 @@
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
-import chalk from 'chalk'
-import partition from 'lodash-es/partition.js'
-
 import {
   CURRENT_WORKSPACE_SCHEMA_VERSION,
   type ManifestWorkspaceFile,
   type StoredWorkspaceSchema,
-} from '../../../manifest/manifestTypes'
+} from '@sanity/schema/_internal'
+import chalk from 'chalk'
+import partition from 'lodash-es/partition.js'
+
 import {SchemaDeploy} from './__telemetry__/schemaStore.telemetry'
 import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'

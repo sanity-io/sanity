@@ -3,9 +3,9 @@ import {readFile, stat} from 'node:fs/promises'
 import path, {join, resolve} from 'node:path'
 
 import {type CliOutputter} from '@sanity/cli'
+import {type CreateManifest, type ManifestSchemaType} from '@sanity/schema/_internal'
 import chalk from 'chalk'
 
-import {type CreateManifest, type ManifestSchemaType} from '../../../../manifest/manifestTypes'
 import {MANIFEST_FILENAME} from '../../manifest/extractManifestAction'
 import {type DeploySchemasFlags} from '../deploySchemasAction'
 
