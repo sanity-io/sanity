@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.13.0](https://github.com/sanity-io/sanity/compare/v5.12.0...v5.13.0) (2026-03-03)
+
+### Features
+
+* **cli:** upgrade blueprints doctor and plan ([#12258](https://github.com/sanity-io/sanity/issues/12258)) ([64d162e](https://github.com/sanity-io/sanity/commit/64d162ee2832b4ef2ee72779c8c390a44f9cfbde)) by Taylor Beseda (tbeseda@gmail.com)
+
 ## [5.12.0](https://github.com/sanity-io/sanity/compare/v5.11.0...v5.12.0) (2026-02-24)
 
 ### Features
