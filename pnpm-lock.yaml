@@ -564,8 +564,8 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/block-tools':
-        specifier: ^5.0.3
-        version: 5.0.4
+        specifier: ^5.0.5
+        version: 5.0.5
       '@portabletext/editor':
         specifier: ^6.0.2
         version: 6.0.2(@types/react@19.2.11)(react@19.2.4)
@@ -1773,8 +1773,8 @@ importers:
         specifier: ^3.10.2
         version: 3.10.2(@types/react-dom@19.2.3(@types/react@19.2.11))(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@portabletext/block-tools':
-        specifier: ^5.0.3
-        version: 5.0.4
+        specifier: ^5.0.5
+        version: 5.0.5
       '@portabletext/editor':
         specifier: ^6.0.2
         version: 6.0.2(@types/react@19.2.11)(react@19.2.4)
@@ -4817,8 +4817,8 @@ packages:
     resolution: {integrity: sha512-h104Kh26rR8tm+a3Qkc5S4VLYint3FE48as7+/5oCEcKR2idC/pF1G6AhIXKI+eHPJa/3J9i5z0Al47IeGHPkA==}
     engines: {node: '>=12'}
 
-  '@portabletext/block-tools@5.0.4':
-    resolution: {integrity: sha512-U5VoY9mrJbQGmjT7/oZCsmFAbM38nfm418gD2wuy777E8Kb6so+vo6wBzE4Z3BVhrfWxVefAAK05stJuvvLPGw==}
+  '@portabletext/block-tools@5.0.5':
+    resolution: {integrity: sha512-ukvP2UsBZr106pbxyQ6QOcYZPyfg8br+otBYAblrYAisA7csyrF6ql6+4hfg6i+nAAJUF//5AAf2d9aizpt7Xw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@portabletext/editor@6.0.2':
@@ -15695,7 +15695,7 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/block-tools@5.0.4':
+  '@portabletext/block-tools@5.0.5':
     dependencies:
       '@portabletext/sanity-bridge': 3.0.0
       '@portabletext/schema': 2.1.1
@@ -15704,7 +15704,7 @@ snapshots:
   '@portabletext/editor@6.0.2(@types/react@19.2.11)(react@19.2.4)':
     dependencies:
       '@juggle/resize-observer': 3.4.0
-      '@portabletext/block-tools': 5.0.4
+      '@portabletext/block-tools': 5.0.5
       '@portabletext/keyboard-shortcuts': 2.1.2
       '@portabletext/markdown': 1.1.3
       '@portabletext/patches': 2.0.4
