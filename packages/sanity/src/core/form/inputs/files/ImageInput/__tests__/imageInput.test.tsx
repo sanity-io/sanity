@@ -20,7 +20,7 @@ describe('ImageInput with empty state', () => {
       render: (inputProps) => <BaseImageInput {...inputProps} />,
     })
     expect(screen.getByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
-    expect(screen.getByTestId('file-input-browse-button')).toBeInTheDocument()
+    expect(screen.getByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
   })
 
   it('shows invalid image warning when asset ref is not a valid image source', async () => {

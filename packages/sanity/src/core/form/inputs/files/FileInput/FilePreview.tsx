@@ -105,7 +105,7 @@ export function FilePreview(props: FileAssetProps) {
       return (
         <MenuItem
           icon={SearchIcon}
-          text={t('inputs.file.browse-button.text')}
+          text={t('asset-source.browse-button.text')}
           onClick={handleSelectFileMenuItemClicked}
           disabled={readOnly}
           data-testid={`file-input-browse-button-${assetSources[0].name}`}

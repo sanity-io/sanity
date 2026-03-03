@@ -58,7 +58,7 @@ const INPUT_CONFIGS = [
   {
     inputType: 'image',
     uploadTestId: 'file-input-upload-button-media-library-mock',
-    browseTestId: 'file-input-browse-button',
+    browseTestId: 'file-input-browse-button-media-library-mock',
     fieldDefinition: {
       name: 'mainImage',
       title: 'Main image',

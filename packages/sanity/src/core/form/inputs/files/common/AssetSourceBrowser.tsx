@@ -17,10 +17,6 @@ export interface AssetSourceBrowserProps {
   onCloseMenu?: () => void
   /** Prefix for data-testid attributes. e.g. 'file-input' or 'video-input' */
   dataTestIdPrefix?: string
-  /** i18n key for multi-source button. Default: 'inputs.file.multi-browse-button.text' */
-  multiBrowseButtonTextKey?: string
-  /** i18n key for single-source button. Default: 'inputs.file.browse-button.text' */
-  browseButtonTextKey?: string
 }
 
 /**
@@ -39,9 +35,9 @@ export function AssetSourceBrowser(props: AssetSourceBrowserProps) {
     onSelectAssetSource,
     onCloseMenu,
     dataTestIdPrefix = 'file-input',
-    multiBrowseButtonTextKey = 'inputs.file.multi-browse-button.text',
-    browseButtonTextKey = 'inputs.file.browse-button.text',
   } = props
+
+  const browseButtonText = 'asset-source.browse-button.text'
 
   const {t} = useTranslation()
   const sourcesFromSchema = schemaType.options?.sources
@@ -68,7 +64,7 @@ export function AssetSourceBrowser(props: AssetSourceBrowserProps) {
         button={
           <Button
             mode="bleed"
-            text={t(multiBrowseButtonTextKey)}
+            text={t(browseButtonText)}
             data-testid={`${dataTestIdPrefix}-multi-browse-button`}
             icon={SearchIcon}
             iconRight={ChevronDownIcon}
@@ -94,7 +90,7 @@ export function AssetSourceBrowser(props: AssetSourceBrowserProps) {
 
   return (
     <Button
-      text={t(browseButtonTextKey)}
+      text={t(browseButtonText)}
       icon={SearchIcon}
       mode="bleed"
       onClick={() => handleSelect(assetSources[0])}

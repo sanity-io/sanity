@@ -21,13 +21,13 @@ import {type FieldMember} from '../../../store'
 import {type Uploader, type UploadOptions} from '../../../studio/uploads/types'
 import {type InputProps} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
+import {AssetSourceBrowser} from '../common/AssetSourceBrowser'
 import {AssetSourceDialog} from '../common/AssetSourceDialog'
 import {UploadProgress} from '../common/UploadProgress'
 import {useAssetSource} from '../common/useAssetSource'
 import {ImageAccessPolicy} from './ImageAccessPolicy'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
-import {ImageInputBrowser} from './ImageInputBrowser'
 import {ImageInputHotspotInput} from './ImageInputHotspotInput'
 import {ImageInputPreview} from './ImageInputPreview'
 import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
@@ -307,13 +307,13 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const renderBrowser = useCallback(() => {
     return (
-      <ImageInputBrowser
+      <AssetSourceBrowser
         assetSources={assetSources}
         readOnly={readOnly}
         id={id}
-        setMenuOpen={setMenuOpen}
         schemaType={schemaType}
-        handleSelectImageFromAssetSource={handleSelectImageFromAssetSource}
+        onSelectAssetSource={handleSelectImageFromAssetSource}
+        dataTestIdPrefix="file-input"
       />
     )
   }, [assetSources, handleSelectImageFromAssetSource, id, readOnly, schemaType])

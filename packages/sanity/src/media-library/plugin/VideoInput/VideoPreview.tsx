@@ -225,7 +225,7 @@ export function VideoPreview(props: VideoAssetInputProps) {
       return (
         <MenuItem
           icon={SearchIcon}
-          text={t('inputs.file.browse-button.text')}
+          text={t('asset-source.browse-button.text')}
           onClick={() => handleSelectAssetSourceForBrowse(assetSources[0])}
           disabled={readOnly}
           data-testid={`video-input-browse-button-${assetSources[0].name}`}

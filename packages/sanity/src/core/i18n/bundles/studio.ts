@@ -86,6 +86,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.asset-usage-dialog.header_image': 'Documents using image',
   /** Text shown in usage dialog when loading documents using the selected asset */
   'asset-source.asset-usage-dialog.loading': 'Loading…',
+  /** Browse button text */
+  'asset-source.browse-button.text': 'Select',
   /** Text for cancel action in delete-asset dialog */
   'asset-source.delete-dialog.action.cancel': 'Cancel',
   /** Text for "confirm delete" action in delete-asset dialog */
@@ -725,8 +727,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.datetime.placeholder': 'e.g. {{example}}',
   /** Acessibility label for button to open file options menu */
   'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
-  /** Browse */
-  'inputs.file.browse-button.text': 'Select',
   /** Unknown member kind: `{{kind}}` */
   'inputs.file.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
   /** The value of this field is not a valid file. Resetting this field will let you choose a new file. */
@@ -736,8 +736,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.file.invalid-file-warning.reset-button.text': 'Reset value',
   /** Invalid file value */
   'inputs.file.invalid-file-warning.title': 'Invalid file value',
-  /** Select */
-  'inputs.file.multi-browse-button.text': 'Select',
   /** The upload could not be completed at this time. */
   'inputs.file.upload-failed.description': 'The upload could not be completed at this time.',
   /** Upload failed */
@@ -810,8 +808,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.image.actions-menu.edit-details.aria-label': 'Open image edit dialog',
   /** Accessibility label for button to open image options menu */
   'inputs.image.actions-menu.options.aria-label': 'Open image options menu',
-  /** Select */
-  'inputs.image.browse-menu.text': 'Select',
   /** Cannot upload this file here */
   'inputs.image.drag-overlay.cannot-upload-here': 'Cannot upload this file here',
   /** Drop image to upload */

@@ -81,7 +81,7 @@ function ImageInputAssetMenuComponent(
     assetSources && assetSources.length === 0 ? null : (
       <MenuItem
         icon={SearchIcon}
-        text={t('inputs.image.browse-menu.text')}
+        text={t('asset-source.browse-button.text')}
         onClick={() => {
           setMenuOpen(false)
           handleSelectImageFromAssetSource(assetSources[0])
