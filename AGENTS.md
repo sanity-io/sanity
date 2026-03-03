@@ -96,7 +96,7 @@ sanity/
 
 ## Build System
 
-- **Package Manager**: pnpm (version 10.30.3, enforced via `preinstall`)
+- **Package Manager**: pnpm (version 10.x, enforced via `preinstall`)
 - **Build Orchestration**: Turbo (caches builds)
 - **Versioning**: Lerna-lite with conventional commits
 

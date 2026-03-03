@@ -8,8 +8,8 @@
   },
   "scripts": {
     "generate:dts-exports": "node generate.mjs",
-    "postgenerate:dts-exports": "oxfmt test/fixtures/**",
     "lint": "eslint .",
+    "postgenerate:dts-exports": "oxfmt test/fixtures/**",
     "test": "vitest run"
   },
   "dependencies": {

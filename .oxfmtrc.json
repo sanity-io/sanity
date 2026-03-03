@@ -17,7 +17,9 @@
     "newlinesBetween": true,
     "sortSideEffects": false
   },
-  "sortPackageJson": {},
+  "sortPackageJson": {
+    "sortScripts": true
+  },
   "overrides": [
     {
       "files": ["*.yml", "*.yaml"],
