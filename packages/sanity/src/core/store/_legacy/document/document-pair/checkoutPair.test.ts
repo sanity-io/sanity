@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
-import {merge, of} from 'rxjs'
+import {merge, NEVER, of, Subject} from 'rxjs'
 import {delay} from 'rxjs/operators'
-import {beforeEach, describe, expect, test, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {checkoutPair} from './checkoutPair'
 
@@ -347,6 +347,176 @@ describe('checkoutPair -- server actions', () => {
         transactionId: expect.any(String),
       },
     )
+
+    sub.unsubscribe()
+  })
+})
+
+describe('checkoutPair -- slow commit warning', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  test('calls onSlowCommit after 50 seconds when commit does not resolve', async () => {
+    const onSlowCommit = vi.fn()
+    const slowDataRequest = vi.fn(() => NEVER)
+
+    const slowClient = {
+      ...client,
+      dataRequest: slowDataRequest,
+    }
+
+    const {draft, published} = checkoutPair(slowClient as any as SanityClient, idPair, of(false), {
+      onSlowCommit,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'slow save'}}]))
+    draft.commit()
+
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(49_999)
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1)
+    expect(onSlowCommit).toHaveBeenCalledOnce()
+
+    sub.unsubscribe()
+  })
+
+  test('does not call onSlowCommit when commit resolves before threshold', async () => {
+    const onSlowCommit = vi.fn()
+    const commitSubject = new Subject()
+
+    const fastClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+    }
+
+    const {draft, published} = checkoutPair(fastClient as any as SanityClient, idPair, of(false), {
+      onSlowCommit,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'quick save'}}]))
+    draft.commit()
+
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    commitSubject.next({transactionId: 'tx1', results: []})
+    commitSubject.complete()
+
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    sub.unsubscribe()
+  })
+
+  test('restarts timer when a new commit request arrives before threshold', async () => {
+    const onSlowCommit = vi.fn()
+    const commitSubject = new Subject()
+
+    const slowClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+    }
+
+    const {draft, published} = checkoutPair(slowClient as any as SanityClient, idPair, of(false), {
+      onSlowCommit,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // First edit starts the timer
+    draft.mutate(draft.patch([{set: {title: 'first edit'}}]))
+    draft.commit()
+
+    // Advance 30s (past halfway but before threshold)
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    // Resolve the first commit so the buffered document can accept a new one
+    commitSubject.next({transactionId: 'tx1', results: []})
+    commitSubject.complete()
+
+    // Second edit restarts the timer via switchMap
+    const secondCommitSubject = new Subject()
+    slowClient.dataRequest.mockReturnValue(secondCommitSubject)
+
+    draft.mutate(draft.patch([{set: {title: 'second edit'}}]))
+    draft.commit()
+
+    // 20s later (50s total from first edit) — should NOT fire because
+    // switchMap restarted the timer when the second commit arrived
+    await vi.advanceTimersByTimeAsync(20_000)
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    // 30s more (50s from second edit) — NOW it fires
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(onSlowCommit).toHaveBeenCalledOnce()
+
+    sub.unsubscribe()
+  })
+
+  test('calls onSlowCommit again for a new slow period after the previous one resolved', async () => {
+    const onSlowCommit = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const slowClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+    }
+
+    const {draft, published} = checkoutPair(slowClient as any as SanityClient, idPair, of(false), {
+      onSlowCommit,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // First slow commit
+    draft.mutate(draft.patch([{set: {title: 'first edit'}}]))
+    draft.commit()
+
+    await vi.advanceTimersByTimeAsync(50_000)
+    expect(onSlowCommit).toHaveBeenCalledTimes(1)
+
+    // Resolve the first commit
+    commitSubject.next({transactionId: 'tx1', results: []})
+    commitSubject.complete()
+    listenerSubject.next({type: 'pending', phase: 'end'})
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Second slow commit (new Subject so it never resolves)
+    const secondCommitSubject = new Subject()
+    slowClient.dataRequest.mockReturnValue(secondCommitSubject)
+
+    draft.mutate(draft.patch([{set: {title: 'second edit'}}]))
+    draft.commit()
+
+    await vi.advanceTimersByTimeAsync(50_000)
+    expect(onSlowCommit).toHaveBeenCalledTimes(2)
 
     sub.unsubscribe()
   })

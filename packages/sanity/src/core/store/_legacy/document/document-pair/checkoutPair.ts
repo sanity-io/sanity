@@ -7,8 +7,19 @@ import {
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
-import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
-import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
+import {defer, EMPTY, from, merge, type Observable, timer} from 'rxjs'
+import {
+  filter,
+  map,
+  mergeMap,
+  scan,
+  share,
+  switchMap,
+  take,
+  takeUntil,
+  tap,
+  withLatestFrom,
+} from 'rxjs/operators'
 
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {
@@ -37,6 +48,9 @@ import {operationsApiClient} from './utils/operationsApiClient'
 
 /** Timeout on request that fetches shard name before reporting latency */
 const FETCH_SHARD_TIMEOUT = 20_000
+
+/** Duration after which a commit is considered slow and a warning is surfaced to the user */
+const SLOW_COMMIT_TIMEOUT_MS = 50_000
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -249,7 +263,7 @@ export function checkoutPair(
 ): Pair {
   const {publishedId, draftId, versionId} = idPair
 
-  const {onReportLatency, onSyncErrorRecovery, tag} = options
+  const {onReportLatency, onSyncErrorRecovery, onSlowCommit, tag} = options
 
   const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
 
@@ -280,11 +294,13 @@ export function checkoutPair(
     filter((ev): ev is PendingMutationsEvent => ev.type === 'pending'),
   )
 
-  const commits$ = merge(
+  const commitRequests$ = merge(
     draft.commitRequest$,
     published.commitRequest$,
     version ? version.commitRequest$ : EMPTY,
-  ).pipe(
+  ).pipe(share())
+
+  const commits$ = commitRequests$.pipe(
     mergeMap((commitRequest) =>
       serverActionsEnabled.pipe(
         take(1),
@@ -293,18 +309,34 @@ export function checkoutPair(
         ),
       ),
     ),
+    share(),
   )
+
+  const pendingEnd$ = transactionsPendingEvents$.pipe(filter((ev) => ev.phase === 'end'))
+  const commitResolved$ = merge(pendingEnd$, commits$)
+
+  // Each new commit request restarts the timer via switchMap.
+  // The timer is cancelled when the commit succeeds or pending mutations resolve.
+  const slowCommitWarning$ = onSlowCommit
+    ? commitRequests$.pipe(
+        switchMap(() => timer(SLOW_COMMIT_TIMEOUT_MS).pipe(takeUntil(commitResolved$))),
+        tap(() => onSlowCommit()),
+      )
+    : EMPTY
 
   // Note: we're only subscribing to this for the side-effect
   const combinedEvents = defer(() =>
-    onReportLatency
-      ? reportLatency({
-          commits$: commits$,
-          listenerEvents$: listenerEvents$,
-          client,
-          onReportLatency,
-        })
-      : merge(commits$, listenerEvents$),
+    merge(
+      onReportLatency
+        ? reportLatency({
+            commits$: commits$,
+            listenerEvents$: listenerEvents$,
+            client,
+            onReportLatency,
+          })
+        : merge(commits$, listenerEvents$),
+      slowCommitWarning$,
+    ),
   ).pipe(
     mergeMap(() => EMPTY),
     share(),

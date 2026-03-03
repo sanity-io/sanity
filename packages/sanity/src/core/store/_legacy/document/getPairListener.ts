@@ -51,6 +51,7 @@ export interface DocumentStoreExtraOptions {
    */
   onSyncErrorRecovery?(error: OutOfSyncError): void
   onReportLatency?: (event: LatencyReportEvent) => void
+  onSlowCommit?: () => void
 }
 
 /** @internal */

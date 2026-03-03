@@ -1,10 +1,12 @@
 import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
+import {useToast} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -33,6 +35,10 @@ import {createUserStore, type UserStore} from './user'
  * Latencies below this value will not be logged
  */
 const IGNORE_LATENCY_BELOW_MS = 1000
+
+/** Minimum time between slow commit toast notifications */
+const SLOW_COMMIT_TOAST_COOLDOWN_MS = 30_000
+const slowCommitCooldown = {lastToastAt: 0}
 
 /**
  * @hidden
@@ -151,6 +157,8 @@ export function useDocumentStore(): DocumentStore {
   }, [workspace.__internal_serverDocumentActions?.enabled])
 
   const telemetry = useTelemetry()
+  const toast = useToast()
+  const {t} = useTranslation()
 
   const handleSyncErrorRecovery = useCallback(
     (error: OutOfSyncError) => {
@@ -172,6 +180,17 @@ export function useDocumentStore(): DocumentStore {
     [telemetry],
   )
 
+  const handleSlowCommit = useCallback(() => {
+    const now = Date.now()
+    if (now - slowCommitCooldown.lastToastAt < SLOW_COMMIT_TOAST_COOLDOWN_MS) return
+    slowCommitCooldown.lastToastAt = now
+    toast.push({
+      title: t('document-store.slow-commit.title'),
+      description: t('document-store.slow-commit.description'),
+      status: 'warning',
+    })
+  }, [toast, t])
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
@@ -189,6 +208,7 @@ export function useDocumentStore(): DocumentStore {
         extraOptions: {
           onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
+          onSlowCommit: handleSlowCommit,
         },
       })
 
@@ -211,6 +231,7 @@ export function useDocumentStore(): DocumentStore {
     serverActionsEnabled,
     handleReportLatency,
     handleSyncErrorRecovery,
+    handleSlowCommit,
   ])
 }
 
