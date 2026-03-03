@@ -35,6 +35,7 @@
   "types": "./lib/groq.d.ts",
   "exports": {
     ".": {
+      "types": "./lib/groq.d.ts",
       "require": "./lib/groq.cjs",
       "default": "./lib/groq.js"
     },
