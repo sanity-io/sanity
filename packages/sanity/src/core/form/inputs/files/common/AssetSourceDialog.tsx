@@ -8,7 +8,7 @@ import {
   type ImageSchemaType,
   type Reference,
 } from '@sanity/types'
-import {get} from 'lodash-es'
+import get from 'lodash-es/get.js'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {type Observable} from 'rxjs'
 

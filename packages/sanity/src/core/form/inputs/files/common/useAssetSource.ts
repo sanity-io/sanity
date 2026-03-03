@@ -1,13 +1,7 @@
-import {
-  type Asset,
-  type AssetSource,
-  type FileSchemaType,
-  type ImageSchemaType,
-  type SchemaType,
-} from '@sanity/types'
+import {type Asset, type FileSchemaType, type ImageSchemaType, type SchemaType} from '@sanity/types'
 
-import type {PatchEvent} from '../../../patch'
-import type {FormPatch} from '../../../patch/types'
+import {type PatchEvent} from '../../../patch'
+import {type FormPatch} from '../../../patch/types'
 import {useAssetSourceActionState} from './useAssetSourceActionState'
 import {useAssetSourceUploader} from './useAssetSourceUploader'
 

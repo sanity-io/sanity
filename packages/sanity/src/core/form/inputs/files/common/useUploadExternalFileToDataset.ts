@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SchemaType} from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {get} from 'lodash-es'
+import get from 'lodash-es/get.js'
 import {useCallback, useRef} from 'react'
 
 import {useTranslation} from '../../../../i18n'
