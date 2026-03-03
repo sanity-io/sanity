@@ -9,12 +9,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
+  oxlint:
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - name: Oxlint files
+        run: pnpm turbo run check:oxlint -- --format github
 
+  eslint:
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -22,9 +32,13 @@ jobs:
       - name: Ensure local main ref exists for turbo --affected
         run: git fetch origin main:main
       - uses: ./.github/actions/setup
-
-      - name: Oxlint files
-        run: pnpm turbo run check:oxlint -- --format github
-
       - name: ESLint files
         run: pnpm turbo run lint --affected --output-logs=full --continue -- -f gha
+
+  knip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - name: Run Knip
+        run: pnpm knip --reporter github-actions
