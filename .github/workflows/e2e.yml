@@ -244,7 +244,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
+        # Be sure to update all instances in this file if updated, as well as github required checks
         project: [chromium, firefox]
         # Add more shards here if needed, but remember that the github required checks will have to be updated as well
         shardIndex: [1, 2, 3, 4]
