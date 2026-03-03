@@ -72,7 +72,7 @@ const PREVIEW_FIELD_WEIGHT_MAP = {
 /**
  * @internal
  */
-export function deriveFromPreview(
+function deriveFromPreview(
   type: {
     preview: {select: Record<string, string>}
   },

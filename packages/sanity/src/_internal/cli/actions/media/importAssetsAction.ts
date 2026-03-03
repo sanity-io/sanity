@@ -171,7 +171,7 @@ const importAssetsAction: CliCommandAction<ImportAssetsFlags> = async (args, con
 
 export default importAssetsAction
 
-export function importer(options: Options): Observable<State> {
+function importer(options: Options): Observable<State> {
   return resolveSource(options).pipe(
     mergeMap(({files, images, aspectsNdjsonPath, workingPath}) => {
       const fileCount = files.length + images.length

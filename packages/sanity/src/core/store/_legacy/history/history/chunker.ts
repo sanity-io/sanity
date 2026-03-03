@@ -154,6 +154,6 @@ function combineState(
   return right === 'unknown' ? left : right
 }
 
-export function isDeletePatch(patch: MendozaPatch): boolean {
+function isDeletePatch(patch: MendozaPatch): boolean {
   return patch[0] === 0 && patch[1] === null
 }

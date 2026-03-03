@@ -122,7 +122,7 @@ function mutationHeader(chalk: Chalk, mutation: Mutation, migration: Migration):
     .join(' ')
 }
 
-export function prettyFormatMutation({
+function prettyFormatMutation({
   chalk,
   subject,
   migration,

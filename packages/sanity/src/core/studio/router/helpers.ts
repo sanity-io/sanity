@@ -158,7 +158,3 @@ export function decodeUrlState(rootRouter: Router, pathname: string): RouterStat
     isNotFound: rootRouter.isNotFound(pathname),
   }
 }
-
-export function isNonNullable<T>(value: T): value is NonNullable<T> {
-  return value !== null && value !== undefined
-}

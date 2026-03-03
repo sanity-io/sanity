@@ -11,7 +11,7 @@ export function ValidationProvider(props: {validation: ValidationMarker[]; child
   )
 }
 
-export function useValidationMarkers(): ValidationMarker[] {
+function useValidationMarkers(): ValidationMarker[] {
   const ctx = useContext(ValidationContext)
   if (!ctx) {
     throw new Error('Form context not provided')

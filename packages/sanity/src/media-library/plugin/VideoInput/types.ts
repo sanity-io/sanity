@@ -45,7 +45,6 @@ export interface VideoPlaybackInfo<T extends VideoPlaybackInfoItem = VideoPlayba
 }
 
 export type VideoPlaybackInfoSigned = VideoPlaybackInfo<VideoPlaybackInfoItemSigned>
-export type VideoPlaybackInfoPublic = VideoPlaybackInfo
 
 export interface VideoPlaybackTokens {
   animated?: string
@@ -54,11 +53,11 @@ export interface VideoPlaybackTokens {
   storyboard?: string
 }
 
-export function isSignedPlayback(item: VideoPlaybackInfoItem): item is VideoPlaybackInfoItemSigned {
+function isSignedPlayback(item: VideoPlaybackInfoItem): item is VideoPlaybackInfoItemSigned {
   return 'token' in item
 }
 
-export function isSignedPlaybackInfo(
+function isSignedPlaybackInfo(
   playbackInfo: VideoPlaybackInfo,
 ): playbackInfo is VideoPlaybackInfoSigned {
   return isSignedPlayback(playbackInfo.stream)

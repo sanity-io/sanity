@@ -16,7 +16,7 @@ import {type CreateDatasetAssetSourceProps} from './createAssetSource'
 
 export {type SanityClient} from '@sanity/client'
 
-export class DatasetUploader implements AssetSourceUploader {
+class DatasetUploader implements AssetSourceUploader {
   private files: AssetSourceUploadFile[] = []
   private subscribers = new Set<AssetSourceUploadSubscriber>()
   private client: SanityClient

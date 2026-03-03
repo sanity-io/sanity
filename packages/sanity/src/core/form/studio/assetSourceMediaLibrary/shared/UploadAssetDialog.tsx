@@ -16,7 +16,7 @@ import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type PluginPostMessage} from '../types'
 import {Iframe} from './Iframe'
 
-export interface UploadAssetsDialogHandle {
+interface UploadAssetsDialogHandle {
   upload: (files: File[]) => Promise<void>
 }
 

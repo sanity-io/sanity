@@ -59,7 +59,7 @@ export function isGlobalDocumentReference(
   return isType(type, 'globalDocumentReference')
 }
 
-export function isObjectField(maybeOjectField: unknown): boolean {
+function isObjectField(maybeOjectField: unknown): boolean {
   return (
     typeof maybeOjectField === 'object' && maybeOjectField !== null && 'name' in maybeOjectField
   )
@@ -126,7 +126,7 @@ function isBoolean(value: unknown): value is boolean {
  * _internal_ownProps contains the _definition_ for the type.
  * Without it we cannot differentiate inline array item types from globally defined types in array.of
  */
-export function getSchemaTypeInternalOwnProps(type: SchemaType): InternalOwnProps | undefined {
+function getSchemaTypeInternalOwnProps(type: SchemaType): InternalOwnProps | undefined {
   return (type as {_internal_ownProps?: InternalOwnProps})?._internal_ownProps
 }
 

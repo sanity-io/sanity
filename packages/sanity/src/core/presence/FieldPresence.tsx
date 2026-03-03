@@ -113,5 +113,6 @@ export function FieldPresence(props: FieldPresenceProps) {
  * @internal
  * @hidden
  * @deprecated Use `FieldPresence` instead
+ * @alias
  */
 export const FieldPresenceWithOverlay = FieldPresence

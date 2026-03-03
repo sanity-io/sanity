@@ -1,6 +1,6 @@
 import {type CliCommandGroupDefinition} from '@sanity/cli'
 
-export const usersGroup: CliCommandGroupDefinition = {
+const usersGroup: CliCommandGroupDefinition = {
   name: 'users',
   signature: '[COMMAND]',
   isGroupRoot: true,

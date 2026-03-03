@@ -23,7 +23,7 @@ interface DocumentHeaderProps {
  * the largest heading size here, even if their browser supports it!
  */
 
-export const TitleContainer = styled(Stack)`
+const TitleContainer = styled(Stack)`
   ${({theme}) => {
     return css`
       @supports not (container-type: inline-size) {

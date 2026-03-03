@@ -1,19 +1,13 @@
 import {type ComponentType} from 'react'
 
 import {useMiddlewareComponents} from '../../config'
-import {
-  type ActiveToolLayoutProps,
-  type LogoProps,
-  type NavbarProps,
-  type ToolMenuProps,
-} from '../../config/studio'
-import {StudioLogo, StudioNavbar, StudioToolMenu} from '../components'
+import {type ActiveToolLayoutProps, type NavbarProps, type ToolMenuProps} from '../../config/studio'
+import {StudioNavbar, StudioToolMenu} from '../components'
 import {StudioActiveToolLayout} from '../components/navbar/StudioActiveToolLayout'
 import {StudioLayoutComponent} from '../StudioLayout'
 import {
   pickActiveToolLayoutComponent,
   pickLayoutComponent,
-  pickLogoComponent,
   pickNavbarComponent,
   pickToolMenuComponent,
 } from './picks'
@@ -35,17 +29,6 @@ export function useNavbarComponent(): ComponentType<Omit<NavbarProps, 'renderDef
   return useMiddlewareComponents({
     defaultComponent: StudioNavbar as ComponentType<Omit<NavbarProps, 'renderDefault'>>,
     pick: pickNavbarComponent,
-  })
-}
-
-/**
- * @internal
- * @deprecated Use `useLogoMarkComponent` instead.
- */
-export function useLogoComponent(): ComponentType<Omit<LogoProps, 'renderDefault'>> {
-  return useMiddlewareComponents({
-    defaultComponent: StudioLogo as ComponentType<Omit<LogoProps, 'renderDefault'>>,
-    pick: pickLogoComponent,
   })
 }
 

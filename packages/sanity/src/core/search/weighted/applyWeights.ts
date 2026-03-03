@@ -17,7 +17,7 @@ type SearchScore = [number, string]
  *
  * @internal
  */
-export const calculateScore = (searchTerms: string[], value: string): SearchScore => {
+const calculateScore = (searchTerms: string[], value: string): SearchScore => {
   // Separate search terms by phrases (wrapped with quotes) and words.
   const {phrases: uniqueSearchPhrases, words: uniqueSearchWords} =
     partitionAndSanitizeSearchTerms(searchTerms)

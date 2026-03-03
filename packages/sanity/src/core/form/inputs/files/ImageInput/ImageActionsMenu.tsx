@@ -7,7 +7,7 @@ import {Button, Popover, TooltipDelayGroupProvider} from '../../../../../ui-comp
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
 
-export const MenuActionsWrapper = styled(Inline)`
+const MenuActionsWrapper = styled(Inline)`
   position: absolute;
   top: 0;
   right: 0;

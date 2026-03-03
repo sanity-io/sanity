@@ -1,4 +1,4 @@
-export const DEFAULT_LINK_ANNOTATION = {
+const DEFAULT_LINK_ANNOTATION = {
   type: 'object',
   name: 'link',
   title: 'Link',
@@ -34,7 +34,7 @@ export const DEFAULT_MARKS_FIELD = {
   title: 'Marks',
 }
 
-export const LIST_TYPES = {
+const LIST_TYPES = {
   bullet: {
     title: 'Bulleted list',
     value: 'bullet',
@@ -75,33 +75,33 @@ export const DEFAULT_BLOCK_STYLES = [
   BLOCK_STYLES.blockquote,
 ]
 
-export const DECORATOR_STRONG = {
+const DECORATOR_STRONG = {
   title: 'Strong',
   value: 'strong',
   i18nTitleKey: 'inputs.portable-text.decorator.strong',
 }
-export const DECORATOR_EMPHASIS = {
+const DECORATOR_EMPHASIS = {
   title: 'Italic',
   value: 'em',
   i18nTitleKey: 'inputs.portable-text.decorator.emphasis',
 }
-export const DECORATOR_CODE = {
+const DECORATOR_CODE = {
   title: 'Code',
   value: 'code',
   i18nTitleKey: 'inputs.portable-text.decorator.code',
 }
-export const DECORATOR_UNDERLINE = {
+const DECORATOR_UNDERLINE = {
   title: 'Underline',
   value: 'underline',
   i18nTitleKey: 'inputs.portable-text.decorator.underline',
 }
-export const DECORATOR_STRIKE = {
+const DECORATOR_STRIKE = {
   title: 'Strike',
   value: 'strike-through',
   i18nTitleKey: 'inputs.portable-text.decorator.strike-through',
 }
 
-export const DECORATORS = {
+const DECORATORS = {
   strong: DECORATOR_STRONG,
   em: DECORATOR_EMPHASIS,
   code: DECORATOR_CODE,

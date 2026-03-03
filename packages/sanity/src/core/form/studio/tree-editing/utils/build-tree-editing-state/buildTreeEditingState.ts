@@ -15,7 +15,7 @@ import {buildArrayState} from './buildArrayState'
 
 const EMPTY_ARRAY: [] = []
 
-export const EMPTY_TREE_STATE: TreeEditingState = {
+const EMPTY_TREE_STATE: TreeEditingState = {
   breadcrumbs: EMPTY_ARRAY,
   menuItems: EMPTY_ARRAY,
   relativePath: EMPTY_ARRAY,

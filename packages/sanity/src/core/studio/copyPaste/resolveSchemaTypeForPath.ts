@@ -14,7 +14,7 @@ import {getValueAtPath} from '../../field/paths/helpers'
 import {getItemType} from '../../form/store/utils/getItemType'
 import {type FormDocumentValue} from '../../form/types/formDocumentValue'
 
-export function getSchemaField(schemaType: SchemaType, fieldPath: string): ObjectField | undefined {
+function getSchemaField(schemaType: SchemaType, fieldPath: string): ObjectField | undefined {
   if (!fieldPath) return undefined
 
   const paths = fromString(fieldPath)

@@ -23,12 +23,6 @@ export interface User {
   updatedAt: string | null
 }
 
-export interface MemberRole {
-  name: string
-  title: string
-  description?: string
-}
-
 export interface Member {
   id: string
   isCurrentUser: boolean

@@ -88,7 +88,7 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
   )
 }
 
-export const TestWrapperContents = (
+const TestWrapperContents = (
   props: TestWrapperProps & {
     client: SanityClient
   },

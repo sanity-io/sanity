@@ -6,10 +6,6 @@ import {
 } from 'sanity'
 import {DocumentActionsStateContext} from 'sanity/_singletons'
 
-/** @internal */
-export interface Action<Args, Description> {
-  (args: Args): Description | null
-}
 export interface ResolvedAction extends DocumentActionDescription {
   action?: DocumentActionComponent['action']
 }

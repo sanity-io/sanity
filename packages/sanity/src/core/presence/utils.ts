@@ -6,16 +6,6 @@ export const splitRight = <T>(array: T[], max: number): [T[], T[]] => {
   return [array.slice(0, idx), array.slice(idx)]
 }
 
-// export const splitRight = <T>(array: T[], index: number): [T[], T[]] => {
-//   const idx = Math.max(0, array.length - index)
-//   return [array.slice(0, idx), array.slice(idx)]
-// }
-//
-export const split = <T>(array: T[], index: number): [T[], T[]] => {
-  const idx = Math.max(0, index)
-  return [array.slice(0, idx), array.slice(idx)]
-}
-
 /** @internal */
 export function calcAvatarStackWidth(len: number): number {
   return -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * len

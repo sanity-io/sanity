@@ -7,8 +7,8 @@ import {type DeploySchemasFlags} from '../deploySchemasAction'
 import {type SchemaListFlags} from '../listSchemasAction'
 import {resolveManifestDirectory} from './manifestReader'
 
-export const validForIdChars = 'a-zA-Z0-9._-'
-export const validForIdPattern = new RegExp(`^[${validForIdChars}]+$`, 'g')
+const validForIdChars = 'a-zA-Z0-9._-'
+const validForIdPattern = new RegExp(`^[${validForIdChars}]+$`, 'g')
 
 //no periods allowed in workspaceName or tag in ids
 export const validForNamesChars = 'a-zA-Z0-9_-'

@@ -57,7 +57,7 @@ function getUploadCandidates(
     .filter((member) => member.uploader) as ResolvedUploader[]
 }
 
-export function uploadTarget<Props>(
+function uploadTarget<Props>(
   Component: ComponentType<Props>,
 ): ForwardRefExoticComponent<
   PropsWithoutRef<UploadTargetProps & Props> & RefAttributes<HTMLElement>
@@ -162,7 +162,7 @@ const StyledCard = styled(Card)`
 
 export const UploadTargetCard = withFocusRing(uploadTarget(StyledCard))
 
-export const Overlay = styled(Layer)`
+const Overlay = styled(Layer)`
   position: absolute;
   display: flex;
   flex-direction: column;

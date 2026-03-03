@@ -11,7 +11,7 @@ type ReleasePermissionError = {details: {type: 'insufficientPermissionsError'}}
  * @param error - the error to check
  * @returns true if the error is a permission error
  */
-export const isReleasePermissionError = (error: unknown): error is ReleasePermissionError =>
+const isReleasePermissionError = (error: unknown): error is ReleasePermissionError =>
   isErrorWithDetails(error) && error.details?.type === 'insufficientPermissionsError'
 
 /**

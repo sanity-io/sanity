@@ -71,7 +71,7 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
   return <CommentsPortableTextInputInner {...props} mode={mode} />
 }
 
-export const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputInner(
+const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputInner(
   props: PortableTextInputProps & {mode: CommentsUIMode},
 ) {
   const {mode} = props

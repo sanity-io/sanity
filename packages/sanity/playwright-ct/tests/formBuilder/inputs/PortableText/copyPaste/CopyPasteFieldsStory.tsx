@@ -103,7 +103,7 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function CopyPasteFieldsStory({
+function CopyPasteFieldsStory({
   focusPath,
   document,
 }: {

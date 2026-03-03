@@ -33,21 +33,21 @@ export interface StyledElementProps {
   $hovered?: boolean
 }
 
-export const getCropStrokeColor = (props: StyledElementProps & ThemeProps): string => {
+const getCropStrokeColor = (props: StyledElementProps & ThemeProps): string => {
   const {color} = getThemeV2(props.theme)
   if (props.$focused) return color.focusRing
   if (props.$hovered) return 'rgba(255, 255, 255, 1)'
   return 'rgba(255, 255, 255, .5)'
 }
 
-export const getHotspotStrokeColor = (props: StyledElementProps & ThemeProps): string => {
+const getHotspotStrokeColor = (props: StyledElementProps & ThemeProps): string => {
   const {color} = getThemeV2(props.theme)
   if (props.$focused) return color.focusRing
   if (props.$hovered) return 'rgba(255, 255, 255, 1)'
   return 'rgba(255, 255, 255, .5)'
 }
 
-export const getHandleStrokeColor = (props: StyledElementProps & ThemeProps): string => {
+const getHandleStrokeColor = (props: StyledElementProps & ThemeProps): string => {
   const {color} = getThemeV2(props.theme)
   if (props.$focused) return color.focusRing
   return '#000'

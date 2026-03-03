@@ -68,13 +68,7 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function CopyPasteStory({
-  focusPath,
-  document,
-}: {
-  focusPath?: Path
-  document?: SanityDocument
-}) {
+function CopyPasteStory({focusPath, document}: {focusPath?: Path; document?: SanityDocument}) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <TestForm document={document} focusPath={focusPath} />

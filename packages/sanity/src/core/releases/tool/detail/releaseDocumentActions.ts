@@ -16,7 +16,7 @@ export interface FilterTabConfig {
   tone: 'default' | 'positive' | 'caution' | 'critical'
 }
 
-export const DOCUMENT_ACTION_CONFIGS: DocumentActionConfig[] = [
+const DOCUMENT_ACTION_CONFIGS: DocumentActionConfig[] = [
   {
     key: 'added',
     tone: 'positive',

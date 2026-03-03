@@ -3,7 +3,7 @@ import {urlStringToPath} from '@sanity/visual-editing-csm'
 
 import {type PresentationStateParams} from '../types'
 
-export function parseId(rawId: string | undefined): string | undefined {
+function parseId(rawId: string | undefined): string | undefined {
   if (rawId === undefined) {
     return undefined
   }
@@ -17,7 +17,7 @@ export function parseId(rawId: string | undefined): string | undefined {
   return segments.join('.')
 }
 
-export function parsePath(rawPath: string | undefined): string | undefined {
+function parsePath(rawPath: string | undefined): string | undefined {
   if (rawPath === undefined) {
     return undefined
   }

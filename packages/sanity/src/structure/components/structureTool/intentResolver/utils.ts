@@ -1,22 +1,8 @@
 import {uuid} from '@sanity/uuid'
 import {firstValueFrom} from 'rxjs'
-import {type DocumentStore, getPublishedId} from 'sanity'
+import {type DocumentStore} from 'sanity'
 
 import {PaneResolutionError} from '../../../structureResolvers'
-
-export function removeDraftPrefix(documentId: string): string {
-  const publishedId = getPublishedId(documentId)
-
-  if (publishedId !== documentId) {
-    console.warn(
-      'Removed unexpected draft id in document link: All links to documents should have the ' +
-        '`drafts.`-prefix removed and something appears to have made an intent link to `%s`',
-      documentId,
-    )
-  }
-
-  return publishedId
-}
 
 export async function ensureDocumentIdAndType(
   documentStore: DocumentStore,

@@ -144,7 +144,7 @@ export function isPathTextInPTEField(
  * Find the schema path for the Portable Text field that the target path belongs to, if any.
  * Returns the path to the PTE array field within the document schema (without key segments).
  */
-export function findPTEParentPathForTarget(fields: ObjectField[], targetPath: Path): Path | null {
+function findPTEParentPathForTarget(fields: ObjectField[], targetPath: Path): Path | null {
   if (targetPath.length === 0) return null
 
   const allPTEPaths = findPTEtypePaths(fields)

@@ -6,6 +6,6 @@ export function readEnv<KnownEnvVar extends string>(name: KnownEnvVar): string {
   return val
 }
 
-export function findEnv<KnownEnvVar extends string>(name: KnownEnvVar): string | undefined {
+function findEnv<KnownEnvVar extends string>(name: KnownEnvVar): string | undefined {
   return process.env[name]
 }

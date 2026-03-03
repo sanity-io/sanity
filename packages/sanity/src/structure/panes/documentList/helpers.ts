@@ -10,13 +10,9 @@ import {
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {type ExprNode, parse} from 'groq-js'
-import {collate, getPublishedId} from 'sanity'
+import {collate} from 'sanity'
 
 import {type DocumentListPaneItem, type SortOrder} from './types'
-
-export function getDocumentKey(value: DocumentListPaneItem, index: number): string {
-  return value._id ? getPublishedId(value._id) : `item-${index}`
-}
 
 export function removePublishedWithDrafts(documents: SanityDocumentLike[]): DocumentListPaneItem[] {
   return collate(documents).map((entry) => {

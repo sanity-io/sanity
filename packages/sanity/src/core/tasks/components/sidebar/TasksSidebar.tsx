@@ -29,7 +29,7 @@ const ContentFlex = styled(Flex)`
 /**
  * @internal
  */
-export function TasksStudioSidebarInner() {
+function TasksStudioSidebarInner() {
   const {mode} = useTasksEnabled()
   const {activeDocument, data, isLoading} = useTasks()
   const {state, setActiveTab, setViewMode} = useTasksNavigation()

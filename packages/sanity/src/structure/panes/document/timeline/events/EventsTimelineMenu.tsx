@@ -38,7 +38,7 @@ const Root = styled(Popover)`
   overflow: clip;
 `
 
-export const TIMELINE_MENU_PORTAL = 'timeline-menu'
+const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
 const formatParams = {
   timestamp: {dateStyle: 'medium', timeStyle: 'short'},

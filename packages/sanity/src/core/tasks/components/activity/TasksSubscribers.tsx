@@ -54,7 +54,7 @@ interface TasksSubscriberAvatarsProps {
   subscriberIds?: string[]
 }
 
-export function TasksSubscriberAvatars(props: TasksSubscriberAvatarsProps) {
+function TasksSubscriberAvatars(props: TasksSubscriberAvatarsProps) {
   const {subscriberIds: subscriberIdsProp} = props
 
   const subscriberIds = useMemo(() => {

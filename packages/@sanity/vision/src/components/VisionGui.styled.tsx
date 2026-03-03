@@ -135,11 +135,6 @@ export const TimingsCard = styled(Card)`
   position: relative;
 `
 
-export const TimingsContainer = styled(Box)`
-  width: 100%;
-  height: 100%;
-`
-
 export const TimingsTextContainer = styled(Flex)`
   height: 100%;
   min-height: ${({theme}) =>

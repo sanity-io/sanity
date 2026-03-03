@@ -42,5 +42,3 @@ export function DecoratorsStory() {
     </TestWrapper>
   )
 }
-
-export default DecoratorsStory

@@ -1639,9 +1639,6 @@ importers:
       quick-lru:
         specifier: ^5.1.1
         version: 5.1.1
-      react-fast-compare:
-        specifier: ^3.2.2
-        version: 3.2.2
       react-rx:
         specifier: ^4.2.2
         version: 4.2.2(react@19.2.4)(rxjs@7.8.2)

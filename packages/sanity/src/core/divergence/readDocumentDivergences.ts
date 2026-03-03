@@ -49,7 +49,7 @@ type DivergenceStatus = 'unresolved' | 'resolved'
 /**
  * @internal
  */
-export type ResolutionMarkerAtPath = [path: string, resolutionMarker: ResolutionMarker]
+type ResolutionMarkerAtPath = [path: string, resolutionMarker: ResolutionMarker]
 
 type SnapshotType = 'subjectHead' | 'upstreamHead' | 'upstreamAtFork'
 

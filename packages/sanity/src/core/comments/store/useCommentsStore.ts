@@ -34,9 +34,9 @@ const LISTEN_OPTIONS: ListenOptions = {
   tag: 'comments-store',
 }
 
-export const SORT_FIELD = '_createdAt'
+const SORT_FIELD = '_createdAt'
 
-export const SORT_ORDER = 'desc'
+const SORT_ORDER = 'desc'
 
 const QUERY_FILTERS = [`_type == "comment"`, `target.document._ref == $documentId`]
 const VERSION_FILTER = `target.documentVersionId==$documentVersionId`

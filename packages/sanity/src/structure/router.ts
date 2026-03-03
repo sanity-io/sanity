@@ -5,10 +5,7 @@ import {type RouterPaneGroup, type RouterPanes, type RouterPaneSibling} from './
 
 const EMPTY_PARAMS = {}
 
-/**
- * @internal
- */
-export function legacyEditParamsToState(params: string): Record<string, unknown> {
+function legacyEditParamsToState(params: string): Record<string, unknown> {
   try {
     return JSON.parse(decodeURIComponent(params))
   } catch {
@@ -17,17 +14,14 @@ export function legacyEditParamsToState(params: string): Record<string, unknown>
   }
 }
 
-export function encodePanesSegment(panes: RouterPanes): string {
+function encodePanesSegment(panes: RouterPanes): string {
   return (panes || [])
     .map((group) => group.map(encodeChunks).join('|'))
     .map(encodeURIComponent)
     .join(';')
 }
 
-/**
- * @internal
- */
-export function legacyEditParamsToPath(params: Record<string, unknown>): string {
+function legacyEditParamsToPath(params: Record<string, unknown>): string {
   return JSON.stringify(params)
 }
 
@@ -136,7 +130,7 @@ function encodeChunks(pane: RouterPaneSibling, index: number, group: RouterPaneG
   )
 }
 
-export function parsePanesSegment(str: string): RouterPanes {
+function parsePanesSegment(str: string): RouterPanes {
   if (str.indexOf(',{') !== -1) {
     return parseOldPanesSegment(str)
   }

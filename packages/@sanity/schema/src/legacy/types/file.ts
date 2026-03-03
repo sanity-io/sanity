@@ -6,13 +6,13 @@ import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {createFieldsets} from './object'
 import {hiddenGetter, lazyGetter} from './utils'
 
-export const ASSET_FIELD = {
+const ASSET_FIELD = {
   name: 'asset',
   type: 'reference',
   to: {type: 'sanity.fileAsset'},
 }
 
-export const MEDIA_LIBRARY_ASSET_FIELD = {
+const MEDIA_LIBRARY_ASSET_FIELD = {
   name: 'media',
   type: 'globalDocumentReference',
   hidden: true,

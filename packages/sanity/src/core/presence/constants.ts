@@ -1,6 +1,5 @@
 // number of avatars to display on each fields (will be stacked and have a counter if more than 3 users in a field)
 export const MAX_AVATARS_DOCK = 3
-export const MAX_AVATARS_GLOBAL = 3
 export const DEFAULT_MAX_AVATARS_FIELDS = 3
 
 // distance between avatars in pixels (negative number means overlap)

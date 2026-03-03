@@ -18,9 +18,3 @@ export const exampleRoles: Record<string, Role> = {
 }
 
 export type ExampleRoleName = keyof typeof exampleRoles
-
-export function getDebugRolesByNames(roleNames: string[]): Role[] {
-  return roleNames
-    .filter((roleName) => roleName in exampleRoles)
-    .map((roleName) => exampleRoles[roleName])
-}

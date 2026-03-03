@@ -1,21 +1,4 @@
-import range from 'lodash-es/range.js'
-
 import {type StudioLocaleResourceKeys} from '../../../../../../../../../../../i18n'
-
-export const MONTH_NAME_KEYS: StudioLocaleResourceKeys[] = [
-  'calendar.month-names.january',
-  'calendar.month-names.february',
-  'calendar.month-names.march',
-  'calendar.month-names.april',
-  'calendar.month-names.may',
-  'calendar.month-names.june',
-  'calendar.month-names.july',
-  'calendar.month-names.august',
-  'calendar.month-names.september',
-  'calendar.month-names.october',
-  'calendar.month-names.november',
-  'calendar.month-names.december',
-]
 
 export const SHORT_WEEK_DAY_KEYS: StudioLocaleResourceKeys[] = [
   'calendar.weekday-names.short.monday',
@@ -26,8 +9,6 @@ export const SHORT_WEEK_DAY_KEYS: StudioLocaleResourceKeys[] = [
   'calendar.weekday-names.short.saturday',
   'calendar.weekday-names.short.sunday',
 ]
-
-export const HOURS_24 = range(0, 24)
 
 export const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
 

@@ -11,8 +11,6 @@ export type ReleaseEvent =
   | DiscardDocumentFromReleaseEvent
   | EditReleaseEvent
 
-export type EventType = ReleaseEvent['type']
-
 export interface BaseEvent {
   timestamp: string
   author: string
@@ -79,8 +77,6 @@ export const isCreateReleaseEvent = (event: ReleaseEvent): event is CreateReleas
   event.type === 'createRelease'
 export const isScheduleReleaseEvent = (event: ReleaseEvent): event is ScheduleReleaseEvent =>
   event.type === 'scheduleRelease'
-export const isUnscheduleReleaseEvent = (event: ReleaseEvent): event is UnscheduleReleaseEvent =>
-  event.type === 'unscheduleRelease'
 export const isPublishReleaseEvent = (event: ReleaseEvent): event is PublishReleaseEvent =>
   event.type === 'publishRelease'
 export const isArchiveReleaseEvent = (event: ReleaseEvent): event is ArchiveReleaseEvent =>

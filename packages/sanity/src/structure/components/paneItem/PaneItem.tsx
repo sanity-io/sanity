@@ -52,7 +52,7 @@ interface PaneItemProps {
  * Return `false` if we explicitly disable the icon.
  * Otherwise return the passed icon or the schema type icon as a backup.
  */
-export function getIconWithFallback(
+function getIconWithFallback(
   icon: ComponentType<any> | false | undefined,
   schemaType: SchemaType | undefined,
   defaultIcon: ComponentType<any>,

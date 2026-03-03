@@ -13,7 +13,7 @@ import {MediaLibraryUploader} from './uploader'
 // This is used to identify assets created from the Media Library in the openInSource function,
 // so don't change it unless you know what you're doing (asset documents will have this source name).
 // The asset source plugin's name itself is still configurable by the user (props.name).
-export const MEDIA_LIBRARY_SOURCE_NAME = 'sanity-media-library'
+const MEDIA_LIBRARY_SOURCE_NAME = 'sanity-media-library'
 export interface CreateSanityMediaLibrarySourceProps {
   i18nKey?: string
   icon?: React.ComponentType

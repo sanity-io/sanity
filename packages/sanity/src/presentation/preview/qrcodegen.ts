@@ -931,7 +931,7 @@ export class Ecc {
 /*
  * Describes how a segment's data bits are interpreted. Immutable.
  */
-export class Mode {
+class Mode {
   /*-- Constants --*/
 
   public static readonly NUMERIC = new Mode(0x1, [10, 12, 14])

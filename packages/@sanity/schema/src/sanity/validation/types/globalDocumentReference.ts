@@ -12,7 +12,7 @@ function normalizeToProp(typeDef: any) {
   return typeDef.to ? [typeDef.to] : []
 }
 
-export function isValidResourceType(resourceType: string): string | true {
+function isValidResourceType(resourceType: string): string | true {
   if (!resourceType) {
     return 'The resource type must be a non-empty string'
   }
@@ -22,7 +22,7 @@ export function isValidResourceType(resourceType: string): string | true {
   return true
 }
 
-export function isValidResourceId(resourceType: string, resourceId: string): string | true {
+function isValidResourceId(resourceType: string, resourceId: string): string | true {
   if (!resourceId) {
     return 'The resource ID must be a non-empty string'
   }

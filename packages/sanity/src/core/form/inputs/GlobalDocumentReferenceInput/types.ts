@@ -21,7 +21,7 @@ export interface SearchState {
 }
 
 /** @internal */
-export type GlobalDocumentSearchFunction = (query: string) => Observable<SearchHit[]>
+type GlobalDocumentSearchFunction = (query: string) => Observable<SearchHit[]>
 
 /** @internal */
 export interface SearchHit {

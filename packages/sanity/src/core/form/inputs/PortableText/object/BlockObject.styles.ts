@@ -114,7 +114,7 @@ export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
   },
 )
 
-export const InnerFlex = styled(Flex)`
+const InnerFlex = styled(Flex)`
   position: relative;
 
   [data-dragged] > & {

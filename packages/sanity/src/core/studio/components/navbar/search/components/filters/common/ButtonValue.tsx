@@ -4,7 +4,6 @@ import {isValid} from 'date-fns/isValid'
 import {useSchema} from '../../../../../../../hooks'
 import {useDateTimeFormat} from '../../../../../../../hooks/useDateTimeFormat'
 import {useUnitFormatter} from '../../../../../../../hooks/useUnitFormatter'
-import {useTranslation} from '../../../../../../../i18n'
 import {
   type OperatorDateEqualValue,
   type OperatorDateLastValue,
@@ -14,11 +13,6 @@ import {type OperatorButtonValueComponentProps} from '../../../definitions/opera
 import {ReferencePreviewTitle} from './ReferencePreviewTitle'
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
-
-export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentProps<boolean>) {
-  const {t} = useTranslation()
-  return <>{value ? t('search.filter-boolean-true') : t('search.filter-boolean-false')}</>
-}
 
 export function SearchButtonValueDate({
   value,

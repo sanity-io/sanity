@@ -29,7 +29,7 @@ export function useFocusBlock(): PortableTextBlock | undefined {
   )
 }
 
-export function useFocusChild(): PortableTextChild | undefined {
+function useFocusChild(): PortableTextChild | undefined {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
 

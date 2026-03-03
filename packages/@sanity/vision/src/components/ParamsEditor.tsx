@@ -20,10 +20,6 @@ export interface ParamsEditorProps {
   editorRef: RefObject<VisionCodeMirrorHandle | null>
 }
 
-export interface ParamsEditorChange {
-  valid: boolean
-}
-
 export function ParamsEditor(props: ParamsEditorProps) {
   const {onChange, paramsError, hasValidParams, editorRef} = props
   const {t} = useTranslation(visionLocaleNamespace)
