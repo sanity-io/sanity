@@ -1,10 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {
-  CURRENT_WORKSPACE_SCHEMA_VERSION,
-  SANITY_WORKSPACE_SCHEMA_ID_PREFIX,
-  SANITY_WORKSPACE_SCHEMA_TYPE,
-  type StoredWorkspaceSchema,
-} from '@sanity/schema/_internal'
+import {getWorkspaceSchemaId, type StoredWorkspaceSchema} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -14,7 +9,6 @@ import {
   type DeleteSchemaFlags,
 } from '../../../src/_internal/cli/actions/schema/deleteSchemaAction'
 import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema/schemaStoreTypes'
-import {getWorkspaceSchemaId} from '../../../src/_internal/cli/actions/schema/utils/workspaceSchemaId'
 import {createSchemaStoreFixture} from './mocks/schemaStoreFixture'
 import {
   createMockJsonReader,
@@ -32,8 +26,8 @@ const workspace3 = testMultiWorkspaceManifest.workspaces[2]
 
 const validStoredSchema1: StoredWorkspaceSchema = {
   _id: getWorkspaceSchemaId({workspaceName: workspace1.name}).safeTaggedId,
-  _type: SANITY_WORKSPACE_SCHEMA_TYPE,
-  version: CURRENT_WORKSPACE_SCHEMA_VERSION,
+  _type: 'system.schema',
+  version: '2025-05-01',
   workspace: workspace1,
   schema: JSON.stringify(testSchema),
   _createdAt: staticDate,
@@ -354,7 +348,7 @@ describe('deleteSchemasAction', () => {
         validStoredSchema1,
         validStoredSchema2,
         validStoredSchema3,
-        {_id: `${SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.nowhere`},
+        {_id: getWorkspaceSchemaId({workspaceName: 'nowhere'}).safeBaseId},
       ]
         .map((s) => s._id)
         .join(','),

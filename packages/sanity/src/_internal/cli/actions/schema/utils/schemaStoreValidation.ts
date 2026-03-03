@@ -1,4 +1,10 @@
-import {isDefined, SANITY_WORKSPACE_SCHEMA_ID_PREFIX} from '@sanity/schema/_internal'
+import {
+  isDefined,
+  type ParsedWorkspaceSchemaId,
+  parseWorkspaceSchemaId,
+  validForNamesChars,
+  validForNamesPattern,
+} from '@sanity/schema/_internal'
 import uniqBy from 'lodash-es/uniqBy.js'
 
 import {type DeleteSchemaFlags} from '../deleteSchemaAction'
@@ -6,29 +12,11 @@ import {type DeploySchemasFlags} from '../deploySchemasAction'
 import {type SchemaListFlags} from '../listSchemasAction'
 import {resolveManifestDirectory} from './manifestReader'
 
-const validForIdChars = 'a-zA-Z0-9._-'
-const validForIdPattern = new RegExp(`^[${validForIdChars}]+$`, 'g')
-
-//no periods allowed in workspaceName or tag in ids
-export const validForNamesChars = 'a-zA-Z0-9_-'
-export const validForNamesPattern = new RegExp(`^[${validForNamesChars}]+$`, 'g')
-
-const requiredInId = SANITY_WORKSPACE_SCHEMA_ID_PREFIX.replace(/[.]/g, '\\.')
-
-const idIdPatternString = `^${requiredInId}\\.([${validForNamesChars}]+)`
-const baseIdPattern = new RegExp(`${idIdPatternString}$`)
-const taggedIdIdPattern = new RegExp(`${idIdPatternString}\\.tag\\.([${validForNamesChars}]+)$`)
-
 export class FlagValidationError extends Error {
   constructor(message: string) {
     super(message)
     this.name = 'FlagValidationError'
   }
-}
-
-interface WorkspaceSchemaId {
-  schemaId: string
-  workspace: string
 }
 
 export interface SchemaStoreCommonFlags {
@@ -97,7 +85,7 @@ function assertNoErrors(errors: string[]) {
   }
 }
 
-export function parseIds(flags: {ids?: unknown}, errors: string[]): WorkspaceSchemaId[] {
+export function parseIds(flags: {ids?: unknown}, errors: string[]): ParsedWorkspaceSchemaId[] {
   const parsedIds = parseNonEmptyString(flags, 'ids', errors)
   if (errors.length) {
     return []
@@ -126,41 +114,6 @@ export function parseId(flags: {id?: unknown}, errors: string[]) {
     return parseWorkspaceSchemaId(id, errors)?.schemaId
   }
   return undefined
-}
-
-export function parseWorkspaceSchemaId(id: string, errors: string[]) {
-  const trimmedId = id.trim()
-
-  if (!trimmedId.match(validForIdPattern)) {
-    errors.push(`id can only contain characters in [${validForIdChars}] but found: "${trimmedId}"`)
-    return undefined
-  }
-
-  if (trimmedId.startsWith('-')) {
-    errors.push(`id cannot start with - (dash) but found: "${trimmedId}"`)
-    return undefined
-  }
-
-  if (trimmedId.match(/\.\./g)) {
-    errors.push(`id cannot have consecutive . (period) characters, but found: "${trimmedId}"`)
-    return undefined
-  }
-  const [fullMatch, workspace, tag] =
-    trimmedId.match(taggedIdIdPattern) ?? trimmedId.match(baseIdPattern) ?? []
-  if (!workspace) {
-    errors.push(
-      [
-        `id must either match ${SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.<workspaceName> `,
-        `or ${SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.<workspaceName>.tag.<tag> but found: "${trimmedId}". `,
-        `Note that workspace name characters not in [${validForNamesChars}] has to be replaced with _ for schema id.`,
-      ].join(''),
-    )
-    return undefined
-  }
-  return {
-    schemaId: trimmedId,
-    workspace,
-  }
 }
 
 function parseDataset(flags: {dataset?: unknown}, errors: string[]) {

@@ -1,9 +1,6 @@
 import {type CliOutputter} from '@sanity/cli'
 import {type ClientConfig, type SanityClient} from '@sanity/client'
-import {
-  SANITY_WORKSPACE_SCHEMA_ID_PREFIX,
-  SANITY_WORKSPACE_SCHEMA_TYPE,
-} from '@sanity/schema/_internal'
+import {getWorkspaceSchemaId} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
 import {vi} from 'vitest'
 
@@ -153,17 +150,14 @@ export function createMockSanityClient(
         const docSchema = requestConfig.body.schemas
         if (Array.isArray(docSchema)) {
           for (const workspaceSchema of docSchema) {
-            const idName = workspaceSchema.workspace.name.replaceAll(
-              new RegExp(`[^a-zA-Z0-9-_]`, 'g'),
-              '_',
-            )
-            const id = workspaceSchema.tag
-              ? `${SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.${idName}.tag.${workspaceSchema.tag}`
-              : `${SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.${idName}`
+            const {safeTaggedId} = getWorkspaceSchemaId({
+              workspaceName: workspaceSchema.workspace.name,
+              tag: workspaceSchema.tag,
+            })
 
             await client.createOrReplace({
-              _type: SANITY_WORKSPACE_SCHEMA_TYPE,
-              _id: id,
+              _type: 'system.schema',
+              _id: safeTaggedId,
               ...workspaceSchema,
             })
           }

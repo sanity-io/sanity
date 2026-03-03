@@ -1,8 +1,5 @@
 import {ClientError, type SanityClient} from '@sanity/client'
-import {
-  type DefaultWorkspaceSchemaId,
-  SANITY_WORKSPACE_SCHEMA_ID_PREFIX,
-} from '@sanity/schema/_internal'
+import {getWorkspaceSchemaId} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -56,7 +53,7 @@ describe('deploySchemasAction', () => {
         {print: '↳ List deployed schemas with: sanity schema list'},
       ])
       const storedSchema = await mockSanityClient.getDocument(
-        `${SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.${testWorkspace.name}` satisfies DefaultWorkspaceSchemaId,
+        getWorkspaceSchemaId({workspaceName: testWorkspace.name}).safeBaseId,
       )
       expect(storedSchema).toEqual({
         _id: '_.schemas.testWorkspace',
@@ -97,9 +94,7 @@ describe('deploySchemasAction', () => {
             .withConfig({
               dataset: workspace.dataset,
             })
-            .getDocument(
-              `${SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.${workspace.name}` satisfies DefaultWorkspaceSchemaId,
-            )
+            .getDocument(getWorkspaceSchemaId({workspaceName: workspace.name}).safeBaseId)
         }),
       )
       expect(docs).toEqual([
@@ -167,7 +162,7 @@ describe('deploySchemasAction', () => {
       ])
 
       const storedSchema = await mockSanityClient.getDocument(
-        '_.schemas.workspace_____' satisfies DefaultWorkspaceSchemaId,
+        getWorkspaceSchemaId({workspaceName: 'workspace .%&/'}).safeBaseId,
       )
       expect(storedSchema).toEqual({
         _id: '_.schemas.workspace_____',

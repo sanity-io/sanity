@@ -17,15 +17,20 @@ export {isDefined} from '../manifest/manifestTypeHelpers'
 export {
   type CreateManifest,
   type CreateWorkspaceManifest,
-  CURRENT_WORKSPACE_SCHEMA_VERSION,
   type DefaultWorkspaceSchemaId,
   type ManifestSchemaType,
   type ManifestWorkspaceFile,
-  SANITY_WORKSPACE_SCHEMA_ID_PREFIX,
-  SANITY_WORKSPACE_SCHEMA_TYPE,
   type StoredWorkspaceSchema,
   type WorkspaceSchemaId,
 } from '../manifest/manifestTypes'
+export {
+  createStoredWorkspaceSchemaPayload,
+  getWorkspaceSchemaId,
+  type ParsedWorkspaceSchemaId,
+  parseWorkspaceSchemaId,
+  validForNamesChars,
+  validForNamesPattern,
+} from '../manifest/workspaceSchemaId'
 export {builtinTypes} from '../sanity/builtinTypes'
 export {extractSchema} from '../sanity/extractSchema'
 export {groupProblems} from '../sanity/groupProblems'

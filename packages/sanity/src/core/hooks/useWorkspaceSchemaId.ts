@@ -1,3 +1,5 @@
+import {getWorkspaceSchemaId} from '@sanity/schema/_internal'
+
 import {useWorkspace} from '../studio/workspace'
 
 /**
@@ -6,5 +8,5 @@ import {useWorkspace} from '../studio/workspace'
  */
 export const useWorkspaceSchemaId = (): string => {
   const workspace = useWorkspace()
-  return `_.schemas.${workspace.name || 'default'}`
+  return getWorkspaceSchemaId({workspaceName: workspace.name || 'default'}).safeBaseId
 }
