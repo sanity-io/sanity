@@ -12,7 +12,7 @@ type Props = {
 export function InvalidVideoWarning({onClearValue}: Props) {
   const {t} = useTranslation(mediaLibraryLocaleNamespace)
   return (
-    <Card tone="caution" padding={4} border radius={2}>
+    <Card data-testid="invalid-video-warning" tone="caution" padding={4} border radius={2}>
       <Flex gap={4} marginBottom={4}>
         <Box>
           <Text size={1}>

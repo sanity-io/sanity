@@ -62,13 +62,13 @@ describe('VideoInput - local tests', () => {
       props: {documentValue: {someVideo: invalidValue}},
       render: (inputProps) => <BaseVideoInput {...inputProps} value={invalidValue} />,
     })
-    expect(screen.getByText('Invalid file value')).toBeInTheDocument()
+    expect(screen.getByTestId('invalid-video-warning')).toBeInTheDocument()
   })
 
   it('renders video preview when asset has media-library ref format', async () => {
     const value = {
       asset: {
-        _ref: 'media-library:org123:lib456:asset789',
+        _ref: 'media-library:org123:asset789',
         _type: 'reference',
       },
       _type: 'sanity.video',
