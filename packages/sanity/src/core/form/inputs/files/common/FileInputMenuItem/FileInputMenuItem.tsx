@@ -13,8 +13,8 @@ export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> 
 
 export const FileInputMenuItem = forwardRef(function FileInputMenuItem(
   props: FileInputMenuItemProps &
-    Omit<HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
-  forwardedRef: ForwardedRef<HTMLButtonElement>,
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
+  forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {icon, accept, capture, multiple, onSelect, text, disabled, ...rest} = props
 
