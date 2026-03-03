@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.13.0](https://github.com/sanity-io/sanity/compare/v5.12.0...v5.13.0) (2026-03-03)
+
+### Bug Fixes
+
+* update fileAsset and imageAsset required fields ([#12261](https://github.com/sanity-io/sanity/issues/12261)) ([2de42c8](https://github.com/sanity-io/sanity/commit/2de42c82d6a0e328e995fa20a07e980028e4e070)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
 ## [5.12.0](https://github.com/sanity-io/sanity/compare/v5.11.0...v5.12.0) (2026-02-24)
 
 **Note:** Version bump only for package @sanity/schema

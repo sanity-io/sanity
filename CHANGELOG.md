@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.13.0](https://github.com/sanity-io/sanity/compare/v5.12.0...v5.13.0) (2026-03-03)
+
+### Features
+
+* add references preview to unknown fields ([#12254](https://github.com/sanity-io/sanity/issues/12254)) ([a8d512d](https://github.com/sanity-io/sanity/commit/a8d512d727c2a207347e7c12a3380526241e0015)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **arrays:** disability ability to add further items when at validation max limit ([#12127](https://github.com/sanity-io/sanity/issues/12127)) ([0e037a1](https://github.com/sanity-io/sanity/commit/0e037a16a03ae2fed904fcfdd032b2e66f52e8da)) by Jordan Lawrence (jordanl17@me.com)
+* **cli:** upgrade blueprints doctor and plan ([#12258](https://github.com/sanity-io/sanity/issues/12258)) ([64d162e](https://github.com/sanity-io/sanity/commit/64d162ee2832b4ef2ee72779c8c390a44f9cfbde)) by Taylor Beseda (tbeseda@gmail.com)
+* **presentation:** add icon and showHref to DocumentLocation ([#12048](https://github.com/sanity-io/sanity/issues/12048)) ([74bb885](https://github.com/sanity-io/sanity/commit/74bb8853b2f3c2bf6d61577235411dd0a26812f5)) by Sam Hemingway (65196819+SamHemingway@users.noreply.github.com)
+* primitive types accept grid as options but didn't show the grid, now it does ([#12263](https://github.com/sanity-io/sanity/issues/12263)) ([383e06e](https://github.com/sanity-io/sanity/commit/383e06eb6074a30e06750e52abeb394b45fb224e)) by RitaDias (rita@sanity.io)
+* **releases:** implement release not found handling and UI updates ([#12236](https://github.com/sanity-io/sanity/issues/12236)) ([633ca45](https://github.com/sanity-io/sanity/commit/633ca45e1385c2a56a2187cd5e726686f14f2722)) by Jordan Lawrence (jordanl17@me.com)
+* **sanity:** add functions for unravelling document lineage and finding most recent transactions shared by two documents ([4d3f719](https://github.com/sanity-io/sanity/commit/4d3f71906db95dcd35b61f827c4c1384752b5b1e)) by Ash (ash@sanity.io)
+* **sanity:** update transaction-fetching function types to indicate their response includes mutations ([b63a690](https://github.com/sanity-io/sanity/commit/b63a690df66f81a17fc0e3fe3ffbb1a475540779)) by Ash (ash@sanity.io)
+* **studio:** clarify release validation phrasing ([#12284](https://github.com/sanity-io/sanity/issues/12284)) ([845875b](https://github.com/sanity-io/sanity/commit/845875b73d604c320e327f6437d647f9a20e7f88)) by Ash (ash@sanity.io)
+* support for copying links to versions of documents; copying document ID from document pane actions ([#12238](https://github.com/sanity-io/sanity/issues/12238)) ([bc5a3b6](https://github.com/sanity-io/sanity/commit/bc5a3b6cc78977a43ac526bca10d98898edb3469)) by Jordan Lawrence (jordanl17@me.com)
+
+### Bug Fixes
+
+* defer import of `isomorphic-dompurify` ([#12274](https://github.com/sanity-io/sanity/issues/12274)) ([da8354c](https://github.com/sanity-io/sanity/commit/da8354c77287472f290c82a3af89e0fc4270c50a)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* **deps:** upgrade @portabletext/* packages to v6 ([#12278](https://github.com/sanity-io/sanity/issues/12278)) ([501a6f3](https://github.com/sanity-io/sanity/commit/501a6f3f0f214997fbd16afef09ea5558863ad4f)) by Christian Grøngaard (christian.groengaard@sanity.io)
+* **deps:** upgrade @sanity/pkg-utils to resolve groq type export issue ([#12277](https://github.com/sanity-io/sanity/issues/12277)) ([cfc9c83](https://github.com/sanity-io/sanity/commit/cfc9c83958870a9d373fae7436f335fca9ae2e01)) by Copilot (198982749+Copilot@users.noreply.github.com)
+* **descriptors:** dedup claims ([0668c43](https://github.com/sanity-io/sanity/commit/0668c43a7a586339da7a54fdc07ddae5f39926bc)) by Dain Cilke (dain.cilke@gmail.com)
+* **groq:** resolve CJS type export issue by removing groq.d.cts ([#12293](https://github.com/sanity-io/sanity/issues/12293)) ([9485b3c](https://github.com/sanity-io/sanity/commit/9485b3c0f8fd7747b5645c504c0291586318f014)) by Copilot (198982749+Copilot@users.noreply.github.com)
+* Improve visual distinction between release types in the Studio ([#12239](https://github.com/sanity-io/sanity/issues/12239)) ([526ebf5](https://github.com/sanity-io/sanity/commit/526ebf544f193248de43b5c2cc6060886d9f1400)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **media-library:** fix VideoInput loading bugs and layout shift ([#12155](https://github.com/sanity-io/sanity/issues/12155)) ([c6b745d](https://github.com/sanity-io/sanity/commit/c6b745db582d8cf4aab35ff794ba9f407db67cfa)) by Fred Carlsen (fred@sjelfull.no)
+* ordering by multiple object fields ([#12265](https://github.com/sanity-io/sanity/issues/12265)) ([49a7a55](https://github.com/sanity-io/sanity/commit/49a7a555e03215b795e3ea55600684642b54d2af)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* schedules tool title ([#12280](https://github.com/sanity-io/sanity/issues/12280)) ([a058425](https://github.com/sanity-io/sanity/commit/a0584254239596714daf1147bce28d92997f90a5)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* update fileAsset and imageAsset required fields ([#12261](https://github.com/sanity-io/sanity/issues/12261)) ([2de42c8](https://github.com/sanity-io/sanity/commit/2de42c82d6a0e328e995fa20a07e980028e4e070)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* update revert dialog position ([#12255](https://github.com/sanity-io/sanity/issues/12255)) ([eb87d78](https://github.com/sanity-io/sanity/commit/eb87d78c428d7d75c113714a63356523eda47b5b)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* upgrade `@portabletext/block-tools` to 5.0.5 ([#12287](https://github.com/sanity-io/sanity/issues/12287)) ([773ee46](https://github.com/sanity-io/sanity/commit/773ee466ca7c48a77bc7a8bf6820d58316321604)) by Christian Grøngaard (christian.groengaard@sanity.io)
+
+### Performance Improvements
+
+* defer refractor language registration to first render ([#12246](https://github.com/sanity-io/sanity/issues/12246)) ([9430166](https://github.com/sanity-io/sanity/commit/94301663ea8256cb9b15498df16f68b0893f18c5)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* lazily build ui theme ([#12241](https://github.com/sanity-io/sanity/issues/12241)) ([b5a2abe](https://github.com/sanity-io/sanity/commit/b5a2abe6dc91cd924830ae2cd3de3efe00f3deff)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+
 ## [5.12.0](https://github.com/sanity-io/sanity/compare/v5.11.0...v5.12.0) (2026-02-24)
 
 ### Features
