@@ -17,7 +17,7 @@
     "start": "sanity preview"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^5.0.3",
+    "@portabletext/block-tools": "^5.0.5",
     "@portabletext/editor": "^6.0.2",
     "@portabletext/plugin-character-pair-decorator": "^7.0.2",
     "@portabletext/react": "^6.0.2",
