@@ -46,7 +46,7 @@ async function deleteDataset(name: string): Promise<void> {
   if (!res.ok) throw new Error(`Failed to delete "${name}": ${res.statusText}`)
 }
 
-async function isPrOpen(prNumber: number): Promise<boolean> {
+async function fetchOpenPrNumbers(): Promise<Set<number>> {
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github.v3+json',
   }
@@ -54,20 +54,30 @@ async function isPrOpen(prNumber: number): Promise<boolean> {
     headers.Authorization = `Bearer ${GITHUB_TOKEN}`
   }
 
-  const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/pulls/${prNumber}`, {
-    headers,
-  })
+  const openPrs = new Set<number>()
+  let page = 1
 
-  if (!res.ok) {
-    if (res.status === 404) {
-      // PR doesn't exist, treat as closed
-      return false
+  // Paginate through all open PRs
+  while (true) {
+    const res = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/pulls?state=open&per_page=100&page=${page}`,
+      {headers},
+    )
+
+    if (!res.ok) {
+      throw new Error(`Failed to list open PRs (page ${page}): ${res.status} ${res.statusText}`)
     }
-    throw new Error(`Failed to check PR #${prNumber}: ${res.status} ${res.statusText}`)
+
+    const prs = (await res.json()) as {number: number}[]
+    for (const pr of prs) {
+      openPrs.add(pr.number)
+    }
+
+    if (prs.length < 100) break
+    page++
   }
 
-  const pr = (await res.json()) as {state: string}
-  return pr.state === 'open'
+  return openPrs
 }
 
 async function run() {
@@ -94,12 +104,13 @@ async function run() {
 
   console.log(`Datasets belong to ${datasetsByPr.size} unique PRs`)
 
+  const openPrs = await fetchOpenPrNumbers()
+  console.log(`Found ${openPrs.size} open PRs in ${GITHUB_REPO}`)
+
   let deletedCount = 0
 
   for (const [prNumber, prDatasetsGroup] of datasetsByPr) {
-    const open = await isPrOpen(prNumber)
-
-    if (open) {
+    if (openPrs.has(prNumber)) {
       console.log(`PR #${prNumber} is open, skipping ${prDatasetsGroup.length} dataset(s)`)
       continue
     }
