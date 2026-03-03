@@ -1,5 +1,6 @@
 import {expect, test} from '@playwright/experimental-ct-react'
-import {type EditorChange, type PortableTextEditor} from '@portabletext/editor'
+import {type PortableTextEditor} from '@portabletext/editor'
+import {type EditorChange} from 'sanity'
 
 import {testHelpers} from '../../../utils/testHelpers'
 import {InputStory} from './InputStory'
