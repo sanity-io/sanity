@@ -282,32 +282,58 @@ pnpm test -- -u MyComponent
 
 Review snapshot changes carefully before committing.
 
-## Commit Message Format
+## Commit Message Format and PR Title (CRITICAL)
 
-This repo uses **conventional commits** for automated releases:
+This repo uses **conventional commits** for automated releases.
+
+**PR titles are validated by CI** using the [semantic-pull-request](https://github.com/amannn/action-semantic-pull-request) action. A PR with a non-conforming title **will fail CI**.
+
+### Format
 
 ```
-type(scope): description
+type(scope): lowercase description without special characters
+```
 
+### Rules
+
+1. **Type** is required and must be one of: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf`, `ci`
+2. **Scope** is required and should be the package or area affected (e.g., `groq`, `cli`, `form`, `deps`)
+3. **Description** must start with a lowercase letter
+4. **No backticks, quotes, or markdown** in the PR title — keep it plain text
+5. Use `fix` for bug fixes, `feat` for new features, `chore` for maintenance tasks
+
+### Choosing the Right Type
+
+- **`fix`** — Fixes a bug or resolves an issue (e.g., `fix(groq): resolve CJS type export issue`)
+- **`feat`** — Adds new functionality (e.g., `feat(form): add array input component`)
+- **`chore`** — Maintenance, dependency updates, CI changes (e.g., `chore(deps): update dependencies`)
+- **`docs`** — Documentation only (e.g., `docs(readme): improve installation instructions`)
+- **`refactor`** — Code restructuring without behavior change (e.g., `refactor(store): simplify document subscription logic`)
+- **`test`** — Adding or updating tests (e.g., `test(validation): add edge case coverage`)
+- **`perf`** — Performance improvements (e.g., `perf(search): optimize query execution`)
+- **`ci`** — CI/CD changes (e.g., `ci(e2e): add retry logic to flaky tests`)
+
+### Examples
+
+```
+# ✅ Good PR titles
+fix(groq): resolve CJS type export issue
 feat(form): add new array input component
-fix(cli): handle missing config file gracefully
 chore(deps): update dependencies
-docs(readme): improve installation instructions
-refactor(store): simplify document subscription logic
-test(validation): add edge case coverage
+
+# ❌ Bad PR titles
+feat(groq): add `types` condition     # no backticks allowed
+Fix(cli): Handle missing config        # type must be lowercase, description must start lowercase
+added new feature                       # missing type and scope
 ```
-
-**Types**: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf`, `ci`
-
-PR titles must follow this format (validated by CI).
 
 ## Pull Request Workflow
 
 **Always create PRs as drafts first.**
 
 ```bash
-# Create a draft PR
-gh pr create --draft --title "feat(scope): description" --body "..."
+# Create a draft PR — title MUST follow conventional commit format
+gh pr create --draft --title "fix(scope): description" --body "..."
 ```
 
 Workflow:
