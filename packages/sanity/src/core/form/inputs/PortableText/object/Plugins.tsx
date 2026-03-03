@@ -49,7 +49,7 @@ export const PortableTextEditorPlugins = (props: {
             return false
           }
 
-          const blocks = htmlToBlocks(event.data, schemaTypes.portableText, {
+          const blocks = htmlToBlocks(event.data, snapshot.context.schema, {
             keyGenerator: snapshot.context.keyGenerator,
             unstable_whitespaceOnPasteMode:
               schemaTypes.block.options?.unstable_whitespaceOnPasteMode,
@@ -79,7 +79,7 @@ export const PortableTextEditorPlugins = (props: {
         ],
       }),
     ],
-    [schemaTypes.block.options?.unstable_whitespaceOnPasteMode, schemaTypes.portableText],
+    [schemaTypes.block.options?.unstable_whitespaceOnPasteMode],
   )
 
   const componentProps = useMemo(

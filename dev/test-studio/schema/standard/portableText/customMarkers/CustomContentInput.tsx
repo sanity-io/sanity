@@ -1,5 +1,6 @@
 import {htmlToBlocks} from '@portabletext/block-tools'
 import {type OnPasteFn, type PortableTextBlock} from '@portabletext/editor'
+import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {useCallback, useMemo} from 'react'
 import {PortableTextInput, type PortableTextInputProps, type PortableTextMarker} from 'sanity'
 
@@ -18,7 +19,7 @@ export function CustomContentInput(inputProps: PortableTextInputProps) {
       console.log('Run `sanity install @sanity/code-input, and add `type: "code"` to your schema.')
     }
     if (html && hasCodeType) {
-      const blocks = htmlToBlocks(html, type, {
+      const blocks = htmlToBlocks(html, sanitySchemaToPortableTextSchema(type), {
         rules: [
           {
             deserialize(el, next, block) {
