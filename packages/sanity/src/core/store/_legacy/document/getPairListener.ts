@@ -2,7 +2,17 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
 import {defer, merge, type Observable, of, throwError} from 'rxjs'
-import {catchError, concatMap, filter, map, mergeMap, scan, share, tap} from 'rxjs/operators'
+import {
+  catchError,
+  concatMap,
+  filter,
+  map,
+  mergeMap,
+  scan,
+  share,
+  shareReplay,
+  tap,
+} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../releases'
@@ -102,8 +112,16 @@ export function getPairListener(
   const markPrefix = `document.pair-listener:${publishedId}`
   performance.mark(`${markPrefix}:subscribe`)
 
+  // Prefetch document snapshots in parallel with listener setup.
+  // Assigned inside the defer so it starts at subscription time, concurrently with the SSE connection.
+  let prefetchedSnapshots$: Observable<Snapshots> | null = null
+
   const sharedEvents = defer(() => {
     performance.mark(`${markPrefix}:listen-start`)
+    performance.mark(`${markPrefix}:fetch-start`)
+    prefetchedSnapshots$ = fetchInitialDocumentSnapshots().pipe(shareReplay(1))
+    prefetchedSnapshots$.subscribe()
+
     return (
       client.observable.listen(
         `*[_id in $ids]`,
@@ -183,8 +201,10 @@ export function getPairListener(
       // However, as long as the document is actively being edited, either by the local user, or other collaborators,
       // the gap detection and recovery will eventually activate and the document will be consistent again.
       return shouldSyncDocument
-        ? (performance.mark(`${markPrefix}:fetch-start`),
-          fetchInitialDocumentSnapshots().pipe(
+        ? (event.type === 'welcome' && i === 0 && prefetchedSnapshots$
+            ? prefetchedSnapshots$
+            : fetchInitialDocumentSnapshots()
+          ).pipe(
             tap(() => {
               performance.mark(`${markPrefix}:fetch-done`)
               performance.measure(`${markPrefix}:welcome→fetch (waterfall)`, {
@@ -201,7 +221,7 @@ export function getPairListener(
               createSnapshotEvent(publishedId, published),
               ...(versionId ? [createSnapshotEvent(versionId, version)] : []),
             ]),
-          ))
+          )
         : of(event)
     }),
     scan(
