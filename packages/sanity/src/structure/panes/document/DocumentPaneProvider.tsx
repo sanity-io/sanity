@@ -6,7 +6,7 @@ import {
   type SanityDocumentLike,
 } from '@sanity/types'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useEffectEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionsContext,
   type DocumentActionsVersionType,
@@ -322,25 +322,16 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [documentActions, documentActionsContext],
   )
 
-  const handlePathOpen = useCallback(
-    (path: Path) => {
-      // Update internal open path
-      onPathOpen(path)
+  const handlePathOpen = useEffectEvent((path: Path) => {
+    onPathOpen(path)
 
-      if (enhancedObjectDialogEnabled) {
-        /**
-         * Before we used to set the path open based on the focus path
-         * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
-         * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
-         */
-        const nextPath = pathToString(path)
-        if (params.path !== nextPath) {
-          setPaneParams({...params, path: nextPath})
-        }
+    if (enhancedObjectDialogEnabled) {
+      const nextPath = pathToString(path)
+      if (params.path !== nextPath) {
+        setPaneParams({...params, path: nextPath})
       }
-    },
-    [onPathOpen, params, setPaneParams, enhancedObjectDialogEnabled],
-  )
+    }
+  })
 
   // Resolve document badges
   const badges = useMemo(
@@ -395,22 +386,19 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     editState,
   })
 
-  const setTimelineRange = useCallback(
-    (newSince: string, newRev: string | null) => {
-      setPaneParams({
-        ...params,
-        since: newSince,
-        rev: newRev || undefined,
-      })
-    },
-    [params, setPaneParams],
-  )
+  const setTimelineRange = useEffectEvent((newSince: string, newRev: string | null) => {
+    setPaneParams({
+      ...params,
+      since: newSince,
+      rev: newRev || undefined,
+    })
+  })
 
   const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
   const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
 
-  const toggleInlineChanges = useCallback(() => {
+  const toggleInlineChanges = useEffectEvent(() => {
     const nextState = router.stickyParams.displayInlineChanges !== 'true'
     telemetry.log(nextState ? InlineChangesSwitchedOn : InlineChangesSwitchedOff)
 
@@ -419,69 +407,62 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         displayInlineChanges: String(nextState),
       },
     })
-  }, [router, telemetry])
+  })
 
-  const handleMenuAction = useCallback(
-    async (item: PaneMenuItem) => {
-      if (item.action === 'production-preview' && previewUrl) {
-        window.open(previewUrl)
-        return true
-      }
+  const handleMenuAction = useEffectEvent(async (item: PaneMenuItem) => {
+    if (item.action === 'production-preview' && previewUrl) {
+      window.open(previewUrl)
+      return true
+    }
 
-      if (item.action === 'reviewChanges') {
-        handleHistoryOpen()
-        return true
-      }
+    if (item.action === 'reviewChanges') {
+      handleHistoryOpen()
+      return true
+    }
 
-      if (
-        item.action === 'inspect' ||
-        (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX))
-      ) {
-        handleInspectorAction(item)
-      }
+    if (
+      item.action === 'inspect' ||
+      (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX))
+    ) {
+      handleInspectorAction(item)
+    }
 
-      if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
-        diffViewRouter.navigateDiffView({
-          mode: 'version',
-          previousDocument: {
-            type: documentType,
-            id: previousId,
-          },
-          nextDocument: {
-            type: documentType,
-            id: value._id,
-          },
-        })
-        return true
-      }
+    if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
+      diffViewRouter.navigateDiffView({
+        mode: 'version',
+        previousDocument: {
+          type: documentType,
+          id: previousId,
+        },
+        nextDocument: {
+          type: documentType,
+          id: value._id,
+        },
+      })
+      return true
+    }
 
-      if (item.action === 'toggleInlineChanges') {
-        toggleInlineChanges()
-        return true
-      }
+    if (item.action === 'toggleInlineChanges') {
+      toggleInlineChanges()
+      return true
+    }
 
-      return false
-    },
-    [
-      previewUrl,
-      previousId,
-      documentType,
-      handleHistoryOpen,
-      handleInspectorAction,
-      diffViewRouter,
-      value._id,
-      toggleInlineChanges,
-    ],
-  )
+    return false
+  })
 
-  useEffect(() => {
-    setDocumentMeta({
+  const documentMeta = useMemo(
+    () => ({
       documentId,
       documentType,
       schemaType: schemaType!,
       onChange,
-    })
-  }, [documentId, documentType, schemaType, onChange, setDocumentMeta])
+    }),
+    [documentId, documentType, schemaType, onChange],
+  )
+
+  useEffect(() => {
+    setDocumentMeta(documentMeta)
+  }, [documentMeta, setDocumentMeta])
 
   const compareValue = useMemo(
     () => getComparisonValue(upstreamEditState),
@@ -498,172 +479,102 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     return displayed
   }, [editState.version, editState.published, displayed])
 
-  const documentPane: DocumentPaneContextValue = useMemo(
-    () =>
-      ({
-        actions,
-        activeViewId,
-        badges,
-        changesOpen,
-        closeInspector,
-        collapsedFieldSets,
-        collapsedPaths,
-        compareValue,
-        connectionState,
-        displayed: currentDisplayed,
-        documentId,
-        documentIdRaw,
-        documentType,
-        editState,
-        fieldActions,
-        focusPath,
-        inspector: currentInspector || null,
-        inspectors,
-        onBlur,
-        onChange,
-        onFocus,
-        onPathOpen: handlePathOpen,
-        onHistoryClose: handleHistoryClose,
-        onHistoryOpen: handleHistoryOpen,
-        onInspectClose: handleLegacyInspectClose,
-        onMenuAction: handleMenuAction,
-        onPaneClose: handlePaneClose,
-        onPaneSplit: handlePaneSplit,
-        onSetActiveFieldGroup,
-        onSetCollapsedPath,
-        onSetCollapsedFieldSet,
-        onSetMaximizedPane,
-        maximized,
-        openInspector,
-        openPath,
-        index,
-        inspectOpen,
-        validation,
-        menuItemGroups: menuItemGroups || [],
-        paneKey,
-        previewUrl,
-        ready,
-        schemaType: schemaType!,
-        hasUpstreamVersion,
-        isPermissionsLoading,
-        isInitialValueLoading,
-        permissions,
-        setTimelineRange,
-        setIsDeleting,
-        isDeleting,
-        isDeleted,
-        timelineError,
-        timelineStore,
-        title,
-        value,
-        selectedReleaseId,
-        views,
-        formState,
-        unstable_languageFilter: languageFilter,
-        revisionId,
-        revisionNotFound,
-        lastNonDeletedRevId,
-        lastRevisionDocument,
-      }) satisfies DocumentPaneContextValue,
-    [
-      actions,
-      activeViewId,
-      badges,
-      changesOpen,
-      closeInspector,
-      collapsedFieldSets,
-      collapsedPaths,
-      compareValue,
-      connectionState,
-      currentDisplayed,
-      documentId,
-      documentIdRaw,
-      documentType,
-      editState,
-      fieldActions,
-      focusPath,
-      currentInspector,
-      inspectors,
-      onBlur,
-      onChange,
-      onFocus,
-      handlePathOpen,
-      handleHistoryClose,
-      handleHistoryOpen,
-      handleLegacyInspectClose,
-      handleMenuAction,
-      handlePaneClose,
-      handlePaneSplit,
-      onSetActiveFieldGroup,
-      onSetCollapsedPath,
-      onSetCollapsedFieldSet,
-      onSetMaximizedPane,
-      maximized,
-      openInspector,
-      openPath,
-      index,
-      inspectOpen,
-      validation,
-      menuItemGroups,
-      paneKey,
-      previewUrl,
-      ready,
-      schemaType,
-      hasUpstreamVersion,
-      isPermissionsLoading,
-      isInitialValueLoading,
-      permissions,
-      setTimelineRange,
-      isDeleting,
-      isDeleted,
-      timelineError,
-      timelineStore,
-      title,
-      value,
-      selectedReleaseId,
-      views,
-      formState,
-      languageFilter,
-      revisionId,
-      revisionNotFound,
-      lastNonDeletedRevId,
-      lastRevisionDocument,
-    ],
-  )
+  const documentPane: DocumentPaneContextValue = {
+    actions,
+    activeViewId,
+    badges,
+    changesOpen,
+    closeInspector,
+    collapsedFieldSets,
+    collapsedPaths,
+    compareValue,
+    connectionState,
+    displayed: currentDisplayed,
+    documentId,
+    documentIdRaw,
+    documentType,
+    editState,
+    fieldActions,
+    focusPath,
+    inspector: currentInspector || null,
+    inspectors,
+    onBlur,
+    onChange,
+    onFocus,
+    onPathOpen: handlePathOpen,
+    onHistoryClose: handleHistoryClose,
+    onHistoryOpen: handleHistoryOpen,
+    onInspectClose: handleLegacyInspectClose,
+    onMenuAction: handleMenuAction,
+    onPaneClose: handlePaneClose,
+    onPaneSplit: handlePaneSplit,
+    onSetActiveFieldGroup,
+    onSetCollapsedPath,
+    onSetCollapsedFieldSet,
+    onSetMaximizedPane,
+    maximized,
+    openInspector,
+    openPath,
+    index,
+    inspectOpen,
+    validation,
+    menuItemGroups: menuItemGroups || [],
+    paneKey,
+    previewUrl,
+    ready,
+    schemaType: schemaType!,
+    hasUpstreamVersion,
+    isPermissionsLoading,
+    isInitialValueLoading,
+    permissions,
+    setTimelineRange,
+    setIsDeleting,
+    isDeleting,
+    isDeleted,
+    timelineError,
+    timelineStore,
+    title,
+    value,
+    selectedReleaseId,
+    views,
+    formState,
+    unstable_languageFilter: languageFilter,
+    revisionId,
+    revisionNotFound,
+    lastNonDeletedRevId,
+    lastRevisionDocument,
+  } satisfies DocumentPaneContextValue
 
   const pathRef = useRef<string | undefined>(undefined)
-  useEffect(() => {
-    if (ready && params.path) {
-      const {path, ...restParams} = params
+  const paramPath = params.path
 
-      // Only trigger a programmatic focus when the URL path changed AND the
-      // form's openPath doesn't already reflect it.  When handlePathOpen updates
-      // both the form state and the URL, the form is already in sync — calling
-      // onProgrammaticFocus again would re-set focusPath/openPath and cause
-      // cascading state updates that flicker nested dialogs.
-      const currentOpenPathString = pathToString(openPath)
-      if (path !== pathRef.current && path !== currentOpenPathString) {
-        const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
-        onProgrammaticFocus(pathFromUrl)
-      }
+  const syncPathFromUrl = useEffectEvent((urlPath: string) => {
+    const {path: _path, ...restParams} = params
 
-      if (!enhancedObjectDialogEnabled) {
-        // remove the `path`-param from url after we have consumed it as the initial focus path
-        paneRouter.setParams(restParams)
-      }
+    // Only trigger a programmatic focus when the URL path changed AND the
+    // form's openPath doesn't already reflect it.  When handlePathOpen updates
+    // both the form state and the URL, the form is already in sync — calling
+    // onProgrammaticFocus again would re-set focusPath/openPath and cause
+    // cascading state updates that flicker nested dialogs.
+    const currentOpenPathString = pathToString(openPath)
+    if (urlPath !== pathRef.current && urlPath !== currentOpenPathString) {
+      const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(urlPath))
+      onProgrammaticFocus(pathFromUrl)
     }
-    pathRef.current = params.path
+
+    if (!enhancedObjectDialogEnabled) {
+      paneRouter.setParams(restParams)
+    }
+  })
+
+  useEffect(() => {
+    if (ready && paramPath) {
+      syncPathFromUrl(paramPath)
+    }
+    pathRef.current = paramPath
 
     return undefined
-  }, [
-    formStateRef,
-    onProgrammaticFocus,
-    paneRouter,
-    params,
-    ready,
-    enhancedObjectDialogEnabled,
-    openPath,
-  ])
+  }, [paramPath, ready])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
