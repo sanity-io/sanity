@@ -232,7 +232,6 @@ describe('uploadTarget - drag and drop', () => {
 
     const {onChange} = await renderVideoInput({
       assetSources: [assetSource],
-      configOverrides: {mediaLibrary: {enabled: false}},
       fieldDefinition: {
         name: 'someVideo',
         title: 'MP4 only',
