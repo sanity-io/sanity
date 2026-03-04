@@ -30,7 +30,7 @@ export async function resolveIcon(options: ResolveIconOptions): Promise<string |
     const html = renderToString(<SchemaIcon {...options} />).trim()
     if (!options.sanitize) return html || undefined
     const DOMPurify = await getDOMPurify()
-    return DOMPurify.sanitize(html, config)
+    return DOMPurify.sanitize(html, config) || undefined
   } catch {
     return undefined
   }
