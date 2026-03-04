@@ -1,5 +1,4 @@
 import {
-  isDefined,
   type ParsedWorkspaceSchemaId,
   parseWorkspaceSchemaId,
   validForNamesChars,
@@ -96,7 +95,7 @@ export function parseIds(flags: {ids?: unknown}, errors: string[]): ParsedWorksp
     .map((id) => id.trim())
     .filter((id) => !!id)
     .map((id) => parseWorkspaceSchemaId(id, errors))
-    .filter(isDefined)
+    .filter((v): v is ParsedWorkspaceSchemaId => v !== undefined)
 
   const uniqueIds = uniqBy(ids, 'schemaId' satisfies keyof (typeof ids)[number])
   if (uniqueIds.length < ids.length) {

@@ -1,5 +1,5 @@
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
-import {isDefined, type CreateManifest, type StoredWorkspaceSchema} from '@sanity/schema/_internal'
+import {type CreateManifest, type StoredWorkspaceSchema} from '@sanity/schema/_internal'
 import chalk from 'chalk'
 import sortBy from 'lodash-es/sortBy.js'
 
@@ -115,7 +115,7 @@ export async function listSchemasAction(
       }
       return []
     })
-    .filter(isDefined)
+    .filter(<T>(v: T | undefined): v is T => v !== undefined)
     .flat()
 
   if (schemas.length === 0) {
@@ -154,7 +154,7 @@ function printSchemaList({
           String,
         )
       })
-      .filter(isDefined),
+      .filter((v): v is string[] => v !== undefined),
     ['createdAt'],
   )
   const headings = ['Id', 'Workspace', 'Dataset', 'ProjectId', 'CreatedAt']

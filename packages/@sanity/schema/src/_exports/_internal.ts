@@ -13,7 +13,6 @@ export {
   extractManifestSchemaTypes,
   type IconResolver,
 } from '../manifest/extractManifestSchemaTypes'
-export {isDefined} from '../manifest/manifestTypeHelpers'
 export {
   type CreateManifest,
   type CreateWorkspaceManifest,

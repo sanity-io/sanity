@@ -1,5 +1,4 @@
 import {type CliCommandContext} from '@sanity/cli'
-import {isDefined} from '@sanity/schema/_internal'
 import chalk from 'chalk'
 import uniq from 'lodash-es/uniq.js'
 
@@ -181,7 +180,7 @@ export async function deleteSchemaAction(
           ? [`Failed to delete ids:\n${getStringList(deleteFailureIds)}`, 'Check logs for errors.']
           : []),
       ]
-        .filter(isDefined)
+        .filter((v): v is string => v !== undefined)
         .join('\n'),
     )
   }
