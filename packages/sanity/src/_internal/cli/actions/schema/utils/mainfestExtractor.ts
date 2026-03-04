@@ -7,7 +7,11 @@ import {
 import {type TelemetryLogger} from '@sanity/telemetry'
 import chalk from 'chalk'
 
-import {type ExtractManifestFlags, extractManifestSafe} from '../../manifest/extractManifestAction'
+import {
+  type ExtractManifestFlags,
+  type ExtractManifestOptions,
+  extractManifestSafe,
+} from '../../manifest/extractManifestAction'
 import {GenerateManifest} from '../__telemetry__/schemaStore.telemetry'
 import {FlagValidationError} from './schemaStoreValidation'
 
@@ -44,7 +48,10 @@ export async function ensureManifestExtractSatisfied(args: {
   }
 }
 
-export function createManifestExtractor(context: CliCommandContext & {safe?: boolean}) {
+export function createManifestExtractor(
+  context: CliCommandContext & {safe?: boolean},
+  options?: ExtractManifestOptions,
+) {
   return async (manifestDir: string) => {
     const error = await extractManifestSafe(
       {
@@ -55,6 +62,7 @@ export function createManifestExtractor(context: CliCommandContext & {safe?: boo
         extraArguments: [],
       } as CliCommandArguments<ExtractManifestFlags>,
       context,
+      options,
     )
     if (!context.safe && error) {
       throw error

@@ -1,9 +1,10 @@
-import {MANIFEST_FILENAME} from '../../../../src/_internal/cli/actions/manifest/extractManifestAction'
 import {
   type CreateManifest,
   type ManifestSchemaType,
   type ManifestWorkspaceFile,
-} from '../../../../src/_internal/manifest/manifestTypes'
+} from '@sanity/schema/_internal'
+
+import {MANIFEST_FILENAME} from '../../../../src/_internal/cli/actions/manifest/extractManifestAction'
 
 export function createSchemaStoreFixture(staticDate: string) {
   const workDir = '/path/to/workdir'

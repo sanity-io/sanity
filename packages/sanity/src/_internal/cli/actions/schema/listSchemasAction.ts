@@ -1,9 +1,8 @@
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
+import {type CreateManifest, type StoredWorkspaceSchema} from '@sanity/schema/_internal'
 import chalk from 'chalk'
 import sortBy from 'lodash-es/sortBy.js'
 
-import {isDefined} from '../../../manifest/manifestTypeHelpers'
-import {type CreateManifest, type StoredWorkspaceSchema} from '../../../manifest/manifestTypes'
 import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'
@@ -38,7 +37,7 @@ export default function listSchemasActionForCommand(
 ): Promise<SchemaStoreActionResult> {
   return listSchemasAction(flags, {
     ...context,
-    manifestExtractor: createManifestExtractor(context),
+    manifestExtractor: createManifestExtractor(context, {resolveIcons: false}),
   })
 }
 
@@ -116,7 +115,7 @@ export async function listSchemasAction(
       }
       return []
     })
-    .filter(isDefined)
+    .filter(<T>(v: T | undefined): v is T => v !== undefined)
     .flat()
 
   if (schemas.length === 0) {
@@ -155,7 +154,7 @@ function printSchemaList({
           String,
         )
       })
-      .filter(isDefined),
+      .filter((v): v is string[] => v !== undefined),
     ['createdAt'],
   )
   const headings = ['Id', 'Workspace', 'Dataset', 'ProjectId', 'CreatedAt']

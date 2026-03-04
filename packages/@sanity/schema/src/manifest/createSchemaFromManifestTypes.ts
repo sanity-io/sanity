@@ -9,11 +9,11 @@ import cloneDeep from 'lodash-es/cloneDeep.js'
 import isObject from 'lodash-es/isObject.js'
 
 import {Schema} from '../legacy/Schema'
-import {builtinTypes} from './builtinTypes'
-import {groupProblems} from './groupProblems'
-import {type SchemaValidationResult} from './typedefs'
-import {validateSchema} from './validateSchema'
-import {ValidationError} from './validation/ValidationError'
+import {builtinTypes} from '../sanity/builtinTypes'
+import {groupProblems} from '../sanity/groupProblems'
+import {type SchemaValidationResult} from '../sanity/typedefs'
+import {validateSchema} from '../sanity/validateSchema'
+import {ValidationError} from '../sanity/validation/ValidationError'
 
 const builtinSchema = Schema.compile({
   name: 'studio',

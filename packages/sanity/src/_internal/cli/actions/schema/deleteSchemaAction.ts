@@ -2,7 +2,6 @@ import {type CliCommandContext} from '@sanity/cli'
 import chalk from 'chalk'
 import uniq from 'lodash-es/uniq.js'
 
-import {isDefined} from '../../../manifest/manifestTypeHelpers'
 import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'
@@ -51,7 +50,7 @@ export default function deleteSchemasActionForCommand(
 ): Promise<SchemaStoreActionResult> {
   return deleteSchemaAction(flags, {
     ...context,
-    manifestExtractor: createManifestExtractor(context),
+    manifestExtractor: createManifestExtractor(context, {resolveIcons: false}),
   })
 }
 
@@ -181,7 +180,7 @@ export async function deleteSchemaAction(
           ? [`Failed to delete ids:\n${getStringList(deleteFailureIds)}`, 'Check logs for errors.']
           : []),
       ]
-        .filter(isDefined)
+        .filter((v): v is string => v !== undefined)
         .join('\n'),
     )
   }

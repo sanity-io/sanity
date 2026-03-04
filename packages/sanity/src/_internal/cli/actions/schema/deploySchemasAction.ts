@@ -1,13 +1,13 @@
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
+import {
+  createStoredWorkspaceSchemaPayload,
+  getWorkspaceSchemaId,
+  type ManifestWorkspaceFile,
+} from '@sanity/schema/_internal'
 import chalk from 'chalk'
 import partition from 'lodash-es/partition.js'
 
-import {
-  CURRENT_WORKSPACE_SCHEMA_VERSION,
-  type ManifestWorkspaceFile,
-  type StoredWorkspaceSchema,
-} from '../../../manifest/manifestTypes'
 import {SchemaDeploy} from './__telemetry__/schemaStore.telemetry'
 import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
@@ -20,7 +20,6 @@ import {
   SCHEMA_PERMISSION_HELP_TEXT,
   type SchemaStoreCommonFlags,
 } from './utils/schemaStoreValidation'
-import {getWorkspaceSchemaId} from './utils/workspaceSchemaId'
 
 export interface DeploySchemasFlags extends SchemaStoreCommonFlags {
   'workspace'?: string
@@ -40,7 +39,7 @@ export default function deploySchemasActionForCommand(
     },
     {
       ...context,
-      manifestExtractor: createManifestExtractor(context),
+      manifestExtractor: createManifestExtractor(context, {resolveIcons: false}),
     },
   )
 }
@@ -153,16 +152,12 @@ function createStoreWorkspaceSchema(args: {
     try {
       const schema = await manifestReader.getWorkspaceSchema(workspace.name)
 
-      const storedWorkspaceSchema: Omit<StoredWorkspaceSchema, '_id' | '_type'> = {
-        version: CURRENT_WORKSPACE_SCHEMA_VERSION,
-        tag,
-        workspace: {
-          name: workspace.name,
-          title: workspace.title,
-        },
-        // the API will stringify the schema – we send as JSON
+      // the API will stringify the schema – we send as JSON
+      const storedWorkspaceSchema = createStoredWorkspaceSchemaPayload({
+        workspace: {name: workspace.name, title: workspace.title},
         schema,
-      }
+        tag,
+      })
 
       await client
         .withConfig({dataset: workspace.dataset, projectId: workspace.projectId})

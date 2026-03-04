@@ -1,10 +1,10 @@
+import {parseWorkspaceSchemaId} from '@sanity/schema/_internal'
 import {describe, expect, test} from 'vitest'
 
 import {
   parseId,
   parseIds,
   parseTag,
-  parseWorkspaceSchemaId,
 } from '../../../src/_internal/cli/actions/schema/utils/schemaStoreValidation'
 
 const workspaceIdCases = [

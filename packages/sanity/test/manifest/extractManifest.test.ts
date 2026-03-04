@@ -1,11 +1,12 @@
-/* eslint-disable camelcase */
-import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {describe, expect, test} from 'vitest'
-
 import {
   extractCreateWorkspaceManifest,
   extractManifestSchemaTypes,
-} from '../../src/_internal/manifest/extractWorkspaceManifest'
+  type IconResolver,
+} from '@sanity/schema/_internal'
+/* eslint-disable camelcase */
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {describe, expect, test, vi} from 'vitest'
+
 import {createSchema, createWorkspaceFromConfig} from '../../src/core'
 
 describe('Extract studio manifest', () => {
@@ -24,13 +25,72 @@ describe('Extract studio manifest', () => {
         },
       })
 
-      const extracted = extractCreateWorkspaceManifest(workspaceConfig)
+      const extracted = await extractCreateWorkspaceManifest(workspaceConfig)
       expect(extracted).toMatchObject({
         name: 'default',
         projectId,
         dataset,
         mediaLibrary: {enabled: true, libraryId: undefined},
       })
+    })
+
+    test('should use the provided icon resolver for workspace and tool icons', async () => {
+      const iconResolver: IconResolver = vi.fn(({title}) => `<svg>${title}</svg>`)
+
+      const schema = createSchema({name: 'test', types: []})
+      const extracted = await extractCreateWorkspaceManifest(
+        {
+          name: 'test-workspace',
+          title: 'Test Workspace',
+          basePath: '/',
+          projectId: 'test',
+          dataset: 'test',
+          schema,
+          tools: [{title: 'Desk', name: 'desk'}],
+        },
+        iconResolver,
+      )
+
+      expect(iconResolver).toHaveBeenCalled()
+      expect(extracted.icon).toBe('<svg>Test Workspace</svg>')
+      expect(extracted.tools[0].icon).toBe('<svg>Desk</svg>')
+    })
+
+    test('should yield null for icon when no icon resolver is passed', async () => {
+      const schema = createSchema({name: 'test', types: []})
+      const extracted = await extractCreateWorkspaceManifest({
+        name: 'test-workspace',
+        basePath: '/',
+        projectId: 'test',
+        dataset: 'test',
+        schema,
+        tools: [{title: 'Desk', name: 'desk'}],
+      })
+
+      expect(extracted.icon).toBeUndefined()
+      expect(extracted.tools[0].icon).toBeUndefined()
+    })
+
+    test('should support an async icon resolver', async () => {
+      const iconResolver: IconResolver = async ({title}) => {
+        return `<svg>async-${title}</svg>`
+      }
+
+      const schema = createSchema({name: 'test', types: []})
+      const extracted = await extractCreateWorkspaceManifest(
+        {
+          name: 'async-test',
+          title: 'Async',
+          basePath: '/',
+          projectId: 'test',
+          dataset: 'test',
+          schema,
+          tools: [],
+        },
+        iconResolver,
+      )
+
+      expect(extracted.icon).toBe('<svg>async-Async</svg>')
     })
   })
   describe('serialize schema for manifest', () => {

@@ -1,4 +1,5 @@
 import {ClientError, type SanityClient} from '@sanity/client'
+import {getWorkspaceSchemaId, type StoredWorkspaceSchema} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -9,11 +10,6 @@ import {
 } from '../../../src/_internal/cli/actions/schema/listSchemasAction'
 import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema/schemaStoreTypes'
 import {SCHEMA_PERMISSION_HELP_TEXT} from '../../../src/_internal/cli/actions/schema/utils/schemaStoreValidation'
-import {getWorkspaceSchemaId} from '../../../src/_internal/cli/actions/schema/utils/workspaceSchemaId'
-import {
-  SANITY_WORKSPACE_SCHEMA_TYPE,
-  type StoredWorkspaceSchema,
-} from '../../../src/_internal/manifest/manifestTypes'
 import {createSchemaStoreFixture} from './mocks/schemaStoreFixture'
 import {
   createMockJsonReader,
@@ -39,7 +35,7 @@ const workspace3 = testMultiWorkspaceManifest.workspaces[2]
 
 const validStoredSchema1: StoredWorkspaceSchema = {
   _id: getWorkspaceSchemaId({workspaceName: workspace1.name}).safeTaggedId,
-  _type: SANITY_WORKSPACE_SCHEMA_TYPE,
+  _type: 'system.schema',
   version: '2025-05-01',
   workspace: workspace1,
   schema: JSON.stringify(testSchema),

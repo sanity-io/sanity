@@ -4,7 +4,7 @@ import {type ClientConfig, createClient, type SanityClient} from '@sanity/client
 import debugit from 'debug'
 import {generateStudioManifest, type StudioManifest, uploadSchema, type Workspace} from 'sanity'
 
-import {resolveIcon} from '../../manifest/extractWorkspaceManifest'
+import {resolveIcon} from '../../manifest/resolveIcon'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 
@@ -86,7 +86,7 @@ async function main() {
           icon: workspace.icon,
           title: workspace.title,
           subtitle: workspace.subtitle,
-        }) ?? undefined,
+        }),
       bundleVersion: opts.sanityVersion,
       buildId: JSON.stringify(Date.now()),
     })

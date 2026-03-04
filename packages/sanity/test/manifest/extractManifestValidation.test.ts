@@ -1,7 +1,7 @@
+import {extractManifestSchemaTypes} from '@sanity/schema/_internal'
 import {defineField, defineType} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
-import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
 import {createSchema} from '../../src/core'
 
 describe('Extract studio manifest', () => {
