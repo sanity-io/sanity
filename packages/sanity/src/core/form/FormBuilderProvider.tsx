@@ -31,6 +31,8 @@ export interface FormBuilderProviderProps {
   __internal_fieldActions?: DocumentFieldAction[]
   /** @internal */
   __internal_patchChannel?: PatchChannel
+  /** @internal */
+  __internal_inspectOpen?: boolean
 
   autoFocus?: boolean
   changesOpen?: boolean
@@ -80,6 +82,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
   const {
     __internal_fieldActions: fieldActions = EMPTY_ARRAY,
     __internal_patchChannel: patchChannel = missingPatchChannel,
+    __internal_inspectOpen: inspectOpen = false,
     autoFocus,
     changesOpen,
     children,
@@ -133,6 +136,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         assetSources: image.assetSources,
         directUploads: image?.directUploads ?? true,
       },
+      inspectOpen,
       onChange,
     }),
     [
@@ -144,6 +148,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       image?.directUploads,
       onChange,
       patchChannel,
+      inspectOpen,
       unstable?.CustomMarkers,
       unstable?.Markers,
     ],

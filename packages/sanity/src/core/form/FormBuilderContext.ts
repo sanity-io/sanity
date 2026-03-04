@@ -39,6 +39,7 @@ export interface FormBuilderContextValue {
       directUploads: boolean
     }
     patchChannel: PatchChannel
+    inspectOpen?: boolean
   }
 
   autoFocus?: boolean

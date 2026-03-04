@@ -184,7 +184,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [portalElement, setDocumentPanelPortalElement])
 
   const inspectDialog = useMemo(() => {
-    return isInspectOpen ? <InspectDialog value={displayed || value} /> : null
+    return isInspectOpen ? (
+      <LegacyLayerProvider zOffset="inspectorDialog">
+        <InspectDialog value={displayed || value} />
+      </LegacyLayerProvider>
+    ) : null
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)

@@ -22,6 +22,7 @@ export const zIndexContextDefaults: ZIndexContextValue = {
   drawershade: 1000000,
   drawer: 1000001,
   fullscreen: 1200000,
+  inspectorDialog: 20000,
   toast: [100, 11000],
   // NOT IN USE
   portal: 200,

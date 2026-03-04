@@ -34,6 +34,8 @@ export interface FormProviderProps {
   __internal_fieldActions?: DocumentFieldAction[]
   /** @internal Considered internal, do not use. */
   __internal_patchChannel: PatchChannel
+  /** @internal Considered internal, do not use. */
+  __internal_inspectOpen?: boolean
 
   autoFocus?: boolean
   changesOpen?: boolean
@@ -66,6 +68,7 @@ export function FormProvider(props: FormProviderProps) {
   const {
     __internal_fieldActions: fieldActions,
     __internal_patchChannel: patchChannel,
+    __internal_inspectOpen: inspectOpen,
     autoFocus,
     changesOpen,
     children,
@@ -138,6 +141,7 @@ export function FormProvider(props: FormProviderProps) {
     <FormBuilderProvider
       __internal_fieldActions={fieldActions}
       __internal_patchChannel={patchChannel}
+      __internal_inspectOpen={inspectOpen}
       autoFocus={autoFocus}
       changesOpen={changesOpen}
       collapsedFieldSets={collapsedFieldSets}

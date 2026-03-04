@@ -9,6 +9,8 @@ import {
   type IdPair,
   type PendingMutationsEvent,
   type ReconnectEvent,
+  type ResetEvent,
+  type WelcomeBackEvent,
   type WelcomeEvent,
 } from '../types'
 import {memoize} from '../utils/createMemoizer'
@@ -18,7 +20,7 @@ import {memoizeKeyGen} from './memoizeKeyGen'
 
 // return true if the event comes with a document snapshot
 function isSnapshotEvent(
-  event: BufferedDocumentEvent | ReconnectEvent | WelcomeEvent,
+  event: BufferedDocumentEvent | ReconnectEvent | WelcomeEvent | WelcomeBackEvent | ResetEvent,
 ): event is SnapshotEvent & {
   version: 'published' | 'draft'
 } {
