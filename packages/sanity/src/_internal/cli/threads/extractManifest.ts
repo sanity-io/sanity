@@ -2,7 +2,7 @@ import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_t
 
 import {extractCreateWorkspaceManifest} from '@sanity/schema/_internal'
 
-import {resolveIcon} from '../../manifest/resolveIcon'
+import {resolveIcon, type ResolveIconOptions} from '../../manifest/resolveIcon'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 
@@ -23,7 +23,10 @@ async function main() {
     throw new Error('Invalid worker data: expected an object with a "workDir" string property')
   }
 
-  const iconResolver = opts.resolveIcons !== false ? resolveIcon : undefined
+  const iconResolver =
+    opts.resolveIcons === false
+      ? undefined
+      : (props: Omit<ResolveIconOptions, 'sanitize'>) => resolveIcon({...props, sanitize: true})
 
   const cleanup = mockBrowserEnvironment(opts.workDir)
 

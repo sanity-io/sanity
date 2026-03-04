@@ -6,6 +6,15 @@ import {config} from './purifyConfig'
 
 export type {SchemaIconProps}
 
+export interface ResolveIconOptions extends SchemaIconProps {
+  /**
+   * When true, sanitize the rendered HTML with DOMPurify.
+   * Required when the output is written to a file. Can be skipped
+   * when the output is posted to an API that sanitizes server-side.
+   */
+  sanitize?: boolean
+}
+
 let cachedDOMPurify: typeof DOMPurifyType | undefined
 
 async function getDOMPurify() {
@@ -16,11 +25,12 @@ async function getDOMPurify() {
   return cachedDOMPurify
 }
 
-export const resolveIcon = async (props: SchemaIconProps): Promise<string | undefined> => {
+export async function resolveIcon(options: ResolveIconOptions): Promise<string | undefined> {
   try {
-    const html = renderToString(<SchemaIcon {...props} />)
+    const html = renderToString(<SchemaIcon {...options} />).trim()
+    if (!options.sanitize) return html || undefined
     const DOMPurify = await getDOMPurify()
-    return DOMPurify.sanitize(html.trim(), config)
+    return DOMPurify.sanitize(html, config)
   } catch {
     return undefined
   }
