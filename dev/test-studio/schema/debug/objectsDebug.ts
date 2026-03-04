@@ -1067,5 +1067,45 @@ export const objectsDebug = defineType({
     arrayWithNestedObjectsWithArray,
     arrayWithArrayInNestedObjects,
     animalWithPopover,
+    defineField({
+      name: 'crossDatasetReferenceSpecies',
+      title: 'Species',
+      type: 'crossDatasetReference',
+      projectId: 'ppsg7ml5', // important when target project differs
+      dataset: 'no-releases', // actual dataset name, not workspace name
+      to: [
+        {
+          type: 'species',
+          preview: {select: {title: 'name'}},
+        },
+      ],
+      studioUrl: ({id, type}) =>
+        type
+          ? `${document.location.protocol}//${document.location.host}/no-releases/structure/${type};${id}`
+          : null,
+    }),
+    defineField({
+      name: 'players',
+      title: 'Players',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          name: 'player',
+          type: 'crossDatasetReference',
+          projectId: 'ppsg7ml5', // important when target project differs
+          dataset: 'no-releases', // actual dataset name, not workspace name
+          to: [
+            {
+              type: 'species',
+              preview: {select: {title: 'name'}},
+            },
+          ],
+          studioUrl: ({id, type}) =>
+            type
+              ? `${document.location.protocol}//${document.location.host}/no-releases/structure/${type};${id}`
+              : null,
+        }),
+      ],
+    }),
   ],
 })
