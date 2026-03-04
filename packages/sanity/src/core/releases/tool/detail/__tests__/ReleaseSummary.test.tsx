@@ -70,9 +70,10 @@ vi.mock('../../components/ReleaseDocumentPreview', () => ({
 
 vi.mock('../../../../studio/components/navbar/search/components/SearchPopover')
 
-// Mock the preview streams to prevent RxJS unsubscription errors during test cleanup.
-// These streams use fromEvent(window, ...) which can cause errors when unsubscribing
-// after the test environment has been modified.
+// Mock the preview streams and other modules using fromEvent(window/document, ...) to prevent
+// RxJS unsubscription errors during test cleanup. These module-level fromEvent subscriptions
+// can cause "target[methodName] is not a function" errors when unsubscribing after the test
+// environment has been torn down (especially in Node v24).
 vi.mock('../../../../preview/streams/scroll', async () => {
   const {EMPTY} = await import('rxjs')
   return {scroll$: EMPTY}
@@ -89,6 +90,24 @@ vi.mock('../../../../preview/streams/visibilityChange', async () => {
   const {EMPTY} = await import('rxjs')
   return {visibilityChange$: EMPTY}
 })
+vi.mock('../../../../store/_legacy/debugParams/debugParams', async () => {
+  const {EMPTY, of} = await import('rxjs')
+  return {debugParams$: of([]), debugRolesParam$: of([])}
+})
+vi.mock(
+  '../../../../store/_legacy/connection-status/connection-status-store',
+  async (importOriginal) => {
+    const mod =
+      await importOriginal<
+        typeof import('../../../../store/_legacy/connection-status/connection-status-store')
+      >()
+    const {of} = await import('rxjs')
+    return {
+      ...mod,
+      createConnectionStatusStore: () => ({connectionStatus$: of(mod.CONNECTING)}),
+    }
+  },
+)
 
 const releaseDocuments = [
   {
