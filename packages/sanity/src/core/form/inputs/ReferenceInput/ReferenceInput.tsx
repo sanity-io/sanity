@@ -9,7 +9,7 @@ import {Button} from '../../../../ui-components'
 import {ReferenceInputPreviewCard} from '../../../components'
 import {Translate, useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {getPublishedId, isNonNullable} from '../../../util'
+import {getPublishedId, getVersionFromId, isNonNullable} from '../../../util'
 import {Alert} from '../../components/Alert'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, setIfMissing, unset} from '../../patch'
@@ -43,6 +43,7 @@ interface AutocompleteOption {
   hit: ReferenceSearchHit
   value: string
 }
+
 export function ReferenceInput(props: ReferenceInputProps) {
   const {
     createOptions,
@@ -144,12 +145,16 @@ export function ReferenceInput(props: ReferenceInputProps) {
       }
       // if there's no published version of this document, set the reference to weak
 
+      const isSameReleaseRef = selectedReleaseId == getVersionFromId(hit.originalId)
+
       const patches = [
         setIfMissing({}),
         set(schemaType.name, ['_type']),
         set(getPublishedId(nextId), ['_ref']),
-        hit.published && !schemaType.weak ? unset(['_weak']) : set(true, ['_weak']),
-        hit.published
+        (hit.published || isSameReleaseRef) && !schemaType.weak
+          ? unset(['_weak'])
+          : set(true, ['_weak']),
+        hit.published || isSameReleaseRef
           ? unset(['_strengthenOnPublish'])
           : set({type: hit?.type, weak: schemaType.weak}, ['_strengthenOnPublish']),
       ].filter(isNonNullable)
@@ -158,7 +163,15 @@ export function ReferenceInput(props: ReferenceInputProps) {
       // Move focus away from _ref and one level up
       onPathFocus(path)
     },
-    [onChange, onPathFocus, schemaType.name, schemaType.weak, searchState.hits, path],
+    [
+      onChange,
+      onPathFocus,
+      schemaType.name,
+      schemaType.weak,
+      searchState.hits,
+      selectedReleaseId,
+      path,
+    ],
   )
 
   const handleClear = useCallback(() => {
