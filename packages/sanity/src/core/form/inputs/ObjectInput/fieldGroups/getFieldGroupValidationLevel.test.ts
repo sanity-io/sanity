@@ -132,9 +132,7 @@ describe('getFieldGroupValidationLevel', () => {
     })
 
     test('should include nested validation under grouped array objects', () => {
-      const validation = [
-        createValidation('error', ['specifications', {_key: 'spec1'}, 'value']),
-      ] as FormNodeValidation[]
+      const validation = [createValidation('error', ['specifications', {_key: 'spec1'}, 'value'])]
       const group = createGroup('specifications')
 
       expect(getFieldGroupValidationLevel(group, [], validation)).toBe('error')
