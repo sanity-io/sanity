@@ -181,10 +181,10 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const handleFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
       if (event.currentTarget === focusElementRef.current) {
-        onPathFocus?.([])
+        onPathFocus?.(path)
       }
     },
-    [onPathFocus],
+    [onPathFocus, path],
   )
 
   const handleAutocompleteFocus = useCallback(
