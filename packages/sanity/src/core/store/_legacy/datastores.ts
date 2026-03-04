@@ -143,7 +143,7 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
  * @hidden
  * @beta */
 export function useDocumentStore(): DocumentStore {
-  const {getClient, i18n} = useSource()
+  const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
   const templates = useTemplates()
   const resourceCache = useResourceCache()
@@ -195,7 +195,15 @@ export function useDocumentStore(): DocumentStore {
     const documentStore =
       resourceCache.get<DocumentStore>({
         namespace: 'documentStore',
-        dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n, workspace],
+        dependencies: [
+          getClient,
+          documentPreviewStore,
+          historyStore,
+          schema,
+          i18n,
+          workspace,
+          currentUser,
+        ],
       }) ||
       createDocumentStore({
         getClient,
@@ -205,6 +213,7 @@ export function useDocumentStore(): DocumentStore {
         schema,
         i18n,
         serverActionsEnabled,
+        currentUser,
         extraOptions: {
           onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
@@ -214,7 +223,15 @@ export function useDocumentStore(): DocumentStore {
 
     resourceCache.set({
       namespace: 'documentStore',
-      dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n, workspace],
+      dependencies: [
+        getClient,
+        documentPreviewStore,
+        historyStore,
+        schema,
+        i18n,
+        workspace,
+        currentUser,
+      ],
       value: documentStore,
     })
 
@@ -227,6 +244,7 @@ export function useDocumentStore(): DocumentStore {
     schema,
     i18n,
     workspace,
+    currentUser,
     templates,
     serverActionsEnabled,
     handleReportLatency,

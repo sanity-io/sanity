@@ -1,5 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {isValidationErrorMarker, type SanityDocument, type Schema} from '@sanity/types'
+import {
+  type CurrentUser,
+  isValidationErrorMarker,
+  type SanityDocument,
+  type Schema,
+} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -56,12 +61,14 @@ const getActiveReleaseDocumentsObservable = ({
   i18n,
   getClient,
   releaseId,
+  currentUser,
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
   i18n: LocaleSource
   getClient: ReturnType<typeof useSource>['getClient']
   releaseId: string
+  currentUser?: Omit<CurrentUser, 'role'> | null
 }): ReleaseDocumentsObservableResult => {
   const groqFilter = `sanity::partOfRelease($releaseId)`
 
@@ -98,6 +105,7 @@ const getActiveReleaseDocumentsObservable = ({
       i18n,
       getClient,
       schema,
+      currentUser,
     }
 
     const document$ = documentPreviewStore
@@ -252,6 +260,7 @@ const getReleaseDocumentsObservable = ({
   releaseId,
   i18n,
   releasesState$,
+  currentUser,
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
@@ -259,6 +268,7 @@ const getReleaseDocumentsObservable = ({
   releaseId: string
   i18n: LocaleSource
   releasesState$: ReturnType<typeof useReleasesStore>['state$']
+  currentUser?: Omit<CurrentUser, 'role'> | null
 }): ReleaseDocumentsObservableResult => {
   if (!bundleDocumentsCache[releaseId]) {
     bundleDocumentsCache[releaseId] = releasesState$.pipe(
@@ -296,6 +306,7 @@ const getReleaseDocumentsObservable = ({
               i18n,
               getClient,
               releaseId,
+              currentUser,
             })
           }
 
@@ -323,7 +334,7 @@ export function useBundleDocuments(releaseId: string): {
   error: null | Error
 } {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {getClient, i18n} = useSource()
+  const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
   const {state$: releasesState$} = useReleasesStore()
 
@@ -336,8 +347,9 @@ export function useBundleDocuments(releaseId: string): {
         releaseId,
         i18n,
         releasesState$,
+        currentUser,
       }),
-    [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$],
+    [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$, currentUser],
   )
 
   return useObservable(releaseDocumentsObservable, {
