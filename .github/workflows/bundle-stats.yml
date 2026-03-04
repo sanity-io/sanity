@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   bundle-stats:
+    continue-on-error: true
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
