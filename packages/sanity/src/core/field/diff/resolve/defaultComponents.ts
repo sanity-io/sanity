@@ -21,6 +21,7 @@ export const defaultComponents: Record<
   image: ImageFieldDiff,
   number: NumberFieldDiff,
   reference: ReferenceFieldDiff,
+  crossDatasetReference: ReferenceFieldDiff,
   slug: SlugFieldDiff,
   string: StringFieldDiff,
 }
