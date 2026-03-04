@@ -37,7 +37,7 @@ export default function listSchemasActionForCommand(
 ): Promise<SchemaStoreActionResult> {
   return listSchemasAction(flags, {
     ...context,
-    manifestExtractor: createManifestExtractor(context),
+    manifestExtractor: createManifestExtractor(context, {resolveIcons: false}),
   })
 }
 

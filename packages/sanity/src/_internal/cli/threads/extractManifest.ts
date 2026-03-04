@@ -9,6 +9,7 @@ import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 /** @internal */
 export interface ExtractManifestWorkerData {
   workDir: string
+  resolveIcons?: boolean
 }
 
 async function main() {
@@ -22,6 +23,8 @@ async function main() {
     throw new Error('Invalid worker data: expected an object with a "workDir" string property')
   }
 
+  const iconResolver = opts.resolveIcons !== false ? resolveIcon : undefined
+
   const cleanup = mockBrowserEnvironment(opts.workDir)
 
   try {
@@ -30,7 +33,7 @@ async function main() {
     const pending: Promise<void>[] = []
     for (const workspace of workspaces) {
       pending.push(
-        extractCreateWorkspaceManifest(workspace, resolveIcon).then((manifest) =>
+        extractCreateWorkspaceManifest(workspace, iconResolver).then((manifest) =>
           parentPort?.postMessage(manifest),
         ),
       )

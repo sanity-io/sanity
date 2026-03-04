@@ -51,7 +51,7 @@ export default function deleteSchemasActionForCommand(
 ): Promise<SchemaStoreActionResult> {
   return deleteSchemaAction(flags, {
     ...context,
-    manifestExtractor: createManifestExtractor(context),
+    manifestExtractor: createManifestExtractor(context, {resolveIcons: false}),
   })
 }
 

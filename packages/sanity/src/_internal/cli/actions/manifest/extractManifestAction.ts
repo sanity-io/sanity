@@ -40,6 +40,11 @@ export interface ExtractManifestFlags {
   path?: string
 }
 
+export interface ExtractManifestOptions {
+  /** When false, skip icon resolution for faster extraction. Defaults to true. */
+  resolveIcons?: boolean
+}
+
 /**
  * This function will never throw.
  * @returns `undefined` if extract succeeded - caught error if it failed
@@ -47,13 +52,14 @@ export interface ExtractManifestFlags {
 export async function extractManifestSafe(
   args: CliCommandArguments<ExtractManifestFlags>,
   context: CliCommandContext,
+  options?: ExtractManifestOptions,
 ): Promise<Error | undefined> {
   if (!EXTRACT_MANIFEST_ENABLED) {
     return undefined
   }
 
   try {
-    await extractManifest(args, context)
+    await extractManifest(args, context, options)
     return undefined
   } catch (err) {
     if (EXTRACT_MANIFEST_LOG_ERRORS) {
@@ -66,6 +72,7 @@ export async function extractManifestSafe(
 async function extractManifest(
   args: CliCommandArguments<ExtractManifestFlags>,
   context: CliCommandContext,
+  options?: ExtractManifestOptions,
 ): Promise<void> {
   const {output, workDir} = context
 
@@ -89,7 +96,11 @@ async function extractManifest(
   const spinner = output.spinner({}).start('Extracting manifest')
 
   try {
-    const workspaceManifests = await getWorkspaceManifests({rootPkgPath, workDir})
+    const workspaceManifests = await getWorkspaceManifests({
+      rootPkgPath,
+      workDir,
+      resolveIcons: options?.resolveIcons,
+    })
     await mkdir(staticPath, {recursive: true})
 
     const workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
@@ -120,9 +131,11 @@ async function extractManifest(
 async function getWorkspaceManifests({
   rootPkgPath,
   workDir,
+  resolveIcons,
 }: {
   rootPkgPath: string
   workDir: string
+  resolveIcons?: boolean
 }): Promise<CreateWorkspaceManifest[]> {
   const workerPath = join(
     dirname(rootPkgPath),
@@ -134,7 +147,7 @@ async function getWorkspaceManifests({
   )
 
   const worker = new Worker(workerPath, {
-    workerData: {workDir} satisfies ExtractManifestWorkerData,
+    workerData: {workDir, resolveIcons} satisfies ExtractManifestWorkerData,
     env: process.env,
   })
 

@@ -39,7 +39,7 @@ export default function deploySchemasActionForCommand(
     },
     {
       ...context,
-      manifestExtractor: createManifestExtractor(context),
+      manifestExtractor: createManifestExtractor(context, {resolveIcons: false}),
     },
   )
 }

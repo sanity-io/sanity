@@ -139,7 +139,7 @@ export default async function deployStudioAction(
         'schema-required': flags['schema-required'],
         'verbose': flags.verbose,
       },
-      {...context, manifestExtractor: createManifestExtractor(context)},
+      {...context, manifestExtractor: createManifestExtractor(context, {resolveIcons: false})},
     )
   }
 
