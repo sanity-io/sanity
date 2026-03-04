@@ -67,8 +67,8 @@ describe('Extract studio manifest', () => {
         tools: [{title: 'Desk', name: 'desk'}],
       })
 
-      expect(extracted.icon).toBeNull()
-      expect(extracted.tools[0].icon).toBeNull()
+      expect(extracted.icon).toBeUndefined()
+      expect(extracted.tools[0].icon).toBeUndefined()
     })
 
     test('should support an async icon resolver', async () => {

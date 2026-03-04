@@ -86,7 +86,7 @@ async function main() {
           icon: workspace.icon,
           title: workspace.title,
           subtitle: workspace.subtitle,
-        }) ?? undefined,
+        }),
       bundleVersion: opts.sanityVersion,
       buildId: JSON.stringify(Date.now()),
     })

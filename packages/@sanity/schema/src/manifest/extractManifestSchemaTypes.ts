@@ -74,7 +74,7 @@ export type IconResolver = (props: {
   icon?: ComponentType | ReactNode
   title: string
   subtitle?: string
-}) => string | null | Promise<string | null>
+}) => string | undefined | Promise<string | undefined>
 
 interface Context {
   schema: Schema
@@ -99,7 +99,7 @@ type ValidationRuleTransformer = (rule: RuleSpec) => ManifestValidationRule | un
 
 const MAX_CUSTOM_PROPERTY_DEPTH = 5
 
-const noopIconResolver: IconResolver = () => null
+const noopIconResolver: IconResolver = () => undefined
 
 export async function extractCreateWorkspaceManifest(
   workspace: ManifestWorkspaceInput,

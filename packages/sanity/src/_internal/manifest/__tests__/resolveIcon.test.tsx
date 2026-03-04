@@ -3,8 +3,8 @@ import {describe, expect, it} from 'vitest'
 import {resolveIcon} from '../resolveIcon'
 
 describe('resolveIcon', () => {
-  it('should render an SVG icon and return sanitized HTML', () => {
-    const result = resolveIcon({
+  it('should render an SVG icon and return sanitized HTML', async () => {
+    const result = await resolveIcon({
       icon: () => (
         <svg>
           <rect width="32" height="32" fill="red" />
@@ -18,10 +18,10 @@ describe('resolveIcon', () => {
     expect(result).toContain('fill="red"')
   })
 
-  it('should strip dangerous attributes from output', () => {
-    const result = resolveIcon({
-      // eslint-disable-next-line react/no-unknown-property
+  it('should strip dangerous attributes from output', async () => {
+    const result = await resolveIcon({
       icon: () => (
+        // eslint-disable-next-line react/no-unknown-property
         <svg onLoad="alert('xss')">
           <rect width="32" height="32" />
         </svg>
@@ -34,21 +34,21 @@ describe('resolveIcon', () => {
     expect(result).toContain('<svg>')
   })
 
-  it('should render fallback initials when no icon is provided', () => {
-    const result = resolveIcon({title: 'My Studio'})
+  it('should render fallback initials when no icon is provided', async () => {
+    const result = await resolveIcon({title: 'My Studio'})
 
     expect(result).toBeTruthy()
     expect(result).toContain('MS')
   })
 
-  it('should return null when icon rendering throws', () => {
-    const result = resolveIcon({
+  it('should return undefined when icon rendering throws', async () => {
+    const result = await resolveIcon({
       icon: () => {
         throw new Error('render failure')
       },
       title: 'Test',
     })
 
-    expect(result).toBeNull()
+    expect(result).toBeUndefined()
   })
 })

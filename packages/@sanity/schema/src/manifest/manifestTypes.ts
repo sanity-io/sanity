@@ -40,9 +40,9 @@ export interface CreateWorkspaceManifest {
   schema: ManifestSchemaType[]
   tools: ManifestTool[]
   /**
-   * returns null in the case of the icon not being able to be stringified
+   * returns undefined in the case of the icon not being able to be stringified
    */
-  icon: string | null
+  icon: string | undefined
 }
 
 export interface ManifestSchemaType {
@@ -107,9 +107,9 @@ export interface ManifestTool {
   name: string
   title: string
   /**
-   * returns null in the case of the icon not being able to be stringified
+   * returns undefined in the case of the icon not being able to be stringified
    */
-  icon: string | null
+  icon: string | undefined
   type: string | null
 }
 
