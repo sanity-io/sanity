@@ -613,7 +613,7 @@ importers:
         version: 2.2.2(react@19.2.4)
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 5.2.5(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(xstate@5.25.1)(yaml@2.8.2)
+        version: 5.2.5(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(xstate@5.28.0)(yaml@2.8.2)
       '@sanity/preview-url-secret':
         specifier: ^4.0.2
         version: 4.0.3(@sanity/client@7.15.0(debug@4.4.3))
@@ -912,7 +912,7 @@ importers:
         version: 1.0.0
       '@sanity/mutate':
         specifier: ^0.16.1
-        version: 0.16.1(xstate@5.28.0)
+        version: 0.16.1(debug@4.4.3)(xstate@5.28.0)
       '@sanity/types':
         specifier: ^5.0.0
         version: link:../../@sanity/types
@@ -1870,7 +1870,7 @@ importers:
         version: 0.19.0
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 5.2.5(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(xstate@5.25.1)(yaml@2.8.2)
+        version: 5.2.5(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(xstate@5.28.0)(yaml@2.8.2)
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../@sanity/mutator
@@ -1933,7 +1933,7 @@ importers:
         version: 5.1.2(vite@7.3.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
       '@xstate/react':
         specifier: ^6.0.0
-        version: 6.0.0(@types/react@19.2.11)(react@19.2.4)(xstate@5.25.1)
+        version: 6.1.0(@types/react@19.2.11)(react@19.2.4)(xstate@5.28.0)
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
@@ -2185,7 +2185,7 @@ importers:
         version: 5.0.0
       xstate:
         specifier: ^5.25.1
-        version: 5.25.1
+        version: 5.28.0
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -6689,15 +6689,6 @@ packages:
 
   '@vitest/utils@4.0.18':
     resolution: {integrity: sha512-msMRKLMVLWygpK3u2Hybgi4MNjcYJvwTb0Ru09+fOyCXIgT5raYP041DRRdiJiI3k/2U6SEbAETB3YtBrUkCFA==}
-
-  '@xstate/react@6.0.0':
-    resolution: {integrity: sha512-xXlLpFJxqLhhmecAXclBECgk+B4zYSrDTl8hTfPZBogkn82OHKbm9zJxox3Z/YXoOhAQhKFTRLMYGdlbhc6T9A==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      xstate: ^5.20.0
-    peerDependenciesMeta:
-      xstate:
-        optional: true
 
   '@xstate/react@6.1.0':
     resolution: {integrity: sha512-ep9F0jGTI63B/jE8GHdMpUqtuz7yRebNaKv8EMUaiSi29NOglywc2X2YSOV/ygbIK+LtmgZ0q9anoEA2iBSEOw==}
@@ -13021,9 +13012,6 @@ packages:
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
 
-  xstate@5.25.1:
-    resolution: {integrity: sha512-oyvsNH5pF2qkHmiHEMdWqc3OjDtoZOH2MTAI35r01f/ZQWOD+VLOiYqo65UgQET0XMA5s9eRm8fnsIo+82biEw==}
-
   xstate@5.28.0:
     resolution: {integrity: sha512-Iaqq6ZrUzqeUtA3hC5LQKZfR8ZLzEFTImMHJM3jWEdVvXWdKvvVLXZEiNQWm3SCA9ZbEou/n5rcsna1wb9t28A==}
 
@@ -16301,19 +16289,19 @@ snapshots:
     dependencies:
       rxjs: 7.8.2
       uuid: 11.1.0
-      xstate: 5.25.1
+      xstate: 5.28.0
 
   '@sanity/comlink@3.1.1':
     dependencies:
       rxjs: 7.8.2
       uuid: 11.1.0
-      xstate: 5.25.1
+      xstate: 5.28.0
 
   '@sanity/comlink@4.0.1':
     dependencies:
       rxjs: 7.8.2
       uuid: 13.0.0
-      xstate: 5.25.1
+      xstate: 5.28.0
 
   '@sanity/core-loader@2.0.5(@sanity/types@packages+@sanity+types)(typescript@5.9.3)':
     dependencies:
@@ -16529,13 +16517,13 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.1
 
-  '@sanity/migrate@5.2.5(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(xstate@5.25.1)(yaml@2.8.2)':
+  '@sanity/migrate@5.2.5(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(xstate@5.28.0)(yaml@2.8.2)':
     dependencies:
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
       '@sanity/cli-core': 0.1.0-alpha.13(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/client': 7.15.0(debug@4.4.3)
-      '@sanity/mutate': 0.16.1(debug@4.4.3)(xstate@5.25.1)
+      '@sanity/mutate': 0.16.1(debug@4.4.3)(xstate@5.28.0)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/util': link:packages/@sanity/util
       arrify: 2.0.1
@@ -16565,7 +16553,7 @@ snapshots:
       - xstate
       - yaml
 
-  '@sanity/mutate@0.11.0-canary.4(xstate@5.25.1)':
+  '@sanity/mutate@0.11.0-canary.4(xstate@5.28.0)':
     dependencies:
       '@sanity/client': 6.29.1
       '@sanity/diff-match-patch': 3.2.0
@@ -16575,7 +16563,7 @@ snapshots:
       mendoza: 3.0.8
       rxjs: 7.8.2
     optionalDependencies:
-      xstate: 5.25.1
+      xstate: 5.28.0
     transitivePeerDependencies:
       - debug
 
@@ -16592,22 +16580,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/mutate@0.16.1(debug@4.4.3)(xstate@5.25.1)':
-    dependencies:
-      '@sanity/client': 7.15.0(debug@4.4.3)
-      '@sanity/diff-match-patch': 3.2.0
-      '@sanity/uuid': 3.0.2
-      hotscript: 1.0.13
-      lodash: 4.17.23
-      mendoza: 3.0.8
-      nanoid: 5.1.6
-      rxjs: 7.8.2
-    optionalDependencies:
-      xstate: 5.25.1
-    transitivePeerDependencies:
-      - debug
-
-  '@sanity/mutate@0.16.1(xstate@5.28.0)':
+  '@sanity/mutate@0.16.1(debug@4.4.3)(xstate@5.28.0)':
     dependencies:
       '@sanity/client': 7.15.0(debug@4.4.3)
       '@sanity/diff-match-patch': 3.2.0
@@ -16958,7 +16931,7 @@ snapshots:
       '@sanity/comlink': 4.0.1
       '@sanity/icons': 3.7.4(react@19.2.4)
       '@sanity/insert-menu': 3.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@sanity/types@packages+@sanity+types)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@sanity/mutate': 0.11.0-canary.4(xstate@5.25.1)
+      '@sanity/mutate': 0.11.0-canary.4(xstate@5.28.0)
       '@sanity/presentation-comlink': 2.0.1(@sanity/client@7.15.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret': 4.0.3(@sanity/client@7.15.0(debug@4.4.3))
       '@sanity/ui': 3.1.13(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
@@ -16969,7 +16942,7 @@ snapshots:
       rxjs: 7.8.2
       scroll-into-view-if-needed: 3.1.0
       styled-components: '@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4)'
-      xstate: 5.25.1
+      xstate: 5.28.0
     optionalDependencies:
       '@sanity/client': 7.15.0(debug@4.4.3)
     transitivePeerDependencies:
@@ -18173,16 +18146,6 @@ snapshots:
     dependencies:
       '@vitest/pretty-format': 4.0.18
       tinyrainbow: 3.0.3
-
-  '@xstate/react@6.0.0(@types/react@19.2.11)(react@19.2.4)(xstate@5.25.1)':
-    dependencies:
-      react: 19.2.4
-      use-isomorphic-layout-effect: 1.2.1(@types/react@19.2.11)(react@19.2.4)
-      use-sync-external-store: 1.6.0(react@19.2.4)
-    optionalDependencies:
-      xstate: 5.25.1
-    transitivePeerDependencies:
-      - '@types/react'
 
   '@xstate/react@6.1.0(@types/react@19.2.11)(react@19.2.4)(xstate@5.28.0)':
     dependencies:
@@ -25046,8 +25009,6 @@ snapshots:
   xml-name-validator@5.0.0: {}
 
   xmlchars@2.2.0: {}
-
-  xstate@5.25.1: {}
 
   xstate@5.28.0: {}
 
