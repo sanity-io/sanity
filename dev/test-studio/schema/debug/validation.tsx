@@ -72,6 +72,29 @@ export default defineType({
       validation: (Rule) => Rule.required().min(5).max(100),
       group: 'group2',
     },
+    {
+      name: 'groupedArrayWithNestedValidation',
+      type: 'array',
+      title: 'Grouped array with nested validation',
+      description:
+        'Repro field: add an item and leave the inner "Value" empty to trigger nested validation in this tab.',
+      group: 'group2',
+      of: [
+        {
+          type: 'object',
+          name: 'groupedArrayNestedValidationItem',
+          fields: [
+            {
+              name: 'value',
+              type: 'string',
+              title: 'Value',
+              validation: (Rule) => Rule.required().error('Value is required'),
+            },
+          ],
+        },
+      ],
+    },
+
     defineField({
       name: 'objectWithValidation',
       type: 'object',
