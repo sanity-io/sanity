@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import {type SanityDocument, type StackablePerspective} from '@sanity/client'
-import {getPublishedId} from '@sanity/client/csm'
+import {getPublishedId, getVersionFromId} from '@sanity/client/csm'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {
   type Reference,
@@ -159,6 +159,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
                     id: doc._id,
                     type: doc._type,
                     published: Boolean(published),
+                    originalId: doc._originalId,
                   })),
                 ),
               ),
