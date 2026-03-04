@@ -6,11 +6,11 @@ test('media plugin should open from input', async ({page, createDraftDocument}) 
   test.slow()
   await createDraftDocument('/content/input-standard;imagesTest')
 
-  // wait for input to be visible
-  await expect(page.getByTestId('change-bar__field-wrapper').nth(2)).toBeVisible()
+  // wait for input to be visible (nth(1) = mainImage, first image field in imagesTest schema)
+  await expect(page.getByTestId('change-bar__field-wrapper').nth(1)).toBeVisible()
 
   // wait for menu to be visible and click menu button
-  const fieldWrapper = page.getByTestId('change-bar__field-wrapper').nth(2)
+  const fieldWrapper = page.getByTestId('change-bar__field-wrapper').nth(1)
   await expect(fieldWrapper.getByTestId(/image-object-input-multi-browse-button/)).toBeVisible()
   await fieldWrapper.getByTestId(/image-object-input-multi-browse-button/).click()
 
