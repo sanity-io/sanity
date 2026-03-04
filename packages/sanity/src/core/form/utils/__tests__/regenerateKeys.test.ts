@@ -79,17 +79,15 @@ describe('regenerateKeys', () => {
       ],
     }
     const result = regenerateKeys(item)
-    const [newLink, newAnnot] = result.markDefs.map((d) => d._key)
+    const [newLink, newAnnot] = result.markDefs.map((markDef) => markDef._key)
 
     expect(newLink).not.toBe('link1')
     expect(newAnnot).not.toBe('annot')
-    // Children marks are remapped to the new markDef keys
     expect(result.children[0].marks).toEqual([newLink])
     expect(result.children[1].marks).toContain(newAnnot)
     expect(result.children[1].marks).toContain('strong')
     expect(result.children[0]._key).not.toBe('span1')
     expect(result.markDefs[0].href).toBe('https://example.com')
-    // Nested content inside markDefs also gets new keys
     expect(result.markDefs[1]).toMatchObject({content: [{_key: expect.stringMatching(HEX_12)}]})
   })
 
@@ -147,6 +145,26 @@ describe('regenerateKeys', () => {
     const [newLinkKey] = result.markDefs.map((def) => def._key)
 
     expect(result.children[0].marks).toEqual([newLinkKey])
+  })
+
+  it('remaps children marks when markDefs contains entries without _key', () => {
+    const item = {
+      _key: 'block',
+      _type: 'block',
+      markDefs: [
+        {_key: 'link1', _type: 'link', href: 'https://example.com'},
+        {_type: 'note', content: 'no key here'},
+      ],
+      children: [{_key: 'span1', _type: 'span', text: 'click', marks: ['link1', 'strong']}],
+    }
+    const result = regenerateKeys(item)
+    const newLinkKey = result.markDefs[0]._key
+
+    expect(newLinkKey).not.toBe('link1')
+    expect(newLinkKey).toMatch(HEX_12)
+    expect(result.children[0].marks).toContain(newLinkKey)
+    expect(result.children[0].marks).toContain('strong')
+    expect(result.children[0].marks).not.toContain('link1')
   })
 
   it('does not mutate the input', () => {
