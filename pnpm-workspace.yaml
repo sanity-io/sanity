@@ -13,7 +13,7 @@ packages:
 catalog:
   '@playwright/experimental-ct-react': 1.57.0
   '@playwright/test': 1.57.0
-  '@sanity/client': ^7.15.0
+  '@sanity/client': ^7.16.0
   '@sanity/codegen': ^5.9.3
   '@sanity/migrate': ^5.2.5
   '@sanity/telemetry': ^0.8.1
