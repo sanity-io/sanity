@@ -51,12 +51,14 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
           />
         )}
         <OptionsMenuPopover
+          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- it's a translation key, not an attribute string literal
           ariaLabelKey="inputs.image.actions-menu.options.aria-label"
           buttonMode="ghost"
           id="image-actions-menu"
           isMenuOpen={isMenuOpen}
           menuButtonRef={menuButtonRef}
           onMenuOpen={onMenuOpen}
+          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- it's a property, not an attribute string literal
           openOnClick="toggle"
         >
           {children}

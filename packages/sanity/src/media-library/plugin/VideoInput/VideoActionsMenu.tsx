@@ -67,6 +67,7 @@ export function VideoActionsMenu(props: Props) {
 
       <MenuActionsWrapper padding={2}>
         <OptionsMenuPopover
+          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- it's a translation key, not an attribute string literal
           ariaLabelKey="inputs.file.actions-menu.video-options.aria-label"
           id="video-actions-menu"
           isMenuOpen={isMenuOpen}
