@@ -6,7 +6,15 @@ import {
   type SanityDocumentLike,
 } from '@sanity/types'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  Profiler,
+  type ProfilerOnRenderCallback,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   type DocumentActionsContext,
   type DocumentActionsVersionType,
@@ -47,6 +55,10 @@ import {InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {
+  getDocumentPaneRenderMeasureName,
+  reportDocumentPaneRenderPerformance,
+} from './documentPanePerf'
+import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
@@ -74,6 +86,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     forcedVersion,
     historyStore,
   } = props
+
+  const {paneKeyForPerf, renderMeasureName} = getDocumentPaneRenderMeasureName(paneKey)
   const {
     store: timelineStore,
     error: timelineError,
@@ -483,6 +497,22 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     })
   }, [documentId, documentType, schemaType, onChange, setDocumentMeta])
 
+  const handleProfilerRender = useCallback(
+    (...args: Parameters<ProfilerOnRenderCallback>) => {
+      const [_id, phase, actualDuration, baseDuration, startTime, commitTime] = args
+      reportDocumentPaneRenderPerformance({
+        paneKeyForPerf,
+        renderMeasureName,
+        phase,
+        actualDuration,
+        baseDuration,
+        startTime,
+        commitTime,
+      })
+    },
+    [paneKeyForPerf, renderMeasureName],
+  )
+
   const compareValue = useMemo(
     () => getComparisonValue(upstreamEditState),
     [upstreamEditState, getComparisonValue],
@@ -666,7 +696,9 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   ])
 
   return (
-    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    <Profiler id={renderMeasureName} onRender={handleProfilerRender}>
+      <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    </Profiler>
   )
 }
 

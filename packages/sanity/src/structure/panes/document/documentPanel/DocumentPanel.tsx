@@ -1,5 +1,13 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {
+  Profiler,
+  type ProfilerOnRenderCallback,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   getSanityCreateLinkMetadata,
   getVersionFromId,
@@ -29,6 +37,10 @@ import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
+import {
+  getDocumentPaneSubtreeRenderMeasureName,
+  reportDocumentPaneRenderPerformance,
+} from '../documentPanePerf'
 import {InspectDialog} from '../inspectDialog'
 import {useDocumentPane} from '../useDocumentPane'
 import {
@@ -100,7 +112,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     permissions,
     isPermissionsLoading,
+    paneKey,
   } = useDocumentPane()
+  const {paneKeyForPerf, renderMeasureName} = getDocumentPaneSubtreeRenderMeasureName(
+    'documentPanel',
+    paneKey,
+  )
   const createLinkMetadata = getSanityCreateLinkMetadata(value)
   const showCreateBanner = isSanityCreateLinked(createLinkMetadata)
 
@@ -369,57 +386,76 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     [documentScrollElement],
   )
   const showFormView = features.resizablePanes || !showInspector
+
+  const handleProfilerRender = useCallback(
+    (...args: Parameters<ProfilerOnRenderCallback>) => {
+      const [_id, phase, actualDuration, baseDuration, startTime, commitTime] = args
+      reportDocumentPaneRenderPerformance({
+        paneKeyForPerf,
+        renderMeasureName,
+        phase,
+        actualDuration,
+        baseDuration,
+        startTime,
+        commitTime,
+      })
+    },
+    [paneKeyForPerf, renderMeasureName],
+  )
+
   return (
-    <PaneContent>
-      <Flex height="fill">
-        {showFormView && (
-          <Flex height="fill" direction="column" width="fill" flex={2}>
-            <LegacyLayerProvider zOffset="paneHeader">
-              {banners}
-              <DocumentPanelSubHeader />
-            </LegacyLayerProvider>
-            <DocumentBox flex={2}>
-              <PortalProvider element={portalElement} __unstable_elements={portalElements}>
-                <BoundaryElementProvider element={documentScrollElement}>
-                  <VirtualizerScrollInstanceProvider
-                    scrollElement={documentScrollElement}
-                    containerElement={formContainerElement}
-                  >
-                    <Scroller
-                      $disabled={layoutCollapsed || false}
-                      data-testid="document-panel-scroller"
-                      ref={setDocumentScrollElement}
+    <Profiler id={renderMeasureName} onRender={handleProfilerRender}>
+      <PaneContent>
+        <Flex height="fill">
+          {showFormView && (
+            <Flex height="fill" direction="column" width="fill" flex={2}>
+              <LegacyLayerProvider zOffset="paneHeader">
+                {banners}
+                <DocumentPanelSubHeader />
+              </LegacyLayerProvider>
+              <DocumentBox flex={2}>
+                <PortalProvider element={portalElement} __unstable_elements={portalElements}>
+                  <BoundaryElementProvider element={documentScrollElement}>
+                    <VirtualizerScrollInstanceProvider
+                      scrollElement={documentScrollElement}
+                      containerElement={formContainerElement}
                     >
-                      <FormView
-                        hidden={formViewHidden}
-                        margins={margins}
-                        ref={formContainerElement}
-                      />
-                      {activeViewNode}
-                    </Scroller>
+                      <Scroller
+                        $disabled={layoutCollapsed || false}
+                        data-testid="document-panel-scroller"
+                        ref={setDocumentScrollElement}
+                      >
+                        <FormView
+                          hidden={formViewHidden}
+                          margins={margins}
+                          ref={formContainerElement}
+                        />
+                        {activeViewNode}
+                      </Scroller>
 
-                    {inspectDialog}
+                      {inspectDialog}
 
-                    <div data-testid="document-panel-portal" ref={setPortalElement} />
-                  </VirtualizerScrollInstanceProvider>
-                </BoundaryElementProvider>
-              </PortalProvider>
-            </DocumentBox>
+                      <div data-testid="document-panel-portal" ref={setPortalElement} />
+                    </VirtualizerScrollInstanceProvider>
+                  </BoundaryElementProvider>
+                </PortalProvider>
+              </DocumentBox>
 
-            {footer}
-          </Flex>
-        )}
-        {showInspector && (
-          <BoundaryElementProvider element={rootElement}>
-            <DocumentInspectorPanel
-              documentId={documentId}
-              documentType={schemaType.name}
-              flex={1}
-            />
-          </BoundaryElementProvider>
-        )}
-      </Flex>
-    </PaneContent>
+              {footer}
+            </Flex>
+          )}
+          {showInspector && (
+            <BoundaryElementProvider element={rootElement}>
+              <DocumentInspectorPanel
+                documentId={documentId}
+                documentType={schemaType.name}
+                flex={1}
+              />
+            </BoundaryElementProvider>
+          )}
+        </Flex>
+      </PaneContent>
+    </Profiler>
   )
 }
 DocumentPanel.displayName = 'DocumentPanel'
