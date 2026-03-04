@@ -26,7 +26,10 @@ import {
   createDatasetFileAssetSource,
   createDatasetImageAssetSource,
 } from '../../../../studio/assetSourceDataset'
-import {accepts} from '../../../../studio/uploads/accepts'
+import {
+  findMatchingSchemaType,
+  matchesSchemaTypeAccept,
+} from '../../../../studio/uploads/matchSchemaTypeAccept'
 import {resolveUploadAssetSources} from '../../../../studio/uploads/resolveUploadAssetSources'
 import {type InputOnSelectFileFunctionProps, type UploadEvent} from '../../../../types'
 import {useFormBuilder} from '../../../../useFormBuilder'
@@ -255,11 +258,10 @@ export function uploadTarget<Props>(
 
     const isFileAccepted = useCallback(
       (file: FileInfo) => {
-        if (assetSourcesProp && assetSourcesProp.length > 0) {
-          const videoType = types.find((type) => _isType(type, 'sanity.video'))
-          if (videoType && file.kind === 'file' && file.type.startsWith('video/')) {
-            return true
-          }
+        // When assetSourcesProp is provided, use schema-accept validation directly
+        // (resolveUploadAssetSources uses formBuilder's sources which may differ)
+        if (assetSourcesProp && assetSourcesProp.length > 0 && file.kind === 'file') {
+          return findMatchingSchemaType(file, types) !== null
         }
         return types.some((type) => resolveUploadAssetSources(type, formBuilder, file).length > 0)
       },
@@ -454,7 +456,12 @@ function getFilesAndAssetSources(options: GetFilesAndAssetSourcesOptions): FileE
       defaultImageAssetSource,
     )
 
-    if (imageType && file.type.startsWith('image/') && imageAssetSource) {
+    if (
+      imageType &&
+      file.type.startsWith('image/') &&
+      imageAssetSource &&
+      matchesSchemaTypeAccept(file, imageType, 'image')
+    ) {
       return {
         file,
         schemaType: imageType,
@@ -478,8 +485,7 @@ function getFilesAndAssetSources(options: GetFilesAndAssetSourcesOptions): FileE
     )
 
     if (fileType && fileAssetSource) {
-      // Validate schema options.accept even when using assetSourcesProp
-      if (!accepts(file, (fileType.options?.accept as string) || '')) {
+      if (!matchesSchemaTypeAccept(file, fileType, 'file')) {
         return {
           file,
           schemaType: fileType,
@@ -494,7 +500,11 @@ function getFilesAndAssetSources(options: GetFilesAndAssetSourcesOptions): FileE
     }
 
     let videoAssetSource: AssetSource | null = null
-    if (videoType && file.type.startsWith('video/')) {
+    if (
+      videoType &&
+      file.type.startsWith('video/') &&
+      matchesSchemaTypeAccept(file, videoType, 'video')
+    ) {
       if (assetSources && assetSources.length > 0) {
         const matchingSource = assetSources.find(
           (src) => assetSourceDestinationName === null || src.name === assetSourceDestinationName,

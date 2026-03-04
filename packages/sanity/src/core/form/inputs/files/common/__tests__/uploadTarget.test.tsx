@@ -4,14 +4,37 @@
  */
 import {fireEvent, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {
   createMockAssetSourceWithMediaLibraryUploader,
   observeFileAssetStub,
+  observeVideoAssetStub,
 } from '../../../../../../../test/fixtures/assetSourceMocks'
-import {renderFileInput} from '../../../../../../../test/form'
+import {renderFileInput, renderVideoInput} from '../../../../../../../test/form'
+import {BaseVideoInput} from '../../../../../../media-library/plugin/VideoInput/VideoInput'
 import {BaseFileInput} from '../../FileInput'
+
+// Mock useVideoPlaybackInfo and VideoPlayer for video tests (VideoInput uses these)
+vi.mock('../../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo', () => ({
+  useVideoPlaybackInfo: () => ({
+    isLoading: false,
+    result: {
+      id: 'test',
+      thumbnail: {url: 'https://example.com/thumb.jpg'},
+      animated: {url: 'https://example.com/animated.gif'},
+      storyboard: {url: 'https://example.com/storyboard.jpg'},
+      stream: {url: 'https://example.com/stream.m3u8'},
+      duration: 60,
+      aspectRatio: 16 / 9,
+    },
+    error: undefined,
+    retry: () => {},
+  }),
+}))
+vi.mock('../../../../../../media-library/plugin/VideoInput/VideoPlayer', () => ({
+  VideoPlayer: () => null,
+}))
 
 /**
  * Creates a DataTransfer-like object for drag/drop tests.
@@ -187,6 +210,47 @@ describe('uploadTarget - drag and drop', () => {
     // Dragging a rejected file over shows "not allowed" message in overlay
     const dragDataTransfer = {
       items: [{kind: 'file' as const, type: 'text/plain'}],
+      files: [] as File[],
+    }
+    fireEvent.dragEnter(fileTarget!, {dataTransfer: dragDataTransfer})
+
+    await waitFor(() => {
+      expect(screen.getByTestId('upload-target-drop-message-not-allowed')).toBeInTheDocument()
+    })
+
+    // Dropping does not trigger upload
+    const dropDataTransfer = createMockDataTransfer([rejectedFile])
+    fireEvent.drop(fileTarget!, {dataTransfer: dropDataTransfer})
+
+    await waitFor(() => {
+      expect(onChange).not.toHaveBeenCalled()
+    })
+  })
+
+  it('denies video files that do not match schema options.accept (e.g. video/webm when accept is video/mp4)', async () => {
+    const assetSource = createMockAssetSourceWithMediaLibraryUploader()
+
+    const {onChange} = await renderVideoInput({
+      assetSources: [assetSource],
+      configOverrides: {mediaLibrary: {enabled: false}},
+      fieldDefinition: {
+        name: 'someVideo',
+        title: 'MP4 only',
+        type: 'sanity.video',
+        options: {accept: 'video/mp4'},
+      },
+      observeAsset: observeVideoAssetStub,
+      render: (inputProps) => <BaseVideoInput {...inputProps} />,
+    })
+
+    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    expect(fileTarget).toBeInTheDocument()
+
+    const rejectedFile = new File(['content'], 'rejected.webm', {type: 'video/webm'})
+
+    // Dragging a rejected video (webm) over shows "not allowed" message in overlay
+    const dragDataTransfer = {
+      items: [{kind: 'file' as const, type: 'video/webm'}],
       files: [] as File[],
     }
     fireEvent.dragEnter(fileTarget!, {dataTransfer: dragDataTransfer})
