@@ -118,7 +118,6 @@ function UploadDropDownMenuComponent(
     (assetSource: AssetSource, index: number) => {
       const inputId = createAssetSourceInputId(assetSource)
       const isDefaultSource = assetSource.name === assetSources[0].name
-      const isComponentMode = isComponentModeAssetSource(assetSource)
       return (
         <MenuItem
           key={`${inputId}-menu-button`}
