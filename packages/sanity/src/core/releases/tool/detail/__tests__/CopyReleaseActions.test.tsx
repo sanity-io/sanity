@@ -1,10 +1,10 @@
-import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type PropsWithChildren} from 'react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {activeASAPRelease} from '../../../__fixtures__/release.fixture'
+import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {CopyReleaseActions} from '../CopyReleaseActions'
 
 const mockLog = vi.fn()
@@ -16,7 +16,8 @@ vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(() => ({log: mockLog})),
 }))
 
-vi.mock('sanity/router', () => ({
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
   useRouter: vi.fn(() => ({
     resolvePathFromState: mockResolvePathFromState,
   })),
@@ -28,33 +29,13 @@ vi.mock('../../../../hooks/useStudioUrl', () => ({
   })),
 }))
 
-vi.mock('../../../../i18n', () => ({
-  useTranslation: vi.fn(() => ({
-    t: (key: string) => {
-      const keys: Record<string, string> = {
-        'action.copy-release.label': 'Copy',
-        'action.copy-release-link.label': 'Copy release link',
-        'action.copy-release-id.label': 'Copy release ID',
-        'action.copy-release-title.label': 'Copy release title',
-        'toast.copy-release-link.success': 'Release link copied to clipboard',
-        'toast.copy-release-id.success': 'Release ID copied to clipboard',
-        'toast.copy-release-title.success': 'Release title copied to clipboard',
-        'release.placeholder-untitled-release': 'Untitled',
-      }
-      return keys[key] || key
-    },
-  })),
-}))
+let wrapper: React.ComponentType<{children: React.ReactNode}>
 
-function TestWrapper({children}: PropsWithChildren) {
-  return (
-    <ThemeProvider theme={studioTheme}>
-      <ToastProvider>
-        <LayerProvider>{children}</LayerProvider>
-      </ToastProvider>
-    </ThemeProvider>
-  )
-}
+beforeAll(async () => {
+  wrapper = await createTestProvider({
+    resources: [releasesUsEnglishLocaleBundle],
+  })
+})
 
 describe('CopyReleaseActions', () => {
   beforeEach(() => {
@@ -65,14 +46,14 @@ describe('CopyReleaseActions', () => {
   })
 
   async function openMenuAndClick(menuItemText: string) {
-    await userEvent.click(screen.getByTestId('copy-release-actions-button'))
+    await userEvent.click(await screen.findByTestId('copy-release-actions-button'))
     await userEvent.click(await screen.findByText(menuItemText))
   }
 
   it('renders the copy menu button and all menu items', async () => {
-    render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper: TestWrapper})
+    render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper})
 
-    await userEvent.click(screen.getByTestId('copy-release-actions-button'))
+    await userEvent.click(await screen.findByTestId('copy-release-actions-button'))
 
     expect(await screen.findByText('Copy release link')).toBeInTheDocument()
     expect(screen.getByText('Copy release ID')).toBeInTheDocument()
@@ -81,7 +62,7 @@ describe('CopyReleaseActions', () => {
 
   describe('Copy Release Link', () => {
     it('copies the release URL, logs telemetry, and shows a toast', async () => {
-      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper: TestWrapper})
+      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper})
       await openMenuAndClick('Copy release link')
 
       expect(mockResolvePathFromState).toHaveBeenCalledWith({releaseId: 'rASAP'})
@@ -98,7 +79,7 @@ describe('CopyReleaseActions', () => {
         (path: string) => `https://sanity.io/dashboard/org/app/workspace${path}`,
       )
 
-      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper: TestWrapper})
+      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper})
       await openMenuAndClick('Copy release link')
 
       expect(mockBuildIntentUrl).toHaveBeenCalledWith('/releases/rASAP')
@@ -110,7 +91,7 @@ describe('CopyReleaseActions', () => {
 
   describe('Copy Release ID', () => {
     it('copies the release ID, logs telemetry, and shows a toast', async () => {
-      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper: TestWrapper})
+      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper})
       await openMenuAndClick('Copy release ID')
 
       expect(mockClipboardWriteText).toHaveBeenCalledWith('rASAP')
@@ -121,7 +102,7 @@ describe('CopyReleaseActions', () => {
 
   describe('Copy Release Title', () => {
     it('copies the release title, logs telemetry, and shows a toast', async () => {
-      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper: TestWrapper})
+      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper})
       await openMenuAndClick('Copy release title')
 
       expect(mockClipboardWriteText).toHaveBeenCalledWith('active asap Release')
@@ -129,7 +110,7 @@ describe('CopyReleaseActions', () => {
       expect(await screen.findByText('Release title copied to clipboard')).toBeInTheDocument()
     })
 
-    it('falls back to "Untitled" when the release has no title', async () => {
+    it('falls back to "Untitled release" when the release has no title', async () => {
       const releaseWithoutTitle = {
         ...activeASAPRelease,
         metadata: {
@@ -138,10 +119,10 @@ describe('CopyReleaseActions', () => {
         },
       }
 
-      render(<CopyReleaseActions release={releaseWithoutTitle} />, {wrapper: TestWrapper})
+      render(<CopyReleaseActions release={releaseWithoutTitle} />, {wrapper})
       await openMenuAndClick('Copy release title')
 
-      expect(mockClipboardWriteText).toHaveBeenCalledWith('Untitled')
+      expect(mockClipboardWriteText).toHaveBeenCalledWith('Untitled release')
     })
   })
 })
