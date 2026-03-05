@@ -65,6 +65,7 @@ export function CopyReleaseActions(props: CopyReleaseActionsProps) {
       id="copy-release-actions"
       button={
         <Button
+          data-testid="copy-release-actions-button"
           icon={ShareIcon}
           mode="bleed"
           tooltipProps={{content: t('action.copy-release.label')}}

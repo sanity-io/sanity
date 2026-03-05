@@ -1,3 +1,4 @@
+import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type PropsWithChildren} from 'react'
@@ -7,37 +8,12 @@ import {activeASAPRelease} from '../../../__fixtures__/release.fixture'
 import {CopyReleaseActions} from '../CopyReleaseActions'
 
 const mockLog = vi.fn()
-const mockToastPush = vi.fn()
 const mockResolvePathFromState = vi.fn().mockReturnValue('/releases/rASAP')
 const mockBuildIntentUrl = vi.fn((path: string) => `${window.location.origin}${path}`)
 const mockClipboardWriteText = vi.fn().mockResolvedValue(undefined)
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(() => ({log: mockLog})),
-}))
-
-vi.mock('@sanity/ui', () => ({
-  useToast: vi.fn(() => ({push: mockToastPush})),
-  Menu: ({children}: PropsWithChildren) => <div data-testid="menu">{children}</div>,
-}))
-
-vi.mock('../../../../../ui-components', () => ({
-  Button: (props: {tooltipProps?: {content: string}}) => (
-    <button type="button" data-testid="copy-menu-trigger">
-      {props.tooltipProps?.content}
-    </button>
-  ),
-  MenuButton: ({button, menu}: {button: React.ReactElement; menu: React.ReactElement}) => (
-    <div>
-      {button}
-      {menu}
-    </div>
-  ),
-  MenuItem: ({text, onClick}: {text: string; onClick: () => void}) => (
-    <button type="button" onClick={onClick}>
-      {text}
-    </button>
-  ),
 }))
 
 vi.mock('sanity/router', () => ({
@@ -70,13 +46,15 @@ vi.mock('../../../../i18n', () => ({
   })),
 }))
 
-vi.mock('../../../i18n', () => ({
-  releasesLocaleNamespace: 'releases',
-}))
-
-vi.mock('../../../util/getReleaseIdFromReleaseDocumentId', () => ({
-  getReleaseIdFromReleaseDocumentId: vi.fn((id: string) => id.replace('_.releases.', '')),
-}))
+function TestWrapper({children}: PropsWithChildren) {
+  return (
+    <ThemeProvider theme={studioTheme}>
+      <ToastProvider>
+        <LayerProvider>{children}</LayerProvider>
+      </ToastProvider>
+    </ThemeProvider>
+  )
+}
 
 describe('CopyReleaseActions', () => {
   beforeEach(() => {
@@ -86,20 +64,25 @@ describe('CopyReleaseActions', () => {
     })
   })
 
-  it('renders the copy menu button and all menu items', () => {
-    render(<CopyReleaseActions release={activeASAPRelease} />)
+  async function openMenuAndClick(menuItemText: string) {
+    await userEvent.click(screen.getByTestId('copy-release-actions-button'))
+    await userEvent.click(await screen.findByText(menuItemText))
+  }
 
-    expect(screen.getByTestId('copy-menu-trigger')).toBeInTheDocument()
-    expect(screen.getByText('Copy release link')).toBeInTheDocument()
+  it('renders the copy menu button and all menu items', async () => {
+    render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper: TestWrapper})
+
+    await userEvent.click(screen.getByTestId('copy-release-actions-button'))
+
+    expect(await screen.findByText('Copy release link')).toBeInTheDocument()
     expect(screen.getByText('Copy release ID')).toBeInTheDocument()
     expect(screen.getByText('Copy release title')).toBeInTheDocument()
   })
 
   describe('Copy Release Link', () => {
     it('copies the release URL, logs telemetry, and shows a toast', async () => {
-      render(<CopyReleaseActions release={activeASAPRelease} />)
-
-      await userEvent.click(screen.getByText('Copy release link'))
+      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper: TestWrapper})
+      await openMenuAndClick('Copy release link')
 
       expect(mockResolvePathFromState).toHaveBeenCalledWith({releaseId: 'rASAP'})
       expect(mockBuildIntentUrl).toHaveBeenCalledWith('/releases/rASAP')
@@ -107,11 +90,7 @@ describe('CopyReleaseActions', () => {
         `${window.location.origin}/releases/rASAP`,
       )
       expect(mockLog).toHaveBeenCalledWith(expect.objectContaining({name: 'Release Link Copied'}))
-      expect(mockToastPush).toHaveBeenCalledWith({
-        id: 'copy-release-link',
-        status: 'info',
-        title: 'Release link copied to clipboard',
-      })
+      expect(await screen.findByText('Release link copied to clipboard')).toBeInTheDocument()
     })
 
     it('uses the coreUi base URL when in coreUi mode', async () => {
@@ -119,9 +98,8 @@ describe('CopyReleaseActions', () => {
         (path: string) => `https://sanity.io/dashboard/org/app/workspace${path}`,
       )
 
-      render(<CopyReleaseActions release={activeASAPRelease} />)
-
-      await userEvent.click(screen.getByText('Copy release link'))
+      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper: TestWrapper})
+      await openMenuAndClick('Copy release link')
 
       expect(mockBuildIntentUrl).toHaveBeenCalledWith('/releases/rASAP')
       expect(mockClipboardWriteText).toHaveBeenCalledWith(
@@ -132,33 +110,23 @@ describe('CopyReleaseActions', () => {
 
   describe('Copy Release ID', () => {
     it('copies the release ID, logs telemetry, and shows a toast', async () => {
-      render(<CopyReleaseActions release={activeASAPRelease} />)
-
-      await userEvent.click(screen.getByText('Copy release ID'))
+      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper: TestWrapper})
+      await openMenuAndClick('Copy release ID')
 
       expect(mockClipboardWriteText).toHaveBeenCalledWith('rASAP')
       expect(mockLog).toHaveBeenCalledWith(expect.objectContaining({name: 'Release ID Copied'}))
-      expect(mockToastPush).toHaveBeenCalledWith({
-        id: 'copy-release-id',
-        status: 'info',
-        title: 'Release ID copied to clipboard',
-      })
+      expect(await screen.findByText('Release ID copied to clipboard')).toBeInTheDocument()
     })
   })
 
   describe('Copy Release Title', () => {
     it('copies the release title, logs telemetry, and shows a toast', async () => {
-      render(<CopyReleaseActions release={activeASAPRelease} />)
-
-      await userEvent.click(screen.getByText('Copy release title'))
+      render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper: TestWrapper})
+      await openMenuAndClick('Copy release title')
 
       expect(mockClipboardWriteText).toHaveBeenCalledWith('active asap Release')
       expect(mockLog).toHaveBeenCalledWith(expect.objectContaining({name: 'Release Title Copied'}))
-      expect(mockToastPush).toHaveBeenCalledWith({
-        id: 'copy-release-title',
-        status: 'info',
-        title: 'Release title copied to clipboard',
-      })
+      expect(await screen.findByText('Release title copied to clipboard')).toBeInTheDocument()
     })
 
     it('falls back to "Untitled" when the release has no title', async () => {
@@ -170,9 +138,8 @@ describe('CopyReleaseActions', () => {
         },
       }
 
-      render(<CopyReleaseActions release={releaseWithoutTitle} />)
-
-      await userEvent.click(screen.getByText('Copy release title'))
+      render(<CopyReleaseActions release={releaseWithoutTitle} />, {wrapper: TestWrapper})
+      await openMenuAndClick('Copy release title')
 
       expect(mockClipboardWriteText).toHaveBeenCalledWith('Untitled')
     })
