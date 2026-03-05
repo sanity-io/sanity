@@ -10,7 +10,8 @@ import {PreviewLoader} from '../PreviewLoader'
 // Mock dependencies
 vi.mock('../../useValuePreview')
 vi.mock('../../useVisibility')
-vi.mock('../../i18n', () => ({
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
   useTranslation: () => ({t: (key: string) => key}),
 }))
 vi.mock('../_extractUploadState', () => ({

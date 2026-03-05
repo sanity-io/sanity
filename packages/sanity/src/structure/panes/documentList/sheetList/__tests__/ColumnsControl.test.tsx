@@ -3,7 +3,12 @@ import {type ColumnDef, useReactTable} from '@tanstack/react-table'
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type SanityDocument} from 'sanity'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
+
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useTranslation: () => ({t: (key: string) => key}),
+}))
 
 import {ColumnsControl} from '../ColumnsControl'
 

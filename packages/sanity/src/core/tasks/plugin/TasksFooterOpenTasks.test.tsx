@@ -4,6 +4,11 @@ import {render, screen} from '@testing-library/react'
 import {act} from 'react'
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useTranslation: () => ({t: (key: string) => key}),
+}))
+
 import {TasksEnabledProvider, TasksNavigationProvider, TasksProvider} from '../context'
 import {useTasksStore} from '../store'
 import {type TaskDocument} from '../types'

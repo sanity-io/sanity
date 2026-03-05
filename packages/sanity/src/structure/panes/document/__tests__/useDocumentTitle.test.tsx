@@ -2,6 +2,19 @@ import {renderHook, waitFor} from '@testing-library/react'
 import {defineConfig, prepareForPreview, type SanityClient, useValuePreview} from 'sanity'
 import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useTranslation: () => ({t: (key: string, opts?: Record<string, string>) => {
+    if (key === 'panes.document-header-title.new.text' && opts?.schemaType) {
+      return `New ${opts.schemaType}`
+    }
+    if (key === 'panes.document-list-pane.error.text') {
+      return 'Encountered an error while fetching documents.'
+    }
+    return key
+  }}),
+}))
+
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
