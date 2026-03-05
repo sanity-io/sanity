@@ -87,7 +87,7 @@ vi.mock('../../../../hooks/useProjectSubscriptions', () => ({
 vi.mock('../../../../hooks/useStudioUrl', () => ({
   useStudioUrl: vi.fn(() => ({
     studioUrl: 'http://localhost:3333',
-    buildStudioUrl: vi.fn((modifiers: {studio?: () => string}) => modifiers.studio?.() || ''),
+    buildIntentUrl: vi.fn((path: string) => `http://localhost:3333${path}`),
   })),
 }))
 

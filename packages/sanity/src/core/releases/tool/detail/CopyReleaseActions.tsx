@@ -26,8 +26,8 @@ export function CopyReleaseActions(props: CopyReleaseActionsProps) {
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
   const toast = useToast()
-  const router = useRouter()
-  const {buildStudioUrl} = useStudioUrl()
+  const {resolvePathFromState} = useRouter()
+  const {buildIntentUrl} = useStudioUrl()
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
   const title = release.metadata.title || tCore('release.placeholder-untitled-release')
@@ -46,15 +46,11 @@ export function CopyReleaseActions(props: CopyReleaseActionsProps) {
   )
 
   const handleCopyReleaseLink = useCallback(async () => {
-    const releasePath = router.resolvePathFromState({releaseId})
-
-    const url = buildStudioUrl({
-      coreUi: (baseUrl: string) => `${baseUrl}${releasePath}`,
-      studio: () => `${window.location.origin}${releasePath}`,
-    })
+    const releasePath = resolvePathFromState({releaseId})
+    const url = buildIntentUrl(releasePath)
 
     await copyToClipboard(url, ReleaseLinkCopied, 'copy-release-link')
-  }, [buildStudioUrl, copyToClipboard, releaseId, router])
+  }, [buildIntentUrl, copyToClipboard, releaseId, resolvePathFromState])
 
   const handleCopyReleaseId = useCallback(async () => {
     await copyToClipboard(releaseId, ReleaseIdCopied, 'copy-release-id')

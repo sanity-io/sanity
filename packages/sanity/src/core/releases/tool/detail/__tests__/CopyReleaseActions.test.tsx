@@ -9,11 +9,7 @@ import {CopyReleaseActions} from '../CopyReleaseActions'
 const mockLog = vi.fn()
 const mockToastPush = vi.fn()
 const mockResolvePathFromState = vi.fn().mockReturnValue('/releases/rASAP')
-const mockBuildStudioUrl = vi.fn(
-  (modifiers: {coreUi?: (url: string) => string; studio?: () => string}) => {
-    return modifiers.studio?.() || ''
-  },
-)
+const mockBuildIntentUrl = vi.fn((path: string) => `${window.location.origin}${path}`)
 const mockClipboardWriteText = vi.fn().mockResolvedValue(undefined)
 
 vi.mock('@sanity/telemetry/react', () => ({
@@ -52,7 +48,7 @@ vi.mock('sanity/router', () => ({
 
 vi.mock('../../../../hooks/useStudioUrl', () => ({
   useStudioUrl: vi.fn(() => ({
-    buildStudioUrl: mockBuildStudioUrl,
+    buildIntentUrl: mockBuildIntentUrl,
   })),
 }))
 
@@ -100,16 +96,13 @@ describe('CopyReleaseActions', () => {
   })
 
   describe('Copy Release Link', () => {
-    it('copies the resolved URL to clipboard, logs telemetry, and toasts', async () => {
+    it('copies the release URL, logs telemetry, and shows a toast', async () => {
       render(<CopyReleaseActions release={activeASAPRelease} />)
 
       await userEvent.click(screen.getByText('Copy release link'))
 
       expect(mockResolvePathFromState).toHaveBeenCalledWith({releaseId: 'rASAP'})
-      expect(mockBuildStudioUrl).toHaveBeenCalledWith({
-        coreUi: expect.any(Function),
-        studio: expect.any(Function),
-      })
+      expect(mockBuildIntentUrl).toHaveBeenCalledWith('/releases/rASAP')
       expect(mockClipboardWriteText).toHaveBeenCalledWith(
         `${window.location.origin}/releases/rASAP`,
       )
@@ -121,15 +114,16 @@ describe('CopyReleaseActions', () => {
       })
     })
 
-    it('constructs the correct URL with the coreUi modifier', async () => {
-      mockBuildStudioUrl.mockImplementationOnce((modifiers: {coreUi?: (url: string) => string}) => {
-        return modifiers.coreUi?.('https://sanity.io/dashboard/org/app/workspace') || ''
-      })
+    it('uses the coreUi base URL when in coreUi mode', async () => {
+      mockBuildIntentUrl.mockImplementationOnce(
+        (path: string) => `https://sanity.io/dashboard/org/app/workspace${path}`,
+      )
 
       render(<CopyReleaseActions release={activeASAPRelease} />)
 
       await userEvent.click(screen.getByText('Copy release link'))
 
+      expect(mockBuildIntentUrl).toHaveBeenCalledWith('/releases/rASAP')
       expect(mockClipboardWriteText).toHaveBeenCalledWith(
         'https://sanity.io/dashboard/org/app/workspace/releases/rASAP',
       )
@@ -137,7 +131,7 @@ describe('CopyReleaseActions', () => {
   })
 
   describe('Copy Release ID', () => {
-    it('copies the release ID to clipboard, logs telemetry, and toasts', async () => {
+    it('copies the release ID, logs telemetry, and shows a toast', async () => {
       render(<CopyReleaseActions release={activeASAPRelease} />)
 
       await userEvent.click(screen.getByText('Copy release ID'))
@@ -153,7 +147,7 @@ describe('CopyReleaseActions', () => {
   })
 
   describe('Copy Release Title', () => {
-    it('copies the release title to clipboard, logs telemetry, and toasts', async () => {
+    it('copies the release title, logs telemetry, and shows a toast', async () => {
       render(<CopyReleaseActions release={activeASAPRelease} />)
 
       await userEvent.click(screen.getByText('Copy release title'))
@@ -167,7 +161,7 @@ describe('CopyReleaseActions', () => {
       })
     })
 
-    it('copies the fallback title when the release has no title', async () => {
+    it('falls back to "Untitled" when the release has no title', async () => {
       const releaseWithoutTitle = {
         ...activeASAPRelease,
         metadata: {
