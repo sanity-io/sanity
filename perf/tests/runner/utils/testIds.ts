@@ -24,6 +24,7 @@ type KnownTestId =
   | 'array-of-1k-string-items'
   | 'array-of-1k-reference-items'
   | 'large-document-editing'
+  | 'arrayi18n-simple-typing-speed-test'
 
 export const KNOWN_TEST_IDS: {[P in KnownTestId]: TestId<P>} = {
   'simple-typing-speed-test': defineId('simple-typing-speed-test'),
@@ -33,6 +34,7 @@ export const KNOWN_TEST_IDS: {[P in KnownTestId]: TestId<P>} = {
   'array-of-1k-string-items': defineId('array-of-1k-string-items'),
   'array-of-1k-reference-items': defineId('array-of-1k-reference-items'),
   'large-document-editing': defineId('large-document-editing'),
+  'arrayi18n-simple-typing-speed-test': defineId('arrayi18n-simple-typing-speed-test'),
 }
 
 export type ValidTestId = (typeof KNOWN_TEST_IDS)[keyof typeof KNOWN_TEST_IDS]

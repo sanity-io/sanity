@@ -19,6 +19,7 @@
     "react-dom": "catalog:",
     "rimraf": "^5.0.10",
     "sanity": "workspace:*",
+    "sanity-plugin-internationalized-array": "^3.2.2",
     "styled-components": "catalog:"
   },
   "devDependencies": {
