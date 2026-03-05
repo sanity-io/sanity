@@ -16,6 +16,7 @@ type StudioUrlModifier = {coreUi?: StudioUrlBuilder; studio?: StudioUrlBuilder} 
 interface UseStudioUrlReturnType {
   studioUrl: string
   buildStudioUrl: (modifiers: StudioUrlModifier) => string
+  buildIntentUrl: (intentLink: string) => string
 }
 
 /**
@@ -54,6 +55,8 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturnType => {
     sanityWebsiteUrl,
   ])
 
+  const basePath = activeWorkspace.basePath
+
   const buildStudioUrl = useCallback(
     ({coreUi, studio}: StudioUrlModifier) => {
       const urlModifier = isCoreUi ? coreUi : studio
@@ -63,7 +66,18 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturnType => {
     [isCoreUi, studioUrl],
   )
 
+  const buildIntentUrl = useCallback(
+    (intentLink: string) => {
+      if (isCoreUi && basePath !== '/') {
+        return `${studioUrl}${intentLink.slice(basePath.length)}`
+      }
+      return `${studioUrl}${intentLink}`
+    },
+    [basePath, isCoreUi, studioUrl],
+  )
+
   return {
+    buildIntentUrl,
     buildStudioUrl,
     studioUrl,
   }

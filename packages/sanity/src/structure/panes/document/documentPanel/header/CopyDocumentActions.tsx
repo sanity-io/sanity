@@ -23,7 +23,7 @@ export function CopyDocumentActions() {
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
-  const {buildStudioUrl} = useStudioUrl()
+  const {buildIntentUrl} = useStudioUrl()
   const {t} = useTranslation(structureLocaleNamespace)
   const telemetry = useTelemetry()
   const {push: pushToast} = useToast()
@@ -56,12 +56,7 @@ export function CopyDocumentActions() {
     }
 
     const intentLink = resolveIntentLink('edit', intentParams, searchParams)
-    const appendIntentLink = (url: string) => `${url}${intentLink}`
-
-    const copyUrl = buildStudioUrl({
-      coreUi: appendIntentLink,
-      studio: appendIntentLink,
-    })
+    const copyUrl = buildIntentUrl(intentLink)
 
     await navigator.clipboard.writeText(copyUrl)
     pushToast({
@@ -70,7 +65,7 @@ export function CopyDocumentActions() {
       title: t('panes.document-operation-results.operation-success_copy-url'),
     })
   }, [
-    buildStudioUrl,
+    buildIntentUrl,
     documentId,
     documentType,
     pushToast,
