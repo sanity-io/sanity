@@ -21,6 +21,7 @@ import {RELEASES_INTENT} from '../../releases/plugin'
 import {isReleaseDocument} from '../../releases/store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
+import {isAgentBundleName} from '../../store/agent/useAgentBundles'
 import {oversizedButtonStyle} from '../styles'
 import {type TargetPerspective} from '../types'
 
@@ -141,7 +142,9 @@ export function CurrentGlobalPerspectiveLabel({
       ) : (
         <Box padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>
           <Text size={1} textOverflow="ellipsis" weight="medium">
-            {selectedPerspective}
+            {isAgentBundleName(selectedPerspective)
+              ? t('version.agent-bundle.proposed-changes')
+              : selectedPerspective}
           </Text>
         </Box>
       )}

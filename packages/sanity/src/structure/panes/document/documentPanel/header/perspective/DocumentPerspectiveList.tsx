@@ -24,6 +24,7 @@ import {
   useDocumentVersions,
   useFilteredReleases,
   useGetDefaultPerspective,
+  useAgentVersionDisplay,
   usePerspective,
   useSchema,
   useSetPerspective,
@@ -270,7 +271,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const isDraftModelEnabled = workspace.document.drafts?.enabled
 
-  const nonReleaseVersions = documentVersions.filter((versionDocumentId) => {
+  const {filteredVersionIds, getVersionDisplay} = useAgentVersionDisplay(documentVersions)
+
+  const nonReleaseVersions = filteredVersionIds.filter((versionDocumentId) => {
     if (isPublishedId(versionDocumentId) || isDraftId(versionDocumentId)) {
       return false
     }
@@ -450,6 +453,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         releases={filteredReleases.notCurrentReleases}
         releasesLoading={loading}
         documentType={documentType}
+        getVersionDisplay={getVersionDisplay}
       />
     </>
   )

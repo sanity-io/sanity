@@ -2237,6 +2237,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'user-menu.login-provider': 'Signed in with {{providerTitle}}',
   /** Label for open menu button for user menu */
   'user-menu.open-menu': 'Open menu',
+
+  /** Label for agent bundle versions in the document header */
+  'version.agent-bundle.proposed-changes': 'Proposed changes',
+
   /**
    * Label for action to add a workspace (currently a developer-oriented action, as this will
    * lead to the documentation on workspace configuration)
