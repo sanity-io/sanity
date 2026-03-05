@@ -20,6 +20,7 @@ export const arrayI18nEfps = {
         {id: 'en', title: 'English'},
         {id: 'es', title: 'Spanish'},
       ],
+      defaultLanguages: ['en'],
       fieldTypes: ['string'],
     }),
   ],
@@ -28,7 +29,15 @@ export const arrayI18nEfps = {
       defineType({
         name: 'arrayI18n',
         type: 'document',
-        fields: [defineField({name: 'simple', type: 'internationalizedArrayString'})],
+        fields: [
+          defineField({name: 'simple', type: 'internationalizedArrayString'}),
+          ...Array.from({length: 30}, (_, i) =>
+            defineField({
+              name: `field${i}`,
+              type: 'internationalizedArrayString',
+            }),
+          ),
+        ],
       }),
     ],
   },
