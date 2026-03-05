@@ -25,7 +25,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "sanity-plugin-internationalized-array": "^3.2.2",
+    "sanity-plugin-internationalized-array": "^4.0.4",
     "sanity-plugin-markdown": "8.0.4",
     "sanity-plugin-media": "^4.1.1",
     "sanity-plugin-mux-input": "^2.12.1",
