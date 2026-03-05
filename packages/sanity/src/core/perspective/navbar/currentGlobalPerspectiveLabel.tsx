@@ -21,7 +21,7 @@ import {RELEASES_INTENT} from '../../releases/plugin'
 import {isReleaseDocument} from '../../releases/store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
-import {isAgentBundleName} from '../../store/agent/useAgentBundles'
+import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {oversizedButtonStyle} from '../styles'
 import {type TargetPerspective} from '../types'
 

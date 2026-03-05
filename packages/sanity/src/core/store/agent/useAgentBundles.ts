@@ -10,12 +10,6 @@ import {
   INITIAL_STATE,
 } from './createAgentBundlesStore'
 
-export {
-  type AgentBundle,
-  type AgentBundlesState,
-  isAgentBundleName,
-} from './createAgentBundlesStore'
-
 const CLIENT_OPTIONS = {apiVersion: 'v2025-02-19'} as const
 
 /**
@@ -33,30 +27,26 @@ export function useAgentBundles(): AgentBundlesState {
   const workspace = useWorkspace()
   const client = useClient(CLIENT_OPTIONS)
   const projectStore = useProjectStore()
-  const token = client.config().token
 
   const store = useMemo(() => {
-    const cached = resourceCache.get<ReturnType<typeof createAgentBundlesStore>>({
-      namespace: 'AgentBundlesStore',
-      dependencies: [workspace],
-    })
-
-    if (cached) return cached
-
-    const created = createAgentBundlesStore({
-      organizationId$: projectStore.getOrganizationId(),
-      client,
-      token,
-    })
+    const agentBundlesStore =
+      resourceCache.get<ReturnType<typeof createAgentBundlesStore>>({
+        namespace: 'AgentBundlesStore',
+        dependencies: [workspace],
+      }) ||
+      createAgentBundlesStore({
+        organizationId$: projectStore.getOrganizationId(),
+        client,
+      })
 
     resourceCache.set({
       namespace: 'AgentBundlesStore',
       dependencies: [workspace],
-      value: created,
+      value: agentBundlesStore,
     })
 
-    return created
-  }, [resourceCache, workspace, client, projectStore, token])
+    return agentBundlesStore
+  }, [resourceCache, workspace, client, projectStore])
 
   return useObservable(store.state$, INITIAL_STATE)
 }

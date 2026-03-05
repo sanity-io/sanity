@@ -4,7 +4,7 @@ import {Box, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import {type CSSProperties, memo, useCallback} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {type AgentBundle} from '../../store/agent/useAgentBundles'
+import {type AgentBundle} from '../../store/agent/createAgentBundlesStore'
 import {usePerspective} from '../usePerspective'
 import {useSetPerspective} from '../useSetPerspective'
 
