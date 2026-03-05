@@ -5,12 +5,12 @@ import {userEvent} from '@testing-library/user-event'
 import {type SanityDocument} from 'sanity'
 import {describe, expect, it, vi} from 'vitest'
 
+import {ColumnsControl} from '../ColumnsControl'
+
 vi.mock('react-i18next', async (importOriginal) => ({
   ...(await importOriginal()),
   useTranslation: () => ({t: (key: string) => key}),
 }))
-
-import {ColumnsControl} from '../ColumnsControl'
 
 const TableHarness = ({columns}: {columns: ColumnDef<SanityDocument>[]}) => {
   const initialVisibilityState = {
