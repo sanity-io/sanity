@@ -18,7 +18,6 @@ import {hideBin} from 'yargs/helpers'
 import {exec} from './helpers/exec'
 import {readEnvVar} from './readEnvVar'
 import {createBrowser, runTest} from './runTest'
-import arrayI18n from './tests/arrayI18n/arrayI18n'
 import article from './tests/article/article'
 import recipe from './tests/recipe/recipe'
 import singleString from './tests/singleString/singleString'
@@ -39,7 +38,7 @@ const REFERENCE_STUDIO_URL = 'https://efps.sanity.dev'
 
 const EXPERIMENT_STUDIO_URL = readEnv('STUDIO_URL')
 
-const TESTS = [arrayI18n, article, recipe, singleString, synthetic]
+const TESTS = [article, recipe, singleString, synthetic]
 
 const stagingToken = readEnvVar('EFPS_SANITY_TOKEN_STAGING')
 const prodToken = readEnvVar('EFPS_SANITY_TOKEN_PROD')

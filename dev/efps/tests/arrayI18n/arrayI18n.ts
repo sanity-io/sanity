@@ -7,10 +7,17 @@ import {defineEfpsTest} from '../../types'
 export default defineEfpsTest({
   name: path.basename(fileURLToPath(import.meta.url), path.extname(fileURLToPath(import.meta.url))),
   configPath: import.meta.resolve?.('./sanity.config.ts'),
-  document: {_type: 'arrayI18n'},
+  document: {
+    _type: 'arrayI18n',
+    simple: [
+      {
+        _type: 'internationalizedArrayStringValue',
+        _key: 'en',
+        value: 'hello world',
+      },
+    ],
+  },
   run: async ({page}) => {
-    await page.getByRole('button', {name: 'en'}).click()
-
     const result = await measureFpsForInput({
       page,
       fieldName: 'simple',

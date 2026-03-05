@@ -1,5 +1,4 @@
 import {type Config, defineField, defineType} from 'sanity'
-import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {structureTool} from 'sanity/structure'
 
 export const arrayI18nEfps = {
@@ -15,20 +14,21 @@ export const arrayI18nEfps = {
               .child(S.documentTypeList('arrayI18n').title('Array I18N Documents')),
           ]),
     }),
-    internationalizedArray({
-      languages: [
-        {id: 'en', title: 'English'},
-        {id: 'es', title: 'Spanish'},
-      ],
-      fieldTypes: ['string'],
-    }),
   ],
   schema: {
     types: [
       defineType({
         name: 'arrayI18n',
         type: 'document',
-        fields: [defineField({name: 'simple', type: 'internationalizedArrayString'})],
+        fields: [
+          defineField({name: 'simple', type: 'internationalizedArrayString'}),
+          ...Array.from({length: 30}, (_, i) =>
+            defineField({
+              name: `field${i}`,
+              type: 'internationalizedArrayString',
+            }),
+          ),
+        ],
       }),
     ],
   },
