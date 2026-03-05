@@ -28,6 +28,7 @@ const it = baseIt.extend<{
       createClient({
         ...DEFAULT_STUDIO_CLIENT_OPTIONS,
         projectId: 'x',
+        useCdn: false,
       }),
     )
   },
