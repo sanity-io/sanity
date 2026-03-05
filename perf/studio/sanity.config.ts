@@ -1,11 +1,9 @@
 /// <reference types="vite/client" />
 import {useCallback} from 'react'
 import {defineConfig, defineDocumentFieldAction} from 'sanity'
-import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {structureTool} from 'sanity/structure'
 
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from '../tests/config/constants'
-import {arrayI18n} from './schema/arrayI18n'
 import {deepArray} from './schema/deepArray'
 import {deepArrayReferences} from './schema/deepArrayReferences'
 import {deepArrayString} from './schema/deepArrayString'
@@ -14,16 +12,7 @@ import {largeDocument} from './schema/largeDocument'
 import {simple} from './schema/simple'
 
 export default defineConfig({
-  plugins: [
-    structureTool({name: 'desk'}),
-    internationalizedArray({
-      languages: [
-        {id: 'en', title: 'English'},
-        {id: 'es', title: 'Spanish'},
-      ],
-      fieldTypes: ['string'],
-    }),
-  ],
+  plugins: [structureTool({name: 'desk'})],
   title: 'Perf test Studio',
   name: 'default',
   projectId: STUDIO_PROJECT_ID,
@@ -49,14 +38,6 @@ export default defineConfig({
     ],
   },
   schema: {
-    types: [
-      simple,
-      deepObject,
-      deepArray,
-      deepArrayString,
-      deepArrayReferences,
-      largeDocument,
-      arrayI18n,
-    ],
+    types: [simple, deepObject, deepArray, deepArrayString, deepArrayReferences, largeDocument],
   },
 })
