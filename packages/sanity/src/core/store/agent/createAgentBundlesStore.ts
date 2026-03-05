@@ -61,15 +61,14 @@ export function isAgentBundleName(versionName: unknown): boolean {
 export function createAgentBundlesStore(context: {
   organizationId$: Observable<string | null>
   client: SanityClient
-  token?: string | null
 }): AgentBundlesStore {
-  const {organizationId$, client, token} = context
+  const {organizationId$, client} = context
 
   const state$ = organizationId$.pipe(
     distinctUntilChanged(),
     switchMap((organizationId) => {
       if (!organizationId) return of(INITIAL_STATE)
-      return listenToBundles(client, organizationId, token)
+      return listenToBundles(client, organizationId)
     }),
     startWith(INITIAL_STATE),
     share({connector: () => new ReplaySubject(1)}),
@@ -78,16 +77,10 @@ export function createAgentBundlesStore(context: {
   return {state$}
 }
 
-function buildUrl(
-  client: SanityClient,
-  organizationId: string,
-  explicitToken?: string | null,
-): string {
-  const {apiHost, token: clientToken} = client.config()
-  const token = explicitToken || clientToken
-  // TEMP: Dev-only env override — remove before go-live.
-  // SANITY_STUDIO_AGENT_API_HOST allows pointing at a local agent during development.
-  // Add e.g. SANITY_STUDIO_AGENT_API_HOST=http://localhost:58300 to .env.local
+function buildUrl(client: SanityClient, organizationId: string): string {
+  const {apiHost, token} = client.config()
+  // Dev override: point at a local agent API during development.
+  // Set SANITY_STUDIO_AGENT_API_HOST=http://localhost:58300 in .env.local
   const envHost: string | undefined = process.env.SANITY_STUDIO_AGENT_API_HOST
   const base = envHost || apiHost || 'https://api.sanity.io'
   const url = new URL(`/v1/agent/${organizationId}/bundles/mine/listen`, base)
@@ -111,14 +104,13 @@ function buildUrl(
 function listenToBundles(
   client: SanityClient,
   organizationId: string,
-  token?: string | null,
 ): Observable<AgentBundlesState> {
-  const effectiveToken = token || client.config().token
-  const url = buildUrl(client, organizationId, effectiveToken)
+  const token = client.config().token
+  const url = buildUrl(client, organizationId)
 
   return new Observable<AgentBundlesState>((subscriber) => {
     const es = new EventSource(url, {
-      withCredentials: !effectiveToken,
+      withCredentials: !token,
     })
 
     es.addEventListener('bundles', (event: MessageEvent) => {

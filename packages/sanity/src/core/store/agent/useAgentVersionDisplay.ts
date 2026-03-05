@@ -1,10 +1,10 @@
-import {SparkleIcon} from '@sanity/icons'
 import {type BadgeTone} from '@sanity/ui'
-import {type ComponentType, useMemo} from 'react'
+import {useMemo} from 'react'
 
 import {useTranslation} from '../../i18n'
 import {getVersionFromId} from '../../util/draftUtils'
-import {isAgentBundleName, useAgentBundles} from './useAgentBundles'
+import {isAgentBundleName} from './createAgentBundlesStore'
+import {useAgentBundles} from './useAgentBundles'
 
 /**
  * Display overrides for an agent bundle version chip.
@@ -14,13 +14,9 @@ import {isAgentBundleName, useAgentBundles} from './useAgentBundles'
 export type AgentVersionDisplay = {
   displayName: string
   tone: BadgeTone
-  icon: ComponentType
 }
 
-const AGENT_DISPLAY: Omit<AgentVersionDisplay, 'displayName'> = {
-  tone: 'suggest',
-  icon: SparkleIcon,
-}
+const AGENT_TONE: BadgeTone = 'suggest'
 
 /**
  * Filters a list of version document IDs and provides display metadata for
@@ -49,7 +45,7 @@ export function useAgentVersionDisplay(versionIds: string[]): {
   const {bundles, loading} = useAgentBundles()
   const {t} = useTranslation()
 
-  // Set for O(1) lookup per `js-set-map-lookups`
+  // Set for O(1) lookup
   const myBundleIds = useMemo(() => new Set(bundles.map((b) => b.id)), [bundles])
 
   const filteredVersionIds = useMemo(
@@ -57,8 +53,8 @@ export function useAgentVersionDisplay(versionIds: string[]): {
       versionIds.filter((id) => {
         const name = getVersionFromId(id)
         if (!name || !isAgentBundleName(name)) return true
-        // While loading, keep all agent versions (optimistic)
-        if (loading) return true
+        // Hide all agent versions until the endpoint confirms ownership
+        if (loading) return false
         return myBundleIds.has(name)
       }),
     [versionIds, myBundleIds, loading],
@@ -66,14 +62,16 @@ export function useAgentVersionDisplay(versionIds: string[]): {
 
   const getVersionDisplay = useMemo(() => {
     const label = t('version.agent-bundle.proposed-changes')
-    const display: AgentVersionDisplay = {...AGENT_DISPLAY, displayName: label}
+    const display: AgentVersionDisplay = {displayName: label, tone: AGENT_TONE}
 
     return (versionDocumentId: string): AgentVersionDisplay | null => {
       const name = getVersionFromId(versionDocumentId)
       if (!name || !isAgentBundleName(name)) return null
+      // Only show display overrides for the current user's bundles
+      if (!loading && !myBundleIds.has(name)) return null
       return display
     }
-  }, [t])
+  }, [t, myBundleIds, loading])
 
   return {filteredVersionIds, getVersionDisplay}
 }
