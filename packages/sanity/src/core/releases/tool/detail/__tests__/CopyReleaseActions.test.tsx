@@ -55,7 +55,7 @@ describe('CopyReleaseActions', () => {
 
     await userEvent.click(await screen.findByTestId('copy-release-actions-button'))
 
-    expect(await screen.findByText('Copy release link')).toBeInTheDocument()
+    expect(await screen.findByText('Copy release URL')).toBeInTheDocument()
     expect(screen.getByText('Copy release ID')).toBeInTheDocument()
     expect(screen.getByText('Copy release title')).toBeInTheDocument()
   })
@@ -63,7 +63,7 @@ describe('CopyReleaseActions', () => {
   describe('Copy Release Link', () => {
     it('copies the release URL, logs telemetry, and shows a toast', async () => {
       render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper})
-      await openMenuAndClick('Copy release link')
+      await openMenuAndClick('Copy release URL')
 
       expect(mockResolvePathFromState).toHaveBeenCalledWith({releaseId: 'rASAP'})
       expect(mockBuildIntentUrl).toHaveBeenCalledWith('/releases/rASAP')
@@ -80,7 +80,7 @@ describe('CopyReleaseActions', () => {
       )
 
       render(<CopyReleaseActions release={activeASAPRelease} />, {wrapper})
-      await openMenuAndClick('Copy release link')
+      await openMenuAndClick('Copy release URL')
 
       expect(mockBuildIntentUrl).toHaveBeenCalledWith('/releases/rASAP')
       expect(mockClipboardWriteText).toHaveBeenCalledWith(
