@@ -35,7 +35,7 @@ import {
   useUnique,
   useWorkspace,
 } from 'sanity'
-import {DocumentPaneContext} from 'sanity/_singletons'
+import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
@@ -45,7 +45,10 @@ import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
-import {type DocumentPaneContextValue} from './DocumentPaneContext'
+import {
+  type DocumentPaneContextValue,
+  type DocumentPaneInfoContextValue,
+} from './DocumentPaneContext'
 import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
@@ -545,6 +548,47 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     lastRevisionDocument,
   } satisfies DocumentPaneContextValue
 
+  const documentPaneInfo: DocumentPaneInfoContextValue = useMemo(
+    () => ({
+      actions,
+      badges,
+      documentId,
+      documentIdRaw,
+      documentType,
+      fieldActions,
+      index,
+      menuItemGroups: menuItemGroups || [],
+      maximized,
+      onPaneClose: handlePaneClose,
+      onPaneSplit: handlePaneSplit,
+      onSetMaximizedPane,
+      paneKey,
+      schemaType: schemaType!,
+      title,
+      views,
+      unstable_languageFilter: languageFilter,
+    }),
+    [
+      actions,
+      badges,
+      documentId,
+      documentIdRaw,
+      documentType,
+      fieldActions,
+      index,
+      menuItemGroups,
+      maximized,
+      handlePaneClose,
+      handlePaneSplit,
+      onSetMaximizedPane,
+      paneKey,
+      schemaType,
+      title,
+      views,
+      languageFilter,
+    ],
+  )
+
   const pathRef = useRef<string | undefined>(undefined)
   const paramPath = params.path
 
@@ -577,7 +621,9 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   }, [paramPath, ready])
 
   return (
-    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    <DocumentPaneInfoContext.Provider value={documentPaneInfo}>
+      <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    </DocumentPaneInfoContext.Provider>
   )
 }
 
