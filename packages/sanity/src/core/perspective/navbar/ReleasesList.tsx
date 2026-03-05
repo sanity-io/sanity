@@ -7,9 +7,11 @@ import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenu
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../studio/workspace'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
+import {AgentBundleMenuItem} from './AgentBundleMenuItem'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
@@ -47,6 +49,7 @@ export function ReleasesList({
   menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): JSX.Element {
   const {loading, data: allReleases} = useActiveReleases()
+  const {bundles: agentBundles} = useAgentBundles()
 
   const releases = useMemo(
     () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
@@ -131,6 +134,15 @@ export function ReleasesList({
           )}
         </Stack>
       </Card>
+      {agentBundles.length > 0 && (
+        <Card borderBottom padding={1}>
+          <Stack space={1}>
+            {agentBundles.map((bundle) => (
+              <AgentBundleMenuItem key={bundle.id} bundle={bundle} />
+            ))}
+          </Stack>
+        </Card>
+      )}
       {areReleasesEnabled && (
         <ScrollWrapper ref={setScrollContainer} onScroll={onScroll} data-ui="scroll-wrapper">
           {orderedReleaseTypes.map((releaseType) => (
