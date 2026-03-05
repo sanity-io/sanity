@@ -62,7 +62,9 @@ vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   IntentLink: vi.fn().mockImplementation((props) => <a {...props} />),
   StateLink: vi.fn().mockImplementation(({state, children, ...rest}) => (
-    <a href="/" {...rest}>{children}</a>
+    <a href="/" {...rest}>
+      {children}
+    </a>
   )),
   useRouterState: vi.fn().mockReturnValue(undefined),
 }))
