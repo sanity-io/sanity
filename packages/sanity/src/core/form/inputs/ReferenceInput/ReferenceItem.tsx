@@ -24,6 +24,7 @@ import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFoc
 import {set, unset} from '../../patch'
 import {type ObjectItem, type ObjectItemProps} from '../../types'
 import {randomKey} from '../../utils/randomKey'
+import {regenerateKeys} from '../../utils/regenerateKeys'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../arrays/ArrayOfObjectsInput/InsertMenuMenuItems'
 import {useArrayValidation} from '../arrays/common/ArrayValidationContext'
@@ -119,14 +120,14 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
 
   const handleDuplicate = useCallback(() => {
     onInsert({
-      items: [{...value, _key: randomKey()}],
+      items: [regenerateKeys(value)],
       position: 'after',
     })
   }, [onInsert, value])
 
   const handleCopy = useCallback(() => {
     onCopy({
-      items: [{...value, _key: randomKey()}],
+      items: [regenerateKeys(value)],
     })
   }, [onCopy, value])
 
