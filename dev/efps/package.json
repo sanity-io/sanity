@@ -19,7 +19,7 @@
     "write:report": "tsx ./formatefpsResult.ts"
   },
   "dependencies": {
-    "sanity-plugin-internationalized-array": "^3.2.2",
+    "sanity-plugin-internationalized-array": "https://pkg.pr.new/sanity-io/plugins/sanity-plugin-internationalized-array@759d4e068196103bed56bd37a08696981711bdeb",
     "styled-components": "catalog:",
     "tsx": "^4.21.0"
   },
