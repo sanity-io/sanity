@@ -150,6 +150,7 @@ describe('schema validation inference', () => {
     })
 
     test("gives error if media can't be found", async () => {
+      vi.spyOn(console, 'warn').mockImplementation(() => {})
       client.fetch.mockImplementation(() => Promise.resolve(false))
 
       await expect(
@@ -169,6 +170,9 @@ describe('schema validation inference', () => {
           path: ['imageField'],
         },
       ])
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining('The asset could not be found in the Media Library'),
+      )
     })
 
     test("gives error if media doesn't validate according to media validation rule", async () => {
