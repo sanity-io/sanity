@@ -1,14 +1,11 @@
-import {type ObjectSchemaType} from '@sanity/types'
-import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type PropsWithChildren} from 'react'
-import {FormBuilderContext} from 'sanity/_singletons'
+import {type ComponentType, type PropsWithChildren} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type FIXME} from '../../../../FIXME'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
-import {type FormBuilderContextValue} from '../../../FormBuilderContext'
 import {PatchEvent, set} from '../../../patch'
 import {type FieldMember} from '../../../store'
 import {
@@ -24,9 +21,9 @@ const EMPTY_ARRAY: never[] = []
 
 describe('PrimitiveField', () => {
   describe('number', () => {
-    it('renders empty input when given no value', () => {
+    it('renders empty input when given no value', async () => {
       // Given
-      const {member, TestWrapper} = setupTest('number', undefined)
+      const {member, TestWrapper} = await setupTest('number', undefined)
 
       // When
       render(
@@ -44,9 +41,9 @@ describe('PrimitiveField', () => {
       expect(input.value).toEqual('')
     })
 
-    it('renders non-zero number when mounted', () => {
+    it('renders non-zero number when mounted', async () => {
       // Given
-      const {member, TestWrapper} = setupTest('number', 42)
+      const {member, TestWrapper} = await setupTest('number', 42)
 
       // When
       render(
@@ -64,9 +61,9 @@ describe('PrimitiveField', () => {
       expect(input.value).toEqual('42')
     })
 
-    it('renders 0 number when mounted', () => {
+    it('renders 0 number when mounted', async () => {
       // Given
-      const {member, TestWrapper} = setupTest('number', 0)
+      const {member, TestWrapper} = await setupTest('number', 0)
 
       // When
       render(
@@ -86,7 +83,7 @@ describe('PrimitiveField', () => {
 
     it('calls `onChange` callback when the input changes', async () => {
       // Given
-      const {member, formCallbacks, TestWrapper} = setupTest('number', undefined)
+      const {member, formCallbacks, TestWrapper} = await setupTest('number', undefined)
 
       render(
         <PrimitiveField
@@ -122,9 +119,9 @@ describe('PrimitiveField', () => {
       )
     })
 
-    it('updates input value when field is updated with a new value', () => {
+    it('updates input value when field is updated with a new value', async () => {
       // Given
-      const {member, TestWrapper} = setupTest('number', 1)
+      const {member, TestWrapper} = await setupTest('number', 1)
 
       const {rerender} = render(
         <PrimitiveField
@@ -155,7 +152,7 @@ describe('PrimitiveField', () => {
     // @TODO move to e2e tests
     it.skip('keeps input value when field value is updated with a "simplified" version of the current input', async () => {
       // Given
-      const {member, TestWrapper} = setupTest('number', 1)
+      const {member, TestWrapper} = await setupTest('number', 1)
 
       const {rerender} = render(
         <PrimitiveField
@@ -191,7 +188,7 @@ describe('PrimitiveField', () => {
 
     it('wont trigger `onChange` callbacks when number input values are out of range', async () => {
       // Given
-      const {formCallbacks, member, TestWrapper} = setupTest('number', undefined)
+      const {formCallbacks, member, TestWrapper} = await setupTest('number', undefined)
 
       render(
         <PrimitiveField
@@ -213,7 +210,7 @@ describe('PrimitiveField', () => {
   })
 })
 
-function setupTest(type: string, value: string | number | boolean | undefined) {
+async function setupTest(type: string, value: string | number | boolean | undefined) {
   const schemaType = {
     name: type,
     jsonType: type as FIXME,
@@ -253,40 +250,19 @@ function setupTest(type: string, value: string | number | boolean | undefined) {
     onFieldGroupSelect: vi.fn(),
   }
 
-  const formBuilder: FormBuilderContextValue = {
-    __internal: {
-      documentId: 'test',
-      field: {actions: []},
-    } as any,
-    collapsedFieldSets: {value: undefined},
-    collapsedPaths: {value: undefined},
-    focusPath: [],
-    groups: [],
-    id: 'test',
-    renderField: () => <>field</>,
-    renderInput: () => <>input</>,
-    renderItem: () => <>item</>,
-    renderPreview: () => <>preview</>,
-    schemaType: {} as ObjectSchemaType,
-  }
+  const BaseTestWrapper = await createTestProvider()
 
-  function TestWrapper({children}: PropsWithChildren) {
-    return (
-      <ThemeProvider theme={studioTheme}>
-        <LayerProvider>
-          <FormBuilderContext.Provider value={formBuilder}>
-            <FormCallbacksProvider {...formCallbacks}>
-              <DocumentIdProvider id="test">
-                <DocumentFieldActionsProvider actions={EMPTY_ARRAY}>
-                  {children}
-                </DocumentFieldActionsProvider>
-              </DocumentIdProvider>
-            </FormCallbacksProvider>
-          </FormBuilderContext.Provider>
-        </LayerProvider>
-      </ThemeProvider>
-    )
-  }
+  const TestWrapper: ComponentType<PropsWithChildren> = ({children}) => (
+    <BaseTestWrapper>
+      <FormCallbacksProvider {...formCallbacks}>
+        <DocumentIdProvider id="test">
+          <DocumentFieldActionsProvider actions={EMPTY_ARRAY}>
+            {children}
+          </DocumentFieldActionsProvider>
+        </DocumentIdProvider>
+      </FormCallbacksProvider>
+    </BaseTestWrapper>
+  )
 
   return {member, formCallbacks, TestWrapper}
 }
