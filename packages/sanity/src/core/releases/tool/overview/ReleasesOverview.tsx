@@ -156,6 +156,7 @@ export function ReleasesOverview() {
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
 
   const mediaIndex = useMediaIndex()
+  const isNarrowViewport = mediaIndex < 2
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> => {
@@ -517,7 +518,7 @@ export function ReleasesOverview() {
 
         <Flex direction="column" flex={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
-            <Flex align="center" flex={1} gap={3}>
+            <Flex align="center" flex={1} gap={3} wrap="wrap">
               <Inline>
                 {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
                 <CardinalityViewPicker
@@ -531,7 +532,11 @@ export function ReleasesOverview() {
                 />
               </Inline>
 
-              <Flex flex={1} gap={1}>
+              <Flex
+                flex={1}
+                gap={1}
+                style={isNarrowViewport ? {minWidth: '100%', order: 3} : undefined}
+              >
                 {loadingOrHasReleases &&
                   (releaseFilterDate ? (
                     <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
@@ -544,7 +549,11 @@ export function ReleasesOverview() {
                   icon={EarthGlobeIcon}
                   iconRight={ChevronDownIcon}
                   mode="bleed"
-                  text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
+                  text={
+                    isNarrowViewport
+                      ? timeZone.abbreviation
+                      : `${timeZone.abbreviation} (${timeZone.namePretty})`
+                  }
                   onClick={dialogTimeZoneShow}
                 />
                 {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
