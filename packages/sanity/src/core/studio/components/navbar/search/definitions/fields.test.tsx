@@ -244,7 +244,7 @@ describe('createFieldDefinitions', () => {
     expect(fieldDefs[0].title).toEqual('A title wrapped in a component')
   })
 
-  it('should fall back to field name when title contains a custom React component that cannot render', () => {
+  it('should return empty string when title contains a custom React component that cannot render', () => {
     function ThrowsOnRender(props: {children: React.ReactNode}) {
       throw new Error('should not render')
     }
@@ -268,6 +268,6 @@ describe('createFieldDefinitions', () => {
     })
 
     const fieldDefs = createFieldDefinitions(mockSchema, filterDefinitions)
-    expect(fieldDefs[0].title).toEqual('Title')
+    expect(fieldDefs[0].title).toEqual('')
   })
 })
