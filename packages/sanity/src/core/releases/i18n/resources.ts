@@ -8,6 +8,14 @@ const releasesLocaleStrings = {
   'action.add-document': 'Add document',
   /** Action text for archiving a release */
   'action.archive': 'Archive release',
+  /** Tooltip for copy release actions button */
+  'action.copy-release.label': 'Copy',
+  /** Menu item label for copying release ID */
+  'action.copy-release-id.label': 'Copy release ID',
+  /** Menu item label for copying release URL */
+  'action.copy-release-link.label': 'Copy release URL',
+  /** Menu item label for copying release title */
+  'action.copy-release-title.label': 'Copy release title',
   /** Tooltip for when the archive release action is disabled due to release being scheduled  */
   'action.archive.tooltip': 'Unschedule this release to archive it',
   /** Action text for showing the archived releases */
@@ -440,6 +448,12 @@ const releasesLocaleStrings = {
   'time.estimated': 'Estimated',
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
+  /** Toast message after copying release ID */
+  'toast.copy-release-id.success': 'Release ID copied to clipboard',
+  /** Toast message after copying release link */
+  'toast.copy-release-link.success': 'Release link copied to clipboard',
+  /** Toast message after copying release title */
+  'toast.copy-release-title.success': 'Release title copied to clipboard',
   /** Description for toast when creating new version of document in release failed */
   'toast.create-version.error': 'Failed to add document to release: {{error}}',
   /** Description for toast when release deletion failed */

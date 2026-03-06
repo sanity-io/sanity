@@ -125,3 +125,33 @@ export const Guidelines = styled.g`
     `
   }}
 `
+
+export const CropDimensionsBadgeGroup = styled.g<{$visible: boolean}>`
+  opacity: ${(props) => (props.$visible ? 1 : 0)};
+  transition: opacity 0.15s;
+`
+
+export const CropDimensionsBadgeRect = styled.rect`
+  ${(props) => {
+    const {color, radius} = getThemeV2(props.theme)
+    return css`
+      fill: ${color.focusRing};
+      rx: ${radius[1]}px;
+    `
+  }}
+`
+
+export const CropDimensionsBadgeText = styled.text`
+  ${(props) => {
+    const {font} = getThemeV2(props.theme)
+    const textSize = font.text.sizes[0]
+    return css`
+      fill: #fff;
+      font-family: ${font.text.family};
+      font-size: ${textSize.fontSize}px;
+      letter-spacing: ${textSize.letterSpacing}px;
+      font-weight: ${font.text.weights.medium};
+      pointer-events: none;
+    `
+  }}
+`

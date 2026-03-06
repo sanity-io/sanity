@@ -1,18 +1,18 @@
 import {isImageSource} from '@sanity/asset-utils'
-import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
+import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
 import get from 'lodash-es/get.js'
-import startCase from 'lodash-es/startCase.js'
-import {memo, type ReactNode, useCallback, useMemo} from 'react'
+import {memo, type ReactNode, type RefObject, useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {ActionsMenu} from '../common/ActionsMenu'
-import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
+import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'
+import {getAssetSourceDisplayName, getAssetSourcesWithUpload} from '../common/assetSourceUtils'
 import {findOpenInSourceResult, getOpenInSourceName} from '../common/openInSource'
-import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
+import {useUploadMenuItem} from '../common/useUploadMenuItem'
 import {type AssetAccessPolicy} from '../types'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {type BaseImageInputProps} from './types'
@@ -32,11 +32,16 @@ function ImageInputAssetMenuComponent(
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
     onSelectFile: (assetSource: AssetSource, file: File) => void
+    /**
+     * Called when an asset source with `uploadMode: 'component'` is selected.
+     * The source should be rendered directly to handle file selection and upload internally.
+     */
+    onOpenSourceForUpload?: (assetSource: AssetSource) => void
     handleSelectImageFromAssetSource: (source: AssetSource) => void
     isImageToolEnabled: boolean
     isMenuOpen: boolean
     setHotspotButtonElement: (el: HTMLButtonElement | null) => void
-    setMenuButtonElement: (el: HTMLButtonElement | null) => void
+    menuButtonRef: RefObject<HTMLButtonElement | null>
     setMenuOpen: (isOpen: boolean) => void
     onOpenInSource: (assetSource: AssetSource, asset: ImageAsset) => void
   },
@@ -48,6 +53,7 @@ function ImageInputAssetMenuComponent(
     handleOpenDialog,
     handleRemoveButtonClick,
     onSelectFile,
+    onOpenSourceForUpload,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
     isImageToolEnabled,
@@ -57,7 +63,7 @@ function ImageInputAssetMenuComponent(
     readOnly,
     schemaType,
     setHotspotButtonElement,
-    setMenuButtonElement,
+    menuButtonRef,
     setMenuOpen,
     value,
   } = props
@@ -72,17 +78,18 @@ function ImageInputAssetMenuComponent(
     return null
   }
 
+  const dataTestIdPrefix = getDataTestIdPrefix(schemaType)
   let browseMenuItem: ReactNode =
     assetSources && assetSources.length === 0 ? null : (
       <MenuItem
         icon={SearchIcon}
-        text={t('inputs.image.browse-menu.text')}
+        text={t('asset-source.browse-button.text')}
         onClick={() => {
           setMenuOpen(false)
           handleSelectImageFromAssetSource(assetSources[0])
         }}
         disabled={readOnly}
-        data-testid="file-input-browse-button"
+        data-testid={`${dataTestIdPrefix}-browse-button`}
       />
     )
   if (assetSources && assetSources.length > 1) {
@@ -90,16 +97,13 @@ function ImageInputAssetMenuComponent(
       return (
         <MenuItem
           key={assetSource.name}
-          text={
-            (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-            startCase(assetSource.name)
-          }
+          text={getAssetSourceDisplayName(assetSource, t, {useStartCaseForName: true})}
           onClick={() => {
             setMenuOpen(false)
             handleSelectImageFromAssetSource(assetSource)
           }}
           icon={assetSource.icon || ImageIcon}
-          data-testid={`file-input-browse-button-${assetSource.name}`}
+          data-testid={`${dataTestIdPrefix}-browse-button-${assetSource.name}`}
           disabled={readOnly}
         />
       )
@@ -116,6 +120,7 @@ function ImageInputAssetMenuComponent(
       handleOpenDialog={handleOpenDialog}
       handleRemoveButtonClick={handleRemoveButtonClick}
       onSelectFile={onSelectFile}
+      onOpenSourceForUpload={onOpenSourceForUpload}
       imageUrlBuilder={imageUrlBuilder}
       isMenuOpen={isMenuOpen}
       observeAsset={observeAsset}
@@ -124,7 +129,7 @@ function ImageInputAssetMenuComponent(
       reference={asset}
       schemaType={schemaType}
       setHotspotButtonElement={setHotspotButtonElement}
-      setMenuButtonElement={setMenuButtonElement}
+      menuButtonRef={menuButtonRef}
       setMenuOpen={setMenuOpen}
       showAdvancedEditButton={!!showAdvancedEditButton}
       value={value}
@@ -145,12 +150,13 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
     onSelectFile: (assetSource: AssetSource, file: File) => void
+    onOpenSourceForUpload?: (assetSource: AssetSource) => void
     onOpenInSource: (assetSource: AssetSource, asset: ImageAsset) => void
     isMenuOpen: boolean
     observeAsset: (assetId: string) => Observable<ImageAsset>
     reference: Reference
     setHotspotButtonElement: (el: HTMLButtonElement | null) => void
-    setMenuButtonElement: (el: HTMLButtonElement | null) => void
+    menuButtonRef: RefObject<HTMLButtonElement | null>
     setMenuOpen: (isOpen: boolean) => void
     showAdvancedEditButton: boolean
   },
@@ -164,6 +170,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     handleOpenDialog,
     handleRemoveButtonClick,
     onSelectFile,
+    onOpenSourceForUpload,
     imageUrlBuilder,
     isMenuOpen,
     onOpenInSource,
@@ -171,7 +178,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     readOnly,
     reference,
     setHotspotButtonElement,
-    setMenuButtonElement,
+    menuButtonRef,
     setMenuOpen,
     showAdvancedEditButton,
     value,
@@ -182,7 +189,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
   const documentId = reference?._ref
   const observable = useMemo(() => observeAsset(documentId), [documentId, observeAsset])
   const asset = useObservable(observable)
-  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
+  const assetSourcesWithUpload = getAssetSourcesWithUpload(assetSources)
 
   // Find the first asset source that can handle opening this asset in source
   const openInSourceResult = useMemo(
@@ -192,9 +199,10 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
 
   const handleSelectFilesFromAssetSource = useCallback(
     (assetSource: AssetSource, files: File[]) => {
+      setMenuOpen(false)
       onSelectFile(assetSource, files[0])
     },
-    [onSelectFile],
+    [onSelectFile, setMenuOpen],
   )
 
   const handleSelectFilesFromAssetSourceSingle = useCallback(
@@ -204,16 +212,48 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     [assetSourcesWithUpload, handleSelectFilesFromAssetSource],
   )
 
+  // Handler for component mode single source
+  const handleOpenSourceForUploadSingle = useCallback(() => {
+    setMenuOpen(false)
+    if (onOpenSourceForUpload) {
+      onOpenSourceForUpload(assetSourcesWithUpload[0])
+    }
+  }, [assetSourcesWithUpload, onOpenSourceForUpload, setMenuOpen])
+
+  // Wrapped for UploadDropDownMenu (multiple sources) - must close menu when selecting from submenu
+  const handleOpenSourceForUpload = useCallback(
+    (assetSource: AssetSource) => {
+      setMenuOpen(false)
+      onOpenSourceForUpload?.(assetSource)
+    },
+    [onOpenSourceForUpload, setMenuOpen],
+  )
+
   const handleOpenInSource = useCallback(() => {
     if (!openInSourceResult || !asset) return
 
+    setMenuOpen(false)
     const {source, result} = openInSourceResult
     if (result.type === 'url') {
       window.open(result.url, result.target || '_blank')
     } else if (result.type === 'component') {
       onOpenInSource?.(source, asset)
     }
-  }, [asset, onOpenInSource, openInSourceResult])
+  }, [asset, onOpenInSource, openInSourceResult, setMenuOpen])
+
+  const uploadMenuItem = useUploadMenuItem({
+    accept,
+    assetSourcesWithUpload,
+    directUploads,
+    readOnly,
+    onSelectFiles: handleSelectFilesFromAssetSource,
+    onOpenSourceForUpload: handleOpenSourceForUpload,
+    onOpenSourceForUploadSingle: handleOpenSourceForUploadSingle,
+    onSelectFilesSingle: handleSelectFilesFromAssetSourceSingle,
+    getSingleButtonTestId: () => 'file-input-upload-button',
+    onCloseParentMenu: () => setMenuOpen(false),
+    onFilePickerCancel: () => menuButtonRef.current?.focus(),
+  })
 
   if (!documentId || !asset) {
     return <ImageActionsMenuWaitPlaceholder />
@@ -234,44 +274,13 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     copyUrl = imageUrlBuilder.image(_id).url()
   }
 
-  let uploadMenuItem: ReactNode = null
-  switch (assetSourcesWithUpload.length) {
-    case 0:
-      uploadMenuItem = null
-      break
-    case 1:
-      uploadMenuItem = (
-        <FileInputMenuItem
-          icon={UploadIcon}
-          onSelect={handleSelectFilesFromAssetSourceSingle}
-          accept={accept}
-          data-asset-source-name={assetSourcesWithUpload[0].name}
-          text={t('inputs.files.common.actions-menu.upload.label')}
-          data-testid="file-input-upload-button"
-          disabled={readOnly || directUploads === false}
-        />
-      )
-      break
-    default:
-      uploadMenuItem = (
-        <UploadDropDownMenu
-          accept={accept}
-          assetSources={assetSourcesWithUpload}
-          directUploads={directUploads}
-          onSelectFiles={handleSelectFilesFromAssetSource}
-          readOnly={readOnly}
-          renderAsMenuGroup
-        />
-      )
-  }
-
   return (
     <ImageActionsMenu
       isMenuOpen={isMenuOpen}
       onEdit={handleOpenDialog}
       onMenuOpen={setMenuOpen}
       setHotspotButtonElement={setHotspotButtonElement}
-      setMenuButtonElement={setMenuButtonElement}
+      menuButtonRef={menuButtonRef}
       showEdit={!!showAdvancedEditButton}
     >
       <ActionsMenu

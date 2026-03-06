@@ -1,9 +1,8 @@
 import {ChevronDownIcon, UploadIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import startCase from 'lodash-es/startCase.js'
 import uniqueId from 'lodash-es/uniqueId.js'
-import {type ChangeEvent, type ForwardedRef, forwardRef, memo, useCallback, useMemo} from 'react'
+import {type ForwardedRef, forwardRef, memo, useCallback, useMemo} from 'react'
 
 import {
   Button,
@@ -14,6 +13,8 @@ import {
   MenuItem,
 } from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {getAssetSourceDisplayName, isComponentModeAssetSource} from './assetSourceUtils'
+import {openFilePicker} from './openFilePicker'
 
 const UPLOAD_DROP_DOWN_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true} as const
 const MENU_GROUP_POPOVER: MenuGroupProps['popover'] = {
@@ -23,14 +24,27 @@ const MENU_GROUP_POPOVER: MenuGroupProps['popover'] = {
 const ASSET_SOURCE_DATA_ATTRIBUTE = 'data-asset-source-name'
 
 interface UploadDropDownButtonComponentProps {
-  accept?: string
-  assetSources: AssetSource[]
-  capture?: 'user' | 'environment'
-  directUploads?: boolean
-  multiple?: boolean
-  onSelectFiles?: (assetSource: AssetSource, files: File[]) => void
-  readOnly?: boolean
-  renderAsMenuGroup?: boolean
+  'accept'?: string
+  'assetSources': AssetSource[]
+  'capture'?: 'user' | 'environment'
+  'directUploads'?: boolean
+  'multiple'?: boolean
+  'onSelectFiles'?: (assetSource: AssetSource, files: File[]) => void
+  /**
+   * Called when an asset source with `uploadMode: 'component'` is selected.
+   * The source should be rendered directly to handle file selection and upload internally.
+   */
+  'onOpenSourceForUpload'?: (assetSource: AssetSource) => void
+  /**
+   * Called when any item in the upload submenu is clicked (before the action).
+   * Use this to close the parent menu so both submenu and main menu close.
+   */
+  'onCloseParentMenu'?: () => void
+  /** Called when the user cancels the native file picker. */
+  'onFilePickerCancel'?: () => void
+  'readOnly'?: boolean
+  'renderAsMenuGroup'?: boolean
+  'data-testid'?: string
 }
 
 function UploadDropDownMenuComponent(
@@ -44,8 +58,12 @@ function UploadDropDownMenuComponent(
     directUploads,
     multiple,
     onSelectFiles,
+    onOpenSourceForUpload,
+    onCloseParentMenu,
+    onFilePickerCancel,
     readOnly,
     renderAsMenuGroup = false,
+    'data-testid': dataTestId,
   } = props
   const {t} = useTranslation()
 
@@ -59,6 +77,21 @@ function UploadDropDownMenuComponent(
     [uniqId],
   )
 
+  const openFilePickerForAssetSource = useCallback(
+    (assetSource: AssetSource) => {
+      openFilePicker({
+        accept,
+        capture,
+        multiple,
+        onSelect: (files) => {
+          onSelectFiles?.(assetSource, files)
+        },
+        onCancel: onFilePickerCancel,
+      })
+    },
+    [accept, capture, multiple, onSelectFiles, onFilePickerCancel],
+  )
+
   // Needed for keyboard navigation (arrow keys + enter/space)
   const handleMenuItemClick = useCallback(
     (event: React.MouseEvent) => {
@@ -67,25 +100,18 @@ function UploadDropDownMenuComponent(
       if (!assetSource) {
         return
       }
-      const element = document.getElementById(createAssetSourceInputId(assetSource))
-      // Test for document.activeElement to avoid clicking the button twice
-      if (element && document.activeElement !== element) {
-        element.click()
+      // Close parent menu so both submenu and main menu close
+      onCloseParentMenu?.()
+      if (isComponentModeAssetSource(assetSource)) {
+        if (onOpenSourceForUpload) {
+          onOpenSourceForUpload(assetSource)
+        }
+        return
       }
+      // For picker mode: create file input in body (outside menu) so it persists after menu closes
+      openFilePickerForAssetSource(assetSource)
     },
-    [assetSources, createAssetSourceInputId],
-  )
-
-  const renderMenuItemLabel = useCallback(
-    (menuItemContent: React.JSX.Element) => {
-      const assetSourceName = menuItemContent.props[ASSET_SOURCE_DATA_ATTRIBUTE]
-      const assetSource = assetSources.find((source) => source.name === assetSourceName)
-      if (!assetSource) {
-        return menuItemContent
-      }
-      return <label htmlFor={createAssetSourceInputId(assetSource)}>{menuItemContent}</label>
-    },
-    [assetSources, createAssetSourceInputId],
+    [assetSources, onCloseParentMenu, onOpenSourceForUpload, openFilePickerForAssetSource],
   )
 
   const renderMenuItemForAssetSource = useCallback(
@@ -103,62 +129,14 @@ function UploadDropDownMenuComponent(
           }
           data-testid={`file-input-upload-button-${index}`}
           disabled={uploadsDisabled}
-          htmlFor={inputId}
           icon={assetSource.icon}
           onClick={handleMenuItemClick}
-          renderMenuItem={renderMenuItemLabel}
-          text={
-            (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-            startCase(assetSource.name)
-          }
+          text={getAssetSourceDisplayName(assetSource, t, {useStartCaseForName: true})}
         />
       )
     },
-    [
-      assetSources,
-      createAssetSourceInputId,
-      handleMenuItemClick,
-      renderMenuItemLabel,
-      t,
-      uploadsDisabled,
-    ],
+    [assetSources, createAssetSourceInputId, handleMenuItemClick, t, uploadsDisabled],
   )
-
-  const handleFileInputChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const assetSourceName = event.target.dataset.assetSourceName
-      const assetSource = assetSources.find((source) => source.name === assetSourceName)
-      if (!assetSource) {
-        return
-      }
-      if (onSelectFiles && event.target.files) {
-        onSelectFiles(assetSource, Array.from(event.target.files))
-      }
-      event.stopPropagation()
-      event.preventDefault()
-    },
-    [assetSources, onSelectFiles],
-  )
-
-  const fileInputs = useMemo(() => {
-    return assetSources.map((assetSource) => {
-      const _id = createAssetSourceInputId(assetSource)
-      return (
-        <input
-          key={_id}
-          accept={accept}
-          capture={capture}
-          id={_id}
-          data-asset-source-name={assetSource.name}
-          multiple={multiple}
-          onChange={handleFileInputChange}
-          type="file"
-          value=""
-          style={{display: 'none'}}
-        />
-      )
-    })
-  }, [accept, assetSources, capture, createAssetSourceInputId, handleFileInputChange, multiple])
 
   if (assetSources && assetSources.length > 1) {
     const menuItems = assetSources.map((assetSource, index) =>
@@ -166,38 +144,33 @@ function UploadDropDownMenuComponent(
     )
     if (renderAsMenuGroup) {
       return (
-        <>
-          <MenuGroup
-            icon={UploadIcon}
-            text={t('input.files.common.upload-placeholder.file-input-button.text')}
-            popover={MENU_GROUP_POPOVER}
-          >
-            {menuItems}
-          </MenuGroup>
-          {fileInputs}
-        </>
+        <MenuGroup
+          data-testid={dataTestId}
+          icon={UploadIcon}
+          text={t('input.files.common.upload-placeholder.file-input-button.text')}
+          popover={MENU_GROUP_POPOVER}
+        >
+          {menuItems}
+        </MenuGroup>
       )
     }
     return (
-      <>
-        <MenuButton
-          id={`${uniqId}_upload-button`}
-          ref={forwardedRef}
-          button={
-            <Button
-              data-testid="file-input-upload-button-0"
-              icon={UploadIcon}
-              iconRight={ChevronDownIcon}
-              mode="bleed"
-              disabled={uploadsDisabled}
-              text={t('input.files.common.upload-placeholder.file-input-button.text')}
-            />
-          }
-          menu={<Menu>{menuItems}</Menu>}
-          popover={UPLOAD_DROP_DOWN_MENU_POPOVER}
-        />
-        {fileInputs}
-      </>
+      <MenuButton
+        id={`${uniqId}_upload-button`}
+        ref={forwardedRef}
+        button={
+          <Button
+            data-testid="file-input-upload-button-0"
+            icon={UploadIcon}
+            iconRight={ChevronDownIcon}
+            mode="bleed"
+            disabled={uploadsDisabled}
+            text={t('input.files.common.upload-placeholder.file-input-button.text')}
+          />
+        }
+        menu={<Menu>{menuItems}</Menu>}
+        popover={UPLOAD_DROP_DOWN_MENU_POPOVER}
+      />
     )
   }
 

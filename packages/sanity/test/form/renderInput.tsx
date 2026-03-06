@@ -70,11 +70,19 @@ export type RenderInputResult = {
   result: ReturnType<typeof render>
 }
 export async function renderInput<ElementProps>(props: {
+  additionalSchemaTypes?: Array<{name: string; [key: string]: unknown}>
+  configOverrides?: Record<string, unknown>
   fieldDefinition: FieldDefinition
   props?: TestRenderProps
   render: TestRenderInputCallback<ElementProps>
 }): Promise<RenderInputResult> {
-  const {render: initialRender, fieldDefinition, props: initialTestProps} = props
+  const {
+    additionalSchemaTypes = [],
+    configOverrides,
+    render: initialRender,
+    fieldDefinition,
+    props: initialTestProps,
+  } = props
   const name = fieldDefinition.name
 
   const client = createMockSanityClient() as unknown as SanityClient
@@ -92,8 +100,10 @@ export async function renderInput<ElementProps>(props: {
             name: 'test',
             fields: [fieldDefinition],
           }),
+          ...additionalSchemaTypes,
         ],
       },
+      ...configOverrides,
     },
   })
 

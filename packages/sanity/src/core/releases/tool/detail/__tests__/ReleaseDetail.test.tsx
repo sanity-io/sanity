@@ -84,6 +84,13 @@ vi.mock('../../../../hooks/useProjectSubscriptions', () => ({
   useProjectSubscriptions: vi.fn(() => useProjectSubscriptionsMockReturn),
 }))
 
+vi.mock('../../../../hooks/useStudioUrl', () => ({
+  useStudioUrl: vi.fn(() => ({
+    studioUrl: 'http://localhost:3333',
+    buildIntentUrl: vi.fn((path: string) => `http://localhost:3333${path}`),
+  })),
+}))
+
 const mockRouterNavigate = vi.fn()
 
 const renderTest = async () => {

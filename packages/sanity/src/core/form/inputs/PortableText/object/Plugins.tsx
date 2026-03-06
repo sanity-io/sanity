@@ -1,6 +1,6 @@
-import {htmlToBlocks} from '@portabletext/block-tools'
 import {defineBehavior, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
+import {htmlToPortableText} from '@portabletext/html'
 import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {PasteLinkPlugin} from '@portabletext/plugin-paste-link'
@@ -38,8 +38,8 @@ export const PortableTextEditorPlugins = (props: {
 
   // Studio owns HTML paste deserialization so it can pass
   // unstable_whitespaceOnPasteMode from the Sanity schema config directly to
-  // block-tools. This bypasses PTE's built-in HTML converter, which doesn't
-  // have access to Sanity-specific schema options.
+  // @portabletext/html. This bypasses PTE's built-in HTML converter, which
+  // doesn't have access to Sanity-specific schema options.
   const htmlPasteBehaviors = useMemo(
     () => [
       defineBehavior({
@@ -49,10 +49,10 @@ export const PortableTextEditorPlugins = (props: {
             return false
           }
 
-          const blocks = htmlToBlocks(event.data, schemaTypes.portableText, {
+          const blocks = htmlToPortableText(event.data, {
+            schema: snapshot.context.schema,
             keyGenerator: snapshot.context.keyGenerator,
-            unstable_whitespaceOnPasteMode:
-              schemaTypes.block.options?.unstable_whitespaceOnPasteMode,
+            whitespaceMode: schemaTypes.block.options?.unstable_whitespaceOnPasteMode,
           }) as Array<PortableTextBlock>
 
           if (blocks.length === 0) {
@@ -79,7 +79,7 @@ export const PortableTextEditorPlugins = (props: {
         ],
       }),
     ],
-    [schemaTypes.block.options?.unstable_whitespaceOnPasteMode, schemaTypes.portableText],
+    [schemaTypes.block.options?.unstable_whitespaceOnPasteMode],
   )
 
   const componentProps = useMemo(

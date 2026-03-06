@@ -9,7 +9,6 @@ import {
   type RenderBlockActionsProps,
 } from '../../types/_transitional'
 import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
-import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 
 interface BlockActionsProps {
   block: PortableTextBlock
@@ -24,26 +23,20 @@ const Root = styled.div`
 
 export function BlockActions(props: BlockActionsProps) {
   const editor = usePortableTextEditor()
-  const schemaTypes = usePortableTextMemberSchemaTypes()
   const {block, onChange, renderBlockActions} = props
-  const decoratorValues = useMemo(
-    () => schemaTypes.decorators.map((d) => d.value),
-    [schemaTypes.decorators],
-  )
-
   const blockActions = useMemo(() => {
     if (renderBlockActions) {
       const blockActionProps: RenderBlockActionsProps = {
         block,
         value: PortableTextEditor.getValue(editor),
-        set: createSetCallback({allowedDecorators: decoratorValues, block, onChange}),
+        set: createSetCallback({block, onChange}),
         unset: createUnsetCallback({block, onChange}),
-        insert: createInsertCallback({allowedDecorators: decoratorValues, block, onChange}),
+        insert: createInsertCallback({block, onChange}),
       }
       return renderBlockActions(blockActionProps)
     }
     return undefined
-  }, [renderBlockActions, block, editor, onChange, decoratorValues])
+  }, [renderBlockActions, block, editor, onChange])
 
   // Don't render anything if the renderBlockActions function returns null.
   // Note that if renderBlockComponent is a React class, this will never be the case.

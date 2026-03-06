@@ -1,6 +1,7 @@
 import {defineConfig} from 'sanity'
 
 import {apiConfig} from './apiConfig'
+import {arrayI18nEfps} from './tests/arrayI18n/sanity.config'
 import {articleEfps} from './tests/article/sanity.config'
 import {recipeEfps} from './tests/recipe/sanity.config'
 import {singleStringEfps} from './tests/singleString/sanity.config'
@@ -17,6 +18,11 @@ const common = {
 }
 
 export default defineConfig([
+  {
+    basePath: '/arrayI18n',
+    ...common,
+    ...arrayI18nEfps,
+  },
   {
     basePath: '/article',
     ...common,

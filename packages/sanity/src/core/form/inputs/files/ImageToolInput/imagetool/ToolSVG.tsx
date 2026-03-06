@@ -1,5 +1,15 @@
+import {useTheme} from '@sanity/ui'
+import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {uuid} from '@sanity/uuid'
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEventHandler,
+} from 'react'
 
 import {
   DEFAULT_CROP,
@@ -14,6 +24,9 @@ import {usePointerHandlers} from './hooks/usePointerHandlers'
 import {useRectCalculations} from './hooks/useRectCalculations'
 import {
   CropCornerHandle,
+  CropDimensionsBadgeGroup,
+  CropDimensionsBadgeRect,
+  CropDimensionsBadgeText,
   CropEdgeHandle,
   CropHandleInteractionArea,
   CropRect,
@@ -33,6 +46,55 @@ import {
   getRectCenterY,
   getRectRight,
 } from './utils'
+
+const BADGE_PADDING_X = 6
+const BADGE_PADDING_Y = 3
+const BADGE_OFFSET_Y = 8
+// Approximate character width as a ratio of font size for badge width estimation
+const BADGE_CHAR_WIDTH_RATIO = 0.6
+
+function CropDimensionsBadge(props: {
+  x: number
+  y: number
+  width: number
+  height: number
+  visible: boolean
+  onMouseEnter?: MouseEventHandler
+  onMouseLeave?: MouseEventHandler
+}) {
+  const {x, y, width, height, visible, onMouseEnter, onMouseLeave} = props
+  const theme = useTheme()
+  const {font} = getThemeV2(theme)
+  const fontSize = font.text.sizes[1].fontSize
+  const text = `${width} × ${height}`
+  const textWidth = text.length * (fontSize * BADGE_CHAR_WIDTH_RATIO)
+  const badgeWidth = textWidth + BADGE_PADDING_X * 2
+  const badgeHeight = fontSize + BADGE_PADDING_Y * 2
+
+  return (
+    <CropDimensionsBadgeGroup
+      $visible={visible}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <title>{`Cropped image size: ${width} × ${height} pixels`}</title>
+      <CropDimensionsBadgeRect
+        x={x - badgeWidth / 2}
+        y={y + BADGE_OFFSET_Y}
+        width={badgeWidth}
+        height={badgeHeight}
+      />
+      <CropDimensionsBadgeText
+        x={x}
+        y={y + BADGE_OFFSET_Y + badgeHeight / 2}
+        textAnchor="middle"
+        dominantBaseline="central"
+      >
+        {text}
+      </CropDimensionsBadgeText>
+    </CropDimensionsBadgeGroup>
+  )
+}
 
 function ToolSVGComponent(props: ToolSVGProps) {
   const {value, image, onChange, onChangeEnd, readOnly, size} = props
@@ -96,6 +158,14 @@ function ToolSVGComponent(props: ToolSVGProps) {
     focusTarget,
     readOnly,
   })
+
+  // Calculate cropped pixel dimensions from the original image
+  const croppedDimensions = useMemo(() => {
+    const crop = value.crop || DEFAULT_CROP
+    const croppedWidth = Math.round(image.naturalWidth * (1 - crop.left - crop.right))
+    const croppedHeight = Math.round(image.naturalHeight * (1 - crop.top - crop.bottom))
+    return {width: croppedWidth, height: croppedHeight}
+  }, [image.naturalWidth, image.naturalHeight, value.crop])
 
   const cropHandles = useMemo(() => calculateCropHandles(cropRect), [cropRect])
 
@@ -431,6 +501,23 @@ function ToolSVGComponent(props: ToolSVGProps) {
                 </g>
               )
             })}
+
+          {/* Cropped resolution badge - visible on hover, drag, or focus */}
+          <CropDimensionsBadge
+            x={getRectCenterX(cropRect)}
+            y={getRectBottom(cropRect)}
+            width={croppedDimensions.width}
+            height={croppedDimensions.height}
+            onMouseEnter={handleCropMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            visible={
+              hoverTarget === 'crop' ||
+              Boolean(hoverTarget?.startsWith('crop-')) ||
+              dragTarget === 'crop' ||
+              dragTarget === 'cropHandle' ||
+              focusTarget === 'crop'
+            }
+          />
         </g>
       </StyledSVG>
     </SVGContainer>
