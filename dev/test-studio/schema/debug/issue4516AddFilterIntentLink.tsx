@@ -23,6 +23,14 @@ export const issue4516AddFilterIntentLink = {
     },
     {
       name: 'notes',
+      description: (
+        <div>
+          <a href="#">
+            <img src="./example.jpg" />
+          </a>
+          <span style={{color: 'red'}}>A title wrapped in a component</span>
+        </div>
+      ),
       title: 'Notes',
       type: 'text',
     },

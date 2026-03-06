@@ -214,7 +214,7 @@ describe('createFieldDefinitions', () => {
     expect(fieldDefs[0].filterName).toEqual('arrayList')
   })
 
-  it('should correctly sanitize titles containing React components', () => {
+  it('should correctly sanitize titles containing plain HTML JSX', () => {
     const mockSchema = Schema.compile({
       name: 'default',
       types: [
@@ -244,7 +244,7 @@ describe('createFieldDefinitions', () => {
     expect(fieldDefs[0].title).toEqual('A title wrapped in a component')
   })
 
-  it('should sanitize title text without rendering custom React components', () => {
+  it('should fall back to field name when title contains a custom React component that cannot render', () => {
     function ThrowsOnRender(props: {children: React.ReactNode}) {
       throw new Error('should not render')
     }
@@ -268,6 +268,6 @@ describe('createFieldDefinitions', () => {
     })
 
     const fieldDefs = createFieldDefinitions(mockSchema, filterDefinitions)
-    expect(fieldDefs[0].title).toEqual('Safe child text')
+    expect(fieldDefs[0].title).toEqual('Title')
   })
 })

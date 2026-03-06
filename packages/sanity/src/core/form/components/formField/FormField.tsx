@@ -1,9 +1,12 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import {type HTMLProps, memo, type ReactNode} from 'react'
+import {type HTMLProps, memo, type ReactNode, useMemo} from 'react'
 
+import {TextWithTone} from '../../../components'
 import {type DocumentFieldActionNode} from '../../../config'
+import {useTranslation} from '../../../i18n'
 import {type FormNodePresence} from '../../../presence'
+import {sanitizeFieldValue} from '../../../studio/components/navbar/search/utils/sanitizeField'
 import {useFieldActions} from '../../field'
 import {type FieldCommentsProps} from '../../types'
 import {FormRow} from '../layout/FormRow'
@@ -65,6 +68,31 @@ export const FormField = memo(function FormField(
     ...restProps
   } = props
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
+  const {t} = useTranslation()
+
+  const sanitizedTitle = useMemo(() => {
+    if (!title) return title
+    const result = sanitizeFieldValue(title as string | React.JSX.Element)
+    return (
+      result || (
+        <TextWithTone tone="caution" size={1}>
+          {t('form.field.title.unsupported-react-element')}
+        </TextWithTone>
+      )
+    )
+  }, [title, t])
+
+  const sanitizedDescription = useMemo(() => {
+    if (!description) return description
+    const result = sanitizeFieldValue(description as string | React.JSX.Element)
+    return (
+      result || (
+        <TextWithTone tone="caution" size={1}>
+          {t('form.field.description.unsupported-react-element')}
+        </TextWithTone>
+      )
+    )
+  }, [description, t])
 
   return (
     <FormRow>
@@ -90,9 +118,9 @@ export const FormField = memo(function FormField(
             inputId={inputId}
             content={
               <FormFieldHeaderText
-                description={description}
+                description={sanitizedDescription}
                 inputId={inputId}
-                title={title}
+                title={sanitizedTitle}
                 validation={validation}
                 deprecated={deprecated}
               />
