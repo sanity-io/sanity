@@ -4,7 +4,7 @@ import {useClient} from 'sanity'
 import {IntentLink, RouteScope, StateLink, useRouter, useStateLink} from 'sanity/router'
 
 export function RouterDebug() {
-  const {navigate} = useRouter()
+  const {navigate, navigateUrl} = useRouter()
 
   const link = useStateLink({
     state: {
@@ -56,6 +56,17 @@ export function RouterDebug() {
           >
             Open in focus mode
           </IntentLink>
+
+          <Button
+            onClick={() =>
+              navigateUrl({
+                path: '/?sidebar=tasks&selectedTask=a763cdc1-d517-45b2-b3b9-19bf7507f4e5&viewMode=edit',
+                replace: false,
+              })
+            }
+          >
+            Open Task
+          </Button>
           <Button
             onClick={() => {
               navigate({
