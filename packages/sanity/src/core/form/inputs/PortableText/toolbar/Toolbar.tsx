@@ -59,8 +59,11 @@ const FullscreenButtonBox = styled(Box)`
 
 const SLOW_INITIAL_VALUE_LIMIT = 300
 
+// navigator.platform is deprecated but remains the most reliable way to detect Mac
+// oxlint-disable typescript/no-deprecated
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
+// oxlint-enable typescript/no-deprecated
 
 const InnerToolbar = memo(function InnerToolbar({
   actionGroups,
@@ -84,6 +87,7 @@ const InnerToolbar = memo(function InnerToolbar({
   const showActionMenu = actionsLen > 0
   const showInsertMenu = insertMenuItems.length > 0
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  // oxlint-disable-next-line typescript/no-deprecated -- useElementRect will be migrated to useElementSize in a separate PR
   const rootElementRect = useElementRect(rootElement)
 
   const collapsed = collapsible && rootElementRect ? rootElementRect?.width < 400 : false
@@ -164,8 +168,10 @@ const InnerToolbar = memo(function InnerToolbar({
 
 export function Toolbar(props: ToolbarProps) {
   const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
+  // oxlint-disable-next-line typescript/no-deprecated -- will be migrated in a separate PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
+  // oxlint-disable-next-line typescript/no-deprecated -- will be migrated in a separate PR
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()
   const disabled = readOnly || !selection
@@ -215,6 +221,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertBlock = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
+      // oxlint-disable-next-line typescript/no-deprecated -- PortableTextEditor API will be migrated in a separate PR
       const path = PortableTextEditor.insertBlock(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)
@@ -226,6 +233,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertInline = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
+      // oxlint-disable-next-line typescript/no-deprecated -- PortableTextEditor API will be migrated in a separate PR
       const path = PortableTextEditor.insertChild(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)
