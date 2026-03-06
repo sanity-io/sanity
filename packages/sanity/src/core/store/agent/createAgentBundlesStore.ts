@@ -99,7 +99,7 @@ function buildUrl(client: SanityClient, organizationId: string): string {
 type EventSourceConstructor = typeof EventSource
 
 const eventSourcePolyfill$ = defer(() => import('@sanity/eventsource')).pipe(
-  map(({default: ES}) => ES as EventSourceConstructor),
+  map(({default: ES}) => ES as unknown as EventSourceConstructor),
   shareReplay(1),
 )
 

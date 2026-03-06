@@ -2247,7 +2247,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for open menu button for user menu */
   'user-menu.open-menu': 'Open menu',
 
-  /** Label for agent bundle versions in the document header */
+  /** Label for other users' agent bundle versions */
+  'version.agent-bundle.agent-changes': 'Agent changes',
+  /** Label for the current user's agent bundle versions */
   'version.agent-bundle.proposed-changes': 'Proposed changes',
 
   /**
