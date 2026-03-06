@@ -1,18 +1,28 @@
-import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
+import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import get from 'lodash-es/get.js'
-import startCase from 'lodash-es/startCase.js'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
+import {EMPTY} from 'rxjs'
 
 import {ActionsMenu} from '../../../core/form/inputs/files/common/ActionsMenu'
-import {FileInputMenuItem} from '../../../core/form/inputs/files/common/FileInputMenuItem/FileInputMenuItem'
-import {UploadDropDownMenu} from '../../../core/form/inputs/files/common/UploadDropDownMenu'
+import {getDataTestIdPrefix} from '../../../core/form/inputs/files/common/AssetSourceBrowser'
+import {
+  getAssetSourceDisplayName,
+  getAssetSourcesWithUpload,
+} from '../../../core/form/inputs/files/common/assetSourceUtils'
+import {
+  findOpenInSourceResult,
+  getOpenInSourceName,
+} from '../../../core/form/inputs/files/common/openInSource'
+import {useUploadMenuItem} from '../../../core/form/inputs/files/common/useUploadMenuItem'
+import {sourceName as MEDIA_LIBRARY_SOURCE_NAME} from '../../../core/form/studio/assetSourceMediaLibrary'
 import {DEFAULT_API_VERSION} from '../../../core/form/studio/assetSourceMediaLibrary/constants'
 import {useClient} from '../../../core/hooks'
 import {useTranslation} from '../../../core/i18n'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {CUSTOM_DOMAIN_PRODUCTION, CUSTOM_DOMAIN_STAGING} from './constants'
-import {getPlaybackTokens, type VideoAssetProps} from './types'
+import {getPlaybackTokens, type VideoAssetInputProps} from './types'
 import {useVideoPlaybackInfo} from './useVideoPlaybackInfo'
 import {VideoActionsMenu} from './VideoActionsMenu'
 import {VideoSkeleton} from './VideoSkeleton'
@@ -26,23 +36,54 @@ export function getMediaLibraryId(assetRef: string) {
   return parts[1]
 }
 
-export function VideoPreview(props: VideoAssetProps) {
+/** Extract asset container ID from a media-library ref (value.media._ref, not value.asset._ref) */
+function getAssetContainerIdFromRef(ref: string): string | null {
+  if (!ref?.startsWith('media-library:')) return null
+  const parts = ref.split(':')
+  if (parts.length !== 3 || !parts[2]) return null
+  return parts[2]
+}
+
+/** Minimal asset for openInSource when observeAsset hasn't resolved yet (media-library refs).
+ * Use mediaRef (value.media._ref), not assetRef (value.asset._ref) - the Media Library /assets/ URL expects the asset container ID. */
+function createMinimalAssetForOpenInSource(
+  mediaRef: string,
+): {_id: string; _type: string; source: {id: string; name: string}} | null {
+  const assetContainerId = getAssetContainerIdFromRef(mediaRef)
+  if (!assetContainerId) return null
+  return {
+    _id: mediaRef,
+    _type: 'sanity.videoAsset',
+    source: {id: assetContainerId, name: MEDIA_LIBRARY_SOURCE_NAME},
+  }
+}
+
+export function VideoPreview(props: VideoAssetInputProps) {
   const {
     assetSources,
     clearField,
     directUploads,
+    menuButtonRef,
+    observeAsset,
+    onOpenInSource,
+    onOpenSourceForUpload,
+    onSelectAssetSourceForBrowse,
     onSelectFiles,
     readOnly,
     schemaType,
-    setBrowseButtonElement,
     setSelectedAssetSource,
     value,
   } = props
   const {t} = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const asset = value?.asset
+  const mediaRef = value?.media?._ref
   const sourcesFromSchema = schemaType.options?.sources
-  const accept = get(schemaType, 'options.accept', '')
+  const accept = get(
+    schemaType,
+    'options.accept',
+    schemaType.name === 'sanity.video' ? 'video/*' : '',
+  )
   const isStaging = useClient({apiVersion: DEFAULT_API_VERSION})
     .config()
     .apiHost.endsWith('.sanity.work')
@@ -77,29 +118,69 @@ export function VideoPreview(props: VideoAssetProps) {
       playbackId: playbackInfoState.result?.id,
       onMenuOpen: setIsMenuOpen,
       isMenuOpen: isMenuOpen,
-      setMenuButtonElement: setBrowseButtonElement,
+      menuButtonRef,
     }
 
     return tokens ? {...baseProps, tokens} : baseProps
-  }, [isStaging, playbackInfoState, isMenuOpen, setBrowseButtonElement])
+  }, [isStaging, playbackInfoState, isMenuOpen, menuButtonRef])
 
-  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
+  const assetSourcesWithUpload = getAssetSourcesWithUpload(assetSources)
 
-  const handleSelectVideoMenuItemClicked = useCallback(
-    (event: React.MouseEvent) => {
-      setIsMenuOpen(false)
-      const assetSourceNameData = event.currentTarget.getAttribute('data-asset-source-name')
-      const assetSource = assetSources.find((source) => source.name === assetSourceNameData)
-      if (assetSource) {
-        setSelectedAssetSource(assetSource)
-      } else {
-        console.warn(
-          `No asset source found for the selected asset source name '${assetSourceNameData}'`,
+  const documentId = asset?._ref
+  const observable = useMemo(
+    () => (documentId && observeAsset ? observeAsset(documentId) : EMPTY),
+    [documentId, observeAsset],
+  )
+  const resolvedAsset = useObservable(observable)
+
+  const openInSourceResult = useMemo(() => {
+    if (resolvedAsset) {
+      return findOpenInSourceResult(resolvedAsset, assetSources)
+    }
+    // Fallback: media-library refs may not resolve via observeAsset (external refs).
+    // Use mediaRef (asset container), not documentId (instance) - Media Library expects asset ID.
+    if (mediaRef) {
+      const minimalAsset = createMinimalAssetForOpenInSource(mediaRef)
+      if (minimalAsset) {
+        return findOpenInSourceResult(
+          minimalAsset as Parameters<typeof findOpenInSourceResult>[0],
+          assetSources,
         )
       }
+    }
+    return null
+  }, [mediaRef, resolvedAsset, assetSources])
+
+  const handleSelectAssetSourceForBrowse = useCallback(
+    (assetSource: AssetSource) => {
+      setIsMenuOpen(false)
+      ;(onSelectAssetSourceForBrowse ?? setSelectedAssetSource)(assetSource)
     },
-    [assetSources, setSelectedAssetSource],
+    [onSelectAssetSourceForBrowse, setSelectedAssetSource],
   )
+
+  const handleOpenInSource = useCallback(() => {
+    if (!openInSourceResult) return
+
+    setIsMenuOpen(false)
+    const {source, result} = openInSourceResult
+    if (result.type === 'url') {
+      window.open(result.url, result.target || '_blank')
+    } else if (result.type === 'component') {
+      const assetContainerId = mediaRef ? getAssetContainerIdFromRef(mediaRef) : null
+      const baseAsset =
+        resolvedAsset ?? (mediaRef ? createMinimalAssetForOpenInSource(mediaRef) : null)
+      // Ensure source.id is the asset container ID (Media Library expects this for /assets/ URL)
+      const assetToOpen = baseAsset
+        ? assetContainerId && baseAsset.source
+          ? {...baseAsset, source: {...baseAsset.source, id: assetContainerId}}
+          : baseAsset
+        : null
+      if (assetToOpen) {
+        onOpenInSource?.(source, assetToOpen as Parameters<typeof onOpenInSource>[1])
+      }
+    }
+  }, [mediaRef, onOpenInSource, openInSourceResult, resolvedAsset, setIsMenuOpen])
 
   const handleSelectVideosFromAssetSource = useCallback(
     (assetSource: AssetSource, videos: File[]) => {
@@ -116,6 +197,21 @@ export function VideoPreview(props: VideoAssetProps) {
     [assetSourcesWithUpload, handleSelectVideosFromAssetSource],
   )
 
+  const handleOpenSourceForUploadSingle = useCallback(() => {
+    setIsMenuOpen(false)
+    onOpenSourceForUpload?.(assetSourcesWithUpload[0])
+  }, [assetSourcesWithUpload, onOpenSourceForUpload])
+
+  // Wrapped for UploadDropDownMenu (multiple sources) - must close menu when selecting from submenu
+  const handleOpenSourceForUpload = useCallback(
+    (assetSource: AssetSource) => {
+      setIsMenuOpen(false)
+      onOpenSourceForUpload?.(assetSource)
+    },
+    [onOpenSourceForUpload],
+  )
+
+  const dataTestIdPrefix = getDataTestIdPrefix(schemaType)
   const browseMenuItem: ReactNode = useMemo(() => {
     // Legacy support for setting asset sources to an empty array through schema
     // Will still allow for uploading videos through the default studio asset source,
@@ -131,11 +227,10 @@ export function VideoPreview(props: VideoAssetProps) {
       return (
         <MenuItem
           icon={SearchIcon}
-          text={t('inputs.file.browse-button.text')}
-          onClick={handleSelectVideoMenuItemClicked}
+          text={t('asset-source.browse-button.text')}
+          onClick={() => handleSelectAssetSourceForBrowse(assetSources[0])}
           disabled={readOnly}
-          data-testid={`video-input-browse-button-${assetSources[0].name}`}
-          data-asset-source-name={assetSources[0].name}
+          data-testid={`${dataTestIdPrefix}-browse-button-${assetSources[0].name}`}
         />
       )
     }
@@ -143,58 +238,37 @@ export function VideoPreview(props: VideoAssetProps) {
       return (
         <MenuItem
           key={assetSource.name}
-          text={
-            (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-            startCase(assetSource.name)
-          }
-          onClick={handleSelectVideoMenuItemClicked}
+          text={getAssetSourceDisplayName(assetSource, t, {useStartCaseForName: true})}
+          onClick={() => handleSelectAssetSourceForBrowse(assetSource)}
           icon={assetSource.icon || ImageIcon}
           disabled={readOnly}
-          data-testid={`video-input-browse-button-${assetSource.name}`}
-          data-asset-source-name={assetSource.name}
+          data-testid={`${dataTestIdPrefix}-browse-button-${assetSource.name}`}
         />
       )
     })
-  }, [assetSources, handleSelectVideoMenuItemClicked, readOnly, sourcesFromSchema?.length, t])
-
-  const uploadMenuItem: ReactNode = useMemo(() => {
-    switch (assetSourcesWithUpload.length) {
-      case 0:
-        return null
-      case 1:
-        return (
-          <FileInputMenuItem
-            icon={UploadIcon}
-            onSelect={handleSelectVideosFromAssetSourceSingle}
-            accept={accept}
-            data-asset-source-name={assetSourcesWithUpload[0].name}
-            text={t('inputs.files.common.actions-menu.upload.label')}
-            data-testid={`video-input-upload-button-${assetSourcesWithUpload[0].name}`}
-            disabled={readOnly || directUploads === false}
-          />
-        )
-      default:
-        return (
-          <UploadDropDownMenu
-            accept={accept}
-            assetSources={assetSourcesWithUpload}
-            directUploads={directUploads}
-            onSelectFiles={handleSelectVideosFromAssetSource}
-            readOnly={readOnly}
-            data-testid="video-input-upload-drop-down-menu-button"
-            renderAsMenuGroup
-          />
-        )
-    }
   }, [
+    assetSources,
+    dataTestIdPrefix,
+    handleSelectAssetSourceForBrowse,
+    readOnly,
+    sourcesFromSchema?.length,
+    t,
+  ])
+
+  const uploadMenuItem = useUploadMenuItem({
     accept,
     assetSourcesWithUpload,
     directUploads,
-    handleSelectVideosFromAssetSource,
-    handleSelectVideosFromAssetSourceSingle,
     readOnly,
-    t,
-  ])
+    onSelectFiles: handleSelectVideosFromAssetSource,
+    onOpenSourceForUpload: handleOpenSourceForUpload,
+    onOpenSourceForUploadSingle: handleOpenSourceForUploadSingle,
+    onSelectFilesSingle: handleSelectVideosFromAssetSourceSingle,
+    getSingleButtonTestId: (sourceName) => `video-input-upload-button-${sourceName}`,
+    dropdownMenuTestId: 'video-input-upload-drop-down-menu-button',
+    onCloseParentMenu: () => setIsMenuOpen(false),
+    onFilePickerCancel: () => menuButtonRef.current?.focus(),
+  })
 
   if (!asset) {
     return null
@@ -222,6 +296,8 @@ export function VideoPreview(props: VideoAssetProps) {
         browse={browseMenuItem}
         upload={uploadMenuItem}
         onReset={clearField}
+        openInSource={openInSourceResult ? handleOpenInSource : undefined}
+        openInSourceName={getOpenInSourceName(openInSourceResult, t)}
         readOnly={readOnly}
       />
     </VideoActionsMenu>

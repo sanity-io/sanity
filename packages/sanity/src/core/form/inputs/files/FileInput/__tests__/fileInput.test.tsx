@@ -5,7 +5,11 @@ import {type Observable, of} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 
 import {renderFileInput} from '../../../../../../../test/form'
+import {getDataTestIdPrefix} from '../../common/AssetSourceBrowser'
 import {BaseFileInput} from '../FileInput'
+
+const fileBrowseTestId = (sourceName: string) =>
+  `${getDataTestIdPrefix({name: 'file', jsonType: 'object'})}-browse-button-${sourceName}`
 
 const observeAssetStub = (): Observable<FileAsset> =>
   of({
@@ -32,102 +36,35 @@ describe('FileInput with empty state', () => {
   })
 
   it.todo('renders new file when a new file in uploaded')
-  it.todo('renders new file when a new file is dragged into the input')
-  it.todo('is unable to upload when the file type is not allowed')
 
-  /* assetSources - adds a list of sources that a user can pick from when browsing */
+  it('shows invalid file warning when asset ref is not a valid file source', async () => {
+    // Value with asset ref that doesn't match file asset id format (e.g. deleted/broken ref)
+    const invalidValue = {
+      _type: 'file',
+      asset: {_ref: 'document-invalid-or-deleted', _type: 'reference'},
+    }
+    await renderFileInput({
+      fieldDefinition: {name: 'someFile', title: 'A file', type: 'file'},
+      observeAsset: observeAssetStub,
+      props: {documentValue: {someFile: invalidValue}},
+      render: (inputProps) => <BaseFileInput {...inputProps} value={invalidValue} />,
+    })
+    expect(screen.getByText('Invalid file value')).toBeInTheDocument()
+  })
 
-  it('renders the browse button when it has at least one element in assetSources', async () => {
-    const {result} = await renderFileInput({
+  it('respects schema options.accept for file type', async () => {
+    await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
-        title: 'A simple file',
+        title: 'PDF only',
         type: 'file',
+        options: {accept: 'application/pdf'},
       },
       observeAsset: observeAssetStub,
       render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
-
-    expect(screen.getByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
-    expect(screen.getByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
-  })
-
-  it('renders only the upload button when it has no assetSources', async () => {
-    const {result} = await renderFileInput({
-      fieldDefinition: {
-        name: 'someFile',
-        title: 'A simple file',
-        type: 'file',
-      },
-      observeAsset: observeAssetStub,
-      render: (inputProps) => <BaseFileInput {...inputProps} assetSources={[]} />,
-    })
-    expect(screen.queryByTestId('file-input-browse-button-test-source')).not.toBeInTheDocument()
-    expect(screen.getByTestId('file-input-upload-button-sanity-default')).toBeInTheDocument()
-    expect(screen.queryByTestId('file-input-browse-button-sanity-default')).not.toBeInTheDocument()
-  })
-
-  it('renders the browse button with a tooltip when it has at least one element in assetSources', async () => {
-    const {result} = await renderFileInput({
-      fieldDefinition: {
-        name: 'someFile',
-        title: 'A simple file',
-        type: 'file',
-      },
-      observeAsset: observeAssetStub,
-      render: (inputProps) => (
-        <BaseFileInput
-          {...inputProps}
-          assetSources={[{name: 'source1', Uploader: {}}, {name: 'source2'}] as any}
-        />
-      ),
-    })
-
-    const browseButton = screen.queryByTestId('file-input-multi-browse-button')
-
-    expect(screen.getByTestId('file-input-upload-button-source1')).toBeInTheDocument()
-    expect(browseButton).toBeInTheDocument()
-
-    await userEvent.click(browseButton!)
-
-    await waitFor(() => {
-      expect(screen.getByTestId('file-input-browse-button-source1')).toBeInTheDocument()
-      expect(screen.getByTestId('file-input-browse-button-source2')).toBeInTheDocument()
-    })
-  })
-
-  /* directUploads - allows for user to upload files directly (default is true) */
-
-  it('renders the upload button as disabled when directUploads is false', async () => {
-    const {result} = await renderFileInput({
-      fieldDefinition: {
-        name: 'someFile',
-        title: 'A simple file',
-        type: 'file',
-      },
-      observeAsset: observeAssetStub,
-      render: (inputProps) => <BaseFileInput {...inputProps} directUploads={false} />,
-    })
-
-    expect(
-      screen.queryByTestId('file-input-upload-button-test-source')!.getAttribute('data-disabled'),
-    ).toBe('true')
-  })
-
-  it('has default text that mentions that you cannot upload files when directUploads is false', async () => {
-    const {result} = await renderFileInput({
-      fieldDefinition: {
-        name: 'someFile',
-        title: 'A simple file',
-        type: 'file',
-      },
-      observeAsset: observeAssetStub,
-      render: (inputProps) => <BaseFileInput {...inputProps} directUploads={false} />,
-    })
-
-    expect(
-      screen.queryByTestId('file-input-upload-button-test-source')!.getAttribute('data-disabled'),
-    ).toBe('true')
+    const fileInput = screen.getByTestId('file-button-input')
+    expect(fileInput).toHaveAttribute('accept', 'application/pdf')
   })
 
   /* readOnly - the file input is read only or not */
@@ -144,7 +81,7 @@ describe('FileInput with empty state', () => {
     })
 
     expect(
-      screen.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+      screen.queryByTestId(fileBrowseTestId('test-source'))!.getAttribute('data-disabled'),
     ).toBe('true')
   })
 
@@ -160,7 +97,7 @@ describe('FileInput with empty state', () => {
     })
 
     expect(
-      screen.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+      screen.queryByTestId(fileBrowseTestId('test-source'))!.getAttribute('data-disabled'),
     ).toBe('true')
   })
 
@@ -183,9 +120,8 @@ describe('FileInput with empty state', () => {
       expect(screen.getByText('Read only')).toBeInTheDocument()
     })
   })
-
-  it.todo('does not allow files to be dragged & uploaded when it is readOnly')
 })
+// Drag-to-upload is tested in common/__tests__/uploadTarget.test.tsx
 
 describe('FileInput with asset', () => {
   const value = {
@@ -212,107 +148,6 @@ describe('FileInput with asset', () => {
   })
 
   it.todo('renders new file when a new file in uploaded')
-  it.todo('renders new file when a new file is dragged into the input')
-  it.todo('is unable to upload when the file type is not allowed')
-
-  /* assetSources - adds a list of sources that a user can pick from when browsing */
-
-  it('renders the browse button in the file menu when it has at least one element in assetSources', async () => {
-    // render(<BaseFileInput value={value} />)
-    // const {result} = render({
-    //   value,
-    // })
-    const {result} = await renderFileInput({
-      fieldDefinition: {
-        name: 'someFile',
-        title: 'A simple file',
-        type: 'file',
-      },
-      observeAsset: observeAssetStub,
-      render: (inputProps) => <BaseFileInput {...inputProps} value={value} />,
-    })
-
-    await userEvent.click(screen.queryByTestId('options-menu-button')!)
-
-    await waitFor(() => {
-      expect(screen.getByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
-    })
-  })
-
-  it('renders the upload button, but no browse item in the file menu when it has empty sources in the schema type', async () => {
-    const {result} = await renderFileInput({
-      fieldDefinition: {
-        name: 'someFile',
-        title: 'A simple file',
-        type: 'file',
-      },
-      observeAsset: observeAssetStub,
-      render: (inputProps) => (
-        <BaseFileInput
-          {...inputProps}
-          schemaType={{
-            ...inputProps.schemaType,
-            options: {...inputProps.schemaType.options, sources: []},
-          }}
-          value={value}
-        />
-      ),
-    })
-
-    await userEvent.click(screen.queryByTestId('options-menu-button')!)
-
-    await waitFor(() => {
-      expect(screen.getByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
-      expect(screen.queryByTestId('file-input-browse-button-test-source')).not.toBeInTheDocument()
-    })
-  })
-
-  it('renders the multiple browse buttons in the file menu when it has multiple assetSources', async () => {
-    const {result} = await renderFileInput({
-      fieldDefinition: {
-        name: 'someFile',
-        title: 'A simple file',
-        type: 'file',
-      },
-      observeAsset: observeAssetStub,
-      render: (inputProps) => (
-        <BaseFileInput
-          {...inputProps}
-          assetSources={[{name: 'source1'}, {name: 'source2'}] as any}
-          value={value}
-        />
-      ),
-    })
-
-    await userEvent.click(screen.queryByTestId('options-menu-button')!)
-
-    await waitFor(() => {
-      expect(screen.getByTestId('file-input-browse-button-source1')).toBeInTheDocument()
-      expect(screen.getByTestId('file-input-browse-button-source2')).toBeInTheDocument()
-    })
-  })
-
-  /* directUploads - allows for user to upload files directly (default is true) */
-
-  it('renders the upload button as disabled when directUploads is false', async () => {
-    const {result} = await renderFileInput({
-      fieldDefinition: {
-        name: 'someFile',
-        title: 'A simple file',
-        type: 'file',
-      },
-      observeAsset: observeAssetStub,
-      render: (inputProps) => <BaseFileInput {...inputProps} directUploads={false} value={value} />,
-    })
-
-    await userEvent.click(screen.queryByTestId('options-menu-button')!)
-
-    await waitFor(() => {
-      expect(
-        screen.queryByTestId('file-input-upload-button-test-source')?.getAttribute('data-disabled'),
-      ).toBe('')
-    })
-  })
 
   /* readOnly - the files input is read only or not */
 
@@ -331,7 +166,7 @@ describe('FileInput with asset', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+        screen.queryByTestId(fileBrowseTestId('test-source'))!.getAttribute('data-disabled'),
       ).toBe('')
     })
   })
@@ -350,9 +185,7 @@ describe('FileInput with asset', () => {
     await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(
-        screen.queryByTestId('file-input-browse-button-test-source')!.hasAttribute('data-disabled'),
-      )
+      expect(screen.queryByTestId(fileBrowseTestId('test-source'))!.hasAttribute('data-disabled'))
     })
   })
 
@@ -377,12 +210,8 @@ describe('FileInput with asset', () => {
     await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(
-        screen.queryByTestId('file-input-browse-button-source1')!.hasAttribute('data-disabled'),
-      )
-      expect(
-        screen.queryByTestId('file-input-browse-button-source2')!.hasAttribute('data-disabled'),
-      )
+      expect(screen.queryByTestId(fileBrowseTestId('source1'))!.hasAttribute('data-disabled'))
+      expect(screen.queryByTestId(fileBrowseTestId('source2'))!.hasAttribute('data-disabled'))
     })
   })
 
@@ -461,6 +290,4 @@ describe('FileInput with asset', () => {
       expect(screen.getByText('31 Bytes')).toBeInTheDocument()
     })
   })
-
-  it.todo('does not allow files to be dragged & uploaded when it is readOnly')
 })

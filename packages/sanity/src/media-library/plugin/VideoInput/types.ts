@@ -1,10 +1,15 @@
-import {type AssetFromSource, type AssetSource, type AssetSourceUploader} from '@sanity/types'
+import {
+  type Asset,
+  type AssetFromSource,
+  type AssetSource,
+  type AssetSourceUploader,
+} from '@sanity/types'
 
 import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
 import {type BaseVideoInputProps} from './VideoInput'
 
-export interface VideoAssetProps extends Omit<BaseVideoInputProps, 'renderDefault'> {
-  browseButtonElementRef: React.RefObject<HTMLButtonElement | null>
+export interface VideoAssetInputProps extends Omit<BaseVideoInputProps, 'renderDefault'> {
+  menuButtonRef: React.RefObject<HTMLButtonElement | null>
   clearField: () => void
   hoveringFiles: FileInfo[]
   isBrowseMenuOpen: boolean
@@ -12,11 +17,20 @@ export interface VideoAssetProps extends Omit<BaseVideoInputProps, 'renderDefaul
   isUploading: boolean
   onCancelUpload?: () => void
   onClearUploadStatus: () => void
+  /**
+   * Called when user selects to browse/select from an asset source.
+   */
+  onSelectAssetSourceForBrowse?: (assetSource: AssetSource) => void
+  /**
+   * Called when an asset source with `uploadMode: 'component'` is selected.
+   * The source should be rendered directly to handle file selection and upload internally.
+   */
+  onOpenSourceForUpload?: (assetSource: AssetSource) => void
+  onOpenInSource: (assetSource: AssetSource, asset: Asset) => void
   onSelectAssets: (assetsFromSource: AssetFromSource[]) => void
   onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   onStale: () => void
   selectedAssetSource: AssetSource | null
-  setBrowseButtonElement: (element: HTMLButtonElement | null) => void
   setHoveringFiles: (hoveringFiles: FileInfo[]) => void
   setIsBrowseMenuOpen: (isBrowseMenuOpen: boolean) => void
   setIsUploading: (isUploading: boolean) => void

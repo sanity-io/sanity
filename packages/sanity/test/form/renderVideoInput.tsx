@@ -1,17 +1,31 @@
-import {type ImageUrlBuilder} from '@sanity/image-url'
 import {
+  defineType,
   type AssetSource,
   type FieldDefinition,
-  type ImageSchemaType,
   type SchemaTypeDefinition,
 } from '@sanity/types'
 import {EMPTY} from 'rxjs'
 
 import {type ObjectInputProps} from '../../src/core'
-import {type BaseImageInputProps} from '../../src/core/form/inputs/files/ImageInput'
+import {type VideoSchemaType} from '../../src/media-library/plugin/schemas/types'
+import {type BaseVideoInputProps} from '../../src/media-library/plugin/VideoInput/VideoInput'
 import {type TestRenderInputContext} from './renderInput'
 import {renderObjectInput} from './renderObjectInput'
 import {type TestRenderProps} from './types'
+
+/**
+ * Minimal stub for sanity.asset - Media Library backend type referenced by sanity.video's "media" field.
+ * Not defined in Studio schema; added here so schema validation passes in tests.
+ * Media library plugin already adds mediaLibrarySchemas when enabled; we only add this stub.
+ */
+const sanityAssetStub = defineType({
+  name: 'sanity.asset',
+  title: 'Asset (stub)',
+  type: 'document',
+  fields: [{name: 'placeholder', type: 'string', hidden: true}],
+})
+
+const videoTestSchemaTypes = [sanityAssetStub]
 
 const STUB_ASSET_SOURCES: AssetSource[] = [{Uploader: {}, name: 'test-source'} as AssetSource]
 
@@ -19,31 +33,29 @@ const STUB_OBSERVE_ASSET = () => EMPTY
 
 const STUB_RESOLVE_UPLOADER = () => ({
   priority: 1,
-  type: 'image',
-  accepts: 'image/*',
+  type: 'file',
+  accepts: 'video/*',
   upload: () => EMPTY,
 })
 
-export type TestRenderImageInputCallback = (
-  inputProps: BaseImageInputProps,
+export type TestRenderVideoInputCallback = (
+  inputProps: BaseVideoInputProps,
   context: TestRenderInputContext,
 ) => React.JSX.Element
 
-export async function renderImageInput(options: {
-  assetSources?: BaseImageInputProps['assetSources']
+export async function renderVideoInput(options: {
+  assetSources?: BaseVideoInputProps['assetSources']
   configOverrides?: Record<string, unknown>
-  fieldDefinition: SchemaTypeDefinition<'image'>
-  imageUrlBuilder?: ImageUrlBuilder
-  observeAsset?: BaseImageInputProps['observeAsset']
+  fieldDefinition: SchemaTypeDefinition<'sanity.video'>
+  observeAsset?: BaseVideoInputProps['observeAsset']
   props?: TestRenderProps
-  render: TestRenderImageInputCallback
-  resolveUploader?: BaseImageInputProps['resolveUploader']
+  render: TestRenderVideoInputCallback
+  resolveUploader?: BaseVideoInputProps['resolveUploader']
 }) {
   const {
     assetSources = STUB_ASSET_SOURCES,
     configOverrides,
     fieldDefinition,
-    imageUrlBuilder = {} as ImageUrlBuilder,
     observeAsset = STUB_OBSERVE_ASSET,
     props,
     render: initialRender,
@@ -53,7 +65,7 @@ export async function renderImageInput(options: {
   function transformProps(
     inputProps: ObjectInputProps,
     context: TestRenderInputContext,
-  ): BaseImageInputProps {
+  ): BaseVideoInputProps {
     const {schemaType, value, ...restProps} = inputProps
     const {client} = context
 
@@ -62,16 +74,16 @@ export async function renderImageInput(options: {
       assetSources,
       client,
       t: (key: string, values?: Record<string, string>) => key,
-      imageUrlBuilder,
-      isUploading: false,
+      directUploads: true,
       observeAsset,
       resolveUploader,
-      schemaType: schemaType as ImageSchemaType,
-      value: value as Record<string, any>,
+      schemaType: schemaType as VideoSchemaType,
+      value: value as Record<string, unknown>,
     }
   }
 
   const result = await renderObjectInput({
+    additionalSchemaTypes: videoTestSchemaTypes,
     configOverrides,
     fieldDefinition: fieldDefinition as FieldDefinition<'object'>,
     props,

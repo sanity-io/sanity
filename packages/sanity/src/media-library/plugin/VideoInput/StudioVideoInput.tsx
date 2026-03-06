@@ -36,8 +36,8 @@ export function StudioVideoInput(props: VideoInputProps) {
   const filteredAssetSources = assetSources.filter((source) => source.name === sourceName)
 
   const observeAsset = useCallback(
-    (id: string) => observeVideoAsset(documentPreviewStore, id),
-    [documentPreviewStore],
+    (id: string) => observeVideoAsset(documentPreviewStore, id, client),
+    [documentPreviewStore, client],
   )
 
   return (
