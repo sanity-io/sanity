@@ -14,7 +14,6 @@ catalog:
   '@playwright/experimental-ct-react': 1.57.0
   '@playwright/test': 1.57.0
   '@sanity/client': ^7.15.0
-  '@sanity/codegen': ^5.10.1
   '@sanity/migrate': ^5.2.5
   '@sanity/telemetry': ^0.8.1
   '@sanity/eslint-config-i18n': ^2.0.0
@@ -27,7 +26,6 @@ catalog:
   '@typescript/native-preview': 7.0.0-dev.20260112.1
   '@vitejs/plugin-react': ^5.1.2
   babel-plugin-styled-components: ^2.1.4
-  esbuild: 0.27.3
   esbuild-register: ^3.6.0
   eslint: ^9.39.2
   globals: ^16.2.0
@@ -88,6 +86,7 @@ trustPolicyExclude:
   - '@octokit/endpoint@9.0.6'
   - '@octokit/plugin-paginate-rest@9.2.2'
   - '@reduxjs/toolkit@2.9.0 || 2.10.1 || 2.11.0'
+  - '@sanity/cli'
   - '@sanity/mutate@0.11.0-canary.4'
   - '@sanity/sdk@2.1.2'
   - '@swc/core@1.13.5'

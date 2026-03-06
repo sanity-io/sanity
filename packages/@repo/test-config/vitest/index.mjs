@@ -35,7 +35,6 @@ const devAliases = {
   // NOTE: do not use regex in the module expressions,
   // because they will be escaped by the jest config
   '@sanity/diff': '@sanity/diff/src',
-  '@sanity/cli': '@sanity/cli/src',
   '@sanity/mutator': '@sanity/mutator/src',
   '@sanity/schema': '@sanity/schema/src/_exports',
   '@sanity/types': '@sanity/types/src',
