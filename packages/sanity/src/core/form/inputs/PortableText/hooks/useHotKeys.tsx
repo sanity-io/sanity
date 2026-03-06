@@ -3,18 +3,11 @@ import {useMemo, useState} from 'react'
 
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 
-// This hook will create final hotkeys for the editor from on those from props.
+// This hook will create final hotkeys for the editor based on those from props.
 export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
   const schemaTypes = usePortableTextMemberSchemaTypes()
-
-  // Guard that hotkeys from props will be a stable object.
-  // If this props is defined inline and is always a new object, there will be issues with key handling and cursor!
   const [initialHotkeys] = useState(() => hotkeys)
-  if (initialHotkeys !== hotkeys) {
-    console.warn(
-      'Make sure that hotkeys are a stable object across renders, or there will be issues with key handling in the Portable Text Editor.',
-    )
-  }
+
   return useMemo(() => {
     const defaultHotkeys: {marks: Record<string, string>} = {marks: {}}
     schemaTypes.decorators.forEach((dec) => {
