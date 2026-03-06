@@ -148,6 +148,11 @@ const TableInner = <TableData, AdditionalRowTableData>({
     [columnDefs, rowActionColumnDef, rowActions],
   )
 
+  const tableMinWidth = useMemo(
+    () => amalgamatedColumnDefs.reduce((sum, col) => sum + (col.width || 200), 0),
+    [amalgamatedColumnDefs],
+  )
+
   const renderRow = useMemo(
     () =>
       function TableRow(
@@ -273,6 +278,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
         style={
           {
             'width': '100%',
+            'minWidth': `${tableMinWidth}px`,
             'height': '100%',
             'position': 'relative',
             '--maxInlineSize': rem(maxInlineSize),
