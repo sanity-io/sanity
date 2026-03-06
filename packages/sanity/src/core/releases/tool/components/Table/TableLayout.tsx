@@ -15,20 +15,26 @@ export const TableLayout = ({isEmptyState, header, content, contentHeight}: Tabl
   if (isEmptyState) {
     // Empty state layout - use CSS Grid to fill height
     return (
-      <div style={{height: '100%', display: 'grid', gridTemplateRows: 'auto 1fr'}}>
-        {header}
-        <Box
+      <div style={{height: '100%'}}>
+        <table
           style={{
+            width: '100%',
             height: '100%',
-            position: 'relative',
-            overflow: 'hidden',
+            display: 'grid',
+            gridTemplateRows: 'auto 1fr',
           }}
-          as="div"
         >
-          <table style={{width: '100%', height: '100%'}}>
-            <tbody style={{height: '100%'}}>{content}</tbody>
-          </table>
-        </Box>
+          {header}
+          <tbody
+            style={{
+              height: '100%',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            {content}
+          </tbody>
+        </table>
       </div>
     )
   }
