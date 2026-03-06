@@ -269,7 +269,10 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const isDraftModelEnabled = workspace.document.drafts?.enabled
 
-  const {filteredVersionIds, getVersionDisplay} = useAgentVersionDisplay(documentVersions)
+  const {filteredVersionIds, getVersionDisplay} = useAgentVersionDisplay(
+    documentVersions,
+    selectedPerspectiveName,
+  )
 
   const nonReleaseVersions = filteredVersionIds.filter((versionDocumentId) => {
     if (isPublishedId(versionDocumentId) || isDraftId(versionDocumentId)) {
