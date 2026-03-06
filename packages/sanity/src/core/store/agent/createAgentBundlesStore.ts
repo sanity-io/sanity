@@ -1,12 +1,15 @@
 import {type SanityClient} from '@sanity/client'
 import {
   catchError,
+  defer,
   distinctUntilChanged,
   EMPTY,
+  map,
   Observable,
   of,
   ReplaySubject,
   share,
+  shareReplay,
   startWith,
   switchMap,
 } from 'rxjs'
@@ -78,59 +81,65 @@ export function createAgentBundlesStore(context: {
 }
 
 function buildUrl(client: SanityClient, organizationId: string): string {
-  const {apiHost, token} = client.config()
+  const {apiHost} = client.config()
   // Dev override: point at a local agent API during development.
   // Set SANITY_STUDIO_AGENT_API_HOST=http://localhost:58300 in .env.local
   const envHost: string | undefined = process.env.SANITY_STUDIO_AGENT_API_HOST
   const base = envHost || apiHost || 'https://api.sanity.io'
   const url = new URL(`/v1/agent/${organizationId}/bundles/mine/listen`, base)
 
-  // EventSource doesn't support custom headers. If the studio uses token auth
-  // we pass it as a query parameter; otherwise the session cookie will be sent
-  // automatically.
-  if (token) {
-    url.searchParams.set('token', token)
-  }
-
   return url.toString()
 }
 
 /**
- * Opens an SSE connection and returns an observable that emits the parsed
- * bundle state for each `bundles` event.
- *
- * The EventSource is created on subscribe and closed on unsubscribe.
+ * Lazy-loaded eventsource polyfill with custom header support.
+ * Uses the same pattern as the sanity client listener.
  */
+type EventSourceConstructor = typeof EventSource
+
+const eventSourcePolyfill$ = defer(() => import('@sanity/eventsource')).pipe(
+  map(({default: ES}) => ES as EventSourceConstructor),
+  shareReplay(1),
+)
+
 function listenToBundles(
   client: SanityClient,
   organizationId: string,
 ): Observable<AgentBundlesState> {
-  const token = client.config().token
+  const {token, withCredentials} = client.config()
   const url = buildUrl(client, organizationId)
 
-  return new Observable<AgentBundlesState>((subscriber) => {
-    const es = new EventSource(url, {
-      withCredentials: !token,
-    })
+  const esOptions: EventSourceInit & {headers?: Record<string, string>} = {}
+  if (token || withCredentials) esOptions.withCredentials = true
+  if (token) esOptions.headers = {Authorization: `Bearer ${token}`}
 
-    es.addEventListener('bundles', (event: MessageEvent) => {
-      try {
-        const data = JSON.parse(event.data) as {bundles: AgentBundle[]}
-        subscriber.next({bundles: data.bundles, loading: false})
-      } catch {
-        // Ignore malformed messages
-      }
-    })
+  // Use polyfill when headers are needed (token auth), native EventSource otherwise
+  const es$: Observable<EventSource> = (
+    esOptions.headers ? eventSourcePolyfill$ : of(EventSource)
+  ).pipe(map((ES) => new ES(url, esOptions)))
 
-    es.addEventListener('error', () => {
-      // EventSource auto-reconnects on transient errors. If the connection
-      // is permanently dead the browser will keep retrying, which is fine —
-      // the observable stays alive and will emit new values if it reconnects.
-      // We don't error the observable so downstream subscribers stay subscribed.
-    })
+  return es$.pipe(
+    switchMap(
+      (es) =>
+        new Observable<AgentBundlesState>((subscriber) => {
+          es.addEventListener('bundles', ((event: MessageEvent) => {
+            try {
+              const data = JSON.parse(event.data) as {bundles: AgentBundle[]}
+              subscriber.next({bundles: data.bundles, loading: false})
+            } catch {
+              // Ignore malformed messages
+            }
+          }) as EventListener)
 
-    return () => {
-      es.close()
-    }
-  }).pipe(catchError(() => EMPTY))
+          es.addEventListener('error', (() => {
+            // EventSource auto-reconnects on transient errors.
+          }) as EventListener)
+
+          return () => {
+            es.close()
+          }
+        }),
+    ),
+    catchError(() => EMPTY),
+  )
 }

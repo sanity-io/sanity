@@ -26,14 +26,17 @@ const AGENT_TONE: BadgeTone = 'suggest'
  * - The current user's `agent-*` versions are kept and can be resolved to
  *   display overrides via `getVersionDisplay`.
  * - Non-agent versions pass through unchanged.
- * - While the SSE connection is still loading, all `agent-*` versions are
- *   kept (optimistic — most users only see their own).
+ * - While the SSE connection is loading, only the currently active agent
+ *   bundle (if any) is kept; all others are hidden until ownership is confirmed.
  *
  * Call this hook once and thread the results down — don't call it per-item.
  *
  * @internal
  */
-export function useAgentVersionDisplay(versionIds: string[]): {
+export function useAgentVersionDisplay(
+  versionIds: string[],
+  activeBundleId?: string,
+): {
   /** Version IDs with other users' agent bundles removed. */
   filteredVersionIds: string[]
   /**
@@ -53,11 +56,12 @@ export function useAgentVersionDisplay(versionIds: string[]): {
       versionIds.filter((id) => {
         const name = getVersionFromId(id)
         if (!name || !isAgentBundleName(name)) return true
-        // Hide all agent versions until the endpoint confirms ownership
-        if (loading) return false
+        // Hide all agent versions until the endpoint confirms ownership,
+        // but always keep the one the user is currently viewing
+        if (loading) return name === activeBundleId
         return myBundleIds.has(name)
       }),
-    [versionIds, myBundleIds, loading],
+    [versionIds, myBundleIds, loading, activeBundleId],
   )
 
   const getVersionDisplay = useMemo(() => {
@@ -67,11 +71,12 @@ export function useAgentVersionDisplay(versionIds: string[]): {
     return (versionDocumentId: string): AgentVersionDisplay | null => {
       const name = getVersionFromId(versionDocumentId)
       if (!name || !isAgentBundleName(name)) return null
-      // Only show display overrides for the current user's bundles
+      // Only show display overrides for the current user's bundles (or the active one during loading)
       if (!loading && !myBundleIds.has(name)) return null
+      if (loading && name !== activeBundleId) return null
       return display
     }
-  }, [t, myBundleIds, loading])
+  }, [t, myBundleIds, loading, activeBundleId])
 
   return {filteredVersionIds, getVersionDisplay}
 }
