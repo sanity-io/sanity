@@ -185,7 +185,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         flex={1}
         borderTop
         style={SCROLL_CONTAINER_STYLE}
-        className="hide-scrollbar"
       >
         <div style={FIT_CONTENT_STYLE}>
           <Table<DocumentInReleaseDetail>
