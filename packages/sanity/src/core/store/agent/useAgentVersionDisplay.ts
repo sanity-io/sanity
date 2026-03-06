@@ -65,18 +65,22 @@ export function useAgentVersionDisplay(
   )
 
   const getVersionDisplay = useMemo(() => {
-    const label = t('version.agent-bundle.proposed-changes')
-    const display: AgentVersionDisplay = {displayName: label, tone: AGENT_TONE}
+    const ownDisplay: AgentVersionDisplay = {
+      displayName: t('version.agent-bundle.proposed-changes'),
+      tone: AGENT_TONE,
+    }
+    const otherDisplay: AgentVersionDisplay = {
+      displayName: t('version.agent-bundle.agent-changes'),
+      tone: AGENT_TONE,
+    }
 
     return (versionDocumentId: string): AgentVersionDisplay | null => {
       const name = getVersionFromId(versionDocumentId)
       if (!name || !isAgentBundleName(name)) return null
-      // Only show display overrides for the current user's bundles (or the active one during loading)
-      if (!loading && !myBundleIds.has(name)) return null
-      if (loading && name !== activeBundleId) return null
-      return display
+      if (!loading && myBundleIds.has(name)) return ownDisplay
+      return otherDisplay
     }
-  }, [t, myBundleIds, loading, activeBundleId])
+  }, [t, myBundleIds, loading])
 
   return {filteredVersionIds, getVersionDisplay}
 }

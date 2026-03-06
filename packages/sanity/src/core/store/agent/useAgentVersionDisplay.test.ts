@@ -20,23 +20,28 @@ function ids(...names: string[]) {
 }
 
 describe('useAgentVersionDisplay', () => {
-  test('loaded: keeps own bundles, filters others, returns display overrides', () => {
+  test('loaded: keeps own bundles, filters others, differentiates display', () => {
     mockState = {bundles: [{id: MINE, applicationKey: 'app'}], loading: false}
     const {result} = renderHook(() => useAgentVersionDisplay(ids(MINE, OTHER, RELEASE)))
 
     expect(result.current.filteredVersionIds).toEqual(ids(MINE, RELEASE))
-    expect(result.current.getVersionDisplay(getVersionId(DOC, MINE))?.tone).toBe('suggest')
-    expect(result.current.getVersionDisplay(getVersionId(DOC, OTHER))).toBeNull()
+    expect(result.current.getVersionDisplay(getVersionId(DOC, MINE))?.displayName).toBe(
+      'version.agent-bundle.proposed-changes',
+    )
+    expect(result.current.getVersionDisplay(getVersionId(DOC, OTHER))?.displayName).toBe(
+      'version.agent-bundle.agent-changes',
+    )
     expect(result.current.getVersionDisplay(getVersionId(DOC, RELEASE))).toBeNull()
   })
 
-  test('loading: hides all agent bundles except the active one', () => {
+  test('loading: hides all agent bundles except the active one, shows as agent changes', () => {
     mockState = {bundles: [], loading: true}
     const {result} = renderHook(() => useAgentVersionDisplay(ids(MINE, OTHER, RELEASE), MINE))
 
     expect(result.current.filteredVersionIds).toEqual(ids(MINE, RELEASE))
-    expect(result.current.getVersionDisplay(getVersionId(DOC, MINE))?.tone).toBe('suggest')
-    expect(result.current.getVersionDisplay(getVersionId(DOC, OTHER))).toBeNull()
+    expect(result.current.getVersionDisplay(getVersionId(DOC, MINE))?.displayName).toBe(
+      'version.agent-bundle.agent-changes',
+    )
   })
 
   test('loading without active bundle: hides all agent bundles', () => {
