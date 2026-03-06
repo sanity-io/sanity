@@ -221,7 +221,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
         ({_id: string; isLoading: boolean} | TableData | (TableData & AdditionalRowTableData)),
     ) => React.ReactNode,
   ) => {
-    return Array.from({length: LOADING_ROW_COUNT}).map((_unused, index) => {
+    return Array.from({length: LOADING_ROW_COUNT}).map((_el, index) => {
       const cardKey = `skeleton-${index}`
       const virtualRow: VirtualItem = {
         index,

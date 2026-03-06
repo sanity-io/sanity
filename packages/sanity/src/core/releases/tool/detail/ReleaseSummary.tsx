@@ -41,7 +41,7 @@ const SCROLL_CONTAINER_STYLE: CSSProperties = {
   msOverflowStyle: 'none',
 }
 
-const FIT_CONTENT_STYLE: CSSProperties = {minWidth: 'fit-content'}
+const FIT_CONTENT_STYLE: CSSProperties = {minWidth: 'fit-content', height: '100%'}
 
 const isBundleDocumentRow = (
   maybeBundleDocumentRow: unknown,
