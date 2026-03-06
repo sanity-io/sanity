@@ -325,16 +325,19 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [documentActions, documentActionsContext],
   )
 
-  const handlePathOpen = useEffectEvent((path: Path) => {
-    onPathOpen(path)
+  const handlePathOpen = useCallback(
+    (path: Path) => {
+      onPathOpen(path)
 
-    if (enhancedObjectDialogEnabled) {
-      const nextPath = pathToString(path)
-      if (params.path !== nextPath) {
-        setPaneParams({...params, path: nextPath})
+      if (enhancedObjectDialogEnabled) {
+        const nextPath = pathToString(path)
+        if (params.path !== nextPath) {
+          setPaneParams({...params, path: nextPath})
+        }
       }
-    }
-  })
+    },
+    [onPathOpen, params, setPaneParams, enhancedObjectDialogEnabled],
+  )
 
   // Resolve document badges
   const badges = useMemo(
@@ -389,19 +392,22 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     editState,
   })
 
-  const setTimelineRange = useEffectEvent((newSince: string, newRev: string | null) => {
-    setPaneParams({
-      ...params,
-      since: newSince,
-      rev: newRev || undefined,
-    })
-  })
+  const setTimelineRange = useCallback(
+    (newSince: string, newRev: string | null) => {
+      setPaneParams({
+        ...params,
+        since: newSince,
+        rev: newRev || undefined,
+      })
+    },
+    [params, setPaneParams],
+  )
 
   const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
   const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
 
-  const toggleInlineChanges = useEffectEvent(() => {
+  const toggleInlineChanges = useCallback(() => {
     const nextState = router.stickyParams.displayInlineChanges !== 'true'
     telemetry.log(nextState ? InlineChangesSwitchedOn : InlineChangesSwitchedOff)
 
@@ -410,48 +416,60 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         displayInlineChanges: String(nextState),
       },
     })
-  })
+  }, [router, telemetry])
 
-  const handleMenuAction = useEffectEvent(async (item: PaneMenuItem) => {
-    if (item.action === 'production-preview' && previewUrl) {
-      window.open(previewUrl)
-      return true
-    }
+  const handleMenuAction = useCallback(
+    async (item: PaneMenuItem) => {
+      if (item.action === 'production-preview' && previewUrl) {
+        window.open(previewUrl)
+        return true
+      }
 
-    if (item.action === 'reviewChanges') {
-      handleHistoryOpen()
-      return true
-    }
+      if (item.action === 'reviewChanges') {
+        handleHistoryOpen()
+        return true
+      }
 
-    if (
-      item.action === 'inspect' ||
-      (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX))
-    ) {
-      handleInspectorAction(item)
-    }
+      if (
+        item.action === 'inspect' ||
+        (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX))
+      ) {
+        handleInspectorAction(item)
+      }
 
-    if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
-      diffViewRouter.navigateDiffView({
-        mode: 'version',
-        previousDocument: {
-          type: documentType,
-          id: previousId,
-        },
-        nextDocument: {
-          type: documentType,
-          id: value._id,
-        },
-      })
-      return true
-    }
+      if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
+        diffViewRouter.navigateDiffView({
+          mode: 'version',
+          previousDocument: {
+            type: documentType,
+            id: previousId,
+          },
+          nextDocument: {
+            type: documentType,
+            id: value._id,
+          },
+        })
+        return true
+      }
 
-    if (item.action === 'toggleInlineChanges') {
-      toggleInlineChanges()
-      return true
-    }
+      if (item.action === 'toggleInlineChanges') {
+        toggleInlineChanges()
+        return true
+      }
 
-    return false
-  })
+      return false
+    },
+    [
+      previewUrl,
+      previousId,
+      documentType,
+      handleHistoryOpen,
+      handleInspectorAction,
+      diffViewRouter,
+      value._id,
+      toggleInlineChanges,
+    ],
+  )
 
   const documentMeta = useMemo(
     () => ({
@@ -571,12 +589,10 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       onBlur,
       onChange,
       onFocus,
-      // oxlint-disable-next-line react-hooks/exhaustive-deps -- useEffectEvent: stable identity, included for React Compiler
       handlePathOpen,
       handleHistoryClose,
       handleHistoryOpen,
       handleLegacyInspectClose,
-      // oxlint-disable-next-line react-hooks/exhaustive-deps -- useEffectEvent: stable identity, included for React Compiler
       handleMenuAction,
       handlePaneClose,
       handlePaneSplit,
@@ -599,7 +615,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isPermissionsLoading,
       isInitialValueLoading,
       permissions,
-      // oxlint-disable-next-line react-hooks/exhaustive-deps -- useEffectEvent: stable identity, included for React Compiler
       setTimelineRange,
       isDeleting,
       isDeleted,
