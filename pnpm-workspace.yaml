@@ -68,6 +68,7 @@ minimumReleaseAgeExclude:
   - '@oxlint-tsgolint/*'
   - '@portabletext/*'
   - '@sanity/*'
+  - 'sanity-plugin-internationalized-array'
   - '@types/*'
   - '@typescript/*'
   - csstype
