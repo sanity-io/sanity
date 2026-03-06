@@ -3,7 +3,6 @@ import {
   catchError,
   defer,
   distinctUntilChanged,
-  EMPTY,
   map,
   Observable,
   of,
@@ -43,6 +42,8 @@ export type AgentBundlesStore = {
 
 export const INITIAL_STATE: AgentBundlesState = {bundles: [], loading: true}
 
+const EMPTY_STATE: AgentBundlesState = {bundles: [], loading: false}
+
 /**
  * Returns whether the given version name (e.g. from `getVersionFromId`) is an
  * agent bundle name (starts with `agent-`).
@@ -70,7 +71,7 @@ export function createAgentBundlesStore(context: {
   const state$ = organizationId$.pipe(
     distinctUntilChanged(),
     switchMap((organizationId) => {
-      if (!organizationId) return of(INITIAL_STATE)
+      if (!organizationId) return of(EMPTY_STATE)
       return listenToBundles(client, organizationId)
     }),
     startWith(INITIAL_STATE),
@@ -102,6 +103,8 @@ const eventSourcePolyfill$ = defer(() => import('@sanity/eventsource')).pipe(
   shareReplay(1),
 )
 
+type PolyfillEventSourceInit = EventSourceInit & {headers?: Record<string, string>}
+
 function listenToBundles(
   client: SanityClient,
   organizationId: string,
@@ -109,7 +112,7 @@ function listenToBundles(
   const {token, withCredentials} = client.config()
   const url = buildUrl(client, organizationId)
 
-  const esOptions: EventSourceInit & {headers?: Record<string, string>} = {}
+  const esOptions: PolyfillEventSourceInit = {}
   if (token || withCredentials) esOptions.withCredentials = true
   if (token) esOptions.headers = {Authorization: `Bearer ${token}`}
 
@@ -140,6 +143,6 @@ function listenToBundles(
           }
         }),
     ),
-    catchError(() => EMPTY),
+    catchError(() => of(EMPTY_STATE)),
   )
 }
