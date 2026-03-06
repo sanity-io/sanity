@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import noop from 'lodash-es/noop.js'
-import {describe, expect, test} from 'vitest'
+import {describe, expect, test, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -81,6 +81,8 @@ describe('provisioning', () => {
   })
 
   test('renders error catch by the ErrorBoundary if something unexpected happens', async () => {
+    // React logs caught errors from error boundaries to console.error
+    vi.spyOn(console, 'error').mockImplementation(() => {})
     const client = createMockSanityClient({
       requestCallback: (request) => {
         switch (request.uri) {

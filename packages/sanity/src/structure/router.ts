@@ -94,7 +94,7 @@ function parseChunks(chunks: string[], initial: RouterPaneSibling): RouterPaneSi
       pane.params = {...pane.params, [decodeURIComponent(key)]: decodeURIComponent(value)}
     } else if (isPayloadLike(chunk)) {
       pane.payload = tryParseBase64Payload(chunk)
-    } else {
+    } else if (chunk) {
       console.warn('Unknown pane segment: %s - skipping', chunk)
     }
 

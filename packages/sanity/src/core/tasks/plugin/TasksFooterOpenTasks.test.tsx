@@ -10,6 +10,11 @@ import {type TaskDocument} from '../types'
 import {SetActiveDocument} from './structure/SetActiveDocument'
 import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
 
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useTranslation: () => ({t: (key: string) => key}),
+}))
+
 vi.mock('../../hooks', () => ({
   useFeatureEnabled: vi.fn().mockReturnValue({enabled: true, isLoading: false}),
 }))

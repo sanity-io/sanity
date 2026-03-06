@@ -18,9 +18,9 @@ export const MenuGroup = (
       tooltipProps?: TooltipProps | null
     },
 ) => {
-  const {tooltipProps} = props
+  const {tooltipProps, ...rest} = props
 
-  const children = <UIMenuGroup {...props} fontSize={1} padding={3} />
+  const children = <UIMenuGroup {...rest} fontSize={1} padding={3} />
 
   if (tooltipProps) {
     return (

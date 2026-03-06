@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {render, screen} from '@testing-library/react'
-import {describe, expect, test} from 'vitest'
+import {describe, expect, test, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
@@ -80,6 +80,7 @@ describe('FilterLabel', () => {
   })
 
   test('handles missing operator descriptionKey', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
     const filterWithoutDescription: SearchFilter = {
       ...mockFilter,
       operatorType: 'unknown',
@@ -106,5 +107,9 @@ describe('FilterLabel', () => {
     expect(screen.getByText('Title')).toBeInTheDocument()
     expect(screen.queryByText('is')).not.toBeInTheDocument()
     expect(screen.queryByText('True')).not.toBeInTheDocument()
+    expect(console.warn).toHaveBeenCalledWith(
+      'Missing `descriptionKey` for operator `%s`',
+      'unknown',
+    )
   })
 })

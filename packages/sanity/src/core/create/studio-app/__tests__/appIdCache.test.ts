@@ -17,11 +17,13 @@ describe('appIdCache', () => {
   })
 
   it(`should suppress error and return undefined`, async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
     const cache = createAppIdCache()
     const appIdFetcher = vi.fn(async () => {
       throw new Error('simulated-error')
     })
     const result1 = await cache.get({projectId: 'projectId', appIdFetcher})
     expect(result1).toEqual(undefined)
+    expect(console.error).toHaveBeenCalledWith(new Error('simulated-error'))
   })
 })

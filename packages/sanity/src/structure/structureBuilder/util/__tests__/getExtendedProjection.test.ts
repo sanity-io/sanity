@@ -1,6 +1,6 @@
 import {Schema} from '@sanity/schema'
 import {type SchemaType, type SortOrderingItem} from '@sanity/types'
-import {describe, expect, test} from 'vitest'
+import {describe, expect, test, vi} from 'vitest'
 
 import {getExtendedProjection} from '../getExtendedProjection'
 
@@ -175,6 +175,7 @@ describe('getExtendedProjection', () => {
   })
 
   test('ignores missing fields in non-strict mode while keeping valid paths', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
     const orderBy: SortOrderingItem[] = [
       {field: 'title', direction: 'asc'},
       {field: 'missingField', direction: 'asc'},
@@ -182,6 +183,9 @@ describe('getExtendedProjection', () => {
     ]
 
     expect(getExtendedProjection(withObjectFieldsOrder, orderBy)).toBe('title, translations{se}')
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('nonexistent field "missingField"'),
+    )
   })
 
   test('throws in strict mode when ordering targets missing top-level field', () => {

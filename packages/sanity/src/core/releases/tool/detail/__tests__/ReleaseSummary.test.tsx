@@ -71,6 +71,12 @@ vi.mock('../../components/ReleaseDocumentPreview', () => ({
 
 vi.mock('../../../../studio/components/navbar/search/components/SearchPopover')
 
+vi.mock('../documentTable/useReleaseHistory', () => ({
+  useReleaseHistory: vi.fn().mockReturnValue({
+    documentsHistory: new Map(),
+  }),
+}))
+
 // Mock the preview streams to prevent RxJS unsubscription errors during test cleanup.
 // These streams use fromEvent(window, ...) which can cause errors when unsubscribing
 // after the test environment has been modified.
