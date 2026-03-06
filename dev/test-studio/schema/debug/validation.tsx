@@ -455,8 +455,10 @@ export default defineType({
           }
 
           const location = points([[geoPoint.lng, geoPoint.lat]])
-          const norwayFeature = featureCollection(norway)
-          const ptsWithin = pointsWithinPolygon(location, norwayFeature)
+
+          const norwayFeature = featureCollection(norway as any)
+
+          const ptsWithin = pointsWithinPolygon(location, norwayFeature as any)
           return ptsWithin.features.length > 0 ? true : 'Location must be in Norway'
         }),
     },
