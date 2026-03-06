@@ -1,11 +1,12 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {useMediaIndex} from '@sanity/ui'
 import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {format} from 'date-fns/format'
 import {set} from 'date-fns/set'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext, useRouter} from 'sanity/router'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
@@ -673,6 +674,30 @@ describe('ReleasesOverview', () => {
 
           expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
         })
+      })
+    })
+
+    describe('narrow viewport layout', () => {
+      beforeEach(async () => {
+        vi.mocked(useMediaIndex).mockReturnValue(1)
+        await rerender()
+      })
+
+      afterEach(() => {
+        vi.mocked(useMediaIndex).mockReturnValue(3)
+      })
+
+      it('opens the calendar filter as a dialog instead of a sidebar', async () => {
+        const filterButton = document.querySelector('button[name="calendar"]') as HTMLButtonElement
+        expect(filterButton).toBeInTheDocument()
+        await userEvent.click(filterButton)
+
+        const dialog = getByDataUi(document.body, 'DialogCard')
+        expect(dialog).toBeInTheDocument()
+      })
+
+      it('hides the timezone text and shows only the icon', () => {
+        expect(screen.queryByText('SCT (Sanity/Oslo)')).not.toBeInTheDocument()
       })
     })
 

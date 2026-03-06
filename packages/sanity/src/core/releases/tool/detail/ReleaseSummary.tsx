@@ -1,7 +1,7 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, Stack, useToast} from '@sanity/ui'
+import {Card, Container, Flex, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
@@ -161,26 +161,27 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   return (
-    <Card
-      ref={setScrollContainerRef}
-      data-testid="document-table-card"
-      style={{
-        height: '100%',
-        overflow: 'auto',
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
-      }}
-      className="hide-scrollbar"
-    >
-      <Stack space={2}>
-        <ReleaseDocumentFilterTabs
-          documents={tableData}
-          releaseState={release.state}
-          isLoading={isLoading}
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-        />
-        <Card borderTop>
+    <Flex direction="column" style={{height: '100%'}}>
+      <ReleaseDocumentFilterTabs
+        documents={tableData}
+        releaseState={release.state}
+        isLoading={isLoading}
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+      />
+      <Card
+        ref={setScrollContainerRef}
+        data-testid="document-table-card"
+        flex={1}
+        borderTop
+        style={{
+          overflow: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+        className="hide-scrollbar"
+      >
+        <div style={{minWidth: 'fit-content'}}>
           <Table<DocumentInReleaseDetail>
             loading={isLoading}
             data={tableData}
@@ -193,8 +194,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             scrollContainerRef={scrollContainerRef}
             defaultSort={{column: 'search', direction: 'asc'}}
           />
-        </Card>
-      </Stack>
+        </div>
+      </Card>
       {release.state === 'active' && (
         <Container width={3}>
           <Card padding={3}>
@@ -214,6 +215,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         releaseId={releaseId}
         idsInRelease={documents.map(({document}) => document._id)}
       />
-    </Card>
+    </Flex>
   )
 }
