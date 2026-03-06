@@ -44,7 +44,11 @@ export function ActiveWorkspaceMatcher({
 
   useEffect(() => {
     if (result.type === 'redirect') {
-      history.replace(result.pathname)
+      history.replace({
+        pathname: result.pathname,
+        search: history.location.search,
+        hash: history.location.hash,
+      })
     }
   }, [history, result])
 
