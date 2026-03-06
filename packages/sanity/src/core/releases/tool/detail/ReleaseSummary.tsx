@@ -2,7 +2,7 @@ import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Container, Flex, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -32,6 +32,16 @@ export interface ReleaseSummaryProps {
   release: ReleaseDocument
   isLoading?: boolean
 }
+
+const FULL_HEIGHT_STYLE: CSSProperties = {height: '100%'}
+
+const SCROLL_CONTAINER_STYLE: CSSProperties = {
+  overflow: 'auto',
+  scrollbarWidth: 'none',
+  msOverflowStyle: 'none',
+}
+
+const FIT_CONTENT_STYLE: CSSProperties = {minWidth: 'fit-content'}
 
 const isBundleDocumentRow = (
   maybeBundleDocumentRow: unknown,
@@ -161,7 +171,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   return (
-    <Flex direction="column" style={{height: '100%'}}>
+    <Flex direction="column" style={FULL_HEIGHT_STYLE}>
       <ReleaseDocumentFilterTabs
         documents={tableData}
         releaseState={release.state}
@@ -174,14 +184,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         data-testid="document-table-card"
         flex={1}
         borderTop
-        style={{
-          overflow: 'auto',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-        }}
+        style={SCROLL_CONTAINER_STYLE}
         className="hide-scrollbar"
       >
-        <div style={{minWidth: 'fit-content'}}>
+        <div style={FIT_CONTENT_STYLE}>
           <Table<DocumentInReleaseDetail>
             loading={isLoading}
             data={tableData}
