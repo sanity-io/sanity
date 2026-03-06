@@ -12,8 +12,8 @@ const releasesLocaleStrings = {
   'action.copy-release.label': 'Copy',
   /** Menu item label for copying release ID */
   'action.copy-release-id.label': 'Copy release ID',
-  /** Menu item label for copying release link */
-  'action.copy-release-link.label': 'Copy release link',
+  /** Menu item label for copying release URL */
+  'action.copy-release-link.label': 'Copy release URL',
   /** Menu item label for copying release title */
   'action.copy-release-title.label': 'Copy release title',
   /** Tooltip for when the archive release action is disabled due to release being scheduled  */
