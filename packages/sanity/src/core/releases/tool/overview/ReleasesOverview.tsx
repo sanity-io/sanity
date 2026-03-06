@@ -429,21 +429,27 @@ export function ReleasesOverview() {
     cardinalityView === 'drafts' &&
     releases.some((release) => release.state === 'active' && isCardinalityOneRelease(release))
 
+  const calendarFilterContent = useMemo(() => {
+    return (
+      <CalendarFilter
+        disabled={loading || releases.length === 0}
+        renderCalendarDay={createReleaseCalendarFilterDay(cardinalityView)}
+        selectedDate={releaseFilterDate}
+        onSelect={handleSelectFilterDate}
+        timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
+      />
+    )
+  }, [loading, releases, releaseFilterDate, handleSelectFilterDate, cardinalityView])
+
   const renderCalendarFilter = useMemo(() => {
     return (
       <Flex flex="none">
         <Card borderRight flex="none" disabled>
-          <CalendarFilter
-            disabled={loading || releases.length === 0}
-            renderCalendarDay={createReleaseCalendarFilterDay(cardinalityView)}
-            selectedDate={releaseFilterDate}
-            onSelect={handleSelectFilterDate}
-            timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
-          />
+          {calendarFilterContent}
         </Card>
       </Flex>
     )
-  }, [loading, releases, releaseFilterDate, handleSelectFilterDate, cardinalityView])
+  }, [calendarFilterContent])
 
   const tableColumns = useMemo(() => {
     if (cardinalityView === 'drafts') {
@@ -502,7 +508,9 @@ export function ReleasesOverview() {
           <Card flex="none" padding={3}>
             <Flex align="center" flex={1} gap={3} wrap="wrap">
               <Inline>
-                {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
+                {!showCalendar && (
+                  <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
+                )}
                 <CardinalityViewPicker
                   cardinalityView={cardinalityView}
                   loading={loading}
@@ -526,18 +534,23 @@ export function ReleasesOverview() {
                     currentArchivedPicker
                   ))}
               </Flex>
-              <Flex flex="none" gap={2}>
-                <Button
-                  icon={EarthGlobeIcon}
-                  iconRight={ChevronDownIcon}
-                  mode="bleed"
-                  text={
-                    isNarrowViewport
-                      ? timeZone.abbreviation
-                      : `${timeZone.abbreviation} (${timeZone.namePretty})`
-                  }
-                  onClick={dialogTimeZoneShow}
-                />
+              <Flex flex="none" gap={2} style={isNarrowViewport ? {marginLeft: 'auto'} : undefined}>
+                {isNarrowViewport ? (
+                  <Button
+                    icon={EarthGlobeIcon}
+                    mode="bleed"
+                    onClick={dialogTimeZoneShow}
+                    tooltipProps={{content: `${timeZone.abbreviation} (${timeZone.namePretty})`}}
+                  />
+                ) : (
+                  <Button
+                    icon={EarthGlobeIcon}
+                    iconRight={ChevronDownIcon}
+                    mode="bleed"
+                    text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
+                    onClick={dialogTimeZoneShow}
+                  />
+                )}
                 {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
                 {loadingOrHasReleases && createReleaseButton}
               </Flex>
