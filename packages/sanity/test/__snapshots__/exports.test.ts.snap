@@ -115,7 +115,7 @@ exports[`exports snapshot 1`] = `
     "FormFieldValidationStatus": "function",
     "FormInput": "object",
     "FormProvider": "function",
-    "FormRow": "object",
+    "FormRow": "function",
     "FormValueProvider": "function",
     "FromTo": "object",
     "FromToArrow": "function",
