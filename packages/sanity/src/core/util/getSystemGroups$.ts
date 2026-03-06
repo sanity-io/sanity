@@ -1,29 +1,37 @@
 import {type SanityClient} from '@sanity/client'
+import QuickLRU from 'quick-lru'
 import {defer, type Observable, shareReplay, tap} from 'rxjs'
 
-const CACHE_TTL_MS = 5 * 60 * 1000
+const CACHE_MAX_AGE = 5 * 60 * 1000
+const CACHE_MAX_SIZE = 50
 
-let cached$: Observable<any> | null = null
-let expiresAt = 0
+const cache = new QuickLRU<string, Observable<any>>({
+  maxAge: CACHE_MAX_AGE,
+  maxSize: CACHE_MAX_SIZE,
+})
+
+function getCacheKey(client: SanityClient['observable']): string {
+  const {projectId, dataset} = client.config()
+  return `${projectId}-${dataset}`
+}
 
 export function getSystemGroups$(client: SanityClient['observable']): Observable<any> {
-  const now = Date.now()
+  const key = getCacheKey(client)
+  const cached$ = cache.get(key)
 
-  if (!cached$ || now >= expiresAt) {
-    cached$ = defer(() => client.fetch('*[_type == "system.group"]{members, grants}')).pipe(
-      tap({
-        next: () => {
-          expiresAt = Date.now() + CACHE_TTL_MS
-        },
-        error: () => {
-          // Reset cache on failure so next call retries
-          cached$ = null
-          expiresAt = 0
-        },
-      }),
-      shareReplay(1),
-    )
+  if (cached$) {
+    return cached$
   }
 
-  return cached$
+  const result$ = defer(() => client.fetch('*[_type == "system.group"]{members, grants}')).pipe(
+    tap({
+      error: () => {
+        cache.delete(key)
+      },
+    }),
+    shareReplay(1),
+  )
+
+  cache.set(key, result$)
+  return result$
 }
