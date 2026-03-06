@@ -4,7 +4,15 @@ import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {AnimatePresence, motion} from 'motion/react'
-import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  type CSSProperties,
+  type MouseEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Tooltip} from '../../../../ui-components'
@@ -157,6 +165,13 @@ export function ReleasesOverview() {
 
   const mediaIndex = useMediaIndex()
   const isNarrowViewport = mediaIndex < 2
+
+  const narrowFilterStyle: CSSProperties | undefined = isNarrowViewport
+    ? {minWidth: '100%', order: 3}
+    : undefined
+  const narrowTimezoneStyle: CSSProperties | undefined = isNarrowViewport
+    ? {marginLeft: 'auto'}
+    : undefined
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> => {
@@ -447,8 +462,8 @@ export function ReleasesOverview() {
     cardinalityView === 'drafts' &&
     releases.some((release) => release.state === 'active' && isCardinalityOneRelease(release))
 
-  const calendarFilterContent = useMemo(() => {
-    return (
+  const calendarFilterContent = useMemo(
+    () => (
       <CalendarFilter
         disabled={loading || releases.length === 0}
         renderCalendarDay={createReleaseCalendarFilterDay(cardinalityView)}
@@ -456,18 +471,20 @@ export function ReleasesOverview() {
         onSelect={handleSelectFilterDate}
         timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
       />
-    )
-  }, [loading, releases, releaseFilterDate, handleSelectFilterDate, cardinalityView])
+    ),
+    [loading, releases, releaseFilterDate, handleSelectFilterDate, cardinalityView],
+  )
 
-  const renderCalendarFilter = useMemo(() => {
-    return (
+  const renderCalendarFilter = useMemo(
+    () => (
       <Flex flex="none">
         <Card borderRight flex="none" disabled>
           {calendarFilterContent}
         </Card>
       </Flex>
-    )
-  }, [calendarFilterContent])
+    ),
+    [calendarFilterContent],
+  )
 
   const tableColumns = useMemo(() => {
     if (cardinalityView === 'drafts') {
@@ -540,11 +557,7 @@ export function ReleasesOverview() {
                 />
               </Inline>
 
-              <Flex
-                flex={1}
-                gap={1}
-                style={isNarrowViewport ? {minWidth: '100%', order: 3} : undefined}
-              >
+              <Flex flex={1} gap={1} style={narrowFilterStyle}>
                 {loadingOrHasReleases &&
                   (releaseFilterDate ? (
                     <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
@@ -552,7 +565,7 @@ export function ReleasesOverview() {
                     currentArchivedPicker
                   ))}
               </Flex>
-              <Flex flex="none" gap={2} style={isNarrowViewport ? {marginLeft: 'auto'} : undefined}>
+              <Flex flex="none" gap={2} style={narrowTimezoneStyle}>
                 {isNarrowViewport ? (
                   <Button
                     icon={EarthGlobeIcon}

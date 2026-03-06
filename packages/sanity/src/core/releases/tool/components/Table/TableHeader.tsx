@@ -1,7 +1,7 @@
 import {ArrowUpIcon, SearchIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {motion} from 'motion/react'
-import {useMemo} from 'react'
+import {type CSSProperties, useMemo} from 'react'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -74,13 +74,15 @@ const TableHeaderSearch = ({
   )
 }
 
+const STICKY_HEADER_STYLE: CSSProperties = {position: 'sticky', top: 0, zIndex: 1}
+
 /**
  *
  * @internal
  */
 export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
   return (
-    <Card as="thead" borderBottom style={{position: 'sticky', top: 0, zIndex: 1}}>
+    <Card as="thead" borderBottom style={STICKY_HEADER_STYLE}>
       <Flex
         as="tr"
         style={{
