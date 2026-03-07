@@ -11,13 +11,15 @@ import {
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
+import {useDocumentPaneInfo} from './useDocumentPaneInfo'
 import {useDocumentTitle} from './useDocumentTitle'
 
 const IGNORE_OPS = ['patch', 'commit']
 
 export const DocumentOperationResults = memo(function DocumentOperationResults() {
   const {push: pushToast} = useToast()
-  const {documentId, documentType, value: documentPaneValue} = useDocumentPane()
+  const {value: documentPaneValue} = useDocumentPane()
+  const {documentId, documentType} = useDocumentPaneInfo()
   const documentTitleInfo = useDocumentTitle()
   const titleError = documentTitleInfo.error
   const event: any = useDocumentOperationEvent(documentId, documentType)

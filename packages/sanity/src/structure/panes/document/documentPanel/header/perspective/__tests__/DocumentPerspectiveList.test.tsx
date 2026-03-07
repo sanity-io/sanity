@@ -24,8 +24,12 @@ import {
 } from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
-import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
+import {
+  type DocumentPaneContextValue,
+  type DocumentPaneInfoContextValue,
+} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
+import {useDocumentPaneInfo} from '../../../../useDocumentPaneInfo'
 import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
 vi.mock('sanity', async (importOriginal) => ({
@@ -66,9 +70,13 @@ vi.mock('sanity/router', () => {
 })
 
 vi.mock('../../../../useDocumentPane')
+vi.mock('../../../../useDocumentPaneInfo')
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>
+>
+const mockUseDocumentPaneInfo = useDocumentPaneInfo as MockedFunction<
+  () => Partial<DocumentPaneInfoContextValue>
 >
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 
@@ -188,6 +196,10 @@ const getPaneMock = ({
 describe('DocumentPerspectiveList', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockUseDocumentPaneInfo.mockReturnValue({
+      documentType: 'testAuthor',
+      documentId: 'foo',
+    })
     mockUsePerspective.mockReturnValue(usePerspectiveMockValue)
     mockUseActiveReleases.mockReturnValue({
       loading: false,

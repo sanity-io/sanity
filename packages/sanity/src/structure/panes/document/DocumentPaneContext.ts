@@ -108,3 +108,25 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   lastNonDeletedRevId: string | null
   lastRevisionDocument: SanityDocument | null
 }
+
+/** @internal */
+export type DocumentPaneInfoContextValue = Pick<
+  DocumentPaneContextValue,
+  | 'actions'
+  | 'badges'
+  | 'documentId'
+  | 'documentIdRaw'
+  | 'documentType'
+  | 'fieldActions'
+  | 'index'
+  | 'menuItemGroups'
+  | 'maximized'
+  | 'onPaneClose'
+  | 'onPaneSplit'
+  | 'onSetMaximizedPane'
+  | 'paneKey'
+  | 'schemaType'
+  | 'title'
+  | 'views'
+  | 'unstable_languageFilter'
+>

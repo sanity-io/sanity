@@ -9,7 +9,7 @@ import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentIDCopied, DocumentURLCopied} from '../../__telemetry__'
-import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 
 /**
  * Renders a dropdown button in the document panel header with two actions:
@@ -19,7 +19,7 @@ import {useDocumentPane} from '../../useDocumentPane'
  * @internal
  */
 export function CopyDocumentActions() {
-  const {documentId, documentType} = useDocumentPane()
+  const {documentId, documentType} = useDocumentPaneInfo()
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()

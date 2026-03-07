@@ -25,6 +25,7 @@ import {
 import {HISTORY_INSPECTOR_NAME} from '../constants'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline'
 import {useDocumentPane} from '../useDocumentPane'
+import {useDocumentPaneInfo} from '../useDocumentPaneInfo'
 import {DocumentStatusPulse} from './DocumentStatusPulse'
 
 const RELATIVE_TIME_OPTIONS = {
@@ -185,7 +186,8 @@ const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
 
 export function DocumentStatusLine() {
-  const {documentId, documentType, editState, value} = useDocumentPane()
+  const {editState, value} = useDocumentPane()
+  const {documentId, documentType} = useDocumentPaneInfo()
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
   const source = useSource()
   const eventsEnabled = source.beta?.eventsAPI?.documents

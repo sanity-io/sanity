@@ -278,7 +278,21 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const subscription = presenceStore
       .documentPresence(value._id, {excludeVersions: true})
       .subscribe((nextPresence) => {
-        setPresence(nextPresence)
+        setPresence((prev) => {
+          if (
+            prev.length === nextPresence.length &&
+            prev.every(
+              // eslint-disable-next-line max-nested-callbacks
+              (p, i) =>
+                p.sessionId === nextPresence[i].sessionId &&
+                p.lastActiveAt === nextPresence[i].lastActiveAt &&
+                p.path === nextPresence[i].path,
+            )
+          ) {
+            return prev
+          }
+          return nextPresence
+        })
       })
     return () => {
       subscription.unsubscribe()
