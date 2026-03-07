@@ -25,7 +25,7 @@ import {
 import {isRecord} from '../util/isRecord'
 import {selectEffect} from './selectEffect'
 import {selectEffectFromHash} from './selectEffectFromHash'
-import {type ResolutionMarker} from './types/ResolutionMarker'
+import {isDivergenceResolutionMarker, type ResolutionMarker} from './types/ResolutionMarker'
 import {delayTask} from './utils/delayTask'
 import {findMovesInArrayOfObjects} from './utils/findMovesInArrayOfObjects'
 import {type FlattenedPair, flattenObject, type PathWithTypes} from './utils/flatten'
@@ -34,22 +34,22 @@ import {hashData} from './utils/hashData'
 /**
  * @internal
  */
-export interface FindDivergencesContext {
-  upstreamHead: SanityDocument
-  subjectHead: SanityDocument
-  upstreamAtFork: SanityDocument
-  resolutions?: {
-    _key: string
-    resolutionMarker: ResolutionMarker
-  }[]
+export interface DivergenceResolution {
+  _key: string
+  resolutionMarker: ResolutionMarker
 }
-
-type DivergenceStatus = 'unresolved' | 'resolved'
 
 /**
  * @internal
  */
-type ResolutionMarkerAtPath = [path: string, resolutionMarker: ResolutionMarker]
+export interface FindDivergencesContext {
+  upstreamHead: SanityDocument
+  subjectHead: SanityDocument
+  upstreamAtFork: SanityDocument
+  resolutions?: DivergenceResolution[]
+}
+
+type DivergenceStatus = 'unresolved' | 'resolved'
 
 type SnapshotType = 'subjectHead' | 'upstreamHead' | 'upstreamAtFork'
 
@@ -173,8 +173,7 @@ export type Divergence = BaseDivergence &
 export type DivergenceAtPath = [path: string, context: Divergence]
 
 // Fields that are never considered divergent.
-// TODO: Remove `_xSystem` from regex.
-const skipFields = /(\.|^)_(id|rev|key|system|createdAt|updatedAt|xSystem)(\.|$)/g
+const skipFields = /(\.|^)_(id|rev|key|system|createdAt|updatedAt|systemDivergences)(\.|$)/g
 
 type State = Record<string, SnapshotsByType>
 
@@ -263,6 +262,21 @@ export function readDocumentDivergences({
       ),
     )
     .pipe(
+      filter(({snapshots}) => {
+        const hasObjectSnapshot = [
+          snapshots.upstreamAtFork?.value,
+          snapshots.upstreamHead?.value,
+          snapshots.subjectHead?.value,
+        ].some(isRecord)
+
+        const hasKeyedObjectSnapshot = [
+          snapshots.upstreamAtFork?.value,
+          snapshots.upstreamHead?.value,
+          snapshots.subjectHead?.value,
+        ].some(isKeyedObject)
+
+        return !hasObjectSnapshot || hasKeyedObjectSnapshot
+      }),
       delayTask(),
       mergeMap<
         {
@@ -277,7 +291,7 @@ export function readDocumentDivergences({
 
         if (isRevisionIdEqual({strategy, upstreamAtFork, upstreamHead, resolutionMarker})) {
           // The entire document is unchanged since resolution: the divergence remains resolved.
-          if (strategy === 'sinceResolution') {
+          if (strategy === 'sinceResolution' && typeof resolutionMarker !== 'undefined') {
             return of<DivergenceAtPath>([
               path,
               {
@@ -288,7 +302,7 @@ export function readDocumentDivergences({
                 subjectId: subjectHead._id,
                 path: path,
                 snapshots,
-                sinceRevisionId: upstreamHead._rev,
+                sinceRevisionId: resolutionMarker?.[0],
               },
             ])
           }
@@ -351,7 +365,10 @@ export function readDocumentDivergences({
                   effect: 'move',
                   delta: positionDelta,
                   upstreamPosition: upstreamHeadIndex,
-                  sinceRevisionId: upstreamAtFork?._rev,
+                  sinceRevisionId: createDocumentRevisionMarker(
+                    upstreamAtFork._id,
+                    upstreamAtFork?._rev,
+                  ),
                   path: path,
                   snapshots,
                 },
@@ -461,7 +478,10 @@ export function readDocumentDivergences({
                 status: 'unresolved',
                 isAddressable,
                 effect,
-                sinceRevisionId: upstreamAtFork?._rev,
+                sinceRevisionId: createDocumentRevisionMarker(
+                  upstreamAtFork._id,
+                  upstreamAtFork?._rev,
+                ),
                 path,
                 snapshots,
               } satisfies BaseDivergence
@@ -666,7 +686,7 @@ function aggregateObjects<
  * An object's type is unlikely to change due to an operation performed by an editor in Studio,
  * but this can occur when scripting or using an agent to update content.
  *
- * This operator:
+ * This operation:
  *
  *  1. Finds any object whose type has changed.
  *  2. Filters all divergences that affect descendants of the changed object.
@@ -708,11 +728,19 @@ function coalesceChangedObjectTypes(): OperatorFunction<DivergenceAtPath, Diverg
       const pathArray = fromString(path)
       const parentObjectPath = pathArray.slice(0, -1)
 
+      const hasKeyedObjectSnapshot = [
+        divergence.snapshots.upstreamHead?.value,
+        divergence.snapshots.subjectHead?.value,
+      ].some(isKeyedObject)
+
       // Whether the object's current state in the upstream can be meaningfully compared with its
       // current state in the subject.
+      //
+      // Object type changes are only expected in arrays of objects.
       const isSubjectObjectTypeCompatible =
+        !hasKeyedObjectSnapshot ||
         divergence.snapshots.upstreamHead?.parentObjectType ===
-        divergence.snapshots.subjectHead?.parentObjectType
+          divergence.snapshots.subjectHead?.parentObjectType
 
       // Whether the object's type has changed in the upstream. It indicates whether the last
       // consistent state of the object can be meaninfully compared with the current state of the
@@ -775,7 +803,8 @@ function isRevisionIdEqual({
       throw new Error('Expected resolution marker')
     }
 
-    return upstreamHead._rev === resolutionMarker[0]
+    const [upstreamId, upstreamRevisionId] = resolutionMarker[0].split('@')
+    return upstreamId === upstreamHead._id && upstreamRevisionId === upstreamHead._rev
   }
 
   if (strategy === 'sinceFork') {
@@ -804,5 +833,42 @@ function isSanityObjectLike(
     typeof maybeSanityObjectLike === 'object' &&
     maybeSanityObjectLike !== null &&
     '_type' in maybeSanityObjectLike
+  )
+}
+
+/**
+ * @internal
+ */
+export function createDocumentRevisionMarker(
+  ...documenentRevision: [documentId: string, revisionId: string]
+): string {
+  return documenentRevision.join('@')
+}
+
+/**
+ * @internal
+ */
+export function isDivergenceResolutions(
+  maybeDivergenceResolutions: unknown,
+): maybeDivergenceResolutions is DivergenceResolution[] {
+  return (
+    Array.isArray(maybeDivergenceResolutions) &&
+    maybeDivergenceResolutions.every(isDivergenceResolution)
+  )
+}
+
+/**
+ * @internal
+ */
+function isDivergenceResolution(
+  maybeDivergenceResolution: unknown,
+): maybeDivergenceResolution is DivergenceResolution {
+  return (
+    typeof maybeDivergenceResolution === 'object' &&
+    maybeDivergenceResolution !== null &&
+    '_key' in maybeDivergenceResolution &&
+    typeof maybeDivergenceResolution._key === 'string' &&
+    'resolutionMarker' in maybeDivergenceResolution &&
+    isDivergenceResolutionMarker(maybeDivergenceResolution.resolutionMarker)
   )
 }

@@ -1,3 +1,4 @@
+import {type Path} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 
@@ -11,12 +12,13 @@ import {PatchEvent, set} from '../../../patch'
 import {type DuplicateKeysError} from '../../../store/types/memberErrors'
 
 interface Props {
+  path: Path
   error: DuplicateKeysError
   onChange: (patchEvent: PatchEvent) => void
 }
 
 export function DuplicateKeysAlert(props: Props) {
-  const {error, onChange} = props
+  const {error, onChange, path} = props
 
   const handleFixDuplicateKeys = useCallback(() => {
     onChange(
@@ -31,7 +33,11 @@ export function DuplicateKeysAlert(props: Props) {
   const {t} = useTranslation()
 
   return (
-    <FormField title={error.schemaType.title} description={error.schemaType.description}>
+    <FormField
+      title={error.schemaType.title}
+      description={error.schemaType.description}
+      path={path}
+    >
       <Alert
         status="warning"
         suffix={

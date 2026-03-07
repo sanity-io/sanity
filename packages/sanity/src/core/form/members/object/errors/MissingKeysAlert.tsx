@@ -1,3 +1,4 @@
+import {type Path} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {useCallback} from 'react'
@@ -14,10 +15,11 @@ import {type MissingKeysError} from '../../../store/types/memberErrors'
 interface Props {
   error: MissingKeysError
   onChange: (patchEvent: PatchEvent) => void
+  path: Path
 }
 
 export function MissingKeysAlert(props: Props) {
-  const {error, onChange} = props
+  const {error, onChange, path} = props
   const handleFixMissingKeys = useCallback(() => {
     onChange(
       PatchEvent.from((error.value || []).map((val, i) => setIfMissing(randomKey(), [i, '_key']))),
@@ -27,7 +29,11 @@ export function MissingKeysAlert(props: Props) {
   const {t} = useTranslation()
 
   return (
-    <FormField title={error.schemaType.title} description={error.schemaType.description}>
+    <FormField
+      title={error.schemaType.title}
+      description={error.schemaType.description}
+      path={path}
+    >
       <Alert
         status="warning"
         suffix={

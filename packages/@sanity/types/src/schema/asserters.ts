@@ -81,6 +81,11 @@ export function isArrayOfPrimitivesSchemaType(type: unknown): type is ArraySchem
 }
 
 /** @internal */
+export function isArrayOfStringsSchemaType(type: unknown): type is ArraySchemaType<string> {
+  return isArraySchemaType(type) && type.of.every((memberType) => isStringSchemaType(memberType))
+}
+
+/** @internal */
 export function isBooleanSchemaType(type: unknown): type is BooleanSchemaType {
   if (!isRecord(type)) return false
   return type.jsonType === 'boolean'
