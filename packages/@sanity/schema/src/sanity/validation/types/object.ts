@@ -89,6 +89,23 @@ export function validateField(field: any, visitorContext: any) {
     )
   }
 
+  if (field.title && typeof field.title !== 'string') {
+    problems.push(
+      warning(
+        `Field "${field.name}" has a non-string title which is discouraged. A plain string is recommended.`,
+        HELP_IDS.FIELD_HAS_UNADVISED_REACT_COMPONENT,
+      ),
+    )
+  }
+  if (field.description && typeof field.description !== 'string') {
+    problems.push(
+      warning(
+        `Field "${field.name}" has a non-string description which is discouraged. A plain string is recommended.`,
+        HELP_IDS.FIELD_HAS_UNADVISED_REACT_COMPONENT,
+      ),
+    )
+  }
+
   return problems
 }
 

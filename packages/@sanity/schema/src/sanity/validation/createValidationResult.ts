@@ -32,6 +32,7 @@ export const HELP_IDS = {
   DEPRECATED_BLOCKEDITOR_KEY: 'schema-deprecated-blockeditor-key',
   STANDALONE_BLOCK_TYPE: 'schema-standalone-block-type',
   FIELD_TYPE_IS_DOCUMENT: 'schema-field-type-is-document',
+  FIELD_HAS_UNADVISED_REACT_COMPONENT: 'schema-field-has-unadvised-react-component',
 }
 
 function createValidationResult(

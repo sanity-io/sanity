@@ -3,11 +3,20 @@ import {renderToString} from 'react-dom/server'
 
 /**
  * Convert a field value to a string (if it's a React element) and remove HTML tags.
- * If the field value is a string, pass through as-is.
  */
 export function sanitizeFieldValue(name: string | React.JSX.Element): string {
   if (isValidElement(name)) {
-    return stripHtmlTags(renderToString(name))
+    try {
+      return stripHtmlTags(renderToString(name))
+    } catch (err) {
+      console.warn(
+        'A field title or description contains a React component that could not be rendered. ' +
+          'This is likely caused by a component that requires runtime context. ' +
+          'Use a plain string or plain HTML instead.',
+        err,
+      )
+      return ''
+    }
   }
 
   return typeof name === 'string' ? name : ''
