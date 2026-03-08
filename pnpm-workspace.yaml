@@ -63,6 +63,7 @@ linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
+  - '@archiver/*'
   - '@oxfmt/*'
   - '@oxlint/*'
   - '@oxlint-tsgolint/*'

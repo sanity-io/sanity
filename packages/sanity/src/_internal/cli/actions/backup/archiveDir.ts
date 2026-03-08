@@ -1,7 +1,7 @@
 import {createWriteStream} from 'node:fs'
 import zlib from 'node:zlib'
 
-import archiver, {type ProgressData} from 'archiver'
+import {TarArchive, type ProgressData} from '@archiver/archiver'
 
 import debug from './debug'
 
@@ -20,7 +20,7 @@ function archiveDir(tmpOutDir: string, outFilePath: string, progressCb: Progress
       resolve()
     })
 
-    const archive = archiver('tar', {
+    const archive = new TarArchive({
       gzip: true,
       gzipOptions: {level: zlib.constants.Z_DEFAULT_COMPRESSION},
     })
@@ -41,7 +41,7 @@ function archiveDir(tmpOutDir: string, outFilePath: string, progressCb: Progress
 
     // Pipe archive data to the file
     archive.pipe(archiveDestination)
-    archive.directory(tmpOutDir, false)
+    archive.directory(tmpOutDir, '')
     void archive.finalize()
   })
 }
