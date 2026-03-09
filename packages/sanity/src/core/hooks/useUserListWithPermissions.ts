@@ -13,6 +13,7 @@ import {
   useUserStore,
 } from '../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
+import {getSystemGroups$} from '../util/getSystemGroups$'
 import {useClient} from './useClient'
 
 type Loadable<T> = {
@@ -94,7 +95,7 @@ export function useUserListWithPermissions(
     )
 
     // 3. Get all the system groups. Use the cached response if it exists to avoid unnecessary requests.
-    const _systemGroup$ = client.observable.fetch('*[_type == "system.group"]').pipe(shareReplay(1))
+    const _systemGroup$ = getSystemGroups$(client.observable)
     return [_users$, _systemGroup$]
   }, [client.observable, projectStore, userStore])
 
