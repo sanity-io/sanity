@@ -1,8 +1,20 @@
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-export type ScrollElement = HTMLDivElement | null
+export type ScrollElement = HTMLElement | null
 
-function isElementVisibleInContainer(container: ScrollElement, element: ScrollElement) {
+function findScrollableAncestor(element: HTMLElement): HTMLElement | null {
+  let current: HTMLElement | null = element.parentElement
+  while (current) {
+    const {overflowY} = getComputedStyle(current)
+    if (overflowY === 'auto' || overflowY === 'scroll') {
+      return current
+    }
+    current = current.parentElement
+  }
+  return null
+}
+
+function isElementVisibleInContainer(container: ScrollElement, element: ScrollElement): boolean {
   if (!container || !element) return true
 
   const containerRect = container.getBoundingClientRect()
@@ -15,33 +27,57 @@ function isElementVisibleInContainer(container: ScrollElement, element: ScrollEl
 }
 
 export const useScrollIndicatorVisibility = () => {
-  const scrollContainerRef = useRef<ScrollElement>(null)
   const scrollElementRef = useRef<ScrollElement>(null)
+  const scrollAncestorRef = useRef<HTMLElement | null>(null)
 
   const [isRangeVisible, setIsRangeVisible] = useState(true)
 
   const handleScroll = useCallback(
     () =>
       setIsRangeVisible(
-        isElementVisibleInContainer(scrollContainerRef.current, scrollElementRef.current),
+        isElementVisibleInContainer(scrollAncestorRef.current, scrollElementRef.current),
       ),
     [],
   )
 
-  const setScrollContainer = useCallback((container: HTMLDivElement) => {
-    scrollContainerRef.current = container
-  }, [])
+  const setScrollContainer = useCallback(
+    (container: HTMLElement | null) => {
+      const previousAncestor = scrollAncestorRef.current
+      if (previousAncestor) {
+        previousAncestor.removeEventListener('scroll', handleScroll)
+        scrollAncestorRef.current = null
+      }
+
+      if (container) {
+        const scrollableAncestor = findScrollableAncestor(container)
+        scrollAncestorRef.current = scrollableAncestor
+
+        if (scrollableAncestor) {
+          scrollableAncestor.addEventListener('scroll', handleScroll, {passive: true})
+        }
+      }
+    },
+    [handleScroll],
+  )
+
+  useEffect(() => {
+    return () => {
+      const ancestor = scrollAncestorRef.current
+      if (ancestor) {
+        ancestor.removeEventListener('scroll', handleScroll)
+      }
+    }
+  }, [handleScroll])
 
   const resetRangeVisibility = useCallback(() => setIsRangeVisible(true), [])
 
   return useMemo(
     () => ({
       resetRangeVisibility,
-      onScroll: handleScroll,
       isRangeVisible,
       setScrollContainer,
       scrollElementRef,
     }),
-    [handleScroll, isRangeVisible, resetRangeVisibility, setScrollContainer],
+    [isRangeVisible, resetRangeVisibility, setScrollContainer],
   )
 }

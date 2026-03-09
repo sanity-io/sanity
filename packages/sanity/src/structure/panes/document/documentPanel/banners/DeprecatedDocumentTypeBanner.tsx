@@ -3,11 +3,11 @@ import {Text} from '@sanity/ui'
 import {isDeprecatedSchemaType, Translate, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
-import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 import {Banner} from './Banner'
 
 export function DeprecatedDocumentTypeBanner() {
-  const {schemaType} = useDocumentPane()
+  const {schemaType} = useDocumentPaneInfo()
   const {t} = useTranslation(structureLocaleNamespace)
 
   if (!isDeprecatedSchemaType(schemaType)) {
