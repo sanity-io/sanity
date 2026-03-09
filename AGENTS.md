@@ -31,8 +31,8 @@ pnpm test
 # Update snapshots if tests fail due to expected changes
 pnpm test -- -u
 
-# Type check
-pnpm check:types
+# Type check (handled by oxlint with --type-check)
+pnpm check:oxlint
 ```
 
 ## CI Checks - What Must Pass
@@ -42,9 +42,8 @@ These checks run on every PR and **must pass**:
 | Check            | Command              | Notes                                                    |
 | ---------------- | -------------------- | -------------------------------------------------------- |
 | **Format**       | `pnpm check:format`  | Uses Prettier. Fix with `pnpm chore:format:fix`          |
-| **Oxlint**       | `pnpm check:oxlint`  | Fast Rust-based linter. Fix with `pnpm chore:oxlint:fix` |
+| **Oxlint**       | `pnpm check:oxlint`  | Fast Rust-based linter + type checker. Fix with `pnpm chore:oxlint:fix` |
 | **ESLint**       | `pnpm lint`          | Full linting. Fix with `pnpm chore:lint:fix`             |
-| **Type Check**   | `pnpm check:types`   | TypeScript via tsgo + turbo                              |
 | **Unit Tests**   | `pnpm test`          | Vitest, sharded in CI                                    |
 | **CLI Tests**    | Runs via `pnpm test` | Tests for @sanity/cli                                    |
 | **Export Tests** | `pnpm test:exports`  | Ensures ESM/CJS/DTS work                                 |

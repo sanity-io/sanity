@@ -7,7 +7,6 @@
   "type": "module",
   "scripts": {
     "build": "run-s sanity:build sanity:manifest",
-    "check:types": "tsc --noEmit",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev",
     "lint": "eslint .",

@@ -44,7 +44,6 @@
   },
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/mutator/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "perf": "node ./perf/run.cjs",
@@ -68,7 +67,6 @@
     "@types/debug": "^4.1.12",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "eslint": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "catalog:"
