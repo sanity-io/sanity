@@ -1,5 +1,6 @@
 import {
   type ClientConfig as SanityClientConfig,
+  ClientError,
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
@@ -15,7 +16,7 @@ import {createBroadcastChannel} from './createBroadcastChannel'
 import {createLoginComponent} from './createLoginComponent'
 import {getSessionId} from './sessionId'
 import * as storage from './storage'
-import {type AuthState, type AuthStore} from './types'
+import {type AuthState, type AuthStore, type LightAuthState} from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 
 /** @internal */
@@ -159,6 +160,34 @@ const getCurrentUser = async (
     }
 
     // Some other error, just throw it
+    throw err
+  }
+}
+
+const checkAuthenticated = async (
+  client: SanityClient,
+  broadcastToken: (token: string | null) => void,
+): Promise<LightAuthState> => {
+  try {
+    const response = await client
+      .withConfig({apiVersion: '1'})
+      .request<{id: string; expiry: number}>({
+        uri: '/auth/id',
+        tag: 'auth.check-id',
+      })
+    return typeof response?.id === 'string'
+      ? {
+          authenticated: true,
+          id: response.id,
+          expiry: new Date(response.expiry * 1000).toISOString(),
+        }
+      : {authenticated: false}
+  } catch (err: unknown) {
+    if (err instanceof ClientError && err.statusCode === 401) {
+      clearToken(client.config().projectId || '')
+      broadcastToken(null)
+      return {authenticated: false}
+    }
     throw err
   }
 }
@@ -307,6 +336,26 @@ export function _createAuthStore({
     broadcast(null)
   }
 
+  const lightState$ = token$.pipe(
+    map((token) =>
+      clientFactory({
+        projectId,
+        dataset,
+        apiVersion: '2026-03-09',
+        useCdn: false,
+        ...getAuthOptions(loginMethod, token),
+        requestTagPrefix: 'sanity.studio',
+        ignoreBrowserTokenWarning: true,
+        allowReconfigure: false,
+        headers: DEFAULT_STUDIO_CLIENT_HEADERS,
+        ...hostOptions,
+      }),
+    ),
+    switchMap((client) => defer(() => checkAuthenticated(client, broadcast))),
+    distinctUntilChanged(),
+    shareReplay(1),
+  )
+
   const LoginComponent = createLoginComponent({
     ...providerOptions,
     getClient: () => state$.pipe(map((state) => state.client)),
@@ -317,6 +366,7 @@ export function _createAuthStore({
     handleCallbackUrl,
     token: token$,
     state: state$,
+    lightState: lightState$,
     LoginComponent,
     logout,
   }

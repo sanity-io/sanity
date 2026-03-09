@@ -202,7 +202,8 @@ describe('createAuthStore', () => {
       const clientFactory = createMockClientFactory(() => {
         callCount++
         if (callCount === 1) return Promise.reject(new HttpError('Unauthorized', 401))
-        return Promise.resolve(null) // second call after token cleared
+        // second call after token cleared
+        return Promise.resolve(null)
       })
 
       const store = _createAuthStore(getDefaultOptions({clientFactory}))
@@ -219,7 +220,9 @@ describe('createAuthStore', () => {
       const clientFactory = createMockClientFactory((options) => {
         if (options.uri === '/users/me') return Promise.reject(new HttpError('Network error'))
         if (options.uri === '/ping') return Promise.resolve('pong')
-        return Promise.resolve(null)
+        throw new Error(
+          `Unexpected request to ${options.uri} during test. Please verify that all requests are handled`,
+        )
       })
 
       const store = _createAuthStore(getDefaultOptions({clientFactory}))
@@ -232,7 +235,9 @@ describe('createAuthStore', () => {
       const clientFactory = createMockClientFactory((options) => {
         if (options.uri === '/users/me') return Promise.reject(new HttpError('Network error'))
         if (options.uri === '/ping') return Promise.resolve('pong')
-        return Promise.resolve(null)
+        throw new Error(
+          `Unexpected request to ${options.uri} during test. Please verify that all requests are handled`,
+        )
       })
 
       const store = _createAuthStore(
@@ -253,7 +258,9 @@ describe('createAuthStore', () => {
       const clientFactory = createMockClientFactory((options) => {
         if (options.uri === '/users/me') return Promise.reject(new HttpError('Server Error', 500))
         if (options.uri === '/ping') return Promise.reject(new Error('Network failure'))
-        return Promise.resolve(null)
+        throw new Error(
+          `Unexpected request to ${options.uri} during test. Please verify that all requests are handled`,
+        )
       })
 
       const store = _createAuthStore(getDefaultOptions({clientFactory}))
@@ -270,7 +277,9 @@ describe('createAuthStore', () => {
       const clientFactory = createMockClientFactory((options) => {
         if (options.uri === '/users/me') return Promise.reject(networkError)
         if (options.uri === '/ping') return Promise.reject(new Error('Also failed'))
-        return Promise.resolve(null)
+        throw new Error(
+          `Unexpected request to ${options.uri} during test. Please verify that all requests are handled`,
+        )
       })
 
       const store = _createAuthStore(getDefaultOptions({clientFactory}))
@@ -340,7 +349,9 @@ describe('createAuthStore', () => {
             if (options.uri === '/users/me') return Promise.resolve(null) // cookie auth fails
             if (options.uri === '/auth/fetch')
               return Promise.resolve({token: 'new-token-from-session'})
-            return Promise.resolve(null)
+            throw new Error(
+              `Unexpected request to ${options.uri} during test. Please verify that all requests are handled`,
+            )
           }),
           withConfig: vi.fn(() => client),
         } as unknown as SanityClient
@@ -366,8 +377,12 @@ describe('createAuthStore', () => {
         const client = {
           config: () => ({...config}),
           request: vi.fn((options: {uri: string}) => {
-            if (options.uri === '/users/me') return Promise.resolve(mockUser)
-            return Promise.resolve(null)
+            if (options.uri === '/users/me') {
+              return Promise.resolve(mockUser)
+            }
+            throw new Error(
+              `Unexpected request to ${options.uri} during test. Please verify that all requests are handled`,
+            )
           }),
           withConfig: vi.fn(() => client),
         } as unknown as SanityClient
@@ -391,7 +406,9 @@ describe('createAuthStore', () => {
           config: () => ({...config}),
           request: vi.fn((options: {uri: string}) => {
             if (options.uri === '/users/me') return Promise.resolve(mockUser)
-            return Promise.resolve(null)
+            throw new Error(
+              `Unexpected request to ${options.uri} during test. Please verify that all requests are handled`,
+            )
           }),
           withConfig: vi.fn(() => client),
         } as unknown as SanityClient

@@ -3,6 +3,10 @@ import {type CurrentUser} from '@sanity/types'
 import {type ComponentType} from 'react'
 import {type Observable} from 'rxjs'
 
+export type LightAuthState =
+  | {authenticated: false}
+  | {authenticated: true; id: string; expiry: string}
+
 /**
  * The interface used by the Studio that produces a `SanityClient` and
  * `CurrentUser` that gets passed to the resulting `Workspace`s and `Source`s.
@@ -24,6 +28,14 @@ export interface AuthStore {
    * `AuthState` value on subscribe
    */
   state: Observable<AuthState>
+  /**
+   * Lightweight observable that only checks if the user is authenticated,
+   * without fetching the full user object. Uses the fast `/v1/auth/id`
+   * endpoint which is globally replicated.
+   *
+   * Use this when you only need to know if the user is logged in, not who they are.
+   */
+  lightState: Observable<LightAuthState>
   /**
    * Emits auth tokens, or `null` if not configured to use them or they do not exist
    */
