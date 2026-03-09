@@ -36,6 +36,7 @@ import {
 import {isLiveEditEnabled} from '../../../../../components/paneItem/helpers'
 import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../../useDocumentPane'
+import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'
 import {NonReleaseVersionsSelect} from '../NonReleaseVersionsSelect'
 
 const TooltipContent = ({release}: {release: ReleaseDocument}) => {
@@ -95,7 +96,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const dateTimeFormat = useDateTimeFormat(DATE_TIME_FORMAT)
   const {loading} = useActiveReleases()
   const schema = useSchema()
-  const {editState, displayed, documentType, documentId} = useDocumentPane()
+  const {editState, displayed} = useDocumentPane()
+  const {documentType, documentId} = useDocumentPaneInfo()
   const isCreatingDocument = displayed && !displayed._createdAt
   const defaultPerspective = useGetDefaultPerspective()
   const filteredReleases = useFilteredReleases({

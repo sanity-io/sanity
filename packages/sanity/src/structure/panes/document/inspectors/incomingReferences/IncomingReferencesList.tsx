@@ -26,7 +26,7 @@ import {
   IncomingReferencesListContainer,
 } from '../../../../components/incomingReferencesDecoration/shared'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
 
 interface TypeSectionProps<T> {
@@ -92,7 +92,7 @@ function TypeSection<T>({
 }
 
 export function IncomingReferencesList() {
-  const {documentId} = useDocumentPane()
+  const {documentId} = useDocumentPaneInfo()
   const {t} = useTranslation(structureLocaleNamespace)
   const {getClient} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
