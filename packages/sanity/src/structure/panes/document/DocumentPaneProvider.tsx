@@ -471,19 +471,9 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     ],
   )
 
-  const documentMeta = useMemo(
-    () => ({
-      documentId,
-      documentType,
-      schemaType: schemaType!,
-      onChange,
-    }),
-    [documentId, documentType, schemaType, onChange],
-  )
-
   useEffect(() => {
-    setDocumentMeta(documentMeta)
-  }, [documentMeta, setDocumentMeta])
+    setDocumentMeta({documentId, documentType, schemaType: schemaType!, onChange})
+  }, [documentId, documentType, schemaType, onChange, setDocumentMeta])
 
   const compareValue = useMemo(
     () => getComparisonValue(upstreamEditState),
