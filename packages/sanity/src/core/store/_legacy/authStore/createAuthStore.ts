@@ -164,38 +164,52 @@ const getCurrentUser = async (
   }
 }
 
-const checkAuthenticated = async (
+const UNAUTHENTICATED = {authenticated: false} as const
+
+const checkAuthenticated = (
   client: SanityClient,
   broadcastToken: (token: string | null) => void,
 ): Promise<LightAuthState> => {
-  try {
-    const response = await client
-      .withConfig({apiVersion: '1'})
-      .request<{id: string; expiry: number}>({
-        uri: '/auth/id',
-        tag: 'auth.check-id',
-      })
-    return typeof response?.id === 'string'
-      ? {
-          authenticated: true,
-          id: response.id,
-          expiry: new Date(response.expiry * 1000).toISOString(),
+  return client
+    .withConfig({apiVersion: '1'})
+    .request<{id: string; expiry: number}>({
+      uri: '/auth/id',
+      tag: 'auth.check-id',
+    })
+    .then(
+      (response) => {
+        // Note: currently this endpoint responds with 401 when user is not authenticated
+        // so response.id will always be set here.
+        // However, to align with /users/me, this endpoint may be changed to
+        // return 200 OK with `{}` as the response (see SRE-3648)
+        return typeof response?.id === 'string'
+          ? {
+              authenticated: true,
+              id: response.id,
+              expiry: new Date(response.expiry * 1000).toISOString(),
+            }
+          : UNAUTHENTICATED
+      },
+      (err) => {
+        if (err instanceof ClientError && err.statusCode === 401) {
+          return UNAUTHENTICATED
         }
-      : {authenticated: false}
-  } catch (err: unknown) {
-    if (err instanceof ClientError && err.statusCode === 401) {
-      clearToken(client.config().projectId || '')
-      broadcastToken(null)
-      return {authenticated: false}
-    }
-    throw err
-  }
+        throw err
+      },
+    )
+    .then((result) => {
+      if (!result.authenticated) {
+        clearToken(client.config().projectId || '')
+        broadcastToken(null)
+      }
+      return result
+    })
 }
 
 /**
  * @internal
  */
-export function _createAuthStore({
+function _createAuthStore({
   clientFactory: clientFactoryOption,
   projectId,
   dataset,
@@ -286,15 +300,15 @@ export function _createAuthStore({
       ...hostOptions,
     })
 
-    let currentUser
+    let authState: LightAuthState = UNAUTHENTICATED
     if (loginMethod === 'dual' || loginMethod === 'cookie') {
-      // try to get the current user by using the cookie credentials
-      currentUser = await getCurrentUser(requestClient, broadcast)
+      // try to check if the user is authenticated by using the cookie credentials
+      authState = await checkAuthenticated(requestClient, broadcast)
     }
 
-    // If we have a user, or token authentication is explicitly disallowed (`cookie` mode),
+    // If we have an authenticated user, or token authentication is explicitly disallowed (`cookie` mode),
     // then we don't need/want to fetch a token
-    if (currentUser || loginMethod === 'cookie') {
+    if (authState.authenticated || loginMethod === 'cookie') {
       // if that worked, then we don't need to fetch a token
       broadcast(null)
       return

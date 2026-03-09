@@ -346,7 +346,7 @@ describe('createAuthStore', () => {
         const client = {
           config: () => ({...config}),
           request: vi.fn((options: {uri: string; [key: string]: unknown}) => {
-            if (options.uri === '/users/me') return Promise.resolve(null) // cookie auth fails
+            if (options.uri === '/auth/id') return Promise.resolve(null) // cookie auth fails
             if (options.uri === '/auth/fetch')
               return Promise.resolve({token: 'new-token-from-session'})
             throw new Error(

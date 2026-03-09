@@ -19,5 +19,10 @@ export interface MockAuthStoreOptions {
 export function createMockAuthStore({client, currentUser = null}: MockAuthStoreOptions): AuthStore {
   return {
     state: of({authenticated: true, client, currentUser}),
+    lightState: of(
+      currentUser?.id
+        ? {authenticated: true, id: currentUser.id, expiry: ''}
+        : {authenticated: false},
+    ),
   }
 }
