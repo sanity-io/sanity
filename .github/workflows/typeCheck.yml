@@ -1,0 +1,22 @@
+name: Type check
+on:
+  push:
+
+jobs:
+  typeCheck:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - name: Check type system
+        # Turbo will run type checks on all files in the project
+        # and ensure that dependencies are built with @sanity/pkg-utils to output dts
+        # used by other packages as they are type checked
+        id: typeCheckModules
+        run: pnpm check:types --log-prefix=none
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192

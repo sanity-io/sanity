@@ -22,6 +22,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
+    "check:types": "(cd ../../.. && tsc --project packages/@repo/release-notes/tsconfig.json --erasableSyntaxOnly)",
     "lint": "eslint .",
     "test": "vitest run"
   },
