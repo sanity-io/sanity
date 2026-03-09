@@ -106,12 +106,6 @@
       ],
       "outputLogs": "new-only"
     },
-    "check:types": {
-      "outputs": [],
-      "dependsOn": [
-        "^build"
-      ]
-    },
     "transit": {
       "dependsOn": ["^transit"]
     },

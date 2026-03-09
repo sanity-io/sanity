@@ -181,6 +181,7 @@ async function fetchJourneySchema(schemaUrl: string): Promise<DocumentOrObject[]
  * @returns The Journey schema as a module export
  */
 async function assembleJourneySchemaTypeFileContent(schemaType: DocumentOrObject): Promise<string> {
+  // @ts-expect-error TS2345: DocumentOrObject lacks index signature required by SchemaObject parameter type
   const serialised = wrapSchemaTypeInHelpers(schemaType)
   const imports = getImports(serialised)
   const prettifiedSchemaType = await format(serialised, {
