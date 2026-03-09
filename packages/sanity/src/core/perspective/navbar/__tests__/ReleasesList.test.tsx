@@ -61,7 +61,6 @@ describe('ReleasesList', () => {
         <Menu>
           <ReleasesList
             setScrollContainer={vi.fn()}
-            onScroll={vi.fn()}
             isRangeVisible={false}
             selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
@@ -83,7 +82,6 @@ describe('ReleasesList', () => {
         <Menu>
           <ReleasesList
             setScrollContainer={vi.fn()}
-            onScroll={vi.fn()}
             isRangeVisible={false}
             selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
@@ -134,7 +132,6 @@ describe('ReleasesList', () => {
         <Menu>
           <ReleasesList
             setScrollContainer={vi.fn()}
-            onScroll={vi.fn()}
             isRangeVisible={false}
             selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
@@ -167,7 +164,6 @@ describe('ReleasesList', () => {
         <Menu>
           <ReleasesList
             setScrollContainer={vi.fn()}
-            onScroll={vi.fn()}
             isRangeVisible={false}
             selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
@@ -193,7 +189,6 @@ describe('ReleasesList', () => {
         <Menu>
           <ReleasesList
             setScrollContainer={vi.fn()}
-            onScroll={vi.fn()}
             isRangeVisible={false}
             selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
@@ -223,7 +218,6 @@ describe('ReleasesList', () => {
         <Menu>
           <ReleasesList
             setScrollContainer={vi.fn()}
-            onScroll={vi.fn()}
             isRangeVisible={false}
             selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}

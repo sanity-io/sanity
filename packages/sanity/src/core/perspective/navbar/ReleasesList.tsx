@@ -22,15 +22,23 @@ import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
-const ScrollWrapper = styled(Stack)`
-  overflow: auto;
-  max-height: 75vh;
+const StickyCard = styled(Card)`
+  position: sticky;
+  z-index: 2;
+  background: var(--card-bg-color);
+`
+
+const StickyTopCard = styled(StickyCard)`
+  top: 0;
+`
+
+const StickyBottomCard = styled(StickyCard)`
+  bottom: 0;
 `
 
 export function ReleasesList({
   areReleasesEnabled,
   setScrollContainer,
-  onScroll,
   isRangeVisible,
   selectedPerspectiveName,
   handleOpenBundleDialog,
@@ -38,8 +46,7 @@ export function ReleasesList({
   menuItemProps,
 }: {
   areReleasesEnabled: boolean
-  setScrollContainer: (el: HTMLDivElement) => void
-  onScroll: (event: React.UIEvent<HTMLDivElement>) => void
+  setScrollContainer: (el: HTMLElement | null) => void
   isRangeVisible: boolean
   selectedPerspectiveName: string | undefined
   handleOpenBundleDialog: () => void
@@ -114,8 +121,8 @@ export function ReleasesList({
   }
 
   return (
-    <Card radius={3} overflow="hidden">
-      <Card borderBottom padding={1}>
+    <Card radius={3}>
+      <StickyTopCard borderBottom padding={1}>
         <Stack space={1}>
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
@@ -130,9 +137,9 @@ export function ReleasesList({
             />
           )}
         </Stack>
-      </Card>
+      </StickyTopCard>
       {areReleasesEnabled && (
-        <ScrollWrapper ref={setScrollContainer} onScroll={onScroll} data-ui="scroll-wrapper">
+        <Stack ref={setScrollContainer} data-ui="scroll-wrapper">
           {orderedReleaseTypes.map((releaseType) => (
             <ReleaseTypeMenuSection
               key={releaseType}
@@ -143,16 +150,16 @@ export function ReleasesList({
               menuItemProps={menuItemProps}
             />
           ))}
-        </ScrollWrapper>
+        </Stack>
       )}
       {areReleasesEnabled && (
-        <Card borderTop paddingY={1} paddingX={2}>
+        <StickyBottomCard borderTop paddingY={1} paddingX={2}>
           <Stack space={1}>
             <ScheduledDraftsMenuItem />
             <ViewContentReleasesMenuItem />
             <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
           </Stack>
-        </Card>
+        </StickyBottomCard>
       )}
     </Card>
   )
