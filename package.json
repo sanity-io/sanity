@@ -108,6 +108,7 @@
     "@repo/tsconfig": "workspace:*",
     "@sanity/ui": "catalog:",
     "@types/node": "^24.6.1",
+    "@typescript/native-preview": "catalog:",
     "@vitest/coverage-v8": "^4.0.18",
     "conventional-changelog-conventionalcommits": "^9.1.0",
     "dotenv": "^16.6.1",

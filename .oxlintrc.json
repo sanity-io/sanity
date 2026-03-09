@@ -23,7 +23,7 @@
     "**/coverage/*",
     "**/node_modules/*",
     "**/dist/**",
-    "**/lib/**",
+    "packages/@sanity/codegen/lib/**",
     "*.json",
     "*.css",
     "*.snap",

@@ -45,6 +45,9 @@ catalogs:
     '@types/react-is':
       specifier: ^19.2.0
       version: 19.2.0
+    '@typescript/native-preview':
+      specifier: 7.0.0-dev.20260112.1
+      version: 7.0.0-dev.20260112.1
     '@vitejs/plugin-react':
       specifier: ^5.1.2
       version: 5.1.2
@@ -122,6 +125,9 @@ importers:
       '@types/node':
         specifier: ^24.6.1
         version: 24.10.4
+      '@typescript/native-preview':
+        specifier: 'catalog:'
+        version: 7.0.0-dev.20260112.1
       '@vitest/coverage-v8':
         specifier: ^4.0.18
         version: 4.0.18(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -17641,7 +17647,6 @@ snapshots:
       '@typescript/native-preview-linux-x64': 7.0.0-dev.20260112.1
       '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260112.1
       '@typescript/native-preview-win32-x64': 7.0.0-dev.20260112.1
-    optional: true
 
   '@uiw/codemirror-extensions-basic-setup@4.25.4(@codemirror/autocomplete@6.20.0)(@codemirror/commands@6.10.1)(@codemirror/language@6.12.1)(@codemirror/lint@6.9.2)(@codemirror/search@6.6.0)(@codemirror/state@6.5.4)(@codemirror/view@6.39.11)':
     dependencies:
