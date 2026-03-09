@@ -93,7 +93,6 @@ export function validateField(field: any, visitorContext: any) {
     problems.push(
       warning(
         `Field "${field.name}" has a non-string title which is discouraged. A plain string is recommended.`,
-        HELP_IDS.FIELD_HAS_UNADVISED_REACT_COMPONENT,
       ),
     )
   }
@@ -101,7 +100,6 @@ export function validateField(field: any, visitorContext: any) {
     problems.push(
       warning(
         `Field "${field.name}" has a non-string description which is discouraged. A plain string is recommended.`,
-        HELP_IDS.FIELD_HAS_UNADVISED_REACT_COMPONENT,
       ),
     )
   }

@@ -476,7 +476,7 @@ describe('Validation test', () => {
     const myDocument = validation.get('myDocument')
     const field = myDocument.fields[0]
     const warnings = field._problems.filter(
-      (p: any) => p.helpId === 'schema-field-has-unadvised-react-component',
+      (p: any) => p.severity === 'warning' && p.message.includes('non-string'),
     )
     expect(warnings).toHaveLength(2)
     expect(warnings[0].message).toContain('title')
