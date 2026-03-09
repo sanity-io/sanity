@@ -39,16 +39,16 @@ pnpm check:oxlint
 
 These checks run on every PR and **must pass**:
 
-| Check            | Command              | Notes                                                    |
-| ---------------- | -------------------- | -------------------------------------------------------- |
-| **Format**       | `pnpm check:format`  | Uses Prettier. Fix with `pnpm chore:format:fix`          |
+| Check            | Command              | Notes                                                                   |
+| ---------------- | -------------------- | ----------------------------------------------------------------------- |
+| **Format**       | `pnpm check:format`  | Uses Prettier. Fix with `pnpm chore:format:fix`                         |
 | **Oxlint**       | `pnpm check:oxlint`  | Fast Rust-based linter + type checker. Fix with `pnpm chore:oxlint:fix` |
-| **ESLint**       | `pnpm lint`          | Full linting. Fix with `pnpm chore:lint:fix`             |
-| **Unit Tests**   | `pnpm test`          | Vitest, sharded in CI                                    |
-| **CLI Tests**    | Runs via `pnpm test` | Tests for @sanity/cli                                    |
-| **Export Tests** | `pnpm test:exports`  | Ensures ESM/CJS/DTS work                                 |
-| **Dep Check**    | `pnpm depcheck`      | Finds unused/missing deps                                |
-| **PR Title**     | Conventional commits | e.g., `feat(scope): description`                         |
+| **ESLint**       | `pnpm lint`          | Full linting. Fix with `pnpm chore:lint:fix`                            |
+| **Unit Tests**   | `pnpm test`          | Vitest, sharded in CI                                                   |
+| **CLI Tests**    | Runs via `pnpm test` | Tests for @sanity/cli                                                   |
+| **Export Tests** | `pnpm test:exports`  | Ensures ESM/CJS/DTS work                                                |
+| **Dep Check**    | `pnpm depcheck`      | Finds unused/missing deps                                               |
+| **PR Title**     | Conventional commits | e.g., `feat(scope): description`                                        |
 
 ### Before Committing
 
