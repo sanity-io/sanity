@@ -24,7 +24,7 @@ import {FormRow} from '../layout/FormRow'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
-import {AlignedBottomGrid, focusRingStyle} from './styles'
+import {ColumnarGrid, focusRingStyle} from './styles'
 
 /** @internal */
 export interface FormFieldSetProps {
@@ -181,9 +181,9 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       return null
     }
     return (
-      <AlignedBottomGrid columns={columns} gapX={4} gapY={5}>
+      <ColumnarGrid columns={columns} gapX={4} gapY={5}>
         {getChildren(children)}
-      </AlignedBottomGrid>
+      </ColumnarGrid>
     )
   }, [children, collapsed, columns])
 
