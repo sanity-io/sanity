@@ -172,6 +172,10 @@ export function ReleasesOverview() {
   const narrowTimezoneStyle: CSSProperties | undefined = isNarrowViewport
     ? {marginLeft: 'auto'}
     : undefined
+  const timeZoneLabel = `${timeZone.abbreviation} (${timeZone.namePretty})`
+  const timeZoneButtonProps = isNarrowViewport
+    ? {tooltipProps: {content: timeZoneLabel}}
+    : {iconRight: ChevronDownIcon, text: timeZoneLabel}
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> => {
@@ -566,22 +570,12 @@ export function ReleasesOverview() {
                   ))}
               </Flex>
               <Flex flex="none" gap={2} style={narrowTimezoneStyle}>
-                {isNarrowViewport ? (
-                  <Button
-                    icon={EarthGlobeIcon}
-                    mode="bleed"
-                    onClick={dialogTimeZoneShow}
-                    tooltipProps={{content: `${timeZone.abbreviation} (${timeZone.namePretty})`}}
-                  />
-                ) : (
-                  <Button
-                    icon={EarthGlobeIcon}
-                    iconRight={ChevronDownIcon}
-                    mode="bleed"
-                    text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
-                    onClick={dialogTimeZoneShow}
-                  />
-                )}
+                <Button
+                  icon={EarthGlobeIcon}
+                  mode="bleed"
+                  onClick={dialogTimeZoneShow}
+                  {...timeZoneButtonProps}
+                />
                 {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
                 {loadingOrHasReleases && createReleaseButton}
               </Flex>
