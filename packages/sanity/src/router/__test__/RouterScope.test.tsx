@@ -32,13 +32,22 @@ const initialState: RouterState = {
   tool: 'desk',
 }
 
+const initialStateWithNonStickyParams: RouterState = {
+  _searchParams: [
+    ['stickyParam', 'stickyValue'],
+    ['sidebar', 'tasks'],
+    ['selectedTask', 'abc123'],
+  ],
+  tool: 'desk',
+}
+
 interface WrapperProps {
   children: React.ReactNode
 }
 
-const createWrapper = (disableScopedSearchParams = false) => {
+const createWrapper = (disableScopedSearchParams = false, state = initialState) => {
   const Wrapper = ({children}: WrapperProps) => (
-    <RouterProvider onNavigate={mockOnNavigate} router={mockRouter} state={initialState}>
+    <RouterProvider onNavigate={mockOnNavigate} router={mockRouter} state={state}>
       <RouteScope scope="testScope" __unsafe_disableScopedSearchParams={disableScopedSearchParams}>
         {children}
       </RouteScope>
@@ -425,6 +434,62 @@ describe('RouteScope', () => {
         tool: 'desk',
         testScope: {},
       },
+    })
+  })
+
+  describe('non-sticky params should not leak into child links', () => {
+    it('resolvePathFromState should not include non-sticky parent params', () => {
+      const wrapper = createWrapper(false, initialStateWithNonStickyParams)
+      const {result} = renderHook(() => useRouter(), {wrapper})
+
+      vi.mocked(mockRouter.encode).mockClear()
+
+      result.current.resolvePathFromState({scopedValue: 'test'})
+
+      expect(mockRouter.encode).toHaveBeenCalledWith({
+        _searchParams: [['stickyParam', 'stickyValue']],
+        tool: 'desk',
+        testScope: {
+          scopedValue: 'test',
+          _searchParams: undefined,
+        },
+      })
+    })
+
+    it('navigate should not include non-sticky parent params', () => {
+      const wrapper = createWrapper(false, initialStateWithNonStickyParams)
+      const {result} = renderHook(() => useRouter(), {wrapper})
+
+      act(() => {
+        result.current.navigate({scopedKey: 'scopedValue'})
+      })
+
+      expect(mockOnNavigate).toHaveBeenCalledWith({
+        path: {
+          _searchParams: [['stickyParam', 'stickyValue']],
+          tool: 'desk',
+          testScope: {
+            scopedKey: 'scopedValue',
+          },
+        },
+      })
+    })
+
+    it('should not leak non-sticky params with __unsafe_disableScopedSearchParams', () => {
+      const wrapper = createWrapper(true, initialStateWithNonStickyParams)
+      const {result} = renderHook(() => useRouter(), {wrapper})
+
+      vi.mocked(mockRouter.encode).mockClear()
+
+      result.current.resolvePathFromState({scopedValue: 'test'})
+
+      expect(mockRouter.encode).toHaveBeenCalledWith({
+        _searchParams: [['stickyParam', 'stickyValue']],
+        tool: 'desk',
+        testScope: {
+          scopedValue: 'test',
+        },
+      })
     })
   })
 

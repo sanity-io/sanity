@@ -85,7 +85,8 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
       if (_nextState === null) return null
 
       const {_searchParams, ...nextState} = _nextState || {}
-      const nextParentState = addScope(parentStateRef.current, scope, nextState)
+      const {_searchParams: _parentSearchParams, ...parentState} = parentStateRef.current
+      const nextParentState = addScope(parentState, scope, nextState)
       if (__unsafe_disableScopedSearchParams) {
         // Move search params to parent scope
         nextParentState._searchParams = _searchParams
