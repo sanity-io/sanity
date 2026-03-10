@@ -10,7 +10,6 @@ import {
   type Action,
   type SidebarTabsIds,
   type State,
-  TASKS_SEARCH_PARAMS,
   TASKS_SELECTED_TASK_SEARCH_PARAM,
   TASKS_SIDEBAR_SEARCH_PARAM,
   TASKS_VIEW_MODE_SEARCH_PARAM,
