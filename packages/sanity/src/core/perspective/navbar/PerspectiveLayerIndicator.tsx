@@ -4,7 +4,7 @@ import {css, styled} from 'styled-components'
 
 const INDICATOR_LEFT_OFFSET = 20
 const INDICATOR_WIDTH = 1
-const INDICATOR_COLOR_VAR_NAME = vars.color.border
+const INDICATOR_COLOR_VAR = vars.color.border
 const INDICATOR_BOTTOM_OFFSET = 4
 
 export const GlobalPerspectiveMenuItemIndicator = styled.div<{
