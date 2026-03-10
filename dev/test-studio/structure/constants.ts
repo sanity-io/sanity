@@ -47,6 +47,7 @@ export const DEBUG_INPUT_TYPES = [
   'allNativeInputComponents',
   'manyViews',
   'decorations',
+  'collapsibleColumnsBug',
   'collapsibleObjects',
   'commentsDebug',
   'domAttrsAsFieldNames',
