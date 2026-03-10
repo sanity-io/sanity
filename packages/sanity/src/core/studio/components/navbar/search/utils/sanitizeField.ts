@@ -12,7 +12,7 @@ export function sanitizeFieldValue(name: string | React.JSX.Element): string {
       console.warn(
         'A field title or description contains a React component that could not be rendered. ' +
           'This is likely caused by a component that requires runtime context. ' +
-          'Use a plain string or plain HTML instead.',
+          'Use a string or JSX containing HTML elements only.',
         err,
       )
       return ''
