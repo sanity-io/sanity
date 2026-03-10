@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {render, screen, waitFor, within} from '@testing-library/react'
+import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {format} from 'date-fns/format'
 import {set} from 'date-fns/set'
@@ -218,6 +218,12 @@ const TestComponent = () => {
   )
 }
 
+async function mountAndFlush(...args: Parameters<typeof render>) {
+  const view = render(...args)
+  await act(() => Promise.resolve())
+  return view
+}
+
 describe('ReleasesOverview', () => {
   beforeEach(() => {
     mockUseActiveReleases.mockRestore()
@@ -268,7 +274,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      render(<TestComponent />, {wrapper})
+      await mountAndFlush(<TestComponent />, {wrapper})
     })
 
     it('shows loading state when releases are loading', async () => {
@@ -315,7 +321,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return render(<TestComponent />, {wrapper})
+      return mountAndFlush(<TestComponent />, {wrapper})
     })
 
     it('shows a message about releases', () => {
@@ -362,7 +368,7 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      return render(<TestComponent />, {wrapper})
+      return mountAndFlush(<TestComponent />, {wrapper})
     }
 
     beforeEach(async () => {
@@ -394,7 +400,7 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      activeRender = render(<TestComponent />, {wrapper})
+      activeRender = await mountAndFlush(<TestComponent />, {wrapper})
     })
 
     it('filters out releases with cardinality "one"', async () => {
@@ -781,7 +787,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return render(<TestComponent />, {wrapper})
+          return mountAndFlush(<TestComponent />, {wrapper})
         })
 
         it('should not show the cardinality view dropdown', () => {
@@ -853,7 +859,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          render(<TestComponent />, {wrapper})
+          await mountAndFlush(<TestComponent />, {wrapper})
         })
 
         it('should show the cardinality view dropdown', () => {
@@ -944,7 +950,7 @@ describe('ReleasesOverview', () => {
           resources: [releasesUsEnglishLocaleBundle],
         })
 
-        return render(<TestComponent />, {wrapper})
+        return mountAndFlush(<TestComponent />, {wrapper})
       })
 
       it('should show the cardinality view dropdown', () => {
@@ -1024,7 +1030,7 @@ describe('ReleasesOverview', () => {
           resources: [releasesUsEnglishLocaleBundle],
         })
 
-        render(<TestComponent />, {wrapper})
+        await mountAndFlush(<TestComponent />, {wrapper})
       })
 
       it('should still show the cardinality view dropdown', () => {
@@ -1098,7 +1104,7 @@ describe('ReleasesOverview', () => {
           },
         })
 
-        render(<TestComponent />, {wrapper})
+        await mountAndFlush(<TestComponent />, {wrapper})
 
         const releasesButton = screen.getByRole('button', {name: 'Releases'})
         expect(releasesButton).toBeInTheDocument()
@@ -1125,7 +1131,7 @@ describe('ReleasesOverview', () => {
           },
         })
 
-        render(<TestComponent />, {wrapper})
+        await mountAndFlush(<TestComponent />, {wrapper})
 
         // text is there, but menu button is not
         expect(screen.getByText('Releases')).toBeInTheDocument()
@@ -1155,7 +1161,7 @@ describe('ReleasesOverview', () => {
           },
         })
 
-        render(<TestComponent />, {wrapper})
+        await mountAndFlush(<TestComponent />, {wrapper})
 
         // menu button should be there now since we have cardinality one releases
         const releasesButton = screen.getByRole('button', {name: 'Releases'})
@@ -1225,7 +1231,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return render(<TestComponent />, {wrapper})
+          return mountAndFlush(<TestComponent />, {wrapper})
         })
 
         it('should show upsell only', () => {
@@ -1254,7 +1260,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return render(<TestComponent />, {wrapper})
+          return mountAndFlush(<TestComponent />, {wrapper})
         })
 
         it('should show data table only (not upsell)', async () => {
@@ -1280,7 +1286,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          render(<TestComponent />, {wrapper})
+          await mountAndFlush(<TestComponent />, {wrapper})
 
           expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
           expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
@@ -1314,7 +1320,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          render(<TestComponent />, {wrapper})
+          await mountAndFlush(<TestComponent />, {wrapper})
 
           expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
           expect(screen.queryByRole('table')).not.toBeInTheDocument()
@@ -1336,7 +1342,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          render(<TestComponent />, {wrapper})
+          await mountAndFlush(<TestComponent />, {wrapper})
 
           expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
           expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
@@ -1360,7 +1366,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      render(<TestComponent />, {wrapper})
+      await mountAndFlush(<TestComponent />, {wrapper})
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalled()
@@ -1386,7 +1392,7 @@ describe('ReleasesOverview', () => {
         resolveIntentLink: mockResolveIntentLink,
       } as unknown as ReturnType<typeof useRouter>)
 
-      const {unmount} = render(<TestComponent />, {wrapper})
+      const {unmount} = await mountAndFlush(<TestComponent />, {wrapper})
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith({
@@ -1404,7 +1410,7 @@ describe('ReleasesOverview', () => {
         resolveIntentLink: mockResolveIntentLink,
       } as unknown as ReturnType<typeof useRouter>)
 
-      render(<TestComponent />, {wrapper})
+      await mountAndFlush(<TestComponent />, {wrapper})
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalled()
