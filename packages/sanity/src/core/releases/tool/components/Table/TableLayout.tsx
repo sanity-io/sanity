@@ -16,7 +16,7 @@ export const TableLayout = ({isEmptyState, header, content, contentHeight}: Tabl
     // Empty state layout - use CSS Grid to fill height
     return (
       <div style={{height: '100%', display: 'grid', gridTemplateRows: 'auto 1fr'}}>
-        {header}
+        <table style={{width: '100%'}}>{header}</table>
         <Box
           style={{
             height: '100%',
