@@ -4,6 +4,7 @@ import {
   type DocumentActionComponent,
   getVersionFromId,
   InsufficientPermissionsMessage,
+  isAgentBundleName,
   isReleaseScheduledOrScheduling,
   useCurrentUser,
   useDocumentOperation,
@@ -24,6 +25,7 @@ const DISABLED_REASON_TITLE_KEY = {
 /** @internal */
 export const useDeleteAction: DocumentActionComponent = ({id, type, draft, version}) => {
   const bundleId = version?._id && getVersionFromId(version._id)
+  const isAgentBundle = isAgentBundleName(bundleId)
   const {delete: deleteOp} = useDocumentOperation(id, type, bundleId)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
@@ -61,6 +63,8 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
   const currentUser = useCurrentUser()
 
   return useMemo(() => {
+    if (isAgentBundle) return null
+
     if (!isPermissionsLoading && !permissions?.granted) {
       return {
         tone: 'critical',
@@ -113,6 +117,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
     handleCancel,
     handleConfirm,
     hasScheduledRelease,
+    isAgentBundle,
     id,
     isConfirmDialogOpen,
     isDeleting,
