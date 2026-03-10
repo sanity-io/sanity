@@ -102,24 +102,27 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-const {mockNavigate, mockResolveIntentLink} = vi.hoisted(() => {
+const {mockNavigate, mockResolveIntentLink, mockRouterReturn} = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockNavigate = vi.fn()
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockResolveIntentLink = vi.fn(() => '/test')
-  return {mockNavigate, mockResolveIntentLink}
+  // Stable reference so the `[router]` effect dependency doesn't fire on every render
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  const mockRouterReturn = {
+    state: {},
+    navigate: mockNavigate,
+    resolveIntentLink: mockResolveIntentLink,
+  }
+  return {mockNavigate, mockResolveIntentLink, mockRouterReturn}
 })
 
 // Mock the router at module level
 vi.mock('sanity/router', async (importOriginal) => {
   const actual = await importOriginal()
   return {
-    ...actual,
-    useRouter: vi.fn(() => ({
-      state: {},
-      navigate: mockNavigate,
-      resolveIntentLink: mockResolveIntentLink,
-    })),
+    ...(actual as Record<string, unknown>),
+    useRouter: vi.fn(() => mockRouterReturn),
   }
 })
 
@@ -522,11 +525,9 @@ describe('ReleasesOverview', () => {
     })
 
     it('allows for pinning perspectives', async () => {
-      mockNavigate.mockClear()
+      mockedSetPerspective.mockClear()
 
       const rows = screen.getAllByTestId('table-row')
-      // First row is activeScheduledRelease with ID 'rActive'
-      // Second row is activeASAPRelease with ID 'rASAP'
       const secondRow = rows[1]
       const pinButton = within(secondRow).getByTestId('pin-release-button')
 
@@ -537,17 +538,7 @@ describe('ReleasesOverview', () => {
 
       await userEvent.click(buttonElement!)
 
-      // Wait for navigate to be called
-      await waitFor(
-        () => {
-          expect(mockNavigate).toHaveBeenCalled()
-        },
-        {timeout: 3000},
-      )
-
-      // The mock was called, which means the button click triggered navigation
-      // This verifies the pinning functionality works
-      expect(mockNavigate).toHaveBeenCalled()
+      expect(mockedSetPerspective).toHaveBeenCalled()
     })
 
     it('will show pinned release in release list', async () => {
@@ -1352,6 +1343,77 @@ describe('ReleasesOverview', () => {
           expect(screen.queryByRole('table')).not.toBeInTheDocument()
         })
       })
+    })
+  })
+
+  describe('URL navigation scenarios', () => {
+    it('navigates without view=drafts when coming from another tool (clean URL)', async () => {
+      mockNavigate.mockClear()
+      vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+      vi.mocked(useRouter).mockReturnValue({
+        state: {},
+        navigate: mockNavigate,
+        resolveIntentLink: mockResolveIntentLink,
+      } as unknown as ReturnType<typeof useRouter>)
+
+      const wrapper = await createTestProvider({
+        resources: [releasesUsEnglishLocaleBundle],
+      })
+
+      render(<TestComponent />, {wrapper})
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalled()
+      })
+
+      for (const call of mockNavigate.mock.calls) {
+        const searchParams: [string, string][] = call[0]?._searchParams || []
+        expect(searchParams).not.toContainEqual(['view', 'drafts'])
+      }
+    })
+
+    it('navigates without view=drafts after external navigation from ?view=drafts to clean URL', async () => {
+      vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+
+      const wrapper = await createTestProvider({
+        resources: [releasesUsEnglishLocaleBundle],
+      })
+
+      // Phase 1: mount with view=drafts — confirms the component respects the URL param
+      vi.mocked(useRouter).mockReturnValue({
+        state: {_searchParams: [['view', 'drafts']]},
+        navigate: mockNavigate,
+        resolveIntentLink: mockResolveIntentLink,
+      } as unknown as ReturnType<typeof useRouter>)
+
+      const {unmount} = render(<TestComponent />, {wrapper})
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith({
+          _searchParams: expect.arrayContaining([['view', 'drafts']]),
+        })
+      })
+
+      unmount()
+      mockNavigate.mockClear()
+
+      // Phase 2: remount with clean URL — simulates external navigation clearing the params
+      vi.mocked(useRouter).mockReturnValue({
+        state: {},
+        navigate: mockNavigate,
+        resolveIntentLink: mockResolveIntentLink,
+      } as unknown as ReturnType<typeof useRouter>)
+
+      render(<TestComponent />, {wrapper})
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalled()
+      })
+
+      for (const call of mockNavigate.mock.calls) {
+        const searchParams: [string, string][] = call[0]?._searchParams || []
+        expect(searchParams).not.toContainEqual(['view', 'drafts'])
+      }
     })
   })
 })
