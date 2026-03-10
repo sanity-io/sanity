@@ -81,17 +81,6 @@ export function createAgentBundlesStore(context: {
   return {state$}
 }
 
-function buildUrl(client: SanityClient, organizationId: string): string {
-  const {apiHost} = client.config()
-  // Dev override: point at a local agent API during development.
-  // Set SANITY_STUDIO_AGENT_API_HOST=http://localhost:58300 in .env.local
-  const envHost: string | undefined = process.env.SANITY_STUDIO_AGENT_API_HOST
-  const base = envHost || apiHost || 'https://api.sanity.io'
-  const url = new URL(`/v1/agent/${organizationId}/bundles/mine/listen`, base)
-
-  return url.toString()
-}
-
 /**
  * Lazy-loaded eventsource polyfill with custom header support.
  * Uses the same pattern as the sanity client listener.
@@ -109,8 +98,9 @@ function listenToBundles(
   client: SanityClient,
   organizationId: string,
 ): Observable<AgentBundlesState> {
-  const {token, withCredentials} = client.config()
-  const url = buildUrl(client, organizationId)
+  const globalClient = client.withConfig({useProjectHostname: false})
+  const {token, withCredentials} = globalClient.config()
+  const url = globalClient.getUrl(`/agent/${organizationId}/bundles/mine/listen`)
 
   const esOptions: PolyfillEventSourceInit = {}
   if (token || withCredentials) esOptions.withCredentials = true
