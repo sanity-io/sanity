@@ -137,7 +137,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
       "oxfmt --no-error-on-unmatched-pattern",
-      "oxlint --disable-nested-config --type-aware --fix --quiet"
+      "oxlint --disable-nested-config --type-aware --fix --quiet --import-plugin"
     ],
     "*.{md,yml,yaml,css,json}": [
       "oxfmt --no-error-on-unmatched-pattern"

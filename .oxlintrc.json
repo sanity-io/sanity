@@ -15,6 +15,17 @@
     "node",
     "promise"
   ],
+  "jsPlugins": [
+    {
+      "name": "react-hooks-js",
+      "specifier": "eslint-plugin-react-hooks-js"
+    },
+    "eslint-plugin-simple-import-sort",
+    "eslint-plugin-tsdoc",
+    "eslint-plugin-unused-imports",
+    "eslint-plugin-boundaries",
+    "eslint-plugin-testing-library"
+  ],
   "ignorePatterns": [
     "**/etc/*",
     "**/.sanity/*",
@@ -37,6 +48,81 @@
     "correctness": "error",
     "suspicious": "error",
     "perf": "error"
+  },
+  "settings": {
+    "boundaries/include": ["packages/sanity/src/**/*.*"],
+    "boundaries/elements": [
+      {
+        "type": "sanity",
+        "pattern": ["packages/sanity/src/_exports/index.ts"],
+        "mode": "full"
+      },
+      {
+        "type": "sanity__contents",
+        "pattern": ["packages/sanity/src/core/**/*.*"],
+        "mode": "full"
+      },
+      {
+        "type": "sanity/_internal",
+        "pattern": ["packages/sanity/src/_exports/_internal.ts"],
+        "mode": "full"
+      },
+      {
+        "type": "sanity/_internal__contents",
+        "pattern": ["packages/sanity/src/_internal/**/*.*"],
+        "mode": "full"
+      },
+      {
+        "type": "sanity/cli",
+        "pattern": ["packages/sanity/src/_exports/cli.ts"],
+        "mode": "full"
+      },
+      {
+        "type": "sanity/cli__contents",
+        "pattern": ["packages/sanity/src/cli/**/*.*"],
+        "mode": "full"
+      },
+      {
+        "type": "sanity/desk",
+        "pattern": ["packages/sanity/src/_exports/desk.ts"],
+        "mode": "file"
+      },
+      {
+        "type": "sanity/desk__contents",
+        "pattern": ["packages/sanity/src/desk/**/*.*"],
+        "mode": "file"
+      },
+      {
+        "type": "sanity/router",
+        "pattern": ["packages/sanity/src/_exports/router.ts"],
+        "mode": "full"
+      },
+      {
+        "type": "sanity/router__contents",
+        "pattern": ["packages/sanity/src/router/**/*.*"],
+        "mode": "full"
+      },
+      {
+        "type": "sanity/structure",
+        "pattern": ["packages/sanity/src/_exports/structure.ts"],
+        "mode": "file"
+      },
+      {
+        "type": "sanity/structure__contents",
+        "pattern": ["packages/sanity/src/structure/**/*.*"],
+        "mode": "file"
+      },
+      {
+        "type": "sanity/_singletons",
+        "pattern": ["packages/sanity/src/_exports/_singletons.ts"],
+        "mode": "file"
+      },
+      {
+        "type": "sanity/_singletons__contents",
+        "pattern": ["packages/sanity/src/_singletons/**/*.*"],
+        "mode": "full"
+      }
+    ]
   },
   "rules": {
     "eslint/no-restricted-imports": [
@@ -105,14 +191,11 @@
     "typescript/prefer-ts-expect-error": "error",
     "react/jsx-key": "error",
     "unicorn/no-abusive-eslint-disable": "error",
-    // Not relevant as we use the modern jsx-runtime transform
     "react-in-jsx-scope": "off",
-    // Not relevant due to React Compiler
     "react_perf/jsx-no-new-array-as-prop": "off",
     "react_perf/jsx-no-new-object-as-prop": "off",
     "react_perf/jsx-no-new-function-as-prop": "off",
     "react_perf/jsx-no-jsx-as-prop": "off",
-    // False negatives
     "jsx_a11y/anchor-is-valid": "off",
     "jest/no-conditional-expect": "off",
     "jest/no-standalone-expect": "off",
@@ -127,20 +210,17 @@
     "vitest/no-disabled-tests": "off",
     "vitest/no-test-prefixes": "off",
     "jsx_a11y/no-autofocus": "off",
-    "jsx_a11y/no-static-element-interactions": "off", // Allow event handlers on static elements
-    "unicorn/require-post-message-target-origin": "off", // disabled since it can't distinguish between `window.postMessage` and node `Worker#postMessage`
-    // Handy rules that are disabled by default
+    "jsx_a11y/no-static-element-interactions": "off",
+    "unicorn/require-post-message-target-origin": "off",
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
-    // We no longer allow commonjs as we ship ESM only (except for in CLI scenarios for legacy reasons)
     "import/no-commonjs": "error",
     "no-restricted-globals": [
       "error",
       {"name": "__dirname", "message": "Use path.dirname(fileURLToPath(import.meta.url)) instead"},
       {"name": "__filename", "message": "Use fileURLToPath(import.meta.url) instead"}
     ],
-    // These rules should be enabled in the future, they are disabled for now to reduce the PR scope for landing oxlint
     "typescript/no-explicit-any": "warn",
     "eslint/no-await-in-loop": "warn",
     "unicorn/no-new-array": "warn",
@@ -179,9 +259,7 @@
     "eslint/no-unsafe-optional-chaining": "warn",
     "promise/always-return": ["error", {"ignoreLastCallback": true}],
     "require-module-specifiers": "warn",
-    // handy type-aware rules
     "no-unnecessary-boolean-literal-compare": "error",
-    // Powerful type-aware rules that should be enabled in the future, but have too many violations to be handled in a single PR
     "no-base-to-string": "warn",
     "no-duplicate-type-constituents": "warn",
     "no-implied-eval": "warn",
@@ -194,13 +272,109 @@
     "no-unsafe-type-assertion": "warn",
     "restrict-template-expressions": "warn",
     "unbound-method": "warn",
-    // Temporarily disabled, will be re-enabled in the near term
     "unicorn/prefer-set-has": "off",
-    // Requires polyfills for older browsers
     "no-array-reverse": "off",
     "no-array-sort": "off",
     "oxc/no-map-spread": "off",
-    "jsx_a11y/aria-proptypes": "off"
+    "jsx_a11y/aria-proptypes": "off",
+    "simple-import-sort/exports": "error",
+    "tsdoc/syntax": "error",
+    "unused-imports/no-unused-imports": "error",
+    "react-hooks-js/unsupported-syntax": "error",
+    "react-hooks-js/set-state-in-effect": "off",
+    "react-hooks-js/capitalized-calls": "error",
+    "react-hooks-js/memoized-effect-dependencies": "error",
+    "react-hooks-js/no-deriving-state-in-effects": "error",
+    "react-hooks-js/hooks": "error",
+    "react-hooks-js/invariant": "error",
+    "react-hooks-js/rule-suppression": "error",
+    "react-hooks-js/syntax": "error",
+    "react-hooks-js/todo": "error",
+    "testing-library/prefer-user-event": "error",
+    "testing-library/prefer-screen-queries": "error",
+    "testing-library/no-node-access": "warn",
+    "testing-library/no-container": "warn",
+    "testing-library/prefer-query-by-disappearance": "warn",
+    "testing-library/render-result-naming-convention": "warn",
+    "testing-library/no-render-in-lifecycle": "warn",
+    "boundaries/element-types": [
+      2,
+      {
+        "default": "disallow",
+        "rules": [
+          {
+            "from": "sanity/_internal",
+            "allow": ["sanity/_internal__contents"]
+          },
+          {
+            "from": "sanity/_internal__contents",
+            "allow": ["sanity", "sanity/_internal__contents"]
+          },
+          {
+            "from": "sanity/cli",
+            "allow": ["sanity/cli__contents"]
+          },
+          {
+            "from": "sanity/cli__contents",
+            "allow": ["sanity/cli__contents"]
+          },
+          {
+            "from": "sanity",
+            "allow": ["sanity__contents"]
+          },
+          {
+            "from": "sanity__contents",
+            "allow": ["sanity__contents", "sanity/router", "sanity/_singletons"]
+          },
+          {
+            "from": "sanity/desk",
+            "allow": ["sanity/desk__contents", "sanity/structure", "sanity/structure__contents"]
+          },
+          {
+            "from": "sanity/desk__contents",
+            "allow": [
+              "sanity",
+              "sanity/desk__contents",
+              "sanity/router",
+              "sanity/_internal",
+              "sanity/structure",
+              "sanity/structure__contents",
+              "sanity/_singletons"
+            ]
+          },
+          {
+            "from": "sanity/router",
+            "allow": ["sanity/router__contents"]
+          },
+          {
+            "from": "sanity/router__contents",
+            "allow": ["sanity/router__contents", "sanity/_singletons"]
+          },
+          {
+            "from": "sanity/structure",
+            "allow": ["sanity/structure__contents"]
+          },
+          {
+            "from": "sanity/structure__contents",
+            "allow": ["sanity", "sanity/structure__contents", "sanity/router", "sanity/_singletons"]
+          },
+          {
+            "from": "sanity/_singletons__contents",
+            "allow": ["sanity/_singletons__contents"]
+          },
+          {
+            "from": "sanity/_singletons__contents",
+            "allow": ["sanity__contents", "sanity/structure__contents", "sanity/router__contents"],
+            "importKind": "type"
+          },
+          {
+            "from": "sanity/_singletons__contents",
+            "disallow": ["sanity", "sanity/structure", "sanity/router"],
+            "importKind": "type"
+          }
+        ]
+      }
+    ]
   },
   "overrides": [
     {
@@ -219,7 +393,6 @@
       }
     },
     {
-      // We still allow CJS in some places, for legacy reasons
       "files": [
         "packages/@sanity/cli/**/*",
         "packages/sanity/src/_internal/cli/**/*",
@@ -234,7 +407,6 @@
       }
     },
     {
-      // Vitest matchers legitimately use `this` context for matcher API
       "files": ["**/test/matchers/**/*.ts"],
       "rules": {
         "oxc/no-this-in-exported-function": "off"
@@ -243,7 +415,19 @@
     {
       "files": ["e2e/**/*"],
       "rules": {
-        "eslint/no-console": "off"
+        "eslint/no-console": "off",
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@playwright/test",
+                "importNames": ["test", "default"],
+                "message": "Please use named imports, e.g. `import {test} from \"studio-test\"` instead."
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -278,6 +462,29 @@
       "files": ["packages/@repo/bundle-manager/**/*"],
       "rules": {
         "eslint/no-console": "off"
+      }
+    },
+    {
+      "files": ["scripts/**/*"],
+      "rules": {
+        "typescript/no-var-requires": "off",
+        "import/no-dynamic-require": "off",
+        "eslint/no-sync": "off",
+        "node/no-process-exit": "off"
+      }
+    },
+    {
+      "files": [
+        "**/*/test/**/*",
+        "**/*/__tests__/**",
+        "**/*.test.{js,ts,tsx}",
+        "**/playwright-ct/**"
+      ],
+      "rules": {
+        "react-hooks-js/preserve-manual-memoization": "warn",
+        "react-hooks-js/refs": "warn",
+        "react-hooks-js/static-components": "warn",
+        "react-hooks-js/todo": "warn"
       }
     }
   ]
