@@ -1,4 +1,10 @@
-import {isKeyedObject, type KeyedObject, type Path, type SanityDocument} from '@sanity/types'
+import {
+  isKeyedObject,
+  isKeySegment,
+  type KeyedObject,
+  type Path,
+  type SanityDocument,
+} from '@sanity/types'
 import {fromString, startsWith, toString} from '@sanity/util/paths'
 import get from 'lodash-es/get.js'
 import {
@@ -412,16 +418,29 @@ export function readDocumentDivergences({
                 effect === 'unset' ||
                 hashes.upstreamHead !== hashes.subjectHead,
             ),
-            // If the node is an inserted object array item, and it already exists in the subject
-            // document, skip it.
-            takeWhile(
-              ({effect}) =>
-                effect !== 'insert' ||
-                typeof snapshots.subjectHead?.parentArray?.find((item) => {
-                  const parentPathSegment = fromString(path).at(-1)
-                  return isKeyedObject(item) && item._key === get(parentPathSegment, '_key')
-                }) === 'undefined',
-            ),
+            // If the node is an inserted array item, and it already exists in
+            // the subject document, skip it.
+            takeWhile(({effect}) => {
+              if (effect === 'insert') {
+                const parentPathSegment = fromString(path).at(-1)
+
+                if (parentPathSegment && isKeySegment(parentPathSegment)) {
+                  return (
+                    typeof snapshots.subjectHead?.parentArray?.find(
+                      (item) => isKeyedObject(item) && item._key === get(parentPathSegment, '_key'),
+                    ) === 'undefined'
+                  )
+                }
+
+                if (typeof parentPathSegment === 'number') {
+                  return (
+                    typeof snapshots.subjectHead?.parentArray?.[parentPathSegment] === 'undefined'
+                  )
+                }
+              }
+
+              return true
+            }),
             takeWhile(() => {
               const isArray = [snapshots.upstreamAtFork?.value, snapshots.upstreamHead?.value].some(
                 Array.isArray,
