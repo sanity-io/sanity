@@ -10,7 +10,6 @@ import {
   type Action,
   type SidebarTabsIds,
   type State,
-  TASKS_SEARCH_PARAMS,
   TASKS_SELECTED_TASK_SEARCH_PARAM,
   TASKS_SIDEBAR_SEARCH_PARAM,
   TASKS_VIEW_MODE_SEARCH_PARAM,
@@ -120,10 +119,12 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
 
     // Remove task-related query parameters from the URL
     router.navigate({
-      ...router.state,
-      _searchParams: (router.state._searchParams ?? []).filter(
-        ([key]) => !TASKS_SEARCH_PARAMS.includes(key as (typeof TASKS_SEARCH_PARAMS)[number]),
-      ),
+      stickyParams: {
+        ...router.stickyParams,
+        [TASKS_SIDEBAR_SEARCH_PARAM]: null,
+        [TASKS_VIEW_MODE_SEARCH_PARAM]: null,
+        [TASKS_SELECTED_TASK_SEARCH_PARAM]: null,
+      },
     })
   }, [router])
 
@@ -152,10 +153,9 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
       })
   }, [state.selectedTask, state.viewMode, telemetry, toast])
 
-  const searchParams = new URLSearchParams(router.state._searchParams)
-  const sidebar = searchParams.get(TASKS_SIDEBAR_SEARCH_PARAM)
-  const viewMode = searchParams.get(TASKS_VIEW_MODE_SEARCH_PARAM)
-  const selectedTask = searchParams.get(TASKS_SELECTED_TASK_SEARCH_PARAM)
+  const sidebar = router.stickyParams[TASKS_SIDEBAR_SEARCH_PARAM]
+  const viewMode = router.stickyParams[TASKS_VIEW_MODE_SEARCH_PARAM]
+  const selectedTask = router.stickyParams[TASKS_SELECTED_TASK_SEARCH_PARAM]
 
   useEffect(() => {
     // listen to the URL to open the tasks view if the sidebar is set to task.

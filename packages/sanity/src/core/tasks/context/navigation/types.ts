@@ -4,11 +4,6 @@ import {type TaskDocument} from '../../types'
 export const TASKS_SIDEBAR_SEARCH_PARAM = 'sidebar'
 export const TASKS_SELECTED_TASK_SEARCH_PARAM = 'selectedTask'
 export const TASKS_VIEW_MODE_SEARCH_PARAM = 'viewMode'
-export const TASKS_SEARCH_PARAMS = [
-  TASKS_SIDEBAR_SEARCH_PARAM,
-  TASKS_SELECTED_TASK_SEARCH_PARAM,
-  TASKS_VIEW_MODE_SEARCH_PARAM,
-] as const
 
 export type SidebarTabsIds = 'assigned' | 'subscribed' | 'document'
 
