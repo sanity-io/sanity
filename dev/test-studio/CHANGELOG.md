@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.14.0](https://github.com/sanity-io/sanity/compare/v5.13.0...v5.14.0) (2026-03-10)
+
+### Features
+
+* add currentUser to validation context + fix hidden issue showing the wrong value on validation ([#12221](https://github.com/sanity-io/sanity/issues/12221)) ([9db645e](https://github.com/sanity-io/sanity/commit/9db645e03f859ad6b077f2c3e6d5e45a223b6628)) by RitaDias (rita@sanity.io)
+
+### Bug Fixes
+
+* add warnings when element is not valid instead of crashing studio ([#12262](https://github.com/sanity-io/sanity/issues/12262)) ([1786aca](https://github.com/sanity-io/sanity/commit/1786aca228c6364c88a0ed76b7eaad8a943fe919)) by RitaDias (rita@sanity.io)
+* **core:** use @portabletext/html for HTML deserialization ([608d1d4](https://github.com/sanity-io/sanity/commit/608d1d40ebf7b139a3a2f2ae4e3df0ebe6f4e4b8)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **deps:** Update portabletext ([#12295](https://github.com/sanity-io/sanity/issues/12295)) ([152a879](https://github.com/sanity-io/sanity/commit/152a8796a409f2dadef866d14c8af35f68111b7b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* issue where cross dataset reference inputs in dialog were closing dialog ([#12304](https://github.com/sanity-io/sanity/issues/12304)) ([0e38d8e](https://github.com/sanity-io/sanity/commit/0e38d8e1e6b0fb72ecfa9fe2904df20b4cc5a42e)) by RitaDias (rita@sanity.io)
+* render group validation for nested fields ([#12309](https://github.com/sanity-io/sanity/issues/12309)) ([5791448](https://github.com/sanity-io/sanity/commit/5791448bbd3dc8cb1db9ccc916b9c1ad7de004f8)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
 ## [5.13.0](https://github.com/sanity-io/sanity/compare/v5.12.0...v5.13.0) (2026-03-03)
 
 ### Features
