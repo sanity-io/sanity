@@ -91,6 +91,7 @@ export function ReleasesOverview() {
   const isDraftModelEnabled = document?.drafts?.enabled
 
   const router = useRouter()
+  const navigateRef = useRef(router.navigate)
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
 
   const [cardinalityView, setCardinalityView] = useState<CardinalityView>(
@@ -241,14 +242,28 @@ export function ReleasesOverview() {
   }, [])
 
   useEffect(() => {
-    router.navigate({
+    navigateRef.current = router.navigate
+  })
+
+  // Sync local state from URL when navigating externally (for example: from menu)
+  useEffect(() => {
+    setReleaseGroupMode(getInitialReleaseGroupMode(router))
+    setCardinalityView(
+      getInitialCardinalityView({router, isScheduledDraftsEnabled, isReleasesEnabled}),
+    )
+    setReleaseFilterDate(getInitialFilterDate(router))
+  }, [router, isScheduledDraftsEnabled, isReleasesEnabled])
+
+  // Sync local state to URL when user interacts with filters
+  useEffect(() => {
+    navigateRef.current({
       _searchParams: buildReleasesSearchParams(
         releaseFilterDate,
         releaseGroupMode,
         isScheduledDraftsEnabled ? cardinalityView : 'releases',
       ),
     })
-  }, [releaseFilterDate, releaseGroupMode, cardinalityView, router, isScheduledDraftsEnabled])
+  }, [releaseFilterDate, releaseGroupMode, cardinalityView, isScheduledDraftsEnabled])
 
   const [hasMounted, setHasMounted] = useState(false)
 
