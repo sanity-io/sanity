@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.14.0](https://github.com/sanity-io/sanity/compare/v5.13.0...v5.14.0) (2026-03-10)
+
+### Features
+
+* add currentUser to validation context + fix hidden issue showing the wrong value on validation ([#12221](https://github.com/sanity-io/sanity/issues/12221)) ([9db645e](https://github.com/sanity-io/sanity/commit/9db645e03f859ad6b077f2c3e6d5e45a223b6628)) by RitaDias (rita@sanity.io)
+* **imagetool:** display cropped image resolution in hotspot/crop modal ([#12325](https://github.com/sanity-io/sanity/issues/12325)) ([0147f18](https://github.com/sanity-io/sanity/commit/0147f183e24db290010cec5ae8b1c886803c3063)) by Bjørge Næss (bjoerge@gmail.com)
+* **releases:** add copy actions for release link, ID, and title ([#12260](https://github.com/sanity-io/sanity/issues/12260)) ([df3acf1](https://github.com/sanity-io/sanity/commit/df3acf12ca428da33e968aca1ece1b68ad620b6f)) by Jordan Lawrence (jordanl17@me.com)
+* **sanity:** document editor gutter layout ([5326f8a](https://github.com/sanity-io/sanity/commit/5326f8af86d8bf299c0fc52eccd1fcf08df1f84f)) by Ash (ash@sanity.io)
+* **sanity:** show agent bundles as Proposed changes and hide others ([#12329](https://github.com/sanity-io/sanity/issues/12329)) ([a321edc](https://github.com/sanity-io/sanity/commit/a321edcce169b0434b22a6a07003edb6d1dbf054)) by Rostislav Melkumyan (hello@rosti.no)
+* support resumability for document editing ([#11198](https://github.com/sanity-io/sanity/issues/11198)) ([879bab8](https://github.com/sanity-io/sanity/commit/879bab88e6afa6fa8e0bd162b91004ddfd3796f2)) by Bjørge Næss (bjoerge@gmail.com)
+
+### Bug Fixes
+
+* add warnings when element is not valid instead of crashing studio ([#12262](https://github.com/sanity-io/sanity/issues/12262)) ([1786aca](https://github.com/sanity-io/sanity/commit/1786aca228c6364c88a0ed76b7eaad8a943fe919)) by RitaDias (rita@sanity.io)
+* **cli:** use yarn up for Yarn 2+ (Berry) when auto-upgrading ([#12301](https://github.com/sanity-io/sanity/issues/12301)) ([9a6046f](https://github.com/sanity-io/sanity/commit/9a6046f67e6e7afaaa4f56d72900e1373d73e5d1)) by Eivind Hyldmo (3465788+hyldmo@users.noreply.github.com)
+* **core:** make tasks params sticky ([#12362](https://github.com/sanity-io/sanity/issues/12362)) ([1684787](https://github.com/sanity-io/sanity/commit/1684787d34c0018166dd3c9a5b1f8e15f3c24e56)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** remove noisy hotkeys stability warning ([b30439e](https://github.com/sanity-io/sanity/commit/b30439e8cdac2dc6ba1577b09cd96e8f712573a1)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* coreUi intent links need to use exact full path ([#12279](https://github.com/sanity-io/sanity/issues/12279)) ([289119a](https://github.com/sanity-io/sanity/commit/289119aa88e570e204f79d2c31b5fafae062b78d)) by Jordan Lawrence (jordanl17@me.com)
+* **core:** use @portabletext/html for HTML deserialization ([608d1d4](https://github.com/sanity-io/sanity/commit/608d1d40ebf7b139a3a2f2ae4e3df0ebe6f4e4b8)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **deps:** update dependency @sanity/export to ^6.1.0 ([#12299](https://github.com/sanity-io/sanity/issues/12299)) ([aed508a](https://github.com/sanity-io/sanity/commit/aed508a383cef378ba3cae7f03aae53bcdd90ad1)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/import to ^4.1.3 ([#12294](https://github.com/sanity-io/sanity/issues/12294)) ([3acb03d](https://github.com/sanity-io/sanity/commit/3acb03de0fe9aab96c369c40f83dd2bef74c0b2c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#12295](https://github.com/sanity-io/sanity/issues/12295)) ([152a879](https://github.com/sanity-io/sanity/commit/152a8796a409f2dadef866d14c8af35f68111b7b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* dont use localStorage in node.js ([#12350](https://github.com/sanity-io/sanity/issues/12350)) ([3065abf](https://github.com/sanity-io/sanity/commit/3065abf2923093cef84d13f9594022e6a663f692)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* issue where cross dataset reference inputs in dialog were closing dialog ([#12304](https://github.com/sanity-io/sanity/issues/12304)) ([0e38d8e](https://github.com/sanity-io/sanity/commit/0e38d8e1e6b0fb72ecfa9fe2904df20b4cc5a42e)) by RitaDias (rita@sanity.io)
+* make sure that inspectors stay atop enhancedobjectdialog ([#12275](https://github.com/sanity-io/sanity/issues/12275)) ([5d2caef](https://github.com/sanity-io/sanity/commit/5d2caef021d4adae2a9bf4c143860f248bc79534)) by RitaDias (rita@sanity.io)
+* render group validation for nested fields ([#12309](https://github.com/sanity-io/sanity/issues/12309)) ([5791448](https://github.com/sanity-io/sanity/commit/5791448bbd3dc8cb1db9ccc916b9c1ad7de004f8)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* resolving issue where multiple scrollable containers show in the releases global nav menu ([#12341](https://github.com/sanity-io/sanity/issues/12341)) ([d0efa8e](https://github.com/sanity-io/sanity/commit/d0efa8e1aca183aee421b255e2f15e697e05b625)) by Jordan Lawrence (jordanl17@me.com)
+* **sanity:** `FormRow` exports snapshots ([187ccf1](https://github.com/sanity-io/sanity/commit/187ccf19fb56d2dc4a9fa0507bc5540fcd5e22bb)) by Ash (ash@sanity.io)
+* **sanity:** disable delete action for agent bundle versions ([#12334](https://github.com/sanity-io/sanity/issues/12334)) ([4460698](https://github.com/sanity-io/sanity/commit/446069880842f68fa0cabd47752920eff693a10b)) by Rostislav Melkumyan (hello@rosti.no)
+* **sanity:** ensure dedicated `ReferenceFieldDiff` is used when diffing cross dataset references ([#12307](https://github.com/sanity-io/sanity/issues/12307)) ([cb30c21](https://github.com/sanity-io/sanity/commit/cb30c213171cb7c2ac883bc3cfe86a249f099414)) by Ash (ash@sanity.io)
+* **sanity:** fix crash when calling `operation.delete.execute()` without versions argument ([#12321](https://github.com/sanity-io/sanity/issues/12321)) ([544be50](https://github.com/sanity-io/sanity/commit/544be5099b382320d032622f8771d3320e3cb735)) by Bjørge Næss (bjoerge@gmail.com)
+* **sanity:** remove SANITY_STUDIO_AGENT_API_HOST env override ([#12361](https://github.com/sanity-io/sanity/issues/12361)) ([ec150bd](https://github.com/sanity-io/sanity/commit/ec150bd597b929b64994b471f15e5c1b2d3eb3ca)) by Rostislav Melkumyan (hello@rosti.no)
+* **sanity:** restore ability for `prepare()` to fallback to schema icon ([#12352](https://github.com/sanity-io/sanity/issues/12352)) ([a70a385](https://github.com/sanity-io/sanity/commit/a70a385847d747d79531ec86c6858974dd793fb9)) by Bjørge Næss (bjoerge@gmail.com)
+* **tasks:** remove task specific params when closing sidebar ([#12351](https://github.com/sanity-io/sanity/issues/12351)) ([9cb4e0f](https://github.com/sanity-io/sanity/commit/9cb4e0fd5504b1d72204b5b09a6c393492317163)) by Josh (37798644+joshuaellis@users.noreply.github.com)
+* unique keys in nested structures when duplicating/copying ([#12264](https://github.com/sanity-io/sanity/issues/12264)) ([2bc4630](https://github.com/sanity-io/sanity/commit/2bc463013574a6de70cc9c620326cebcdf96225c)) by Jordan Lawrence (jordanl17@me.com)
+
+### Performance Improvements
+
+* improvements to document pane provider (presence + move contexts) ([#12335](https://github.com/sanity-io/sanity/issues/12335)) ([93f2a10](https://github.com/sanity-io/sanity/commit/93f2a107a6783b3b937234d0917f8fea6bfe0e86)) by RitaDias (rita@sanity.io)
+
 ## [5.13.0](https://github.com/sanity-io/sanity/compare/v5.12.0...v5.13.0) (2026-03-03)
 
 ### Features
