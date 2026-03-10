@@ -2,7 +2,14 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ChevronDownIcon, ChevronUpIcon} from '@sanity/icons'
 import {Container, Flex, useClickOutsideEvent} from '@sanity/ui'
 import {useMemo, useRef, useState} from 'react'
-import {Chip, getPublishedId, getVersionFromId, useTranslation, VersionChip} from 'sanity'
+import {
+  Chip,
+  getPublishedId,
+  getVersionFromId,
+  type AgentVersionDisplay,
+  useTranslation,
+  VersionChip,
+} from 'sanity'
 
 import {Popover, Tooltip} from '../../../../../ui-components'
 
@@ -14,6 +21,7 @@ export function NonReleaseVersionsSelect(props: {
   releases: ReleaseDocument[]
   releasesLoading: boolean
   documentType: string
+  getVersionDisplay: (versionDocumentId: string) => AgentVersionDisplay | null
 }) {
   const {
     nonReleaseVersions,
@@ -21,6 +29,7 @@ export function NonReleaseVersionsSelect(props: {
     onSelectBundle,
     onCopyToDraftsNavigate,
     documentType,
+    getVersionDisplay,
     releasesLoading,
     releases,
   } = props
@@ -63,12 +72,13 @@ export function NonReleaseVersionsSelect(props: {
       {selectedNonReleaseVersion &&
         (() => {
           const bundleId = getVersionFromId(selectedNonReleaseVersion)!
+          const versionDisplay = getVersionDisplay(selectedNonReleaseVersion)
           return (
             <VersionChip
               key={selectedNonReleaseVersion}
               selected
-              text={bundleId}
-              tone="default"
+              text={versionDisplay?.displayName ?? bundleId}
+              tone={versionDisplay?.tone ?? 'default'}
               onClick={() => onSelectBundle(bundleId)}
               onCopyToDraftsNavigate={onCopyToDraftsNavigate}
               contextValues={{
@@ -120,14 +130,15 @@ export function NonReleaseVersionsSelect(props: {
                 const bundle = getVersionFromId(nonReleaseVersionId)!
                 const selected = selectedPerspective === bundle
 
+                const versionDisplay = getVersionDisplay(nonReleaseVersionId)
                 return (
                   <VersionChip
                     key={nonReleaseVersionId}
                     selected={selected}
-                    text={bundle}
+                    text={versionDisplay?.displayName ?? bundle}
                     disabled={false}
                     contextMenuPortal={false}
-                    tone="default"
+                    tone={versionDisplay?.tone ?? 'default'}
                     onClick={() => onSelectBundle(bundle)}
                     onCopyToDraftsNavigate={onCopyToDraftsNavigate}
                     contextValues={{
