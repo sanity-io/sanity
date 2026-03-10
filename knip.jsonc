@@ -34,6 +34,8 @@
         "eslint-formatter-gha",
         // See .github/workflows/e2e-ui.yml
         "@sanity/ui",
+        // Used by VS Code for the tsgo language server, not referenced in code
+        "@typescript/native-preview",
       ],
       "ignoreBinaries": [
         // No root packages provide these binaries
