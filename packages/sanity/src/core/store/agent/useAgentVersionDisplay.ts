@@ -51,18 +51,21 @@ export function useAgentVersionDisplay(
   // Set for O(1) lookup
   const myBundleIds = useMemo(() => new Set(bundles.map((b) => b.id)), [bundles])
 
-  const filteredVersionIds = useMemo(
-    () =>
-      versionIds.filter((id) => {
-        const name = getVersionFromId(id)
-        if (!name || !isAgentBundleName(name)) return true
-        // Hide all agent versions until the endpoint confirms ownership,
-        // but always keep the one the user is currently viewing
-        if (loading) return name === activeBundleId
-        return myBundleIds.has(name)
-      }),
-    [versionIds, myBundleIds, loading, activeBundleId],
-  )
+  const filteredVersionIds = useMemo(() => {
+    // Find the most recent agent bundle the current user owns (or the active one while loading)
+    const primaryAgentId = versionIds.find((id) => {
+      const name = getVersionFromId(id)
+      if (!name || !isAgentBundleName(name)) return false
+      if (loading) return name === activeBundleId
+      return myBundleIds.has(name)
+    })
+
+    return versionIds.filter((id) => {
+      const name = getVersionFromId(id)
+      if (!name || !isAgentBundleName(name)) return true
+      return id === primaryAgentId
+    })
+  }, [versionIds, myBundleIds, loading, activeBundleId])
 
   const getVersionDisplay = useMemo(() => {
     const ownDisplay: AgentVersionDisplay = {

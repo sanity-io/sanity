@@ -44,6 +44,20 @@ describe('useAgentVersionDisplay', () => {
     )
   })
 
+  test('loaded: only shows the most recent owned agent bundle', () => {
+    const MINE2 = 'agent-mine2'
+    mockState = {
+      bundles: [
+        {id: MINE, applicationKey: 'app'},
+        {id: MINE2, applicationKey: 'app'},
+      ],
+      loading: false,
+    }
+    const {result} = renderHook(() => useAgentVersionDisplay(ids(MINE, MINE2, RELEASE)))
+
+    expect(result.current.filteredVersionIds).toEqual(ids(MINE, RELEASE))
+  })
+
   test('loading without active bundle: hides all agent bundles', () => {
     mockState = {bundles: [], loading: true}
     const {result} = renderHook(() => useAgentVersionDisplay(ids(MINE, OTHER, RELEASE)))

@@ -141,12 +141,10 @@ export function ReleasesList({
           )}
         </Stack>
       </StickyTopCard>
-      {agentBundles.length > 0 && (
+      {agentBundles[0] && (
         <Card borderBottom padding={1}>
           <Stack space={1}>
-            {agentBundles.map((bundle) => (
-              <AgentBundleMenuItem key={bundle.id} bundle={bundle} />
-            ))}
+            <AgentBundleMenuItem bundle={agentBundles[0]} />
           </Stack>
         </Card>
       )}
