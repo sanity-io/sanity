@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.14.1](https://github.com/sanity-io/sanity/compare/v5.14.0...v5.14.1) (2026-03-10)
+
+### Bug Fixes
+
+* issue with icons not showing up in dashboard ([#12364](https://github.com/sanity-io/sanity/issues/12364)) ([834e6ca](https://github.com/sanity-io/sanity/commit/834e6cabb60096a231f73f71b44c407b06699916)) by Binoy Patel (me@binoy.io)
+* update rendering logic to exclude "Estimated" for archived releases and improve readability ([#12359](https://github.com/sanity-io/sanity/issues/12359)) ([12d2107](https://github.com/sanity-io/sanity/commit/12d210738c6c7d204ac1bd4b6f482135afe67f61)) by Jordan Lawrence (jordanl17@me.com)
+
 ## [5.14.0](https://github.com/sanity-io/sanity/compare/v5.13.0...v5.14.0) (2026-03-10)
 
 ### Features
