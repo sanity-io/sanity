@@ -1873,6 +1873,88 @@ it('emits resolved divergences when arrays of objects have been reordered', asyn
   expect(value).toMatchInlineSnapshot(`[]`)
 })
 
+it('does not emit divergences if an inserted primitive array item is present in subject array', async () => {
+  const upstreamAtFork: SanityDocument = {
+    _id: 'a',
+    _type: 'article',
+    _rev: 'revA',
+    _createdAt: '2025-10-29T09:00:00Z',
+    _updatedAt: '2025-10-29T09:10:00Z',
+    somePrimitiveArray: [],
+  }
+
+  const upstreamHead: SanityDocument = {
+    _id: 'a',
+    _type: 'article',
+    _rev: 'revB',
+    _createdAt: '2025-10-29T09:00:00Z',
+    _updatedAt: '2025-10-29T09:10:00Z',
+    somePrimitiveArray: ['a'],
+  }
+
+  const subjectHead: SanityDocument = {
+    _id: 'drafts.a',
+    _type: 'article',
+    _rev: 'revC',
+    _createdAt: '2025-10-29T09:00:00Z',
+    _updatedAt: '2025-10-29T09:10:00Z',
+    somePrimitiveArray: ['a'],
+  }
+
+  expect.assertions(1)
+
+  const value = await lastValueFrom(
+    readDocumentDivergences({
+      upstreamAtFork,
+      upstreamHead,
+      subjectHead,
+    }).pipe(toSortedArray()),
+  )
+
+  expect(value).toMatchInlineSnapshot(`[]`)
+})
+
+it('does not emit divergences if an inserted object array item is present in subject array', async () => {
+  const upstreamAtFork: SanityDocument = {
+    _id: 'a',
+    _type: 'article',
+    _rev: 'revA',
+    _createdAt: '2025-10-29T09:00:00Z',
+    _updatedAt: '2025-10-29T09:10:00Z',
+    somePrimitiveArray: [],
+  }
+
+  const upstreamHead: SanityDocument = {
+    _id: 'a',
+    _type: 'article',
+    _rev: 'revB',
+    _createdAt: '2025-10-29T09:00:00Z',
+    _updatedAt: '2025-10-29T09:10:00Z',
+    somePrimitiveArray: keyArray('a'),
+  }
+
+  const subjectHead: SanityDocument = {
+    _id: 'drafts.a',
+    _type: 'article',
+    _rev: 'revC',
+    _createdAt: '2025-10-29T09:00:00Z',
+    _updatedAt: '2025-10-29T09:10:00Z',
+    somePrimitiveArray: keyArray('a'),
+  }
+
+  expect.assertions(1)
+
+  const value = await lastValueFrom(
+    readDocumentDivergences({
+      upstreamAtFork,
+      upstreamHead,
+      subjectHead,
+    }).pipe(toSortedArray()),
+  )
+
+  expect(value).toMatchInlineSnapshot(`[]`)
+})
+
 it('does not emit divergences if object fields have been reordered', async () => {
   const upstreamAtFork: SanityDocument = {
     _id: 'a',
