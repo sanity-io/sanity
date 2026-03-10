@@ -39,7 +39,9 @@ export default function deploySchemasActionForCommand(
     },
     {
       ...context,
-      manifestExtractor: createManifestExtractor(context, {resolveIcons: false}),
+      manifestExtractor: createManifestExtractor(context, {
+        resolveIcons: true,
+      }),
     },
   )
 }
@@ -78,7 +80,11 @@ export async function deploySchemasAction(
   try {
     trace.start()
     const {client} = createSchemaApiClient(apiClient)
-    const manifestReader = createManifestReader({manifestDir, output, jsonReader})
+    const manifestReader = createManifestReader({
+      manifestDir,
+      output,
+      jsonReader,
+    })
     const manifest = await manifestReader.getManifest()
 
     const storeWorkspaceSchema = createStoreWorkspaceSchema({
@@ -160,7 +166,10 @@ function createStoreWorkspaceSchema(args: {
       })
 
       await client
-        .withConfig({dataset: workspace.dataset, projectId: workspace.projectId})
+        .withConfig({
+          dataset: workspace.dataset,
+          projectId: workspace.projectId,
+        })
         .request({
           method: 'PUT',
           url: `/projects/${workspace.projectId}/datasets/${workspace.dataset}/schemas`,
@@ -179,13 +188,17 @@ function createStoreWorkspaceSchema(args: {
     } catch (err) {
       if ('statusCode' in err && err?.statusCode === 401) {
         output.error(
-          `↳ No permissions to write schema for workspace "${workspace.name}" – ${projectIdDatasetPair(workspace)}. ${
-            SCHEMA_PERMISSION_HELP_TEXT
-          }:\n  ${chalk.red(`${err.message}`)}`,
+          `↳ No permissions to write schema for workspace "${
+            workspace.name
+          }" – ${projectIdDatasetPair(
+            workspace,
+          )}. ${SCHEMA_PERMISSION_HELP_TEXT}:\n  ${chalk.red(`${err.message}`)}`,
         )
       } else {
         output.error(
-          `↳ Error deploying schema for workspace "${workspace.name}":\n  ${chalk.red(`${err.message}`)}`,
+          `↳ Error deploying schema for workspace "${
+            workspace.name
+          }":\n  ${chalk.red(`${err.message}`)}`,
         )
       }
 

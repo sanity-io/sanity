@@ -27,7 +27,7 @@ export default async function deployAppAction(
   args: CliCommandArguments<DeployAppActionFlags>,
   context: CliCommandContext,
 ): Promise<void> {
-  const {apiClient, workDir, chalk, output, prompt, cliConfig, cliConfigPath} = context
+  const {apiClient, workDir, chalk, output, prompt, cliConfig} = context
   const flags = {build: true, ...args.extOptions}
   const customSourceDir = args.argsWithoutOptions[0]
   const sourceDir = path.resolve(process.cwd(), customSourceDir || path.join(workDir, 'dist'))
@@ -105,7 +105,9 @@ export default async function deployAppAction(
       extOptions: flags,
       argsWithoutOptions: [customSourceDir].filter(Boolean),
     }
-    const {didCompile} = await buildSanityApp(buildArgs, context, {basePath: '/'})
+    const {didCompile} = await buildSanityApp(buildArgs, context, {
+      basePath: '/',
+    })
 
     if (!didCompile) {
       return

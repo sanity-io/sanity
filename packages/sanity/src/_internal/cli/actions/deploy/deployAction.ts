@@ -102,7 +102,12 @@ export default async function deployStudioAction(
         ...(appId ? {appId, appHost: undefined} : {appId: undefined, appHost: configStudioHost}),
       })
     } else {
-      userApplication = await getOrCreateStudio({client, context, spinner, urlType})
+      userApplication = await getOrCreateStudio({
+        client,
+        context,
+        spinner,
+        urlType,
+      })
     }
   } catch (err) {
     if (err.message) {
@@ -122,7 +127,9 @@ export default async function deployStudioAction(
       extOptions: flags,
       argsWithoutOptions: [customSourceDir].filter(Boolean),
     }
-    const {didCompile} = await buildSanityStudio(buildArgs, context, {basePath: '/'})
+    const {didCompile} = await buildSanityStudio(buildArgs, context, {
+      basePath: '/',
+    })
 
     if (!didCompile) {
       return
@@ -139,7 +146,12 @@ export default async function deployStudioAction(
         'schema-required': flags['schema-required'],
         'verbose': flags.verbose,
       },
-      {...context, manifestExtractor: createManifestExtractor(context, {resolveIcons: false})},
+      {
+        ...context,
+        manifestExtractor: createManifestExtractor(context, {
+          resolveIcons: true,
+        }),
+      },
     )
   }
 
