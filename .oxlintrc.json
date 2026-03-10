@@ -39,7 +39,7 @@
     "perf": "error"
   },
   "rules": {
-    "eslint/no-restricted-imports": [
+    "no-restricted-imports": [
       "error",
       {
         "paths": [
@@ -132,7 +132,7 @@
     // Handy rules that are disabled by default
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
-    "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
+    "no-console": ["error", {"allow": ["warn", "error"]}],
     // We no longer allow commonjs as we ship ESM only (except for in CLI scenarios for legacy reasons)
     "import/no-commonjs": "error",
     "no-restricted-globals": [
@@ -142,14 +142,14 @@
     ],
     // These rules should be enabled in the future, they are disabled for now to reduce the PR scope for landing oxlint
     "typescript/no-explicit-any": "warn",
-    "eslint/no-await-in-loop": "warn",
+    "no-await-in-loop": "warn",
     "unicorn/no-new-array": "warn",
     "unicorn/consistent-function-scoping": "warn",
     "unicorn/no-useless-spread": "warn",
     "unicorn/no-await-in-promise-methods": "warn",
-    "eslint/no-useless-catch": "warn",
-    "eslint/no-unneeded-ternary": "warn",
-    "eslint/no-unused-vars": "warn",
+    "no-useless-catch": "warn",
+    "no-unneeded-ternary": "warn",
+    "no-unused-vars": "warn",
     "unicorn/no-useless-fallback-in-spread": "warn",
     "import/no-named-as-default": "warn",
     "unicorn/prefer-string-starts-ends-with": "warn",
@@ -159,8 +159,8 @@
     "oxc/no-async-endpoint-handlers": "warn",
     "unicorn/prefer-array-find": "warn",
     "jsx_a11y/alt-text": "warn",
-    "eslint/no-constant-binary-expression": "warn",
-    "eslint/no-extend-native": "warn",
+    "no-constant-binary-expression": "warn",
+    "no-extend-native": "warn",
     "jsx_a11y/anchor-has-content": "warn",
     "react/no-array-index-key": "warn",
     "oxc/no-accumulating-spread": "warn",
@@ -176,7 +176,7 @@
     "react/iframe-missing-sandbox": "warn",
     "jsx_a11y/iframe-has-title": "warn",
     "promise/no-callback-in-promise": "warn",
-    "eslint/no-unsafe-optional-chaining": "warn",
+    "no-unsafe-optional-chaining": "warn",
     "promise/always-return": ["error", {"ignoreLastCallback": true}],
     "require-module-specifiers": "warn",
     // handy type-aware rules
@@ -243,13 +243,13 @@
     {
       "files": ["e2e/**/*"],
       "rules": {
-        "eslint/no-console": "off"
+        "no-console": "off"
       }
     },
     {
       "files": ["dev/test-studio/**/*"],
       "rules": {
-        "eslint/no-console": "off",
+        "no-console": "off",
         "no-explicit-any": "off",
         "jsx_a11y/iframe-has-title": "off",
         "react/iframe-missing-sandbox": "off",
@@ -277,7 +277,7 @@
     {
       "files": ["packages/@repo/bundle-manager/**/*"],
       "rules": {
-        "eslint/no-console": "off"
+        "no-console": "off"
       }
     }
   ]
