@@ -20,6 +20,11 @@ import {type FormPatch, type PatchEvent, set} from '../../../form'
 import {useTranslation} from '../../../i18n'
 import {useCurrentUser} from '../../../store'
 import {useWorkspace} from '../../../studio'
+import {
+  TASKS_SELECTED_TASK_SEARCH_PARAM,
+  TASKS_SIDEBAR_SEARCH_PARAM,
+  TASKS_VIEW_MODE_SEARCH_PARAM,
+} from '../../context/navigation/types'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
 import {getMentionedUsers} from '../form/utils'
@@ -73,9 +78,9 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
   const handleGetNotificationValue = (message: CommentInputProps['value'], commentId: string) => {
     const studioUrl = new URL(`${window.location.origin}${basePath ? `${basePath}/` : ''}`)
 
-    studioUrl.searchParams.set('sidebar', 'tasks')
-    studioUrl.searchParams.set('selectedTask', value?._id)
-    studioUrl.searchParams.set('viewMode', 'edit')
+    studioUrl.searchParams.set(TASKS_SIDEBAR_SEARCH_PARAM, 'tasks')
+    studioUrl.searchParams.set(TASKS_SELECTED_TASK_SEARCH_PARAM, value?._id)
+    studioUrl.searchParams.set(TASKS_VIEW_MODE_SEARCH_PARAM, 'edit')
     studioUrl.searchParams.set('commentId', commentId)
 
     const mentionedUsers = getMentionedUsers(message)
