@@ -4,6 +4,7 @@ import {Box, Flex, Text} from '@sanity/ui'
 import {useTranslation} from '../../../i18n'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
+import {ARCHIVED_RELEASE_STATES} from '../../util/const'
 import {isReleaseScheduledOrScheduling} from '../../util/util'
 import {type TableRelease} from '../overview/ReleasesOverview'
 
@@ -32,7 +33,7 @@ export const ReleaseTime: React.FC<{release: TableRelease}> = ({release}) => {
   // For scheduled releases:
 
   const isScheduledOrScheduling = isReleaseScheduledOrScheduling(release)
-  const isArchived = release.state === 'archived'
+  const isInArchivedView = ARCHIVED_RELEASE_STATES.includes(release.state)
 
   return (
     <Flex gap={1} align="center" wrap="wrap">
@@ -43,7 +44,7 @@ export const ReleaseTime: React.FC<{release: TableRelease}> = ({release}) => {
           </Text>
         </Box>
       )}
-      {!isArchived && (
+      {!isInArchivedView && (
         <>
           <Box paddingY={1}>
             <Text size={1} muted>
