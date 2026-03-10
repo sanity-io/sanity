@@ -573,10 +573,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.error.unhandled-runtime-error.title': 'Unhandled Runtime Error',
   /** Form field deprecated label */
   'form.field.deprecated-label': 'deprecated',
-  /** Warning shown when a field description contains a React component */
-  'form.field.description.unsupported-react-element': `This field's description that contains a React component, which is discouraged. Please change it to a plain string or plain HTML.`,
-  /** Warning shown when a field title contains a React component */
-  'form.field.title.unsupported-react-element': `This field's title that contains a React component, which is discouraged. Please change it to a plain string or plain HTML.`,
   /** Fallback title shown above field if it has no defined title */
   'form.field.untitled-field-label': 'Untitled',
   /** Accessibility label for the icon that indicates the field has a validation error */
