@@ -5,6 +5,7 @@ import {
   type SanityClient,
   ServerError,
 } from '@sanity/client'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {observableCallback} from 'observable-callback'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
@@ -21,8 +22,15 @@ import {
   takeUntil,
   withLatestFrom,
 } from 'rxjs/operators'
-import {catchWithCount, useSchema, useSearchMaxFieldDepth, useWorkspace} from 'sanity'
+import {
+  catchWithCount,
+  measureFirstMatch,
+  useSchema,
+  useSearchMaxFieldDepth,
+  useWorkspace,
+} from 'sanity'
 
+import {DocumentListLoadTimeMeasured} from './__telemetry__/documentListSearch.telemetry'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 import {findStaticTypesInFilter, removePublishedWithDrafts} from './helpers'
 import {listenSearchQuery} from './listenSearchQuery'
@@ -103,6 +111,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
   const {strategy: searchStrategy} = useWorkspace().search
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
+  const telemetry = useTelemetry()
 
   // Get the type name from the filter, if it is a simple type filter.
   const typeNameFromFilter = useMemo(
@@ -129,6 +138,17 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     }
 
     const partialList$ = listenSearchQuery(listenSearchQueryArgs).pipe(
+      measureFirstMatch(
+        (event) => event.connected,
+        (durationMs, data) => {
+          telemetry.log(DocumentListLoadTimeMeasured, {
+            durationMs: durationMs,
+            searchStringLength: (searchQuery || '').length,
+            returnedDocuments: data.documents.length,
+            fromCache: data.fromCache,
+          })
+        },
+      ),
       shareReplay({refCount: true, bufferSize: 1}),
     )
 
@@ -244,6 +264,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     searchStrategy,
     onFetchFullList$,
     onRetry$,
+    telemetry,
   ])
 
   const {
