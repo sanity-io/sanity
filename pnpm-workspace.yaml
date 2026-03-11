@@ -66,20 +66,22 @@ minimumReleaseAgeExclude:
   - '@oxlint-tsgolint/*'
   - '@portabletext/*'
   - '@sanity/*'
-  - 'sanity-plugin-internationalized-array'
   - '@types/*'
   - '@typescript/*'
-  - csstype
+  - 'csstype'
+  - 'data-uri-to-buffer@7.0.0'
+  - 'eslint-plugin-oxlint'
   - 'get-it'
+  - 'get-uri@7.0.0'
   - 'groq-js'
   - 'oxfmt'
   - 'oxlint'
   - 'oxlint-tsgolint'
-  - 'eslint-plugin-oxlint'
   - 'react'
   - 'react-dom'
   - 'react-is'
   - 'react-rx'
+  - 'sanity-plugin-internationalized-array'
 
 trustPolicy: no-downgrade
 
