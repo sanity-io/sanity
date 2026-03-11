@@ -114,6 +114,19 @@ export interface Schema {
 export interface SortOrderingItem {
   field: string
   direction: 'asc' | 'desc'
+  /**
+   * Controls whether null/undefined values appear first or last in the sort order.
+   *
+   * Defaults match PostgreSQL behavior:
+   * - `'desc'` direction → nulls first
+   * - `'asc'` direction → nulls last
+   *
+   * Only specify this to override the default (e.g. `nulls: 'last'` with `direction: 'desc'`).
+   *
+   * **Note:** Overriding the default may have performance implications for document types
+   * with lots of documents.
+   */
+  nulls?: 'first' | 'last'
 }
 
 /** @public */

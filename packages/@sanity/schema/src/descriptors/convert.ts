@@ -842,10 +842,12 @@ function maybeOrderingBy(val: unknown): ObjectOrderingBy | undefined {
     'direction' in val && (val.direction === 'asc' || val.direction === 'desc')
       ? val.direction
       : undefined
+  const nulls =
+    'nulls' in val && (val.nulls === 'first' || val.nulls === 'last') ? val.nulls : undefined
 
   if (!field || !direction) return undefined
 
-  return {field, direction}
+  return {field, direction, ...(nulls && {nulls})}
 }
 
 /**

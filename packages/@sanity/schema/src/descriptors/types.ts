@@ -134,6 +134,7 @@ export type ObjectOrdering = {
 export type ObjectOrderingBy = {
   field: string
   direction: 'asc' | 'desc'
+  nulls?: 'first' | 'last'
 }
 
 export interface ReferenceTypeDef extends SubtypeDef {
