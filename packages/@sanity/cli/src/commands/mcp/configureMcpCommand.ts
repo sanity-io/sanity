@@ -43,7 +43,7 @@ const configureMcpCommand: CliCommandDefinition = {
     }
 
     if (mcpResult.configuredEditors.length > 0) {
-      output.print(`\nWe recommend installing our Sanity skills with the following command:`)
+      output.print(`\nWe recommend installing our agent skills with the following command:`)
       output.print(`${context.chalk.cyan('npx skills add sanity-io/agent-toolkit')}`)
     }
 
