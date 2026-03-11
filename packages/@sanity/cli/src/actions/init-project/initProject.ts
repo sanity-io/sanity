@@ -599,14 +599,7 @@ export default async function initSanity(
     print(
       `\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`,
     )
-    if (mcpConfigured && mcpConfigured.length > 0) {
-      const message = await getPostInitMCPPrompt(mcpConfigured)
-      print(`\n${message}`)
-      print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
-      print(
-        `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
-      )
-    }
+    await printPostInitMCPPromptTemplate(mcpConfigured)
 
     return
   }
@@ -758,14 +751,7 @@ export default async function initSanity(
     )
     print('\nGet started in `src/App.tsx`, or refer to our documentation for a walkthrough:')
     print(chalk.blue.underline('https://www.sanity.io/docs/app-sdk/sdk-configuration'))
-    if (mcpConfigured && mcpConfigured.length > 0) {
-      const message = await getPostInitMCPPrompt(mcpConfigured)
-      print(`\n${message}`)
-      print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
-      print(
-        `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
-      )
-    }
+    await printPostInitMCPPromptTemplate(mcpConfigured)
     print('\n')
     print(`Other helpful commands:`)
     print(`npx sanity docs browse     to open the documentation in a browser`)
@@ -778,14 +764,7 @@ export default async function initSanity(
     print(
       `\nGet started by running ${chalk.cyan(devCommand)} to launch your Studio's development server`,
     )
-    if (mcpConfigured && mcpConfigured.length > 0) {
-      const message = await getPostInitMCPPrompt(mcpConfigured)
-      print(`\n${message}`)
-      print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
-      print(
-        `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
-      )
-    }
+    await printPostInitMCPPromptTemplate(mcpConfigured)
     print('\n')
     print(`Other helpful commands:`)
     print(`npx sanity docs browse     to open the documentation in a browser`)
@@ -888,13 +867,22 @@ export default async function initSanity(
     }
   }
 
-  async function getPostInitMCPPrompt(editorsNames: EditorName[]): Promise<string> {
+  async function printPostInitMCPPromptTemplate(editorsNames: EditorName[]): Promise<string> {
+    if (!(mcpConfigured && mcpConfigured.length > 0)) return
+
     const promptClient = apiClient({requireUser: false, requireProject: false})
-    return fetchPostInitPrompt({
+    const message = await fetchPostInitPrompt({
       client: promptClient,
       editorNames: new Intl.ListFormat('en').format(editorsNames),
       chalk,
     })
+    print(`\n${message}`)
+    print(`\nWe recommend installing our Sanity skills with the following command:`)
+    print(`${chalk.cyan('npx skills add sanity-io/agent-toolkit')}`)
+    print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
+    print(
+      `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
+    )
   }
 
   // eslint-disable-next-line complexity

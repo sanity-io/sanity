@@ -41,6 +41,12 @@ const configureMcpCommand: CliCommandDefinition = {
     if (mcpResult.error) {
       trace.error(mcpResult.error)
     }
+
+    if (mcpResult.configuredEditors.length > 0) {
+      output.print(`\nWe recommend installing our Sanity skills with the following command:`)
+      output.print(`${context.chalk.cyan('npx skills add sanity-io/agent-toolkit')}`)
+    }
+
     trace.complete()
   },
 }
