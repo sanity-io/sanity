@@ -29,6 +29,7 @@ import {
 
 import {Delay} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {FormHeader} from './FormHeader'
@@ -71,6 +72,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
+  const {maximizedPane} = useResolvedPanesList()
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
   // - Used by the Portable Text input to modify selections.
@@ -160,9 +162,10 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   )
 
   const isReadOnly = connectionState === 'reconnecting' || formState?.readOnly || !editState?.ready
+  const formWidth = maximizedPane ? 2 : 1
 
   return (
-    <FormContainer hidden={hidden}>
+    <FormContainer hidden={hidden} $formWidth={formWidth}>
       <PresenceOverlay margins={margins}>
         <Box
           as="form"
@@ -223,6 +226,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 readOnly={isReadOnly}
                 schemaType={formState.schemaType}
                 validation={validation}
+                formWidth={formWidth}
                 value={
                   // note: the form state doesn't have a typed concept of a "document" value
                   // but these should be compatible

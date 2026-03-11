@@ -7,7 +7,7 @@ import {type FormNodePresence} from '../presence'
 import {EMPTY_ARRAY} from '../util'
 import {DocumentIdProvider} from './contexts/DocumentIdProvider'
 import {HoveredFieldProvider} from './field'
-import {type FormBuilderContextValue} from './FormBuilderContext'
+import {type FormBuilderContextValue, type FormWidth} from './FormBuilderContext'
 import {ArrayOfObjectsFunctions} from './inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
@@ -43,6 +43,7 @@ export interface FormBuilderProviderProps {
   filterField?: FormBuilderFilterFieldFn
   focusPath: Path
   focused?: boolean
+  formWidth?: FormWidth
   groups: FormFieldGroup[]
   id: string
   image: Source['form']['image']
@@ -92,6 +93,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     filterField,
     focusPath,
     focused,
+    formWidth = 1,
     groups,
     id,
     image,
@@ -174,6 +176,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       renderItem,
       renderPreview,
       schemaType,
+      formWidth,
     }),
     [
       __internal,
@@ -194,6 +197,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       renderItem,
       renderPreview,
       schemaType,
+      formWidth,
     ],
   )
 

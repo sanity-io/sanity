@@ -22,6 +22,7 @@ import {
 } from '../../../../studio/tree-editing'
 import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
+import {useFormBuilder} from '../../../../useFormBuilder'
 import {regenerateKeys} from '../../../../utils/regenerateKeys'
 import {useArrayValidation} from '../../common/ArrayValidationContext'
 import {RowLayout} from '../../layouts/RowLayout'
@@ -74,7 +75,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const arrayValidation = useArrayValidation()
   const maxReached = arrayValidation?.maxReached
   const maxReachedReason = arrayValidation?.maxReachedReason
-
+  const {formWidth} = useFormBuilder()
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   // The edit portal should open if the item is open and:
@@ -334,7 +335,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
               : t('inputs.array.action.edit', {itemTypeTitle})
           }
           type={parentSchemaType?.options?.modal?.type || 'dialog'}
-          width={parentSchemaType?.options?.modal?.width ?? 1}
+          width={parentSchemaType?.options?.modal?.width ?? formWidth}
           id={value._key}
           onClose={onClose}
           autofocus={focused}

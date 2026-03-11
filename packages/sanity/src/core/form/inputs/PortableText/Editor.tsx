@@ -95,7 +95,7 @@ export function Editor(props: EditorProps): ReactNode {
     setScrollElement,
     ariaDescribedBy,
   } = props
-  const {id} = useFormBuilder()
+  const {id, formWidth} = useFormBuilder()
   const {t} = useTranslation()
   const {isTopLayer} = useLayer()
 
@@ -212,6 +212,7 @@ export function Editor(props: EditorProps): ReactNode {
           <div>
             <EditableWrapper
               $isFullscreen={isFullscreen}
+              $formWidth={formWidth}
               $isOneLine={isOneLine}
               tone={readOnly ? 'transparent' : 'default'}
             >
