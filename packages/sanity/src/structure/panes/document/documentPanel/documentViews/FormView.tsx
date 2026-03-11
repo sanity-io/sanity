@@ -165,7 +165,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   const formWidth = maximizedPane ? 2 : 1
 
   return (
-    <FormContainer hidden={hidden} $formWidth={formWidth}>
+    <FormContainer hidden={hidden} $formWidth={formWidth} data-testid="form-container">
       <PresenceOverlay margins={margins}>
         <Box
           as="form"
