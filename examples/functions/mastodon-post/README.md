@@ -112,7 +112,6 @@ defineField({
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'mastodon-post',
          src: './functions/mastodon-post',
          memory: 1,

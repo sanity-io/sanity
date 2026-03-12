@@ -71,7 +71,6 @@ npx sanity schema deploy
 
    ```ts
    defineDocumentFunction({
-     type: 'sanity.function.document',
      src: './functions/auto-summary',
      memory: 2,
      timeout: 30,

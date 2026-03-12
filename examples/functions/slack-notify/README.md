@@ -88,7 +88,6 @@ Most official templates already include these fields.
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'slack-notify',
          src: './functions/slack-notify',
          memory: 1,
@@ -234,7 +233,6 @@ import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
 export default defineBlueprint({
   resources: [
     defineDocumentFunction({
-      type: 'sanity.function.document',
       name: 'slack-notify',
       src: './functions/slack-notify',
       memory: 1,

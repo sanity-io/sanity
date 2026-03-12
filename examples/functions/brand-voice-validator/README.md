@@ -75,7 +75,6 @@ npx sanity schema deploy
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'brand-voice-validator',
          src: './functions/brand-voice-validator',
          memory: 2,
@@ -166,7 +165,6 @@ import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
 export default defineBlueprint({
   resources: [
     defineDocumentFunction({
-      type: 'sanity.function.document',
       name: 'brand-voice-validator',
       src: './functions/brand-voice-validator',
       memory: 2,

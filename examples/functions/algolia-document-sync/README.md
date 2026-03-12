@@ -55,7 +55,6 @@ This function is built to be compatible with any of [the official "clean" templa
    }
 
    defineDocumentFunction({
-     type: 'sanity.function.document',
      name: 'algolia-document-sync',
      memory: 1,
      timeout: 10,
