@@ -4,6 +4,7 @@ import {DocumentId, getPublishedId, getVersionNameFromId, isVersionId} from '@sa
 import {client} from '../client'
 import {octokit} from '../octokit'
 import {type StudioChangelogEntry} from '../types'
+import {stripPr} from '../utils/stripPrNumber'
 
 export async function publishReleases(options: {dryRun: boolean; targetVersion: string}) {
   const changelogDocuments = await client.fetch<{_id: string; changelog: StudioChangelogEntry[]}[]>(
@@ -53,7 +54,15 @@ export async function publishReleases(options: {dryRun: boolean; targetVersion: 
   const formattedChangelog = `
 Author | Message | Commit
 ------------ | ------------- | -------------
-${changelogDocument.changelog.map((entry) => `${mention(entry.author)} | ${entry.subject} (#${entry.pr}) | ${entry.hash}`).join('\n')}
+${changelogDocument.changelog
+  .map((entry) => {
+    return [
+      mention(entry.author),
+      `${stripPr(entry.header, entry.pr)} (#${entry.pr})`,
+      entry.hash,
+    ].join(' | ')
+  })
+  .join('\n')}
   `
   const createGithubReleasePayload = {
     owner: 'sanity-io',
@@ -116,4 +125,11 @@ To initiate a new Sanity Studio project or learn more about upgrading, please re
 # 📓 Full changelog
 ${vars.changelog}
 `
+}
+
+function conventionalPrefix(entry: StudioChangelogEntry) {
+  if (!entry.type) {
+    return ''
+  }
+  return `${entry.type}${entry.scope ? `(${entry.scope})` : ''}: `
 }
