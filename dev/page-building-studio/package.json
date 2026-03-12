@@ -23,7 +23,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "eslint": "catalog:",
-    "rimraf": "^5.0.10",
+    "rimraf": "catalog:",
     "vite": "catalog:"
   }
 }

@@ -71,7 +71,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "chokidar": "^3.6.0",
     "eslint": "catalog:",
-    "rimraf": "^5.0.10",
+    "rimraf": "catalog:",
     "tsx": "^4.21.0",
     "vite": "catalog:"
   }

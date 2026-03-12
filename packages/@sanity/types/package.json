@@ -69,7 +69,7 @@
     "@vitejs/plugin-react": "catalog:",
     "eslint": "catalog:",
     "react": "catalog:",
-    "rimraf": "^5.0.10",
+    "rimraf": "catalog:",
     "vitest": "catalog:"
   },
   "peerDependencies": {

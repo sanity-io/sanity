@@ -23,7 +23,7 @@
     "globby": "^11.1.0",
     "lodash-es": "^4.17.22",
     "minimist": "^1.2.8",
-    "rimraf": "^5.0.10",
+    "rimraf": "catalog:",
     "rxjs": "^7.8.2",
     "semver": "^7.7.3",
     "yargs": "^17.7.2"
