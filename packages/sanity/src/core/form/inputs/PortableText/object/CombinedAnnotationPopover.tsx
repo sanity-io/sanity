@@ -96,6 +96,16 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
     }
   }, [handleSelectionChange])
 
+  // Re-check selection when annotations register or unregister.
+  // Annotation components register with the context after React processes
+  // the editor's selection change, which happens after the DOM
+  // selectionchange event has already fired. Without this, the popover
+  // misses the first click because annotations.length is still 0 when
+  // selectionchange runs.
+  useEffect(() => {
+    handleSelectionChange()
+  }, [handleSelectionChange])
+
   // Handle scroll to keep popover positioned correctly
   const handleScroll = useCallback(() => {
     if (rangeRef.current) {
