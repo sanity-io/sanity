@@ -4,6 +4,7 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {
   activeASAPRelease,
@@ -70,6 +71,7 @@ describe('ReleasesList', () => {
         </Menu>,
         {wrapper},
       )
+      await flushMicrotasksThisIsACodeSmell()
 
       expect(screen.getByText('active asap Release')).toBeInTheDocument()
       expect(screen.getByText('active Release')).toBeInTheDocument()
@@ -91,6 +93,7 @@ describe('ReleasesList', () => {
         </Menu>,
         {wrapper},
       )
+      await flushMicrotasksThisIsACodeSmell()
 
       await waitFor(() =>
         expect(screen.getByTestId('create-new-release-button')).not.toBeDisabled(),
@@ -141,6 +144,7 @@ describe('ReleasesList', () => {
         </Menu>,
         {wrapper},
       )
+      await flushMicrotasksThisIsACodeSmell()
 
       expect(screen.getByText('active asap Release')).toBeInTheDocument()
       expect(screen.getByText('active Release')).toBeInTheDocument()
@@ -173,6 +177,7 @@ describe('ReleasesList', () => {
         </Menu>,
         {wrapper},
       )
+      await flushMicrotasksThisIsACodeSmell()
 
       await waitFor(() => {
         expect(screen.getByTestId('release-drafts')).toBeInTheDocument()
@@ -198,6 +203,7 @@ describe('ReleasesList', () => {
         </Menu>,
         {wrapper},
       )
+      await flushMicrotasksThisIsACodeSmell()
 
       expect(screen.queryByTestId('create-new-release-button')).toBeNull()
     })
@@ -227,6 +233,7 @@ describe('ReleasesList', () => {
         </Menu>,
         {wrapper},
       )
+      await flushMicrotasksThisIsACodeSmell()
       await waitFor(() => expect(screen.getByTestId('create-new-release-button')).toBeDisabled())
     })
   })

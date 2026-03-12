@@ -4,6 +4,7 @@ import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {useDocumentPairPermissionsMockReturn} from '../../../../../../../test/mocks/useDocumentPairPermissions.mock'
+import {flushMicrotasksThisIsACodeSmell} from '../../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {
   mockUseReleasePermissions,
@@ -89,6 +90,7 @@ describe('VersionContextMenu', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
 
     expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
 
@@ -111,6 +113,7 @@ describe('VersionContextMenu', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
 
     expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
 
@@ -135,6 +138,7 @@ describe('VersionContextMenu', () => {
     }
 
     render(<VersionContextMenu {...publishedProps} />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
 
     expect(screen.queryByTestId('discard')).not.toBeInTheDocument()
   })
@@ -145,6 +149,7 @@ describe('VersionContextMenu', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
 
     await waitFor(() => {
       expect(screen.getByText('Discard version')).not.toBeDisabled()
@@ -161,6 +166,7 @@ describe('VersionContextMenu', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
 
     expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
 
@@ -180,6 +186,7 @@ describe('VersionContextMenu', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
 
     expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
 
@@ -199,6 +206,7 @@ describe('VersionContextMenu', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} isGoingToUnpublish />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
 
     await waitFor(() => {
       expect(screen.getByTestId('copy-version-to-release-button-group')).toBeDisabled()
