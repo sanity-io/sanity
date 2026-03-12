@@ -60,7 +60,8 @@ const MemoDocumentType = memo(
 
 const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentRow> = (t) => ({
   id: 'action',
-  width: 100,
+  width: null,
+  style: {minWidth: 100},
   header: (props) => (
     <Flex {...props.headerProps} paddingY={3} sizing="border">
       <Headers.BasicHeader text={t('table-header.action')} />
@@ -105,7 +106,8 @@ export const getDocumentTableColumnDefs: (
   ...(releaseState === 'archived' || releaseState === 'published' ? [] : [documentActionColumn(t)]),
   {
     id: 'document._type',
-    width: 100,
+    width: null,
+    style: {minWidth: 100},
     sorting: true,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
@@ -123,7 +125,7 @@ export const getDocumentTableColumnDefs: (
   {
     id: 'search',
     width: null,
-    style: {minWidth: '50%', maxWidth: '50%'},
+    style: {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
     sortTransform(value) {
       return (
         String(
