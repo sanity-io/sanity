@@ -7,7 +7,7 @@ import {
   type Path,
   type SchemaType,
 } from '@sanity/types'
-import {render} from '@testing-library/react'
+import {act, render} from '@testing-library/react'
 import {type FocusEvent, type RefObject} from 'react'
 import {type MockInstance, vi} from 'vitest'
 
@@ -216,13 +216,18 @@ export async function renderInput<ElementProps>(props: {
     )
   }
 
-  const result = render(
-    <TestProvider>
-      <div id="__test_container__">
-        <TestForm {...initialTestProps} render={initialRender} />
-      </div>
-    </TestProvider>,
-  )
+  // Wrap in async act() so suspended resources (e.g. React.lazy imports) resolve
+  // within the act boundary instead of triggering warnings after it closes.
+  let result!: ReturnType<typeof render>
+  await act(async () => {
+    result = render(
+      <TestProvider>
+        <div id="__test_container__">
+          <TestForm {...initialTestProps} render={initialRender} />
+        </div>
+      </TestProvider>,
+    )
+  })
 
   const container = result.container.querySelector('#__test_container__')!
 

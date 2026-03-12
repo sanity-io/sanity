@@ -535,8 +535,8 @@ describe('ReleasesOverview', () => {
       mockedSetPerspective.mockClear()
 
       const rows = screen.getAllByTestId('table-row')
-      const secondRow = rows[1]
-      const pinButton = within(secondRow).getByTestId('pin-release-button')
+      const firstRow = rows[0]
+      const pinButton = within(firstRow).getByTestId('pin-release-button')
 
       expect(pinButton).toBeInTheDocument()
       const buttonElement = pinButton.closest('button')
@@ -545,7 +545,9 @@ describe('ReleasesOverview', () => {
 
       await userEvent.click(buttonElement!)
 
-      expect(mockedSetPerspective).toHaveBeenCalled()
+      await waitFor(() => {
+        expect(mockedSetPerspective).toHaveBeenCalledOnce()
+      })
     })
 
     it('will show pinned release in release list', async () => {
