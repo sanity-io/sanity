@@ -76,12 +76,19 @@ await yargs(process.argv.slice(2))
           type: 'string',
           demandOption: true,
         },
+        dryRun: {
+          description: 'Dry run',
+          type: 'boolean',
+        },
       }),
     handler: async (args) => {
       try {
         await publishReleases({
           targetVersion: args.targetVersion,
+          dryRun: Boolean(args.dryRun),
         })
+        // oxlint-disable-next-line no-console
+        console.info('ℹ️ This was a dry run. Nothing has been released.')
       } catch (error) {
         // oxlint-disable-next-line no-console
         console.error(error)
