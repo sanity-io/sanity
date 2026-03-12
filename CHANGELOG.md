@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.15.0](https://github.com/sanity-io/sanity/compare/v5.14.1...v5.15.0) (2026-03-12)
+
+### Features
+
+* upgrade to new `@sanity/cli` ([#12200](https://github.com/sanity-io/sanity/issues/12200)) ([902075d](https://github.com/sanity-io/sanity/commit/902075d3a4567223745988ab706a6009a86419b7)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+
+### Bug Fixes
+
+* **deps:** move dev-only packages from dependencies to devDependencies ([#12383](https://github.com/sanity-io/sanity/issues/12383)) ([50e35a5](https://github.com/sanity-io/sanity/commit/50e35a5b4577f5043d090cb5f6cc1ac0fbb4ddcb)) by Binoy Patel (me@binoy.io)
+* make sure that columns in formFields are aligned to the top ([#12357](https://github.com/sanity-io/sanity/issues/12357)) ([8a06dc6](https://github.com/sanity-io/sanity/commit/8a06dc619c943b52525ea24055eac8dfcef08513)) by RitaDias (rita@sanity.io)
+* navigation on releases menu when in the releases plugin ([#12354](https://github.com/sanity-io/sanity/issues/12354)) ([b004d82](https://github.com/sanity-io/sanity/commit/b004d821d643d7a202eb96d404ffa5036dd757b8)) by RitaDias (rita@sanity.io)
+* **portable-text:** show annotation popover on first click ([08801fa](https://github.com/sanity-io/sanity/commit/08801fad3fae6cbccb5a2cc97145a0adeda9641d)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **releases:** releases overview on mobile ([#12343](https://github.com/sanity-io/sanity/issues/12343)) ([a925f7b](https://github.com/sanity-io/sanity/commit/a925f7bff6b2503af2fe8a305a8a59ddca060a95)) by Jordan Lawrence (jordanl17@me.com)
+* update function examples ([#12382](https://github.com/sanity-io/sanity/issues/12382)) ([7ec6fb0](https://github.com/sanity-io/sanity/commit/7ec6fb0221b946e14b73a4a1fbf7909dfe9eacc4)) by Simon MacDonald (simon.macdonald@gmail.com)
+* upgrade `@sanity/cli` to 6.1.0 ([#12387](https://github.com/sanity-io/sanity/issues/12387)) ([d9d2619](https://github.com/sanity-io/sanity/commit/d9d2619ec734ad49e2f07283d8a286289a652267)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+
 ## [5.14.1](https://github.com/sanity-io/sanity/compare/v5.14.0...v5.14.1) (2026-03-10)
 
 ### Bug Fixes
