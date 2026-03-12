@@ -201,6 +201,7 @@ export function useDocumentStore(): DocumentStore {
     (event: DocumentPairLoadedEvent) => {
       telemetry.log(DocumentPairLoadingMeasured, {
         durationMs: event.durationMs,
+        fromCache: event.fromCache,
         hasPublished: event.hasPublished,
         hasDraft: event.hasDraft,
         hasVersion: event.hasVersion,

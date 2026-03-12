@@ -45,6 +45,7 @@ export interface LatencyReportEvent {
 /** @internal */
 export interface DocumentPairLoadedEvent {
   durationMs: number
+  fromCache: boolean
   hasPublished: boolean
   hasDraft: boolean
   hasVersion: boolean

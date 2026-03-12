@@ -14,7 +14,7 @@ interface DocumentListLoadTimeData {
    */
   returnedDocuments: number
   /**
-   * Whether the document list was loaded from an in-memory cache or not
+   * Whether the document list was loaded from an in-memory cache
    */
   fromCache: boolean
 }
@@ -23,5 +23,5 @@ export const DocumentListLoadTimeMeasured = defineEvent<DocumentListLoadTimeData
   name: 'Document List Load Time Measured',
   version: 1,
   description: 'Time from document list search subscription to first result',
-  maxSampleRate: 10_000,
+  maxSampleRate: 30_000,
 })

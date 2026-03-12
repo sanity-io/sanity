@@ -84,15 +84,18 @@ export const editState = memoize(
           typeof versions.version === 'undefined' ? of(null) : versions.version.snapshots$,
         ]),
       ),
-      measureFirstEmission((durationMs, [draftSnapshot, publishedSnapshot, , versionSnapshot]) => {
-        ctx.extraOptions?.onDocumentPairLoaded?.({
-          durationMs,
-          hasPublished: Boolean(publishedSnapshot),
-          hasDraft: Boolean(draftSnapshot),
-          hasVersion: Boolean(versionSnapshot),
-        })
-      }),
       swr(`${idPair.publishedId}-${idPair.draftId}-${idPair.versionId}`),
+      measureFirstEmission(
+        (durationMs, {fromCache, value: [draftSnapshot, publishedSnapshot, versionSnapshot]}) => {
+          ctx.extraOptions?.onDocumentPairLoaded?.({
+            durationMs,
+            fromCache,
+            hasPublished: Boolean(publishedSnapshot),
+            hasDraft: Boolean(draftSnapshot),
+            hasVersion: Boolean(versionSnapshot),
+          })
+        },
+      ),
       map(
         ({
           value: [draftSnapshot, publishedSnapshot, transactionSyncLock, versionSnapshot],
