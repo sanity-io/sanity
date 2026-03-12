@@ -60,7 +60,7 @@
     "@sanity/pkg-utils": "catalog:",
     "@typescript/native-preview": "catalog:",
     "eslint": "catalog:",
-    "rimraf": "^5.0.10"
+    "rimraf": "catalog:"
   },
   "browserslist": [
     "node >=20.19",

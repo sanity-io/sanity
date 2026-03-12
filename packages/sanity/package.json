@@ -297,7 +297,7 @@
     "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "rimraf": "^5.0.10",
+    "rimraf": "catalog:",
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
     "swr": "2.2.5",

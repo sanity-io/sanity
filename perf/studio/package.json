@@ -17,13 +17,13 @@
     "babel-plugin-react-compiler": "1.0.0",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "rimraf": "^5.0.10",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "eslint": "catalog:"
+    "eslint": "catalog:",
+    "rimraf": "catalog:"
   }
 }

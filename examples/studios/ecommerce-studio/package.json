@@ -34,5 +34,8 @@
     "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "rimraf": "catalog:"
   }
 }

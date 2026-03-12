@@ -99,7 +99,7 @@
     "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "rimraf": "^5.0.10",
+    "rimraf": "catalog:",
     "sanity": "^5.14.1",
     "styled-components": "catalog:",
     "vite": "catalog:",
