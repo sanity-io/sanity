@@ -89,6 +89,7 @@ export {
 } from './theme'
 export * from './user-color'
 export * from './util'
+export {measureFirstEmission, measureFirstMatch} from './util/measureFirstEmission'
 export {
   Rule as ConcreteRuleClass,
   validateDocument,
