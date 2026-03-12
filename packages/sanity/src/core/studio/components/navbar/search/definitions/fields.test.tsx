@@ -1,5 +1,5 @@
 import {Schema} from '@sanity/schema'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {filterDefinitions} from './defaultFilters'
 import {createFieldDefinitions, generateFieldId, MAX_OBJECT_TRAVERSAL_DEPTH} from './fields'
@@ -245,6 +245,8 @@ describe('createFieldDefinitions', () => {
   })
 
   it('should return empty string when title contains a custom React component that cannot render', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
     function ThrowsOnRender(props: {children: React.ReactNode}) {
       throw new Error('should not render')
     }
@@ -269,5 +271,6 @@ describe('createFieldDefinitions', () => {
 
     const fieldDefs = createFieldDefinitions(mockSchema, filterDefinitions)
     expect(fieldDefs[0].title).toEqual('')
+    expect(warnSpy).toHaveBeenCalledOnce()
   })
 })
