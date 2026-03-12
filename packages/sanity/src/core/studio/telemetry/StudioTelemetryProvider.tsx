@@ -24,9 +24,7 @@ import {type TelemetryContext} from './types'
 
 const sessionId = createSessionId()
 
-const DEBUG_TELEMETRY = !!(
-  typeof process !== 'undefined' && process.env?.SANITY_STUDIO_DEBUG_TELEMETRY
-)
+const DEBUG_TELEMETRY = import.meta && import.meta.env?.SANITY_STUDIO_DEBUG_TELEMETRY === 'true'
 
 /** Telemetry only runs on client */
 const isClient = typeof window !== 'undefined'
