@@ -16,6 +16,7 @@ import {arrayCapabilities} from './debug/arrayCapabilities'
 import {arrayOfStringsGridCustomInput} from './debug/arrayOfStringsGridCustomInput'
 import button from './debug/button'
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
+import {collapsibleColumnsBug} from './debug/collapsibleColumnsBug'
 import {collapsibleObjects} from './debug/collapsibleObjects'
 import {commentsDebug} from './debug/comments'
 import conditionalFields from './debug/conditionalFields'
@@ -226,6 +227,7 @@ export function createSchemaTypes(projectId: string) {
     tooltipAnnotationType,
     arrayOfStringsGridCustomInput,
     button,
+    collapsibleColumnsBug,
     collapsibleObjects,
     domAttrsAsFieldNames,
     commentsDebug,
