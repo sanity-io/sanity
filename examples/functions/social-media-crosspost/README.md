@@ -157,7 +157,6 @@ This function includes a `socialPost` document type schema with a custom charact
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'social-media-crosspost',
          src: './functions/social-media-crosspost',
          memory: 2,

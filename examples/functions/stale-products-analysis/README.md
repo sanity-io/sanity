@@ -140,7 +140,6 @@ defineField({
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'stale-products-analysis',
          memory: 1,
          timeout: 30,

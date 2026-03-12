@@ -108,7 +108,6 @@ defineField({
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'bluesky-post',
          src: './functions/bluesky-post',
          memory: 1,

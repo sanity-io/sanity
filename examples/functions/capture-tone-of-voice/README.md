@@ -75,7 +75,6 @@ npx sanity schema deploy
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'capture-tone-of-voice',
          src: './functions/capture-tone-of-voice',
          memory: 2,
@@ -164,7 +163,6 @@ import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
 export default defineBlueprint({
   resources: [
     defineDocumentFunction({
-      type: 'sanity.function.document',
       name: 'capture-tone-of-voice',
       src: './functions/capture-tone-of-voice',
       memory: 2,

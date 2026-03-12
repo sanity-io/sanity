@@ -110,7 +110,6 @@ npx sanity schema list
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'sentiment-analysis',
          src: './functions/sentiment-analysis',
          memory: 2,
@@ -225,7 +224,6 @@ import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
 export default defineBlueprint({
   resources: [
     defineDocumentFunction({
-      type: 'sanity.function.document',
       name: 'sentiment-analysis',
       src: './functions/sentiment-analysis',
       memory: 2,
