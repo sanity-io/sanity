@@ -4,6 +4,7 @@ import {combineLatest, type Observable, of} from 'rxjs'
 import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
 
 import {getVersionFromId} from '../../../../util'
+import {measureFirstEmission} from '../../../../util/measureFirstEmission'
 import {createSWR} from '../../../../util/rxSwr'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent} from '../types'
@@ -83,6 +84,14 @@ export const editState = memoize(
           typeof versions.version === 'undefined' ? of(null) : versions.version.snapshots$,
         ]),
       ),
+      measureFirstEmission((durationMs, [draftSnapshot, publishedSnapshot, , versionSnapshot]) => {
+        ctx.extraOptions?.onDocumentPairLoaded?.({
+          durationMs,
+          hasPublished: Boolean(publishedSnapshot),
+          hasDraft: Boolean(draftSnapshot),
+          hasVersion: Boolean(versionSnapshot),
+        })
+      }),
       swr(`${idPair.publishedId}-${idPair.draftId}-${idPair.versionId}`),
       map(
         ({
