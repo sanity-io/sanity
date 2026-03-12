@@ -1,18 +1,6 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
 
-/**
- * Reproduction for https://github.com/sanity-io/sanity/issues/6917
- *
- * Opening one collapsible column field causes its neighbor to disappear
- * because they are bottom-aligned (`align-items: flex-end` on the grid).
- *
- * Steps to reproduce:
- * 1. Open a document of this type
- * 2. Both "Column A" and "Column B" should appear side by side, collapsed
- * 3. Expand "Column A" — Column B disappears to the bottom of the page
- * 4. Scroll to the very bottom to find Column B aligned at the bottom of Column A
- */
 export const collapsibleColumnsBug = defineType({
   name: 'collapsibleColumnsBug',
   type: 'document',
