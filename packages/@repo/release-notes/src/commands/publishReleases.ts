@@ -5,7 +5,7 @@ import {client} from '../client'
 import {octokit} from '../octokit'
 import {type StudioChangelogEntry} from '../types'
 
-export async function publishReleases(options: {targetVersion: string}) {
+export async function publishReleases(options: {dryRun: boolean; targetVersion: string}) {
   const changelogDocuments = await client.fetch<{_id: string; changelog: StudioChangelogEntry[]}[]>(
     '*[_type=="apiChange" && releaseAutomation.source == "studio" && releaseAutomation.tentativeVersion == $version]',
     {version: options.targetVersion},
@@ -34,11 +34,17 @@ export async function publishReleases(options: {targetVersion: string}) {
 
   if (isVersionId(changelogDocumentId)) {
     const releaseId = getVersionNameFromId(changelogDocumentId)
-    console.log(`Publishing content release ${releaseId} for version ${options.targetVersion}`)
-    await client.releases.publish({releaseId})
-    console.log(
-      `🚀 Content release ${releaseId} for ${options.targetVersion} published successfully!`,
-    )
+    if (options.dryRun) {
+      console.log(
+        `[DRY RUN] Publishing content release ${releaseId} for version ${options.targetVersion}`,
+      )
+    } else {
+      console.log(`Publishing content release ${releaseId} for version ${options.targetVersion}`)
+      await client.releases.publish({releaseId})
+      console.log(
+        `🚀 Content release ${releaseId} for ${options.targetVersion} published successfully!`,
+      )
+    }
   } else {
     console.log(`Changelog for version ${options.targetVersion} already published.`)
   }
@@ -49,7 +55,7 @@ Author | Message | Commit
 ------------ | ------------- | -------------
 ${changelogDocument.changelog.map((entry) => `${mention(entry.author)} | ${entry.subject} (#${entry.pr}) | ${entry.hash}`).join('\n')}
   `
-  const response = await octokit.request('POST /repos/{owner}/{repo}/releases', {
+  const createGithubReleasePayload = {
     owner: 'sanity-io',
     repo: 'sanity',
     // eslint-disable-next-line camelcase
@@ -61,8 +67,21 @@ ${changelogDocument.changelog.map((entry) => `${mention(entry.author)} | ${entry
       changelog: formattedChangelog,
     }),
     draft: false,
-  })
-  console.log('Created GitHub Release:', response.data.html_url)
+  }
+  if (options.dryRun) {
+    console.log(
+      `[DRY RUN] Create release for tag ${createGithubReleasePayload.tag_name} with name ${createGithubReleasePayload.name} on ${createGithubReleasePayload.owner}/${createGithubReleasePayload.repo} with body:`,
+    )
+    console.log()
+    console.log(createGithubReleasePayload.body)
+    console.log()
+  } else {
+    const response = await octokit.request(
+      'POST /repos/{owner}/{repo}/releases',
+      createGithubReleasePayload,
+    )
+    console.log('Created GitHub Release:', response.data.html_url)
+  }
 }
 
 function mention(author: StudioChangelogEntry['author']) {
