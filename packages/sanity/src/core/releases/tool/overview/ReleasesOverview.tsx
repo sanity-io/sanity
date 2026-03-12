@@ -98,6 +98,18 @@ export function ReleasesOverview() {
     getInitialCardinalityView({router, isScheduledDraftsEnabled, isReleasesEnabled}),
   )
 
+  const viewFromUrl = useMemo(
+    (): CardinalityView =>
+      new URLSearchParams(router.state._searchParams).get('view') === 'drafts'
+        ? 'drafts'
+        : 'releases',
+    [router.state._searchParams],
+  )
+
+  if (viewFromUrl !== cardinalityView) {
+    setCardinalityView(viewFromUrl)
+  }
+
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
   )
@@ -244,15 +256,6 @@ export function ReleasesOverview() {
   useEffect(() => {
     navigateRef.current = router.navigate
   })
-
-  // Sync local state from URL when navigating externally (for example: from menu)
-  useEffect(() => {
-    setReleaseGroupMode(getInitialReleaseGroupMode(router))
-    setCardinalityView(
-      getInitialCardinalityView({router, isScheduledDraftsEnabled, isReleasesEnabled}),
-    )
-    setReleaseFilterDate(getInitialFilterDate(router))
-  }, [router, isScheduledDraftsEnabled, isReleasesEnabled])
 
   // Sync local state to URL when user interacts with filters
   useEffect(() => {
