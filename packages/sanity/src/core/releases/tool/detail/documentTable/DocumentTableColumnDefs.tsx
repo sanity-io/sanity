@@ -125,7 +125,7 @@ export const getDocumentTableColumnDefs: (
   {
     id: 'search',
     width: null,
-    style: {minWidth: '50%', maxWidth: '50%'},
+    style: {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
     sortTransform(value) {
       return (
         String(
