@@ -1672,21 +1672,6 @@ importers:
       '@tanstack/react-virtual':
         specifier: ^3.13.18
         version: 3.13.18(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@types/react-is':
-        specifier: 'catalog:'
-        version: 19.2.0
-      '@types/shallow-equals':
-        specifier: ^1.0.3
-        version: 1.0.3
-      '@types/speakingurl':
-        specifier: ^13.0.6
-        version: 13.0.6
-      '@types/use-sync-external-store':
-        specifier: ^1.5.0
-        version: 1.5.0
-      '@vitejs/plugin-react':
-        specifier: 'catalog:'
-        version: 5.1.4(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       '@xstate/react':
         specifier: ^6.0.0
         version: 6.1.0(@types/react@19.2.14)(react@19.2.4)(xstate@5.28.0)
@@ -1825,9 +1810,6 @@ importers:
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
-      vite:
-        specifier: 'catalog:'
-        version: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       web-vitals:
         specifier: ^5.1.0
         version: 5.1.0
@@ -1898,15 +1880,30 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.14)
+      '@types/react-is':
+        specifier: 'catalog:'
+        version: 19.2.0
       '@types/semver':
         specifier: ^7.7.0
         version: 7.7.1
+      '@types/shallow-equals':
+        specifier: ^1.0.3
+        version: 1.0.3
+      '@types/speakingurl':
+        specifier: ^13.0.6
+        version: 13.0.6
+      '@types/use-sync-external-store':
+        specifier: ^1.5.0
+        version: 1.5.0
       '@types/wicg-task-scheduling':
         specifier: ^2024.1.0
         version: 2024.1.0
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260112.1
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 5.1.4(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       '@vitest/expect':
         specifier: ^4.0.18
         version: 4.0.18
@@ -1955,6 +1952,9 @@ importers:
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
+      vite:
+        specifier: 'catalog:'
+        version: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       vitest:
         specifier: ^4.0.18
         version: 4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.13)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
