@@ -1583,8 +1583,8 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0
       '@sanity/bifur-client':
-        specifier: ^0.4.1
-        version: 0.4.1
+        specifier: ^1.0.0
+        version: 1.0.0
       '@sanity/cli':
         specifier: ^6.1.0
         version: 6.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)
@@ -5062,6 +5062,10 @@ packages:
 
   '@sanity/bifur-client@0.4.1':
     resolution: {integrity: sha512-mHM8WR7pujbIw2qxuV0lzinS1izOoyLza/ejWV6quITTLpBhUoPIQGPER3Ar0SON5JV0VEEqkJGa1kjiYYgx2w==}
+
+  '@sanity/bifur-client@1.0.0':
+    resolution: {integrity: sha512-4cy7RytpkR0wm08EzEx9tL3XwoH7FqnAb9aUNskLmwpWzkFSs34amh19BvUq1TujmEqwCGLJARa+QWpOCoWpjw==}
+    engines: {node: '>=20.19'}
 
   '@sanity/blueprints-parser@0.4.0':
     resolution: {integrity: sha512-zsWRKubWZnRwuAnRUC4UqeIJg6SpIrz6ft20FzfhI2mAqaxPky8rFh18/x96+5HpNv5ww/B9zU359IJCJMWNkw==}
@@ -15007,6 +15011,11 @@ snapshots:
   '@sanity/bifur-client@0.4.1':
     dependencies:
       nanoid: 3.3.11
+      rxjs: 7.8.2
+
+  '@sanity/bifur-client@1.0.0':
+    dependencies:
+      nanoid: 5.1.6
       rxjs: 7.8.2
 
   '@sanity/blueprints-parser@0.4.0': {}
