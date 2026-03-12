@@ -15,4 +15,10 @@ export default defineConfig({
 
   babel: {reactCompiler: true, styledComponents: true},
   reactCompilerOptions: {target: '19'},
+
+  // Workaround for a long-standing rollup bug: when `moduleSideEffects` marks externals as
+  // side-effect-free (e.g. 'no-external') in a multi-entry build, bare imports from other entries
+  // leak into the first entry. The default `true` avoids this. Since the output is a library, the
+  // consumer's bundler handles external tree-shaking anyway.
+  rollup: {treeshake: {moduleSideEffects: true}},
 })
