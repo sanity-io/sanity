@@ -1586,8 +1586,8 @@ importers:
         specifier: ^0.4.1
         version: 0.4.1
       '@sanity/cli':
-        specifier: ^6.0.0
-        version: 6.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)
+        specifier: ^6.1.0
+        version: 6.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)
       '@sanity/client':
         specifier: 'catalog:'
         version: 7.17.0(debug@4.4.3)
@@ -4618,10 +4618,6 @@ packages:
       react-redux:
         optional: true
 
-  '@rexxars/gitconfiglocal@3.0.1':
-    resolution: {integrity: sha512-+/fA3IOwEw4IWjON1FVumvemdEBsAosk1aoy+2Y6l2FqDuxOSGSxjgehLuydfNXG62s0p/z9hzvv2pv7TL3UWQ==}
-    engines: {node: '>=12.0.0'}
-
   '@rexxars/jiti@2.6.2':
     resolution: {integrity: sha512-B9FdXL9Z+TnaT+H1Z91nd68tjaD5q3G0ZC7e1Se3/rUur70DSZj++54HhkfoNIA5n/Y1TMllKKGk9qYsOVK2Lw==}
     hasBin: true
@@ -5084,14 +5080,14 @@ packages:
     peerDependencies:
       '@sanity/telemetry': '>=0.8.1 <0.9.0'
 
-  '@sanity/cli-core@1.0.1':
-    resolution: {integrity: sha512-9ZHggxlvI9q69JjT56HjHx2OmcsU3ZK9qHXjmu3As3u4AbqN5n3ZsAEpk9vMvvSYwFEHWHhT+HIvozY1aaagfw==}
+  '@sanity/cli-core@1.1.0':
+    resolution: {integrity: sha512-9XtJbFBr0h8GCg/jHeRBpHjtfiS2VotRdPJ9OgePUZCz4A+nSNuM0E3dK8k9PKA1iIZ8tsP/FbMB9mgeDLSC7Q==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     peerDependencies:
       '@sanity/telemetry': '>=0.8.1 <0.9.0'
 
-  '@sanity/cli@6.0.0':
-    resolution: {integrity: sha512-DHEhAUbLLa4163asenUqz8mrIp3ztC7tNXuk0cG0Dec1RDYYGzs7BM5U2+kdySoJaMZPY+h35gQZb7GX8dDAIg==}
+  '@sanity/cli@6.1.0':
+    resolution: {integrity: sha512-M0sv9MmeupG7VxBwnhei7SiCJYsJM/l7ui+vbXdcQivoOVG/w4BlfXlV8AwYMASUquHQPuynaPzKYQ0ZcLfxMw==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     hasBin: true
 
@@ -7847,10 +7843,6 @@ packages:
   exponential-backoff@3.1.3:
     resolution: {integrity: sha512-ZgEeZXj30q+I0EN+CbSSpIyPaJ5HVQD18Z1m+u1FXbAeT94mr1zw50q4q6jiiC447Nl/YTcIYSAftiGqetwXCA==}
 
-  extend-shallow@2.0.1:
-    resolution: {integrity: sha512-zCnTtlxNoAiDc3gqY2aYAWFx7XWWiasuF2K8Me5WbN8otHKTUKBwjPtNpRs/rbUZm7KxWAaNj7P1a/p52GbVug==}
-    engines: {node: '>=0.10.0'}
-
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
 
@@ -8025,10 +8017,6 @@ packages:
       react-dom:
         optional: true
 
-  fs-exists-sync@0.1.0:
-    resolution: {integrity: sha512-cR/vflFyPZtrN6b38ZyWxpWdhlXrzZEBawlpBQMq7033xVY7/kg0GDMBK5jg8lDYQckdJ5x/YC88lM3C7VMsLg==}
-    engines: {node: '>=0.10.0'}
-
   fs-extra@11.1.0:
     resolution: {integrity: sha512-0rcTq621PD5jM/e0a3EJoGC/1TC5ZBCERW82LQuwfGnCa1V8w7dpYH1yNu+SLb6E5dkeCBzKEyLGlFrnr+dUyw==}
     engines: {node: '>=14.14'}
@@ -8144,19 +8132,11 @@ packages:
     resolution: {integrity: sha512-ZsC7KQxm1Hra8yO0RvMZ4lGJT7vnBtSNpEHKq39MPN7vjuvCiu1aQ8rkXUaIXG1y/TSDez97Gmv04ibnYqCp/A==}
     engines: {node: '>= 14'}
 
-  git-config-path@1.0.1:
-    resolution: {integrity: sha512-KcJ2dlrrP5DbBnYIZ2nlikALfRhKzNSX0stvv3ImJ+fvC4hXKoV+U+74SV0upg+jlQZbrtQzc0bu6/Zh+7aQbg==}
-    engines: {node: '>=0.10.0'}
-
   git-up@8.1.1:
     resolution: {integrity: sha512-FDenSF3fVqBYSaJoYy1KSc2wosx0gCvKP+c+PRBht7cAaiCeQlBtfBDX9vgnNOHmdePlSFITVcn4pFfcgNvx3g==}
 
   git-url-parse@16.1.0:
     resolution: {integrity: sha512-cPLz4HuK86wClEW7iDdeAKcCVlWXmrLpb2L+G9goW0Z1dtpNS6BXXSOckUTlJT/LDQViE1QZKstNORzHsLnobw==}
-
-  git-user-info@2.0.3:
-    resolution: {integrity: sha512-G4ffrtck6AhUvJBmaWiq50viL9Zt3l1G/Qv0tV8BTKJZcJYnKWKGW8m7JvPrhzrPwh+Pwuq88pzERGlrLuOWng==}
-    engines: {node: '>=12.0.0'}
 
   glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
@@ -8315,10 +8295,6 @@ packages:
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
-
-  homedir-polyfill@1.0.3:
-    resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
-    engines: {node: '>=0.10.0'}
 
   hosted-git-info@7.0.2:
     resolution: {integrity: sha512-puUZAUKT5m8Zzvs72XWy3HtvVbTWljRE66cP60bxJzAqf2DgICo7lYTY2IHUmLnNpjYvw5bvmoHvPc0QO2a62w==}
@@ -8566,10 +8542,6 @@ packages:
     resolution: {integrity: sha512-eljcgEDlEns/7AXFosB5K/2nCM4P7FQPkGc/DWLy5rmFEWvZayGrik1d9/QIY5nJ4f9YsVvBkA6kJpHn9rISdQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     hasBin: true
-
-  is-extendable@0.1.1:
-    resolution: {integrity: sha512-5BMULNob1vgFX6EjQw5izWDxrecWK9AM72rugNr0TFldMOi0fj6Jk+zeKIt0xGj4cEfQIJth4w3OKWOJ4f+AFw==}
-    engines: {node: '>=0.10.0'}
 
   is-extglob@2.1.1:
     resolution: {integrity: sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ==}
@@ -9761,10 +9733,6 @@ packages:
   parse-entities@4.0.2:
     resolution: {integrity: sha512-GG2AQYWoLgL877gQIKeRPGO1xF9+eG1ujIb5soS5gPvLQ1y2o8FL90w2QWNdf9I361Mpp7726c+lj3U0qK1uGw==}
 
-  parse-git-config@1.1.1:
-    resolution: {integrity: sha512-S3LGXJZVSy/hswvbSkfdbKBRVsnqKrVu6j8fcvdtJ4TxosSELyQDsJPuGPXuZ+EyuYuJd3O4uAF8gcISR0OFrQ==}
-    engines: {node: '>=0.10.0'}
-
   parse-headers@2.0.6:
     resolution: {integrity: sha512-Tz11t3uKztEW5FEVZnj1ox8GKblWn+PvHY9TmJV5Mll2uHEwRdR/5Li1OlXoECjLYkApdhWy44ocONwXLiKO5A==}
 
@@ -9783,10 +9751,6 @@ packages:
   parse-ms@4.0.0:
     resolution: {integrity: sha512-TXfryirbmq34y8QBwgqCVLi+8oA3oWx2eAnSn62ITyEhEYaWRlVZ2DvMM9eZbMs/RfxPu/PK/aBLyGj4IrqMHw==}
     engines: {node: '>=18'}
-
-  parse-passwd@1.0.0:
-    resolution: {integrity: sha512-1Y1A//QUXEZK7YKz+rD9WydcE1+EuPr6ZBgKecAB8tmoW6UFv0NREVJe1p+jRxtThkcbbKkfwIbWJe/IeE6m2Q==}
-    engines: {node: '>=0.10.0'}
 
   parse-path@7.1.0:
     resolution: {integrity: sha512-EuCycjZtfPcjWk7KTksnJ5xPMvWGA/6i4zrLYhRG0hGvC3GPU/jGUj3Cy+ZR0v30duV3e23R95T1lE2+lsndSw==}
@@ -14725,10 +14689,6 @@ snapshots:
       react: 19.2.4
       react-redux: 9.2.0(@types/react@19.2.14)(react@19.2.4)(redux@5.0.1)
 
-  '@rexxars/gitconfiglocal@3.0.1':
-    dependencies:
-      ini: 1.3.8
-
   '@rexxars/jiti@2.6.2': {}
 
   '@rexxars/react-json-inspector@9.0.1(react@19.2.4)':
@@ -15098,7 +15058,7 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@sanity/cli-core@1.0.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)':
+  '@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)':
     dependencies:
       '@inquirer/prompts': 8.3.0(@types/node@24.10.13)
       '@oclif/core': 4.8.3
@@ -15138,22 +15098,21 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@sanity/cli@6.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)':
+  '@sanity/cli@6.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)':
     dependencies:
       '@babel/traverse': 7.29.0
       '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       '@oclif/plugin-not-found': 3.2.74(@types/node@24.10.13)
-      '@rexxars/gitconfiglocal': 3.0.1
-      '@sanity/cli-core': 1.0.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
+      '@sanity/cli-core': 1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
       '@sanity/client': 7.17.0(debug@4.4.3)
-      '@sanity/codegen': 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.0.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))
+      '@sanity/codegen': 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))
       '@sanity/descriptors': 1.3.0
       '@sanity/export': 6.1.0
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
       '@sanity/import': 5.0.1(@sanity/client@7.17.0(debug@4.4.3))
-      '@sanity/migrate': 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.0.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
+      '@sanity/migrate': 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
       '@sanity/runtime-cli': 14.5.0(@types/node@24.10.13)(debug@4.4.3)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 0.8.1(react@19.2.4)
@@ -15172,7 +15131,6 @@ snapshots:
       execa: 9.6.1
       form-data: 4.0.5
       get-latest-version: 6.0.1(debug@4.4.3)
-      git-user-info: 2.0.3
       gunzip-maybe: 1.4.2
       import-meta-resolve: 4.2.0
       is-installed-globally: 1.0.0
@@ -15285,7 +15243,7 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/codegen@6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.0.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))':
+  '@sanity/codegen@6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/generator': 7.29.1
@@ -15296,7 +15254,7 @@ snapshots:
       '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
       '@oclif/core': 4.8.3
-      '@sanity/cli-core': 1.0.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
+      '@sanity/cli-core': 1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
       '@sanity/telemetry': 0.8.1(react@19.2.4)
       '@sanity/worker-channels': 2.0.0
       chokidar: 3.6.0
@@ -15581,10 +15539,10 @@ snapshots:
       - xstate
       - yaml
 
-  '@sanity/migrate@6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.0.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)':
+  '@sanity/migrate@6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)':
     dependencies:
       '@oclif/core': 4.8.3
-      '@sanity/cli-core': 1.0.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
+      '@sanity/cli-core': 1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
       '@sanity/client': 7.17.0(debug@4.4.3)
       '@sanity/mutate': 0.16.1(debug@4.4.3)(xstate@5.28.0)
       '@sanity/types': link:packages/@sanity/types
@@ -18785,10 +18743,6 @@ snapshots:
 
   exponential-backoff@3.1.3: {}
 
-  extend-shallow@2.0.1:
-    dependencies:
-      is-extendable: 0.1.1
-
   extend@3.0.2: {}
 
   fast-content-type-parse@3.0.0: {}
@@ -18959,8 +18913,6 @@ snapshots:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
-  fs-exists-sync@0.1.0: {}
-
   fs-extra@11.1.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -19107,12 +19059,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  git-config-path@1.0.1:
-    dependencies:
-      extend-shallow: 2.0.1
-      fs-exists-sync: 0.1.0
-      homedir-polyfill: 1.0.3
-
   git-up@8.1.1:
     dependencies:
       is-ssh: 1.4.1
@@ -19121,11 +19067,6 @@ snapshots:
   git-url-parse@16.1.0:
     dependencies:
       git-up: 8.1.1
-
-  git-user-info@2.0.3:
-    dependencies:
-      git-config-path: 1.0.1
-      parse-git-config: 1.1.1
 
   glob-parent@5.1.2:
     dependencies:
@@ -19311,10 +19252,6 @@ snapshots:
   hoist-non-react-statics@3.3.2:
     dependencies:
       react-is: 16.13.1
-
-  homedir-polyfill@1.0.3:
-    dependencies:
-      parse-passwd: 1.0.0
 
   hosted-git-info@7.0.2:
     dependencies:
@@ -19543,8 +19480,6 @@ snapshots:
   is-docker@2.2.1: {}
 
   is-docker@3.0.0: {}
-
-  is-extendable@0.1.1: {}
 
   is-extglob@2.1.1: {}
 
@@ -20800,13 +20735,6 @@ snapshots:
       is-decimal: 2.0.1
       is-hexadecimal: 2.0.1
 
-  parse-git-config@1.1.1:
-    dependencies:
-      extend-shallow: 2.0.1
-      fs-exists-sync: 0.1.0
-      git-config-path: 1.0.1
-      ini: 1.3.8
-
   parse-headers@2.0.6: {}
 
   parse-json@5.2.0:
@@ -20825,8 +20753,6 @@ snapshots:
   parse-ms@2.1.0: {}
 
   parse-ms@4.0.0: {}
-
-  parse-passwd@1.0.0: {}
 
   parse-path@7.1.0:
     dependencies:
