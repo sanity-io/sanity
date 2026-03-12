@@ -15,7 +15,7 @@ jobs:
 
       - name: Mark Growth Linear issues Done
         id: mark-growth-issues-done
-        uses: sanity-io/mark-issues-done-action@main
+        uses: sanity-labs/mark-issues-done-action@main
         with:
           linear_api_key: ${{secrets.LINEAR_API_TOKEN}}
           repository_name: ${{github.event.repository.name}}
