@@ -212,7 +212,7 @@ jobs:
           retention-days: 30
 
   merge-reports:
-    if: ${{github.ref_name != 'main' && needs.deploy.outputs.examples_only != 'true'}}
+    if: ${{github.ref_name != 'main' && needs.deploy.outputs.examples_only != 'true' && needs.efps-test.result == 'success'}}
     needs: [deploy, efps-test]
     runs-on: ubuntu-8core
     steps:

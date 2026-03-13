@@ -1,9 +1,9 @@
-import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {measureFpsForInput} from '../../helpers/measureFpsForInput'
 import {measureFpsForPte} from '../../helpers/measureFpsForPte'
+import {uploadImageAssets} from '../../helpers/uploadAsset'
 import {defineEfpsTest} from '../../types'
 import {type Category, type Recipe} from './sanity.types'
 
@@ -22,13 +22,12 @@ export default defineEfpsTest({
   name: 'recipe',
   configPath: import.meta.resolve?.('./sanity.config.ts'),
   document: async ({client}) => {
-    const imageAsset = await client.assets.upload(
-      'image',
-      fs.createReadStream(path.join(dirname, 'assets', 'pizza.webp')),
+    const [imageAsset] = await uploadImageAssets(client, [
       {
-        source: {id: 'pizza', name: 'recipe-test'},
+        filePath: path.join(dirname, 'assets', 'pizza.webp'),
+        options: {source: {id: 'pizza', name: 'recipe-test'}},
       },
-    )
+    ])
 
     const category: Omit<Category, '_rev' | '_updatedAt' | '_createdAt'> = {
       _id: 'example-recipe-category',
