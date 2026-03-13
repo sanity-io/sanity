@@ -5,7 +5,7 @@ import {
 
 /**
  * Packages whose Renovate release notes are parsed into changelog contents.
- * Add packages here as they get prBodyTemplate with {{{changelogs}}} in renovate.json.
+ * Add packages here as they get a prBodyTemplate with changelogs in renovate.json.
  */
 export const RENOVATE_RELEASE_NOTES_PACKAGES: ReadonlySet<string> = new Set(['@sanity/cli'])
 
