@@ -135,7 +135,7 @@
     {
       "description": "Include release notes in PR description for @sanity/cli updates",
       "matchPackageNames": ["@sanity/cli"],
-      "prBodyTemplate": "### Notes for release\n{{{changelogs}}}"
+      "prBodyTemplate": "{{{header}}}{{{table}}}{{{warnings}}}{{{notes}}}{{{configDescription}}}{{{controls}}}{{{footer}}}\n### Notes for release\n{{{changelogs}}}"
     }
   ],
   "ignorePaths": ["packages/sanity/fixtures/examples/prj-with-react-19/package.json"]
