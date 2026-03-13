@@ -51,24 +51,53 @@ test.describe('Custom Release Actions', () => {
   })
 
   const openReleaseMenu = async (page: Page, isOverview: boolean) => {
-    if (isOverview) {
-      // On overview page, wait for the release to appear and then click its menu button
-      const releaseRow = page.getByRole('row').filter({hasText: uniqueReleaseTitle}).first()
-      await expect(releaseRow).toBeVisible()
-
-      const menuButton = releaseRow.getByTestId('release-menu-button')
-      await expect(menuButton).toBeVisible()
-      await expect(menuButton).toBeEnabled()
-      // Use force click to bypass vercel-live-feedback overlay
-      await menuButton.click({force: true})
-    } else {
-      // On individual release page, wait for the menu button and click it
-      const menuButton = page.getByTestId('release-menu-button')
-      await expect(menuButton).toBeVisible()
-      await expect(menuButton).toBeEnabled()
-      // Use force click to bypass vercel-live-feedback overlay
-      await menuButton.click({force: true})
+    const getMenuButton = () => {
+      if (isOverview) {
+        const releaseRow = page.getByRole('row').filter({hasText: uniqueReleaseTitle}).first()
+        return releaseRow.getByTestId('release-menu-button')
+      }
+      return page.getByTestId('release-menu-button')
     }
+
+    // A built-in menu item that is always present for active ASAP releases.
+    // Used to verify the menu actually opened after clicking the button.
+    const archiveMenuItem = page.getByTestId('archive-release-menu-item')
+
+    const menuButton = getMenuButton()
+    await expect(menuButton).toBeVisible()
+    await expect(menuButton).toBeEnabled()
+
+    // Retry clicking the menu button if the menu doesn't open.
+    // On the overview page, data updates from concurrent subscriptions can cause
+    // the component to re-render, which may swallow the click or close the menu.
+    // oxlint-disable no-await-in-loop -- sequential retry loop is intentional
+    const maxAttempts = 3
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      // Use force click to bypass vercel-live-feedback overlay
+      await menuButton.click({force: true})
+
+      // Check if the menu opened by looking for a built-in menu item
+      const opened = await archiveMenuItem.isVisible().catch(() => false)
+      if (opened) return
+
+      // Wait briefly for the menu to render before checking again
+      await expect(archiveMenuItem)
+        .toBeVisible({timeout: 5_000})
+        .catch(() => {
+          // Menu didn't open on this attempt, will retry
+        })
+
+      // If still not open and we have retries left, click the button again.
+      // The menu might have closed due to a re-render, so re-resolve the button.
+      if (attempt < maxAttempts && !(await archiveMenuItem.isVisible().catch(() => false))) {
+        // Brief pause to let any in-flight re-renders settle
+        await page.waitForTimeout(500)
+      }
+    }
+    // oxlint-enable no-await-in-loop
+
+    // Final assertion - if we get here and the menu still isn't open, fail with a clear message
+    await expect(archiveMenuItem).toBeVisible({timeout: 10_000})
   }
 
   const expectCustomActionInMenu = async (page: Page) => {
