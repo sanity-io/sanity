@@ -19,6 +19,7 @@
 
 - bump react+react-dom to latest on new installs ([#658](https://redirect.github.com/sanity-io/cli/issues/658)) ([87b733f](https://redirect.github.com/sanity-io/cli/commit/87b733f))
 - resolve react-dom/server and @sanity/ui from studio workDir ([#657](https://redirect.github.com/sanity-io/cli/issues/657)) ([ce07d42](https://redirect.github.com/sanity-io/cli/commit/ce07d42))
+- **deps:** update oclif-tooling ([#651](https://github.com/sanity-io/cli/issues/651)) ([f807f1d](https://github.com/sanity-io/cli/commit/f807f1dc351e4657debf86c00c5537b014391feb))
 
 ##### Dependencies
 

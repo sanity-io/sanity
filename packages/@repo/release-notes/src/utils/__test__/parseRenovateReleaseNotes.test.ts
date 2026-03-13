@@ -28,6 +28,9 @@ describe('parseRenovateReleaseNotes', () => {
     expect(markdown).not.toContain('workspace dependencies were updated')
     expect(markdown).not.toContain('cli-core bumped')
 
+    // Should NOT contain deps-scoped items even when under Bug Fixes
+    expect(markdown).not.toContain('update oclif-tooling')
+
     // Should NOT contain commit hashes or PR refs
     expect(markdown).not.toMatch(/\(\[#\d+]\(/)
     expect(markdown).not.toMatch(/\(\[[0-9a-f]{7}]\(/)
@@ -87,6 +90,29 @@ describe('parseRenovateReleaseNotes', () => {
     expect(markdown).not.toContain('dep bumped')
     expect(markdown).not.toContain('reformatted code')
     expect(markdown).not.toContain('updated config')
+  })
+
+  it('removes deps-scoped items from visible sections', () => {
+    const body = `### Release Notes
+
+<details>
+<summary>sanity-io/cli (@sanity/cli)</summary>
+
+### [\`v1.0.0\`](https://example.com)
+
+##### Bug Fixes
+
+- a real fix ([#1](https://example.com)) ([abc1234](https://example.com))
+- **deps:** update oclif-tooling ([#2](https://example.com)) ([def5678](https://example.com))
+
+</details>`
+
+    const blocks = parseRenovateReleaseNotes(body)
+    const markdown = portableTextToMarkdown(blocks)
+
+    expect(markdown).toContain('a real fix')
+    expect(markdown).not.toContain('update oclif-tooling')
+    expect(markdown).not.toContain('deps')
   })
 
   it('strips commit hashes and PR refs from list items', () => {
