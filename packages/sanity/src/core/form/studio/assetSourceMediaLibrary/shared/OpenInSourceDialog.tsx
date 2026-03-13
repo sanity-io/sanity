@@ -1,6 +1,7 @@
 import {type PluginPayload} from '@sanity/media-library-types'
 import {type Asset} from '@sanity/types'
 import {Box, Card, Flex, usePrefersDark} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../../ui-components'
@@ -118,7 +119,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
           position: 'absolute',
           inset: 0,
           borderTop: '1px solid',
-          borderColor: 'var(--card-border-color)',
+          borderColor: vars.color.border,
           overflow: 'hidden',
           display: 'flex',
         }}

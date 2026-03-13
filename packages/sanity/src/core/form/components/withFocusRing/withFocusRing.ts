@@ -9,12 +9,12 @@ export function withFocusRing<Props>(component: ComponentType<Props>) {
 
     return css`
       /* --card-focus-box-shadow:  */
-
       border-radius: ${vars.radius[$radius]};
       outline: none;
-      box-shadow: var(--card-focus-box-shadow);
+      box-shadow: ${vars.card.shadow};
 
       &:focus {
+        box-shadow: ${vars.card.shadow};
         /* TODO: ui-v4-migration - fix this */
         /* Maybe? */
         /* inset 0 0 0 ${vars.input.border.width} ${vars.color.border}; */

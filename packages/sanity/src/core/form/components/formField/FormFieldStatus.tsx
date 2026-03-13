@@ -1,3 +1,4 @@
+import {vars} from '@sanity/ui/css'
 import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
@@ -12,7 +13,7 @@ const Root = styled.div`
   display: flex;
   justify-content: flex-end;
   box-sizing: border-box;
-  min-height: var(--avatar-height);
+  min-height: ${vars.avatar.size};
   width: 77px;
   margin-left: var(--small-padding);
 

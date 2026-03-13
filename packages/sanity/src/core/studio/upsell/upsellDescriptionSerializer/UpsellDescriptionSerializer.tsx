@@ -65,7 +65,7 @@ const InlineIcon = styled(Icon)<InlineIconProps>`
 
 const Link = styled.a<{$useTextColor: boolean}>`
   font-weight: 600;
-  color: ${(props) => (props.$useTextColor ? 'var(--card-muted-fg-color) !important' : '')};
+  color: ${(props) => (props.$useTextColor ? `${vars.color.muted.fg} !important` : '')};
 `
 
 const DynamicIconContainer = styled.span<{$inline: boolean}>`

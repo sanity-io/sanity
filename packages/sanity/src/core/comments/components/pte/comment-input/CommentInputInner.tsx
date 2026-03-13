@@ -1,10 +1,10 @@
 import {type RenderBlockFunction} from '@portabletext/editor'
 import {type CurrentUser} from '@sanity/types'
-import {Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {type AvatarSize} from '@sanity/ui/theme'
 import {useCallback} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'

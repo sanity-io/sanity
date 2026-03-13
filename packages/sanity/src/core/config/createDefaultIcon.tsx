@@ -1,7 +1,7 @@
 import {COLOR_HUES, hues} from '@sanity/color'
+import {vars} from '@sanity/ui/css'
 import {darken, hasBadContrast, lighten, readableColor} from 'color2k'
 import {useState} from 'react'
-import {useTheme} from 'styled-components'
 
 function pseudoRandomNumber(seed: string) {
   const hashCode = seed
@@ -14,10 +14,9 @@ function pseudoRandomNumber(seed: string) {
 const possibleTints = ['300', '400', '500', '600', '700'] as const
 
 function DefaultIcon({title, subtitle}: {title: string; subtitle: string}): React.JSX.Element {
-  const theme = useTheme()
-  const fontFamily = theme.sanity.fonts.text.family
-  const fontWeight = theme.sanity.fonts.text.weights.medium
-  const fontSize = `${theme.sanity.fonts.text.sizes[1].fontSize}px`
+  const fontFamily = vars.font.text.family
+  const fontWeight = vars.font.text.weight.medium
+  const fontSize = vars.font.text.scale[1].fontSize
 
   const [rng1] = useState(() => pseudoRandomNumber(`${title} ${subtitle}`))
 

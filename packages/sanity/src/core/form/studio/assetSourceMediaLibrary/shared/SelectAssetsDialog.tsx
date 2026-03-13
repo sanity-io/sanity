@@ -11,6 +11,7 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {Box, Card, Flex, useCard, useToast} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Button} from '../../../../../ui-components'
@@ -238,7 +239,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
           position: 'absolute',
           inset: 0,
           borderTop: '1px solid',
-          borderColor: 'var(--card-border-color)',
+          borderColor: vars.color.border,
           overflow: 'hidden',
           display: 'flex',
         }}

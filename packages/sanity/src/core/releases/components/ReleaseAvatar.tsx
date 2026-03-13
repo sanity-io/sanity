@@ -1,6 +1,8 @@
 import {type ReleaseType} from '@sanity/client'
 import {BoltIcon, ClockIcon, DotIcon} from '@sanity/icons'
 import {type ElementTone, Box, Text} from '@sanity/ui'
+import {getVarName, type Padding, vars} from '@sanity/ui/css'
+import {type FontTextSize} from '@sanity/ui/theme'
 import {type CSSProperties} from 'react'
 
 import {type TargetPerspective} from '../../perspective/types'
@@ -12,7 +14,7 @@ import {isDraftPerspective} from '../util/util'
 
 interface IconProps {
   'data-testid': string
-  'style': CSSProperties & {'--card-icon-color': string}
+  'style': CSSProperties
 }
 function renderReleaseTypeIcon(releaseType: ReleaseType, iconProps: IconProps) {
   if (releaseType === 'asap') return <BoltIcon {...iconProps} />
@@ -41,8 +43,10 @@ type ReleaseAvatarIconProps =
       releaseType?: never
     }
 
+const varName = getVarName(vars.color.muted.fg)
+
 export const ReleaseAvatarIcon = ({tone, release, releaseType}: ReleaseAvatarIconProps) => {
-  const resolvedTone =
+  const resolvedTone: ElementTone =
     tone ??
     (releaseType
       ? RELEASE_TYPES_TONES[releaseType]?.tone
@@ -56,7 +60,8 @@ export const ReleaseAvatarIcon = ({tone, release, releaseType}: ReleaseAvatarIco
   const iconProps: IconProps = {
     'data-testid': `release-avatar-${resolvedTone}`,
     'style': {
-      '--card-icon-color': `var(--card-badge-${resolvedTone}-icon-color)`,
+      // @ts-expect-error - TODO: ui-v4-migration - Fix this
+      [varName]: vars.color.tinted[resolvedTone].fg[4],
     },
   }
 
@@ -79,8 +84,8 @@ export function ReleaseAvatar({
   padding = 3,
   ...iconProps
 }: ReleaseAvatarIconProps & {
-  fontSize?: number
-  padding?: number
+  fontSize?: FontTextSize
+  padding?: Padding
 }): React.JSX.Element {
   return (
     <Box flex="none" padding={padding} style={{borderRadius: 3}}>

@@ -62,11 +62,11 @@ const IconWrapperBox = styled(Box)<{$isExcluded: boolean}>(
     position: relative;
     z-index: 1;
     border-radius: 50%;
-    /* background-color: var(--card-background-color);  */
+    /* background-color: ${vars.color.bg}; */
     opacity: ${$isExcluded ? 0 : 1};
     // The icon needs a white background to visually sit on top of the line indicator
     & svg {
-      background-color: var(--card-bg-color);
+      background-color: ${vars.color.bg};
     }
   `,
 )

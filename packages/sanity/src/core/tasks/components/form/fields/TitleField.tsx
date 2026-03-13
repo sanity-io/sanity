@@ -36,7 +36,7 @@ const TitleInput = styled.textarea`
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus,
   &:-webkit-autofill:active {
-    -webkit-text-fill-color: var(--input-fg-color) !important;
+    -webkit-text-fill-color: ${vars.color.input.text.fg} !important;
     transition: background-color 5000s;
     transition-delay: 86400s /* 24h */;
   }

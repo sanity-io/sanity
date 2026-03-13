@@ -1,6 +1,7 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {LaunchIcon} from '@sanity/icons'
 import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useEffect, useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -28,7 +29,7 @@ const ContentWrapper = styled(Box)`
 `
 
 const HelpLink = styled.a`
-  color: var(--card-link-fg-color);
+  color: ${vars.color.link.fg};
   text-decoration: none;
   display: inline-flex;
   align-items: center;

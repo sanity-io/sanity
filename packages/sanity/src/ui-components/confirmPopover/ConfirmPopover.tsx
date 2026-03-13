@@ -11,6 +11,7 @@ import {
   useGlobalKeyDown,
   useLayer,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ComponentType, type ReactNode, useCallback, useRef} from 'react'
 import {useTranslation} from 'react-i18next'
 
@@ -105,7 +106,7 @@ function ConfirmPopoverContent({
       <Box flex={1} overflow="auto" padding={4}>
         <Text size={1}>{message}</Text>
       </Box>
-      <Box paddingX={4} paddingY={3} style={{borderTop: '1px solid var(--card-border-color)'}}>
+      <Box paddingX={4} paddingY={3} style={{borderTop: `1px solid ${vars.color.border}`}}>
         <Grid gridTemplateColumns={2} gap={2}>
           <UIButton
             data-testid="confirm-popover-cancel-button"
