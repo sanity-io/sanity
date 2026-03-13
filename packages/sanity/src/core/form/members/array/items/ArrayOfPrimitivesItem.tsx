@@ -3,6 +3,7 @@ import {type ChangeEvent, type FocusEvent, useCallback, useMemo, useRef, useStat
 
 import {type FIXME} from '../../../../FIXME'
 import {useCopyPaste} from '../../../../studio'
+import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {getEmptyValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
@@ -17,6 +18,7 @@ import {
   type RenderArrayOfPrimitivesItemCallback,
   type RenderInputCallback,
 } from '../../../types'
+import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
@@ -120,12 +122,16 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       'readOnly': Boolean(member.item.readOnly),
       'placeholder': member.item.schemaType.placeholder,
       'aria-describedby': createDescriptionId(member.item.id, member.item.schemaType.description),
+      'style': {
+        anchorName: pathToAnchorIdent('input', member.item.path),
+      },
     }),
     [
       handleBlur,
       handleFocus,
       handleNativeChange,
       member.item.id,
+      member.item.path,
       member.item.readOnly,
       member.item.schemaType,
       member.item.value,
@@ -218,7 +224,9 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       path={member.item.path}
       render={renderItem}
     >
-      <RenderInput {...inputProps} render={renderInput} />
+      <FormNodeDivergenceDetail path={member.item.path} readOnly={member.item.readOnly}>
+        <RenderInput {...inputProps} render={renderInput} />
+      </FormNodeDivergenceDetail>
     </RenderItem>
   )
 }

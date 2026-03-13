@@ -1633,6 +1633,9 @@ importers:
       '@sanity/migrate':
         specifier: 'catalog:'
         version: 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
+      '@sanity/mutate':
+        specifier: ^0.16.1
+        version: 0.16.1(debug@4.4.3)(xstate@5.28.0)
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../@sanity/mutator

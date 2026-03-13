@@ -25,6 +25,7 @@ import {route} from '../../../../src/router'
 import {RouterProvider} from '../../../../src/router/RouterProvider'
 import {Pane, PaneContent, PaneLayout} from '../../../../src/structure/components/pane'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
+import {DivergencesTestProvider} from '../../../../test/testUtils/DivergencesTestProvider'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 
 interface TestWrapperProps {
@@ -124,7 +125,9 @@ const TestWrapperContents = (
                               <PaneLayout height="fill">
                                 <Pane id="test-pane">
                                   <PaneContent>
-                                    <Card padding={3}>{children}</Card>
+                                    <DivergencesTestProvider>
+                                      <Card padding={3}>{children}</Card>
+                                    </DivergencesTestProvider>
                                   </PaneContent>
                                 </Pane>
                               </PaneLayout>

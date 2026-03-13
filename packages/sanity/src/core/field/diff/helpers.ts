@@ -1,3 +1,5 @@
+import {type SchemaType} from '@sanity/types'
+
 import {
   type ChangeNode,
   type Diff,
@@ -38,3 +40,17 @@ export function isRemovedItemDiff(
 export function isUnchangedDiff(diff: Diff): diff is Diff & {action: 'unchanged'} {
   return diff.action === 'unchanged'
 }
+
+/**
+ * A map of supported JSON types to valid empty values that may be used for diffing purposes when
+ * the node has no underlying value to be compared with.
+ *
+ * @internal
+ */
+export const emptyValuesByType = {
+  string: '',
+  number: 0,
+  boolean: false,
+  array: [],
+  object: {},
+} satisfies Record<SchemaType['jsonType'], unknown>

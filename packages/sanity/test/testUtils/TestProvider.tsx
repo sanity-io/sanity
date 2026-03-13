@@ -26,6 +26,7 @@ import {SourceProvider} from '../../src/core/studio/source'
 import {WorkspaceProvider} from '../../src/core/studio/workspace'
 import {route, RouterProvider} from '../../src/router'
 import {type Panes} from '../../src/structure/structureResolvers'
+import {DivergencesTestProvider} from './DivergencesTestProvider'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 // Mock the useUpsellData hook to prevent API calls in tests
@@ -108,7 +109,9 @@ export async function createTestProvider({
                             <AddonDatasetContext.Provider value={addonDatasetContextValue}>
                               <PerspectiveContext.Provider value={perspectiveContextValueMock}>
                                 <DocumentLimitUpsellProvider>
-                                  <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
+                                  <AssetLimitUpsellProvider>
+                                    <DivergencesTestProvider>{children}</DivergencesTestProvider>
+                                  </AssetLimitUpsellProvider>
                                 </DocumentLimitUpsellProvider>
                               </PerspectiveContext.Provider>
                             </AddonDatasetContext.Provider>

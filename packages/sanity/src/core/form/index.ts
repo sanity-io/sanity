@@ -3,6 +3,7 @@
  */
 
 export * from './components'
+export * from './contexts/DivergencesProvider'
 export * from './contexts/FormValue'
 export * from './contexts/GetFormValue'
 export * from './field'

@@ -279,7 +279,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   ])
 
   return (
-    <>
+    <div style={props.elementProps.style}>
       {!featureInfo.isLoading && !featureInfo.enabled && (
         <DisabledFeatureWarning value={value} onClearValue={handleClear} />
       )}
@@ -428,6 +428,6 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
           )}
         </Stack>
       )}
-    </>
+    </div>
   )
 }

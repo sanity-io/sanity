@@ -1,4 +1,4 @@
-import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
+import {type Path, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import {type HTMLProps, memo, type ReactNode} from 'react'
 
@@ -6,6 +6,8 @@ import {type DocumentFieldActionNode} from '../../../config'
 import {type FormNodePresence} from '../../../presence'
 import {useFieldActions} from '../../field'
 import {type FieldCommentsProps} from '../../types'
+import {FormDivergenceIndicator} from '../FormDivergenceIndicator'
+import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
@@ -44,6 +46,7 @@ export interface FormFieldProps {
    */
   validation?: FormNodeValidation[]
   deprecated?: DeprecatedProperty
+  path: Path
 }
 
 /** @internal */
@@ -59,6 +62,8 @@ export const FormField = memo(function FormField(
     description,
     inputId,
     level,
+    path,
+    readOnly,
     title,
     validation,
     deprecated,
@@ -67,40 +72,42 @@ export const FormField = memo(function FormField(
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
 
   return (
-    <FormRow>
-      <Stack
-        {...restProps}
-        data-level={level}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        space={2}
-      >
-        {/*
+    <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
+      <FormRow gutterStartCell={<FormDivergenceIndicator path={path} />}>
+        <Stack
+          {...restProps}
+          data-level={level}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          space={2}
+        >
+          {/*
         NOTE: It’s not ideal to hide validation, presence and description when there's no `title`.
         So we might want to separate the concerns of input vs formfield components later on.
       */}
-        {title && (
-          <FormFieldBaseHeader
-            __internal_comments={comments}
-            __internal_slot={slot}
-            actions={actions}
-            fieldFocused={Boolean(focused)}
-            fieldHovered={hovered}
-            presence={presence}
-            inputId={inputId}
-            content={
-              <FormFieldHeaderText
-                description={description}
-                inputId={inputId}
-                title={title}
-                validation={validation}
-                deprecated={deprecated}
-              />
-            }
-          />
-        )}
-        <div>{children}</div>
-      </Stack>
-    </FormRow>
+          {title && (
+            <FormFieldBaseHeader
+              __internal_comments={comments}
+              __internal_slot={slot}
+              actions={actions}
+              fieldFocused={Boolean(focused)}
+              fieldHovered={hovered}
+              presence={presence}
+              inputId={inputId}
+              content={
+                <FormFieldHeaderText
+                  description={description}
+                  inputId={inputId}
+                  title={title}
+                  validation={validation}
+                  deprecated={deprecated}
+                />
+              }
+            />
+          )}
+          <div>{children}</div>
+        </Stack>
+      </FormRow>
+    </FormNodeDivergenceDetail>
   )
 })

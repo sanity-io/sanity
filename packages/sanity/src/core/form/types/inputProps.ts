@@ -34,6 +34,7 @@ import {
   type FormEventHandler,
   type MutableRefObject,
 } from 'react'
+import {type CSSProperties} from 'styled-components'
 
 import {type FormPatch, type PatchEvent} from '../patch'
 import {type FormFieldGroup} from '../store'
@@ -442,6 +443,7 @@ export interface PrimitiveInputElementProps {
   'onBlur': FocusEventHandler
   'ref': MutableRefObject<any>
   'aria-describedby': string | undefined
+  'style': Pick<CSSProperties, 'anchorName'>
 }
 
 /**
@@ -453,6 +455,7 @@ export interface ComplexElementProps {
   'onBlur': FocusEventHandler
   'ref': MutableRefObject<any>
   'aria-describedby': string | undefined
+  'style': Pick<CSSProperties, 'anchorName'>
 }
 
 /**

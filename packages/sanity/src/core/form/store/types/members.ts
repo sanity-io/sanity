@@ -1,4 +1,4 @@
-import {type ArraySchemaType} from '@sanity/types'
+import {type Path, type ArraySchemaType} from '@sanity/types'
 import {type ComponentType} from 'react'
 
 import {type FieldsetMembers, type FieldsetState} from './fieldsetState'
@@ -98,6 +98,8 @@ export interface FieldMember<Node extends BaseFormNode = BaseFormNode> {
    * The form node that represents this field.
    */
   field: Node
+
+  path: Path
 }
 
 /**
@@ -137,6 +139,8 @@ export interface FieldSetMember {
    * The callback to render the members of the field set.
    */
   renderMembers?: FieldsetRenderMembersCallback
+
+  path: Path
 }
 
 /**

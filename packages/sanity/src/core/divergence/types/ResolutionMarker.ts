@@ -22,3 +22,23 @@ export type ResolutionMarker = [
    */
   Signature: string | number,
 ]
+
+/**
+ * @internal
+ */
+export type ResolutionMarkerAtPath = [path: string, resolutionMarker: ResolutionMarker]
+
+/**
+ * @internal
+ */
+export function isDivergenceResolutionMarker(
+  maybeDivergenceResolutionMarker: unknown,
+): maybeDivergenceResolutionMarker is ResolutionMarker {
+  return (
+    Array.isArray(maybeDivergenceResolutionMarker) &&
+    maybeDivergenceResolutionMarker.length === 2 &&
+    typeof maybeDivergenceResolutionMarker.at(0) === 'string' &&
+    (typeof maybeDivergenceResolutionMarker.at(1) === 'string' ||
+      typeof maybeDivergenceResolutionMarker.at(1) === 'number')
+  )
+}
