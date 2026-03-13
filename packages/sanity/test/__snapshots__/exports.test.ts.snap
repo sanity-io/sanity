@@ -480,6 +480,8 @@ exports[`exports snapshot 1`] = `
     "joinPath": "function",
     "listenQuery": "function",
     "matchWorkspace": "function",
+    "measureFirstEmission": "function",
+    "measureFirstMatch": "function",
     "newDraftFrom": "function",
     "noop": "function",
     "normalizeIndexSegment": "function",
