@@ -22,7 +22,11 @@ import {type PullRequestInfo} from '../types'
 import {getCommits, getSemverTags} from '../utils/getCommits'
 import {getMergedPRForCommit} from '../utils/github'
 import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
-import {markdownToPortableText} from '../utils/portabletext-markdown/markdownToPortableText'
+import {parseRenovateReleaseNotes} from '../utils/parseRenovateReleaseNotes'
+import {
+  markdownToPortableText,
+  type NormalizedMarkdownBlock,
+} from '../utils/portabletext-markdown/markdownToPortableText'
 import {extractReleaseNotes} from '../utils/pullRequestReleaseNotes'
 import {stripPr} from '../utils/stripPrNumber'
 import {uploadImages} from '../utils/uploadImages'
@@ -134,6 +138,15 @@ async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInf
 
   // get the link to an entry: ;path=changelog%5B_key%3D%3D%22b470e3b5%22%5D.subject/?perspective=rstudio-1000
   const userType = pr?.user?.type?.toLowerCase()
+  const isBot = userType === 'bot'
+
+  const releaseNoteBlocks: NormalizedMarkdownBlock[] = pr?.body
+    ? isBot
+      ? parseRenovateReleaseNotes(pr.body)
+      : extractReleaseNotes(markdownToPortableText(pr.body))
+    : []
+  const hasReleaseNotes = releaseNoteBlocks.length > 0
+
   const entry = {
     _type: 'changelogEntry',
     _key: conventionalCommit.hash!.slice(0, 8),
@@ -149,8 +162,7 @@ async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInf
         : undefined,
     authorAssociation: pr?.author_association.toLowerCase(),
     exclude:
-      // are there ever cases where we want to show release notes from bot PRs?
-      userType === 'bot' ||
+      (isBot && !hasReleaseNotes) ||
       conventionalCommit.type === 'chore' ||
       conventionalCommit.type === 'test' ||
       conventionalCommit.scope === 'dev' ||
@@ -162,10 +174,7 @@ async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInf
     scope: conventionalCommit.scope,
     hash: conventionalCommit.hash,
     type: conventionalCommit.type,
-    contents:
-      pr && pr.body
-        ? await uploadImages(client, extractReleaseNotes(markdownToPortableText(pr.body)))
-        : cleanSubject,
+    contents: hasReleaseNotes ? await uploadImages(client, releaseNoteBlocks) : cleanSubject,
   }
   return [at('changelog', insertIfMissing(entry, 'before', 0))]
 }
