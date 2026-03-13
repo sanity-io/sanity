@@ -12,7 +12,10 @@ describe('useUnitFormatter', () => {
     projectId: 'test',
     dataset: 'test',
     name: 'test',
-    i18n: {bundles: [studioDefaultLocaleResources]},
+    i18n: {
+      bundles: [studioDefaultLocaleResources],
+      locales: [{id: 'fr-FR', title: 'Français', weekInfo: {firstDay: 1, weekend: [6, 7]}}],
+    },
   })
 
   const wrapper = ({children}: {children: React.ReactNode}) => (

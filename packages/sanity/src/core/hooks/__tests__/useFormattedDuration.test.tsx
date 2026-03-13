@@ -28,7 +28,7 @@ describe('useFormattedDuration', () => {
     </ThemeProvider>
   )
 
-  beforeAll(() => i18next.init())
+  beforeAll(() => i18next.init({showSupportNotice: false}))
 
   describe('millisecond resolution', () => {
     const resolution = 'milliseconds'
