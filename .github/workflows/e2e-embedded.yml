@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     outputs:
-      examples_only: ${{ steps.check_examples.outputs.path_only }}
+      has_code_changes: ${{ steps.changes.outputs.code }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -26,17 +26,44 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if only examples files changed
-        id: check_examples
-        uses: ./.github/actions/check-path-only
+      - uses: dorny/paths-filter@v3
+        id: changes
         with:
-          path: examples/
+          filters: |
+            code:
+              - '**'
+              - '!**/*.md'
+              - '!LICENSE'
+              - '!.editorconfig'
+              - '!.prettierrc'
+              - '!.prettierignore'
+              - '!.oxfmtrc.json'
+              - '!.claude/**'
+              - '!.cursor/**'
+              - '!.agents/**'
+              - '!.vscode/**'
+              - '!.gitignore'
+              - '!.husky/**'
+              - '!.github/CODEOWNERS'
+              - '!.github/ISSUE_TEMPLATE/**'
+              - '!.github/PULL_REQUEST_TEMPLATE.md'
+              - '!.github/renovate.json'
+              - '!.github/skills/**'
+              - '!.github/workflows/**'
+              - '!.tsdoc/**'
+              - '!docs/**'
+              - '!examples/**'
+              - '!skills/**'
+              - '!catalog-info.yaml'
+              - '!knip.jsonc'
+              - '!lerna.json'
+              - '!.env.example'
 
       - uses: ./.github/actions/setup
-        if: steps.check_examples.outputs.path_only != 'true'
+        if: steps.changes.outputs.code == 'true'
 
       - name: Store Playwright's Version
-        if: steps.check_examples.outputs.path_only != 'true'
+        if: steps.changes.outputs.code == 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
@@ -44,7 +71,7 @@ jobs:
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
-        if: steps.check_examples.outputs.path_only != 'true'
+        if: steps.changes.outputs.code == 'true'
         id: cache-playwright-browsers
         uses: actions/cache@v5
         with:
@@ -52,11 +79,11 @@ jobs:
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
-        if: steps.check_examples.outputs.path_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: steps.changes.outputs.code == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
   test:
-    if: needs.install.outputs.examples_only != 'true'
+    if: needs.install.outputs.has_code_changes == 'true'
     timeout-minutes: 30
     needs: [install]
     runs-on: ubuntu-latest
