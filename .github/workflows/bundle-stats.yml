@@ -20,8 +20,44 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v6
+
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            code:
+              - '**'
+              - '!**/*.md'
+              - '!LICENSE'
+              - '!.editorconfig'
+              - '!.prettierrc'
+              - '!.prettierignore'
+              - '!.oxfmtrc.json'
+              - '!.claude/**'
+              - '!.cursor/**'
+              - '!.agents/**'
+              - '!.vscode/**'
+              - '!.gitignore'
+              - '!.husky/**'
+              - '!.github/CODEOWNERS'
+              - '!.github/ISSUE_TEMPLATE/**'
+              - '!.github/PULL_REQUEST_TEMPLATE.md'
+              - '!.github/renovate.json'
+              - '!.github/skills/**'
+              - '!.github/workflows/**'
+              - '!.tsdoc/**'
+              - '!docs/**'
+              - '!examples/**'
+              - '!skills/**'
+              - '!catalog-info.yaml'
+              - '!knip.jsonc'
+              - '!lerna.json'
+              - '!.env.example'
+
       - uses: ./.github/actions/setup
+        if: steps.changes.outputs.code == 'true'
       - uses: rexxars/bundle-stats@v1
+        if: steps.changes.outputs.code == 'true'
         with:
           packages: packages/sanity
           build-command: pnpm build

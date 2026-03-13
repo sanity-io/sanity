@@ -13,15 +13,42 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if only examples files changed
-        id: check_examples
-        uses: ./.github/actions/check-path-only
+      - uses: dorny/paths-filter@v3
+        id: changes
         with:
-          path: examples/
+          filters: |
+            code:
+              - '**'
+              - '!**/*.md'
+              - '!LICENSE'
+              - '!.editorconfig'
+              - '!.prettierrc'
+              - '!.prettierignore'
+              - '!.oxfmtrc.json'
+              - '!.claude/**'
+              - '!.cursor/**'
+              - '!.agents/**'
+              - '!.vscode/**'
+              - '!.gitignore'
+              - '!.husky/**'
+              - '!.github/CODEOWNERS'
+              - '!.github/ISSUE_TEMPLATE/**'
+              - '!.github/PULL_REQUEST_TEMPLATE.md'
+              - '!.github/renovate.json'
+              - '!.github/skills/**'
+              - '!.github/workflows/**'
+              - '!.tsdoc/**'
+              - '!docs/**'
+              - '!examples/**'
+              - '!skills/**'
+              - '!catalog-info.yaml'
+              - '!knip.jsonc'
+              - '!lerna.json'
+              - '!.env.example'
 
       - uses: ./.github/actions/setup
-        if: steps.check_examples.outputs.path_only != 'true'
+        if: steps.changes.outputs.code == 'true'
 
       - name: Check export conditions in native node ESM and CJS, and TypeScript DTS
-        if: steps.check_examples.outputs.path_only != 'true'
+        if: steps.changes.outputs.code == 'true'
         run: pnpm test:exports

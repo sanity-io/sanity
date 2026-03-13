@@ -8,9 +8,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            code:
+              - '**'
+              - '!**/*.md'
+              - '!LICENSE'
+              - '!.editorconfig'
+              - '!.prettierrc'
+              - '!.prettierignore'
+              - '!.oxfmtrc.json'
+              - '!.claude/**'
+              - '!.cursor/**'
+              - '!.agents/**'
+              - '!.vscode/**'
+              - '!.gitignore'
+              - '!.husky/**'
+              - '!.github/CODEOWNERS'
+              - '!.github/ISSUE_TEMPLATE/**'
+              - '!.github/PULL_REQUEST_TEMPLATE.md'
+              - '!.github/renovate.json'
+              - '!.github/skills/**'
+              - '!.github/workflows/**'
+              - '!.tsdoc/**'
+              - '!docs/**'
+              - '!examples/**'
+              - '!skills/**'
+              - '!catalog-info.yaml'
+              - '!knip.jsonc'
+              - '!lerna.json'
+              - '!.env.example'
+
       - uses: ./.github/actions/setup
+        if: steps.changes.outputs.code == 'true'
 
       - name: Check for unused/missing dependencies
+        if: steps.changes.outputs.code == 'true'
         id: depcheck
         run: pnpm depcheck
         env:
