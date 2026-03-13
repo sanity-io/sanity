@@ -4,6 +4,7 @@ import {usePerspective} from 'sanity'
 import {
   type Mock,
   type MockedFunction,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -89,6 +90,7 @@ beforeAll(async () => {
 
 describe('CopyDocumentActions', () => {
   beforeEach(() => {
+    vi.useFakeTimers({shouldAdvanceTime: true})
     vi.clearAllMocks()
     Object.assign(navigator, {
       clipboard: {writeText: mockClipboardWriteText},
@@ -100,6 +102,10 @@ describe('CopyDocumentActions', () => {
       documentType: 'article',
       documentId: 'doc-123',
     })
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   async function clickMenuItem(testId: string) {
