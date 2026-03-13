@@ -256,7 +256,6 @@ import type {
   ConnectionStatusStoreOptions,
   ConnectorContextValue,
   ContextMenuButton,
-  CookielessCompatibleLoginMethod,
   CopyOptions,
   CopyPasteContextType,
   CopyPasteProvider,
@@ -785,7 +784,6 @@ import type {
   isBuilder,
   isCardinalityOnePerspective,
   isCardinalityOneRelease,
-  isCookielessCompatibleLoginMethod,
   isCreateDocumentVersionEvent,
   isCreateIfNotExistsMutation,
   isCreateLiveDocumentEvent,
@@ -2432,9 +2430,6 @@ describe('sanity', () => {
   test('ContextMenuButton', () => {
     expectTypeOf<typeof ContextMenuButton>().not.toBeNever()
   })
-  test('CookielessCompatibleLoginMethod', () => {
-    expectTypeOf<CookielessCompatibleLoginMethod>().not.toBeNever()
-  })
   test('CopyOptions', () => {
     expectTypeOf<CopyOptions>().toBeObject()
   })
@@ -4035,9 +4030,6 @@ describe('sanity', () => {
   })
   test('isCardinalityOneRelease', () => {
     expectTypeOf<typeof isCardinalityOneRelease>().toBeFunction()
-  })
-  test('isCookielessCompatibleLoginMethod', () => {
-    expectTypeOf<typeof isCookielessCompatibleLoginMethod>().toBeFunction()
   })
   test('isCreateDocumentVersionEvent', () => {
     expectTypeOf<typeof isCreateDocumentVersionEvent>().not.toBeNever()

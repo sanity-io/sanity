@@ -8,7 +8,7 @@ import memoize from 'lodash-es/memoize.js'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
-import {type AuthConfig, type LoginMethod} from '../../../config'
+import {type AuthConfig} from '../../../config'
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors'
 import {createBroadcastChannel} from './createBroadcastChannel'
@@ -16,7 +16,6 @@ import {createLoginComponent} from './createLoginComponent'
 import {getSessionId} from './sessionId'
 import * as storage from './storage'
 import {type AuthState, type AuthStore} from './types'
-import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 
 /** @internal */
 export interface AuthStoreOptions extends AuthConfig {
@@ -51,21 +50,6 @@ const getHashToken = (): string | null => {
   history.replaceState(null, '', newUrl)
 
   return tokenParam
-}
-
-const getAuthOptions = (
-  loginMethod: LoginMethod,
-  token: string | null,
-): {token: string} | {withCredentials: boolean} | null => {
-  if (loginMethod === 'cookie') {
-    return {withCredentials: true}
-  }
-
-  if (loginMethod === 'token') {
-    return token ? {token} : null
-  }
-
-  return token ? {token} : {withCredentials: true}
 }
 
 const getStoredToken = (projectId: string): string | null => {
@@ -171,25 +155,14 @@ export function _createAuthStore({
   projectId,
   dataset,
   apiHost,
-  loginMethod = 'dual',
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
   // this broadcast channel receives either a token as a `string` or `null`.
-  // a new client will be created from it, otherwise, it'll only trigger a retry
-  // for cookie-based auth
-  const {broadcast, messages} = createBroadcastChannel<string | null>(`dual_mode_auth_${projectId}`)
+  const {broadcast, messages} = createBroadcastChannel<string | null>(`auth_${projectId}`)
 
   const clientFactory = clientFactoryOption ?? createSanityClient
 
-  // // TODO: there is currently a bug where the AuthBoundary flashes the
-  // // `NotAuthenticatedComponent` on the first load after a login with
-  // // cookieless mode. A potential solution to fix this bug is to delay
-  // // emitting `state$` until the session ID has been converted to a token
-  // const firstMessage = messages.pipe(first())
-
-  const token$ = messages.pipe(
-    startWith(isCookielessCompatibleLoginMethod(loginMethod) ? getToken(projectId) : null),
-  )
+  const token$ = messages.pipe(startWith(getToken(projectId)))
 
   // Allow configuration of `apiHost` through source configuration
   const hostOptions: {apiHost?: string} = {}
@@ -210,7 +183,7 @@ export function _createAuthStore({
         dataset,
         apiVersion: '2021-06-07',
         useCdn: false,
-        ...getAuthOptions(loginMethod, token),
+        ...(token ? {token} : {}),
         perspective: 'raw',
         requestTagPrefix: 'sanity.studio',
         ignoreBrowserTokenWarning: true,
@@ -242,7 +215,7 @@ export function _createAuthStore({
     const sessionId = getSessionId()
 
     if (!sessionId) {
-      broadcast(loginMethod === 'cookie' ? null : getToken(projectId))
+      broadcast(getToken(projectId))
       return
     }
 
@@ -250,29 +223,13 @@ export function _createAuthStore({
       projectId,
       dataset,
       useCdn: true,
-      withCredentials: true,
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
       headers: DEFAULT_STUDIO_CLIENT_HEADERS,
       ...hostOptions,
     })
 
-    let currentUser
-    if (loginMethod === 'dual' || loginMethod === 'cookie') {
-      // try to get the current user by using the cookie credentials
-      currentUser = await getCurrentUser(requestClient, broadcast)
-    }
-
-    // If we have a user, or token authentication is explicitly disallowed (`cookie` mode),
-    // then we don't need/want to fetch a token
-    if (currentUser || loginMethod === 'cookie') {
-      // if that worked, then we don't need to fetch a token
-      broadcast(null)
-      return
-    }
-
-    // If we allow using token authentication, we should try to trade the session ID
-    // for a token and store it locally for subsequent use
+    // Trade the session ID for a token and store it locally for subsequent use
     const token = await tradeSessionForToken(requestClient, sessionId)
     broadcast(token ?? null)
   }
@@ -295,7 +252,7 @@ export function _createAuthStore({
       projectId,
       dataset,
       useCdn: true,
-      ...getAuthOptions(loginMethod, token),
+      ...(token ? {token} : {}),
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
       headers: DEFAULT_STUDIO_CLIENT_HEADERS,
@@ -310,7 +267,6 @@ export function _createAuthStore({
   const LoginComponent = createLoginComponent({
     ...providerOptions,
     getClient: () => state$.pipe(map((state) => state.client)),
-    loginMethod,
   })
 
   return {

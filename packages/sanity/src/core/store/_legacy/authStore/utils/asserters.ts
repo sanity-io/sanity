@@ -1,4 +1,3 @@
-import {type CookielessCompatibleLoginMethod, type LoginMethod} from '../../../../config'
 import {isRecord} from '../../../../util'
 import {type AuthStore} from '../types'
 
@@ -17,17 +16,4 @@ export function isAuthStore(maybeStore: unknown): maybeStore is AuthStore {
     'subscribe' in maybeStore.state &&
     typeof maybeStore.state.subscribe === 'function'
   )
-}
-
-/**
- * Check whether the provided login method is compatible with cookieless auth, e.g. whether any
- * authentication token found in localStorage should be acknowledged.
- *
- * @internal
- */
-export function isCookielessCompatibleLoginMethod(
-  loginMethod: LoginMethod,
-): loginMethod is CookielessCompatibleLoginMethod {
-  const cookielessCompatibleLoginMethods = ['dual', 'token']
-  return cookielessCompatibleLoginMethods.includes(loginMethod as CookielessCompatibleLoginMethod)
 }

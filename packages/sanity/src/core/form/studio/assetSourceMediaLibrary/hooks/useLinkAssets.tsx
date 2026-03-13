@@ -116,7 +116,6 @@ function linkAsset({
       .request<AssetLinkingResponse>({
         method: 'POST',
         url: `/assets/media-library-link/${client.config().dataset}?${metadataPropsFromSchema?.map((prop) => `meta[]=${prop}`).join('&') || ''}`,
-        withCredentials: true,
         body: {
           mediaLibraryId,
           assetInstanceId: asset.assetInstanceId,

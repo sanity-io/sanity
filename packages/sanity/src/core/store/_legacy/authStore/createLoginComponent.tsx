@@ -62,37 +62,23 @@ interface CreateLoginComponentOptions extends AuthConfig {
 
 interface CreateHrefForProviderOptions {
   redirectPath: string
-  loginMethod: AuthConfig['loginMethod']
   projectId: string
   url: string
 }
 
-function createHrefForProvider({
-  loginMethod = 'dual',
-  projectId,
-  url,
-  redirectPath,
-}: CreateHrefForProviderOptions) {
+function createHrefForProvider({projectId, url, redirectPath}: CreateHrefForProviderOptions) {
   const params = new URLSearchParams()
   params.set('origin', `${window.location.origin}${redirectPath}`)
   params.set('projectId', projectId)
 
-  // Setting `type=token` will return the sid as part of the _query_, which may end up in
-  // server access logs and similar. Instead, use `withSid=true` to return the sid as part
-  // of the _hash_ instead, which is only accessible to the client. Other auth types will
-  // use the `type` parameter - `dual` will automatically use the hash, so do not need the
-  // additional parameter.
-  if (loginMethod === 'token') {
-    params.set('withSid', 'true')
-  } else {
-    params.set('type', loginMethod)
-  }
+  // Use `withSid=true` to return the sid as part of the _hash_ instead of the query,
+  // which is only accessible to the client and avoids leaking to server access logs.
+  params.set('withSid', 'true')
   return `${url}?${params}`
 }
 
 export function createLoginComponent({
   getClient,
-  loginMethod,
   redirectOnSingle,
   ...providerOptions
 }: CreateLoginComponentOptions) {
@@ -157,7 +143,6 @@ export function createLoginComponent({
       providers?.length === 1 &&
       providers?.[0] &&
       createHrefForProvider({
-        loginMethod,
         projectId,
         url: providers[0].url,
         redirectPath,
@@ -188,7 +173,6 @@ export function createLoginComponent({
             <LastUsedProviderButton
               provider={lastUsedProvider}
               href={createHrefForProvider({
-                loginMethod,
                 projectId,
                 url: lastUsedProvider.url,
                 redirectPath,
@@ -202,7 +186,6 @@ export function createLoginComponent({
                 key={`${provider.url}_${index}`}
                 provider={provider}
                 href={createHrefForProvider({
-                  loginMethod,
                   projectId,
                   url: provider.url,
                   redirectPath,

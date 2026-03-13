@@ -385,7 +385,6 @@ exports[`exports snapshot 1`] = `
     "isBuilder": "function",
     "isCardinalityOnePerspective": "function",
     "isCardinalityOneRelease": "function",
-    "isCookielessCompatibleLoginMethod": "function",
     "isCreateDocumentVersionEvent": "function",
     "isCreateIfNotExistsMutation": "function",
     "isCreateLiveDocumentEvent": "function",

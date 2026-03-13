@@ -411,9 +411,6 @@ export default defineConfig([
     ...envConfig.staging,
     plugins: [sharedSettings({projectId: 'exx11uqh'})],
     basePath: '/staging',
-    auth: {
-      loginMethod: 'token',
-    },
     unstable_tasks: {
       enabled: true,
     },
@@ -430,9 +427,6 @@ export default defineConfig([
     ...envConfig.staging,
     plugins: [sharedSettings({projectId: 'qroupali'})],
     basePath: '/growth',
-    auth: {
-      loginMethod: 'token',
-    },
     unstable_tasks: {
       enabled: true,
     },
@@ -448,9 +442,6 @@ export default defineConfig([
     ...envConfig.staging,
     plugins: [sharedSettings({projectId: '5iedwjzw'})],
     basePath: '/media-library-playground-staging',
-    auth: {
-      loginMethod: 'token',
-    },
     mediaLibrary: {
       enabled: true,
     },
@@ -463,9 +454,6 @@ export default defineConfig([
     ...envConfig.staging,
     plugins: [sharedSettings({projectId: '5iedwjzw'})],
     basePath: '/media-library-playground-localdev',
-    auth: {
-      loginMethod: 'token',
-    },
     mediaLibrary: {
       enabled: true,
       __internal: {
@@ -481,9 +469,6 @@ export default defineConfig([
     ...envConfig.staging,
     plugins: [sharedSettings({projectId: 'exx11uqh'})],
     basePath: '/playground-staging',
-    auth: {
-      loginMethod: 'token',
-    },
     mediaLibrary: {
       enabled: true,
     },
