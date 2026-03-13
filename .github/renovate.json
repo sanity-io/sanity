@@ -129,6 +129,11 @@
       "description": "Always upgrade oxlint together",
       "groupName": "oxlint",
       "matchPackageNames": ["oxlint", "eslint-plugin-oxlint", "oxlint-tsgolint"]
+    },
+    {
+      "description": "Include release notes in PR description for @sanity/cli updates",
+      "matchPackageNames": ["@sanity/cli"],
+      "prBodyTemplate": "Notes for release\n{{{releaseNotes}}}"
     }
   ],
   "ignorePaths": ["packages/sanity/fixtures/examples/prj-with-react-19/package.json"]
