@@ -135,6 +135,6 @@ function cleanChangelogItems(markdown: string): string {
       // Remove dependency-scoped list items
       .replace(/^\s*-\s+\*\*deps:\*\*.*$/gm, '')
       // Strip PR refs and commit hashes from remaining items
-      .replace(/^(\s*-\s+.+?)\s*\(\[#\d+]\([^)]*\)\)\s*\(\[[0-9a-f]+]\([^)]*\)\)\s*$/gm, '$1')
+      .replace(/^(\s*-\s+.+?)\s*(?:\(\[#\d+]\([^)]*\)\)\s*)?(?:\(\[[0-9a-f]+]\([^)]*\)\)\s*)?$/gm, '$1')
   )
 }
