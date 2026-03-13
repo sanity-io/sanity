@@ -54,6 +54,7 @@
       "matchPackageNames": [
         "@portabletext/*",
         "@sanity/bifur-client",
+        "@sanity/cli",
         "@sanity/client",
         "@sanity/import",
         "@sanity/export",
@@ -85,6 +86,7 @@
         "@portabletext/editor",
         "@portabletext/html",
         "@sanity/bifur-client",
+        "@sanity/cli",
         "@sanity/client",
         "@sanity/comlink",
         "@sanity/eslint-config-i18n",
