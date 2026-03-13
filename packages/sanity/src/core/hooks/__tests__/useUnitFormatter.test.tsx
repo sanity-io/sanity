@@ -1,5 +1,5 @@
 import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {renderHook} from '@testing-library/react'
+import {act, renderHook} from '@testing-library/react'
 import {beforeAll, beforeEach, describe, expect, it} from 'vitest'
 
 import {LocaleProviderBase, usEnglishLocale} from '../../i18n'
@@ -63,9 +63,11 @@ describe('useUnitFormatter', () => {
   })
 
   it('respects active locale', async () => {
-    await i18next.changeLanguage('fr-FR')
+    await act(async () => {
+      await i18next.changeLanguage('fr-FR')
+    })
     const {result} = renderHook(() => useUnitFormatter()(2, 'meter'), {wrapper})
-    expect(result.current).toBe('2 mètres')
+    expect(result.current).toBe('2 mètres')
   })
 
   it('can format all defined units', () => {
