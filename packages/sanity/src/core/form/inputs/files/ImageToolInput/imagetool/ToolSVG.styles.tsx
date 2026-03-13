@@ -128,7 +128,7 @@ export const CropDimensionsBadgeGroup = styled.g<{$visible: boolean}>`
 
 export const CropDimensionsBadgeRect = styled.rect`
       fill: ${vars.color.focusRing};
-      rx: ${vars.radius[1]}px;
+      rx: ${vars.radius[1]};
     `
 
 export const CropDimensionsBadgeText = styled.text`

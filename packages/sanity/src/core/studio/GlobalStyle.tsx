@@ -23,8 +23,8 @@ const GlobalStyleSheet = createGlobalStyle<Props>(({$documentEditorGutterEnabled
     }
 
     :root {
-      --formGutterSize: ${$documentEditorGutterEnabled ? vars.space[4] : 0}px;
-      --formGutterGap: ${$documentEditorGutterEnabled ? vars.space[3] : 0}px;
+      --formGutterSize: ${$documentEditorGutterEnabled ? vars.space[4] : '0px'};
+      --formGutterGap: ${$documentEditorGutterEnabled ? vars.space[3] : '0px'};
     }
 
     html {
