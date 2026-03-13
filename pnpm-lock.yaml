@@ -613,7 +613,7 @@ importers:
         version: 2.2.2(react@19.2.4)
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
+        version: 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
       '@sanity/preview-url-secret':
         specifier: ^4.0.2
         version: 4.0.3(@sanity/client@7.17.0(debug@4.4.3))
@@ -1586,8 +1586,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/cli':
-        specifier: ^6.1.0
-        version: 6.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)
+        specifier: ^6.1.2
+        version: 6.1.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)
       '@sanity/client':
         specifier: 'catalog:'
         version: 7.17.0(debug@4.4.3)
@@ -1632,7 +1632,7 @@ importers:
         version: 0.19.0
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
+        version: 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../@sanity/mutator
@@ -5092,14 +5092,14 @@ packages:
   '@sanity/browserslist-config@1.0.5':
     resolution: {integrity: sha512-so+/UtCge8t1jq509hH0otbbptRz0zM/Aa0dh5MhMD7HGT6n2igWIL2VWH/9QR9e77Jn3dJsjz23mW1WCxT+sg==}
 
-  '@sanity/cli-core@1.1.0':
-    resolution: {integrity: sha512-9XtJbFBr0h8GCg/jHeRBpHjtfiS2VotRdPJ9OgePUZCz4A+nSNuM0E3dK8k9PKA1iIZ8tsP/FbMB9mgeDLSC7Q==}
+  '@sanity/cli-core@1.1.1':
+    resolution: {integrity: sha512-00/YuUVqvLXgmr3/7d//5ROrsLO56r07MTALqUf+DYlzRw7qN/UyGospmPtiTn+qipf+q8LM1MkFwIPp6rwEVg==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     peerDependencies:
       '@sanity/telemetry': '>=0.8.1 <0.9.0'
 
-  '@sanity/cli@6.1.0':
-    resolution: {integrity: sha512-M0sv9MmeupG7VxBwnhei7SiCJYsJM/l7ui+vbXdcQivoOVG/w4BlfXlV8AwYMASUquHQPuynaPzKYQ0ZcLfxMw==}
+  '@sanity/cli@6.1.2':
+    resolution: {integrity: sha512-WKFoFskzOocKm3dGEkGVId61P+ntUkzalrKxGRJG9AbXiuLRoAQBtrSGJf3QvpigRv/chGx56mJci6hVOgryvw==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     hasBin: true
 
@@ -6479,10 +6479,6 @@ packages:
   ast-kit@3.0.0-beta.1:
     resolution: {integrity: sha512-trmleAnZ2PxN/loHWVhhx1qeOHSRXq4TDsBBxq3GqeJitfk3+jTQ+v/C1km/KYq9M7wKqCewMh+/NAvVH7m+bw==}
     engines: {node: '>=20.19.0'}
-
-  ast-types@0.16.1:
-    resolution: {integrity: sha512-6t10qk83GOG8p0vKmaCr8eiilZwO171AvbROMtvvNiwrTly62t+7XkA8RdIIVbpMhCASAsxgAzdRSwh6nw/5Dg==}
-    engines: {node: '>=4'}
 
   ast-v8-to-istanbul@0.3.11:
     resolution: {integrity: sha512-Qya9fkoofMjCBNVdWINMjB5KZvkYfaO9/anwkWnjxibpWUxo5iHl2sOdP7/uAqaRuUYuoo8rDwnbaaKVFxoUvw==}
@@ -10261,10 +10257,6 @@ packages:
     resolution: {integrity: sha512-9u/XQ1pvrQtYyMpZe7DXKv2p5CNvyVwzUB6uhLAnQwHMSgKMBR62lc7AHljaeteeHXn11XTAaLLUVZYVZyuRBQ==}
     engines: {node: '>= 20.19.0'}
 
-  recast@0.23.11:
-    resolution: {integrity: sha512-YTUo+Flmw4ZXiWfQKGcwwc11KnoRAYgzAE2E7mXKCjSviTKShtxBsN6YUUBB2gtaBzKzeKunxhUwNHQuRryhWA==}
-    engines: {node: '>= 4'}
-
   redent@3.0.0:
     resolution: {integrity: sha512-6tDA8g98We0zd0GvVeMT9arEOnTw9qM03L9cJXaCjrip1OO764RDBLBfrB4cwzNGDj5OA5ioymC9GkizgWJDUg==}
     engines: {node: '>=8'}
@@ -11006,9 +10998,6 @@ packages:
   time-span@4.0.0:
     resolution: {integrity: sha512-MyqZCTGLDZ77u4k+jqg4UlrzPTPZ49NDlaekU6uuFaJLzPIN1woaRXCbGeqOfxwc3Y37ZROGAJ614Rdv7Olt+g==}
     engines: {node: '>=10'}
-
-  tiny-invariant@1.3.3:
-    resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
 
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
@@ -15035,7 +15024,7 @@ snapshots:
 
   '@sanity/browserslist-config@1.0.5': {}
 
-  '@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)':
+  '@sanity/cli-core@1.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)':
     dependencies:
       '@inquirer/prompts': 8.3.0(@types/node@24.10.13)
       '@oclif/core': 4.8.3
@@ -15075,21 +15064,20 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@sanity/cli@6.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)':
+  '@sanity/cli@6.1.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)':
     dependencies:
-      '@babel/traverse': 7.29.0
       '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       '@oclif/plugin-not-found': 3.2.74(@types/node@24.10.13)
-      '@sanity/cli-core': 1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
+      '@sanity/cli-core': 1.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
       '@sanity/client': 7.17.0(debug@4.4.3)
-      '@sanity/codegen': 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))
+      '@sanity/codegen': 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))
       '@sanity/descriptors': 1.3.0
       '@sanity/export': 6.1.0
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
       '@sanity/import': 5.0.1(@sanity/client@7.17.0(debug@4.4.3))
-      '@sanity/migrate': 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
+      '@sanity/migrate': 6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
       '@sanity/runtime-cli': 14.5.0(@types/node@24.10.13)(debug@4.4.3)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 0.8.1(react@19.2.4)
@@ -15132,7 +15120,6 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
       react-is: 19.2.4
       read-package-up: 12.0.0
-      recast: 0.23.11
       rimraf: 6.1.3
       rxjs: 7.8.2
       semver: 7.7.4
@@ -15220,7 +15207,7 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/codegen@6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))':
+  '@sanity/codegen@6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/generator': 7.29.1
@@ -15231,7 +15218,7 @@ snapshots:
       '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
       '@oclif/core': 4.8.3
-      '@sanity/cli-core': 1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
+      '@sanity/cli-core': 1.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
       '@sanity/telemetry': 0.8.1(react@19.2.4)
       '@sanity/worker-channels': 2.0.0
       chokidar: 3.6.0
@@ -15480,10 +15467,10 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.1
 
-  '@sanity/migrate@6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)':
+  '@sanity/migrate@6.0.0(@oclif/core@4.8.3)(@sanity/cli-core@1.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)':
     dependencies:
       '@oclif/core': 4.8.3
-      '@sanity/cli-core': 1.1.0(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
+      '@sanity/cli-core': 1.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
       '@sanity/client': 7.17.0(debug@4.4.3)
       '@sanity/mutate': 0.16.1(debug@4.4.3)(xstate@5.28.0)
       '@sanity/types': link:packages/@sanity/types
@@ -17166,10 +17153,6 @@ snapshots:
       '@babel/parser': 8.0.0-rc.2
       estree-walker: 3.0.3
       pathe: 2.0.3
-
-  ast-types@0.16.1:
-    dependencies:
-      tslib: 2.8.1
 
   ast-v8-to-istanbul@0.3.11:
     dependencies:
@@ -21181,14 +21164,6 @@ snapshots:
 
   readdirp@5.0.0: {}
 
-  recast@0.23.11:
-    dependencies:
-      ast-types: 0.16.1
-      esprima: 4.0.1
-      source-map: 0.6.1
-      tiny-invariant: 1.3.3
-      tslib: 2.8.1
-
   redent@3.0.0:
     dependencies:
       indent-string: 4.0.0
@@ -22126,8 +22101,6 @@ snapshots:
   time-span@4.0.0:
     dependencies:
       convert-hrtime: 3.0.0
-
-  tiny-invariant@1.3.3: {}
 
   tinybench@2.9.0: {}
 
