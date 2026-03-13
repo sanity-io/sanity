@@ -78,6 +78,11 @@ export const test = baseTest.extend<SanityFixtures>({
       return await originalGoto(url, options)
     }
 
+    // Block the free trial dialog API to prevent overlay from intercepting clicks
+    await page.route('**/journey/trial**', (route) =>
+      route.fulfill({status: 200, contentType: 'application/json', body: 'null'}),
+    )
+
     await use(page)
   },
   async createDraftDocument({page, _testContext}, use) {
