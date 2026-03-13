@@ -48,8 +48,8 @@ interface DialogBreadcrumbsProps {
   currentPath?: Path
   /** Callback to navigate to a path, updating the form path and cleaning up the dialog stack. */
   onNavigate?: (path: Path) => void
-  /** Callback to fully close all dialogs and reset the path. Used when navigating above all dialog levels. */
-  onClose?: () => void
+  /** Callback to differentiate between closing all dialogs and closing the top dialog. Used when navigating above all dialog levels. */
+  onClose?: (closeAll?: boolean) => void
 }
 
 interface BreadcrumbItemData {
@@ -81,16 +81,18 @@ function BreadcrumbButton({
   itemPath,
   documentSchemaType,
   documentValue,
+  currentPath,
   isSelected = false,
   onPathSelect,
 }: {
   itemPath: Path
   documentSchemaType: SchemaType
   documentValue: unknown
+  currentPath?: Path
   isSelected?: boolean
   onPathSelect: (path: Path) => void
 }) {
-  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue)
+  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue, currentPath)
   const siblingInfo = useBreadcrumbSiblingInfo(itemPath, documentSchemaType, documentValue)
   const telemetry = useTelemetry()
 
@@ -111,6 +113,7 @@ function BreadcrumbButton({
       title={title}
       aria-label={title}
       aria-current={isSelected ? 'location' : false}
+      data-testid={`breadcrumb-item-${title?.toLowerCase().replace(/ /g, '-')}`}
     >
       <Flex align="center" style={{minWidth: 0}}>
         {siblingInfo && (
@@ -148,14 +151,16 @@ function BreadcrumbMenuItem({
   itemPath,
   documentSchemaType,
   documentValue,
+  currentPath,
   onPathSelect,
 }: {
   itemPath: Path
   documentSchemaType: SchemaType
   documentValue: unknown
+  currentPath?: Path
   onPathSelect: (path: Path) => void
 }) {
-  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue)
+  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue, currentPath)
   const siblingInfo = useBreadcrumbSiblingInfo(itemPath, documentSchemaType, documentValue)
 
   const handleClick = useCallback(() => {
@@ -249,10 +254,10 @@ export function DialogBreadcrumbs({
 
         // Fallback: open to the item itself
         navigate(path)
-      } else if (onClose) {
+      } else if (path.length === 1) {
         // Non-key segment (field name like "animals") — this means navigating above
         // all dialog levels, so close everything rather than navigating to a field path.
-        onClose()
+        onClose?.(true)
       } else {
         navigate(path)
       }
@@ -351,6 +356,7 @@ export function DialogBreadcrumbs({
                     itemPath={overflowItem.path}
                     documentSchemaType={documentSchemaType}
                     documentValue={documentValue}
+                    currentPath={currentPath}
                     onPathSelect={handlePathSelect}
                   />
                 ))}
@@ -386,6 +392,7 @@ export function DialogBreadcrumbs({
           itemPath={item.path}
           documentSchemaType={documentSchemaType}
           documentValue={documentValue}
+          currentPath={currentPath}
           isSelected={isSelected}
           onPathSelect={handlePathSelect}
         />

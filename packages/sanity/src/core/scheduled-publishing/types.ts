@@ -25,11 +25,6 @@ export interface Schedule {
   stateReason: string
 }
 
-export interface ScheduleFilter {
-  state: ScheduleState
-  title: string
-}
-
 export interface ScheduleFormData {
   date: string
 }
@@ -38,8 +33,3 @@ export interface ValidationStatus {
   isValidating: boolean
   validation: ValidationMarker[]
 }
-
-/**
- * key is schedule.id, NOT documentId
- */
-export type ScheduledDocValidations = Record<string, ValidationStatus>

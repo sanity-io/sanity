@@ -63,7 +63,7 @@ async function uploadInlineImages(client: ClientLike, block: PortableTextBlock) 
   }
 }
 
-export async function uploadImage(
+async function uploadImage(
   client: ClientLike,
   url: string,
   metadata: UploadClientConfig,

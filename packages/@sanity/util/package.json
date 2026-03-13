@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "5.10.0",
+  "version": "5.15.0",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "cms",
@@ -139,9 +139,14 @@
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
     "eslint": "catalog:",
-    "rimraf": "^5.0.10",
+    "rimraf": "catalog:",
     "vitest": "catalog:"
   },
+  "browserslist": [
+    "node >=20.19",
+    "node >=22.12",
+    "baseline 2024"
+  ],
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
   }

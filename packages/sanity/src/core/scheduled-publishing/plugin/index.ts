@@ -9,9 +9,6 @@ import resolveDocumentBadges from './documentBadges/scheduled'
 import {DocumentBannerInput} from './inputResolver'
 import {SchedulePublishingStudioLayout} from './SchedulePublishingStudioLayout'
 
-export {EditScheduleForm} from '../components/editScheduleForm/EditScheduleForm'
-export {resolveDocumentActions, resolveDocumentBadges}
-
 /**
  * @internal
  */

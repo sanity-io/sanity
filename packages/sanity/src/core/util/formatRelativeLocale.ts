@@ -1,4 +1,6 @@
-import {formatRelative, isValid, parse} from 'date-fns'
+import {formatRelative} from 'date-fns/formatRelative'
+import {isValid} from 'date-fns/isValid'
+import {parse} from 'date-fns/parse'
 
 /**
  * date-fns `formatRelative` defaults to formatting as `mm/dd/yyyy` if the date is more/less than

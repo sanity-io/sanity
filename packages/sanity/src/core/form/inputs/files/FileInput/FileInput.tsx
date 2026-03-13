@@ -2,38 +2,30 @@ import {type SanityClient} from '@sanity/client'
 import {
   type AssetFromSource,
   type AssetSource,
-  type AssetSourceUploader,
   type File as BaseFile,
   type FileAsset,
   type FileSchemaType,
   type UploadState,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
-import {get} from 'lodash-es'
-import {Fragment, useCallback, useEffect, useRef, useState} from 'react'
+import {Fragment, useCallback, useState} from 'react'
 import {type Observable} from 'rxjs'
 
 import {useTranslation} from '../../../../i18n'
 import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
-import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {MemberDecoration} from '../../../members/object/MemberDecoration'
 import {useRenderMembers} from '../../../members/object/useRenderMembers'
-import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
-import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
+import {unset} from '../../../patch'
 import {resolveUploader} from '../../../studio/uploads/resolveUploader'
-import {
-  type Uploader,
-  type UploaderResolver,
-  type UploadOptions,
-} from '../../../studio/uploads/types'
-import {createInitialUploadPatches} from '../../../studio/uploads/utils'
+import {type UploaderResolver} from '../../../studio/uploads/types'
 import {type ObjectInputProps} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
+import {AssetSourceDialog} from '../common/AssetSourceDialog'
 import {type FileInfo} from '../common/styles'
+import {useAssetSource} from '../common/useAssetSource'
 import {useAccessPolicy} from '../ImageInput/useAccessPolicy'
 import {FileAsset as FileAssetComponent} from './FileAsset'
-import {FileAssetSource} from './FileInputAssetSource'
+import {FileSkeleton} from './FileSkeleton'
 
 /**
  * @hidden
@@ -73,101 +65,51 @@ export function BaseFileInput(props: BaseFileInputProps) {
     schemaType,
     value,
   } = props
-  const {push} = useToast()
   const {t} = useTranslation()
   const renderedMembers = useRenderMembers(schemaType, members)
 
   const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
-  const [isStale, setIsStale] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
   const [isBrowseMenuOpen, setIsBrowseMenuOpen] = useState(false)
-  const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
   const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
-  const browseButtonElementRef = useRef<HTMLButtonElement>(null)
 
-  // State for "open in source" component mode
-  const [openInSourceAsset, setOpenInSourceAsset] = useState<FileAsset | null>(null)
+  const {
+    action: assetSourceAction,
+    selectedAssetSource,
+    openInSourceAsset,
+    setSelectedAssetSource,
+    openForBrowse: handleSelectAssetSourceForBrowse,
+    openForUpload: handleOpenSourceForUpload,
+    openInSource: handleOpenInSource,
+    changeAction: handleAssetSourceChangeAction,
+    clearUploadStatus,
+    close: handleAssetSourceClosed,
+    menuButtonRef,
+    resetOnComplete: handleAssetSourceResetOnComplete,
+    uploadWith: uploadExternalFileToDataset,
+    isUploading,
+    setIsUploading,
+    isStale,
+    setIsStale,
+    onStale: handleStaleUpload,
+    assetSourceUploader,
+    handleSelectFilesToUpload,
+  } = useAssetSource<FileAsset>({
+    client,
+    onChange,
+    schemaType,
+    onAssetLimitError: () => handleAssetLimitUpsellDialog('field_action'),
+  })
 
-  const [assetSourceUploader, setAssetSourceUploader] = useState<{
-    unsubscribe: () => void
-    uploader: AssetSourceUploader
-  } | null>(null)
-
-  const setBrowseButtonElement = useCallback(
-    (element: HTMLButtonElement | null) => {
-      if (element) {
-        browseButtonElementRef.current = element
-      }
-    },
-    [browseButtonElementRef],
-  )
-
-  const uploadSubscriptionRef = useRef<{unsubscribe: () => void} | null>(null)
+  const handleClearUploadStatus = useCallback(() => {
+    if (value?._upload) {
+      clearUploadStatus()
+      setIsStale(false)
+    }
+  }, [clearUploadStatus, setIsStale, value?._upload])
 
   const handleClearField = useCallback(() => {
     onChange([unset(['asset']), unset(['media'])])
   }, [onChange])
-
-  const handleClearUploadStatus = useCallback(() => {
-    if (value?._upload) {
-      onChange(PatchEvent.from([unset(['_upload'])]))
-    }
-  }, [onChange, value?._upload])
-
-  const handleStaleUpload = useCallback(() => {
-    setIsStale(true)
-  }, [])
-
-  const cancelExternalFileToDatasetUpload = useCallback(() => {
-    if (uploadSubscriptionRef.current) {
-      uploadSubscriptionRef.current?.unsubscribe()
-      handleClearUploadStatus()
-    }
-  }, [handleClearUploadStatus])
-
-  // This function is used to upload an external file to the dataset
-  // when selecting an asset from an asset source that is of type 'file' or 'base64'.
-  const uploadExternalFileToDataset = useCallback(
-    (uploader: Uploader, file: globalThis.File, assetDocumentProps: UploadOptions = {}) => {
-      const {source} = assetDocumentProps
-      const options = {
-        metadata: get(schemaType, 'options.metadata'),
-        storeOriginalFilename: get(schemaType, 'options.storeOriginalFilename'),
-        source,
-      }
-      cancelExternalFileToDatasetUpload()
-      setIsUploading(true)
-      onChange(PatchEvent.from([setIfMissing({_type: schemaType.name})]))
-      uploadSubscriptionRef.current = uploader.upload(client, file, schemaType, options).subscribe({
-        next: (uploadEvent) => {
-          if (uploadEvent.patches) {
-            onChange(PatchEvent.from(uploadEvent.patches))
-          }
-        },
-        error: (err) => {
-          console.error(err)
-          push({
-            status: 'error',
-            description: t('inputs.file.upload-failed.description'),
-            title: t('inputs.file.upload-failed.title'),
-          })
-          handleClearUploadStatus()
-        },
-        complete: () => {
-          setIsUploading(false)
-        },
-      })
-    },
-    [
-      cancelExternalFileToDatasetUpload,
-      handleClearUploadStatus,
-      client,
-      onChange,
-      push,
-      schemaType,
-      t,
-    ],
-  )
 
   const handleSelectAssets = useCallback(
     (assetsFromSource: AssetFromSource[]) => {
@@ -181,101 +123,15 @@ export function BaseFileInput(props: BaseFileInputProps) {
         resolveUploader,
         uploadWith: uploadExternalFileToDataset,
       })
-      setOpenInSourceAsset(null)
-      setSelectedAssetSource(null)
-      setIsUploading(false) // This function is also called on after a successful upload completion though an asset source, so reset that state here.
+      handleAssetSourceResetOnComplete()
     },
-    [onChange, schemaType, uploadExternalFileToDataset],
-  )
-
-  const handleOpenInSource = useCallback((assetSource: AssetSource, asset: FileAsset) => {
-    setSelectedAssetSource(assetSource)
-    setOpenInSourceAsset(asset)
-  }, [])
-
-  const handleSelectFilesToUpload = useCallback(
-    (assetSource: AssetSource, files: File[]) => {
-      if (files.length === 0) {
-        return
-      }
-      setSelectedAssetSource(assetSource)
-      if (assetSource.Uploader) {
-        const uploader = new assetSource.Uploader()
-        // Unsubscribe from the previous uploader
-        assetSourceUploader?.unsubscribe()
-        try {
-          setAssetSourceUploader({
-            unsubscribe: uploader.subscribe((event) => {
-              switch (event.type) {
-                case 'progress':
-                  onChange(
-                    PatchEvent.from([
-                      set(Math.max(2, event.progress), [UPLOAD_STATUS_KEY, 'progress']),
-                      set(new Date().toISOString(), [UPLOAD_STATUS_KEY, 'updatedAt']),
-                    ]),
-                  )
-                  break
-                case 'error':
-                  event.files.forEach((file) => {
-                    console.error(file.error)
-                  })
-                  push({
-                    status: 'error',
-                    description: t('asset-sources.common.uploader.upload-failed.description'),
-                    title: t('asset-sources.common.uploader.upload-failed.title'),
-                  })
-                  break
-                case 'all-complete': {
-                  // Asset limit errors only come through after all file uploads attemps have been made
-                  const hasAssetLimitError = event.files.some(
-                    (file) => file.status === 'error' && isAssetLimitError(file.error),
-                  )
-                  if (hasAssetLimitError) {
-                    handleAssetLimitUpsellDialog('field_action')
-                  }
-                  onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
-                  // Reset state to allow selecting again
-                  setSelectedAssetSource(null)
-                  setIsUploading(false)
-                  break
-                }
-                default:
-              }
-            }),
-            uploader,
-          })
-          setIsUploading(true)
-          onChange(PatchEvent.from(createInitialUploadPatches(files[0])))
-          uploader.upload(files, {schemaType, onChange: onChange as (patch: unknown) => void})
-        } catch (err) {
-          onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
-          setIsUploading(false)
-          setSelectedAssetSource(null)
-          assetSourceUploader?.unsubscribe()
-          push({
-            status: 'error',
-            description: t('asset-sources.common.uploader.upload-failed.description'),
-            title: t('asset-sources.common.uploader.upload-failed.title'),
-          })
-          console.error(err)
-        }
-      }
-    },
-    [assetSourceUploader, handleAssetLimitUpsellDialog, onChange, push, schemaType, t],
+    [handleAssetSourceResetOnComplete, onChange, schemaType, uploadExternalFileToDataset],
   )
 
   const accessPolicy = useAccessPolicy({
     client,
     source: value,
   })
-
-  // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
-  useEffect(() => {
-    return () => {
-      assetSourceUploader?.uploader?.abort()
-      assetSourceUploader?.unsubscribe()
-    }
-  }, [assetSourceUploader])
 
   const handleCancelUpload = useCallback(() => {
     assetSourceUploader?.uploader?.abort()
@@ -286,7 +142,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
       <FileAssetComponent
         {...props}
         accessPolicy={accessPolicy}
-        browseButtonElementRef={browseButtonElementRef}
+        menuButtonRef={menuButtonRef}
         clearField={handleClearField}
         hoveringFiles={hoveringFiles}
         isBrowseMenuOpen={isBrowseMenuOpen}
@@ -295,11 +151,12 @@ export function BaseFileInput(props: BaseFileInputProps) {
         onCancelUpload={handleCancelUpload}
         onClearUploadStatus={handleClearUploadStatus}
         onOpenInSource={handleOpenInSource}
+        onOpenSourceForUpload={handleOpenSourceForUpload}
+        onSelectAssetSourceForBrowse={handleSelectAssetSourceForBrowse}
         onSelectAssets={handleSelectAssets}
         onSelectFiles={handleSelectFilesToUpload}
         onStale={handleStaleUpload}
         selectedAssetSource={selectedAssetSource}
-        setBrowseButtonElement={setBrowseButtonElement}
         setHoveringFiles={setHoveringFiles}
         setIsBrowseMenuOpen={setIsBrowseMenuOpen}
         setIsUploading={setIsUploading}
@@ -310,8 +167,11 @@ export function BaseFileInput(props: BaseFileInputProps) {
     accessPolicy,
     handleCancelUpload,
     handleClearField,
+    menuButtonRef,
     handleClearUploadStatus,
     handleOpenInSource,
+    handleOpenSourceForUpload,
+    handleSelectAssetSourceForBrowse,
     handleSelectAssets,
     handleSelectFilesToUpload,
     handleStaleUpload,
@@ -321,7 +181,8 @@ export function BaseFileInput(props: BaseFileInputProps) {
     isUploading,
     props,
     selectedAssetSource,
-    setBrowseButtonElement,
+    setIsUploading,
+    setSelectedAssetSource,
   ])
 
   return (
@@ -377,29 +238,20 @@ export function BaseFileInput(props: BaseFileInputProps) {
           </Fragment>
         )
       })}
-      {selectedAssetSource && (
-        <FileAssetSource
-          {...props}
-          browseButtonElementRef={browseButtonElementRef}
-          clearField={handleClearField}
-          hoveringFiles={hoveringFiles}
-          isBrowseMenuOpen={isBrowseMenuOpen}
-          isStale={isStale}
-          isUploading={isUploading}
-          onClearUploadStatus={handleClearUploadStatus}
-          onStale={handleStaleUpload}
-          onSelectAssets={handleSelectAssets}
-          onSelectFiles={handleSelectFilesToUpload}
+      {selectedAssetSource && assetSourceAction && (
+        <AssetSourceDialog
+          action={assetSourceAction}
+          assetType="file"
+          observeAsset={props.observeAsset}
+          onClose={handleAssetSourceClosed}
+          onChangeAction={handleAssetSourceChangeAction}
+          onSelect={handleSelectAssets}
           openInSourceAsset={openInSourceAsset}
-          onOpenInSource={handleOpenInSource}
+          schemaType={props.schemaType}
           selectedAssetSource={selectedAssetSource}
-          setBrowseButtonElement={setBrowseButtonElement}
-          setOpenInSourceAsset={setOpenInSourceAsset}
-          setHoveringFiles={setHoveringFiles}
-          setIsBrowseMenuOpen={setIsBrowseMenuOpen}
-          setIsUploading={setIsUploading}
-          setSelectedAssetSource={setSelectedAssetSource}
           uploader={assetSourceUploader?.uploader}
+          value={props.value}
+          waitPlaceholder={<FileSkeleton />}
         />
       )}
     </>

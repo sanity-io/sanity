@@ -5,7 +5,8 @@ import {
   type PortableTextTextBlock,
   type SpanSchemaType,
 } from '@sanity/types'
-import {uniq, xor} from 'lodash-es'
+import uniq from 'lodash-es/uniq.js'
+import xor from 'lodash-es/xor.js'
 import {type ReactNode, useMemo} from 'react'
 
 import {type TFunction, useTranslation} from '../../../../../i18n'

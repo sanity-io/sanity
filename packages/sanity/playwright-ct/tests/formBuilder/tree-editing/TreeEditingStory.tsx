@@ -178,5 +178,3 @@ export function TreeEditingStory(props: TreeEditingStoryProps): React.JSX.Elemen
     </TestWrapper>
   )
 }
-
-export default TreeEditingStory

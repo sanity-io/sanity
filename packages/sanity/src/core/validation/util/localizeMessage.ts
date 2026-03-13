@@ -1,5 +1,5 @@
 import {type CustomValidatorResult, type LocalizedValidationMessages} from '@sanity/types'
-import {isPlainObject} from 'lodash-es'
+import isPlainObject from 'lodash-es/isPlainObject.js'
 
 import {type LocaleSource} from '../../i18n'
 

@@ -1,4 +1,5 @@
-import {flatten, isPlainObject} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
+import isPlainObject from 'lodash-es/isPlainObject.js'
 
 import {type SchemaValidationResult} from '../../typedefs'
 import {error, HELP_IDS} from '../createValidationResult'
@@ -12,7 +13,7 @@ function normalizeToProp(typeDef: any) {
 }
 
 const VALID_DATASET = /^[a-z0-9~][-_a-z0-9]+$/
-export function isValidDatasetName(name: string): string | true {
+function isValidDatasetName(name: string): string | true {
   const isValid = name.length >= 2 && name.toLowerCase() === name && VALID_DATASET.test(name)
   return (
     isValid ||

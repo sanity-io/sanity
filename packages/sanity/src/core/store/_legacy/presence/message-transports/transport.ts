@@ -6,12 +6,6 @@ import {type PresenceLocation} from '../types'
 // Message: something you send
 // Event: something you receive
 
-export type Incoming<T> = T & {
-  userId: string
-  timestamp: string
-  sessionId: string
-}
-
 export interface StateMessage {
   type: 'state'
   locations: PresenceLocation[]

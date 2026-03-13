@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {LoadingBlock} from '../../../components'
@@ -11,6 +11,7 @@ import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {type ReleasesRouterState} from '../../types/router'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {RELEASE_NOT_FOUND_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {useReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
 import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
@@ -22,7 +23,7 @@ import {useBundleDocuments} from './useBundleDocuments'
 export type ReleaseInspector = 'activity'
 const MotionCard = motion.create(Card)
 
-export const ReleaseDetail = () => {
+export function ReleaseDetail() {
   const router = useRouter()
   const [inspector, setInspector] = useState<ReleaseInspector | undefined>(undefined)
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -41,6 +42,16 @@ export const ReleaseDetail = () => {
   const releaseInDetail = data
     .concat(archivedReleases)
     .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)
+
+  const isNotFound = !loading && !releaseInDetail
+
+  useEffect(() => {
+    if (isNotFound) {
+      router.navigate({
+        _searchParams: [[RELEASE_NOT_FOUND_SEARCH_PARAM_KEY, 'true']],
+      })
+    }
+  }, [isNotFound, router])
 
   const detailContent = useMemo(() => {
     if (bundleDocumentsError) {
@@ -120,13 +131,5 @@ export const ReleaseDetail = () => {
     )
   }
 
-  return (
-    <Card flex={1} tone="critical">
-      <Container width={0}>
-        <Stack paddingX={4} paddingY={6} space={1}>
-          <Heading>{t('not-found', {releaseId})}</Heading>
-        </Stack>
-      </Container>
-    </Card>
-  )
+  return null
 }

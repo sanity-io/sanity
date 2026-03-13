@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.15.0](https://github.com/sanity-io/sanity/compare/v5.14.1...v5.15.0) (2026-03-12)
+
+**Note:** Version bump only for package studio-e2e-testing
+
+## [5.14.1](https://github.com/sanity-io/sanity/compare/v5.14.0...v5.14.1) (2026-03-10)
+
+**Note:** Version bump only for package studio-e2e-testing
+
+## [5.14.0](https://github.com/sanity-io/sanity/compare/v5.13.0...v5.14.0) (2026-03-10)
+
+**Note:** Version bump only for package studio-e2e-testing
+
+## [5.13.0](https://github.com/sanity-io/sanity/compare/v5.12.0...v5.13.0) (2026-03-03)
+
+**Note:** Version bump only for package studio-e2e-testing
+
+## [5.12.0](https://github.com/sanity-io/sanity/compare/v5.11.0...v5.12.0) (2026-02-24)
+
+### Features
+
+* remove enhancedObjectDialog from config ([#12231](https://github.com/sanity-io/sanity/issues/12231)) ([5444de8](https://github.com/sanity-io/sanity/commit/5444de827663e1b00a3ccc7a93abe05c99fe0c0c)) by RitaDias (rita@sanity.io)
+
+## [5.11.0](https://github.com/sanity-io/sanity/compare/v5.10.0...v5.11.0) (2026-02-19)
+
+**Note:** Version bump only for package studio-e2e-testing
+
 ## [5.10.0](https://github.com/sanity-io/sanity/compare/v5.9.0...v5.10.0) (2026-02-17)
 
 **Note:** Version bump only for package studio-e2e-testing

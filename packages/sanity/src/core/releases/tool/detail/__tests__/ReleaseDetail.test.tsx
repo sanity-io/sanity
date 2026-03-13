@@ -4,6 +4,7 @@ import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {mockUseRouterReturn} from '../../../../../../test/mocks/useRouter.mock'
+import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useProjectSubscriptionsMockReturn} from '../../../../hooks/__mocks__/useProjectSubscriptions.mock'
 import {
@@ -84,13 +85,20 @@ vi.mock('../../../../hooks/useProjectSubscriptions', () => ({
   useProjectSubscriptions: vi.fn(() => useProjectSubscriptionsMockReturn),
 }))
 
+vi.mock('../../../../hooks/useStudioUrl', () => ({
+  useStudioUrl: vi.fn(() => ({
+    studioUrl: 'http://localhost:3333',
+    buildIntentUrl: vi.fn((path: string) => `http://localhost:3333${path}`),
+  })),
+}))
+
 const mockRouterNavigate = vi.fn()
 
 const renderTest = async () => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
-  return render(
+  const result = render(
     <RouterProvider
       state={{
         releaseId: activeASAPRelease._id,
@@ -102,6 +110,10 @@ const renderTest = async () => {
     </RouterProvider>,
     {wrapper},
   )
+
+  await flushMicrotasksThisIsACodeSmell()
+
+  return result
 }
 
 const publishAgnosticTests = (title: string) => {
@@ -455,6 +467,40 @@ describe('after releases have loaded', () => {
       expect(
         await screen.findAllByText(activeASAPRelease.metadata.title, {exact: false}),
       ).not.toHaveLength(0)
+    })
+  })
+
+  describe('with non-existent release', () => {
+    beforeEach(async () => {
+      vi.clearAllMocks()
+
+      mockUseActiveReleases.mockReset()
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [],
+        loading: false,
+      })
+
+      mockUseRouterReturn.state = {
+        releaseId: 'non-existent-id',
+      }
+    })
+
+    it('should redirect to releases overview with releaseNotFound param', async () => {
+      await renderTest()
+
+      await waitFor(() => {
+        expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith({
+          _searchParams: [['releaseNotFound', 'true']],
+        })
+      })
+    })
+
+    it('should not render any release content', async () => {
+      await renderTest()
+
+      expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('release-menu-button')).not.toBeInTheDocument()
     })
   })
 

@@ -3,6 +3,7 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {
   mockUseReleasePermissions,
@@ -43,6 +44,7 @@ describe('ReleaseDetailsEditor', () => {
     it('should call updateRelease after title change', async () => {
       const wrapper = await createTestProvider()
       const {container} = render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
 
       const release = {
         _id: 'release1',
@@ -78,6 +80,7 @@ describe('ReleaseDetailsEditor', () => {
     it('should call updateRelease after description change', async () => {
       const wrapper = await createTestProvider()
       const {container} = render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
 
       const release = {
         _id: 'release1',
@@ -130,6 +133,7 @@ describe('ReleaseDetailsEditor', () => {
     it('when there is no permission, should not call updateRelease', async () => {
       const wrapper = await createTestProvider()
       render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
 
       const input = screen.getByTestId('release-form-description')
       expect(input).toBeDisabled()

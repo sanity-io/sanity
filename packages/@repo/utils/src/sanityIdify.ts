@@ -1,4 +1,4 @@
-import {deburr} from 'lodash-es'
+import deburr from 'lodash-es/deburr.js'
 
 export function sanityIdify(input: string): string {
   return deburr(input)

@@ -5,7 +5,8 @@ import {
 } from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
 import debugit from 'debug'
-import {max, sum} from 'lodash-es'
+import max from 'lodash-es/max.js'
+import sum from 'lodash-es/sum.js'
 
 import {isDev} from '../../environment'
 import {DESCRIPTOR_CONVERTER} from '../../schema'
@@ -13,6 +14,20 @@ import {DESCRIPTOR_CONVERTER} from '../../schema'
 const debug = debugit('sanity:manifest')
 
 const MAX_SYNC_ITERATIONS = 5
+
+/**
+ * Cache of in-flight or completed claim+sync promises, keyed by `${descriptorId}:${contextKey}`.
+ * Prevents duplicate HTTP POSTs when multiple workspaces share the same schema.
+ */
+const claimPromiseCache = new Map<string, Promise<string | undefined>>()
+
+/**
+ * Clear the claim cache. Intended for use in tests only.
+ * @internal
+ */
+export function _clearClaimPromiseCache(): void {
+  claimPromiseCache.clear()
+}
 
 type ClaimRequest = {
   contextKey: string
@@ -77,38 +92,56 @@ export async function uploadSchema(
   let contextKey = `dataset:${projectId}:${dataset}`
   if (isDev) contextKey += '#dev'
 
-  const claimRequest: ClaimRequest = {descriptorId, contextKey}
-
-  const clientTimings = {
-    convertSchema: duration,
-    convertSchemaPauseTotal: totalPause,
-    convertSchemaPauseMax: maxPause,
-    convertSchemaPauseAvg: avgPause,
+  const cacheKey = `${descriptorId}:${contextKey}`
+  const cached = claimPromiseCache.get(cacheKey)
+  if (cached) {
+    debug('Reusing cached claim promise for %s', cacheKey)
+    return cached
   }
 
-  const claimResponse = await client.request<ClaimResponse>({
-    uri: '/descriptors/claim',
-    method: 'POST',
-    body: claimRequest,
-    headers: {
-      // We mirror the format of Server-Timing: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Server-Timing
-      'Client-Timing': Object.entries(clientTimings)
-        .map(([name, dur]) => `${name};dur=${dur}`)
-        .join(','),
-    },
+  const claimAndSync = (async () => {
+    const claimRequest: ClaimRequest = {descriptorId, contextKey}
+
+    const clientTimings = {
+      convertSchema: duration,
+      convertSchemaPauseTotal: totalPause,
+      convertSchemaPauseMax: maxPause,
+      convertSchemaPauseAvg: avgPause,
+    }
+
+    const claimResponse = await client.request<ClaimResponse>({
+      uri: '/descriptors/claim',
+      method: 'POST',
+      body: claimRequest,
+      headers: {
+        // We mirror the format of Server-Timing: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Server-Timing
+        'Client-Timing': Object.entries(clientTimings)
+          .map(([name, dur]) => `${name};dur=${dur}`)
+          .join(','),
+      },
+    })
+
+    let syncResult = claimResponse.synchronization
+    for (let i = 0; i < MAX_SYNC_ITERATIONS; i++) {
+      const syncRequest = processSchemaSynchronization(sync, syncResult)
+      if (syncRequest === null) return descriptorId
+
+      syncResult = await client.request<SchemaSynchronizationResult>({
+        uri: '/descriptors/synchronize',
+        method: 'POST',
+        body: syncRequest,
+      })
+    }
+
+    throw new Error(`Schema synchronization didn't succeed in ${MAX_SYNC_ITERATIONS} iterations`)
+  })()
+
+  claimPromiseCache.set(cacheKey, claimAndSync)
+
+  // On failure, remove from cache so retries can try again
+  claimAndSync.catch(() => {
+    claimPromiseCache.delete(cacheKey)
   })
 
-  let syncResult = claimResponse.synchronization
-  for (let i = 0; i < MAX_SYNC_ITERATIONS; i++) {
-    const syncRequest = processSchemaSynchronization(sync, syncResult)
-    if (syncRequest === null) return descriptorId
-
-    syncResult = await client.request<SchemaSynchronizationResult>({
-      uri: '/descriptors/synchronize',
-      method: 'POST',
-      body: syncRequest,
-    })
-  }
-
-  throw new Error(`Schema synchronization didn't succeed in ${MAX_SYNC_ITERATIONS} iterations`)
+  return claimAndSync
 }

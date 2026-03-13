@@ -22,6 +22,7 @@ import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useS
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
+import {LATEST, PUBLISHED} from '../../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {Chip} from '../Chip'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
@@ -196,6 +197,8 @@ export const VersionChip = memo(function VersionChip(props: {
   })
 
   const isPaused = isPausedCardinalityOneRelease(release)
+  const sourceReleasePerspective =
+    release ?? (bundleId === 'published' ? PUBLISHED : bundleId === 'draft' ? LATEST : bundleId)
 
   const rightIcon = useMemo(() => {
     if (isLinked) return <ComposeSparklesIcon />
@@ -218,7 +221,7 @@ export const VersionChip = memo(function VersionChip(props: {
             selected={selected}
             tone={tone}
             onContextMenu={contextMenuHandler}
-            icon={<ReleaseAvatarIcon tone={tone} />}
+            icon={<ReleaseAvatarIcon release={sourceReleasePerspective} />}
             iconRight={rightIcon}
             text={text}
           />
@@ -278,7 +281,7 @@ export const VersionChip = memo(function VersionChip(props: {
           onCreateVersion={handleAddVersion}
           documentId={isVersion ? getVersionId(documentId, bundleId) : documentId}
           documentType={documentType}
-          tone={tone}
+          release={sourceReleasePerspective}
           title={text}
         />
       )}

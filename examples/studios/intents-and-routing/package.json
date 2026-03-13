@@ -11,7 +11,7 @@
     "start": "sanity start"
   },
   "dependencies": {
-    "@sanity/ui": "^3.1.11",
+    "@sanity/ui": "catalog:",
     "@sanity/vision": "workspace:*",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

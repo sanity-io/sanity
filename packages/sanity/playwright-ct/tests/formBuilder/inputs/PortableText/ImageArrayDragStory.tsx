@@ -43,7 +43,7 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function ImageArrayDragStory({
+function ImageArrayDragStory({
   focusPath,
   onPathFocus,
   document,

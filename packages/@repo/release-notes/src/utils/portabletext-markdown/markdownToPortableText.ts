@@ -22,7 +22,7 @@ export function markdownToPortableText(
   )
 }
 // Normalizes markdown to portable text by converting html blocks to markdown
-export function normalize(
+function normalize(
   blocks: PortableTextMarkdownBlock[],
   options?: Options,
 ): NormalizedMarkdownBlock[] {

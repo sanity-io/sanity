@@ -1,17 +1,18 @@
 import arrify from 'arrify'
-import {capitalize, pick} from 'lodash-es'
+import capitalize from 'lodash-es/capitalize.js'
+import pick from 'lodash-es/pick.js'
 
 import {resolveSearchConfigForBaseFieldPaths} from '../searchConfig/resolve'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {hiddenGetter, lazyGetter} from './utils'
 
-export const REF_FIELD = {
+const REF_FIELD = {
   name: '_ref',
   title: 'Referenced document ID',
   type: 'string',
 }
 
-export const WEAK_FIELD = {
+const WEAK_FIELD = {
   name: '_weak',
   title: 'Weak reference marker',
   type: 'boolean',

@@ -10,6 +10,11 @@ import {useClient} from '../../../../hooks'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useWorkspace} from '../../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {
+  TASKS_SELECTED_TASK_SEARCH_PARAM,
+  TASKS_SIDEBAR_SEARCH_PARAM,
+  TASKS_VIEW_MODE_SEARCH_PARAM,
+} from '../../../context/navigation/types'
 import {useDocumentPreviewValues} from '../../../hooks'
 import {type TaskContext, type TaskDocument} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
@@ -21,9 +26,9 @@ export function getTaskURL(taskId: string, basePath?: string, toolName: string =
 
   const currentUrl = new URL(`${path}/`)
 
-  currentUrl.searchParams.set('sidebar', 'tasks')
-  currentUrl.searchParams.set('selectedTask', taskId)
-  currentUrl.searchParams.set('viewMode', 'edit')
+  currentUrl.searchParams.set(TASKS_SIDEBAR_SEARCH_PARAM, 'tasks')
+  currentUrl.searchParams.set(TASKS_SELECTED_TASK_SEARCH_PARAM, taskId)
+  currentUrl.searchParams.set(TASKS_VIEW_MODE_SEARCH_PARAM, 'edit')
   return currentUrl.toString()
 }
 

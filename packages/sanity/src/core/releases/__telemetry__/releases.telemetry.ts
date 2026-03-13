@@ -43,13 +43,6 @@ export const CreatedRelease = defineEvent<OriginInfo>({
   description: 'User created a release',
 })
 
-/** When a release is successfully updated */
-export const UpdatedRelease = defineEvent({
-  name: 'Release Updated',
-  version: 1,
-  description: 'User updated a release',
-})
-
 /** When a release is successfully deleted */
 export const DeletedRelease = defineEvent({
   name: 'Release Deleted',
@@ -104,4 +97,25 @@ export const DuplicatedRelease = defineEvent({
   name: 'Release Duplicated',
   version: 1,
   description: 'User duplicated a release',
+})
+
+/** When a release link is copied to clipboard */
+export const ReleaseLinkCopied = defineEvent({
+  name: 'Release Link Copied',
+  version: 1,
+  description: 'User copied release link to clipboard',
+})
+
+/** When a release ID is copied to clipboard */
+export const ReleaseIdCopied = defineEvent({
+  name: 'Release ID Copied',
+  version: 1,
+  description: 'User copied release ID to clipboard',
+})
+
+/** When a release title is copied to clipboard */
+export const ReleaseTitleCopied = defineEvent({
+  name: 'Release Title Copied',
+  version: 1,
+  description: 'User copied release title to clipboard',
 })

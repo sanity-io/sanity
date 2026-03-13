@@ -10,7 +10,7 @@ import * as is from '../../utils/is'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
 
-export function isArrayOfPrimitives(type: ArraySchemaType): boolean {
+function isArrayOfPrimitives(type: ArraySchemaType): boolean {
   return type.of.every((ofType) => PRIMITIVES.includes(ofType.jsonType))
 }
 

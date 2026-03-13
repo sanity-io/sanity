@@ -30,9 +30,7 @@
     "*.css",
     "*.snap",
     "*.md",
-    "packages/@sanity/cli/templates/**/*",
-    "dev/test-studio/sanity.theme.mjs",
-    "dev/test-studio/workshop/scopes.js"
+    "dev/test-studio/sanity.theme.mjs"
   ],
   "categories": {
     "correctness": "error",
@@ -80,6 +78,14 @@
           {
             "name": "react/compiler-runtime",
             "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
+          },
+          {
+            "name": "date-fns",
+            "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
+          },
+          {
+            "name": "lodash-es",
+            "message": "Import from individual modules instead, e.g. `import debounce from 'lodash-es/debounce.js'`. Barrel imports are ~55% slower."
           }
         ],
         "patterns": [
@@ -89,7 +95,7 @@
           },
           {
             "group": ["lodash.*", "lodash/*", "lodash"],
-            "message": "Please use the default import from 'lodash-es' instead."
+            "message": "Please use individual imports from 'lodash-es' instead, e.g. `import debounce from 'lodash-es/debounce.js'`."
           }
         ]
       }
@@ -126,12 +132,18 @@
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
-    // We no longer allow commonjs as we ship ESM only (except for in CLI scenarios for legacy reasons)
+    // We no longer allow commonjs as we ship ESM only
     "import/no-commonjs": "error",
     "no-restricted-globals": [
       "error",
-      {"name": "__dirname", "message": "Use path.dirname(fileURLToPath(import.meta.url)) instead"},
-      {"name": "__filename", "message": "Use fileURLToPath(import.meta.url) instead"}
+      {
+        "name": "__dirname",
+        "message": "Use path.dirname(fileURLToPath(import.meta.url)) instead"
+      },
+      {
+        "name": "__filename",
+        "message": "Use fileURLToPath(import.meta.url) instead"
+      }
     ],
     // These rules should be enabled in the future, they are disabled for now to reduce the PR scope for landing oxlint
     "typescript/no-explicit-any": "warn",
@@ -201,7 +213,7 @@
       "rules": {"no-console": "off", "no-unsafe-type-assertion": "off"}
     },
     {
-      "files": ["**/*.test.{ts,tsx,cjs,mjs,js,jsx}", "**/__workshop__/**"],
+      "files": ["**/*.test.{ts,tsx,cjs,mjs,js,jsx}"],
       "rules": {
         "no-base-to-string": "off",
         "no-unnecessary-boolean-literal-compare": "off",
@@ -213,14 +225,7 @@
     },
     {
       // We still allow CJS in some places, for legacy reasons
-      "files": [
-        "packages/@sanity/cli/**/*",
-        "packages/sanity/src/_internal/cli/**/*",
-        "scripts/**/*",
-        "**/*.cjs",
-        "**/*.cts.ts",
-        "**/perf/**/*"
-      ],
+      "files": ["scripts/**/*", "**/*.cjs", "**/*.cts.ts", "**/perf/**/*"],
       "rules": {
         "import/no-commonjs": "off",
         "no-restricted-globals": "off"

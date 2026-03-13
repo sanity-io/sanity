@@ -30,8 +30,8 @@ import {type ReleaseStore} from './types'
 type ActionWrapper = {action: ReleasesReducerAction}
 type ResponseWrapper = {response: ReleaseDocument[]}
 
-export const SORT_FIELD = '_createdAt'
-export const SORT_ORDER = 'desc'
+const SORT_FIELD = '_createdAt'
+const SORT_ORDER = 'desc'
 
 const QUERY_FILTER = `_type=="${RELEASE_DOCUMENT_TYPE}" && _id in path("${RELEASE_DOCUMENTS_PATH}.*")`
 
@@ -161,7 +161,7 @@ export function createReleaseStore(context: {
 /**
  * @internal
  */
-export function releaseStoreErrorCount(): OperatorFunction<ReleasesReducerState, number> {
+function releaseStoreErrorCount(): OperatorFunction<ReleasesReducerState, number> {
   return pipe(
     switchMap(({releases}) =>
       from(releases.values()).pipe(

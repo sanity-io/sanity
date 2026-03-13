@@ -50,7 +50,7 @@ export function shouldExcludeReleaseNotes(blocks: PortableTextMarkdownBlock[]): 
   )
 }
 
-export function getBlockText(block: PortableTextMarkdownBlock) {
+function getBlockText(block: PortableTextMarkdownBlock) {
   if (block._type !== 'block' || !Array.isArray(block.children)) {
     return ''
   }

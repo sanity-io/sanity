@@ -38,6 +38,9 @@ export interface ZIndexContextValue {
   /** Used for UI that sits on top of the entire application */
   fullscreen: number | number[]
 
+  /** Used for inspector dialog */
+  inspectorDialog: number | number[]
+
   /** Used for toasts */
   toast: number | number[]
 

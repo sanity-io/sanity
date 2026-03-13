@@ -1,5 +1,5 @@
 import {Card, Text} from '@sanity/ui'
-import {isPast} from 'date-fns'
+import {isPast} from 'date-fns/isPast'
 import {useCallback} from 'react'
 
 interface CalendarDayProps {

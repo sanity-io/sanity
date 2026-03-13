@@ -3,7 +3,7 @@ import {colorInput} from '@sanity/color-input'
 import {debugSecrets} from '@sanity/debug-preview-url-secret-plugin'
 import {documentInternationalization} from '@sanity/document-internationalization'
 import {googleMapsInput} from '@sanity/google-maps-input'
-import {BookIcon} from '@sanity/icons'
+import {BookIcon, EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
 import {DECISION_PARAMETERS_SCHEMA, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
@@ -53,7 +53,6 @@ import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
-import {workshopTool} from './workshop'
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
@@ -145,6 +144,41 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
                 }
               },
             }),
+            // Test document type for verifying DocumentLocation icon and showHref properties
+            locationResolverTest: defineLocations({
+              select: {title: 'title', slug: 'slug.current'},
+              resolve: (doc) => {
+                if (!doc?.title) return {message: 'Add a title to see locations', tone: 'caution'}
+                return {
+                  locations: [
+                    {
+                      title: 'Email Client View',
+                      href: `/newsletter/${doc.slug ?? 'untitled'}/email`,
+                      icon: EnvelopeIcon,
+                      showHref: false,
+                    },
+                    {
+                      title: 'Web View',
+                      href: `/newsletter/${doc.slug ?? 'untitled'}`,
+                      // Uses defaults: DesktopIcon, showHref: true
+                    },
+                    {
+                      title: 'Mobile App',
+                      href: `/newsletter/${doc.slug ?? 'untitled'}/app`,
+                      icon: MobileDeviceIcon,
+                      showHref: false,
+                    },
+                    {
+                      title: 'In-store Display',
+                      href: `/newsletter/${doc.slug ?? 'untitled'}/display`,
+                      icon: PresentationIcon,
+                      showHref: false,
+                    },
+                  ],
+                  message: 'Preview this content in different contexts',
+                }
+              },
+            }),
           },
         },
       }),
@@ -169,13 +203,6 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         },
       }),
       colorInput(),
-      workshopTool({
-        collections: [
-          {name: 'sanity', title: 'sanity'},
-          {name: 'structure-tool', title: 'sanity/structure'},
-          {name: 'form-builder', title: '@sanity/form-builder'},
-        ],
-      }),
       visionTool({
         // uncomment to test
         //defaultApiVersion: '2025-02-05',

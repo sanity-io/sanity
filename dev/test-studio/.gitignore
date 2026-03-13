@@ -1,7 +1,4 @@
 /dist
 
-# Ignore generated source files
-/workshop/scopes.js
-
 .env.*
 !.env.example

@@ -45,7 +45,7 @@ export function OpenReleaseToEditBanner({
   return <OpenReleaseToEditBannerInner documentId={documentId} />
 }
 
-export function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
+function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
   const {data: activeReleases} = useActiveReleases()
   const setPerspective = useSetPerspective()
   const releaseId = getVersionFromId(documentId) ?? ''

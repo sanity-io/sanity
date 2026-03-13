@@ -132,7 +132,7 @@ export async function resolveInitialValue(
 }
 
 /** @internal */
-export function getItemType(arrayType: ArraySchemaType, item: unknown): SchemaType | undefined {
+function getItemType(arrayType: ArraySchemaType, item: unknown): SchemaType | undefined {
   const itemTypeName = resolveTypeName(item)
 
   return itemTypeName === 'object' && arrayType.of.length === 1

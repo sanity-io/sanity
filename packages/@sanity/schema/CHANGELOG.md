@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.15.0](https://github.com/sanity-io/sanity/compare/v5.14.1...v5.15.0) (2026-03-12)
+
+### Features
+
+* upgrade to new `@sanity/cli` ([#12200](https://github.com/sanity-io/sanity/issues/12200)) ([902075d](https://github.com/sanity-io/sanity/commit/902075d3a4567223745988ab706a6009a86419b7)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+
+## [5.14.1](https://github.com/sanity-io/sanity/compare/v5.14.0...v5.14.1) (2026-03-10)
+
+**Note:** Version bump only for package @sanity/schema
+
+## [5.14.0](https://github.com/sanity-io/sanity/compare/v5.13.0...v5.14.0) (2026-03-10)
+
+### Bug Fixes
+
+* add warnings when element is not valid instead of crashing studio ([#12262](https://github.com/sanity-io/sanity/issues/12262)) ([1786aca](https://github.com/sanity-io/sanity/commit/1786aca228c6364c88a0ed76b7eaad8a943fe919)) by RitaDias (rita@sanity.io)
+
+## [5.13.0](https://github.com/sanity-io/sanity/compare/v5.12.0...v5.13.0) (2026-03-03)
+
+### Bug Fixes
+
+* update fileAsset and imageAsset required fields ([#12261](https://github.com/sanity-io/sanity/issues/12261)) ([2de42c8](https://github.com/sanity-io/sanity/commit/2de42c82d6a0e328e995fa20a07e980028e4e070)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+## [5.12.0](https://github.com/sanity-io/sanity/compare/v5.11.0...v5.12.0) (2026-02-24)
+
+**Note:** Version bump only for package @sanity/schema
+
+## [5.11.0](https://github.com/sanity-io/sanity/compare/v5.10.0...v5.11.0) (2026-02-19)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.27.1 ([#12180](https://github.com/sanity-io/sanity/issues/12180)) ([c8c7dea](https://github.com/sanity-io/sanity/commit/c8c7dea5a94a691dabb2f1549a2d494432d494f0)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.10.0](https://github.com/sanity-io/sanity/compare/v5.9.0...v5.10.0) (2026-02-17)
 
 ### Features

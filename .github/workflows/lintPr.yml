@@ -3,29 +3,42 @@ name: Lint PR
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
-  # Build on commits pushed to branches without a PR if it's in the allowlist
-  push:
-    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
-  lint:
+  oxlint:
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - name: Oxlint files
+        run: pnpm turbo run check:oxlint -- --format github
 
+  eslint:
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # needed for the --affected flag in turbo to work correctly
+      - name: Ensure local main ref exists for turbo --affected
+        run: git fetch origin main:main
       - uses: ./.github/actions/setup
-
-      - name: Oxlint files
-        run: pnpm turbo run check:oxlint -- --format github
-
       - name: ESLint files
         run: pnpm turbo run lint --affected --output-logs=full --continue -- -f gha
+
+  knip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - name: Run Knip
+        run: pnpm knip --reporter github-actions

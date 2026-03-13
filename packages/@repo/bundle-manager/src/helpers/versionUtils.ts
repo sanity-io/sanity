@@ -1,4 +1,6 @@
-import {groupBy, partition, uniqBy} from 'lodash-es'
+import groupBy from 'lodash-es/groupBy.js'
+import partition from 'lodash-es/partition.js'
+import uniqBy from 'lodash-es/uniqBy.js'
 import semver from 'semver'
 
 import {STALE_TAGS_EXPIRY_SECONDS} from '../constants'

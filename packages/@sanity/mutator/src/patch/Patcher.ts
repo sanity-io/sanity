@@ -6,11 +6,6 @@ import {SetIfMissingPatch} from './SetIfMissingPatch'
 import {SetPatch} from './SetPatch'
 import {type PatchTypes, type SingleDocumentPatch} from './types'
 
-export interface Patch {
-  id: string
-  path: string
-}
-
 export class Patcher {
   patches: PatchTypes[]
 

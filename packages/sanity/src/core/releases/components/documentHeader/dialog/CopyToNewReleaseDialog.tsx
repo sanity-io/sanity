@@ -1,6 +1,6 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -8,12 +8,12 @@ import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {type TargetPerspective} from '../../../../perspective/types'
 import {Preview} from '../../../../preview/components/Preview'
 import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../../hooks/useReleaseFormStorage'
-import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
@@ -27,13 +27,12 @@ export function CopyToNewReleaseDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
-  tone: BadgeTone
+  release: TargetPerspective
   title: string
   onCreateVersion: (releaseId: string) => void
 }): React.JSX.Element {
-  const {onClose, documentId, documentType, tone, title, onCreateVersion} = props
+  const {onClose, documentId, documentType, release: sourceRelease, title, onCreateVersion} = props
   const {t} = useTranslation()
-  const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const toast = useToast()
   const createReleaseMetadata = useCreateReleaseMetadata()
   const {releasePromise} = useGuardWithReleaseLimitUpsell()
@@ -158,7 +157,7 @@ export function CopyToNewReleaseDialog(props: {
               textOverflow: 'ellipsis',
             }}
           >
-            <ReleaseAvatar padding={1} tone={tone} />
+            <ReleaseAvatar padding={1} release={sourceRelease} />
             <Text size={1} title={displayTitle}>
               {displayTitle}
             </Text>

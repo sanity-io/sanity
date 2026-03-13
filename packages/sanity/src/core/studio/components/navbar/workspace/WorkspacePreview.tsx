@@ -15,7 +15,7 @@ interface MediaProps {
   $size: PreviewIconSize
 }
 
-export const Media = styled.div<MediaProps>`
+const Media = styled.div<MediaProps>`
   width: ${(props) => (props.$size === 'small' ? '25px' : '41px')};
   height: ${(props) => (props.$size === 'small' ? '25px' : '41px')};
   border-radius: 0.25rem;

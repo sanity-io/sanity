@@ -1,14 +1,22 @@
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 import {type RouterContextValue, type SearchParam} from 'sanity/router'
 
 export type Mode = 'active' | 'paused' | 'archived'
 export type CardinalityView = 'releases' | 'drafts'
 
-export const DATE_SEARCH_PARAM_KEY = 'date'
 export const GROUP_SEARCH_PARAM_KEY = 'group'
-export const VIEW_SEARCH_PARAM_KEY = 'view'
+export const RELEASE_NOT_FOUND_SEARCH_PARAM_KEY = 'releaseNotFound'
+const DATE_SEARCH_PARAM_KEY = 'date'
+const VIEW_SEARCH_PARAM_KEY = 'view'
 
 const DATE_SEARCH_PARAM_VALUE_FORMAT = 'yyyy-MM-dd'
+
+export function getInitialReleaseNotFound(router: RouterContextValue): boolean {
+  return (
+    new URLSearchParams(router.state._searchParams).get(RELEASE_NOT_FOUND_SEARCH_PARAM_KEY) ===
+    'true'
+  )
+}
 
 export const getInitialFilterDate = (router: RouterContextValue) => () => {
   const activeFilterDate = new URLSearchParams(router.state._searchParams).get(

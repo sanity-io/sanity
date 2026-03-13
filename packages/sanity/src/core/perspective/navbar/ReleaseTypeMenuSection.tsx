@@ -1,5 +1,5 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Flex, Label} from '@sanity/ui'
+import {Card, Flex, Label, Stack} from '@sanity/ui'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -50,28 +50,30 @@ export function ReleaseTypeMenuSection({
   const releaseTypeOffset = offsets[releaseType]
 
   return (
-    <>
-      <GlobalPerspectiveMenuLabelIndicator
-        $withinRange={releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset}
-        paddingRight={2}
-        paddingTop={releaseType === 'asap' ? 1 : 4}
-        paddingBottom={2}
-      >
-        <Label muted style={{textTransform: 'uppercase'}} size={1}>
-          {t(RELEASE_TYPE_LABELS[releaseType])}
-        </Label>
-      </GlobalPerspectiveMenuLabelIndicator>
-      <Flex direction="column" gap={1}>
-        {releases.map((release, index) => (
-          <GlobalPerspectiveMenuItem
-            key={release._id}
-            release={release}
-            ref={getMenuItemRef(getReleaseIdFromReleaseDocumentId(release._id))}
-            rangePosition={getRangePosition(range, releaseTypeOffset + index)}
-            menuItemProps={menuItemProps}
-          />
-        ))}
-      </Flex>
-    </>
+    <Card padding={1} borderBottom>
+      <Stack space={1}>
+        <GlobalPerspectiveMenuLabelIndicator
+          $withinRange={releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset}
+          paddingLeft={2}
+          paddingTop={3}
+          paddingBottom={1}
+        >
+          <Label muted style={{textTransform: 'uppercase'}} size={1}>
+            {t(RELEASE_TYPE_LABELS[releaseType])}
+          </Label>
+        </GlobalPerspectiveMenuLabelIndicator>
+        <Flex direction="column" gap={1}>
+          {releases.map((release, index) => (
+            <GlobalPerspectiveMenuItem
+              key={release._id}
+              release={release}
+              ref={getMenuItemRef(getReleaseIdFromReleaseDocumentId(release._id))}
+              rangePosition={getRangePosition(range, releaseTypeOffset + index)}
+              menuItemProps={menuItemProps}
+            />
+          ))}
+        </Flex>
+      </Stack>
+    </Card>
   )
 }

@@ -1,1 +1,0 @@
-export {pretty} from './prettyReporter'

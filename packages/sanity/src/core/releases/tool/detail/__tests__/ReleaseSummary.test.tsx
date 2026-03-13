@@ -14,6 +14,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import type * as ConnectionStatusStoreMod from '../../../../store/_legacy/connection-status/connection-status-store'
 import {
   activeASAPRelease,
   archivedScheduledRelease,
@@ -70,6 +71,12 @@ vi.mock('../../components/ReleaseDocumentPreview', () => ({
 
 vi.mock('../../../../studio/components/navbar/search/components/SearchPopover')
 
+vi.mock('../documentTable/useReleaseHistory', () => ({
+  useReleaseHistory: vi.fn().mockReturnValue({
+    documentsHistory: new Map(),
+  }),
+}))
+
 // Mock the preview streams to prevent RxJS unsubscription errors during test cleanup.
 // These streams use fromEvent(window, ...) which can cause errors when unsubscribing
 // after the test environment has been modified.
@@ -89,6 +96,22 @@ vi.mock('../../../../preview/streams/visibilityChange', async () => {
   const {EMPTY} = await import('rxjs')
   return {visibilityChange$: EMPTY}
 })
+vi.mock('../../../../store/_legacy/debugParams/debugParams', async () => {
+  const {of} = await import('rxjs')
+  return {debugParams$: of([]), debugRolesParam$: of([])}
+})
+
+vi.mock(
+  '../../../../store/_legacy/connection-status/connection-status-store',
+  async (importOriginal) => {
+    const mod = await importOriginal<typeof ConnectionStatusStoreMod>()
+    const {of} = await import('rxjs')
+    return {
+      ...mod,
+      createConnectionStatusStore: () => ({connectionStatus$: of(mod.CONNECTING)}),
+    }
+  },
+)
 
 const releaseDocuments = [
   {

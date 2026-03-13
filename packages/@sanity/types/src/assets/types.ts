@@ -159,7 +159,19 @@ export interface AssetSourceComponentProps {
   onSelect: (assetFromSource: AssetFromSource[]) => void
   onChangeAction?: (action: AssetSourceComponentAction) => void
   schemaType?: ImageSchemaType | FileSchemaType
-  /** @beta */
+  /**
+   * The uploader instance for tracking upload progress.
+   *
+   * When `action` is `'upload'`:
+   * - If `uploader` is provided: Picker mode. Files are available via
+   *   `uploader.getFiles()`. The source should upload these files and report
+   *   progress via the uploader.
+   * - If `uploader` is undefined: Component mode. The source should show its
+   *   own file selection UI, handle uploads internally, and call `onSelect`
+   *   when complete.
+   *
+   * @beta
+   */
   uploader?: AssetSourceUploader
   /**
    * The asset to open in source. Only provided when action is 'openInSource'.
@@ -203,6 +215,21 @@ export interface AssetSource {
   icon?: ComponentType
   /** @beta */
   Uploader?: AssetSourceUploaderClass
+  /**
+   * Specifies how uploads should be initiated for this source.
+   *
+   * - `'picker'` (default): The studio opens a native file picker first,
+   *   then passes the selected files to the source via the `uploader` prop.
+   *   Progress is tracked via the uploader and shown in the studio UI.
+   *
+   * - `'component'`: The studio renders the source component directly with
+   *   `action: 'upload'`. The source provides its own UI for selecting and
+   *   uploading files, and tracks progress internally. When complete, the
+   *   source calls `onSelect` with the uploaded assets.
+   *
+   * @beta
+   */
+  uploadMode?: 'picker' | 'component'
   /**
    * Resolve how to open an asset in its original source.
    *

@@ -21,18 +21,6 @@ export interface Doc {
 }
 
 /**
- * Sanity document that has been persisted to the backend, and thus has
- * both a revision ID and updated/created at timestamps
- *
- * @internal
- */
-export interface PersistedDoc extends Doc {
-  _rev: string
-  _updatedAt: string
-  _createdAt: string
-}
-
-/**
  * Internal mutation body representation - note that theoretically a
  * mutation can only hold one of these operations each, but for sake
  * of simpler code it is bundled together as one here

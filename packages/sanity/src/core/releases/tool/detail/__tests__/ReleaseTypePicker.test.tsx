@@ -69,7 +69,7 @@ describe('ReleaseTypePicker', () => {
     it('renders the button and displays for ASAP release', async () => {
       await renderComponent()
 
-      expect(screen.getByText('ASAP')).toBeInTheDocument()
+      expect(screen.getByText('As soon as possible')).toBeInTheDocument()
     })
 
     it('renders the button and displays for undecided release', async () => {
@@ -146,7 +146,7 @@ describe('ReleaseTypePicker', () => {
       await userEvent.click(pickerButton)
       const scheduledTab = await findTabByName('At time')
       await userEvent.click(scheduledTab)
-      const asapTab = await findTabByName('ASAP')
+      const asapTab = await findTabByName('As soon as possible')
       await userEvent.click(asapTab)
 
       expect(screen.queryByTestId('date-input')).not.toBeInTheDocument()
@@ -221,7 +221,7 @@ describe('ReleaseTypePicker', () => {
       const undecidedTab = await findTabByName('Undecided')
       await userEvent.click(undecidedTab)
 
-      const asapTab = await findTabByName('ASAP')
+      const asapTab = await findTabByName('As soon as possible')
       await userEvent.click(asapTab)
 
       await userEvent.click(screen.getByTestId('release-type-picker'))
@@ -239,7 +239,7 @@ describe('ReleaseTypePicker', () => {
       const atTimeTab = await findTabByName('At time')
       await userEvent.click(atTimeTab)
 
-      const asapTab = await findTabByName('ASAP')
+      const asapTab = await findTabByName('As soon as possible')
       await userEvent.click(asapTab)
 
       await userEvent.click(screen.getByTestId('release-type-picker'))
@@ -261,7 +261,7 @@ describe('ReleaseTypePicker', () => {
       const pickerButton = screen.getByRole('button')
       await userEvent.click(pickerButton)
 
-      const asapTab = await findTabByName('ASAP')
+      const asapTab = await findTabByName('As soon as possible')
       await userEvent.click(asapTab)
 
       // 23 hours before `intendedPublishAt` (one hour after picker opened).

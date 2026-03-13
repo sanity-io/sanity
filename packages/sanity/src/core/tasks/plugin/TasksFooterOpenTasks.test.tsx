@@ -10,6 +10,11 @@ import {type TaskDocument} from '../types'
 import {SetActiveDocument} from './structure/SetActiveDocument'
 import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
 
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useTranslation: () => ({t: (key: string) => key}),
+}))
+
 vi.mock('../../hooks', () => ({
   useFeatureEnabled: vi.fn().mockReturnValue({enabled: true, isLoading: false}),
 }))
@@ -34,7 +39,7 @@ vi.mock('@sanity/ui', async () => {
 })
 vi.mock('sanity/router', async () => {
   const actual = await vi.importActual('sanity/router')
-  const mock = vi.fn().mockReturnValue({asPath: '/', state: {}})
+  const mock = vi.fn().mockReturnValue({asPath: '/', state: {}, stickyParams: {}})
   return new Proxy(actual, {
     get: (target, property: keyof typeof actual) => {
       if (property === 'useRouter') return mock

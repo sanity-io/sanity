@@ -25,11 +25,19 @@ export type TestRenderObjectInputCallback = (
 ) => React.JSX.Element
 
 export async function renderObjectInput(options: {
+  additionalSchemaTypes?: Array<{name: string; [key: string]: unknown}>
+  configOverrides?: Record<string, unknown>
   fieldDefinition: FieldDefinition<'object'>
   props?: TestRenderProps
   render: TestRenderObjectInputCallback
 }) {
-  const {fieldDefinition, props, render: initialRender} = options
+  const {
+    additionalSchemaTypes,
+    configOverrides,
+    fieldDefinition,
+    props,
+    render: initialRender,
+  } = options
 
   const onFieldClose = vi.fn()
   const onFieldCollapse = vi.fn()
@@ -78,6 +86,8 @@ export async function renderObjectInput(options: {
   }
 
   const result = await renderInput<ComplexElementProps>({
+    additionalSchemaTypes,
+    configOverrides,
     fieldDefinition,
     props,
     render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),

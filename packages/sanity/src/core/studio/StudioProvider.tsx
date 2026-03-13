@@ -1,11 +1,5 @@
 import {ToastProvider} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
-import {registerLanguage} from 'react-refractor'
-import bash from 'refractor/bash'
-import javascript from 'refractor/javascript'
-import json from 'refractor/json'
-import jsx from 'refractor/jsx'
-import typescript from 'refractor/typescript'
 
 import {LoadingBlock} from '../components/loadingBlock'
 import {AppIdCacheProvider} from '../create/studio-app/AppIdCacheProvider'
@@ -41,12 +35,6 @@ import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
 
-registerLanguage(bash)
-registerLanguage(javascript)
-registerLanguage(json)
-registerLanguage(jsx)
-registerLanguage(typescript)
-
 /**
  * @hidden
  * @beta */
@@ -70,6 +58,9 @@ export function StudioProvider({
   // occur during configuration loading, React rendering etc. StudioProvider is often the highest
   // mounted React component that is shared across embedded and standalone studios.
   errorReporter.initialize()
+
+  // Register refractor languages on first render (deferred from module scope for faster import)
+  ensureRefractorLanguages()
 
   // Extract the first workspace's projectId for use in error screens
   const primaryProjectId = useMemo(() => {
@@ -144,5 +135,25 @@ export function StudioProvider({
         </StudioErrorBoundary>
       </ToastProvider>
     </ColorSchemeProvider>
+  )
+}
+
+let _refractorRegistered = false
+
+function ensureRefractorLanguages() {
+  if (_refractorRegistered) return
+  _refractorRegistered = true
+  void import('react-refractor').then(({registerLanguage}) =>
+    Promise.all([
+      import('refractor/bash'),
+      import('refractor/javascript'),
+      import('refractor/json'),
+      import('refractor/jsx'),
+      import('refractor/typescript'),
+    ])
+      .then((languages) => languages.forEach((lang) => registerLanguage(lang.default)))
+      .catch((error) =>
+        console.warn('Failed to load syntax highlighting languages for code blocks', error),
+      ),
   )
 }

@@ -1,6 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
-import {debounce} from 'lodash-es'
+import debounce from 'lodash-es/debounce.js'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 
@@ -18,10 +18,6 @@ export interface ParamsEditorProps {
   paramsError: string | undefined
   hasValidParams: boolean
   editorRef: RefObject<VisionCodeMirrorHandle | null>
-}
-
-export interface ParamsEditorChange {
-  valid: boolean
 }
 
 export function ParamsEditor(props: ParamsEditorProps) {

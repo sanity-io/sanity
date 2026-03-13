@@ -36,6 +36,7 @@ import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {useDocumentPane} from '../../useDocumentPane'
 import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetry__/focus.telemetry'
+import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
@@ -223,6 +224,7 @@ export const DocumentPanelHeader = memo(
                     </>
                   )}
 
+                  <CopyDocumentActions />
                   {menuButtonNodes.map((item) => (
                     <PaneHeaderActionButton key={item.key} node={item} />
                   ))}

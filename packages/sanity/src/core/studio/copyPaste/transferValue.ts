@@ -34,7 +34,7 @@ import {
   type TypedObject,
 } from '@sanity/types'
 import {resolveTypeName} from '@sanity/util/content'
-import {last} from 'lodash-es'
+import last from 'lodash-es/last.js'
 
 import {getValueAtPath} from '../../field/paths/helpers'
 import {type FIXME} from '../../FIXME'

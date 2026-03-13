@@ -1,5 +1,5 @@
 import {Card, Text} from '@sanity/ui'
-import {endOfDay} from 'date-fns'
+import {endOfDay} from 'date-fns/endOfDay'
 import {useCallback, useMemo} from 'react'
 
 interface CalendarDayProps {

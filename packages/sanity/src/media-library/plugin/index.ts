@@ -1,4 +1,5 @@
 import {definePlugin} from '../../core/config/definePlugin'
+import {mediaLibraryUsEnglishLocaleBundle} from './i18n'
 import {mediaLibrarySchemas} from './schemas'
 
 /**
@@ -13,5 +14,8 @@ export const mediaLibrary = definePlugin({
   name: MEDIA_LIBRARY_NAME,
   schema: {
     types: mediaLibrarySchemas,
+  },
+  i18n: {
+    bundles: [mediaLibraryUsEnglishLocaleBundle],
   },
 })

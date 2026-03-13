@@ -1,10 +1,12 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {render, screen, waitFor, within} from '@testing-library/react'
+import {useMediaIndex} from '@sanity/ui'
+import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {format, set} from 'date-fns'
+import {format} from 'date-fns/format'
+import {set} from 'date-fns/set'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext, useRouter} from 'sanity/router'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
@@ -101,24 +103,27 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-const {mockNavigate, mockResolveIntentLink} = vi.hoisted(() => {
+const {mockNavigate, mockResolveIntentLink, mockRouterReturn} = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockNavigate = vi.fn()
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockResolveIntentLink = vi.fn(() => '/test')
-  return {mockNavigate, mockResolveIntentLink}
+  // Stable reference so the `[router]` effect dependency doesn't fire on every render
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  const mockRouterReturn = {
+    state: {},
+    navigate: mockNavigate,
+    resolveIntentLink: mockResolveIntentLink,
+  }
+  return {mockNavigate, mockResolveIntentLink, mockRouterReturn}
 })
 
 // Mock the router at module level
 vi.mock('sanity/router', async (importOriginal) => {
   const actual = await importOriginal()
   return {
-    ...actual,
-    useRouter: vi.fn(() => ({
-      state: {},
-      navigate: mockNavigate,
-      resolveIntentLink: mockResolveIntentLink,
-    })),
+    ...(actual as Record<string, unknown>),
+    useRouter: vi.fn(() => mockRouterReturn),
   }
 })
 
@@ -214,6 +219,12 @@ const TestComponent = () => {
   )
 }
 
+async function mountAndFlush(...args: Parameters<typeof render>) {
+  const view = render(...args)
+  await act(() => Promise.resolve())
+  return view
+}
+
 describe('ReleasesOverview', () => {
   beforeEach(() => {
     mockUseActiveReleases.mockRestore()
@@ -264,7 +275,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      render(<TestComponent />, {wrapper})
+      await mountAndFlush(<TestComponent />, {wrapper})
     })
 
     it('shows loading state when releases are loading', async () => {
@@ -311,7 +322,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return render(<TestComponent />, {wrapper})
+      return mountAndFlush(<TestComponent />, {wrapper})
     })
 
     it('shows a message about releases', () => {
@@ -358,7 +369,7 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      return render(<TestComponent />, {wrapper})
+      return mountAndFlush(<TestComponent />, {wrapper})
     }
 
     beforeEach(async () => {
@@ -390,7 +401,7 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      activeRender = render(<TestComponent />, {wrapper})
+      activeRender = await mountAndFlush(<TestComponent />, {wrapper})
     })
 
     it('filters out releases with cardinality "one"', async () => {
@@ -480,7 +491,7 @@ describe('ReleasesOverview', () => {
     it('shows time as ASAP for asap release types', () => {
       const asapReleaseRow = screen.getAllByTestId('table-row')[0]
 
-      within(asapReleaseRow).getByText('ASAP')
+      within(asapReleaseRow).getByText('As soon as possible')
     })
 
     it('shows time as Undecided for undecided release types', () => {
@@ -506,6 +517,7 @@ describe('ReleasesOverview', () => {
     it('shows lock next to scheduled releases', () => {
       const scheduledReleaseRow = screen.getAllByTestId('table-row')[1]
       within(scheduledReleaseRow).getByTestId('release-avatar-suggest')
+
       within(scheduledReleaseRow).getByTestId('release-lock-icon')
     })
 
@@ -520,13 +532,11 @@ describe('ReleasesOverview', () => {
     })
 
     it('allows for pinning perspectives', async () => {
-      mockNavigate.mockClear()
+      mockedSetPerspective.mockClear()
 
       const rows = screen.getAllByTestId('table-row')
-      // First row is activeScheduledRelease with ID 'rActive'
-      // Second row is activeASAPRelease with ID 'rASAP'
-      const secondRow = rows[1]
-      const pinButton = within(secondRow).getByTestId('pin-release-button')
+      const firstRow = rows[0]
+      const pinButton = within(firstRow).getByTestId('pin-release-button')
 
       expect(pinButton).toBeInTheDocument()
       const buttonElement = pinButton.closest('button')
@@ -535,17 +545,9 @@ describe('ReleasesOverview', () => {
 
       await userEvent.click(buttonElement!)
 
-      // Wait for navigate to be called
-      await waitFor(
-        () => {
-          expect(mockNavigate).toHaveBeenCalled()
-        },
-        {timeout: 3000},
-      )
-
-      // The mock was called, which means the button click triggered navigation
-      // This verifies the pinning functionality works
-      expect(mockNavigate).toHaveBeenCalled()
+      await waitFor(() => {
+        expect(mockedSetPerspective).toHaveBeenCalledOnce()
+      })
     })
 
     it('will show pinned release in release list', async () => {
@@ -677,6 +679,30 @@ describe('ReleasesOverview', () => {
       })
     })
 
+    describe('narrow viewport layout', () => {
+      beforeEach(async () => {
+        vi.mocked(useMediaIndex).mockReturnValue(1)
+        await rerender()
+      })
+
+      afterEach(() => {
+        vi.mocked(useMediaIndex).mockReturnValue(3)
+      })
+
+      it('opens the calendar filter as a dialog instead of a sidebar', async () => {
+        const filterButton = document.querySelector('button[name="calendar"]') as HTMLButtonElement
+        expect(filterButton).toBeInTheDocument()
+        await userEvent.click(filterButton)
+
+        const dialog = getByDataUi(document.body, 'DialogCard')
+        expect(dialog).toBeInTheDocument()
+      })
+
+      it('hides the timezone text and shows only the icon', () => {
+        expect(screen.queryByText('SCT (Sanity/Oslo)')).not.toBeInTheDocument()
+      })
+    })
+
     describe('archived releases', () => {
       beforeEach(async () => {
         await userEvent.click(screen.getByText('Archived'))
@@ -717,7 +743,7 @@ describe('ReleasesOverview', () => {
       within(unsortedFifthRelease).getByText(activeUndecidedErrorRelease.metadata.title)
 
       // sort by asc publish at
-      await userEvent.click(screen.getByText('Time'))
+      await userEvent.click(screen.getByText('When'))
       const [
         descPublishSortedFirstRelease,
         descPublishSortedSecondRelease,
@@ -788,7 +814,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return render(<TestComponent />, {wrapper})
+          return mountAndFlush(<TestComponent />, {wrapper})
         })
 
         it('should not show the cardinality view dropdown', () => {
@@ -860,7 +886,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          render(<TestComponent />, {wrapper})
+          await mountAndFlush(<TestComponent />, {wrapper})
         })
 
         it('should show the cardinality view dropdown', () => {
@@ -951,7 +977,7 @@ describe('ReleasesOverview', () => {
           resources: [releasesUsEnglishLocaleBundle],
         })
 
-        return render(<TestComponent />, {wrapper})
+        return mountAndFlush(<TestComponent />, {wrapper})
       })
 
       it('should show the cardinality view dropdown', () => {
@@ -1031,7 +1057,7 @@ describe('ReleasesOverview', () => {
           resources: [releasesUsEnglishLocaleBundle],
         })
 
-        render(<TestComponent />, {wrapper})
+        await mountAndFlush(<TestComponent />, {wrapper})
       })
 
       it('should still show the cardinality view dropdown', () => {
@@ -1105,7 +1131,7 @@ describe('ReleasesOverview', () => {
           },
         })
 
-        render(<TestComponent />, {wrapper})
+        await mountAndFlush(<TestComponent />, {wrapper})
 
         const releasesButton = screen.getByRole('button', {name: 'Releases'})
         expect(releasesButton).toBeInTheDocument()
@@ -1132,7 +1158,7 @@ describe('ReleasesOverview', () => {
           },
         })
 
-        render(<TestComponent />, {wrapper})
+        await mountAndFlush(<TestComponent />, {wrapper})
 
         // text is there, but menu button is not
         expect(screen.getByText('Releases')).toBeInTheDocument()
@@ -1162,7 +1188,7 @@ describe('ReleasesOverview', () => {
           },
         })
 
-        render(<TestComponent />, {wrapper})
+        await mountAndFlush(<TestComponent />, {wrapper})
 
         // menu button should be there now since we have cardinality one releases
         const releasesButton = screen.getByRole('button', {name: 'Releases'})
@@ -1232,7 +1258,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return render(<TestComponent />, {wrapper})
+          return mountAndFlush(<TestComponent />, {wrapper})
         })
 
         it('should show upsell only', () => {
@@ -1261,7 +1287,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return render(<TestComponent />, {wrapper})
+          return mountAndFlush(<TestComponent />, {wrapper})
         })
 
         it('should show data table only (not upsell)', async () => {
@@ -1287,7 +1313,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          render(<TestComponent />, {wrapper})
+          await mountAndFlush(<TestComponent />, {wrapper})
 
           expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
           expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
@@ -1321,7 +1347,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          render(<TestComponent />, {wrapper})
+          await mountAndFlush(<TestComponent />, {wrapper})
 
           expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
           expect(screen.queryByRole('table')).not.toBeInTheDocument()
@@ -1343,13 +1369,84 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          render(<TestComponent />, {wrapper})
+          await mountAndFlush(<TestComponent />, {wrapper})
 
           expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
           expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
           expect(screen.queryByRole('table')).not.toBeInTheDocument()
         })
       })
+    })
+  })
+
+  describe('URL navigation scenarios', () => {
+    it('navigates without view=drafts when coming from another tool (clean URL)', async () => {
+      mockNavigate.mockClear()
+      vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+      vi.mocked(useRouter).mockReturnValue({
+        state: {},
+        navigate: mockNavigate,
+        resolveIntentLink: mockResolveIntentLink,
+      } as unknown as ReturnType<typeof useRouter>)
+
+      const wrapper = await createTestProvider({
+        resources: [releasesUsEnglishLocaleBundle],
+      })
+
+      await mountAndFlush(<TestComponent />, {wrapper})
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalled()
+      })
+
+      for (const call of mockNavigate.mock.calls) {
+        const searchParams: [string, string][] = call[0]?._searchParams || []
+        expect(searchParams).not.toContainEqual(['view', 'drafts'])
+      }
+    })
+
+    it('navigates without view=drafts after external navigation from ?view=drafts to clean URL', async () => {
+      vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+
+      const wrapper = await createTestProvider({
+        resources: [releasesUsEnglishLocaleBundle],
+      })
+
+      // Phase 1: mount with view=drafts — confirms the component respects the URL param
+      vi.mocked(useRouter).mockReturnValue({
+        state: {_searchParams: [['view', 'drafts']]},
+        navigate: mockNavigate,
+        resolveIntentLink: mockResolveIntentLink,
+      } as unknown as ReturnType<typeof useRouter>)
+
+      const {unmount} = await mountAndFlush(<TestComponent />, {wrapper})
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith({
+          _searchParams: expect.arrayContaining([['view', 'drafts']]),
+        })
+      })
+
+      unmount()
+      mockNavigate.mockClear()
+
+      // Phase 2: remount with clean URL — simulates external navigation clearing the params
+      vi.mocked(useRouter).mockReturnValue({
+        state: {},
+        navigate: mockNavigate,
+        resolveIntentLink: mockResolveIntentLink,
+      } as unknown as ReturnType<typeof useRouter>)
+
+      await mountAndFlush(<TestComponent />, {wrapper})
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalled()
+      })
+
+      for (const call of mockNavigate.mock.calls) {
+        const searchParams: [string, string][] = call[0]?._searchParams || []
+        expect(searchParams).not.toContainEqual(['view', 'drafts'])
+      }
     })
   })
 })

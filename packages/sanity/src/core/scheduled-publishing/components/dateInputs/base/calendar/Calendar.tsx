@@ -7,8 +7,14 @@ import {
   Select,
   Text,
 } from '@sanity/ui'
-import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
-import {range} from 'lodash-es'
+import {addDays} from 'date-fns/addDays'
+import {addMonths} from 'date-fns/addMonths'
+import {setDate} from 'date-fns/setDate'
+import {setHours} from 'date-fns/setHours'
+import {setMinutes} from 'date-fns/setMinutes'
+import {setMonth} from 'date-fns/setMonth'
+import {setYear} from 'date-fns/setYear'
+import range from 'lodash-es/range.js'
 import {
   type ComponentProps,
   type FormEvent,

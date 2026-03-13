@@ -27,10 +27,3 @@ const patterns = config.packages.map((pkg) => path.join(pkg, 'package.json'))
 export function getManifestPaths(): string[] {
   return patterns.flatMap((pattern) => globSync(pattern))
 }
-
-/**
- * @internal
- */
-export function getPackagePaths(): string[] {
-  return getManifestPaths().map((p) => path.dirname(p))
-}

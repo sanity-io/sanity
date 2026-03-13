@@ -102,7 +102,9 @@ const VersionItemPreview = ({
           <Card radius={'full'} tone={tone} style={{backgroundColor: 'transparent'}}>
             <Flex align="center" gap={2} paddingY={2} paddingRight={3} paddingLeft={2}>
               <Text size={1}>
-                <ReleaseAvatarIcon tone={tone} />
+                <ReleaseAvatarIcon
+                  release={documentVariant === 'version' && release ? release : documentVariant}
+                />
               </Text>
               {documentVariant === 'version' ? (
                 <ReleaseTitle

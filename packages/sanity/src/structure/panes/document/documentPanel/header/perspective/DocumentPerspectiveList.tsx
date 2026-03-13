@@ -24,6 +24,7 @@ import {
   useDocumentVersions,
   useFilteredReleases,
   useGetDefaultPerspective,
+  useAgentVersionDisplay,
   usePerspective,
   useSchema,
   useSetPerspective,
@@ -36,6 +37,7 @@ import {
 import {isLiveEditEnabled} from '../../../../../components/paneItem/helpers'
 import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../../useDocumentPane'
+import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'
 import {NonReleaseVersionsSelect} from '../NonReleaseVersionsSelect'
 
 const TooltipContent = ({release}: {release: ReleaseDocument}) => {
@@ -95,7 +97,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const dateTimeFormat = useDateTimeFormat(DATE_TIME_FORMAT)
   const {loading} = useActiveReleases()
   const schema = useSchema()
-  const {editState, displayed, documentType, documentId} = useDocumentPane()
+  const {editState, displayed} = useDocumentPane()
+  const {documentType, documentId} = useDocumentPaneInfo()
   const isCreatingDocument = displayed && !displayed._createdAt
   const defaultPerspective = useGetDefaultPerspective()
   const filteredReleases = useFilteredReleases({
@@ -268,7 +271,12 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const isDraftModelEnabled = workspace.document.drafts?.enabled
 
-  const nonReleaseVersions = documentVersions.filter((versionDocumentId) => {
+  const {filteredVersionIds, getVersionDisplay} = useAgentVersionDisplay(
+    documentVersions,
+    selectedPerspectiveName,
+  )
+
+  const nonReleaseVersions = filteredVersionIds.filter((versionDocumentId) => {
     if (isPublishedId(versionDocumentId) || isDraftId(versionDocumentId)) {
       return false
     }
@@ -448,6 +456,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         releases={filteredReleases.notCurrentReleases}
         releasesLoading={loading}
         documentType={documentType}
+        getVersionDisplay={getVersionDisplay}
       />
     </>
   )

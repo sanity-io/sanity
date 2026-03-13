@@ -14,7 +14,8 @@ import {
   UnknownIcon,
 } from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
-import {capitalize, get} from 'lodash-es'
+import capitalize from 'lodash-es/capitalize.js'
+import get from 'lodash-es/get.js'
 import {type ComponentType, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 

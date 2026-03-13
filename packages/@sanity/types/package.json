@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "5.10.0",
+  "version": "5.15.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "cms",
@@ -69,10 +69,15 @@
     "@vitejs/plugin-react": "catalog:",
     "eslint": "catalog:",
     "react": "catalog:",
-    "rimraf": "^5.0.10",
+    "rimraf": "catalog:",
     "vitest": "catalog:"
   },
   "peerDependencies": {
     "@types/react": "^19.2"
-  }
+  },
+  "browserslist": [
+    "node >=20.19",
+    "node >=22.12",
+    "baseline 2024"
+  ]
 }

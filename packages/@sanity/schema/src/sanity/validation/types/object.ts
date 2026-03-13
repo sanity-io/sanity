@@ -1,4 +1,4 @@
-import {isPlainObject} from 'lodash-es'
+import isPlainObject from 'lodash-es/isPlainObject.js'
 
 import inspect from '../../inspect'
 import {error, HELP_IDS, warning} from '../createValidationResult'
@@ -89,6 +89,21 @@ export function validateField(field: any, visitorContext: any) {
     )
   }
 
+  if (field.title && typeof field.title !== 'string') {
+    problems.push(
+      warning(
+        `Field "${field.name}" has a non-string title. This is known to cause problems and will not be supported in future versions. Please use a string instead.`,
+      ),
+    )
+  }
+  if (field.description && typeof field.description !== 'string') {
+    problems.push(
+      warning(
+        `Field "${field.name}" has a non-string description. This is known to cause problems and will not be supported in future versions. Please use a string instead.`,
+      ),
+    )
+  }
+
   return problems
 }
 
@@ -149,7 +164,7 @@ export function validateFields(fields: any, options = {allowEmpty: false}) {
   return problems
 }
 
-export function validatePreview(preview: PreviewConfig) {
+function validatePreview(preview: PreviewConfig) {
   if (!isPlainObject(preview)) {
     return [error(`The "preview" property must be an object, instead saw "${typeof preview}"`)]
   }

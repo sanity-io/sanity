@@ -6,7 +6,15 @@ import {TasksNavigationContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
 import {TaskLinkCopied, TaskLinkOpened} from '../../__telemetry__/tasks.telemetry'
-import {type Action, type SidebarTabsIds, type State, type ViewModeOptions} from './types'
+import {
+  type Action,
+  type SidebarTabsIds,
+  type State,
+  TASKS_SELECTED_TASK_SEARCH_PARAM,
+  TASKS_SIDEBAR_SEARCH_PARAM,
+  TASKS_VIEW_MODE_SEARCH_PARAM,
+  type ViewModeOptions,
+} from './types'
 
 const initialState: State = {
   viewMode: 'list',
@@ -108,7 +116,17 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
 
   const handleCloseTasks = useCallback(() => {
     dispatch({type: 'TOGGLE_TASKS_VIEW', payload: false})
-  }, [])
+
+    // Remove task-related query parameters from the URL
+    router.navigate({
+      stickyParams: {
+        ...router.stickyParams,
+        [TASKS_SIDEBAR_SEARCH_PARAM]: null,
+        [TASKS_VIEW_MODE_SEARCH_PARAM]: null,
+        [TASKS_SELECTED_TASK_SEARCH_PARAM]: null,
+      },
+    })
+  }, [router])
 
   const handleOpenTasks = useCallback(() => {
     dispatch({type: 'TOGGLE_TASKS_VIEW', payload: true})
@@ -116,10 +134,10 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
 
   const handleCopyLinkToTask = useCallback(() => {
     const url = new URL(window.location.href)
-    url.searchParams.set('sidebar', 'tasks')
-    url.searchParams.set('viewMode', state.viewMode)
+    url.searchParams.set(TASKS_SIDEBAR_SEARCH_PARAM, 'tasks')
+    url.searchParams.set(TASKS_VIEW_MODE_SEARCH_PARAM, state.viewMode)
     if (state.selectedTask) {
-      url.searchParams.set('selectedTask', state.selectedTask)
+      url.searchParams.set(TASKS_SELECTED_TASK_SEARCH_PARAM, state.selectedTask)
     }
     navigator.clipboard
       .writeText(url.toString())
@@ -135,10 +153,9 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
       })
   }, [state.selectedTask, state.viewMode, telemetry, toast])
 
-  const searchParams = new URLSearchParams(router.state._searchParams)
-  const sidebar = searchParams.get('sidebar')
-  const viewMode = searchParams.get('viewMode')
-  const selectedTask = searchParams.get('selectedTask')
+  const sidebar = router.stickyParams[TASKS_SIDEBAR_SEARCH_PARAM]
+  const viewMode = router.stickyParams[TASKS_VIEW_MODE_SEARCH_PARAM]
+  const selectedTask = router.stickyParams[TASKS_SELECTED_TASK_SEARCH_PARAM]
 
   useEffect(() => {
     // listen to the URL to open the tasks view if the sidebar is set to task.

@@ -6,6 +6,7 @@ import {
   type Schema,
   type ValidationContext,
   type ValidationMarker,
+  type CurrentUser,
 } from '@sanity/types'
 import {reduce as reduceJSON} from 'json-reduce'
 import {
@@ -103,6 +104,7 @@ export function validateDocumentWithReferences(
     observeDocumentPairAvailability: DocumentPreviewStore['unstable_observeDocumentPairAvailability']
     schema: Schema
     i18n: LocaleSource
+    currentUser?: Omit<CurrentUser, 'role'> | null
   },
   document$: Observable<SanityDocument | null | undefined>,
   // whether to require all references to exist as published documents
@@ -184,6 +186,7 @@ export function validateDocumentWithReferences(
             i18n: ctx.i18n,
             schema: ctx.schema,
             environment: 'studio',
+            currentUser: ctx.currentUser,
           }).pipe(
             map((validationMarkers) => ({validation: validationMarkers, isValidating: false})),
           ),

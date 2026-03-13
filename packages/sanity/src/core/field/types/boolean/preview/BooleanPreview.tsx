@@ -6,7 +6,7 @@ type BooleanProps = {
   color?: UserColor
 }
 
-export const BooleanPreview: FieldPreviewComponent<boolean> = function BooleanPreview({
+const BooleanPreview: FieldPreviewComponent<boolean> = function BooleanPreview({
   value,
   schemaType,
   color,

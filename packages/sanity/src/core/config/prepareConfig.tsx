@@ -5,7 +5,7 @@ import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
-import {startCase} from 'lodash-es'
+import startCase from 'lodash-es/startCase.js'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
@@ -40,7 +40,6 @@ import {
   documentInspectorsReducer,
   documentLanguageFilterReducer,
   draftsEnabledReducer,
-  enhancedObjectDialogEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
@@ -748,11 +747,6 @@ function resolveSource({
       eventsAPI: {
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
-      },
-      form: {
-        enhancedObjectDialog: {
-          enabled: enhancedObjectDialogEnabledReducer({config, initialValue: true}),
-        },
       },
       create: {
         startInCreateEnabled: false,

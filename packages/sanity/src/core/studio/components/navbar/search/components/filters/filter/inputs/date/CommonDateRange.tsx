@@ -1,5 +1,5 @@
 import {Flex, Stack} from '@sanity/ui'
-import {addDays} from 'date-fns'
+import {addDays} from 'date-fns/addDays'
 import {useCallback, useState} from 'react'
 
 import {useTranslation} from '../../../../../../../../../i18n'

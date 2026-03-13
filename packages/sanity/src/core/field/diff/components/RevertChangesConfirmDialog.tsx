@@ -39,8 +39,8 @@ export function RevertChangesConfirmDialog({
       open={open}
       referenceElement={referenceElement}
       tone="critical"
-      placement="left"
-      fallbackPlacements={['left', 'left-start', 'left-end']}
+      placement="bottom"
+      fallbackPlacements={['bottom', 'bottom-start', 'bottom-end']}
     />
   )
 }

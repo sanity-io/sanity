@@ -1,5 +1,5 @@
 import {Box, Card, Container, Flex, Text, useTheme} from '@sanity/ui'
-import {parse} from 'date-fns'
+import {parse} from 'date-fns/parse'
 import {useEffect, useMemo, useRef} from 'react'
 import {Link, type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'

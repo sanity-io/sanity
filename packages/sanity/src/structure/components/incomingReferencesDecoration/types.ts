@@ -60,12 +60,6 @@ export interface IncomingReferenceType {
   title?: string
 }
 
-export function isIncomingReferenceType(
-  type: IncomingReferenceType | CrossDatasetIncomingReference,
-): type is IncomingReferenceType {
-  return !type.dataset
-}
-
 export function isCrossDatasetIncomingReference(
   type: IncomingReferenceType | CrossDatasetIncomingReference,
 ): type is CrossDatasetIncomingReference {

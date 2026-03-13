@@ -23,7 +23,7 @@ export function withMaxConcurrency<Args extends any[], Ret>(
   return (...args: Args) => observableFrom(throttler(func(...args))) as Observable<Ret>
 }
 
-export function createThrottler(concurrency: number = DEFAULT_CONCURRENCY) {
+function createThrottler(concurrency: number = DEFAULT_CONCURRENCY) {
   const currentSubscriptions: Array<Subscription> = []
   const pendingObservables: Array<Observable<any>> = []
   const ready$ = new Subject()

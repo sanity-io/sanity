@@ -86,6 +86,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.asset-usage-dialog.header_image': 'Documents using image',
   /** Text shown in usage dialog when loading documents using the selected asset */
   'asset-source.asset-usage-dialog.loading': 'Loading…',
+  /** Browse button text */
+  'asset-source.browse-button.text': 'Select',
   /** Text for cancel action in delete-asset dialog */
   'asset-source.delete-dialog.action.cancel': 'Cancel',
   /** Text for "confirm delete" action in delete-asset dialog */
@@ -130,12 +132,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Select asset dialog select-button */
   'asset-source.dialog.button.select': 'Select',
   /** Keys shared between both image asset source and file asset source */
-  /** Select asset dialog title for files */
-  'asset-source.dialog.default-title_file': 'Select file',
-  /** Select asset dialog title for images */
-  'asset-source.dialog.default-title_image': 'Select image',
-  /** Select asset dialog title for videos */
-  'asset-source.dialog.default-title_video': 'Select video',
   /** Insert asset error */
   'asset-source.dialog.insert-asset-error':
     'Error inserting asset. See the console for more information.',
@@ -228,10 +224,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the open in source dialog */
   'asset-sources.media-library.open-in-source-dialog.title': 'Edit asset',
 
-  /** Info messages for the Media Library Asset Source  */
-  'asset-sources.media-library.select-dialog.title_file': 'Selecting file for {{targetTitle}}',
-  'asset-sources.media-library.select-dialog.title_image': 'Selecting image for {{targetTitle}}',
-  'asset-sources.media-library.select-dialog.title_video': 'Selecting video for {{targetTitle}}',
+  /** Title for the upload dialog (component mode) */
+  'asset-sources.media-library.upload-dialog.title': 'Upload to Media Library',
 
   /** Warning message shown when uploading already existing files to the Media Library Asset Source */
   'asset-sources.media-library.warning.file-already-exist.description':
@@ -506,6 +500,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Label to show in the document footer indicating that the revision was not found */
   'document-status.revision-not-found': 'Revision not found',
+
+  /** Toast description shown when saving changes is taking longer than expected */
+  'document-store.slow-commit.description': 'Your changes are still being saved.',
+  /** Toast title shown when saving changes is taking longer than expected */
+  'document-store.slow-commit.title': 'Saving is taking longer than expected',
+
   /** Label to indicate that a document type was not found */
   'document.type.not-found': 'Document type "{{type}}" not found',
 
@@ -671,6 +671,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.action.duplicate': 'Duplicate',
   /** Label for editing the item of a specific type, eg "Edit Person" */
   'inputs.array.action.edit': 'Edit {{itemTypeTitle}}',
+  /** Tooltip text explaining why adding items is disabled when array max is reached */
+  'inputs.array.action.max-reached': 'Maximum items reached',
   /** Label for removing an array item action  */
   'inputs.array.action.remove': 'Remove',
   /** Label for removing action when an array item has an error  */
@@ -725,10 +727,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.datetime.placeholder': 'e.g. {{example}}',
   /** Acessibility label for button to open file options menu */
   'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
-  /** Browse */
-  'inputs.file.browse-button.text': 'Select',
-  /** Select file */
-  'inputs.file.dialog.title': 'Select file',
   /** Unknown member kind: `{{kind}}` */
   'inputs.file.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
   /** The value of this field is not a valid file. Resetting this field will let you choose a new file. */
@@ -738,8 +736,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.file.invalid-file-warning.reset-button.text': 'Reset value',
   /** Invalid file value */
   'inputs.file.invalid-file-warning.title': 'Invalid file value',
-  /** Select */
-  'inputs.file.multi-browse-button.text': 'Select',
   /** The upload could not be completed at this time. */
   'inputs.file.upload-failed.description': 'The upload could not be completed at this time.',
   /** Upload failed */
@@ -804,14 +800,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'An upload has made no progress for at least {{staleThresholdMinutes}} minutes and likely got interrupted. You can safely clear the incomplete upload and try uploading again.',
   /** Incomplete upload */
   'inputs.files.common.stale-upload-warning.title': 'Incomplete upload',
+  /** Select file */
+  'inputs.files.select-dialog.title': 'Select file for "{{targetTitle}}"',
   /** Tooltip text for action to crop image */
   'inputs.image.actions-menu.crop-image-tooltip': 'Crop image',
   /** Accessibility label for button to open image edit dialog */
   'inputs.image.actions-menu.edit-details.aria-label': 'Open image edit dialog',
   /** Accessibility label for button to open image options menu */
   'inputs.image.actions-menu.options.aria-label': 'Open image options menu',
-  /** Select */
-  'inputs.image.browse-menu.text': 'Select',
   /** Cannot upload this file here */
   'inputs.image.drag-overlay.cannot-upload-here': 'Cannot upload this file here',
   /** Drop image to upload */
@@ -834,6 +830,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.image.invalid-image-warning.title': 'Invalid image value',
   /** Preview of uploaded image */
   'inputs.image.preview-uploaded-image': 'Preview of uploaded image',
+  /** Select image */
+  'inputs.image.select-dialog.title': 'Select image for "{{targetTitle}}"',
   /** The upload could not be completed at this time. */
   'inputs.image.upload-error.description': 'The upload could not be completed at this time.',
   /** Upload failed */
@@ -888,6 +886,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Read-only field description */
   'inputs.object.unknown-fields.read-only.description':
     'This field is <strong>read only</strong> according to the document’s schema and cannot be unset. If you want to be able to unset this in Studio, make sure you remove the <code>readOnly</code> field from the enclosing type in the schema.',
+  /** Fallback description shown when the unknown reference preview cannot be loaded */
+  'inputs.object.unknown-fields.reference.preview.unavailable':
+    'Unable to load preview for reference "{{documentId}}".',
   /** Remove field */
   'inputs.object.unknown-fields.remove-field-button.text': 'Remove field',
   /** Encountered `{{count}}` fields that are not defined in the schema. */
@@ -1238,7 +1239,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.untyped-value.title': 'Property value missing <code>_type</code>',
   /** Unset value */
   'inputs.untyped-value.unset-item-button.text': 'Unset value',
-
+  /** Select video */
+  'inputs.video.select-dialog.title': 'Select video for "{{targetTitle}}"',
   /** The fallback explanation if no context is provided */
   'insufficient-permissions-message.not-authorized-explanation':
     'You do not have permission to access this feature.',
@@ -1565,7 +1567,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */
   'release.tooltip.locked': 'This release has been scheduled. Unschedule it to add more documents.',
   /** Label for the release type 'as soon as possible' */
-  'release.type.asap': 'ASAP',
+  'release.type.asap': 'As soon as possible',
   /** Label for the release type 'at time', meaning it's a release with a scheduled date */
   'release.type.scheduled': 'At time',
   /** Label for the release type 'undecided' */
@@ -2235,6 +2237,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'user-menu.login-provider': 'Signed in with {{providerTitle}}',
   /** Label for open menu button for user menu */
   'user-menu.open-menu': 'Open menu',
+
+  /** Label for other users' agent bundle versions */
+  'version.agent-bundle.agent-changes': 'Agent changes',
+  /** Label for the current user's agent bundle versions */
+  'version.agent-bundle.proposed-changes': 'Proposed changes',
+
   /**
    * Label for action to add a workspace (currently a developer-oriented action, as this will
    * lead to the documentation on workspace configuration)

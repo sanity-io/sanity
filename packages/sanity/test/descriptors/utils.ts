@@ -3,12 +3,13 @@ import {
   type EncodableValue,
   type SetSynchronization,
 } from '@sanity/descriptors'
-import {createSchemaFromManifestTypes} from '@sanity/schema/_internal'
+import {createSchemaFromManifestTypes, extractManifestSchemaTypes} from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
-import {capitalize, cloneDeep, startCase} from 'lodash-es'
+import capitalize from 'lodash-es/capitalize.js'
+import cloneDeep from 'lodash-es/cloneDeep.js'
+import startCase from 'lodash-es/startCase.js'
 import {expect} from 'vitest'
 
-import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
 import {DESCRIPTOR_CONVERTER} from '../../src/core/schema'
 
 export async function expectManifestSchemaConversion(

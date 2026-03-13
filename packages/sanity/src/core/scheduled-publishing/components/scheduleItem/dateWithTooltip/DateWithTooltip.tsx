@@ -1,5 +1,5 @@
 import {Text} from '@sanity/ui'
-import {formatDistance} from 'date-fns'
+import {formatDistance} from 'date-fns/formatDistance'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTimeZone} from '../../../../hooks/useTimeZone'

@@ -6,6 +6,7 @@ import {useCallback, useId, useMemo} from 'react'
 import {Button, MenuButton, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {type ArrayInputFunctionsProps} from '../../../types'
+import {useArrayValidation} from '../common/ArrayValidationContext'
 
 /**
  * @hidden
@@ -17,6 +18,8 @@ export function ArrayOfPrimitivesFunctions<
   const {schemaType, readOnly, children, onValueCreate, onItemAppend} = props
   const menuButtonId = useId()
   const {t} = useTranslation()
+  const arrayValidation = useArrayValidation()
+  const maxReached = arrayValidation?.maxReached ?? false
 
   const insertItem = useCallback(
     (itemType: any) => {
@@ -48,6 +51,23 @@ export function ArrayOfPrimitivesFunctions<
         <Grid>
           <Button
             data-testid="add-single-primitive-button"
+            icon={AddIcon}
+            mode="ghost"
+            disabled
+            size="large"
+            text={t(addItemI18nKey)}
+          />
+        </Grid>
+      </Tooltip>
+    )
+  }
+
+  if (maxReached) {
+    return (
+      <Tooltip portal content={t('inputs.array.action.max-reached')}>
+        <Grid>
+          <Button
+            data-testid="add-max-reached-primitive-button"
             icon={AddIcon}
             mode="ghost"
             disabled

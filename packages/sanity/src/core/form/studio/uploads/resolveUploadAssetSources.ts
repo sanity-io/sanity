@@ -39,5 +39,15 @@ export function resolveUploadAssetSources(
     }
     return filterAssetSourcesWithFallback(formBuilder.__internal.file.assetSources)
   }
+  if (is.type('sanity.video', type)) {
+    // Video uses the file config (Media Library is in file.assetSources)
+    if (!supportsDirectFileUploads) {
+      return []
+    }
+    if (file && !accepts(file, type.options?.accept || 'video/*')) {
+      return []
+    }
+    return filterAssetSourcesWithFallback(formBuilder.__internal.file.assetSources)
+  }
   return []
 }

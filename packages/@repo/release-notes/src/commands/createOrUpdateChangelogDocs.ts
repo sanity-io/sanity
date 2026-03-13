@@ -12,7 +12,7 @@ import {
 } from '@sanity/mutate'
 import {applyPatches} from '@sanity/mutate/_unstable_apply'
 import {type Commit} from 'conventional-commits-parser'
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 import {descriptionToCoAuthors} from 'description-to-co-authors'
 import pMap from 'p-map'
 
@@ -104,7 +104,7 @@ export async function createOrUpdateChangelogDocs(args: {
   return {success: true, changelogDocumentId, apiVersionDocId, commitsWithPrs, releaseId}
 }
 
-export async function toArray<T>(it: AsyncIterableIterator<T>): Promise<T[]> {
+async function toArray<T>(it: AsyncIterableIterator<T>): Promise<T[]> {
   const result: T[] = []
   for await (const chunk of it) {
     result.push(chunk)

@@ -1,4 +1,4 @@
-import {pick} from 'lodash-es'
+import pick from 'lodash-es/pick.js'
 
 import createPreviewGetter from '../../preview/createPreviewGetter'
 import {OWN_PROPS_NAME} from '../constants'

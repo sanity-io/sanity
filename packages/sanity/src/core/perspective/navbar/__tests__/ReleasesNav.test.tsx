@@ -61,6 +61,11 @@ vi.mock('../../../studio/useWorkspace', () => ({
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   IntentLink: vi.fn().mockImplementation((props) => <a {...props} />),
+  StateLink: vi.fn().mockImplementation(({state, children, ...rest}) => (
+    <a href="/" {...rest}>
+      {children}
+    </a>
+  )),
   useRouterState: vi.fn().mockReturnValue(undefined),
 }))
 
@@ -152,7 +157,7 @@ describe('ReleasesNav', () => {
         const releaseMenu = within(screen.getByTestId('release-menu'))
 
         // section titles
-        releaseMenu.getByText('ASAP')
+        releaseMenu.getByText('As soon as possible')
         releaseMenu.getByText('At time')
         expect(releaseMenu.queryByText('Undecided')).toBeNull()
 
@@ -337,9 +342,8 @@ describe('ReleasesNav', () => {
           .getByText('active Release')
           .closest('button')!
 
-        expect(
-          within(activeReleaseMenuItem).queryByTestId('release-avatar-suggest'),
-        ).not.toBeInTheDocument()
+        const indicatorIcon = within(activeReleaseMenuItem).getByTestId('release-indicator-icon')
+        expect(indicatorIcon).toHaveStyle({opacity: 0})
       })
 
       describe('when releases are disabled', () => {

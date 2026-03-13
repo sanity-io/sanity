@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import {expect, type Locator, type PlaywrightTestArgs} from '@playwright/test'
 
-export const DEFAULT_TYPE_DELAY = 20
+const DEFAULT_TYPE_DELAY = 20
 
 export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
   const activatePTInputOverlay = async ($pteField: Locator) => {

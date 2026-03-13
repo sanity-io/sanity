@@ -22,7 +22,12 @@ import {
 
 import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
+import {
+  DocumentPublished,
+  PublishButtonDisabledComplete,
+  PublishButtonDisabledStart,
+  PublishButtonClicked,
+} from './__telemetry__/documentActions.telemetry'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
@@ -65,10 +70,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const {changesOpen, documentId, documentType, value} = useDocumentPane()
   const validationStatus = useValidationStatus(value._id, type, !release)
   const syncState = useSyncState(id, type)
-  const editState = useEditState(documentId, documentType)
+  const editState = useEditState(documentId, documentType, 'default', bundleId)
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const revision = (editState?.draft || editState?.published || {})._rev
+  const revision = (editState?.version || editState?.draft || editState?.published || {})._rev
   const toast = useToast()
 
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
@@ -92,10 +97,13 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
   const currentPublishRevision = published?._rev
 
+  const telemetry = useTelemetry()
+
   const doPublish = useCallback(() => {
     publish.execute()
+    telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-  }, [publish, currentPublishRevision])
+  }, [publish, currentPublishRevision, telemetry, id])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -138,15 +146,42 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       publishState?.status === 'publishing' &&
       currentPublishRevision !== publishState.publishRevision
 
+    if (didPublish) {
+      telemetry.log(PublishButtonClicked, {documentId: id, stage: 'completed'})
+    }
+
     const nextState = didPublish ? PUBLISHED_STATE : null
     const delay = didPublish ? 200 : 4000
     const timer = setTimeout(() => {
+      if (
+        publishState?.status === 'publishing' &&
+        currentPublishRevision === publishState.publishRevision
+      ) {
+        telemetry.log(PublishButtonClicked, {documentId: id, stage: 'failed'})
+      }
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
-  }, [changesOpen, publishState, currentPublishRevision])
+  }, [changesOpen, publishState, currentPublishRevision, telemetry, id])
 
-  const telemetry = useTelemetry()
+  const isWaitingToPublish = Boolean(
+    (draft || version) &&
+    (publishScheduled || editState?.transactionSyncLock?.enabled || isPermissionsLoading),
+  )
+
+  useEffect(() => {
+    if (!isWaitingToPublish) return undefined
+    telemetry.log(PublishButtonDisabledStart, {
+      documentId: id,
+      isRemoteEvent: editState?.transactionSyncLock?.enabled,
+    })
+    return () => {
+      telemetry.log(PublishButtonDisabledComplete, {
+        documentId: id,
+        isRemoteEvent: editState?.transactionSyncLock?.enabled,
+      })
+    }
+  }, [isWaitingToPublish, telemetry, id, editState?.transactionSyncLock?.enabled])
 
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {

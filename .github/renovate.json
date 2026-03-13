@@ -82,8 +82,8 @@
       "description": "Ensure internal and important packages open a PRs right away, without waiting for manual approval",
       "matchPackageNames": [
         "lerna",
-        "@portabletext/block-tools",
         "@portabletext/editor",
+        "@portabletext/html",
         "@sanity/bifur-client",
         "@sanity/client",
         "@sanity/comlink",
@@ -131,8 +131,5 @@
       "matchPackageNames": ["oxlint", "eslint-plugin-oxlint", "oxlint-tsgolint"]
     }
   ],
-  "ignorePaths": [
-    "packages/@sanity/cli/test/__fixtures__/v2/package.json",
-    "packages/sanity/fixtures/examples/prj-with-react-19/package.json"
-  ]
+  "ignorePaths": ["packages/sanity/fixtures/examples/prj-with-react-19/package.json"]
 }

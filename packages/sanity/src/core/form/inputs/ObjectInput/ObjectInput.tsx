@@ -1,10 +1,11 @@
 import {isKeySegment} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import {last} from 'lodash-es'
+import last from 'lodash-es/last.js'
 import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 
 import {EMPTY_ARRAY} from '../../../util/empty'
+import {FormRow} from '../../components'
 import {ObjectInputMembers} from '../../members'
 import {useRenderMembers} from '../../members/object/useRenderMembers'
 import {type ObjectInputProps} from '../../types'
@@ -69,8 +70,17 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
       return null
     }
 
-    return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
-  }, [onChange, schemaType.fields, value])
+    return (
+      <FormRow>
+        <UnknownFields
+          fieldNames={unknownFields}
+          value={value}
+          onChange={onChange}
+          renderPreview={renderPreview}
+        />
+      </FormRow>
+    )
+  }, [onChange, renderPreview, schemaType.fields, value])
 
   const selectedGroup = useMemo(() => groups.find(({selected}) => selected), [groups])
 
@@ -150,7 +160,6 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
           renderObjectMembers()
         )}
       </Fragment>
-
       {renderedUnknownFields}
     </RootStack>
   )

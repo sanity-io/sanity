@@ -1,4 +1,4 @@
-import {identity} from 'lodash-es'
+import identity from 'lodash-es/identity.js'
 import {useMemo} from 'react'
 
 import {type RouterState} from './types'

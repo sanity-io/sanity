@@ -5,7 +5,8 @@ import {
   type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
-  type OnPasteFn,
+  type OnPasteFn as EditorOnPasteFn,
+  type PasteData as EditorPasteData,
   type RangeDecoration,
 } from '@portabletext/editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
@@ -17,6 +18,7 @@ import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
+import {type OnPasteFn} from '../../types/inputProps'
 import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
 import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
@@ -89,6 +91,21 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const setElementRef = useSetPortableTextMemberItemElementRef()
+
+  // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with
+  // Sanity-specific PortableTextMemberSchemaTypes instead of the editor's
+  // EditorSchema. This shields Studio consumers from the PTE v6 type change.
+  const wrappedOnPaste: EditorOnPasteFn | undefined = useMemo(() => {
+    if (!onPaste) {
+      return undefined
+    }
+    return (data: EditorPasteData) => {
+      return onPaste({
+        ...data,
+        schemaTypes,
+      })
+    }
+  }, [onPaste, schemaTypes])
 
   const boundaryElement = useBoundaryElement().element
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
@@ -447,7 +464,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             isOneLine={isOneLineEditor}
             onItemOpen={onItemOpen}
             onCopy={onCopy}
-            onPaste={onPaste}
+            onPaste={wrappedOnPaste}
             onToggleFullscreen={handleToggleFullscreen}
             path={path}
             rangeDecorations={rangeDecorations}
@@ -480,7 +497,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       isOneLineEditor,
       onItemOpen,
       onCopy,
-      onPaste,
+      wrappedOnPaste,
       handleToggleFullscreen,
       path,
       rangeDecorations,

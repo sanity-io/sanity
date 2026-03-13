@@ -17,7 +17,7 @@ concurrency:
 jobs:
   test:
     timeout-minutes: 60
-    name: Test (node ${{ matrix.node }})
+    name: Test (node ${{ matrix.node }}) - ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
     runs-on: ubuntu-8core
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}

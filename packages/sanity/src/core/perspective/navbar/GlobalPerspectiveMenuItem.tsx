@@ -1,8 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {DotIcon, ErrorOutlineIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
+import {ErrorOutlineIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
-import {type CSSProperties, forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
+import {forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
@@ -11,12 +11,11 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
 import {usePerspective} from '../../perspective/usePerspective'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
-import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
+import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
 import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {
   formatRelativeLocalePublishDate,
   isDraftPerspective,
@@ -56,21 +55,20 @@ const ToggleLayerButton = styled(Button)<{$visible: boolean}>(
   `,
 )
 
-const ExcludedLayerDot = () => (
-  <Box padding={3}>
-    <Text size={1}>
-      <DotIcon
-        style={
-          {
-            opacity: 0,
-          } as CSSProperties
-        }
-      />
-    </Text>
-  </Box>
-)
-
 type rangePosition = 'first' | 'within' | 'last' | undefined
+const IconWrapperBox = styled(Box)<{$isExcluded: boolean}>(
+  ({$isExcluded}) => css`
+    position: relative;
+    z-index: 1;
+    border-radius: 50%;
+    /* background-color: var(--card-background-color);  */
+    opacity: ${$isExcluded ? 0 : 1};
+    // The icon needs a white background to visually sit on top of the line indicator
+    & svg {
+      background-color: var(--card-bg-color);
+    }
+  `,
+)
 
 export function getRangePosition(range: LayerRange, index: number): rangePosition {
   const {lastIndex} = range
@@ -149,25 +147,22 @@ export const GlobalPerspectiveMenuItem = forwardRef<
         onClick={handleOnReleaseClick}
         padding={1}
         pressed={active}
+        selected={active}
         data-testid={`release-${releaseId}`}
         {...props.menuItemProps?.({perspective: release})}
       >
         <Flex align="flex-start" gap={1}>
-          <Box
+          <IconWrapperBox
+            $isExcluded={isReleasePerspectiveExcluded}
             flex="none"
-            style={{
-              position: 'relative',
-              zIndex: 1,
-            }}
+            data-testid="release-indicator-icon"
+            paddingX={3}
+            paddingY={2}
           >
             <Text size={1}>
-              {isReleasePerspectiveExcluded ? (
-                <ExcludedLayerDot />
-              ) : (
-                <ReleaseAvatar tone={getReleaseTone(release)} />
-              )}
+              <ReleaseAvatarIcon release={release} />
             </Text>
-          </Box>
+          </IconWrapperBox>
           <Stack
             flex={1}
             paddingY={2}

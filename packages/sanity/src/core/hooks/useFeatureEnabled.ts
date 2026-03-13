@@ -48,7 +48,7 @@ const cachedFeatureRequest = new Map<string, Observable<string[]>>()
  * Retrieves the features for a given project. This returns a cached observable.
  * The client should be initialized with the options in `DEFAULT_STUDIO_CLIENT_OPTIONS`.
  */
-export function getFeatures({
+function getFeatures({
   projectId,
   versionedClient,
 }: {

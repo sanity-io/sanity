@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react'
-import {escapeRegExp} from 'lodash-es'
+import escapeRegExp from 'lodash-es/escapeRegExp.js'
 import {type UserConfig} from 'vite'
 
 import {version} from '../package.json'

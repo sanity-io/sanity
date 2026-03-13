@@ -47,6 +47,7 @@ export const DEBUG_INPUT_TYPES = [
   'allNativeInputComponents',
   'manyViews',
   'decorations',
+  'collapsibleColumnsBug',
   'collapsibleObjects',
   'commentsDebug',
   'domAttrsAsFieldNames',
@@ -66,6 +67,7 @@ export const DEBUG_INPUT_TYPES = [
   'fieldsetsTest',
   'fieldValidationInferReproDoc',
   'focusTest',
+  'hiddenCurrentUserTest',
   'hiddenFieldValidationTest',
   'patchOnMountDebug',
   'formInputDebug',
@@ -103,6 +105,8 @@ export const DEBUG_INPUT_TYPES = [
   'virtualizationDebug',
   'virtualizationInObject',
   'annotationCustomTypeTest',
+  'arrayOfStringsGridCustomInputTest',
+  'withObjectFieldsOrder',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI', 'textsTest', 'commentsCI']

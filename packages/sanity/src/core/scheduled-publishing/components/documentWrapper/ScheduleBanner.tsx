@@ -1,7 +1,7 @@
 import {CalendarIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type ValidationMarker} from '@sanity/types'
 import {Badge, Box, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 
 import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {DATE_FORMAT} from '../../../studio/timezones/constants'

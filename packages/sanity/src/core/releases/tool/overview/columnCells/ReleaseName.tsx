@@ -14,7 +14,6 @@ import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTone} from '../../../util/getReleaseTone'
 import {type TableRowProps} from '../../components/Table/Table'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
@@ -103,7 +102,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
           <Card {...cardProps} padding={2} radius={2} flex={1}>
             <Flex align="center" gap={2}>
               <Box flex="none">
-                <ReleaseAvatar tone={getReleaseTone(release)} />
+                <ReleaseAvatar release={release} />
               </Box>
               <Stack flex={1} space={2}>
                 <Flex align="center" gap={2} style={{minWidth: 0}}>

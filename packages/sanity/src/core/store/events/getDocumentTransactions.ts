@@ -1,12 +1,17 @@
 import {type SanityClient} from '@sanity/client'
-import {type TransactionLogEventWithEffects} from '@sanity/types'
+import {
+  type TransactionLogEventWithMutations,
+  type TransactionLogEventWithEffects,
+} from '@sanity/types'
 
 import {getTransactionsLogs} from '../translog/getTransactionsLogs'
 
 const TRANSLOG_ENTRY_LIMIT = 50
 
-const documentTransactionsCache: Record<string, TransactionLogEventWithEffects[]> =
-  Object.create(null)
+const documentTransactionsCache: Record<
+  string,
+  (TransactionLogEventWithEffects & TransactionLogEventWithMutations)[]
+> = Object.create(null)
 
 // Transactions could be cached, given they are not gonna change EVER.
 // Transactions are in an order, so if we have [rev4, rev3, rev2] and we already got [rev4, rev3] we can just get the diff between rev3 and rev2 and increment it.
@@ -21,7 +26,7 @@ export async function getDocumentTransactions({
   client: SanityClient
   toTransaction?: string
   fromTransaction: string
-}): Promise<TransactionLogEventWithEffects[]> {
+}): Promise<(TransactionLogEventWithEffects & TransactionLogEventWithMutations)[]> {
   const cacheKey = `${documentId}-${toTransaction}-${fromTransaction}`
   if (documentTransactionsCache[cacheKey] && typeof toTransaction !== 'undefined') {
     return documentTransactionsCache[cacheKey]

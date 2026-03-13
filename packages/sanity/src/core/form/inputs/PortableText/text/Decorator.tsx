@@ -4,6 +4,7 @@ import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {type BlockDecoratorProps} from '../../../types'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {TEXT_DECORATOR_TAGS} from './constants'
 
 const Root = styled.span(({theme}: {theme: Theme}) => {
@@ -20,8 +21,14 @@ const Root = styled.span(({theme}: {theme: Theme}) => {
 
 export function Decorator(props: BlockDecoratorRenderProps) {
   const {value, focused, selected, children, schemaType} = props
+  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const sanitySchemaType = schemaTypes.decorators.find((type) => type.value === schemaType.value)
+  if (!sanitySchemaType) {
+    // This should never happen
+    throw new Error(`Could not find Sanity schema type for decorator: ${schemaType.value}`)
+  }
   const tag = TEXT_DECORATOR_TAGS[value]
-  const CustomComponent = schemaType.component
+  const CustomComponent = sanitySchemaType.component
   const DefaultComponent = useCallback(
     (defaultComponentProps: BlockDecoratorProps) => {
       return (
@@ -36,9 +43,9 @@ export function Decorator(props: BlockDecoratorRenderProps) {
     const componentProps = {
       focused,
       renderDefault: DefaultComponent,
-      schemaType,
+      schemaType: sanitySchemaType,
       selected,
-      title: schemaType.title,
+      title: sanitySchemaType.title,
       value,
     }
     return CustomComponent ? (
@@ -47,5 +54,5 @@ export function Decorator(props: BlockDecoratorRenderProps) {
       // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
-  }, [CustomComponent, DefaultComponent, children, focused, schemaType, selected, value])
+  }, [CustomComponent, DefaultComponent, children, focused, sanitySchemaType, selected, value])
 }

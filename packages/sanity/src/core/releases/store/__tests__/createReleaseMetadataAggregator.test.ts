@@ -64,6 +64,7 @@ describe('createReleaseMetadataAggregator', () => {
   })
 
   it('should handle fetch errors with loading states', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
     const error = new Error('Fetch failed')
     mockClient.observable.fetch.mockReturnValue(
       new Observable((subscriber) => subscriber.error(error)),
@@ -86,6 +87,7 @@ describe('createReleaseMetadataAggregator', () => {
       {loading: true, data: null, error: null},
       {loading: false, data: null, error},
     ])
+    expect(console.error).toHaveBeenCalledWith('Failed to fetch release metadata', error)
   })
 
   it('should handle null client', async () => {

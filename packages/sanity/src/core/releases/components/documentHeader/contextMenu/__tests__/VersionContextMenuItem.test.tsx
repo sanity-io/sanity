@@ -51,7 +51,7 @@ describe('VersionContextMenuItem', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenuItem release={asapRelease} />, {wrapper})
-    expect(screen.getByText('ASAP')).toBeInTheDocument()
+    expect(screen.getByText('As soon as possible')).toBeInTheDocument()
   })
 
   it('renders release type as undecided', async () => {

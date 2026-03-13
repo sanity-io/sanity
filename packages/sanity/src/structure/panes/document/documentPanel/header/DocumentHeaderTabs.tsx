@@ -4,6 +4,7 @@ import {type ComponentType, type ReactNode, useCallback} from 'react'
 import {Tab} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components'
 import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 
 /**
  * This component will render the tabs for the document pane, following this rules:
@@ -16,7 +17,8 @@ import {useDocumentPane} from '../../useDocumentPane'
  * ghost elements just to measure the width.
  */
 export function DocumentHeaderTabs() {
-  const {activeViewId, paneKey, views} = useDocumentPane()
+  const {activeViewId} = useDocumentPane()
+  const {paneKey, views} = useDocumentPaneInfo()
 
   const tabPanelId = `${paneKey}tabpanel`
 

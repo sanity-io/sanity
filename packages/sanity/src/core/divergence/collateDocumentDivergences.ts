@@ -1,4 +1,4 @@
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import QuickLRU from 'quick-lru'
 import {
   debounceTime,
@@ -49,7 +49,7 @@ let cache: QuickLRU<string, Instance>
 /**
  * @internal
  */
-export const collateDocumentDivergencesInitialState: CollatedDocumentDivergencesState = {
+const collateDocumentDivergencesInitialState: CollatedDocumentDivergencesState = {
   state: 'pending',
   divergences: {},
 }

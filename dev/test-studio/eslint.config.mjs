@@ -2,7 +2,7 @@ import baseConfig from '@repo/eslint-config'
 import {defineConfig} from 'eslint/config'
 
 export default defineConfig([
-  {ignores: ['sanity.theme.mjs', 'workshop/scopes.js']},
+  {ignores: ['sanity.theme.mjs']},
   ...baseConfig,
   {
     rules: {

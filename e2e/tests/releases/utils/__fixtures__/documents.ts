@@ -16,3 +16,8 @@ export const speciesDocumentNameUndecided = {
   _type: 'species',
   name: 'Undecided A',
 }
+
+export const speciesDocumentNameAnonymousVersion = {
+  _type: 'species',
+  name: 'Anonymous version',
+}

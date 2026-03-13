@@ -1,4 +1,7 @@
-import {flatten, groupBy, orderBy, sortBy} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
+import groupBy from 'lodash-es/groupBy.js'
+import orderBy from 'lodash-es/orderBy.js'
+import sortBy from 'lodash-es/sortBy.js'
 import {
   type CSSProperties,
   Fragment,

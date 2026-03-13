@@ -72,5 +72,6 @@ export function ObjectInputMembers(props: ObjectMembersProps) {
 /**
  * @deprecated Use ObjectInputMembers instead
  * @internal
+ * @alias
  */
 export const ObjectMembers = ObjectInputMembers

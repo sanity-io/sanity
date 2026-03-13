@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
@@ -119,6 +119,7 @@ export interface DocumentStoreOptions {
   i18n: LocaleSource
   serverActionsEnabled: Observable<boolean>
   extraOptions?: DocumentStoreExtraOptions
+  currentUser?: Omit<CurrentUser, 'role'> | null
 }
 
 /** @internal */
@@ -131,6 +132,7 @@ export function createDocumentStore({
   i18n,
   serverActionsEnabled,
   extraOptions = {},
+  currentUser,
 }: DocumentStoreOptions): DocumentStore {
   const observeDocumentPairAvailability =
     documentPreviewStore.unstable_observeDocumentPairAvailability
@@ -140,7 +142,7 @@ export function createDocumentStore({
   // for things like validations
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  const {onSyncErrorRecovery, onReportLatency} = extraOptions
+  const {onSyncErrorRecovery, onReportLatency, onSlowCommit} = extraOptions
   const ctx = {
     client,
     getClient,
@@ -150,6 +152,7 @@ export function createDocumentStore({
     i18n,
     serverActionsEnabled,
     extraOptions,
+    currentUser,
   }
 
   return {
@@ -158,6 +161,7 @@ export function createDocumentStore({
       return checkoutPair(client, idPair, serverActionsEnabled, {
         onSyncErrorRecovery,
         onReportLatency,
+        onSlowCommit,
       })
     },
     initialValue(opts, context) {

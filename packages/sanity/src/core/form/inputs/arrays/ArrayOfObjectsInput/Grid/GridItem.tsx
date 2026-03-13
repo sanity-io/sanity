@@ -24,7 +24,8 @@ import {
 } from '../../../../studio/tree-editing'
 import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
-import {randomKey} from '../../../../utils/randomKey'
+import {regenerateKeys} from '../../../../utils/regenerateKeys'
+import {useArrayValidation} from '../../common/ArrayValidationContext'
 import {CellLayout} from '../../layouts/CellLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../InsertMenuMenuItems'
@@ -87,6 +88,9 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
+  const arrayValidation = useArrayValidation()
+  const maxReached = arrayValidation?.maxReached
+  const maxReachedReason = arrayValidation?.maxReachedReason
 
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
@@ -122,14 +126,14 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const handleDuplicate = useCallback(() => {
     onInsert({
-      items: [{...value, _key: randomKey()}],
+      items: [regenerateKeys(value)],
       position: 'after',
     })
   }, [onInsert, value])
 
   const handleCopy = useCallback(() => {
     onCopy({
-      items: [{...value, _key: randomKey()}],
+      items: [regenerateKeys(value)],
     })
   }, [onCopy, value])
 
@@ -168,6 +172,8 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     insertMenuOptions: parentSchemaType.options?.insertMenu,
     onInsert: handleInsert,
     referenceElement: contextMenuButtonElement,
+    disabled: maxReached,
+    disabledReason: maxReachedReason,
   })
 
   const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY

@@ -8,6 +8,14 @@ const releasesLocaleStrings = {
   'action.add-document': 'Add document',
   /** Action text for archiving a release */
   'action.archive': 'Archive release',
+  /** Tooltip for copy release actions button */
+  'action.copy-release.label': 'Copy',
+  /** Menu item label for copying release ID */
+  'action.copy-release-id.label': 'Copy release ID',
+  /** Menu item label for copying release URL */
+  'action.copy-release-link.label': 'Copy release URL',
+  /** Menu item label for copying release title */
+  'action.copy-release-title.label': 'Copy release title',
   /** Tooltip for when the archive release action is disabled due to release being scheduled  */
   'action.archive.tooltip': 'Unschedule this release to archive it',
   /** Action text for showing the archived releases */
@@ -227,12 +235,14 @@ const releasesLocaleStrings = {
   'no-paused-release': 'No paused scheduled drafts',
   /** Text for when no releases are found */
   'no-releases': 'No Releases',
-  /** Text for when a release is not found */
-  'not-found': 'Release not found: {{releaseId}}',
+  /** Banner text shown when navigating to a release that does not exist */
+  'banner.release-not-found': 'This release could not be found',
+  /** Tooltip for the dismiss button in the release not found banner */
+  'banner.release-not-found.dismiss': 'Dismiss',
 
   /** Text for the button name for the release tool */
   'overview.action.documentation': 'Documentation',
-  /** Text for when a release is not found */
+  /** Tooltip for the calendar button in the release overview */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */
   'overview.description':
@@ -379,14 +389,14 @@ const releasesLocaleStrings = {
   'summary.validated-documents': '{{validatedCount}} of {{totalCount}} documents validated',
 
   /** Text for when the release has validated all documents */
-  'summary.all-documents-validated': 'All documents validated, no conflicts found',
+  'summary.all-documents-validated': 'All documents validated, no issues found',
 
   /** Text for when the release has no errors found */
-  'summary.all-documents-errors-found': 'All documents validated, conflicts found',
+  'summary.all-documents-errors-found': 'All documents validated, issues found',
 
   /** Text for when the release has some errors found */
   'summary.errors-found':
-    'In order to publish or schedule the release, please resolve the conflicts found in the documents',
+    'In order to publish or schedule the release, please resolve the issues found in the documents',
 
   /** add action type that will be shown in the table*/
   'table-body.action.add': 'Add',
@@ -419,6 +429,8 @@ const releasesLocaleStrings = {
   'table-header.intended-for': 'Intended for',
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
+  /** Header for the document table in the release tool - when */
+  'table-header.when': 'When',
   /** Header for the  document table in the release tool - release title */
   'table-header.title': 'Release',
   /** Header for the document table in the release tool - type */
@@ -430,9 +442,18 @@ const releasesLocaleStrings = {
   'filter-tab.all': 'All',
   /** Filter tab label for documents with validation errors */
   'filter-tab.errors': 'Errors',
-
+  /** Text for the release time label for scheduled releases  which has been scheduled*/
+  'time.scheduled': 'Scheduled',
+  /** Text for the release time label for scheduled releases  which has not been scheduled yet*/
+  'time.estimated': 'Estimated',
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
+  /** Toast message after copying release ID */
+  'toast.copy-release-id.success': 'Release ID copied to clipboard',
+  /** Toast message after copying release link */
+  'toast.copy-release-link.success': 'Release link copied to clipboard',
+  /** Toast message after copying release title */
+  'toast.copy-release-title.success': 'Release title copied to clipboard',
   /** Description for toast when creating new version of document in release failed */
   'toast.create-version.error': 'Failed to add document to release: {{error}}',
   /** Description for toast when release deletion failed */

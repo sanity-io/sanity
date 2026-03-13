@@ -1,4 +1,4 @@
-import {expect, it} from 'vitest'
+import {expect, it, vi} from 'vitest'
 
 import {coreUiRenderingContext} from './coreUiRenderingContext'
 
@@ -50,11 +50,13 @@ it('parses the `_context` URL search parameter', async () => {
 })
 
 it('fails gracefully if the `_context` URL search parameter cannot be parsed', async () => {
+  vi.spyOn(console, 'warn').mockImplementation(() => {})
   const invalidCoreUiContextString = urlSearch(coreUiProductionContext).slice(0, -10)
 
   await expect(() => coreUiRenderingContext(invalidCoreUiContextString)).toMatchEmissions([
     [undefined, undefined],
   ])
+  expect(console.warn).toHaveBeenCalledWith('Error parsing rendering context:', expect.any(Error))
 })
 
 function urlSearch(context: unknown): string {

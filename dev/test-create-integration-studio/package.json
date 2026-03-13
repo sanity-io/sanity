@@ -1,6 +1,6 @@
 {
   "name": "test-create-integration-studio",
-  "version": "5.10.0",
+  "version": "5.15.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -22,6 +22,6 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "eslint": "catalog:",
-    "rimraf": "^5.0.10"
+    "rimraf": "catalog:"
   }
 }

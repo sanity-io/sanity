@@ -27,6 +27,8 @@ import {
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSystemBundleName,
+  LATEST,
+  PUBLISHED,
   ReleaseAvatar,
   type ReleaseDocument,
   ReleaseTitle,
@@ -286,12 +288,12 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
   }
 
   if (type) {
-    const tone: ButtonTone = type === 'published' ? 'positive' : 'caution'
+    const releasePerspective = type === 'published' ? PUBLISHED : LATEST
 
     return (
       <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
         <Flex gap={1}>
-          <ReleaseAvatar padding={2} tone={tone} />
+          <ReleaseAvatar padding={2} release={releasePerspective} />
           <Box paddingY={2}>
             <Text size={1} weight="medium">
               {tStructure(['compare-versions.status', type].join('.'))}
@@ -302,12 +304,10 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     )
   }
 
-  const tone: ButtonTone = release ? getReleaseTone(release) : 'neutral'
-
   return (
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
-        <ReleaseAvatar padding={2} tone={tone} />
+        <ReleaseAvatar padding={2} release={release} />
         <Stack flex={1} paddingY={2} paddingRight={2} space={2} style={{minWidth: 0}}>
           <ReleaseTitle
             title={release.metadata.title}
@@ -363,7 +363,7 @@ function getMenuButtonProps({
 
     return {
       text: selected?.metadata.title || tCore('release.placeholder-untitled-release'),
-      icon: <ReleaseAvatar padding={1} tone={tone} />,
+      icon: <ReleaseAvatar padding={1} release={selected} />,
       iconRight: selected && isReleaseScheduledOrScheduling(selected) ? <LockIcon /> : undefined,
       tone,
     }
@@ -371,17 +371,19 @@ function getMenuButtonProps({
 
   if (isSystemBundleName(selected)) {
     const tone: ButtonTone = selected === 'published' ? 'positive' : 'caution'
+    const releasePerspective = selected === 'published' ? PUBLISHED : LATEST
 
     return {
       text: tStructure(['compare-versions.status', selected].join('.')),
-      icon: <ReleaseAvatar padding={1} tone={tone} />,
+      icon: <ReleaseAvatar padding={1} release={releasePerspective} />,
       tone,
     }
   }
 
   return {
     text: selected,
-    icon: <ReleaseAvatar padding={1} tone="neutral" />,
+    // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+    icon: <ReleaseAvatar padding={1} releaseType="undecided" />,
     tone: 'neutral',
   }
 }

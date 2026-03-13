@@ -1,5 +1,5 @@
 import {Card, Stack} from '@sanity/ui'
-import {get} from 'lodash-es'
+import get from 'lodash-es/get.js'
 import {PureComponent} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
@@ -7,6 +7,7 @@ import {ArrayOfPrimitivesItem} from '../../../members'
 import {type ArrayOfPrimitivesInputProps} from '../../../types'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
+import {ArrayValidationProvider} from '../common/ArrayValidationContext'
 import {Item, List} from '../common/list'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 import {UploadTargetCard} from './arrayOfPrimitiveUploadTarget'
@@ -159,6 +160,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
     } = this.props
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
+    const isGrid = schemaType.options?.layout === 'grid'
 
     // Note: we need this in order to generate new id's when items are moved around in the list
     // without it, dndkit will restore focus on the original index of the dragged item
@@ -168,76 +170,81 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
     }))
 
     return (
-      <Stack space={2} data-testid="array-primitives-input">
-        <UploadTargetCard
-          types={schemaType.of}
-          resolveUploader={resolveUploader}
-          onUpload={onUpload}
-          {...elementProps}
-          tabIndex={0}
-        >
-          <Stack space={1}>
-            {membersWithSortIds.length === 0 ? (
-              <NoItemsPlaceholder schemaType={schemaType} />
-            ) : (
-              <Card padding={1} border>
-                <List
-                  onItemMove={this.handleSortEnd}
-                  onItemMoveStart={this.handleItemMoveStart}
-                  onItemMoveEnd={this.handleItemMoveEnd}
-                  items={membersWithSortIds.map((m) => m.id)}
-                  sortable={isSortable}
-                  gap={1}
-                >
-                  {membersWithSortIds.map(({member, id}, index) => {
-                    return (
-                      <Item
-                        key={member.key}
-                        id={id}
-                        sortable={isSortable}
-                        disableTransition={this.state.disableTransition}
-                      >
-                        {member.kind === 'item' && (
-                          <ChangeIndicator
-                            path={member.item.path}
-                            isChanged={changed}
-                            hasFocus={false}
-                          >
-                            <ArrayOfPrimitivesItem
+      <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
+        <Stack space={2} data-testid="array-primitives-input">
+          <UploadTargetCard
+            types={schemaType.of}
+            resolveUploader={resolveUploader}
+            onUpload={onUpload}
+            {...elementProps}
+            tabIndex={0}
+          >
+            <Stack space={1}>
+              {membersWithSortIds.length === 0 ? (
+                <NoItemsPlaceholder schemaType={schemaType} />
+              ) : (
+                <Card padding={1} border>
+                  <List
+                    onItemMove={this.handleSortEnd}
+                    onItemMoveStart={this.handleItemMoveStart}
+                    onItemMoveEnd={this.handleItemMoveEnd}
+                    items={membersWithSortIds.map((m) => m.id)}
+                    sortable={isSortable}
+                    gap={isGrid ? 3 : 1}
+                    columns={isGrid ? [2, 3, 4] : 1}
+                    padding={isGrid ? 1 : undefined}
+                    margin={isGrid ? 1 : undefined}
+                  >
+                    {membersWithSortIds.map(({member, id}, index) => {
+                      return (
+                        <Item
+                          key={member.key}
+                          id={id}
+                          sortable={isSortable}
+                          disableTransition={this.state.disableTransition}
+                        >
+                          {member.kind === 'item' && (
+                            <ChangeIndicator
+                              path={member.item.path}
+                              isChanged={changed}
+                              hasFocus={false}
+                            >
+                              <ArrayOfPrimitivesItem
+                                member={member}
+                                renderItem={this.renderArrayItem}
+                                renderInput={renderInput}
+                              />
+                            </ChangeIndicator>
+                          )}
+                          {member.kind === 'error' && (
+                            <ErrorItem
+                              readOnly={readOnly}
+                              sortable={isSortable}
                               member={member}
-                              renderItem={this.renderArrayItem}
-                              renderInput={renderInput}
+                              onRemove={() => onItemRemove(index)}
                             />
-                          </ChangeIndicator>
-                        )}
-                        {member.kind === 'error' && (
-                          <ErrorItem
-                            readOnly={readOnly}
-                            sortable={isSortable}
-                            member={member}
-                            onRemove={() => onItemRemove(index)}
-                          />
-                        )}
-                      </Item>
-                    )
-                  })}
-                </List>
-              </Card>
-            )}
-          </Stack>
-        </UploadTargetCard>
+                          )}
+                        </Item>
+                      )
+                    })}
+                  </List>
+                </Card>
+              )}
+            </Stack>
+          </UploadTargetCard>
 
-        <ArrayFunctions
-          onChange={this.props.onChange}
-          onItemAppend={this.handleAppend}
-          onItemPrepend={this.handlePrepend}
-          onValueCreate={getEmptyValue}
-          readOnly={this.props.readOnly}
-          schemaType={this.props.schemaType}
-          value={this.props.value}
-          path={this.props.path}
-        />
-      </Stack>
+          <ArrayFunctions
+            onChange={this.props.onChange}
+            onItemAppend={this.handleAppend}
+            onItemPrepend={this.handlePrepend}
+            onValueCreate={getEmptyValue}
+            readOnly={this.props.readOnly}
+            schemaType={this.props.schemaType}
+            value={this.props.value}
+            path={this.props.path}
+          />
+        </Stack>
+      </ArrayValidationProvider>
     )
   }
 }

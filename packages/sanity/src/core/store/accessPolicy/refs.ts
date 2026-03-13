@@ -15,9 +15,7 @@ export function makeMediaLibraryRef(libraryId: string, assetId: string): MediaLi
   return `media-library:${libraryId}:${assetId}`
 }
 
-export function containsMediaProperty(
-  value: unknown,
-): value is {media: GlobalDocumentReferenceValue} {
+function containsMediaProperty(value: unknown): value is {media: GlobalDocumentReferenceValue} {
   if (!hasOwnRecord(value, 'media') || !hasOwnRecord(value.media, '_ref')) {
     return false
   }

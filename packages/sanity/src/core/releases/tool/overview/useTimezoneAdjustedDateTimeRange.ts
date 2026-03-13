@@ -1,4 +1,5 @@
-import {endOfDay, startOfDay} from 'date-fns'
+import {endOfDay} from 'date-fns/endOfDay'
+import {startOfDay} from 'date-fns/startOfDay'
 import {useCallback} from 'react'
 
 import {useTimeZone} from '../../../hooks/useTimeZone'

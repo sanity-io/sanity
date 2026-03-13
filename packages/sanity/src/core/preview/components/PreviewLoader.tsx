@@ -74,13 +74,14 @@ export function PreviewLoader(
       )
     }
 
+    // media: null or false explicitly suppresses the icon.
+    // All other falsy cases (undefined, missing key) fall back to the schema icon.
+    if (preview?.value?.media === null || preview?.value?.media === false) {
+      return undefined
+    }
+
     if (!preview?.value?.media) {
-      // Only fall back to schema icon if there's no custom prepare function.
-      // When a prepare function is defined and doesn't return media,
-      // the user intentionally omitted it - don't show the schema icon.
-      // See: https://github.com/sanity-io/sanity/issues/1200
-      const hasCustomPrepare = typeof schemaType.preview?.prepare === 'function'
-      return hasCustomPrepare ? undefined : schemaType.icon
+      return schemaType.icon
     }
 
     // @todo: fix `TS2769: No overload matches this call.`

@@ -5,8 +5,6 @@ import {LegacyLayerProvider} from 'sanity'
 import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
 import {usePane} from './usePane'
 
-export type TabsType = 'default' | 'dropdown'
-
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */

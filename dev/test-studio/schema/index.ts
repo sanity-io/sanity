@@ -13,8 +13,10 @@ import {
   tooltipAnnotationType,
 } from './debug/annotationCustomTypeTest'
 import {arrayCapabilities} from './debug/arrayCapabilities'
+import {arrayOfStringsGridCustomInput} from './debug/arrayOfStringsGridCustomInput'
 import button from './debug/button'
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
+import {collapsibleColumnsBug} from './debug/collapsibleColumnsBug'
 import {collapsibleObjects} from './debug/collapsibleObjects'
 import {commentsDebug} from './debug/comments'
 import conditionalFields from './debug/conditionalFields'
@@ -55,15 +57,18 @@ import {
 import focus from './debug/focus'
 import {formInputDebug} from './debug/formInputDebug'
 import gallery from './debug/gallery'
+import {hiddenCurrentUserTest} from './debug/hiddenCurrentUserTest'
 import {hiddenFieldValidationTypes} from './debug/hiddenFieldValidation'
 import {customBlock, hoistedPt, hoistedPtDocument} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
-import {languageFilterDebugType} from './debug/languageFilter'
+import {issue4516AddFilterIntentLink} from './debug/issue4516AddFilterIntentLink'
+import {languageFilterDebugType, localeBlockContentType} from './debug/languageFilter'
 import lazyComponents from './debug/lazyComponents'
 import liveEdit from './debug/liveEdit'
 import localeString from './debug/localeString'
+import {locationResolverTest} from './debug/locationResolverTest'
 import {longValidationTestType} from './debug/longValidation'
 import manyFieldsTest from './debug/manyFieldsTest'
 import {manyViewsType} from './debug/manyViews'
@@ -140,6 +145,7 @@ import strings from './standard/strings'
 import texts from './standard/texts'
 import urls from './standard/urls'
 import videos from './standard/videos'
+import withObjectFieldsOrder from './standard/withObjectFieldsOrder'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -212,13 +218,16 @@ export function createSchemaTypes(projectId: string) {
     strings,
     texts,
     urls,
+    withObjectFieldsOrder,
 
     // Test documents for debugging
     actions,
     annotationCustomTypeTest,
     ctaType,
     tooltipAnnotationType,
+    arrayOfStringsGridCustomInput,
     button,
+    collapsibleColumnsBug,
     collapsibleObjects,
     domAttrsAsFieldNames,
     commentsDebug,
@@ -238,6 +247,7 @@ export function createSchemaTypes(projectId: string) {
     experiment,
     fieldActionsTest,
     fieldComponentsTest,
+    hiddenCurrentUserTest,
     ...hiddenFieldValidationTypes,
     fieldsets,
     removeRestoreAction,
@@ -254,8 +264,11 @@ export function createSchemaTypes(projectId: string) {
     superlatives,
     inspectorsTestType,
     invalidPreviews,
+    issue4516AddFilterIntentLink,
     languageFilterDebugType,
+    localeBlockContentType,
     lazyComponents,
+    locationResolverTest,
     liveEdit,
     localeString,
     manyFieldsTest,

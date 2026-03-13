@@ -52,7 +52,7 @@ export interface PaneHeaderMenuItemActionButtonProps {
   node: _PaneMenuItem
 }
 
-export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionButtonProps) {
+function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionButtonProps) {
   const {node} = props
   const {title} = useI18nText(node)
   const {t} = useTranslation()

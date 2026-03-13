@@ -41,6 +41,9 @@ describe('useDocumentRevertStates', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    // Suppress expected console.error from the revert states pipeline
+    // (async fetch errors during test teardown and intentional error tests)
+    vi.spyOn(console, 'error').mockImplementation(() => {})
 
     mockUseClient.mockReturnValue(mockClient)
 
@@ -173,6 +176,10 @@ describe('useDocumentRevertStates', () => {
     })
 
     expect(mockClient.observable.request).not.toHaveBeenCalled() // No API calls on failure
+    expect(console.error).toHaveBeenCalledWith(
+      'Error in document revert states pipeline:',
+      expect.any(Error),
+    )
   })
 
   it('should handle a mix of existing and missing revisions', async () => {

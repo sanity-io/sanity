@@ -1,8 +1,13 @@
-import {type TransactionLogEventWithEffects} from '@sanity/types'
+import {
+  type TransactionLogEventWithMutations,
+  type TransactionLogEventWithEffects,
+} from '@sanity/types'
 
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../../studioClient'
 
-type StreamResult = TransactionLogEventWithEffects | {error: {description?: string; type: string}}
+type StreamResult =
+  | (TransactionLogEventWithEffects & TransactionLogEventWithMutations)
+  | {error: {description?: string; type: string}}
 
 export async function getJsonStream(
   url: string,
@@ -24,7 +29,7 @@ function getStream(response: Response): ReadableStream<StreamResult> {
   let reader: ReadableStreamDefaultReader<Uint8Array>
   let cancelled = false
 
-  return new ReadableStream<TransactionLogEventWithEffects>({
+  return new ReadableStream<TransactionLogEventWithEffects & TransactionLogEventWithMutations>({
     start(controller): void | PromiseLike<void> {
       reader = body.getReader()
       const decoder = new TextDecoder()

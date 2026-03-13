@@ -1,15 +1,8 @@
 import {Box, Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
-import {isValid} from 'date-fns'
-import {get} from 'lodash-es'
-import {
-  type CSSProperties,
-  Fragment,
-  type HTMLProps,
-  type RefAttributes,
-  useMemo,
-  useRef,
-} from 'react'
+import {isValid} from 'date-fns/isValid'
+import get from 'lodash-es/get.js'
+import {type CSSProperties, Fragment, type HTMLProps, type RefAttributes, useMemo} from 'react'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {TableEmptyState} from './TableEmptyState'
@@ -71,7 +64,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
   hideTableInlinePadding = false,
 }: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort} = useTableContext()
-  const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
 
   const filteredData = useMemo(() => {
     const filteredResult = searchFilter ? searchFilter(data, searchTerm || '') : data
@@ -146,6 +138,11 @@ const TableInner = <TableData, AdditionalRowTableData>({
         (column) => !column.hidden,
       ),
     [columnDefs, rowActionColumnDef, rowActions],
+  )
+
+  const tableMinWidth = useMemo(
+    () => amalgamatedColumnDefs.reduce((sum, col) => sum + (col.width || 200), 0),
+    [amalgamatedColumnDefs],
   )
 
   const renderRow = useMemo(
@@ -224,7 +221,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
         ({_id: string; isLoading: boolean} | TableData | (TableData & AdditionalRowTableData)),
     ) => React.ReactNode,
   ) => {
-    return Array.from({length: LOADING_ROW_COUNT}).map((el, index) => {
+    return Array.from({length: LOADING_ROW_COUNT}).map((_el, index) => {
       const cardKey = `skeleton-${index}`
       const virtualRow: VirtualItem = {
         index,
@@ -268,11 +265,12 @@ const TableInner = <TableData, AdditionalRowTableData>({
   }
 
   return (
-    <div ref={virtualizerContainerRef} style={{height: '100%'}}>
+    <div style={{height: '100%'}}>
       <div
         style={
           {
             'width': '100%',
+            'minWidth': `${tableMinWidth}px`,
             'height': '100%',
             'position': 'relative',
             '--maxInlineSize': rem(maxInlineSize),

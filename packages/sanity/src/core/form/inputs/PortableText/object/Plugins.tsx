@@ -1,5 +1,6 @@
-import {defineBehavior} from '@portabletext/editor/behaviors'
+import {defineBehavior, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
+import {htmlToPortableText} from '@portabletext/html'
 import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {PasteLinkPlugin} from '@portabletext/plugin-paste-link'
@@ -35,6 +36,52 @@ export const PortableTextEditorPlugins = (props: {
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const isOneLineEditor = Boolean(schemaTypes.block.options?.oneLine)
 
+  // Studio owns HTML paste deserialization so it can pass
+  // unstable_whitespaceOnPasteMode from the Sanity schema config directly to
+  // @portabletext/html. This bypasses PTE's built-in HTML converter, which
+  // doesn't have access to Sanity-specific schema options.
+  const htmlPasteBehaviors = useMemo(
+    () => [
+      defineBehavior({
+        on: 'deserialize.data',
+        guard: ({snapshot, event}) => {
+          if (event.mimeType !== 'text/html') {
+            return false
+          }
+
+          const blocks = htmlToPortableText(event.data, {
+            schema: snapshot.context.schema,
+            keyGenerator: snapshot.context.keyGenerator,
+            whitespaceMode: schemaTypes.block.options?.unstable_whitespaceOnPasteMode,
+          }) as Array<PortableTextBlock>
+
+          if (blocks.length === 0) {
+            return {
+              type: 'deserialization.failure' as const,
+              mimeType: 'text/html' as const,
+              reason: 'No blocks deserialized',
+            }
+          }
+
+          return {
+            type: 'deserialization.success' as const,
+            mimeType: 'text/html' as const,
+            data: blocks,
+          }
+        },
+        actions: [
+          ({event}, deserializeEvent) => [
+            raise({
+              ...deserializeEvent,
+              originEvent: event.originEvent,
+            }),
+          ],
+        ],
+      }),
+    ],
+    [schemaTypes.block.options?.unstable_whitespaceOnPasteMode],
+  )
+
   const componentProps = useMemo(
     (): PortableTextPluginsProps => ({
       plugins: {
@@ -62,6 +109,7 @@ export const PortableTextEditorPlugins = (props: {
 
   return (
     <>
+      <BehaviorPlugin behaviors={htmlPasteBehaviors} />
       {isOneLineEditor && (
         <>
           <OneLinePlugin />
@@ -141,7 +189,7 @@ function DefaultTypographyPlugin(props: PortableTextPluginsProps['plugins']['typ
   return <TypographyPlugin {...typographyPluginProps} />
 }
 
-export const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefault'>) => {
+const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefault'>) => {
   const RenderPlugins = useMiddlewareComponents({
     defaultComponent: DefaultPortableTextEditorPlugins,
     pick: pickPortableTextEditorPluginsComponent,

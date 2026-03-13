@@ -62,6 +62,7 @@ export function ActionsMenu(props: Props) {
             sourceName: openInSourceName || 'source',
           })}
           onClick={openInSource}
+          data-testid="file-input-open-in-source"
         />
       )}
 

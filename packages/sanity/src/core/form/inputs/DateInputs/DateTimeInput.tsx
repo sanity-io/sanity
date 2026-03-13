@@ -9,7 +9,9 @@ import {
   type ParseResult,
 } from '@sanity/util/legacyDateFormat'
 import {fromString as pathFromString} from '@sanity/util/paths'
-import {getMinutes, parseISO, setMinutes} from 'date-fns'
+import {getMinutes} from 'date-fns/getMinutes'
+import {parseISO} from 'date-fns/parseISO'
+import {setMinutes} from 'date-fns/setMinutes'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 

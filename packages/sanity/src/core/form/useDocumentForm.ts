@@ -9,7 +9,7 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
-import {throttle} from 'lodash-es'
+import throttle from 'lodash-es/throttle.js'
 import {type RefObject, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 
@@ -152,7 +152,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {data: documentVersions} = useDocumentVersions({documentId})
   const workspace = useWorkspace()
 
-  const enhancedObjectDialogEnabled = workspace.beta?.form?.enhancedObjectDialog?.enabled
+  const enhancedObjectDialogEnabled = true
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -278,7 +278,21 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const subscription = presenceStore
       .documentPresence(value._id, {excludeVersions: true})
       .subscribe((nextPresence) => {
-        setPresence(nextPresence)
+        setPresence((prev) => {
+          if (
+            prev.length === nextPresence.length &&
+            prev.every(
+              // eslint-disable-next-line max-nested-callbacks
+              (p, i) =>
+                p.sessionId === nextPresence[i].sessionId &&
+                p.lastActiveAt === nextPresence[i].lastActiveAt &&
+                p.path === nextPresence[i].path,
+            )
+          ) {
+            return prev
+          }
+          return nextPresence
+        })
       })
     return () => {
       subscription.unsubscribe()

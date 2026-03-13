@@ -1,15 +1,52 @@
-import {Card, Flex, Skeleton, Stack, TextSkeleton} from '@sanity/ui'
+import {ResetIcon} from '@sanity/icons'
+import {Flex, Skeleton, Text} from '@sanity/ui'
+import {type CSSProperties} from 'react'
 
-export function VideoSkeleton({error}: {error?: Error}) {
+import {useTranslation} from '../../../core/i18n'
+import {Button} from '../../../ui-components/button'
+import {mediaLibraryLocaleNamespace} from '../i18n'
+import {RatioBox} from './styles'
+
+interface VideoSkeletonProps {
+  error?: Error
+  retry?: () => void
+  aspectRatio?: number
+}
+
+export function VideoSkeleton({error, retry, aspectRatio}: VideoSkeletonProps) {
+  const {t} = useTranslation(mediaLibraryLocaleNamespace)
+  const ratio = aspectRatio ?? 16 / 9
+
   return (
-    <Card padding={0} radius={0} tone={error ? 'critical' : 'default'}>
-      <Flex align="center" justify="flex-start" padding={2}>
-        <Skeleton padding={3} radius={1} animated={!error} />
-        <Stack flex={1} space={2} marginLeft={3}>
-          <TextSkeleton style={{width: '100%'}} radius={1} animated={!error} />
-          <TextSkeleton style={{width: '100%'}} radius={1} animated={!error} />
-        </Stack>
-      </Flex>
-    </Card>
+    <RatioBox
+      tone={error ? 'critical' : 'transparent'}
+      $isPortrait={ratio < 0.75}
+      style={{'--aspect-ratio': ratio} as CSSProperties}
+    >
+      {error ? (
+        <Flex
+          align="center"
+          justify="center"
+          direction="column"
+          gap={3}
+          style={{position: 'absolute', inset: 0}}
+          padding={4}
+        >
+          <Text size={1} muted>
+            {error.message || t('video-error.description')}
+          </Text>
+          {retry && (
+            <Button
+              icon={ResetIcon}
+              mode="ghost"
+              text={t('video-error.retry-button.text')}
+              onClick={retry}
+            />
+          )}
+        </Flex>
+      ) : (
+        <Skeleton style={{position: 'absolute', inset: 0}} radius={1} animated />
+      )}
+    </RatioBox>
   )
 }

@@ -1,4 +1,8 @@
-import {endOfDay, endOfMinute, startOfDay, startOfMinute, sub} from 'date-fns'
+import {endOfDay} from 'date-fns/endOfDay'
+import {endOfMinute} from 'date-fns/endOfMinute'
+import {startOfDay} from 'date-fns/startOfDay'
+import {startOfMinute} from 'date-fns/startOfMinute'
+import {sub} from 'date-fns/sub'
 import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {

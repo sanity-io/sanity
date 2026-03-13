@@ -21,6 +21,8 @@ import {RELEASES_INTENT} from '../../releases/plugin'
 import {isReleaseDocument} from '../../releases/store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
+import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
+import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {oversizedButtonStyle} from '../styles'
 import {type TargetPerspective} from '../types'
 
@@ -123,6 +125,7 @@ export function CurrentGlobalPerspectiveLabel({
   selectedPerspective: TargetPerspective
 }): React.JSX.Element | null {
   const {t} = useTranslation()
+  const {bundles} = useAgentBundles()
 
   return (
     <AnimatedTextWidth
@@ -141,7 +144,13 @@ export function CurrentGlobalPerspectiveLabel({
       ) : (
         <Box padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>
           <Text size={1} textOverflow="ellipsis" weight="medium">
-            {selectedPerspective}
+            {isAgentBundleName(selectedPerspective)
+              ? t(
+                  bundles.some((b) => b.id === selectedPerspective)
+                    ? 'version.agent-bundle.proposed-changes'
+                    : 'version.agent-bundle.agent-changes',
+                )
+              : selectedPerspective}
           </Text>
         </Box>
       )}

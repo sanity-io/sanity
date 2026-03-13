@@ -1,4 +1,4 @@
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 import {useCallback} from 'react'
 
 import {useTimeZone} from '../../hooks/useTimeZone'

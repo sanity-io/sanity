@@ -10,6 +10,7 @@ import {useTranslation} from '../../../../i18n'
 import {CreatedNewObject} from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
+import {useArrayValidation} from '../common/ArrayValidationContext'
 import {useInsertMenuPopover} from './InsertMenuPopover'
 
 /**
@@ -21,6 +22,8 @@ export function ArrayOfObjectsFunctions<
 >(props: ArrayInputFunctionsProps<Item, TSchemaType>) {
   const {schemaType, readOnly, children, onValueCreate, onItemAppend, path} = props
   const {t} = useTranslation()
+  const arrayValidation = useArrayValidation()
+  const maxReached = arrayValidation?.maxReached ?? false
   const [gridElement, setGridElement] = useState<HTMLDivElement | null>(null)
   const [popoverToggleElement, setPopoverToggleElement] = useState<HTMLButtonElement | null>(null)
 
@@ -85,6 +88,16 @@ export function ArrayOfObjectsFunctions<
       <Tooltip portal content={t('inputs.array.read-only-label')}>
         <Grid>
           <Button {...insertButtonProps} data-testid="add-read-object-button" disabled />
+        </Grid>
+      </Tooltip>
+    )
+  }
+
+  if (maxReached) {
+    return (
+      <Tooltip portal content={t('inputs.array.action.max-reached')}>
+        <Grid>
+          <Button {...insertButtonProps} data-testid="add-max-reached-object-button" disabled />
         </Grid>
       </Tooltip>
     )

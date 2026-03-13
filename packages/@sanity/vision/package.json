@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "5.10.0",
+  "version": "5.15.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "admin",
@@ -63,7 +63,6 @@
     "@codemirror/search": "^6.6.0",
     "@codemirror/state": "^6.5.4",
     "@codemirror/view": "^6.39.11",
-    "@juggle/resize-observer": "^3.4.0",
     "@lezer/highlight": "^1.2.3",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
@@ -77,7 +76,6 @@
     "json5": "^2.2.3",
     "lodash-es": "^4.17.22",
     "quick-lru": "^5.1.1",
-    "react-fast-compare": "^3.2.2",
     "react-rx": "^4.2.2",
     "rxjs": "^7.8.2"
   },
@@ -98,10 +96,11 @@
     "babel-plugin-react-compiler": "1.0.0",
     "babel-plugin-styled-components": "catalog:",
     "eslint": "catalog:",
+    "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "rimraf": "^5.0.10",
-    "sanity": "^5.10.0",
+    "rimraf": "catalog:",
+    "sanity": "^5.15.0",
     "styled-components": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
@@ -110,5 +109,10 @@
     "react": "^19.2.2",
     "sanity": "^4.0.0-0 || ^5.0.0-0",
     "styled-components": "^6.1.15"
-  }
+  },
+  "browserslist": [
+    "node >=20.19",
+    "node >=22.12",
+    "baseline 2024"
+  ]
 }

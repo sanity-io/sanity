@@ -1,5 +1,10 @@
 import {tz as tzHelper} from '@date-fns/tz'
-import {format, getMinutes, isValid, parse, parseISO, setMinutes} from 'date-fns'
+import {format} from 'date-fns/format'
+import {getMinutes} from 'date-fns/getMinutes'
+import {isValid} from 'date-fns/isValid'
+import {parse} from 'date-fns/parse'
+import {parseISO} from 'date-fns/parseISO'
+import {setMinutes} from 'date-fns/setMinutes'
 import {type ForwardedRef, forwardRef, useCallback} from 'react'
 
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'

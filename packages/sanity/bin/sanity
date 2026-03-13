@@ -20,7 +20,7 @@ import {readFile, open} from 'node:fs/promises'
 import {createRequire} from 'node:module'
 import {dirname, resolve} from 'node:path'
 import {pathToFileURL} from 'node:url'
-import execa from 'execa'
+import {spawn} from 'node:child_process'
 
 const require = createRequire(import.meta.url)
 
@@ -38,8 +38,8 @@ runSanityCli().catch((err) => {
  * - If the binary is a Node.js script, we either `import()` or `require()` it based on
  *   the extension (cjs/mjs) or the package `type` field. This is prefered as it does
  *   not require spawning a new process.
- * - If the binary is not a Node.js script, we spawn it using `execa`, which handles
- *   things correctly across platforms (windows doesn't enjoy shebangs etc). stdio is
+ * - If the binary is not a Node.js script, we spawn it as a child process. On Windows,
+ *   shebangs are parsed manually and the interpreter is invoked directly. stdio is
  *   inherited from the parent process.
  *
  * Note:
@@ -50,10 +50,11 @@ runSanityCli().catch((err) => {
  */
 async function runSanityCli() {
   const {bin, type} = await getSanityCliBin()
+  const shebang = await parseShebang(bin)
 
   // The optimal case: the binary is a Node.js script - import/require it directly to
   // prevent needing to spawn a new process
-  if (await isNodeScript(bin)) {
+  if (isNodeScript(bin, shebang)) {
     if (type === 'module') {
       await import(pathToFileURL(bin).href)
     } else {
@@ -62,13 +63,20 @@ async function runSanityCli() {
     return
   }
 
-  // Fallback: spawn the binary as a child process
-  const child = execa(bin, process.argv.slice(2), {
-    stdio: 'inherit',
-    encoding: null,
-    buffer: false,
-    reject: false,
-  })
+  // Fallback: spawn the binary as a child process.
+  // Note: because we resolve the `bin` field from `@sanity/cli`'s package.json, the path
+  // points to the actual source file, not a cmd-shim wrapper. This means we don't need the
+  // full cmd-shim argument escaping that libraries like `cross-spawn` provide - we only need
+  // to handle shebangs on Windows, where they are not natively supported by the OS.
+  // On Unix, the OS handles shebangs natively.
+  let command = bin
+  let args = process.argv.slice(2)
+  if (process.platform === 'win32' && shebang) {
+    command = shebang.interpreter
+    args = [...shebang.args, bin, ...process.argv.slice(2)]
+  }
+
+  const child = spawn(command, args, {stdio: 'inherit'})
 
   // Forward signals to the child process
   const signals = ['SIGINT', 'SIGTERM', 'SIGHUP']
@@ -79,7 +87,10 @@ async function runSanityCli() {
   })
 
   try {
-    const {exitCode} = await child
+    const exitCode = await new Promise((resolve, reject) => {
+      child.on('error', reject)
+      child.on('close', (code) => resolve(code ?? 1))
+    })
     process.exitCode = exitCode
   } finally {
     // Clean up signal handlers
@@ -118,12 +129,15 @@ async function getSanityCliBin() {
 }
 
 /**
- * Determines if the file at `scriptPath` is a Node.js script by checking its shebang.
- * Returns true if:
- * - The shebang interpreter is `node` (e.g., `#!/usr/bin/node`, `#!/usr/bin/env node`)
- * - The file has a `.js`, `.mjs`, or `.cjs` extension (fallback when no shebang)
+ * Parses the shebang from a script file and returns the interpreter and its arguments.
+ * Returns `null` if the file has no shebang.
+ *
+ * Handles both direct paths and `env` invocations:
+ * - `#!/usr/bin/node` => `{interpreter: '/usr/bin/node', args: []}`
+ * - `#!/usr/bin/env node` => `{interpreter: 'node', args: []}`
+ * - `#!/usr/bin/env -S node --flags` => `{interpreter: 'node', args: ['--flags']}`
  */
-async function isNodeScript(scriptPath) {
+async function parseShebang(scriptPath) {
   let file
   try {
     file = await open(scriptPath)
@@ -138,25 +152,48 @@ async function isNodeScript(scriptPath) {
     const content = buffer.toString('utf8', 0, bytesRead)
 
     if (!content.startsWith('#!')) {
-      // No shebang - fall back to extension check (.js, .mjs, .cjs)
-      // This is not perfect - but it's better than nothing
-      return /\.(m?js|cjs)$/.test(scriptPath)
+      return null
     }
 
-    // Extract the interpreter, handling both direct paths and `env` invocations:
-    // `#!/usr/bin/node` => `node`
-    // `#!/usr/bin/env node` => `node`
-    // `#!/usr/bin/env -S node --flags` => `node`
     const firstLine = content.slice(2, content.indexOf('\n')).trim()
     const parts = firstLine.split(/\s+/)
-    const interpreter = parts[0].endsWith('/env')
-      ? parts.find((part, i) => i > 0 && !part.startsWith('-'))
-      : parts[0]
 
-    return interpreter && (interpreter.endsWith('node') || interpreter.endsWith('node.exe'))
+    if (parts[0].endsWith('/env')) {
+      // `env` invocation: skip flags (e.g. `-S`) to find the actual interpreter
+      const interpreterIdx = parts.findIndex((part, i) => i > 0 && !part.startsWith('-'))
+      if (interpreterIdx === -1) {
+        return null
+      }
+      return {
+        interpreter: parts[interpreterIdx],
+        args: parts.slice(interpreterIdx + 1),
+      }
+    }
+
+    return {
+      interpreter: parts[0],
+      args: parts.slice(1),
+    }
   } finally {
     await file.close()
   }
+}
+
+/**
+ * Determines if the file at `scriptPath` is a Node.js script by checking its shebang.
+ * Returns true if:
+ * - The shebang interpreter is `node` (e.g., `#!/usr/bin/node`, `#!/usr/bin/env node`)
+ * - The file has a `.js`, `.mjs`, or `.cjs` extension (fallback when no shebang)
+ */
+function isNodeScript(scriptPath, shebang) {
+  if (shebang) {
+    const {interpreter} = shebang
+    return interpreter.endsWith('node') || interpreter.endsWith('node.exe')
+  }
+
+  // No shebang - fall back to extension check (.js, .mjs, .cjs)
+  // This is not perfect - but it's better than nothing
+  return /\.(m?js|cjs)$/.test(scriptPath)
 }
 
 function determineModuleType(binPath, pkgJson) {

@@ -98,7 +98,13 @@ export default [
       ...sanityTypescript.rules,
       'no-negated-condition': 'off',
       '@typescript-eslint/no-var-requires': 'off', // prefer import/no-dynamic-require
-      'import/extensions': ['error', {pattern: {cjs: 'always', json: 'always'}}],
+      'import/extensions': [
+        'error',
+        {
+          pattern: {cjs: 'always', json: 'always'},
+          pathGroupOverrides: [{pattern: 'lodash-es/*', action: 'ignore'}],
+        },
+      ],
       'import/named': 'off',
       'import/no-named-as-default': 'off',
       'import/no-named-as-default-member': 'off',
@@ -158,6 +164,7 @@ export default [
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
+          noWarnOnMultipleProjects: true,
           project: [
             'dev/*/tsconfig.json',
             'examples/*/tsconfig.json',
@@ -216,7 +223,6 @@ export default [
     name: 'sanity/no-react-compiler-on-test-code',
     files: [
       `**/*/test/**/*`,
-      `**/*/__workshop__/**/*`,
       '**/*/__tests__/**/*',
       '**/*.test.{js,ts,tsx}',
       '**/playwright-ct/**',

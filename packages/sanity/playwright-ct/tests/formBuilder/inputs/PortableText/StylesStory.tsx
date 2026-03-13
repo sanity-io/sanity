@@ -38,5 +38,3 @@ export function StylesStory() {
     </TestWrapper>
   )
 }
-
-export default StylesStory

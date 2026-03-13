@@ -75,7 +75,6 @@ npx sanity schema deploy
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'auto-tag',
          src: './functions/auto-tag',
          memory: 2,
@@ -164,7 +163,6 @@ Once you've tested your function locally and are satisfied with its behavior, yo
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'auto-tag',
          src: './functions/auto-tag',
          memory: 2,

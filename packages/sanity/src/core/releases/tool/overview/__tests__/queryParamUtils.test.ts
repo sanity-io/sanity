@@ -1,8 +1,12 @@
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 import {type RouterContextValue} from 'sanity/router'
 import {describe, expect, it} from 'vitest'
 
-import {buildReleasesSearchParams, getInitialCardinalityView} from '../queryParamUtils'
+import {
+  buildReleasesSearchParams,
+  getInitialCardinalityView,
+  getInitialReleaseNotFound,
+} from '../queryParamUtils'
 
 const createMockRouter = (searchParams: string): RouterContextValue =>
   ({
@@ -61,6 +65,23 @@ describe('queryParamUtils', () => {
         isReleasesEnabled: false,
       })()
       expect(result).toBe('releases')
+    })
+  })
+
+  describe('getInitialReleaseNotFound', () => {
+    it('should return true when releaseNotFound=true is in search params', () => {
+      const router = createMockRouter('releaseNotFound=true')
+      expect(getInitialReleaseNotFound(router)).toBe(true)
+    })
+
+    it('should return false when param is absent', () => {
+      const router = createMockRouter('')
+      expect(getInitialReleaseNotFound(router)).toBe(false)
+    })
+
+    it('should return false when param value is not "true"', () => {
+      const router = createMockRouter('releaseNotFound=false')
+      expect(getInitialReleaseNotFound(router)).toBe(false)
     })
   })
 

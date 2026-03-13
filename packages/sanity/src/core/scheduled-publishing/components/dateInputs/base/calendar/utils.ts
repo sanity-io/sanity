@@ -1,8 +1,12 @@
-import {addDays, eachWeekOfInterval, getWeek, lastDayOfMonth, startOfMonth} from 'date-fns'
+import {addDays} from 'date-fns/addDays'
+import {eachWeekOfInterval} from 'date-fns/eachWeekOfInterval'
+import {getWeek} from 'date-fns/getWeek'
+import {lastDayOfMonth} from 'date-fns/lastDayOfMonth'
+import {startOfMonth} from 'date-fns/startOfMonth'
 
 import {TAIL_WEEKDAYS} from './constants'
 
-export const getWeekStartsOfMonth = (date: Date): Date[] => {
+const getWeekStartsOfMonth = (date: Date): Date[] => {
   const firstDay = startOfMonth(date)
   return eachWeekOfInterval({
     start: firstDay,
@@ -10,7 +14,7 @@ export const getWeekStartsOfMonth = (date: Date): Date[] => {
   })
 }
 
-export const getWeekDaysFromWeekStarts = (weekStarts: Date[]): Date[][] => {
+const getWeekDaysFromWeekStarts = (weekStarts: Date[]): Date[][] => {
   return weekStarts.map((weekStart) => [
     weekStart,
     ...TAIL_WEEKDAYS.map((d) => addDays(weekStart, d)),

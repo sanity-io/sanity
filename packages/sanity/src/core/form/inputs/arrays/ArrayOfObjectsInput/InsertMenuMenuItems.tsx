@@ -15,6 +15,8 @@ type InsertMenuItemsProps = {
   onInsert: (pos: 'before' | 'after', type: SchemaType) => void
   referenceElement: HTMLElement | null
   schemaTypes?: SchemaType[]
+  disabled?: boolean
+  disabledReason?: string
 }
 
 /**
@@ -22,7 +24,7 @@ type InsertMenuItemsProps = {
  */
 export function useInsertMenuMenuItems(props: InsertMenuItemsProps) {
   const {t} = useTranslation()
-  const {onInsert, schemaTypes: types} = props
+  const {onInsert, schemaTypes: types, disabled, disabledReason} = props
   const insertBefore = useInsertMenuPopover({
     insertMenuProps: {
       ...props.insertMenuOptions,
@@ -86,9 +88,11 @@ export function useInsertMenuMenuItems(props: InsertMenuItemsProps) {
           }
           icon={InsertAboveIcon}
           onClick={handleToggleInsertBefore}
+          disabled={disabled}
+          tooltipProps={disabledReason ? {content: disabledReason} : undefined}
         />
       ) : null,
-    [handleToggleInsertBefore, t, types],
+    [disabled, disabledReason, handleToggleInsertBefore, t, types],
   )
   const insertAfterMenuItem = useMemo(
     () =>
@@ -102,9 +106,11 @@ export function useInsertMenuMenuItems(props: InsertMenuItemsProps) {
           }
           icon={InsertBelowIcon}
           onClick={handleToggleInsertAfter}
+          disabled={disabled}
+          tooltipProps={disabledReason ? {content: disabledReason} : undefined}
         />
       ) : null,
-    [handleToggleInsertAfter, t, types],
+    [disabled, disabledReason, handleToggleInsertAfter, t, types],
   )
 
   return {

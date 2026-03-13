@@ -93,7 +93,7 @@ test.describe('Revert Undecided', () => {
         exact: true,
       }),
     ).toBeVisible()
-    await expect(page.getByTestId('release-type-picker')).toHaveText('ASAP')
+    await expect(page.getByTestId('release-type-picker')).toHaveText('As soon as possible')
   })
 
   // Publish -> Revert -> ASAP release
@@ -116,6 +116,6 @@ test.describe('Revert Undecided', () => {
         exact: true,
       }),
     ).toBeVisible()
-    await expect(page.getByTestId('release-type-picker')).toHaveText('ASAP')
+    await expect(page.getByTestId('release-type-picker')).toHaveText('As soon as possible')
   })
 })

@@ -21,7 +21,7 @@ export const OverlayWrapper = styled.div`
   z-index: 13;
 `
 
-export const RegionWrapper = css`
+const RegionWrapper = css`
   overflow: hidden;
   overflow: clip;
   pointer-events: none;

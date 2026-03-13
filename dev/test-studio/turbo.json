@@ -4,7 +4,7 @@
   "tasks": {
     "build": {
       "env": ["REACT_PRODUCTION_PROFILING"],
-      "outputs": [".sanity/**", "dist/**", "workshop/scopes.js"]
+      "outputs": [".sanity/**", "dist/**"]
     },
     "start": {
       "dependsOn": ["build"],

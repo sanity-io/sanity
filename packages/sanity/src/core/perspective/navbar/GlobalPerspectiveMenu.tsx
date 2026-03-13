@@ -15,6 +15,10 @@ import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 const StyledMenu = styled(Menu)`
   min-width: 200px;
   max-width: 320px;
+  /* Remove the default menu gap*/
+  > [data-ui='Stack'] {
+    gap: 0;
+  }
 `
 const OversizedButton = styled(Button)`
   ${oversizedButtonStyle}
@@ -34,7 +38,7 @@ export function GlobalPerspectiveMenu({
     useReleasesUpsell()
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
-  const {isRangeVisible, onScroll, resetRangeVisibility, setScrollContainer, scrollElementRef} =
+  const {isRangeVisible, resetRangeVisibility, setScrollContainer, scrollElementRef} =
     useScrollIndicatorVisibility()
   const handleOpenBundleDialog = useCallback(() => {
     if (releasesUpsellMode === 'upsell') {
@@ -63,11 +67,10 @@ export function GlobalPerspectiveMenu({
         id="releases-menu"
         onClose={resetRangeVisibility}
         menu={
-          <StyledMenu data-testid="release-menu" ref={styledMenuRef}>
+          <StyledMenu data-testid="release-menu" ref={styledMenuRef} padding={0}>
             <ReleasesList
               areReleasesEnabled={areReleasesEnabled}
               setScrollContainer={setScrollContainer}
-              onScroll={onScroll}
               isRangeVisible={isRangeVisible}
               scrollElementRef={scrollElementRef}
               selectedPerspectiveName={selectedPerspectiveName}
@@ -77,10 +80,13 @@ export function GlobalPerspectiveMenu({
           </StyledMenu>
         }
         popover={{
+          __unstable_margins: [0, 0, 32, 0],
           constrainSize: true,
           fallbackPlacements: ['bottom-end'],
           placement: 'bottom-end',
           portal: true,
+          // @ts-expect-error PopoverProps doesn't include `style`, but the Popover implementation accepts it via React.HTMLProps<HTMLDivElement>
+          style: {overflow: 'hidden'} as React.CSSProperties,
           tone: 'default',
           zOffset: 3000,
         }}

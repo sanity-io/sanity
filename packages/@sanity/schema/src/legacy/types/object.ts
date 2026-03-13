@@ -6,7 +6,10 @@ import {
   type ObjectDefinition,
   type ObjectField,
 } from '@sanity/types'
-import {castArray, flatMap, pick, startCase} from 'lodash-es'
+import castArray from 'lodash-es/castArray.js'
+import flatMap from 'lodash-es/flatMap.js'
+import pick from 'lodash-es/pick.js'
+import startCase from 'lodash-es/startCase.js'
 
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import createPreviewGetter from '../preview/createPreviewGetter'

@@ -11,7 +11,7 @@ import {TaskStatusChanged} from '../../../__telemetry__/tasks.telemetry'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 import {tasksLocaleNamespace} from '../../../i18n'
 
-export const StatusMenuButton = forwardRef(function StatusMenuButton(
+const StatusMenuButton = forwardRef(function StatusMenuButton(
   props: {value: string | undefined; options: TitledListValue<string>[]},
   ref: ForwardedRef<HTMLButtonElement>,
 ) {

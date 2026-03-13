@@ -127,5 +127,3 @@ export function ToolbarStory(props: InputStoryProps) {
     </TestWrapper>
   )
 }
-
-export default ToolbarStory

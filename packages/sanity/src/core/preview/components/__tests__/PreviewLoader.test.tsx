@@ -10,7 +10,8 @@ import {PreviewLoader} from '../PreviewLoader'
 // Mock dependencies
 vi.mock('../../useValuePreview')
 vi.mock('../../useVisibility')
-vi.mock('../../i18n', () => ({
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
   useTranslation: () => ({t: (key: string) => key}),
 }))
 vi.mock('../_extractUploadState', () => ({
@@ -61,8 +62,8 @@ describe('PreviewLoader', () => {
       expect(capturedMedia).toBe(DocumentIcon)
     })
 
-    it('should NOT show schema icon when prepare function exists but returns no media', () => {
-      // Schema WITH custom prepare function
+    it('should show schema icon when prepare function exists but returns no media key', () => {
+      // Schema WITH custom prepare function that omits media key entirely
       const schemaType = {
         name: 'testDoc',
         icon: DocumentIcon,
@@ -74,7 +75,7 @@ describe('PreviewLoader', () => {
 
       vi.mocked(useValuePreview).mockReturnValue({
         isLoading: false,
-        value: {title: 'Test Title'}, // No media in return value
+        value: {title: 'Test Title'}, // No media key in return value
       })
 
       render(
@@ -86,8 +87,8 @@ describe('PreviewLoader', () => {
         />,
       )
 
-      // Verify the component was called with undefined media (no icon fallback)
-      expect(capturedMedia).toBeUndefined()
+      // media key is absent, so fall back to schema icon
+      expect(capturedMedia).toBe(DocumentIcon)
     })
 
     it('should show returned media when prepare function returns media', () => {
@@ -146,12 +147,39 @@ describe('PreviewLoader', () => {
         />,
       )
 
-      // media: null is falsy, so the condition !preview?.value?.media is true
-      // Since there's a custom prepare, it should return undefined (no fallback)
+      // media key is present and falsy (null), so no icon is shown
       expect(capturedMedia).toBeUndefined()
     })
 
-    it('should NOT show schema icon when prepare function returns media: undefined explicitly', () => {
+    it('should NOT show schema icon when prepare function returns media: false', () => {
+      const schemaType = {
+        name: 'testDoc',
+        icon: DocumentIcon,
+        preview: {
+          select: {title: 'title'},
+          prepare: ({title}: {title: string}) => ({title, media: false}),
+        },
+      } as unknown as SchemaType
+
+      vi.mocked(useValuePreview).mockReturnValue({
+        isLoading: false,
+        value: {title: 'Test Title', media: false},
+      })
+
+      render(
+        <PreviewLoader
+          component={MockPreviewComponent}
+          schemaType={schemaType}
+          value={{_id: 'test', _type: 'testDoc'}}
+          skipVisibilityCheck
+        />,
+      )
+
+      // media: false is an explicit opt-out, no icon shown
+      expect(capturedMedia).toBeUndefined()
+    })
+
+    it('should show schema icon when prepare function returns media: undefined', () => {
       // Schema WITH custom prepare function that explicitly returns undefined media
       const schemaType = {
         name: 'testDoc',
@@ -176,9 +204,8 @@ describe('PreviewLoader', () => {
         />,
       )
 
-      // media: undefined is falsy, so the condition !preview?.value?.media is true
-      // Since there's a custom prepare, it should return undefined (no fallback)
-      expect(capturedMedia).toBeUndefined()
+      // media: undefined is not an explicit opt-out, fall back to schema icon
+      expect(capturedMedia).toBe(DocumentIcon)
     })
 
     it('should show schema icon when no preview config at all', () => {
