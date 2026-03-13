@@ -69,9 +69,6 @@ export function AuthBoundary({
     return <RequestAccessScreen />
   }
 
-  // NOTE: there is currently a bug where the `AuthenticateComponent` will
-  // flash after the first login with cookieless mode. See `createAuthStore`
-  // for details
   if (loggedIn === 'logged-out') return <AuthenticateComponent />
 
   return <>{children}</>

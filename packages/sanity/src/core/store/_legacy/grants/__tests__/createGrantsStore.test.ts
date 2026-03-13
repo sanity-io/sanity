@@ -20,7 +20,7 @@ function createMockClient(data: {requests?: Record<string, any>} = {}): SanityCl
   const mockClient = {
     config: () => mockConfig,
     withConfig: () => mockClient,
-    request: vi.fn((opts: {uri: string; tag?: string; withCredentials?: boolean}) => {
+    request: vi.fn((opts: {uri: string; tag?: string}) => {
       const path = opts.uri.slice(requestUriPrefix.length)
 
       if (data?.requests?.[path]) {

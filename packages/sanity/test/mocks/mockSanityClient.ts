@@ -118,7 +118,7 @@ export function createMockSanityClient(
 
     withConfig: () => mockClient,
 
-    request: (opts: {uri: string; tag?: string; withCredentials?: boolean; method: HTTPMethod}) => {
+    request: (opts: {uri: string; tag?: string; method: HTTPMethod}) => {
       $log.request.push(opts)
 
       const requestCallbackValue =
@@ -175,12 +175,7 @@ export function createMockSanityClient(
         return of({type: 'welcome'})
       },
 
-      request: (opts: {
-        uri: string
-        tag?: string
-        withCredentials?: boolean
-        method: HTTPMethod
-      }) => {
+      request: (opts: {uri: string; tag?: string; method: HTTPMethod}) => {
         // console.log('mockSanityClient.observable.request', opts)
 
         $log.observable.request.push(opts)

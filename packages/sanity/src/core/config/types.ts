@@ -1195,12 +1195,7 @@ export interface PreparedConfig {
   workspaces: WorkspaceSummary[]
 }
 
-export type {
-  AuthConfig,
-  AuthProvider,
-  CookielessCompatibleLoginMethod,
-  LoginMethod,
-} from './auth/types'
+export type {AuthConfig, AuthProvider, LoginMethod} from './auth/types'
 
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {

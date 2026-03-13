@@ -3,15 +3,7 @@
  *
  * @public
  */
-export type LoginMethod = 'dual' | 'cookie' | 'token'
-
-/**
- * Login methods that acknowledge cookieless authentication tokens.
- *
- * @internal
- * @hidden
- */
-export type CookielessCompatibleLoginMethod = Extract<LoginMethod, 'dual' | 'token'>
+export type LoginMethod = 'token'
 
 /**
  * Authentication options
@@ -20,12 +12,10 @@ export type CookielessCompatibleLoginMethod = Extract<LoginMethod, 'dual' | 'tok
  */
 export interface AuthConfig {
   /**
-   * Login method to use for the studio. Can be one of:
-   * - `dual` (default) - attempt to use cookies where possible, falling back to
-   *   storing authentication token in `localStorage` otherwise
-   * - `cookie` - explicitly disable `localStorage` method, relying only on cookies. May fail due
-   *   to cookies being treated as third-party cookies in some browsers, thus the default is `dual`.
-   * - `token` - explicitly disable cookies, relying only on `localStorage` method
+   * Login method to use for the studio. Token-based authentication stores the
+   * authentication token in `localStorage`.
+   *
+   * @deprecated This option is no longer needed as token-based auth is now the only method.
    */
   loginMethod?: LoginMethod
 

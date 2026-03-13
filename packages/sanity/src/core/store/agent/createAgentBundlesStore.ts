@@ -99,12 +99,14 @@ function listenToBundles(
   organizationId: string,
 ): Observable<AgentBundlesState> {
   const globalClient = client.withConfig({useProjectHostname: false})
-  const {token, withCredentials} = globalClient.config()
+  const {token} = globalClient.config()
   const url = globalClient.getUrl(`/agent/${organizationId}/bundles/mine/listen`)
 
   const esOptions: PolyfillEventSourceInit = {}
-  if (token || withCredentials) esOptions.withCredentials = true
-  if (token) esOptions.headers = {Authorization: `Bearer ${token}`}
+  if (token) {
+    esOptions.withCredentials = true
+    esOptions.headers = {Authorization: `Bearer ${token}`}
+  }
 
   // Use polyfill when headers are needed (token auth), native EventSource otherwise
   const es$: Observable<EventSource> = (
