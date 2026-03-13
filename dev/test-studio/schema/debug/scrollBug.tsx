@@ -144,7 +144,7 @@ export const todo = defineType({
   components: {
     preview: (props: any) => {
       return (
-        <Stack space={2} padding={2}>
+        <Stack gap={2} padding={2}>
           <Text weight="semibold">Article TODOs</Text>
           <ul>
             {props?.items?.map((t: string) => (
@@ -215,7 +215,7 @@ export const timeline = defineType({
   components: {
     preview: (props: PreviewProps & {events?: any[]}) => {
       return (
-        <Stack space={2} padding={2}>
+        <Stack gap={2} padding={2}>
           <Text weight="semibold">Timeline</Text>
           <ul>
             {props?.events?.map((event: {title: string; periodDescription: string}) => (

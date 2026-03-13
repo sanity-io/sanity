@@ -150,8 +150,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
         const cardRowProps = rowProps(datum as TableData)
         const cardKey = loading ? `skeleton-${datum.index}` : String(get(datum, rowId))
 
-        // cardRowProps.children
-
         return (
           <Card
             key={cardKey}

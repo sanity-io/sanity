@@ -1,6 +1,6 @@
 import {type DragStartEvent} from '@dnd-kit/core'
 import {Card} from '@sanity/ui'
-import {type Padding, type ResponsiveProp} from '@sanity/ui/css'
+import {vars, type Padding, type ResponsiveProp} from '@sanity/ui/css'
 import {type Radius, type Space} from '@sanity/ui/theme'
 import {
   defaultRangeExtractor,
@@ -35,8 +35,8 @@ interface VirtualizedArrayListProps<Item extends ObjectItem> {
   renderInput: ArrayOfObjectsInputProps<Item>['renderInput']
   renderItem: ArrayOfObjectsInputProps<Item>['renderItem']
   renderPreview: ArrayOfObjectsInputProps<Item>['renderPreview']
-  listGridGap: ResponsiveProp<Space>
-  paddingY: ResponsiveProp<Padding>
+  listGridGap: Space
+  paddingY: Padding
   radius: ResponsiveProp<Radius>
 }
 
@@ -176,10 +176,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
         // This is not memoized since it changes on scroll so it will change anyways making memo useless
         // Account for grid gap
         boxSizing: 'border-box',
-        height: `${
-          virtualizer.getTotalSize()
-          // + items.length *vars.space[listGridGap]+ vars.space[paddingY]
-        }px`,
+        height: `calc(${virtualizer.getTotalSize()}px + (${items.length} * ${vars.space[listGridGap]}) + ${vars.space[paddingY]})`,
         width: '100%',
         position: 'relative',
       }}

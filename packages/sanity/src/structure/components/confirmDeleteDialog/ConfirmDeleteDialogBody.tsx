@@ -79,7 +79,7 @@ export function ConfirmDeleteDialogBody({
   )
   const confirmationMessage = useCallback(
     () => (
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text as="p" size={1}>
           <Translate
             t={t}

@@ -365,7 +365,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             <VersionChip
               tooltipContent={
                 isTruncated ? (
-                  <Stack space={2} style={{maxWidth: '300px'}}>
+                  <Stack gap={2} style={{maxWidth: '300px'}}>
                     <Text size={1} weight="medium">
                       {fullTitle}
                     </Text>
@@ -408,7 +408,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               <VersionChip
                 tooltipContent={
                   isTruncated ? (
-                    <Stack space={2} style={{maxWidth: '300px'}}>
+                    <Stack gap={2} style={{maxWidth: '300px'}}>
                       <Text size={1} weight="medium">
                         {fullTitle}
                       </Text>

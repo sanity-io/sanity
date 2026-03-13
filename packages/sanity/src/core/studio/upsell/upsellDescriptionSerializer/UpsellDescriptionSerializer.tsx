@@ -36,15 +36,15 @@ const SerializerContainer = styled.div`
 const IconTextContainer = styled(Text)((props) => {
   if (props.accent) {
     return css`
-      ${getVarName(vars.color.muted.fg)}: var(--card-accent-fg-color);
+      ${getVarName(vars.color.muted.fg)}: vars.color.tinted.suggest.fg[4];
     `
   }
   return css``
 })
 
 const AccentSpan = styled.span`
-  color: var(--card-accent-fg-color);
-  ${getVarName(vars.color.muted.fg)}: var(--card-accent-fg-color);
+  color: vars.color.tinted.suggest.fg[4];
+  ${getVarName(vars.color.muted.fg)}: vars.color.tinted.suggest.fg[4];
 `
 
 const SemiboldSpan = styled.span`

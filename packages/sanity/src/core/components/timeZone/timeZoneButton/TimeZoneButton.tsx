@@ -45,17 +45,17 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                     data-testid="timezone-button"
                     icon={EarthAmericasIcon}
                     mode="bleed"
-                    // @ts-expect-error TODO: fix this
-                    readOnly={!allowTimeZoneSwitch}
-                    onClick={allowTimeZoneSwitch ? dialogTimeZoneShow : noop}
-                    text={`${timeZone.city}`}
+                    onClick={dialogTimeZoneShow}
+                    text={timeZone.city}
                   />
                 ) : (
                   <Inline gap={2} padding={2}>
                     <Text weight={'medium'} size={1}>
                       <EarthAmericasIcon />
                     </Text>
-                    <Text weight={'medium'} size={1}>{`${timeZone.city}`}</Text>
+                    <Text weight={'medium'} size={1}>
+                      {timeZone.city}
+                    </Text>
                   </Inline>
                 )}
               </Box>
@@ -65,9 +65,7 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                     data-testid="timezone-button"
                     icon={EarthAmericasIcon}
                     mode="bleed"
-                    // @ts-expect-error TODO: fix this
-                    readOnly={!allowTimeZoneSwitch}
-                    onClick={allowTimeZoneSwitch ? dialogTimeZoneShow : noop}
+                    onClick={dialogTimeZoneShow}
                     text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
                   />
                 ) : (
@@ -89,9 +87,7 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                 <Button
                   icon={EarthAmericasIcon}
                   mode="bleed"
-                  // @ts-expect-error TODO: fix this
-                  readOnly={!allowTimeZoneSwitch}
-                  onClick={allowTimeZoneSwitch ? dialogTimeZoneShow : noop}
+                  onClick={dialogTimeZoneShow}
                   text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
                 />
               ) : (

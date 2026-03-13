@@ -38,3 +38,8 @@ export function renderPreviewNode<Layout = PreviewLayoutKey>(
   // @todo: find out why `value` isn't infered as `ReactNode` here
   return (value as any) || fallbackNode
 }
+
+/**
+ * Replaces the ui-v3 rem function
+ */
+export const rem = (value: number) => `${value / 16}rem`

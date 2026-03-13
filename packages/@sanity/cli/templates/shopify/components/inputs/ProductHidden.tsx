@@ -43,7 +43,7 @@ export default function ProductHiddenInput(props: StringFieldProps) {
                 This product is hidden
               </Text>
             </Box>
-            <Stack marginTop={4} space={2}>
+            <Stack marginTop={4} gap={2}>
               <Text size={1}>{message}</Text>
             </Stack>
             {!isDeleted && shopifyProductUrl && (

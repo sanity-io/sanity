@@ -194,7 +194,7 @@ function DropMessage(props: DropMessageProps) {
     <>
       {acceptedFiles.length > 0 ? (
         <>
-          <Inline space={2}>
+          <Inline gap={2}>
             <Text>
               <UploadIcon />
             </Text>
@@ -207,7 +207,7 @@ function DropMessage(props: DropMessageProps) {
           </Inline>
           {rejectedFilesCount > 0 && (
             <Box marginTop={4}>
-              <Inline space={2}>
+              <Inline gap={2}>
                 <Text muted size={1}>
                   <AccessDeniedIcon />
                 </Text>
@@ -221,7 +221,7 @@ function DropMessage(props: DropMessageProps) {
           )}
         </>
       ) : (
-        <Inline space={2}>
+        <Inline gap={2}>
           <Text>
             <AccessDeniedIcon />
           </Text>

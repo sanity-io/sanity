@@ -7,25 +7,24 @@ export const HighlightSpan = styled.span`
   transition:
     background-color 100ms ease,
     border-color 100ms ease;
-
   &[data-inline-comment-state='added'][data-inline-comment-nested='false'] {
     background-color: ${vars.color.tinted.caution.bg[2]};
-    border-bottom: 1px solid ${vars.color.tinted.caution.fg[3]};
+    border-bottom: 2px solid ${vars.color.tinted.caution.bg[3]};
   }
 
   &[data-inline-comment-state='added'][data-inline-comment-nested='true'] {
     background-color: ${vars.color.tinted.caution.bg[3]};
-    border-bottom: 1px solid ${vars.color.tinted.caution.fg[4]};
+    border-bottom: 2px solid ${vars.color.tinted.caution.bg[4]};
   }
 
   &[data-inline-comment-state='added'][data-inline-comment-nested='false'][data-hovered='true'] {
     background-color: ${vars.color.tinted.caution.bg[3]};
-    border-bottom: 1px solid ${vars.color.tinted.caution.fg[4]};
+    border-bottom: 2px solid ${vars.color.tinted.caution.bg[4]};
   }
 
   &[data-inline-comment-state='authoring'] {
     background-color: ${vars.color.tinted.caution.bg[2]};
-    border-bottom: 1px solid ${vars.color.tinted.caution.fg[3]};
+    border-bottom: 2px solid ${vars.color.tinted.caution.bg[3]};
   }
 `
 

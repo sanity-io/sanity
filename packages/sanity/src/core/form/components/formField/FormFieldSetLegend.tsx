@@ -2,7 +2,7 @@ import {ToggleArrowRightIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {memo, type ReactNode} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 export interface FormFieldSetLegendProps {
   collapsed: boolean
@@ -17,45 +17,39 @@ const Root = styled.legend`
   display: table;
 `
 
-const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})(() => {
-  // const {theme} = props
-  // const {focusRing, radius} = theme.sanity
-  // const {base} = theme.sanity.color
+const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})`
+  appearance: none;
+  border: 0;
+  background: none;
+  color: inherit;
+  -webkit-font-smoothing: inherit;
+  font: inherit;
+  outline: none;
+  border-radius: ${vars.radius[2]};
+  position: relative;
 
-  return css`
-    appearance: none;
-    border: 0;
-    background: none;
-    color: inherit;
-    -webkit-font-smoothing: inherit;
-    font: inherit;
-    outline: none;
-    border-radius: ${vars.radius[2]};
-    position: relative;
+  &:not([hidden]) {
+    display: flex;
+  }
 
-    &:not([hidden]) {
-      display: flex;
-    }
+  &:focus {
+    /* TODO: ui-v4-migration - fix this */
+  }
 
-    &:focus {
-      /* TODO: fix this */
-    }
+  &:focus:not(:focus-visible) {
+    box-shadow: none;
+  }
 
-    &:focus:not(:focus-visible) {
-      box-shadow: none;
-    }
-
-    /* Added to increase the hit area of the collapsible fieldset */
-    &::after {
-      content: '';
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      bottom: -10px;
-      left: -10px;
-    }
-  `
-})
+  /* Added to increase the hit area of the collapsible fieldset */
+  &::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    bottom: -10px;
+    left: -10px;
+  }
+`
 
 const ToggleIconBox = styled(Box)`
   width: 9px;

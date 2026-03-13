@@ -89,7 +89,6 @@ const Content = styled(Box)<{
 }>((props) => {
   const {$borderLeft, $focused} = props
   // const {focusRing} = theme.sanity
-  // const {base} = theme.sanity.color
 
   return css`
     outline: none;

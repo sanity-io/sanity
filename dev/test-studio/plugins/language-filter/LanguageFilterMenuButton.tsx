@@ -63,7 +63,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
     <Box overflow="auto" padding={1}>
       {defaultLanguages.length > 0 && (
         <Card radius={2} tone="primary">
-          <Stack padding={2} space={3}>
+          <Stack padding={2} gap={3}>
             <Text size={1} weight="semibold">
               Default language{defaultLanguages.length > 1 && <>s</>}
             </Text>
@@ -75,7 +75,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
         </Card>
       )}
 
-      <Stack marginTop={3} padding={2} space={2}>
+      <Stack marginTop={3} padding={2} gap={2}>
         <Box paddingBottom={1}>
           <Text size={1} weight="semibold">
             Show translations

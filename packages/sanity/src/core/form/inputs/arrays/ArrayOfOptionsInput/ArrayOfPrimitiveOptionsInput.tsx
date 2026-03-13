@@ -95,9 +95,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
               <Checkbox
                 disabled={disabled}
                 checked={checked}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleChange(e.currentTarget.checked, option.value)
-                }
+                onChange={(e) => handleChange(e.currentTarget.checked, option.value)}
                 onFocus={() => onIndexFocus(index)}
                 readOnly={readOnly}
               />

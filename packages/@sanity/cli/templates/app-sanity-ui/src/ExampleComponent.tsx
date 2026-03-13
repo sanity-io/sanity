@@ -10,7 +10,7 @@ export function ExampleComponent() {
         <Flex align="center" direction="column" gap={5} marginY={4}>
           <Avatar size={3} src={user?.profileImage} />
           <Heading as="h1">Welcome to your Sanity App, {user?.name}!</Heading>
-          <Stack space={4}>
+          <Stack gap={4}>
             <Text muted>
               This is an example component, rendered with Sanity UI and the{' '}
               <code>useCurrentUser</code> hook from the Sanity App SDK. You can import and use any

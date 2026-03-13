@@ -177,7 +177,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
                 // Dialog is portaled to the document root, so its Autocomplete
                 // popover should be bounded by document.body rather than any
                 // panel-scoped scroll container.
-                boundaryElement: document.body,
+                referenceBoundary: document.body,
                 constrainSize: true,
                 placement: 'bottom-start',
               }}

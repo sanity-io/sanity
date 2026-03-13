@@ -6,7 +6,7 @@ type Props = PropsWithChildren<{
 }>
 
 export const LazyContainer: ComponentType<Props> = ({name, children}) => (
-  <Stack space={2}>
+  <Stack gap={2}>
     <Box>
       <Badge tone="primary">{name}</Badge>
     </Box>

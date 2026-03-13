@@ -3,7 +3,7 @@ import {IntentLink} from 'sanity/router'
 
 export function MovieTitleInput(props) {
   return (
-    <Stack space={4}>
+    <Stack gap={4}>
       <Flex>
         <IntentLink intent="approve" params={{foo: 'bar'}}>
           Approve

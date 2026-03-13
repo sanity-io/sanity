@@ -220,7 +220,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
                 value={intendedPublishAt}
                 onChange={handlePublishAtCalendarChange}
                 isPastDisabled
-                showTimezone
+                showTimeZone
                 timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
               />
             </>

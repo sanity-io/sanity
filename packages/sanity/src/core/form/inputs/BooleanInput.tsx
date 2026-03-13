@@ -43,8 +43,7 @@ export function BooleanInput(props: BooleanInputProps) {
   const input = (
     <Box padding={3}>
       <LayoutSpecificInput
-        // @ts-expect-error - TODO: fix this
-        label={schemaType.title}
+        aria-label={schemaType.title}
         {...elementProps}
         checked={checked}
         readOnly={readOnly}

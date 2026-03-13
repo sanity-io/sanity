@@ -20,64 +20,54 @@ const EditableWrap = styled(Box)`
   overflow-y: auto;
 `
 
-const ButtonDivider = styled(MenuDivider)({
-  height: 20,
-  width: 1,
-})
+// TODO: This card lost the focus ring with the ui 4 migration
+const RootCard = styled(Card)`
+  border-radius: ${vars.radius[2]};
+  box-shadow: var(--input-box-shadow);
 
-const RootCard = styled(Card)(({theme}) => {
-  const radii = vars.radius[2]
+  &:not([data-expand-on-focus='false'], :focus-within) {
+    background: transparent;
+    box-shadow: unset;
+  }
 
-  return css`
-    border-radius: ${radii};
-    box-shadow: var(--input-box-shadow);
-
-    &:not([data-expand-on-focus='false'], :focus-within) {
-      background: transparent;
-      box-shadow: unset;
+  &[data-focused='true']:focus-within {
+    ${EditableWrap} {
+      min-height: 1em;
     }
+  }
 
-    &[data-focused='true']:focus-within {
-      ${EditableWrap} {
-        min-height: 1em;
-      }
+  &:focus-within {
+    ${EditableWrap} {
+      min-height: 1em;
+    }
+  }
+
+  &[data-expand-on-focus='false'] {
+    ${EditableWrap} {
+      min-height: 1em;
+    }
+  }
+
+  &[data-expand-on-focus='true'] {
+    [data-ui='CommentInputActions']:not([hidden]) {
+      display: none;
     }
 
     &:focus-within {
-      ${EditableWrap} {
-        min-height: 1em;
+      [data-ui='CommentInputActions'] {
+        display: flex;
       }
     }
+  }
+  &:hover {
+  }
+`
 
-    &[data-expand-on-focus='false'] {
-      ${EditableWrap} {
-        min-height: 1em;
-      }
-    }
-
-    &[data-expand-on-focus='true'] {
-      [data-ui='CommentInputActions']:not([hidden]) {
-        display: none;
-      }
-
-      &:focus-within {
-        [data-ui='CommentInputActions'] {
-          display: flex;
-        }
-      }
-    }
-    &:hover {
-    }
-  `
-})
-
-const AvatarContainer = styled.div((props) => {
-  return `
-    min-height: ${vars.avatar.scale[1].size};
-    display: flex;
-    align-items: center;
-  `
-})
+const AvatarContainer = styled.div`
+  min-height: ${vars.avatar.scale[1].size};
+  display: flex;
+  align-items: center;
+`
 
 interface CommentInputInnerProps {
   avatarSize?: AvatarSize

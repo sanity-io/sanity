@@ -129,7 +129,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
 
   return (
     <RootStack
-      space={6}
+      gap={6}
       tabIndex={isFocusable ? 0 : undefined}
       onFocus={handleFocus}
       ref={wrapperRef}

@@ -46,12 +46,11 @@ export function useReferenceInput(options: Options) {
     () =>
       forwardRef(function EditReferenceLink_(
         _props: ComponentProps<NonNullable<typeof EditReferenceLinkComponent>>,
-        forwardedRef: ForwardedRef<'a'>,
+        forwardedRef: ForwardedRef<HTMLAnchorElement>,
       ) {
         return EditReferenceLinkComponent ? (
           <EditReferenceLinkComponent
             {..._props}
-            // @ts-expect-error - TODO: fix this
             ref={forwardedRef}
             parentRefPath={path}
             template={template}

@@ -55,16 +55,16 @@ export function FieldGroups(): React.JSX.Element {
       {data?.map((item) => {
         return (
           <Card key={item._id} padding={4}>
-            <Stack space={4}>
+            <Stack gap={4}>
               <Text weight={'bold'}>{item.field1 || 'N/A'}</Text>
               <Text weight={'bold'}>{item.field2 || 'N/A'}</Text>
               {item.nested && (
-                <Stack space={4} paddingLeft={2}>
+                <Stack gap={4} paddingLeft={2}>
                   <Text>{item.nested.field3 || 'N/A'}</Text>
                   <Text>{item.nested.field4 || 'N/A'}</Text>
                   <Text>{item.nested.field5 || 'N/A'}</Text>
                   {item.nested.nested && (
-                    <Stack space={4} paddingLeft={2}>
+                    <Stack gap={4} paddingLeft={2}>
                       <Text>{item.nested.nested.field6 || 'N/A'}</Text>
                       <Text>{item.nested.nested.field7 || 'N/A'}</Text>
                       <Text>{item.nested.nested.field8 || 'N/A'}</Text>
@@ -72,9 +72,9 @@ export function FieldGroups(): React.JSX.Element {
                   )}
                 </Stack>
               )}
-              <Stack space={4} paddingLeft={2}>
+              <Stack gap={4} paddingLeft={2}>
                 {item.objectArray?.map((object) => (
-                  <Stack key={object._key} space={4} paddingLeft={2}>
+                  <Stack key={object._key} gap={4} paddingLeft={2}>
                     <Text>{object.stringAlpha || 'N/A'}</Text>
                     <Text>{object.stringBeta || 'N/A'}</Text>
                   </Stack>

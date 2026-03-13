@@ -6,6 +6,6 @@ export const ThreadCard = styled(Card).attrs({padding: 3, radius: 3, sizing: 'bo
   background-color: ${vars.color.tinted.default.bg[1]};
 
   &[data-active='true'] {
-    background-color: ${vars.color.tinted.default.bg[2]};
+    background-color: ${vars.color.tinted.caution.bg[1]};
   }
 `

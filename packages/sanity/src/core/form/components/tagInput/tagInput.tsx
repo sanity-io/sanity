@@ -112,6 +112,7 @@ const TagBox = styled(Box)`
   max-width: 100%;
 `
 
+// TODO: ui-v4-migration - this input is not working as expected
 export const TagInput = forwardRef(
   (
     props: {

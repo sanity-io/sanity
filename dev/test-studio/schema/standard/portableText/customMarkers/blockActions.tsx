@@ -31,7 +31,7 @@ function CommentButton(props: {set: (block: PortableTextBlock) => void; value: P
 
   const content = open && (
     <Box padding={3}>
-      <Stack space={2}>
+      <Stack gap={2}>
         <Text size={1} weight="semibold">
           Comment
         </Text>

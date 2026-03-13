@@ -11,14 +11,14 @@ import {styled} from 'styled-components'
 export function StegaDebugger(props: InputProps) {
   if (isDocumentSchemaType(props.schemaType)) {
     return (
-      <Stack space={2}>
+      <Stack gap={2}>
         <DocumentDebugger />
         {props.renderDefault(props)}
       </Stack>
     )
   }
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       {props.renderDefault(props)}
       <InputDebugger {...props} />
     </Stack>
@@ -52,7 +52,7 @@ function DocumentDebugger() {
         background: 'white',
       }}
     >
-      <Stack space={2}>
+      <Stack gap={2}>
         <Label size={0}>current focus path</Label>
         <Box overflow="auto" padding={1}>
           <Code size={0}>{studioPath.toString(focusPath) || 'undefined'}</Code>
@@ -119,10 +119,10 @@ function InputDebugger(props: InputProps) {
 
   return (
     <Card padding={2} tone="default" border>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Label size={0}>edit links that updates focus path</Label>
         <Box overflow="auto" padding={1}>
-          <Stack space={2}>
+          <Stack gap={2}>
             {stegaEditLinks?.map(({href}: any) => {
               const [, relativePath] = href.split('/intent/edit/')
               const [pathname] = relativePath.split('?')

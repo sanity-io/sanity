@@ -2,7 +2,7 @@
 
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {type PropsWithChildren, type ReactNode, useCallback, useRef, useState} from 'react'
+import {type ReactNode, useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
 
@@ -22,21 +22,6 @@ interface PopoverEditDialogProps {
   title: string | ReactNode
   width?: ModalWidth
 }
-
-/**
- * Wrapper for focus lock that maintains scroll on the popover
- * Unlike Fragment (on some react versions) this does not absorb the ref prop
- */
-const NoopContainer = ({children, ...props}: PropsWithChildren) => (
-  <div
-    {...props}
-    // Makes the div focusable so clicking on the popover will move the focus away from the input once focus lock is active
-    // Solves an issue when scrolling the popover and then clicking outside of the input will scroll back the popover to the input.
-    tabIndex={-1}
-  >
-    {children}
-  </div>
-)
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
@@ -129,13 +114,7 @@ function Content(props: PopoverEditDialogProps) {
       containerElement={containerElement}
     >
       <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
-        <Flex
-          as={NoopContainer}
-          // @ts-expect-error - TODO: fix this
-          ref={containerElement}
-          direction="column"
-          height="fill"
-        >
+        <Flex tabIndex={-1} ref={containerElement} direction="column" height="fill">
           <ContentHeaderBox flex="none" padding={1}>
             <Flex align="center">
               <Box flex={1} padding={2}>

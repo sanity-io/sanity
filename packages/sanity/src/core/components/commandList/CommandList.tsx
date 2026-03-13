@@ -1,6 +1,3 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
-
 import {Box, Stack} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
@@ -50,7 +47,7 @@ const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
     z-index: 2;
 
     ${VirtualListBox}:focus-visible & {
-      /* TODO */
+      /* TODO: ui-v4-migration - Restore the box shadow */
     }
   `
 })

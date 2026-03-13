@@ -128,8 +128,7 @@ function PaneHeaderMenuGroupActionButton(props: PaneHeaderMenuGroupActionButtonP
         <Button
           disabled={!!node.disabled}
           icon={node.icon ?? UnknownIcon}
-          // @ts-expect-error - TODO: fix this
-          label={title}
+          aria-label={title}
           mode="bleed"
           tooltipProps={{content: node.title, portal: true}}
         />

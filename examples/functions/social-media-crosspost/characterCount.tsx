@@ -24,7 +24,7 @@ export function CharacterCount(props: any) {
 
   return (
     <Card shadow={1} padding={3} radius={2}>
-      <Stack space={3}>
+      <Stack gap={3}>
         <Flex gap={3} direction="row" align="center" wrap="wrap">
           {platformsToDisplay.map((platform: Platform) => {
             const platformSetting = Array.isArray(doc.platformOverrides)

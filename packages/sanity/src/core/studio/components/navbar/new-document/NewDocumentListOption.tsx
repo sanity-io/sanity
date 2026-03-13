@@ -43,6 +43,18 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   )
 
   const {title} = useI18nText(option)
+  const sharedCardProps = useMemo(() => {
+    const padding = preview === 'inline' ? (3 as const) : (4 as const)
+    const marginBottom = 1 as const
+    const radius = 2 as const
+    return {
+      'data-testid': `create-new-${option.templateId}`,
+      marginBottom,
+      'onClick': handleDocumentClick,
+      padding,
+      radius,
+    }
+  }, [option.templateId, handleDocumentClick, preview])
 
   return (
     <Tooltip
@@ -54,19 +66,15 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
       }
     >
       <div>
-        <Card
-          as={option.hasPermission ? 'a' : 'button'}
-          data-testid={`create-new-${option.templateId}`}
-          disabled={!option.hasPermission}
-          // @ts-expect-error - `as` prop is `'a' | 'button'`
-          href={href}
-          marginBottom={1}
-          onClick={handleDocumentClick}
-          padding={preview === 'inline' ? 3 : 4}
-          radius={2}
-        >
-          <Text size={preview === 'inline' ? 1 : undefined}>{title}</Text>
-        </Card>
+        {option.hasPermission ? (
+          <Card as="a" href={href} {...sharedCardProps}>
+            <Text size={preview === 'inline' ? 1 : undefined}>{title}</Text>
+          </Card>
+        ) : (
+          <Card as="button" disabled {...sharedCardProps}>
+            <Text size={preview === 'inline' ? 1 : undefined}>{title}</Text>
+          </Card>
+        )}
       </div>
     </Tooltip>
   )

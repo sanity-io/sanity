@@ -58,7 +58,7 @@ export function UploadDestinationPicker(props: UploadDestinationPickerProps) {
       bodyHeight="stretch"
     >
       <Box padding={2}>
-        <Stack space={2}>
+        <Stack gap={2}>
           {assetSourcesWithUpload.map((assetSource) => {
             const Icon = assetSource.icon
             return (

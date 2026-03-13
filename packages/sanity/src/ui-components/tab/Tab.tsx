@@ -32,5 +32,5 @@ export const Tab = forwardRef(function Tab(
   }: TabProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'type'>,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
-  return <UITab {...props} padding={2} ref={ref} tone={tone} />
+  return <UITab {...props} muted padding={2} ref={ref} tone={tone} />
 })

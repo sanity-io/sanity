@@ -109,7 +109,6 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
               onClick={handleClearRecentSearchesClick}
               tone="default"
               text={t('search.action.clear-recent-searches')}
-              // muted
             />
           </Box>
         </>

@@ -14,7 +14,7 @@ export const DatePicker = forwardRef(function DatePicker(
     calendarLabels: CalendarLabels
     monthPickerVariant?: CalendarProps['monthPickerVariant']
     padding?: Space
-    showTimezone?: boolean
+    showTimeZone?: boolean
     isPastDisabled?: boolean
     timeZoneScope: TimeZoneScope
     onTimeZoneOpen?: () => void
@@ -26,7 +26,6 @@ export const DatePicker = forwardRef(function DatePicker(
     onChange,
     calendarLabels,
     padding = 2,
-    // @ts-expect-error - TODO: Fix this.
     showTimeZone = false,
     timeZoneScope,
     onTimeZoneOpen,

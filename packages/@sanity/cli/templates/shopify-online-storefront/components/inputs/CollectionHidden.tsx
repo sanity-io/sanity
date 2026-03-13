@@ -13,7 +13,7 @@ export default function CollectionHiddenInput() {
           <Box>
             <Text weight="semibold">This collection is hidden</Text>
           </Box>
-          <Stack marginTop={4} space={2}>
+          <Stack marginTop={4} gap={2}>
             <Text size={1}>It has been deleted from Shopify.</Text>
           </Stack>
         </Box>

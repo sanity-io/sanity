@@ -1,8 +1,8 @@
 /* eslint-disable complexity */
 import {type CurrentUser} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
 import {type AvatarSize} from '@sanity/ui-v3'
+import {vars} from '@sanity/ui/css'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
@@ -76,41 +76,39 @@ const RetryCardButton = styled(Card)`
   }
 `
 
-const RootStack = styled(Stack)(({theme}) => {
-  return css`
-    position: relative;
+const RootStack = styled(Stack)`
+  position: relative;
 
-    /* Only show the floating layer on hover when hover is supported.
-    Else, the layer is always visible. */
-    @media (hover: hover) {
-      ${ContextMenuBox} {
-        opacity: 0;
-        position: absolute;
-        right: 0;
-        top: 0;
-        transform: translate(${vars.space[1]}, calc(0 - ${vars.space[1]}));
-      }
+  /* Only show the floating layer on hover when hover is supported.
+  Else, the layer is always visible. */
+  @media (hover: hover) {
+    ${ContextMenuBox} {
+      opacity: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transform: translate(${vars.space[1]}, calc(0 - ${vars.space[1]}));
+    }
 
-      ${ContextMenuBox} {
-        &:focus-within {
-          opacity: 1;
-        }
-      }
-
-      &:hover {
-        ${ContextMenuBox} {
-          opacity: 1;
-        }
+    ${ContextMenuBox} {
+      &:focus-within {
+        opacity: 1;
       }
     }
 
-    &[data-menu-open='true'] {
+    &:hover {
       ${ContextMenuBox} {
         opacity: 1;
       }
     }
-  `
-})
+  }
+
+  &[data-menu-open='true'] {
+    ${ContextMenuBox} {
+      opacity: 1;
+    }
+  }
+`
 
 interface CommentsListItemLayoutProps {
   avatarSize?: AvatarSize

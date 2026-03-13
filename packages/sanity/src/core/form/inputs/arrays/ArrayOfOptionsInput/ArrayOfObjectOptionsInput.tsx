@@ -125,9 +125,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
               <Checkbox
                 disabled={disabled}
                 checked={checked}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleChange(e.currentTarget.checked, option)
-                }
+                onChange={(e) => handleChange(e.currentTarget.checked, option)}
                 onFocus={() => handleItemFocus(index)}
                 readOnly={readOnly}
               />

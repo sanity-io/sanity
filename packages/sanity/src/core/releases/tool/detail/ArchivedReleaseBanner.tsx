@@ -40,7 +40,7 @@ export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
           {retentionDays && (
             <Text
               size={1}
-              // TODO: Accent is not available in @sanity/ui@4, what do we use instead?
+              // TODO: ui-v4-migration - Accent is not available in @sanity/ui@4, what do we use instead?
               // accent
             >
               <Translate

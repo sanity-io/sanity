@@ -3,9 +3,8 @@ import {type Radius} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {PREVIEW_SIZES} from '../constants'
+import {rem} from '../helpers'
 import {type PreviewLayoutKey, type PreviewMediaDimensions} from '../types'
-
-const rem = (value: number) => `${value / 16}rem`
 
 export const MediaWrapper = styled.span<{
   $dimensions: PreviewMediaDimensions

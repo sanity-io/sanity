@@ -6,9 +6,8 @@ import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media, type MediaProps} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
+import {rem} from '../helpers'
 import {type PreviewMediaDimensions} from '../types'
-
-const rem = (value: number) => `${value / 16}rem`
 
 /**
  * @hidden

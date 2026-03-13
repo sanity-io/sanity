@@ -62,7 +62,7 @@ function CropDimensionsBadge(props: {
   onMouseLeave?: MouseEventHandler
 }) {
   const {x, y, width, height, visible, onMouseEnter, onMouseLeave} = props
-  // TODO: This needs to be refactored to use css variables instead of runtime values.
+  // TODO: ui-v4-migration - This needs to be refactored to use css variables instead of runtime values.
   const fontSize = vars.font.text.scale[1].fontSize
   const text = `${width} × ${height}`
   const textWidth = text.length * (fontSize * BADGE_CHAR_WIDTH_RATIO)

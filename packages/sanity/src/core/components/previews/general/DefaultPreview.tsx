@@ -7,10 +7,8 @@ import {useTranslation} from '../../../i18n'
 import {LinearProgress} from '../../progress/LinearProgress'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
-import {renderPreviewNode} from '../helpers'
+import {renderPreviewNode, rem} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
-
-const rem = (value: number) => `${value / 16}rem`
 
 /**
  * @hidden

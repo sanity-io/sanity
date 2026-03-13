@@ -138,7 +138,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
     <AnimatePresence>
       {isOpen && (
         <TrapFocus returnFocus>
-          <Root data-ui="NavDrawer" onKeyDown={handleKeyDown}>
+          <Root onKeyDown={handleKeyDown}>
             <BackdropMotion
               animate="open"
               data-open={isOpen}

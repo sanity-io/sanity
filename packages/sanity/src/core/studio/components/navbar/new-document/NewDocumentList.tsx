@@ -62,14 +62,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
   // Render no search results state
   if (!hasOptions && searchQuery) {
     return (
-      <ContentFlex
-        align="center"
-        flex={1}
-        height="fill"
-        justify="center"
-        // padding={4}
-        sizing="border"
-      >
+      <ContentFlex align="center" flex={1} height="fill" justify="center" sizing="border">
         <Text align="center" muted size={1}>
           <Translate t={t} i18nKey="new-document.no-results" values={{searchQuery}} />
         </Text>
@@ -80,14 +73,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
   // Render no options state
   if (!hasOptions) {
     return (
-      <ContentFlex
-        align="center"
-        flex={1}
-        height="fill"
-        justify="center"
-        // padding={4}
-        sizing="border"
-      >
+      <ContentFlex align="center" flex={1} height="fill" justify="center" sizing="border">
         <Text align="center" muted size={1}>
           {t('new-document.no-document-types-found')}
         </Text>

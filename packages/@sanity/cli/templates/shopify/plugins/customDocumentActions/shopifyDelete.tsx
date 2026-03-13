@@ -32,7 +32,7 @@ export default (props: ShopifyDocumentActionProps): DocumentActionDescription | 
   if (type === 'product') {
     dialog = {
       message: (
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text>Delete the current product and all associated variants in your dataset.</Text>
           <Text weight="medium">No content on Shopify will be deleted.</Text>
         </Stack>
@@ -93,7 +93,7 @@ export default (props: ShopifyDocumentActionProps): DocumentActionDescription | 
   if (type === 'collection') {
     dialog = {
       message: (
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text>Delete the current collection in your dataset.</Text>
           <Text weight="medium">No content on Shopify will be deleted.</Text>
         </Stack>

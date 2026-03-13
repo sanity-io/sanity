@@ -1,10 +1,12 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import {getVarName, vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
 
+// TODO: ui-v4-migration - Replace the var with the new css variable
 const StyledErrorOutlineIcon = styled(ErrorOutlineIcon)`
-  --card-icon-color: var(--card-badge-critical-icon-color);
+  ${getVarName(vars.color.muted.fg)}: vars.color.tinted.critical.fg[4];
 `
 function ValidationErrorIcon() {
   const {t} = useTranslation()
@@ -18,8 +20,10 @@ function ValidationErrorIcon() {
   )
 }
 
+// TODO: ui-v4-migration - Replace the var with the new css variable
+
 const StyledWarningOutlineIcon = styled(WarningOutlineIcon)`
-  --card-icon-color: var(--card-badge-caution-icon-color);
+  ${getVarName(vars.color.muted.fg)}: vars.color.tinted.caution.fg[4];
 `
 
 function ValidationWarningIcon() {
@@ -34,8 +38,9 @@ function ValidationWarningIcon() {
   )
 }
 
+// TODO: ui-v4-migration - Replace the var with the new css variable
 const StyledInfoOutlineIcon = styled(InfoOutlineIcon)`
-  --card-icon-color: var(--card-badge-primary-icon-color);
+  ${getVarName(vars.color.muted.fg)}: vars.color.tinted.primary.fg[4];
 `
 function ValidationInfoIcon() {
   const {t} = useTranslation()

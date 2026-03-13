@@ -23,6 +23,7 @@ type BaseButtonProps = Pick<
   | 'tone'
   | 'type'
   | 'width'
+  | 'onKeyDown'
 > & {
   as?: ButtonElementType
   size?: 'default' | 'large'
@@ -75,7 +76,7 @@ export function Button<E extends ButtonElementType = 'button'>(props: ButtonProp
     tone = 'default',
     tooltipProps,
     ...rest
-  } = props as ButtonProps<'button'>
+  } = props as ButtonProps
   const sizeProps = size === 'default' ? DEFAULT_BUTTON_PROPS : LARGE_BUTTON_PROPS
   const children = (
     <UIButton {...rest} {...sizeProps} as={as} paddingY={paddingY} mode={mode} tone={tone} />

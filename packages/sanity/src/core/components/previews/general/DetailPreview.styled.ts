@@ -3,8 +3,7 @@ import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {PREVIEW_SIZES} from '../constants'
-
-const rem = (value: number) => `${value / 16}rem`
+import {rem} from '../helpers'
 
 export const RootFlex = styled(Flex).attrs({align: 'center'})`
   height: ${rem(PREVIEW_SIZES.detail.media.height)};

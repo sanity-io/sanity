@@ -33,7 +33,7 @@ export function ReleaseLimitsMisconfigurationDialog(
         },
       }}
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text>{t('releases.upsell.misconfiguration.message')}</Text>
       </Stack>
     </Dialog>

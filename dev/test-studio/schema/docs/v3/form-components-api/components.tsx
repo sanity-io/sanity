@@ -21,9 +21,9 @@ const COMPONENT_COLORS = {
 
 export function FormInput(props: InputProps) {
   return (
-    <Stack space={5} padding={3}>
-      <Stack space={4}>
-        <Stack space={4}>
+    <Stack gap={5} padding={3}>
+      <Stack gap={4}>
+        <Stack gap={4}>
           <Heading>Form components API test</Heading>
           <Text size={1}>
             The borders are configured in the schema, and the backgrounds are configured in the
@@ -33,7 +33,7 @@ export function FormInput(props: InputProps) {
 
         <Flex align="center" gap={4}>
           {Object.entries(COMPONENT_COLORS).map(([key, value]) => (
-            <Inline key={key} space={2}>
+            <Inline key={key} gap={2}>
               <div style={{width: '1em', height: '1em', background: value, borderRadius: '50%'}} />
               <Text size={1} weight="semibold">
                 {key.charAt(0).toUpperCase() + key.slice(1)}

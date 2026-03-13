@@ -1,5 +1,5 @@
-import {Card, type CardElementType, type CardProps} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {Card, type CardProps} from '@sanity/ui'
+import {forwardRef} from 'react'
 import {styled} from 'styled-components'
 
 const StyledCard = styled(Card)`
@@ -19,17 +19,13 @@ const StyledCard = styled(Card)`
   }
 `
 
-type ReferenceLinkCardProps<E extends CardElementType> = CardProps<E> & {
+type ReferenceLinkCardProps = CardProps & {
   documentId: string
   documentType: string | undefined
 }
 
-export const ReferenceLinkCard = forwardRef(
-  // @ts-expect-error - TODO: fix this
-  function ReferenceLinkCard<E extends CardElementType>(
-    props: ReferenceLinkCardProps<E> & HTMLProps<HTMLElement>,
-    ref: ForwardedRef<HTMLElement>,
-  ) {
+export const ReferenceLinkCard = forwardRef<HTMLDivElement, ReferenceLinkCardProps>(
+  function ReferenceLinkCard(props, ref) {
     const {as, documentId, documentType, ...cardProps} = props
 
     // If the child link is clicked without a document type, an error will be thrown.
@@ -45,13 +41,6 @@ export const ReferenceLinkCard = forwardRef(
         'documentType': documentType,
       }
 
-    return (
-      <StyledCard
-        {...cardProps}
-        {...linkProps}
-        data-ui="ReferenceLinkCard"
-        ref={ref as unknown as ForwardedRef<HTMLDivElement>}
-      />
-    )
+    return <StyledCard {...cardProps} {...linkProps} data-ui="ReferenceLinkCard" ref={ref} />
   },
 )

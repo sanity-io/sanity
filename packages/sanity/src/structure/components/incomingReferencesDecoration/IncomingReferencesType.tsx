@@ -146,7 +146,7 @@ export function IncomingReferencesType({
     return <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
   }
   return (
-    <Stack space={2} marginBottom={2}>
+    <Stack gap={2} marginBottom={2}>
       {shouldRenderTitle && (
         <Box paddingY={2} paddingX={0}>
           <Text size={1} weight="medium">

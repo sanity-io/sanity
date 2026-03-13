@@ -51,7 +51,7 @@ export function ReleaseTypeMenuSection({
 
   return (
     <Card padding={1} borderBottom>
-      <Stack space={1}>
+      <Stack gap={1}>
         <GlobalPerspectiveMenuLabelIndicator
           $withinRange={releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset}
           paddingLeft={2}

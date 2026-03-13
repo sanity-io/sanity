@@ -9,7 +9,15 @@ import {
   type TextInputProps,
   useClickOutsideEvent,
 } from '@sanity/ui'
-import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {
+  type KeyboardEventHandler,
+  type ChangeEvent,
+  type KeyboardEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 
 import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
@@ -94,7 +102,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
 
   // Open popover on arrow down
   const handleOpenButtonKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLButtonElement>) => {
+    (e: KeyboardEventHandler<HTMLButtonElement>) => {
       if (e.key === 'ArrowDown' && !open) {
         setOpen(true)
       }
@@ -157,7 +165,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   )
 
   // Shared open button props for the popover and dialog
-  const sharedOpenButtonProps: ButtonProps<'button'> = useMemo(
+  const sharedOpenButtonProps: ButtonProps = useMemo(
     () => ({
       'aria-label': openDialogAriaLabel,
       'data-testid': 'new-document-button',
@@ -280,7 +288,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
               {...sharedOpenButtonProps}
               aria-expanded={open}
               aria-haspopup="true"
-              // @ts-expect-error - TODO: fix this
+              // @ts-expect-error - TODO:  ui-v4-migration - fix this
               onKeyDown={handleOpenButtonKeyDown}
             />
           </div>

@@ -235,7 +235,7 @@ export function QueryRecall({
 
   return (
     <ScrollContainer>
-      <FixedHeader space={3}>
+      <FixedHeader gap={3}>
         <Flex padding={2} paddingBottom={0} justify="space-between" align="center">
           <Box padding={3}>
             <Text weight="semibold" style={{textTransform: 'capitalize'}} size={1}>
@@ -243,8 +243,7 @@ export function QueryRecall({
             </Text>
           </Box>
           <Button
-            // @ts-expect-error - TODO: fix this
-            label={t('action.save-query')}
+            aria-label={t('action.save-query')}
             icon={AddIcon}
             disabled={saving}
             onClick={handleSave}

@@ -50,7 +50,7 @@ export function ErrorReportingTest() {
   return (
     <Card padding={5}>
       <Flex>
-        <Stack space={4}>
+        <Stack gap={4}>
           <Button
             text="Trigger import error from React event handler"
             onClick={triggerImportError}

@@ -23,7 +23,7 @@ const StyledCard = styled(Card)`
   outline: none;
   text-decoration: none;
   &:focus-visible {
-    /* TODO: fix this */
+    /* TODO ui-v4-migration - fix this */
   }
 `
 

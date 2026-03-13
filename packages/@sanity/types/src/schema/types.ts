@@ -443,7 +443,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
 /** @internal */
 export interface ObjectSchemaTypeWithOptions extends Omit<ObjectSchemaType, 'options'> {
   options?: CollapseOptions & {
-    columns?: ResponsiveProp<number>
+    columns?: ResponsiveProp<GridTemplateColumns>
   }
 }
 

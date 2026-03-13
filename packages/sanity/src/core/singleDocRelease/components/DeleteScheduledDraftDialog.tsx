@@ -155,7 +155,7 @@ function DeleteScheduledDraftDialogContent({
         },
       }}
     >
-      <Stack space={3} paddingX={3} marginBottom={2}>
+      <Stack gap={3} paddingX={3} marginBottom={2}>
         {children}
       </Stack>
     </Dialog>

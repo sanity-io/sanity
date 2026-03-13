@@ -31,7 +31,7 @@ const StyledRoot = styled.div`
   display: block;
   position: relative;
 `
-
+// TODO: ui-v4-migration - revisit this input
 /**
  * This string input implementation is powered by the Portable Text Editor. It's used when inline
  * diffs are switched on, but this will likely expand in the future to support features such as
@@ -131,7 +131,7 @@ export function StringInputPortableText(props: StringInputProps) {
     if (isEntireValuedDeleted && diffSegments) {
       return (
         <span
-        // $fontSize={fontSize} $space={space} $padding={padding}
+        // $fontSize={fontSize} $gap={space} $padding={padding}
         >
           <DeletedSegment segment={diffSegments[0]} />
         </span>
@@ -159,7 +159,7 @@ export function StringInputPortableText(props: StringInputProps) {
           renderPlaceholder={props.displayInlineChanges ? renderPlaceholder : undefined}
           rangeDecorations={props.displayInlineChanges ? rangeDecorations : undefined}
           // $fontSize={fontSize}
-          // $space={space}
+          // $gap={space}
           // $padding={padding}
           // $scheme={rootTheme.scheme}
           // $tone={rootTheme.tone}

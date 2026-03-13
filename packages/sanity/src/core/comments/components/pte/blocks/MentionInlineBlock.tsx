@@ -35,7 +35,6 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
         data-testid="comment-mentions-loading-skeleton"
         style={{width: '10ch'}}
         size={0}
-        // @ts-expect-error - TODO: fix this in `@sanity/ui`
         muted
         radius={1}
         animated

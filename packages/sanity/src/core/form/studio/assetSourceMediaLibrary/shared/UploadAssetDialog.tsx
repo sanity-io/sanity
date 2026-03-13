@@ -4,7 +4,7 @@ import {
   type FileSchemaType,
   type ImageSchemaType,
 } from '@sanity/types'
-import {useCard, useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
 import {useTranslation} from '../../../../i18n'
@@ -26,7 +26,6 @@ export interface UploadAssetsDialogProps {
 
 export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
   const mediaLibraryIds = useMediaLibraryIds()
-  const card = useCard()
   const {schemaType} = props
 
   const {onLinkAssets} = useLinkAssets({schemaType})

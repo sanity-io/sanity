@@ -1467,15 +1467,9 @@ importers:
       '@sanity/pkg-utils':
         specifier: 'catalog:'
         version: 10.4.6(@types/babel__core@7.20.5)(@types/node@24.10.4)(@typescript/native-preview@7.0.0-dev.20260112.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.17.1)(typescript@5.9.3)
-      '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       '@types/lodash':
         specifier: ^4.17.20
         version: 4.17.21
-      '@types/lodash-es':
-        specifier: ^4.17.12
-        version: 4.17.12
       '@types/object-inspect':
         specifier: ^1.13.0
         version: 1.13.0
@@ -1522,9 +1516,6 @@ importers:
       '@sanity/pkg-utils':
         specifier: 'catalog:'
         version: 10.4.6(@types/babel__core@7.20.5)(@types/node@24.10.4)(@typescript/native-preview@7.0.0-dev.20260112.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.17.1)(typescript@5.9.3)
-      '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.11

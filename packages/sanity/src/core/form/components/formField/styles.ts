@@ -10,6 +10,7 @@ export const AlignedBottomGrid = styled(Grid)`
   align-items: flex-end;
 `
 
+// TODO: ui-v4-migration - update this to work with no theme
 export function focusRingStyle(opts: {
   base?: {bg: string}
   border?: {color: string; width: number}

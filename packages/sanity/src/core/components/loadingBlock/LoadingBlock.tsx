@@ -59,9 +59,6 @@ const StyledCard = styled(Card)<{$fill?: boolean}>(({$fill}) => {
       css`
         background: linear-gradient(#5555ca, #daf9f9);
         border: 2px solid black;
-        /* > * {
-          mix-blend-mode: multiply;
-        } */
       `
     }
 

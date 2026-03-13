@@ -23,7 +23,7 @@ export const useTestPopoverDialogAction: DocumentActionComponent = () => {
       ({
         type: 'popover',
         content: (
-          <Stack padding={4} space={4}>
+          <Stack padding={4} gap={4}>
             <Text>
               This is the <code>popover</code> dialog
             </Text>

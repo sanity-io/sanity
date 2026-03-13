@@ -45,7 +45,7 @@ export const FilterPopoverContentHeader = forwardRef<
           clearButton={!!typeFilter}
           fontSize={fullscreen ? 2 : 1}
           icon={SearchIcon}
-          // muted
+          muted
           onChange={onChange}
           onClear={onClear}
           placeholder={t('search.filter-placeholder')}

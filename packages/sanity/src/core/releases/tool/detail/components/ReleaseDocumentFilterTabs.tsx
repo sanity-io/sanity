@@ -107,7 +107,7 @@ function ReleaseDocumentFilterTabsInner({
   return (
     <Container width={3}>
       <Box padding={3}>
-        <TabList space={1}>
+        <TabList gap={1}>
           {FILTER_TAB_CONFIGS.map((config) => {
             const isSelected = activeFilter === config.key
 

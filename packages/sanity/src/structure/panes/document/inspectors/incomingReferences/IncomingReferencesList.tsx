@@ -50,7 +50,7 @@ function TypeSection<T>({
   const title = schemaType?.title || type
 
   return (
-    <Stack key={type} padding={2} space={1} marginBottom={2}>
+    <Stack key={type} padding={2} gap={1} marginBottom={2}>
       <Flex align="center" justify="space-between" paddingBottom={2} gap={2}>
         <Box padding={2}>
           <Text size={1} weight="medium">

@@ -18,16 +18,16 @@ export function SideBySideObjectItem(props: ItemProps) {
 
   return (
     <Card padding={3} radius={2} shadow={1} tone="primary">
-      <Stack space={3}>
+      <Stack gap={3}>
         {/* Preview of the item */}
         <Flex gap={3}>
-          <Stack space={2} flex={1}>
+          <Stack gap={2} flex={1}>
             <Text size={0} weight="semibold">
               Name
             </Text>
             <Text size={1}>{nameChild || 'No name'}</Text>
           </Stack>
-          <Stack space={2} flex={1}>
+          <Stack gap={2} flex={1}>
             <Text size={0} weight="semibold">
               Internationalized
             </Text>
@@ -71,7 +71,7 @@ export function SideBySideObjectInput(props: ObjectInputProps) {
   )
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       {/* Render the two target fields side by side */}
       {nameChildMember && internationalizedMember && (
         <Flex gap={3}>

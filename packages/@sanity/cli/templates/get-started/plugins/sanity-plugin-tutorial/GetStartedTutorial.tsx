@@ -10,12 +10,12 @@ import {
   Stack,
   useElementSize,
 } from '@sanity/ui'
-import {BREAKPOINTS} from '@sanity/ui/css'
+import {BREAKPOINTS, vars} from '@sanity/ui/css'
 import React, {useState} from 'react'
 import {css, styled} from 'styled-components'
 
 const BlueColor = css`
-  color: ${({theme}) => theme.sanity.color.muted.primary.enabled.fg};
+  color: ${vars.color.muted.fg};
 `
 
 const LabelContainer = styled(Label)`
@@ -62,7 +62,7 @@ export const GetStartedTutorial = () => {
             padding={isSmallScreen ? undefined : 3}
           />
         </Flex>
-        <Stack space={5}>
+        <Stack gap={5}>
           {!isSmallScreen && (
             <>
               <LabelContainer forwardedAs="p" align="center">

@@ -64,7 +64,6 @@
     "@repo/tsconfig": "workspace:*",
     "@sanity/insert-menu": "3.0.4",
     "@sanity/pkg-utils": "catalog:",
-    "@sanity/ui": "catalog:",
     "@types/react": "catalog:",
     "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
@@ -74,7 +73,6 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@types/react": "^19.2",
-    "@sanity/ui": "^4"
+    "@types/react": "^19.2"
   }
 }

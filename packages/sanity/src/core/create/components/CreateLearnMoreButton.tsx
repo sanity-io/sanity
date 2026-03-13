@@ -8,7 +8,7 @@ import {createUserDocumentationUrl} from './constants'
 
 export const CreateLearnMoreButton = forwardRef(function CreateLearnMoreButton(
   props,
-  ref: ForwardedRef<HTMLButtonElement>,
+  ref: ForwardedRef<HTMLAnchorElement>,
 ) {
   const {t} = useTranslation(createLocaleNamespace)
   return (
@@ -16,7 +16,6 @@ export const CreateLearnMoreButton = forwardRef(function CreateLearnMoreButton(
       as={'a'}
       href={createUserDocumentationUrl}
       target="_blank"
-      // @ts-expect-error TODO: fix this
       ref={ref}
       text={t('start-in-create-dialog.cta.learn-more')}
       mode="bleed"

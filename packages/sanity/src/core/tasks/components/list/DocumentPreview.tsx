@@ -60,11 +60,7 @@ export function DocumentPreview({
         <DocumentIcon />
       </Text>
       {isLoading ? (
-        <TextSkeleton
-          size={1}
-          // @ts-expect-error - TODO: fix this in `@sanity/ui`
-          muted
-        />
+        <TextSkeleton size={1} muted />
       ) : (
         <Text size={1} as={Link} weight="medium" style={{maxWidth: '20ch'}} textOverflow="ellipsis">
           {value?.title || 'Untitled'}

@@ -6,8 +6,6 @@ import {css, styled} from 'styled-components'
 import {DEBUG} from '../../../../changeIndicators/constants'
 
 export const Root = styled(Card)<{$isDark: boolean}>(({$isDark}) => {
-  // const {color, radius, space} = props.theme.sanity
-
   const overlay = css`
     pointer-events: none;
     content: '';

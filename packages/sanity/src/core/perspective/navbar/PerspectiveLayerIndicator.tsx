@@ -4,7 +4,7 @@ import {css, styled} from 'styled-components'
 
 const INDICATOR_LEFT_OFFSET = 20
 const INDICATOR_WIDTH = 1
-const INDICATOR_COLOR_VAR = vars.color.border
+const INDICATOR_COLOR_VAR_NAME = vars.color.border
 const INDICATOR_BOTTOM_OFFSET = 4
 
 export const GlobalPerspectiveMenuItemIndicator = styled.div<{
@@ -18,7 +18,7 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
 
     --indicator-left: ${INDICATOR_LEFT_OFFSET}px;
     --indicator-width: ${INDICATOR_WIDTH}px;
-    --indicator-color: ${INDICATOR_COLOR_VAR};
+    --indicator-color: ${INDICATOR_COLOR_VAR_NAME};
     --indicator-bottom: ${INDICATOR_BOTTOM_OFFSET}px;
 
     --indicator-in-range-height: 16.5px;
@@ -119,7 +119,7 @@ export const GlobalPerspectiveMenuLabelIndicator = styled(Box)<{$withinRange: bo
         top: -8px;
         bottom: -${INDICATOR_BOTTOM_OFFSET}px;
         width: ${INDICATOR_WIDTH}px;
-        background-color: ${INDICATOR_COLOR_VAR};
+        background-color: ${INDICATOR_COLOR_VAR_NAME};
       }
     `
     }

@@ -32,7 +32,7 @@ export function Markdown(): React.JSX.Element {
         const dataAttribute = createDataAttribute({id: item._id, type: item._type})
         return (
           <Card key={item._id} padding={4}>
-            <Stack space={4}>
+            <Stack gap={4}>
               <Text weight={'bold'}>{item.title}</Text>
               <Code
                 data-sanity={dataAttribute('markdown')}
