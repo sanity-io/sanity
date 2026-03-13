@@ -91,7 +91,7 @@ import reservedFieldNames from './debug/reservedFieldNames'
 import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
 import select from './debug/select'
-import {settingsV2DialogRepro, settingsV2NavSettings} from './debug/settingsV2DialogRepro'
+import {navbarSettingsDialogRepro} from './debug/settingsV2DialogRepro'
 import {simpleArrayOfObjects} from './debug/simpleArrayOfObjects'
 import {simpleReferences} from './debug/simpleReferences'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
@@ -300,8 +300,7 @@ export function createSchemaTypes(projectId: string) {
     simpleReferences,
     reservedFieldNames,
     review,
-    settingsV2NavSettings,
-    settingsV2DialogRepro,
+    navbarSettingsDialogRepro,
     select,
     typeWithNoToplevelStrings,
     uploads,
