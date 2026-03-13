@@ -158,7 +158,7 @@ Some normal release notes here.`
     expect(blocks).toEqual([])
   })
 
-  it('preserves version headers that have visible sections', () => {
+  it('strips version headers and merges sections across versions', () => {
     const body = `### Release Notes
 
 <details>
@@ -181,13 +181,15 @@ Some normal release notes here.`
     const blocks = parseRenovateReleaseNotes(body)
     const markdown = portableTextToMarkdown(blocks)
 
-    expect(markdown).toContain('v2.0.0')
+    // Version headers should NOT appear in output
+    expect(markdown).not.toContain('v2.0.0')
+    expect(markdown).not.toContain('v1.0.0')
+    // Content from both versions should be present
     expect(markdown).toContain('new feature A')
-    expect(markdown).toContain('v1.0.0')
     expect(markdown).toContain('fix B')
   })
 
-  it('removes version headers with only hidden sections', () => {
+  it('strips all version headers and excludes hidden sections', () => {
     const body = `### Release Notes
 
 <details>
@@ -210,11 +212,61 @@ Some normal release notes here.`
     const blocks = parseRenovateReleaseNotes(body)
     const markdown = portableTextToMarkdown(blocks)
 
-    expect(markdown).toContain('v2.0.0')
-    expect(markdown).toContain('visible feature')
-    // v1.0.0 header should be removed since it only has Dependencies
+    // No version headers in output
+    expect(markdown).not.toContain('v2.0.0')
     expect(markdown).not.toContain('v1.0.0')
+    // Visible content preserved, hidden content excluded
+    expect(markdown).toContain('visible feature')
     expect(markdown).not.toContain('hidden deps content')
+  })
+
+  it('merges same-type sections across multiple versions', () => {
+    const body = `### Release Notes
+
+<details>
+<summary>sanity-io/cli (@sanity/cli)</summary>
+
+### [\`v6.1.3\`](https://example.com)
+
+##### Bug Fixes
+
+- fix the project-id flag
+
+### [\`v6.1.2\`](https://example.com)
+
+##### Bug Fixes
+
+- bump react to latest
+
+### [\`v6.1.1\`](https://example.com)
+
+##### Bug Fixes
+
+- lazy-load icon resolver
+
+##### Features
+
+- add new template flag
+
+</details>`
+
+    const blocks = parseRenovateReleaseNotes(body)
+    const markdown = portableTextToMarkdown(blocks)
+
+    // All bug fixes should appear together under one Bug Fixes header
+    expect(markdown).toContain('fix the project-id flag')
+    expect(markdown).toContain('bump react to latest')
+    expect(markdown).toContain('lazy-load icon resolver')
+    expect(markdown).toContain('add new template flag')
+
+    // No version headers in output
+    expect(markdown).not.toMatch(/###.*v6\.1\.3/)
+    expect(markdown).not.toMatch(/###.*v6\.1\.2/)
+    expect(markdown).not.toMatch(/###.*v6\.1\.1/)
+
+    // No section headers in output — just the list items
+    expect(markdown).not.toContain('Bug Fixes')
+    expect(markdown).not.toContain('Features')
   })
 
   it('strips renovate-debug HTML comments', () => {

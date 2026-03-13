@@ -72,35 +72,25 @@ function extractDetailsBlocks(body: string): DetailsBlock[] {
 
 /**
  * Splits markdown by section headers (h5: `##### Section Name`) and keeps only
- * visible sections. Removes version headers (h3) that end up with no visible sections.
+ * visible sections. Strips version headers (h3) and merges sections of the same
+ * type across versions so multi-version PRs produce a single grouped output.
  */
 function filterVisibleSections(markdown: string): string {
   const lines = markdown.split('\n')
-  const output: string[] = []
 
-  let currentVersionHeader: string | null = null
-  let currentVersionLines: string[] = []
+  // Map from lowercase section name → list of content lines (excluding the header itself)
+  const sectionItems = new Map<string, string[]>()
+  // Track insertion order for deterministic output
+  const sectionOrder: string[] = []
+
+  let currentSection: string | null = null
   let inVisibleSection = false
-  let hasVisibleContent = false
-
-  function flushVersion() {
-    if (hasVisibleContent) {
-      if (currentVersionHeader !== null) {
-        output.push(currentVersionHeader)
-      }
-      output.push(...currentVersionLines)
-    }
-    currentVersionHeader = null
-    currentVersionLines = []
-    inVisibleSection = false
-    hasVisibleContent = false
-  }
 
   for (const line of lines) {
-    // Version header (h3): ### [`v6.1.3`](...)
+    // Version header (h3): ### [`v6.1.3`](...) — skip entirely
     if (/^###\s+\[/.test(line)) {
-      flushVersion()
-      currentVersionHeader = line
+      currentSection = null
+      inVisibleSection = false
       continue
     }
 
@@ -110,18 +100,28 @@ function filterVisibleSections(markdown: string): string {
       const sectionName = sectionMatch[1].trim().toLowerCase()
       inVisibleSection = VISIBLE_CHANGELOG_SECTIONS.has(sectionName)
       if (inVisibleSection) {
-        currentVersionLines.push(line)
-        hasVisibleContent = true
+        currentSection = sectionName
+        if (!sectionItems.has(sectionName)) {
+          sectionItems.set(sectionName, [])
+          sectionOrder.push(sectionName)
+        }
+      } else {
+        currentSection = null
       }
       continue
     }
 
-    if (inVisibleSection) {
-      currentVersionLines.push(line)
+    if (inVisibleSection && currentSection) {
+      sectionItems.get(currentSection)!.push(line)
     }
   }
 
-  flushVersion()
+  // Collect all items without section headers
+  const output: string[] = []
+  for (const section of sectionOrder) {
+    output.push(...sectionItems.get(section)!)
+  }
+
   return output.join('\n')
 }
 
