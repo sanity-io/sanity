@@ -14,10 +14,10 @@ import {
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchPath,
-  type SearchSort,
   type SearchSpec,
   type SearchTerms,
 } from '../common'
+import {toOrderClause} from '../common/toOrderClause'
 import {FINDABILITY_MVI} from '../constants'
 
 export interface SearchParams {
@@ -96,21 +96,6 @@ export function extractTermsFromQuery(query: string): string[] {
   const remainingTerms = uniq(compact(tokenize(toLower(unquotedQuery))))
 
   return [...quotedTerms, ...remainingTerms]
-}
-
-function toOrderClause(orderBy: SearchSort[]): string {
-  function wrapFieldWithFn(ordering: SearchSort): string {
-    return ordering.mapWith ? `${ordering.mapWith}(${ordering.field})` : ordering.field
-  }
-
-  return (orderBy || [])
-    .map((ordering) =>
-      [wrapFieldWithFn(ordering), (ordering.direction || '').toLowerCase()]
-        .map((str) => str.trim())
-        .filter(Boolean)
-        .join(' '),
-    )
-    .join(',')
 }
 
 /**
