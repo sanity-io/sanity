@@ -160,6 +160,7 @@ describe('Calendar with stored timezone tokyo', () => {
     // Change the time to 22:30 Tokyo time
     await userEvent.clear(timeInput)
     await userEvent.type(timeInput, '22:30')
+    expect(timeInput).toHaveValue('22:30')
 
     // 22:30 Tokyo = 13:30 UTC (Tokyo is UTC+9)
     expect(mockOnSelect).toHaveBeenCalledWith(new Date('2024-01-15T13:30:00Z'))
