@@ -1475,7 +1475,7 @@ importers:
         specifier: 'catalog:'
         version: 6.1.3
       sanity:
-        specifier: ^5.15.0
+        specifier: ^5.16.0
         version: link:../../sanity
       styled-components:
         specifier: 'catalog:'

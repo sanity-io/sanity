@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "5.15.0",
+  "version": "5.16.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "cms",

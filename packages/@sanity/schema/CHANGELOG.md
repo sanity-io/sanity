@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.16.0](https://github.com/sanity-io/sanity/compare/v5.15.0...v5.16.0) (2026-03-14)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.29.0 ([#12384](https://github.com/sanity-io/sanity/issues/12384)) ([d230b6a](https://github.com/sanity-io/sanity/commit/d230b6aeaadccd58befd53d776ad2935d32f63f8)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.15.0](https://github.com/sanity-io/sanity/compare/v5.14.1...v5.15.0) (2026-03-12)
 
 ### Features
