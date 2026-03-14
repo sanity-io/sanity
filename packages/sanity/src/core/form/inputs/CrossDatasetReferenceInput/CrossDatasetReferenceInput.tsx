@@ -405,8 +405,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                           )}
                         </Menu>
                       }
-                      placement="right"
-                      popover={{portal: true, tone: 'default'}}
+                      popover={{placement: 'right', portal: true, tone: 'default'}}
                     />
                   </Inline>
                 </Flex>
