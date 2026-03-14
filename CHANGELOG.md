@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.16.0](https://github.com/sanity-io/sanity/compare/v5.15.0...v5.16.0) (2026-03-14)
+
+### Features
+
+* **sanity:** add `introspectSchema` ([92f7c72](https://github.com/sanity-io/sanity/commit/92f7c729f5fefb5386676ee8b2937839e002a1c9)) by Ash (ash@sanity.io)
+* **sanity:** cache recent shared transactions ([c4f26d4](https://github.com/sanity-io/sanity/commit/c4f26d48ffb2bf58647bc42e81141be34bd7154b)) by Ash (ash@sanity.io)
+* update telegram recipe function ([#10721](https://github.com/sanity-io/sanity/issues/10721)) ([2802934](https://github.com/sanity-io/sanity/commit/280293431b343a7c57222066d02444e79599c37b)) by Ken Jones (ken@sanity.io)
+
+### Bug Fixes
+
+* **core:** forward search & hash params when redirecting to a workspace ([#12378](https://github.com/sanity-io/sanity/issues/12378)) ([f409139](https://github.com/sanity-io/sanity/commit/f40913909976b93f35e288b1da16fefb7fa9da7a)) by Josh (37798644+joshuaellis@users.noreply.github.com)
+* **deps:** update dependency @sanity/bifur-client to v1 ([#12386](https://github.com/sanity-io/sanity/issues/12386)) ([a2ebd5d](https://github.com/sanity-io/sanity/commit/a2ebd5d51900b3924e7bc73a87f35388101fc349)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/cli to ^6.1.3 ([#12405](https://github.com/sanity-io/sanity/issues/12405)) ([0a995b4](https://github.com/sanity-io/sanity/commit/0a995b41bcc1cd6f3243e90d24f1bc8a182cbcf0)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/cli to ^6.1.4 ([#12414](https://github.com/sanity-io/sanity/issues/12414)) ([b60724f](https://github.com/sanity-io/sanity/commit/b60724f257766cd1661f2d1501eb12605bf6462d)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/cli to ^6.1.5 ([#12417](https://github.com/sanity-io/sanity/issues/12417)) ([4a5f72a](https://github.com/sanity-io/sanity/commit/4a5f72a8c72f5acb465bfeee836c482d304e3921)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* **deps:** update dependency @sanity/client to ^7.17.0 ([#12381](https://github.com/sanity-io/sanity/issues/12381)) ([cf3e972](https://github.com/sanity-io/sanity/commit/cf3e972d1dc0d12cc99cb665ee971675b691a3bf)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.29.0 ([#12384](https://github.com/sanity-io/sanity/issues/12384)) ([d230b6a](https://github.com/sanity-io/sanity/commit/d230b6aeaadccd58befd53d776ad2935d32f63f8)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* prevent bare imports from appearing in random chunks ([#12390](https://github.com/sanity-io/sanity/issues/12390)) ([4c51af4](https://github.com/sanity-io/sanity/commit/4c51af4e299196e70ff3d09fdc6233ded5e219d9)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* **sanity:** use project hostname for agent bundles SSE endpoint ([#12400](https://github.com/sanity-io/sanity/issues/12400)) ([ba90d60](https://github.com/sanity-io/sanity/commit/ba90d60ece9b44f2cc0077291278b758bd0d8b83)) by Rostislav Melkumyan (hello@rosti.no)
+* updated i18next dependency ([#12397](https://github.com/sanity-io/sanity/issues/12397)) ([914e9a4](https://github.com/sanity-io/sanity/commit/914e9a46b02682a82e3b722a51e654e7a6b61027)) by Christian Munk-Nissen (96743881+Chrilleweb@users.noreply.github.com)
+
 ## [5.15.0](https://github.com/sanity-io/sanity/compare/v5.14.1...v5.15.0) (2026-03-12)
 
 ### Features
