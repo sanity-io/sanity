@@ -19,6 +19,8 @@ import {
 } from 'react'
 import {isValidElementType} from 'react-is'
 
+import {isVideoAssetSource} from '../../../media-library/plugin/preview/isVideoAssetSource'
+import {VideoThumbnail} from '../../../media-library/plugin/preview/VideoThumbnail'
 import {Tooltip} from '../../../ui-components'
 import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews'
 import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
@@ -161,6 +163,12 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
 
     if (isImageSource(mediaProp)) {
       return renderMedia
+    }
+
+    if (isVideoAssetSource(mediaProp)) {
+      return function VideoMediaPreview({dimensions}: {dimensions: PreviewMediaDimensions}) {
+        return <VideoThumbnail value={mediaProp} dimensions={dimensions} />
+      }
     }
 
     if (isValidElementType(mediaProp)) {
