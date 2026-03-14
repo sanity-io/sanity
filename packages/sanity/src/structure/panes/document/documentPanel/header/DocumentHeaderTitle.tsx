@@ -1,4 +1,3 @@
-import {useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -9,16 +8,11 @@ import {DocumentHeaderBreadcrumb} from './DocumentHeaderBreadcrumb'
 
 export function DocumentHeaderTitle(): React.JSX.Element {
   const {connectionState, schemaType, title, value: documentValue, index} = useDocumentPane()
-  const {paneDataItems} = useResolvedPanesList()
+  const {paneDataItems, maximizedPane} = useResolvedPanesList()
   const {title: documentTitle, error} = useDocumentTitle()
   const subscribed = Boolean(documentValue)
 
   const {t} = useTranslation(structureLocaleNamespace)
-
-  const hasMaximizedPane = useMemo(
-    () => paneDataItems.some((paneData) => paneData.maximized),
-    [paneDataItems],
-  )
 
   if (connectionState === 'connecting' && !subscribed) {
     return <></>
@@ -44,7 +38,7 @@ export function DocumentHeaderTitle(): React.JSX.Element {
 
   return (
     <>
-      {hasMaximizedPane ? (
+      {maximizedPane ? (
         <DocumentHeaderBreadcrumb paneDataItems={paneDataItems} currentPaneIndex={index} />
       ) : (
         documentTitle || (

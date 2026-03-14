@@ -5,6 +5,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {ScrollContainer} from '../../../components/scroll'
+import {type FormWidth} from '../../FormBuilderContext'
 import {createListName, TEXT_LEVELS} from './text'
 
 export const Root = styled(Card)<{$isOneLine: boolean}>`
@@ -67,8 +68,13 @@ export const Scroller = styled(ScrollContainer)`
     min-height: auto;
   }
 `
+interface EditableWrapperProps {
+  $isFullscreen: boolean
+  $isOneLine: boolean
+  $formWidth: FormWidth
+}
 
-export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine: boolean}>`
+export const EditableWrapper = styled(Card)<EditableWrapperProps>`
   height: 100%;
   width: 100%;
   counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
@@ -121,7 +127,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
 
     & > .pt-block {
       margin: 0 auto;
-      max-width: ${(props) => getTheme_v2(props.theme).container[1]}px;
+      max-width: ${(props) => getTheme_v2(props.theme).container[props.$formWidth]}px;
     }
 
     /* & > .pt-block {

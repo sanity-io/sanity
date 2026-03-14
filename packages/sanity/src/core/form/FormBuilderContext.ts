@@ -14,6 +14,7 @@ import {
   type RenderPreviewCallback,
 } from './types'
 
+export type FormWidth = 1 | 2
 /**
  *
  * @hidden
@@ -48,6 +49,7 @@ export interface FormBuilderContextValue {
   collapsedPaths: StateTree<boolean> | undefined
   focusPath: Path
   focused?: boolean
+  formWidth: FormWidth
   groups: FormFieldGroup[]
   id: string
   readOnly?: boolean

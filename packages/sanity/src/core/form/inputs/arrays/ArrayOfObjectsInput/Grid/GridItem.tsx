@@ -24,6 +24,7 @@ import {
 } from '../../../../studio/tree-editing'
 import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
+import {useFormBuilder} from '../../../../useFormBuilder'
 import {regenerateKeys} from '../../../../utils/regenerateKeys'
 import {useArrayValidation} from '../../common/ArrayValidationContext'
 import {CellLayout} from '../../layouts/CellLayout'
@@ -89,6 +90,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   } = props
   const {t} = useTranslation()
   const arrayValidation = useArrayValidation()
+  const {formWidth} = useFormBuilder()
   const maxReached = arrayValidation?.maxReached
   const maxReachedReason = arrayValidation?.maxReachedReason
 
@@ -344,7 +346,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
               : t('inputs.array.action.edit', {itemTypeTitle})
           }
           type={parentSchemaType?.options?.modal?.type || 'dialog'}
-          width={parentSchemaType?.options?.modal?.width ?? 1}
+          width={parentSchemaType?.options?.modal?.width ?? formWidth}
           id={value._key}
           onClose={onClose}
           autofocus={focused}
