@@ -31,6 +31,7 @@ test(`document panel displays correct title for published document`, async ({
   await expect(page.getByTestId('document-status-bar-hotkeys')).toBeVisible()
   const hotkeys = page.getByTestId('document-status-bar-hotkeys')
 
+  // oxlint-disable-next-line typescript/no-deprecated -- navigator.platform is deprecated but remains the most reliable way to detect Mac
   const isMac = await page.evaluate(() => /Mac|iPod|iPhone|iPad/.test(navigator.platform || ''))
   await expect(hotkeys).toHaveText(isMac ? 'CtrlOptionP' : 'CtrlAltP')
 
