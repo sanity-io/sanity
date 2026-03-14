@@ -1586,8 +1586,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/cli':
-        specifier: ^6.1.4
-        version: 6.1.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)
+        specifier: ^6.1.5
+        version: 6.1.5(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)
       '@sanity/client':
         specifier: 'catalog:'
         version: 7.17.0(debug@4.4.3)
@@ -5098,8 +5098,8 @@ packages:
     peerDependencies:
       '@sanity/telemetry': '>=0.8.1 <0.9.0'
 
-  '@sanity/cli@6.1.4':
-    resolution: {integrity: sha512-EPFzt5rYh5hHAC59f2Kw7I8/Q4CqDxuQdx+r0kv995ysEw7sTEfs9ovy6di1tZTdyQsE/zfDkUs3Uwuz6Wr0Gw==}
+  '@sanity/cli@6.1.5':
+    resolution: {integrity: sha512-oBIOTbLdjv+E7GDVJCXCuSPqWhdxjppSuO4dFNRwzlrfk/nVDOf7W296XUhiAcpNuwSggrYscbzJTB7jTMxZ3w==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     hasBin: true
 
@@ -15069,7 +15069,7 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@sanity/cli@6.1.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)':
+  '@sanity/cli@6.1.5(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)':
     dependencies:
       '@oclif/core': 4.8.4
       '@oclif/plugin-help': 6.2.37
