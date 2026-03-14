@@ -115,6 +115,34 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
       }
 
       const scroll = instance.scrollElement
+      const el = parentRef.current
+
+      // When the list is rendered inside a portal (e.g. a custom Dialog wrapping
+      // renderDefault), the context scroll element is not an ancestor. In that case
+      // scroll events on it won't reflect movement of this list, so fall back to
+      // tracking the Card's own position via request animation frame.
+      if (el && !scroll.contains(el)) {
+        let startTop = el.getBoundingClientRect().top
+        let lastOffset = 0
+        let rafId: number
+
+        const check = () => {
+          const currentTop = el.getBoundingClientRect().top
+          // If the Card moved down it can't be from scrolling — the baseline
+          // must have shifted (dialog animation, content change above, resize).
+          if (currentTop > startTop) {
+            startTop = currentTop
+          }
+          const offset = Math.floor(startTop - currentTop)
+          if (offset !== lastOffset) {
+            lastOffset = offset
+            callback(offset, true)
+          }
+          rafId = requestAnimationFrame(check)
+        }
+        check()
+        return () => cancelAnimationFrame(rafId)
+      }
 
       const handleScroll = (evt?: Event) => {
         const containerElementTop = containerElement.current?.getBoundingClientRect().top ?? 0
