@@ -5,7 +5,9 @@
 import type {
   ActiveWorkspaceMatcherContext,
   AddonDatasetContext,
+  AnnotationEntry,
   AppIdCacheContext,
+  ArrayValidationContext,
   AssetLimitUpsellContext,
   AssetLimitUpsellContextValue,
   CalendarContext,
@@ -22,10 +24,15 @@ import type {
   CommentsSelectedPathContext,
   CommentsUpsellContext,
   CopyPasteContext,
+  DialogStackContext,
+  DialogStackContextValue,
+  DialogStackEntry,
   DiffContext,
   DocumentActionPropsContext,
   DocumentActionsStateContext,
   DocumentChangeContext,
+  DocumentDivergencesContext,
+  DocumentDivergencesContextValue,
   DocumentFieldActionsContext,
   DocumentFieldActionsContextValue,
   DocumentIdContext,
@@ -33,6 +40,7 @@ import type {
   DocumentLimitUpsellContext,
   DocumentLimitUpsellContextValue,
   DocumentPaneContext,
+  DocumentPaneInfoContext,
   DocumentSheetListContext,
   EnhancedObjectDialogContext,
   EventsContext,
@@ -66,6 +74,7 @@ import type {
   PortableTextMarkersContext,
   PortableTextMemberItemElementRefsContext,
   PortableTextMemberItemsContext,
+  PortableTextMemberSchemaTypesContext,
   PresenceContext,
   PresenceTrackerContextGetSnapshot,
   PresenceTrackerContextStore,
@@ -96,6 +105,8 @@ import type {
   SchedulesContext,
   ScrollContext,
   SearchContext,
+  SelectedAnnotationsContext,
+  SelectedAnnotationsContextValue,
   SingleDocReleaseContext,
   SingleDocReleaseContextValue,
   SingleDocReleaseEnabledContext,
@@ -129,8 +140,14 @@ describe('sanity/_singletons', () => {
   test('AddonDatasetContext', () => {
     expectTypeOf<typeof AddonDatasetContext>().not.toBeNever()
   })
+  test('AnnotationEntry', () => {
+    expectTypeOf<AnnotationEntry>().toBeObject()
+  })
   test('AppIdCacheContext', () => {
     expectTypeOf<typeof AppIdCacheContext>().not.toBeNever()
+  })
+  test('ArrayValidationContext', () => {
+    expectTypeOf<typeof ArrayValidationContext>().not.toBeNever()
   })
   test('AssetLimitUpsellContext', () => {
     expectTypeOf<typeof AssetLimitUpsellContext>().not.toBeNever()
@@ -180,6 +197,15 @@ describe('sanity/_singletons', () => {
   test('CopyPasteContext', () => {
     expectTypeOf<typeof CopyPasteContext>().not.toBeNever()
   })
+  test('DialogStackContext', () => {
+    expectTypeOf<typeof DialogStackContext>().not.toBeNever()
+  })
+  test('DialogStackContextValue', () => {
+    expectTypeOf<DialogStackContextValue>().toBeObject()
+  })
+  test('DialogStackEntry', () => {
+    expectTypeOf<DialogStackEntry>().toBeObject()
+  })
   test('DiffContext', () => {
     expectTypeOf<typeof DiffContext>().not.toBeNever()
   })
@@ -191,6 +217,12 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentChangeContext', () => {
     expectTypeOf<typeof DocumentChangeContext>().not.toBeNever()
+  })
+  test('DocumentDivergencesContext', () => {
+    expectTypeOf<typeof DocumentDivergencesContext>().not.toBeNever()
+  })
+  test('DocumentDivergencesContextValue', () => {
+    expectTypeOf<DocumentDivergencesContextValue>().not.toBeNever()
   })
   test('DocumentFieldActionsContext', () => {
     expectTypeOf<typeof DocumentFieldActionsContext>().not.toBeNever()
@@ -212,6 +244,9 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentPaneContext', () => {
     expectTypeOf<typeof DocumentPaneContext>().not.toBeNever()
+  })
+  test('DocumentPaneInfoContext', () => {
+    expectTypeOf<typeof DocumentPaneInfoContext>().not.toBeNever()
   })
   test('DocumentSheetListContext', () => {
     expectTypeOf<typeof DocumentSheetListContext>().not.toBeNever()
@@ -312,6 +347,9 @@ describe('sanity/_singletons', () => {
   test('PortableTextMemberItemsContext', () => {
     expectTypeOf<typeof PortableTextMemberItemsContext>().not.toBeNever()
   })
+  test('PortableTextMemberSchemaTypesContext', () => {
+    expectTypeOf<typeof PortableTextMemberSchemaTypesContext>().not.toBeNever()
+  })
   test('PresenceContext', () => {
     expectTypeOf<typeof PresenceContext>().not.toBeNever()
   })
@@ -401,6 +439,12 @@ describe('sanity/_singletons', () => {
   })
   test('SearchContext', () => {
     expectTypeOf<typeof SearchContext>().not.toBeNever()
+  })
+  test('SelectedAnnotationsContext', () => {
+    expectTypeOf<typeof SelectedAnnotationsContext>().not.toBeNever()
+  })
+  test('SelectedAnnotationsContextValue', () => {
+    expectTypeOf<SelectedAnnotationsContextValue>().toBeObject()
   })
   test('SingleDocReleaseContext', () => {
     expectTypeOf<typeof SingleDocReleaseContext>().not.toBeNever()
