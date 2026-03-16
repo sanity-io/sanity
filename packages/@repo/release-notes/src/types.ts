@@ -2,8 +2,7 @@ import {type RestEndpointMethodTypes} from '@octokit/rest'
 import {type Commit} from 'conventional-commits-parser'
 import {type CoAuthor} from 'description-to-co-authors'
 
-import {NormalizedMarkdownBlock} from './utils/portabletext-markdown/markdownToPortableText'
-import {type PortableTextBlock} from './utils/portabletext-markdown/types'
+import {type NormalizedMarkdownBlock} from './utils/portabletext-markdown/markdownToPortableText'
 
 export type KnownEnvVar =
   | 'RELEASE_NOTES_SANITY_DATASET'
