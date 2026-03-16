@@ -30,7 +30,7 @@
     "@repo/tsconfig": "workspace:*",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "catalog:",
-    "esbuild": "0.27.3",
+    "esbuild": "0.27.4",
     "eslint": "catalog:",
     "ts-node": "^10.9.2",
     "typescript": "catalog:",
