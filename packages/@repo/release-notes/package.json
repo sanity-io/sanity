@@ -34,7 +34,7 @@
     "@sanity/client": "catalog:",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/mutate": "^0.16.1",
-    "@sanity/types": "workspace:^",
+    "@sanity/types": "workspace:*",
     "conventional-commits-parser": "^6.2.1",
     "date-fns": "^4.1.0",
     "description-to-co-authors": "^0.3.0",
