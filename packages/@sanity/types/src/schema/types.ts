@@ -123,8 +123,10 @@ export interface SortOrderingItem {
    *
    * Only specify this to override the default (e.g. `nulls: 'last'` with `direction: 'desc'`).
    *
-   * **Note:** Overriding the default may have performance implications for document types
-   * with lots of documents.
+   * ### ❗This is an experimental feature.
+   * Overriding the default may have performance implications for document types
+   * with hundreds of documents.
+   * @alpha
    */
   nulls?: 'first' | 'last'
 }
