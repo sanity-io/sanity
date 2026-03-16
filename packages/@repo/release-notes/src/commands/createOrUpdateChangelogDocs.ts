@@ -11,7 +11,6 @@ import {
   setIfMissing,
 } from '@sanity/mutate'
 import {applyPatches} from '@sanity/mutate/_unstable_apply'
-import {PortableTextBlock} from '@sanity/types'
 import {type Commit} from 'conventional-commits-parser'
 import {format} from 'date-fns/format'
 import {descriptionToCoAuthors} from 'description-to-co-authors'
