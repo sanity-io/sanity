@@ -31,6 +31,7 @@ function ImageInputAssetComponent(props: {
   value: BaseImageInputValue | undefined
 }) {
   const {
+    assetSources,
     elementProps,
     handleClearUploadState,
     onOpenSourceForUpload,
@@ -91,6 +92,7 @@ function ImageInputAssetComponent(props: {
           <UploadTargetCard
             {...elementProps}
             $border={hasValueOrUpload}
+            assetSources={assetSources}
             isReadOnly={readOnly}
             onFocus={handleFileTargetFocus}
             onOpenSourceForUpload={onOpenSourceForUpload}
