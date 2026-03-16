@@ -228,10 +228,10 @@ export function uploadTarget<Props>(
           }
           return
         }
-        const allAssetSources = assetSourcesProp
+        const uploadAssetSources = assetSourcesProp
           ? getAssetSourcesWithUpload(assetSourcesProp)
           : types.flatMap((type) => resolveUploadAssetSources?.(type, formBuilder) ?? [])
-        const uniqueAssetSources = uniqBy(allAssetSources, 'name')
+        const uniqueAssetSources = uniqBy(uploadAssetSources, 'name')
         if (uniqueAssetSources.length > 1 && assetSourceDestinationName.current === null) {
           setShowAssetSourceDestinationPicker(true)
           setFilesToUpload(files)
