@@ -88,7 +88,6 @@ import type {
   ReviewChangesContext,
   RouterContext,
   RouterHistoryContext,
-  SanityCreateConfigContext,
   ScheduledPublishingEnabledContext,
   ScheduledPublishingEnabledContextValue,
   SchedulePublishUpsellContext,
@@ -377,9 +376,6 @@ describe('sanity/_singletons', () => {
   })
   test('RouterHistoryContext', () => {
     expectTypeOf<typeof RouterHistoryContext>().not.toBeNever()
-  })
-  test('SanityCreateConfigContext', () => {
-    expectTypeOf<typeof SanityCreateConfigContext>().not.toBeNever()
   })
   test('ScheduledPublishingEnabledContext', () => {
     expectTypeOf<typeof ScheduledPublishingEnabledContext>().not.toBeNever()
