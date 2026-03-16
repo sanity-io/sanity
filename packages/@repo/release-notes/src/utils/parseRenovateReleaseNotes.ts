@@ -53,14 +53,14 @@ function extractDetailsBlocks(body: string): DetailsBlock[] {
   let match
 
   while ((match = detailsRegex.exec(body)) !== null) {
-    const summaryText = match[1].trim()
-    const content = match[2].trim()
+    const summaryText = match[1]?.trim() || ''
+    const content = match[2]?.trim() || ''
 
     // Extract package name from parenthesized portion: "sanity-io/cli (@sanity/cli)"
     // The &#8203; is a zero-width space that Renovate inserts to prevent @-mentions
     const cleaned = summaryText.replace(/&#8203;/g, '')
     const parenMatch = cleaned.match(/\(([^)]+)\)\s*$/)
-    const packageName = parenMatch ? parenMatch[1].trim() : ''
+    const packageName = (parenMatch && parenMatch[1]?.trim()) || ''
 
     if (packageName && content) {
       blocks.push({packageName, content})
@@ -97,7 +97,7 @@ function filterVisibleSections(markdown: string): string {
     // Section header (h5): ##### Bug Fixes
     const sectionMatch = line.match(/^#{5}\s+(.+)/)
     if (sectionMatch) {
-      const sectionName = sectionMatch[1].trim().toLowerCase()
+      const sectionName = sectionMatch[1]?.trim().toLowerCase() || ''
       inVisibleSection = VISIBLE_CHANGELOG_SECTIONS.has(sectionName)
       if (inVisibleSection) {
         currentSection = sectionName

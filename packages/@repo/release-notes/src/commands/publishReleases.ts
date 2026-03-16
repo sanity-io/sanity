@@ -94,8 +94,8 @@ ${changelogDocument.changelog
 }
 
 function mention(author: StudioChangelogEntry['author']) {
-  if (author.type !== 'bot') {
-    return `@${author.username}`
+  if (author?.type !== 'bot') {
+    return `@${author?.username}`
   }
   return author.username
 }

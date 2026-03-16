@@ -11,6 +11,7 @@ import {
   setIfMissing,
 } from '@sanity/mutate'
 import {applyPatches} from '@sanity/mutate/_unstable_apply'
+import {PortableTextBlock} from '@sanity/types'
 import {type Commit} from 'conventional-commits-parser'
 import {format} from 'date-fns/format'
 import {descriptionToCoAuthors} from 'description-to-co-authors'
@@ -18,7 +19,7 @@ import pMap from 'p-map'
 
 import {client} from '../client'
 import {STUDIO_PLATFORM_DOCUMENT_ID} from '../constants'
-import {type PullRequestInfo} from '../types'
+import {type PullRequestInfo, type StudioChangelogEntry} from '../types'
 import {getCommits, getSemverTags} from '../utils/getCommits'
 import {getMergedPRForCommit} from '../utils/github'
 import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
@@ -147,7 +148,7 @@ async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInf
     : []
   const hasReleaseNotes = releaseNoteBlocks.length > 0
 
-  const entry = {
+  const entry: StudioChangelogEntry = {
     _type: 'changelogEntry',
     _key: conventionalCommit.hash!.slice(0, 8),
     pr: pr?.number,
@@ -171,11 +172,14 @@ async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInf
     subject: cleanSubject,
     header: conventionalCommit.header || '',
     coAuthors: conventionalCommit.body ? descriptionToCoAuthors(conventionalCommit.body) : [],
-    scope: conventionalCommit.scope,
-    hash: conventionalCommit.hash,
-    type: conventionalCommit.type,
-    contents: hasReleaseNotes ? await uploadImages(client, releaseNoteBlocks) : cleanSubject,
+    scope: conventionalCommit.scope || undefined,
+    hash: conventionalCommit.hash || undefined,
+    type: conventionalCommit.type || undefined,
+    contents: (hasReleaseNotes
+      ? await uploadImages(client, releaseNoteBlocks)
+      : markdownToPortableText(cleanSubject)) as NormalizedMarkdownBlock[],
   }
+
   return [at('changelog', insertIfMissing(entry, 'before', 0))]
 }
 
