@@ -1,10 +1,10 @@
 import {type ReactNode, useMemo} from 'react'
 import {SanityCreateConfigContext} from 'sanity/_singletons'
 
+import {useAppIdCache} from '../../store/studio-app/AppIdCacheProvider'
 import {useSource} from '../../studio'
 import {CreateLinkedActions} from '../components/CreateLinkedActions'
 import {CreateLinkedDocumentBannerContent} from '../components/CreateLinkedDocumentBannerContent'
-import {useAppIdCache} from '../studio-app/AppIdCacheProvider'
 import {type SanityCreateConfigContextValue} from './useSanityCreateConfig'
 
 interface SanityCreateConfigProviderProps {

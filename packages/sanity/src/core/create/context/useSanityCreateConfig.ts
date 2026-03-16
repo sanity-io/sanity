@@ -1,7 +1,7 @@
 import {type ComponentType, useContext} from 'react'
 import {SanityCreateConfigContext} from 'sanity/_singletons'
 
-import {type AppIdCache} from '../studio-app/appIdCache'
+import {type AppIdCache} from '../../store/studio-app/appIdCache'
 import {type CreateLinkedActionsProps, type CreateLinkedDocumentBannerContentProps} from '../types'
 
 /**
