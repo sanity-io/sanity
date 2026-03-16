@@ -10,11 +10,13 @@ import {describe, expect, it, vi} from 'vitest'
 import {
   createMockAssetSourceWithMediaLibraryUploader,
   observeFileAssetStub,
+  observeImageAssetStub,
   observeVideoAssetStub,
 } from '../../../../../../../test/fixtures/assetSourceMocks'
-import {renderFileInput, renderVideoInput} from '../../../../../../../test/form'
+import {renderFileInput, renderImageInput, renderVideoInput} from '../../../../../../../test/form'
 import {BaseVideoInput} from '../../../../../../media-library/plugin/VideoInput/VideoInput'
 import {BaseFileInput} from '../../FileInput'
+import {BaseImageInput} from '../../ImageInput'
 
 // Mock useVideoPlaybackInfo and VideoPlayer for video tests (VideoInput uses these)
 vi.mock('../../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo', () => ({
@@ -295,6 +297,38 @@ describe('uploadTarget - drag and drop', () => {
     fireEvent.drop(fileTarget!, {dataTransfer})
 
     // Picker should show only upload-capable sources, not browse-only
+    await waitFor(() => {
+      expect(screen.getByTestId('upload-destination-source-a')).toBeInTheDocument()
+      expect(screen.getByTestId('upload-destination-source-b')).toBeInTheDocument()
+      expect(screen.queryByTestId('upload-destination-browse-only')).not.toBeInTheDocument()
+    })
+  })
+
+  it('does not show browse-only asset sources in upload destination picker (image)', async () => {
+    const browseOnlySource: AssetSource = {
+      name: 'browse-only',
+      title: 'Browse Only',
+      component: () => null,
+    }
+    const source1 = createMockAssetSourceWithMediaLibraryUploader({name: 'source-a'})
+    const source2 = createMockAssetSourceWithMediaLibraryUploader({name: 'source-b'})
+
+    await renderImageInput({
+      assetSources: [browseOnlySource, source1, source2],
+      configOverrides: {mediaLibrary: {enabled: false}},
+      fieldDefinition: {name: 'mainImage', title: 'Main image', type: 'image'},
+      observeAsset: observeImageAssetStub,
+      render: (inputProps) => <BaseImageInput {...inputProps} />,
+    })
+
+    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    expect(fileTarget).toBeInTheDocument()
+
+    const file = new File(['content'], 'test.jpg', {type: 'image/jpeg'})
+    const dataTransfer = createMockDataTransfer([file])
+
+    fireEvent.drop(fileTarget!, {dataTransfer})
+
     await waitFor(() => {
       expect(screen.getByTestId('upload-destination-source-a')).toBeInTheDocument()
       expect(screen.getByTestId('upload-destination-source-b')).toBeInTheDocument()
