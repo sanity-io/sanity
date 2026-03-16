@@ -1,3 +1,4 @@
+import {type AssetSource} from '@sanity/types'
 /**
  * Tests for drag-and-drop and paste upload via uploadTarget/fileTarget.
  * Shared behavior used by FileInput, ImageInput, and VideoInput.
@@ -264,6 +265,40 @@ describe('uploadTarget - drag and drop', () => {
 
     await waitFor(() => {
       expect(onChange).not.toHaveBeenCalled()
+    })
+  })
+
+  it('does not show browse-only asset sources in upload destination picker', async () => {
+    // Browse-only source (no Uploader, no uploadMode: 'component') should not appear in picker
+    const browseOnlySource: AssetSource = {
+      name: 'browse-only',
+      title: 'Browse Only',
+      component: () => null,
+    }
+    const source1 = createMockAssetSourceWithMediaLibraryUploader({name: 'source-a'})
+    const source2 = createMockAssetSourceWithMediaLibraryUploader({name: 'source-b'})
+
+    await renderFileInput({
+      assetSources: [browseOnlySource, source1, source2],
+      configOverrides: {mediaLibrary: {enabled: false}},
+      fieldDefinition: {name: 'someFile', title: 'A file', type: 'file'},
+      observeAsset: observeFileAssetStub,
+      render: (inputProps) => <BaseFileInput {...inputProps} />,
+    })
+
+    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    expect(fileTarget).toBeInTheDocument()
+
+    const file = new File(['content'], 'test.pdf', {type: 'application/pdf'})
+    const dataTransfer = createMockDataTransfer([file])
+
+    fireEvent.drop(fileTarget!, {dataTransfer})
+
+    // Picker should show only upload-capable sources, not browse-only
+    await waitFor(() => {
+      expect(screen.getByTestId('upload-destination-source-a')).toBeInTheDocument()
+      expect(screen.getByTestId('upload-destination-source-b')).toBeInTheDocument()
+      expect(screen.queryByTestId('upload-destination-browse-only')).not.toBeInTheDocument()
     })
   })
 
