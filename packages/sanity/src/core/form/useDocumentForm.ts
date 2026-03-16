@@ -351,7 +351,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   )
   const {isLockedByCanvas} = useCanvasCompanionDoc(value._id)
 
-  // eslint-disable-next-line complexity
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
     const updateActionDisabled = !isActionEnabled(schemaType, 'update')
@@ -456,15 +455,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         patch.execute(toMutationPatches(event.patches), initialValue?.value)
       }
     }
-  }, [
-    editState.draft,
-    editState.published,
-    initialValue,
-    patch,
-    telemetry,
-    readOnly,
-    isCreateLinked,
-  ])
+  }, [editState.draft, editState.published, initialValue, patch, telemetry, readOnly])
 
   const formDocumentValue = useMemo(() => {
     if (getFormDocumentValue) return getFormDocumentValue(value)
