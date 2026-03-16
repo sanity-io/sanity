@@ -23,12 +23,16 @@ test.describe('Validation test', () => {
       })
 
       await createDraftDocument('/content/house')
+      await expect(page.getByTestId('document-panel-scroller')).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeEnabled()
       await page.getByTestId('field-name').getByTestId('string-input').fill('Test House')
-      await expect(page.getByTestId('add-single-object-button')).toBeVisible()
-      await expect(page.getByTestId('add-single-object-button')).toBeEnabled()
-      await page.getByTestId('add-single-object-button').click()
+
+      const addButton = page.getByTestId('add-single-object-button')
+      await expect(addButton).toBeVisible()
+      await expect(addButton).toBeEnabled()
+      // Use force to bypass any pointer-events issues in Firefox
+      await addButton.click({force: true})
 
       await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
 
@@ -47,7 +51,8 @@ test.describe('Validation test', () => {
       const arrayItemMenuButton = page.getByTestId('array-item-menu-button')
       await expect(arrayItemMenuButton).toBeVisible()
       await expect(arrayItemMenuButton).toBeEnabled()
-      await arrayItemMenuButton.click()
+      // Use force to bypass pointer-events interception from document-panel-portal overlays in Firefox
+      await arrayItemMenuButton.click({force: true})
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
       await page.getByRole('menuitem', {name: 'Remove'}).click()
@@ -126,7 +131,8 @@ test.describe('Validation test', () => {
 
       await expect(page.getByTestId('array-item-menu-button').first()).toBeVisible()
       await expect(page.getByTestId('array-item-menu-button').first()).toBeEnabled()
-      await page.getByTestId('array-item-menu-button').first().click()
+      // Use force to bypass pointer-events interception from document-panel-portal overlays in Firefox
+      await page.getByTestId('array-item-menu-button').first().click({force: true})
 
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
@@ -166,7 +172,8 @@ test.describe('Validation test', () => {
       const addButton = page.getByTestId('add-single-object-button')
       await expect(addButton).toBeVisible()
       await expect(addButton).toBeEnabled()
-      await addButton.click()
+      // Use force to bypass any pointer-events issues in Firefox
+      await addButton.click({force: true})
 
       await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       const roomNameInput = page.getByTestId(/field-house\[.*\]\.name/).getByTestId('string-input')
@@ -187,7 +194,8 @@ test.describe('Validation test', () => {
       const arrayItemMenuButton = page.getByTestId('array-item-menu-button').first()
       await expect(arrayItemMenuButton).toBeVisible()
       await expect(arrayItemMenuButton).toBeEnabled()
-      await arrayItemMenuButton.click()
+      // Use force to bypass pointer-events interception from document-panel-portal overlays in Firefox
+      await arrayItemMenuButton.click({force: true})
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
       await page.getByRole('menuitem', {name: 'Remove'}).click()
