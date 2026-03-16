@@ -174,9 +174,7 @@ async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInf
     scope: conventionalCommit.scope || undefined,
     hash: conventionalCommit.hash || undefined,
     type: conventionalCommit.type || undefined,
-    contents: (hasReleaseNotes
-      ? await uploadImages(client, releaseNoteBlocks)
-      : markdownToPortableText(cleanSubject)) as NormalizedMarkdownBlock[],
+    contents: (await uploadImages(client, releaseNoteBlocks)) as NormalizedMarkdownBlock[],
   }
 
   return [at('changelog', insertIfMissing(entry, 'before', 0))]
