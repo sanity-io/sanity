@@ -96,6 +96,10 @@
           {
             "group": ["lodash.*", "lodash/*", "lodash"],
             "message": "Please use individual imports from 'lodash-es' instead, e.g. `import debounce from 'lodash-es/debounce.js'`."
+          },
+          {
+            "group": ["lodash-es/*", "!lodash-es/*.js"],
+            "message": "lodash-es submodule imports must include the .js extension, e.g. `import debounce from 'lodash-es/debounce.js'`."
           }
         ]
       }
