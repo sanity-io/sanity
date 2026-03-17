@@ -311,6 +311,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'There are no other versions of this document to compare.',
   /** The text for the "Compare versions" action for a document */
   'compare-versions.menu-item.title': 'Compare versions',
+  /** Label for the share feedback button in the compare versions header */
+  'compare-versions.share-feedback': 'Share feedback',
   /** The string used to label draft documents */
   'compare-versions.status.draft': 'Draft',
   /** The string used to label published documents */

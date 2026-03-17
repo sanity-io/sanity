@@ -9,6 +9,7 @@ import {StatusButton} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
+import {FeedbackDialog} from '../../feedback/FeedbackDialog'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
 import {StudioInfoDialog} from './StudioInfoDialog'
@@ -52,9 +53,24 @@ export function ResourcesButton() {
     setStudioInfoDialogOpen(true)
   }, [])
 
+  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false)
+  const handleOpenFeedback = useCallback(() => {
+    setFeedbackDialogOpen(true)
+  }, [])
+  const handleCloseFeedback = useCallback(() => {
+    setFeedbackDialogOpen(false)
+  }, [])
+
   return (
     <>
       {studioInfoDialogOpen && <StudioInfoDialog onClose={handleStudioInfoDialogClose} />}
+      {feedbackDialogOpen && (
+        <FeedbackDialog
+          header={t('help-resources.action.share-feedback')}
+          recordingId="gQrAuXm"
+          onClose={handleCloseFeedback}
+        />
+      )}
       <MenuButton
         button={
           <StatusButton
@@ -77,6 +93,7 @@ export function ResourcesButton() {
               isLoading={isLoading}
               value={value}
               onOpenStudioVersionDialog={handleOpenVersionDialog}
+              onOpenFeedback={handleOpenFeedback}
             />
           </StyledMenu>
         }

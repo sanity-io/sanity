@@ -14,9 +14,10 @@ import {
 } from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {type ComponentProps, type ComponentType, useMemo} from 'react'
+import {type ComponentProps, type ComponentType, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentLayoutProps,
+  FeedbackDialog,
   formatRelativeLocalePublishDate,
   getDraftId,
   getPublishedId,
@@ -59,6 +60,41 @@ const VersionModeHeaderLayoutSection = styled.div`
   justify-content: space-between;
   align-items: center;
 `
+
+const DiffViewFeedbackButton: ComponentType<{
+  t: TFunction
+  documentId: string
+  documentType?: string
+}> = ({t, documentId, documentType}) => {
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const handleOpen = useCallback(() => setDialogOpen(true), [])
+  const handleClose = useCallback(() => setDialogOpen(false), [])
+
+  return (
+    <>
+      <Button
+        mode="bleed"
+        onClick={handleOpen}
+        padding={2}
+        text={t('compare-versions.share-feedback')}
+        tone="primary"
+      />
+      {dialogOpen && (
+        <FeedbackDialog
+          header={t('compare-versions.share-feedback')}
+          recordingId="KTHrcje"
+          metadata={{
+            feedbackType: 'feature',
+            feature: 'compare-versions',
+            documentId,
+            documentType,
+          }}
+          onClose={handleClose}
+        />
+      )}
+    </>
+  )
+}
 
 /**
  * The header component that is rendered when diff view is being used to compare versions of a
@@ -146,14 +182,21 @@ export const VersionModeHeader: ComponentType<
             document={documents.next}
           />
         )}
-        <Box
+        <Flex
           padding={3}
+          gap={1}
+          align="center"
           style={{
             justifySelf: 'end',
           }}
         >
+          <DiffViewFeedbackButton
+            t={t}
+            documentId={documentId}
+            documentType={documents?.next?.type}
+          />
           <Button icon={CloseIcon} mode="bleed" onClick={exitDiffView} padding={2} />
-        </Box>
+        </Flex>
       </VersionModeHeaderLayoutSection>
     </VersionModeHeaderLayout>
   )

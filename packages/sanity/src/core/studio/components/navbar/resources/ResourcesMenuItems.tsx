@@ -32,6 +32,7 @@ interface ResourcesMenuItemProps {
   latestTaggedVersion?: SemVer
   value?: ResourcesResponse
   onOpenStudioVersionDialog: () => void
+  onOpenFeedback: () => void
 }
 
 function reload() {
@@ -46,6 +47,7 @@ export function ResourcesMenuItems({
   currentVersion,
   onOpenStudioVersionDialog,
   newAutoUpdateVersion,
+  onOpenFeedback,
 }: ResourcesMenuItemProps) {
   const sections = value?.resources?.sectionArray
   const {t} = useTranslation()
@@ -78,6 +80,9 @@ export function ResourcesMenuItems({
 
   return (
     <>
+      <MenuItem text={t('help-resources.action.share-feedback')} onClick={onOpenFeedback} />
+      <MenuDivider />
+
       {/* Studio version information */}
       <StudioVersion
         currentVersion={currentVersion}

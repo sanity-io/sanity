@@ -512,6 +512,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Error message shown when an action cannot be performed */
   'errors.unable-to-perform-action': 'Unable to perform this action',
 
+  /** Label for the contact consent checkbox in the feedback dialog */
+  'feedback.dialog.contact-consent': "I'm okay with being contacted about this report",
+  /** Label for the description textarea in the feedback dialog */
+  'feedback.dialog.description-label': 'Description',
+  /** Label for the submit button in the feedback dialog */
+  'feedback.dialog.submit': 'Send feedback with recording',
+
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
     'The value of the <code>_key</code> property must be a unique string.',
@@ -611,6 +618,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
   'help-resources.action.join-our-community': 'Join our community',
+
+  /** Label for "share feedback" action that opens a Jam recording session */
+  'help-resources.action.share-feedback': 'Share feedback',
 
   /** Information for what the latest sanity version is */
   'help-resources.latest-sanity-version': 'Latest version is v{{latestVersion}}',
