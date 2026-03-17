@@ -34,7 +34,9 @@ module.exports = (condition) => {
 
       validateSourceCondition(workspace, key, value, pkg.publishConfig?.exports)
 
-      if (condition in value) {
+      // Match the requested condition, falling back to `default` for ESM imports
+      // (most packages use `default` rather than an explicit `import` condition)
+      if (condition in value || (condition === 'import' && 'default' in value)) {
         workspaces[workspace].push(path.join(workspace, key))
       }
     }
