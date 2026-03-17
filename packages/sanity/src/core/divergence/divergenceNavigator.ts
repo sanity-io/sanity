@@ -1,6 +1,6 @@
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 import {fromString, startsWith, toString} from '@sanity/util/paths'
-import pick from 'lodash-es/pick'
+import pick from 'lodash-es/pick.js'
 import {useCallback, useEffect, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
