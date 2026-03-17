@@ -1,3 +1,4 @@
+// oxlint-disable no-console
 import {ConventionalGitClient} from '@conventional-changelog/git-client'
 import {MONOREPO_ROOT} from '@repo/utils'
 import {ClientError} from '@sanity/client'
@@ -27,15 +28,16 @@ import {
   markdownToPortableText,
   type NormalizedMarkdownBlock,
 } from '../utils/portabletext-markdown/markdownToPortableText'
-import {extractReleaseNotes} from '../utils/pullRequestReleaseNotes'
+import {extractReleaseNotes, shouldExcludeReleaseNotes} from '../utils/pullRequestReleaseNotes'
 import {stripPr} from '../utils/stripPrNumber'
 import {uploadImages} from '../utils/uploadImages'
 
 export async function createOrUpdateChangelogDocs(args: {
   tentativeVersion?: string
   baseVersion: string
+  dryRun?: boolean
 }) {
-  const {tentativeVersion, baseVersion} = args
+  const {tentativeVersion, baseVersion, dryRun} = args
 
   // We obfuscate the base version id so we can use in the changelog document ids
   // Without obfuscating, the document id for the changelog document would include the
@@ -91,7 +93,7 @@ export async function createOrUpdateChangelogDocs(args: {
       at('releaseAutomation', setIfMissing({})),
       at('releaseAutomation.tentativeVersion', set(tentativeVersion)),
       at('releaseAutomation.source', set('studio')),
-      ...(await mergeChangelogBody(changelogDocumentId.version, commitsWithPrs)),
+      ...(await mergeChangelogBody(changelogDocumentId.version, commitsWithPrs, {dryRun})),
       at('publishedAt', set(new Date())),
       at(
         'version',
@@ -103,7 +105,12 @@ export async function createOrUpdateChangelogDocs(args: {
     ]),
   ]
 
-  await client.transaction(SanityEncoder.encodeAll(mutations)).commit()
+  if (dryRun) {
+    console.log('[DRY RUN] UPDATE CHANGELOG')
+    console.log(JSON.stringify(mutations, null, 0))
+  } else {
+    await client.transaction(SanityEncoder.encodeAll(mutations)).commit()
+  }
 
   return {success: true, changelogDocumentId, apiVersionDocId, commitsWithPrs, releaseId}
 }
@@ -116,9 +123,13 @@ async function toArray<T>(it: AsyncIterableIterator<T>): Promise<T[]> {
   return result
 }
 
-async function mergeChangelogBody(id: string, entries: PullRequestInfo[]) {
+async function mergeChangelogBody(
+  id: string,
+  entries: PullRequestInfo[],
+  {dryRun}: {dryRun?: boolean},
+) {
   const currentDocument = (await client.getDocument(id)) || {}
-  const changelogEntryPatches = await pMap(entries, async (entry) => createEntry(entry))
+  const changelogEntryPatches = await pMap(entries, async (entry) => createEntry(entry, {dryRun}))
   const updated = applyPatches(
     [at('changelog', setIfMissing([])), ...changelogEntryPatches.flat()],
     currentDocument,
@@ -127,11 +138,14 @@ async function mergeChangelogBody(id: string, entries: PullRequestInfo[]) {
   return [at('changelog', set(updated.changelog.filter(Boolean)))]
 }
 
-function createEntry(info: PullRequestInfo) {
-  return info.pr && info.pr.body ? getReleaseNotesMutations(info) : []
+function createEntry(info: PullRequestInfo, {dryRun}: {dryRun?: boolean}) {
+  return info.pr && info.pr.body ? getReleaseNotesMutations(info, {dryRun}) : []
 }
 
-async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInfo) {
+async function getReleaseNotesMutations(
+  {pr, conventionalCommit}: PullRequestInfo,
+  options: {dryRun?: boolean},
+) {
   const cleanSubject = pr
     ? stripPr(conventionalCommit.subject || '', pr.number)
     : conventionalCommit.subject || ''
@@ -140,12 +154,20 @@ async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInf
   const userType = pr?.user?.type?.toLowerCase()
   const isBot = userType === 'bot'
 
-  const releaseNoteBlocks: NormalizedMarkdownBlock[] = pr?.body
+  const releaseNoteBlocks = pr?.body
     ? isBot
       ? parseRenovateReleaseNotes(pr.body)
       : extractReleaseNotes(markdownToPortableText(pr.body))
     : []
-  const hasReleaseNotes = releaseNoteBlocks.length > 0
+
+  const excludeReleaseNotes =
+    shouldExcludeReleaseNotes(releaseNoteBlocks) ||
+    (isBot && releaseNoteBlocks.length === 0) ||
+    conventionalCommit.type === 'chore' ||
+    conventionalCommit.type === 'test' ||
+    conventionalCommit.scope === 'dev' ||
+    conventionalCommit.scope === 'build' ||
+    conventionalCommit.scope === 'test'
 
   const entry: StudioChangelogEntry = {
     _type: 'changelogEntry',
@@ -161,22 +183,18 @@ async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInf
           }
         : undefined,
     authorAssociation: pr?.author_association.toLowerCase(),
-    exclude:
-      (isBot && !hasReleaseNotes) ||
-      conventionalCommit.type === 'chore' ||
-      conventionalCommit.type === 'test' ||
-      conventionalCommit.scope === 'dev' ||
-      conventionalCommit.scope === 'build' ||
-      conventionalCommit.scope === 'test',
+    exclude: excludeReleaseNotes,
     subject: cleanSubject,
     header: conventionalCommit.header || '',
     coAuthors: conventionalCommit.body ? descriptionToCoAuthors(conventionalCommit.body) : [],
     scope: conventionalCommit.scope || undefined,
     hash: conventionalCommit.hash || undefined,
     type: conventionalCommit.type || undefined,
-    contents: (hasReleaseNotes
-      ? await uploadImages(client, releaseNoteBlocks)
-      : markdownToPortableText(cleanSubject)) as NormalizedMarkdownBlock[],
+    contents: excludeReleaseNotes
+      ? []
+      : ((await uploadImages(client, releaseNoteBlocks, {
+          dryRun: options.dryRun,
+        })) as NormalizedMarkdownBlock[]),
   }
 
   return [at('changelog', insertIfMissing(entry, 'before', 0))]

@@ -46,7 +46,7 @@ describe('uploadImages()', () => {
         }),
       },
     }
-    const notesWithAssets = await uploadImages(mockClient, notes)
+    const notesWithAssets = await uploadImages(mockClient, notes, {dryRun: false})
 
     expect(notesWithAssets).toMatchInlineSnapshot(`
       [
