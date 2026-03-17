@@ -1,11 +1,13 @@
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 import {fromString, startsWith, toString} from '@sanity/util/paths'
+import pick from 'lodash-es/pick'
 import {useCallback, useEffect, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
   BehaviorSubject,
   combineLatest,
   filter,
+  first,
   map,
   merge,
   type Observable,
@@ -125,20 +127,20 @@ type Action =
       context: {
         divergences: CollatedDocumentDivergencesState
         schemaType: ObjectSchemaType
-        formState: FormState
+        formState: Pick<FormState, 'groups' | '_allMembers'>
       }
     }
 
 interface DivergenceNavigatorContext {
   divergences: Observable<CollatedDocumentDivergencesState>
   schemaType: ObjectSchemaType
-  formState: FormState
+  formState: Pick<FormState, 'groups' | '_allMembers'>
 }
 
 interface StateContext {
   divergences: CollatedDocumentDivergencesState
   schemaType: ObjectSchemaType
-  formState: FormState
+  formState: Pick<FormState, 'groups' | '_allMembers'>
 }
 
 /**
@@ -160,15 +162,33 @@ export function useDivergenceNavigator({
   )
   useEffect(() => schemaTypeContext.next(schemaType), [schemaTypeContext, schemaType])
 
-  const formStateContext = useMemo(() => new BehaviorSubject<FormState | undefined>(undefined), [])
+  const formStateContext = useMemo(
+    () => new BehaviorSubject<Pick<FormState, 'groups' | '_allMembers'> | undefined>(undefined),
+    [],
+  )
   useEffect(() => formStateContext.next(formState), [formStateContext, formState])
 
   const context = useMemo<Observable<StateContext>>(
     () =>
       combineLatest({
-        divergences,
+        divergences: divergences,
         schemaType: schemaTypeContext.pipe(filter((value) => typeof value !== 'undefined')),
-        formState: formStateContext.pipe(filter((value) => typeof value !== 'undefined')),
+        formState: formStateContext.pipe(
+          filter((value) => typeof value !== 'undefined'),
+          // Form state is used to map divergences to fields, and order them to
+          // match the order fields and groups are rendered in the document
+          // editor.
+          //
+          // However, form state also encapsulates current value, the focused
+          // path, etc. and changes with every change to the displayed document
+          // and interaction with the document editor.
+          //
+          // It's unnecessary to remap divergences every time the displayed
+          // document or state, like the focus path, changes. Therefore, this
+          // code takes only the first form state value emitted.
+          first(),
+          map((state) => (state ? pick(state, ['groups', '_allMembers']) : state)),
+        ),
       }),
     [divergences, schemaTypeContext, formStateContext],
   )
