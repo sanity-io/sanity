@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.1](https://github.com/sanity-io/sanity/compare/v5.17.0...v5.17.1) (2026-03-17)
+
+### Bug Fixes
+
+* incorrect lodash-es import ([#12444](https://github.com/sanity-io/sanity/issues/12444)) ([c89b7bf](https://github.com/sanity-io/sanity/commit/c89b7bfc5d703001acf447267e1be893ec7de6b0)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+
 ## [5.17.0](https://github.com/sanity-io/sanity/compare/v5.16.0...v5.17.0) (2026-03-17)
 
 **Note:** Version bump only for package @repo/test-exports
