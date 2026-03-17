@@ -19,6 +19,7 @@ import {useClient} from '../../hooks'
 import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
 import {useWorkspace} from '../workspace'
+import {useDeferredTelemetry} from './DeferredTelemetryProvider'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
 
@@ -135,6 +136,15 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   // asynchronously (on flush), not during render. Suppress the lint warning.
   // eslint-disable-next-line react-hooks/refs
   const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
+
+  // Consume any deferred telemetry that was collected prior to mounting this provider
+  const {consume} = useDeferredTelemetry()
+  useEffect(() => {
+    for (const {event, data} of consume()) {
+      // todo: replace with store.logger.resume()
+      store.logger.log(event, data)
+    }
+  }, [store.logger, consume])
 
   // Also update user properties on the store (for backwards compatibility)
   useEffect(() => {

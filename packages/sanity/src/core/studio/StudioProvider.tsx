@@ -31,6 +31,7 @@ import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncem
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
+import {DeferredTelemetryProvider} from './telemetry/DeferredTelemetryProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
@@ -104,37 +105,43 @@ export function StudioProvider({
   )
 
   return (
-    <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
-      <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-        <StudioErrorBoundary primaryProjectId={primaryProjectId}>
-          <StudioRootErrorHandler primaryProjectId={primaryProjectId}>
-            <WorkspacesProvider config={config} basePath={basePath} LoadingComponent={LoadingBlock}>
-              <ActiveWorkspaceMatcher
-                unstable_history={history}
-                NotFoundComponent={NotFoundScreen}
+    <DeferredTelemetryProvider>
+      <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
+        <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
+          <StudioErrorBoundary primaryProjectId={primaryProjectId}>
+            <StudioRootErrorHandler primaryProjectId={primaryProjectId}>
+              <WorkspacesProvider
+                config={config}
+                basePath={basePath}
                 LoadingComponent={LoadingBlock}
               >
-                <StudioThemeProvider>
-                  <UserColorManagerProvider>
-                    {noAuthBoundary ? (
-                      _children
-                    ) : (
-                      <AuthBoundary
-                        LoadingComponent={LoadingBlock}
-                        AuthenticateComponent={AuthenticateScreen}
-                        NotAuthenticatedComponent={NotAuthenticatedScreen}
-                      >
-                        {_children}
-                      </AuthBoundary>
-                    )}
-                  </UserColorManagerProvider>
-                </StudioThemeProvider>
-              </ActiveWorkspaceMatcher>
-            </WorkspacesProvider>
-          </StudioRootErrorHandler>
-        </StudioErrorBoundary>
-      </ToastProvider>
-    </ColorSchemeProvider>
+                <ActiveWorkspaceMatcher
+                  unstable_history={history}
+                  NotFoundComponent={NotFoundScreen}
+                  LoadingComponent={LoadingBlock}
+                >
+                  <StudioThemeProvider>
+                    <UserColorManagerProvider>
+                      {noAuthBoundary ? (
+                        _children
+                      ) : (
+                        <AuthBoundary
+                          LoadingComponent={LoadingBlock}
+                          AuthenticateComponent={AuthenticateScreen}
+                          NotAuthenticatedComponent={NotAuthenticatedScreen}
+                        >
+                          {_children}
+                        </AuthBoundary>
+                      )}
+                    </UserColorManagerProvider>
+                  </StudioThemeProvider>
+                </ActiveWorkspaceMatcher>
+              </WorkspacesProvider>
+            </StudioRootErrorHandler>
+          </StudioErrorBoundary>
+        </ToastProvider>
+      </ColorSchemeProvider>
+    </DeferredTelemetryProvider>
   )
 }
 
