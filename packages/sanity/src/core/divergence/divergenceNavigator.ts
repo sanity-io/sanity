@@ -6,6 +6,7 @@ import {useObservable} from 'react-rx'
 import {
   BehaviorSubject,
   combineLatest,
+  EMPTY,
   filter,
   first,
   map,
@@ -19,6 +20,7 @@ import {
 
 import {type DiffComponent, type DiffComponentOptions} from '../field'
 import {type FormState} from '../form/store'
+import {useWorkspace} from '../studio/workspace'
 import {type CollatedDocumentDivergencesState} from './collateDocumentDivergences'
 import {type Divergence, type DivergenceAtPath} from './readDocumentDivergences'
 import {transposeSchema} from './transposeSchema'
@@ -154,6 +156,10 @@ export function useDivergenceNavigator({
   schemaType,
   formState,
 }: DivergenceNavigatorContext): DivergenceNavigator {
+  const {
+    advancedVersionControl: {enabled: advancedVersionControlEnabled},
+  } = useWorkspace()
+
   const dispatch = useMemo(() => new Subject<Action>(), [])
 
   const schemaTypeContext = useMemo(
@@ -168,30 +174,32 @@ export function useDivergenceNavigator({
   )
   useEffect(() => formStateContext.next(formState), [formStateContext, formState])
 
-  const context = useMemo<Observable<StateContext>>(
-    () =>
-      combineLatest({
-        divergences: divergences,
-        schemaType: schemaTypeContext.pipe(filter((value) => typeof value !== 'undefined')),
-        formState: formStateContext.pipe(
-          filter((value) => typeof value !== 'undefined'),
-          // Form state is used to map divergences to fields, and order them to
-          // match the order fields and groups are rendered in the document
-          // editor.
-          //
-          // However, form state also encapsulates current value, the focused
-          // path, etc. and changes with every change to the displayed document
-          // and interaction with the document editor.
-          //
-          // It's unnecessary to remap divergences every time the displayed
-          // document or state, like the focus path, changes. Therefore, this
-          // code takes only the first form state value emitted.
-          first(),
-          map((state) => (state ? pick(state, ['groups', '_allMembers']) : state)),
-        ),
-      }),
-    [divergences, schemaTypeContext, formStateContext],
-  )
+  const context = useMemo<Observable<StateContext>>(() => {
+    if (!advancedVersionControlEnabled) {
+      return EMPTY
+    }
+
+    return combineLatest({
+      divergences: divergences,
+      schemaType: schemaTypeContext.pipe(filter((value) => typeof value !== 'undefined')),
+      formState: formStateContext.pipe(
+        filter((value) => typeof value !== 'undefined'),
+        // Form state is used to map divergences to fields, and order them to
+        // match the order fields and groups are rendered in the document
+        // editor.
+        //
+        // However, form state also encapsulates current value, the focused
+        // path, etc. and changes with every change to the displayed document
+        // and interaction with the document editor.
+        //
+        // It's unnecessary to remap divergences every time the displayed
+        // document or state, like the focus path, changes. Therefore, this
+        // code takes only the first form state value emitted.
+        first(),
+        map((state) => (state ? pick(state, ['groups', '_allMembers']) : state)),
+      ),
+    })
+  }, [advancedVersionControlEnabled, divergences, schemaTypeContext, formStateContext])
 
   const readState = useMemo(() => createStateReducer({dispatch, context}), [dispatch, context])
 
