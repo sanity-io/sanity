@@ -1,8 +1,10 @@
-import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
+import {type ComponentType, type ReactNode, useEffect, useRef, useState} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock'
+import {AuthBoundaryResolved} from './__telemetry__/authBoundary.telemetry'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
 import {AuthenticateScreen, NotAuthenticatedScreen, RequestAccessScreen} from './screens'
+import {useDeferredTelemetry} from './telemetry/DeferredTelemetryProvider'
 
 interface AuthBoundaryProps {
   children: ReactNode
@@ -25,6 +27,19 @@ export function AuthBoundary({
   )
   const [loginProvider, setLoginProvider] = useState<string | undefined>()
   const {activeWorkspace} = useActiveWorkspace()
+  const earlyTelemetry = useDeferredTelemetry()
+  const [mountTime] = useState(() => performance.now())
+  const resolvedRef = useRef(false)
+
+  useEffect(() => {
+    if (loggedIn !== 'loading' && !resolvedRef.current) {
+      resolvedRef.current = true
+      earlyTelemetry.log(AuthBoundaryResolved, {
+        durationMs: Math.round(performance.now() - mountTime),
+        result: loggedIn,
+      })
+    }
+  }, [loggedIn, earlyTelemetry, mountTime])
 
   useEffect(() => {
     activeWorkspace.auth.handleCallbackUrl?.().catch(handleError)
