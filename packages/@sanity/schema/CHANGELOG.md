@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.0](https://github.com/sanity-io/sanity/compare/v5.16.0...v5.17.0) (2026-03-17)
+
+### Features
+
+* **schema:** add ability to control undefined/null sorting ([#12367](https://github.com/sanity-io/sanity/issues/12367)) ([d5f6875](https://github.com/sanity-io/sanity/commit/d5f6875ffdc01d146f4cb35142ea39c558d9fbf4)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [5.16.0](https://github.com/sanity-io/sanity/compare/v5.15.0...v5.16.0) (2026-03-14)
 
 ### Bug Fixes

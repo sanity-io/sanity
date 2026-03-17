@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.0](https://github.com/sanity-io/sanity/compare/v5.16.0...v5.17.0) (2026-03-17)
+
+### Features
+
+* **sanity:** add `isArrayOfStringsSchemaType` type guard ([fd7e777](https://github.com/sanity-io/sanity/commit/fd7e777ee9ccb9ac3620e4e58b06c23ebbc5cc9f)) by Ash (ash@sanity.io)
+* **sanity:** add `path` property to field members ([544500e](https://github.com/sanity-io/sanity/commit/544500ee19b64be96ea94d61ceef0fac1d1e5323)) by Ash (ash@sanity.io)
+* **sanity:** add `readOnly` property to field members ([e84b477](https://github.com/sanity-io/sanity/commit/e84b477c82fa7c3239c8b9f3a353c1a597d62ca3)) by Ash (ash@sanity.io)
+* **sanity:** add `schemaType` property to field members ([ab423ed](https://github.com/sanity-io/sanity/commit/ab423edf0e2fd39dc1f0e9bdd181c78b5955fab7)) by Ash (ash@sanity.io)
+* **sanity:** add collated divergences exports ([2ea9d73](https://github.com/sanity-io/sanity/commit/2ea9d73136b4bd7c8e836550e658bcc91be999da)) by Ash (ash@sanity.io)
+* **sanity:** add CSS anchor names to inputs ([05dc683](https://github.com/sanity-io/sanity/commit/05dc683c3b153326c92290e78c8fe163a21cc9cd)) by Ash (ash@sanity.io)
+* **sanity:** divergence reporting, inspection, and resolution UI ([52895b3](https://github.com/sanity-io/sanity/commit/52895b364fabc1fdc049fa33e8e341c8049c5a79)) by Ash (ash@sanity.io)
+* **sanity:** export divergence types ([f46aae6](https://github.com/sanity-io/sanity/commit/f46aae64e5a3fea557b48258e224470fe2fedf60)) by Ash (ash@sanity.io)
+* **sanity:** functions for navigating divergences in the context of a schema type ([d42f2a6](https://github.com/sanity-io/sanity/commit/d42f2a652fb61e3f4466dabeb2bbc97ad1ce3ee8)) by Ash (ash@sanity.io)
+* **sanity:** include document id in divergence resolution marker ([bb3d45a](https://github.com/sanity-io/sanity/commit/bb3d45aed75c988477f309b276f1046a2d9c8d30)) by Ash (ash@sanity.io)
+* **sanity:** move `emptyValuesByType` and export it ([0a594e8](https://github.com/sanity-io/sanity/commit/0a594e85539caa14c744ed5c4ad8d0d66dbb4605)) by Ash (ash@sanity.io)
+* **sanity:** move divergence metadata to `_systemDivergences` field ([3bdcf81](https://github.com/sanity-io/sanity/commit/3bdcf819b1c74c9ef39fb6d94448787afd472969)) by Ash (ash@sanity.io)
+* **sanity:** omit divergences in unkeyed objects ([3fdbca8](https://github.com/sanity-io/sanity/commit/3fdbca81d61f061709e51f7f5fad5fa233d509c0)) by Ash (ash@sanity.io)
+* **sanity:** patch creators for acting on divergences ([08a7c7b](https://github.com/sanity-io/sanity/commit/08a7c7b589df626c3039a0f99e6e11faa0e54bc5)) by Ash (ash@sanity.io)
+* **sanity:** when collating divergences, accept `undefined` ids, and add `upstreamId` to result ([d3d178c](https://github.com/sanity-io/sanity/commit/d3d178c276c5b569354f2182b5273da199c0a669)) by Ash (ash@sanity.io)
+* **schema:** add ability to control undefined/null sorting ([#12367](https://github.com/sanity-io/sanity/issues/12367)) ([d5f6875](https://github.com/sanity-io/sanity/commit/d5f6875ffdc01d146f4cb35142ea39c558d9fbf4)) by Bjørge Næss (bjoerge@gmail.com)
+* **test-studio:** switch on Advanced Version Control ([042b8ee](https://github.com/sanity-io/sanity/commit/042b8ee3eb558eab6d35945f6b2127efd81ac9af)) by Ash (ash@sanity.io)
+
+### Bug Fixes
+
+* **core:** make tags input wider, fixes firefox crop issue ([#12438](https://github.com/sanity-io/sanity/issues/12438)) ([3acbd9a](https://github.com/sanity-io/sanity/commit/3acbd9a452c721c01a629f15eeb534696f2e6639)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* fix issue with Calendar on typing ([#12399](https://github.com/sanity-io/sanity/issues/12399)) ([b58159b](https://github.com/sanity-io/sanity/commit/b58159bb701d0a85f9bd2502257df1d5c49fc521)) by RitaDias (rita@sanity.io)
+* **form:** filter asset sources by upload capability in file upload target ([#12434](https://github.com/sanity-io/sanity/issues/12434)) ([083bfc7](https://github.com/sanity-io/sanity/commit/083bfc7a5767eea8dbdebbf4d41ab09252bc6e39)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* **sanity:** do not emit divergence navigator context if not switched on ([3477476](https://github.com/sanity-io/sanity/commit/34774763252af93aa0090d885a0a652c9fcb1f6f)) by Ash (ash@sanity.io)
+* **sanity:** excessive recomputing based on `formState` ([26cff4f](https://github.com/sanity-io/sanity/commit/26cff4f77a3ba9dd04deb3023439d85f91d56e0c)) by Ash (ash@sanity.io)
+* **sanity:** expose object path segment directly ([2182019](https://github.com/sanity-io/sanity/commit/218201910eda6abeb9fe7a948f9bef394763e226)) by Ash (ash@sanity.io)
+* **sanity:** loosen `@sanity/types` workspace version constraint ([3534755](https://github.com/sanity-io/sanity/commit/3534755c28fc94fdd944fde61acdf2c4c832b529)) by Ash (ash@sanity.io)
+* **sanity:** remove `@sanity/types` workspace override ([c978cca](https://github.com/sanity-io/sanity/commit/c978cca75a4bb8fdae84ddcbdfd772be53fd817e)) by Ash (ash@sanity.io)
+* **studio:** check whether inserted array item present in subject version ([1a73760](https://github.com/sanity-io/sanity/commit/1a73760a998fc8f09ced7b60fa4bf81e8297a9ef)) by Ash (ash@sanity.io)
+
 ## [5.16.0](https://github.com/sanity-io/sanity/compare/v5.15.0...v5.16.0) (2026-03-14)
 
 ### Features
