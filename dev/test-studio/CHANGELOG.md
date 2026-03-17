@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.0](https://github.com/sanity-io/sanity/compare/v5.16.0...v5.17.0) (2026-03-17)
+
+### Features
+
+* **sanity:** add CSS anchor names to inputs ([05dc683](https://github.com/sanity-io/sanity/commit/05dc683c3b153326c92290e78c8fe163a21cc9cd)) by Ash (ash@sanity.io)
+* **schema:** add ability to control undefined/null sorting ([#12367](https://github.com/sanity-io/sanity/issues/12367)) ([d5f6875](https://github.com/sanity-io/sanity/commit/d5f6875ffdc01d146f4cb35142ea39c558d9fbf4)) by Bjørge Næss (bjoerge@gmail.com)
+* **test-studio:** switch on Advanced Version Control ([042b8ee](https://github.com/sanity-io/sanity/commit/042b8ee3eb558eab6d35945f6b2127efd81ac9af)) by Ash (ash@sanity.io)
+
 ## [5.16.0](https://github.com/sanity-io/sanity/compare/v5.15.0...v5.16.0) (2026-03-14)
 
 **Note:** Version bump only for package sanity-test-studio
