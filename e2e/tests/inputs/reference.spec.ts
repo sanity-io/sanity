@@ -1,8 +1,50 @@
-import {expect} from '@playwright/test'
+import {type Locator, type Page, expect} from '@playwright/test'
 
 import {withDefaultClient} from '../../helpers'
 import {expectPublishedStatus, expectSavedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
+
+/**
+ * Search for a reference and wait for a specific option to appear.
+ * Retries the search by clearing and re-typing the query if the option doesn't appear,
+ * which handles eventual consistency in the search index on fresh datasets.
+ */
+async function searchAndSelectReference(
+  page: Page,
+  autocomplete: Locator,
+  popover: Locator,
+  searchText: string,
+  optionSelector: string,
+  {timeout = 30_000}: {timeout?: number} = {},
+) {
+  const deadline = Date.now() + timeout
+  while (Date.now() < deadline) {
+    await autocomplete.click()
+    await autocomplete.fill(searchText)
+    await expect(popover).toBeVisible()
+
+    // Wait briefly for results to appear
+    try {
+      await expect(page.locator(optionSelector)).toBeVisible({
+        timeout: 10_000,
+      })
+      // Option found, click it
+      await page.locator(optionSelector).click()
+      return
+    } catch {
+      // Option not found yet — retry the search.
+      // Clear the input to trigger a fresh search on next iteration.
+      await autocomplete.clear()
+      // Brief pause before retrying to let the search index catch up
+      await page.waitForTimeout(2_000)
+    }
+  }
+  // Final attempt — let it throw the regular assertion error if it still fails
+  await autocomplete.click()
+  await autocomplete.fill(searchText)
+  await expect(page.locator(optionSelector)).toBeVisible({timeout: 10_000})
+  await page.locator(optionSelector).click()
+}
 
 withDefaultClient((context) => {
   test(`value can be changed after the document has been published`, async ({
@@ -34,24 +76,23 @@ withDefaultClient((context) => {
 
     // Reference fields don't seem to be given a test id, so this selection can't be more specific
     // at the moment e.g. `page.getByTestId('field-author')`.
-    const referenceInput = page.getByTestId('reference-input')
     const paneFooter = page.getByTestId('pane-footer')
     const publishButton = page.getByTestId('action-publish')
-    const authorListbox = page.locator('#author-listbox')
     const popover = page.getByTestId('autocomplete-popover')
+    const autocomplete = page.getByTestId('autocomplete')
 
-    // Select the first document in the list.
-    await expect(page.getByTestId('autocomplete')).toBeVisible()
-    // Click to focus and ensure the popover opens reliably
-    await page.getByTestId('autocomplete').click()
-    await page.getByTestId('autocomplete').fill('Author A')
+    await expect(autocomplete).toBeVisible()
 
-    // Wait for the Author reference popover to appear.
-    await expect(popover).toBeVisible()
-    await expect(authorListbox).toBeVisible()
-
-    await expect(page.locator('#author-option-authorA')).toBeVisible()
-    await page.locator('#author-option-authorA').click()
+    // Search and select Author A. Uses retry logic to handle search index
+    // eventual consistency on fresh datasets.
+    await searchAndSelectReference(
+      page,
+      autocomplete,
+      popover,
+      'Author A',
+      '#author-option-authorA',
+      {timeout: 60_000},
+    )
 
     // wait for the edit to finish
     await expectSavedStatus(paneFooter, {timeout: 30_000})
@@ -65,18 +106,19 @@ withDefaultClient((context) => {
     // Open the Author reference input.
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
-    // Select the first document in the list.
-    await expect(page.getByTestId('autocomplete')).toBeVisible()
-    // Click to focus and ensure the popover opens reliably
-    await page.getByTestId('autocomplete').click()
-    await page.getByTestId('autocomplete').fill('Author B')
 
-    // Wait for the Author reference popover to appear.
-    await expect(popover).toBeVisible()
-    await expect(authorListbox).toBeVisible()
+    await expect(autocomplete).toBeVisible()
 
-    await expect(page.locator('#author-option-authorB')).toBeVisible()
-    await page.locator('#author-option-authorB').click()
+    // Search and select Author B
+    await searchAndSelectReference(
+      page,
+      autocomplete,
+      popover,
+      'Author B',
+      '#author-option-authorB',
+      {timeout: 60_000},
+    )
+
     await expect(paneFooter).toContainText('Saved', {timeout: 30_000})
 
     // wait for the edit to finish
