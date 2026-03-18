@@ -11,8 +11,8 @@ packages:
   - packages/sanity/fixtures/examples/*
 
 catalog:
-  '@playwright/experimental-ct-react': 1.57.0
-  '@playwright/test': 1.57.0
+  '@playwright/experimental-ct-react': 1.58.2
+  '@playwright/test': 1.58.2
   '@sanity/client': ^7.17.0
   '@sanity/migrate': ^6.0.0
   '@sanity/telemetry': ^0.8.1
@@ -29,7 +29,7 @@ catalog:
   esbuild-register: ^3.6.0
   eslint: ^9.39.2
   globals: ^16.2.0
-  playwright: 1.57.0
+  playwright: 1.58.2
   react: ^19.2.4
   react-dom: ^19.2.4
   react-is: ^19.2.4
