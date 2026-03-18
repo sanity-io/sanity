@@ -1,13 +1,12 @@
 /* eslint-disable no-console */
 /**
- * Periodic cleanup of e2e datasets for closed/merged PRs.
+ * Periodic cleanup of e2e datasets.
  *
- * Lists all datasets in the e2e project, extracts the PR number from dataset names
- * matching the pattern `pr-<number>-<browser>-<run-id>`, checks if the corresponding
- * PR is closed via the GitHub API, and deletes datasets for closed PRs.
+ * Handles two types of datasets:
+ * - PR datasets (`pr-<number>-<browser>-<run-id>`): deleted when the PR is closed
+ * - Main datasets (`main-<browser>-<run-id>`): deleted when older than 24 hours
  *
- * This replaces the previous approach of only cleaning up on PR close events,
- * which could fail and leave dangling datasets.
+ * Runs on a schedule (every 6 hours) and can be triggered manually.
  */
 
 import {readEnv} from '../envVars'
@@ -21,6 +20,8 @@ const GITHUB_REPO = 'sanity-io/sanity'
 
 const API_BASE_URL = `https://${SANITY_E2E_PROJECT_ID}.api.sanity.work/v2026-03-03`
 
+const MAIN_DATASET_MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours
+
 interface Dataset {
   name: string
   createdAt: string
@@ -29,6 +30,8 @@ interface Dataset {
 
 // Match dataset names like `pr-12225-chromium-22576482973`
 const PR_DATASET_PATTERN = /^pr-(\d+)-/
+// Match dataset names like `main-chromium-22576482973`
+const MAIN_DATASET_PATTERN = /^main-(chromium|firefox)-/
 
 async function listDatasets(): Promise<Dataset[]> {
   const res = await fetch(`${API_BASE_URL}/datasets?tag=studio-e2e-cleanup`, {
@@ -80,17 +83,13 @@ async function fetchOpenPrNumbers(): Promise<Set<number>> {
   return openPrs
 }
 
-async function run() {
-  const datasets = await listDatasets()
-
-  // Find all PR datasets (excluding comment datasets which are auto-deleted)
+async function cleanupPrDatasets(datasets: Dataset[]): Promise<number> {
   const prDatasets = datasets.filter(
     (ds) => PR_DATASET_PATTERN.test(ds.name) && !ds.name.endsWith('-comments'),
   )
 
   console.log(`Found ${prDatasets.length} PR datasets total`)
 
-  // Group datasets by PR number to minimize GitHub API calls
   const datasetsByPr = new Map<number, Dataset[]>()
   for (const ds of prDatasets) {
     const match = ds.name.match(PR_DATASET_PATTERN)
@@ -128,7 +127,45 @@ async function run() {
     }
   }
 
-  console.log(`\nCleanup complete. Deleted ${deletedCount} dataset(s).`)
+  return deletedCount
+}
+
+async function cleanupMainDatasets(datasets: Dataset[]): Promise<number> {
+  const now = Date.now()
+  const mainDatasets = datasets.filter((ds) => MAIN_DATASET_PATTERN.test(ds.name))
+
+  console.log(`Found ${mainDatasets.length} main datasets total`)
+
+  let deletedCount = 0
+
+  for (const ds of mainDatasets) {
+    const age = now - new Date(ds.createdAt).getTime()
+    if (age < MAIN_DATASET_MAX_AGE_MS) {
+      console.log(`  Skipping ${ds.name} (${Math.round(age / 3600000)}h old)`)
+      continue
+    }
+
+    try {
+      await deleteDataset(ds.name)
+      console.log(`  Deleted: ${ds.name} (${Math.round(age / 3600000)}h old)`)
+      deletedCount++
+    } catch (err) {
+      console.error(`  Failed to delete ${ds.name}: ${err}`)
+    }
+  }
+
+  return deletedCount
+}
+
+async function run() {
+  const datasets = await listDatasets()
+
+  const prDeleted = await cleanupPrDatasets(datasets)
+  const mainDeleted = await cleanupMainDatasets(datasets)
+
+  console.log(
+    `\nCleanup complete. Deleted ${prDeleted} PR dataset(s) and ${mainDeleted} main dataset(s).`,
+  )
 }
 
 run().catch((error) => {
