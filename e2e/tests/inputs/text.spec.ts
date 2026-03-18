@@ -109,10 +109,11 @@ test.describe('inputs: text', () => {
     await expectEditedStatus(paneFooter, {timeout: 30_000})
 
     // Wait for the document to be published.
+    // Use an explicit timeout since the CI staging API can be slow under load.
     await expect(publishButton).toBeVisible()
     await expect(publishButton).toBeEnabled()
     await publishButton.click()
-    await expectPublishedStatus(paneFooter)
+    await expectPublishedStatus(paneFooter, {timeout: 90_000})
 
     // Change the title.
     await expect(titleInput).toBeVisible()
@@ -123,6 +124,6 @@ test.describe('inputs: text', () => {
     await expect(publishButton).toBeVisible()
     await expect(publishButton).toBeEnabled()
     await publishButton.click()
-    await expectPublishedStatus(paneFooter)
+    await expectPublishedStatus(paneFooter, {timeout: 90_000})
   })
 })

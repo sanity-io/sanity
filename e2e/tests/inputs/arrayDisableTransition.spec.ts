@@ -52,8 +52,16 @@ test.describe('PR #11775 - disableTransition prop leak', () => {
     const titleInput = insertDialog.getByLabel('Title')
     await titleInput.fill('Test Book')
 
-    // Close dialog
+    // Close dialog - retry Escape if the dialog doesn't close (the dialog in
+    // the document-panel-portal may not have focus, especially in Firefox)
     await page.keyboard.press('Escape')
+    const dialogClosed = await insertDialog
+      .waitFor({state: 'hidden', timeout: 5_000})
+      .then(() => true)
+      .catch(() => false)
+    if (!dialogClosed) {
+      await page.keyboard.press('Escape')
+    }
     await expect(insertDialog).not.toBeVisible()
 
     // Wait for item to be rendered

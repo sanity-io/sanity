@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
 
+import {retryingClickUntilVisible} from '../../helpers/retryingClick'
 import {test} from '../../studio-test'
 
 test.describe('Validation test', () => {
@@ -51,9 +52,11 @@ test.describe('Validation test', () => {
       const arrayItemMenuButton = page.getByTestId('array-item-menu-button')
       await expect(arrayItemMenuButton).toBeVisible()
       await expect(arrayItemMenuButton).toBeEnabled()
-      // Use force to bypass pointer-events interception from document-panel-portal overlays in Firefox
-      await arrayItemMenuButton.click({force: true})
-      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
+      await retryingClickUntilVisible(
+        page,
+        arrayItemMenuButton,
+        page.getByRole('menuitem', {name: 'Remove'}),
+      )
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
       await page.getByRole('menuitem', {name: 'Remove'}).click()
 
@@ -129,14 +132,15 @@ test.describe('Validation test', () => {
         {timeout: 10000},
       )
 
-      await expect(page.getByTestId('array-item-menu-button').first()).toBeVisible()
-      await expect(page.getByTestId('array-item-menu-button').first()).toBeEnabled()
-      // Use force to bypass pointer-events interception from document-panel-portal overlays in Firefox
-      await page.getByTestId('array-item-menu-button').first().click({force: true})
-
-      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
+      const firstMenuButton = page.getByTestId('array-item-menu-button').first()
+      await expect(firstMenuButton).toBeVisible()
+      await expect(firstMenuButton).toBeEnabled()
+      await retryingClickUntilVisible(
+        page,
+        firstMenuButton,
+        page.getByRole('menuitem', {name: 'Remove'}),
+      )
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
-      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
       await page.getByRole('menuitem', {name: 'Remove'}).click()
       await expect(page.getByRole('button', {name: 'House / Room / List furniture'})).toHaveCount(1)
 
@@ -194,9 +198,11 @@ test.describe('Validation test', () => {
       const arrayItemMenuButton = page.getByTestId('array-item-menu-button').first()
       await expect(arrayItemMenuButton).toBeVisible()
       await expect(arrayItemMenuButton).toBeEnabled()
-      // Use force to bypass pointer-events interception from document-panel-portal overlays in Firefox
-      await arrayItemMenuButton.click({force: true})
-      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
+      await retryingClickUntilVisible(
+        page,
+        arrayItemMenuButton,
+        page.getByRole('menuitem', {name: 'Remove'}),
+      )
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
       await page.getByRole('menuitem', {name: 'Remove'}).click()
 
