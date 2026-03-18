@@ -1,9 +1,9 @@
 import {renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
-import {useStudioAppIdStore} from '../../create/studio-app/useStudioAppIdStore'
 import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
 import {useRenderingContext} from '../../store/renderingContext/useRenderingContext'
+import {useStudioAppIdStore} from '../../store/studio-app/useStudioAppIdStore'
 import {useActiveWorkspace} from '../../studio'
 import {useEnvAwareSanityWebsiteUrl} from '../../studio/hooks/useEnvAwareSanityWebsiteUrl'
 import {getDashboardPath} from '../../util/dashboardPath'
@@ -13,7 +13,7 @@ vi.mock('../../store/renderingContext/useRenderingContext', () => ({
   useRenderingContext: vi.fn(),
 }))
 
-vi.mock('../../create/studio-app/useStudioAppIdStore', () => ({
+vi.mock('../../store/studio-app/useStudioAppIdStore', () => ({
   useStudioAppIdStore: vi.fn(),
 }))
 

@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {AppIdCache} from '../../core/create/studio-app/appIdCache'
+import type {AppIdCache} from '../../core/store/studio-app/appIdCache'
 
 /**
  * @internal

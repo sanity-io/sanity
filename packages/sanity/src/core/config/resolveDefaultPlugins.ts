@@ -1,7 +1,6 @@
 import {MEDIA_LIBRARY_NAME, mediaLibrary} from '../../media-library/plugin'
 import {CANVAS_INTEGRATION_NAME, canvasIntegration} from '../canvas/canvasIntegrationPlugin'
 import {comments} from '../comments/plugin'
-import {createIntegration} from '../create/createIntegrationPlugin'
 import {releases, RELEASES_NAME} from '../releases/plugin'
 // oxlint-disable-next-line no-restricted-imports
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduled-publishing/plugin'
@@ -20,7 +19,6 @@ const defaultPlugins = (options: DefaultPluginsOptions) => [
   comments(),
   tasks(),
   scheduledPublishing(),
-  createIntegration(),
   releases(),
   canvasIntegration(),
   mediaLibrary(),

@@ -748,10 +748,6 @@ function resolveSource({
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
-      create: {
-        startInCreateEnabled: false,
-        fallbackStudioOrigin: undefined,
-      },
     },
     // eslint-disable-next-line camelcase
     __internal_serverDocumentActions: {

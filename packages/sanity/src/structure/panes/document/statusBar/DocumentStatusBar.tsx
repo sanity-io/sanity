@@ -1,21 +1,12 @@
 import {Card, Flex} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
-import {
-  type CreateLinkMetadata,
-  isPublishedPerspective,
-  isReleaseDocument,
-  isSanityCreateLinked,
-  usePerspective,
-  useSanityCreateConfig,
-} from 'sanity'
+import {isPublishedPerspective, isReleaseDocument, usePerspective} from 'sanity'
 
 import {usePaneRouter} from '../../../components'
 import {SpacerButton} from '../../../components/spacerButton'
-import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {EMPTY_PARAMS} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
-import {useDocumentTitle} from '../useDocumentTitle'
 import {DocumentBadges} from './DocumentBadges'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
 import {DocumentStatusLine} from './DocumentStatusLine'
@@ -24,7 +15,6 @@ import {useResizeObserver} from './useResizeObserver'
 
 export interface DocumentStatusBarProps {
   actionsBoxRef?: Ref<HTMLDivElement>
-  createLinkMetadata?: CreateLinkMetadata
 }
 
 const CONTAINER_BREAKPOINT = 480 // px
@@ -32,13 +22,10 @@ const CONTAINER_BREAKPOINT = 480 // px
 const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
-  const {actionsBoxRef, createLinkMetadata} = props
-  const {editState, onChange: onDocumentChange, revisionNotFound} = useDocumentPane()
+  const {actionsBoxRef} = props
+  const {editState, revisionNotFound} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const {selectedPerspective} = usePerspective()
-  const {title} = useDocumentTitle()
-
-  const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
 
   const showingRevision = Boolean(params.rev)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
@@ -64,16 +51,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   }, [collapsed, editState?.published, editState?.ready, editState?.version, selectedPerspective])
 
   let actions: React.JSX.Element | null = null
-  if (createLinkMetadata && isSanityCreateLinked(createLinkMetadata) && CreateLinkedActions) {
-    actions = (
-      <CreateLinkedActions
-        metadata={createLinkMetadata}
-        panelPortalElementId={DOCUMENT_PANEL_PORTAL_ELEMENT}
-        onDocumentChange={onDocumentChange}
-        documentTitle={title}
-      />
-    )
-  } else if (showingRevision) {
+  if (showingRevision) {
     actions = <HistoryStatusBarActions />
   } else {
     actions = <DocumentStatusBarActions />
