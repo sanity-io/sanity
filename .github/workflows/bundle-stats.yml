@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
-      - uses: rexxars/bundle-stats@v1
+      - uses: rexxars/bundle-stats@8a203ebfe0d207cab6fa587dbf912815e11c7a7a # v1
         with:
           packages: packages/sanity
           build-command: pnpm build
