@@ -6,7 +6,7 @@ import {test} from '../../studio-test'
 
 /**
  * Search for a reference and wait for a specific option to appear.
- * Retries the search by clearing and re-typing the query if the option doesn't appear,
+ * Uses expect.toPass to retry the entire search flow (clear, re-type, check)
  * which handles eventual consistency in the search index on fresh datasets.
  */
 async function searchAndSelectReference(
@@ -17,32 +17,17 @@ async function searchAndSelectReference(
   optionSelector: string,
   {timeout = 30_000}: {timeout?: number} = {},
 ) {
-  const deadline = Date.now() + timeout
-  while (Date.now() < deadline) {
+  // Retry the search until the expected option appears.
+  // On fresh datasets the search index may not have caught up yet,
+  // so we clear and re-type to trigger a new search on each attempt.
+  await expect(async () => {
+    await autocomplete.clear()
     await autocomplete.click()
     await autocomplete.fill(searchText)
     await expect(popover).toBeVisible()
+    await expect(page.locator(optionSelector)).toBeVisible({timeout: 10_000})
+  }).toPass({timeout, intervals: [2_000]})
 
-    // Wait briefly for results to appear
-    try {
-      await expect(page.locator(optionSelector)).toBeVisible({
-        timeout: 10_000,
-      })
-      // Option found, click it
-      await page.locator(optionSelector).click()
-      return
-    } catch {
-      // Option not found yet — retry the search.
-      // Clear the input to trigger a fresh search on next iteration.
-      await autocomplete.clear()
-      // Brief pause before retrying to let the search index catch up
-      await page.waitForTimeout(2_000)
-    }
-  }
-  // Final attempt — let it throw the regular assertion error if it still fails
-  await autocomplete.click()
-  await autocomplete.fill(searchText)
-  await expect(page.locator(optionSelector)).toBeVisible({timeout: 10_000})
   await page.locator(optionSelector).click()
 }
 
