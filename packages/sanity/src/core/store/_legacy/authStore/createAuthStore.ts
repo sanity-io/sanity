@@ -13,6 +13,7 @@ import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {createLoginComponent} from './createLoginComponent'
+import {type HandleCallbackResult} from './handleCallbackResult'
 import {getSessionId} from './sessionId'
 import * as storage from './storage'
 import {type AuthState, type AuthStore} from './types'
@@ -238,12 +239,19 @@ export function _createAuthStore({
     shareReplay(1),
   )
 
-  async function handleCallbackUrl() {
+  async function handleCallbackUrl(): Promise<HandleCallbackResult> {
+    const startTime = performance.now()
     const sessionId = getSessionId()
 
     if (!sessionId) {
       broadcast(loginMethod === 'cookie' ? null : getToken(projectId))
-      return
+      return {
+        hadSessionId: false,
+        loginMethod,
+        path: 'no-session',
+        success: true,
+        durationMs: Math.round(performance.now() - startTime),
+      }
     }
 
     const requestClient = clientFactory({
@@ -268,13 +276,43 @@ export function _createAuthStore({
     if (currentUser || loginMethod === 'cookie') {
       // if that worked, then we don't need to fetch a token
       broadcast(null)
-      return
+      return {
+        hadSessionId: true,
+        loginMethod,
+        path: 'cookie-auth',
+        success: !!currentUser,
+        durationMs: Math.round(performance.now() - startTime),
+        failureReason: currentUser ? undefined : 'cookie auth failed, login method is cookie-only',
+      }
     }
 
     // If we allow using token authentication, we should try to trade the session ID
     // for a token and store it locally for subsequent use
-    const token = await tradeSessionForToken(requestClient, sessionId)
-    broadcast(token ?? null)
+    const tokenExchangeStart = performance.now()
+    try {
+      const token = await tradeSessionForToken(requestClient, sessionId)
+      broadcast(token ?? null)
+      return {
+        hadSessionId: true,
+        loginMethod,
+        path: 'token-exchange',
+        success: !!token,
+        durationMs: Math.round(performance.now() - startTime),
+        tokenExchangeDurationMs: Math.round(performance.now() - tokenExchangeStart),
+        failureReason: token ? undefined : 'token exchange returned empty token',
+      }
+    } catch (err) {
+      broadcast(null)
+      return {
+        hadSessionId: true,
+        loginMethod,
+        path: 'token-exchange',
+        success: false,
+        durationMs: Math.round(performance.now() - startTime),
+        tokenExchangeDurationMs: Math.round(performance.now() - tokenExchangeStart),
+        failureReason: err instanceof Error ? err.message : 'token exchange failed',
+      }
+    }
   }
 
   async function tradeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {

@@ -1,7 +1,11 @@
 import {type ComponentType, type ReactNode, useEffect, useRef, useState} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock'
-import {AuthBoundaryResolved} from './__telemetry__/authBoundary.telemetry'
+import {type HandleCallbackResult} from '../store/_legacy/authStore/handleCallbackResult'
+import {
+  AuthBoundaryResolved,
+  SessionTokenExchangeCompleted,
+} from './__telemetry__/authBoundary.telemetry'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
 import {AuthenticateScreen, NotAuthenticatedScreen, RequestAccessScreen} from './screens'
 import {useDeferredTelemetry} from './telemetry/DeferredTelemetryProvider'
@@ -42,8 +46,15 @@ export function AuthBoundary({
   }, [loggedIn, earlyTelemetry, mountTime])
 
   useEffect(() => {
-    activeWorkspace.auth.handleCallbackUrl?.().catch(handleError)
-  }, [activeWorkspace.auth])
+    activeWorkspace.auth
+      .handleCallbackUrl?.()
+      .then((result: unknown) => {
+        if (result && typeof result === 'object' && 'path' in result) {
+          earlyTelemetry.log(SessionTokenExchangeCompleted, result as HandleCallbackResult)
+        }
+      })
+      .catch(handleError)
+  }, [activeWorkspace.auth, earlyTelemetry])
 
   useEffect(() => {
     const subscription = activeWorkspace.auth.state.subscribe({

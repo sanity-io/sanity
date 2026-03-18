@@ -1,5 +1,6 @@
 export * from './createAuthStore'
 export * from './createMockAuthStore'
+export * from './handleCallbackResult'
 export * from './providerTitle'
 export * from './types'
 export * from './utils/asserters'
