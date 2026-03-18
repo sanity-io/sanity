@@ -31,8 +31,11 @@ describe('parseRenovateReleaseNotes', () => {
     // Should NOT contain deps-scoped items even when under Bug Fixes
     expect(markdown).not.toContain('update oclif-tooling')
 
-    // Should NOT contain commit hashes or PR refs
+    // Should preserve PR/issue refs as links (without outer parens)
+    expect(markdown).toMatch(/\[#\d+]\(/)
     expect(markdown).not.toMatch(/\(\[#\d+]\(/)
+
+    // Should NOT contain commit hashes
     expect(markdown).not.toMatch(/\(\[[0-9a-f]{7}]\(/)
 
     // Should NOT contain content from non-allowlisted packages
@@ -87,6 +90,10 @@ describe('parseRenovateReleaseNotes', () => {
     const markdown = portableTextToMarkdown(blocks)
 
     expect(markdown).toContain('a visible fix')
+    // PR ref link should be preserved
+    expect(markdown).toContain('[#1](https://example.com)')
+    // Commit hash should be stripped
+    expect(markdown).not.toContain('abc1234')
     expect(markdown).not.toContain('dep bumped')
     expect(markdown).not.toContain('reformatted code')
     expect(markdown).not.toContain('updated config')
@@ -115,7 +122,7 @@ describe('parseRenovateReleaseNotes', () => {
     expect(markdown).not.toContain('deps')
   })
 
-  it('strips commit hashes and PR refs from list items', () => {
+  it('strips commit hashes but preserves PR refs as links', () => {
     const body = `### Release Notes
 
 <details>
@@ -133,8 +140,12 @@ describe('parseRenovateReleaseNotes', () => {
     const markdown = portableTextToMarkdown(blocks)
 
     expect(markdown).toContain('fix something important')
-    expect(markdown).not.toContain('#123')
+    // PR ref should be preserved as a link
+    expect(markdown).toContain('[#123](https://example.com/issues/123)')
+    // Commit hash should be stripped
     expect(markdown).not.toContain('deadbeef')
+    // Outer parens around PR ref should be removed
+    expect(markdown).not.toContain('([#123]')
   })
 
   it('returns empty for non-Renovate PR bodies', () => {
