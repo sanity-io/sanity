@@ -82,23 +82,27 @@ jobs:
         run: npx playwright install --with-deps
 
   dataset-setup:
-    timeout-minutes: 30
-    runs-on: ubuntu-8core
-    needs: [install]
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        if: needs.install.outputs.examples_only != 'true'
+        with:
+          fetch-depth: 0
+
+      - name: Check if only examples files changed
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
+
       - uses: ./.github/actions/setup
-        if: needs.install.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
 
       - name: Create dataset (chromium)
-        if: needs.install.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         env:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
           SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
           SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
         run: |
@@ -106,10 +110,10 @@ jobs:
           pnpm e2e:setup
 
       - name: Create dataset (firefox)
-        if: needs.install.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         env:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
           SANITY_E2E_DATASET: ${{ env.FIREFOX_DATASET }}
           SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
         run: |
@@ -253,7 +257,7 @@ jobs:
         if: needs.install.outputs.examples_only != 'true'
         env:
           PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
           SANITY_E2E_DATASET: ${{ (matrix.project == 'chromium') && env.CHROMIUM_DATASET || env.FIREFOX_DATASET }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
