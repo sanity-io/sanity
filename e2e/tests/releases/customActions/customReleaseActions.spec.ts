@@ -1,5 +1,6 @@
 import {expect, type Page} from '@playwright/test'
 
+import {retryingClickUntilVisible} from '../../../helpers/retryingClick'
 import {test} from '../../../studio-test'
 import {speciesDocumentNameASAP} from '../utils/__fixtures__/documents'
 import {partialASAPReleaseMetadata} from '../utils/__fixtures__/releases'
@@ -51,53 +52,27 @@ test.describe('Custom Release Actions', () => {
   })
 
   const openReleaseMenu = async (page: Page, isOverview: boolean) => {
-    const getMenuButton = () => {
-      if (isOverview) {
-        const releaseRow = page.getByRole('row').filter({hasText: uniqueReleaseTitle}).first()
-        return releaseRow.getByTestId('release-menu-button')
-      }
-      return page.getByTestId('release-menu-button')
-    }
+    const menuButton = isOverview
+      ? page
+          .getByRole('row')
+          .filter({hasText: uniqueReleaseTitle})
+          .first()
+          .getByTestId('release-menu-button')
+      : page.getByTestId('release-menu-button')
 
-    // A built-in menu item that is always present for active ASAP releases.
-    // Used to verify the menu actually opened after clicking the button.
-    const archiveMenuItem = page.getByTestId('archive-release-menu-item')
-
-    const menuButton = getMenuButton()
     await expect(menuButton).toBeVisible()
     await expect(menuButton).toBeEnabled()
 
-    // Retry clicking the menu button if the menu doesn't open.
-    // On the overview page, data updates from concurrent subscriptions can cause
-    // the component to re-render, which may swallow the click or close the menu.
-    // oxlint-disable no-await-in-loop -- sequential retry loop is intentional
-    const maxAttempts = 3
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      // Use force click to bypass vercel-live-feedback overlay
-      await menuButton.click({force: true})
-
-      // Check if the menu opened by looking for a built-in menu item
-      const opened = await archiveMenuItem.isVisible().catch(() => false)
-      if (opened) return
-
-      // Wait briefly for the menu to render before checking again
-      await expect(archiveMenuItem)
-        .toBeVisible({timeout: 5_000})
-        .catch(() => {
-          // Menu didn't open on this attempt, will retry
-        })
-
-      // If still not open and we have retries left, click the button again.
-      // The menu might have closed due to a re-render, so re-resolve the button.
-      if (attempt < maxAttempts && !(await archiveMenuItem.isVisible().catch(() => false))) {
-        // Brief pause to let any in-flight re-renders settle
-        await page.waitForTimeout(500)
-      }
-    }
-    // oxlint-enable no-await-in-loop
-
-    // Final assertion - if we get here and the menu still isn't open, fail with a clear message
-    await expect(archiveMenuItem).toBeVisible({timeout: 10_000})
+    // A built-in menu item that is always present for active ASAP releases.
+    // Used to verify the menu actually opened after clicking the button.
+    // On the overview page, subscription updates can re-render the table and
+    // swallow the click, so retrying with portal diagnostics helps debug failures.
+    await retryingClickUntilVisible(
+      page,
+      menuButton,
+      page.getByTestId('archive-release-menu-item'),
+      {maxRetries: 5},
+    )
   }
 
   const expectCustomActionInMenu = async (page: Page) => {
@@ -124,8 +99,13 @@ test.describe('Custom Release Actions', () => {
 
         // Wait for page-specific elements to be ready
         if (isOverview) {
-          // On overview page, wait for the releases table
+          // On overview page, wait for the releases table and the specific release row.
+          // The table may render before all releases are loaded from subscriptions,
+          // so waiting for the row ensures our test release data is available.
           await expect(page.getByRole('table')).toBeVisible()
+          await expect(page.getByRole('row').filter({hasText: uniqueReleaseTitle})).toBeVisible({
+            timeout: 30_000,
+          })
         } else {
           // On individual release page, wait for the menu button
           await expect(page.getByTestId('release-menu-button')).toBeVisible()
