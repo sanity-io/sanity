@@ -44,7 +44,7 @@
     "docs:typedocs:cleanup": "pnpm --filter=sanity docs:typedocs:cleanup",
     "docs:typedocs:generate": "pnpm --filter=sanity docs:typedocs:generate",
     "e2e:build": "turbo run build --filter=studio-e2e-testing",
-    "e2e:cleanup": "tsx -r dotenv-flow/config e2e/scripts/cleanupDatasetsForClosedPrs",
+    "e2e:cleanup": "tsx -r dotenv-flow/config e2e/scripts/cleanupDatasets",
     "e2e:codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
     "e2e:dev": "pnpm --filter studio-e2e-testing dev",
     "e2e:preview": "pnpm --filter e2e build && pnpm --filter studio-e2e-testing preview",
