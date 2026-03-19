@@ -105,7 +105,7 @@ export function useUserListWithPermissions(
       mergeMap(async ([users, groups]) => {
         const grantPromises = users?.map(async (user) => {
           const grants = groups.map((group: any) => {
-            if (group.members.includes(user.id)) {
+            if (group.members?.includes(user.id)) {
               return group.grants
             }
 

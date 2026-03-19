@@ -14,10 +14,10 @@ catalog:
   '@playwright/experimental-ct-react': 1.58.2
   '@playwright/test': 1.58.2
   '@sanity/client': ^7.17.0
-  '@sanity/migrate': ^6.0.0
-  '@sanity/telemetry': ^0.8.1
   '@sanity/eslint-config-i18n': ^2.0.0
+  '@sanity/migrate': ^6.0.0
   '@sanity/pkg-utils': ^10.4.10
+  '@sanity/telemetry': ^0.8.1
   '@sanity/ui': ^3.1.14
   '@types/node': ^24.3.0
   '@types/react': ^19.2.11
@@ -29,35 +29,21 @@ catalog:
   esbuild-register: ^3.6.0
   eslint: ^9.39.2
   globals: ^16.2.0
+  jsdom: ^26.1.0
   playwright: 1.58.2
   react: ^19.2.4
   react-dom: ^19.2.4
   react-is: ^19.2.4
   rimraf: ^6.1.3
-  # Note: there is currently a test failure in src/core/form/inputs/files/FileInput/__tests__/fileInput.test.tsx
-  # that blocks us from upgrading to jsdom@27 – once that test is passing, the jsdom override can be removed from
-  # the workspace package.json.
-  # The test failure looks like this:
-  # × FileInput with empty state > renders the browse button with a tooltip when it has at least one element in assetSources
-  #     → Cannot create property 'border-width' on string '1px solid var(--card-border-color)'
-  jsdom: ^26.1.0
-  vite: ^7.3.1
-  vitest: ^4.0.18
   styled-components: npm:@sanity/styled-components@^6.1.24
   typescript: 5.9.3
+  vite: ^7.3.1
+  vitest: ^4.0.18
 
-overrides:
-  # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
-  '@sanity/ui@3': '$@sanity/ui'
-  # We are currently blocked from upgrading to jsdom 27 because of a strange build error related to the new version of
-  # cssstyle required by jsdom 27. If this error is no longer present, it's safe to remove the following override.
-  jsdom: 26.1.0
-  vitest: $vitest
-
-preferWorkspacePackages: true
 linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
+
 minimumReleaseAgeExclude:
   - '@oxfmt/*'
   - '@oxlint/*'
@@ -66,20 +52,31 @@ minimumReleaseAgeExclude:
   - '@sanity/*'
   - '@types/*'
   - '@typescript/*'
-  - 'csstype'
-  - 'data-uri-to-buffer@7.0.0'
-  - 'eslint-plugin-oxlint'
-  - 'get-it'
-  - 'get-uri@7.0.0'
-  - 'groq-js'
-  - 'oxfmt'
-  - 'oxlint'
-  - 'oxlint-tsgolint'
-  - 'react'
-  - 'react-dom'
-  - 'react-is'
-  - 'react-rx'
-  - 'sanity-plugin-internationalized-array'
+  - csstype
+  - data-uri-to-buffer@7.0.0
+  - eslint-plugin-oxlint
+  - get-it
+  - get-uri@7.0.0
+  - groq-js
+  - oxfmt
+  - oxlint
+  - oxlint-tsgolint
+  - react
+  - react-dom
+  - react-is
+  - react-rx
+  - sanity-plugin-internationalized-array
+
+onlyBuiltDependencies:
+  - esbuild
+  - unrs-resolver
+
+overrides:
+  '@sanity/ui@3': $@sanity/ui
+  jsdom: 26.1.0
+  vitest: $vitest
+
+preferWorkspacePackages: true
 
 trustPolicy: no-downgrade
 
