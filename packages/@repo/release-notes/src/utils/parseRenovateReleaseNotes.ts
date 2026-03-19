@@ -126,7 +126,9 @@ function filterVisibleSections(markdown: string): string {
 }
 
 /**
- * Strip trailing commit hashes like `(0b660b9)` and PR refs like `(#661)` from list items,
+ * Strip trailing commit hashes like `([0b660b9](url))` from list items,
+ * unwrap PR/issue refs from outer parentheses so the link is preserved
+ * (e.g. `([#661](url))` → `[#661](url)`),
  * and remove dependency-scoped items (e.g. `- **deps:** ...`) that aren't meaningful for release notes.
  */
 function cleanChangelogItems(markdown: string): string {
@@ -134,10 +136,9 @@ function cleanChangelogItems(markdown: string): string {
     markdown
       // Remove dependency-scoped list items
       .replace(/^\s*-\s+\*\*deps:\*\*.*$/gm, '')
-      // Strip PR refs and commit hashes from remaining items
-      .replace(
-        /^(\s*-\s+.+?)\s*(?:\(\[#\d+]\([^)]*\)\)\s*)?(?:\(\[[0-9a-f]+]\([^)]*\)\)\s*)?$/gm,
-        '$1',
-      )
+      // Strip trailing commit hash links like ([0b660b9](url))
+      .replace(/\s*\(\[[0-9a-f]+]\([^)]*\)\)/gm, '')
+      // Unwrap PR/issue refs: ([#123](url)) → [#123](url) so the link is preserved
+      .replace(/\(\[#(\d+)]\(([^)]*)\)\)/gm, '[#$1]($2)')
   )
 }
