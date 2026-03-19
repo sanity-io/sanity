@@ -1,8 +1,8 @@
 import {Flex} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 
-import {Button} from '../../../../../../../ui-components'
-import {useTranslation} from '../../../../../../i18n'
+import {Button} from '../../../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
 import {DEBUG_MODE} from '../../constants'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {getFilterKey} from '../../utils/filterUtils'

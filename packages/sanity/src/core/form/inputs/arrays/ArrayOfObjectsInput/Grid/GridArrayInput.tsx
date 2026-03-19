@@ -1,13 +1,10 @@
 import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
-import {useTranslation} from '../../../../../i18n'
-import {ArrayOfObjectsItem} from '../../../../members'
-import {
-  type ArrayOfObjectsInputProps,
-  type ObjectItem,
-  type ObjectItemProps,
-} from '../../../../types'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
+import type {ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import type {ObjectItem, ObjectItemProps} from '../../../../types/itemProps'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
 import {Item, List} from '../../common/list'

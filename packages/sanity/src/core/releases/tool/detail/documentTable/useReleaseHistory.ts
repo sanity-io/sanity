@@ -1,9 +1,9 @@
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
-import {getVersionId} from '../../../../util'
+import {getVersionId} from '../../../../util/draftUtils'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 
 const historyCache: Record<string, {transactions: TransactionLogEventWithEffects[]}> =

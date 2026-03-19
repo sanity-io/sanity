@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {DESCRIPTOR_CONVERTER} from '../../../schema'
+import {DESCRIPTOR_CONVERTER} from '../../../schema/descriptors'
 import {_clearClaimPromiseCache, uploadSchema} from '../uploadSchema'
 
 // Mock DESCRIPTOR_CONVERTER.get() to return a controlled descriptorId

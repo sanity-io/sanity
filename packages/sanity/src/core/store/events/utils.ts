@@ -4,7 +4,7 @@ import {type ReleasesReducerState} from '../../releases/store/reducer'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getVersionFromId} from '../../util/draftUtils'
 import {type DocumentVariantType} from '../../util/getDocumentVariantType'
-import {type DocumentRemoteMutationEvent} from '../_legacy'
+import type {DocumentRemoteMutationEvent} from '../_legacy/document/buffered-doc/types'
 import {
   type DocumentGroupEvent,
   type EditDocumentVersionEvent,

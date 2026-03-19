@@ -3,8 +3,9 @@ import {EditIcon, TrashIcon} from '@sanity/icons'
 import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
-import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 

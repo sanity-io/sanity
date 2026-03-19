@@ -1,7 +1,7 @@
 import {Box} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {type FieldPreviewComponent} from '../../../preview'
+import type {FieldPreviewComponent} from '../../../preview/types'
 
 const StringWrapper = styled.div`
   display: inline-block;

@@ -11,10 +11,10 @@ import {
 } from 'react'
 import {styled} from 'styled-components'
 
-import {type MenuButtonProps} from '../../../ui-components'
+import type {MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
 import {ObserveElement} from '../collapseMenu/ObserveElement'
-import {ContextMenuButton} from '../contextMenuButton'
+import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
 
 function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)

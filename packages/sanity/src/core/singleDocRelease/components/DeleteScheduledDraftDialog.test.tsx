@@ -3,7 +3,7 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
-import {useSchema} from '../../hooks'
+import {useSchema} from '../../hooks/useSchema'
 import {scheduledRelease} from '../../releases/__fixtures__/release.fixture'
 import {useDocumentVersionInfo} from '../../releases/store/useDocumentVersionInfo'
 import {

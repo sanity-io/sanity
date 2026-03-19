@@ -3,8 +3,8 @@ import {isPortableTextSpan, type Path} from '@sanity/types'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {CommentInputContext} from 'sanity/_singletons'
 
-import {useDidUpdate} from '../../../../form'
-import {type UserListWithPermissionsHookValue} from '../../../../hooks'
+import {useDidUpdate} from '../../../../form/hooks/useDidUpdate'
+import type {UserListWithPermissionsHookValue} from '../../../../hooks/useUserListWithPermissions'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
 import {type CommentMessage} from '../../../types'
 

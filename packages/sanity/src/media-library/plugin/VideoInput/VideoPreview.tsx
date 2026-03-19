@@ -16,10 +16,10 @@ import {
   getOpenInSourceName,
 } from '../../../core/form/inputs/files/common/openInSource'
 import {useUploadMenuItem} from '../../../core/form/inputs/files/common/useUploadMenuItem'
-import {sourceName as MEDIA_LIBRARY_SOURCE_NAME} from '../../../core/form/studio/assetSourceMediaLibrary'
 import {DEFAULT_API_VERSION} from '../../../core/form/studio/assetSourceMediaLibrary/constants'
-import {useClient} from '../../../core/hooks'
-import {useTranslation} from '../../../core/i18n'
+import {sourceName as MEDIA_LIBRARY_SOURCE_NAME} from '../../../core/form/studio/assetSourceMediaLibrary/createAssetSource'
+import {useClient} from '../../../core/hooks/useClient'
+import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {CUSTOM_DOMAIN_PRODUCTION, CUSTOM_DOMAIN_STAGING} from './constants'
 import {getPlaybackTokens, type VideoAssetInputProps} from './types'

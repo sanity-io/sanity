@@ -2,7 +2,7 @@ import {Box} from '@sanity/ui'
 import {type ReactNode} from 'react'
 
 import {Preview} from '../../../preview/components/Preview'
-import {type FieldPreviewComponent} from '../../preview'
+import type {FieldPreviewComponent} from '../../preview/types'
 import {type Diff, type DiffComponent} from '../../types'
 import {DiffFromTo} from './DiffFromTo'
 

@@ -13,9 +13,10 @@ import {
 } from 'react'
 import {useObservable} from 'react-rx'
 
-import {Popover, Tooltip} from '../../../../ui-components'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
 import {useSingleDocRelease} from '../../../singleDocRelease/context/SingleDocReleaseProvider'
 import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'

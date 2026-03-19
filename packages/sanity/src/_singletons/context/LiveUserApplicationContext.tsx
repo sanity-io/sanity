@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {UserApplication} from '../../core/store/userApplications'
+import type {UserApplication} from '../../core/store/userApplications/userApplicationCache'
 
 /**
  * @hidden

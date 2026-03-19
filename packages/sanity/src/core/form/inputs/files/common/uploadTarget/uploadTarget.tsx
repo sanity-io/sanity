@@ -17,25 +17,26 @@ import {
 import {styled} from 'styled-components'
 
 import {type FIXME} from '../../../../../FIXME'
-import {useClient} from '../../../../../hooks'
-import {useTranslation} from '../../../../../i18n'
-import {useSource} from '../../../../../studio'
+import {useClient} from '../../../../../hooks/useClient'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useSource} from '../../../../../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {_isType} from '../../../../../util/schemaUtils'
 import {
   createDatasetFileAssetSource,
   createDatasetImageAssetSource,
-} from '../../../../studio/assetSourceDataset'
+} from '../../../../studio/assetSourceDataset/createAssetSource'
 import {
   findMatchingSchemaType,
   matchesSchemaTypeAccept,
 } from '../../../../studio/uploads/matchSchemaTypeAccept'
 import {resolveUploadAssetSources} from '../../../../studio/uploads/resolveUploadAssetSources'
-import {type InputOnSelectFileFunctionProps, type UploadEvent} from '../../../../types'
+import type {UploadEvent} from '../../../../types/event'
+import type {InputOnSelectFileFunctionProps} from '../../../../types/inputProps'
 import {useFormBuilder} from '../../../../useFormBuilder'
 import {getAssetSourcesWithUpload, isComponentModeAssetSource} from '../assetSourceUtils'
 import {DropMessage} from '../DropMessage'
-import {type FileInfo, fileTarget} from '../fileTarget'
+import {type FileInfo, fileTarget} from '../fileTarget/fileTarget'
 import {UploadDestinationPicker} from '../UploadDestinationPicker'
 import {Overlay} from './styles'
 

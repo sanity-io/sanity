@@ -12,11 +12,13 @@ import {
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 
-import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
-import {InsufficientPermissionsMessage} from '../../../../components'
-import {useSchema} from '../../../../hooks'
-import {useGetI18nText, useTranslation} from '../../../../i18n'
-import {useCurrentUser} from '../../../../store'
+import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
+import {Tooltip, type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
+import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useGetI18nText} from '../../../../i18n/hooks/useGetI18nText'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {filterOptions} from './filter'
 import {

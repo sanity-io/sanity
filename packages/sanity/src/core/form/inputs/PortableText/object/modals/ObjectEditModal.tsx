@@ -1,8 +1,9 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
-import {EnhancedObjectDialog, useEnhancedObjectDialog} from '../../../..'
-import {useTranslation} from '../../../../../i18n'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {EnhancedObjectDialog} from '../../../../components/EnhancedObjectDialog'
+import {useEnhancedObjectDialog} from '../../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {_getModalOption} from '../helpers'
 import {DefaultEditDialog} from './DialogModal'
 import {PopoverEditDialog} from './PopoverModal'

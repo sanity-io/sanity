@@ -2,9 +2,9 @@ import {TabList, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {type CSSProperties} from 'styled-components'
 
-import {Tab} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {type SidebarTabsIds} from '../../context'
+import {Tab} from '../../../../ui-components/tab/Tab'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import type {SidebarTabsIds} from '../../context/navigation/types'
 import {tasksLocaleNamespace} from '../../i18n'
 
 const LIST_STYLES: CSSProperties = {

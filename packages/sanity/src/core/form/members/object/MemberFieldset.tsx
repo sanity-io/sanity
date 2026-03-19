@@ -2,17 +2,17 @@ import {type SchemaType} from '@sanity/types'
 import capitalize from 'lodash-es/capitalize.js'
 import {memo, useCallback, useMemo} from 'react'
 
-import {FormFieldSet} from '../../components/formField'
-import {type FieldSetMember} from '../../store'
+import {FormFieldSet} from '../../components/formField/FormFieldSet'
+import type {FieldSetMember} from '../../store/types/members'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {
-  type RenderAnnotationCallback,
-  type RenderArrayOfObjectsItemCallback,
-  type RenderBlockCallback,
-  type RenderFieldCallback,
-  type RenderInputCallback,
-  type RenderPreviewCallback,
-} from '../../types'
+import type {
+  RenderAnnotationCallback,
+  RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderPreviewCallback,
+} from '../../types/renderCallback'
 import {MemberDecoration} from './MemberDecoration'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'

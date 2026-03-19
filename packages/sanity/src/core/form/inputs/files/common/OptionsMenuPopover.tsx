@@ -1,9 +1,9 @@
 import {Menu, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {type ReactNode, type RefObject, useCallback, useEffect, useState} from 'react'
 
-import {Popover} from '../../../../../ui-components'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../i18n'
+import {Popover} from '../../../../../ui-components/popover/Popover'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 export interface OptionsMenuPopoverProps {
   children: ReactNode

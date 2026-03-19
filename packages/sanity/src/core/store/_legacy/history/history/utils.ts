@@ -1,4 +1,4 @@
-import {type Annotation} from '../../../../field'
+import type {Annotation} from '../../../../field/types'
 import {type CombinedDocument} from './types'
 
 export function isSameAnnotation(a: Annotation, b: Annotation): boolean {

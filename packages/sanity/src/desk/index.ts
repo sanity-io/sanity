@@ -1,159 +1,208 @@
+import {
+  ConfirmDeleteDialog as _ConfirmDeleteDialog,
+  type ConfirmDeleteDialogProps as _ConfirmDeleteDialogProps,
+} from '../structure/components/confirmDeleteDialog/index'
+import {PaneLayout as _PaneLayout} from '../structure/components/pane/PaneLayout'
 /**
  * This is a _FALLBACK MODULE_ provided for backwards compatibility, and is likely to be removed
  * in Sanity v4.0.0. Please import from `sanity/structure` instead.
  *
  * @deprecated Use `sanity/structure` instead.
  */
+import type {
+  BackLinkProps as _BackLinkProps,
+  ChildLinkProps as _ChildLinkProps,
+  EditReferenceOptions as _EditReferenceOptions,
+  PaneRouterContextValue as _PaneRouterContextValue,
+  ParameterizedLinkProps as _ParameterizedLinkProps,
+  ReferenceChildLinkProps as _ReferenceChildLinkProps,
+} from '../structure/components/paneRouter/types'
+import {usePaneRouter as _usePaneRouter} from '../structure/components/paneRouter/usePaneRouter'
 import {
-  type BackLinkProps as _BackLinkProps,
-  type BaseGenericList as _BaseGenericList,
-  type BaseIntentParams as _BaseIntentParams,
-  type BaseView as _BaseView,
+  structureLocaleNamespace as _structureLocaleNamespace,
+  type StructureLocaleResourceKeys as _StructureLocaleResourceKeys,
+} from '../structure/i18n/index'
+import {DocumentInspectorHeader as _DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
+import {DocumentPane as _DocumentPane} from '../structure/panes/document/DocumentPane'
+import {DocumentPaneProviderWrapper as _DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'
+import type {DocumentPaneProviderProps as _DocumentPaneProviderProps} from '../structure/panes/document/types'
+import {useDocumentPane as _useDocumentPane} from '../structure/panes/document/useDocumentPane'
+import {useDocumentTitle as _useDocumentTitle} from '../structure/panes/document/useDocumentTitle'
+import {
+  DocumentListPane as _DocumentListPane,
+  type DocumentListPaneProps as _DocumentListPaneProps,
+} from '../structure/panes/documentList/index'
+import type {
+  ChildObservable as _ChildObservable,
+  ChildResolver as _ChildResolver,
+  ChildResolverOptions as _ChildResolverOptions,
+  ItemChild as _ItemChild,
+} from '../structure/structureBuilder/ChildResolver'
+import {
   type BuildableComponent as _BuildableComponent,
-  type BuildableGenericList as _BuildableGenericList,
-  type BuildableList as _BuildableList,
-  type Builder as _Builder,
-  type Child as _Child,
-  type ChildLinkProps as _ChildLinkProps,
-  type ChildObservable as _ChildObservable,
-  type ChildResolver as _ChildResolver,
-  type ChildResolverOptions as _ChildResolverOptions,
-  type Collection as _Collection,
-  type CollectionBuilder as _CollectionBuilder,
   type Component as _Component,
-  component as _component,
   ComponentBuilder as _ComponentBuilder,
   type ComponentInput as _ComponentInput,
-  type ComponentView as _ComponentView,
-  ComponentViewBuilder as _ComponentViewBuilder,
-  ConfirmDeleteDialog as _ConfirmDeleteDialog,
-  type ConfirmDeleteDialogProps as _ConfirmDeleteDialogProps,
+} from '../structure/structureBuilder/Component'
+import {
   createStructureBuilder as _createStructureBuilder,
-  type CustomComponentPaneNode as _CustomComponentPaneNode,
-  DEFAULT_INTENT_HANDLER as _DEFAULT_INTENT_HANDLER,
-  type DefaultDocumentNodeContext as _DefaultDocumentNodeContext,
-  type DefaultDocumentNodeResolver as _DefaultDocumentNodeResolver,
-  defaultInitialValueTemplateItems as _defaultInitialValueTemplateItems,
-  defaultIntentChecker as _defaultIntentChecker,
-  type Divider as _Divider,
+  type StructureBuilderOptions as _StructureBuilderOptions,
+} from '../structure/structureBuilder/createStructureBuilder'
+import {
   DocumentBuilder as _DocumentBuilder,
-  type DocumentFieldMenuActionNode as _DocumentFieldMenuActionNode,
   documentFromEditor as _documentFromEditor,
   documentFromEditorWithInitialValue as _documentFromEditorWithInitialValue,
-  DocumentInspectorHeader as _DocumentInspectorHeader,
+  type DocumentOptions as _DocumentOptions,
+  type PartialDocumentNode as _PartialDocumentNode,
+} from '../structure/structureBuilder/Document'
+import {
   type DocumentList as _DocumentList,
   DocumentListBuilder as _DocumentListBuilder,
   type DocumentListInput as _DocumentListInput,
+  type DocumentListOptions as _DocumentListOptions,
+  getTypeNamesFromFilter as _getTypeNamesFromFilter,
+  type PartialDocumentList as _PartialDocumentList,
+} from '../structure/structureBuilder/DocumentList'
+import {
   type DocumentListItem as _DocumentListItem,
   DocumentListItemBuilder as _DocumentListItemBuilder,
   type DocumentListItemInput as _DocumentListItemInput,
-  type DocumentListOptions as _DocumentListOptions,
-  DocumentListPane as _DocumentListPane,
-  type DocumentListPaneNode as _DocumentListPaneNode,
-  type DocumentListPaneProps as _DocumentListPaneProps,
-  type DocumentNode as _DocumentNode,
-  type DocumentOptions as _DocumentOptions,
-  DocumentPane as _DocumentPane,
-  type DocumentPaneNode as _DocumentPaneNode,
-  DocumentPaneProvider as _DocumentPaneProvider,
-  type DocumentPaneProviderProps as _DocumentPaneProviderProps,
+  isDocumentListItem as _isDocumentListItem,
+  type PartialDocumentListItem as _PartialDocumentListItem,
+} from '../structure/structureBuilder/DocumentListItem'
+import {
   DocumentTypeListBuilder as _DocumentTypeListBuilder,
   type DocumentTypeListInput as _DocumentTypeListInput,
-  type EditorNode as _EditorNode,
-  type EditReferenceOptions as _EditReferenceOptions,
-  form as _form,
-  type FormView as _FormView,
-  FormViewBuilder as _FormViewBuilder,
+} from '../structure/structureBuilder/DocumentTypeList'
+import {
+  type BaseGenericList as _BaseGenericList,
+  type BuildableGenericList as _BuildableGenericList,
   type GenericList as _GenericList,
   GenericListBuilder as _GenericListBuilder,
   type GenericListInput as _GenericListInput,
-  GenericViewBuilder as _GenericViewBuilder,
-  getOrderingMenuItem as _getOrderingMenuItem,
-  getOrderingMenuItemsForSchemaType as _getOrderingMenuItemsForSchemaType,
-  getTypeNamesFromFilter as _getTypeNamesFromFilter,
-  HELP_URL as _HELP_URL,
+  type ListDisplayOptions as _ListDisplayOptions,
+  shallowIntentChecker as _shallowIntentChecker,
+} from '../structure/structureBuilder/GenericList'
+import {
+  defaultInitialValueTemplateItems as _defaultInitialValueTemplateItems,
   InitialValueTemplateItemBuilder as _InitialValueTemplateItemBuilder,
+  maybeSerializeInitialValueTemplateItem as _maybeSerializeInitialValueTemplateItem,
+  menuItemsFromInitialValueTemplateItems as _menuItemsFromInitialValueTemplateItems,
+} from '../structure/structureBuilder/InitialValueTemplateItem'
+import {
+  type BaseIntentParams as _BaseIntentParams,
+  DEFAULT_INTENT_HANDLER as _DEFAULT_INTENT_HANDLER,
+  defaultIntentChecker as _defaultIntentChecker,
   type Intent as _Intent,
   type IntentChecker as _IntentChecker,
   type IntentJsonParams as _IntentJsonParams,
   type IntentParams as _IntentParams,
-  isDocumentListItem as _isDocumentListItem,
-  type ItemChild as _ItemChild,
+} from '../structure/structureBuilder/Intent'
+import {
+  type BuildableList as _BuildableList,
   type List as _List,
   ListBuilder as _ListBuilder,
-  type ListDisplayOptions as _ListDisplayOptions,
   type ListInput as _ListInput,
+} from '../structure/structureBuilder/List'
+import {
   type ListItem as _ListItem,
   ListItemBuilder as _ListItemBuilder,
   type ListItemChild as _ListItemChild,
   type ListItemDisplayOptions as _ListItemDisplayOptions,
   type ListItemInput as _ListItemInput,
   type ListItemSerializeOptions as _ListItemSerializeOptions,
-  type ListPaneNode as _ListPaneNode,
-  maybeSerializeInitialValueTemplateItem as _maybeSerializeInitialValueTemplateItem,
+  type PartialListItem as _PartialListItem,
+  type UnserializedListItem as _UnserializedListItem,
+  type UnserializedListItemChild as _UnserializedListItemChild,
+} from '../structure/structureBuilder/ListItem'
+import {
+  getOrderingMenuItem as _getOrderingMenuItem,
+  getOrderingMenuItemsForSchemaType as _getOrderingMenuItemsForSchemaType,
   maybeSerializeMenuItem as _maybeSerializeMenuItem,
-  maybeSerializeMenuItemGroup as _maybeSerializeMenuItemGroup,
-  maybeSerializeView as _maybeSerializeView,
   type MenuItem as _MenuItem,
   type MenuItemActionType as _MenuItemActionType,
   MenuItemBuilder as _MenuItemBuilder,
+  type MenuItemParamsType as _MenuItemParamsType,
+  type PartialMenuItem as _PartialMenuItem,
+  type SortMenuItem as _SortMenuItem,
+} from '../structure/structureBuilder/MenuItem'
+import {
+  maybeSerializeMenuItemGroup as _maybeSerializeMenuItemGroup,
   type MenuItemGroup as _MenuItemGroup,
   MenuItemGroupBuilder as _MenuItemGroupBuilder,
-  type MenuItemParamsType as _MenuItemParamsType,
-  menuItemsFromInitialValueTemplateItems as _menuItemsFromInitialValueTemplateItems,
-  PaneLayout as _PaneLayout,
-  type PaneListItem as _PaneListItem,
-  type PaneListItemDivider as _PaneListItemDivider,
-  type PaneMenuItem as _PaneMenuItem,
-  type PaneMenuItemGroup as _PaneMenuItemGroup,
-  type PaneNode as _PaneNode,
-  type PaneNodeResolver as _PaneNodeResolver,
-  type PaneRouterContextValue as _PaneRouterContextValue,
-  type ParameterizedLinkProps as _ParameterizedLinkProps,
-  type PartialDocumentList as _PartialDocumentList,
-  type PartialDocumentListItem as _PartialDocumentListItem,
-  type PartialDocumentNode as _PartialDocumentNode,
-  type PartialListItem as _PartialListItem,
-  type PartialMenuItem as _PartialMenuItem,
-  type ReferenceChildLinkProps as _ReferenceChildLinkProps,
-  type RouterPaneGroup as _RouterPaneGroup,
-  type RouterPanes as _RouterPanes,
-  type RouterPaneSibling as _RouterPaneSibling,
-  type RouterPaneSiblingContext as _RouterPaneSiblingContext,
-  type SerializablePaneNode as _SerializablePaneNode,
+} from '../structure/structureBuilder/MenuItemGroup'
+import {
+  HELP_URL as _HELP_URL,
   SerializeError as _SerializeError,
-  type SerializeOptions as _SerializeOptions,
-  type SerializePath as _SerializePath,
-  shallowIntentChecker as _shallowIntentChecker,
-  type SortMenuItem as _SortMenuItem,
-  type StructureBuilder as _StructureBuilder,
-  type StructureBuilderOptions as _StructureBuilderOptions,
-  type StructureContext as _StructureContext,
-  structureLocaleNamespace as _structureLocaleNamespace,
-  type StructureLocaleResourceKeys as _StructureLocaleResourceKeys,
-  type StructureNode as _StructureNode,
-  type StructureResolver as _StructureResolver,
-  type StructureResolverContext as _StructureResolverContext,
-  structureTool as _structureTool,
-  type StructureToolContextValue as _DeskToolContextValue,
-  type StructureToolFeatures as _DeskToolFeatures,
-  type StructureToolMenuItem as _DeskToolMenuItem,
-  type StructureToolOptions as _DeskToolOptions,
-  type StructureToolPaneActionHandler as _DeskToolPaneActionHandler,
+} from '../structure/structureBuilder/SerializeError'
+import type {
+  Builder as _Builder,
+  Child as _Child,
+  Collection as _Collection,
+  CollectionBuilder as _CollectionBuilder,
+  Divider as _Divider,
+  DocumentNode as _DocumentNode,
+  EditorNode as _EditorNode,
+  SerializeOptions as _SerializeOptions,
+  SerializePath as _SerializePath,
+  StructureNode as _StructureNode,
+} from '../structure/structureBuilder/StructureNodes'
+import type {
+  DefaultDocumentNodeContext as _DefaultDocumentNodeContext,
+  DefaultDocumentNodeResolver as _DefaultDocumentNodeResolver,
+  StructureBuilder as _StructureBuilder,
+  StructureContext as _StructureContext,
+  UserComponent as _UserComponent,
+  UserViewComponent as _UserViewComponent,
+  View as _View,
+} from '../structure/structureBuilder/types'
+import {
+  type ComponentView as _ComponentView,
+  ComponentViewBuilder as _ComponentViewBuilder,
+} from '../structure/structureBuilder/views/ComponentView'
+import {
+  type FormView as _FormView,
+  FormViewBuilder as _FormViewBuilder,
+} from '../structure/structureBuilder/views/FormView'
+import {component as _component, form as _form} from '../structure/structureBuilder/views/index'
+import {
+  type BaseView as _BaseView,
+  GenericViewBuilder as _GenericViewBuilder,
+  maybeSerializeView as _maybeSerializeView,
+  type ViewBuilder as _ViewBuilder,
+} from '../structure/structureBuilder/views/View'
+import {structureTool as _structureTool} from '../structure/structureTool'
+import {
   StructureToolProvider as _DeskToolProvider,
   type StructureToolProviderProps as _DeskToolProviderProps,
-  type UnresolvedPaneNode as _UnresolvedPaneNode,
-  type UnserializedListItem as _UnserializedListItem,
-  type UnserializedListItemChild as _UnserializedListItemChild,
-  useDocumentPane as _useDocumentPane,
-  useDocumentTitle as _useDocumentTitle,
-  usePaneRouter as _usePaneRouter,
-  type UserComponent as _UserComponent,
-  type UserViewComponent as _UserViewComponent,
-  useStructureTool as _useStructureTool,
-  type View as _View,
-  type ViewBuilder as _ViewBuilder,
-} from '../structure'
+} from '../structure/StructureToolProvider'
+import type {
+  CustomComponentPaneNode as _CustomComponentPaneNode,
+  DocumentFieldMenuActionNode as _DocumentFieldMenuActionNode,
+  DocumentListPaneNode as _DocumentListPaneNode,
+  DocumentPaneNode as _DocumentPaneNode,
+  ListPaneNode as _ListPaneNode,
+  PaneListItem as _PaneListItem,
+  PaneListItemDivider as _PaneListItemDivider,
+  PaneMenuItem as _PaneMenuItem,
+  PaneMenuItemGroup as _PaneMenuItemGroup,
+  PaneNode as _PaneNode,
+  PaneNodeResolver as _PaneNodeResolver,
+  RouterPaneGroup as _RouterPaneGroup,
+  RouterPanes as _RouterPanes,
+  RouterPaneSibling as _RouterPaneSibling,
+  RouterPaneSiblingContext as _RouterPaneSiblingContext,
+  SerializablePaneNode as _SerializablePaneNode,
+  StructureResolver as _StructureResolver,
+  StructureResolverContext as _StructureResolverContext,
+  StructureToolContextValue as _DeskToolContextValue,
+  StructureToolFeatures as _DeskToolFeatures,
+  StructureToolMenuItem as _DeskToolMenuItem,
+  StructureToolOptions as _DeskToolOptions,
+  StructureToolPaneActionHandler as _DeskToolPaneActionHandler,
+  UnresolvedPaneNode as _UnresolvedPaneNode,
+} from '../structure/types'
+import {useStructureTool as _useStructureTool} from '../structure/useStructureTool'
 
 /**
  * @deprecated Import from `sanity/structure` instead
@@ -178,7 +227,7 @@ export type BaseIntentParams = _BaseIntentParams
  * @hidden
  * @beta
  */
-export type {BaseResolvedPaneNode} from '../structure'
+export type {BaseResolvedPaneNode} from '../structure/types'
 /**
  * @deprecated Import from `sanity/structure` instead
  * @hidden
@@ -664,7 +713,7 @@ export type RouterPanes = _RouterPanes
  * @hidden
  * @beta
  */
-export type {Serializable} from '../structure'
+export type {Serializable} from '../structure/structureBuilder/StructureNodes'
 /**
  * @deprecated Import from `sanity/structure` instead
  * @hidden

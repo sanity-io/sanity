@@ -8,7 +8,7 @@ import {
   type RootFormStateOptions,
   createPrepareFormState,
 } from '../../formState'
-import {type BaseFormNode} from '../../types'
+import type {BaseFormNode} from '../../types/nodes'
 import {getExpandOperations} from '../getExpandOperations'
 
 const schemaDefinition = {

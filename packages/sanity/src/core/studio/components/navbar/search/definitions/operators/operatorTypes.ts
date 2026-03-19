@@ -1,6 +1,6 @@
 import {type ComponentType} from 'react'
 
-import {type LocaleSource} from '../../../../../../i18n'
+import type {LocaleSource} from '../../../../../../i18n/types'
 import {type SearchFieldDefinition} from '../fields'
 
 /**

@@ -1,7 +1,7 @@
 import {type HTMLProps} from 'react'
 import {IntentLink, type IntentLinkProps} from 'sanity/router'
 
-import {Button, type ButtonProps} from '../../ui-components'
+import {Button, type ButtonProps} from '../../ui-components/button/Button'
 
 /**
  *

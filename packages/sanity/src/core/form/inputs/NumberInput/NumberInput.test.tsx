@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {renderNumberInput} from '../../../../../test/form'
+import {renderNumberInput} from '../../../../../test/form/renderNumberInput'
 import {NumberInput} from './NumberInput'
 
 describe('number-input', () => {

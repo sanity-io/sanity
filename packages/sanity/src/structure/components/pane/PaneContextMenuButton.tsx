@@ -2,7 +2,8 @@ import {Menu, MenuDivider} from '@sanity/ui'
 import {type ReactNode, useId} from 'react'
 import {ContextMenuButton} from 'sanity'
 
-import {MenuButton, type PopoverProps} from '../../../ui-components'
+import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
+import type {PopoverProps} from '../../../ui-components/popover/Popover'
 import {PaneMenuButtonItem} from './PaneMenuButtonItem'
 import {type _PaneMenuItem, type _PaneMenuNode} from './types'
 

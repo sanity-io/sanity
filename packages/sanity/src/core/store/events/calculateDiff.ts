@@ -2,7 +2,7 @@ import {diffInput} from '@sanity/diff'
 import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
 import {applyPatch, incremental} from 'mendoza'
 
-import {type Annotation, type ObjectDiff} from '../../field'
+import type {Annotation, ObjectDiff} from '../../field/types'
 import {wrapValue} from '../_legacy/history/history/diffValue'
 import {type DocumentGroupEvent, isEditDocumentVersionEvent} from './types'
 

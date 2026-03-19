@@ -9,8 +9,9 @@ import uniq from 'lodash-es/uniq.js'
 import xor from 'lodash-es/xor.js'
 import {type ReactNode, useMemo} from 'react'
 
-import {type TFunction, useTranslation} from '../../../../../i18n'
-import {DiffCard} from '../../../../diff'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import type {TFunction} from '../../../../../i18n/types'
+import {DiffCard} from '../../../../diff/components/DiffCard'
 import {
   type ArrayDiff,
   type ObjectDiff,

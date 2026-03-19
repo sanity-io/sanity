@@ -5,16 +5,18 @@ import {type Observable} from 'rxjs'
 
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../core/form/inputs/files/common/assetSource'
 import {AssetSourceDialog} from '../../../core/form/inputs/files/common/AssetSourceDialog'
-import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
+import type {FileInfo} from '../../../core/form/inputs/files/common/fileTarget/fileTarget'
 import {useAssetSource} from '../../../core/form/inputs/files/common/useAssetSource'
-import {MemberField, MemberFieldError, MemberFieldSet} from '../../../core/form/members'
 import {MemberDecoration} from '../../../core/form/members/object/MemberDecoration'
+import {MemberField} from '../../../core/form/members/object/MemberField'
+import {MemberFieldError} from '../../../core/form/members/object/MemberFieldError'
+import {MemberFieldSet} from '../../../core/form/members/object/MemberFieldset'
 import {useRenderMembers} from '../../../core/form/members/object/useRenderMembers'
-import {unset} from '../../../core/form/patch'
+import {unset} from '../../../core/form/patch/patch'
 import {resolveUploader} from '../../../core/form/studio/uploads/resolveUploader'
 import {type UploaderResolver} from '../../../core/form/studio/uploads/types'
-import {type ObjectInputProps} from '../../../core/form/types'
-import {useTranslation} from '../../../core/i18n'
+import type {ObjectInputProps} from '../../../core/form/types/inputProps'
+import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
 import {
   type VideoAsset,
   type VideoSchemaType,

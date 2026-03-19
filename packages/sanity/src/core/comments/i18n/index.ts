@@ -1,4 +1,4 @@
-import {type LocaleResourceBundle} from '../../i18n'
+import type {LocaleResourceBundle} from '../../i18n/types'
 
 /**
  * The locale namespace for the comments plugin

@@ -14,7 +14,7 @@ import {
   tap,
 } from 'rxjs'
 
-import {type ObjectDiff} from '../../field'
+import type {ObjectDiff} from '../../field/types'
 import {calculateDiff} from './calculateDiff'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'

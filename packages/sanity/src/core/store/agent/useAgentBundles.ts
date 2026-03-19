@@ -1,9 +1,10 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
-import {useClient} from '../../hooks'
-import {useProjectStore, useResourceCache} from '../../store'
-import {useWorkspace} from '../../studio'
+import {useClient} from '../../hooks/useClient'
+import {useWorkspace} from '../../studio/workspace'
+import {useProjectStore} from '../_legacy/datastores'
+import {useResourceCache} from '../_legacy/ResourceCacheProvider'
 import {
   type AgentBundlesState,
   createAgentBundlesStore,

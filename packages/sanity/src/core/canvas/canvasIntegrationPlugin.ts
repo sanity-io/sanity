@@ -1,4 +1,5 @@
-import {definePlugin, type DocumentActionComponent} from '../config'
+import {definePlugin} from '../config/definePlugin'
+import type {DocumentActionComponent} from '../config/document/actions'
 import {useEditInCanvasAction} from './actions/EditInCanvas/EditInCanvasAction'
 import {useLinkToCanvasAction} from './actions/LinkToCanvas/LinkToCanvasAction'
 import {useUnlinkFromCanvasAction} from './actions/UnlinkFromCanvas/UnlinkFromCanvasAction'

@@ -1,7 +1,7 @@
 import {render, screen} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {GetHookCollectionState} from '../../../components/hookCollection'
+import {GetHookCollectionState} from '../../../components/hookCollection/GetHookCollectionState'
 import {
   type ReleaseActionComponent,
   type ReleaseActionDescription,

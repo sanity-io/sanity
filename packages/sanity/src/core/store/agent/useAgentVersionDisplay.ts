@@ -1,7 +1,7 @@
 import {type BadgeTone} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {getVersionFromId} from '../../util/draftUtils'
 import {isAgentBundleName} from './createAgentBundlesStore'
 import {useAgentBundles} from './useAgentBundles'

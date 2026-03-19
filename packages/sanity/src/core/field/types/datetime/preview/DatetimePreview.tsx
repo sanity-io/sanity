@@ -3,7 +3,7 @@ import {Box} from '@sanity/ui'
 import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
 import {styled} from 'styled-components'
 
-import {type FieldPreviewComponent} from '../../../preview'
+import type {FieldPreviewComponent} from '../../../preview/types'
 
 const DatetimeWrapper = styled.div`
   display: inline-block;

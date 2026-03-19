@@ -3,7 +3,7 @@ import {Box, Flex, Inline, rem, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../ui-components'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../i18n'
 
 export const ChevronWrapper = styled(Box)`

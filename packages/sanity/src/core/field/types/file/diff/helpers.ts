@@ -1,4 +1,4 @@
-import {type UnitFormatter} from '../../../../hooks'
+import type {UnitFormatter} from '../../../../hooks/useUnitFormatter'
 
 /**
  * Calculates the size difference between two numbers, in percent

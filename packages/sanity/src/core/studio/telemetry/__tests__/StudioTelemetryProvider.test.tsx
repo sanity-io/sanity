@@ -34,7 +34,7 @@ import {createBatchedStore, createSessionId, SessionId} from '@sanity/telemetry'
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {useRouterState} from 'sanity/router'
 
-import {useClient} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
 import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
 import {useWorkspace} from '../../workspace'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'

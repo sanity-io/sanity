@@ -10,10 +10,10 @@ import {
   useState,
 } from 'react'
 
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {useReleaseOperations} from '../../../store'
+import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {getReleaseDefaults} from '../../../util/util'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'

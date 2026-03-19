@@ -4,7 +4,7 @@ import {act, renderHook} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {type SearchTerms} from '../../../../../search'
+import type {SearchTerms} from '../../../../../search/common/types'
 import {filterDefinitions} from '../definitions/defaultFilters'
 import {createFieldDefinitions} from '../definitions/fields'
 import {type SearchFilter} from '../types'

@@ -5,17 +5,19 @@ import deepEquals from 'react-fast-compare'
 import {useRouterState} from 'sanity/router'
 
 import {isDev} from '../../../../environment'
-import {type ObjectFieldProps, set, useFormValue} from '../../../../form'
-import {useClient} from '../../../../hooks'
+import {useFormValue} from '../../../../form/contexts/FormValue'
+import {set} from '../../../../form/patch/patch'
+import type {ObjectFieldProps} from '../../../../form/types/fieldProps'
+import {useClient} from '../../../../hooks/useClient'
 import {usePerspective} from '../../../../perspective/usePerspective'
-import {useWorkspace} from '../../../../studio'
+import {useWorkspace} from '../../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {
   TASKS_SELECTED_TASK_SEARCH_PARAM,
   TASKS_SIDEBAR_SEARCH_PARAM,
   TASKS_VIEW_MODE_SEARCH_PARAM,
 } from '../../../context/navigation/types'
-import {useDocumentPreviewValues} from '../../../hooks'
+import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'
 import {type TaskContext, type TaskDocument} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 

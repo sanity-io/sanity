@@ -1,7 +1,7 @@
 import {Box, Text, type TextProps} from '@sanity/ui'
 import {type CSSProperties, type ReactElement, type ReactNode} from 'react'
 
-import {Tooltip} from '../../../ui-components'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {getReleaseTitleDetails} from '../util/getReleaseTitleDetails'
 
 /** @internal */

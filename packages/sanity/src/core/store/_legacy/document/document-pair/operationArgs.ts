@@ -3,12 +3,12 @@ import {type Schema} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 
-import {type HistoryStore} from '../../history'
+import type {HistoryStore} from '../../history/createHistoryStore'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
-import {type OperationArgs} from './operations'
+import type {OperationArgs} from './operations/types'
 import {snapshotPair} from './snapshotPair'
 
 export const operationArgs = memoize(

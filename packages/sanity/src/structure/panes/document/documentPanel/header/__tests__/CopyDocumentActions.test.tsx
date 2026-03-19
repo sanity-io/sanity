@@ -13,7 +13,7 @@ import {
 } from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {usePaneRouter} from '../../../../../components'
+import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {type DocumentPaneInfoContextValue} from '../../../DocumentPaneContext'
 import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'

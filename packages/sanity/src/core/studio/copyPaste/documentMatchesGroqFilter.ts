@@ -1,7 +1,7 @@
 import {type Path, type ReferenceOptions, type SanityDocument} from '@sanity/types'
 import {evaluate, parse} from 'groq-js'
 
-import {type Source} from '../../config'
+import type {Source} from '../../config/types'
 import {resolveUserDefinedFilter} from '../../form/studio/inputs/reference/resolveUserDefinedFilter'
 import {isEmptyValue} from './utils'
 

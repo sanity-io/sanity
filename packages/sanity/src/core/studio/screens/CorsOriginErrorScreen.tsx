@@ -4,7 +4,7 @@ import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {useEffect, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {isProd} from '../../environment'
 
 interface CorsOriginErrorScreenProps {

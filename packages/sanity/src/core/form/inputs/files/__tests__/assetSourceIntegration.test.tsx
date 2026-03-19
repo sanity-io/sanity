@@ -13,11 +13,13 @@ import {
   observeImageAssetStub,
   observeVideoAssetStub,
 } from '../../../../../../test/fixtures/assetSourceMocks'
-import {renderFileInput, renderImageInput, renderVideoInput} from '../../../../../../test/form'
+import {renderFileInput} from '../../../../../../test/form/renderFileInput'
+import {renderImageInput} from '../../../../../../test/form/renderImageInput'
+import {renderVideoInput} from '../../../../../../test/form/renderVideoInput'
 import {BaseVideoInput} from '../../../../../media-library/plugin/VideoInput/VideoInput'
 import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'
-import {BaseFileInput} from '../FileInput'
-import {BaseImageInput} from '../ImageInput'
+import {BaseFileInput} from '../FileInput/FileInput'
+import {BaseImageInput} from '../ImageInput/ImageInput'
 
 function getBrowseTestId(schemaTypeName: string, sourceName: string): string {
   const prefix = getDataTestIdPrefix({name: schemaTypeName, jsonType: 'object'})

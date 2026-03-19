@@ -1,7 +1,7 @@
 import {Card, Code, Stack, Text} from '@sanity/ui'
 import {isDev, Translate, useTranslation} from 'sanity'
 
-import {ErrorPane} from '../../error'
+import {ErrorPane} from '../../error/ErrorPane'
 
 interface DocumentLayoutErrorProps {
   currentMinWidth?: number

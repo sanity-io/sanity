@@ -2,7 +2,7 @@
 import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {ErrorActions} from '../../components'
+import {ErrorActions} from '../../components/errorActions/ErrorActions'
 import {isDev, isProd} from '../../environment'
 
 const View = styled(Box)`

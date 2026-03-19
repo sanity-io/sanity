@@ -3,9 +3,9 @@ import {type CurrentUser} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 
-import {Dialog} from '../../../ui-components'
-import {getProviderTitle} from '../../store'
-import {useActiveWorkspace} from '../activeWorkspaceMatcher'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {getProviderTitle} from '../../store/_legacy/authStore/providerTitle'
+import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 
 export function NotAuthenticatedScreen() {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)

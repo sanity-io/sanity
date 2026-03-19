@@ -4,7 +4,7 @@ import {
 } from '@sanity/media-library-types'
 import {type CustomValidatorResult, isReference, type Validators} from '@sanity/types'
 
-import {getPublishedId} from '../../util'
+import {getPublishedId} from '../../util/draftUtils'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
 import {genericValidators, SLOW_VALIDATOR_TIMEOUT} from './genericValidator'

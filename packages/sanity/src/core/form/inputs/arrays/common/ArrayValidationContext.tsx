@@ -2,7 +2,7 @@ import {type ArraySchemaType} from '@sanity/types'
 import {type ReactNode, useContext, useMemo} from 'react'
 import {ArrayValidationContext} from 'sanity/_singletons'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {getValidationRule} from '../../../utils/getValidationRule'
 
 /** @internal */

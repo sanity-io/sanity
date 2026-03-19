@@ -4,11 +4,11 @@ import {from, Observable, of as observableOf} from 'rxjs'
 import {catchError, map, mergeMap, startWith} from 'rxjs/operators'
 
 import {type VideoAsset} from '../../../../../media-library/plugin/schemas/types'
-import {type DocumentPreviewStore} from '../../../../preview'
-import {sourceName as MEDIA_LIBRARY_SOURCE_NAME} from '../../assetSourceMediaLibrary'
+import type {DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
 import {DEFAULT_API_VERSION} from '../../assetSourceMediaLibrary/constants'
+import {sourceName as MEDIA_LIBRARY_SOURCE_NAME} from '../../assetSourceMediaLibrary/createAssetSource'
 import {type UploadOptions} from '../../uploads/types'
-import {withMaxConcurrency} from '../../utils'
+import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 
 const MAX_CONCURRENT_UPLOADS = 4
 

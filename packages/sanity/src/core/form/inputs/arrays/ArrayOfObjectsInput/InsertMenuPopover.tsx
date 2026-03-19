@@ -6,7 +6,7 @@ import {type SchemaType} from '@sanity/types'
 import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {useCallback, useMemo, useReducer, useRef} from 'react'
 
-import {Popover, type PopoverProps} from '../../../../../ui-components'
+import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 type PopoverState = {open: boolean}

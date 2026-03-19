@@ -5,7 +5,7 @@ import {useEditState, usePerspective, useSchema, useTranslation, useValuePreview
 import {LOADING_PANE} from '../../constants'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
-import {type Panes} from '../../structureResolvers'
+import type {Panes} from '../../structureResolvers/useResolvedPanes'
 import {type DocumentPaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 

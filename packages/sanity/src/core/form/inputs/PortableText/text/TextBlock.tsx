@@ -4,28 +4,29 @@ import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 
-import {Tooltip} from '../../../../../ui-components'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {selectDivergence} from '../../../../divergence/divergenceNavigator'
-import {pathToString} from '../../../../field'
-import {EMPTY_ARRAY} from '../../../../util'
+import {pathToString} from '../../../../field/paths/helpers'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useDocumentDivergences} from '../../../contexts/DivergencesProvider'
-import {useFormCallbacks} from '../../../studio'
+import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useChildPresence} from '../../../studio/contexts/Presence'
-import {
-  type BlockProps,
-  type RenderAnnotationCallback,
-  type RenderArrayOfObjectsItemCallback,
-  type RenderBlockCallback,
-  type RenderCustomMarkers,
-  type RenderFieldCallback,
-  type RenderInputCallback,
-  type RenderPreviewCallback,
-} from '../../../types'
+import type {RenderCustomMarkers} from '../../../types/_transitional'
 import {type RenderBlockActionsCallback} from '../../../types/_transitional'
+import type {BlockProps} from '../../../types/blockProps'
+import type {
+  RenderAnnotationCallback,
+  RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderPreviewCallback,
+} from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
+import {ReviewChangesHighlightBlock} from '../_common/ReviewChangesHighlightBlock'
+import {StyledChangeIndicatorWithProvidedFullPath} from '../_common/StyledChangeIndicatorWithProvidedFullPath'
 import {BlockActions} from '../BlockActions'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'

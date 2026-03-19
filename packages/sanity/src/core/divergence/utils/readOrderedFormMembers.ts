@@ -2,20 +2,19 @@ import {type Path} from '@sanity/types'
 import {type Observable, concatWith, filter, from, map, merge, mergeMap, of, switchMap} from 'rxjs'
 
 import {
-  type FormState,
-  type ArrayOfObjectsItemMember,
-  type FieldMember,
-  type ArrayOfObjectsMember,
-  type ArrayOfPrimitivesMember,
-  type ArrayOfPrimitivesItemMember,
-  type ObjectArrayFormNode,
-  type BaseFormNode,
-} from '../../form'
-import {
   isArrayOfObjectsFormNode,
   isArrayOfPrimitivesFormNode,
   isObjectFormNode,
 } from '../../form/store/types/asserters'
+import type {
+  ArrayOfObjectsItemMember,
+  FieldMember,
+  ArrayOfObjectsMember,
+  ArrayOfPrimitivesMember,
+  ArrayOfPrimitivesItemMember,
+} from '../../form/store/types/members'
+import type {ObjectArrayFormNode, BaseFormNode} from '../../form/store/types/nodes'
+import type {FormState} from '../../form/store/useFormState'
 
 type Member = FieldMember | ArrayOfObjectsItemMember | ArrayOfPrimitivesItemMember
 

@@ -4,7 +4,7 @@ import {isValid} from 'date-fns/isValid'
 import get from 'lodash-es/get.js'
 import {type CSSProperties, Fragment, type HTMLProps, type RefAttributes, useMemo} from 'react'
 
-import {TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {TableEmptyState} from './TableEmptyState'
 import {TableHeader} from './TableHeader'
 import {TableLayout} from './TableLayout'

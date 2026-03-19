@@ -13,7 +13,7 @@ import {
 import {useRouter} from 'sanity/router'
 
 import {structureLocaleNamespace} from '../../i18n'
-import {usePaneRouter} from '../paneRouter'
+import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {IncomingReferenceDocumentActions} from './IncomingReferenceDocumentActions'
 import {IncomingReferencePreview} from './IncomingReferencePreview'
 import {type IncomingReferencesOptions} from './types'
