@@ -1,23 +1,10 @@
 import {type BlockDecoratorRenderProps} from '@portabletext/editor'
-import {type Theme} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
-
 import {type BlockDecoratorProps} from '../../../types'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {TEXT_DECORATOR_TAGS} from './constants'
+import {root as rootClass} from './Decorator.css'
 
-const Root = styled.span(({theme}: {theme: Theme}) => {
-  const isDark = theme.sanity.color.dark
-
-  return css`
-    /* Make sure the annotation styling is visible */
-    &[data-mark='code'] {
-      color: inherit;
-      mix-blend-mode: ${isDark ? 'screen' : 'multiply'};
-    }
-  `
-})
 
 export function Decorator(props: BlockDecoratorRenderProps) {
   const {value, focused, selected, children, schemaType} = props
@@ -32,9 +19,9 @@ export function Decorator(props: BlockDecoratorRenderProps) {
   const DefaultComponent = useCallback(
     (defaultComponentProps: BlockDecoratorProps) => {
       return (
-        <Root as={tag} data-mark={value}>
+        <span className={rootClass} data-mark={value} style={{mixBlendMode: 'inherit'}}>
           {defaultComponentProps.children}
-        </Root>
+        </span>
       )
     },
     [tag, value],

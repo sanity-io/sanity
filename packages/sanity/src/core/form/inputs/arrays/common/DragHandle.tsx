@@ -2,18 +2,10 @@ import {useSortable} from '@dnd-kit/sortable'
 import {DragHandleIcon} from '@sanity/icons'
 import {useContext} from 'react'
 import {SortableItemIdContext} from 'sanity/_singletons'
-import {css, styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-
-const DragHandleButton = styled(Button)<{$grid?: boolean; disabled?: boolean}>((props) => {
-  const {$grid, disabled} = props
-  if (disabled) return css``
-  return css`
-    cursor: ${$grid ? 'move' : 'ns-resize'};
-  `
-})
+import {dragHandleGrid, dragHandleList} from './DragHandle.css'
 
 interface DragHandleProps {
   $grid?: boolean
@@ -25,12 +17,13 @@ interface DragHandleProps {
 
 export const DragHandle = function DragHandle(props: DragHandleProps) {
   const id = useContext(SortableItemIdContext)!
-  const {mode = 'bleed', readOnly, ...rest} = props
+  const {mode = 'bleed', readOnly, $grid, ...rest} = props
   const {listeners, attributes} = useSortable({id, disabled: readOnly})
   const {t} = useTranslation()
 
   return (
-    <DragHandleButton
+    <Button
+      className={!readOnly ? ($grid ? dragHandleGrid : dragHandleList) : undefined}
       icon={DragHandleIcon}
       tooltipProps={{
         content: t('inputs.array.action.drag.tooltip'),

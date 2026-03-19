@@ -1,28 +1,12 @@
-import {rem} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ReactNode, useContext} from 'react'
 import {FormRow, type ObjectSchemaType, type PublishedId} from 'sanity'
 import {PresentationDocumentContext} from 'sanity/_singletons'
-import {css, styled} from 'styled-components'
 
 import {type PresentationPluginOptions} from '../types'
+import {locationStack, gapVar, minHeightVar, marginBottomVar} from './PresentationDocumentHeader.css'
 import {LocationsBanner} from './LocationsBanner'
-
-const LocationStack = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    display: flex;
-    flex-direction: column;
-    gap: ${rem(theme.space[2])};
-    min-height: ${rem(42)};
-    margin-bottom: ${rem(theme.space[5])};
-
-    &:empty {
-      display: none;
-    }
-  `
-})
 
 export function PresentationDocumentHeader(props: {
   documentId: PublishedId
@@ -32,6 +16,7 @@ export function PresentationDocumentHeader(props: {
 }): ReactNode {
   const {documentId, options, schemaType, version} = props
   const context = useContext(PresentationDocumentContext)
+  const {space} = useThemeV2()
 
   const contextOptions = context?.options || []
   const resolvers = contextOptions.map((o) => o.resolve?.locations || o.locate)
@@ -43,7 +28,14 @@ export function PresentationDocumentHeader(props: {
 
   return (
     <FormRow>
-      <LocationStack>
+      <div
+        className={locationStack}
+        style={assignInlineVars({
+          [gapVar]: `${space[2]}px`,
+          [minHeightVar]: '42px',
+          [marginBottomVar]: `${space[5]}px`,
+        })}
+      >
         {contextOptions.map((_options, idx) => (
           <LocationsBanner
             // oxlint-disable-next-line no-array-index-key
@@ -56,7 +48,7 @@ export function PresentationDocumentHeader(props: {
             version={version}
           />
         ))}
-      </LocationStack>
+      </div>
     </FormRow>
   )
 }

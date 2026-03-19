@@ -1,10 +1,9 @@
-import {Card, Text, type Theme} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'
 import {isSameDay} from 'date-fns/isSameDay'
 import {isSameMonth} from 'date-fns/isSameMonth'
 import {useCallback} from 'react'
-import {css, styled} from 'styled-components'
 
 import {useCalendar} from './contexts/useDatePicker'
 
@@ -13,45 +12,12 @@ interface CalendarDayProps {
   onSelect: (date: Date) => void
 }
 
-const CircleSvg = styled.svg(({theme}: {theme: Theme}) => {
-  return css`
-    bottom: 0;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-
-    circle {
-      stroke: ${theme.sanity.color.card.enabled.border};
-      stroke-width: 3;
-      fill: none;
-    }
-  `
-})
-
-const CustomCard = styled(Card)`
-  position: relative;
-
-  &[data-focused='true'] {
-    z-index: 1;
-  }
-
-  &[data-start-date='true'] {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  &[data-end-date='true'] {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-
-  &[data-within-range='true'] {
-    border-radius: 0;
-  }
-`
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {circleSvg, customCard, borderColorVar} from './CalendarDay.css'
 
 export function CalendarDay({date, onSelect}: CalendarDayProps) {
+  const {color: themeColor} = useThemeV2()
   const handleClick = useCallback(() => {
     onSelect(date)
   }, [date, onSelect])
@@ -75,7 +41,8 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
     isBefore(date, selectedEndDate)
 
   return (
-    <CustomCard
+    <Card
+      className={customCard}
       __unstable_focusRing
       aria-label={date.toDateString()}
       aria-pressed={isSelected}
@@ -96,7 +63,9 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
       tone={isWithinRange ? 'primary' : 'default'}
     >
       {isToday && (
-        <CircleSvg
+        <svg
+          className={circleSvg}
+          style={assignInlineVars({[borderColorVar]: themeColor.border})}
           height="100%"
           preserveAspectRatio="xMidYMid meet"
           vectorEffect="non-scaling-stroke"
@@ -104,7 +73,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
           width="100%"
         >
           <circle cx="50" cy="50" r="40%" />
-        </CircleSvg>
+        </svg>
       )}
       <Text
         align="center"
@@ -114,6 +83,6 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
       >
         {date.getDate()}
       </Text>
-    </CustomCard>
+    </Card>
   )
 }

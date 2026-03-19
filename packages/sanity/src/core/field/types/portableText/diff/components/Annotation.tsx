@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
-import {Flex, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {
   type MouseEvent,
@@ -13,7 +13,6 @@ import {
   useState,
 } from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
 import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators'
@@ -21,7 +20,8 @@ import {useTranslation} from '../../../../../i18n'
 import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
-import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
+import {annotationWrapper} from './Annotation.css'
+import {inlineBox, inlineText, popoverContainer, previewContainer} from './styledComponents.css'
 
 interface AnnotationProps {
   diff?: ObjectDiff
@@ -30,31 +30,6 @@ interface AnnotationProps {
   path: Path
   children: ReactNode
 }
-
-const AnnotationWrapper = styled.div`
-  text-decoration: none;
-  display: inline;
-  position: relative;
-  border: 0;
-  padding: 0;
-  border-bottom: 2px dotted currentColor;
-  box-shadow: inset 0 0 0 1px var(--card-border-color);
-  white-space: nowrap;
-  align-items: center;
-  background-color: color(var(--card-fg-color) a(10%));
-
-  &[data-changed] {
-    cursor: pointer;
-  }
-
-  &[data-removed] {
-    text-decoration: line-through;
-  }
-
-  &:hover ${PreviewContainer} {
-    opacity: 1;
-  }
-`
 
 export function Annotation({
   children,
@@ -67,9 +42,9 @@ export function Annotation({
   const {t} = useTranslation()
   if (!schemaType) {
     return (
-      <AnnotationWrapper {...restProps}>
+      <div className={annotationWrapper} {...restProps}>
         {t('changes.portable-text.unknown-annotation-schema-type')}
-      </AnnotationWrapper>
+      </div>
     )
   }
   if (diff && diff.action !== 'unchanged') {
@@ -85,7 +60,7 @@ export function Annotation({
       </AnnnotationWithDiff>
     )
   }
-  return <AnnotationWrapper>{children}</AnnotationWrapper>
+  return <div className={annotationWrapper}>{children}</div>
 }
 
 interface AnnnotationWithDiffProps {
@@ -166,7 +141,7 @@ function AnnnotationWithDiff({
 
   const popoverContent = (
     <DiffContext.Provider value={value}>
-      <PopoverContainer padding={3}>
+      <Box className={popoverContainer} padding={3}>
         <div>
           {emptyObject && (
             <Text muted size={1} weight="medium">
@@ -177,12 +152,13 @@ function AnnnotationWithDiff({
           )}
           {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
         </div>
-      </PopoverContainer>
+      </Box>
     </DiffContext.Provider>
   )
 
   return (
-    <AnnotationWrapper
+    <div
+      className={annotationWrapper}
       {...restProps}
       onClick={handleOpenPopup}
       style={style}
@@ -190,22 +166,22 @@ function AnnnotationWithDiff({
       data-removed={diff.action === 'removed' ? '' : undefined}
     >
       <Popover content={popoverContent} open={open} ref={popoverRef} portal>
-        <PreviewContainer paddingLeft={1}>
+        <Box className={previewContainer} paddingLeft={1}>
           <DiffTooltip
             annotations={annotations}
             description={t('changes.portable-text.annotation', {context: diff.action})}
           >
-            <InlineBox style={{display: 'inline-flex'}}>
+            <Box className={inlineBox} style={{display: 'inline-flex'}}>
               <span>{children}</span>
               <Flex align="center" paddingX={1}>
-                <InlineText size={0}>
+                <Text className={inlineText} size={0}>
                   <ChevronDownIcon />
-                </InlineText>
+                </Text>
               </Flex>
-            </InlineBox>
+            </Box>
           </DiffTooltip>
-        </PreviewContainer>
+        </Box>
       </Popover>
-    </AnnotationWrapper>
+    </div>
   )
 }

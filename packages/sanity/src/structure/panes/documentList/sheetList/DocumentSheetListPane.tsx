@@ -9,9 +9,9 @@ import {
 } from '@tanstack/react-table'
 import {useCallback, useEffect, useState} from 'react'
 import {SearchProvider, useSchema, useSearchState} from 'sanity'
-import {styled} from 'styled-components'
 
 import {type BaseStructureToolPaneProps} from '../../types'
+import {paneContainer, tableContainer, table} from './DocumentSheetListPane.css'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
 import {DocumentSheetListHeader} from './DocumentSheetListHeader'
@@ -23,34 +23,6 @@ import {useDocumentSheetList} from './useDocumentSheetList'
 
 type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'>
 
-const PaneContainer = styled(Flex)`
-  height: 100%;
-`
-const TableContainer = styled.div`
-  overflow: auto; //our scrollable table container
-  position: relative; //needed for sticky header
-`
-const Table = styled.table`
-  border-collapse: separate;
-  border-spacing: 0;
-  font-family: arial, sans-serif;
-  white-space: nowrap;
-  width: 100%;
-  border: 1px solid lightgray;
-
-  thead {
-    display: grid;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  tr {
-    padding: 0;
-  }
-  tr:last-child {
-    border-bottom: none;
-  }
-`
 
 function DocumentSheetListPaneInner({
   documentSchemaType,
@@ -110,7 +82,7 @@ function DocumentSheetListPaneInner({
 
   const rowsCount = `Total: ${totalRows} rows, showing ${rows.length} rows`
   return (
-    <PaneContainer direction="column" paddingX={3} data-testid="document-sheet-list-pane">
+    <Flex className={paneContainer} direction="column" paddingX={3} data-testid="document-sheet-list-pane">
       <Flex direction="row" align="center" paddingY={3} paddingX={1} justify="space-between">
         <Flex direction="row" align="center">
           <DocumentSheetListFilter />
@@ -120,9 +92,9 @@ function DocumentSheetListPaneInner({
         </Flex>
         <ColumnsControl table={table} />
       </Flex>
-      <TableContainer>
+      <div className={tableContainer}>
         <DocumentSheetListProvider table={table}>
-          <Table>
+          <table className={table}>
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <Box key={headerGroup.id} as="tr">
@@ -137,13 +109,13 @@ function DocumentSheetListPaneInner({
               ))}
             </thead>
             <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
-          </Table>
+          </table>
         </DocumentSheetListProvider>
-      </TableContainer>
+      </div>
       <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
         <DocumentSheetListPaginator table={table} />
       </Flex>
-    </PaneContainer>
+    </Flex>
   )
 }
 

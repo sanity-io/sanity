@@ -1,6 +1,6 @@
 import {type FunctionComponent, type PropsWithChildren, useContext, useLayoutEffect} from 'react'
 import {PresentationPanelsContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
+import {root as rootClass} from './Panel.css'
 
 interface PanelProps extends PropsWithChildren {
   defaultSize?: number | null
@@ -10,11 +10,6 @@ interface PanelProps extends PropsWithChildren {
   order?: number
 }
 
-const Root = styled.div`
-  overflow: hidden;
-  flex-basis: 0;
-  flex-shrink: 1;
-`
 
 export const Panel: FunctionComponent<PanelProps> = function ({
   children,
@@ -49,5 +44,5 @@ export const Panel: FunctionComponent<PanelProps> = function ({
     }
   }, [id, defaultSize, order, maxWidth, minWidth, registerElement, unregisterElement])
 
-  return <Root style={style}>{children}</Root>
+  return <div className={rootClass} style={style}>{children}</div>
 }

@@ -1,126 +1,67 @@
 import {Box} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {forwardRef, type HTMLAttributes, type ReactNode} from 'react'
 
-const INDICATOR_LEFT_OFFSET = 20
-const INDICATOR_WIDTH = 1
-const INDICATOR_COLOR_VAR_NAME = '--card-border-color'
-const INDICATOR_BOTTOM_OFFSET = 4
+import {
+  firstPosition,
+  inRangeAfter,
+  inRangeAfterDefault,
+  inRangeMenuItem,
+  labelIndicatorBase,
+  labelIndicatorWithinRange,
+  lastPosition,
+  menuItemIndicatorBase,
+} from './PerspectiveLayerIndicator.css'
 
-export const GlobalPerspectiveMenuItemIndicator = styled.div<{
-  $inRange: boolean
-  $last: boolean
-  $first: boolean
-  $isDefaultPerspective: boolean
-}>(
-  ({$inRange, $last, $first, $isDefaultPerspective}) => css`
-    position: relative;
+export const GlobalPerspectiveMenuItemIndicator = forwardRef<
+  HTMLDivElement,
+  {
+    $inRange: boolean
+    $last: boolean
+    $first: boolean
+    $isDefaultPerspective: boolean
+    children?: ReactNode
+  } & HTMLAttributes<HTMLDivElement>
+>(({$inRange, $last, $first, $isDefaultPerspective, children, className, ...rest}, ref) => {
+  const classes = [
+    menuItemIndicatorBase,
+    $inRange ? inRangeMenuItem : '',
+    $inRange && !$last ? ($isDefaultPerspective ? inRangeAfterDefault : inRangeAfter) : '',
+    $first ? firstPosition : '',
+    $last ? lastPosition : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')
 
-    --indicator-left: ${INDICATOR_LEFT_OFFSET}px;
-    --indicator-width: ${INDICATOR_WIDTH}px;
-    --indicator-color: var(${INDICATOR_COLOR_VAR_NAME});
-    --indicator-bottom: ${INDICATOR_BOTTOM_OFFSET}px;
+  return (
+    <div className={classes} ref={ref} {...rest}>
+      {children}
+    </div>
+  )
+})
 
-    --indicator-in-range-height: 16.5px;
+GlobalPerspectiveMenuItemIndicator.displayName = 'GlobalPerspectiveMenuItemIndicator'
 
-    ${
-      $inRange &&
-      !$last &&
-      css`
-      &:after {
-        content: '';
-        display: block;
-        position: absolute;
-        left: var(--indicator-left);
-        bottom: -var(--indicator-bottom);
-        width: var(--indicator-width);
-        height: ${
-          $isDefaultPerspective ? 'calc(var(--indicator-bottom) + 12px)' : 'var(--indicator-bottom)'
-        };
-        background-color: var(--card-border-color);
-      }
-    `
-    }
+export const GlobalPerspectiveMenuLabelIndicator = forwardRef<
+  HTMLDivElement,
+  {
+    $withinRange: boolean
+    children?: ReactNode
+  } & React.ComponentProps<typeof Box>
+>(({$withinRange, children, className, ...rest}, ref) => {
+  const classes = [
+    labelIndicatorBase,
+    $withinRange ? labelIndicatorWithinRange : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')
 
-    ${
-      $inRange &&
-      css`
-        > [data-ui='MenuItem'] {
-          position: relative;
+  return (
+    <Box className={classes} ref={ref} {...rest}>
+      {children}
+    </Box>
+  )
+})
 
-          &:before,
-          &:after {
-            content: '';
-            display: block;
-            position: absolute;
-            left: var(--indicator-left);
-            width: var(--indicator-width);
-            background-color: var(--card-border-color);
-          }
-
-          &:before {
-            top: 0;
-            height: var(--indicator-in-range-height);
-          }
-
-          &:after {
-            top: var(--indicator-in-range-height);
-            bottom: 0;
-          }
-        }
-      `
-    }
-
-    ${
-      $first &&
-      css`
-      > [data-ui='MenuItem']:after {
-        margin-top: -3px;
-        border-top-left-radius: ${INDICATOR_WIDTH}px;
-        border-top-right-radius: ${INDICATOR_WIDTH}px;
-      }
-      > [data-ui='MenuItem']:before {
-        display: none;
-      }
-    `
-    }
-
-    ${
-      $last &&
-      css`
-      > [data-ui='MenuItem']:before {
-        // dot diameter (5px) - 1.6px stroke divided by 2
-        padding-bottom: 1.7px;
-        border-bottom-left-radius: ${INDICATOR_WIDTH}px;
-        border-bottom-right-radius: ${INDICATOR_WIDTH}px;
-      }
-      > [data-ui='MenuItem']:after {
-        display: none;
-      }
-    `
-    }
-  `,
-)
-
-export const GlobalPerspectiveMenuLabelIndicator = styled(Box)<{$withinRange: boolean}>(
-  ({$withinRange}) => css`
-    position: relative;
-    // 4px padding + 33px release indicator width + 4px gap
-    padding-left: 41px;
-
-    ${
-      $withinRange &&
-      css`
-      &:before {
-        content: '';
-        display: block;
-        position: absolute;
-        left: ${INDICATOR_LEFT_OFFSET}px;
-        top: -8px;
-        bottom: -${INDICATOR_BOTTOM_OFFSET}px;
-        width: ${INDICATOR_WIDTH}px;
-        background-color: var(${INDICATOR_COLOR_VAR_NAME});
-      }
-    `
-    }
-  `,
-)
+GlobalPerspectiveMenuLabelIndicator.displayName = 'GlobalPerspectiveMenuLabelIndicator'

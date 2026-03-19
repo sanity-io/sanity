@@ -1,8 +1,8 @@
-import {Box} from '@sanity/ui'
+import {Box, Card, Layer} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type ReactNode} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
-import {Root, RootCard} from './PaneFooter.styles'
+import {root, rootCard} from './PaneFooter.css'
 import {usePane} from './usePane'
 
 interface PaneFooterProps {
@@ -24,11 +24,11 @@ export const PaneFooter = forwardRef(function PaneFooter(
 
   return (
     <LegacyLayerProvider zOffset="paneFooter">
-      <Root data-testid="pane-footer" hidden={collapsed} ref={ref}>
-        <RootCard tone="inherit">
+      <Layer className={root} data-testid="pane-footer" hidden={collapsed} ref={ref}>
+        <Card className={rootCard} tone="inherit">
           <Box padding={padding}>{children}</Box>
-        </RootCard>
-      </Root>
+        </Card>
+      </Layer>
     </LegacyLayerProvider>
   )
 })

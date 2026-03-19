@@ -1,4 +1,4 @@
-import {Box, Stack} from '@sanity/ui'
+import {Box, Stack} from '@sanity/ui'  
 import {
   Fragment,
   type HTMLAttributes,
@@ -22,7 +22,10 @@ import {isFieldChange} from '../helpers'
 import {useDocumentChange} from '../hooks'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
-import {ChangeListWrapper, GroupChangeContainer} from './GroupChange.styled'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+
+import {changeListWrapper, groupChangeContainer, groupChangeErrorVar} from './GroupChange.css'
 import {RevertChangesButton} from './RevertChangesButton'
 import {RevertChangesConfirmDialog} from './RevertChangesConfirmDialog'
 
@@ -44,6 +47,16 @@ export function GroupChange(
     rootDiff,
     isComparingCurrent,
   } = useDocumentChange()
+
+  const {color, space} = useThemeV2()
+
+  const groupChangeVars = {
+    ...assignInlineVars({
+      [groupChangeErrorVar]: color.solid.critical.enabled.bg,
+    }),
+    '--diff-inspect-padding-xsmall': `${space[1]}px`,
+    '--diff-inspect-padding-small': `${space[2]}px`,
+  } as React.CSSProperties
 
   const isPortableText = changes.every(
     (change) => isFieldChange(change) && isPTSchemaType(change.schemaType),
@@ -90,12 +103,13 @@ export function GroupChange(
         <>
           <Stack
             space={1}
-            as={GroupChangeContainer}
+            className={groupChangeContainer}
+            style={groupChangeVars}
             data-ui="group-change-content"
             data-revert-group-hover={isRevertButtonHovered ? '' : undefined}
             data-portable-text={isPortableText ? '' : undefined}
           >
-            <Stack as={ChangeListWrapper} space={5} data-ui="group-change-list">
+            <Stack className={changeListWrapper} space={5} data-ui="group-change-list">
               {changes.map((change) => (
                 <ChangeResolver
                   key={change.key}

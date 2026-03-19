@@ -14,16 +14,34 @@ import {
   type RenderChildFunction,
 } from '@portabletext/editor'
 import {type Path} from '@sanity/types'
-import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {BoundaryElementProvider, Card, rem, useBoundaryElement, useGlobalKeyDown, useLayer, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
-
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useFormBuilder} from '../../useFormBuilder'
-import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+
+import {
+  counterResetVar,
+  dropIndicatorLeftVar,
+  dropIndicatorRadiusVar,
+  dropIndicatorRightVar,
+  dropIndicatorWidthVar,
+  editableCard,
+  editableWrapper,
+  firstChildPaddingTopVar,
+  heightVar,
+  listItemSpaceVar,
+  listSpaceVar,
+  maxWidthVar,
+  paddingBottomVar,
+  resizeVar,
+  root,
+  scroller,
+  toolbarCard,
+} from './Editor.css'
+import {ScrollContainer} from '../../../components/scroll'
+import {createListName, TEXT_LEVELS} from './text'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
 import {Decorator} from './text'
@@ -37,12 +55,6 @@ const noOutlineStyle = {outline: 'none'} as const
 // This is used to determine whether this editor should apply document pane specific styling.
 const FORM_BUILDER_DEFAULT_ID = 'root'
 
-const PlaceholderWrapper = styled.span((props) => {
-  const {color} = getTheme_v2(props.theme)
-  return css`
-    color: ${color.input.default.enabled.placeholder};
-  `
-})
 
 interface EditorProps {
   elementRef: React.RefObject<HTMLDivElement | null>
@@ -96,6 +108,7 @@ export function Editor(props: EditorProps): ReactNode {
     ariaDescribedBy,
   } = props
   const {id} = useFormBuilder()
+  const {space, container, radius} = useThemeV2()
   const {t} = useTranslation()
   const {isTopLayer} = useLayer()
 
@@ -118,9 +131,9 @@ export function Editor(props: EditorProps): ReactNode {
 
   const renderPlaceholder = useCallback(
     () => (
-      <PlaceholderWrapper data-testid="pt-input-placeholder">
+      <span data-testid="pt-input-placeholder" style={{color: 'var(--input-placeholder-color)'}}>
         {t('inputs.portable-text.empty-placeholder')}
-      </PlaceholderWrapper>
+      </span>
     ),
     [t],
   )
@@ -191,10 +204,18 @@ export function Editor(props: EditorProps): ReactNode {
   const collapsibleToolbar = id === FORM_BUILDER_DEFAULT_ID
 
   return (
-    <Root data-fullscreen={isFullscreen} data-testid="pt-editor" $isOneLine={isOneLine}>
+    <Card
+      className={root}
+      data-fullscreen={isFullscreen}
+      data-testid="pt-editor"
+      style={assignInlineVars({
+        [resizeVar]: isOneLine ? 'none' : 'vertical',
+        [heightVar]: isOneLine ? 'auto' : '19em',
+      })}
+    >
       {isActive && !hideToolbar && (
         <TooltipDelayGroupProvider>
-          <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
+          <Card className={toolbarCard} data-testid="pt-editor__toolbar-card" shadow={1}>
             <Toolbar
               collapsible={collapsibleToolbar}
               hotkeys={hotkeys}
@@ -203,27 +224,38 @@ export function Editor(props: EditorProps): ReactNode {
               onToggleFullscreen={onToggleFullscreen}
               readOnly={readOnly}
             />
-          </ToolbarCard>
+          </Card>
         </TooltipDelayGroupProvider>
       )}
 
-      <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>
-        <Scroller ref={setScrollElement}>
+      <Card className={editableCard} flex={1} tone={readOnly ? 'transparent' : 'default'}>
+        <ScrollContainer className={scroller} ref={setScrollElement}>
           <div>
-            <EditableWrapper
-              $isFullscreen={isFullscreen}
-              $isOneLine={isOneLine}
+            <Card
+              className={editableWrapper}
               tone={readOnly ? 'transparent' : 'default'}
+              style={assignInlineVars({
+                [counterResetVar]: TEXT_LEVELS.map((l) => createListName(l)).join(' '),
+                [firstChildPaddingTopVar]: `${space[isFullscreen ? 5 : 3]}px`,
+                [paddingBottomVar]: isOneLine ? '0' : `${space[isFullscreen ? 9 : 5]}px`,
+                [maxWidthVar]: `${container[1]}px`,
+                [listSpaceVar]: `${space[3]}px`,
+                [listItemSpaceVar]: `${space[2]}px`,
+                [dropIndicatorRadiusVar]: `${radius[2]}px`,
+                [dropIndicatorLeftVar]: `calc(${isFullscreen ? rem(space[5]) : rem(space[3])} - 1px)`,
+                [dropIndicatorRightVar]: `calc(${isFullscreen ? rem(space[5]) : rem(space[3])} - 1px)`,
+                [dropIndicatorWidthVar]: `calc(100% - ${isFullscreen ? rem(space[5] * 2) : rem(space[3] * 2)} + 2px) !important`,
+              })}
             >
               <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
                 {editable}
               </BoundaryElementProvider>
-            </EditableWrapper>
+            </Card>
           </div>
-        </Scroller>
+        </ScrollContainer>
 
         <div data-portal="" ref={setPortalElement} />
-      </EditableCard>
-    </Root>
+      </Card>
+    </Card>
   )
 }

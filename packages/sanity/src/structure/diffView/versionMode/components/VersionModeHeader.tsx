@@ -39,26 +39,15 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {versionModeHeaderLayout, versionModeHeaderLayoutSection} from './VersionModeHeader.css'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
 import {useDiffViewState} from '../../hooks/useDiffViewState'
 import {findRelease} from '../../utils/findRelease'
 
-const VersionModeHeaderLayout = styled.header`
-  display: grid;
-  grid-area: header;
-  grid-template-columns: 1fr min-content 1fr;
-  border-block-end: 1px solid var(--card-border-color);
-`
 
-const VersionModeHeaderLayoutSection = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
 
 /**
  * The header component that is rendered when diff view is being used to compare versions of a
@@ -110,8 +99,8 @@ export const VersionModeHeader: ComponentType<
   }
 
   return (
-    <VersionModeHeaderLayout>
-      <VersionModeHeaderLayoutSection>
+    <header className={versionModeHeaderLayout}>
+      <div className={versionModeHeaderLayoutSection}>
         <Box padding={4}>
           <Text as="h1" size={1} muted>
             {t('compare-versions.title')}
@@ -128,13 +117,13 @@ export const VersionModeHeader: ComponentType<
             document={documents.previous}
           />
         )}
-      </VersionModeHeaderLayoutSection>
+      </div>
       <Flex align="center" paddingX={3}>
         <Text size={1}>
           <TransferIcon />
         </Text>
       </Flex>
-      <VersionModeHeaderLayoutSection>
+      <div className={versionModeHeaderLayoutSection}>
         {typeof documents?.next !== 'undefined' && (
           <VersionMenu
             releases={releases}
@@ -154,8 +143,8 @@ export const VersionModeHeader: ComponentType<
         >
           <Button icon={CloseIcon} mode="bleed" onClick={exitDiffView} padding={2} />
         </Box>
-      </VersionModeHeaderLayoutSection>
-    </VersionModeHeaderLayout>
+      </div>
+    </header>
   )
 }
 

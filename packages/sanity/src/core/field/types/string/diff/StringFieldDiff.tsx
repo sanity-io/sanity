@@ -1,13 +1,7 @@
-import {styled} from 'styled-components'
-
 import {DiffFromTo, DiffString} from '../../../diff'
 import {type DiffComponent, type StringDiff} from '../../../types'
 import {StringPreview} from '../preview/StringPreview'
-
-const StringWrapper = styled.div`
-  white-space: pre-wrap;
-  word-wrap: break-word;
-`
+import {stringWrapper} from './StringFieldDiff.css'
 
 export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) => {
   const {options} = schemaType
@@ -19,8 +13,8 @@ export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) =
   }
 
   return (
-    <StringWrapper>
+    <div className={stringWrapper}>
       <DiffString diff={diff} />
-    </StringWrapper>
+    </div>
   )
 }

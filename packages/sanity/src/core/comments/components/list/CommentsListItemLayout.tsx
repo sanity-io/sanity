@@ -12,10 +12,10 @@ import {
   useClickOutsideEvent,
 } from '@sanity/ui'
 // eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
-import {css, styled} from 'styled-components'
 
 import {useDidUpdate} from '../../../form'
 import {
@@ -42,107 +42,27 @@ import {FLEX_GAP} from '../constants'
 import {CommentMessageSerializer} from '../pte'
 import {CommentInput, type CommentInputHandle} from '../pte/comment-input'
 import {CommentReactionsBar} from '../reactions'
+import {
+  contextMenuBox,
+  errorFlex,
+  fgColorVar,
+  headerFlex,
+  innerStack,
+  intentText,
+  minHeightVar,
+  retryCardButton,
+  rootStack,
+  timeText,
+  transformVar,
+} from './CommentsListItemLayout.css'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
 
-const ContextMenuBox = styled(Box)``
-
 const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
 
 const EMPTY_ARRAY: [] = []
-
-const TimeText = styled(Text)(({theme}) => {
-  const isDark = theme.sanity.color.dark
-  const fg = hues.gray[isDark ? 200 : 800].hex
-
-  return css`
-    min-width: max-content;
-    --card-fg-color: ${fg};
-    color: var(--card-fg-color);
-  `
-})
-
-const HeaderFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return css`
-    min-height: ${theme.avatar.sizes[props.$size]?.size}px;
-  `
-})
-
-const IntentText = styled(Text)(({theme}) => {
-  const isDark = theme.sanity.color.dark
-  const fg = hues.gray[isDark ? 200 : 800].hex
-
-  return css`
-    --card-fg-color: ${fg};
-    color: var(--card-fg-color);
-  `
-})
-
-const InnerStack = styled(Stack)`
-  transition: opacity 200ms ease;
-
-  &[data-muted='true'] {
-    transition: unset;
-    opacity: 0.5;
-  }
-`
-
-const ErrorFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return css`
-    min-height: ${theme.avatar.sizes[props.$size]?.size}px;
-  `
-})
-
-const RetryCardButton = styled(Card)`
-  /* Add not on hover */
-  &:not(:hover) {
-    background-color: transparent;
-  }
-`
-
-const RootStack = styled(Stack)(({theme}) => {
-  const {space} = theme.sanity
-
-  return css`
-    position: relative;
-
-    /* Only show the floating layer on hover when hover is supported.
-    Else, the layer is always visible. */
-    @media (hover: hover) {
-      ${ContextMenuBox} {
-        opacity: 0;
-        position: absolute;
-        right: 0;
-        top: 0;
-        transform: translate(${space[1]}px, -${space[1]}px);
-      }
-
-      ${ContextMenuBox} {
-        &:focus-within {
-          opacity: 1;
-        }
-      }
-
-      &:hover {
-        ${ContextMenuBox} {
-          opacity: 1;
-        }
-      }
-    }
-
-    &[data-menu-open='true'] {
-      ${ContextMenuBox} {
-        opacity: 1;
-      }
-    }
-  `
-})
 
 interface CommentsListItemLayoutProps {
   avatarSize?: AvatarSize
@@ -197,6 +117,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const {_createdAt, authorId, message, _id, lastEditedAt} = comment
   const [user] = useUser(authorId)
   const {t} = useTranslation(commentsLocaleNamespace)
+  const theme = useThemeV2()
 
   const [value, setValue] = useState<CommentMessage>(message)
   const [isEditing, setIsEditing] = useState<boolean>(false)
@@ -208,6 +129,11 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const hasChanges = useCommentHasChanged(value)
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
+
+  const isDark = theme.color._dark
+  const fgColor = hues.gray[isDark ? 200 : 800].hex
+
+  const avatarMinHeight = `${theme.avatar.sizes[avatarSize]?.size}px`
 
   // Filter out reactions that's been optimistically removed from the comment.
   const reactions = (
@@ -333,15 +259,22 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   )
 
   return (
-    <RootStack
+    <Stack
+      className={rootStack}
       data-menu-open={menuOpen ? 'true' : 'false'}
       data-testid="comments-list-item-layout"
       onKeyDown={handleRootKeyDown}
       ref={rootElementRef}
       space={4}
     >
-      <InnerStack space={1} data-muted={displayError}>
-        <HeaderFlex align="center" gap={FLEX_GAP} flex={1} $size={avatarSize}>
+      <Stack className={innerStack} space={1} data-muted={displayError}>
+        <Flex
+          className={headerFlex}
+          style={assignInlineVars({[minHeightVar]: avatarMinHeight})}
+          align="center"
+          gap={FLEX_GAP}
+          flex={1}
+        >
           {withAvatar && <CommentsAvatar user={user} size={avatarSize} />}
 
           <Flex direction="column" gap={2} paddingY={intent ? 2 : 0}>
@@ -356,18 +289,29 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
                 {!displayError && (
                   <Flex align="center" gap={1}>
-                    <TimeText muted size={0}>
+                    <Text
+                      className={timeText}
+                      style={assignInlineVars({[fgColorVar]: fgColor})}
+                      muted
+                      size={0}
+                    >
                       <time dateTime={createdDate.toISOString()} title={formattedCreatedAt}>
                         {createdTimeAgo}
                       </time>
-                    </TimeText>
+                    </Text>
 
                     {formattedLastEditAt && editedDate && (
-                      <TimeText muted size={0} title={formattedLastEditAt}>
+                      <Text
+                        className={timeText}
+                        style={assignInlineVars({[fgColorVar]: fgColor})}
+                        muted
+                        size={0}
+                        title={formattedLastEditAt}
+                      >
                         <time dateTime={editedDate.toISOString()} title={formattedLastEditAt}>
                           ({t('list-item.layout-edited')})
                         </time>
-                      </TimeText>
+                      </Text>
                     )}
                   </Flex>
                 )}
@@ -376,7 +320,13 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
             {intent && (
               <Box flex={1}>
-                <IntentText muted size={0} textOverflow="ellipsis">
+                <Text
+                  className={intentText}
+                  style={assignInlineVars({[fgColorVar]: fgColor})}
+                  muted
+                  size={0}
+                  textOverflow="ellipsis"
+                >
                   <Translate
                     t={t}
                     i18nKey="list-item.layout-context"
@@ -390,13 +340,20 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                         ) : undefined,
                     }}
                   />
-                </IntentText>
+                </Text>
               </Box>
             )}
           </Flex>
 
           {!isEditing && !displayError && (
-            <ContextMenuBox data-root-menu={isParent ? 'true' : 'false'} onClick={stopPropagation}>
+            <Box
+              className={contextMenuBox}
+              style={assignInlineVars({
+                [transformVar]: `translate(${theme.space[1]}px, -${theme.space[1]}px)`,
+              })}
+              data-root-menu={isParent ? 'true' : 'false'}
+              onClick={stopPropagation}
+            >
               <CommentsListItemContextMenu
                 canDelete={canDelete}
                 canEdit={canEdit}
@@ -412,9 +369,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 readOnly={readOnly}
                 status={comment.status}
               />
-            </ContextMenuBox>
+            </Box>
           )}
-        </HeaderFlex>
+        </Flex>
 
         {isTextSelectionComment(comment) && Boolean(comment?.contentSnapshot) && (
           <Flex gap={FLEX_GAP} marginBottom={3}>
@@ -473,10 +430,14 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             </Box>
           </Flex>
         )}
-      </InnerStack>
+      </Stack>
 
       {displayError && (
-        <ErrorFlex gap={FLEX_GAP} $size={avatarSize}>
+        <Flex
+          className={errorFlex}
+          style={assignInlineVars({[minHeightVar]: avatarMinHeight})}
+          gap={FLEX_GAP}
+        >
           {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
           <Flex align="center" gap={1} flex={1}>
@@ -486,7 +447,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             </Text>
 
             <Flex hidden={isRetrying}>
-              <RetryCardButton
+              <Card
+                className={retryCardButton}
                 __unstable_focusRing
                 display="flex"
                 forwardedAs="button"
@@ -498,11 +460,11 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 <Text size={1} muted>
                   {t('list-item.layout-retry')}
                 </Text>
-              </RetryCardButton>
+              </Card>
             </Flex>
           </Flex>
-        </ErrorFlex>
+        </Flex>
       )}
-    </RootStack>
+    </Stack>
   )
 }

@@ -8,13 +8,18 @@ import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
-
 import {Button} from '../../../../../ui-components'
 import {useRovingFocus} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {
+  actionMenuBox,
+  fullscreenButtonBox,
+  rootFlex,
+  styleSelectBox,
+  styleSelectFlex,
+} from './Toolbar.css'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {getBlockStyles, getInsertMenuItems} from './helpers'
@@ -32,19 +37,9 @@ interface ToolbarProps {
   readOnly?: boolean
 }
 
-const RootFlex = styled(Flex)`
-  width: 100%;
-`
 
-const StyleSelectBox = styled(Box)`
-  width: 8em;
-`
 
-const StyleSelectFlex = styled(Flex)`
-  border-right: 1px solid var(--card-border-color);
-`
 
-const ActionMenuBox = styled(Box)<{$withInsertMenu: boolean}>`
   ${({$withInsertMenu}) =>
     $withInsertMenu &&
     css`
@@ -53,9 +48,6 @@ const ActionMenuBox = styled(Box)<{$withInsertMenu: boolean}>`
     `}
 `
 
-const FullscreenButtonBox = styled(Box)`
-  border-left: 1px solid var(--card-border-color);
-`
 
 const SLOW_INITIAL_VALUE_LIMIT = 300
 
@@ -98,26 +90,26 @@ const InnerToolbar = memo(function InnerToolbar({
   }, [])
 
   return (
-    <RootFlex align="center" ref={setRootElement} onMouseDown={preventEditorBlurOnToolbarMouseDown}>
+    <Flex className={rootFlex} align="center" ref={setRootElement} onMouseDown={preventEditorBlurOnToolbarMouseDown}>
       {showBlockStyleSelect && (
-        <StyleSelectFlex flex={collapsed ? 1 : undefined}>
-          <StyleSelectBox padding={isFullscreen ? 2 : 1} data-testid="block-style-select">
+        <Flex className={styleSelectFlex} flex={collapsed ? 1 : undefined}>
+          <Box className={styleSelectBox} padding={isFullscreen ? 2 : 1} data-testid="block-style-select">
             <BlockStyleSelect
               disabled={disabled}
               items={blockStyles}
               // send the boundary in cases of PTEs within PTEs
               boundaryElement={rootElement}
             />
-          </StyleSelectBox>
-        </StyleSelectFlex>
+          </Box>
+        </Flex>
       )}
 
       <Flex flex={1}>
         {showActionMenu && (
-          <ActionMenuBox
+          <Box
+            className={showInsertMenu ? actionMenuBox : undefined}
             flex={collapsed ? undefined : 1}
             padding={isFullscreen ? 2 : 1}
-            $withInsertMenu={showInsertMenu}
           >
             <ActionMenu
               disabled={disabled}
@@ -125,7 +117,7 @@ const InnerToolbar = memo(function InnerToolbar({
               groups={actionGroups}
               isFullscreen={isFullscreen}
             />
-          </ActionMenuBox>
+          </Box>
         )}
 
         {showInsertMenu && (
@@ -139,7 +131,7 @@ const InnerToolbar = memo(function InnerToolbar({
           </Box>
         )}
       </Flex>
-      <FullscreenButtonBox padding={isFullscreen ? 2 : 1}>
+      <Box className={fullscreenButtonBox} padding={isFullscreen ? 2 : 1}>
         <Button
           aria-label={t('inputs.portable-text.action.expand-editor')}
           icon={isFullscreen ? CollapseIcon : ExpandIcon}
@@ -157,8 +149,8 @@ const InnerToolbar = memo(function InnerToolbar({
             portal: 'default',
           }}
         />
-      </FullscreenButtonBox>
-    </RootFlex>
+      </Box>
+    </Flex>
   )
 })
 

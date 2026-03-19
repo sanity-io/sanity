@@ -5,14 +5,11 @@ import {useEffect, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of, take, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
 import {isDev} from '../../environment'
 
-const View = styled(Box)`
-  align-items: center;
-`
+import {view} from './ImportErrorScreen.css'
 
 function reloadPage() {
   window.location.reload()
@@ -41,7 +38,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
 
   return (
     <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
-      <View display="flex" height="fill">
+      <Box className={view} display="flex" height="fill">
         <Container width={3}>
           <Stack space={6}>
             <Stack space={4}>
@@ -77,7 +74,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
             </Stack>
           </Stack>
         </Container>
-      </View>
+      </Box>
     </Card>
   )
 }

@@ -1,33 +1,17 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {useUnitFormatter} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {ChangeList, DiffCard, DiffTooltip, FromTo, MetaInfo} from '../../../diff'
 import {useRefValue} from '../../../diff/hooks'
 import {type DiffComponent, type ObjectDiff} from '../../../types'
+import {sizeDiff, sizeDiffNegativeVar, sizeDiffPositiveVar} from './FileFieldDiff.css'
 import {getHumanFriendlyBytes, getSizeDiff} from './helpers'
 import {type File, type FileAsset} from './types'
-
-const SizeDiff = styled.div`
-  ${({theme}) => `
-    --size-diff-positive: ${theme.sanity.color.solid.positive.enabled.bg};
-    --size-diff-negative: ${theme.sanity.color.solid.critical.enabled.bg};
-  `}
-  &:not([hidden]) {
-    display: inline-block;
-  }
-
-  [data-number='positive'] {
-    color: var(--size-diff-positive);
-  }
-
-  [data-number='negative'] {
-    color: var(--size-diff-negative);
-  }
-`
 
 export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType}) => {
   const {fromValue, toValue, fields} = diff
@@ -54,6 +38,16 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
 
   const cardStyles = useMemo(() => ({display: 'block', flex: 1}), [])
 
+  const {color} = useThemeV2()
+  const sizeDiffVars = useMemo(
+    () =>
+      assignInlineVars({
+        [sizeDiffPositiveVar]: color.solid.positive.enabled.bg,
+        [sizeDiffNegativeVar]: color.solid.critical.enabled.bg,
+      }),
+    [color],
+  )
+
   const from = prev && (
     <DiffCard as="del" diff={diff} path="asset._ref" style={cardStyles}>
       <MetaInfo
@@ -78,7 +72,7 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
             {nextSize}
           </Text>
           {pctDiff !== 0 && (
-            <Card radius={2} padding={1} as={SizeDiff} marginLeft={2}>
+            <Card className={sizeDiff} style={sizeDiffVars} radius={2} padding={1} marginLeft={2}>
               <Text size={0} data-number={pctDiff > 0 ? 'positive' : 'negative'}>
                 {pctDiff > 0 ? '+' : '-'}
                 {pctDiff}%

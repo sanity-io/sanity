@@ -2,9 +2,9 @@
 
 import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
-import {styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '..'
+import {tooltipButtonWrapper} from './Button.css'
 
 type BaseButtonProps = Pick<
   UIButtonProps,
@@ -52,9 +52,6 @@ const DEFAULT_BUTTON_PROPS = {
   padding: 2,
 }
 
-const TooltipButtonWrapper = styled.span`
-  display: inline-flex;
-`
 /**
  * Customized Sanity UI <Button> with pre-defined layout options.
  *
@@ -90,7 +87,7 @@ export const Button = forwardRef(function Button(
     return (
       <Tooltip content={tooltipProps?.content} portal {...tooltipProps}>
         {/* This span is needed to make the tooltip work in disabled buttons */}
-        <TooltipButtonWrapper>{children}</TooltipButtonWrapper>
+        <span className={tooltipButtonWrapper}>{children}</span>
       </Tooltip>
     )
   }

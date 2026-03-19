@@ -3,7 +3,6 @@ import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sani
 import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
 import get from 'lodash-es/get.js'
 import {useCallback, useEffect, useId, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
 import {type Source} from '../../../../../../../../../config'
@@ -25,9 +24,7 @@ const ASSET_TYPE: Record<AssetType, string> = {
   image: 'sanity.imageAsset',
 }
 
-const ContainerBox = styled(Box)`
-  width: min(calc(100vw - 40px), 320px);
-`
+import {containerBox} from './Asset.css'
 
 export function SearchFilterAssetInput(type?: AssetType) {
   return function FieldInputAssetWithType({
@@ -112,7 +109,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
     const accept = get(type, 'options.accept', type === 'image' ? 'image/*' : '')
 
     return (
-      <ContainerBox>
+      <Box className={containerBox}>
         <Stack space={3}>
           {/* Asset source component */}
           {selectedAssetSource && AssetSourceComponent && (
@@ -196,7 +193,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
             )}
           </Flex>
         </Stack>
-      </ContainerBox>
+      </Box>
     )
   }
 }

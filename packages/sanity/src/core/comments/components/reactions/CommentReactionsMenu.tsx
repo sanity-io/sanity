@@ -6,7 +6,7 @@ import {useTranslation} from '../../../i18n'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption} from '../../types'
-import {EmojiText} from './EmojiText.styled'
+import {EmojiText} from './EmojiText'
 
 const GRID_COLUMNS = 6
 

@@ -1,6 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Heading} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {useColorSchemeValue} from '../../../colorScheme'
@@ -8,36 +7,11 @@ import {UpsellDescriptionSerializer} from '../../../upsell'
 import {type TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
 import {type FreeTrialDialog} from './types'
 
+import {styledButton, image as imageClass, styledDialog} from './DialogContent.css'
+
 /**
  * Absolute positioned button to close the dialog.
  */
-const StyledButton = styled(Button)`
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 20;
-  background: transparent;
-  border-radius: 9999px;
-  box-shadow: none;
-  color: white;
-  --card-fg-color: white;
-  :hover {
-    --card-fg-color: white;
-  }
-`
-
-const Image = styled.img`
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  height: 196px;
-`
-
-const StyledDialog = styled(Dialog)`
-  > [data-ui='DialogCard'] {
-    max-width: 22.5rem;
-  }
-`
 interface ModalContentProps {
   content: FreeTrialDialog
   onClose: (action?: TrialDialogDismissedInfo['dialogDismissAction']) => void
@@ -65,7 +39,8 @@ export function DialogContent({
   const schemeValue = useColorSchemeValue()
   if (!open) return null
   return (
-    <StyledDialog
+    <Dialog
+      className={styledDialog}
       id="free-trial-modal"
       onClose={onClose}
       onClickOutside={handleClickOutside}
@@ -99,7 +74,8 @@ export function DialogContent({
         },
       }}
     >
-      <StyledButton
+      <Button
+        className={styledButton}
         icon={CloseIcon}
         mode="bleed"
         tone="default"
@@ -108,7 +84,7 @@ export function DialogContent({
         tooltipProps={null}
       />
       {content.image && (
-        <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
+        <img className={imageClass} src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
       )}
       <Flex padding={3} direction={'column'}>
         <Box paddingX={2} marginTop={3}>
@@ -118,6 +94,6 @@ export function DialogContent({
           <UpsellDescriptionSerializer blocks={content.descriptionText} />
         </Box>
       </Flex>
-    </StyledDialog>
+    </Dialog>
   )
 }

@@ -11,7 +11,6 @@ import {
   Text,
 } from '@sanity/ui'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
 import {UserAvatar} from '../../../../components'
@@ -23,19 +22,13 @@ import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {LoginProviderLogo} from './LoginProviderLogo'
 
-const StyledMenu = styled(Menu)`
-  min-width: 200px;
-  max-width: 300px;
-`
-
-const AvatarBox = styled(Box)`
-  position: relative;
-  min-width: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
-  min-height: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
-`
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {styledMenu, avatarBox, avatarSizeVar} from './UserMenu.css'
 
 export function UserMenu() {
   const {currentUser, auth} = useWorkspace()
+  const theme = useThemeV2()
   const scheme = useColorSchemeValue()
   const setScheme = useColorSchemeSetValue()
 
@@ -64,7 +57,7 @@ export function UserMenu() {
       }
       id="user-menu"
       menu={
-        <StyledMenu data-testid="user-menu">
+        <Menu className={styledMenu} data-testid="user-menu">
           <Card padding={2}>
             <Flex align="center">
               <Tooltip
@@ -72,10 +65,10 @@ export function UserMenu() {
                 portal
                 content={t('user-menu.login-provider', {providerTitle})}
               >
-                <AvatarBox marginRight={3}>
+                <Box className={avatarBox} marginRight={3} style={assignInlineVars({[avatarSizeVar]: `${theme.avatar.sizes[2].size}px`})}>
                   <UserAvatar size={2} user="me" />
                   {currentUser?.provider && <LoginProviderLogo provider={currentUser.provider} />}
-                </AvatarBox>
+                </Box>
               </Tooltip>
 
               <Stack space={2} flex={1}>
@@ -104,7 +97,7 @@ export function UserMenu() {
               />
             </>
           )}
-        </StyledMenu>
+        </Menu>
       }
       popover={popoverProps}
     />

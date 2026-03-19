@@ -2,16 +2,14 @@ import {AddCommentIcon} from '@sanity/icons'
 import {useClickOutsideEvent} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useRef} from 'react'
-import {styled} from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {CommentDisabledIcon} from '../../../components'
 import {commentsLocaleNamespace} from '../../../i18n'
+import {motionPopover} from './FloatingButtonPopover.css'
 
-const MotionPopover = styled(motion.create(Popover))`
-  user-select: none;
-`
+const MotionPopover = motion.create(Popover)
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 
@@ -52,6 +50,7 @@ export function FloatingButtonPopover(props: FloatingButtonPopoverProps) {
 
   return (
     <MotionPopover
+      className={motionPopover}
       animate="visible"
       content={content}
       contentEditable={false}

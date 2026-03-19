@@ -9,17 +9,14 @@ import {
   useMemo,
 } from 'react'
 import {IntentLink, useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n'
 import {NavigatedToReleasesOverview} from '../../releases/__telemetry__/navigation.telemetry'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {SCHEDULES_TOOL_NAME} from '../../schedules/plugin'
+import {styledLinkComponent} from './ViewContentReleasesMenuItem.css'
 
-const StyledLinkComponent = styled(IntentLink)`
-  text-decoration: none;
-`
 export const ViewContentReleasesMenuItem: ComponentType = () => {
   const router = useRouter()
   const {t} = useTranslation()
@@ -41,8 +38,9 @@ export const ViewContentReleasesMenuItem: ComponentType = () => {
         ref: ForwardedRef<HTMLAnchorElement>,
       ) {
         return (
-          <StyledLinkComponent
+          <IntentLink
             {...restProps}
+            className={styledLinkComponent}
             intent={RELEASES_INTENT}
             params={{source: 'menu'}}
             ref={ref}

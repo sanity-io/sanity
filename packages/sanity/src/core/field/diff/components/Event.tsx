@@ -1,8 +1,9 @@
 import {type AvatarSize, AvatarStack, Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
-import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
@@ -24,6 +25,16 @@ import {
   TIMELINE_ITEM_EVENT_TONE,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
 } from './constants'
+import {
+  avatarSizeVar,
+  avatarSkeleton,
+  iconBox,
+  iconColorBgVar,
+  iconColorFgVar,
+  iconSizeVar,
+  nameHeightVar,
+  nameSkeleton,
+} from './Event.css'
 
 interface UserAvatarStackProps {
   maxLength?: number
@@ -42,56 +53,72 @@ function UserAvatarStack({maxLength, userIds, size, withTooltip = true}: UserAva
   )
 }
 
-const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
-  const theme = getTheme_v2(props.theme)
-  const color = props.$color
-
-  return css`
-    --card-icon-color: ${theme.color.avatar[color].fg};
-    background-color: ${theme.color.avatar[color].bg};
-    box-shadow: 0 0 0 1px var(--card-bg-color);
-
-    position: absolute;
-    width: ${theme.avatar.sizes[0].size}px;
-    height: ${theme.avatar.sizes[0].size}px;
-    right: -3px;
-    bottom: -3px;
-    border-radius: 50%;
-  `
-})
+function IconBox({
+  children,
+  $color,
+  ...restProps
+}: {
+  children: React.ReactNode
+  $color: ThemeColorAvatarColorKey
+  align?: 'center'
+  justify?: 'center'
+}) {
+  const theme = useThemeV2()
+  const vars = useMemo(
+    () =>
+      assignInlineVars({
+        [iconColorFgVar]: theme.color.avatar[$color].fg,
+        [iconColorBgVar]: theme.color.avatar[$color].bg,
+        [iconSizeVar]: `${theme.avatar.sizes[0].size}px`,
+      }),
+    [theme, $color],
+  )
+  return (
+    <Flex className={iconBox} style={vars} {...restProps}>
+      {children}
+    </Flex>
+  )
+}
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   minimal: true,
   useTemporalPhrase: true,
 }
 
-const AvatarSkeleton = styled(Skeleton)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    border-radius: 50%;
-    width: ${theme.avatar.sizes[1].size}px;
-    height: ${theme.avatar.sizes[1].size}px;
-  `
-})
+function AvatarSkeletonComponent(props: {animated?: boolean}) {
+  const theme = useThemeV2()
+  const vars = useMemo(
+    () =>
+      assignInlineVars({
+        [avatarSizeVar]: `${theme.avatar.sizes[1].size}px`,
+      }),
+    [theme],
+  )
+  return <Skeleton className={avatarSkeleton} style={vars} {...props} />
+}
 
-const NameSkeleton = styled(Skeleton)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    width: 6ch;
-    height: ${theme.font.text.sizes[0].lineHeight}px;
-  `
-})
+function NameSkeletonComponent(props: {animated?: boolean}) {
+  const theme = useThemeV2()
+  const vars = useMemo(
+    () =>
+      assignInlineVars({
+        [nameHeightVar]: `${theme.font.text.sizes[0].lineHeight}px`,
+      }),
+    [theme],
+  )
+  return <Skeleton className={nameSkeleton} style={vars} {...props} />
+}
 
 const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
 
   return (
     <Flex key={userId} align="center" gap={2} padding={1}>
-      <Box>{loading || !user ? <AvatarSkeleton animated /> : <UserAvatar user={user} />}</Box>
+      <Box>{loading || !user ? <AvatarSkeletonComponent animated /> : <UserAvatar user={user} />}</Box>
       <Box>
         {loading || !user?.displayName ? (
           <Text size={1}>
-            <NameSkeleton animated />
+            <NameSkeletonComponent animated />
           </Text>
         ) : (
           <Text muted size={1}>

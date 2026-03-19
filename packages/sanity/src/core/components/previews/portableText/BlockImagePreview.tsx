@@ -1,11 +1,14 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
-import {HeaderFlex, MediaCard, RootBox} from './BlockImagePreview.styled'
+import {headerFlex, mediaCard, radiusVar, ratioVar, rootBox} from './BlockImagePreview.css'
 
 /**
  * @hidden
@@ -44,10 +47,23 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
     status,
   } = props
 
+  const {radius} = useThemeV2()
+
   return (
-    <RootBox>
+    <Box
+      className={rootBox}
+      overflow="hidden"
+      style={assignInlineVars({[radiusVar]: `${radius[1]}px`})}
+    >
       <Stack>
-        <HeaderFlex paddingBottom={3} paddingLeft={2} paddingRight={1} paddingTop={1}>
+        <Flex
+          className={headerFlex}
+          align="center"
+          paddingBottom={3}
+          paddingLeft={2}
+          paddingRight={1}
+          paddingTop={1}
+        >
           <Stack flex={1} space={2}>
             {(title || fallbackTitle) && (
               <Text size={1} textOverflow="ellipsis" weight="medium">
@@ -71,15 +87,16 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
 
             {actions as any}
           </Flex>
-        </HeaderFlex>
+        </Flex>
 
-        <MediaCard
-          $ratio={getRatio(mediaDimensions)}
+        <Card
+          className={mediaCard}
           __unstable_checkered
           display="flex"
           sizing="border"
           radius={2}
           tone="inherit"
+          style={assignInlineVars({[ratioVar]: `${getRatio(mediaDimensions)}%`})}
         >
           <Media
             border={false}
@@ -89,7 +106,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
             radius={0}
             responsive
           />
-        </MediaCard>
+        </Card>
       </Stack>
 
       {description && (
@@ -101,6 +118,6 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
       )}
 
       {children && <div>{children}</div>}
-    </RootBox>
+    </Box>
   )
 }

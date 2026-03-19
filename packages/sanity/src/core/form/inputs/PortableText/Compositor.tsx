@@ -20,7 +20,20 @@ import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../typ
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {type OnPasteFn} from '../../types/inputProps'
 import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
-import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
+import {Layer} from '@sanity/ui'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+
+import {focusRingBorderStyle, focusRingStyle} from '../../components/withFocusRing/helpers'
+import {
+  borderRadiusVar,
+  borderWidthVar,
+  expandedLayer,
+  focusBoxShadowVar,
+  inputBoxShadowVar,
+  root as rootClass,
+  stringDiffContainer,
+} from './Compositor.css'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 import {SelectedAnnotationsProvider} from './contexts/SelectedAnnotationsContext'
@@ -110,6 +123,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const boundaryElement = useBoundaryElement().element
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
+  const {color: themeColor, input: themeInput, radius: themeRadius} = useThemeV2()
 
   const handleToggleFullscreen = useCallback(() => {
     onToggleFullscreen()
@@ -452,7 +466,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         tabIndex={-1}
         types={schemaTypes.portableText.of}
       >
-        <StringDiffContainer>
+        <div className={stringDiffContainer}>
           <Editor
             ariaDescribedBy={ariaDescribedBy}
             elementRef={elementRef}
@@ -476,7 +490,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             scrollElement={scrollElement}
             setScrollElement={setScrollElement}
           />
-        </StringDiffContainer>
+        </div>
       </UploadTargetCard>
     ),
 
@@ -548,7 +562,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             >
               <Box data-wrapper="" ref={setWrapperElement}>
                 <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                  {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                  {isFullscreen ? <Layer className={expandedLayer}>{editorNode}</Layer> : editorNode}
                   <AnnotationObjectEditModal
                     focused={focused}
                     onItemClose={onItemClose}
@@ -561,7 +575,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
                 </Portal>
               </Box>
               <div data-border="" />
-            </Root>
+            </div>
           </ChangeIndicator>
         </ActivateOnFocus>
       </PortalProvider>

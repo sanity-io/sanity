@@ -1,23 +1,10 @@
 import {hues} from '@sanity/color'
-import {Card, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {Card} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 
-const STROKE_WIDTH = 0.5
-
-const Root = styled(Card)`
-  overflow: hidden;
-  overflow: clip;
-`
-
-const Bar = styled(Card)(({theme}: {theme: Theme}) => {
-  const {color} = theme.sanity
-
-  return css`
-    height: ${STROKE_WIDTH}rem;
-    background: ${hues.blue[color.dark ? 400 : 500].hex};
-    transition: transform 75ms;
-  `
-})
+import {barColorVar, barStyle, rootStyle} from './LinearProgress.css'
 
 /**
  * @hidden
@@ -27,10 +14,18 @@ export function LinearProgress(props: {
   value: number
 }) {
   const {value} = props
+  const {color} = useThemeV2()
 
   return (
-    <Root radius={5}>
-      <Bar radius={5} style={{transform: `translate3d(${value - 100}%, 0, 0)`}} />
-    </Root>
+    <Card className={rootStyle} radius={5}>
+      <Card
+        className={barStyle}
+        radius={5}
+        style={{
+          ...assignInlineVars({[barColorVar]: hues.blue[color.dark ? 400 : 500].hex}),
+          transform: `translate3d(${value - 100}%, 0, 0)`,
+        }}
+      />
+    </Card>
   )
 }

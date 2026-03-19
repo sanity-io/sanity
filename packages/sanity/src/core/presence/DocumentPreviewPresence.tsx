@@ -1,9 +1,10 @@
 /* eslint-disable camelcase */
 
 import {AvatarStack} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+// eslint-disable-next-line camelcase
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
-import {css, styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '../../ui-components'
 import {UserAvatar} from '../components'
@@ -12,6 +13,7 @@ import {getReleaseIdFromReleaseDocumentId, useActiveReleases} from '../releases'
 import {releasesLocaleNamespace} from '../releases/i18n'
 import {type DocumentPresence} from '../store'
 import {getVersionFromId, isNonNullable} from '../util'
+import {avatarStackBox, marginVar} from './DocumentPreviewPresence.css'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {
@@ -22,18 +24,11 @@ const PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
   portal: true,
 }
 
-const AvatarStackBox = styled.div((props) => {
-  const {space} = getTheme_v2(props.theme)
-
-  return css`
-    margin: ${0 - space[1]}px;
-  `
-})
-
 /** @internal */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
   const {presence} = props
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {space} = useThemeV2()
 
   const {data: releases} = useActiveReleases()
 
@@ -72,13 +67,16 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
 
   return (
     <Tooltip content={tooltipContent} {...PRESENCE_MENU_POPOVER_PROPS}>
-      <AvatarStackBox>
+      <div
+        className={avatarStackBox}
+        style={assignInlineVars({[marginVar]: `${0 - space[1]}px`})}
+      >
         <AvatarStack maxLength={2} aria-label={tooltipContent} size={0}>
           {uniquePresence.map((item) => (
             <UserAvatar key={item.user.id} size={0} user={item.user} />
           ))}
         </AvatarStack>
-      </AvatarStackBox>
+      </div>
     </Tooltip>
   )
 }

@@ -1,18 +1,13 @@
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
 import {memo} from 'react'
-import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useUser} from '../../../store'
 import {tasksLocaleNamespace} from '../../i18n'
+import * as classes from './TasksActivityCreatedAt.css'
 import {NoWrap, useUpdatedTimeAgo} from './helpers'
 import {ActivityItem} from './TasksActivityItem'
-
-const UserSkeleton = styled(TextSkeleton)`
-  max-width: 15ch;
-  width: '100%';
-`
 
 interface TasksActivityCreatedAtProps {
   createdAt: string
@@ -31,7 +26,7 @@ export const TasksActivityCreatedAt = memo(
           <Text size={1} muted>
             <strong style={{fontWeight: 600}}>
               {loading ? (
-                <UserSkeleton />
+                <TextSkeleton className={classes.userSkeleton} />
               ) : (
                 (user?.displayName ?? t('panel.activity.unknown-user'))
               )}{' '}

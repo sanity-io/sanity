@@ -1,13 +1,13 @@
 import {AddIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {type SidebarTabsIds, useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskStatus} from '../../types'
+import * as classes from './EmptyStates.css'
 
 const HEADING_BY_STATUS: Record<
   TaskStatus,
@@ -84,25 +84,6 @@ const EMPTY_TASK_LIST: Record<
   },
 }
 
-const Root = styled.div`
-  max-width: 268px;
-  margin: 0 auto;
-  height: 100%;
-  margin-top: 40%;
-`
-
-const AnimatedText = styled(Text)`
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  animation: fadeIn 0.2s ease-in-out;
-`
-
 export function EmptyTasksListState() {
   const {activeDocument} = useTasks()
   const {mode} = useTasksEnabled()
@@ -120,15 +101,15 @@ export function EmptyTasksListState() {
     setViewMode({type: 'create'})
   }, [setViewMode])
   return (
-    <Root>
+    <div className={classes.root}>
       <Flex direction={'column'} gap={3} align={'center'} flex={1} justify={'center'}>
-        <AnimatedText key={key} size={1} weight="semibold">
+        <Text className={classes.animatedText} key={key} size={1} weight="semibold">
           {t(heading)}
-        </AnimatedText>
+        </Text>
         <Box paddingBottom={6} paddingTop={1}>
-          <AnimatedText key={key} size={1} align="center">
+          <Text className={classes.animatedText} key={key} size={1} align="center">
             {t(text)}
-          </AnimatedText>
+          </Text>
         </Box>
         {mode !== 'upsell' && (
           <Button
@@ -138,6 +119,6 @@ export function EmptyTasksListState() {
           />
         )}
       </Flex>
-    </Root>
+    </div>
   )
 }

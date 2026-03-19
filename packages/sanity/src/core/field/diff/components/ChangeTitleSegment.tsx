@@ -1,21 +1,13 @@
 import {Box, rem, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {useMemo} from 'react'
 
 import {useTranslation} from '../../../i18n'
 import {type Annotation, type FieldChangeNode, type FromToIndex} from '../../types'
 import {getAnnotationAtPath} from '../annotations'
+import {annotationText, paddingVar, radiusVar, roundedCard} from './ChangeTitleSegment.css'
 import {DiffCard} from './DiffCard'
-
-const RoundedCard = styled.div`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
-  padding: ${({theme}) => rem(theme.sanity.space[1])};
-`
-
-const AnnotationText = styled(Text)`
-  &:not([hidden]) {
-    color: inherit;
-  }
-`
 
 /** @internal */
 export function ChangeTitleSegment(props: {
@@ -70,18 +62,26 @@ function CreatedTitleSegment(props: {
 }) {
   const {annotation: annotationProp, change, toIndex = 0} = props
   const {t} = useTranslation()
+  const {radius, space} = useThemeV2()
   const readableIndex = toIndex + 1
   const description = t('changes.array.item-added-in-position', {position: readableIndex})
   const content = <>#{readableIndex}</>
   const diffAnnotation = change?.diff ? getAnnotationAtPath(change.diff, []) : undefined
   const annotation = diffAnnotation || annotationProp
 
+  const roundedCardVars = useMemo(
+    () => assignInlineVars({[radiusVar]: rem(radius[2]), [paddingVar]: rem(space[1])}),
+    [radius, space],
+  )
+
   if (annotation) {
     return (
-      <DiffCard annotation={annotation} tooltip={{description}} as={RoundedCard}>
-        <AnnotationText size={1} weight="medium" forwardedAs="ins" style={{textDecoration: 'none'}}>
-          {content}
-        </AnnotationText>
+      <DiffCard annotation={annotation} tooltip={{description}} as="div">
+        <div className={roundedCard} style={roundedCardVars}>
+          <Text className={annotationText} size={1} weight="medium" forwardedAs="ins" style={{textDecoration: 'none'}}>
+            {content}
+          </Text>
+        </div>
       </DiffCard>
     )
   }
@@ -96,13 +96,22 @@ function CreatedTitleSegment(props: {
 function DeletedTitleSegment(props: {annotation: Annotation | undefined; fromIndex?: number}) {
   const {annotation, fromIndex = 0} = props
   const {t} = useTranslation()
+  const {radius, space} = useThemeV2()
   const readableIndex = fromIndex + 1
   const description = t('changes.array.item-removed-from-position', {position: readableIndex})
+
+  const roundedCardVars = useMemo(
+    () => assignInlineVars({[radiusVar]: rem(radius[2]), [paddingVar]: rem(space[1])}),
+    [radius, space],
+  )
+
   return (
-    <DiffCard annotation={annotation || null} as={RoundedCard} tooltip={{description}}>
-      <AnnotationText size={1} weight="medium" forwardedAs="del">
-        #{readableIndex}
-      </AnnotationText>
+    <DiffCard annotation={annotation || null} as="div" tooltip={{description}}>
+      <div className={roundedCard} style={roundedCardVars}>
+        <Text className={annotationText} size={1} weight="medium" forwardedAs="del">
+          #{readableIndex}
+        </Text>
+      </div>
     </DiffCard>
   )
 }
@@ -114,6 +123,7 @@ function MovedTitleSegment(props: {
 }) {
   const {annotation, fromIndex, toIndex} = props
   const {t} = useTranslation()
+  const {radius, space} = useThemeV2()
   const indexDiff = toIndex - fromIndex
   const indexSymbol = indexDiff < 0 ? '↑' : '↓'
   const positions = Math.abs(indexDiff)
@@ -123,18 +133,25 @@ function MovedTitleSegment(props: {
     context: direction,
   })
 
+  const roundedCardVars = useMemo(
+    () => assignInlineVars({[radiusVar]: rem(radius[2]), [paddingVar]: rem(space[1])}),
+    [radius, space],
+  )
+
   return (
     <>
       <Box padding={1}>
-        <AnnotationText size={1} weight="medium">
+        <Text className={annotationText} size={1} weight="medium">
           #{toIndex + 1}
-        </AnnotationText>
+        </Text>
       </Box>
-      <DiffCard annotation={annotation} as={RoundedCard} tooltip={{description}}>
-        <AnnotationText size={1} weight="medium">
-          {indexSymbol}
-          {Math.abs(indexDiff)}
-        </AnnotationText>
+      <DiffCard annotation={annotation} as="div" tooltip={{description}}>
+        <div className={roundedCard} style={roundedCardVars}>
+          <Text className={annotationText} size={1} weight="medium">
+            {indexSymbol}
+            {Math.abs(indexDiff)}
+          </Text>
+        </div>
       </DiffCard>
     </>
   )

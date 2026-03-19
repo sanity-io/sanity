@@ -18,8 +18,8 @@ import {
 import {ReactionIcon} from '../icons'
 import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
-import {EmojiText} from './EmojiText.styled'
-import {TransparentCard} from './TransparentCard.styled'
+import {EmojiText} from './EmojiText'
+import {TransparentCard} from './TransparentCard'
 
 /**
  * A function that groups reactions by name. For example:

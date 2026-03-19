@@ -1,35 +1,23 @@
-import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {
-  type ObjectSchemaType,
-  type Path,
-  type PortableTextBlock,
-  type PortableTextChild,
-} from '@sanity/types'
-import {isEqual} from '@sanity/util/paths'
-import {useCallback, useMemo, useState} from 'react'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {hues} from '@sanity/color'
 
-import {Tooltip} from '../../../../../ui-components'
-import {pathToString} from '../../../../field/paths'
-import {useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
-import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
-  type BlockProps,
-  type RenderAnnotationCallback,
-  type RenderArrayOfObjectsItemCallback,
-  type RenderBlockCallback,
-  type RenderCustomMarkers,
-  type RenderFieldCallback,
-  type RenderInputCallback,
-  type RenderPreviewCallback,
-} from '../../../types'
-import {useFormBuilder} from '../../../useFormBuilder'
-import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
-import {useMemberValidation} from '../hooks/useMemberValidation'
-import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
-import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
-import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'
+  borderRadiusVar,
+  focusBorderColorVar,
+  focusFgColorVar,
+  hoveredBorderColorVar,
+  invalidBgVar,
+  invalidBorderVar,
+  invalidHoverBorderVar,
+  markersBgVar,
+  previewSpan,
+  root as rootClass,
+  selectedBgVar,
+  tooltipBox,
+  warningBgVar,
+  warningHoverBorderVar,
+} from './InlineObject.css'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 import {ObjectEditModal} from './modals/ObjectEditModal'
 
@@ -196,13 +184,13 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
   const toolTipContent = useMemo(
     () =>
       (tooltipEnabled && (
-        <TooltipBox>
+        <Box className={tooltipBox}>
           <Markers
             markers={markers}
             validation={validation}
             renderCustomMarkers={renderCustomMarkers}
           />
-        </TooltipBox>
+        </Box>
       )) ||
       null,
     [Markers, markers, renderCustomMarkers, tooltipEnabled, validation],
@@ -281,7 +269,8 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
 
   return (
     <>
-      <Root
+      <Card
+  className={rootClass}
         aria-label={t('inputs.portable-text.inline-block.aria-label')}
         data-focused={focused || undefined}
         data-invalid={hasError || undefined}
@@ -294,7 +283,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
         onDoubleClick={onOpen}
         tone={tone}
       >
-        <PreviewSpan>
+        <span className={previewSpan}>
           {renderPreview({
             layout: 'inline',
             schemaType,
@@ -302,8 +291,8 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
             value,
             fallbackTitle: 'Click to edit',
           })}
-        </PreviewSpan>
-      </Root>
+        </span>
+      </Card>
       {referenceElement && (
         <InlineObjectToolbarPopover
           floatingBoundary={floatingBoundary}

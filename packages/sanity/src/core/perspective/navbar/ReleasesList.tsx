@@ -1,7 +1,6 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {Card, Flex, Spinner, Stack} from '@sanity/ui'
 import {type JSX, type RefObject, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
@@ -17,26 +16,13 @@ import {
   GlobalPerspectiveMenuItem,
   type LayerRange,
 } from './GlobalPerspectiveMenuItem'
+import {stickyBottomCard, stickyTopCard} from './ReleasesList.css'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
 import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
-
-const StickyCard = styled(Card)`
-  position: sticky;
-  z-index: 2;
-  background: var(--card-bg-color);
-`
-
-const StickyTopCard = styled(StickyCard)`
-  top: 0;
-`
-
-const StickyBottomCard = styled(StickyCard)`
-  bottom: 0;
-`
 
 export function ReleasesList({
   areReleasesEnabled,
@@ -125,7 +111,7 @@ export function ReleasesList({
 
   return (
     <Card radius={3}>
-      <StickyTopCard borderBottom padding={1}>
+      <Card className={stickyTopCard} borderBottom padding={1}>
         <Stack space={1}>
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
@@ -140,7 +126,7 @@ export function ReleasesList({
             />
           )}
         </Stack>
-      </StickyTopCard>
+      </Card>
       {agentBundles[0] && (
         <Card borderBottom padding={1}>
           <Stack space={1}>
@@ -163,13 +149,13 @@ export function ReleasesList({
         </Stack>
       )}
       {areReleasesEnabled && (
-        <StickyBottomCard borderTop paddingY={1} paddingX={2}>
+        <Card className={stickyBottomCard} borderTop paddingY={1} paddingX={2}>
           <Stack space={1}>
             <ScheduledDraftsMenuItem />
             <ViewContentReleasesMenuItem />
             <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
           </Stack>
-        </StickyBottomCard>
+        </Card>
       )}
     </Card>
   )

@@ -1,8 +1,11 @@
 import {TextInput} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {forwardRef} from 'react'
 
-export const TimeInput = styled(TextInput).attrs(() => ({
-  type: 'time',
-}))`
-  line-height: 1;
-`
+import {timeInput} from './TimeInput.css'
+
+export const TimeInput = forwardRef(function TimeInput(
+  props: React.ComponentProps<typeof TextInput>,
+  ref: React.Ref<HTMLInputElement>,
+) {
+  return <TextInput {...props} className={timeInput} type="time" ref={ref} />
+})

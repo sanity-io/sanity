@@ -1,13 +1,12 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type PortableTextBlock} from '@sanity/types'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
-
 import {type PatchEvent} from '../../patch'
 import {
   type RenderBlockActionsCallback,
   type RenderBlockActionsProps,
 } from '../../types/_transitional'
+import {root} from './BlockActions.css'
 import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
 
 interface BlockActionsProps {
@@ -16,10 +15,6 @@ interface BlockActionsProps {
   renderBlockActions?: RenderBlockActionsCallback
 }
 
-const Root = styled.div`
-  display: flex;
-  pointer-events: all;
-`
 
 export function BlockActions(props: BlockActionsProps) {
   const editor = usePortableTextEditor()
@@ -42,5 +37,5 @@ export function BlockActions(props: BlockActionsProps) {
   // Note that if renderBlockComponent is a React class, this will never be the case.
   if (!blockActions) return null
 
-  return <Root contentEditable={false}>{blockActions}</Root>
+  return <div className={root} contentEditable={false}>{blockActions}</div>
 }

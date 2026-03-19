@@ -2,9 +2,8 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {Dialog} from '../../../ui-components'
+import {styledDialog} from './EnhancedObjectDialog.css'
 import {PopoverDialog} from '../../components'
 import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
@@ -19,14 +18,6 @@ import {
 import {useFormBuilder} from '../useFormBuilder'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
 
-/**
- * Styled Dialog component that conditionally hides the dialog card and backdrop.
- * Used to keep non-top dialogs in the DOM but hidden from view.
- */
-const StyledDialog = styled(Dialog)<{$isHidden: boolean}>`
-  ${(props) =>
-    props.$isHidden &&
-    `
     /* Hide the backdrop (the semi-transparent overlay) */
     background: transparent !important;
 
@@ -180,8 +171,9 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         scrollElement={documentScrollElement}
         containerElement={containerElement}
       >
-        <StyledDialog
-          $isHidden={!isTop}
+        <Dialog
+          className={styledDialog}
+          data-hidden={!isTop ? 'true' : undefined}
           __unstable_autoFocus={isTop ? props.autofocus : false}
           contentRef={setDocumentScrollElement}
           data-testid="nested-object-dialog"
@@ -201,7 +193,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           onClickOutside={handleCompleteDialogClose}
         >
           {contents}
-        </StyledDialog>
+        </Dialog>
       </VirtualizerScrollInstanceProvider>
     )
   }

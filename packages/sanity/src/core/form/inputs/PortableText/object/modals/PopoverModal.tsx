@@ -1,15 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 
-import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {type PropsWithChildren, type ReactNode, useCallback, useRef, useState} from 'react'
-import FocusLock from 'react-focus-lock'
-import {type PortableTextEditorElement} from 'sanity/_singletons'
-
-import {Button, type PopoverProps} from '../../../../../../ui-components'
-import {PresenceOverlay} from '../../../../../presence'
-import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
+import {contentHeaderBox, contentScrollerBox, rootPopover} from './PopoverModal.css'
 import {type ModalWidth} from './types'
 
 interface PopoverEditDialogProps {
@@ -129,7 +120,7 @@ function Content(props: PopoverEditDialogProps) {
     >
       <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
         <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
-          <ContentHeaderBox flex="none" padding={1}>
+          <Box className={contentHeaderBox} flex="none" padding={1}>
             <Flex align="center">
               <Box flex={1} padding={2}>
                 <Text weight="medium">{title}</Text>
@@ -144,14 +135,14 @@ function Content(props: PopoverEditDialogProps) {
                 data-testid="close-popover-edit-dialog-button"
               />
             </Flex>
-          </ContentHeaderBox>
-          <ContentScrollerBox flex={1}>
+          </Box>
+          <Box className={contentScrollerBox} flex={1}>
             <PresenceOverlay margins={[0, 0, 1, 0]}>
               <Box padding={3} ref={setContentElement}>
                 {props.children}
               </Box>
             </PresenceOverlay>
-          </ContentScrollerBox>
+          </Box>
         </Flex>
       </FocusLock>
     </VirtualizerScrollInstanceProvider>

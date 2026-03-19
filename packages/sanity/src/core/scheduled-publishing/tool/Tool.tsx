@@ -2,9 +2,8 @@ import {Box, Card, Container, Flex, Text, useTheme} from '@sanity/ui'
 import {parse} from 'date-fns/parse'
 import {useEffect, useMemo, useRef} from 'react'
 import {Link, type RouterContextValue, useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
-
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {column} from './Tool.css'
 import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -28,12 +27,7 @@ import {Schedules} from './schedules'
 import SchedulesContextMenu from './schedulesContextMenu/SchedulesContextMenu'
 import {ToolCalendar} from './toolCalendar'
 
-const Column = styled(Box)`
-  flex-direction: column;
-  &:not(:last-child) {
-    border-right: 1px solid var(--card-border-color);
-  }
-`
+
 
 const NO_SCHEDULE: Schedule[] = []
 const DATE_SLUG_FORMAT = 'yyyy-MM-dd' // date-fns format
@@ -136,7 +130,7 @@ export default function Tool() {
       <Flex direction="column" height="fill" flex={1} overflow="hidden">
         <Flex flex={1} height="fill">
           {/* LHS Column */}
-          <Column
+          <Box className={column}
             display={['none', null, null, 'flex'] as any}
             style={{
               position: 'sticky',
@@ -149,9 +143,9 @@ export default function Tool() {
               timeZoneScope={timeZoneScope}
               selectedDate={selectedDate}
             />
-          </Column>
+          </Box>
           {/* RHS Column */}
-          <Column display="flex" flex={1} overflow="hidden">
+          <Box className={column} display="flex" flex={1} overflow="hidden">
             <ScheduledDraftsBanner />
             <TimeZoneButtonElementQuery
               style={{
@@ -212,7 +206,7 @@ export default function Tool() {
                 )}
               </Box>
             </Flex>
-          </Column>
+          </Box>
         </Flex>
       </Flex>
     </SchedulesProvider>

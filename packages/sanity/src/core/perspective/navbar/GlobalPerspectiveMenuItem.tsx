@@ -2,8 +2,8 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../ui-components/tooltip'
@@ -23,6 +23,12 @@ import {
 } from '../../releases/util/util'
 import {useWorkspace} from '../../studio/workspace'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
+import {
+  iconWrapperBoxHidden,
+  iconWrapperBoxVisible,
+  toggleLayerButton,
+  toggleLayerVisibleVar,
+} from './GlobalPerspectiveMenuItem.css'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
 export interface LayerRange {
@@ -34,41 +40,7 @@ export interface LayerRange {
   }
 }
 
-const ToggleLayerButton = styled(Button)<{$visible: boolean}>(
-  ({$visible}) => css`
-    --card-fg-color: inherit;
-    --card-icon-color: inherit;
-
-    background-color: inherit;
-    opacity: ${$visible ? 0 : 1};
-
-    @media (hover: hover) {
-      &:not([data-disabled='true']):hover {
-        --card-fg-color: inherit;
-        --card-icon-color: inherit;
-      }
-    }
-
-    [data-ui='MenuItem']:hover & {
-      opacity: 1;
-    }
-  `,
-)
-
 type rangePosition = 'first' | 'within' | 'last' | undefined
-const IconWrapperBox = styled(Box)<{$isExcluded: boolean}>(
-  ({$isExcluded}) => css`
-    position: relative;
-    z-index: 1;
-    border-radius: 50%;
-    /* background-color: var(--card-background-color);  */
-    opacity: ${$isExcluded ? 0 : 1};
-    // The icon needs a white background to visually sit on top of the line indicator
-    & svg {
-      background-color: var(--card-bg-color);
-    }
-  `,
-)
 
 export function getRangePosition(range: LayerRange, index: number): rangePosition {
   const {lastIndex} = range
@@ -152,8 +124,8 @@ export const GlobalPerspectiveMenuItem = forwardRef<
         {...props.menuItemProps?.({perspective: release})}
       >
         <Flex align="flex-start" gap={1}>
-          <IconWrapperBox
-            $isExcluded={isReleasePerspectiveExcluded}
+          <Box
+            className={isReleasePerspectiveExcluded ? iconWrapperBoxHidden : iconWrapperBoxVisible}
             flex="none"
             data-testid="release-indicator-icon"
             paddingX={3}
@@ -162,7 +134,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             <Text size={1}>
               <ReleaseAvatarIcon release={release} />
             </Text>
-          </IconWrapperBox>
+          </Box>
           <Stack
             flex={1}
             paddingY={2}
@@ -207,8 +179,11 @@ export const GlobalPerspectiveMenuItem = forwardRef<
           <Box flex="none">
             {canReleaseBeExcluded && (
               <Tooltip portal content={t('release.layer.hide')} placement="bottom">
-                <ToggleLayerButton
-                  $visible={!isReleasePerspectiveExcluded}
+                <Button
+                  className={toggleLayerButton}
+                  style={assignInlineVars({
+                    [toggleLayerVisibleVar]: isReleasePerspectiveExcluded ? '1' : '0',
+                  })}
                   forwardedAs="div"
                   icon={isReleasePerspectiveExcluded ? EyeClosedIcon : EyeOpenIcon}
                   mode="bleed"

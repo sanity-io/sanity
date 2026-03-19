@@ -1,10 +1,10 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type FormNodeValidation} from '@sanity/types'
-import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 
 import {type PortableTextMarker, type RenderCustomMarkers} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {iconTextError, iconTextInfo, iconTextWarning} from './Markers.css'
 
 export interface MarkersProps {
   markers: PortableTextMarker[]
@@ -24,21 +24,11 @@ const getIcon = (level: 'error' | 'warning' | 'info') => {
   return <InfoOutlineIcon />
 }
 
-const IconText = styled(Text)(({theme}: {theme: Theme}) => {
-  return css`
-    &[data-info] {
-      color: ${theme.sanity.color.muted.primary.enabled.fg};
-    }
-
-    &[data-warning] {
-      color: ${theme.sanity.color.muted.caution.enabled.fg};
-    }
-
-    &[data-error] {
-      color: ${theme.sanity.color.muted.critical.enabled.fg};
-    }
-  `
-})
+const ICON_CLASS_MAP = {
+  info: iconTextInfo,
+  warning: iconTextWarning,
+  error: iconTextError,
+} as const
 
 export function DefaultMarkers(props: MarkersProps) {
   const {markers, validation, renderCustomMarkers} = props
@@ -54,14 +44,12 @@ export function DefaultMarkers(props: MarkersProps) {
         validation.map(({message, level}, index) => (
           <Flex key={`validationItem-${index}`}>
             <Box marginRight={2} marginBottom={index + 1 === validation.length ? 0 : 2}>
-              <IconText
+              <Text
                 size={1}
-                data-error={level === 'error' ? '' : undefined}
-                data-warning={level === 'warning' ? '' : undefined}
-                data-info={level === 'info' ? '' : undefined}
+                className={ICON_CLASS_MAP[level]}
               >
                 {getIcon(level)}
-              </IconText>
+              </Text>
             </Box>
             <Box>
               <Text size={1}>{message || 'Error'}</Text>

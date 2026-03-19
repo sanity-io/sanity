@@ -15,9 +15,9 @@ import {
   useZIndex,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
+import {styledChangeConnectorRoot} from './DocumentLayout.css'
 import {DocumentActionsProvider} from '../../../DocumentActionsProvider'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
@@ -46,13 +46,6 @@ const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   'absolute',
 ]
 
-const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-`
 
 export function DocumentLayout() {
   const {
@@ -220,7 +213,8 @@ export function DocumentLayout() {
             <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
               <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
-                <StyledChangeConnectorRoot
+                <ChangeConnectorRoot
+                  className={styledChangeConnectorRoot}
                   data-testid="change-connector-root"
                   isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
                   onOpenReviewChanges={onHistoryOpen}
@@ -240,7 +234,7 @@ export function DocumentLayout() {
                       />
                     }
                   />
-                </StyledChangeConnectorRoot>
+                </ChangeConnectorRoot>
               </Flex>
             </DialogProvider>
             <DocumentOperationResults />

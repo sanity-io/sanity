@@ -1,7 +1,6 @@
 import {Box, Card, Portal} from '@sanity/ui'
 import {useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import {styled} from 'styled-components'
 
 import {supportsTouch} from '../../../../util'
 import {useColorSchemeValue} from '../../../colorScheme'
@@ -19,25 +18,7 @@ interface SearchDialogProps {
   open: boolean
 }
 
-const InnerCard = styled(Card)`
-  flex-direction: column;
-  overflow: hidden;
-  overflow: clip;
-  pointer-events: all;
-  position: relative;
-`
-
-const SearchDialogBox = styled(Box)`
-  height: 100%;
-  left: 0;
-  overflow: hidden;
-  overflow: clip;
-  pointer-events: none;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1;
-`
+import {innerCard, searchDialogBox} from './SearchDialog.css'
 
 /**
  * @internal
@@ -57,8 +38,8 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       {open && (
         <Portal>
           <FocusLock autoFocus={!supportsTouch} returnFocus>
-            <SearchDialogBox>
-              <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
+            <Box className={searchDialogBox}>
+              <Card className={innerCard} display="flex" height="fill" scheme={scheme} tone="default">
                 <SearchHeader onClose={onClose} ref={setInputElement} />
                 {filtersVisible && (
                   <Card borderTop flex="none">
@@ -70,8 +51,8 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
                 ) : (
                   <RecentSearches inputElement={inputElement} />
                 )}
-              </InnerCard>
-            </SearchDialogBox>
+              </Card>
+            </Box>
           </FocusLock>
         </Portal>
       )}

@@ -1,40 +1,51 @@
 /* eslint-disable camelcase */
 
-import {rem, type Theme} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {type ComponentType} from 'react'
-import {css, styled} from 'styled-components'
+import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {type ComponentType, forwardRef} from 'react'
 
 import {focusRingBorderStyle, focusRingStyle} from './helpers'
+import {
+  borderRadiusVar,
+  boxShadowVar,
+  focusBoxShadowVar,
+  focusRingClass,
+} from './withFocusRing.css'
 
-export function withFocusRing<Props>(component: ComponentType<Props>) {
-  return styled(component)<Props & {$border?: boolean; $radius?: number}>(
-    (props: {theme: Theme; $border?: boolean; $radius?: number}) => {
-      const {$border, $radius} = props
-      const {card, color, radius} = getTheme_v2(props.theme)
+export function withFocusRing<Props extends {className?: string; style?: React.CSSProperties}>(
+  component: ComponentType<Props>,
+) {
+  const WrappedComponent = forwardRef<unknown, Props & {$border?: boolean; $radius?: number}>(
+    (props, ref) => {
+      const {$border, $radius, ...rest} = props as any
+      const {card, color, radius} = useThemeV2()
 
       const border = {width: $border ? 1 : 0, color: 'var(--card-border-color)'}
 
-      return css`
-        --card-focus-box-shadow: ${focusRingBorderStyle(border)};
-
-        border-radius: ${rem(radius[$radius ?? 1])};
-        outline: none;
-        box-shadow: var(--card-focus-box-shadow);
-
-        &:focus {
-          --card-focus-box-shadow: ${focusRingStyle({
-            border,
-            base: color,
-            focusRing: {
-              ...card.focusRing,
-              // An offset of 0 is needed to avoid the focus ring overlap the border of the inner items, the theme has an offset of -1
-              // Detected in empty array items.
-              offset: 0,
-            },
-          })};
-        }
-      `
+      const Component = component as any
+      return (
+        <Component
+          {...rest}
+          ref={ref}
+          className={`${focusRingClass}${rest.className ? ` ${rest.className}` : ''}`}
+          style={{
+            ...rest.style,
+            [borderRadiusVar]: rem(radius[$radius ?? 1]),
+            [boxShadowVar]: focusRingBorderStyle(border),
+            [focusBoxShadowVar]: focusRingStyle({
+              border,
+              base: color,
+              focusRing: {
+                ...card.focusRing,
+                // An offset of 0 is needed to avoid the focus ring overlap the border of the inner items, the theme has an offset of -1
+                // Detected in empty array items.
+                offset: 0,
+              },
+            }),
+          }}
+        />
+      )
     },
   )
+  WrappedComponent.displayName = `withFocusRing(${(component as any).displayName || (component as any).name || 'Component'})`
+  return WrappedComponent
 }

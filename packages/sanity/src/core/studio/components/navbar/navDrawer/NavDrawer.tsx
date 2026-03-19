@@ -3,7 +3,6 @@ import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {UserAvatar} from '../../../../components'
@@ -46,32 +45,10 @@ const INNER_CARD_VARIANTS: Variants = {
   },
 }
 
-const Root = styled(Layer)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-`
+import {root as rootClass, backdropMotion as backdropMotionClass, innerCardMotion as innerCardMotionClass} from './NavDrawer.css'
 
-const BackdropMotion = styled(motion.create(Card))`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--card-shadow-penumbra-color);
-`
-
-const InnerCardMotion = styled(motion.create(Card))`
-  position: relative;
-  pointer-events: all;
-  flex-direction: column;
-  height: 100%;
-  min-width: 200px;
-  max-width: 280px;
-  overflow: auto;
-`
+const BackdropMotion = motion.create(Card)
+const InnerCardMotion = motion.create(Card)
 
 interface NavDrawerProps {
   __internal_actions?: NavbarAction[]
@@ -136,8 +113,9 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
     <AnimatePresence>
       {isOpen && (
         <TrapFocus returnFocus>
-          <Root onKeyDown={handleKeyDown}>
+          <Layer className={rootClass} onKeyDown={handleKeyDown}>
             <BackdropMotion
+              className={backdropMotionClass}
               animate="open"
               data-open={isOpen}
               exit="closed"
@@ -147,6 +125,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               variants={BACKDROP_VARIANTS}
             />
             <InnerCardMotion
+              className={innerCardMotionClass}
               animate="open"
               data-open={isOpen}
               display="flex"
@@ -236,7 +215,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                 </Card>
               )}
             </InnerCardMotion>
-          </Root>
+          </Layer>
         </TrapFocus>
       )}
     </AnimatePresence>

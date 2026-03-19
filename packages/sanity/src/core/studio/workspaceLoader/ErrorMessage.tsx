@@ -2,11 +2,8 @@
 import {Box, Card, Code, Flex, Text} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
 import {useEffect} from 'react'
-import {styled} from 'styled-components'
 
-const ListItem = styled(Flex)``
-
-const ErrorMessageRoot = styled(Box).attrs({padding: 4})``
+import {errorMessageRoot} from './ErrorMessage.css'
 
 /**
  * @internal
@@ -29,7 +26,7 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
   const last = path[path.length - 1]
 
   return (
-    <ErrorMessageRoot forwardedAs={Flex} direction="column" gap={4}>
+    <Flex direction="column" gap={4} padding={4}>
       <Flex direction="column" gap={2}>
         <Text weight="medium" size={3}>
           {startCase(last.type)} Error
@@ -43,7 +40,7 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
       <Flex as="ul" direction="column" gap={2}>
         {path.map(({name, type}, index) => (
           // oxlint-disable-next-line no-array-index-key
-          <ListItem key={index} forwardedAs="li" gap={2} align="center">
+          <Flex key={index} as="li" gap={2} align="center">
             <Box>
               <Code>{name}</Code>
             </Box>
@@ -52,7 +49,7 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
                 {type}
               </Text>
             </Box>
-          </ListItem>
+          </Flex>
         ))}
       </Flex>
 
@@ -65,6 +62,6 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
           </Box>
         </details>
       )}
-    </ErrorMessageRoot>
+    </Flex>
   )
 }

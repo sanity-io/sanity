@@ -1,5 +1,4 @@
 import {Box, Grid, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../../../../../../../../i18n'
 import {CalendarDay} from './CalendarDay'
@@ -23,9 +22,7 @@ interface CalendarMonthProps {
   onSelect: (date: Date) => void
 }
 
-const CustomGrid = styled(Grid)`
-  grid-template-columns: repeat(7, minmax(44px, auto));
-`
+import {customGrid} from './CalendarMonth.css'
 
 export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
   const {focusedDate, firstWeekDay} = useCalendar()
@@ -33,7 +30,7 @@ export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
 
   return (
     <Box aria-hidden={hidden || false} data-ui="CalendarMonth">
-      <CustomGrid gapY={1}>
+      <Grid className={customGrid} gapY={1}>
         {WEEK_DAY_NAME_KEYS[firstWeekDay].map((weekdayDay) => (
           <Box key={weekdayDay} paddingBottom={3} paddingTop={2}>
             <Text align="center" size={1} weight="medium">
@@ -49,7 +46,7 @@ export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
             )
           }),
         )}
-      </CustomGrid>
+      </Grid>
     </Box>
   )
 }

@@ -2,7 +2,6 @@ import {type Schema, type SchemaType} from '@sanity/types'
 import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
 import partition from 'lodash-es/partition.js'
 import {type ChangeEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../../../../../../ui-components'
 import {
@@ -19,10 +18,9 @@ import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
 
-const ClearButtonBox = styled(Box)`
-  border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};
-  flex-shrink: 0;
-`
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {clearButtonBox, borderColorVar} from './DocumentTypesPopoverContent.css'
 
 const POPOVER_STYLES = {width: '250px'}
 
@@ -176,7 +174,7 @@ function ClearButton({onClick, selectedTypes}: {onClick: () => void; selectedTyp
   const {t} = useTranslation()
 
   return (
-    <ClearButtonBox padding={1}>
+    <Box className={clearButtonBox} padding={1}>
       <Stack>
         <Button
           aria-label={t('search.action.clear-type-filters-aria-label')}
@@ -188,7 +186,7 @@ function ClearButton({onClick, selectedTypes}: {onClick: () => void; selectedTyp
           tone="primary"
         />
       </Stack>
-    </ClearButtonBox>
+    </Box>
   )
 }
 

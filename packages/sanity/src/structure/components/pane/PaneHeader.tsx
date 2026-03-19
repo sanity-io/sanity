@@ -1,8 +1,9 @@
-import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
+import {Box, Card, Flex, Layer, LayerProvider, TextSkeleton, Text, useElementRect} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 
-import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
+import {root, layout, titleCard, titleText, titleTextSkeleton, borderColorVar} from './PaneHeader.css'
 import {usePane} from './usePane'
 
 /**
@@ -66,15 +67,19 @@ export const PaneHeader = forwardRef(function PaneHeader(
 
   return (
     <LayerProvider zOffset={100}>
-      <Root
-        $border={border}
+      <Layer
+        className={root}
+        style={assignInlineVars({
+          [borderColorVar]: border ? 'var(--card-border-color)' : 'transparent',
+        })}
         data-collapsed={collapsed ? '' : undefined}
         data-testid="pane-header"
         ref={ref}
       >
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
-            <Layout
+            <Flex
+              className={layout}
               direction="column"
               gap={3}
               onClick={handleLayoutClick}
@@ -85,7 +90,8 @@ export const PaneHeader = forwardRef(function PaneHeader(
               <Flex align="flex-start" gap={3}>
                 {backButton && <Box flex="none">{backButton}</Box>}
 
-                <TitleCard
+                <Card
+                  className={titleCard}
                   __unstable_focusRing
                   flex={1}
                   onClick={handleTitleClick}
@@ -95,18 +101,18 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 >
                   {loading && (
                     <Box>
-                      <TitleTextSkeleton animated radius={1} size={1} />
+                      <TextSkeleton className={titleTextSkeleton} animated radius={1} size={1} />
                     </Box>
                   )}
                   {!loading && (
                     <Flex align="center" gap={1}>
-                      <TitleText size={1} textOverflow="ellipsis" weight="semibold">
+                      <Text className={titleText} size={1} textOverflow="ellipsis" weight="semibold">
                         {title}
-                      </TitleText>
+                      </Text>
                       {appendTitle}
                     </Flex>
                   )}
-                </TitleCard>
+                </Card>
 
                 {actions && (
                   <Box hidden={collapsed}>
@@ -124,12 +130,12 @@ export const PaneHeader = forwardRef(function PaneHeader(
                   {subActions}
                 </Flex>
               )}
-            </Layout>
+            </Flex>
 
             {!collapsed && contentAfter}
           </Card>
         </LegacyLayerProvider>
-      </Root>
+      </Layer>
     </LayerProvider>
   )
 })

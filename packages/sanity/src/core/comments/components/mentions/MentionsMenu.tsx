@@ -9,27 +9,17 @@ import {
   useRef,
   useState,
 } from 'react'
-import {styled} from 'styled-components'
 
 import {CommandList, type CommandListHandle, LoadingBlock} from '../../../components'
 import {type UserWithPermission} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {commentsLocaleNamespace} from '../../i18n'
+import {flexWrap, root} from './MentionsMenu.css'
 import {MentionsMenuItem} from './MentionsMenuItem'
 
 const EMPTY_ARRAY: UserWithPermission[] = []
 
-const Root = styled(Stack)({
-  maxWidth: '220px', // todo: improve
-})
-
 const ITEM_HEIGHT = 41
-const LIST_PADDING = 4
-const MAX_ITEMS = 7
-
-const FlexWrap = styled(Flex)({
-  maxHeight: ITEM_HEIGHT * MAX_ITEMS + LIST_PADDING * 2 + ITEM_HEIGHT / 2,
-})
 
 export interface MentionsMenuHandle {
   setSearchTerm: (term: string) => void
@@ -104,9 +94,9 @@ export const MentionsMenu = forwardRef(function MentionsMenu(
 
   if (loading) {
     return (
-      <Root>
+      <Stack className={root}>
         <LoadingBlock showText />
-      </Root>
+      </Stack>
     )
   }
 
@@ -125,7 +115,7 @@ export const MentionsMenu = forwardRef(function MentionsMenu(
       )}
 
       {filteredOptions.length > 0 && (
-        <FlexWrap direction="column" flex={1} overflow="hidden">
+        <Flex className={flexWrap} direction="column" flex={1} overflow="hidden">
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={t('mentions.user-list-aria-label')}
@@ -138,7 +128,7 @@ export const MentionsMenu = forwardRef(function MentionsMenu(
             ref={commandListRef}
             renderItem={renderItem}
           />
-        </FlexWrap>
+        </Flex>
       )}
     </Flex>
   )

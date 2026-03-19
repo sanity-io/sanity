@@ -40,7 +40,7 @@ export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = 
         padding={false}
         __unstable_hideCloseButton
       >
-        <DialogLayout>
+        <div className={DialogLayout}>
           {mode === 'version' && <VersionModeHeader documentId={documentId} state={state} />}
           {state === 'ready' && (
             <>
@@ -65,7 +65,7 @@ export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = 
               />
             </>
           )}
-        </DialogLayout>
+        </div>
       </Dialog>
     </ReferenceInputOptionsContext.Provider>
   )

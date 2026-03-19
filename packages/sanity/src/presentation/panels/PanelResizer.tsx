@@ -8,16 +8,10 @@ import {
   useRef,
 } from 'react'
 import {PresentationPanelsContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
 import {usePanelId} from './usePanelId'
+import {resizer, resizerInner, resizerInnerDisabled} from './PanelResizer.css'
 
-const Resizer = styled.div`
-  position: relative;
-`
-const ResizerInner = styled.div<{
-  $disabled: boolean
-}>`
   position: absolute;
   top: 0;
   bottom: 0;
@@ -152,11 +146,11 @@ export const PanelResizer: FunctionComponent<{
   }, [id, order, registerElement, unregisterElement])
 
   return (
-    <Resizer onMouseDown={onMouseDown} ref={el}>
-      <ResizerInner $disabled={disabled}>
+    <div className={resizer} onMouseDown={onMouseDown} ref={el}>
+      <div className={disabled ? resizerInnerDisabled : resizerInner}>
         <span />
         <span />
-      </ResizerInner>
-    </Resizer>
+      </div>
+    </div>
   )
 }

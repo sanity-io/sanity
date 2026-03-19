@@ -3,7 +3,6 @@ import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useMemo, useState} from 'react'
-import {styled} from 'styled-components'
 
 import {
   type CommentBaseCreatePayload,
@@ -42,7 +41,7 @@ const VARIANTS: Variants = {
   visible: {opacity: 1, x: 0},
 }
 
-const MotionStack = styled(motion.create(Stack))``
+const MotionStack = motion.create(Stack)
 
 interface TasksActivityLogProps {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void

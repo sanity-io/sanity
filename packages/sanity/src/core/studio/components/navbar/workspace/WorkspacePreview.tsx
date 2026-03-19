@@ -2,7 +2,6 @@ import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {type ComponentType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
-import {styled} from 'styled-components'
 
 export const STATE_TITLES = {
   'logged-in': '',
@@ -10,23 +9,9 @@ export const STATE_TITLES = {
   'no-access': '',
 }
 
+import {media as mediaStyles} from './WorkspacePreview.css'
+
 type PreviewIconSize = 'small' | 'large'
-interface MediaProps {
-  $size: PreviewIconSize
-}
-
-const Media = styled.div<MediaProps>`
-  width: ${(props) => (props.$size === 'small' ? '25px' : '41px')};
-  height: ${(props) => (props.$size === 'small' ? '25px' : '41px')};
-  border-radius: 0.25rem;
-  padding: 0;
-
-  svg {
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-  }
-`
 
 export const WorkspacePreviewIcon = ({
   icon,
@@ -37,7 +22,7 @@ export const WorkspacePreviewIcon = ({
 }) => {
   const iconComponent = useMemo(() => createIcon(icon), [icon])
 
-  return <Media $size={size}>{iconComponent}</Media>
+  return <div className={mediaStyles[size]}>{iconComponent}</div>
 }
 
 const createIcon = (Icon: ComponentType | ReactNode) => {

@@ -1,7 +1,6 @@
 import {CalendarIcon, CircleIcon, EditIcon, LinkIcon, UserIcon} from '@sanity/icons'
 import {TextSkeleton} from '@sanity/ui'
 import {IntentLink} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {
   type RelativeTimeOptions,
@@ -15,6 +14,7 @@ import {useUser} from '../../../../store'
 import {TASK_STATUS} from '../../../constants'
 import {useDocumentPreviewValues} from '../../../hooks'
 import {type TaskTarget} from '../../../types'
+import * as classes from './index.css'
 import {type FieldChange} from './parseTransactions'
 
 const DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
@@ -30,12 +30,13 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
-const Strong = styled.strong`
-  font-weight: 600;
-`
-export const NoWrap = styled.span`
-  white-space: nowrap;
-`
+function Strong({children}: {children: React.ReactNode}) {
+  return <strong className={classes.strong}>{children}</strong>
+}
+
+export function NoWrap({children}: {children: React.ReactNode}) {
+  return <span className={classes.noWrap}>{children}</span>
+}
 
 export function useUpdatedTimeAgo(timestamp: string) {
   const date = new Date(timestamp)
@@ -70,15 +71,6 @@ function DueByChange({date}: {date: string}) {
   )
 }
 
-const LinkWrapper = styled.span`
-  > a {
-    color: var(--card-fg-muted-color);
-    text-decoration: underline;
-    text-underline-offset: 1px;
-    font-weight: 600;
-  }
-`
-
 function TargetContentChange({target}: {target: TaskTarget}) {
   const schema = useSchema()
   const documentId = target.document._ref
@@ -99,11 +91,11 @@ function TargetContentChange({target}: {target: TaskTarget}) {
   }
 
   return (
-    <LinkWrapper>
+    <span className={classes.linkWrapper}>
       <IntentLink intent="edit" params={{id: documentId, type: documentType}}>
         {value?.title}
       </IntentLink>
-    </LinkWrapper>
+    </span>
   )
 }
 

@@ -1,25 +1,13 @@
 import {Box, Flex} from '@sanity/ui'
 import {useCallback, useId, useMemo} from 'react'
 import {getPublishedId, LoadingBlock, useDocumentVersions, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {DocTitle} from '../DocTitle'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
+import {dialogBody, loadingContainer} from './ConfirmDeleteDialog.css'
 import {useReferringDocuments} from './useReferringDocuments'
-
-const DialogBody = styled(Box)`
-  box-sizing: border-box;
-`
-
-const LoadingContainer = styled(Flex).attrs({
-  align: 'center',
-  direction: 'column',
-  justify: 'center',
-})`
-  height: 110px;
-`
 
 /** @internal */
 export interface ConfirmDeleteDialogProps {
@@ -100,7 +88,7 @@ export function ConfirmDeleteDialog({
       onClose={onCancel}
       onClickOutside={onCancel}
     >
-      <DialogBody>
+      <Box className={dialogBody}>
         {crossDatasetReferences && internalReferences && !isLoading && !versionsLoading ? (
           <ConfirmDeleteDialogBody
             crossDatasetReferences={crossDatasetReferences}
@@ -118,11 +106,17 @@ export function ConfirmDeleteDialog({
             documentVersions={documentVersions}
           />
         ) : (
-          <LoadingContainer data-testid="loading-container">
+          <Flex
+            align="center"
+            direction="column"
+            justify="center"
+            className={loadingContainer}
+            data-testid="loading-container"
+          >
             <LoadingBlock showText title={t('confirm-delete-dialog.loading.text')} />
-          </LoadingContainer>
+          </Flex>
         )}
-      </DialogBody>
+      </Box>
     </Dialog>
   )
 }

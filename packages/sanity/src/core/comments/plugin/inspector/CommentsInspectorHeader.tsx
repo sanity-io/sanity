@@ -1,18 +1,12 @@
 import {CheckmarkIcon, ChevronDownIcon, CloseIcon} from '@sanity/icons'
 import {Card, Flex, Menu, Text} from '@sanity/ui'
 import {forwardRef, useCallback} from 'react'
-import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentStatus, type CommentsUIMode} from '../../types'
-
-const Root = styled(Card)({
-  position: 'relative',
-  zIndex: '1',
-  lineHeight: '0',
-})
+import {root} from './CommentsInspectorHeader.css'
 
 interface CommentsInspectorHeaderProps {
   onClose: () => void
@@ -32,7 +26,7 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
   const handleSetResolvedView = useCallback(() => onViewChange('resolved'), [onViewChange])
 
   return (
-    <Root ref={ref}>
+    <Card className={root} ref={ref}>
       <Flex padding={2}>
         <Flex align="center" flex={1} gap={2} paddingY={2} padding={3}>
           <Text as="h1" size={1} weight="medium">
@@ -86,6 +80,6 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
           />
         </Flex>
       </Flex>
-    </Root>
+    </Card>
   )
 })

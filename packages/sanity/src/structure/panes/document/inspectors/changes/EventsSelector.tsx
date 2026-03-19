@@ -12,18 +12,12 @@ import {
   useEvents,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
 
 import {EventsTimeline} from '../../timeline/events/EventsTimeline'
+import {scroller} from './EventsSelector.css'
 import {TimelineError} from '../../timeline/TimelineError'
 import {useDocumentPane} from '../../useDocumentPane'
 
-const Scroller = styled(ScrollContainer)`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  scroll-behavior: smooth;
-`
 
 export function EventsSelector({showList}: {showList: boolean}) {
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
@@ -96,7 +90,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
           <TimelineError />
         ) : (
           <BoundaryElementProvider element={scrollRef}>
-            <Scroller data-ui="Scroller" ref={getScrollerRef}>
+            <ScrollContainer className={scroller} data-ui="Scroller" ref={getScrollerRef}>
               {listHeight &&
               // This forces the list to unmount and remount, which is needed to reset the scroll position
               showList &&
@@ -113,7 +107,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
                 />
               ) : null}
               {loading && <LoadingBlock />}
-            </Scroller>
+            </ScrollContainer>
           </BoundaryElementProvider>
         )}
       </Card>

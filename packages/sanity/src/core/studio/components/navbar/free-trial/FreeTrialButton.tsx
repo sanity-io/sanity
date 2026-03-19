@@ -2,17 +2,11 @@ import {purple, yellow} from '@sanity/color'
 import {BoltIcon} from '@sanity/icons'
 import {Card, Text} from '@sanity/ui'
 import {forwardRef, type Ref} from 'react'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 
-const CenteredStroke = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-`
+import {centeredStroke} from './FreeTrialButton.css'
 
 interface OutlineProps {
   daysLeft: number
@@ -31,7 +25,7 @@ const SvgFilledOutline = ({daysLeft, totalDays}: OutlineProps) => {
 
   return (
     <Card>
-      <CenteredStroke>
+      <div className={centeredStroke}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width={size}
@@ -58,7 +52,7 @@ const SvgFilledOutline = ({daysLeft, totalDays}: OutlineProps) => {
             strokeDashoffset={strokeDashOffset}
           />
         </svg>
-      </CenteredStroke>
+      </div>
     </Card>
   )
 }

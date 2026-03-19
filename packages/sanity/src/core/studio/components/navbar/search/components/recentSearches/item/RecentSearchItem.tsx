@@ -12,7 +12,6 @@ import {
   Text,
 } from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
-import {styled} from 'styled-components'
 
 import {RecentSearchClicked} from '../../../__telemetry__/search.telemetry'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -28,33 +27,9 @@ export interface RecentSearchesProps extends ResponsiveMarginProps, ResponsivePa
 
 const DEFAULT_COMBINED_TYPE_COUNT = 40
 
-const RecentSearchItemButton = styled(Button)`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
-  cursor: default;
-  width: 100%;
-`
-
-const SearchItemPillsBox = styled(Box)`
-  flex-shrink: 3;
-`
-
-const SearchItemQueryFlex = styled(Flex)`
-  flex-shrink: 2;
-`
-
-const CloseButtonDiv = styled.div`
-  opacity: 0.8;
-  visibility: hidden;
-
-  @media (hover: hover) {
-    ${RecentSearchItemButton}:hover & {
-      visibility: visible;
-    }
-    &:hover {
-      opacity: 0.4;
-    }
-  }
-`
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {recentSearchItemButton, searchItemPillsBox, searchItemQueryFlex, closeButtonDiv, radiusVar} from './RecentSearchItem.css'
 
 export function RecentSearchItem({
   index,
@@ -62,6 +37,7 @@ export function RecentSearchItem({
   value,
   ...rest
 }: RecentSearchesProps) {
+  const {radius} = useThemeV2()
   const {dispatch} = useSearchState()
   const recentSearchesStore = useRecentSearchesStore()
   const telemetry = useTelemetry()
@@ -93,7 +69,9 @@ export function RecentSearchItem({
 
   return (
     <Box {...rest}>
-      <RecentSearchItemButton
+      <Button
+        className={recentSearchItemButton}
+        style={assignInlineVars({[radiusVar]: `${rem(radius[2])}px`})}
         mode="bleed"
         onClick={handleClick}
         paddingLeft={3}
@@ -113,17 +91,17 @@ export function RecentSearchItem({
           <Flex align="stretch" flex={1} gap={2} justify="flex-start" marginLeft={3} wrap="wrap">
             {/* Text query */}
             {value.query && (
-              <SearchItemQueryFlex align="center" paddingY={2}>
+              <Flex className={searchItemQueryFlex} align="center" paddingY={2}>
                 <Text muted size={1} textOverflow="ellipsis" weight="medium">
                   {value.query}
                 </Text>
-              </SearchItemQueryFlex>
+              </Flex>
             )}
             {/* Document type */}
             {value.types.length > 0 && (
-              <SearchItemPillsBox>
+              <Box className={searchItemPillsBox}>
                 <DocumentTypesPill availableCharacters={availableCharacters} types={value.types} />
-              </SearchItemPillsBox>
+              </Box>
             )}
             {/* Filters */}
             {value?.filters?.map((filter, i) => {
@@ -134,16 +112,16 @@ export function RecentSearchItem({
 
           {/* TODO: this is neither semantic nor accessible, consider revising */}
           <Flex align="center">
-            <CloseButtonDiv onClick={handleDelete}>
+            <div className={closeButtonDiv} onClick={handleDelete}>
               <Flex padding={2}>
                 <Text size={1}>
                   <CloseIcon />
                 </Text>
               </Flex>
-            </CloseButtonDiv>
+            </div>
           </Flex>
         </Flex>
-      </RecentSearchItemButton>
+      </Button>
     </Box>
   )
 }

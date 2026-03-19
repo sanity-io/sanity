@@ -5,7 +5,6 @@ import {type SchemaValidationProblemGroup} from '@sanity/types'
 import {Box, Breadcrumbs, Card, Flex, Stack, Text, type ThemeColorToneKey} from '@sanity/ui'
 import capitalize from 'lodash-es/capitalize.js'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
 import {getTypeInfo} from './getTypeInfo'
@@ -15,16 +14,7 @@ const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   warning: 'caution',
 }
 
-const SegmentSpan = styled.code`
-  && {
-    background: none;
-    color: inherit;
-  }
-`
-
-const ErrorMessageText = styled(Text)`
-  white-space: pre-line;
-`
+import {segmentSpan, errorMessageText} from './SchemaProblemGroups.css'
 
 export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProblemGroup[]}) {
   const {problemGroups} = props
@@ -86,7 +76,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                       return (
                         // oxlint-disable-next-line no-array-index-key
                         <Text key={j} title={text} size={1} textOverflow="ellipsis">
-                          <SegmentSpan>{text}</SegmentSpan>
+                          <code className={segmentSpan}>{text}</code>
                         </Text>
                       )
                     }
@@ -95,7 +85,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                       return (
                         // oxlint-disable-next-line no-array-index-key
                         <Text key={j} title={segment.name} size={1} textOverflow="ellipsis">
-                          <SegmentSpan>{segment.name}</SegmentSpan>
+                          <code className={segmentSpan}>{segment.name}</code>
                         </Text>
                       )
                     }
@@ -109,9 +99,9 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
             <Box as="ul" marginTop={4}>
               <Box as="li">
                 <Stack space={3}>
-                  <ErrorMessageText muted size={1}>
+                  <Text className={errorMessageText} muted size={1}>
                     {problem.message}
-                  </ErrorMessageText>
+                  </Text>
 
                   {problem.helpId && (
                     <Text muted size={1}>

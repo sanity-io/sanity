@@ -1,10 +1,8 @@
 import {CloseIcon, DocumentIcon} from '@sanity/icons'
-import {Box, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, Card, Flex, LayerProvider, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
 import {IntentLink} from 'sanity/router'
-import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {FormFieldHeaderText, type ObjectFieldProps, set, unset} from '../../../../form'
@@ -23,70 +21,7 @@ import {type FormMode, type TaskTarget} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 import {getTargetValue} from '../utils'
 import {FieldWrapperRoot} from './FieldWrapper'
-
-const EmptyReferenceRoot = styled(Card)((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return css`
-    &:focus {
-      border: 1px solid var(--card-focus-ring-color);
-    }
-    &:focus-visible {
-      outline: none;
-      border: 1px solid var(--card-focus-ring-color);
-    }
-    &:hover {
-      border-color: ${theme.color.input.default.hovered.border};
-    }
-  `
-})
-
-const Placeholder = styled(Text)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return `
-      color: ${theme.color.input.default.enabled.placeholder};
-      margin-left: 3px;
-  `
-})
-
-// This allows to hide and show the remove button on hover or focus.
-const TargetRoot = styled(Card)`
-  position: relative;
-  [data-ui='show-on-hover'] {
-    opacity: 0;
-    position: absolute;
-    right: 6px;
-    top: 4px;
-    display: flex;
-  }
-  &:focus-within,
-  &:hover {
-    padding-right: 36px;
-    /* Hides the preview status dot, the button will take it's position. */
-    [data-testid='compact-preview__status'] {
-      opacity: 0;
-    }
-    [data-ui='show-on-hover'] {
-      transition: opacity 200ms;
-      opacity: 1;
-    }
-  }
-`
-const StyledIntentLink = styled(IntentLink)(() => {
-  return css`
-    text-decoration: none;
-    width: 100%;
-    overflow: hidden;
-    cursor: pointer;
-    &:focus {
-      box-shadow: 0 0 0 1px var(--card-focus-ring-color);
-    }
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 1px var(--card-focus-ring-color);
-    }
-  `
-})
+import * as classes from './TargetField.css'
 
 function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const {value, handleRemove} = props
@@ -102,8 +37,9 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
         const versionId = getVersionFromId(documentId)
 
         return (
-          <StyledIntentLink
+          <IntentLink
             {...linkProps}
+            className={classes.styledIntentLink}
             intent="edit"
             params={{id: getPublishedId(documentId), type: documentType}}
             ref={ref}
@@ -118,7 +54,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   }
 
   return (
-    <TargetRoot border radius={2}>
+    <Card className={classes.targetRoot} border radius={2}>
       <Flex gap={1} align={'center'} justify={'space-between'}>
         <Card as={CardLink} radius={2} data-as="button">
           <SearchResultItemPreview
@@ -131,7 +67,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
           />
         </Card>
 
-        <div data-ui="show-on-hover">
+        <div data-ui="show-on-hover" className={classes.showOnHover}>
           <Button
             icon={CloseIcon}
             mode="bleed"
@@ -140,7 +76,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
           />
         </div>
       </Flex>
-    </TargetRoot>
+    </Card>
   )
 }
 
@@ -151,6 +87,7 @@ export function TargetField(
 ) {
   const [open, setOpen] = useState(false)
   const {dataset, projectId} = useWorkspace()
+  const theme = useThemeV2()
   const {
     mode,
     inputProps: {onChange},
@@ -215,7 +152,8 @@ export function TargetField(
                 {value ? (
                   <Preview value={value} handleRemove={handleRemove} />
                 ) : (
-                  <EmptyReferenceRoot
+                  <Card
+                    className={classes.emptyReferenceRoot}
                     border
                     radius={2}
                     paddingX={2}
@@ -223,6 +161,9 @@ export function TargetField(
                     onClick={handleOpenSearch}
                     onKeyDown={handleKeyDown}
                     tabIndex={0}
+                    style={assignInlineVars({
+                      [classes.hoveredBorderColorVar]: theme.color.input.default.hovered.border,
+                    })}
                   >
                     <Flex gap={1} justify={'flex-start'} align={'center'}>
                       <Box paddingX={1}>
@@ -230,11 +171,17 @@ export function TargetField(
                           <DocumentIcon />
                         </Text>
                       </Box>
-                      <Placeholder size={1}>
+                      <Text
+                        className={classes.placeholder}
+                        size={1}
+                        style={assignInlineVars({
+                          [classes.placeholderColorVar]: theme.color.input.default.enabled.placeholder,
+                        })}
+                      >
                         {t('form.input.target.search.placeholder')}
-                      </Placeholder>
+                      </Text>
                     </Flex>
-                  </EmptyReferenceRoot>
+                  </Card>
                 )}
               </Stack>
               <SearchPopover

@@ -15,9 +15,9 @@ import {
   useTranslation,
   useUnique,
 } from 'sanity'
-import {keyframes, styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../i18n'
+import {animatedSpinnerIcon, subtleSpinnerIcon, delayedSubtleSpinnerIcon} from './DocumentListPane.css'
 import {type BaseStructureToolPaneProps} from '../types'
 import {EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
@@ -34,42 +34,6 @@ export type DocumentListPaneProps = BaseStructureToolPaneProps<'documentList'> &
   layout?: Exclude<GeneralPreviewLayoutKey, 'sheetList'>
 }
 
-const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`
-
-const fadeIn = keyframes`
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.1;
-  }
-  100% {
-    opacity: 0.4;
-  }
-`
-
-const AnimatedSpinnerIcon = styled(SpinnerIcon)`
-  animation: ${rotate} 500ms linear infinite;
-`
-
-const SubtleSpinnerIcon = styled(SpinnerIcon)`
-  animation: ${rotate} 1500ms linear infinite;
-  opacity: 0.4;
-`
-
-const DelayedSubtleSpinnerIcon = styled(SpinnerIcon)`
-  animation:
-    ${rotate} 1500ms linear infinite,
-    ${fadeIn} 1000ms linear;
-  opacity: 0.4;
-`
 
 /**
  * @internal
@@ -185,15 +149,19 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     return 'initial'
   }, [connected, enableSearchSpinner, fromCache, isLoading, paneKey])
 
+  const AnimatedSpinnerIconComponent = useCallback((props: any) => <SpinnerIcon {...props} className={animatedSpinnerIcon} />, [])
+  const SubtleSpinnerIconComponent = useCallback((props: any) => <SpinnerIcon {...props} className={subtleSpinnerIcon} />, [])
+  const DelayedSubtleSpinnerIconComponent = useCallback((props: any) => <SpinnerIcon {...props} className={delayedSubtleSpinnerIcon} />, [])
+
   const textInputIcon = useMemo(() => {
     if (loadingVariant === 'spinner') {
-      return AnimatedSpinnerIcon
+      return AnimatedSpinnerIconComponent
     }
     if (searchInputValue && loadingVariant === 'subtle') {
-      return SubtleSpinnerIcon
+      return SubtleSpinnerIconComponent
     }
     return SearchIcon
-  }, [loadingVariant, searchInputValue])
+  }, [loadingVariant, searchInputValue, AnimatedSpinnerIconComponent, SubtleSpinnerIconComponent])
 
   useReconnectingToast(!connected)
 
@@ -209,7 +177,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           icon={textInputIcon}
           iconRight={
             !connected || (loadingVariant === 'subtle' && !searchInputValue)
-              ? DelayedSubtleSpinnerIcon
+              ? DelayedSubtleSpinnerIconComponent
               : null
           }
           onChange={handleQueryChange}

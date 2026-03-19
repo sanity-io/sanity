@@ -1,35 +1,14 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, Layer, type ResponsiveWidthProps, Stack, Text, type Theme} from '@sanity/ui'
+import {Box, Flex, Layer, type ResponsiveWidthProps, Stack, Text} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
 import TrapFocus from 'react-focus-lock'
-import {css, styled} from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../ui-components'
 import {PopoverContainer} from './PopoverContainer'
-
-const StyledPopover = styled(Popover)(() => {
-  return css`
-    /* Make the popover scrollable if it overflows the viewport */
-    [data-ui='Popover__wrapper'] {
-      overflow: auto;
-    }
-  `
-})
-
-// This layer is sticky so that the header is always visible when scrolling
-const StickyLayer = styled(Layer)((props: {theme: Theme}) => {
-  const radii = props.theme.sanity.radius[3]
-
-  return css`
-    position: sticky;
-    top: 0;
-    width: 100%;
-    background: var(--card-bg-color);
-    border-bottom: 1px solid var(--card-border-color);
-    border-top-left-radius: ${radii}px;
-    border-top-right-radius: ${radii}px;
-  `
-})
+import {radiusVar, styledPopover, stickyLayer} from './PopoverDialog.css'
 
 interface PopoverDialogProps {
   children: ReactNode
@@ -43,6 +22,7 @@ interface PopoverDialogProps {
 /** @internal */
 export function PopoverDialog(props: PopoverDialogProps) {
   const {children, header, onClose, referenceElement, containerRef, width} = props
+  const {radius} = useThemeV2()
 
   const handleClose = useCallback(() => {
     onClose()
@@ -56,7 +36,10 @@ export function PopoverDialog(props: PopoverDialogProps) {
     <PopoverContainer width={width} data-testid="popover-dialog">
       <TrapFocus autoFocus>
         <Stack ref={containerRef}>
-          <StickyLayer>
+          <Layer
+            className={stickyLayer}
+            style={assignInlineVars({[radiusVar]: `${radius[3]}px`})}
+          >
             <Box padding={2} paddingLeft={4}>
               <Flex align="center" gap={2}>
                 <Box flex={1}>
@@ -72,7 +55,7 @@ export function PopoverDialog(props: PopoverDialogProps) {
                 />
               </Flex>
             </Box>
-          </StickyLayer>
+          </Layer>
           <Box padding={4}>{children}</Box>
         </Stack>
       </TrapFocus>
@@ -85,7 +68,8 @@ export function PopoverDialog(props: PopoverDialogProps) {
   //  - clickOutside needs to work through portals. So if you have an array inside here that opens its items in a dialog/portal,
   //    any clicks inside such dialogs or portals should not cause _this_ popover to close
   return (
-    <StyledPopover
+    <Popover
+      className={styledPopover}
       portal
       constrainSize
       content={content}

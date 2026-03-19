@@ -1,15 +1,16 @@
-import {Card} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {Card, type CardProps} from '@sanity/ui'
+import {type ComponentProps, forwardRef} from 'react'
 
-export const RatioBox = styled(Card)<{$isPortrait?: boolean}>`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  min-height: 3.75rem;
-  aspect-ratio: var(--aspect-ratio);
+import {ratioBox, ratioBoxPortrait} from './styles.css'
 
-  /* Apply max-height constraint only for portrait videos (aspect ratio < 0.75) */
-  ${(props) => (props.$isPortrait ? 'max-height: 30dvh;' : '')}
-`
+export const RatioBox = forwardRef<HTMLDivElement, CardProps & {$isPortrait?: boolean}>(
+  function RatioBox({$isPortrait, ...props}, ref) {
+    return (
+      <Card
+        {...props}
+        className={$isPortrait ? ratioBoxPortrait : ratioBox}
+        ref={ref}
+      />
+    )
+  },
+)

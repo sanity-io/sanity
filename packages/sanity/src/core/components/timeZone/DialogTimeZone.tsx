@@ -1,39 +1,27 @@
 import {SearchIcon} from '@sanity/icons'
-import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
+import {Autocomplete, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type NormalizedTimeZone} from '../../studio/timezones/types'
+import {
+  fgColorVar,
+  mutedFgColorVar,
+  readOnlyFgColorVar,
+  timeZoneAlternativeNameSpan,
+  timeZoneCitySpan,
+  timeZoneOffsetSpan,
+} from './DialogTimeZone.css'
 
 export interface DialogTimeZoneProps {
   onClose?: () => void
   timeZoneScope: TimeZoneScope
 }
-
-const TimeZoneCitySpan = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    color: ${theme.sanity.color.base.fg};
-    font-weight: 500;
-    margin-left: 1em;
-  `
-})
-
-const TimeZoneOffsetSpan = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    color: ${theme.sanity.color.muted.default.enabled.fg};
-    font-weight: 500;
-  `
-})
-
-const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    color: ${theme.sanity.color.input.default.readOnly.fg};
-    float: right;
-  `
-})
 
 const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const {onClose, timeZoneScope} = props
@@ -42,6 +30,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const [selectedTz, setSelectedTz] = useState<NormalizedTimeZone | undefined>(timeZone)
   const [showAllOptions, setShowAllOptions] = useState(false)
   const {t} = useTranslation('studio')
+  const {color} = useThemeV2()
 
   const timeZoneScopeTypeToLabel = useMemo(
     (): Record<TimeZoneScopeType, ReturnType<typeof t>> => ({
@@ -95,14 +84,14 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
     return (
       <Card as="button" padding={3}>
         <Text size={1} textOverflow="ellipsis">
-          <TimeZoneCitySpan>{option.city}</TimeZoneCitySpan>
-          <TimeZoneOffsetSpan>
+          <span className={timeZoneCitySpan}>{option.city}</span>
+          <span className={timeZoneOffsetSpan}>
             {' '}
             ({'GMT'}
             {option.offset})
-          </TimeZoneOffsetSpan>
+          </span>
 
-          <TimeZoneAlternativeNameSpan>{option.alternativeName}</TimeZoneAlternativeNameSpan>
+          <span className={timeZoneAlternativeNameSpan}>{option.alternativeName}</span>
         </Text>
       </Card>
     )

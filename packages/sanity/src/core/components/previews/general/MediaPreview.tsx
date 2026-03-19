@@ -1,4 +1,4 @@
-import {Box, Text} from '@sanity/ui'
+import {Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
@@ -9,12 +9,12 @@ import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
 import {
-  MediaFlex,
-  MediaSkeleton,
-  ProgressFlex,
-  RootBox,
-  TooltipContentStack,
-} from './MediaPreview.styled'
+  mediaFlex,
+  mediaSkeleton,
+  progressFlex,
+  rootBox,
+  tooltipContentStack,
+} from './MediaPreview.css'
 
 /**
  * @hidden
@@ -54,7 +54,7 @@ export function MediaPreview(props: MediaPreviewProps) {
     }
 
     return (
-      <TooltipContentStack>
+      <Stack className={tooltipContentStack} space={2}>
         {title && (
           <Text align="center" size={1} weight="medium">
             {renderPreviewNode(title, 'media')}
@@ -66,19 +66,19 @@ export function MediaPreview(props: MediaPreviewProps) {
             {renderPreviewNode(subtitle, 'media')}
           </Text>
         )}
-      </TooltipContentStack>
+      </Stack>
     )
   }, [subtitle, title])
 
   return (
     <Box padding={2}>
-      <RootBox data-testid="media-preview" flex={1} overflow="hidden">
+      <Box className={rootBox} data-testid="media-preview" flex={1} overflow="hidden">
         <div style={STYLES_PADDER} />
 
         <Tooltip content={tooltipContent} disabled={!tooltipContent} placement="top" portal>
-          <MediaFlex>
+          <Flex className={mediaFlex} align="center" justify="center">
             {isPlaceholder ? (
-              <MediaSkeleton />
+              <Skeleton className={mediaSkeleton} animated radius={2} />
             ) : (
               <Media
                 border={withBorder}
@@ -91,15 +91,15 @@ export function MediaPreview(props: MediaPreviewProps) {
             )}
 
             {typeof progress === 'number' && progress > -1 && (
-              <ProgressFlex>
+              <Flex className={progressFlex} align="center" justify="center">
                 <CircularProgress value={progress} />
-              </ProgressFlex>
+              </Flex>
             )}
-          </MediaFlex>
+          </Flex>
         </Tooltip>
 
         {children}
-      </RootBox>
+      </Box>
     </Box>
   )
 }

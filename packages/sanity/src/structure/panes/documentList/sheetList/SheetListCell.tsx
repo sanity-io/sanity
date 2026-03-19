@@ -7,23 +7,11 @@ import {Select, TextInput} from '@sanity/ui'
 import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {type SanityDocument} from 'sanity'
-import {styled} from 'styled-components'
 
 import {useDocumentSheetListContext} from './DocumentSheetListProvider'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {dataCell, pinnedDataCell, cellWidthVar} from './SheetListCell.css'
 
-const DataCell = styled.td<{width: number}>`
-  display: flex;
-  overflow: hidden;
-  box-sizing: border-box;
-  width: ${({width}) => width}px;
-  border-top: 1px solid var(--card-border-color);
-  background-color: var(--card-bg-color);
-`
-
-const PinnedDataCell = styled(DataCell)`
-  position: sticky;
-  z-index: 2;
-`
 
 interface SheetListCellInnerProps extends CellContext<SanityDocument, unknown> {
   fieldType: ObjectFieldType
@@ -205,19 +193,20 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
 /** @internal */
 export function SheetListCell(cell: Cell<SanityDocument, unknown>) {
   const isPinned = cell.column.getIsPinned()
-  const Cell = isPinned ? PinnedDataCell : DataCell
+  const cellClassName = isPinned ? pinnedDataCell : dataCell
   const borderWidth = isPinned && cell.column.getIsLastColumn('left') ? 2 : 1
 
   return (
-    <Cell
+    <td
       key={cell.row.original._id + cell.id}
+      className={cellClassName}
       style={{
         left: cell.column.getStart('left') ?? undefined,
         borderRight: `${borderWidth}px solid var(--card-border-color)`,
+        ...assignInlineVars({[cellWidthVar]: `${cell.column.getSize()}px`}),
       }}
-      width={cell.column.getSize()}
     >
       {flexRender(cell.column.columnDef.cell, cell.getContext?.())}
-    </Cell>
+    </td>
   )
 }

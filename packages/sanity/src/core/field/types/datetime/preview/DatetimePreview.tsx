@@ -1,21 +1,16 @@
 import {type StringSchemaType} from '@sanity/types'
 import {Box} from '@sanity/ui'
 import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
-import {styled} from 'styled-components'
 
 import {type FieldPreviewComponent} from '../../../preview'
-
-const DatetimeWrapper = styled.div`
-  display: inline-block;
-  word-wrap: break-word;
-`
+import {datetimeWrapper} from './DatetimePreview.css'
 
 export const DatetimePreview: FieldPreviewComponent<string> = function DatetimePreview({
   value,
   schemaType,
 }) {
   return (
-    <Box as={DatetimeWrapper} paddingX={2} paddingY={1}>
+    <Box className={datetimeWrapper} paddingX={2} paddingY={1}>
       {formatDateTime(value, schemaType)}
     </Box>
   )

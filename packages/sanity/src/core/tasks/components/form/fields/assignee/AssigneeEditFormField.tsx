@@ -9,7 +9,6 @@ import {
   TextSkeleton,
 } from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../../ui-components'
 import {type FormPatch, type PatchEvent, set, useFormValue} from '../../../../../form'
@@ -17,11 +16,8 @@ import {useTranslation} from '../../../../../i18n'
 import {useMentionUser} from '../../../../context'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
+import * as classes from './AssigneeEditFormField.css'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
-
-const StyledButton = styled(Button)`
-  padding: 3px 6px;
-`
 
 interface AssigneeEditFormFieldProps {
   value: string | undefined
@@ -63,7 +59,7 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
       onSelect={onSelect}
       value={value}
       menuButton={
-        <StyledButton mode="ghost" padding={0}>
+        <Button className={classes.styledButton} mode="ghost" padding={0}>
           <Tooltip
             content={
               value
@@ -88,7 +84,7 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
               )}
             </Flex>
           </Tooltip>
-        </StyledButton>
+        </Button>
       }
     />
   )

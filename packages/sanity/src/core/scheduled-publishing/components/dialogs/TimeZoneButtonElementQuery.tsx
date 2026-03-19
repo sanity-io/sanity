@@ -1,22 +1,18 @@
 import {ElementQuery} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {forwardRef, type ComponentProps} from 'react'
 
-const TimeZoneButtonElementQuery = styled(ElementQuery)`
-  .button-small {
-    display: block;
-  }
-  .button-large {
-    display: none;
-  }
+import {timeZoneButtonElementQuery} from './TimeZoneButtonElementQuery.css'
 
-  &[data-eq-min~='2'] {
-    .button-small {
-      display: none;
-    }
-    .button-large {
-      display: block;
-    }
-  }
-`
+const TimeZoneButtonElementQuery = forwardRef<HTMLDivElement, ComponentProps<typeof ElementQuery>>(
+  function TimeZoneButtonElementQuery({className, ...props}, ref) {
+    return (
+      <ElementQuery
+        ref={ref}
+        className={[timeZoneButtonElementQuery, className].filter(Boolean).join(' ')}
+        {...props}
+      />
+    )
+  },
+)
 
 export default TimeZoneButtonElementQuery

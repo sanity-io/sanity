@@ -19,14 +19,17 @@ import {useGetI18nText, useTranslation} from '../../../../i18n'
 import {useCurrentUser} from '../../../../store'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {filterOptions} from './filter'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
-  DialogHeaderCard,
-  PopoverHeaderCard,
-  PopoverListFlex,
-  RootFlex,
-  StyledDialog,
-  StyledPopover,
-} from './NewDocumentButton.style'
+  dialogHeaderCard,
+  popoverHeaderCard,
+  popoverListFlex,
+  rootFlex,
+  styledDialog,
+  styledPopover,
+  itemHeightVar,
+  maxItemsVar,
+} from './NewDocumentButton.css'
 import {NewDocumentList, type NewDocumentListProps} from './NewDocumentList'
 import {INLINE_PREVIEW_HEIGHT} from './NewDocumentListOption'
 import {type ModalType, type NewDocumentOption} from './types'
@@ -208,7 +211,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
         </Tooltip>
 
         {open && (
-          <StyledDialog
+          <Dialog className={styledDialog}
             header={title}
             id="create-new-document-dialog"
             onClickOutside={handleClose}
@@ -217,19 +220,19 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
             scheme={scheme}
             width={1}
           >
-            <RootFlex direction="column" flex={1} height="fill">
-              <DialogHeaderCard padding={2} borderBottom>
+            <Flex className={rootFlex} direction="column" flex={1} height="fill">
+              <Card className={dialogHeaderCard} padding={2} borderBottom>
                 <TextInput
                   data-testid="new-document-button-search-input"
                   {...sharedTextInputProps}
                 />
-              </DialogHeaderCard>
+              </Card>
 
               <Flex direction="column" overflow="hidden">
                 <NewDocumentList {...sharedListProps} />
               </Flex>
-            </RootFlex>
-          </StyledDialog>
+            </Flex>
+          </Dialog>
         )}
       </>
     )
@@ -237,7 +240,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
 
   // Popover
   return (
-    <StyledPopover
+    <Popover className={styledPopover}
       constrainSize
       onKeyDown={handlePopoverKeyDown}
       open={open}
@@ -247,20 +250,20 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       ref={popoverRef}
       scheme={scheme}
       content={
-        <RootFlex
+        <Flex className={rootFlex}
           direction="column"
           flex={1}
           forwardedAs={ReactFocusLock}
           height="fill"
           returnFocus
         >
-          <PopoverHeaderCard sizing="border">
+          <Card className={popoverHeaderCard} sizing="border">
             <Stack>
               <Card borderBottom padding={1}>
                 <TextInput {...sharedTextInputProps} fontSize={1} radius={1} />
               </Card>
             </Stack>
-          </PopoverHeaderCard>
+          </Card>
 
           <PopoverListFlex
             $itemHeight={INLINE_PREVIEW_HEIGHT}
@@ -269,8 +272,8 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
             overflow="hidden"
           >
             <NewDocumentList {...sharedListProps} />
-          </PopoverListFlex>
-        </RootFlex>
+          </Flex>
+        </Flex>
       }
     >
       <div>
@@ -285,6 +288,6 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
           </div>
         </Tooltip>
       </div>
-    </StyledPopover>
+    </Popover>
   )
 }

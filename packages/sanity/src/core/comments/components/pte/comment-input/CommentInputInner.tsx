@@ -2,9 +2,9 @@ import {type RenderBlockFunction} from '@portabletext/editor'
 import {type CurrentUser} from '@sanity/types'
 import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback} from 'react'
-import {css, styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -12,93 +12,23 @@ import {useUser} from '../../../../store'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentsAvatar} from '../../avatars'
 import {MentionIcon, SendIcon} from '../../icons'
+import {
+  avatarContainer,
+  avatarMinHeightVar,
+  buttonDivider,
+  editableWrap,
+  focusedBoxShadowVar,
+  hoveredBoxShadowVar,
+  inputBoxShadowVar,
+  radiiVar,
+  rootCard,
+} from './CommentInputInner.css'
 import {Editable} from './Editable'
 import {useCommentInput} from './useCommentInput'
-
-const EditableWrap = styled(Box)`
-  max-height: 20vh;
-  overflow-y: auto;
-`
-
-const ButtonDivider = styled(MenuDivider)({
-  height: 20,
-  width: 1,
-})
 
 function focusRingBorderStyle(border: {color: string; width: number}): string {
   return `inset 0 0 0 ${border.width}px ${border.color}`
 }
-
-const RootCard = styled(Card)(({theme}) => {
-  const {color, input, radius} = getTheme_v2(theme)
-  const radii = radius[2]
-
-  return css`
-    border-radius: ${radii}px;
-    box-shadow: var(--input-box-shadow);
-
-    --input-box-shadow: ${focusRingBorderStyle({
-      color: color.input.default.enabled.border,
-      width: input.border.width,
-    })};
-
-    &:not([data-expand-on-focus='false'], :focus-within) {
-      background: transparent;
-      box-shadow: unset;
-    }
-
-    &[data-focused='true']:focus-within {
-      ${EditableWrap} {
-        min-height: 1em;
-      }
-
-      /* box-shadow: inset 0 0 0 1px var(--card-focus-ring-color); */
-      --input-box-shadow: ${focusRingBorderStyle({
-        color: 'var(--card-focus-ring-color)',
-        width: input.border.width,
-      })};
-    }
-
-    &:focus-within {
-      ${EditableWrap} {
-        min-height: 1em;
-      }
-    }
-
-    &[data-expand-on-focus='false'] {
-      ${EditableWrap} {
-        min-height: 1em;
-      }
-    }
-
-    &[data-expand-on-focus='true'] {
-      [data-ui='CommentInputActions']:not([hidden]) {
-        display: none;
-      }
-
-      &:focus-within {
-        [data-ui='CommentInputActions'] {
-          display: flex;
-        }
-      }
-    }
-    &:hover {
-      --input-box-shadow: ${focusRingBorderStyle({
-        color: color.input.default.hovered.border,
-        width: input.border.width,
-      })};
-    }
-  `
-})
-
-const AvatarContainer = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-  return `
-    min-height: ${theme.avatar.sizes[1]?.size}px;
-    display: flex;
-    align-items: center;
-  `
-})
 
 interface CommentInputInnerProps {
   avatarSize?: AvatarSize
@@ -128,6 +58,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   } = props
 
   const [user] = useUser(currentUser.id)
+  const theme = useThemeV2()
   const {
     canSubmit,
     expandOnFocus,
@@ -140,10 +71,17 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   } = useCommentInput()
 
   const {t} = useTranslation(commentsLocaleNamespace)
+
+  const {color, input, radius} = theme
+  const radii = radius[2]
+
   const avatar = withAvatar ? (
-    <AvatarContainer>
+    <div
+      className={avatarContainer}
+      style={assignInlineVars({[avatarMinHeightVar]: `${theme.avatar.sizes[1]?.size}px`})}
+    >
       <CommentsAvatar user={user} size={avatarSize} />
-    </AvatarContainer>
+    </div>
   ) : null
 
   const handleMentionButtonClicked = useCallback(
@@ -159,7 +97,23 @@ export function CommentInputInner(props: CommentInputInnerProps) {
     <Flex align="flex-start" gap={2}>
       {avatar}
 
-      <RootCard
+      <Card
+        className={rootCard}
+        style={assignInlineVars({
+          [radiiVar]: `${radii}px`,
+          [inputBoxShadowVar]: focusRingBorderStyle({
+            color: color.input.default.enabled.border,
+            width: input.border.width,
+          }),
+          [focusedBoxShadowVar]: focusRingBorderStyle({
+            color: 'var(--card-focus-ring-color)',
+            width: input.border.width,
+          }),
+          [hoveredBoxShadowVar]: focusRingBorderStyle({
+            color: color.input.default.hovered.border,
+            width: input.border.width,
+          }),
+        })}
         id="comment-input-root"
         data-expand-on-focus={expandOnFocus && !canSubmit ? 'true' : 'false'}
         data-focused={focused ? 'true' : 'false'}
@@ -168,7 +122,8 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         tone={readOnly ? 'transparent' : 'default'}
       >
         <Stack>
-          <EditableWrap
+          <Box
+            className={editableWrap}
             data-ui="CommentInputEditableWrap"
             paddingX={1}
             paddingY={2}
@@ -183,7 +138,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               placeholder={placeholder}
               renderBlock={renderBlock}
             />
-          </EditableWrap>
+          </Box>
 
           <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
             <TooltipDelayGroupProvider>
@@ -201,7 +156,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               )}
               {onSubmit && (
                 <>
-                  {!mentionOptions.disabled && <ButtonDivider />}
+                  {!mentionOptions.disabled && <MenuDivider className={buttonDivider} />}
 
                   <Button
                     aria-label={t('compose.send-comment-aria-label')}
@@ -218,7 +173,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
             </TooltipDelayGroupProvider>
           </Flex>
         </Stack>
-      </RootCard>
+      </Card>
     </Flex>
   )
 }

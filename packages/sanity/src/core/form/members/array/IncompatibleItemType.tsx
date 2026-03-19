@@ -1,15 +1,13 @@
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
-import {Box, Card, Code, Flex, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Card, Code, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {Popover} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
+import {maxWidthVar, popoverCard} from './IncompatibleItemType.css'
 
-const PopoverCard = styled(Card)`
-  max-width: ${({theme}: {theme: Theme}) => theme.sanity.container[1]}px;
-`
 
 interface Props {
   value: unknown
@@ -19,6 +17,7 @@ interface Props {
 
 export function IncompatibleItemType(props: Props) {
   const {value, onFocus, vertical, ...rest} = props
+  const {container} = useThemeV2()
   const [showDetails, setShowDetails] = useState(false)
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
@@ -49,7 +48,7 @@ export function IncompatibleItemType(props: Props) {
       constrainSize
       tone="default"
       content={
-        <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
+        <Card className={popoverCard} margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto" style={assignInlineVars({[maxWidthVar]: `${container[1]}px`})}>
           <Stack space={4}>
             <Text weight="medium">
               <Translate
@@ -84,7 +83,7 @@ export function IncompatibleItemType(props: Props) {
               </Card>
             </Stack>
           </Stack>
-        </PopoverCard>
+        </Card>
       }
     >
       <Card

@@ -1,6 +1,5 @@
 import {Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {TextWithTone} from '../../../../../../components'
 import {type TFunction, useTranslation} from '../../../../../../i18n'
@@ -17,9 +16,8 @@ interface FilterLabelProps {
   showContent?: boolean
 }
 
-const CustomBox = styled(Box)<{$flexShrink?: number}>`
-  flex-shrink: ${({$flexShrink = 0}) => $flexShrink};
-`
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {customBox, flexShrinkVar} from './FilterLabel.css'
 
 export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLabelProps) {
   const {t} = useTranslation()
@@ -35,27 +33,27 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
   const components: TranslateComponentMap = useMemo(
     () => ({
       Field: () => (
-        <CustomBox $flexShrink={fullscreen ? 1 : 0}>
+        <Box className={customBox} style={assignInlineVars({[flexShrinkVar]: String(fullscreen ? 1 : 0)})}>
           <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
             <FilterTitle filter={filter} maxLength={fullscreen ? 25 : 40} />
           </TextWithTone>
-        </CustomBox>
+        </Box>
       ),
       Operator: ({children}) =>
         showContent ? (
-          <CustomBox $flexShrink={0}>
+          <Box className={customBox} style={assignInlineVars({[flexShrinkVar]: String(0)})}>
             <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="regular">
               {children}
             </TextWithTone>
-          </CustomBox>
+          </Box>
         ) : null,
       Value: ({children}) =>
         showContent ? (
-          <CustomBox $flexShrink={1}>
+          <Box className={customBox} style={assignInlineVars({[flexShrinkVar]: String(1)})}>
             <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
               {ButtonValue ? <ButtonValue value={filterValue} /> : children}
             </TextWithTone>
-          </CustomBox>
+          </Box>
         ) : null,
     }),
     [filter, fontSize, fullscreen, showContent, ButtonValue, filterValue],

@@ -1,10 +1,7 @@
 import {Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {styled} from 'styled-components'
 
-const NormalText = styled(Text)`
-  word-break: break-word;
-`
+import {normalText} from './NormalBlock.css'
 
 interface NormalBlockProps {
   children: ReactNode
@@ -13,5 +10,5 @@ interface NormalBlockProps {
 export function NormalBlock(props: NormalBlockProps): React.JSX.Element {
   const {children} = props
 
-  return <NormalText size={1}>{children}</NormalText>
+  return <Text className={normalText} size={1}>{children}</Text>
 }

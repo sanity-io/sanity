@@ -1,30 +1,28 @@
-import {styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {useMemo} from 'react'
 
-const DecoratorWrapper = styled.span<{decoration: string}>`
-  display: inline;
-  ${({theme, decoration}) => {
-    switch (decoration) {
-      case 'strong':
-        return 'font-weight: bold;'
-      case 'em':
-        return 'font-style: italic;'
-      case 'underline':
-        return 'text-decoration: underline;'
-      case 'overline':
-        return 'text-decoration: overline;'
-      case 'strike-through':
-        return 'text-decoration: line-through;'
-      case 'code':
-        return `
-          font-family: ${theme.sanity.fonts.code.family};
-          background: ${theme.sanity.color.muted.default.enabled.bg};
-        `
-      default:
-        return ''
-    }
-  }}
-`
+import {codeBgVar, codeFontFamilyVar, decoratorVariants} from './Decorator.css'
 
 export function Decorator({mark, children}: {mark: string; children: React.JSX.Element}) {
-  return <DecoratorWrapper decoration={mark}>{children}</DecoratorWrapper>
+  const {font, color} = useThemeV2()
+
+  const vars = useMemo(
+    () =>
+      mark === 'code'
+        ? assignInlineVars({
+            [codeFontFamilyVar]: font.code.family,
+            [codeBgVar]: color.muted.default.enabled.bg,
+          })
+        : undefined,
+    [mark, font, color],
+  )
+
+  const className = (decoratorVariants as Record<string, string>)[mark] || decoratorVariants.default
+
+  return (
+    <span className={className} style={vars}>
+      {children}
+    </span>
+  )
 }

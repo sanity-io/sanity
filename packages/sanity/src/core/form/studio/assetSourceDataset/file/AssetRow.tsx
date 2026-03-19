@@ -13,8 +13,6 @@ import {
 } from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
-import {css, styled} from 'styled-components'
-
 import {Tooltip} from '../../../../../ui-components'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
 import {useClient, useRelativeTime, useUnitFormatter} from '../../../../hooks'
@@ -24,6 +22,15 @@ import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
 import {AssetMenu} from '../shared/AssetMenu'
 import {AssetUsageDialog} from '../shared/AssetUsageDialog'
 import {type AssetMenuAction} from '../types'
+import {
+  cardIconWrapper,
+  customCardSelected,
+  customFlex,
+  rowButton,
+  rowButtonNotSelected,
+  rowButtonSelected,
+  typeText,
+} from './AssetRow.css'
 import {formatMimeType} from '../utils/mimeType'
 
 interface RowProps {
@@ -35,49 +42,13 @@ interface RowProps {
   onDeleteFinished?: (assetId: string) => void
 }
 
-const CardIconWrapper = styled.span`
-  background-color: transparent;
-  flex-shrink: 0;
-`
 
-// These are here because using vanilla UI components caused a type issue inside of styled-components
-const CustomFlex = styled(Flex)``
 
-const CustomCard = styled(Card)<RowProps>`
-  ${(props) =>
-    props.isSelected &&
-    css`
       --card-muted-fg-color: var(--card-bg-color);
       --card-fg-color: var(--card-bg-color);
     `}
 `
 
-const RowButton = styled(Button)<RowProps>`
-  box-shadow: none;
-  min-width: 0;
-  cursor: pointer;
-  position: initial;
-
-  &:before,
-  &:after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-  }
-
-  &:before {
-    z-index: 0;
-    pointer-events: none;
-    border-radius: inherit;
-  }
-
-  ${(props) =>
-    props.isSelected &&
-    css`
       --card-muted-fg-color: var(--card-bg-color);
       --card-fg-color: var(--card-bg-color);
 
@@ -112,9 +83,6 @@ const RowButton = styled(Button)<RowProps>`
     `}
 `
 
-const TypeText = styled(Text)`
-  overflow-wrap: anywhere;
-`
 
 const STYLES_ROW_CARD = {
   position: 'relative',
@@ -255,8 +223,8 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
             opacity: isDeleting ? 0.5 : 1,
           }}
         >
-          <RowButton
-            asset={asset}
+          <Button
+            className={`${rowButton}`}
             mode="bleed"
             padding={0}
             data-id={_id}
@@ -265,7 +233,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
             radius={2}
           >
             <Flex gap={2} flex={2} align="center">
-              <Card as={CardIconWrapper} padding={2} tone="transparent" radius={2}>
+              <Card as="span" className={cardIconWrapper} padding={2} tone="transparent" radius={2}>
                 <Text muted size={2} style={STYLES_ICON_CARD}>
                   <DocumentIcon />
                 </Text>
@@ -274,7 +242,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
                 {originalFilename}
               </Text>
             </Flex>
-          </RowButton>
+          </Button>
           <Flex justify="flex-end" align="center" paddingRight={1} style={STYLES_ASSETMENU_WRAPPER}>
             <Button
               mode="bleed"
@@ -346,13 +314,12 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
   }
 
   return (
-    <CustomCard
-      asset={asset}
+    <Card
+      className={isSelected ? customCardSelected : undefined}
       paddingBottom={1}
       style={STYLES_ROW_CARD}
       radius={0}
       overflow={'hidden'}
-      isSelected={isSelected}
       aria-selected="true"
     >
       <Grid
@@ -366,8 +333,8 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           opacity: isDeleting ? 0.5 : 1,
         }}
       >
-        <RowButton
-          asset={asset}
+        <Button
+          className={`${rowButton} ${isSelected ? rowButtonSelected : rowButtonNotSelected}`}
           mode="bleed"
           data-id={_id}
           onClick={onClick}
@@ -376,10 +343,9 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           title={t('asset-source.file.asset-list.item.select-file-tooltip', {
             filename: originalFilename,
           })}
-          isSelected={isSelected}
           radius={2}
         >
-          <CustomFlex
+          <Flex className={customFlex}
             gap={2}
             flex={2}
             paddingRight={1}
@@ -412,26 +378,26 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
                 {originalFilename}
               </Text>
             )}
-          </CustomFlex>
-        </RowButton>
-        <CustomFlex align="center">
+          </Flex>
+        </Button>
+        <Flex className={customFlex} align="center">
           <Text size={1} muted>
             {formattedSize}
           </Text>
-        </CustomFlex>
-        <CustomFlex align="center">
+        </Flex>
+        <Flex className={customFlex} align="center">
           <Box>
-            <TypeText size={1} muted textOverflow="ellipsis">
+            <Text className={typeText} size={1} muted textOverflow="ellipsis">
               {formattedMimeType}
-            </TypeText>
+            </Text>
           </Box>
-        </CustomFlex>
-        <CustomFlex align="center">
+        </Flex>
+        <Flex className={customFlex} align="center">
           <Text as="time" size={1} muted dateTime={_createdAt}>
             {formattedTime}
           </Text>
-        </CustomFlex>
-        <CustomFlex
+        </Flex>
+        <Flex className={customFlex}
           justify="flex-end"
           align="center"
           paddingX={1}
@@ -439,9 +405,9 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           style={STYLES_ASSETMENU_WRAPPER}
         >
           <AssetMenu border={false} isSelected={false} onAction={handleMenuAction} />
-        </CustomFlex>
+        </Flex>
       </Grid>
       {usageDialog || deleteDialog}
-    </CustomCard>
+    </Card>
   )
 }

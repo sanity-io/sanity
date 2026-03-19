@@ -1,5 +1,7 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
+import {Box, Card, Flex, isHTMLElement, rem, Text} from '@sanity/ui'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -13,130 +15,34 @@ import {
   useRef,
   useState,
 } from 'react'
-import {css, type CSSObject, styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
-
-const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
-  const {theme} = props
-  const {focusRing, input, radius} = theme.sanity
-  const color = theme.sanity.color.input
-  const space = rem(theme.sanity.space[1])
-
-  return {
-    'position': 'relative',
-    'borderRadius': `${radius[1]}px`,
-    'color': color.default.enabled.fg,
-    'boxShadow': focusRingBorderStyle({
-      color: color.default.enabled.border,
-      width: input.border.width,
-    }),
-
-    '& > .content': {
-      position: 'relative',
-      lineHeight: '0',
-      margin: `-${space} 0 0 -${space}`,
-    },
-
-    '& > .content > div': {
-      display: 'inline-block',
-      verticalAlign: 'top',
-      padding: `${space} 0 0 ${space}`,
-    },
-
-    // enabled
-    '&:not([data-read-only])': {
-      cursor: 'text',
-    },
-
-    // hovered
-    '@media(hover:hover):not([data-disabled]):not([data-read-only]):hover': {
-      borderColor: color.default.hovered.border,
-    },
-
-    // focused
-    '&:not([data-disabled]):not([data-read-only])[data-focused]': {
-      boxShadow: focusRingStyle({
-        border: {
-          color: color.default.enabled.border,
-          width: input.border.width,
-        },
-        focusRing,
-      }),
-    },
-
-    // disabled
-    '*:disabled + &': {
-      color: color.default.disabled.fg,
-      backgroundColor: color.default.disabled.bg,
-      boxShadow: focusRingBorderStyle({
-        color: color.default.disabled.border,
-        width: input.border.width,
-      }),
-    },
-  }
-})
-
-const Input = styled.input((props: {theme: Theme}): CSSObject => {
-  const {theme} = props
-  const font = theme.sanity.fonts.text
-  const color = theme.sanity.color.input
-  const p = theme.sanity.space[2]
-  const size = theme.sanity.fonts.text.sizes[2]
-
-  return {
-    'appearance': 'none',
-    'background': 'none',
-    'border': 0,
-    'borderRadius': 0,
-    'outline': 'none',
-    'fontSize': rem(size.fontSize),
-    'lineHeight': `${size.lineHeight / size.fontSize}`,
-    'fontFamily': font.family,
-    'fontWeight': `${font.weights.regular}`,
-    'margin': 0,
-    'display': 'block',
-    'minWidth': '1px',
-    'maxWidth': '100%',
-    'boxSizing': 'border-box',
-    'paddingTop': rem(p - size.ascenderHeight),
-    'paddingRight': rem(p),
-    'paddingBottom': rem(p - size.descenderHeight),
-    'paddingLeft': rem(p),
-
-    // enabled
-    '&:not(:invalid):not(:disabled)': {
-      color: color.default.enabled.fg,
-    },
-
-    // disabled
-    '&:not(:invalid):disabled': {
-      color: color.default.disabled.fg,
-    },
-  }
-})
-
-const Placeholder = styled(Box)((props: {theme: Theme}) => {
-  const {theme} = props
-  const color = theme.sanity.color.input
-
-  return css`
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    pointer-events: none;
-    --card-fg-color: ${color.default.enabled.placeholder};
-  `
-})
-
-const TagBox = styled(Box)`
-  // This is needed to make textOverflow="ellipsis" work properly for the Text primitive
-  max-width: 100%;
-`
+import {
+  borderRadiusVar,
+  boxShadowVar,
+  contentItemStyle,
+  contentStyle,
+  focusBoxShadowVar,
+  inputColorVar,
+  inputDisabledColorVar,
+  inputFontFamilyVar,
+  inputFontSizeVar,
+  inputFontWeightVar,
+  inputLineHeightVar,
+  inputPaddingBottomVar,
+  inputPaddingLeftVar,
+  inputPaddingRightVar,
+  inputPaddingTopVar,
+  inputStyle,
+  placeholderColorVar,
+  placeholderStyle,
+  rootStyle,
+  spaceVar,
+  tagBox,
+} from './tagInput.css'
 
 export const TagInput = forwardRef(
   (
@@ -160,6 +66,7 @@ export const TagInput = forwardRef(
     } = props
 
     const {t} = useTranslation(studioLocaleNamespace)
+    const theme = useThemeV2()
     const [inputValue, setInputValue] = useState('')
     const enabled = !disabled && !readOnly
     const [focused, setFocused] = useState(false)
@@ -239,8 +146,16 @@ export const TagInput = forwardRef(
       }
     }, [inputValue])
 
+    const {input, radius, fonts, color: themeColor, space} = theme
+    const color = themeColor.input || themeColor
+    const spaceVal = rem(space[1])
+    const font = fonts.text
+    const size = fonts.text.sizes[2]
+    const p = space[2]
+
     return (
-      <Root
+      <Card
+        className={rootStyle}
         data-disabled={disabled ? '' : undefined}
         data-focused={focused ? '' : undefined}
         data-read-only={readOnly ? '' : undefined}
@@ -249,9 +164,31 @@ export const TagInput = forwardRef(
         overflow="auto"
         padding={1}
         ref={rootRef}
+        style={assignInlineVars({
+          [borderRadiusVar]: `${radius[1]}px`,
+          [boxShadowVar]: focusRingBorderStyle({
+            color: 'var(--card-border-color)',
+            width: input.border.width,
+          }),
+          [focusBoxShadowVar]: focusRingStyle({
+            border: {
+              color: 'var(--card-border-color)',
+              width: input.border.width,
+            },
+            focusRing: theme.card.focusRing,
+          }),
+          [spaceVar]: spaceVal,
+        })}
       >
         {enabled && (
-          <Placeholder hidden={Boolean(inputValue || value.length)} padding={3}>
+          <Box
+            className={placeholderStyle}
+            hidden={Boolean(inputValue || value.length)}
+            padding={3}
+            style={assignInlineVars({
+              [placeholderColorVar]: 'var(--card-muted-fg-color)',
+            })}
+          >
             <Text textOverflow="ellipsis">
               {placeholderProp
                 ? placeholderProp
@@ -262,25 +199,28 @@ export const TagInput = forwardRef(
                         : undefined,
                   })}
             </Text>
-          </Placeholder>
+          </Box>
         )}
 
-        <div className="content">
+        <div className={contentStyle}>
           {value.map((tag, tagIndex) => (
-            <TagBox key={`tag-${tagIndex}`}>
-              <Tag
-                enabled={enabled}
-                index={tagIndex}
-                muted={!enabled}
-                onRemove={handleTagRemove}
-                tag={tag}
-              />
-            </TagBox>
+            <div className={contentItemStyle} key={`tag-${tagIndex}`}>
+              <Box className={tagBox}>
+                <Tag
+                  enabled={enabled}
+                  index={tagIndex}
+                  muted={!enabled}
+                  onRemove={handleTagRemove}
+                  tag={tag}
+                />
+              </Box>
+            </div>
           ))}
 
-          <div key="tag-input">
-            <Input
+          <div className={contentItemStyle} key="tag-input">
+            <input
               {...restProps}
+              className={inputStyle}
               disabled={!enabled}
               onBlur={handleInputBlur}
               onChange={handleInputChange}
@@ -289,10 +229,22 @@ export const TagInput = forwardRef(
               ref={ref}
               type="text"
               value={inputValue}
+              style={assignInlineVars({
+                [inputFontSizeVar]: rem(size.fontSize),
+                [inputLineHeightVar]: `${size.lineHeight / size.fontSize}`,
+                [inputFontFamilyVar]: font.family,
+                [inputFontWeightVar]: `${font.weights.regular}`,
+                [inputPaddingTopVar]: rem(p - size.ascenderHeight),
+                [inputPaddingRightVar]: rem(p),
+                [inputPaddingBottomVar]: rem(p - size.descenderHeight),
+                [inputPaddingLeftVar]: rem(p),
+                [inputColorVar]: 'var(--card-fg-color)',
+                [inputDisabledColorVar]: 'var(--card-muted-fg-color)',
+              })}
             />
           </div>
         </div>
-      </Root>
+      </Card>
     )
   },
 )

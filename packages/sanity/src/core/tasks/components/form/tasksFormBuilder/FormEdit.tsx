@@ -1,11 +1,9 @@
 import {CopyIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
-import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, Card, Flex, Menu, MenuDivider, Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
 
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {CommentsProvider} from '../../../../comments/context/comments/CommentsProvider'
@@ -29,14 +27,7 @@ import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 import {AssigneeEditFormField, DateEditFormField, StatusSelector, Title} from '../fields'
 import {RemoveTaskDialog} from '../RemoveTaskDialog'
 import {getMentionedUsers} from '../utils'
-
-const FirstRow = styled(Flex)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    column-gap: ${theme.space[2]}px;
-    row-gap: ${theme.space[3]}px;
-  `
-})
+import * as classes from './FormEdit.css'
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()
@@ -104,6 +95,7 @@ function FormEditInner(props: ObjectInputProps) {
   const currentUser = useCurrentUser()
   const {t} = useTranslation(tasksLocaleNamespace)
   const activityData = useActivityLog(value).changes
+  const theme = useThemeV2()
   const handleChangeAndSubscribe = useCallback(
     (patch: FormPatch | PatchEvent | FormPatch[]) => {
       const subscribers = value.subscribers || []
@@ -137,12 +129,17 @@ function FormEditInner(props: ObjectInputProps) {
       </Flex>
 
       <Card borderTop marginTop={3}>
-        <FirstRow
+        <Flex
+          className={classes.firstRow}
           paddingBottom={3}
           paddingTop={4}
           align="flex-start"
           justify="flex-start"
           wrap="wrap"
+          style={assignInlineVars({
+            [classes.columnGapVar]: `${theme.space[2]}px`,
+            [classes.rowGapVar]: `${theme.space[3]}px`,
+          })}
         >
           <TooltipDelayGroupProvider>
             <StatusSelector
@@ -162,7 +159,7 @@ function FormEditInner(props: ObjectInputProps) {
               path={['dueBy']}
             />
           </TooltipDelayGroupProvider>
-        </FirstRow>
+        </Flex>
       </Card>
 
       {props.renderDefault(props)}

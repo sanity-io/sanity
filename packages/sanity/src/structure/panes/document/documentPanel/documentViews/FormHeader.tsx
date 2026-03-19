@@ -1,11 +1,21 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Heading, Inline, Stack, Text} from '@sanity/ui'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {css, styled} from 'styled-components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 
 import {Tooltip} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {
+  titleContainer,
+  headingSize4FontSize,
+  headingSize4LineHeight,
+  headingSize3FontSize,
+  headingSize3LineHeight,
+  headingSize2FontSize,
+  headingSize2LineHeight,
+} from './FormHeader.css'
 
 interface DocumentHeaderProps {
   documentId: string
@@ -23,39 +33,6 @@ interface DocumentHeaderProps {
  * the largest heading size here, even if their browser supports it!
  */
 
-const TitleContainer = styled(Stack)`
-  ${({theme}) => {
-    return css`
-      @supports not (container-type: inline-size) {
-        display: none !important;
-      }
-
-      container-type: inline-size;
-
-      [data-heading] {
-        font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize}px;
-        line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight}px;
-        overflow-wrap: break-word;
-        text-wrap: pretty;
-      }
-
-      @container (max-width: 560px) {
-        [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[3].lineHeight}px;
-        }
-      }
-
-      @container (max-width: 420px) {
-        [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight}px;
-        }
-      }
-    `
-  }}
-`
-
 /**
  * Header containing current document title and type.
  * Document type is hidden if the document `_id` matches the current document `_type`.
@@ -65,12 +42,25 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
   const isSingleton = documentId === schemaType.name
   const description = schemaType.description
   const {t} = useTranslation(structureLocaleNamespace)
+  const {font} = useThemeV2()
 
   if (schemaType.__experimental_formPreviewTitle === false) {
     return null
   }
   return (
-    <TitleContainer marginBottom={6} space={4}>
+    <Stack
+      className={titleContainer}
+      marginBottom={6}
+      space={4}
+      style={assignInlineVars({
+        [headingSize4FontSize]: `${font.heading.sizes[4].fontSize}px`,
+        [headingSize4LineHeight]: `${font.heading.sizes[4].lineHeight}px`,
+        [headingSize3FontSize]: `${font.heading.sizes[3].fontSize}px`,
+        [headingSize3LineHeight]: `${font.heading.sizes[3].lineHeight}px`,
+        [headingSize2FontSize]: `${font.heading.sizes[2].fontSize}px`,
+        [headingSize2LineHeight]: `${font.heading.sizes[2].lineHeight}px`,
+      })}
+    >
       {!isSingleton && (
         <Inline space={1}>
           <Text muted size={1}>
@@ -86,6 +76,6 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
       <Heading as="h2" data-heading muted={!title} data-testid="document-panel-document-title">
         {title ?? t('document-view.form-view.form-title-fallback')}
       </Heading>
-    </TitleContainer>
+    </Stack>
   )
 }

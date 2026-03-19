@@ -1,30 +1,17 @@
 import {Card, Flex, Spinner, Stack} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {useCurrentUser} from '../../../store'
 import {useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {TasksFormBuilder} from '../form'
 import {TasksList} from '../list/TasksList'
 import {TasksUpsellPanel} from '../upsell'
+import * as classes from './TasksSidebar.css'
 import {TasksListTabs} from './TasksListTabs'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 
 const MotionCard = motion.create(Card)
-const RootCard = styled(MotionCard)`
-  flex: 1;
-  flex-direction: column;
-`
-
-const HeaderStack = styled(Stack)`
-  border-bottom: 1px solid var(--card-border-color);
-`
-
-const ContentFlex = styled(Flex)`
-  overflow-y: scroll;
-  overflow-x: hidden;
-`
 
 /**
  * @internal
@@ -74,7 +61,8 @@ function TasksStudioSidebarInner() {
   }, [filteredList, isLoading, onTaskSelect, selectedTask, viewMode, mode])
 
   return (
-    <RootCard
+    <MotionCard
+      className={classes.rootCard}
       display="flex"
       height="fill"
       flex={1}
@@ -82,14 +70,15 @@ function TasksStudioSidebarInner() {
       initial={{opacity: 0}}
       animate={{opacity: 1, transition: {duration: 0.2}}}
     >
-      <HeaderStack space={3} padding={3} sizing="border">
+      <Stack className={classes.headerStack} space={3} padding={3} sizing="border">
         <TasksSidebarHeader items={filteredList} />
         {viewMode === 'list' && !isLoading && (
           <TasksListTabs activeTabId={activeTabId} onChange={setActiveTab} />
         )}
-      </HeaderStack>
+      </Stack>
 
-      <ContentFlex
+      <Flex
+        className={classes.contentFlex}
         direction="column"
         flex={1}
         overflow="auto"
@@ -99,8 +88,8 @@ function TasksStudioSidebarInner() {
         sizing="border"
       >
         {content}
-      </ContentFlex>
-    </RootCard>
+      </Flex>
+    </MotionCard>
   )
 }
 

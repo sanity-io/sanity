@@ -1,9 +1,8 @@
 import {type Asset} from '@sanity/types'
 import {Box, Flex, Grid, Spinner, Text} from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent} from 'react'
-import {styled} from 'styled-components'
-
 import {AssetThumb} from './AssetThumb'
+import {thumbGrid} from './ImageListView.css'
 
 interface ImageListViewProps {
   isLoading?: boolean
@@ -14,15 +13,12 @@ interface ImageListViewProps {
   onDeleteFinished: (assetId: string) => void
 }
 
-const ThumbGrid = styled(Grid)`
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-`
 
 export function ImageListView(props: ImageListViewProps) {
   const {isLoading, assets, selectedAssets, onItemClick, onItemKeyPress, onDeleteFinished} = props
   return (
     <Box padding={4}>
-      <ThumbGrid gap={2}>
+      <Grid className={thumbGrid} gap={2}>
         {assets.map((asset) => (
           <AssetThumb
             key={asset._id}
@@ -33,7 +29,7 @@ export function ImageListView(props: ImageListViewProps) {
             onDeleteFinished={onDeleteFinished}
           />
         ))}
-      </ThumbGrid>
+      </Grid>
       {isLoading && assets.length === 0 && (
         <Flex justify="center">
           <Spinner muted />

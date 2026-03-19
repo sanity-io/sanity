@@ -10,42 +10,22 @@ import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {type Path} from '@sanity/types'
-import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
+import {Card, useRootTheme} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
-import {styled} from 'styled-components'
-
+import {styledRoot} from './StringInputPortableText.css'
 import {set, unset} from '../../../patch/patch'
 import {type StringInputProps} from '../../../types'
 import {DeletedSegment} from '../../common/diff/string/segments'
-import {stringDiffContainerStyles} from '../../common/diff/string/styles'
 import {UpdateReadOnlyPlugin} from '../../PortableText/PortableTextInput'
 import {useOptimisticDiff} from './diff/useOptimisticDiff'
 import {packageValue} from './packageValue'
-import {
-  responsiveInputPaddingStyle,
-  textInputBaseStyle,
-  textInputFontSizeStyle,
-  type TextInputInputStyleProps,
-  textInputRepresentationStyle,
-  type TextInputRepresentationStyleProps,
-  type TextInputResponsivePaddingStyleProps,
-  textInputRootStyle,
-} from './styles'
+
 import {unpackageValue} from './unpackageValue'
 
 export const ROOT_PATH: Path = [{_key: 'root'}, 'children', {_key: 'root'}]
 const INVALID_CLASS_NAME = 'invalid'
 
-const StyledRoot = styled.div`
-  flex: 1;
-  min-width: 0;
-  display: block;
-  position: relative;
-`
 
-const StyledInput = styled(PortableTextEditable)<
-  TextInputInputStyleProps & TextInputResponsivePaddingStyleProps
->`
   ${textInputRootStyle}
   ${textInputBaseStyle}
   ${responsiveInputPaddingStyle}
@@ -53,13 +33,7 @@ const StyledInput = styled(PortableTextEditable)<
   ${stringDiffContainerStyles}
 `
 
-const StyledEditorRepresentation = styled(Card)<TextInputRepresentationStyleProps>(
-  textInputRepresentationStyle,
-)
 
-const StyledPlaceholder = styled.span<TextInputResponsivePaddingStyleProps>`
-  ${responsiveInputPaddingStyle}
-`
 
 /**
  * This string input implementation is powered by the Portable Text Editor. It's used when inline
@@ -159,9 +133,9 @@ export function StringInputPortableText(props: StringInputProps) {
 
     if (isEntireValuedDeleted && diffSegments) {
       return (
-        <StyledPlaceholder $fontSize={fontSize} $space={space} $padding={padding}>
+        <span>
           <DeletedSegment segment={diffSegments[0]} />
-        </StyledPlaceholder>
+        </span>
       )
     }
 
@@ -169,36 +143,29 @@ export function StringInputPortableText(props: StringInputProps) {
   }, [diff.fromValue, diff.toValue, diffSegments, fontSize, space, padding])
 
   return (
-    <StyledRoot>
+    <div className={styledRoot}>
       <EditorProvider initialConfig={initialConfig}>
         <OneLinePlugin />
         <EventListenerPlugin on={handleEditorEvent} />
         <UpdateValuePlugin value={props.value} />
         <UpdateReadOnlyPlugin readOnly={props.readOnly ?? false} />
         <BehaviorPlugin behaviors={[plainTextPasteBehaviour, plainTextOneLineBehaviour]} />
-        <StyledInput
+        <PortableTextEditable
           className={props.validationError ? INVALID_CLASS_NAME : undefined}
           renderPlaceholder={props.displayInlineChanges ? renderPlaceholder : undefined}
           rangeDecorations={props.displayInlineChanges ? rangeDecorations : undefined}
-          $fontSize={fontSize}
-          $space={space}
-          $padding={padding}
-          $scheme={rootTheme.scheme}
-          $tone={rootTheme.tone}
           data-scheme={rootTheme.scheme}
           data-tone={rootTheme.tone}
           data-testid="string-input-portable-text"
         />
       </EditorProvider>
-      <StyledEditorRepresentation
-        radius={radius}
-        $scheme={rootTheme.scheme}
-        $tone={rootTheme.tone}
-        data-scheme={rootTheme.scheme}
-        data-tone={rootTheme.tone}
-        data-border
-      />
-    </StyledRoot>
+      <Card
+          radius={radius}
+          data-scheme={rootTheme.scheme}
+          data-tone={rootTheme.tone}
+          data-border
+        />
+    </div>
   )
 }
 

@@ -1,17 +1,11 @@
 import {Box, Card, Container, Flex, Heading} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {UpsellDescriptionSerializer} from '../../../upsell'
 import {type TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
 import {type FreeTrialDialog} from './types'
 
-const Image = styled.img`
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  height: 180px;
-`
+import {image as imageClass} from './PopoverContent.css'
 
 interface PopoverContentProps {
   content: FreeTrialDialog
@@ -24,7 +18,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
     <Card radius={3} overflow={'hidden'} width={0}>
       <Container width={0}>
         {content.image && (
-          <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
+          <img className={imageClass} src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
         )}
         <Flex padding={3} direction={'column'}>
           <Box paddingX={2} marginTop={3}>

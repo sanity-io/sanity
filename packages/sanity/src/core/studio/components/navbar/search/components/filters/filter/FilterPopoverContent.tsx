@@ -1,5 +1,4 @@
 import {Flex} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {DEBUG_MODE} from '../../../constants'
 import {type SearchFilter} from '../../../types'
@@ -11,17 +10,11 @@ interface FilterPopoverContentProps {
   filter: SearchFilter
 }
 
-const ContainerFlex = styled(Flex)`
-  max-width: 480px;
-  min-width: 150px;
-  overflow: hidden;
-  overflow: clip;
-  width: 100%;
-`
+import {containerFlex} from './FilterPopoverContent.css'
 
 export function FilterPopoverContent({filter}: FilterPopoverContentProps) {
   return (
-    <ContainerFlex direction="column">
+    <Flex className={containerFlex} direction="column">
       <FilterForm filter={filter} />
 
       {/* Debug panels */}
@@ -31,6 +24,6 @@ export function FilterPopoverContent({filter}: FilterPopoverContentProps) {
           <DebugDocumentTypes filter={filter} />
         </>
       )}
-    </ContainerFlex>
+    </Flex>
   )
 }

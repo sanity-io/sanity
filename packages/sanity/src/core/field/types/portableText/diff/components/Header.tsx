@@ -1,6 +1,7 @@
 import {Heading} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {styled} from 'styled-components'
+
+import {styledHeading} from './Header.css'
 
 const headingSizes: Record<string, number | undefined> = {
   h1: 2,
@@ -11,19 +12,6 @@ const headingSizes: Record<string, number | undefined> = {
   h6: 0,
 }
 
-const StyledHeading = styled(Heading)`
-  &:not([hidden]) {
-    display: inline;
-    text-transform: none;
-    margin: 0;
-
-    &::before,
-    &::after {
-      content: unset;
-    }
-  }
-`
-
 export function Header({style, children}: {style: string; children: ReactNode}): React.JSX.Element {
-  return <StyledHeading size={headingSizes[style]}>{children}</StyledHeading>
+  return <Heading className={styledHeading} size={headingSizes[style]}>{children}</Heading>
 }

@@ -1,11 +1,13 @@
 import {hues} from '@sanity/color'
 import {type PortableTextBlock} from '@sanity/types'
 import {Stack, useBoundaryElement} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
 
 import {type FieldProps} from '../../../form'
 import {getSchemaTypeTitle} from '../../../schema'
@@ -22,6 +24,17 @@ import {
   useCommentsUpsell,
 } from '../../hooks'
 import {type CommentCreatePayload, type CommentMessage, type CommentsUIMode} from '../../types'
+import {
+  bgVar,
+  blendModeVar,
+  fieldStack,
+  heightVar,
+  highlightDiv,
+  leftVar,
+  radiusVar,
+  topVar,
+  widthVar,
+} from './CommentsField.css'
 import {CommentsFieldButton} from './CommentsFieldButton'
 
 // When the form is temporarily set to `readOnly` while reconnecting, the form
@@ -54,29 +67,7 @@ export function CommentsField(props: FieldProps) {
   return <CommentFieldInner {...props} mode={mode} />
 }
 
-const HighlightDiv = styled(motion.div)(({theme}) => {
-  const {radius, space, color} = theme.sanity
-  const bg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][color.dark ? 900 : 50].hex
-
-  return css`
-    mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
-    border-radius: ${radius[3]}px;
-    top: -${space[2]}px;
-    left: -${space[2]}px;
-    bottom: -${space[2]}px;
-    right: -${space[2]}px;
-    pointer-events: none;
-    position: absolute;
-    z-index: 1;
-    width: calc(100% + ${space[2] * 2}px);
-    height: calc(100% + ${space[2] * 2}px);
-    background-color: ${bg};
-  `
-})
-
-const FieldStack = styled(Stack)`
-  position: relative;
-`
+const MotionDiv = motion.div
 
 function CommentFieldInner(
   props: FieldProps & {
@@ -87,6 +78,7 @@ function CommentFieldInner(
 
   const currentUser = useCurrentUser()
   const {element: boundaryElement} = useBoundaryElement()
+  const theme = useThemeV2()
 
   const rootRef = useRef<HTMLDivElement | null>(null)
 
@@ -278,6 +270,10 @@ function CommentFieldInner(
     [stringPath],
   )
 
+  const isDark = theme.color._dark
+  const bg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 900 : 50].hex
+  const {radius, space} = theme
+
   const internalComments: FieldProps['__internal_comments'] = useMemo(
     () => ({
       button: currentUser && (
@@ -317,7 +313,11 @@ function CommentFieldInner(
   )
 
   return (
-    <FieldStack {...applyCommentsFieldAttr(PathUtils.toString(props.path))} ref={rootRef}>
+    <Stack
+      className={fieldStack}
+      {...applyCommentsFieldAttr(PathUtils.toString(props.path))}
+      ref={rootRef}
+    >
       {props.renderDefault({
         ...props,
         // eslint-disable-next-line camelcase
@@ -326,7 +326,17 @@ function CommentFieldInner(
 
       <AnimatePresence>
         {isSelected && !isInlineCommentThread && (
-          <HighlightDiv
+          <MotionDiv
+            className={highlightDiv}
+            style={assignInlineVars({
+              [blendModeVar]: isDark ? 'screen' : 'multiply',
+              [radiusVar]: `${radius[3]}px`,
+              [topVar]: `-${space[2]}px`,
+              [leftVar]: `-${space[2]}px`,
+              [widthVar]: `calc(100% + ${space[2] * 2}px)`,
+              [heightVar]: `calc(100% + ${space[2] * 2}px)`,
+              [bgVar]: bg,
+            })}
             animate="animate"
             exit="exit"
             initial="initial"
@@ -334,6 +344,6 @@ function CommentFieldInner(
           />
         )}
       </AnimatePresence>
-    </FieldStack>
+    </Stack>
   )
 }

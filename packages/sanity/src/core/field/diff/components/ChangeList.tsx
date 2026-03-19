@@ -15,7 +15,7 @@ import {type ChangeNode, type ObjectDiff} from '../../types'
 import {buildObjectChangeList} from '../changes/buildChangeList'
 import {undoChange} from '../changes/undoChange'
 import {useDocumentChange} from '../hooks/useDocumentChange'
-import {ChangeListWrapper} from './ChangeList.styled'
+import {changeListWrapper} from './ChangeList.css'
 import {ChangeResolver} from './ChangeResolver'
 import {NoChanges} from './NoChanges'
 import {RevertChangesConfirmDialog} from './RevertChangesConfirmDialog'
@@ -107,7 +107,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
   return (
     <Card>
       <Stack space={5}>
-        <Stack as={ChangeListWrapper} space={5}>
+        <Stack className={changeListWrapper} space={5}>
           {changes.map((change) => (
             <div key={change.key}>
               <ChangeResolver

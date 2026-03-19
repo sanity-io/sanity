@@ -2,7 +2,6 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {useEffect, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
 import {isProd} from '../../environment'
@@ -17,27 +16,7 @@ interface CorsOriginErrorScreenProps {
   primaryProjectId?: string
 }
 
-const CenteredContainer = styled(Flex)`
-  min-height: 100vh;
-  box-sizing: border-box;
-`
-
-const ContentWrapper = styled(Box)`
-  width: 100%;
-  max-width: 640px;
-`
-
-const HelpLink = styled.a`
-  color: var(--card-link-fg-color);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25em;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`
+import {centeredContainer, contentWrapper, helpLink} from './CorsOriginErrorScreen.css'
 
 export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   const {projectId, isStaging, primaryProjectId} = props
@@ -78,8 +57,8 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
 
   return (
     <Card height="fill">
-      <CenteredContainer align="center" justify="center" padding={4}>
-        <ContentWrapper paddingBottom={5}>
+      <Flex className={centeredContainer} align="center" justify="center" padding={4}>
+        <Box className={contentWrapper} paddingBottom={5}>
           <Stack space={5}>
             <Heading as="h1" size={2}>
               Connect this studio to your project
@@ -156,19 +135,19 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
 
             <Flex justify="flex-end">
               <Text size={1}>
-                <HelpLink
+                <a className={helpLink}
                   href="https://www.sanity.io/docs/cors"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{textDecoration: 'none'}}
                 >
                   Need help? &rarr;
-                </HelpLink>
+                </a>
               </Text>
             </Flex>
           </Stack>
-        </ContentWrapper>
-      </CenteredContainer>
+        </Box>
+      </Flex>
     </Card>
   )
 }
