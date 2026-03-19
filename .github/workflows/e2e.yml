@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-8core
     outputs:
-      examples_only: ${{ steps.check_examples.outputs.path_only }}
+      has_code_changes: ${{ steps.changes.outputs.has_changes }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -32,11 +32,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if only examples files changed
-        id: check_examples
-        uses: ./.github/actions/check-path-only
-        with:
-          path: examples/
+      - uses: ./.github/actions/detect-code-changes
+        id: changes
 
       - uses: ./.github/actions/setup
         if: steps.check_examples.outputs.path_only != 'true'
@@ -130,19 +127,19 @@ jobs:
       preview_url: ${{ steps.deploy.outputs.DEPLOY_URL }}
     steps:
       - uses: actions/checkout@v6
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
       - uses: ./.github/actions/setup
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
 
       - name: Pull Vercel Environment Information
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
         run: pnpm vercel pull --yes --environment=${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'production' || 'preview' }} --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Build Project Artifacts
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
@@ -153,7 +150,7 @@ jobs:
         run: pnpm vercel build ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '--prod' || '' }} --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
         id: deploy
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
@@ -171,7 +168,7 @@ jobs:
           -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
 
       - name: Echo the preview URL
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
         run: |
           if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
            echo "::error::Preview URL was not found. Deployment may have failed."
@@ -181,7 +178,7 @@ jobs:
 
       - name: Add PR Comment with preview URL
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: needs.install.outputs.examples_only != 'true' && github.event_name == 'pull_request'
+        if: needs.install.outputs.has_code_changes == 'true' && github.event_name == 'pull_request'
         with:
           comment-tag: "e2e-preview-url"
           message: |
@@ -223,15 +220,15 @@ jobs:
         shardTotal: [4]
     steps:
       - uses: actions/checkout@v6
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
       - name: Echo the base URL
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
         run: echo "$SANITY_E2E_BASE_URL"
       - uses: ./.github/actions/setup
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
 
       - name: Store Playwright's Version
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
@@ -239,7 +236,7 @@ jobs:
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
         id: cache-playwright-browsers
         uses: actions/cache/restore@v5
         with:
@@ -247,11 +244,11 @@ jobs:
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
-        if: needs.install.outputs.examples_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
         run: npx playwright install --with-deps
 
       - name: Run E2E tests
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.has_code_changes == 'true'
         env:
           PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
