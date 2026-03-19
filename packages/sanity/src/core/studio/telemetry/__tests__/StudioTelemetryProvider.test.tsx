@@ -8,6 +8,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 vi.mock('@sanity/telemetry')
 vi.mock('@sanity/telemetry/react', () => ({
   TelemetryProvider: ({children}: {children: ReactNode}) => children,
+  DeferredTelemetryProvider: ({children}: {children: ReactNode}) => children,
 }))
 vi.mock('../../../hooks')
 vi.mock('../../workspace')
@@ -25,7 +26,9 @@ vi.mock('../PerformanceTelemetry', () => ({
 }))
 
 // Import mocked modules AFTER vi.mock declarations
-import {createBatchedStore, createSessionId} from '@sanity/telemetry'
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import {createBatchedStore, createSessionId, SessionId} from '@sanity/telemetry'
+import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {useRouterState} from 'sanity/router'
 
 import {useClient} from '../../../hooks'
@@ -56,13 +59,14 @@ describe('StudioTelemetryProvider', () => {
     vi.clearAllMocks()
 
     // Setup default mocks
-    vi.mocked(createSessionId).mockReturnValue('test-session-id')
+    vi.mocked(createSessionId).mockReturnValue('test-session-id' as SessionId)
     vi.mocked(useClient).mockReturnValue(mockClient as never)
     vi.mocked(useWorkspace).mockReturnValue(mockWorkspace as never)
-    vi.mocked(useProjectOrganizationId).mockReturnValue({value: 'org-123'} as never)
-    vi.mocked(useRouterState).mockImplementation(
-      <T,>(selector: (state: {tool?: string}) => T): T => selector({tool: 'desk'}),
-    )
+    vi.mocked(useProjectOrganizationId).mockReturnValue({
+      value: 'org-123',
+    } as never)
+    vi.mocked(useRouterState).mockImplementation(((selector: (state: {tool?: string}) => unknown) =>
+      selector({tool: 'desk'})) as any)
 
     // Capture store options when createBatchedStore is called
     vi.mocked(createBatchedStore).mockImplementation((_sessionId, options) => {
@@ -77,9 +81,11 @@ describe('StudioTelemetryProvider', () => {
 
   it('enriches events with context in sendEvents callback', async () => {
     render(
-      <StudioTelemetryProvider>
-        <div>Test Child</div>
-      </StudioTelemetryProvider>,
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
     )
 
     // Verify createBatchedStore was called
@@ -138,9 +144,11 @@ describe('StudioTelemetryProvider', () => {
     })
 
     render(
-      <StudioTelemetryProvider>
-        <div>Test Child</div>
-      </StudioTelemetryProvider>,
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
     )
 
     // Get the captured sendBeacon callback
@@ -172,9 +180,11 @@ describe('StudioTelemetryProvider', () => {
 
   it('updates context when workspace changes', async () => {
     const {rerender} = render(
-      <StudioTelemetryProvider>
-        <div>Test Child</div>
-      </StudioTelemetryProvider>,
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
     )
 
     // Change workspace
@@ -186,9 +196,11 @@ describe('StudioTelemetryProvider', () => {
 
     // Re-render to trigger context update
     rerender(
-      <StudioTelemetryProvider>
-        <div>Test Child</div>
-      </StudioTelemetryProvider>,
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
     )
 
     // The context ref should be updated - verify by calling sendEvents
@@ -214,20 +226,23 @@ describe('StudioTelemetryProvider', () => {
 
   it('updates context when activeTool changes', async () => {
     const {rerender} = render(
-      <StudioTelemetryProvider>
-        <div>Test Child</div>
-      </StudioTelemetryProvider>,
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
     )
 
     // Change active tool
-    vi.mocked(useRouterState).mockImplementation(
-      <T,>(selector: (state: {tool?: string}) => T): T => selector({tool: 'vision'}),
-    )
+    vi.mocked(useRouterState).mockImplementation(((selector: (state: {tool?: string}) => unknown) =>
+      selector({tool: 'vision'})) as any)
 
     rerender(
-      <StudioTelemetryProvider>
-        <div>Test Child</div>
-      </StudioTelemetryProvider>,
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
     )
 
     const testBatch = [{name: 'Test Event'}]
@@ -249,12 +264,16 @@ describe('StudioTelemetryProvider', () => {
   })
 
   it('handles null orgId gracefully', async () => {
-    vi.mocked(useProjectOrganizationId).mockReturnValue({value: null} as never)
+    vi.mocked(useProjectOrganizationId).mockReturnValue({
+      value: null,
+    } as never)
 
     render(
-      <StudioTelemetryProvider>
-        <div>Test Child</div>
-      </StudioTelemetryProvider>,
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
     )
 
     const testBatch = [{name: 'Test Event'}]
@@ -289,9 +308,11 @@ describe('StudioTelemetryProvider', () => {
     })
 
     render(
-      <StudioTelemetryProvider>
-        <div>Test Child</div>
-      </StudioTelemetryProvider>,
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
     )
 
     const testBatch = [{name: 'Test Event'}]
