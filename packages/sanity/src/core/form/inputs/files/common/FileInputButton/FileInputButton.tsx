@@ -36,6 +36,7 @@ export const FileInputButton = forwardRef(function FileInputButton(
   )
 
   return (
+    // @ts-expect-error - TODO: vanilla-extract-migration fix this
     <FileButton {...rest} icon={icon} text={text} htmlFor={id} disabled={disabled}>
       {/* Visibly hidden input */}
       <input

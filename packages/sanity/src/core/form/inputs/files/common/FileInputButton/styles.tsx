@@ -22,6 +22,7 @@ export function FileButton(props: ComponentProps<typeof Button>) {
       {...rest}
       className={[fileButton, className].filter(Boolean).join(' ')}
       style={{...useFocusRingVars(), ...style}}
+      // @ts-expect-error - TODO: vanilla-extract-migration fix this
       forwardedAs="label"
     />
   )
@@ -35,6 +36,7 @@ export function FileMenuItem(props: ComponentProps<typeof MenuItem>) {
       {...rest}
       className={[fileMenuItem, className].filter(Boolean).join(' ')}
       style={{...useFocusRingVars(), ...style}}
+      // @ts-expect-error - TODO: vanilla-extract-migration fix this
       forwardedAs="label"
     />
   )
