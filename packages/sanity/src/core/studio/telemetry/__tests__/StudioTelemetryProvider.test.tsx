@@ -8,6 +8,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 vi.mock('@sanity/telemetry')
 vi.mock('@sanity/telemetry/react', () => ({
   TelemetryProvider: ({children}: {children: ReactNode}) => children,
+  DeferredTelemetryProvider: ({children}: {children: ReactNode}) => children,
 }))
 vi.mock('../../../hooks')
 vi.mock('../../workspace')
@@ -27,12 +28,12 @@ vi.mock('../PerformanceTelemetry', () => ({
 // Import mocked modules AFTER vi.mock declarations
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import {createBatchedStore, createSessionId, SessionId} from '@sanity/telemetry'
+import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {useRouterState} from 'sanity/router'
 
 import {useClient} from '../../../hooks'
 import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
 import {useWorkspace} from '../../workspace'
-import {DeferredTelemetryProvider} from '../DeferredTelemetryProvider'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'
 /* eslint-enable import/first */
 

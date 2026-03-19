@@ -1,3 +1,4 @@
+import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {ToastProvider} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 
@@ -31,7 +32,6 @@ import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncem
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
-import {DeferredTelemetryProvider} from './telemetry/DeferredTelemetryProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
