@@ -612,7 +612,7 @@ importers:
         version: 2.2.2(react@19.2.4)
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 6.0.0(@oclif/core@4.8.4)(@sanity/cli-core@1.1.2(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
+        version: 6.0.0(@oclif/core@4.9.0)(@sanity/cli-core@1.1.3(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
       '@sanity/preview-url-secret':
         specifier: ^4.0.2
         version: 4.0.3(@sanity/client@7.17.0(debug@4.4.3))
@@ -1585,8 +1585,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/cli':
-        specifier: ^6.1.5
-        version: 6.1.5(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)
+        specifier: ^6.1.8
+        version: 6.1.8(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)
       '@sanity/client':
         specifier: 'catalog:'
         version: 7.17.0(debug@4.4.3)
@@ -1631,7 +1631,7 @@ importers:
         version: 0.19.0
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 6.0.0(@oclif/core@4.8.4)(@sanity/cli-core@1.1.2(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
+        version: 6.0.0(@oclif/core@4.9.0)(@sanity/cli-core@1.1.3(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
       '@sanity/mutate':
         specifier: ^0.16.1
         version: 0.16.1(debug@4.4.3)(xstate@5.28.0)
@@ -4098,16 +4098,16 @@ packages:
     resolution: {integrity: sha512-ER2N6itRkzWbbtVmZ9WKaWxVlKlOeBFF1/7xx+KA5J1xKa4JjUwBdb6tDpk0v1qA+d+VDwHI9qmLcXSWcmi+Rw==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@oclif/core@4.8.4':
-    resolution: {integrity: sha512-UTAqwXJJyRvLBvosL+1uPZYSpr8lEHgUb/EVGbPXo5WZqUIBHfJ0sR2bkBEsrj00/ar4IegKxx4YK0wn2c8SQg==}
+  '@oclif/core@4.9.0':
+    resolution: {integrity: sha512-k/ntRgDcUprTT+aaNoF+whk3cY3f9fRD2lkF6ul7JeCUg2MaMXVXZXfbRhJCfsiX51X8/5Pqo0LGdO9SLYXNHg==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-help@6.2.37':
-    resolution: {integrity: sha512-5N/X/FzlJaYfpaHwDC0YHzOzKDWa41s9t+4FpCDu4f9OMReds4JeNBaaWk9rlIzdKjh2M6AC5Q18ORfECRkHGA==}
+  '@oclif/plugin-help@6.2.38':
+    resolution: {integrity: sha512-aTVQ8qPy5kD/Neq2B4OEo2joukHWdEabTMHfQyXtsagW1O2MvhM58+JUWADvieX67OSjSXseD6f6O/e5SA2N/Q==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-not-found@3.2.74':
-    resolution: {integrity: sha512-6RD/EuIUGxAYR45nMQg+nw+PqwCXUxkR6Eyn+1fvbVjtb9d+60OPwB77LCRUI4zKNI+n0LOFaMniEdSpb+A7kQ==}
+  '@oclif/plugin-not-found@3.2.75':
+    resolution: {integrity: sha512-xBEf7fJoS/fIqzGBUe0i6yc7ozo23KTyusy50DHqh+oqay5gtMLPUfr1RbvJBGGwozzFAMMFXN9o+AvUDt/zTA==}
     engines: {node: '>=18.0.0'}
 
   '@octokit/auth-token@6.0.0':
@@ -5090,14 +5090,14 @@ packages:
   '@sanity/browserslist-config@1.0.5':
     resolution: {integrity: sha512-so+/UtCge8t1jq509hH0otbbptRz0zM/Aa0dh5MhMD7HGT6n2igWIL2VWH/9QR9e77Jn3dJsjz23mW1WCxT+sg==}
 
-  '@sanity/cli-core@1.1.2':
-    resolution: {integrity: sha512-oT0NtAVgPgj1Q6iYgr942g1vsw8rreeSRJB8tH82ivPqnqCmKWjOrzM8eGnlHcLPFKW9nsQqL8cpq3ec9+1WlA==}
+  '@sanity/cli-core@1.1.3':
+    resolution: {integrity: sha512-EiKO29UKoZtZEv/iLxD0OXxeORRU1jL3/scMuVg0d0ZkaAp11ctGiZBksjpfZ++9XCu0/gnqgsbxQEVXlRji1A==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     peerDependencies:
       '@sanity/telemetry': '>=0.8.1 <0.9.0'
 
-  '@sanity/cli@6.1.5':
-    resolution: {integrity: sha512-oBIOTbLdjv+E7GDVJCXCuSPqWhdxjppSuO4dFNRwzlrfk/nVDOf7W296XUhiAcpNuwSggrYscbzJTB7jTMxZ3w==}
+  '@sanity/cli@6.1.8':
+    resolution: {integrity: sha512-7LNnGZsZCQfkbGkUDttgrhLsHrZemZrfmMYABNFjucUTOdGw/RdBxjNmQsqBtwNNRx0dnxMshs1H7kHdrFUs6Q==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     hasBin: true
 
@@ -5341,8 +5341,8 @@ packages:
     peerDependencies:
       react: ^18.3 || ^19
 
-  '@sanity/runtime-cli@14.5.0':
-    resolution: {integrity: sha512-cbNOKpvuyNlvcQcpMAJ1PtrcqgdyfNGZYsZECbxb5XJKp9LVSkKmZQl0aVWTFvjf1R6RqE60dtBM6NBMesjR3w==}
+  '@sanity/runtime-cli@14.5.1':
+    resolution: {integrity: sha512-IFL6eLPmMtmXzmDbWzlEaMWOAiZOGvH7BBUAl+l//c6GCPfmGNuMbWGpfuSAqUR4knFMip/Buy8muNMi8QX/tA==}
     engines: {node: '>=20.19'}
     hasBin: true
 
@@ -5383,8 +5383,8 @@ packages:
     peerDependencies:
       react: ^18.2 || ^19.0.0
 
-  '@sanity/template-validator@3.0.0':
-    resolution: {integrity: sha512-ej6bdYiMz+M3Z/kYlWnTgGy2KQcYQk3O2dwJog1xSI8l444T3IZSOICr9cFuQL/j41W9HcEHqcbg/LO+31L3KA==}
+  '@sanity/template-validator@3.0.1':
+    resolution: {integrity: sha512-HYsOBaAmO4gnUyC0XKSWbxSyNRplzpxqFZdETMltbyWPei/UTS9WERUHBX2PH5e9Eaco0XQ35m0WRGaaUJEiTA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -6169,8 +6169,8 @@ packages:
   '@vercel/fastify@0.1.15':
     resolution: {integrity: sha512-FVL5pK9MvlT4cxnrJ7ELv1AdERloIGYZbwfbwPMqGasW3nPhoFQfGA8z1XdEvY+NfDJtjAzBfakC91qtDVAUIQ==}
 
-  '@vercel/frameworks@3.8.4':
-    resolution: {integrity: sha512-mJHrZM0hZftUYPvRkwb78WKG92atIx2dQ+xXWbzW13tdf1tdwqpD8Ynf7wX0a/zxjSjbC1YrHF6FmPLTF+aLDQ==}
+  '@vercel/frameworks@3.21.1':
+    resolution: {integrity: sha512-N8ciri8NSz4vlc8Dqfa9cr1rn2RRbmG3T8Q+8/QM/4af4d1UbSdBG8cBBo7jQSQfNobjURRGL/miGBe+dS2wOQ==}
 
   '@vercel/fun@1.2.0':
     resolution: {integrity: sha512-WSmS9qe2R+5roucDEwYB3atKhs9sUbkHV3laJGEUoqz25O83jLE/jqg/B/3yTunB0av1xqiCIBFFVKnXsqSc8w==}
@@ -6246,6 +6246,12 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
+
+  '@vitejs/plugin-react@5.2.0':
+    resolution: {integrity: sha512-YmKkfhOAi3wsB1PhJq5Scj3GXMn3WvtQ/JC0xoopuHoXSdmtdStOpFrYaT1kie2YgFBcIe64ROzMYRjCrYOdYw==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    peerDependencies:
+      vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
 
   '@vitest/coverage-v8@4.0.18':
     resolution: {integrity: sha512-7i+N2i0+ME+2JFZhfuz7Tg/FqKtilHjGyGvoHYQ6iLV0zahbsJ9sljC9OcFcPDbhYKCet+sG8SsVqlyGvPflZg==}
@@ -6590,6 +6596,15 @@ packages:
 
   bare-fs@4.5.3:
     resolution: {integrity: sha512-9+kwVx8QYvt3hPWnmb19tPnh38c6Nihz8Lx3t0g9+4GoIf3/fTgYwM4Z6NxgI+B9elLQA7mLE9PpqcWtOMRDiQ==}
+    engines: {bare: '>=1.16.0'}
+    peerDependencies:
+      bare-buffer: '*'
+    peerDependenciesMeta:
+      bare-buffer:
+        optional: true
+
+  bare-fs@4.5.5:
+    resolution: {integrity: sha512-XvwYM6VZqKoqDll8BmSww5luA5eflDzY0uEFfBJtFKe4PAAtxBjU3YIxzIBzhyaEQBy1VXEQBto4cpN5RZJw+w==}
     engines: {bare: '>=1.16.0'}
     peerDependencies:
       bare-buffer: '*'
@@ -7294,6 +7309,10 @@ packages:
 
   dotenv@17.2.4:
     resolution: {integrity: sha512-mudtfb4zRB4bVvdj0xRo+e6duH1csJRM8IukBqfTRvHotn9+LBXB8ynAidP9zHqoRC/fsllXgk4kCKlR21fIhw==}
+    engines: {node: '>=12'}
+
+  dotenv@17.3.1:
+    resolution: {integrity: sha512-IO8C/dzEb6O3F9/twg6ZLXz164a2fhTnEWb95H23Dm4OuN+92NmEAlTrupP9VW6Jm3sO26tQlqyvyi4CsnY9GA==}
     engines: {node: '>=12'}
 
   dts-resolver@2.1.3:
@@ -10977,8 +10996,8 @@ packages:
   tar-fs@3.1.2:
     resolution: {integrity: sha512-QGxxTxxyleAdyM3kpFs14ymbYmNFrfY+pHj7Z8FgtbZ7w2//VAgLMac7sT6nRpIHjppXO2AwwEOg0bPFVRcmXw==}
 
-  tar-stream@3.1.7:
-    resolution: {integrity: sha512-qJj60CXt7IU1Ffyc3NJMjh6EkuCFej46zUqJ4J7pqYlThyd9bO0XBTmcOIhSzZJVWfsLks0+nle/j538YAW9RQ==}
+  tar-stream@3.1.8:
+    resolution: {integrity: sha512-U6QpVRyCGHva435KoNWy9PRoi2IFYCgtEhq9nmrPPpbRacPs9IH4aJ3gbrFC8dPcXvdSZ4XXfXT5Fshbp2MtlQ==}
 
   tar@6.2.1:
     resolution: {integrity: sha512-DZ4yORTwrbTj/7MZYq2w+/ZFdI6OZ/f9SFHR+71gIVUZhOQPHzVCLpvRnPgyaMpfWxxk/4ONva3GQSyNIKRv6A==}
@@ -10987,6 +11006,10 @@ packages:
 
   tar@7.5.10:
     resolution: {integrity: sha512-8mOPs1//5q/rlkNSPcCegA6hiHJYDmSLEI8aMH/CdSQJNWztHC9WHNam5zdQlfpTwB9Xp7IBEsHfV5LKMJGVAw==}
+    engines: {node: '>=18'}
+
+  tar@7.5.11:
+    resolution: {integrity: sha512-ChjMH33/KetonMTAtpYdgUFr0tbz69Fp2v7zWxQfYZX4g5ZN2nOBXm1R2xyA+lMIKrLKIoKAwFj93jE/avX9cQ==}
     engines: {node: '>=18'}
 
   teeny-request@9.0.0:
@@ -14253,7 +14276,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@oclif/core@4.8.4':
+  '@oclif/core@4.9.0':
     dependencies:
       ansi-escapes: 4.3.2
       ansis: 3.17.0
@@ -14274,14 +14297,14 @@ snapshots:
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
 
-  '@oclif/plugin-help@6.2.37':
+  '@oclif/plugin-help@6.2.38':
     dependencies:
-      '@oclif/core': 4.8.4
+      '@oclif/core': 4.9.0
 
-  '@oclif/plugin-not-found@3.2.74(@types/node@24.10.13)':
+  '@oclif/plugin-not-found@3.2.75(@types/node@24.10.13)':
     dependencies:
       '@inquirer/prompts': 7.10.1(@types/node@24.10.13)
-      '@oclif/core': 4.8.4
+      '@oclif/core': 4.9.0
       ansis: 3.17.0
       fast-levenshtein: 3.0.0
     transitivePeerDependencies:
@@ -15037,10 +15060,10 @@ snapshots:
 
   '@sanity/browserslist-config@1.0.5': {}
 
-  '@sanity/cli-core@1.1.2(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)':
+  '@sanity/cli-core@1.1.3(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)':
     dependencies:
       '@inquirer/prompts': 8.3.0(@types/node@24.10.13)
-      '@oclif/core': 4.8.4
+      '@oclif/core': 4.9.0
       '@rexxars/jiti': 2.6.2
       '@sanity/client': 7.17.0(debug@4.4.3)
       '@sanity/telemetry': 0.8.1(react@19.2.4)
@@ -15077,10 +15100,10 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@sanity/cli-core@1.1.2(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)':
+  '@sanity/cli-core@1.1.3(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)':
     dependencies:
       '@inquirer/prompts': 8.3.0(@types/node@24.10.13)
-      '@oclif/core': 4.8.4
+      '@oclif/core': 4.9.0
       '@rexxars/jiti': 2.6.2
       '@sanity/client': 7.17.0(debug@4.4.3)
       '@sanity/telemetry': 0.9.0(react@19.2.4)
@@ -15117,34 +15140,34 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@sanity/cli@6.1.5(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)':
+  '@sanity/cli@6.1.8(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(typescript@5.9.3)(xstate@5.28.0)':
     dependencies:
-      '@oclif/core': 4.8.4
-      '@oclif/plugin-help': 6.2.37
-      '@oclif/plugin-not-found': 3.2.74(@types/node@24.10.13)
-      '@sanity/cli-core': 1.1.2(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)
+      '@oclif/core': 4.9.0
+      '@oclif/plugin-help': 6.2.38
+      '@oclif/plugin-not-found': 3.2.75(@types/node@24.10.13)
+      '@sanity/cli-core': 1.1.3(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)
       '@sanity/client': 7.17.0(debug@4.4.3)
-      '@sanity/codegen': 6.0.1(@oclif/core@4.8.4)(@sanity/cli-core@1.1.2(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))
+      '@sanity/codegen': 6.0.1(@oclif/core@4.9.0)(@sanity/cli-core@1.1.3(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))
       '@sanity/descriptors': 1.3.0
       '@sanity/export': 6.1.0
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
       '@sanity/import': 5.0.1(@sanity/client@7.17.0(debug@4.4.3))
-      '@sanity/migrate': 6.0.0(@oclif/core@4.8.4)(@sanity/cli-core@1.1.2(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
-      '@sanity/runtime-cli': 14.5.0(@types/node@24.10.13)(debug@4.4.3)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+      '@sanity/migrate': 6.0.0(@oclif/core@4.9.0)(@sanity/cli-core@1.1.3(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)
+      '@sanity/runtime-cli': 14.5.1(@types/node@24.10.13)(debug@4.4.3)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 0.8.1(react@19.2.4)
-      '@sanity/template-validator': 3.0.0
+      '@sanity/template-validator': 3.0.1
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 3.1.14(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       '@sanity/worker-channels': 2.0.0
-      '@vercel/frameworks': 3.8.4
-      '@vitejs/plugin-react': 5.1.4(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+      '@vercel/frameworks': 3.21.1
+      '@vitejs/plugin-react': 5.2.0(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       chokidar: 5.0.0
       console-table-printer: 2.15.0
       date-fns: 4.1.0
       debug: 4.4.3(supports-color@8.1.1)
-      dotenv: 17.2.4
+      dotenv: 17.3.1
       eventsource: 4.1.0
       execa: 9.6.1
       form-data: 4.0.5
@@ -15177,9 +15200,9 @@ snapshots:
       rxjs: 7.8.2
       semver: 7.7.4
       smol-toml: 1.6.0
-      tar: 7.5.10
+      tar: 7.5.11
       tar-fs: 3.1.2
-      tar-stream: 3.1.7
+      tar-stream: 3.1.8
       tinyglobby: 0.2.15
       tsx: 4.21.0
       typeid-js: 1.2.0
@@ -15260,7 +15283,7 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/codegen@6.0.1(@oclif/core@4.8.4)(@sanity/cli-core@1.1.2(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))':
+  '@sanity/codegen@6.0.1(@oclif/core@4.9.0)(@sanity/cli-core@1.1.3(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(@sanity/telemetry@0.8.1(react@19.2.4))':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/generator': 7.29.1
@@ -15270,8 +15293,8 @@ snapshots:
       '@babel/register': 7.28.6(@babel/core@7.29.0)
       '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
-      '@oclif/core': 4.8.4
-      '@sanity/cli-core': 1.1.2(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)
+      '@oclif/core': 4.9.0
+      '@sanity/cli-core': 1.1.3(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)
       '@sanity/telemetry': 0.8.1(react@19.2.4)
       '@sanity/worker-channels': 2.0.0
       chokidar: 3.6.0
@@ -15395,10 +15418,11 @@ snapshots:
       get-it: 8.7.0(debug@4.4.3)
       json-stream-stringify: 3.1.6
       p-queue: 9.1.0
-      tar: 7.5.10
-      tar-stream: 3.1.7
+      tar: 7.5.11
+      tar-stream: 3.1.8
     transitivePeerDependencies:
       - bare-abort-controller
+      - bare-buffer
       - react-native-b4a
       - supports-color
 
@@ -15520,10 +15544,10 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.1
 
-  '@sanity/migrate@6.0.0(@oclif/core@4.8.4)(@sanity/cli-core@1.1.2(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)':
+  '@sanity/migrate@6.0.0(@oclif/core@4.9.0)(@sanity/cli-core@1.1.3(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))(xstate@5.28.0)':
     dependencies:
-      '@oclif/core': 4.8.4
-      '@sanity/cli-core': 1.1.2(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)
+      '@oclif/core': 4.9.0
+      '@sanity/cli-core': 1.1.3(@sanity/telemetry@0.9.0(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)
       '@sanity/client': 7.17.0(debug@4.4.3)
       '@sanity/mutate': 0.16.1(debug@4.4.3)(xstate@5.28.0)
       '@sanity/types': link:packages/@sanity/types
@@ -15667,13 +15691,13 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/runtime-cli@14.5.0(@types/node@24.10.13)(debug@4.4.3)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)':
+  '@sanity/runtime-cli@14.5.1(@types/node@24.10.13)(debug@4.4.3)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)':
     dependencies:
       '@architect/hydrate': 5.0.2
       '@architect/inventory': 5.0.0
       '@inquirer/prompts': 8.3.0(@types/node@24.10.13)
-      '@oclif/core': 4.8.4
-      '@oclif/plugin-help': 6.2.37
+      '@oclif/core': 4.9.0
+      '@oclif/plugin-help': 6.2.38
       '@sanity/blueprints': 0.13.1
       '@sanity/blueprints-parser': 0.4.0
       '@sanity/client': 7.17.0(debug@4.4.3)
@@ -15686,7 +15710,7 @@ snapshots:
       jiti: 2.6.1
       mime-types: 3.0.2
       ora: 9.3.0
-      tar-stream: 3.1.7
+      tar-stream: 3.1.8
       vite: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       vite-tsconfig-paths: 6.1.1(typescript@5.9.3)(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       ws: 8.19.0
@@ -15694,6 +15718,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
       - bare-abort-controller
+      - bare-buffer
       - bufferutil
       - debug
       - less
@@ -15809,7 +15834,7 @@ snapshots:
       rxjs: 7.8.2
       typeid-js: 0.3.0
 
-  '@sanity/template-validator@3.0.0':
+  '@sanity/template-validator@3.0.1':
     dependencies:
       '@actions/core': 3.0.0
       '@actions/github': 9.0.0
@@ -16733,7 +16758,7 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/frameworks@3.8.4':
+  '@vercel/frameworks@3.21.1':
     dependencies:
       '@iarna/toml': 2.2.3
       '@vercel/error-utils': 2.0.3
@@ -16946,6 +16971,18 @@ snapshots:
       - supports-color
 
   '@vitejs/plugin-react@5.1.4(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))':
+    dependencies:
+      '@babel/core': 7.29.0
+      '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.29.0)
+      '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.29.0)
+      '@rolldown/pluginutils': 1.0.0-rc.3
+      '@types/babel__core': 7.20.5
+      react-refresh: 0.18.0
+      vite: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@vitejs/plugin-react@5.2.0(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.29.0)
@@ -17333,13 +17370,22 @@ snapshots:
       - react-native-b4a
     optional: true
 
-  bare-os@3.6.2:
-    optional: true
+  bare-fs@4.5.5:
+    dependencies:
+      bare-events: 2.8.2
+      bare-path: 3.0.0
+      bare-stream: 2.7.0(bare-events@2.8.2)
+      bare-url: 2.3.2
+      fast-fifo: 1.3.2
+    transitivePeerDependencies:
+      - bare-abort-controller
+      - react-native-b4a
+
+  bare-os@3.6.2: {}
 
   bare-path@3.0.0:
     dependencies:
       bare-os: 3.6.2
-    optional: true
 
   bare-stream@2.7.0(bare-events@2.8.2):
     dependencies:
@@ -17349,12 +17395,10 @@ snapshots:
     transitivePeerDependencies:
       - bare-abort-controller
       - react-native-b4a
-    optional: true
 
   bare-url@2.3.2:
     dependencies:
       bare-path: 3.0.0
-    optional: true
 
   base64-js@1.5.1: {}
 
@@ -17977,6 +18021,8 @@ snapshots:
   dotenv@16.6.1: {}
 
   dotenv@17.2.4: {}
+
+  dotenv@17.3.1: {}
 
   dts-resolver@2.1.3(oxc-resolver@11.17.1):
     optionalDependencies:
@@ -22105,7 +22151,7 @@ snapshots:
   tar-fs@3.1.2:
     dependencies:
       pump: 3.0.3
-      tar-stream: 3.1.7
+      tar-stream: 3.1.8
     optionalDependencies:
       bare-fs: 4.5.3
       bare-path: 3.0.0
@@ -22114,13 +22160,15 @@ snapshots:
       - bare-buffer
       - react-native-b4a
 
-  tar-stream@3.1.7:
+  tar-stream@3.1.8:
     dependencies:
       b4a: 1.7.3
+      bare-fs: 4.5.5
       fast-fifo: 1.3.2
       streamx: 2.23.0
     transitivePeerDependencies:
       - bare-abort-controller
+      - bare-buffer
       - react-native-b4a
 
   tar@6.2.1:
@@ -22133,6 +22181,14 @@ snapshots:
       yallist: 4.0.0
 
   tar@7.5.10:
+    dependencies:
+      '@isaacs/fs-minipass': 4.0.1
+      chownr: 3.0.0
+      minipass: 7.1.3
+      minizlib: 3.1.0
+      yallist: 5.0.0
+
+  tar@7.5.11:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0
