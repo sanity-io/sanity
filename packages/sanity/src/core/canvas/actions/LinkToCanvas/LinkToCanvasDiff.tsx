@@ -1,10 +1,8 @@
 import {ArrowRightIcon, ComposeSparklesIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Box, Card, Flex, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, Card, Flex, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {motion} from 'motion/react'
-import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
@@ -12,20 +10,25 @@ import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {canvasLocaleNamespace} from '../../i18n'
 import {DocumentDiff} from './DocumentDiff/DocumentDiff'
 
-const ChipCard = styled(Card)<{tone: BadgeTone}>((props) => {
-  const {color} = getTheme_v2(props.theme)
-  return css`
-    --card-fg-color: ${color.button.ghost[props.tone].enabled.fg};
-  `
-})
-
 const VersionChip = ({id, showSparkles}: {id: string; showSparkles?: boolean}) => {
   const documentVariantType = getDocumentVariantType(id)
   const badgeTitle = documentVariantType === 'published' ? 'Published' : 'Draft'
   const badgeTone = documentVariantType === 'published' ? 'positive' : 'caution'
 
+  // Read the theme in the component
+  const {color} = useThemeV2()
+  const iconColor = color.button.ghost[badgeTone].enabled.fg
+
   return (
-    <ChipCard tone={badgeTone} padding={2} paddingRight={3} radius={'full'}>
+    <Card
+      tone={badgeTone}
+      padding={2}
+      paddingRight={3}
+      radius={'full'}
+      style={assignInlineVars({
+        '--card-fg-color': iconColor,
+      })}
+    >
       <Flex gap={2} align="center">
         <Text size={1}>
           <ReleaseAvatarIcon tone={documentVariantType === 'published' ? 'positive' : 'caution'} />
@@ -39,7 +42,7 @@ const VersionChip = ({id, showSparkles}: {id: string; showSparkles?: boolean}) =
           </Text>
         )}
       </Flex>
-    </ChipCard>
+    </Card>
   )
 }
 

@@ -30,21 +30,11 @@ import {
   useMemo,
 } from 'react'
 import {SortableItemIdContext} from 'sanity/_singletons'
-import {css, styled} from 'styled-components'
 
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
+import {listItem, listItemState} from './list.css'
 
 export const MOVING_ITEM_CLASS_NAME = 'moving'
-
-const ListItem = styled(Box)<ComponentProps<typeof Box> & {$moving?: boolean}>`
-  ${(props) =>
-    props.$moving &&
-    css`
-      z-index: 10000;
-      /* prevents hover-effects etc on the dragged element  */
-      pointer-events: none;
-    `}
-`
 
 const AUTO_SCROLL_OPTIONS: AutoScrollOptions = {
   threshold: {
@@ -145,15 +135,20 @@ const SortableListItem = forwardRef<HTMLDivElement, ItemProps>(
     )
 
     return (
-      <ListItem
+      <Box
         ref={setRef}
         style={style}
-        $moving={isActive}
-        className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
+        className={[
+          listItem,
+          isActive ? listItemState.moving : listItemState.idle,
+          isActive ? MOVING_ITEM_CLASS_NAME : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
         data-index={props['data-index']}
       >
         {children}
-      </ListItem>
+      </Box>
     )
   },
 )
@@ -212,7 +207,7 @@ export const Item = forwardRef(function Item(
       {sortable ? (
         <SortableListItem ref={ref} disableTransition={disableTransition} {...rest} />
       ) : (
-        <ListItem ref={ref} {...rest} />
+        <Box className={listItem} ref={ref} {...rest} />
       )}
     </SortableItemIdContext.Provider>
   )

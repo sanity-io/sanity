@@ -1,24 +1,17 @@
 import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Inline, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../i18n'
 import {resolveUploadAssetSources} from '../../../studio/uploads/resolveUploadAssetSources'
 import {type FileLike} from '../../../studio/uploads/types'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {sticky} from './DropMessage.css'
 
 interface Props {
   hoveringFiles: FileLike[]
   types: SchemaType[]
 }
-
-const Sticky = styled(Box)`
-  position: sticky;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-`
 
 export function DropMessage(props: Props) {
   const {hoveringFiles, types} = props
@@ -30,7 +23,12 @@ export function DropMessage(props: Props) {
   const multiple = types.length > 1
   const {t} = useTranslation()
   return (
-    <Sticky data-testid="upload-target-drop-message" paddingBottom={3} paddingTop={3}>
+    <Box
+      className={sticky}
+      data-testid="upload-target-drop-message"
+      paddingBottom={3}
+      paddingTop={3}
+    >
       {acceptedFiles.length > 0 ? (
         <>
           <Inline space={2}>
@@ -71,6 +69,6 @@ export function DropMessage(props: Props) {
           </Text>
         </Inline>
       )}
-    </Sticky>
+    </Box>
   )
 }

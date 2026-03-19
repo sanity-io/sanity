@@ -10,7 +10,7 @@ import {DefaultPreview, type PreviewMediaDimensions, TextWithTone} from '../../.
 import {type FIXME} from '../../../FIXME'
 import {useTranslation} from '../../../i18n'
 import {type DocumentAvailability} from '../../../preview'
-import {StyledPreviewFlex} from './GlobalDocumentReferencePreview.styled'
+import {previewFlex} from './GlobalDocumentReferencePreview.css'
 import {resolveProjectDataset} from './utils/resolveProjectDataset'
 
 /**
@@ -81,7 +81,7 @@ export function GlobalDocumentReferencePreview(props: {
   }, [previewMedia, resourceType, resourceId, refType?.icon, t])
 
   return (
-    <StyledPreviewFlex align="center" justify="center" flex={1} data-testid="preview">
+    <Flex className={previewFlex} align="center" justify="center" flex={1} data-testid="preview">
       {availability?.available ? (
         <Box flex={1}>
           <DefaultPreview
@@ -142,6 +142,6 @@ export function GlobalDocumentReferencePreview(props: {
           )}
         </Inline>
       </Box>
-    </StyledPreviewFlex>
+    </Flex>
   )
 }

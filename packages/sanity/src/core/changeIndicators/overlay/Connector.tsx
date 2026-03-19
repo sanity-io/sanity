@@ -8,7 +8,8 @@ import {
   INTERACTIVE_STROKE_WIDTH,
   STROKE_WIDTH,
 } from '../constants'
-import {ConnectorPath, DebugRect, InteractivePath, RightBarWrapper} from './Connector.styled'
+import {ClampedRect} from './ClampedRect'
+import {connectorPath, debugRect, interactivePath, rightBarWrapper} from './Connector.css'
 import {arrowPath, generateConnectorPath} from './connectorPath'
 import {mapConnectorToLine} from './mapConnectorToLine'
 import {type Rect} from './types'
@@ -30,11 +31,16 @@ export const Connector = memo(function Connector({from, to}: Props) {
 
   return (
     <>
-      <InteractivePath d={linePathDescription} strokeWidth={INTERACTIVE_STROKE_WIDTH} />
+      <path
+        className={interactivePath}
+        d={linePathDescription}
+        strokeWidth={INTERACTIVE_STROKE_WIDTH}
+      />
 
-      <ConnectorPath d={linePathDescription} strokeWidth={STROKE_WIDTH} />
+      <path className={connectorPath} d={linePathDescription} strokeWidth={STROKE_WIDTH} />
 
-      <RightBarWrapper
+      <ClampedRect
+        className={rightBarWrapper}
         top={to.rect.top}
         left={to.rect.left - 0.5}
         height={to.rect.height}
@@ -43,7 +49,8 @@ export const Connector = memo(function Connector({from, to}: Props) {
       />
 
       {line.from.isAbove && (
-        <ConnectorPath
+        <path
+          className={connectorPath}
           d={arrowPath(
             line.from.left + ARROW_MARGIN_X,
             line.from.bounds.top - ARROW_THRESHOLD + ARROW_MARGIN_Y,
@@ -54,7 +61,8 @@ export const Connector = memo(function Connector({from, to}: Props) {
       )}
 
       {line.from.isBelow && (
-        <ConnectorPath
+        <path
+          className={connectorPath}
           d={arrowPath(
             line.from.left + ARROW_MARGIN_X,
             line.from.bounds.top + line.from.bounds.height + ARROW_THRESHOLD - ARROW_MARGIN_Y,
@@ -65,7 +73,8 @@ export const Connector = memo(function Connector({from, to}: Props) {
       )}
 
       {line.to.isAbove && (
-        <ConnectorPath
+        <path
+          className={connectorPath}
           d={arrowPath(
             line.to.bounds.left + ARROW_MARGIN_X,
             line.to.bounds.top - ARROW_THRESHOLD + ARROW_MARGIN_Y,
@@ -76,7 +85,8 @@ export const Connector = memo(function Connector({from, to}: Props) {
       )}
 
       {line.to.isBelow && (
-        <ConnectorPath
+        <path
+          className={connectorPath}
           d={arrowPath(
             line.to.bounds.left + ARROW_MARGIN_X,
             line.to.bounds.top + line.to.bounds.height + ARROW_THRESHOLD - ARROW_MARGIN_Y,
@@ -88,7 +98,8 @@ export const Connector = memo(function Connector({from, to}: Props) {
 
       {DEBUG && (
         <>
-          <DebugRect
+          <rect
+            className={debugRect}
             x={line.from.bounds.left}
             y={line.from.bounds.top}
             width={line.from.bounds.width}
@@ -96,7 +107,8 @@ export const Connector = memo(function Connector({from, to}: Props) {
             stroke="green"
           />
 
-          <DebugRect
+          <rect
+            className={debugRect}
             x={line.to.bounds.left}
             y={line.to.bounds.top}
             width={line.to.bounds.width}
@@ -106,7 +118,8 @@ export const Connector = memo(function Connector({from, to}: Props) {
 
           {!line.from.outOfBounds && (
             <g transform={`translate(${line.from.bounds.left} ${line.from.bounds.top})`}>
-              <DebugRect
+              <rect
+                className={debugRect}
                 width={line.from.bounds.width}
                 height={line.from.bounds.height}
                 strokeWidth={STROKE_WIDTH}
@@ -117,7 +130,8 @@ export const Connector = memo(function Connector({from, to}: Props) {
 
           {!line.to.outOfBounds && (
             <g transform={`translate(${line.to.bounds.left} ${line.to.bounds.top})`}>
-              <DebugRect
+              <rect
+                className={debugRect}
                 width={line.to.bounds.width}
                 height={line.to.bounds.height}
                 strokeWidth={STROKE_WIDTH}

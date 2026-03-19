@@ -13,7 +13,6 @@ import {getMinutes} from 'date-fns/getMinutes'
 import {parseISO} from 'date-fns/parseISO'
 import {setMinutes} from 'date-fns/setMinutes'
 import {useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
@@ -30,6 +29,7 @@ import {useFieldActions} from '../../field'
 import {set, unset} from '../../patch'
 import {type StringInputProps} from '../../types/inputProps'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
+import {root} from './DateTimeInput.css'
 import {getCalendarLabels, isValidDate} from './utils'
 
 /**
@@ -58,10 +58,6 @@ export function sanitizeTimeZoneKeyId(id: string): string {
     return id.replace(/[[\]="']/g, '-')
   }
 }
-
-const Root = styled(Card)`
-  line-height: 1;
-`
 
 interface ParsedOptions {
   dateFormat: string
@@ -212,7 +208,8 @@ export function DateTimeInput(props: DateTimeInputProps) {
   )
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   return (
-    <Root
+    <Card
+      className={root}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       data-testid={`field-${id}`}
@@ -287,6 +284,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
           </div>
         </ChangeIndicator>
       </Flex>
-    </Root>
+    </Card>
   )
 }

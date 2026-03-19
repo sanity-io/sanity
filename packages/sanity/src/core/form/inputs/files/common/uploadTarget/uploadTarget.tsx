@@ -1,5 +1,5 @@
 import {type AssetSource, type SchemaType} from '@sanity/types'
-import {Box, type CardTone, Flex, Text, useToast} from '@sanity/ui'
+import {Box, type CardTone, Flex, Layer, Text, useToast} from '@sanity/ui'
 import uniqBy from 'lodash-es/uniqBy.js'
 import {
   type ComponentType,
@@ -14,7 +14,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import {styled} from 'styled-components'
 
 import {type FIXME} from '../../../../../FIXME'
 import {useClient} from '../../../../../hooks'
@@ -37,7 +36,8 @@ import {isComponentModeAssetSource} from '../assetSourceUtils'
 import {DropMessage} from '../DropMessage'
 import {type FileInfo, fileTarget} from '../fileTarget'
 import {UploadDestinationPicker} from '../UploadDestinationPicker'
-import {Overlay} from './styles'
+import {overlay} from './styles.css'
+import {root} from './uploadTarget.css'
 
 type FileEntry = {
   file: File
@@ -65,10 +65,6 @@ export interface UploadTargetProps {
   tone?: CardTone
   children?: ReactNode
 }
-
-const Root = styled.div`
-  position: relative;
-`
 
 export function uploadTarget<Props>(
   Component: ComponentType<Props>,
@@ -348,7 +344,7 @@ export function uploadTarget<Props>(
     )
 
     return (
-      <Root>
+      <div className={root}>
         {showAssetSourceDestinationPicker && (
           <UploadDestinationPicker
             assetSources={assetSourcesWithUploadByName}
@@ -367,13 +363,13 @@ export function uploadTarget<Props>(
           pasteTarget={pasteTarget}
         >
           {hoveringFiles.length > 0 && (
-            <Overlay zOffset={10}>
+            <Layer className={overlay} zOffset={10}>
               <DropMessage hoveringFiles={hoveringFiles} types={types} />
-            </Overlay>
+            </Layer>
           )}
           {children}
         </FileTarget>
-      </Root>
+      </div>
     )
   })
 }

@@ -8,6 +8,10 @@ export const myObject = defineType({
   type: 'object',
   name: 'myObject',
   title: 'My object',
+  groups: [
+    {name: 'content', title: 'Content', default: true},
+    {name: 'media', title: 'Media'},
+  ],
   // icon,
   // readOnly: true,
   fields: [
@@ -15,21 +19,25 @@ export const myObject = defineType({
       name: 'first',
       type: 'string',
       title: 'First',
+      group: 'content',
     },
     {
       name: 'second',
       type: 'string',
       title: 'Second',
+      group: 'content',
     },
     {
       name: 'third',
       type: 'image',
       title: 'Image',
+      group: 'media',
     },
     {
       name: 'fourth',
       type: 'file',
       title: 'File',
+      group: 'media',
     },
   ],
 })
@@ -132,214 +140,6 @@ export default defineType({
       type: 'myObject',
       title: 'MyObject',
       description: 'The first field here should be the title',
-    },
-    defineField({
-      type: 'object',
-      name: 'color',
-      title: 'Color with a long title',
-      fields: [
-        {
-          name: 'title',
-          type: 'string',
-        },
-        {
-          name: 'name',
-          type: 'string',
-        },
-      ],
-    }),
-    {
-      name: 'fieldWithObjectType',
-      title: 'Field of object type',
-      type: 'object',
-      description:
-        'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
-      // readOnly: true,
-      // hidden: true,
-      options: {collapsible: true},
-      fields: [
-        {
-          name: 'field1',
-          type: 'string',
-          description: 'This is a string field',
-          // readOnly: true,
-        },
-        {
-          name: 'field2',
-          type: 'myObject',
-          title: 'A field of myObject 1',
-          description: 'This is another field of "myObject"',
-          readOnly: true,
-        },
-        {
-          name: 'field3',
-          type: 'myObject',
-          title: 'A field of myObject 2',
-          description: 'This is another field of "myObject"',
-          hidden: ({parent}) => parent?.field1 === 'hide-field-3',
-        },
-      ],
-    },
-    {
-      name: 'recursive',
-      title: 'This field is of type objectsTest',
-      type: 'objectsTest',
-      fieldset: 'recursive',
-    },
-    {
-      name: 'collapsibleObject',
-      title: 'Collapsible object',
-      type: 'object',
-      options: {collapsible: true, collapsed: false},
-      description:
-        'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
-      fields: [
-        {name: 'field1', type: 'string', description: 'This is a string field'},
-        {name: 'field2', type: 'string', description: 'This is a collapsed field'},
-        {
-          name: 'field3',
-          type: 'object',
-          options: {collapsible: true, collapsed: true},
-          fields: [
-            {name: 'nested1', title: 'nested1', type: 'string'},
-            {
-              name: 'nested2',
-              title: 'nested2',
-              type: 'object',
-              fields: [
-                {name: 'ge', title: 'hello', type: 'string', validation: (Rule) => Rule.required()},
-              ],
-              options: {collapsible: true, collapsed: true},
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: 'events',
-      title: 'Events',
-      type: 'array',
-      of: [
-        {
-          name: 'mbwEvent',
-          type: 'object',
-          preview: {
-            select: {
-              where: 'where',
-              what: 'what',
-            },
-            prepare({where, what}) {
-              return {
-                title: where as string,
-                subtitle: ((what as string[]) || []).join(', '),
-                media: () => ((where as string) || '').slice(0, 1),
-              }
-            },
-          },
-          fields: [
-            {
-              name: 'where',
-              title: 'Where',
-              description: 'Victoriagade? Baghaven? Koelschip?',
-              type: 'string',
-              validation: (Rule) => Rule.required(),
-            },
-            {
-              name: 'what',
-              title: 'What',
-              description: 'Party? Bottle release? Tap takeover?',
-              type: 'array',
-              of: [{type: 'string'}],
-              validation: (Rule) => Rule.min(1),
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: 'readOnlyObject',
-      title: 'Read only object',
-      type: 'object',
-      fieldset: 'readOnly',
-      readOnly: true,
-      fields: [
-        {
-          name: 'selfDefinedReadOnlyField',
-          title: 'Read only field',
-          description: 'ReadOnly defined in field',
-          type: 'string',
-          readOnly: true,
-        },
-        {
-          name: 'inheritedReadOnlyField',
-          title: 'Read only field',
-          description: 'ReadOnly inherited from object',
-          type: 'string',
-        },
-      ],
-    },
-    {
-      name: 'sections',
-      title: 'Sections',
-      type: 'array',
-      fieldset: 'readOnly',
-      of: [
-        {
-          type: 'object',
-          name: 'blocks',
-          fields: [
-            {
-              type: 'array',
-              name: 'blocks',
-              title: 'Grid',
-              of: [{type: 'playlistTrack'}],
-            },
-          ],
-        },
-        {
-          type: 'object',
-          name: 'textBlocks',
-          fields: [
-            {
-              type: 'text',
-              name: 'text',
-              title: 'Text',
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: 'sectionsReadOnly',
-      title: 'Sections (read only)',
-      type: 'array',
-      readOnly: true,
-      fieldset: 'readOnly',
-      of: [
-        {
-          type: 'object',
-          name: 'blocks',
-          fields: [
-            {
-              type: 'array',
-              name: 'blocks',
-              title: 'Grid',
-              of: [{type: 'playlistTrack'}],
-            },
-          ],
-        },
-        {
-          type: 'object',
-          name: 'textBlocks',
-          fields: [
-            {
-              type: 'text',
-              name: 'text',
-              title: 'Text',
-            },
-          ],
-        },
-      ],
     },
   ],
 })

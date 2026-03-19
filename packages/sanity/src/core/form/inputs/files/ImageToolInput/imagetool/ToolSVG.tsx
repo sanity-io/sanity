@@ -1,6 +1,6 @@
-import {useTheme} from '@sanity/ui'
-import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
   memo,
   useCallback,
@@ -22,22 +22,37 @@ import {useHoverHandlers} from './hooks/useHoverHandlers'
 import {useKeyboardControls} from './hooks/useKeyboardControls'
 import {usePointerHandlers} from './hooks/usePointerHandlers'
 import {useRectCalculations} from './hooks/useRectCalculations'
+import {getCropStrokeColor, getHandleStrokeColor, getHotspotStrokeColor} from './styles.utils'
 import {
-  CropCornerHandle,
-  CropDimensionsBadgeGroup,
-  CropDimensionsBadgeRect,
-  CropDimensionsBadgeText,
-  CropEdgeHandle,
-  CropHandleInteractionArea,
-  CropRect,
-  DarkenedOverlay,
-  Guidelines,
-  HotspotEllipse,
-  HotspotHandle,
-  HotspotHandleInteractionArea,
-  StyledSVG,
-  SVGContainer,
-} from './ToolSVG.styles'
+  badgeFillColorVar,
+  badgeFontFamilyVar,
+  badgeFontSizeVar,
+  badgeFontWeightVar,
+  badgeLetterSpacingVar,
+  cropCornerHandle,
+  cropDimensionsBadgeGroup,
+  cropDimensionsBadgeGroupVisible,
+  cropDimensionsBadgeRect,
+  cropDimensionsBadgeText,
+  cropEdgeHandle,
+  cropHandleInteractionArea,
+  cropRect as cropRectClass,
+  cursorVar,
+  darkenedOverlay,
+  filterVar,
+  guidelines,
+  guidelinesStrokeColorVar,
+  handleStrokeColorVar,
+  hotspotEllipse,
+  hotspotHandle,
+  hotspotHandleInteractionArea,
+  styledSvg,
+  strokeColorVar,
+  strokeWidthVar,
+  svgContainer,
+  svgHeightVar,
+  svgWidthVar,
+} from './ToolSVG.css'
 import {type ToolFocusTarget, type ToolSVGProps} from './types'
 import {
   calculateCurrentCursor,
@@ -50,7 +65,6 @@ import {
 const BADGE_PADDING_X = 6
 const BADGE_PADDING_Y = 3
 const BADGE_OFFSET_Y = 8
-// Approximate character width as a ratio of font size for badge width estimation
 const BADGE_CHAR_WIDTH_RATIO = 0.6
 
 function CropDimensionsBadge(props: {
@@ -63,8 +77,7 @@ function CropDimensionsBadge(props: {
   onMouseLeave?: MouseEventHandler
 }) {
   const {x, y, width, height, visible, onMouseEnter, onMouseLeave} = props
-  const theme = useTheme()
-  const {font} = getThemeV2(theme)
+  const {color, font, radius} = useThemeV2()
   const fontSize = font.text.sizes[1].fontSize
   const text = `${width} × ${height}`
   const textWidth = text.length * (fontSize * BADGE_CHAR_WIDTH_RATIO)
@@ -72,27 +85,39 @@ function CropDimensionsBadge(props: {
   const badgeHeight = fontSize + BADGE_PADDING_Y * 2
 
   return (
-    <CropDimensionsBadgeGroup
-      $visible={visible}
+    <g
+      className={[cropDimensionsBadgeGroup, visible ? cropDimensionsBadgeGroupVisible : '']
+        .filter(Boolean)
+        .join(' ')}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       <title>{`Cropped image size: ${width} × ${height} pixels`}</title>
-      <CropDimensionsBadgeRect
+      <rect
+        className={cropDimensionsBadgeRect}
         x={x - badgeWidth / 2}
         y={y + BADGE_OFFSET_Y}
         width={badgeWidth}
         height={badgeHeight}
+        rx={radius[1]}
+        style={assignInlineVars({[badgeFillColorVar]: color.focusRing})}
       />
-      <CropDimensionsBadgeText
+      <text
+        className={cropDimensionsBadgeText}
         x={x}
         y={y + BADGE_OFFSET_Y + badgeHeight / 2}
         textAnchor="middle"
         dominantBaseline="central"
+        style={assignInlineVars({
+          [badgeFontFamilyVar]: font.text.family,
+          [badgeFontSizeVar]: `${font.text.sizes[0].fontSize}px`,
+          [badgeLetterSpacingVar]: `${font.text.sizes[0].letterSpacing}px`,
+          [badgeFontWeightVar]: String(font.text.weights.medium),
+        })}
       >
         {text}
-      </CropDimensionsBadgeText>
-    </CropDimensionsBadgeGroup>
+      </text>
+    </g>
   )
 }
 
@@ -103,7 +128,6 @@ function ToolSVGComponent(props: ToolSVGProps) {
   const hotspotRef = useRef<SVGEllipseElement>(null)
   const [focusTarget, setFocusTarget] = useState<ToolFocusTarget | null>(null)
 
-  // Generate a unique ID for the clipPath
   const hotspotClipId = useMemo(() => `hotspotClip-${uuid()}`, [])
 
   useEffect(() => {
@@ -111,7 +135,6 @@ function ToolSVGComponent(props: ToolSVGProps) {
     if (!svgElement) return undefined
 
     const handleTouchMove = (e: TouchEvent) => {
-      // Prevent iOS scrolling page while dragging the element
       e.preventDefault()
       return undefined
     }
@@ -159,7 +182,6 @@ function ToolSVGComponent(props: ToolSVGProps) {
     readOnly,
   })
 
-  // Calculate cropped pixel dimensions from the original image
   const croppedDimensions = useMemo(() => {
     const crop = value.crop || DEFAULT_CROP
     const croppedWidth = Math.round(image.naturalWidth * (1 - crop.left - crop.right))
@@ -178,7 +200,6 @@ function ToolSVGComponent(props: ToolSVGProps) {
     [hotspotRect],
   )
 
-  // Handle focus events
   const handleFocus = useCallback((target: ToolFocusTarget | null) => {
     setFocusTarget(target)
   }, [])
@@ -192,7 +213,6 @@ function ToolSVGComponent(props: ToolSVGProps) {
   const handleCropFocus = useCallback(() => handleFocus('crop'), [handleFocus])
   const handleCropBlur = useCallback(() => handleBlur(), [handleBlur])
 
-  // Other event handlers
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
       const svg = svgRef.current
@@ -218,11 +238,41 @@ function ToolSVGComponent(props: ToolSVGProps) {
     [dragTarget, onChangeEnd, value.crop, value.hotspot, constrainedHotspot, resetDragState],
   )
 
-  // Get current cursor based on hover and drag states
   const currentCursor = useMemo(
     () => calculateCurrentCursor(dragTarget, activeHandle, hoverTarget),
     [dragTarget, activeHandle, hoverTarget],
   )
+
+  const {color} = useThemeV2()
+  const focusRingColor = color.focusRing
+
+  const hotspotIsActive =
+    !readOnly &&
+    (hoverTarget === 'hotspot' ||
+      hoverTarget === 'hotspotHandle' ||
+      dragTarget === 'hotspot' ||
+      dragTarget === 'hotspotHandle')
+  const cropIsActive =
+    !readOnly &&
+    (hoverTarget === 'crop' ||
+      Boolean(hoverTarget?.startsWith('crop-')) ||
+      dragTarget === 'crop' ||
+      dragTarget === 'cropHandle')
+
+  const hotspotFocused = !readOnly && focusTarget === 'hotspot'
+  const cropFocused = !readOnly && focusTarget === 'crop'
+
+  const hotspotStrokeColor = getHotspotStrokeColor({
+    focused: hotspotFocused,
+    hovered: hotspotIsActive,
+    focusRingColor,
+  })
+  const cropStrokeColor = getCropStrokeColor({
+    focused: cropFocused,
+    hovered: cropIsActive,
+    focusRingColor,
+  })
+  const handleStroke = getHandleStrokeColor({focused: !!focusTarget, focusRingColor})
 
   const handleCropEnter = useCallback(() => handleMouseEnter('crop'), [handleMouseEnter])
 
@@ -237,18 +287,19 @@ function ToolSVGComponent(props: ToolSVGProps) {
   )
 
   return (
-    <SVGContainer>
-      <StyledSVG
+    <div className={svgContainer}>
+      <svg
+        className={styledSvg}
         ref={svgRef}
         viewBox={`0 0 ${size.width} ${size.height}`}
         preserveAspectRatio="xMidYMid"
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        style={{
-          cursor: readOnly ? 'default' : currentCursor,
-          width: `${size.width}px`,
-          height: `${size.height}px`,
-        }}
+        style={assignInlineVars({
+          [cursorVar]: readOnly ? 'default' : currentCursor,
+          [svgWidthVar]: `${size.width}px`,
+          [svgHeightVar]: `${size.height}px`,
+        })}
       >
         {/* Background image with reduced opacity */}
         <image
@@ -282,10 +333,14 @@ function ToolSVGComponent(props: ToolSVGProps) {
             preserveAspectRatio="xMidYMid meet"
           />
 
-          {/* Darkened overlay for crop area */}
-          <DarkenedOverlay x="0" y="0" width={cropRect.width} height={cropRect.height} />
+          <rect
+            className={darkenedOverlay}
+            x="0"
+            y="0"
+            width={cropRect.width}
+            height={cropRect.height}
+          />
 
-          {/* Transparent overlay to make the entire crop area draggable */}
           <rect
             x="0"
             y="0"
@@ -298,7 +353,6 @@ function ToolSVGComponent(props: ToolSVGProps) {
           />
         </svg>
 
-        {/* Hotspot area with full opacity - masked with ellipse */}
         <defs>
           <clipPath id={hotspotClipId}>
             <ellipse
@@ -320,23 +374,14 @@ function ToolSVGComponent(props: ToolSVGProps) {
           preserveAspectRatio="xMidYMid meet"
         />
 
-        {/* Hotspot */}
         <g>
-          {/* Hotspot ellipse - make it interactive for dragging but allow crop handles to take precedence */}
-          <HotspotEllipse
+          <ellipse
+            className={hotspotEllipse}
             ref={hotspotRef}
             cx={getRectCenterX(hotspotRect)}
             cy={getRectCenterY(hotspotRect)}
             rx={Math.max(0.01, hotspotRect.width / 2)}
             ry={Math.max(0.01, hotspotRect.height / 2)}
-            $hovered={
-              !readOnly &&
-              (hoverTarget === 'hotspot' ||
-                hoverTarget === 'hotspotHandle' ||
-                dragTarget === 'hotspot' ||
-                dragTarget === 'hotspotHandle')
-            }
-            $focused={!readOnly && focusTarget === 'hotspot'}
             data-handle="hotspot"
             onPointerDown={handlePointerDown}
             tabIndex={readOnly ? -1 : 0}
@@ -346,14 +391,19 @@ function ToolSVGComponent(props: ToolSVGProps) {
             onBlur={handleHotspotBlur}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
-            style={{pointerEvents: 'visiblePainted'}}
+            style={assignInlineVars({
+              [strokeColorVar]: hotspotStrokeColor,
+              [strokeWidthVar]: hotspotFocused ? '2px' : '1px',
+            })}
           />
 
           {/* Hotspot handle - only show if not readOnly */}
           {!readOnly && (
             <g>
               {/* Invisible larger hit area for better touch interaction */}
-              <HotspotHandleInteractionArea
+
+              <circle
+                className={hotspotHandleInteractionArea}
                 cx={hotspotHandlePosition.x}
                 cy={hotspotHandlePosition.y}
                 r={hotspotHandlePosition.hitRadius}
@@ -361,30 +411,29 @@ function ToolSVGComponent(props: ToolSVGProps) {
                 onPointerDown={handlePointerDown}
                 onMouseEnter={handleHotspotHandleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                style={{pointerEvents: 'visiblePainted'}}
               />
 
               {/* Visible handle */}
-              <HotspotHandle
+              <circle
+                className={hotspotHandle}
                 cx={hotspotHandlePosition.x}
                 cy={hotspotHandlePosition.y}
                 r={hotspotHandlePosition.radius}
-                $hovered={
-                  !readOnly &&
-                  (hoverTarget === 'hotspot' ||
-                    hoverTarget === 'hotspotHandle' ||
-                    dragTarget === 'hotspot' ||
-                    dragTarget === 'hotspotHandle')
-                }
-                $focused={!readOnly && focusTarget === 'hotspot'}
                 pointerEvents="none"
+                style={assignInlineVars({
+                  [handleStrokeColorVar]: handleStroke,
+                })}
               />
             </g>
           )}
         </g>
 
-        {/* Guidelines */}
-        <Guidelines>
+        <g
+          className={guidelines}
+          style={assignInlineVars({
+            [guidelinesStrokeColorVar]: color.fg,
+          })}
+        >
           {/* Vertical center line */}
           <line
             x1={getRectCenterX(hotspotRect)}
@@ -427,25 +476,18 @@ function ToolSVGComponent(props: ToolSVGProps) {
             x2={getRectRight(innerRect)}
             y2={getRectBottom(hotspotRect)}
           />
-        </Guidelines>
+        </g>
 
         {/* Crop area */}
         <g>
           {/* Crop rectangle */}
-          <CropRect
+          <rect
+            className={cropRectClass}
             ref={cropRef}
             x={cropRect.left}
             y={cropRect.top}
             width={cropRect.width}
             height={cropRect.height}
-            $hovered={
-              !readOnly &&
-              (hoverTarget === 'crop' ||
-                Boolean(hoverTarget?.startsWith('crop-')) ||
-                dragTarget === 'crop' ||
-                dragTarget === 'cropHandle')
-            }
-            $focused={!readOnly && focusTarget === 'crop'}
             data-handle="crop"
             onPointerDown={handlePointerDown}
             tabIndex={readOnly ? -1 : 0}
@@ -455,15 +497,28 @@ function ToolSVGComponent(props: ToolSVGProps) {
             onBlur={handleCropBlur}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
+            style={assignInlineVars({
+              [strokeColorVar]: cropStrokeColor,
+              [strokeWidthVar]: cropFocused ? '2px' : '1px',
+              [filterVar]: cropFocused ? 'drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3))' : 'none',
+            })}
           />
 
           {/* Crop handles */}
           {!readOnly &&
             Object.entries(cropHandles).map(([key, handle]) => {
+              const hovered = !readOnly && isHandleHovered(key)
+              const cropHandleStroke = getHandleStrokeColor({
+                focused: cropFocused || hovered,
+                focusRingColor,
+              })
+              const cropHandleVars = assignInlineVars({[handleStrokeColorVar]: cropHandleStroke})
+
               return (
                 <g key={key}>
                   {/* Interaction area */}
-                  <CropHandleInteractionArea
+                  <rect
+                    className={cropHandleInteractionArea}
                     x={handle.hit.left}
                     y={handle.hit.top}
                     width={handle.hit.width}
@@ -472,7 +527,6 @@ function ToolSVGComponent(props: ToolSVGProps) {
                     onPointerDown={handlePointerDown}
                     onMouseEnter={getCropHandleMouseEnter(key)}
                     onMouseLeave={handleMouseLeave}
-                    style={{pointerEvents: 'all'}}
                   />
 
                   {/* Either a corner or edge handle depending on the handle type */}
@@ -480,22 +534,22 @@ function ToolSVGComponent(props: ToolSVGProps) {
                     <g
                       transform={`translate(${handle.position?.x ?? 0}, ${handle.position?.y ?? 0}) rotate(${handle.rotation ?? 0})`}
                     >
-                      <CropCornerHandle
+                      <path
+                        className={cropCornerHandle}
                         d={handle.path}
-                        $hovered={!readOnly && isHandleHovered(key)}
-                        $focused={!readOnly && focusTarget === 'crop'}
                         pointerEvents="none"
+                        style={cropHandleVars}
                       />
                     </g>
                   ) : (
-                    <CropEdgeHandle
+                    <rect
+                      className={cropEdgeHandle}
                       x={handle.visual.left}
                       y={handle.visual.top}
                       width={handle.visual.width}
                       height={handle.visual.height}
-                      $hovered={!readOnly && isHandleHovered(key)}
-                      $focused={!readOnly && focusTarget === 'crop'}
                       pointerEvents="none"
+                      style={cropHandleVars}
                     />
                   )}
                 </g>
@@ -519,8 +573,8 @@ function ToolSVGComponent(props: ToolSVGProps) {
             }
           />
         </g>
-      </StyledSVG>
-    </SVGContainer>
+      </svg>
+    </div>
   )
 }
 

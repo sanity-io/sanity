@@ -1,8 +1,8 @@
 import {isKeySegment} from '@sanity/types'
-import {Stack} from '@sanity/ui'
+import {Card, Grid, Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import last from 'lodash-es/last.js'
 import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
-import {styled} from 'styled-components'
 
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormRow} from '../../components'
@@ -10,16 +10,12 @@ import {ObjectInputMembers} from '../../members'
 import {useRenderMembers} from '../../members/object/useRenderMembers'
 import {type ObjectInputProps} from '../../types'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
-import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
+import {
+  alignedBottomGrid,
+  fieldGroupTabsMarginBottomVar,
+  fieldGroupTabsWrapper,
+} from './ObjectInput.css'
 import {UnknownFields} from './UnknownFields'
-
-const RootStack = styled(Stack)`
-  /* Disable focus ring for the object block. We instead highlight the left border on the fieldset
-  for level > 0 to signal that you have focused on the object */
-  &:focus {
-    outline: none;
-  }
-`
 
 /**
  * @hidden
@@ -49,6 +45,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
 
   const wrapperRef = useRef<HTMLDivElement>(null)
   const {columns} = schemaType.options || {}
+  const {space} = useThemeV2()
 
   // Object inputs should only be focusable if they are not the root object input
   // This includes if they are in the root of a array block
@@ -128,14 +125,17 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   }
 
   return (
-    <RootStack
-      space={6}
-      tabIndex={isFocusable ? 0 : undefined}
-      onFocus={handleFocus}
-      ref={wrapperRef}
-    >
+    <Stack space={6} tabIndex={isFocusable ? 0 : undefined} onFocus={handleFocus} ref={wrapperRef}>
       {groups.length > 0 ? (
-        <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
+        <Card
+          className={fieldGroupTabsWrapper}
+          style={assignInlineVars({
+            // The negative margins here removes the extra space between the tabs and the fields when inside of a grid
+            [fieldGroupTabsMarginBottomVar]: `${level === 0 ? 0 : space[5] * -1}px`,
+          })}
+          paddingBottom={4}
+          data-testid="field-groups"
+        >
           <FieldGroupTabs
             path={path}
             groups={groups}
@@ -144,7 +144,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
             // autofocus is taken care of either by focusPath or focusFirstDescendant in the parent component
             shouldAutoFocus={false}
           />
-        </FieldGroupTabsWrapper>
+        </Card>
       ) : null}
 
       <Fragment
@@ -153,14 +153,14 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         key={selectedGroup?.name}
       >
         {columns ? (
-          <AlignedBottomGrid columns={columns} gap={4} marginTop={1}>
+          <Grid className={alignedBottomGrid} columns={columns} gap={4} marginTop={1}>
             {renderObjectMembers()}
-          </AlignedBottomGrid>
+          </Grid>
         ) : (
           renderObjectMembers()
         )}
       </Fragment>
       {renderedUnknownFields}
-    </RootStack>
+    </Stack>
   )
 })

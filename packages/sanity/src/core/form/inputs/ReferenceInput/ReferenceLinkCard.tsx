@@ -1,23 +1,7 @@
 import {Card, type CardProps} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
-import {styled} from 'styled-components'
 
-const StyledCard = styled(Card)`
-  /* this is a hack to avoid layout jumps while previews are loading
-         there's probably better ways of solving this */
-  min-height: 33px;
-  position: relative;
-
-  /* TextWithTone uses its own logic to set color, and we therefore need */
-  /* to override this logic in order to set the correct color in different states */
-  &[data-selected],
-  &[data-pressed],
-  &:active {
-    [data-ui='TextWithTone'] {
-      color: inherit;
-    }
-  }
-`
+import {referenceLinkCard} from './ReferenceLinkCard.css'
 
 interface ReferenceLinkCardProps extends CardProps {
   as: any
@@ -45,10 +29,11 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
     }
 
   return (
-    <StyledCard
+    <Card
       {...cardProps}
       {...linkProps}
       data-ui="ReferenceLinkCard"
+      className={referenceLinkCard}
       ref={ref as unknown as ForwardedRef<HTMLDivElement>}
     />
   )

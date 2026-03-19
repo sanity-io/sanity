@@ -1,15 +1,33 @@
 import {Box} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {forwardRef, type ComponentProps, type Ref} from 'react'
 
-export const RatioBox = styled(Box)<{ratio?: number}>`
-  position: relative;
-  padding-bottom: calc(${({ratio = 3 / 2}) => 1 / ratio} * 100%);
+import {ratioBox, ratioInnerPaddingVar, ratioPaddingBottomVar} from './RatioBox.css'
 
-  & > div {
-    position: absolute;
-    top: ${({padding = 0}) => padding}px;
-    left: ${({padding = 0}) => padding}px;
-    right: ${({padding = 0}) => padding}px;
-    bottom: ${({padding = 0}) => padding}px;
-  }
-`
+type RatioBoxProps = ComponentProps<typeof Box> & {
+  ratio?: number
+}
+
+const DEFAULT_RATIO = 1.5
+
+export const RatioBox = forwardRef(function RatioBox(
+  props: RatioBoxProps,
+  ref: Ref<HTMLDivElement>,
+) {
+  const {className, ratio = DEFAULT_RATIO, padding = 0, style, ...rest} = props
+
+  return (
+    <Box
+      {...rest}
+      ref={ref}
+      className={[ratioBox, className].filter(Boolean).join(' ')}
+      style={{
+        ...assignInlineVars({
+          [ratioPaddingBottomVar]: `${(1 / ratio) * 100}%`,
+          [ratioInnerPaddingVar]: typeof padding === 'number' ? `${padding}px` : String(padding),
+        }),
+        ...style,
+      }}
+    />
+  )
+})

@@ -10,7 +10,7 @@ import {DefaultPreview, type PreviewMediaDimensions, TextWithTone} from '../../.
 import {type FIXME} from '../../../FIXME'
 import {useTranslation} from '../../../i18n'
 import {type DocumentAvailability} from '../../../preview'
-import {StyledPreviewFlex} from './CrossDatasetReferencePreview.styled'
+import {previewFlex} from './CrossDatasetReferencePreview.css'
 
 /**
  * Used to preview a referenced type
@@ -77,7 +77,7 @@ export function CrossDatasetReferencePreview(props: {
   }, [previewMedia, dataset, projectId, refType?.icon, t])
 
   return (
-    <StyledPreviewFlex align="center" justify="center" flex={1} data-testid="preview">
+    <Flex className={previewFlex} align="center" justify="center" flex={1} data-testid="preview">
       {availability?.available ? (
         <Box flex={1}>
           <DefaultPreview
@@ -138,6 +138,6 @@ export function CrossDatasetReferencePreview(props: {
           )}
         </Inline>
       </Box>
-    </StyledPreviewFlex>
+    </Flex>
   )
 }

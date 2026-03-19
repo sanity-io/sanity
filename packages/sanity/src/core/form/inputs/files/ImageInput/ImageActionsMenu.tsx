@@ -1,16 +1,16 @@
 import {CropIcon} from '@sanity/icons'
-import {Skeleton} from '@sanity/ui'
+import {Inline, Skeleton} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, type RefObject} from 'react'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {MenuActionsWrapper} from '../common/MenuActionsWrapper.styled'
+import {menuActionsWrapper} from '../common/MenuActionsWrapper.css'
 import {OptionsMenuPopover} from '../common/OptionsMenuPopover'
 
 export const ImageActionsMenuWaitPlaceholder = () => (
-  <MenuActionsWrapper padding={2}>
+  <Inline className={menuActionsWrapper} padding={2}>
     <Skeleton style={{width: '25px', height: '25px'}} animated />
-  </MenuActionsWrapper>
+  </Inline>
 )
 
 interface ImageActionsMenuProps {
@@ -38,7 +38,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
   return (
     <TooltipDelayGroupProvider>
-      <MenuActionsWrapper data-buttons space={1} padding={2}>
+      <Inline className={menuActionsWrapper} data-buttons space={1} padding={2}>
         {showEdit && (
           <Button
             aria-label={t('inputs.image.actions-menu.edit-details.aria-label')}
@@ -63,7 +63,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
         >
           {children}
         </OptionsMenuPopover>
-      </MenuActionsWrapper>
+      </Inline>
     </TooltipDelayGroupProvider>
   )
 }

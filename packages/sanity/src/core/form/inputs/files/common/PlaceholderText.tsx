@@ -1,10 +1,10 @@
 import {AccessDeniedIcon, BinaryDocumentIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../i18n'
 import {type FileLike} from '../../../studio/uploads/types'
+import {rootFlex} from './PlaceholderText.css'
 
 interface Props {
   readOnly?: boolean
@@ -14,10 +14,6 @@ interface Props {
   rejectedFilesCount?: number
   directUploads?: boolean
 }
-
-const RootFlex = styled(Flex)`
-  pointer-events: none;
-`
 
 export function PlaceholderText(props: Props) {
   const {hoveringFiles, type, readOnly, acceptedFiles, rejectedFilesCount, directUploads} = props
@@ -64,7 +60,7 @@ export function PlaceholderText(props: Props) {
   }, [acceptedFiles, directUploads, hoveringFiles, readOnly, rejectedFilesCount, t, type])
 
   return (
-    <RootFlex align="center" gap={3} justify="center" paddingLeft={1}>
+    <Flex className={rootFlex} align="center" gap={3} justify="center" paddingLeft={1}>
       <Text muted size={1}>
         {messageIcon}
       </Text>
@@ -72,6 +68,6 @@ export function PlaceholderText(props: Props) {
       <Text size={1} muted>
         {messageText}
       </Text>
-    </RootFlex>
+    </Flex>
   )
 }

@@ -4,10 +4,10 @@ import {Flex, useElementSize} from '@sanity/ui'
 import get from 'lodash-es/get.js'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {useSource} from '../../../../../core/studio'
 import {Button} from '../../../../../ui-components'
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
+import {useSource} from '../../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {
   createDatasetFileAssetSource,

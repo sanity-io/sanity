@@ -1,7 +1,7 @@
-import {Box, Card} from '@sanity/ui'
+import {Box, Card, Inline} from '@sanity/ui'
 import {type CSSProperties, lazy, type ReactNode, type RefObject, Suspense} from 'react'
 
-import {MenuActionsWrapper} from '../../../core/form/inputs/files/common/MenuActionsWrapper.styled'
+import {menuActionsWrapper} from '../../../core/form/inputs/files/common/MenuActionsWrapper.css'
 import {OptionsMenuPopover} from '../../../core/form/inputs/files/common/OptionsMenuPopover'
 import {RatioBox} from './styles'
 import {type VideoPlaybackTokens} from './types'
@@ -65,7 +65,7 @@ export function VideoActionsMenu(props: Props) {
         </RatioBox>
       </Card>
 
-      <MenuActionsWrapper padding={2}>
+      <Inline className={menuActionsWrapper} padding={2}>
         <OptionsMenuPopover
           // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- it's a translation key, not an attribute string literal
           ariaLabelKey="inputs.file.actions-menu.video-options.aria-label"
@@ -76,7 +76,7 @@ export function VideoActionsMenu(props: Props) {
         >
           {children}
         </OptionsMenuPopover>
-      </MenuActionsWrapper>
+      </Inline>
     </Box>
   )
 }

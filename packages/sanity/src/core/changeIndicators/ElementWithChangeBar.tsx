@@ -1,16 +1,25 @@
-import {useLayer} from '@sanity/ui'
+import {useLayer, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ReactNode, useContext, useMemo} from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {Tooltip} from '../../ui-components'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {
-  ChangeBar,
-  ChangeBarButton,
-  ChangeBarMarker,
-  ChangeBarWrapper,
-  FieldWrapper,
-} from './ElementWithChangeBar.styled'
+  changeBar as changeBarClass,
+  changeBarButton,
+  changeBarButtonHoverEffect,
+  changeBarButtonInteractive,
+  changeBarMarker,
+  changeBarMarkerMinWidthVar,
+  changeBarWrapper,
+  changeBarWrapperDisabled,
+  changeBarWrapperFocused,
+  changeBarWrapperNotChanged,
+  changeBarWrapperReviewOpen,
+  changeBarZIndexVar,
+  fieldWrapper,
+} from './ElementWithChangeBar.css'
 
 export function ElementWithChangeBar(props: {
   children: ReactNode
@@ -31,31 +40,48 @@ export function ElementWithChangeBar(props: {
 
   const {onOpenReviewChanges, isReviewChangesOpen} = useContext(ReviewChangesContext)
   const {zIndex} = useLayer()
+  const {media} = useThemeV2()
   const {t} = useTranslation()
 
-  const changeBar = useMemo(
+  const markerMinWidth = media?.[0] ? `${media[0]}px` : '0px'
+
+  const changeBarElement = useMemo(
     () =>
       disabled || !isChanged ? null : (
-        <ChangeBar data-testid="change-bar" $zIndex={zIndex}>
-          <ChangeBarMarker data-testid="change-bar__marker" />
+        <div
+          className={changeBarClass}
+          data-testid="change-bar"
+          style={assignInlineVars({[changeBarZIndexVar]: String(zIndex)})}
+        >
+          <div
+            className={changeBarMarker}
+            data-testid="change-bar__marker"
+            style={assignInlineVars({[changeBarMarkerMinWidthVar]: markerMinWidth})}
+          />
           <Tooltip content={t('changes.change-bar.aria-label')} portal disabled={!isInteractive}>
-            <ChangeBarButton
+            <button
               aria-label={t('changes.change-bar.aria-label')}
               data-testid="change-bar__button"
               onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
               tabIndex={-1}
               type="button"
-              $withHoverEffect={withHoverEffect}
-              $isInteractive={isInteractive}
+              className={[
+                changeBarButton,
+                withHoverEffect ? changeBarButtonHoverEffect : '',
+                isInteractive ? changeBarButtonInteractive : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
             />
           </Tooltip>
-        </ChangeBar>
+        </div>
       ),
     [
       disabled,
       isChanged,
       isInteractive,
       isReviewChangesOpen,
+      markerMinWidth,
       onOpenReviewChanges,
       t,
       withHoverEffect,
@@ -64,15 +90,22 @@ export function ElementWithChangeBar(props: {
   )
 
   return (
-    <ChangeBarWrapper
+    <div
       data-testid="change-bar-wrapper"
-      $changed={isChanged}
-      $disabled={disabled}
-      $hasFocus={hasFocus}
-      $isReviewChangeOpen={isReviewChangesOpen}
+      className={[
+        changeBarWrapper,
+        disabled ? changeBarWrapperDisabled : '',
+        hasFocus ? changeBarWrapperFocused : '',
+        !isChanged ? changeBarWrapperNotChanged : '',
+        isReviewChangesOpen ? changeBarWrapperReviewOpen : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
-      <FieldWrapper data-testid="change-bar__field-wrapper">{children}</FieldWrapper>
-      {changeBar}
-    </ChangeBarWrapper>
+      <div className={fieldWrapper} data-testid="change-bar__field-wrapper">
+        {children}
+      </div>
+      {changeBarElement}
+    </div>
   )
 }

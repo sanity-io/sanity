@@ -8,21 +8,10 @@ import {
   type RefObject,
   useCallback,
 } from 'react'
-import {styled} from 'styled-components'
 
 import {Popover} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
-
-const StyledPopover = styled(Popover)`
-  & > div {
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-`
-
-const StyledText = styled(Text)`
-  word-break: break-word;
-`
+import {noResultsText, popover} from './ReferenceAutocomplete.css'
 
 const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 
@@ -54,7 +43,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
       },
       contentRef: Ref<HTMLDivElement>,
     ) => (
-      <StyledPopover
+      <Popover
         data-testid="autocomplete-popover"
         placement="bottom-start"
         fallbackPlacements={FALLBACK_PLACEMENTS}
@@ -63,19 +52,19 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         content={
-          <div ref={contentRef}>
+          <div ref={contentRef} className={popover}>
             {hasResults ? (
               content
             ) : (
               <Box padding={4}>
                 <Flex align="center" height="fill" justify="center">
-                  <StyledText align="center" muted>
+                  <Text className={noResultsText} align="center" muted>
                     <Translate
                       t={t}
                       i18nKey="inputs.reference.no-results-for-query"
                       values={{searchTerm: searchString || ''}}
                     />
-                  </StyledText>
+                  </Text>
                 </Flex>
               </Box>
             )}

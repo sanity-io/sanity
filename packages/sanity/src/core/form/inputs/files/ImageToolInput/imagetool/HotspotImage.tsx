@@ -13,7 +13,7 @@ import {
 
 import {calculateStyles} from './calculateStyles'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
-import {HotspotImageContainer} from './HotspotImage.styles'
+import {hotspotImageContainer} from './HotspotImage.css'
 import {type Crop, type Hotspot} from './types'
 
 const debug = Debug('sanity-imagetool')
@@ -127,7 +127,11 @@ export const HotspotImage = memo(function HotspotImage(props: HotspotImageProps)
   )
 
   return (
-    <HotspotImageContainer className={`${className}`} style={style} ref={containerElementRef}>
+    <div
+      className={[hotspotImageContainer, className].filter(Boolean).join(' ')}
+      style={style}
+      ref={containerElementRef}
+    >
       <div style={targetStyles.container}>
         <div style={targetStyles.padding} />
         <div style={targetStyles.crop}>
@@ -142,6 +146,6 @@ export const HotspotImage = memo(function HotspotImage(props: HotspotImageProps)
           />
         </div>
       </div>
-    </HotspotImageContainer>
+    </div>
   )
 })

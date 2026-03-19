@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import {styled} from 'styled-components'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {LoadingBlock} from '../../../../components/loadingBlock'
@@ -22,6 +21,7 @@ import {set} from '../../../patch'
 import {type ObjectInputProps} from '../../../types'
 import {RatioBox} from '../common/RatioBox'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT, HotspotImage, ImageTool} from './imagetool'
+import {placeholder} from './ImageToolInput.css'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps extends Omit<
@@ -44,10 +44,6 @@ const DEFAULT_VALUE: Partial<Image> = {
   crop: DEFAULT_CROP,
   hotspot: DEFAULT_HOTSPOT,
 }
-
-const Placeholder = styled.div`
-  min-height: 6em;
-`
 
 function LoadStatus(props: {children: ReactNode}) {
   return (
@@ -234,7 +230,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                             crop={localValue.crop || DEFAULT_CROP}
                           />
                         ) : (
-                          <Placeholder />
+                          <div className={placeholder} />
                         )}
                       </Card>
                     </RatioBox>

@@ -1,18 +1,7 @@
 import {Grid, useElementRect} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useState} from 'react'
-import {css, styled} from 'styled-components'
 
-const NARROW_LAYOUT = css`
-  grid-template-columns: minmax(0px, 1fr);
-`
-
-const WIDE_LAYOUT = css`
-  grid-template-columns: 1fr min-content;
-`
-
-const Root = styled(Grid)<{$narrow: boolean}>((props: {$narrow: boolean}) =>
-  props.$narrow ? NARROW_LAYOUT : WIDE_LAYOUT,
-)
+import {rootVariants} from './AutocompleteContainer.css'
 
 export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
   props: {
@@ -33,11 +22,12 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
   )
 
   const inputWrapperRect = useElementRect(rootElement)
+  const narrow = (inputWrapperRect?.width || 480) < 480
 
   return (
-    <Root ref={handleNewRef} gap={1} $narrow={(inputWrapperRect?.width || 480) < 480}>
+    <Grid ref={handleNewRef} gap={1} className={narrow ? rootVariants.narrow : rootVariants.wide}>
       {props.children}
-    </Root>
+    </Grid>
   )
 })
 

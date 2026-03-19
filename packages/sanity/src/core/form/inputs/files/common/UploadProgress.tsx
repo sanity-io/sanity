@@ -1,12 +1,12 @@
 import {type UploadState} from '@sanity/types'
-import {Card, Flex, Inline, Text} from '@sanity/ui'
+import {Card, Flex, Inline, Text, Stack, Code} from '@sanity/ui'
 import {useEffect} from 'react'
 
 import {Button} from '../../../../../ui-components'
 import {LinearProgress} from '../../../../components'
 import {Translate, useTranslation} from '../../../../i18n'
 import {STALE_UPLOAD_MS} from '../constants'
-import {CardWrapper, CodeWrapper, FlexWrapper, LeftSection} from './UploadProgress.styled'
+import {cardWrapper, codeWrapper, flexWrapper, leftSection} from './UploadProgress.css'
 
 type Props = {
   uploadState: UploadState
@@ -26,8 +26,9 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
 
   const {t} = useTranslation()
   return (
-    <CardWrapper tone="primary" border>
-      <FlexWrapper
+    <Card className={cardWrapper} tone="primary" border>
+      <Flex
+        className={flexWrapper}
         padding={4}
         align="center"
         justify="space-between"
@@ -35,7 +36,7 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
         direction="row"
         gap={2}
       >
-        <LeftSection>
+        <Stack className={leftSection}>
           <Flex justify="center" gap={[3, 3, 2, 2]} direction={['column', 'column', 'row']}>
             <Text size={1}>
               <Inline space={2}>
@@ -43,7 +44,11 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
                   t={t}
                   i18nKey="input.files.common.upload-progress"
                   components={{
-                    FileName: () => <CodeWrapper size={1}>{filename ? filename : '…'}</CodeWrapper>,
+                    FileName: () => (
+                      <Code className={codeWrapper} size={1}>
+                        {filename ? filename : '…'}
+                      </Code>
+                    ),
                   }}
                 />
               </Inline>
@@ -53,7 +58,7 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
           <Card border marginTop={3} radius={5}>
             <LinearProgress value={uploadState.progress} />
           </Card>
-        </LeftSection>
+        </Stack>
 
         {onCancel ? (
           <Button
@@ -63,7 +68,7 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
             tone="critical"
           />
         ) : null}
-      </FlexWrapper>
-    </CardWrapper>
+      </Flex>
+    </Card>
   )
 }

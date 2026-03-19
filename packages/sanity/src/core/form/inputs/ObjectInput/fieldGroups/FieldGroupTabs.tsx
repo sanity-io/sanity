@@ -1,12 +1,12 @@
 import {type FormNodeValidation, type Path} from '@sanity/types'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
 import {type ChangeEvent, memo, useCallback} from 'react'
-import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../i18n'
 import {StatusIcon} from '../../../components/formField/ValidationStatusIcon'
 import {type FormFieldGroup} from '../../../store'
 import {useChildValidation} from '../../../studio/contexts/Validation'
+import {root} from './FieldGroupTabs.css'
 import {getFieldGroupValidationLevel} from './getFieldGroupValidationLevel'
 import {GroupOption, GroupTab} from './GroupTab'
 
@@ -18,23 +18,6 @@ interface FieldGroupTabsProps {
   shouldAutoFocus?: boolean
   path: Path
 }
-
-const Root = styled(ElementQuery)`
-  /* Hide on small screens */
-  &[data-eq-max~='0'] [data-ui='TabList'] {
-    display: none;
-  }
-
-  /* Hide on medium to large screens */
-  [data-ui='Select'] {
-    display: none;
-  }
-
-  /* Show on small screens */
-  &[data-eq-max~='0'] [data-ui='Select'] {
-    display: block;
-  }
-`
 
 /* For medium to large screens, use TabList and Tab from Sanity UI  */
 const GroupTabs = ({
@@ -149,9 +132,9 @@ export const FieldGroupTabs = memo(function FieldGroupTabs({
   const validation = useChildValidation(props.path, true)
 
   return (
-    <Root data-testid="field-group-root">
+    <ElementQuery className={root} data-testid="field-group-root">
       <GroupTabs {...props} disabled={disabled} onClick={handleClick} validation={validation} />
       <GroupSelect {...props} disabled={disabled} onSelect={handleClick} validation={validation} />
-    </Root>
+    </ElementQuery>
   )
 })

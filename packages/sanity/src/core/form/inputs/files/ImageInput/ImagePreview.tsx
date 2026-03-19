@@ -1,11 +1,11 @@
 import {WarningOutlineIcon} from '@sanity/icons'
-import {type Card, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {type ComponentProps, useCallback, useEffect, useState} from 'react'
 
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
 import {type AssetAccessPolicy} from '../types'
-import {ErrorIconWrapper, FlexOverlay, Overlay, RatioBox} from './ImagePreview.styled'
+import {errorIconWrapper, flexOverlay, overlay, ratioBox, ratioBoxImage} from './ImagePreview.css'
 
 interface ImagePreviewProps {
   alt: string
@@ -39,12 +39,13 @@ export function ImagePreview(props: ComponentProps<typeof Card> & ImagePreviewPr
   const showLoading = !isLoaded && !showAccessWarning
 
   return (
-    <RatioBox {...rest} tone="transparent">
+    <Card {...rest} className={ratioBox} tone="transparent" data-ui="ratio-box">
       {showAccessWarning && <AccessWarningOverlay />}
       {showLoading && <LoadingOverlay />}
 
       {src && (
         <img
+          className={ratioBoxImage}
           src={src}
           data-testid="hotspot-image-input"
           alt={props.alt}
@@ -53,17 +54,17 @@ export function ImagePreview(props: ComponentProps<typeof Card> & ImagePreviewPr
           referrerPolicy="strict-origin-when-cross-origin"
         />
       )}
-    </RatioBox>
+    </Card>
   )
 }
 
 function LoadingOverlay() {
   return (
-    <Overlay padding={3} tone="transparent">
-      <FlexOverlay direction="column" align="center" justify="center">
+    <Card className={overlay} padding={3} tone="transparent">
+      <Flex className={flexOverlay} direction="column" align="center" justify="center">
         <LoadingBlock showText />
-      </FlexOverlay>
-    </Overlay>
+      </Flex>
+    </Card>
   )
 }
 
@@ -71,15 +72,15 @@ function AccessWarningOverlay() {
   const {t} = useTranslation()
 
   return (
-    <Overlay padding={3} tone="critical" border>
-      <FlexOverlay direction="column" align="center" justify="center" gap={2}>
-        <ErrorIconWrapper>
+    <Card className={overlay} padding={3} tone="critical" border>
+      <Flex className={flexOverlay} direction="column" align="center" justify="center" gap={2}>
+        <div className={errorIconWrapper}>
           <WarningOutlineIcon />
-        </ErrorIconWrapper>
+        </div>
         <Text muted size={1}>
           {t('inputs.image.error.possible-access-restriction')}
         </Text>
-      </FlexOverlay>
-    </Overlay>
+      </Flex>
+    </Card>
   )
 }
