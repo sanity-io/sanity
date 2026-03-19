@@ -43,7 +43,6 @@ export default defineCliConfig({
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     const nextConfig = mergeConfig(viteConfig, {
-      plugins: [vanillaExtractPlugin()],
       server: {
         warmup: {
           clientFiles: [
@@ -98,6 +97,7 @@ export default defineCliConfig({
     // Support hot reloading of files from monorepo workspaces during development
     if (mode !== 'production' && command === 'serve') {
       return mergeConfig(nextConfig, {
+        plugins: [vanillaExtractPlugin()],
         resolve: {conditions: ['monorepo', ...defaultClientConditions]},
       } satisfies UserConfig)
     }

@@ -31,10 +31,9 @@ import {
 } from 'react'
 import {SortableItemIdContext} from 'sanity/_singletons'
 
+import {MOVING_ITEM_CLASS_NAME} from './constants'
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
 import {listItem, listItemState} from './list.css'
-
-export const MOVING_ITEM_CLASS_NAME = 'moving'
 
 const AUTO_SCROLL_OPTIONS: AutoScrollOptions = {
   threshold: {

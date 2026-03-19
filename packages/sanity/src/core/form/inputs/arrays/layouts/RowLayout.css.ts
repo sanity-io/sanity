@@ -1,6 +1,6 @@
 import {style} from '@vanilla-extract/css'
 
-import {MOVING_ITEM_CLASS_NAME} from '../common/list'
+import {MOVING_ITEM_CLASS_NAME} from '../common/constants'
 
 export const root = style({
   selectors: {
