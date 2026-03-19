@@ -5,6 +5,7 @@ import {useEffect, useMemo} from 'react'
 
 import {Button} from '../../../ui-components'
 import {isProd} from '../../environment'
+import {centeredContainer, contentWrapper, helpLink} from './CorsOriginErrorScreen.css'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string
@@ -15,8 +16,6 @@ interface CorsOriginErrorScreenProps {
    */
   primaryProjectId?: string
 }
-
-import {centeredContainer, contentWrapper, helpLink} from './CorsOriginErrorScreen.css'
 
 export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   const {projectId, isStaging, primaryProjectId} = props
@@ -135,7 +134,8 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
 
             <Flex justify="flex-end">
               <Text size={1}>
-                <a className={helpLink}
+                <a
+                  className={helpLink}
                   href="https://www.sanity.io/docs/cors"
                   target="_blank"
                   rel="noopener noreferrer"

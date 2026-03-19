@@ -9,17 +9,24 @@ import {
   type TextInputProps,
   useClickOutsideEvent,
 } from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 
-import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
+import {
+  Button,
+  type ButtonProps,
+  Dialog,
+  Popover,
+  Tooltip,
+  type TooltipProps,
+} from '../../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useSchema} from '../../../../hooks'
 import {useGetI18nText, useTranslation} from '../../../../i18n'
 import {useCurrentUser} from '../../../../store'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {filterOptions} from './filter'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
   dialogHeaderCard,
   popoverHeaderCard,
@@ -211,28 +218,30 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
         </Tooltip>
 
         {open && (
-          <Dialog className={styledDialog}
-            header={title}
-            id="create-new-document-dialog"
-            onClickOutside={handleClose}
-            onClose={handleClose}
-            ref={dialogRef}
-            scheme={scheme}
-            width={1}
-          >
-            <Flex className={rootFlex} direction="column" flex={1} height="fill">
-              <Card className={dialogHeaderCard} padding={2} borderBottom>
-                <TextInput
-                  data-testid="new-document-button-search-input"
-                  {...sharedTextInputProps}
-                />
-              </Card>
+          <div className={styledDialog}>
+            <Dialog
+              header={title}
+              id="create-new-document-dialog"
+              onClickOutside={handleClose}
+              onClose={handleClose}
+              ref={dialogRef}
+              scheme={scheme}
+              width={1}
+            >
+              <Flex className={rootFlex} direction="column" flex={1} height="fill">
+                <Card className={dialogHeaderCard} padding={2} borderBottom>
+                  <TextInput
+                    data-testid="new-document-button-search-input"
+                    {...sharedTextInputProps}
+                  />
+                </Card>
 
-              <Flex direction="column" overflow="hidden">
-                <NewDocumentList {...sharedListProps} />
+                <Flex direction="column" overflow="hidden">
+                  <NewDocumentList {...sharedListProps} />
+                </Flex>
               </Flex>
-            </Flex>
-          </Dialog>
+            </Dialog>
+          </div>
         )}
       </>
     )
@@ -240,7 +249,8 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
 
   // Popover
   return (
-    <Popover className={styledPopover}
+    <Popover
+      className={styledPopover}
       constrainSize
       onKeyDown={handlePopoverKeyDown}
       open={open}
@@ -250,29 +260,28 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       ref={popoverRef}
       scheme={scheme}
       content={
-        <Flex className={rootFlex}
-          direction="column"
-          flex={1}
-          forwardedAs={ReactFocusLock}
-          height="fill"
-          returnFocus
-        >
-          <Card className={popoverHeaderCard} sizing="border">
-            <Stack>
-              <Card borderBottom padding={1}>
-                <TextInput {...sharedTextInputProps} fontSize={1} radius={1} />
-              </Card>
-            </Stack>
-          </Card>
+        <Flex className={rootFlex} direction="column" flex={1} height="fill">
+          <ReactFocusLock returnFocus>
+            <Card className={popoverHeaderCard} sizing="border">
+              <Stack>
+                <Card borderBottom padding={1}>
+                  <TextInput {...sharedTextInputProps} fontSize={1} radius={1} />
+                </Card>
+              </Stack>
+            </Card>
 
-          <PopoverListFlex
-            $itemHeight={INLINE_PREVIEW_HEIGHT}
-            $maxDisplayedItems={MAX_DISPLAYED_ITEMS}
-            direction="column"
-            overflow="hidden"
-          >
-            <NewDocumentList {...sharedListProps} />
-          </Flex>
+            <Flex
+              className={popoverListFlex}
+              style={assignInlineVars({
+                [itemHeightVar]: `${INLINE_PREVIEW_HEIGHT}px`,
+                [maxItemsVar]: `${MAX_DISPLAYED_ITEMS}`,
+              })}
+              direction="column"
+              overflow="hidden"
+            >
+              <NewDocumentList {...sharedListProps} />
+            </Flex>
+          </ReactFocusLock>
         </Flex>
       }
     >

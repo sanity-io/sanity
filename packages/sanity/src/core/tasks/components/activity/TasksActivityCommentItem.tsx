@@ -1,6 +1,5 @@
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-// eslint-disable-next-line camelcase
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 
 import {CommentsListItem, type CommentsListItemProps} from '../../../comments/components'
 import {useTasksEnabled} from '../../context'

@@ -6,17 +6,10 @@ import {
 import {Icon, LinkIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 
 import {interpolateTemplate} from '../../../util/interpolateTemplate'
 import {transformBlocks} from './helpers'
-
-/** @internal */
-export type InterpolationProp = {[key: string]: string | number}
-
-import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
   divider as dividerClass,
   serializerContainer,
@@ -24,14 +17,15 @@ import {
   iconTextContainerAccent,
   accentSpan as accentSpanClass,
   semiboldSpan as semiboldSpanClass,
-  fontWeightVar,
   link as linkClass,
   linkUseTextColor,
   dynamicIconContainerInline,
   dynamicIconContainerBlock,
   imageBlock,
-  imageRadiusVar,
 } from './UpsellDescriptionSerializer.css'
+
+/** @internal */
+export type InterpolationProp = {[key: string]: string | number}
 
 const DynamicIcon = (props: {icon: {url: string}; inline?: boolean}) => {
   const iconClassName = props.inline ? dynamicIconContainerInline : dynamicIconContainerBlock
@@ -95,8 +89,6 @@ function H3Block(props: {children: ReactNode}) {
     </Box>
   )
 }
-
-
 
 function ImageBlock(
   props: PortableTextTypeComponentProps<{
@@ -176,7 +168,9 @@ const createComponents = ({
 
     marks: {
       strong: ({children}) => <strong>{interpolateChildren(children)}</strong>,
-      semibold: ({children}) => <span className={semiboldSpanClass}>{interpolateChildren(children)}</span>,
+      semibold: ({children}) => (
+        <span className={semiboldSpanClass}>{interpolateChildren(children)}</span>
+      ),
       link: (props) => (
         <a
           className={props.value.useTextColor ? linkUseTextColor : linkClass}
@@ -197,14 +191,14 @@ const createComponents = ({
           {props.value.showIcon && <LinkIcon style={{marginLeft: '2px'}} />}
         </a>
       ),
-      accent: ({children}) => <span className={accentSpanClass}>{interpolateChildren(children)}</span>,
+      accent: ({children}) => (
+        <span className={accentSpanClass}>{interpolateChildren(children)}</span>
+      ),
     },
     types: {
       inlineIcon: (props) => {
         const children = props.value.sanityIcon ? (
-          <Icon
-            symbol={props.value.sanityIcon}
-          />
+          <Icon symbol={props.value.sanityIcon} />
         ) : (
           <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} inline />}</>
         )
@@ -231,7 +225,10 @@ const createComponents = ({
           gap={2}
         >
           <Flex gap={2} style={{flexShrink: 0}}>
-            <Text className={props.value.accent ? iconTextContainerAccent : iconTextContainerClass} size={1}>
+            <Text
+              className={props.value.accent ? iconTextContainerAccent : iconTextContainerClass}
+              size={1}
+            >
               {props.value.sanityIcon ? (
                 <Icon symbol={props.value.sanityIcon} />
               ) : (

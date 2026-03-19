@@ -1,7 +1,5 @@
 import {hues} from '@sanity/color'
-import {Card} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Card, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 
 import {barColorVar, barStyle, rootStyle} from './LinearProgress.css'
@@ -22,7 +20,7 @@ export function LinearProgress(props: {
         className={barStyle}
         radius={5}
         style={{
-          ...assignInlineVars({[barColorVar]: hues.blue[color.dark ? 400 : 500].hex}),
+          ...assignInlineVars({[barColorVar]: hues.blue[color._dark ? 400 : 500].hex}),
           transform: `translate3d(${value - 100}%, 0, 0)`,
         }}
       />

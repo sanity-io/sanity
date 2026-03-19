@@ -1,5 +1,5 @@
-import {Card, type CardProps} from '@sanity/ui'
-import {forwardRef} from 'react'
+import {Card} from '@sanity/ui'
+import {type ComponentProps, forwardRef} from 'react'
 
 import {transparentCard} from './TransparentCard.css'
 
@@ -9,7 +9,7 @@ import {transparentCard} from './TransparentCard.css'
  *
  * TODO: consider exposing an unstable prop in Sanity UI to facilitate this.
  */
-export const TransparentCard = forwardRef<HTMLDivElement, CardProps>(
+export const TransparentCard = forwardRef<HTMLDivElement, ComponentProps<typeof Card>>(
   function TransparentCard(props, ref) {
     const {className, ...rest} = props
     return (

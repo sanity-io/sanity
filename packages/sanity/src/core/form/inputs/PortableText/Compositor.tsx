@@ -10,21 +10,26 @@ import {
   type RangeDecoration,
 } from '@portabletext/editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
+import {
+  Box,
+  Portal,
+  PortalProvider,
+  useBoundaryElement,
+  usePortal,
+  Layer,
+  useTheme_v2 as useThemeV2,
+} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
+import {focusRingBorderStyle, focusRingStyle} from '../../components/withFocusRing/helpers'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {type OnPasteFn} from '../../types/inputProps'
 import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
-import {Layer} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-
-import {focusRingBorderStyle, focusRingStyle} from '../../components/withFocusRing/helpers'
 import {
   borderRadiusVar,
   borderWidthVar,
@@ -556,13 +561,34 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             isChanged={changed}
             path={path}
           >
-            <Root
+            <div
+              className={rootClass}
               data-focused={editorFocused ? '' : undefined}
               data-read-only={readOnly ? '' : undefined}
+              style={assignInlineVars({
+                [borderRadiusVar]: `${themeRadius[2]}px`,
+                [borderWidthVar]: `${themeInput.border.width}px`,
+                [inputBoxShadowVar]: focusRingBorderStyle({
+                  color: themeColor.input.default.enabled.border,
+                  width: themeInput.border.width,
+                }),
+                [focusBoxShadowVar]: focusRingStyle({
+                  base: themeColor,
+                  border: {
+                    color: themeColor.input.default.enabled.border,
+                    width: themeInput.border.width,
+                  },
+                  focusRing: themeInput.text.focusRing,
+                }),
+              })}
             >
               <Box data-wrapper="" ref={setWrapperElement}>
                 <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                  {isFullscreen ? <Layer className={expandedLayer}>{editorNode}</Layer> : editorNode}
+                  {isFullscreen ? (
+                    <Layer className={expandedLayer}>{editorNode}</Layer>
+                  ) : (
+                    editorNode
+                  )}
                   <AnnotationObjectEditModal
                     focused={focused}
                     onItemClose={onItemClose}

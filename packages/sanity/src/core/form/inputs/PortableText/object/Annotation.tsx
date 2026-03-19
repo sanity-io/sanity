@@ -1,5 +1,6 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity/types'
+import {Box} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {type ComponentType, useCallback, useEffect, useMemo, useState} from 'react'
 
@@ -28,19 +29,7 @@ import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {hues} from '@sanity/color'
-
-import {
-  bgColorVar,
-  customMarkersBgVar,
-  errorBgVar,
-  fgColorVar,
-  root as rootClass,
-  tooltipBox,
-  warningBgVar,
-} from './Annotation.css'
+import {root as rootClass, tooltipBox} from './Annotation.css'
 
 interface AnnotationProps {
   children: React.JSX.Element
@@ -325,8 +314,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
 
   return (
     <span
-  className={rootClass}
-      
+      className={rootClass}
       aria-label={t('inputs.portable-text.annotation-aria-label')}
       data-link={isLink ? '' : undefined}
       data-error={hasError ? '' : undefined}

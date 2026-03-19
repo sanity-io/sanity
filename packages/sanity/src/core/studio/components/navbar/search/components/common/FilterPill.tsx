@@ -2,12 +2,11 @@ import {Card} from '@sanity/ui'
 
 import {type SearchFilter} from '../../types'
 import {FilterLabel} from './FilterLabel'
+import {filterPillCard} from './FilterPill.css'
 
 interface FilterPillProps {
   filter: SearchFilter
 }
-
-import {filterPillCard} from './FilterPill.css'
 
 export function FilterPill({filter}: FilterPillProps) {
   return (

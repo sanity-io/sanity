@@ -10,30 +10,20 @@ import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {type Path} from '@sanity/types'
-import {Card, useRootTheme} from '@sanity/ui'
+import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
-import {styledRoot} from './StringInputPortableText.css'
+
 import {set, unset} from '../../../patch/patch'
 import {type StringInputProps} from '../../../types'
 import {DeletedSegment} from '../../common/diff/string/segments'
 import {UpdateReadOnlyPlugin} from '../../PortableText/PortableTextInput'
 import {useOptimisticDiff} from './diff/useOptimisticDiff'
 import {packageValue} from './packageValue'
-
+import {styledRoot} from './StringInputPortableText.css'
 import {unpackageValue} from './unpackageValue'
 
 export const ROOT_PATH: Path = [{_key: 'root'}, 'children', {_key: 'root'}]
 const INVALID_CLASS_NAME = 'invalid'
-
-
-  ${textInputRootStyle}
-  ${textInputBaseStyle}
-  ${responsiveInputPaddingStyle}
-  ${textInputFontSizeStyle}
-  ${stringDiffContainerStyles}
-`
-
-
 
 /**
  * This string input implementation is powered by the Portable Text Editor. It's used when inline
@@ -140,7 +130,7 @@ export function StringInputPortableText(props: StringInputProps) {
     }
 
     return null
-  }, [diff.fromValue, diff.toValue, diffSegments, fontSize, space, padding])
+  }, [diff.fromValue, diff.toValue, diffSegments])
 
   return (
     <div className={styledRoot}>
@@ -159,12 +149,7 @@ export function StringInputPortableText(props: StringInputProps) {
           data-testid="string-input-portable-text"
         />
       </EditorProvider>
-      <Card
-          radius={radius}
-          data-scheme={rootTheme.scheme}
-          data-tone={rootTheme.tone}
-          data-border
-        />
+      <Card radius={radius} data-scheme={rootTheme.scheme} data-tone={rootTheme.tone} data-border />
     </div>
   )
 }

@@ -1,14 +1,14 @@
 // Styles moved to InspectDialog.css.ts
 export {
-  jsonInspectorWrapper as JSONInspectorWrapper,
   codeFamilyVar,
   codeFontSizeVar,
   codeLineHeightVar,
-  space4Var,
+  jsonInspectorWrapper as JSONInspectorWrapper,
   space3Var,
-  syntaxPropertyVar,
-  syntaxConstantVar,
-  syntaxStringVar,
+  space4Var,
   syntaxBooleanVar,
+  syntaxConstantVar,
   syntaxNumberVar,
+  syntaxPropertyVar,
+  syntaxStringVar,
 } from './InspectDialog.css'

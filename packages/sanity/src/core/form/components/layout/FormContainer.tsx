@@ -1,4 +1,3 @@
-// eslint-disable-next-line camelcase
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type HTMLProps, forwardRef} from 'react'

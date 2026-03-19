@@ -14,13 +14,22 @@ import {
   type RenderChildFunction,
 } from '@portabletext/editor'
 import {type Path} from '@sanity/types'
-import {BoundaryElementProvider, Card, rem, useBoundaryElement, useGlobalKeyDown, useLayer, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {
+  BoundaryElementProvider,
+  Card,
+  rem,
+  useBoundaryElement,
+  useGlobalKeyDown,
+  useLayer,
+  useTheme_v2 as useThemeV2,
+} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ReactNode, useCallback, useMemo} from 'react'
+
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
+import {ScrollContainer} from '../../../components/scroll'
 import {useTranslation} from '../../../i18n'
 import {useFormBuilder} from '../../useFormBuilder'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-
 import {
   counterResetVar,
   dropIndicatorLeftVar,
@@ -40,11 +49,9 @@ import {
   scroller,
   toolbarCard,
 } from './Editor.css'
-import {ScrollContainer} from '../../../components/scroll'
-import {createListName, TEXT_LEVELS} from './text'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
-import {Decorator} from './text'
+import {createListName, TEXT_LEVELS, Decorator} from './text'
 import {ListItem} from './text/ListItem'
 import {Style} from './text/Style'
 import {Toolbar} from './toolbar'
@@ -54,7 +61,6 @@ const noOutlineStyle = {outline: 'none'} as const
 // The <FormBuilder> id that represents the default (document pane) form layout.
 // This is used to determine whether this editor should apply document pane specific styling.
 const FORM_BUILDER_DEFAULT_ID = 'root'
-
 
 interface EditorProps {
   elementRef: React.RefObject<HTMLDivElement | null>

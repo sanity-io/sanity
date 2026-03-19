@@ -13,6 +13,7 @@ import {
 } from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
+
 import {Tooltip} from '../../../../../ui-components'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
 import {useClient, useRelativeTime, useUnitFormatter} from '../../../../hooks'
@@ -22,6 +23,7 @@ import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
 import {AssetMenu} from '../shared/AssetMenu'
 import {AssetUsageDialog} from '../shared/AssetUsageDialog'
 import {type AssetMenuAction} from '../types'
+import {formatMimeType} from '../utils/mimeType'
 import {
   cardIconWrapper,
   customCardSelected,
@@ -31,7 +33,6 @@ import {
   rowButtonSelected,
   typeText,
 } from './AssetRow.css'
-import {formatMimeType} from '../utils/mimeType'
 
 interface RowProps {
   isMobile?: boolean
@@ -41,48 +42,6 @@ interface RowProps {
   onKeyPress?: (event: KeyboardEvent) => void
   onDeleteFinished?: (assetId: string) => void
 }
-
-
-
-      --card-muted-fg-color: var(--card-bg-color);
-      --card-fg-color: var(--card-bg-color);
-    `}
-`
-
-      --card-muted-fg-color: var(--card-bg-color);
-      --card-fg-color: var(--card-bg-color);
-
-      &:before {
-        background-color: var(--card-focus-ring-color);
-      }
-
-      ${CardIconWrapper} {
-        --card-muted-fg-color: var(--card-bg-color);
-      }
-
-      ${CustomFlex} {
-        --card-muted-fg-color: var(--card-bg-color);
-        --card-fg-color: var(--card-bg-color);
-      }
-    `}
-
-  ${(props) =>
-    !props.isSelected &&
-    css`
-      &:hover:before {
-        background-color: var(--card-bg-color);
-      }
-
-      &:focus:before {
-        background-color: var(--card-code-bg-color);
-      }
-
-      &:focus-within:before {
-        background-color: var(--card-bg-color);
-      }
-    `}
-`
-
 
 const STYLES_ROW_CARD = {
   position: 'relative',
@@ -345,7 +304,8 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           })}
           radius={2}
         >
-          <Flex className={customFlex}
+          <Flex
+            className={customFlex}
             gap={2}
             flex={2}
             paddingRight={1}
@@ -355,7 +315,8 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
             data-id={_id}
           >
             <Card
-              as={CardIconWrapper}
+              as="span"
+              className={cardIconWrapper}
               padding={2}
               tone="transparent"
               radius={2}
@@ -397,7 +358,8 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
             {formattedTime}
           </Text>
         </Flex>
-        <Flex className={customFlex}
+        <Flex
+          className={customFlex}
           justify="flex-end"
           align="center"
           paddingX={1}

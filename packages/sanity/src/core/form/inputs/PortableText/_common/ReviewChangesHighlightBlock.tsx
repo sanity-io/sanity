@@ -1,5 +1,5 @@
-import {rgba} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {hues} from '@sanity/color'
+import {rgba, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type HTMLProps} from 'react'
 
@@ -17,8 +17,8 @@ export function ReviewChangesHighlightBlock(
   props: {$fullScreen: boolean} & HTMLProps<HTMLDivElement>,
 ) {
   const {$fullScreen, ...rest} = props
-  const {radius, space, color} = useThemeV2()
-  const bg = rgba(color.spot.yellow, 0.2)
+  const {radius, space} = useThemeV2()
+  const bg = rgba(hues.yellow[500].hex, 0.2)
 
   return (
     <div

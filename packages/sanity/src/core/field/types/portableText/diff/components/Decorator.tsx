@@ -12,7 +12,7 @@ export function Decorator({mark, children}: {mark: string; children: React.JSX.E
       mark === 'code'
         ? assignInlineVars({
             [codeFontFamilyVar]: font.code.family,
-            [codeBgVar]: color.muted.default.enabled.bg,
+            [codeBgVar]: color.muted.bg,
           })
         : undefined,
     [mark, font, color],

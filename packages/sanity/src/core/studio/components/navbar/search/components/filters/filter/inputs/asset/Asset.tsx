@@ -14,6 +14,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioCl
 import {useSource} from '../../../../../../../../source'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {containerBox} from './Asset.css'
 import {AssetSourceError} from './AssetSourceError'
 import {AssetPreview} from './preview/AssetPreview'
 
@@ -23,8 +24,6 @@ const ASSET_TYPE: Record<AssetType, string> = {
   file: 'sanity.fileAsset',
   image: 'sanity.imageAsset',
 }
-
-import {containerBox} from './Asset.css'
 
 export function SearchFilterAssetInput(type?: AssetType) {
   return function FieldInputAssetWithType({

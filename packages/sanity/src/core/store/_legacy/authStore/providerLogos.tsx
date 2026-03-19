@@ -1,4 +1,3 @@
-// eslint-disable-next-line camelcase
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ComponentType} from 'react'
@@ -8,7 +7,7 @@ import {customImage, fgColorVar, githubRootSvg} from './providerLogos.css'
 
 const GithubLogo = () => {
   const theme = useThemeV2()
-  const fg = theme.color.base.fg
+  const fg = theme.color.fg
 
   return (
     <svg

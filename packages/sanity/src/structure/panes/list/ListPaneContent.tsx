@@ -9,8 +9,8 @@ import {
 } from 'sanity'
 
 import {PaneContent, PaneItem, usePaneLayout} from '../../components'
-import {dividerContainer, divider, dividerTitle} from './ListPaneContent.css'
 import {type PaneListItem, type PaneListItemDivider} from '../../types'
+import {dividerContainer, divider} from './ListPaneContent.css'
 
 interface ListPaneContentProps {
   childItemId?: string
@@ -20,7 +20,6 @@ interface ListPaneContentProps {
   showIcons: boolean
   title: string
 }
-
 
 interface DividerItemProps {
   item: PaneListItemDivider

@@ -64,7 +64,9 @@ export function StructureError({error}: StructureErrorProps) {
                 {/* TODO: it seems like the path is off by one and includes */}
                 {/* `root` twice  */}
                 {path.slice(1).map((segment, i) => (
-                  <span className={pathSegment} key={`${segment}-${i}`}>{segment}</span>
+                  <span key={`${segment}-${i}`} className={pathSegment}>
+                    {segment}
+                  </span>
                 ))}
               </Code>
             </Stack>

@@ -256,7 +256,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const renderOption = useCallback(
     (option: FIXME) => {
       return (
-        <ReferenceInputPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
+        <ReferenceInputPreviewCard as="button" type="button" radius={2} tone="inherit">
           <OptionPreview
             referenceType={schemaType}
             document={option.hit.published}

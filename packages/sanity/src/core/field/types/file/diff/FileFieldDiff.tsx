@@ -1,6 +1,5 @@
 import {DocumentIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Box, Card, Flex, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
 
@@ -42,8 +41,8 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
   const sizeDiffVars = useMemo(
     () =>
       assignInlineVars({
-        [sizeDiffPositiveVar]: color.solid.positive.enabled.bg,
-        [sizeDiffNegativeVar]: color.solid.critical.enabled.bg,
+        [sizeDiffPositiveVar]: color.selectable.positive.enabled.bg,
+        [sizeDiffNegativeVar]: color.selectable.critical.enabled.bg,
       }),
     [color],
   )

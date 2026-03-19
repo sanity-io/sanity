@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {createVar, style} from '@vanilla-extract/css'
 
 export const topVar = createVar()

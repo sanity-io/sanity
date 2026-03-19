@@ -3,12 +3,11 @@ import {Card, type CardTone, Code, Inline, Stack} from '@sanity/ui'
 
 import {Tooltip} from '../../../../../../../../ui-components'
 import {type WeightedHit} from '../../../../../../../search'
+import {debugScoreCard} from './DebugOverlay.css'
 
 interface DebugScoreProps {
   data: WeightedHit
 }
-
-import {debugScoreCard} from './DebugOverlay.css'
 
 export function DebugOverlay({data}: DebugScoreProps) {
   const {score} = data

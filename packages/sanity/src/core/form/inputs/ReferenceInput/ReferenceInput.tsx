@@ -227,7 +227,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const renderOption = useCallback(
     (option: AutocompleteOption) => {
       return (
-        <ReferenceInputPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
+        <ReferenceInputPreviewCard as="button" type="button" radius={2} tone="inherit">
           <OptionPreview
             id={option.hit.id}
             type={option.hit.type}

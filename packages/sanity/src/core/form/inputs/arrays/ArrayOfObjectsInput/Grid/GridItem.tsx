@@ -2,6 +2,7 @@ import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType, type UploadState} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
+
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ChangeIndicator} from '../../../../../changeIndicators'
 import {ContextMenuButton} from '../../../../../components/contextMenuButton'
@@ -24,13 +25,12 @@ import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {regenerateKeys} from '../../../../utils/regenerateKeys'
 import {useArrayValidation} from '../../common/ArrayValidationContext'
-import {previewCard} from './GridItem.css'
 import {CellLayout} from '../../layouts/CellLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../InsertMenuMenuItems'
+import {previewCard} from './GridItem.css'
 
 type GridItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
-
 
 function getTone({
   readOnly,
@@ -261,10 +261,11 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       selected={openPortal}
       readOnly={readOnly}
     >
-      <Card className={previewCard}
+      <Card
+        className={previewCard}
         tone="inherit"
         overflow="auto"
-        forwardedAs="button"
+        as="button"
         data-ui="PreviewCard"
         data-as="button"
         type="button"

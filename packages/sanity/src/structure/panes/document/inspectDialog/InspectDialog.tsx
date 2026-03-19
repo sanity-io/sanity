@@ -1,6 +1,7 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
 import {type SanityDocument} from '@sanity/types'
-import {Card, Code, Flex, TabList, TabPanel} from '@sanity/ui'
+import {Card, Code, Flex, TabList, TabPanel, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback} from 'react'
 import {Translate, useTranslation} from 'sanity'
 
@@ -24,8 +25,6 @@ import {
   syntaxBooleanVar,
   syntaxNumberVar,
 } from './InspectDialog.styles'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Search} from './Search'
 
 interface InspectDialogProps {
@@ -120,7 +119,9 @@ export function InspectDialog(props: InspectDialogProps) {
           style={{outline: 'none'}}
         >
           {viewMode === VIEW_MODE_PARSED && (
-            <div className={JSONInspectorWrapper} style={assignInlineVars({
+            <div
+              className={JSONInspectorWrapper}
+              style={assignInlineVars({
                 [codeFamilyVar]: font.code.family,
                 [codeFontSizeVar]: `${font.code.sizes[1].fontSize}px`,
                 [codeLineHeightVar]: `${font.code.sizes[1].lineHeight}px`,
@@ -131,7 +132,8 @@ export function InspectDialog(props: InspectDialogProps) {
                 [syntaxStringVar]: color.syntax.string,
                 [syntaxBooleanVar]: color.syntax.boolean,
                 [syntaxNumberVar]: color.syntax.number,
-              })}>
+              })}
+            >
               <JsonInspector
                 data={value}
                 isExpanded={isExpanded}

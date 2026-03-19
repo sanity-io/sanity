@@ -1,4 +1,4 @@
-import {createVar, style, styleVariants} from '@vanilla-extract/css'
+import {createVar, style} from '@vanilla-extract/css'
 
 export const stackWrapper = style({
   selectors: {

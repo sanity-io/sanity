@@ -16,11 +16,8 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
+import {clearButtonBox} from './DocumentTypesPopoverContent.css'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
-
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {clearButtonBox, borderColorVar} from './DocumentTypesPopoverContent.css'
 
 const POPOVER_STYLES = {width: '250px'}
 

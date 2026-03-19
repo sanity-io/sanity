@@ -11,6 +11,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
+
 import {TextWithTone} from '../../../components'
 import {type DocumentFieldActionNode} from '../../../config'
 import {useTranslation} from '../../../i18n'
@@ -19,8 +20,8 @@ import {useFieldActions} from '../../field'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types'
 import {FormRow} from '../layout/FormRow'
-import {content as contentClass, rootFieldset} from './FormFieldSet.css'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
+import {content as contentClass, rootFieldset} from './FormFieldSet.css'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {ColumnarGrid} from './styles'
@@ -66,8 +67,6 @@ export interface FormFieldSetProps {
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
 }
-
-
 
 const EMPTY_ARRAY: never[] = []
 
@@ -202,15 +201,16 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
           onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}
           ref={ref}
           tabIndex={tabIndex}
-          style={{
-            borderLeft: level > 0 ? '1px solid var(--card-border-color)' : undefined,
-            ...(level > 0 && focused ? {
-              borderLeft: '1px solid var(--card-focus-ring-color)',
-              boxShadow: 'inset 1px 0 0 var(--card-focus-ring-color)',
-            } : level > 0 && !focused ? {
-              boxShadow: 'inset 0 0 0 transparent',
-            } : {}),
-          }}
+          style={(level > 0
+              ? {
+                  borderLeft: focused
+                    ? '1px solid var(--card-focus-ring-color)'
+                    : '1px solid var(--card-border-color)',
+                  boxShadow: focused
+                    ? 'inset 1px 0 0 var(--card-focus-ring-color)'
+                    : 'inset 0 0 0 transparent',
+                }
+              : {})}
         >
           {!collapsed && content}
         </Box>

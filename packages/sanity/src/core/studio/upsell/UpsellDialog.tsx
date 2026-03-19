@@ -1,13 +1,10 @@
-import {white} from '@sanity/color'
 import {CloseIcon, LaunchIcon} from '@sanity/icons'
-import {Box, Stack} from '@sanity/ui'
+import {Box, Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 
 import {Button, Dialog} from '../../../ui-components'
 import {type UpsellData} from './types'
 import {type InterpolationProp, UpsellDescriptionSerializer} from './upsellDescriptionSerializer'
-
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {styledButton, image as imageClass, topVar, rightVar} from './UpsellDialog.css'
 
 interface UpsellDialogProps {
@@ -76,7 +73,13 @@ export function UpsellDialog(props: UpsellDialogProps) {
         tabIndex={-1}
         tooltipProps={null}
       />
-      {data.image && <img className={imageClass} src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
+      {data.image && (
+        <img
+          className={imageClass}
+          src={data.image.asset.url}
+          alt={data.image.asset.altText ?? ''}
+        />
+      )}
       <Box padding={3} marginTop={2}>
         <Stack space={4} paddingBottom={2}>
           <UpsellDescriptionSerializer

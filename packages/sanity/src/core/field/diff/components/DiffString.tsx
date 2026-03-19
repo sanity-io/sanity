@@ -1,5 +1,4 @@
-import {Card, rem, Text} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Card, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
 
@@ -16,7 +15,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JS
   const {radius} = useThemeV2()
 
   const roundedCardVars = useMemo(
-    () => assignInlineVars({[radiusVar]: rem(radius[1])}),
+    () => assignInlineVars({[radiusVar]: String(rem(radius[1]))}),
     [radius],
   )
 
@@ -46,7 +45,9 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JS
         tooltip={{description: t('changes.removed-label')}}
       >
         <span className={roundedCard} style={roundedCardVars}>
-          <Text className={changeSegment} as="del">{text}</Text>
+          <Text className={changeSegment} as="del">
+            {text}
+          </Text>
         </span>
       </DiffCard>
     )

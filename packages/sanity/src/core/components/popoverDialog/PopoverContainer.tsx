@@ -1,10 +1,4 @@
-import {
-  Container,
-  type ContainerProps,
-  rem,
-} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Container, type ContainerProps, rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {forwardRef, type ReactNode, type Ref, useMemo} from 'react'
 
 import {styledContainer, widthVar} from './PopoverContainer.css'
@@ -24,7 +18,7 @@ export const PopoverContainer = forwardRef(function PopoverContainer(
   const {width = [], ...restProps} = props
   const theme = useThemeV2()
   const {container} = theme
-  const widthArray = Array.isArray(width) ? width : [width]
+  const widthArray = useMemo(() => (Array.isArray(width) ? width : [width]), [width])
 
   // Compute the width value based on the first responsive width
   const computedWidth = useMemo(() => {

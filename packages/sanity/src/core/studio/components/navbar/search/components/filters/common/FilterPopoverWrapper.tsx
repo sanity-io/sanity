@@ -3,7 +3,8 @@ import {isHotkey} from 'is-hotkey-esm'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 
-import {POPOVER_INPUT_PADDING, POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
+import {POPOVER_INPUT_PADDING, POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants' // px
+import {hiddenOverlay} from './FilterPopoverWrapper.css'
 
 interface FilterPopoverWrapperProps {
   anchorElement?: HTMLElement | null
@@ -13,9 +14,7 @@ interface FilterPopoverWrapperProps {
 
 const isEscape = isHotkey('escape')
 
-const MAX_HEIGHT = 500 // px
-
-import {hiddenOverlay} from './FilterPopoverWrapper.css'
+const MAX_HEIGHT = 500
 
 export function FilterPopoverWrapper({
   anchorElement,

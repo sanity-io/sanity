@@ -1,13 +1,20 @@
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
-import {Box, Card, Code, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {
+  Box,
+  Card,
+  Code,
+  Stack,
+  Text,
+  useClickOutsideEvent,
+  useTheme_v2 as useThemeV2,
+} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
+
 import {Popover} from '../../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../../i18n'
 import {maxWidthVar, popoverCard} from './IncompatibleItemType.css'
-
 
 interface Props {
   value: unknown
@@ -48,7 +55,15 @@ export function IncompatibleItemType(props: Props) {
       constrainSize
       tone="default"
       content={
-        <Card className={popoverCard} margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto" style={assignInlineVars({[maxWidthVar]: `${container[1]}px`})}>
+        <Card
+          className={popoverCard}
+          margin={1}
+          padding={3}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+          overflow="auto"
+          style={assignInlineVars({[maxWidthVar]: `${container[1]}px`})}
+        >
           <Stack space={4}>
             <Box>
               <Text weight="medium">{t('inputs.array.error.type-is-incompatible-title')}</Text>

@@ -1,10 +1,16 @@
 import {SearchIcon} from '@sanity/icons'
-import {Box, Flex} from '@sanity/ui'
+import {Box, Flex, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ChangeEvent, forwardRef} from 'react'
 
 import {useTranslation} from '../../../../../../../i18n'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {CustomTextInput} from '../../common/CustomTextInput'
+import {
+  searchHeaderBox,
+  searchHeaderContentFlex,
+  borderColorVar,
+} from './FilterPopoverContentHeader.css'
 
 interface FilterPopoverContentHeaderProps {
   ariaInputLabel: string
@@ -12,10 +18,6 @@ interface FilterPopoverContentHeaderProps {
   onClear: () => void
   typeFilter: string
 }
-
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {searchHeaderBox, searchHeaderContentFlex, borderColorVar} from './FilterPopoverContentHeader.css'
 
 export const FilterPopoverContentHeader = forwardRef<
   HTMLInputElement,
@@ -28,7 +30,10 @@ export const FilterPopoverContentHeader = forwardRef<
   const {t} = useTranslation()
 
   return (
-    <Box className={searchHeaderBox} style={assignInlineVars({[borderColorVar]: themeColor.border})}>
+    <Box
+      className={searchHeaderBox}
+      style={assignInlineVars({[borderColorVar]: themeColor.border})}
+    >
       <Flex className={searchHeaderContentFlex} align="center" flex={1} padding={1}>
         <CustomTextInput
           __unstable_disableFocusRing

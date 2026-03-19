@@ -1,15 +1,8 @@
-/* eslint-disable camelcase */
-
 import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {type ComponentType, forwardRef} from 'react'
 
 import {focusRingBorderStyle, focusRingStyle} from './helpers'
-import {
-  borderRadiusVar,
-  boxShadowVar,
-  focusBoxShadowVar,
-  focusRingClass,
-} from './withFocusRing.css'
+import {borderRadiusVar, boxShadowVar, focusBoxShadowVar, focusRingClass} from './withFocusRing.css'
 
 export function withFocusRing<Props extends {className?: string; style?: React.CSSProperties}>(
   component: ComponentType<Props>,

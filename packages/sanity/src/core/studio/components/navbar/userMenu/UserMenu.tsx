@@ -9,7 +9,9 @@ import {
   MenuDivider,
   Stack,
   Text,
+  useTheme_v2 as useThemeV2,
 } from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
@@ -21,9 +23,6 @@ import {useWorkspace} from '../../../workspace'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {LoginProviderLogo} from './LoginProviderLogo'
-
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {styledMenu, avatarBox, avatarSizeVar} from './UserMenu.css'
 
 export function UserMenu() {
@@ -65,7 +64,11 @@ export function UserMenu() {
                 portal
                 content={t('user-menu.login-provider', {providerTitle})}
               >
-                <Box className={avatarBox} marginRight={3} style={assignInlineVars({[avatarSizeVar]: `${theme.avatar.sizes[2].size}px`})}>
+                <Box
+                  className={avatarBox}
+                  marginRight={3}
+                  style={assignInlineVars({[avatarSizeVar]: `${theme.avatar.sizes[2].size}px`})}
+                >
                   <UserAvatar size={2} user="me" />
                   {currentUser?.provider && <LoginProviderLogo provider={currentUser.provider} />}
                 </Box>

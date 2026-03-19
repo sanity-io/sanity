@@ -1,5 +1,4 @@
-import {Box, rem, Text} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Box, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
 
@@ -70,7 +69,8 @@ function CreatedTitleSegment(props: {
   const annotation = diffAnnotation || annotationProp
 
   const roundedCardVars = useMemo(
-    () => assignInlineVars({[radiusVar]: rem(radius[2]), [paddingVar]: rem(space[1])}),
+    () =>
+      assignInlineVars({[radiusVar]: String(rem(radius[2])), [paddingVar]: String(rem(space[1]))}),
     [radius, space],
   )
 
@@ -78,7 +78,13 @@ function CreatedTitleSegment(props: {
     return (
       <DiffCard annotation={annotation} tooltip={{description}} as="div">
         <div className={roundedCard} style={roundedCardVars}>
-          <Text className={annotationText} size={1} weight="medium" forwardedAs="ins" style={{textDecoration: 'none'}}>
+          <Text
+            className={annotationText}
+            size={1}
+            weight="medium"
+            as="ins"
+            style={{textDecoration: 'none'}}
+          >
             {content}
           </Text>
         </div>
@@ -101,14 +107,15 @@ function DeletedTitleSegment(props: {annotation: Annotation | undefined; fromInd
   const description = t('changes.array.item-removed-from-position', {position: readableIndex})
 
   const roundedCardVars = useMemo(
-    () => assignInlineVars({[radiusVar]: rem(radius[2]), [paddingVar]: rem(space[1])}),
+    () =>
+      assignInlineVars({[radiusVar]: String(rem(radius[2])), [paddingVar]: String(rem(space[1]))}),
     [radius, space],
   )
 
   return (
     <DiffCard annotation={annotation || null} as="div" tooltip={{description}}>
       <div className={roundedCard} style={roundedCardVars}>
-        <Text className={annotationText} size={1} weight="medium" forwardedAs="del">
+        <Text className={annotationText} size={1} weight="medium" as="del">
           #{readableIndex}
         </Text>
       </div>
@@ -134,7 +141,8 @@ function MovedTitleSegment(props: {
   })
 
   const roundedCardVars = useMemo(
-    () => assignInlineVars({[radiusVar]: rem(radius[2]), [paddingVar]: rem(space[1])}),
+    () =>
+      assignInlineVars({[radiusVar]: String(rem(radius[2])), [paddingVar]: String(rem(space[1]))}),
     [radius, space],
   )
 

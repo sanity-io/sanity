@@ -8,11 +8,17 @@ import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
+
 import {Button} from '../../../../../ui-components'
 import {useRovingFocus} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {ActionMenu} from './ActionMenu'
+import {BlockStyleSelect} from './BlockStyleSelect'
+import {getBlockStyles, getInsertMenuItems} from './helpers'
+import {useActionGroups} from './hooks'
+import {InsertMenu} from './InsertMenu'
 import {
   actionMenuBox,
   fullscreenButtonBox,
@@ -20,11 +26,6 @@ import {
   styleSelectBox,
   styleSelectFlex,
 } from './Toolbar.css'
-import {ActionMenu} from './ActionMenu'
-import {BlockStyleSelect} from './BlockStyleSelect'
-import {getBlockStyles, getInsertMenuItems} from './helpers'
-import {useActionGroups} from './hooks'
-import {InsertMenu} from './InsertMenu'
 import {type BlockItem, type BlockStyleItem, type PTEToolbarActionGroup} from './types'
 
 interface ToolbarProps {
@@ -36,18 +37,6 @@ interface ToolbarProps {
   onToggleFullscreen: () => void
   readOnly?: boolean
 }
-
-
-
-
-  ${({$withInsertMenu}) =>
-    $withInsertMenu &&
-    css`
-      max-width: max-content;
-      border-right: 1px solid var(--card-border-color);
-    `}
-`
-
 
 const SLOW_INITIAL_VALUE_LIMIT = 300
 
@@ -90,10 +79,19 @@ const InnerToolbar = memo(function InnerToolbar({
   }, [])
 
   return (
-    <Flex className={rootFlex} align="center" ref={setRootElement} onMouseDown={preventEditorBlurOnToolbarMouseDown}>
+    <Flex
+      className={rootFlex}
+      align="center"
+      ref={setRootElement}
+      onMouseDown={preventEditorBlurOnToolbarMouseDown}
+    >
       {showBlockStyleSelect && (
         <Flex className={styleSelectFlex} flex={collapsed ? 1 : undefined}>
-          <Box className={styleSelectBox} padding={isFullscreen ? 2 : 1} data-testid="block-style-select">
+          <Box
+            className={styleSelectBox}
+            padding={isFullscreen ? 2 : 1}
+            data-testid="block-style-select"
+          >
             <BlockStyleSelect
               disabled={disabled}
               items={blockStyles}

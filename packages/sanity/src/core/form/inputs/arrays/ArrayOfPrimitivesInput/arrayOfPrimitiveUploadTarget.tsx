@@ -15,6 +15,7 @@ import {
   useCallback,
   useState,
 } from 'react'
+
 import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n'
 import {withFocusRing} from '../../../components/withFocusRing'
@@ -24,8 +25,8 @@ import {
   type UploaderResolver,
 } from '../../../studio/uploads/types'
 import {type UploadEvent} from '../../../types'
-import {overlay as overlayClass, rootStyle, styledCard} from './arrayOfPrimitiveUploadTarget.css'
 import {type FileInfo, fileTarget} from '../../files/common/fileTarget'
+import {overlay as overlayClass, rootStyle, styledCard} from './arrayOfPrimitiveUploadTarget.css'
 
 export interface UploadTargetProps {
   types: SchemaType[]
@@ -38,7 +39,6 @@ interface UploadTask {
   file: File
   uploaderCandidates: ResolvedUploader[]
 }
-
 
 function getUploadCandidates(
   types: SchemaType[],
@@ -152,13 +152,19 @@ function uploadTarget<Props>(
   })
 }
 
+const StyledCardComponent = forwardRef<HTMLDivElement, any>(
+  function StyledCardComponent(props, ref) {
+    return (
+      <Card
+        {...props}
+        className={`${styledCard}${props.className ? ` ${props.className}` : ''}`}
+        ref={ref}
+      />
+    )
+  },
+)
 
-const StyledCardComponent = forwardRef<HTMLDivElement, any>(function StyledCardComponent(props, ref) {
-  return <Card {...props} className={`${styledCard}${props.className ? ` ${props.className}` : ''}`} ref={ref} />
-})
-
-export const UploadTargetCard = withFocusRing(uploadTarget(StyledCardComponent))
-
+export const UploadTargetCard = withFocusRing<any>(uploadTarget(StyledCardComponent))
 
 interface DropMessageProps {
   hoveringFiles: FileLike[]

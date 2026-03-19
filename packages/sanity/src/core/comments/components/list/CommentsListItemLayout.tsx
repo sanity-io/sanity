@@ -10,9 +10,8 @@ import {
   Text,
   TextSkeleton,
   useClickOutsideEvent,
+  useTheme_v2 as useThemeV2,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
@@ -42,6 +41,7 @@ import {FLEX_GAP} from '../constants'
 import {CommentMessageSerializer} from '../pte'
 import {CommentInput, type CommentInputHandle} from '../pte/comment-input'
 import {CommentReactionsBar} from '../reactions'
+import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {
   contextMenuBox,
   errorFlex,
@@ -55,7 +55,6 @@ import {
   timeText,
   transformVar,
 } from './CommentsListItemLayout.css'
-import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
@@ -451,7 +450,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 className={retryCardButton}
                 __unstable_focusRing
                 display="flex"
-                forwardedAs="button"
+                as="button"
                 onClick={handleCreateRetry}
                 padding={1}
                 radius={2}

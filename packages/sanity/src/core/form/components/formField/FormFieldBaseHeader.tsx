@@ -1,5 +1,4 @@
-import {Box, Card, Flex} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Box, Card, Flex, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 
@@ -8,6 +7,7 @@ import {type DocumentFieldActionNode} from '../../../config'
 import {FieldPresence, type FormNodePresence} from '../../../presence'
 import {calcAvatarStackWidth} from '../../../presence/utils'
 import {FieldActionMenu} from '../../field'
+import {type FieldCommentsProps} from '../../types'
 import {
   contentBox,
   contentMaxWidthVar,
@@ -18,8 +18,6 @@ import {
   slotBox,
   slotRightVar,
 } from './FormFieldBaseHeader.css'
-import {type FieldCommentsProps} from '../../types'
-
 
 const MAX_AVATARS = 4
 
@@ -125,7 +123,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
         {slot}
       </div>
     )
-  }, [floatingCardWidth, showFieldActions, slot])
+  }, [floatingCardWidth, showFieldActions, slot, space])
 
   return (
     <Flex

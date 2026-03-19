@@ -5,9 +5,7 @@ import {
   usePortableTextEditorSelection,
 } from '@portabletext/editor'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
-import {useClickOutsideEvent} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {useClickOutsideEvent, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import isEqual from 'lodash-es/isEqual.js'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -17,7 +15,13 @@ import {useTranslation} from '../../../../i18n'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {MentionsMenu, type MentionsMenuHandle} from '../../mentions'
 import {renderChild} from '../render'
-import {placeholderColorVar, placeholderWrapper, radiusVar, spaceVar, styledPopover} from './Editable.css'
+import {
+  placeholderColorVar,
+  placeholderWrapper,
+  radiusVar,
+  spaceVar,
+  styledPopover,
+} from './Editable.css'
 import {useCommentInput} from './useCommentInput'
 import {useCursorElement} from './useCursorElement'
 

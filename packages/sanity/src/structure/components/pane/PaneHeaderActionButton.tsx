@@ -96,7 +96,7 @@ function PaneHeaderActionIntentButton(props: {intent: Intent; node: _PaneMenuIte
 
   return (
     <StatusButton
-      forwardedAs="a"
+      as="a"
       disabled={isDisabled}
       href={intentLink.href}
       icon={node.icon}

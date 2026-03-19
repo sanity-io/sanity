@@ -1,7 +1,6 @@
 import {COLOR_HUES, hues} from '@sanity/color'
-import {darken, hasBadContrast, lighten, readableColor} from 'color2k'
-// eslint-disable-next-line camelcase
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {darken, hasBadContrast, lighten, readableColor} from 'color2k'
 import {useState} from 'react'
 
 function pseudoRandomNumber(seed: string) {

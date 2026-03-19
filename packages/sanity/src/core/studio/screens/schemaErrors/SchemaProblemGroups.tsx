@@ -8,13 +8,12 @@ import {useMemo} from 'react'
 
 import {useTranslation} from '../../../i18n'
 import {getTypeInfo} from './getTypeInfo'
+import {segmentSpan, errorMessageText} from './SchemaProblemGroups.css'
 
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   error: 'critical',
   warning: 'caution',
 }
-
-import {segmentSpan, errorMessageText} from './SchemaProblemGroups.css'
 
 export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProblemGroup[]}) {
   const {problemGroups} = props

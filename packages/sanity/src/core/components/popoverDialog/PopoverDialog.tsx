@@ -1,7 +1,13 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, Layer, type ResponsiveWidthProps, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {
+  Box,
+  Flex,
+  Layer,
+  type ResponsiveWidthProps,
+  Stack,
+  Text,
+  useTheme_v2 as useThemeV2,
+} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
 import TrapFocus from 'react-focus-lock'
@@ -36,10 +42,7 @@ export function PopoverDialog(props: PopoverDialogProps) {
     <PopoverContainer width={width} data-testid="popover-dialog">
       <TrapFocus autoFocus>
         <Stack ref={containerRef}>
-          <Layer
-            className={stickyLayer}
-            style={assignInlineVars({[radiusVar]: `${radius[3]}px`})}
-          >
+          <Layer className={stickyLayer} style={assignInlineVars({[radiusVar]: `${radius[3]}px`})}>
             <Box padding={2} paddingLeft={4}>
               <Flex align="center" gap={2}>
                 <Box flex={1}>

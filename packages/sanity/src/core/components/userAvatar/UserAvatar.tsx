@@ -6,11 +6,8 @@ import {
   type AvatarSize,
   type AvatarStatus,
   Skeleton,
+  useTheme_v2 as useThemeV2,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ForwardedRef, forwardRef, useState} from 'react'
 

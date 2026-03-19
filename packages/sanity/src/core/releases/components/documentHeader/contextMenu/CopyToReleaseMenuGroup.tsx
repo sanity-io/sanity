@@ -7,8 +7,8 @@ import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
 import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
-import {releasesList} from './CopyToReleaseMenuGroup.css'
 import {CopyToDraftsMenuItem} from './CopyToDraftsMenuItem'
+import {releasesList} from './CopyToReleaseMenuGroup.css'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
 interface CopyToReleaseMenuGroupProps {
@@ -58,7 +58,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
       data-testid="copy-version-to-release-button-group"
     >
       {(hasCopyToDraftOption || releases.length > 0) && (
-        <Stack className={releasesList} key={bundleId} space={1}>
+        <Stack key={bundleId} className={releasesList} space={1}>
           {hasCopyToDraftOption && (
             <CopyToDraftsMenuItem
               documentType={documentType}

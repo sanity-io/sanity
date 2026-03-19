@@ -1,4 +1,5 @@
 import {Box, Flex} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
 
 import {TextWithTone} from '../../../../../../components'
@@ -8,6 +9,7 @@ import {isRecord} from '../../../../../../util'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {getOperatorDefinition} from '../../definitions/operators'
 import {type SearchFilter, type SearchFilterValues} from '../../types'
+import {customBox, flexShrinkVar} from './FilterLabel.css'
 import {FilterTitle} from './FilterTitle'
 
 interface FilterLabelProps {
@@ -15,9 +17,6 @@ interface FilterLabelProps {
   fontSize?: number
   showContent?: boolean
 }
-
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {customBox, flexShrinkVar} from './FilterLabel.css'
 
 export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLabelProps) {
   const {t} = useTranslation()
@@ -33,7 +32,10 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
   const components: TranslateComponentMap = useMemo(
     () => ({
       Field: () => (
-        <Box className={customBox} style={assignInlineVars({[flexShrinkVar]: String(fullscreen ? 1 : 0)})}>
+        <Box
+          className={customBox}
+          style={assignInlineVars({[flexShrinkVar]: String(fullscreen ? 1 : 0)})}
+        >
           <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
             <FilterTitle filter={filter} maxLength={fullscreen ? 25 : 40} />
           </TextWithTone>

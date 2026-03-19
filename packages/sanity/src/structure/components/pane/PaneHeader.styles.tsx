@@ -1,9 +1,9 @@
 // Styles moved to PaneHeader.css.ts
 export {
-  root as Root,
-  layout as Layout,
-  titleCard as TitleCard,
-  titleTextSkeleton as TitleTextSkeleton,
-  titleText as TitleText,
   borderColorVar,
+  layout as Layout,
+  root as Root,
+  titleCard as TitleCard,
+  titleText as TitleText,
+  titleTextSkeleton as TitleTextSkeleton,
 } from './PaneHeader.css'

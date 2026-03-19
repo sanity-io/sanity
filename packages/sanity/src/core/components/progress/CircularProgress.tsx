@@ -1,9 +1,14 @@
 import {hues} from '@sanity/color'
-// eslint-disable-next-line camelcase
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 
-import {bgCircle, bgStrokeVar, progressCircle, progressStrokeVar, root} from './CircularProgress.css'
+import {
+  bgCircle,
+  bgStrokeVar,
+  progressCircle,
+  progressStrokeVar,
+  root,
+} from './CircularProgress.css'
 
 const SIZE = 43
 const STROKE_WIDTH = 3
@@ -28,8 +33,8 @@ export function CircularProgress(props: {
       className={root}
       viewBox={viewBox}
       style={assignInlineVars({
-        [bgStrokeVar]: hues.gray[color.dark ? 900 : 100].hex,
-        [progressStrokeVar]: hues.blue[color.dark ? 400 : 500].hex,
+        [bgStrokeVar]: hues.gray[color._dark ? 900 : 100].hex,
+        [progressStrokeVar]: hues.blue[color._dark ? 400 : 500].hex,
       })}
     >
       <circle className={bgCircle} cx={SIZE} cy={SIZE} r={radius} />

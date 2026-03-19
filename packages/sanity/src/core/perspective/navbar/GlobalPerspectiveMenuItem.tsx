@@ -88,7 +88,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   const {t} = useTranslation()
 
   const handleToggleReleaseVisibility = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
+    (event: MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation()
       toggleExcludedPerspective(releaseId)
     },
@@ -184,7 +184,6 @@ export const GlobalPerspectiveMenuItem = forwardRef<
                   style={assignInlineVars({
                     [toggleLayerVisibleVar]: isReleasePerspectiveExcluded ? '1' : '0',
                   })}
-                  forwardedAs="div"
                   icon={isReleasePerspectiveExcluded ? EyeClosedIcon : EyeOpenIcon}
                   mode="bleed"
                   onClick={handleToggleReleaseVisibility}

@@ -1,10 +1,8 @@
 import {ToggleArrowRightIcon} from '@sanity/icons'
-import {Box, Flex, Text} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Box, Flex, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {memo, type ReactNode} from 'react'
 
-import {focusRingStyle} from './styles'
 import {
   borderRadiusVar,
   focusBoxShadowVar,
@@ -12,6 +10,7 @@ import {
   toggleButton,
   toggleIconBox,
 } from './FormFieldSetLegend.css'
+import {focusRingStyle} from './styles'
 
 export interface FormFieldSetLegendProps {
   collapsed: boolean

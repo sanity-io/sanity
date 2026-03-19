@@ -12,14 +12,13 @@ import {useSearchState} from '../../contexts/search/useSearchState'
 import {type RecentSearch, useRecentSearchesStore} from '../../datastores/recentSearches'
 import {Instructions} from '../Instructions'
 import {RecentSearchItem} from './item/RecentSearchItem'
+import {recentSearchesBox} from './RecentSearches.css'
 
 const VIRTUAL_LIST_RECENT_SEARCH_ITEM_HEIGHT = 36 // px
 
 // Max character count of selected document types (combined) by breakpoint
 const MAX_COMBINED_TYPE_COUNT_SMALL = 20
 const MAX_COMBINED_TYPE_COUNT_LARGE = 40
-
-import {recentSearchesBox} from './RecentSearches.css'
 
 interface RecentSearchesProps {
   inputElement?: HTMLInputElement | null

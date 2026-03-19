@@ -1,5 +1,4 @@
-import {Heading, Text} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Heading, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ComponentType, type HTMLProps} from 'react'
 
@@ -12,7 +11,9 @@ type BlockQuoteStyleProps = Omit<HTMLProps<HTMLQuoteElement>, 'as' | 'ref'>
  * Without this container, editing with Android breaks due to how Text is styled via `responsiveFont` in `@sanity/ui`
  */
 export const TextContainer = ({children, ...rest}: HTMLProps<HTMLDivElement>) => (
-  <div className={textContainer} {...rest}>{children}</div>
+  <div className={textContainer} {...rest}>
+    {children}
+  </div>
 )
 
 /**

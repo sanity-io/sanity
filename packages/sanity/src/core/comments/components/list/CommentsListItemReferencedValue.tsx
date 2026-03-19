@@ -2,9 +2,7 @@ import {toPlainText} from '@portabletext/react'
 import {hues} from '@sanity/color'
 import {LinkRemovedIcon} from '@sanity/icons'
 import {isPortableTextTextBlock} from '@sanity/types'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Box, Flex, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
 
@@ -55,7 +53,7 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
       style={assignInlineVars({[borderColorVar]: borderColor})}
       data-testid="comments-list-item-referenced-value"
       flex={1}
-      forwardedAs="blockquote"
+      as="blockquote"
       padding={1}
       paddingLeft={2}
       sizing="border"

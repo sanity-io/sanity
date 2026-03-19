@@ -123,15 +123,22 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
       </Flex>
 
       {/* Element that always render all the children to keep track of their position and if the available space to render them */}
-      <Flex className={hiddenRow} justify="flex-start" gap={gap} ref={setRootEl} data-hidden aria-hidden="true">
+      <Flex
+        className={hiddenRow}
+        justify="flex-start"
+        gap={gap}
+        ref={setRootEl}
+        data-hidden
+        aria-hidden="true"
+      >
         {cloneElement(menuButton, {
           'disabled': true,
           'aria-hidden': true,
         })}
         {children?.map((child) => (
           <ObserveElement
-            className={optionObserveElement}
             key={`${child.key}_observer`}
+            className={optionObserveElement}
             options={intersectionOptions}
             onIntersectionChange={(e) => handleIntersection(e[0], child)}
           >

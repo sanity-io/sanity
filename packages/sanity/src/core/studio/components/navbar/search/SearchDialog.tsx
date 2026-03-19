@@ -10,6 +10,7 @@ import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/searchResults/SearchResults'
 import {useSearchState} from './contexts/search/useSearchState'
+import {innerCard, searchDialogBox} from './SearchDialog.css'
 import {hasSearchableTerms} from './utils/hasSearchableTerms'
 
 interface SearchDialogProps {
@@ -17,8 +18,6 @@ interface SearchDialogProps {
   onOpen: () => void
   open: boolean
 }
-
-import {innerCard, searchDialogBox} from './SearchDialog.css'
 
 /**
  * @internal
@@ -39,7 +38,13 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
         <Portal>
           <FocusLock autoFocus={!supportsTouch} returnFocus>
             <Box className={searchDialogBox}>
-              <Card className={innerCard} display="flex" height="fill" scheme={scheme} tone="default">
+              <Card
+                className={innerCard}
+                display="flex"
+                height="fill"
+                scheme={scheme}
+                tone="default"
+              >
                 <SearchHeader onClose={onClose} ref={setInputElement} />
                 {filtersVisible && (
                   <Card borderTop flex="none">

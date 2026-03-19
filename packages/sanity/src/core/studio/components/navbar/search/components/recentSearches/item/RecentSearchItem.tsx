@@ -10,7 +10,9 @@ import {
   type ResponsiveMarginProps,
   type ResponsivePaddingProps,
   Text,
+  useTheme_v2 as useThemeV2,
 } from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type MouseEvent, useCallback} from 'react'
 
 import {RecentSearchClicked} from '../../../__telemetry__/search.telemetry'
@@ -18,6 +20,13 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type RecentSearch, useRecentSearchesStore} from '../../../datastores/recentSearches'
 import {DocumentTypesPill} from '../../common/DocumentTypesPill'
 import {FilterPill} from '../../common/FilterPill'
+import {
+  recentSearchItemButton,
+  searchItemPillsBox,
+  searchItemQueryFlex,
+  closeButtonDiv,
+  radiusVar,
+} from './RecentSearchItem.css'
 
 export interface RecentSearchesProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   index: number
@@ -26,10 +35,6 @@ export interface RecentSearchesProps extends ResponsiveMarginProps, ResponsivePa
 }
 
 const DEFAULT_COMBINED_TYPE_COUNT = 40
-
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {recentSearchItemButton, searchItemPillsBox, searchItemQueryFlex, closeButtonDiv, radiusVar} from './RecentSearchItem.css'
 
 export function RecentSearchItem({
   index,

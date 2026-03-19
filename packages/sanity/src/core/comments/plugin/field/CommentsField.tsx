@@ -1,8 +1,6 @@
 import {hues} from '@sanity/color'
 import {type PortableTextBlock} from '@sanity/types'
-import {Stack, useBoundaryElement} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Stack, useBoundaryElement, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {assignInlineVars} from '@vanilla-extract/dynamic'

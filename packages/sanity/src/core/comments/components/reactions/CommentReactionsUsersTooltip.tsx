@@ -74,7 +74,11 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
 
     if (item.type === 'literal') {
       // Add literals as-is - the next case will rewrite literals to exclude leading non-whitespace
-      elements.push(<Text className={inlineText} key={`literal-${i}`} size={TEXT_SIZE}>{item.value}</Text>)
+      elements.push(
+        <Text key={`literal-${i}`} className={inlineText} size={TEXT_SIZE}>
+          {item.value}
+        </Text>,
+      )
       continue
     }
 
@@ -88,11 +92,13 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
 
       elements.push(
         // Key (value) is user ID, thus unique
-        <span className={textGroup} key={item.value}>
+        <span key={item.value} className={textGroup}>
           <Text className={inlineText} size={TEXT_SIZE} weight="medium">
             <UserDisplayName currentUserId={currentUserId} isFirst={i === 0} userId={item.value} />
           </Text>
-          <Text className={inlineText} size={TEXT_SIZE}>{nonWhitespace}</Text>
+          <Text className={inlineText} size={TEXT_SIZE}>
+            {nonWhitespace}
+          </Text>
         </span>,
       )
 
@@ -105,7 +111,7 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
     // in an element that does _not_ have a leading non-whitespace literal following it.
     elements.push(
       // Key (value) is user ID, thus unique
-      <Text className={inlineText} key={item.value} size={TEXT_SIZE} weight="medium">
+      <Text key={item.value} className={inlineText} size={TEXT_SIZE} weight="medium">
         <UserDisplayName currentUserId={currentUserId} isFirst={i === 0} userId={item.value} />
       </Text>,
     )
@@ -138,10 +144,17 @@ function CommentReactionsUsersTooltipContent(
           values={{reactionName}}
           components={{
             UserList,
-            ReactionName: () => <Text className={inlineText} muted size={TEXT_SIZE}>{reactionName}</Text>,
+            ReactionName: () => (
+              <Text className={inlineText} muted size={TEXT_SIZE}>
+                {reactionName}
+              </Text>
+            ),
             Text: ({children}) => (
               <>
-                <Text className={inlineText} muted size={TEXT_SIZE}>{children}</Text> <wbr />{' '}
+                <Text className={inlineText} muted size={TEXT_SIZE}>
+                  {children}
+                </Text>{' '}
+                <wbr />{' '}
               </>
             ),
           }}

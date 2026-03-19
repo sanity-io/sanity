@@ -2,6 +2,7 @@ import {Box, Grid, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../../../../../../../../../i18n'
 import {CalendarDay} from './CalendarDay'
+import {customGrid} from './CalendarMonth.css'
 import {SHORT_WEEK_DAY_KEYS} from './constants'
 import {useCalendar} from './contexts/useDatePicker'
 import {useWeeksOfMonth} from './utils'
@@ -21,8 +22,6 @@ interface CalendarMonthProps {
   hidden?: boolean
   onSelect: (date: Date) => void
 }
-
-import {customGrid} from './CalendarMonth.css'
 
 export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
   const {focusedDate, firstWeekDay} = useCalendar()

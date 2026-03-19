@@ -1,5 +1,14 @@
 /* eslint-disable react/no-unused-prop-types */
 
+import {CloseIcon} from '@sanity/icons'
+import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {type PropsWithChildren, type ReactNode, useCallback, useRef, useState} from 'react'
+import FocusLock from 'react-focus-lock'
+import {type PortableTextEditorElement} from 'sanity/_singletons'
+
+import {Button, type PopoverProps, Popover} from '../../../../../../ui-components'
+import {PresenceOverlay} from '../../../../../presence'
+import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {contentHeaderBox, contentScrollerBox, rootPopover} from './PopoverModal.css'
 import {type ModalWidth} from './types'
 
@@ -34,7 +43,8 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 
 export function PopoverEditDialog(props: PopoverEditDialogProps): ReactNode {
   const {floatingBoundary, referenceBoundary, referenceElement, width = 2} = props
   return (
-    <RootPopover
+    <Popover
+      className={rootPopover}
       content={<Content {...props} />}
       constrainSize
       data-testid="popover-edit-dialog"

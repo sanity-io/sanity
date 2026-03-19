@@ -1,4 +1,4 @@
-import {globalStyle, style} from '@vanilla-extract/css'
+import {style} from '@vanilla-extract/css'
 
 export const iframeElement = style({
   boxShadow: '0 0 0 1px var(--card-border-color)',

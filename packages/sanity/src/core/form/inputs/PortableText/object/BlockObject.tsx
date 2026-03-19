@@ -1,32 +1,58 @@
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {hues} from '@sanity/color'
+import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
+import {
+  isImage,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type UploadState,
+} from '@sanity/types'
+import {Box, Card, Flex, type ResponsivePaddingProps} from '@sanity/ui'
+import {isEqual} from '@sanity/util/paths'
+import {
+  type MouseEvent,
+  type PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
+import {Tooltip} from '../../../../../ui-components'
+import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
+import {pathToString} from '../../../../field'
+import {useTranslation} from '../../../../i18n'
+import {EMPTY_ARRAY} from '../../../../util'
+import {useFormCallbacks} from '../../../studio'
+import {useChildPresence} from '../../../studio/contexts/Presence'
+import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
+import {
+  type BlockProps,
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderCustomMarkers,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
+} from '../../../types'
+import {type RenderBlockActionsCallback} from '../../../types/_transitional'
+import {useFormBuilder} from '../../../useFormBuilder'
+import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
+import {BlockActions} from '../BlockActions'
+import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {debugRender} from '../debugRender'
+import {useMemberValidation} from '../hooks/useMemberValidation'
+import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
+import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {
   blockActionsInner,
   blockActionsOuter,
-  borderRadiusVar,
-  changeIndicatorHidden,
-  changeIndicatorPaddingLeftVar,
-  changeIndicatorPaddingRightVar,
-  changeIndicatorWidthVar,
   changeIndicatorWrapper,
-  hoveredBorderColorVar,
-  innerFlex,
-  invalidBgVar,
-  invalidHoverBorderVar,
-  markersBgVar,
-  overlayBlendModeVar,
-  overlayBottomVar,
-  overlayLeftVar,
-  overlayRadiusVar,
-  overlayRightVar,
-  overlayTopVar,
   previewContainer,
   root as rootClass,
   tooltipBox,
-  warningBgVar,
-  warningHoverBorderVar,
 } from './BlockObject.css'
 import {BlockObjectActionsMenu} from './BlockObjectActionsMenu'
 import {ObjectEditModal} from './modals/ObjectEditModal'
@@ -291,7 +317,7 @@ export function BlockObject(props: BlockObjectProps) {
 
           {blockActionsEnabled && (
             <Box className={blockActionsOuter} contentEditable={false} marginRight={3}>
-              <BlockActionsInner>
+              <Flex className={blockActionsInner}>
                 {focused && (
                   <BlockActions
                     block={value}
@@ -304,9 +330,7 @@ export function BlockObject(props: BlockObjectProps) {
           )}
 
           {changeIndicatorVisible && (
-            <ChangeIndicatorWrapper
-              contentEditable={false}
-            >
+            <div className={changeIndicatorWrapper} contentEditable={false}>
               <StyledChangeIndicatorWithProvidedFullPath
                 hasFocus={focused}
                 isChanged={memberItem.member.item.changed}
@@ -373,7 +397,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
   return (
     <>
       <Card
-  className={rootClass}
+        className={rootClass}
         aria-label={t('inputs.portable-text.block.aria-label')}
         data-focused={focused ? '' : undefined}
         data-image-preview={isImagePreview ? '' : undefined}

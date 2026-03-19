@@ -1,4 +1,4 @@
-import {createVar, globalStyle, style, styleVariants} from '@vanilla-extract/css'
+import {globalStyle, style} from '@vanilla-extract/css'
 
 const INDICATOR_LEFT_OFFSET = 20
 const INDICATOR_WIDTH = 1
@@ -54,14 +54,17 @@ globalStyle(`${inRangeMenuItem} > [data-ui='MenuItem']`, {
   position: 'relative',
 })
 
-globalStyle(`${inRangeMenuItem} > [data-ui='MenuItem']::before, ${inRangeMenuItem} > [data-ui='MenuItem']::after`, {
-  content: '""',
-  display: 'block',
-  position: 'absolute',
-  left: 'var(--indicator-left)',
-  width: 'var(--indicator-width)',
-  backgroundColor: 'var(--card-border-color)',
-})
+globalStyle(
+  `${inRangeMenuItem} > [data-ui='MenuItem']::before, ${inRangeMenuItem} > [data-ui='MenuItem']::after`,
+  {
+    content: '""',
+    display: 'block',
+    position: 'absolute',
+    left: 'var(--indicator-left)',
+    width: 'var(--indicator-width)',
+    backgroundColor: 'var(--card-border-color)',
+  },
+)
 
 globalStyle(`${inRangeMenuItem} > [data-ui='MenuItem']::before`, {
   top: 0,

@@ -6,7 +6,6 @@ import {styledButton, dot} from './StatusButton.css'
 /** @hidden @beta */
 export type StatusButtonProps = ButtonProps & {
   ['aria-label']: HTMLProps<HTMLButtonElement>['aria-label']
-  'forwardedAs'?: string
   'disabled'?: boolean | {reason: ReactNode}
   'mode'?: ButtonProps['mode']
   'iconRight'?: undefined
@@ -25,6 +24,7 @@ export const StatusButton = forwardRef(function StatusButton(
     mode = 'bleed',
     text,
     tone,
+    as: _as,
     ...restProps
   } = props
 
@@ -35,7 +35,7 @@ export const StatusButton = forwardRef(function StatusButton(
     <Button
       data-ui="StatusButton"
       className={styledButton}
-      {...restProps}
+      {...(restProps as any)}
       aria-label={label}
       disabled={disabled}
       mode={mode}

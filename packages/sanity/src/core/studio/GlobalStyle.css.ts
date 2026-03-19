@@ -1,6 +1,4 @@
-/* eslint-disable camelcase */
-import {globalStyle} from '@vanilla-extract/css'
-import {createVar} from '@vanilla-extract/css'
+import {globalStyle, createVar} from '@vanilla-extract/css'
 
 // CSS variables for dynamic theme values
 export const resizerBgImageVar = createVar()

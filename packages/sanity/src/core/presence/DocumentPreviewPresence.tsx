@@ -1,8 +1,4 @@
-/* eslint-disable camelcase */
-
-import {AvatarStack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {AvatarStack, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
 
@@ -67,10 +63,7 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
 
   return (
     <Tooltip content={tooltipContent} {...PRESENCE_MENU_POPOVER_PROPS}>
-      <div
-        className={avatarStackBox}
-        style={assignInlineVars({[marginVar]: `${0 - space[1]}px`})}
-      >
+      <div className={avatarStackBox} style={assignInlineVars({[marginVar]: `${0 - space[1]}px`})}>
         <AvatarStack maxLength={2} aria-label={tooltipContent} size={0}>
           {uniquePresence.map((item) => (
             <UserAvatar key={item.user.id} size={0} user={item.user} />

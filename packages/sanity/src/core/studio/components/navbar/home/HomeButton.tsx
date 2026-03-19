@@ -1,12 +1,11 @@
-import {Card, Flex, rem} from '@sanity/ui'
+import {Card, Flex, rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useStateLink} from 'sanity/router'
 
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
-import {logoMarkContainer, styledCard, radiusVar, focusRingShadowVar} from './HomeButton.css'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {WorkspacePreviewIcon} from '../workspace'
+import {logoMarkContainer, styledCard, radiusVar, focusRingShadowVar} from './HomeButton.css'
 
 const RADIUS = 2
 
@@ -19,7 +18,7 @@ export function HomeButton() {
   const {activeWorkspace} = useActiveWorkspace()
   const {href: rootHref, onClick: handleRootClick} = useStateLink({state: {}})
   const {card, color, radius} = useThemeV2()
-  const radiusValue = rem(radius[RADIUS])
+  const radiusValue = String(rem(radius[RADIUS]))
   const focusRingValue = focusRingStyle({
     base: color,
     focusRing: {...card.focusRing, offset: 1},

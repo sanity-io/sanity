@@ -103,11 +103,11 @@ export function EmptyTasksListState() {
   return (
     <div className={classes.root}>
       <Flex direction={'column'} gap={3} align={'center'} flex={1} justify={'center'}>
-        <Text className={classes.animatedText} key={key} size={1} weight="semibold">
+        <Text key={key} className={classes.animatedText} size={1} weight="semibold">
           {t(heading)}
         </Text>
         <Box paddingBottom={6} paddingTop={1}>
-          <Text className={classes.animatedText} key={key} size={1} align="center">
+          <Text key={key} className={classes.animatedText} size={1} align="center">
             {t(text)}
           </Text>
         </Box>

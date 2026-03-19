@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {createVar, keyframes, style, globalStyle} from '@vanilla-extract/css'
 
 export const cardHoverBgVar = createVar()
@@ -6,8 +5,8 @@ export const cardNormalBgVar = createVar()
 export const hoverBorderVar = createVar()
 
 const shimmer = keyframes({
-  '0%': { backgroundPosition: '100%' },
-  '100%': { backgroundPosition: '-100%' },
+  '0%': {backgroundPosition: '100%'},
+  '100%': {backgroundPosition: '-100%'},
 })
 
 export const root = style({

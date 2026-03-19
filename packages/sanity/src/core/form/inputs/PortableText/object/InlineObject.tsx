@@ -1,23 +1,36 @@
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {hues} from '@sanity/color'
-
+import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {
-  borderRadiusVar,
-  focusBorderColorVar,
-  focusFgColorVar,
-  hoveredBorderColorVar,
-  invalidBgVar,
-  invalidBorderVar,
-  invalidHoverBorderVar,
-  markersBgVar,
-  previewSpan,
-  root as rootClass,
-  selectedBgVar,
-  tooltipBox,
-  warningBgVar,
-  warningHoverBorderVar,
-} from './InlineObject.css'
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type PortableTextChild,
+} from '@sanity/types'
+import {Box, Card} from '@sanity/ui'
+import {isEqual} from '@sanity/util/paths'
+import {useCallback, useMemo, useState} from 'react'
+
+import {Tooltip} from '../../../../../ui-components'
+import {pathToString} from '../../../../field/paths'
+import {useTranslation} from '../../../../i18n'
+import {EMPTY_ARRAY} from '../../../../util'
+import {useChildPresence} from '../../../studio/contexts/Presence'
+import {
+  type BlockProps,
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderCustomMarkers,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
+} from '../../../types'
+import {useFormBuilder} from '../../../useFormBuilder'
+import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {useMemberValidation} from '../hooks/useMemberValidation'
+import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
+import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
+import {previewSpan, root as rootClass, tooltipBox} from './InlineObject.css'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 import {ObjectEditModal} from './modals/ObjectEditModal'
 
@@ -270,7 +283,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
   return (
     <>
       <Card
-  className={rootClass}
+        className={rootClass}
         aria-label={t('inputs.portable-text.inline-block.aria-label')}
         data-focused={focused || undefined}
         data-invalid={hasError || undefined}
@@ -278,7 +291,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
         data-read-only={readOnly || undefined}
         data-selected={selected || undefined}
         data-warning={hasWarning || undefined}
-        forwardedAs="span"
+        as="span"
         onClick={readOnly ? onOpen : undefined}
         onDoubleClick={onOpen}
         tone={tone}

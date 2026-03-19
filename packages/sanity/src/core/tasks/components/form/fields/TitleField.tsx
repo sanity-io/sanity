@@ -1,5 +1,4 @@
 import {type Path} from '@sanity/types'
-// eslint-disable-next-line camelcase
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ChangeEvent, useCallback, useEffect, useRef} from 'react'

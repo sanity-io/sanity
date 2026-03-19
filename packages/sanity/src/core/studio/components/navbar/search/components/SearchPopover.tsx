@@ -5,18 +5,14 @@ import {useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 
 import {supportsTouch} from '../../../../../util'
-import {
-  POPOVER_INPUT_PADDING,
-  POPOVER_MAX_HEIGHT,
-  POPOVER_MAX_WIDTH,
-  POPOVER_RADIUS,
-} from '../constants'
+import {POPOVER_RADIUS} from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {SearchWrapper} from './common/SearchWrapper'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
+import {motionOverlay, searchMotionCard} from './SearchPopover.css'
 import {type ItemSelectHandler} from './searchResults/item/SearchResultItem'
 import {SearchResults} from './searchResults/SearchResults'
 
@@ -50,8 +46,6 @@ const OVERLAY_VARIANTS: Variants = {
   open: {opacity: 1},
   closed: {opacity: 0},
 }
-
-import {motionOverlay, searchMotionCard} from './SearchPopover.css'
 
 const MotionOverlay = motion.create(Card)
 const SearchMotionCard = motion.create(Card)

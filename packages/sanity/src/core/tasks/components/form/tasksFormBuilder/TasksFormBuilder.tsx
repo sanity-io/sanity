@@ -87,7 +87,7 @@ const TasksFormBuilderInner = ({
           animate="visible"
           variants={VARIANTS}
           style={assignInlineVars({
-            [classes.gridGapVar]: rem(theme.space[4]),
+            [classes.gridGapVar]: String(rem(theme.space[4])),
           })}
         >
           <FormBuilder

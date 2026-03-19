@@ -1,7 +1,5 @@
 import {type EditableReleaseDocument} from '@sanity/client'
-import {Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
@@ -43,18 +41,22 @@ export function TitleDescriptionForm({
   const {t} = useTranslation()
   const theme = useThemeV2()
 
-  const themeVars = useMemo(() => assignInlineVars({
-    [fontFamilyVar]: theme.font.text.family,
-    [titleFontWeightVar]: String(theme.font.text.weights.bold),
-    [titleFontSizeVar]: `${theme.font.text.sizes[4].fontSize}px`,
-    [titleLineHeightVar]: `${theme.font.text.sizes[4].lineHeight}px`,
-    [titleMinHeightVar]: `${theme.font.text.sizes[4].lineHeight}px`,
-    [fgColorVar]: theme.color.input.default.enabled.fg,
-    [placeholderColorVar]: theme.color.input.default.enabled.placeholder,
-    [descFontWeightVar]: String(theme.font.text.weights.regular),
-    [descFontSizeVar]: `${theme.font.text.sizes[2].fontSize}px`,
-    [descLineHeightVar]: `${theme.font.text.sizes[2].lineHeight}px`,
-  }), [theme])
+  const themeVars = useMemo(
+    () =>
+      assignInlineVars({
+        [fontFamilyVar]: theme.font.text.family,
+        [titleFontWeightVar]: String(theme.font.text.weights.bold),
+        [titleFontSizeVar]: `${theme.font.text.sizes[4].fontSize}px`,
+        [titleLineHeightVar]: `${theme.font.text.sizes[4].lineHeight}px`,
+        [titleMinHeightVar]: `${theme.font.text.sizes[4].lineHeight}px`,
+        [fgColorVar]: theme.color.input.default.enabled.fg,
+        [placeholderColorVar]: theme.color.input.default.enabled.placeholder,
+        [descFontWeightVar]: String(theme.font.text.weights.regular),
+        [descFontSizeVar]: `${theme.font.text.sizes[2].fontSize}px`,
+        [descLineHeightVar]: `${theme.font.text.sizes[2].lineHeight}px`,
+      }),
+    [theme],
+  )
 
   const {localData, updateLocalData, createFocusHandler, handleBlur} =
     useReleaseFormOptimisticUpdating({

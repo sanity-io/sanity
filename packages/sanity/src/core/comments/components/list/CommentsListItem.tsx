@@ -1,8 +1,13 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {
+  type AvatarSize,
+  Flex,
+  Stack,
+  type StackProps,
+  useLayer,
+  useTheme_v2 as useThemeV2,
+} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
   type KeyboardEvent,
@@ -218,6 +223,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
       onMouseLeave={handleMouseLeave}
     >
       <button
+        type="button"
         className={ghostButton}
         data-ui="GhostButton"
         aria-label={t('list-item.go-to-field-button.aria-label')}

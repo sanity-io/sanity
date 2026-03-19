@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
-import {type ComponentProps, forwardRef} from 'react'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {type ComponentProps, forwardRef} from 'react'
 
 import {heightVar, incomingReferencesListContainer} from './shared.css'
 

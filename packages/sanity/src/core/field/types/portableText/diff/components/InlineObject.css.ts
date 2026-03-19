@@ -1,5 +1,4 @@
 import {style} from '@vanilla-extract/css'
-import {inlineBox} from './styledComponents.css'
 
 export const inlineObjectWrapper = style({
   selectors: {

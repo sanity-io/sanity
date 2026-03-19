@@ -20,7 +20,7 @@ export function MetaInfo(props: MetaInfoProps) {
     <Flex padding={2} align="center">
       {Icon && (
         <Box padding={2}>
-          <Text className={metaText} size={4} forwardedAs={markRemoved ? 'del' : 'div'}>
+          <Text className={metaText} size={4} as={markRemoved ? 'del' : 'div'}>
             <Icon />
           </Text>
         </Box>
@@ -31,7 +31,7 @@ export function MetaInfo(props: MetaInfoProps) {
           className={metaText}
           size={1}
           weight="medium"
-          forwardedAs={markRemoved ? 'del' : 'h3'}
+          as={markRemoved ? 'del' : 'h3'}
           textOverflow="ellipsis"
         >
           {title}

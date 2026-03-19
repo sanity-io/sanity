@@ -14,14 +14,13 @@ import {
   ProductAnnouncementViewed,
 } from './__telemetry__/studioAnnouncements.telemetry'
 import {Divider} from './Divider'
+import {rootBox, dialogHeader, floatingButtonBox} from './StudioAnnouncementsDialog.css'
 import {type DialogMode, type StudioAnnouncementDocument} from './types'
 
 const DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
   month: 'short',
   day: '2-digit',
 }
-
-import {rootBox, dialogHeader, floatingButtonBox} from './StudioAnnouncementsDialog.css'
 
 interface AnnouncementProps {
   announcement: StudioAnnouncementDocument

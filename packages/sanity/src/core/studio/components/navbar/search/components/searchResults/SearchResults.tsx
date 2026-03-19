@@ -1,5 +1,6 @@
 import {type StackablePerspective} from '@sanity/client'
 import {Card, Flex} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type MouseEvent, useCallback} from 'react'
 
 import {CommandList, type CommandListRenderItemCallback} from '../../../../../../components'
@@ -12,12 +13,10 @@ import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
 import {DebugOverlay} from './item/DebugOverlay'
 import {type ItemSelectHandler, SearchResultItem} from './item/SearchResultItem'
+import {searchResultsInnerFlex, loadingOpacityVar} from './SearchResults.css'
 
 const VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT = 57 // px
 const VIRTUAL_LIST_OVERSCAN = 4
-
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {searchResultsInnerFlex, loadingOpacityVar} from './SearchResults.css'
 
 interface SearchResultsProps {
   disableIntentLink?: boolean
@@ -98,7 +97,9 @@ export function SearchResults({
           {/* Results */}
           <Flex
             className={searchResultsInnerFlex}
-            style={assignInlineVars({[loadingOpacityVar]: result.loading && cursor === null ? '0.5' : '1'})}
+            style={assignInlineVars({
+              [loadingOpacityVar]: result.loading && cursor === null ? '0.5' : '1',
+            })}
             aria-busy={result.loading}
             flex={1}
           >

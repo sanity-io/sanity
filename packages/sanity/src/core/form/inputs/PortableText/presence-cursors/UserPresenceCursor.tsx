@@ -1,7 +1,5 @@
-import {type ColorTints} from '@sanity/color'
 import {type User} from '@sanity/types'
-import {Box, Text} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Box, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {useCallback, useMemo, useState} from 'react'

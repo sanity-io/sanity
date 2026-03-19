@@ -1,5 +1,6 @@
 import {type ObjectSchemaType, type Path} from '@sanity/types'
-import {Stack} from '@sanity/ui'
+import {Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {Fragment, type HTMLAttributes, startTransition, useCallback, useMemo, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
@@ -14,9 +15,6 @@ import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
 import {DiffInspectWrapper} from './DiffInspectWrapper'
 import {FallbackDiff} from './FallbackDiff'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-
 import {diffBorder, fieldChangeContainer, fieldChangeErrorVar} from './FieldChange.css'
 import {RevertChangesButton} from './RevertChangesButton'
 import {RevertChangesConfirmDialog} from './RevertChangesConfirmDialog'
@@ -87,7 +85,7 @@ export function FieldChange(
   const {t} = useTranslation()
 
   const fieldChangeVars = assignInlineVars({
-    [fieldChangeErrorVar]: color.solid.critical.enabled.bg,
+    [fieldChangeErrorVar]: color.selectable.critical.enabled.bg,
   })
 
   const diffBorderStyle = {

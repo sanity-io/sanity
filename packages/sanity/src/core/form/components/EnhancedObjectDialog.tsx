@@ -2,8 +2,8 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+
 import {Dialog} from '../../../ui-components'
-import {styledDialog} from './EnhancedObjectDialog.css'
 import {PopoverDialog} from '../../components'
 import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
@@ -17,18 +17,7 @@ import {
 } from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useFormBuilder} from '../useFormBuilder'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
-
-    /* Hide the backdrop (the semi-transparent overlay) */
-    background: transparent !important;
-
-    /* Hide the dialog card */
-    [data-ui='DialogCard'] {
-      opacity: 0 !important;
-      pointer-events: none !important;
-      transform: scale(0.95) !important;
-    }
-  `}
-`
+import {styledDialog} from './EnhancedObjectDialog.css'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
@@ -171,29 +160,29 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         scrollElement={documentScrollElement}
         containerElement={containerElement}
       >
-        <Dialog
-          className={styledDialog}
-          data-hidden={!isTop ? 'true' : undefined}
-          __unstable_autoFocus={isTop ? props.autofocus : false}
-          contentRef={setDocumentScrollElement}
-          data-testid="nested-object-dialog"
-          header={
-            <DialogBreadcrumbs
-              currentPath={currentPath}
-              onNavigate={navigateTo}
-              onClose={handleStackedDialogClose}
-            />
-          }
-          id={dialogId}
-          onClose={handleStackedDialogClose}
-          onDragEnter={onDragEnter}
-          onDrop={onDrop}
-          width={width}
-          animate={!shouldDisableAnimation}
-          onClickOutside={handleCompleteDialogClose}
-        >
-          {contents}
-        </Dialog>
+        <div className={styledDialog} data-hidden={!isTop ? 'true' : undefined}>
+          <Dialog
+            __unstable_autoFocus={isTop ? props.autofocus : false}
+            contentRef={setDocumentScrollElement}
+            data-testid="nested-object-dialog"
+            header={
+              <DialogBreadcrumbs
+                currentPath={currentPath}
+                onNavigate={navigateTo}
+                onClose={handleStackedDialogClose}
+              />
+            }
+            id={dialogId}
+            onClose={handleStackedDialogClose}
+            onDragEnter={onDragEnter}
+            onDrop={onDrop}
+            width={width}
+            animate={!shouldDisableAnimation}
+            onClickOutside={handleCompleteDialogClose}
+          >
+            {contents}
+          </Dialog>
+        </div>
       </VirtualizerScrollInstanceProvider>
     )
   }

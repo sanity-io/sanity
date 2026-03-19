@@ -18,7 +18,7 @@ export const RevertChangesButton = forwardRef(function RevertChangesButton(
   const {color} = useThemeV2()
 
   const vars = useMemo(
-    () => assignInlineVars({[revertErrorColorVar]: color.solid.critical.enabled.bg}),
+    () => assignInlineVars({[revertErrorColorVar]: color.selectable.critical.enabled.bg}),
     [color],
   )
 

@@ -1,11 +1,8 @@
-/* eslint-disable camelcase */
-
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {rgba} from '@sanity/ui/theme'
-import {type ComponentType} from 'react'
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {rgba} from '@sanity/ui/theme'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {type ComponentType} from 'react'
 
-import {useWorkspace} from './workspace'
 import {
   resizerBgImageVar,
   scrollbarBorderColorVar,
@@ -17,6 +14,7 @@ import {
   fontFamilyVar,
   fontWeightMediumVar,
 } from './GlobalStyle.css'
+import {useWorkspace} from './workspace'
 
 // Construct a resize handle icon as a data URI, to be displayed in browsers that support the `::-webkit-resizer` selector.
 function buildResizeHandleDataUri(hexColor: string) {

@@ -12,6 +12,7 @@ import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {useSearch} from '../../../../../hooks/useSearch'
 import {getDocumentTypesTruncated} from '../../../../../utils/documentTypesTruncated'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
+import {styledText} from './ReferenceAutocomplete.css'
 
 type AutocompleteSearchHit = {value: string} & SearchHit
 
@@ -29,8 +30,6 @@ interface ReferenceAutocompleteProps {
 }
 
 const NO_FILTER = () => true
-
-import {styledText} from './ReferenceAutocomplete.css'
 
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   {onSelect, types = [], value}: ReferenceAutocompleteProps,

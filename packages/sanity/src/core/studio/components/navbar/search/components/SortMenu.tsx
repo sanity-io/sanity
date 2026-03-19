@@ -9,12 +9,11 @@ import {useWorkspace} from '../../../../workspace'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {getOrderings} from '../definitions/getOrderings'
 import {type SearchOrdering} from '../types'
+import {sortMenuContentFlex} from './SortMenu.css'
 
 interface SearchDivider {
   type: 'divider'
 }
-
-import {sortMenuContentFlex} from './SortMenu.css'
 
 function isSearchDivider(item: SearchDivider | SearchOrdering): item is SearchDivider {
   return (item as SearchDivider).type === 'divider'

@@ -1,6 +1,4 @@
-import {Box, Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Box, Flex, Skeleton, Stack, Text, TextSkeleton, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 

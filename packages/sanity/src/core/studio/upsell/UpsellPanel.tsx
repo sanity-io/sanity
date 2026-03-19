@@ -1,12 +1,9 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Box, Card, Flex, type FlexDirection} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
 
 import {Button} from '../../../ui-components'
 import {type UpsellData} from './types'
 import {UpsellDescriptionSerializer} from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
-
 import {descriptionRoot} from './UpsellPanel.css'
 
 type Layout = 'vertical' | 'horizontal'
@@ -47,10 +44,18 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
           <img
             src={data.image.asset.url}
             alt={data.image.asset.altText ?? ''}
-            style={{objectFit: 'cover', width: layout === 'horizontal' ? '50%' : '100%', height: layout === 'horizontal' ? 'auto' : '180px'}}
+            style={{
+              objectFit: 'cover',
+              width: layout === 'horizontal' ? '50%' : '100%',
+              height: layout === 'horizontal' ? 'auto' : '180px',
+            }}
           />
         )}
-        <Box className={descriptionRoot} paddingX={3} paddingY={layout === 'horizontal' ? HORIZONTAL_PADDING_Y : 3}>
+        <Box
+          className={descriptionRoot}
+          paddingX={3}
+          paddingY={layout === 'horizontal' ? HORIZONTAL_PADDING_Y : 3}
+        >
           <Flex gap={4} direction={'column'} align={align}>
             <UpsellDescriptionSerializer blocks={data.descriptionText} />
           </Flex>

@@ -15,6 +15,7 @@ import {
 } from '../../../../../../../preview'
 import {useDocumentVersionInfo} from '../../../../../../../releases'
 import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
+import {searchResultItemPreviewBox} from './SearchResultItemPreview.css'
 
 interface SearchResultItemPreviewProps {
   documentId: string
@@ -25,8 +26,6 @@ interface SearchResultItemPreviewProps {
   schemaType: SchemaType
   showBadge?: boolean
 }
-
-import {searchResultItemPreviewBox} from './SearchResultItemPreview.css'
 
 /**
  * @internal

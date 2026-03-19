@@ -1,7 +1,5 @@
 import {type StringDiffSegment} from '@sanity/diff'
-import {type BadgeTone, type ButtonTone} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {type BadgeTone, type ButtonTone, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ComponentType, type PropsWithChildren} from 'react'
 
@@ -55,10 +53,7 @@ export const InsertedSegment: ComponentType<PropsWithChildren<SegmentProps>> = (
 }
 
 function segmentTone(seg: StringDiffSegment<ProvenanceDiffAnnotation>): BadgeTone | undefined {
-  if (
-    seg.action !== 'unchanged' &&
-    typeof seg.annotation.provenance.bundle !== 'undefined'
-  ) {
+  if (seg.action !== 'unchanged' && typeof seg.annotation.provenance.bundle !== 'undefined') {
     if (seg.annotation.provenance.bundle === 'drafts') {
       return RELEASE_TYPES_TONES.asap.tone
     }

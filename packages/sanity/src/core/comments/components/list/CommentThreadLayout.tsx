@@ -1,13 +1,11 @@
 import {type CurrentUser} from '@sanity/types'
 import {
   // eslint-disable-next-line no-restricted-imports
-  Button, // Button with specific styling and children behavior.
-  Card,
+  Button,
   Flex,
   Stack,
+  useTheme_v2 as useThemeV2,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
@@ -23,8 +21,8 @@ import {
   type CommentsUIMode,
 } from '../../types'
 import {CommentBreadcrumbs} from '../CommentBreadcrumbs'
-import {CreateNewThreadInput} from './CreateNewThreadInput'
 import {breadcrumbsButton, fgColorVar, headerFlex} from './CommentThreadLayout.css'
+import {CreateNewThreadInput} from './CreateNewThreadInput'
 import {ThreadCard} from './styles'
 
 interface CommentThreadLayoutProps {
@@ -120,7 +118,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
           <Flex align="center">
             <Button
               className={breadcrumbsButton}
-              style={assignInlineVars({[fgColorVar]: theme.color.base.fg})}
+              style={assignInlineVars({[fgColorVar]: theme.color.fg})}
               aria-label={t('list-item.breadcrumb-button-go-to-field-aria-label', {
                 field: lastCrumb,
               })}

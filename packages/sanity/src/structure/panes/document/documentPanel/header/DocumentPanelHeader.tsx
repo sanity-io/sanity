@@ -1,10 +1,7 @@
 import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {horizontalScroller, horizontalScrollerWithGradient, gradientColorVar} from './DocumentPanelHeader.css'
 import {
   type ForwardedRef,
   forwardRef,
@@ -39,13 +36,17 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetry__/focus.telemetry'
 import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
+import {
+  horizontalScroller,
+  horizontalScrollerWithGradient,
+  gradientColorVar,
+} from './DocumentPanelHeader.css'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
 export interface DocumentPanelHeaderProps {
   menuItems: PaneMenuItem[]
 }
-
 
 export const DocumentPanelHeader = memo(
   forwardRef(function DocumentPanelHeader(

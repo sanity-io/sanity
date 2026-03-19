@@ -9,51 +9,8 @@ import {
 } from 'react'
 import {PresentationPanelsContext} from 'sanity/_singletons'
 
-import {usePanelId} from './usePanelId'
 import {resizer, resizerInner, resizerInnerDisabled} from './PanelResizer.css'
-
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -5px;
-  width: 9px;
-  z-index: 10;
-  cursor: ${({$disabled}) => ($disabled ? 'auto' : 'ew-resize')};
-
-  /* Border */
-  & > span:nth-child(1) {
-    display: block;
-    border-left: 1px solid var(--card-border-color);
-    position: absolute;
-    top: 0;
-    left: 4px;
-    bottom: 0;
-    transition: opacity 200ms;
-  }
-
-  ${({$disabled}) =>
-    !$disabled &&
-    `
-    /* Hover effect */
-    & > span:nth-child(2) {
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 9px;
-      bottom: 0;
-      background-color: var(--card-border-color);
-      opacity: 0;
-      transition: opacity 150ms;
-    }
-
-    @media (hover: hover) {
-      &:hover > span:nth-child(2) {
-        opacity: 0.2;
-      }
-    }
-  `}
-`
+import {usePanelId} from './usePanelId'
 
 export const PanelResizer: FunctionComponent<{
   id?: string

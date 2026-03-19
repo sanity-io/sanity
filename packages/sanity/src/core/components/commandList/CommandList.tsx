@@ -1,5 +1,6 @@
-import {Box, rem, Stack} from '@sanity/ui'
+import {Box, Stack} from '@sanity/ui'
 import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import throttle from 'lodash-es/throttle.js'
 import {
   cloneElement,
@@ -15,19 +16,8 @@ import {
   useRef,
   useState,
 } from 'react'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
 
 import {type FIXME} from '../../FIXME'
-import {focusRingStyle} from '../../form/components/formField/styles'
-import {
-  type CommandListElementType,
-  type CommandListGetItemDisabledCallback,
-  type CommandListGetItemSelectedCallback,
-  type CommandListHandle,
-  type CommandListProps,
-} from './types'
 import {
   focusOverlayDiv,
   focusOverlayOffsetVar,
@@ -35,6 +25,13 @@ import {
   virtualListBox,
   virtualListChildBox,
 } from './CommandList.css'
+import {
+  type CommandListElementType,
+  type CommandListGetItemDisabledCallback,
+  type CommandListGetItemSelectedCallback,
+  type CommandListHandle,
+  type CommandListProps,
+} from './types'
 
 // Data attribute to assign to the current active virtual list element
 const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'
@@ -538,7 +535,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
       {virtualizer && (
         <Box
           className={virtualListChildBox}
-          forwardedAs="ul"
+          as="ul"
           style={{height: `${virtualizer.getTotalSize()}px`}}
           aria-label={ariaLabel}
           aria-multiselectable={ariaMultiselectable}

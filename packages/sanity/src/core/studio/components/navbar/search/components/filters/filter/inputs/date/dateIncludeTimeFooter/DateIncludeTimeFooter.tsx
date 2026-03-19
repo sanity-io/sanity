@@ -1,13 +1,12 @@
 import {Flex, Stack, Switch, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../../../../../../../../i18n'
+import {timeLabelText} from './DateIncludeTimeFooter.css'
 
 interface DateIncludeTimeFooterProps {
   onChange: () => void
   value: boolean
 }
-
-import {timeLabelText} from './DateIncludeTimeFooter.css'
 
 export function DateIncludeTimeFooter({onChange, value}: DateIncludeTimeFooterProps) {
   const {t} = useTranslation()

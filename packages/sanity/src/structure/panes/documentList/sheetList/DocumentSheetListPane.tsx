@@ -11,18 +11,17 @@ import {useCallback, useEffect, useState} from 'react'
 import {SearchProvider, useSchema, useSearchState} from 'sanity'
 
 import {type BaseStructureToolPaneProps} from '../../types'
-import {paneContainer, tableContainer, table} from './DocumentSheetListPane.css'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
 import {DocumentSheetListHeader} from './DocumentSheetListHeader'
 import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
+import {paneContainer, tableContainer, table as tableClass} from './DocumentSheetListPane.css'
 import {DocumentSheetListProvider} from './DocumentSheetListProvider'
 import {SheetListCell} from './SheetListCell'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 
 type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'>
-
 
 function DocumentSheetListPaneInner({
   documentSchemaType,
@@ -82,7 +81,12 @@ function DocumentSheetListPaneInner({
 
   const rowsCount = `Total: ${totalRows} rows, showing ${rows.length} rows`
   return (
-    <Flex className={paneContainer} direction="column" paddingX={3} data-testid="document-sheet-list-pane">
+    <Flex
+      className={paneContainer}
+      direction="column"
+      paddingX={3}
+      data-testid="document-sheet-list-pane"
+    >
       <Flex direction="row" align="center" paddingY={3} paddingX={1} justify="space-between">
         <Flex direction="row" align="center">
           <DocumentSheetListFilter />
@@ -94,7 +98,7 @@ function DocumentSheetListPaneInner({
       </Flex>
       <div className={tableContainer}>
         <DocumentSheetListProvider table={table}>
-          <table className={table}>
+          <table className={tableClass}>
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <Box key={headerGroup.id} as="tr">

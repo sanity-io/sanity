@@ -1,5 +1,4 @@
 import {type PortableTextBlock} from '@sanity/types'
-// eslint-disable-next-line camelcase
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {startTransition, useCallback, useEffect, useState} from 'react'
@@ -54,9 +53,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
   const verticalPadding = mode === 'edit' ? theme.space[1] : theme.space[3]
   const minHeight = mode === 'edit' ? 120 : 200
   const paddingValue =
-    mode === 'edit'
-      ? `${verticalPadding}px 0px`
-      : `${verticalPadding}px ${theme.space[2]}px`
+    mode === 'edit' ? `${verticalPadding}px 0px` : `${verticalPadding}px ${theme.space[2]}px`
   const computedMinHeight = Math.max(textBoxScrollHeight + verticalPadding, minHeight)
 
   if (!currentUser) return null

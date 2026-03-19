@@ -1,6 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Card, Flex, isHTMLElement, rem, Text} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Box, Card, Flex, isHTMLElement, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
   type ChangeEvent,
@@ -146,7 +145,7 @@ export const TagInput = forwardRef(
       }
     }, [inputValue])
 
-    const {input, radius, fonts, color: themeColor, space} = theme
+    const {input, radius, font: fonts, color: themeColor, space} = theme
     const color = themeColor.input || themeColor
     const spaceVal = rem(space[1])
     const font = fonts.text
@@ -178,7 +177,7 @@ export const TagInput = forwardRef(
             focusRing: theme.card.focusRing,
           }),
           [spaceVar]: spaceVal,
-        })}
+        } as Record<string, string>)}
       >
         {enabled && (
           <Box
@@ -204,7 +203,7 @@ export const TagInput = forwardRef(
 
         <div className={contentStyle}>
           {value.map((tag, tagIndex) => (
-            <div className={contentItemStyle} key={`tag-${tagIndex}`}>
+            <div key={`tag-${tagIndex}`} className={contentItemStyle}>
               <Box className={tagBox}>
                 <Tag
                   enabled={enabled}
@@ -217,7 +216,7 @@ export const TagInput = forwardRef(
             </div>
           ))}
 
-          <div className={contentItemStyle} key="tag-input">
+          <div key="tag-input" className={contentItemStyle}>
             <input
               {...restProps}
               className={inputStyle}
@@ -230,14 +229,14 @@ export const TagInput = forwardRef(
               type="text"
               value={inputValue}
               style={assignInlineVars({
-                [inputFontSizeVar]: rem(size.fontSize),
+                [inputFontSizeVar]: `${rem(size.fontSize)}`,
                 [inputLineHeightVar]: `${size.lineHeight / size.fontSize}`,
                 [inputFontFamilyVar]: font.family,
                 [inputFontWeightVar]: `${font.weights.regular}`,
-                [inputPaddingTopVar]: rem(p - size.ascenderHeight),
-                [inputPaddingRightVar]: rem(p),
-                [inputPaddingBottomVar]: rem(p - size.descenderHeight),
-                [inputPaddingLeftVar]: rem(p),
+                [inputPaddingTopVar]: `${rem(p - size.ascenderHeight)}`,
+                [inputPaddingRightVar]: `${rem(p)}`,
+                [inputPaddingBottomVar]: `${rem(p - size.descenderHeight)}`,
+                [inputPaddingLeftVar]: `${rem(p)}`,
                 [inputColorVar]: 'var(--card-fg-color)',
                 [inputDisabledColorVar]: 'var(--card-muted-fg-color)',
               })}

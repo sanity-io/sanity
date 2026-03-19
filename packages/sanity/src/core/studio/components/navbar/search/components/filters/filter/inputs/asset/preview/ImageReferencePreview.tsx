@@ -6,12 +6,11 @@ import {LoadingBlock} from '../../../../../../../../../../components/loadingBloc
 import {observeImageAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
 import {WithReferencedAsset} from '../../../../../../../../../../form/utils/WithReferencedAsset'
 import {useDocumentPreviewStore} from '../../../../../../../../../../store'
+import {container, image as imageClass} from './ImageReferencePreview.css'
 
 interface ImageReferencePreviewProps {
   reference: ReferenceValue
 }
-
-import {container, image as imageClass} from './ImageReferencePreview.css'
 
 export function ImageReferencePreview({reference}: ImageReferencePreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()

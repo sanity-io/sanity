@@ -1,9 +1,8 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Heading, Inline, Stack, Text} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {useTranslation} from 'sanity'
+import {Heading, Inline, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {useTranslation} from 'sanity'
 
 import {Tooltip} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'

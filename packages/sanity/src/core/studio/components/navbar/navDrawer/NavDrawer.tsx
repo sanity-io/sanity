@@ -18,6 +18,11 @@ import {WorkspaceMenuButton} from '../workspace'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {ManageMenu} from './ManageMenu'
+import {
+  root as rootClass,
+  backdropMotion as backdropMotionClass,
+  innerCardMotion as innerCardMotionClass,
+} from './NavDrawer.css'
 
 const ANIMATION_TRANSITION: Transition = {
   bounce: 0,
@@ -44,8 +49,6 @@ const INNER_CARD_VARIANTS: Variants = {
     x: '-100%',
   },
 }
-
-import {root as rootClass, backdropMotion as backdropMotionClass, innerCardMotion as innerCardMotionClass} from './NavDrawer.css'
 
 const BackdropMotion = motion.create(Card)
 const InnerCardMotion = motion.create(Card)

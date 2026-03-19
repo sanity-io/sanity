@@ -1,7 +1,14 @@
-import {type AvatarSize, AvatarStack, Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {
+  type AvatarSize,
+  AvatarStack,
+  Box,
+  Flex,
+  Skeleton,
+  Stack,
+  Text,
+  useTheme_v2 as useThemeV2,
+} from '@sanity/ui'
+import {type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
 
@@ -114,7 +121,9 @@ const UserLine = ({userId}: {userId: string}) => {
 
   return (
     <Flex key={userId} align="center" gap={2} padding={1}>
-      <Box>{loading || !user ? <AvatarSkeletonComponent animated /> : <UserAvatar user={user} />}</Box>
+      <Box>
+        {loading || !user ? <AvatarSkeletonComponent animated /> : <UserAvatar user={user} />}
+      </Box>
       <Box>
         {loading || !user?.displayName ? (
           <Text size={1}>

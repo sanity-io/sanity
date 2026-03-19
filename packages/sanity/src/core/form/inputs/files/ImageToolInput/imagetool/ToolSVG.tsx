@@ -24,34 +24,29 @@ import {usePointerHandlers} from './hooks/usePointerHandlers'
 import {useRectCalculations} from './hooks/useRectCalculations'
 import {getCropStrokeColor, getHandleStrokeColor, getHotspotStrokeColor} from './styles.utils'
 import {
-  badgeFillColorVar,
+  badgeFillVar,
   badgeFontFamilyVar,
   badgeFontSizeVar,
   badgeFontWeightVar,
   badgeLetterSpacingVar,
   cropCornerHandle,
-  cropDimensionsBadgeGroup,
+  cropDimensionsBadgeGroupHidden,
   cropDimensionsBadgeGroupVisible,
   cropDimensionsBadgeRect,
   cropDimensionsBadgeText,
   cropEdgeHandle,
   cropHandleInteractionArea,
   cropRect as cropRectClass,
-  cursorVar,
   darkenedOverlay,
-  filterVar,
   guidelines,
-  guidelinesStrokeColorVar,
+  guidelinesStrokeVar,
   handleStrokeColorVar,
   hotspotEllipse,
   hotspotHandle,
   hotspotHandleInteractionArea,
-  styledSvg,
+  styledSVG,
   strokeColorVar,
-  strokeWidthVar,
   svgContainer,
-  svgHeightVar,
-  svgWidthVar,
 } from './ToolSVG.css'
 import {type ToolFocusTarget, type ToolSVGProps} from './types'
 import {
@@ -86,7 +81,7 @@ function CropDimensionsBadge(props: {
 
   return (
     <g
-      className={[cropDimensionsBadgeGroup, visible ? cropDimensionsBadgeGroupVisible : '']
+      className={[cropDimensionsBadgeGroupHidden, visible ? cropDimensionsBadgeGroupVisible : '']
         .filter(Boolean)
         .join(' ')}
       onMouseEnter={onMouseEnter}
@@ -100,7 +95,7 @@ function CropDimensionsBadge(props: {
         width={badgeWidth}
         height={badgeHeight}
         rx={radius[1]}
-        style={assignInlineVars({[badgeFillColorVar]: color.focusRing})}
+        style={assignInlineVars({[badgeFillVar]: color.focusRing})}
       />
       <text
         className={cropDimensionsBadgeText}
@@ -289,17 +284,17 @@ function ToolSVGComponent(props: ToolSVGProps) {
   return (
     <div className={svgContainer}>
       <svg
-        className={styledSvg}
+        className={styledSVG}
         ref={svgRef}
         viewBox={`0 0 ${size.width} ${size.height}`}
         preserveAspectRatio="xMidYMid"
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        style={assignInlineVars({
-          [cursorVar]: readOnly ? 'default' : currentCursor,
-          [svgWidthVar]: `${size.width}px`,
-          [svgHeightVar]: `${size.height}px`,
-        })}
+        style={{
+          cursor: readOnly ? 'default' : currentCursor,
+          width: `${size.width}px`,
+          height: `${size.height}px`,
+        }}
       >
         {/* Background image with reduced opacity */}
         <image
@@ -391,10 +386,12 @@ function ToolSVGComponent(props: ToolSVGProps) {
             onBlur={handleHotspotBlur}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
-            style={assignInlineVars({
-              [strokeColorVar]: hotspotStrokeColor,
-              [strokeWidthVar]: hotspotFocused ? '2px' : '1px',
-            })}
+            style={{
+              ...assignInlineVars({
+                [strokeColorVar]: hotspotStrokeColor,
+              }),
+              strokeWidth: hotspotFocused ? '2px' : '1px',
+            }}
           />
 
           {/* Hotspot handle - only show if not readOnly */}
@@ -431,7 +428,7 @@ function ToolSVGComponent(props: ToolSVGProps) {
         <g
           className={guidelines}
           style={assignInlineVars({
-            [guidelinesStrokeColorVar]: color.fg,
+            [guidelinesStrokeVar]: color.fg,
           })}
         >
           {/* Vertical center line */}
@@ -497,11 +494,13 @@ function ToolSVGComponent(props: ToolSVGProps) {
             onBlur={handleCropBlur}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
-            style={assignInlineVars({
-              [strokeColorVar]: cropStrokeColor,
-              [strokeWidthVar]: cropFocused ? '2px' : '1px',
-              [filterVar]: cropFocused ? 'drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3))' : 'none',
-            })}
+            style={{
+              ...assignInlineVars({
+                [strokeColorVar]: cropStrokeColor,
+              }),
+              strokeWidth: cropFocused ? '2px' : '1px',
+              filter: cropFocused ? 'drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3))' : 'none',
+            }}
           />
 
           {/* Crop handles */}

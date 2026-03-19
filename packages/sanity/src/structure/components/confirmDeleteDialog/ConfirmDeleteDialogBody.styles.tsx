@@ -1,9 +1,8 @@
 import {InfoOutlineIcon} from '@sanity/icons'
-import {Box, Flex, Inline, Text} from '@sanity/ui'
-import {type ComponentProps, forwardRef, type ReactNode} from 'react'
-import {useTranslation} from 'sanity'
+import {Box, Flex, Inline, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {type ComponentProps, forwardRef} from 'react'
+import {useTranslation} from 'sanity'
 
 import {Tooltip} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'

@@ -1,20 +1,18 @@
-import {Card, Text} from '@sanity/ui'
+import {Card, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'
 import {isSameDay} from 'date-fns/isSameDay'
 import {isSameMonth} from 'date-fns/isSameMonth'
 import {useCallback} from 'react'
 
+import {circleSvg, customCard, borderColorVar} from './CalendarDay.css'
 import {useCalendar} from './contexts/useDatePicker'
 
 interface CalendarDayProps {
   date: Date
   onSelect: (date: Date) => void
 }
-
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {circleSvg, customCard, borderColorVar} from './CalendarDay.css'
 
 export function CalendarDay({date, onSelect}: CalendarDayProps) {
   const {color: themeColor} = useThemeV2()
@@ -52,7 +50,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
       aria-selected={isSelected}
       data-start-date={isStartDate ? true : undefined}
       data-within-range={isWithinRange ? true : undefined}
-      forwardedAs="button"
+      as="button"
       onClick={handleClick}
       paddingX={3}
       paddingY={2}

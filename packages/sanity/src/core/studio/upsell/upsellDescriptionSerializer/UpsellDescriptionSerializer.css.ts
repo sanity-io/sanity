@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {createVar, style, globalStyle} from '@vanilla-extract/css'
 
 export const divider = style({
@@ -85,17 +84,23 @@ export const dynamicIconContainerBlock = style({
   lineHeight: 0,
 })
 
-globalStyle(`.${dynamicIconContainer} > svg, .${dynamicIconContainerInline} > svg, .${dynamicIconContainerBlock} > svg`, {
-  height: '1em',
-  width: '1em',
-  display: 'inline',
-  fontSize: '1em !important',
-  margin: '-0.375rem !important',
-})
+globalStyle(
+  `.${dynamicIconContainer} > svg, .${dynamicIconContainerInline} > svg, .${dynamicIconContainerBlock} > svg`,
+  {
+    height: '1em',
+    width: '1em',
+    display: 'inline',
+    fontSize: '1em !important',
+    margin: '-0.375rem !important',
+  },
+)
 
-globalStyle(`.${dynamicIconContainer} > svg *[stroke], .${dynamicIconContainerInline} > svg *[stroke], .${dynamicIconContainerBlock} > svg *[stroke]`, {
-  stroke: 'currentColor',
-})
+globalStyle(
+  `.${dynamicIconContainer} > svg *[stroke], .${dynamicIconContainerInline} > svg *[stroke], .${dynamicIconContainerBlock} > svg *[stroke]`,
+  {
+    stroke: 'currentColor',
+  },
+)
 
 export const imageRadiusVar = createVar()
 

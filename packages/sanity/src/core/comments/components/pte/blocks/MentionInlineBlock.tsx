@@ -1,6 +1,4 @@
-import {Flex, Text, TextSkeleton} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Flex, Text, TextSkeleton, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 
 import {Tooltip} from '../../../../../ui-components'
@@ -48,7 +46,7 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
         className={mentionSpan}
         style={assignInlineVars({
           [fontWeightVar]: String(theme.font.text.weights.regular),
-          [hoveredBgVar]: theme.color.card.hovered.bg,
+          [hoveredBgVar]: theme.color.selectable.default.hovered.bg,
           [activeBgVar]: theme.color.selectable.caution.pressed.bg,
         })}
         data-selected={selected}

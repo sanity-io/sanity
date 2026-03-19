@@ -25,10 +25,10 @@ export const searchItemQueryFlex = style({
 })
 
 export const closeButtonDiv = style({
-  opacity: 0.8,
-  visibility: 'hidden',
-  selectors: {
-    `.${recentSearchItemButton}:hover &`: {
+  'opacity': 0.8,
+  'visibility': 'hidden',
+  'selectors': {
+    [`.${recentSearchItemButton}:hover &`]: {
       visibility: 'visible',
     },
     '&:hover': {

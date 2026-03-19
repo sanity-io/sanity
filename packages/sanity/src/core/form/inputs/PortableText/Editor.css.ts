@@ -116,9 +116,12 @@ globalStyle(`${editableWrapper} .pt-editable > .pt-block`, {
   maxWidth: maxWidthVar,
 })
 
-globalStyle(`${editableWrapper} .pt-editable > .pt-list-item-bullet + .pt-list-item-number, ${editableWrapper} .pt-editable > .pt-list-item-number + .pt-list-item-bullet`, {
-  marginTop: listSpaceVar,
-})
+globalStyle(
+  `${editableWrapper} .pt-editable > .pt-list-item-bullet + .pt-list-item-number, ${editableWrapper} .pt-editable > .pt-list-item-number + .pt-list-item-bullet`,
+  {
+    marginTop: listSpaceVar,
+  },
+)
 
 globalStyle(`${editableWrapper} .pt-editable > :not(.pt-list-item) + .pt-list-item`, {
   marginTop: listItemSpaceVar,
@@ -128,84 +131,83 @@ globalStyle(`${editableWrapper} .pt-editable > .pt-list-item + :not(.pt-list-ite
   marginTop: listSpaceVar,
 })
 
-
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}'][data-list-index='1']`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='1'][data-list-index='1']`, {
   counterSet: 'list-level-1 1',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}']:not([data-list-index='1'])`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='1']:not([data-list-index='1'])`, {
   counterIncrement: 'list-level-1',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}'][data-list-index='1']`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='2'][data-list-index='1']`, {
   counterSet: 'list-level-2 1',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}']:not([data-list-index='1'])`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='2']:not([data-list-index='1'])`, {
   counterIncrement: 'list-level-2',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}'][data-list-index='1']`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='3'][data-list-index='1']`, {
   counterSet: 'list-level-3 1',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}']:not([data-list-index='1'])`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='3']:not([data-list-index='1'])`, {
   counterIncrement: 'list-level-3',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}'][data-list-index='1']`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='4'][data-list-index='1']`, {
   counterSet: 'list-level-4 1',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}']:not([data-list-index='1'])`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='4']:not([data-list-index='1'])`, {
   counterIncrement: 'list-level-4',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}'][data-list-index='1']`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='5'][data-list-index='1']`, {
   counterSet: 'list-level-5 1',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}']:not([data-list-index='1'])`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='5']:not([data-list-index='1'])`, {
   counterIncrement: 'list-level-5',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}'][data-list-index='1']`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='6'][data-list-index='1']`, {
   counterSet: 'list-level-6 1',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}']:not([data-list-index='1'])`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='6']:not([data-list-index='1'])`, {
   counterIncrement: 'list-level-6',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}'][data-list-index='1']`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='7'][data-list-index='1']`, {
   counterSet: 'list-level-7 1',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}']:not([data-list-index='1'])`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='7']:not([data-list-index='1'])`, {
   counterIncrement: 'list-level-7',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}'][data-list-index='1']`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='8'][data-list-index='1']`, {
   counterSet: 'list-level-8 1',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}']:not([data-list-index='1'])`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='8']:not([data-list-index='1'])`, {
   counterIncrement: 'list-level-8',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}'][data-list-index='1']`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='9'][data-list-index='1']`, {
   counterSet: 'list-level-9 1',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}']:not([data-list-index='1'])`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='9']:not([data-list-index='1'])`, {
   counterIncrement: 'list-level-9',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}'][data-list-index='1']`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='10'][data-list-index='1']`, {
   counterSet: 'list-level-10 1',
 })
 
-globalStyle(`${editableWrapper} .pt-editable [data-level='${l}']:not([data-list-index='1'])`, {
+globalStyle(`${editableWrapper} .pt-editable [data-level='10']:not([data-list-index='1'])`, {
   counterIncrement: 'list-level-10',
 })
 

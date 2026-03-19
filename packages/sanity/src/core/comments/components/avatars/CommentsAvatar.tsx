@@ -1,6 +1,6 @@
 import {type User} from '@sanity/types'
 import {Avatar, type AvatarProps} from '@sanity/ui'
-import {useMemo} from 'react'
+import {type HTMLProps, useMemo} from 'react'
 
 import {styledAvatar} from './CommentsAvatar.css'
 
@@ -17,7 +17,8 @@ function nameToInitials(fullName: string) {
   return `${namesArray[0].charAt(0)}${namesArray[namesArray.length - 1].charAt(0)}`
 }
 
-interface CommentsAvatarProps extends AvatarProps {
+interface CommentsAvatarProps
+  extends AvatarProps, Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref' | 'size' | 'color'> {
   user: User | undefined | null
 }
 
@@ -26,7 +27,7 @@ export function CommentsAvatar(props: CommentsAvatarProps) {
   const user = userProp as User
   const initials = useMemo(() => nameToInitials(user?.displayName || ''), [user?.displayName])
 
-  if (!user) return <Avatar className={styledAvatar} {...restProps} />
+  if (!user) return <Avatar className={styledAvatar} {...(restProps as any)} />
 
   return (
     <Avatar
@@ -34,7 +35,7 @@ export function CommentsAvatar(props: CommentsAvatarProps) {
       initials={initials}
       src={user?.imageUrl}
       title={user?.displayName}
-      {...restProps}
+      {...(restProps as any)}
     />
   )
 }

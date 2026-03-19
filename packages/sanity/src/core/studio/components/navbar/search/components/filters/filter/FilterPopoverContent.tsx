@@ -5,12 +5,11 @@ import {type SearchFilter} from '../../../types'
 import {DebugDocumentTypes} from '../debug/_DebugDocumentTypes'
 import {DebugFilterValues} from '../debug/_DebugFilterValues'
 import {FilterForm} from './FilterForm'
+import {containerFlex} from './FilterPopoverContent.css'
 
 interface FilterPopoverContentProps {
   filter: SearchFilter
 }
-
-import {containerFlex} from './FilterPopoverContent.css'
 
 export function FilterPopoverContent({filter}: FilterPopoverContentProps) {
   return (

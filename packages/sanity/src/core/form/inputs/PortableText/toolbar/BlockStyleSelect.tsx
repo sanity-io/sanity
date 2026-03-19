@@ -7,6 +7,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
+
 import {Button, MenuButton, type MenuButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
@@ -31,7 +32,6 @@ interface BlockStyleSelectProps {
   items: BlockStyleItem[]
   boundaryElement: HTMLDivElement | null
 }
-
 
 const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
@@ -160,8 +160,8 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
         {items.map((item) => {
           return (
             <MenuItem
-              className={styledMenuItem}
               key={item.key}
+              className={styledMenuItem}
               pressed={activeItems.includes(item)}
               onClick={_disabled ? undefined : () => handleChange(item)}
             >

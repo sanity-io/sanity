@@ -32,15 +32,16 @@ import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
-  BlockActionsInner,
-  BlockActionsOuter,
-  ChangeIndicatorWrapper,
-  ListPrefixWrapper,
-  TextBlockFlexWrapper,
-  TextFlex,
-  TextRoot,
-  TooltipBox,
-} from './TextBlock.styles'
+  blockActionsInner,
+  blockActionsOuter,
+  changeIndicatorHidden,
+  changeIndicatorWrapper,
+  listPrefixWrapper,
+  textBlockFlexWrapper,
+  textFlex,
+  textRoot,
+  tooltipBox,
+} from './TextBlock.css'
 import {TextContainer} from './textStyles'
 
 export interface TextBlockProps {
@@ -158,20 +159,20 @@ export function TextBlock(props: TextBlockProps) {
 
   const text = useMemo(() => {
     return (
-      <TextFlex align="flex-start" $level={value?.level}>
+      <Flex className={textFlex} align="flex-start">
         {value.listItem && (
-          <ListPrefixWrapper contentEditable={false}>
+          <div className={listPrefixWrapper} contentEditable={false}>
             <Text data-list-prefix="">
               <TextContainer />
             </Text>
-          </ListPrefixWrapper>
+          </div>
         )}
         <div data-text="" style={debugRender()}>
           {children}
         </div>
-      </TextFlex>
+      </Flex>
     )
-  }, [value.listItem, value.level, children])
+  }, [value.listItem, children])
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
@@ -269,13 +270,13 @@ export function TextBlock(props: TextBlockProps) {
   const toolTipContent = useMemo(
     () =>
       (tooltipEnabled && (
-        <TooltipBox>
+        <Box className={tooltipBox}>
           <Markers
             markers={markers}
             renderCustomMarkers={renderCustomMarkers}
             validation={validation}
           />
-        </TooltipBox>
+        </Box>
       )) ||
       null,
     [Markers, markers, renderCustomMarkers, tooltipEnabled, validation],
@@ -303,7 +304,7 @@ export function TextBlock(props: TextBlockProps) {
       ref={setRef}
       style={debugRender()}
     >
-      <TextBlockFlexWrapper data-testid="text-block__wrapper">
+      <Flex className={textBlockFlexWrapper} data-testid="text-block__wrapper">
         <Flex flex={1} {...innerPaddingProps}>
           <Box flex={1}>
             <Tooltip
@@ -312,8 +313,9 @@ export function TextBlock(props: TextBlockProps) {
               placement="top"
               portal="editor"
             >
-              <TextRoot
-                $level={value.level || 1}
+              <div
+                className={textRoot}
+                data-level={value.level || 1}
                 data-error={hasError ? '' : undefined}
                 data-list-item={value.listItem}
                 data-markers={hasMarkers ? '' : undefined}
@@ -323,13 +325,13 @@ export function TextBlock(props: TextBlockProps) {
                 spellCheck={spellCheck}
               >
                 {renderBlock && renderBlock(componentProps)}
-              </TextRoot>
+              </div>
             </Tooltip>
           </Box>
 
           {blockActionsEnabled && (
-            <BlockActionsOuter contentEditable={false} marginRight={3}>
-              <BlockActionsInner>
+            <Box className={blockActionsOuter} contentEditable={false} marginRight={3}>
+              <div className={blockActionsInner}>
                 {focused && (
                   <BlockActions
                     block={value}
@@ -337,14 +339,13 @@ export function TextBlock(props: TextBlockProps) {
                     renderBlockActions={renderBlockActions}
                   />
                 )}
-              </BlockActionsInner>
-            </BlockActionsOuter>
+              </div>
+            </Box>
           )}
 
           {changeIndicatorVisible && (
-            <ChangeIndicatorWrapper
-              // Use current memberItem when available for accurate data, fallback to cached for stability
-              $hasChanges={(memberItem ?? memberItemRef).member.item.changed}
+            <div
+              className={`${changeIndicatorWrapper}${(memberItem ?? memberItemRef).member.item.changed ? '' : ` ${changeIndicatorHidden}`}`}
               contentEditable={false}
             >
               <StyledChangeIndicatorWithProvidedFullPath
@@ -353,11 +354,11 @@ export function TextBlock(props: TextBlockProps) {
                 path={(memberItem ?? memberItemRef).member.item.path}
                 withHoverEffect={false}
               />
-            </ChangeIndicatorWrapper>
+            </div>
           )}
           {changeHovered && <ReviewChangesHighlightBlock $fullScreen={Boolean(isFullscreen)} />}
         </Flex>
-      </TextBlockFlexWrapper>
+      </Flex>
     </Box>
   )
 }

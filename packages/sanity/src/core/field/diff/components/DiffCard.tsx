@@ -1,12 +1,17 @@
 import {type Path} from '@sanity/types'
-import {Card, rem} from '@sanity/ui'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Card, rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ElementType, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 
 import {type Annotation, type Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
-import {bgColorVar, diffCardBgColorVar, diffCardRadiusVar, styledCard, textColorVar} from './DiffCard.css'
+import {
+  bgColorVar,
+  diffCardBgColorVar,
+  diffCardRadiusVar,
+  styledCard,
+  textColorVar,
+} from './DiffCard.css'
 import {DiffTooltip} from './DiffTooltip'
 
 /** @internal */
@@ -22,10 +27,10 @@ export interface DiffCardProps {
 const EMPTY_PATH: Path = []
 
 /** @internal */
-export const DiffCard = forwardRef(function DiffCard(
-  props: DiffCardProps & Omit<HTMLProps<HTMLElement>, 'as' | 'height'>,
-  ref,
-) {
+export const DiffCard = forwardRef<
+  HTMLDivElement,
+  DiffCardProps & Omit<HTMLProps<HTMLElement>, 'as' | 'height'>
+>(function DiffCard(props, ref) {
   const {
     annotation: annotationProp,
     as = 'div',
@@ -52,10 +57,10 @@ export const DiffCard = forwardRef(function DiffCard(
       assignInlineVars({
         [bgColorVar]: color.background,
         [textColorVar]: color.text,
-        [diffCardRadiusVar]: rem(radius[2]),
-        [diffCardBgColorVar]: themeColor.card.enabled.bg,
+        [diffCardRadiusVar]: String(rem(radius[2])),
+        [diffCardBgColorVar]: themeColor.bg,
       }),
-    [color.background, color.text, radius, themeColor.card.enabled.bg],
+    [color.background, color.text, radius, themeColor.bg],
   )
 
   const mergedStyle = useMemo(() => ({...inlineVars, ...style}), [inlineVars, style])

@@ -5,7 +5,9 @@ import {
   Card,
   rem,
   useClickOutsideEvent,
+  useTheme_v2 as useThemeV2,
 } from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type KeyboardEvent, useCallback, useRef, useState} from 'react'
 
 import {Popover} from '../../../../../../../../ui-components'
@@ -16,16 +18,19 @@ import {type SearchFilter} from '../../../types'
 import {getFilterKey, validateFilter} from '../../../utils/filterUtils'
 import {FilterLabel} from '../../common/FilterLabel'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
+import {
+  closeButton as closeButtonClass,
+  closeCard as closeCardClass,
+  containerDiv,
+  labelButton as labelButtonClass,
+  radiusVar,
+} from './FilterButton.css'
 import {FilterPopoverContent} from './FilterPopoverContent'
 
 interface FilterButtonProps {
   filter: SearchFilter
   initialOpen?: boolean
 }
-
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {closeButton as closeButtonClass, closeCard as closeCardClass, containerDiv, labelButton as labelButtonClass, radiusVar} from './FilterButton.css'
 
 export function FilterButton({filter, initialOpen}: FilterButtonProps) {
   const {radius} = useThemeV2()
@@ -102,7 +107,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
             ref={setButtonElement}
           >
             <FilterLabel filter={filter} showContent={isValid} />
-          </LabelButton>
+          </Button>
         </Card>
 
         {!fullscreen && (

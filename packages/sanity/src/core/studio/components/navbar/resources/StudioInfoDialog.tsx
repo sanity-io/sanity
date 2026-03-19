@@ -11,12 +11,11 @@ import {Translate, useTranslation} from '../../../../i18n'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useWorkspace} from '../../../workspace'
+import {monogramContainer, truncateBadge} from './StudioInfoDialog.css'
 
 interface StudioInfoDialogProps {
   onClose: () => void
 }
-
-import {monogramContainer, truncateBadge} from './StudioInfoDialog.css'
 
 function reload() {
   window.location.reload()
@@ -31,8 +30,6 @@ function getVersionType(ver: SemVer): 'development' | 'prerelease' | 'default' {
   }
   return 'prerelease'
 }
-
-
 
 const HEX_ONLY = /^[0-9a-fA-F]+$/i
 function resolveGithubURLFromVersion(ver: SemVer) {

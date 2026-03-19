@@ -2,6 +2,8 @@ import {SanityLogo} from '@sanity/logos'
 import {Box, Card, Flex, Heading, Stack, Text, usePrefersDark} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
 
+import {styledText} from './Layout.css'
+
 const LINKS = [
   {
     url: 'https://snty.link/community',
@@ -24,8 +26,6 @@ const LINKS = [
     title: 'sanity.io',
   },
 ]
-
-import {styledText} from './Layout.css'
 
 interface LayoutProps {
   header?: ReactNode

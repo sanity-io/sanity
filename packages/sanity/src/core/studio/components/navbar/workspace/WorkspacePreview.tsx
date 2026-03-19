@@ -3,13 +3,13 @@ import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {type ComponentType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 
+import {media as mediaStyles} from './WorkspacePreview.css'
+
 export const STATE_TITLES = {
   'logged-in': '',
   'logged-out': 'Signed out',
   'no-access': '',
 }
-
-import {media as mediaStyles} from './WorkspacePreview.css'
 
 type PreviewIconSize = 'small' | 'large'
 
