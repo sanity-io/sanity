@@ -69,7 +69,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
   } = props
 
   const {space} = useTheme().sanity
-  const {scrollElement} = useVirtualizerScrollInstance()
+  const {scrollElement, containerElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)
 
   // Resolve the effective scroll element.
@@ -132,30 +132,61 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
    */
   const observeElementOffset = useCallback<
     VirtualizerOptions<HTMLElement, Element>['observeElementOffset']
-  >((instance, callback) => {
-    if (!instance.scrollElement) {
-      return undefined
-    }
+  >(
+    (instance, callback) => {
+      if (!instance.scrollElement) {
+        return undefined
+      }
 
-    const scroll = instance.scrollElement
+      const scroll = instance.scrollElement
 
-    const handleScroll = (evt?: Event) => {
-      const scrollTop = scroll.getBoundingClientRect().top
-      const parentTop = parentRef.current?.getBoundingClientRect().top ?? 0
-      callback(Math.floor(scrollTop - parentTop), Boolean(evt))
-    }
+      // When rendered inside a portal, the context's containerElement is not
+      // inside the resolved scroll ancestor.
+      // Fall back to purely visual positions for the offset calculation.
+      if (containerElement.current && !scroll.contains(containerElement.current)) {
+        const handleScroll = (evt?: Event) => {
+          const scrollTop = scroll.getBoundingClientRect().top
+          const parentTop = parentRef.current?.getBoundingClientRect().top ?? 0
+          callback(Math.floor(scrollTop - parentTop), Boolean(evt))
+        }
 
-    handleScroll()
+        handleScroll()
 
-    scroll.addEventListener('scroll', handleScroll, {
-      capture: false,
-      passive: true,
-    })
+        scroll.addEventListener('scroll', handleScroll, {
+          capture: false,
+          passive: true,
+        })
 
-    return () => {
-      scroll.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
+        return () => {
+          scroll.removeEventListener('scroll', handleScroll)
+        }
+      }
+
+      const handleScroll = (evt?: Event) => {
+        const containerElementTop = containerElement.current?.getBoundingClientRect().top ?? 0
+        const parentElementTop = parentRef.current?.getBoundingClientRect().top ?? 0
+
+        // This is used to calculate the offsetTop of the parent element
+        // Instead of using the `offsetTop` which will use the nearest parent with `position: relative`
+        // We pass a component that we have more control over to avoid issues when wrapped in custom component
+        const itemOffset = Math.floor(parentElementTop - containerElementTop)
+
+        callback(scroll.scrollTop - itemOffset, Boolean(evt))
+      }
+
+      handleScroll()
+
+      instance.scrollElement.addEventListener('scroll', handleScroll, {
+        capture: false,
+        passive: true,
+      })
+
+      return () => {
+        scroll.removeEventListener('scroll', handleScroll)
+      }
+    },
+    [containerElement],
+  )
 
   // This is the estimated size of an item in the list. The reason this is an estimate is because
   // custom components can have different dimensions and the library recalculate the size of the element
