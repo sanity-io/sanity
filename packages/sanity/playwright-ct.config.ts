@@ -2,6 +2,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
+import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
 import {defaultClientConditions} from 'vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -11,7 +12,6 @@ const TESTS_PATH = path.join(__dirname, 'playwright-ct', 'tests')
 const HTML_REPORT_PATH = path.join(__dirname, 'playwright-ct', 'report')
 const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'playwright-ct', 'results')
 const isCI = !!process.env.CI
-const monorepoPath = path.resolve(__dirname, '..', '..')
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -50,6 +50,8 @@ export default defineConfig({
     ctPort: 3100,
     /* Configure Playwright vite config */
     ctViteConfig: {
+      // @ts-expect-error - vite types acting up with vanilla-extract plugin and playwrights own vite
+      plugins: [vanillaExtractPlugin()],
       resolve: {
         conditions: ['monorepo', ...defaultClientConditions],
         dedupe: ['react', 'react-dom', 'sanity', 'styled-components'],
