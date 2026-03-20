@@ -87,7 +87,8 @@ describe('ReleaseDashboardFooter', () => {
     test('shows the unarchive button', async () => {
       await renderTest({release: archivedScheduledRelease})
 
-      expect(screen.getByTestId('release-dashboard-footer-actions').children.length).toEqual(1)
+      const footerActions = screen.getByTestId('release-dashboard-footer-actions')
+      expect(footerActions.children.length).toEqual(1)
     })
   })
 })

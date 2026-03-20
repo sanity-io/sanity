@@ -35,7 +35,7 @@ test('time zone for the test environment should be set to America/Los_Angeles', 
 })
 
 test('does not emit onChange after invalid value has been typed', async () => {
-  const {onChange, result} = await renderStringInput({
+  const {onChange} = await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
       name: 'test',
@@ -43,7 +43,7 @@ test('does not emit onChange after invalid value has been typed', async () => {
     render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input')!
+  const input = screen.getByRole('textbox') as HTMLInputElement
 
   await userEvent.type(input, 'this is invalid')
   expect(input.value).toBe('this is invalid')
@@ -55,7 +55,7 @@ test('does not emit onChange after invalid value has been typed', async () => {
 })
 
 test('emits onChange on correct format if a valid value has been typed', async () => {
-  const {onChange, result} = await renderStringInput({
+  const {onChange} = await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
       name: 'test',
@@ -63,7 +63,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
     render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input')!
+  const input = screen.getByRole('textbox') as HTMLInputElement
 
   // NOTE: the date is entered and displayed in local time zone
   // (which is hardcoded to America/Los_Angeles)
@@ -77,7 +77,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
 })
 
 test('formatting of deserialized value', async () => {
-  const {result} = await renderStringInput({
+  await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
       name: 'test',
@@ -86,7 +86,7 @@ test('formatting of deserialized value', async () => {
     render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input')!
+  const input = screen.getByRole('textbox') as HTMLInputElement
 
   // const {textInput} = renderInput({value: '2021-03-28T17:23:00.000Z'} as any)
   expect(input.value).toBe('2021-03-28 10:23')
@@ -95,7 +95,7 @@ test('formatting of deserialized value', async () => {
 test('time is shown in the display time zone if specified (utc+1 winter)', async () => {
   const spy = vi.spyOn(useTimeZoneModule, 'useTimeZone').mockReturnValue(mockUseTimeZoneWithOslo)
 
-  const {result} = await renderStringInput({
+  await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
       name: 'test',
@@ -105,7 +105,7 @@ test('time is shown in the display time zone if specified (utc+1 winter)', async
     render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input')!
+  const input = screen.getByRole('textbox') as HTMLInputElement
 
   expect(input.value).toBe('2021-01-15 13:00')
 
@@ -115,7 +115,7 @@ test('time is shown in the display time zone if specified (utc+1 winter)', async
 test('time is shown in the display time zone if specified (utc+2 summer)', async () => {
   const spy = vi.spyOn(useTimeZoneModule, 'useTimeZone').mockReturnValue(mockUseTimeZoneWithOslo)
 
-  const {result} = await renderStringInput({
+  await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
       name: 'test',
@@ -125,7 +125,7 @@ test('time is shown in the display time zone if specified (utc+2 summer)', async
     render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input')!
+  const input = screen.getByRole('textbox') as HTMLInputElement
 
   expect(input.value).toBe('2021-06-15 14:00')
 
@@ -133,7 +133,7 @@ test('time is shown in the display time zone if specified (utc+2 summer)', async
 })
 
 test('Make sure time is displaying in wall time when displayTimeZone is not set', async () => {
-  const {result} = await renderStringInput({
+  await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
       name: 'test',
@@ -142,7 +142,7 @@ test('Make sure time is displaying in wall time when displayTimeZone is not set'
     render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input')!
+  const input = screen.getByRole('textbox') as HTMLInputElement
 
   expect(input.value).toBe('2021-06-15 05:00')
 })
@@ -155,7 +155,7 @@ test('Make sure we are respecting the saved timezone in hook when displayTimeZon
     const fieldName = 'test'
     const initialUtcValue = '2021-06-15T12:00:00.000Z'
 
-    const {result} = await renderStringInput({
+    await renderStringInput({
       fieldDefinition: defineField({
         type: 'datetime',
         name: fieldName,
@@ -174,7 +174,7 @@ test('Make sure we are respecting the saved timezone in hook when displayTimeZon
       ),
     })
 
-    const input = result.container.querySelector('input')!
+    const input = screen.getByRole('textbox') as HTMLInputElement
 
     expect(input.value).toBe('2021-06-15 21:00')
 
@@ -188,7 +188,7 @@ test('Make sure we are respecting the saved timezone in hook when displayTimeZon
 test('Make sure that if the hook timezone is set but the allowTimeZoneSwitch is false, that we respect the displayTimeZone', async () => {
   const spy = vi.spyOn(useTimeZoneModule, 'useTimeZone').mockReturnValue(mockUseTimeZoneWithOslo)
 
-  const {result} = await renderStringInput({
+  await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
       name: 'test',
@@ -198,7 +198,7 @@ test('Make sure that if the hook timezone is set but the allowTimeZoneSwitch is 
     render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input')!
+  const input = screen.getByRole('textbox') as HTMLInputElement
   // should be 2 hours ahead for Oslo in Summer
   expect(input.value).toBe('2021-06-15 14:00')
 
@@ -208,7 +208,7 @@ test('Make sure that if the hook timezone is set but the allowTimeZoneSwitch is 
 test('the time zone can not be changed by the user if not allowed', async () => {
   const spy = vi.spyOn(useTimeZoneModule, 'useTimeZone').mockReturnValue(mockUseTimeZoneWithOslo)
 
-  const {result} = await renderStringInput({
+  await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
       name: 'test',
@@ -304,7 +304,7 @@ const expected = {
 
 Object.entries(expected).forEach(([format, expectedValue]) => {
   test(`renders date in format token "${format}"`, async () => {
-    const {result} = await renderStringInput({
+    await renderStringInput({
       fieldDefinition: defineField({
         type: 'datetime',
         name: 'test',
@@ -313,7 +313,7 @@ Object.entries(expected).forEach(([format, expectedValue]) => {
       props: {documentValue: {test: TEST_DATE_ISO}},
       render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
     })
-    const input = result.container.querySelector('input')!
+    const input = screen.getByRole('textbox') as HTMLInputElement
     // added to enforce type safety and linting from screaming
     const isRegExp = (value: unknown): value is RegExp => value instanceof RegExp
     if (isRegExp(expectedValue)) {

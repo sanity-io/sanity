@@ -184,7 +184,7 @@ describe('ReleaseDetail', () => {
         await screen.findAllByText(activeASAPRelease.metadata.title, {exact: false}),
       ).not.toHaveLength(0)
       expect(await screen.findByTestId('release-menu-button')).toBeInTheDocument()
-      expect((await screen.findByTestId('publish-all-button')).closest('button')).toBeDisabled()
+      expect(await screen.findByTestId('publish-all-button')).toBeDisabled()
     })
   })
 })
@@ -230,7 +230,7 @@ describe('after releases have loaded', () => {
       it('should disable publish all button', async () => {
         await renderTest()
         await waitFor(() => {
-          expect(screen.getByTestId('publish-all-button').closest('button')).toBeDisabled()
+          expect(screen.getByTestId('publish-all-button')).toBeDisabled()
         })
       })
     })
@@ -258,7 +258,7 @@ describe('after releases have loaded', () => {
         await renderTest()
 
         await waitFor(() => {
-          expect(screen.getByTestId('publish-all-button').closest('button')).not.toBeDisabled()
+          expect(screen.getByTestId('publish-all-button')).not.toBeDisabled()
         })
       })
 
@@ -270,8 +270,7 @@ describe('after releases have loaded', () => {
         await waitFor(
           () => {
             const publishButton = screen.getByTestId('publish-all-button')
-            const button = publishButton.closest('button')
-            expect(button).toBeInTheDocument()
+            expect(publishButton).toBeInTheDocument()
           },
           {timeout: 1000},
         )
@@ -285,8 +284,7 @@ describe('after releases have loaded', () => {
         await waitFor(
           () => {
             const publishButton = screen.getByTestId('publish-all-button')
-            const button = publishButton.closest('button')
-            expect(button).toBeInTheDocument()
+            expect(publishButton).toBeInTheDocument()
           },
           {timeout: 1000},
         )

@@ -1,5 +1,5 @@
 import {defineField} from '@sanity/types'
-import {screen} from '@testing-library/react'
+import {screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
 
@@ -49,12 +49,11 @@ describe('fieldset with default options', () => {
         )
       },
     })
-    const fieldset = screen.queryByTestId('fieldset-withDefaults')
+    const fieldset = screen.getByRole('group', {name: 'Fieldset with defaults'})
     expect(fieldset).toBeVisible()
-    expect(fieldset!.tagName).toBe('FIELDSET')
-    const legend = fieldset!.querySelector('legend')
+    expect(fieldset.tagName).toBe('FIELDSET')
+    const legend = within(fieldset).getByText('Fieldset with defaults')
     expect(legend).toBeVisible()
-    expect(legend).toContainHTML('Fieldset with defaults')
     const field1 = screen.queryByTestId('input-withDefaults1')
     expect(field1).toBeVisible()
     expect(fieldset).toContainElement(field1)
@@ -66,11 +65,9 @@ describe('fieldset with default options', () => {
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
 
-    const fieldset = result.container.querySelector('fieldset')
+    const fieldset = screen.getByRole('group', {name: 'Fieldset with defaults'})
     expect(fieldset).toBeVisible()
-    const legend = fieldset!.querySelector('legend')
-    expect(legend).toBeVisible()
-    expect(legend!.querySelector('button')).toBeNull()
+    expect(within(fieldset).queryByRole('button')).toBeNull()
   })
 })
 
@@ -81,12 +78,11 @@ describe('collapsible fieldset with default options', () => {
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
 
-    const fieldset = screen.queryByTestId('fieldset-collapsibleWithDefaults')
+    const fieldset = screen.getByRole('group', {name: 'Collapsible fieldset with defaults'})
     expect(fieldset).toBeVisible()
-    expect(fieldset!.tagName).toBe('FIELDSET')
-    const legend = fieldset!.querySelector('legend')
+    expect(fieldset.tagName).toBe('FIELDSET')
+    const legend = within(fieldset).getByText('Collapsible fieldset with defaults')
     expect(legend).toBeVisible()
-    expect(legend).toContainHTML('Collapsible fieldset with defaults')
   })
 
   it('renders a button for the fieldset legend ', async () => {
@@ -95,9 +91,9 @@ describe('collapsible fieldset with default options', () => {
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
 
-    const fieldset = screen.queryByTestId('fieldset-collapsibleWithDefaults')
+    const fieldset = screen.getByRole('group', {name: 'Collapsible fieldset with defaults'})
     expect(fieldset).toBeVisible()
-    const toggleButton = fieldset!.querySelector('legend button')
+    const toggleButton = within(fieldset).getByRole('button')
     expect(toggleButton).toBeVisible()
   })
 
@@ -119,14 +115,13 @@ describe('collapsible fieldset with default options', () => {
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
 
-    const fieldset = screen.queryByTestId('fieldset-collapsibleWithDefaults')
+    const fieldset = screen.getByRole('group', {name: 'Collapsible fieldset with defaults'})
     expect(fieldset).toBeVisible()
-    const toggleButton = fieldset!.querySelector('legend button')
+    const toggleButton = within(fieldset).getByRole('button')
 
     expect(screen.queryByTestId('input-collapsibleWithDefaults1')).toBeNull()
 
-    expect(toggleButton).toBeDefined()
-    await userEvent.click(toggleButton!)
+    await userEvent.click(toggleButton)
     expect(onSetFieldSetCollapsed).toHaveBeenCalledTimes(1)
   })
 
@@ -142,11 +137,10 @@ describe('collapsible fieldset with default options', () => {
       ),
     })
 
-    const fieldset = screen.queryByTestId('fieldset-collapsibleWithDefaults')
+    const fieldset = screen.getByRole('group', {name: 'Collapsible fieldset with defaults'})
 
-    const toggleButton = fieldset!.querySelector('legend button')
-    expect(toggleButton).toBeDefined()
-    await userEvent.click(toggleButton!)
+    const toggleButton = within(fieldset).getByRole('button')
+    await userEvent.click(toggleButton)
     expect(onFocus).not.toHaveBeenCalled()
   })
 })

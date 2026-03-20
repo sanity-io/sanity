@@ -1,3 +1,4 @@
+import {screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
 
@@ -21,9 +22,9 @@ describe('StringInputBasic', () => {
       },
     })
 
-    const input = result.container.querySelector('input')
+    const input = screen.getByRole('textbox')
 
-    expect(input?.value).toBe('test')
+    expect(input).toHaveValue('test')
   })
 
   it('emits onFocus', async () => {
@@ -42,9 +43,9 @@ describe('StringInputBasic', () => {
       },
     })
 
-    const input = result.container.querySelector('input')
+    const input = screen.getByRole('textbox')
 
-    input?.focus()
+    input.focus()
 
     expect(onFocus.mock.calls).toHaveLength(1)
   })
@@ -65,9 +66,9 @@ describe('StringInputBasic', () => {
       },
     })
 
-    const input = result.container.querySelector('input')
+    const input = screen.getByRole('textbox')
 
-    await userEvent.type(input!, 't')
+    await userEvent.type(input, 't')
 
     expect(onNativeChange).toHaveBeenCalledTimes(1)
   })
@@ -88,10 +89,10 @@ describe('StringInputBasic', () => {
       },
     })
 
-    const input = result.container.querySelector('input')
-    expect(input!.value).toBe('t')
+    const input = screen.getByRole('textbox')
+    expect(input).toHaveValue('t')
 
-    await userEvent.click(input!)
+    await userEvent.click(input)
     await userEvent.keyboard('[Backspace]')
 
     expect(onNativeChange).toHaveBeenCalledTimes(1)

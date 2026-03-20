@@ -99,13 +99,13 @@ describe('uploadTarget - drag and drop', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
 
-    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    const fileTarget = screen.getByTestId('file-target')
     expect(fileTarget).toBeInTheDocument()
 
     const file = new File(['content'], 'test.pdf', {type: 'application/pdf'})
     const dataTransfer = createMockDataTransfer([file])
 
-    fireEvent.drop(fileTarget!, {dataTransfer})
+    fireEvent.drop(fileTarget, {dataTransfer})
 
     await waitFor(
       () => {
@@ -137,7 +137,7 @@ describe('uploadTarget - drag and drop', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
 
-    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    const fileTarget = screen.getByTestId('file-target')
     expect(fileTarget).toBeInTheDocument()
 
     const fileTypes = [{kind: 'file' as const, type: 'application/pdf'}]
@@ -146,7 +146,7 @@ describe('uploadTarget - drag and drop', () => {
       files: [] as File[],
     }
 
-    fireEvent.dragEnter(fileTarget!, {dataTransfer})
+    fireEvent.dragEnter(fileTarget, {dataTransfer})
 
     await waitFor(() => {
       expect(screen.getByTestId('upload-target-drop-message')).toBeInTheDocument()
@@ -165,13 +165,13 @@ describe('uploadTarget - drag and drop', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
 
-    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    const fileTarget = screen.getByTestId('file-target')
     expect(fileTarget).toBeInTheDocument()
 
     const file = new File(['content'], 'test.pdf', {type: 'application/pdf'})
     const dataTransfer = createMockDataTransfer([file])
 
-    fireEvent.drop(fileTarget!, {dataTransfer})
+    fireEvent.drop(fileTarget, {dataTransfer})
 
     await waitFor(() => {
       expect(screen.getByTestId('upload-destination-source-a')).toBeInTheDocument()
@@ -215,7 +215,7 @@ describe('uploadTarget - drag and drop', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
 
-    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    const fileTarget = screen.getByTestId('file-target')
     expect(fileTarget).toBeInTheDocument()
 
     const rejectedFile = new File(['content'], 'rejected.txt', {type: 'text/plain'})
@@ -225,7 +225,7 @@ describe('uploadTarget - drag and drop', () => {
       items: [{kind: 'file' as const, type: 'text/plain'}],
       files: [] as File[],
     }
-    fireEvent.dragEnter(fileTarget!, {dataTransfer: dragDataTransfer})
+    fireEvent.dragEnter(fileTarget, {dataTransfer: dragDataTransfer})
 
     await waitFor(() => {
       expect(screen.getByTestId('upload-target-drop-message-not-allowed')).toBeInTheDocument()
@@ -233,7 +233,7 @@ describe('uploadTarget - drag and drop', () => {
 
     // Dropping does not trigger upload
     const dropDataTransfer = createMockDataTransfer([rejectedFile])
-    fireEvent.drop(fileTarget!, {dataTransfer: dropDataTransfer})
+    fireEvent.drop(fileTarget, {dataTransfer: dropDataTransfer})
 
     await waitFor(() => {
       expect(onChange).not.toHaveBeenCalled()
@@ -255,7 +255,7 @@ describe('uploadTarget - drag and drop', () => {
       render: (inputProps) => <BaseVideoInput {...inputProps} />,
     })
 
-    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    const fileTarget = screen.getByTestId('file-target')
     expect(fileTarget).toBeInTheDocument()
 
     const rejectedFile = new File(['content'], 'rejected.webm', {type: 'video/webm'})
@@ -265,7 +265,7 @@ describe('uploadTarget - drag and drop', () => {
       items: [{kind: 'file' as const, type: 'video/webm'}],
       files: [] as File[],
     }
-    fireEvent.dragEnter(fileTarget!, {dataTransfer: dragDataTransfer})
+    fireEvent.dragEnter(fileTarget, {dataTransfer: dragDataTransfer})
 
     await waitFor(() => {
       expect(screen.getByTestId('upload-target-drop-message-not-allowed')).toBeInTheDocument()
@@ -273,7 +273,7 @@ describe('uploadTarget - drag and drop', () => {
 
     // Dropping does not trigger upload
     const dropDataTransfer = createMockDataTransfer([rejectedFile])
-    fireEvent.drop(fileTarget!, {dataTransfer: dropDataTransfer})
+    fireEvent.drop(fileTarget, {dataTransfer: dropDataTransfer})
 
     await waitFor(() => {
       expect(onChange).not.toHaveBeenCalled()
@@ -298,13 +298,13 @@ describe('uploadTarget - drag and drop', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
 
-    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    const fileTarget = screen.getByTestId('file-target')
     expect(fileTarget).toBeInTheDocument()
 
     const file = new File(['content'], 'test.pdf', {type: 'application/pdf'})
     const dataTransfer = createMockDataTransfer([file])
 
-    fireEvent.drop(fileTarget!, {dataTransfer})
+    fireEvent.drop(fileTarget, {dataTransfer})
 
     // Picker should show only upload-capable sources, not browse-only
     await waitFor(() => {
@@ -331,13 +331,13 @@ describe('uploadTarget - drag and drop', () => {
       render: (inputProps) => <BaseImageInput {...inputProps} />,
     })
 
-    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    const fileTarget = screen.getByTestId('file-target')
     expect(fileTarget).toBeInTheDocument()
 
     const file = new File(['content'], 'test.jpg', {type: 'image/jpeg'})
     const dataTransfer = createMockDataTransfer([file])
 
-    fireEvent.drop(fileTarget!, {dataTransfer})
+    fireEvent.drop(fileTarget, {dataTransfer})
 
     await waitFor(() => {
       expect(screen.getByTestId('upload-destination-source-a')).toBeInTheDocument()
@@ -357,7 +357,7 @@ describe('uploadTarget - drag and drop', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} readOnly />,
     })
 
-    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    const fileTarget = screen.getByTestId('file-target')
     expect(fileTarget).toBeInTheDocument()
 
     const fileTypes = [{kind: 'file' as const, type: 'application/pdf'}]
@@ -366,7 +366,7 @@ describe('uploadTarget - drag and drop', () => {
       files: [] as File[],
     }
 
-    fireEvent.dragEnter(fileTarget!, {dataTransfer})
+    fireEvent.dragEnter(fileTarget, {dataTransfer})
 
     await waitFor(() => {
       expect(screen.queryByTestId('upload-target-drop-message')).not.toBeInTheDocument()

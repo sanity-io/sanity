@@ -305,7 +305,7 @@ export function fileTarget<ComponentProps>(
           onDragEnter={disabled ? undefined : handleDragEnter}
           onDragLeave={disabled ? undefined : handleDragLeave}
           onDrop={disabled ? undefined : handleDrop}
-          data-test-id="file-target"
+          data-testid="file-target"
           {...fileTargetDataAttribute}
         />
         {!disabled && showPasteInput && (

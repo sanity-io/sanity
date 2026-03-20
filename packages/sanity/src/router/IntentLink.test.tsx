@@ -1,4 +1,4 @@
-import {render} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import noop from 'lodash-es/noop.js'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -31,8 +31,11 @@ describe('IntentLink', () => {
       },
     )
     // Component should render the query param in the href
-    expect(view.container.querySelector('a')?.href).toContain(
-      '/test/intent/edit/id=document-id-123;type=document-type/?aTestStickyParam=aStickyParam.value',
+    expect(screen.getByRole('link')).toHaveAttribute(
+      'href',
+      expect.stringContaining(
+        '/test/intent/edit/id=document-id-123;type=document-type/?aTestStickyParam=aStickyParam.value',
+      ),
     )
   })
 
@@ -61,8 +64,11 @@ describe('IntentLink', () => {
       },
     )
     // Component should render the query param in the href
-    expect(view.container.querySelector('a')?.href).toContain(
-      '/test/intent/edit/id=document-id-123;type=document-type/?aTestStickyParam=aStickyParam.value',
+    expect(screen.getByRole('link')).toHaveAttribute(
+      'href',
+      expect.stringContaining(
+        '/test/intent/edit/id=document-id-123;type=document-type/?aTestStickyParam=aStickyParam.value',
+      ),
     )
   })
 
@@ -92,10 +98,14 @@ describe('IntentLink', () => {
       },
     )
     // Component should render the query param in the href
-    expect(view.container.querySelector('a')?.href).toContain(
-      '/test/intent/edit/id=document-id-123;type=document-type/?aTestStickyParam=aStickyParam.value.to-be-defined',
+    const link = screen.getByRole('link')
+    expect(link).toHaveAttribute(
+      'href',
+      expect.stringContaining(
+        '/test/intent/edit/id=document-id-123;type=document-type/?aTestStickyParam=aStickyParam.value.to-be-defined',
+      ),
     )
-    expect(view.container.querySelector('a')?.href).not.toContain(
+    expect(link.getAttribute('href')).not.toContain(
       'aTestStickyParam=aStickyParam.value.to-be-overridden',
     )
   })

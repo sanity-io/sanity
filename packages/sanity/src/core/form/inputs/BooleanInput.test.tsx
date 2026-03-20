@@ -57,12 +57,12 @@ const defs = {
 }
 
 it('renders the boolean input field', async () => {
-  const {result} = await renderBooleanInput({
+  await renderBooleanInput({
     fieldDefinition: defs.booleanTest,
     render: (inputProps) => <BooleanInput {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input[id="booleanTest"]')
+  const input = screen.getByRole('checkbox')
   expect(input).toBeDefined()
   expect(input).toHaveAttribute('type', 'checkbox')
   expect(input).toBePartiallyChecked()
@@ -70,60 +70,60 @@ it('renders the boolean input field', async () => {
 
 describe('Mouse accessibility', () => {
   it('emits onFocus when clicked', async () => {
-    const {onFocus, result} = await renderBooleanInput({
+    const {onFocus} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
-    const input = result.container.querySelector('input[id="booleanTest"]')
-    await userEvent.click(input!)
+    const input = screen.getByRole('checkbox')
+    await userEvent.click(input)
     expect(onFocus).toBeCalled()
   })
 
   it('emits onChange when clicked', async () => {
-    const {onChange, result} = await renderBooleanInput({
+    const {onChange} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    const input = result.container.querySelector('input[id="booleanTest"]')
-    await userEvent.click(input!)
+    const input = screen.getByRole('checkbox')
+    await userEvent.click(input)
     expect(onChange).toBeCalled()
   })
 })
 
 describe('Keyboard accessibility', () => {
   it('emits onFocus when tabbing to input', async () => {
-    const {onFocus, result} = await renderBooleanInput({
+    const {onFocus} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    const input = result.container.querySelector('input[id="booleanTest"]')
+    const input = screen.getByRole('checkbox')
     await userEvent.tab()
     expect(input).toHaveFocus()
     expect(onFocus).toBeCalled()
   })
 
   it('emits onChange when pressing enter', async () => {
-    const {onChange, result} = await renderBooleanInput({
+    const {onChange} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    const input = result.container.querySelector('input[id="booleanTest"]')
-    await userEvent.click(input!)
+    const input = screen.getByRole('checkbox')
+    await userEvent.click(input)
     await waitFor(() => {
       expect(onChange).toBeCalled()
     })
   })
 
   it('emits onBlur when navigating away from field', async () => {
-    const {onBlur, result} = await renderBooleanInput({
+    const {onBlur} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    const input = result.container.querySelector('input[id="booleanTest"]')
+    const input = screen.getByRole('checkbox')
     await userEvent.tab()
     await userEvent.tab()
     expect(input).not.toHaveFocus()
@@ -134,38 +134,38 @@ describe('Keyboard accessibility', () => {
 
 describe('Layout options', () => {
   it('renders a switch (default)', async () => {
-    const {result} = await renderBooleanInput({
+    await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    const input = result.container.querySelector('input[id="booleanTest"][data-ui="Switch"]')
-    expect(input).toBeDefined()
+    const input = screen.getByRole('checkbox')
+    expect(input).toHaveAttribute('data-ui', 'Switch')
   })
 
   it('renders a checkbox', async () => {
-    const {result} = await renderBooleanInput({
+    await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    const input = result.container.querySelector('input[id="booleanTest"][data-ui="Checkbox"]')
-    expect(input).toBeDefined()
+    const input = screen.getByRole('checkbox')
+    expect(input).toHaveAttribute('data-ui', 'Checkbox')
   })
 })
 
 describe('readOnly property', () => {
   it('makes field read-only', async () => {
-    const {onChange, result} = await renderBooleanInput({
+    const {onChange} = await renderBooleanInput({
       fieldDefinition: defs.booleanReadOnly,
       render: (inputProps) => <BooleanInput {...inputProps} readOnly />,
     })
 
-    const input = result.container.querySelector('input[id="booleanReadOnly"]')
+    const input = screen.getByRole('checkbox')
     expect(input).toBeDisabled()
 
     // Mouse event
-    await userEvent.click(input!)
+    await userEvent.click(input)
     // expect(input).toHaveFocus()
     expect(onChange).not.toBeCalled()
 
@@ -175,28 +175,28 @@ describe('readOnly property', () => {
   })
 
   it('renders a tooltip on the switch', async () => {
-    const {container} = await renderBooleanInput({
+    await renderBooleanInput({
       fieldDefinition: defs.booleanReadOnly,
       render: (inputProps) => <BooleanInput {...inputProps} readOnly />,
     })
 
-    const input = container.querySelector('input[id="booleanReadOnly"]')
-    await userEvent.hover(input!)
+    const input = screen.getByRole('checkbox')
+    await userEvent.hover(input)
 
     await screen.findByText('Disabled')
   })
 
   it('does not make field read-only with callback', async () => {
-    const {onChange, result} = await renderBooleanInput({
+    const {onChange} = await renderBooleanInput({
       fieldDefinition: defs.readOnlyCallback,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    const input = result.container.querySelector('input[id="readOnlyCallback"]')
+    const input = screen.getByRole('checkbox')
     expect(input).not.toBeDisabled()
 
     // Mouse event
-    await userEvent.click(input!)
+    await userEvent.click(input)
     expect(onChange).toBeCalled()
 
     // Keyboard event
@@ -207,17 +207,17 @@ describe('readOnly property', () => {
   })
 
   it.skip('makes field read-only based on value in document', async () => {
-    const {onChange, result} = await renderBooleanInput({
+    const {onChange} = await renderBooleanInput({
       fieldDefinition: defs.readOnlyWithDocument,
       props: {documentValue: {title: 'Hello, world'}},
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    const input = result.container.querySelector('input[id="readOnlyWithDocument"]')
+    const input = screen.getByRole('checkbox')
     expect(input).toBeDisabled()
 
     // Mouse event
-    await userEvent.click(input!)
+    await userEvent.click(input)
     expect(onChange).not.toBeCalled()
 
     // Keyboard event

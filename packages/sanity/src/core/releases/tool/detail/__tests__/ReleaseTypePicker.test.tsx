@@ -41,17 +41,7 @@ const renderComponent = async (release = activeASAPRelease) => {
 }
 
 const findTabByName = async (name: string) => {
-  const labels = await screen.findAllByText(name)
-
-  for (const label of labels) {
-    const tab = label.closest('[role="tab"]') as HTMLButtonElement | null
-
-    if (tab) {
-      return tab
-    }
-  }
-
-  throw new Error(`Could not find tab with name "${name}"`)
+  return screen.getByRole('tab', {name})
 }
 
 const mockUpdateRelease = vi.fn()

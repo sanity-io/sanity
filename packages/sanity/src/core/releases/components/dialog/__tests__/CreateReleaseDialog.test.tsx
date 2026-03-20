@@ -66,7 +66,7 @@ describe('CreateReleaseDialog', () => {
 
       // Wait for the button to be enabled after typing
       await waitFor(() => {
-        expect(submitButton.closest('button')).not.toBeDisabled()
+        expect(submitButton).not.toBeDisabled()
       })
 
       await userEvent.click(submitButton)

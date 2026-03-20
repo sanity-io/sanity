@@ -303,8 +303,8 @@ describe('ReleasesOverview', () => {
         },
         {timeout: 4000},
       )
-      expect(screen.getByText('Active').closest('button')).toBeDisabled()
-      expect(screen.getByText('Archived').closest('button')).toBeDisabled()
+      expect(screen.getByRole('button', {name: 'Active'})).toBeDisabled()
+      expect(screen.getByRole('button', {name: 'Archived'})).toBeDisabled()
     })
 
     it('does show the page heading', () => {
@@ -527,8 +527,8 @@ describe('ReleasesOverview', () => {
     })
 
     it('allows for switching between history modes', () => {
-      expect(screen.getByText('Active').closest('button')).not.toBeDisabled()
-      expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()
+      expect(screen.getByRole('button', {name: 'Active'})).not.toBeDisabled()
+      expect(screen.getByRole('button', {name: 'Archived'})).not.toBeDisabled()
     })
 
     it('allows for pinning perspectives', async () => {
@@ -539,11 +539,9 @@ describe('ReleasesOverview', () => {
       const pinButton = within(firstRow).getByTestId('pin-release-button')
 
       expect(pinButton).toBeInTheDocument()
-      const buttonElement = pinButton.closest('button')
-      expect(buttonElement).not.toBeNull()
-      expect(buttonElement).not.toBeDisabled()
+      expect(pinButton).not.toBeDisabled()
 
-      await userEvent.click(buttonElement!)
+      await userEvent.click(pinButton)
 
       await waitFor(() => {
         expect(mockedSetPerspective).toHaveBeenCalledOnce()
@@ -576,7 +574,7 @@ describe('ReleasesOverview', () => {
         const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
           'day-tile-today',
         )
-        expect(todayTile.firstChild).toHaveStyle('font-weight: 700')
+        expect(within(todayTile).getByText(/\d+/)).toHaveStyle('font-weight: 700')
       })
 
       describe('selecting a release date', () => {
@@ -600,9 +598,9 @@ describe('ReleasesOverview', () => {
         })
 
         it('clears the filter by clicking the selected date', async () => {
-          // not ideal, but the easiest way of finding the now selected date
-          const todayTile = getCalendar().querySelector('[data-selected]')
-          await userEvent.click(todayTile!)
+          // The today tile was clicked in beforeEach, so it should now be selected
+          const selectedTile = within(getCalendar()).getByTestId('day-tile-today')
+          await userEvent.click(selectedTile)
 
           await waitFor(() => {
             expect(screen.getAllByTestId('table-row')).toHaveLength(5)
@@ -665,7 +663,7 @@ describe('ReleasesOverview', () => {
           const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
             'day-tile-today',
           )
-          expect(todayTile.parentNode).not.toHaveStyle('font-weight: 700')
+          expect(within(todayTile).getByText(/\d+/)).not.toHaveStyle('font-weight: 700')
         })
 
         it('shows no releases when filtered by today', async () => {
@@ -690,7 +688,7 @@ describe('ReleasesOverview', () => {
       })
 
       it('opens the calendar filter as a dialog instead of a sidebar', async () => {
-        const filterButton = document.querySelector('button[name="calendar"]') as HTMLButtonElement
+        const filterButton = screen.getByRole('button', {name: 'calendar'})
         expect(filterButton).toBeInTheDocument()
         await userEvent.click(filterButton)
 
@@ -721,7 +719,7 @@ describe('ReleasesOverview', () => {
 
       it('does not allow for perspective pinning', () => {
         screen.getAllByTestId('table-row').forEach((row) => {
-          expect(within(row).getByTestId('pin-release-button').closest('button')).toBeDisabled()
+          expect(within(row).getByTestId('pin-release-button')).toBeDisabled()
         })
       })
     })
@@ -825,8 +823,8 @@ describe('ReleasesOverview', () => {
           const dropdownButton = screen.queryByTestId('cardinality-view-menu')
           expect(dropdownButton).not.toBeInTheDocument()
 
-          const releasesText = screen.getByText('Releases')
-          expect(releasesText.closest('button')).toBeNull()
+          expect(screen.getByText('Releases')).toBeInTheDocument()
+          expect(screen.queryByRole('button', {name: 'Releases'})).not.toBeInTheDocument()
         })
 
         it('should show the create release button', () => {
@@ -894,7 +892,7 @@ describe('ReleasesOverview', () => {
           expect(releasesButton).toBeInTheDocument()
 
           // Should find the dropdown menu button by id
-          const dropdownButton = document.getElementById('cardinality-view-menu')
+          const dropdownButton = screen.getByTestId('cardinality-view-menu')
           expect(dropdownButton).toBeInTheDocument()
         })
 
@@ -1065,7 +1063,7 @@ describe('ReleasesOverview', () => {
         expect(releasesButton).toBeInTheDocument()
 
         // Should find the dropdown menu button by id
-        const dropdownButton = document.getElementById('cardinality-view-menu')
+        const dropdownButton = screen.getByTestId('cardinality-view-menu')
         expect(dropdownButton).toBeInTheDocument()
       })
 

@@ -169,18 +169,19 @@ describe('ReleasesNav', () => {
       })
 
       it('should show the intended release date for intended schedule releases', async () => {
-        const scheduledMenuItem = within(screen.getByTestId('release-menu'))
-          .getByText('active Scheduled 2')
-          .closest('button')!
+        const scheduledMenuItem = within(screen.getByTestId('release-menu')).getByRole('button', {
+          name: /active Scheduled 2/,
+        })
 
         within(scheduledMenuItem).getByText(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/)
         within(scheduledMenuItem).getByTestId('release-avatar-suggest')
       })
 
       it('should show the actual release date for a scheduled release', async () => {
-        const scheduledMenuItem = within(screen.getByTestId('release-menu'))
-          .getByText('scheduled Release')
-          .closest('button')!
+        const releaseMenu = screen.getByTestId('release-menu')
+        const scheduledMenuItem = within(releaseMenu).getByRole('button', {
+          name: /scheduled Release/,
+        })
 
         within(scheduledMenuItem).getByText(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/)
         within(scheduledMenuItem).getByTestId('release-lock-icon')
@@ -189,11 +190,12 @@ describe('ReleasesNav', () => {
 
       it('should show the error icon if the release is active and has an error', () => {
         const releaseMenu = screen.getByTestId('release-menu')
-        const releaseTitle = within(releaseMenu).getByText('active asap Error Release')
-        const releaseButton = releaseTitle?.closest('button')
+        const releaseButton = within(releaseMenu).getByRole('button', {
+          name: /active asap Error Release/,
+        })
 
         expect(releaseButton).toBeTruthy()
-        within(releaseButton!).getByTestId('release-error-icon')
+        within(releaseButton).getByTestId('release-error-icon')
       })
 
       it('allows for new release to be created', async () => {
@@ -245,9 +247,9 @@ describe('ReleasesNav', () => {
         it('should allow for hiding of any deeper layered releases', async () => {
           await prerenderTest()
 
-          const deepLayerRelease = within(screen.getByTestId('release-menu'))
-            .getByText('active Release')
-            .closest('button')!
+          const deepLayerRelease = within(screen.getByTestId('release-menu')).getByRole('button', {
+            name: /^active Release/,
+          })
 
           // toggle to hide
           await userEvent.click(within(deepLayerRelease).getByTestId('release-toggle-visibility'))
@@ -265,9 +267,9 @@ describe('ReleasesNav', () => {
         it('should not allow for hiding of published perspective', async () => {
           await prerenderTest()
 
-          const publishedRelease = within(screen.getByTestId('release-menu'))
-            .getByText('Published')
-            .closest('button')!
+          const publishedRelease = within(screen.getByTestId('release-menu')).getByRole('button', {
+            name: /Published/,
+          })
 
           expect(
             within(publishedRelease).queryByTestId('release-toggle-visibility'),
@@ -277,9 +279,9 @@ describe('ReleasesNav', () => {
         it('should allow for hiding of draft perspective', async () => {
           await prerenderTest()
 
-          const drafts = within(screen.getByTestId('release-menu'))
-            .getByText('Drafts')
-            .closest('button')!
+          const drafts = within(screen.getByTestId('release-menu')).getByRole('button', {
+            name: /Drafts/,
+          })
 
           expect(within(drafts).getByTestId('release-toggle-visibility')).toBeInTheDocument()
           // toggle to hide
@@ -297,9 +299,9 @@ describe('ReleasesNav', () => {
         it('should not allow hiding of the current perspective', async () => {
           await prerenderTest()
 
-          const currentRelease = within(screen.getByTestId('release-menu'))
-            .getByText('active Scheduled 2')
-            .closest('button')!
+          const currentRelease = within(screen.getByTestId('release-menu')).getByRole('button', {
+            name: /active Scheduled 2/,
+          })
 
           expect(
             within(currentRelease).queryByTestId('release-toggle-visibility'),
@@ -309,9 +311,9 @@ describe('ReleasesNav', () => {
         it('should not allow hiding of un-nested releases', async () => {
           await prerenderTest()
 
-          const unNestedRelease = within(screen.getByTestId('release-menu'))
-            .getByText('undecided Release')
-            .closest('button')!
+          const unNestedRelease = within(screen.getByTestId('release-menu')).getByRole('button', {
+            name: /undecided Release/,
+          })
 
           expect(
             within(unNestedRelease).queryByTestId('release-toggle-visibility'),
@@ -321,9 +323,10 @@ describe('ReleasesNav', () => {
         it('should not allow hiding of locked in scheduled releases', async () => {
           await prerenderTest()
 
-          const scheduledReleaseMenuItem = within(screen.getByTestId('release-menu'))
-            .getByText('scheduled Release')
-            .closest('button')!
+          const scheduledReleaseMenuItem = within(screen.getByTestId('release-menu')).getByRole(
+            'button',
+            {name: /scheduled Release/},
+          )
 
           expect(
             within(scheduledReleaseMenuItem).queryByTestId('release-toggle-visibility'),
@@ -338,9 +341,10 @@ describe('ReleasesNav', () => {
 
         await renderAndWaitForStableMenu()
 
-        const activeReleaseMenuItem = within(screen.getByTestId('release-menu'))
-          .getByText('active Release')
-          .closest('button')!
+        const activeReleaseMenuItem = within(screen.getByTestId('release-menu')).getByRole(
+          'button',
+          {name: /^active Release/},
+        )
 
         const indicatorIcon = within(activeReleaseMenuItem).getByTestId('release-indicator-icon')
         expect(indicatorIcon).toHaveStyle({opacity: 0})

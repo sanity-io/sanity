@@ -5,7 +5,7 @@ import {
   format,
   parse,
 } from '@sanity/util/legacyDateFormat'
-import {fireEvent} from '@testing-library/react'
+import {fireEvent, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {expect, test, vi} from 'vitest'
 
@@ -103,8 +103,8 @@ test('time zone for the test environment should be set to America/Los_Angeles', 
 })
 
 test('does not emit onChange after invalid value has been typed', async () => {
-  const {result, onChange} = await renderInput()
-  const input = result.container.querySelector('input')!
+  const {onChange} = await renderInput()
+  const input = screen.getByRole('textbox') as HTMLInputElement
 
   await userEvent.type(input, 'this is invalid')
   expect(input.value).toBe('this is invalid')
@@ -116,8 +116,8 @@ test('does not emit onChange after invalid value has been typed', async () => {
 })
 
 test('emits onChange on correct format if a valid value has been typed', async () => {
-  const {result, onChange} = await renderInput()
-  const input = result.container.querySelector('input')!
+  const {onChange} = await renderInput()
+  const input = screen.getByRole('textbox') as HTMLInputElement
 
   // NOTE: the date is entered and displayed in local time zone (which is hardcoded to America/Los_Angeles)
   await userEvent.type(input, '2021-03-28 10:23')

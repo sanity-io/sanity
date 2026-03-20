@@ -1,5 +1,5 @@
 import {defineField} from '@sanity/types'
-import {fireEvent} from '@testing-library/react'
+import {fireEvent, screen} from '@testing-library/react'
 import {expect, test} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
@@ -12,7 +12,7 @@ test('time zone for the test environment should be set to America/Los_Angeles', 
 })
 
 test('does not emit onChange after invalid value has been typed', async () => {
-  const {onChange, result} = await renderStringInput({
+  const {onChange} = await renderStringInput({
     fieldDefinition: defineField({
       type: 'date',
       name: 'test',
@@ -20,7 +20,7 @@ test('does not emit onChange after invalid value has been typed', async () => {
     render: (inputProps) => <DateInput {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input')!
+  const input = screen.getByRole('textbox') as HTMLInputElement
 
   // eslint-disable-next-line testing-library/prefer-user-event
   fireEvent.change(input, {target: {value: 'this is invalid'}})
@@ -33,7 +33,7 @@ test('does not emit onChange after invalid value has been typed', async () => {
 })
 
 test('emits onChange on correct format if a valid value has been typed', async () => {
-  const {onChange, result} = await renderStringInput({
+  const {onChange} = await renderStringInput({
     fieldDefinition: defineField({
       type: 'date',
       name: 'test',
@@ -41,7 +41,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
     render: (inputProps) => <DateInput {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input')!
+  const input = screen.getByRole('textbox') as HTMLInputElement
 
   // NOTE: the date is entered and displayed in local time zone
   // eslint-disable-next-line testing-library/prefer-user-event
@@ -55,7 +55,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
 })
 
 test('formatting of deserialized value', async () => {
-  const {result} = await renderStringInput({
+  await renderStringInput({
     fieldDefinition: defineField({
       type: 'date',
       name: 'test',
@@ -64,14 +64,14 @@ test('formatting of deserialized value', async () => {
     render: (inputProps) => <DateInput {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input')!
+  const input = screen.getByRole('textbox') as HTMLInputElement
 
   // const {textInput} = renderInput({value: '2021-03-28'} as any)
   expect(input.value).toBe('2021-03-28')
 })
 
 test('change the date should show the correct date in the input (save on enter)', async () => {
-  const {onChange, result} = await renderStringInput({
+  const {onChange} = await renderStringInput({
     fieldDefinition: defineField({
       type: 'date',
       name: 'test',
@@ -80,7 +80,7 @@ test('change the date should show the correct date in the input (save on enter)'
     render: (inputProps) => <DateInput {...inputProps} />,
   })
 
-  const input = result.container.querySelector('input')!
+  const input = screen.getByRole('textbox') as HTMLInputElement
   // eslint-disable-next-line testing-library/prefer-user-event
   fireEvent.change(input, {target: {value: '2021-03-30'}})
   fireEvent.blur(input)

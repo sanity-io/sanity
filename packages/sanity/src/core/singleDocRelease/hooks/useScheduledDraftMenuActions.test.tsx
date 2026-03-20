@@ -1,5 +1,5 @@
 import {Menu} from '@sanity/ui'
-import {render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
@@ -187,7 +187,7 @@ describe('useScheduledDraftMenuActions', () => {
     )
 
     const menuContainer = screen.getByTestId('menu-items')
-    const menuItems = menuContainer.children
+    const menuItems = within(menuContainer).getAllByRole('menuitem')
 
     // Should have exactly 3 menu items
     expect(menuItems).toHaveLength(3)

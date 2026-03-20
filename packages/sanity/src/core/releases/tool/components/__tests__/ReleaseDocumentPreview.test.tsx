@@ -23,7 +23,10 @@ const mockPreviewValues = {
 
 vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
   SanityDefaultPreview: vi.fn(({isPlaceholder, title, subtitle, status}) => (
-    <div data-ui={isPlaceholder ? 'Placeholder' : 'Preview'}>
+    <div
+      data-ui={isPlaceholder ? 'Placeholder' : 'Preview'}
+      data-testid={isPlaceholder ? 'preview-placeholder' : 'preview-content'}
+    >
       {!isPlaceholder && title && <div>{title}</div>}
       {!isPlaceholder && subtitle && <div>{subtitle}</div>}
       {status}
@@ -96,51 +99,51 @@ describe('ReleaseDocumentPreview', () => {
       value: null,
     })
 
-    const {container} = await renderTest({
+    await renderTest({
       documentId: 'doc123',
       documentTypeName: 'post',
       releaseId: activeASAPRelease._id,
     })
 
-    expect(container.querySelector('[data-ui="Placeholder"]')).toBeInTheDocument()
+    expect(screen.getByTestId('preview-placeholder')).toBeInTheDocument()
   })
 
   it('creates link with published perspective when release state is published', async () => {
-    const {container} = await renderTest({
+    await renderTest({
       documentId: 'doc123',
       documentTypeName: 'post',
       releaseId: activeASAPRelease._id,
       releaseState: 'published',
     })
 
-    const link = container.querySelector('a')
-    const searchParams = JSON.parse(link.getAttribute('data-search-params'))
+    const link = screen.getByRole('link')
+    const searchParams = JSON.parse(link.getAttribute('data-search-params') ?? 'null')
     expect(searchParams).toContainEqual(['perspective', 'published'])
   })
 
   it('creates link with release ID perspective when release state is not published', async () => {
-    const {container} = await renderTest({
+    await renderTest({
       documentId: 'doc123',
       documentTypeName: 'post',
       releaseId: activeScheduledRelease._id,
       releaseState: 'active',
     })
 
-    const link = container.querySelector('a')
-    const searchParams = JSON.parse(link.getAttribute('data-search-params'))
+    const link = screen.getByRole('link')
+    const searchParams = JSON.parse(link.getAttribute('data-search-params') ?? 'null')
     expect(searchParams).toContainEqual(['perspective', 'rActive'])
   })
 
   it('creates link with release ID perspective when release state is not published', async () => {
-    const {container} = await renderTest({
+    await renderTest({
       documentId: 'doc123',
       documentTypeName: 'post',
       releaseId: activeScheduledRelease._id,
       releaseState: 'archived',
     })
 
-    const link = container.querySelector('a')
-    const searchParams = JSON.parse(link.getAttribute('data-search-params'))
+    const link = screen.getByRole('link')
+    const searchParams = JSON.parse(link.getAttribute('data-search-params') ?? 'null')
     expect(searchParams).toBeNull()
   })
 })

@@ -33,10 +33,10 @@ describe('createDefaultIcon', () => {
   })
 
   it('should handle titles that are only emojis', () => {
-    renderIcon('🟢')
+    const {container} = renderIcon('🟢')
     // When the title is only emojis, after filtering there should be no letters
     // The component should handle this gracefully (empty text)
-    const svg = document.querySelector('svg')
+    const svg = container.querySelector('svg')
     expect(svg).toBeInTheDocument()
   })
 
