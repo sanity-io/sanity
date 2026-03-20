@@ -33,7 +33,6 @@ import type {
   DocumentLimitUpsellContext,
   DocumentLimitUpsellContextValue,
   DocumentPaneContext,
-  DocumentSheetListContext,
   EnhancedObjectDialogContext,
   EventsContext,
   FieldActionsContext,
@@ -211,9 +210,6 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentPaneContext', () => {
     expectTypeOf<typeof DocumentPaneContext>().not.toBeNever()
-  })
-  test('DocumentSheetListContext', () => {
-    expectTypeOf<typeof DocumentSheetListContext>().not.toBeNever()
   })
   test('EnhancedObjectDialogContext', () => {
     expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()

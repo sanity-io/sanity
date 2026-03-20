@@ -20,7 +20,6 @@ import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'
 import {findStaticTypesInFilter} from './helpers'
 import {PaneHeader} from './PaneHeader'
-import {DocumentSheetListPane} from './sheetList/DocumentSheetListPane'
 import {type SortOrder} from './types'
 
 /**
@@ -148,20 +147,14 @@ export const PaneContainer = memo(function PaneContainer(
     [customMenuItemState, layout, menuItemsWithIds, sortOrderRaw],
   )
 
-  const isSheetListLayout = layout === 'sheetList'
-  const paneLayout = isSheetListLayout ? (
-    <DocumentSheetListPane key={props.pane.id} {...props} />
-  ) : (
-    <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
-  )
-
   return (
     <SourceProvider name={sourceName || parentSourceName}>
       <Pane
         data-ui="DocumentListPane"
         id={paneKey}
         minWidth={320}
-        {...(isSheetListLayout ? {} : {currentMaxWidth: 350, maxWidth: 640})}
+        currentMaxWidth={350}
+        maxWidth={640}
         selected={isSelected}
       >
         {_DEBUG && (
@@ -181,7 +174,7 @@ export const PaneContainer = memo(function PaneContainer(
           setCustomMenuItemState={setCustomMenuItemState}
           title={title}
         />
-        {paneLayout}
+        <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
       </Pane>
     </SourceProvider>
   )
