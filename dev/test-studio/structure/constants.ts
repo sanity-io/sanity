@@ -78,6 +78,7 @@ export const DEBUG_INPUT_TYPES = [
   'lazyComponents',
   'manyFieldsTest',
   'noTitleField',
+  'navbarSettings',
   'objectsDebug',
   'poppers',
   'presence',
