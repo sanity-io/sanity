@@ -713,7 +713,12 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
           formState={formState}
         >
           <DivergenceAutofocus onProgrammaticFocus={onProgrammaticFocus} />
-          <DocumentTitle />
+          <DocumentTitle
+            isDeleted={isDeleted}
+            displayed={displayed}
+            ready={ready}
+            schemaType={schemaType}
+          />
           {children}
         </DivergencesProvider>
       </DocumentPaneContext.Provider>

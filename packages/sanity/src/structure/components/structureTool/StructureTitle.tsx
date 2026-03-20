@@ -1,9 +1,9 @@
+import {type SanityDocument, type ObjectSchemaType} from '@sanity/types'
 import {useEffect} from 'react'
 import {useTranslation, useValuePreview} from 'sanity'
 
 import {LOADING_PANE} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
-import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {type Panes} from '../../structureResolvers'
 import {type DocumentPaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
@@ -12,8 +12,17 @@ interface StructureTitleProps {
   resolvedPanes: Panes['resolvedPanes']
 }
 
-export const DocumentTitle = () => {
-  const {isDeleted, displayed, ready, schemaType} = useDocumentPane()
+export const DocumentTitle = ({
+  isDeleted,
+  displayed,
+  ready,
+  schemaType,
+}: {
+  isDeleted: boolean
+  displayed: Partial<SanityDocument>
+  ready: boolean
+  schemaType: ObjectSchemaType | undefined
+}) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const isNewDocument = !displayed?._createdAt
   const {value} = useValuePreview({enabled: !!displayed, schemaType, value: displayed})

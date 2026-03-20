@@ -7,8 +7,6 @@ import {
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getVersionId,
-  isDeleteDocumentGroupEvent,
-  isDeleteDocumentVersionEvent,
   PerspectiveProvider,
   useArchivedReleases,
   useEditState,
