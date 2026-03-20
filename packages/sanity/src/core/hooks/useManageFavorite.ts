@@ -7,7 +7,7 @@ import {
   type StudioResource,
   type WindowMessages,
 } from '@sanity/message-protocol'
-import {type DocumentHandle} from '@sanity/sdk'
+import {type DocumentHandle} from '@sanity/sdk-react'
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
