@@ -144,6 +144,7 @@ describe.each(INPUT_CONFIGS)(
           ? new File(['content'], 'test.mp4', {type: 'video/mp4'})
           : new File(['content'], 'test.pdf', {type: 'application/pdf'})
       const uploadButton = screen.getByTestId(uploadTestId)
+      // eslint-disable-next-line testing-library/no-node-access -- hidden file input has no accessible role
       let fileInput = uploadButton.querySelector('input[type="file"]') as HTMLInputElement | null
       // Single source: FileInputButton has embedded input. Multiple sources: UploadDropDownMenu uses
       // imperative openFilePicker - click button to open menu, then click menu item to create input.
@@ -187,6 +188,7 @@ describe.each(INPUT_CONFIGS)(
           ? new File(['more content'], 'test2.mp4', {type: 'video/mp4'})
           : new File(['more content'], 'test2.pdf', {type: 'application/pdf'})
       // Input may have been removed after first upload (imperative flow); click again to create new one
+      // eslint-disable-next-line testing-library/no-node-access -- hidden file input has no accessible role
       let fileInput2 = uploadButton.querySelector('input[type="file"]') as HTMLInputElement | null
       if (!fileInput2) {
         await userEvent.click(uploadButton)
@@ -304,6 +306,7 @@ describe.each(INPUT_CONFIGS)(
 
       const uploadButton = screen.getByTestId('file-input-upload-button-component-source')
       expect(uploadButton).toBeInTheDocument()
+      // eslint-disable-next-line testing-library/no-node-access -- hidden file input has no accessible role
       expect(uploadButton.querySelector('input[type="file"]')).not.toBeInTheDocument()
       await userEvent.click(uploadButton)
 

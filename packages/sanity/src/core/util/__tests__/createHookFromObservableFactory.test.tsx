@@ -204,6 +204,7 @@ describe('createHookFromObservableFactory', () => {
           return {hasError: true}
         }
         override render() {
+          // eslint-disable-next-line testing-library/no-node-access -- React class component render, not DOM access
           return this.props.children
         }
       },

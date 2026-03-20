@@ -88,6 +88,7 @@ describe('ReleaseDashboardFooter', () => {
       await renderTest({release: archivedScheduledRelease})
 
       const footerActions = screen.getByTestId('release-dashboard-footer-actions')
+      // eslint-disable-next-line testing-library/no-node-access -- checking child count, no accessible query available
       expect(footerActions.children.length).toEqual(1)
     })
   })
