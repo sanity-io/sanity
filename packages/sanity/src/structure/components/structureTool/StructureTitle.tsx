@@ -1,10 +1,9 @@
-import {type ObjectSchemaType} from '@sanity/types'
 import {useEffect} from 'react'
-import {useEditState, usePerspective, useSchema, useTranslation, useValuePreview} from 'sanity'
+import {useTranslation, useValuePreview} from 'sanity'
 
 import {LOADING_PANE} from '../../constants'
-import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
+import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {type Panes} from '../../structureResolvers'
 import {type DocumentPaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
@@ -13,26 +12,11 @@ interface StructureTitleProps {
   resolvedPanes: Panes['resolvedPanes']
 }
 
-// TODO: Fix state jank when editing different versions inside panes.
-const DocumentTitle = (props: {documentId: string; documentType: string}) => {
-  const {documentId, documentType} = props
-  const {selectedReleaseId} = usePerspective()
-
-  const editState = useEditState(documentId, documentType, 'default', selectedReleaseId)
-  const schema = useSchema()
+export const DocumentTitle = () => {
+  const {isDeleted, displayed, ready, schemaType} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
-  const isNewDocument = !editState?.published && !editState?.draft
-  const documentValue = editState?.version || editState?.draft || editState?.published
-  const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
-
-  const {value, isLoading: previewValueIsLoading} = useValuePreview({
-    enabled: !!documentValue,
-    schemaType,
-    value: documentValue,
-  })
-
-  const {lastRevisionDocument} = useDocumentLastRev(documentId, documentType)
-  const isDeleted = lastRevisionDocument && !documentValue
+  const isNewDocument = !displayed?._createdAt
+  const {value} = useValuePreview({enabled: !!displayed, schemaType, value: displayed})
 
   // if the document is deleted, we don't want to show the title
   const documentTitle = isDeleted
@@ -43,13 +27,12 @@ const DocumentTitle = (props: {documentId: string; documentType: string}) => {
         })
       : value?.title || t('browser-document-title.untitled-document')
 
-  const settled = editState.ready && !previewValueIsLoading
   const newTitle = useConstructDocumentTitle(documentTitle)
   useEffect(() => {
-    if (!settled) return
+    if (!ready) return
     // Set the title as the document title
     document.title = newTitle
-  }, [documentTitle, settled, newTitle])
+  }, [documentTitle, ready, newTitle])
 
   return null
 }
@@ -82,9 +65,8 @@ export const StructureTitle = (props: StructureTitleProps) => {
     if (lastPane?.title) {
       return <PassthroughTitle title={lastPane.title} />
     }
-
-    // Otherwise, display a `document.title` containing the resolved Sanity document title
-    return <DocumentTitle documentId={lastPane.options.id} documentType={lastPane.options.type} />
+    // Otherwise, display a `document.title` containing the resolved Sanity document title, which will be imported from the document pane
+    return null
   }
 
   // Otherwise, display the last pane's title (if present)

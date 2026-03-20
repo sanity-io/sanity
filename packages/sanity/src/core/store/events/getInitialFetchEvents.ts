@@ -10,6 +10,8 @@ import {
   type EditDocumentVersionEvent,
   type HistoryClearedEvent,
   isCreateDocumentVersionEvent,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
 } from './types'
 import {addEventId, removeDupes} from './utils'
 
@@ -73,13 +75,18 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
     const eventWithRevision =
       documentVariantType === 'version'
         ? events.find(isCreateDocumentVersionEvent)
-        : events.find((event) => 'versionRevisionId' in event && event.versionRevisionId)
+        : events.find(
+            (event) =>
+              'versionRevisionId' in event &&
+              event.versionRevisionId &&
+              !isDeleteDocumentVersionEvent(event) &&
+              !isDeleteDocumentGroupEvent(event),
+          )
 
     const revisionId =
       eventWithRevision &&
       'versionRevisionId' in eventWithRevision &&
       eventWithRevision.versionRevisionId
-
     return from(
       getDocumentTransactions({
         client,

@@ -9,11 +9,13 @@ import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient
 import {useWorkspace} from '../../studio/workspace'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {createEventsStore} from './createEventsStore'
-import {getDocumentAtRevision} from './getDocumentAtRevision'
+import {getDocumentAtRevision as getDocumentAtRevisionFunction} from './getDocumentAtRevision'
 import {
   type DocumentGroupEvent,
   type EventsStore,
   isCreateDocumentVersionEvent,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
   isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
 } from './types'
@@ -112,10 +114,20 @@ export function useEventsStore({
     return rev
   }, [events, rev, eventsStore, loading])
 
+  const getDocumentAtRevision = useCallback(
+    (revision: string) => {
+      return getDocumentAtRevisionFunction({
+        client,
+        documentId,
+        revisionId: revision,
+      })
+    },
+    [client, documentId],
+  )
+
   const revision$ = useMemo(
-    () =>
-      revisionId ? getDocumentAtRevision({client, documentId, revisionId: revisionId}) : of(null),
-    [client, documentId, revisionId],
+    () => (revisionId ? getDocumentAtRevision(revisionId) : of(null)),
+    [getDocumentAtRevision, revisionId],
   )
   const revision = useObservable(revision$, null)
 
@@ -147,8 +159,8 @@ export function useEventsStore({
   }, [events, revisionId, since])
 
   const since$ = useMemo(
-    () => (sinceId ? getDocumentAtRevision({client, documentId, revisionId: sinceId}) : of(null)),
-    [sinceId, client, documentId],
+    () => (sinceId ? getDocumentAtRevision(sinceId) : of(null)),
+    [getDocumentAtRevision, sinceId],
   )
 
   const getChangesList = useCallback(
@@ -208,6 +220,12 @@ export function useEventsStore({
     [events, rev, revisionId],
   )
 
+  const lastNonDeletedRevId = useMemo(
+    () =>
+      events.find((e) => !isDeleteDocumentGroupEvent(e) && !isDeleteDocumentVersionEvent(e))?.id ||
+      null,
+    [events],
+  )
   return {
     events,
     nextCursor,
@@ -220,5 +238,7 @@ export function useEventsStore({
     loadMoreEvents: eventsStore.loadMoreEvents,
     expandEvent: eventsStore.handleExpandEvent,
     getChangesList,
+    getDocumentAtRevision,
+    lastNonDeletedRevId,
   }
 }
