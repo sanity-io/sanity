@@ -10,7 +10,7 @@ export function useStudioAnnouncements(): StudioAnnouncementsContextValue {
     return {
       studioAnnouncements: [],
       unseenAnnouncements: [],
-      onDialogOpen: () => {},
+      onDialogOpen: () => { /* intentionally empty */ },
     }
   }
 

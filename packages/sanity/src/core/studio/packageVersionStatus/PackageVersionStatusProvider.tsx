@@ -15,7 +15,7 @@ import {parseImportMapModuleCdnUrl} from './utils'
 const POLL_INTERVAL_MS = 1000 * 60 * 15 // check every 15 minutes
 const CHECK_THROTTLE_TIME_MS = 1000 * 10 // prevent checking more often than every 10s
 
-const noop = () => {}
+const noop = () => { /* intentionally empty */ }
 
 type VersionCheckState = {
   lastCheckedAt: Date | null

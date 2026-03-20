@@ -16,7 +16,7 @@ describe('ErrorBoundary', () => {
 
   it('calls onUncaughtError when an error is caught', async () => {
     // React logs caught errors from error boundaries to console.error
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => { /* intentionally empty */ })
     const onUncaughtError = vi.fn()
     const onCatch = vi.fn()
 
@@ -49,7 +49,7 @@ describe('ErrorBoundary', () => {
 
   it('calls onCatch prop when an error is caught when no onUncaughtError exists', () => {
     // React logs caught errors from error boundaries to console.error
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => { /* intentionally empty */ })
     const onCatch = vi.fn()
 
     const WrapperWithoutError = ({children}: {children: React.ReactNode}) => {

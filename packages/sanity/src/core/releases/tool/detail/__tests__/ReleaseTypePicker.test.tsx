@@ -289,7 +289,7 @@ describe('ReleaseTypePicker', () => {
       mockUseReleaseOperations.mockReturnValue({
         ...useReleaseOperationsMockReturn,
         updateRelease: vi.fn().mockImplementation(() => {
-          return new Promise(() => {})
+          return new Promise(() => { /* intentionally empty */ })
         }),
       })
       await renderComponent()

@@ -195,7 +195,7 @@ describe('createHookFromObservableFactory', () => {
     renderHook(useHook, {
       // Error is hoisted. To prevent it from being printed as uncaught in terminal,
       // we explicitly catch it and suppress it
-      onCaughtError: () => {},
+      onCaughtError: () => { /* intentionally empty */ },
       wrapper: class Wrapper extends Component<PropsWithChildren> {
         static getDerivedStateFromError(err: Error) {
           error = err

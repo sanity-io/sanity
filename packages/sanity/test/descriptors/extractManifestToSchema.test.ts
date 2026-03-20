@@ -539,13 +539,13 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
     const customization: any = {
       recursiveObject, // this one will be cut off at max-depth
       serializableProp: 'dummy',
-      nonSerializableProp: () => {},
+      nonSerializableProp: () => { /* intentionally empty */ },
       options: {
         serializableOption: true,
-        nonSerializableOption: () => {},
+        nonSerializableOption: () => { /* intentionally empty */ },
         nested: {
           serializableOption: 1,
-          nonSerializableOption: () => {},
+          nonSerializableOption: () => { /* intentionally empty */ },
         },
       },
     }

@@ -384,7 +384,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                 )
               }
               selected
-              onClick={() => {}}
+              onClick={() => { /* intentionally empty */ }}
               locked={false}
               tone={getReleaseTone(filteredReleases.inCreation!)}
               text={displayTitle}

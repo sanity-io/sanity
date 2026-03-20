@@ -175,7 +175,7 @@ describe('getExtendedProjection', () => {
   })
 
   test('ignores missing fields in non-strict mode while keeping valid paths', () => {
-    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => { /* intentionally empty */ })
     const orderBy: SortOrderingItem[] = [
       {field: 'title', direction: 'asc'},
       {field: 'missingField', direction: 'asc'},

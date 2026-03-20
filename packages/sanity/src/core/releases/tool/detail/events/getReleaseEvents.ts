@@ -42,8 +42,8 @@ const notEnabledActivityEvents: ReturnType<typeof getReleaseActivityEvents> = {
     loading: false,
     error: null,
   }),
-  reloadEvents: () => {},
-  loadMore: () => {},
+  reloadEvents: () => { /* intentionally empty */ },
+  loadMore: () => { /* intentionally empty */ },
 }
 
 /**

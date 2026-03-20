@@ -76,7 +76,7 @@ export function RequestAccessScreen() {
 
   // Check if user has a pending access request for this project
   useEffect(() => {
-    if (!client || !projectId) return () => {}
+    if (!client || !projectId) return () => { /* intentionally empty */ }
     const request$ = client.observable
       .request<AccessRequest[] | null>({
         url: '/access/requests/me',

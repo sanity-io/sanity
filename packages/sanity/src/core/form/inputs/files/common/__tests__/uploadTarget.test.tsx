@@ -32,7 +32,7 @@ vi.mock('../../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo'
       aspectRatio: 16 / 9,
     },
     error: undefined,
-    retry: () => {},
+    retry: () => { /* intentionally empty */ },
   }),
 }))
 vi.mock('../../../../../../media-library/plugin/VideoInput/VideoPlayer', () => ({
@@ -58,17 +58,17 @@ function createMockDataTransfer(files: File[]): DataTransfer {
     files: fileList,
     items: {
       length: files.length,
-      add: () => {},
-      clear: () => {},
+      add: () => { /* intentionally empty */ },
+      clear: () => { /* intentionally empty */ },
       get: () => null,
-      remove: () => {},
+      remove: () => { /* intentionally empty */ },
       *[Symbol.iterator]() {
         for (const f of files) {
           yield {
             kind: 'file' as const,
             type: f.type,
             getAsFile: () => f,
-            getAsString: () => {},
+            getAsString: () => { /* intentionally empty */ },
             webkitGetAsEntry: () => null,
           } as DataTransferItem
         }

@@ -29,7 +29,7 @@ function createMockDocumentPreviewStore() {
         // Return a minimal observable that emits once
         return {
           pipe: () => ({
-            subscribe: () => ({unsubscribe: () => {}}),
+            subscribe: () => ({unsubscribe: () => { /* intentionally empty */ }}),
           }),
         }
       },

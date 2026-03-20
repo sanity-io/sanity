@@ -82,7 +82,7 @@ describe('provisioning', () => {
 
   test('renders error catch by the ErrorBoundary if something unexpected happens', async () => {
     // React logs caught errors from error boundaries to console.error
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => { /* intentionally empty */ })
     const client = createMockSanityClient({
       requestCallback: (request) => {
         switch (request.uri) {
