@@ -1,27 +1,34 @@
-import {Box, Flex, Stack} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {Box, type BoxProps, Flex, type FlexProps, Stack, type StackProps} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {forwardRef} from 'react'
 
-export const StackWrapper = styled(Stack)`
-  max-width: 200px;
-`
+import {stackWrapper, listWrapper, maxHeightVar, rootVisible, rootHidden} from './timeline.css'
 
-export const ListWrapper = styled(Flex)<{$maxHeight: string}>`
-  max-height: ${(props) => props.$maxHeight};
-  min-width: 244px;
-`
+export const StackWrapper = forwardRef<HTMLDivElement, StackProps>(
+  function StackWrapper(props, ref) {
+    return <Stack {...props} className={stackWrapper} ref={ref} />
+  },
+)
 
-export const Root = styled(Box)<{$visible?: boolean}>(({$visible}) => {
-  return css`
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
+export const ListWrapper = forwardRef<HTMLDivElement, FlexProps & {$maxHeight: string}>(
+  function ListWrapper({$maxHeight, style: styleProp, ...props}, ref) {
+    return (
+      <Flex
+        {...props}
+        className={listWrapper}
+        style={{
+          ...styleProp,
+          ...assignInlineVars({[maxHeightVar]: $maxHeight}),
+        }}
+        ref={ref}
+      />
+    )
+  },
+)
 
-    ${
-      $visible &&
-      css`
-        opacity: 1;
-        pointer-events: auto;
-      `
-    }
-  `
+export const Root = forwardRef<HTMLDivElement, BoxProps & {$visible?: boolean}>(function Root(
+  {$visible, ...props},
+  ref,
+) {
+  return <Box {...props} className={$visible ? rootVisible : rootHidden} ref={ref} />
 })

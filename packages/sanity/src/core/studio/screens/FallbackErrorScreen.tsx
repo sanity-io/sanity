@@ -1,13 +1,10 @@
 /* eslint-disable i18next/no-literal-string */
 import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {ErrorActions} from '../../components'
 import {isDev, isProd} from '../../environment'
 
-const View = styled(Box)`
-  align-items: center;
-`
+import {view} from './FallbackErrorScreen.css'
 
 export function FallbackErrorScreen(props: {
   error: Error
@@ -21,7 +18,7 @@ export function FallbackErrorScreen(props: {
 
   return (
     <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
-      <View display="flex" height="fill">
+      <Box className={view} display="flex" height="fill">
         <Container width={3}>
           <Stack space={6}>
             <Stack space={4}>
@@ -50,7 +47,7 @@ export function FallbackErrorScreen(props: {
             <ErrorActions error={error} eventId={eventId} onRetry={onReset} size="large" />
           </Stack>
         </Container>
-      </View>
+      </Box>
     </Card>
   )
 }

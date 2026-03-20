@@ -10,7 +10,7 @@ import {
   type RangeDecoration,
 } from '@portabletext/editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
+import {Box, Layer, Portal, PortalProvider, useBoundaryElement, usePortal, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
@@ -20,7 +20,12 @@ import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../typ
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {type OnPasteFn} from '../../types/inputProps'
 import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
-import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
+
+import {
+  expandedLayer,
+  root as rootClass,
+  stringDiffContainer,
+} from './Compositor.css'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 import {SelectedAnnotationsProvider} from './contexts/SelectedAnnotationsContext'
@@ -110,6 +115,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const boundaryElement = useBoundaryElement().element
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
+  const {color: themeColor, input: themeInput, radius: themeRadius} = useThemeV2()
 
   const handleToggleFullscreen = useCallback(() => {
     onToggleFullscreen()
@@ -452,7 +458,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         tabIndex={-1}
         types={schemaTypes.portableText.of}
       >
-        <StringDiffContainer>
+        <div className={stringDiffContainer}>
           <Editor
             ariaDescribedBy={ariaDescribedBy}
             elementRef={elementRef}
@@ -476,7 +482,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             scrollElement={scrollElement}
             setScrollElement={setScrollElement}
           />
-        </StringDiffContainer>
+        </div>
       </UploadTargetCard>
     ),
 
@@ -542,13 +548,14 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             isChanged={changed}
             path={path}
           >
-            <Root
+            <div
+              className={rootClass}
               data-focused={editorFocused ? '' : undefined}
               data-read-only={readOnly ? '' : undefined}
             >
               <Box data-wrapper="" ref={setWrapperElement}>
                 <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                  {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                  {isFullscreen ? <Layer className={expandedLayer}>{editorNode}</Layer> : editorNode}
                   <AnnotationObjectEditModal
                     focused={focused}
                     onItemClose={onItemClose}
@@ -561,7 +568,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
                 </Portal>
               </Box>
               <div data-border="" />
-            </Root>
+            </div>
           </ChangeIndicator>
         </ActivateOnFocus>
       </PortalProvider>

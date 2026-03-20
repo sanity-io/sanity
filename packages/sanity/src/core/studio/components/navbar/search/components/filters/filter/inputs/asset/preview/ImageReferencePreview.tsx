@@ -1,31 +1,17 @@
 import {type ImageAsset, type ReferenceValue} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../../../../../../../../components/loadingBlock'
 import {observeImageAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
 import {WithReferencedAsset} from '../../../../../../../../../../form/utils/WithReferencedAsset'
 import {useDocumentPreviewStore} from '../../../../../../../../../../store'
 
+import {container, image as imageClass} from './ImageReferencePreview.css'
+
 interface ImageReferencePreviewProps {
   reference: ReferenceValue
 }
-
-const Container = styled(Card)`
-  position: relative;
-  padding-bottom: 100%;
-`
-
-const Image = styled.img`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: contain;
-`
 
 export function ImageReferencePreview({reference}: ImageReferencePreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
@@ -46,9 +32,9 @@ function ImagePreview({asset}: {asset: ImageAsset}) {
   const handleLoad = useCallback(() => setLoaded(true), [])
 
   return (
-    <Container __unstable_checkered border>
+    <Card className={container} __unstable_checkered border>
       {!loaded && <LoadingBlock fill showText />}
-      <Image onLoad={handleLoad} src={imageUrl} />
-    </Container>
+      <img className={imageClass} onLoad={handleLoad} src={imageUrl} />
+    </Card>
   )
 }

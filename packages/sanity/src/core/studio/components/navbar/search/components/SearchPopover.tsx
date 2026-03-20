@@ -3,13 +3,9 @@ import {Card, Portal, useClickOutsideEvent, useLayer} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import {styled} from 'styled-components'
 
 import {supportsTouch} from '../../../../../util'
 import {
-  POPOVER_INPUT_PADDING,
-  POPOVER_MAX_HEIGHT,
-  POPOVER_MAX_WIDTH,
   POPOVER_RADIUS,
 } from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
@@ -20,6 +16,8 @@ import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
 import {type ItemSelectHandler} from './searchResults/item/SearchResultItem'
 import {SearchResults} from './searchResults/SearchResults'
+
+import {motionOverlay, searchMotionCard} from './SearchPopover.css'
 
 /**
  * @internal
@@ -52,29 +50,8 @@ const OVERLAY_VARIANTS: Variants = {
   closed: {opacity: 0},
 }
 
-const Y_POSITION = 12 // vh
-
-const MotionOverlay = styled(motion.create(Card))`
-  background-color: var(--card-backdrop-color);
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-`
-
-const SearchMotionCard = styled(motion.create(Card))`
-  display: flex !important;
-  flex-direction: column;
-  left: 50%;
-  max-height: min(
-    calc(100vh - ${Y_POSITION}vh - ${POPOVER_INPUT_PADDING}px),
-    ${POPOVER_MAX_HEIGHT}px
-  );
-  position: absolute;
-  top: ${Y_POSITION}vh;
-  width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
-`
+const MotionOverlay = motion.create(Card)
+const SearchMotionCard = motion.create(Card)
 
 /**
  * @internal
@@ -115,6 +92,7 @@ export function SearchPopover({
           <Portal>
             <FocusLock autoFocus={!supportsTouch} disabled={disableFocusLock} returnFocus>
               <MotionOverlay
+                className={motionOverlay}
                 animate="open"
                 exit="closed"
                 initial="closed"
@@ -124,6 +102,7 @@ export function SearchPopover({
               />
 
               <SearchMotionCard
+                className={searchMotionCard}
                 animate="open"
                 exit="closed"
                 initial="closed"

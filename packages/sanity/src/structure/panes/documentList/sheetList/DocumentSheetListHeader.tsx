@@ -6,34 +6,11 @@ import {type SanityDocument} from '@sanity/types'
 import {Box, Flex, Menu, Text} from '@sanity/ui'
 import {flexRender, type Header as HeaderType, type HeaderGroup} from '@tanstack/react-table'
 import {useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem, Tooltip} from '../../../../ui-components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {header as headerClass, pinnedHeader, hoverMenu, widthVar} from './DocumentSheetListHeader.css'
 
-const Header = styled.th<{width: number}>`
-  margin: 16px;
-  z-index: 1;
-  padding: 22px 0px;
-  border-top: 1px solid var(--card-border-color);
-  background-color: var(--card-badge-default-bg-color);
-  box-sizing: border-box;
-  text-align: left;
-  width: ${({width}) => width}px;
-  max-width: ${({width}) => width}px;
-`
-
-const PinnedHeader = styled(Header)`
-  position: sticky;
-  z-index: 2;
-`
-
-const HoverMenu = styled.div`
-  visibility: hidden;
-
-  ${Header}:hover & {
-    visibility: visible;
-  }
-`
 
 type DocumentSheetListHeaderProps = {
   header: HeaderType<SanityDocument, unknown>
@@ -53,7 +30,7 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
       </Text>
     )
 
-  const HeaderTag = isPinned ? PinnedHeader : Header
+  const headerClassName = isPinned ? pinnedHeader : headerClass
 
   const canShowHeaderMenu =
     header.column.getCanHide() &&
@@ -62,14 +39,15 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
   const borderWidth = isPinned && header.column.getIsLastColumn('left') ? 2 : 1
 
   return (
-    <HeaderTag
+    <th
       key={header.id}
+      className={headerClassName}
       style={{
         left: header.column.getStart('left') ?? undefined,
         borderRight: `${borderWidth}px solid var(--card-border-color)`,
+        ...assignInlineVars({[widthVar]: `${header.getSize()}px`}),
       }}
       data-testid={`header-${header.id}`}
-      width={header.getSize()}
     >
       <Flex justify="space-between" marginX={2} align="baseline">
         <Tooltip delay={500} content={headerTitle}>
@@ -78,7 +56,7 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
           </Box>
         </Tooltip>
         {canShowHeaderMenu && (
-          <HoverMenu>
+          <div className={hoverMenu}>
             <MenuButton
               button={
                 <Button
@@ -100,9 +78,9 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
                 </Menu>
               }
             />
-          </HoverMenu>
+          </div>
         )}
       </Flex>
-    </HeaderTag>
+    </th>
   )
 }

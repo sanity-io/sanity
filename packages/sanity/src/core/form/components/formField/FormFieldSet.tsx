@@ -1,5 +1,5 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -11,7 +11,6 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import {css, styled} from 'styled-components'
 
 import {TextWithTone} from '../../../components'
 import {type DocumentFieldActionNode} from '../../../config'
@@ -22,9 +21,10 @@ import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types'
 import {FormRow} from '../layout/FormRow'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
+import {content as contentClass, contentNesting, rootFieldset} from './FormFieldSet.css'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
-import {ColumnarGrid, focusRingStyle} from './styles'
+import {ColumnarGrid} from './styles'
 
 /** @internal */
 export interface FormFieldSetProps {
@@ -67,61 +67,6 @@ export interface FormFieldSetProps {
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
 }
-
-const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
-  border: none;
-
-  /* See: https://thatemil.com/blog/2015/01/03/reset-your-fieldset/ */
-  body:not(:-moz-handler-blocked) & {
-    display: table-cell;
-  }
-`
-
-const Content = styled(Box)<{
-  /*
-   * @note: The dollar sign ($) prefix is a `styled-components` convention for
-   * denoting transient props. See:
-   * https://styled-components.com/docs/api#transient-props
-   */
-  $borderLeft: boolean
-  $focused?: boolean
-  theme: Theme
-}>((props) => {
-  const {$borderLeft, $focused, theme} = props
-  const {focusRing} = theme.sanity
-  const {base} = theme.sanity.color
-
-  return css`
-    outline: none;
-    border-left: ${$borderLeft ? '1px solid var(--card-border-color)' : undefined};
-    transition:
-      border-color 0.2s ease-in-out,
-      box-shadow 0.2s ease-in-out;
-
-    ${
-      $borderLeft &&
-      $focused &&
-      `border-left: 1px solid var(--card-focus-ring-color);
-    box-shadow: inset 1px 0 0 var(--card-focus-ring-color);`
-    }
-
-    ${
-      $borderLeft &&
-      !$focused &&
-      `
-      box-shadow: inset 0 0 0 transparent;
-    `
-    }
-
-    &:focus {
-      box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};
-    }
-
-    &:focus:not(:focus-visible) {
-      box-shadow: none;
-    }
-  `
-})
 
 const EMPTY_ARRAY: never[] = []
 
@@ -187,11 +132,15 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     )
   }, [children, collapsed, columns])
 
+  const contentNestingVariant = level === 0 ? 'none' : focused ? 'focused' : 'resting'
+
   return (
     <FormRow>
-      <Root
+      <Stack
+        as="fieldset"
         data-level={level}
         {...restProps}
+        className={rootFieldset}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         space={2}
@@ -247,9 +196,8 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
             </Stack>
           }
         />
-        <Content
-          $borderLeft={level > 0}
-          $focused={Boolean(focused)}
+        <Box
+          className={`${contentClass} ${contentNesting[contentNestingVariant]}`}
           hidden={collapsed}
           paddingLeft={level === 0 ? 0 : 3}
           onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}
@@ -257,8 +205,8 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
           tabIndex={tabIndex}
         >
           {!collapsed && content}
-        </Content>
-      </Root>
+        </Box>
+      </Stack>
     </FormRow>
   )
 })

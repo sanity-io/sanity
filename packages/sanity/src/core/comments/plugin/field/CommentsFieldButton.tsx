@@ -9,7 +9,6 @@ import {
   useClickOutsideEvent,
 } from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 
 import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
@@ -19,10 +18,7 @@ import {CommentInput, type CommentInputHandle} from '../../components'
 import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentMessage} from '../../types'
-
-const ContentStack = styled(Stack)`
-  width: 320px;
-`
+import {contentStack} from './CommentsFieldButton.css'
 
 interface CommentsFieldButtonProps {
   count: number
@@ -133,7 +129,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     )
 
     const content = (
-      <ContentStack padding={2} space={4}>
+      <Stack className={contentStack} padding={2} space={4}>
         <CommentInput
           currentUser={currentUser}
           focusLock
@@ -149,7 +145,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
           ref={commentInputHandle}
           value={value}
         />
-      </ContentStack>
+      </Stack>
     )
 
     return (

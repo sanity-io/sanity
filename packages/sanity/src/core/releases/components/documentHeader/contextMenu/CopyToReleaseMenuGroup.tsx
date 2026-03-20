@@ -2,20 +2,14 @@ import {type ReleaseDocument} from '@sanity/client'
 import {CopyIcon} from '@sanity/icons'
 import {MenuDivider, Stack} from '@sanity/ui'
 import {memo} from 'react'
-import {styled} from 'styled-components'
 
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
 import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
+import {releasesList} from './CopyToReleaseMenuGroup.css'
 import {CopyToDraftsMenuItem} from './CopyToDraftsMenuItem'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
-
-const ReleasesList = styled(Stack)`
-  max-width: 300px;
-  max-height: 200px;
-  overflow-y: auto;
-`
 
 interface CopyToReleaseMenuGroupProps {
   releases: ReleaseDocument[]
@@ -64,7 +58,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
       data-testid="copy-version-to-release-button-group"
     >
       {(hasCopyToDraftOption || releases.length > 0) && (
-        <ReleasesList key={bundleId} space={1}>
+        <Stack key={bundleId} className={releasesList} space={1}>
           {hasCopyToDraftOption && (
             <CopyToDraftsMenuItem
               documentType={documentType}
@@ -84,7 +78,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
               />
             )
           })}
-        </ReleasesList>
+        </Stack>
       )}
       {isReleasesEnabled && (hasCopyToDraftOption || releases.length > 0) && <MenuDivider />}
       {isReleasesEnabled && <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />}

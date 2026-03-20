@@ -1,9 +1,8 @@
 import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ElementType, type ReactNode, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {statusDotPlaceholder} from './PreviewWrapper.css'
 import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'
 import {useTimeZone} from '../../../hooks/useTimeZone'
@@ -25,9 +24,7 @@ import DateWithTooltip from './dateWithTooltip/DateWithTooltip'
 import StateReasonFailedInfo from './StateReasonFailedInfo'
 import User from './User'
 
-const StatusDotPlaceholder = styled(Box)`
-  width: 9px;
-`
+
 interface Props {
   children?: ReactNode
   contextMenu?: ReactNode
@@ -153,7 +150,7 @@ const PreviewWrapper = (props: Props) => {
                   {publishedDocumentId ? (
                     <DocumentVersionsStatus publishedDocumentId={publishedDocumentId} />
                   ) : (
-                    <StatusDotPlaceholder />
+                    <Box className={statusDotPlaceholder} />
                   )}
                 </Box>
               </Flex>

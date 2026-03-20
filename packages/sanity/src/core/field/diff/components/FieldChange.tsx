@@ -1,5 +1,6 @@
 import {type ObjectSchemaType, type Path} from '@sanity/types'
-import {Stack} from '@sanity/ui'
+import {Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {Fragment, type HTMLAttributes, startTransition, useCallback, useMemo, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
@@ -14,7 +15,7 @@ import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
 import {DiffInspectWrapper} from './DiffInspectWrapper'
 import {FallbackDiff} from './FallbackDiff'
-import {DiffBorder, FieldChangeContainer} from './FieldChange.styled'
+import {diffBorder, fieldChangeContainer, fieldChangeErrorVar} from './FieldChange.css'
 import {RevertChangesButton} from './RevertChangesButton'
 import {RevertChangesConfirmDialog} from './RevertChangesConfirmDialog'
 import {ValueError} from './ValueError'
@@ -80,7 +81,17 @@ export function FieldChange(
      */
     startTransition(() => _setButtonElement(element))
   }
+  const {color, space} = useThemeV2()
   const {t} = useTranslation()
+
+  const fieldChangeVars = assignInlineVars({
+    [fieldChangeErrorVar]: color.solid.critical.enabled.bg,
+  })
+
+  const diffBorderStyle = {
+    '--diff-inspect-padding-xsmall': `${space[1]}px`,
+    '--diff-inspect-padding-small': `${space[2]}px`,
+  } as React.CSSProperties
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
@@ -129,7 +140,7 @@ export function FieldChange(
 
   return (
     <>
-      <Stack space={1} as={FieldChangeContainer} {...restProps}>
+      <Stack space={1} className={fieldChangeContainer} style={fieldChangeVars} {...restProps}>
         {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
         <ParentWrapper
           path={fieldPath}
@@ -139,7 +150,8 @@ export function FieldChange(
           <FieldWrapper path={fieldPath} hasRevertHover={revertHovered}>
             <DiffInspectWrapper
               change={change}
-              as={DiffBorder}
+              className={diffBorder}
+              style={diffBorderStyle}
               data-revert-field-hover={revertHovered ? '' : undefined}
               data-error={change.error ? '' : undefined}
               data-revert-all-hover

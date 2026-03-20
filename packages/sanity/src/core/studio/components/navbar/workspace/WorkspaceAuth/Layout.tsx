@@ -1,7 +1,8 @@
 import {SanityLogo} from '@sanity/logos'
 import {Box, Card, Flex, Heading, Stack, Text, usePrefersDark} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
-import {styled} from 'styled-components'
+
+import {styledText} from './Layout.css'
 
 const LINKS = [
   {
@@ -25,12 +26,6 @@ const LINKS = [
     title: 'sanity.io',
   },
 ]
-
-const StyledText = styled(Text)`
-  a {
-    color: inherit;
-  }
-`
 
 interface LayoutProps {
   header?: ReactNode
@@ -73,11 +68,11 @@ export function Layout(props: LayoutProps) {
         <Flex align="center" gap={2}>
           {LINKS.map((link, index) => (
             <Fragment key={link.title}>
-              <StyledText muted size={1}>
+              <Text className={styledText} muted size={1}>
                 <a href={link.url} target="_blank" rel="noopener noreferrer">
                   {link.title}
                 </a>
-              </StyledText>
+              </Text>
 
               {index < LINKS.length - 1 && (
                 <Text size={1} muted>

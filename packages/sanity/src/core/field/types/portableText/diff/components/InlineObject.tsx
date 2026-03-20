@@ -6,11 +6,10 @@ import {
   type PortableTextChild,
   type PortableTextObject,
 } from '@sanity/types'
-import {Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
 import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators'
@@ -19,7 +18,8 @@ import {Preview} from '../../../../../preview/components/Preview'
 import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
-import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
+import {inlineObjectWrapper} from './InlineObject.css'
+import {inlineBox, inlineText, popoverContainer, previewContainer} from './styledComponents.css'
 
 interface InlineObjectProps {
   diff?: ObjectDiff
@@ -28,30 +28,13 @@ interface InlineObjectProps {
   schemaType?: ObjectSchemaType
 }
 
-const InlineObjectWrapper = styled(Card)`
-  &:not([hidden]) {
-    display: inline;
-    cursor: pointer;
-    white-space: nowrap;
-    align-items: center;
-
-    &[data-removed] {
-      text-decoration: line-through;
-    }
-
-    ${InlineBox} {
-      display: inline-flex;
-    }
-  }
-`
-
 export function InlineObject({diff, object, schemaType, ...restProps}: InlineObjectProps) {
   const {t} = useTranslation()
   if (!schemaType) {
     return (
-      <InlineObjectWrapper {...restProps} border radius={1}>
+      <Card className={inlineObjectWrapper} {...restProps} border radius={1}>
         {t('changes.portable-text.unknown-inline-object-schema-type', {schemaType: object._type})}
-      </InlineObjectWrapper>
+      </Card>
     )
   }
 
@@ -62,9 +45,9 @@ export function InlineObject({diff, object, schemaType, ...restProps}: InlineObj
   }
 
   return (
-    <InlineObjectWrapper>
+    <Card className={inlineObjectWrapper}>
       <Preview schemaType={schemaType} value={object} layout="inline" />
-    </InlineObjectWrapper>
+    </Card>
   )
 }
 
@@ -145,7 +128,8 @@ function InlineObjectWithDiff({
   const annotations = annotation ? [annotation] : []
 
   return (
-    <InlineObjectWrapper
+    <Card
+      className={inlineObjectWrapper}
       {...restProps}
       onClick={handleOpenPopup}
       style={style}
@@ -154,23 +138,23 @@ function InlineObjectWithDiff({
       radius={2}
     >
       <Popover content={popoverContent} open={open} portal>
-        <PreviewContainer>
+        <Box className={previewContainer}>
           <DiffTooltip
             annotations={annotations}
             description={t('changes.portable-text.inline-object', {context: diff.action})}
           >
-            <InlineBox>
+            <Box className={inlineBox}>
               <Preview schemaType={schemaType} value={object} layout="inline" />
               <Flex align="center" paddingX={1}>
-                <InlineText size={0}>
+                <Text className={inlineText} size={0}>
                   <ChevronDownIcon />
-                </InlineText>
+                </Text>
               </Flex>
-            </InlineBox>
+            </Box>
           </DiffTooltip>
-        </PreviewContainer>
+        </Box>
       </Popover>
-    </InlineObjectWrapper>
+    </Card>
   )
 }
 
@@ -191,7 +175,7 @@ function PopoverContent({
   useClickOutsideEvent(onClose, () => [popoverRef.current])
 
   return (
-    <PopoverContainer ref={popoverRef} padding={3}>
+    <Box className={popoverContainer} ref={popoverRef} padding={3}>
       {emptyObject && (
         <Text muted size={1} weight="medium">
           {t('changes.portable-text.empty-inline-object', {
@@ -200,6 +184,6 @@ function PopoverContent({
         </Text>
       )}
       {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
-    </PopoverContainer>
+    </Box>
   )
 }

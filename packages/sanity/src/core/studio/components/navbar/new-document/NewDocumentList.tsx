@@ -1,7 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
 
 import {CommandList} from '../../../../components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
@@ -10,9 +9,7 @@ import {supportsTouch} from '../../../../util'
 import {INLINE_PREVIEW_HEIGHT, NewDocumentListOption} from './NewDocumentListOption'
 import {type NewDocumentOption, type PreviewLayout} from './types'
 
-const ContentFlex = styled(Flex)`
-  min-height: 100px;
-`
+import {contentFlex} from './NewDocumentList.css'
 
 export interface NewDocumentListProps {
   currentUser: CurrentUser | null
@@ -62,7 +59,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
   // Render no search results state
   if (!hasOptions && searchQuery) {
     return (
-      <ContentFlex
+      <Flex className={contentFlex}
         align="center"
         flex={1}
         height="fill"
@@ -73,14 +70,14 @@ export function NewDocumentList(props: NewDocumentListProps) {
         <Text align="center" muted size={1}>
           <Translate t={t} i18nKey="new-document.no-results" values={{searchQuery}} />
         </Text>
-      </ContentFlex>
+      </Flex>
     )
   }
 
   // Render no options state
   if (!hasOptions) {
     return (
-      <ContentFlex
+      <Flex className={contentFlex}
         align="center"
         flex={1}
         height="fill"
@@ -91,7 +88,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
         <Text align="center" muted size={1}>
           {t('new-document.no-document-types-found')}
         </Text>
-      </ContentFlex>
+      </Flex>
     )
   }
 

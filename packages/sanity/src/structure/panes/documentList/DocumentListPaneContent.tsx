@@ -14,26 +14,14 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
 
 import {Delay, PaneContent, PaneItem, usePane, usePaneLayout} from '../../components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {rootBox, commandListBox, opacityVar} from './DocumentListPaneContent.css'
 import {structureLocaleNamespace} from '../../i18n'
 import {FULL_LIST_LIMIT} from './constants'
 import {type DocumentListPaneItem, type LoadingVariant, type SortOrder} from './types'
 
-const RootBox = styled(Box)<{$opacity?: number}>`
-  position: relative;
-  opacity: ${(props) => props.$opacity || 1};
-  transition: opacity 0.4s;
-`
-
-const CommandListBox = styled(Box)`
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-`
 
 interface DocumentListPaneContentProps {
   childItemId?: string
@@ -278,8 +266,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     const key = `${index}-${collapsed}`
 
     return (
-      <RootBox overflow="hidden" height="fill" $opacity={muted ? 0.8 : 1}>
-        <CommandListBox>
+      <Box className={rootBox} overflow="hidden" height="fill" style={assignInlineVars({[opacityVar]: String(muted ? 0.8 : 1)})}>
+        <Box className={commandListBox}>
           <CommandList
             key={key}
             activeItemDataAttr="data-hovered"
@@ -296,8 +284,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             renderItem={renderItem}
             wrapAround={false}
           />
-        </CommandListBox>
-      </RootBox>
+        </Box>
+      </Box>
     )
   }, [
     autoRetry,

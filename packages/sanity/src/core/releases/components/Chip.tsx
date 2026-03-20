@@ -1,17 +1,18 @@
 import {
-  type Button, // eslint-disable-line no-restricted-imports
+  Button, // eslint-disable-line no-restricted-imports
 } from '@sanity/ui'
 import {type ComponentProps, forwardRef} from 'react'
 
-import {ChipButton, ChipButtonContainer} from './documentHeader/styles'
+import {chipButton, chipButtonContainer} from './documentHeader/styles.css'
 
 /**
  * @internal
  */
 export const Chip = forwardRef(function Chip(props: ComponentProps<typeof Button>, ref) {
   return (
-    <ChipButtonContainer>
-      <ChipButton
+    <span className={chipButtonContainer}>
+      <Button
+        className={chipButton}
         ref={ref}
         paddingY={2}
         paddingLeft={2}
@@ -20,6 +21,6 @@ export const Chip = forwardRef(function Chip(props: ComponentProps<typeof Button
         radius="full"
         {...props}
       />
-    </ChipButtonContainer>
+    </span>
   )
 })

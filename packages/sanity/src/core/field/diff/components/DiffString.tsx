@@ -1,43 +1,23 @@
-import {Card, rem, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {Card, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {useMemo} from 'react'
 
 import {useTranslation} from '../../../i18n'
 import {type StringDiff, type StringDiffSegment} from '../../types'
 import {DiffCard} from './DiffCard'
-
-const RoundedCard = styled.span`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
-`
-
-const ChangeSegment = styled(Text)`
-  &:not([hidden]) {
-    display: inline;
-    line-height: calc(1.25em + 2px);
-  }
-
-  &:hover {
-    background-color: none !important;
-    background-image: linear-gradient(
-      to bottom,
-      var(--card-bg-color) 0,
-      var(--card-bg-color) 33.333%,
-      currentColor 33.333%,
-      currentColor 100%
-    );
-    background-size: 1px 3px;
-    background-repeat: repeat-x;
-    background-position-y: bottom;
-    padding-bottom: 3px;
-    box-shadow: 0 0 0 1px var(--card-bg-color);
-    z-index: 1;
-  }
-`
+import {changeSegment, radiusVar, roundedCard} from './DiffString.css'
 
 /** @internal */
 export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JSX.Element {
   const {segment} = props
   const {text} = segment
   const {t} = useTranslation()
+  const {radius} = useThemeV2()
+
+  const roundedCardVars = useMemo(
+    () => assignInlineVars({[radiusVar]: String(rem(radius[1]))}),
+    [radius],
+  )
 
   if (segment.action === 'added') {
     return (
@@ -45,11 +25,13 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JS
         annotation={segment.annotation}
         disableHoverEffect
         tooltip={{description: t('changes.added-label')}}
-        as={RoundedCard}
+        as="span"
       >
-        <ChangeSegment as="ins" style={{textDecoration: 'none'}}>
-          {text}
-        </ChangeSegment>
+        <span className={roundedCard} style={roundedCardVars}>
+          <Text className={changeSegment} as="ins" style={{textDecoration: 'none'}}>
+            {text}
+          </Text>
+        </span>
       </DiffCard>
     )
   }
@@ -58,11 +40,15 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JS
     return (
       <DiffCard
         annotation={segment.annotation}
-        as={RoundedCard}
+        as="span"
         disableHoverEffect
         tooltip={{description: t('changes.removed-label')}}
       >
-        <ChangeSegment as="del">{text}</ChangeSegment>
+        <span className={roundedCard} style={roundedCardVars}>
+          <Text className={changeSegment} as="del">
+            {text}
+          </Text>
+        </span>
       </DiffCard>
     )
   }

@@ -1,11 +1,2 @@
-import {Card, Layer} from '@sanity/ui'
-import {styled} from 'styled-components'
-
-export const Root = styled(Layer)`
-  position: sticky;
-  bottom: 0;
-`
-
-export const RootCard = styled(Card)`
-  padding-bottom: env(safe-area-inset-bottom);
-`
+// Styles moved to PaneFooter.css.ts
+export {root as Root, rootCard as RootCard} from './PaneFooter.css'

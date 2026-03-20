@@ -1,9 +1,20 @@
+ 
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewMedia, renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
-import {MediaSpan, RootSpan, TextSpan} from './InlinePreview.styled'
+import {
+  fontSizeVar,
+  fontWeightVar,
+  lineHeightVar,
+  mediaSpan,
+  radiusVar,
+  rootSpan,
+  textSpan,
+} from './InlinePreview.css'
 
 /**
  * @hidden
@@ -28,18 +39,36 @@ export function InlinePreview(props: InlinePreviewProps) {
     mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,
   } = props
 
+  const {font, radius} = useThemeV2()
+  const textFont = font.text
+  const textSize = textFont.sizes[1]
+
   return (
-    <RootSpan data-testid="inline-preview">
+    <span className={rootSpan} data-testid="inline-preview">
       {media && (
-        <MediaSpan data-testid="inline-preview-media">
+        <span
+          className={mediaSpan}
+          data-testid="inline-preview-media"
+          style={assignInlineVars({
+            [radiusVar]: `${radius[1]}px`,
+          })}
+        >
           {renderPreviewMedia(media, 'inline', mediaDimensions)}
           <span />
-        </MediaSpan>
+        </span>
       )}
 
-      <TextSpan data-testid="inline-preview-title" size={1}>
+      <span
+        className={textSpan}
+        data-testid="inline-preview-title"
+        style={assignInlineVars({
+          [fontSizeVar]: `calc(${textSize.fontSize} / 16 * 1em)`,
+          [fontWeightVar]: String(textFont.weights.medium),
+          [lineHeightVar]: String(textSize.lineHeight / textSize.fontSize),
+        })}
+      >
         {renderPreviewNode(title, 'inline', fallbackTitle)}
-      </TextSpan>
-    </RootSpan>
+      </span>
+    </span>
   )
 }

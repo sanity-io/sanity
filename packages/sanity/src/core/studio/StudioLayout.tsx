@@ -1,10 +1,11 @@
 /* eslint-disable @sanity/i18n/no-attribute-template-literals */
 import {Card, Flex} from '@sanity/ui'
+
+import {searchFullscreenPortalCard} from './StudioLayout.css'
 import startCase from 'lodash-es/startCase.js'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../components/loadingBlock'
 import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
@@ -30,16 +31,7 @@ const DetectViteDevServerStopped = lazy(() =>
 
 const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
 
-const SearchFullscreenPortalCard = styled(Card)`
-  height: 100%;
-  left: 0;
-  overflow: hidden;
-  overflow: clip;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 200;
-`
+
 
 /** @internal */
 export interface NavbarContextValue {
@@ -196,7 +188,7 @@ export function StudioLayoutComponent() {
         <ToolNotFoundScreen toolName={activeToolName} />
       )}
       {searchFullscreenOpen && (
-        <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
+        <Card className={searchFullscreenPortalCard} ref={setSearchFullscreenPortalEl} overflow="auto" />
       )}
       {/* By using the tool name as the key on the error boundary, we force it to re-render
           when switching tools, which ensures we don't show the wrong tool having crashed */}

@@ -1,6 +1,6 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
 import {type SanityDocument} from '@sanity/types'
-import {Card, Code, Flex, TabList, TabPanel} from '@sanity/ui'
+import {Card, Code, Flex, TabList, TabPanel,useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {useCallback} from 'react'
 import {Translate, useTranslation} from 'sanity'
 
@@ -11,7 +11,20 @@ import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {useDocumentPane} from '../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
-import {JSONInspectorWrapper} from './InspectDialog.styles'
+import {
+  JSONInspectorWrapper,
+  codeFamilyVar,
+  codeFontSizeVar,
+  codeLineHeightVar,
+  space4Var,
+  space3Var,
+  syntaxPropertyVar,
+  syntaxConstantVar,
+  syntaxStringVar,
+  syntaxBooleanVar,
+  syntaxNumberVar,
+} from './InspectDialog.styles'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {Search} from './Search'
 
 interface InspectDialogProps {
@@ -44,6 +57,7 @@ export function InspectDialog(props: InspectDialogProps) {
   }, [onViewModeChange])
 
   const {t} = useTranslation(structureLocaleNamespace)
+  const {font, color, space} = useThemeV2()
 
   return (
     <Dialog
@@ -105,7 +119,18 @@ export function InspectDialog(props: InspectDialogProps) {
           style={{outline: 'none'}}
         >
           {viewMode === VIEW_MODE_PARSED && (
-            <JSONInspectorWrapper>
+            <div className={JSONInspectorWrapper} style={assignInlineVars({
+                [codeFamilyVar]: font.code.family,
+                [codeFontSizeVar]: `${font.code.sizes[1].fontSize}px`,
+                [codeLineHeightVar]: `${font.code.sizes[1].lineHeight}px`,
+                [space4Var]: `${space[4]}px`,
+                [space3Var]: `${space[3]}px`,
+                [syntaxPropertyVar]: color.syntax.property,
+                [syntaxConstantVar]: color.syntax.constant,
+                [syntaxStringVar]: color.syntax.string,
+                [syntaxBooleanVar]: color.syntax.boolean,
+                [syntaxNumberVar]: color.syntax.number,
+              })}>
               <JsonInspector
                 data={value}
                 isExpanded={isExpanded}
@@ -113,7 +138,7 @@ export function InspectDialog(props: InspectDialogProps) {
                 search={Search}
                 filterOptions={{ignoreCase: true}}
               />
-            </JSONInspectorWrapper>
+            </div>
           )}
 
           {viewMode === VIEW_MODE_RAW && (

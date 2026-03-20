@@ -7,9 +7,9 @@ import {
   type PaneNode,
   StructureToolProvider,
 } from 'sanity/structure'
-import {styled} from 'styled-components'
 
 import {ErrorBoundary} from '../../ui-components'
+import {rootLayout, root, wrappedCode} from './DocumentListPane.css'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
 import {PresentationPaneRouterProvider} from '../paneRouter/PresentationPaneRouterProvider'
@@ -21,20 +21,6 @@ import {
 } from '../types'
 import {usePresentationTool} from '../usePresentationTool'
 
-const RootLayout = styled(PaneLayout)`
-  height: 100%;
-`
-
-const Root = styled(Flex)`
-  & > div {
-    min-width: none !important;
-    max-width: none !important;
-  }
-`
-
-const WrappedCode = styled(Code)`
-  white-space: pre-wrap;
-`
 
 export function DocumentListPane(props: {
   mainDocumentState?: MainDocumentState
@@ -93,7 +79,7 @@ export function DocumentListPane(props: {
               <Label muted size={0}>
                 {t('presentation-error.label')}
               </Label>
-              <WrappedCode size={1}>{errorParams.error.message}</WrappedCode>
+              <Code className={wrappedCode} size={1}>{errorParams.error.message}</Code>
             </Stack>
           </Card>
         )}
@@ -103,7 +89,7 @@ export function DocumentListPane(props: {
 
   return (
     <ErrorBoundary onCatch={setErrorParams}>
-      <RootLayout>
+      <PaneLayout className={rootLayout}>
         <StructureToolProvider>
           <PresentationPaneRouterProvider
             onEditReference={onEditReference}
@@ -112,7 +98,7 @@ export function DocumentListPane(props: {
             searchParams={searchParams}
             refs={refs}
           >
-            <Root direction="column" flex={1}>
+            <Flex className={root} direction="column" flex={1}>
               <StructureDocumentListPane
                 index={0}
                 itemId="$root"
@@ -120,10 +106,10 @@ export function DocumentListPane(props: {
                 // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
                 paneKey="$root"
               />
-            </Root>
+            </Flex>
           </PresentationPaneRouterProvider>
         </StructureToolProvider>
-      </RootLayout>
+      </PaneLayout>
     </ErrorBoundary>
   )
 }

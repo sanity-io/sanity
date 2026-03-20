@@ -1,36 +1,17 @@
 import {hues} from '@sanity/color'
-import {type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+
+import {
+  bgCircle,
+  bgStrokeVar,
+  progressCircle,
+  progressStrokeVar,
+  root,
+} from './CircularProgress.css'
 
 const SIZE = 43
 const STROKE_WIDTH = 3
-
-const Root = styled.svg`
-  width: ${SIZE}px;
-  height: ${SIZE}px;
-  transform: rotate(-90deg);
-`
-
-const BgCircle = styled.circle(({theme}: {theme: Theme}) => {
-  const {color} = theme.sanity
-
-  return css`
-    fill: none;
-    stroke: ${hues.gray[color.dark ? 900 : 100].hex};
-    stroke-width: ${STROKE_WIDTH}px;
-  `
-})
-
-const ProgressCircle = styled.circle(({theme}: {theme: Theme}) => {
-  const {color} = theme.sanity
-
-  return css`
-    fill: none;
-    stroke: ${hues.blue[color.dark ? 400 : 500].hex};
-    stroke-width: ${STROKE_WIDTH}px;
-    transition: stroke-dashoffset 75ms;
-  `
-})
 
 /**
  * @hidden
@@ -40,6 +21,7 @@ export function CircularProgress(props: {
   value: number
 }) {
   const {value: valueProp} = props
+  const {color} = useThemeV2()
   const value = Math.min(Math.max(valueProp, 0), 100)
   const radius = SIZE / 2 - STROKE_WIDTH / 2
   const circ = 2 * Math.PI * radius
@@ -47,9 +29,17 @@ export function CircularProgress(props: {
   const viewBox = `${SIZE / 2} ${SIZE / 2} ${SIZE} ${SIZE}`
 
   return (
-    <Root viewBox={viewBox}>
-      <BgCircle cx={SIZE} cy={SIZE} r={radius} />
-      <ProgressCircle
+    <svg
+      className={root}
+      viewBox={viewBox}
+      style={assignInlineVars({
+        [bgStrokeVar]: hues.gray[color.dark ? 900 : 100].hex,
+        [progressStrokeVar]: hues.blue[color.dark ? 400 : 500].hex,
+      })}
+    >
+      <circle className={bgCircle} cx={SIZE} cy={SIZE} r={radius} />
+      <circle
+        className={progressCircle}
         cx={SIZE}
         cy={SIZE}
         r={radius}
@@ -58,6 +48,6 @@ export function CircularProgress(props: {
           strokeDashoffset: `${offset}px`,
         }}
       />
-    </Root>
+    </svg>
   )
 }

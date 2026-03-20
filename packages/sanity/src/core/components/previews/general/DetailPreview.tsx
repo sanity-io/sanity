@@ -1,4 +1,6 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Skeleton, Stack, Text, TextSkeleton,useTheme_v2 as useThemeV2} from '@sanity/ui'
+ 
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n'
@@ -7,14 +9,15 @@ import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
 import {
-  DescriptionSkeleton,
-  DescriptionText,
-  MediaSkeleton,
-  RootFlex,
-  StatusBox,
-  SubtitleSkeleton,
-  TitleSkeleton,
-} from './DetailPreview.styled'
+  descriptionSkeleton,
+  descriptionText,
+  maxHeightVar,
+  mediaSkeleton,
+  rootFlex,
+  statusBox,
+  subtitleSkeleton,
+  titleSkeleton,
+} from './DetailPreview.css'
 
 /**
  * @hidden
@@ -43,31 +46,45 @@ export function DetailPreview(props: DetailPreviewProps) {
     isPlaceholder,
   } = props
   const {t} = useTranslation()
+  const {font} = useThemeV2()
+
+  const textSize1 = font.text.sizes[1]
+  const maxLines = 2
+  const maxHeight = textSize1.lineHeight * maxLines
 
   const statusNode = status && (
-    <StatusBox marginLeft={3} paddingRight={1}>
+    <Box className={statusBox} marginLeft={3} paddingRight={1}>
       {renderPreviewNode(status, 'detail')}
-    </StatusBox>
+    </Box>
   )
 
   if (isPlaceholder) {
     return (
-      <RootFlex
+      <Flex
+        className={rootFlex}
+        align="center"
         data-testid="detail-preview"
         paddingLeft={media ? 2 : 3}
         paddingRight={2}
         paddingY={2}
       >
         <Flex align="center" flex={1} gap={3}>
-          {media && <MediaSkeleton data-testid="detail-preview__media" />}
+          {media && (
+            <Skeleton
+              className={mediaSkeleton}
+              animated
+              radius={2}
+              data-testid="detail-preview__media"
+            />
+          )}
 
           <Flex align="center" data-testid="detail-preview__header" flex={1}>
             <Stack flex={1} space={2}>
-              <TitleSkeleton />
-              <SubtitleSkeleton />
+              <TextSkeleton className={titleSkeleton} animated radius={1} size={1} />
+              <TextSkeleton className={subtitleSkeleton} animated radius={1} size={1} />
               {description && (
                 <Box marginTop={1}>
-                  <DescriptionSkeleton />
+                  <TextSkeleton className={descriptionSkeleton} animated radius={1} size={1} />
                 </Box>
               )}
             </Stack>
@@ -75,12 +92,14 @@ export function DetailPreview(props: DetailPreviewProps) {
 
           {statusNode}
         </Flex>
-      </RootFlex>
+      </Flex>
     )
   }
 
   return (
-    <RootFlex
+    <Flex
+      className={rootFlex}
+      align="center"
       data-testid="detail-preview"
       paddingLeft={media ? 2 : 3}
       paddingRight={2}
@@ -104,9 +123,16 @@ export function DetailPreview(props: DetailPreviewProps) {
 
             {description && (
               <Box marginTop={1}>
-                <DescriptionText muted size={1}>
+                <Text
+                  className={descriptionText}
+                  muted
+                  size={1}
+                  style={assignInlineVars({
+                    [maxHeightVar]: `${maxHeight}px`,
+                  })}
+                >
                   {renderPreviewNode(description, 'detail')}
-                </DescriptionText>
+                </Text>
               </Box>
             )}
           </Stack>
@@ -116,6 +142,6 @@ export function DetailPreview(props: DetailPreviewProps) {
 
         {children}
       </Flex>
-    </RootFlex>
+    </Flex>
   )
 }

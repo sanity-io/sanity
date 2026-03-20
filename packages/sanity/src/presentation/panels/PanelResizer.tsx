@@ -8,58 +8,9 @@ import {
   useRef,
 } from 'react'
 import {PresentationPanelsContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
 import {usePanelId} from './usePanelId'
-
-const Resizer = styled.div`
-  position: relative;
-`
-const ResizerInner = styled.div<{
-  $disabled: boolean
-}>`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -5px;
-  width: 9px;
-  z-index: 10;
-  cursor: ${({$disabled}) => ($disabled ? 'auto' : 'ew-resize')};
-
-  /* Border */
-  & > span:nth-child(1) {
-    display: block;
-    border-left: 1px solid var(--card-border-color);
-    position: absolute;
-    top: 0;
-    left: 4px;
-    bottom: 0;
-    transition: opacity 200ms;
-  }
-
-  ${({$disabled}) =>
-    !$disabled &&
-    `
-    /* Hover effect */
-    & > span:nth-child(2) {
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 9px;
-      bottom: 0;
-      background-color: var(--card-border-color);
-      opacity: 0;
-      transition: opacity 150ms;
-    }
-
-    @media (hover: hover) {
-      &:hover > span:nth-child(2) {
-        opacity: 0.2;
-      }
-    }
-  `}
-`
+import {resizer, resizerInner, resizerInnerDisabled} from './PanelResizer.css'
 
 export const PanelResizer: FunctionComponent<{
   id?: string
@@ -152,11 +103,11 @@ export const PanelResizer: FunctionComponent<{
   }, [id, order, registerElement, unregisterElement])
 
   return (
-    <Resizer onMouseDown={onMouseDown} ref={el}>
-      <ResizerInner $disabled={disabled}>
+    <div className={resizer} onMouseDown={onMouseDown} ref={el}>
+      <div className={disabled ? resizerInnerDisabled : resizerInner}>
         <span />
         <span />
-      </ResizerInner>
-    </Resizer>
+      </div>
+    </div>
   )
 }

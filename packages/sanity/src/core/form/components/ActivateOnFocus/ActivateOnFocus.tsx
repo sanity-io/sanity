@@ -1,14 +1,14 @@
 // This is transitional in order to track usage of the ActivateOnFocusPart part from within the form-builder package
-import {Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {type KeyboardEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {useTranslation} from '../../../i18n'
 import {
-  CardContainer,
-  ContentContainer,
-  FlexContainer,
-  OverlayContainer,
-} from './ActivateOnFocus.styles'
+  cardContainer,
+  contentContainer,
+  flexContainer,
+  overlayContainer,
+} from './ActivateOnFocus.css'
 
 const isTouchDevice = () =>
   (typeof window !== 'undefined' && 'ontouchstart' in window) ||
@@ -90,7 +90,8 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
   }, [focused, message, t])
 
   return (
-    <OverlayContainer
+    <div
+      className={overlayContainer}
       onBlur={handleBlur}
       onClick={handleClick}
       onFocus={handleOnFocus}
@@ -98,17 +99,18 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
       onDragEnter={handleDragEnter}
     >
       {isOverlayActive && (
-        <FlexContainer data-testid="activate-overlay" tabIndex={0} align="center" justify="center">
-          <CardContainer
+        <Flex className={flexContainer} data-testid="activate-overlay" tabIndex={0} align="center" justify="center">
+          <Card
+            className={cardContainer}
             // Almost all input elements have radius=1, and this component is
             // typically used for overlaying input elements.
             // @todo Consider making `radius` a component property of `ActivateOnFocus`.
             radius={2}
           />
-          <ContentContainer>{msg}</ContentContainer>
-        </FlexContainer>
+          <div className={contentContainer}>{msg}</div>
+        </Flex>
       )}
       {children}
-    </OverlayContainer>
+    </div>
   )
 }

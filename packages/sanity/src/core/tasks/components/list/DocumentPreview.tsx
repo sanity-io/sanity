@@ -1,24 +1,14 @@
 import {DocumentIcon} from '@sanity/icons'
-import {Flex, Text, TextSkeleton} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Flex, Text, TextSkeleton, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {useSchema} from '../../../hooks'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../hooks'
+import * as classes from './DocumentPreview.css'
 
-const StyledIntentLink = styled(IntentLink)((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return `
-  text-decoration: underline;
-  text-decoration-color: ${theme.color.input.default.enabled.border};
-  text-underline-offset: 2px;
-`
-})
 export function DocumentPreview({
   documentId,
   documentType,
@@ -34,20 +24,25 @@ export function DocumentPreview({
     documentType,
     perspectiveStack,
   })
+  const theme = useThemeV2()
 
   const Link = useMemo(
     () =>
       forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
         return (
-          <StyledIntentLink
+          <IntentLink
             {...linkProps}
+            className={classes.styledIntentLink}
+            style={assignInlineVars({
+              [classes.decorationColorVar]: theme.color.input.default.enabled.border,
+            })}
             intent="edit"
             params={{id: documentId, type: documentType}}
             ref={ref}
           />
         )
       }),
-    [documentId, documentType],
+    [documentId, documentType, theme],
   )
 
   if (!documentSchema) {

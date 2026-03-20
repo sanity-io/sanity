@@ -1,10 +1,8 @@
 import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
-import {hues} from '@sanity/color'
 import {ImageIcon} from '@sanity/icons'
 import {createImageUrlBuilder} from '@sanity/image-url'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {type SyntheticEvent, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
 
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
@@ -13,6 +11,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {MetaInfo} from '../../../diff'
 import {getDeviceDpr, simpleHash} from './helpers'
 import {HotspotCropSVG} from './HotspotCropSVG'
+import {hotspotDiff, image, imageWrapper} from './ImagePreview.css'
 import {type ImagePreviewProps, type MinimalAsset} from './types'
 
 const ASSET_FIELDS = ['originalFilename']
@@ -35,66 +34,6 @@ export const NoImagePreview = () => {
     </Card>
   )
 }
-
-const ImageWrapper = styled.div`
-  height: 100%;
-  max-height: 190px;
-  position: relative;
-
-  /* Ideally the checkerboard component currently in the form builder should be made available and used here */
-  background-color: ${hues.gray[100].hex};
-  background-image:
-    linear-gradient(45deg, ${hues.gray[50].hex} 25%, transparent 25%),
-    linear-gradient(-45deg, ${hues.gray[50].hex} 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, ${hues.gray[50].hex} 75%),
-    linear-gradient(-45deg, transparent 75%, ${hues.gray[50].hex} 75%);
-  background-size: 16px 16px;
-  background-position:
-    0 0,
-    0 8px,
-    8px -8px,
-    -8px 0;
-
-  &::after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    box-shadow: inset 0 0 0 1px var(--card-border-color);
-    pointer-events: none;
-  }
-
-  &[data-changed] {
-    opacity: 0.45;
-  }
-`
-
-const Image = styled.img`
-  display: block;
-  flex: 1;
-  min-height: 0;
-  object-fit: contain;
-  width: 100%;
-  height: 100%;
-
-  &[data-action='removed'] {
-    opacity: 0.45;
-  }
-`
-
-const HotspotDiff = styled.div`
-  svg {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
-`
 
 export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
   const {id, action, diff, hotspot, crop, is} = props
@@ -128,13 +67,14 @@ export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
     <Flex direction="column" height="fill" flex={1}>
       <Box flex={1} padding={2} paddingBottom={0}>
         <Flex
-          as={ImageWrapper}
+          className={imageWrapper}
           direction="column"
           data-changed={is === 'from' && assetChanged ? '' : undefined}
           data-error={imageError ? '' : undefined}
         >
           {!assetIsDeleted && !imageError && (
-            <Image
+            <img
+              className={image}
               src={imageSource.toString() || ''}
               alt={title}
               data-action={metaAction}
@@ -152,7 +92,7 @@ export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
             </Box>
           )}
 
-          <HotspotDiff>
+          <div className={hotspotDiff}>
             <HotspotCropSVG
               crop={crop && !isDefaultCrop(crop) ? crop : undefined}
               diff={diff}
@@ -161,7 +101,7 @@ export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
               width={dimensions.width}
               height={dimensions.height}
             />
-          </HotspotDiff>
+          </div>
         </Flex>
       </Box>
 

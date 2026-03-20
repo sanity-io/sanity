@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
 
+import {panel} from './Schedules.css'
+import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useSchedulePublishingUpsell} from '../contexts/SchedulePublishingUpsellProvider'
@@ -9,9 +9,7 @@ import {useSchedules} from '../contexts/schedules'
 import EmptySchedules from './EmptySchedules'
 import VirtualList from './VirtualList'
 
-const Panel = styled(Container)`
-  width: auto;
-`
+
 
 export const Schedules = () => {
   const {activeSchedules, selectedDate, scheduleState} = useSchedules()
@@ -21,19 +19,19 @@ export const Schedules = () => {
   return (
     <Box style={{height: '100%'}}>
       {mode === 'upsell' && upsellData && (
-        <Panel width={1} padding={4} paddingBottom={1}>
+        <Container className={panel} width={1} padding={4} paddingBottom={1}>
           <UpsellPanel
             layout="horizontal"
             data={upsellData}
             onPrimaryClick={telemetryLogs.panelPrimaryClicked}
             onSecondaryClick={telemetryLogs.panelSecondaryClicked}
           />
-        </Panel>
+        </Container>
       )}
       {activeSchedules.length === 0 ? (
-        <Panel width={1} padding={4} paddingTop={4}>
+        <Container className={panel} width={1} padding={4} paddingTop={4}>
           <EmptySchedules scheduleState={scheduleState} selectedDate={selectedDate} />
-        </Panel>
+        </Container>
       ) : (
         <>
           {showWarning && (

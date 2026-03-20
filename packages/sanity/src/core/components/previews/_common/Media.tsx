@@ -1,9 +1,11 @@
-import {Text} from '@sanity/ui'
+import {rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ComponentType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 
+import {PREVIEW_SIZES} from '../constants'
 import {type PreviewLayoutKey, type PreviewMediaDimensions, type PreviewProps} from '../types'
-import {MediaWrapper} from './Media.styled'
+import {heightVar, iconSizeVar, mediaWrapper, minWidthVar, radiusVar, widthVar} from './Media.css'
 
 export interface MediaProps {
   border?: boolean
@@ -20,19 +22,27 @@ export interface MediaProps {
 
 export function Media(props: MediaProps) {
   const {border = true, dimensions, layout, media, radius = 1, responsive = false, styles} = props
+  const theme = useThemeV2()
+
+  const width = dimensions.width || 0
+  const height = dimensions.width || 0
+  const iconSize = PREVIEW_SIZES[layout].icon
 
   return (
-    <MediaWrapper
-      $dimensions={dimensions}
-      $layout={layout}
-      $radius={radius}
-      $responsive={responsive}
-      className={styles?.media}
+    <span
+      className={styles?.media ? `${mediaWrapper} ${styles.media}` : mediaWrapper}
       data-testid="Media"
+      style={assignInlineVars({
+        [widthVar]: responsive ? '100%' : rem(width),
+        [heightVar]: responsive ? '100%' : rem(height),
+        [minWidthVar]: responsive ? '' : rem(width),
+        [radiusVar]: `${theme.radius[radius]}px`,
+        [iconSizeVar]: `calc(${iconSize} / 16 * 1em)`,
+      })}
     >
       {renderMedia({dimensions, layout, media})}
       {border && <span data-border />}
-    </MediaWrapper>
+    </span>
   )
 }
 

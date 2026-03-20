@@ -1,8 +1,8 @@
 import {Box, Container, Flex} from '@sanity/ui'
+
+import {panel} from './SchedulesUpsell.css'
 import {motion} from 'motion/react'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
-
 import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/SingleDocReleaseEnabledProvider'
 import {useSingleDocReleaseUpsell} from '../../../singleDocRelease/context/SingleDocReleaseUpsellProvider'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
@@ -10,10 +10,7 @@ import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 import {type CardinalityView} from './queryParamUtils'
 
-const Panel = styled(Container)`
-  width: auto;
-  flex-shrink: 0;
-`
+
 
 const SingleDocReleasesUpsell = () => {
   const {mode} = useSingleDocReleaseEnabled()
@@ -36,7 +33,7 @@ const SingleDocReleasesUpsell = () => {
         animate={{opacity: 1}}
         transition={{duration: 0.3, ease: 'easeInOut'}}
       >
-        <Panel width={0} padding={4} paddingY={1}>
+        <Container className={panel} width={0} padding={4} paddingY={1}>
           <Flex align={'center'} direction="column">
             <ReleaseIllustration />
             <Box paddingTop={2}>
@@ -50,7 +47,7 @@ const SingleDocReleasesUpsell = () => {
               />
             </Box>
           </Flex>
-        </Panel>
+        </Container>
       </motion.div>
     </Flex>
   )
@@ -76,7 +73,7 @@ const ReleasesUpsell = () => {
         animate={{opacity: 1}}
         transition={{duration: 0.3, ease: 'easeInOut'}}
       >
-        <Panel width={0} padding={4} paddingY={1}>
+        <Container className={panel} width={0} padding={4} paddingY={1}>
           <Flex align={'center'} direction="column">
             <ReleaseIllustration />
             <Box paddingTop={2}>
@@ -90,7 +87,7 @@ const ReleasesUpsell = () => {
               />
             </Box>
           </Flex>
-        </Panel>
+        </Container>
       </motion.div>
     </Flex>
   )

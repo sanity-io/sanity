@@ -1,53 +1,56 @@
 import {InfoOutlineIcon} from '@sanity/icons'
-import {Box, Flex, Inline, rem, Text} from '@sanity/ui'
+import {Box, Flex, Inline, Text,useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {type ComponentProps, forwardRef} from 'react'
 import {useTranslation} from 'sanity'
-import {styled} from 'styled-components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 
 import {Tooltip} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
+import * as css from './ConfirmDeleteDialogBody.css'
 
-export const ChevronWrapper = styled(Box)`
-  margin-left: auto;
-`
+export const ChevronWrapper = forwardRef<HTMLDivElement, ComponentProps<typeof Box>>(
+  function ChevronWrapper(props, ref) {
+    return <Box {...props} className={css.chevronWrapper} ref={ref} />
+  },
+)
 
-export const CrossDatasetReferencesDetails = styled.details`
-  flex: none;
+export const CrossDatasetReferencesDetails = forwardRef<
+  HTMLDetailsElement,
+  React.DetailedHTMLProps<React.DetailsHTMLAttributes<HTMLDetailsElement>, HTMLDetailsElement>
+>(function CrossDatasetReferencesDetails(props, ref) {
+  return <details {...props} className={css.crossDatasetReferencesDetails} ref={ref} />
+})
 
-  &[open] ${ChevronWrapper} {
-    transform: rotate(180deg);
-  }
-`
+export const CrossDatasetReferencesSummary = forwardRef<
+  HTMLElement,
+  React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+>(function CrossDatasetReferencesSummary(props, ref) {
+  return <summary {...props} className={css.crossDatasetReferencesSummary} ref={ref as any} />
+})
 
-export const CrossDatasetReferencesSummary = styled.summary`
-  list-style: none;
+export const Table = forwardRef<HTMLTableElement, React.TableHTMLAttributes<HTMLTableElement>>(
+  function Table(props, ref) {
+    const {space} = useThemeV2()
+    return (
+      <table
+        {...props}
+        className={css.table}
+        style={assignInlineVars({
+          [css.paddingVar]: `${space[2]}px`,
+          [css.thPaddingVar]: `${space[1]}px`,
+          [css.tdPaddingVar]: `0 ${space[1]}px`,
+        })}
+        ref={ref}
+      />
+    )
+  },
+)
 
-  &::-webkit-details-marker {
-    display: none;
-  }
-`
-
-export const Table = styled.table`
-  width: 100%;
-  text-align: left;
-  padding: 0 ${({theme}) => rem(theme.sanity.space[2])};
-  border-collapse: collapse;
-
-  th {
-    padding: ${({theme}) => rem(theme.sanity.space[1])};
-  }
-
-  td {
-    padding: 0 ${({theme}) => rem(theme.sanity.space[1])};
-  }
-
-  tr > *:last-child {
-    text-align: right;
-  }
-`
-
-export const DocumentIdFlex = styled(Flex)`
-  min-height: 33px;
-`
+export const DocumentIdFlex = forwardRef<HTMLDivElement, ComponentProps<typeof Flex>>(
+  function DocumentIdFlex(props, ref) {
+    return <Flex {...props} className={css.documentIdFlex} ref={ref} />
+  },
+)
 
 export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) => {
   const {t} = useTranslation(structureLocaleNamespace)

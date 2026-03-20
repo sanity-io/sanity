@@ -1,7 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
 import {useListFormat} from '../../../hooks'
@@ -10,30 +9,10 @@ import {useUser} from '../../../store'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionShortNames} from '../../types'
-import {EmojiText} from './EmojiText.styled'
+import {contentStack, inlineText, textBox, textGroup} from './CommentReactionsUsersTooltip.css'
+import {EmojiText} from './EmojiText'
 
 const TEXT_SIZE: number | number[] = 1
-
-const ContentStack = styled(Stack)`
-  max-width: 180px;
-`
-
-const TextGroup = styled.div`
-  display: inline-block;
-`
-
-const InlineText = styled(Text).attrs({size: TEXT_SIZE})`
-  display: inline-block !important;
-
-  & > span {
-    white-space: break-spaces;
-  }
-`
-
-const TextBox = styled(Box)`
-  line-height: 1;
-  text-align: center;
-`
 
 const LEADING_NON_WHITESPACE_RE = /^\S+/
 
@@ -95,7 +74,11 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
 
     if (item.type === 'literal') {
       // Add literals as-is - the next case will rewrite literals to exclude leading non-whitespace
-      elements.push(<InlineText key={`literal-${i}`}>{item.value}</InlineText>)
+      elements.push(
+        <Text key={`literal-${i}`} className={inlineText} size={TEXT_SIZE}>
+          {item.value}
+        </Text>,
+      )
       continue
     }
 
@@ -109,12 +92,14 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
 
       elements.push(
         // Key (value) is user ID, thus unique
-        <TextGroup key={item.value}>
-          <InlineText weight="medium">
+        <span key={item.value} className={textGroup}>
+          <Text className={inlineText} size={TEXT_SIZE} weight="medium">
             <UserDisplayName currentUserId={currentUserId} isFirst={i === 0} userId={item.value} />
-          </InlineText>
-          <InlineText>{nonWhitespace}</InlineText>
-        </TextGroup>,
+          </Text>
+          <Text className={inlineText} size={TEXT_SIZE}>
+            {nonWhitespace}
+          </Text>
+        </span>,
       )
 
       // Rewrite the next item to not contain this leading non-whitespace
@@ -126,9 +111,9 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
     // in an element that does _not_ have a leading non-whitespace literal following it.
     elements.push(
       // Key (value) is user ID, thus unique
-      <InlineText key={item.value} weight="medium">
+      <Text key={item.value} className={inlineText} size={TEXT_SIZE} weight="medium">
         <UserDisplayName currentUserId={currentUserId} isFirst={i === 0} userId={item.value} />
-      </InlineText>,
+      </Text>,
     )
   }
 
@@ -147,27 +132,34 @@ function CommentReactionsUsersTooltipContent(
   }, [currentUser, userIds])
 
   return (
-    <ContentStack padding={1}>
+    <Stack className={contentStack} padding={1}>
       <Flex justify="center" paddingBottom={2} paddingTop={1}>
         <EmojiText size={4}>{COMMENT_REACTION_EMOJIS[reactionName]}</EmojiText>
       </Flex>
 
-      <TextBox>
+      <Box className={textBox}>
         <Translate
           t={t}
           i18nKey="reactions.users-reacted-with-reaction"
           values={{reactionName}}
           components={{
             UserList,
-            ReactionName: () => <InlineText muted>{reactionName}</InlineText>,
+            ReactionName: () => (
+              <Text className={inlineText} muted size={TEXT_SIZE}>
+                {reactionName}
+              </Text>
+            ),
             Text: ({children}) => (
               <>
-                <InlineText muted>{children}</InlineText> <wbr />{' '}
+                <Text className={inlineText} muted size={TEXT_SIZE}>
+                  {children}
+                </Text>{' '}
+                <wbr />{' '}
               </>
             ),
           }}
         />
-      </TextBox>
-    </ContentStack>
+      </Box>
+    </Stack>
   )
 }

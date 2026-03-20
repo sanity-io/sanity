@@ -1,20 +1,14 @@
 /* eslint-disable i18next/no-literal-string */
 import {Card, type CardTone, Code, Inline, Stack} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../../../../ui-components'
 import {type WeightedHit} from '../../../../../../../search'
 
+import {debugScoreCard} from './DebugOverlay.css'
+
 interface DebugScoreProps {
   data: WeightedHit
 }
-
-const DebugScoreCard = styled(Card)`
-  cursor: help;
-  left: 0;
-  position: absolute;
-  top: 0;
-`
 
 export function DebugOverlay({data}: DebugScoreProps) {
   const {score} = data
@@ -52,9 +46,9 @@ export function DebugOverlay({data}: DebugScoreProps) {
         placement="bottom-start"
         portal
       >
-        <DebugScoreCard padding={1} shadow={1} tone={tone}>
+        <Card className={debugScoreCard} padding={1} shadow={1} tone={tone}>
           <Code size={0}>score: {score}</Code>
-        </DebugScoreCard>
+        </Card>
       </Tooltip>
     </>
   )

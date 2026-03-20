@@ -1,26 +1,28 @@
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+ 
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 
 import {type StringFieldProps} from '../../../../form'
+import * as classes from './FieldWrapper.css'
 
 /**
  * @internal
  * Updates the padding and font weight of the field header content box.
  */
-export const FieldWrapperRoot = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
+export const FieldWrapperRoot = ({children}: {children: React.ReactNode}) => {
+  const theme = useThemeV2()
 
-  return css`
-    // Reset the padding of the field header content box
-    [data-ui='fieldHeaderContentBox'] {
-      padding: 0;
-      label {
-        font-weight: ${theme.font.text.weights.regular};
-      }
-    }
-  `
-})
+  return (
+    <div
+      className={classes.fieldWrapperRoot}
+      style={assignInlineVars({
+        [classes.fontWeightVar]: String(theme.font.text.weights.regular),
+      })}
+    >
+      {children}
+    </div>
+  )
+}
 
 export function FieldWrapper(props: StringFieldProps) {
   return <FieldWrapperRoot>{props.renderDefault(props)}</FieldWrapperRoot>

@@ -1,19 +1,35 @@
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+ 
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {type HTMLProps, forwardRef} from 'react'
+
+import {
+  formContainer,
+  maxWidthVar,
+  paddingBlockEndVar,
+  paddingBlockStartVar,
+  paddingInlineVar,
+} from './FormContainer.css'
 
 /**
  * @internal
  */
-export const FormContainer = styled.div((props) => {
-  const {space, container} = getTheme_v2(props.theme)
+export const FormContainer = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
+  function FormContainer(props, ref) {
+    const {space, container} = useThemeV2()
 
-  return css`
-    box-sizing: border-box;
-    margin-inline: auto;
-    padding-inline: ${space[4]}px;
-    padding-block-start: ${space[5]}px;
-    padding-block-end: ${space[9]}px;
-    max-width: calc(${container[1]}px + (var(--formGutterSize, 0px) * 2) + (var(--formGutterGap, 0px) * 2));
-  `
-})
+    return (
+      <div
+        {...props}
+        ref={ref}
+        className={formContainer}
+        style={assignInlineVars({
+          [paddingInlineVar]: `${space[4]}px`,
+          [paddingBlockStartVar]: `${space[5]}px`,
+          [paddingBlockEndVar]: `${space[9]}px`,
+          [maxWidthVar]: `calc(${container[1]}px + (var(--formGutterSize, 0px) * 2) + (var(--formGutterGap, 0px) * 2))`,
+        })}
+      />
+    )
+  },
+)

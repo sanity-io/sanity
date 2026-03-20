@@ -6,91 +6,31 @@ import {
 import {Icon, LinkIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+ 
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
 
 import {interpolateTemplate} from '../../../util/interpolateTemplate'
 import {transformBlocks} from './helpers'
 
+import {
+  divider as dividerClass,
+  serializerContainer,
+  iconTextContainer as iconTextContainerClass,
+  iconTextContainerAccent,
+  accentSpan as accentSpanClass,
+  semiboldSpan as semiboldSpanClass,
+  link as linkClass,
+  linkUseTextColor,
+  dynamicIconContainerInline,
+  dynamicIconContainerBlock,
+  imageBlock,
+} from './UpsellDescriptionSerializer.css'
+
 /** @internal */
 export type InterpolationProp = {[key: string]: string | number}
 
-const Divider = styled(Box)`
-  height: 1px;
-  background: var(--card-border-color);
-  width: 100%;
-`
-
-const SerializerContainer = styled.div`
-  /* Remove margin top of first element */
-  > div:first-child {
-    margin-top: 0;
-  }
-  /* Remove margin bottom to last box. */
-  > [data-ui='Box']:last-child {
-    margin-bottom: 0;
-  }
-`
-
-const IconTextContainer = styled(Text)((props) => {
-  if (props.accent) {
-    return `
-    --card-icon-color: var(--card-accent-fg-color);
-    `
-  }
-  return ``
-})
-
-const AccentSpan = styled.span`
-  color: var(--card-accent-fg-color);
-  --card-icon-color: var(--card-accent-fg-color);
-`
-
-const SemiboldSpan = styled.span(({theme}) => {
-  const {weights} = theme.sanity.fonts.text
-
-  return css`
-    font-weight: ${weights.semibold};
-  `
-})
-
-interface InlineIconProps {
-  $hasTextLeft: boolean
-  $hasTextRight: boolean
-}
-const InlineIcon = styled(Icon)<InlineIconProps>`
-  &[data-sanity-icon] {
-    /* Forces the icon to leave the necessary space to the right or left it has surrounding text */
-    margin-left: ${(props) => (props.$hasTextLeft ? '0' : '')};
-    margin-right: ${(props) => (props.$hasTextRight ? '0' : '')};
-  }
-`
-
-const Link = styled.a<{$useTextColor: boolean}>`
-  font-weight: 600;
-  color: ${(props) => (props.$useTextColor ? 'var(--card-muted-fg-color) !important' : '')};
-`
-
-const DynamicIconContainer = styled.span<{$inline: boolean}>`
-  display: ${({$inline}) => ($inline ? 'inline-block' : 'inline')};
-  font-size: calc(21 / 16 * 1rem) !important;
-  min-width: calc(21 / 16 * 1rem - 0.375rem);
-  line-height: 0;
-  > svg {
-    height: 1em;
-    width: 1em;
-    display: inline;
-    font-size: 1em !important;
-    margin: -0.375rem !important;
-    *[stroke] {
-      stroke: currentColor;
-    }
-  }
-`
-
 const DynamicIcon = (props: {icon: {url: string}; inline?: boolean}) => {
+  const iconClassName = props.inline ? dynamicIconContainerInline : dynamicIconContainerBlock
   const [__html, setHtml] = useState('')
   useEffect(() => {
     const controller = new AbortController()
@@ -115,7 +55,7 @@ const DynamicIcon = (props: {icon: {url: string}; inline?: boolean}) => {
     }
   }, [props.icon.url])
 
-  return <DynamicIconContainer $inline={!!props.inline} dangerouslySetInnerHTML={{__html}} />
+  return <span className={iconClassName} dangerouslySetInnerHTML={{__html}} />
 }
 
 function NormalBlock(props: {children: ReactNode}) {
@@ -152,15 +92,7 @@ function H3Block(props: {children: ReactNode}) {
   )
 }
 
-const Image = styled.img((props) => {
-  const theme = getTheme_v2(props.theme)
 
-  return css`
-    object-fit: cover;
-    width: 100%;
-    border-radius: ${theme.radius[3]}px;
-  `
-})
 
 function ImageBlock(
   props: PortableTextTypeComponentProps<{
@@ -169,7 +101,7 @@ function ImageBlock(
 ) {
   return (
     <Box paddingX={2} marginY={4}>
-      <Image src={props.value.image?.url} />
+      <img className={imageBlock} src={props.value.image?.url} />
     </Box>
   )
 }
@@ -240,13 +172,13 @@ const createComponents = ({
 
     marks: {
       strong: ({children}) => <strong>{interpolateChildren(children)}</strong>,
-      semibold: ({children}) => <SemiboldSpan>{interpolateChildren(children)}</SemiboldSpan>,
+      semibold: ({children}) => <span className={semiboldSpanClass}>{interpolateChildren(children)}</span>,
       link: (props) => (
-        <Link
+        <a
+          className={props.value.useTextColor ? linkUseTextColor : linkClass}
           href={props.value.href}
           rel="noopener noreferrer"
           target="_blank"
-          $useTextColor={props.value.useTextColor}
           onClick={
             onLinkClick
               ? () =>
@@ -259,31 +191,29 @@ const createComponents = ({
         >
           {props.children}
           {props.value.showIcon && <LinkIcon style={{marginLeft: '2px'}} />}
-        </Link>
+        </a>
       ),
-      accent: ({children}) => <AccentSpan>{interpolateChildren(children)}</AccentSpan>,
+      accent: ({children}) => <span className={accentSpanClass}>{interpolateChildren(children)}</span>,
     },
     types: {
       inlineIcon: (props) => {
         const children = props.value.sanityIcon ? (
-          <InlineIcon
+          <Icon
             symbol={props.value.sanityIcon}
-            $hasTextLeft={props.value.hasTextLeft}
-            $hasTextRight={props.value.hasTextRight}
           />
         ) : (
           <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} inline />}</>
         )
 
         if (props.value.accent) {
-          return <AccentSpan>{children}</AccentSpan>
+          return <span className={accentSpanClass}>{children}</span>
         }
         return children
       },
       divider: () => (
         <Box marginY={3}>
           <Box paddingY={3}>
-            <Divider />
+            <Box className={dividerClass} />
           </Box>
         </Box>
       ),
@@ -297,13 +227,13 @@ const createComponents = ({
           gap={2}
         >
           <Flex gap={2} style={{flexShrink: 0}}>
-            <IconTextContainer size={1} accent={props.value.accent}>
+            <Text className={props.value.accent ? iconTextContainerAccent : iconTextContainerClass} size={1}>
               {props.value.sanityIcon ? (
                 <Icon symbol={props.value.sanityIcon} />
               ) : (
                 <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} />} </>
               )}
-            </IconTextContainer>
+            </Text>
             <Text size={1} weight="semibold" accent={props.value.accent}>
               {interpolateChildren(props.value.title)}
             </Text>
@@ -341,14 +271,14 @@ export function UpsellDescriptionSerializer(props: DescriptionSerializerProps) {
 
   return (
     <Card tone="default">
-      <SerializerContainer>
+      <div className={serializerContainer}>
         <PortableText
           value={value}
           components={components}
           /* Disable warnings on missing components */
           onMissingComponent={false}
         />
-      </SerializerContainer>
+      </div>
     </Card>
   )
 }

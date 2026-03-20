@@ -15,7 +15,6 @@ import {
   useCallback,
   useState,
 } from 'react'
-import {styled} from 'styled-components'
 
 import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n'
@@ -27,6 +26,7 @@ import {
 } from '../../../studio/uploads/types'
 import {type UploadEvent} from '../../../types'
 import {type FileInfo, fileTarget} from '../../files/common/fileTarget'
+import {overlay as overlayClass, rootStyle, styledCard} from './arrayOfPrimitiveUploadTarget.css'
 
 export interface UploadTargetProps {
   types: SchemaType[]
@@ -39,10 +39,6 @@ interface UploadTask {
   file: File
   uploaderCandidates: ResolvedUploader[]
 }
-
-const Root = styled.div`
-  position: relative;
-`
 
 function getUploadCandidates(
   types: SchemaType[],
@@ -132,7 +128,7 @@ function uploadTarget<Props>(
     const handleFilesOut = useCallback(() => setHoveringFiles([]), [])
 
     return (
-      <Root>
+      <div className={rootStyle}>
         <FileTarget
           {...rest}
           ref={forwardedRef}
@@ -141,40 +137,35 @@ function uploadTarget<Props>(
           onFilesOut={handleFilesOut}
         >
           {resolveUploader && hoveringFiles.length > 0 && (
-            <Overlay zOffset={10}>
+            <Layer className={overlayClass} zOffset={10}>
               <DropMessage
                 hoveringFiles={hoveringFiles}
                 types={types}
                 resolveUploader={resolveUploader}
               />
-            </Overlay>
+            </Layer>
           )}
           {children}
         </FileTarget>
-      </Root>
+      </div>
     )
   })
 }
 
-const StyledCard = styled(Card)`
-  height: 100%;
-`
+const StyledCardComponent = forwardRef<HTMLDivElement, any>(
+  function StyledCardComponent(props, ref) {
+    const {className, ...rest} = props
+    return (
+      <Card
+        {...rest}
+        className={[styledCard, className].filter(Boolean).join(' ')}
+        ref={ref}
+      />
+    )
+  },
+)
 
-export const UploadTargetCard = withFocusRing(uploadTarget(StyledCard))
-
-const Overlay = styled(Layer)`
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background-color: var(--card-bg-color);
-  opacity: 0.8;
-`
+export const UploadTargetCard = withFocusRing(uploadTarget(StyledCardComponent))
 
 interface DropMessageProps {
   hoveringFiles: FileLike[]

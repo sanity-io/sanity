@@ -1,10 +1,8 @@
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
-import {Box, rem} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {motion, type Variants} from 'motion/react'
 import {useEffect, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../../components'
 import {createPatchChannel, FormBuilder, useDocumentForm} from '../../../../form'
@@ -14,6 +12,7 @@ import {MentionUserProvider, useMentionUser, useTasks, useTasksNavigation} from 
 import {type TaskDocument, type TaskTarget} from '../../../types'
 import {TasksAddonWorkspaceProvider} from '../addonWorkspace'
 import {getTargetValue} from '../utils'
+import * as classes from './TasksFormBuilder.css'
 
 const VARIANTS: Variants = {
   hidden: {opacity: 0},
@@ -23,22 +22,6 @@ const VARIANTS: Variants = {
   },
 }
 
-const FormBuilderRoot = styled(motion.div)((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return `
-    // Update spacing for the form builder
-    & > [data-ui='Stack'] {
-      grid-gap: ${rem(theme.space[4])};
-    }
-`
-})
-
-/**
- * A partial task document with the `_id` and `_type` fields.
- */
-type TaskDocumentInitialValue = Partial<TaskDocument> & SanityDocumentLike
-
 const TasksFormBuilderInner = ({
   documentId,
   initialValue,
@@ -47,6 +30,7 @@ const TasksFormBuilderInner = ({
   initialValue?: TaskDocumentInitialValue
 }) => {
   const [patchChannel] = useState(() => createPatchChannel())
+  const theme = useThemeV2()
 
   const {
     formState,
@@ -96,7 +80,16 @@ const TasksFormBuilderInner = ({
       {isLoading ? (
         <LoadingBlock showText />
       ) : (
-        <FormBuilderRoot id="wrapper" initial="hidden" animate="visible" variants={VARIANTS}>
+        <motion.div
+          className={classes.formBuilderRoot}
+          id="wrapper"
+          initial="hidden"
+          animate="visible"
+          variants={VARIANTS}
+          style={assignInlineVars({
+            [classes.gridGapVar]: rem(theme.space[4]),
+          })}
+        >
           <FormBuilder
             __internal_patchChannel={patchChannel}
             id="root"
@@ -120,11 +113,16 @@ const TasksFormBuilderInner = ({
             value={value}
             hasUpstreamVersion={false}
           />
-        </FormBuilderRoot>
+        </motion.div>
       )}
     </Box>
   )
 }
+
+/**
+ * A partial task document with the `_id` and `_type` fields.
+ */
+type TaskDocumentInitialValue = Partial<TaskDocument> & SanityDocumentLike
 
 /**
  * @internal

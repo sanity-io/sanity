@@ -1,11 +1,12 @@
 import {Box, Grid, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../../../../../../../../i18n'
 import {CalendarDay} from './CalendarDay'
 import {SHORT_WEEK_DAY_KEYS} from './constants'
 import {useCalendar} from './contexts/useDatePicker'
 import {useWeeksOfMonth} from './utils'
+
+import {customGrid} from './CalendarMonth.css'
 
 const WEEK_DAY_NAME_KEYS = {
   // Monday is start of the week
@@ -23,17 +24,13 @@ interface CalendarMonthProps {
   onSelect: (date: Date) => void
 }
 
-const CustomGrid = styled(Grid)`
-  grid-template-columns: repeat(7, minmax(44px, auto));
-`
-
 export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
   const {focusedDate, firstWeekDay} = useCalendar()
   const {t} = useTranslation()
 
   return (
     <Box aria-hidden={hidden || false} data-ui="CalendarMonth">
-      <CustomGrid gapY={1}>
+      <Grid className={customGrid} gapY={1}>
         {WEEK_DAY_NAME_KEYS[firstWeekDay].map((weekdayDay) => (
           <Box key={weekdayDay} paddingBottom={3} paddingTop={2}>
             <Text align="center" size={1} weight="medium">
@@ -49,7 +46,7 @@ export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
             )
           }),
         )}
-      </CustomGrid>
+      </Grid>
     </Box>
   )
 }

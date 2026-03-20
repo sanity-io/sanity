@@ -13,7 +13,6 @@ import {
 } from '@sanity/ui'
 import deburr from 'lodash-es/deburr.js'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../../../ui-components'
 import {LoadingBlock} from '../../../../../components'
@@ -22,6 +21,7 @@ import {useTranslation} from '../../../../../i18n'
 import {useMentionUser} from '../../../../context'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
+import * as classes from './AssigneeSelectionMenu.css'
 
 type SelectItemHandler = (id: string) => void
 
@@ -52,11 +52,6 @@ function MentionUserMenuItem(props: {
     </MenuItem>
   )
 }
-
-const StyledMenu = styled(Menu)`
-  width: 308px;
-  border-radius: 3px;
-`
 
 const IGNORED_KEYS = [
   'Control',
@@ -192,9 +187,9 @@ export function AssigneeSelectionMenu(props: {
       button={menuButton}
       id="assign-user-menu"
       menu={
-        <StyledMenu>
+        <Menu className={classes.styledMenu}>
           <MentionsMenu onSelect={onSelect} value={value} />
-        </StyledMenu>
+        </Menu>
       }
       popover={{
         placement: 'bottom',

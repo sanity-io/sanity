@@ -24,12 +24,16 @@ import {
 } from '../types'
 import {createIntersectionObserver} from './intersectionObserver'
 import {
-  BottomRegionWrapper,
-  MiddleRegionWrapper,
-  OverlayWrapper,
-  RootWrapper,
-  TopRegionWrapper,
-} from './RegionsWithIntersections.styled'
+  bottomRegionWrapper,
+  bottomRegionWrapperDebug,
+  middleRegionWrapper,
+  middleRegionWrapperDebug,
+  overlayWrapper,
+  rootWrapper,
+  topRegionWrapper,
+  topRegionWrapperDebug,
+} from './RegionsWithIntersections.css'
+import {WithIntersection} from './WithIntersection'
 
 interface RegionsWithIntersectionsProps {
   regions: ReportedRegionWithRect<FieldPresenceData>[]
@@ -154,24 +158,24 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
   )
 
   return (
-    <RootWrapper ref={ref}>
-      <TopRegionWrapper
-        $debug={DEBUG}
+    <div className={rootWrapper} ref={ref}>
+      <WithIntersection
+        className={`${topRegionWrapper}${DEBUG ? ` ${topRegionWrapperDebug}` : ''}`}
         io={io}
         id="::top"
         onIntersection={onIntersection}
-        margins={margins}
+        style={{top: margins ? `${margins[0] - 1}px` : undefined}}
       />
       <div>{children}</div>
-      <OverlayWrapper ref={overlayRef}>
+      <div className={overlayWrapper} ref={overlayRef}>
         {overlayWidth && render(regionsWithIntersectionDetails, overlayWidth)}
-      </OverlayWrapper>
+      </div>
       {regions.map((region) => {
         const forceWidth = region.rect.width === 0
         return (
-          <MiddleRegionWrapper
+          <WithIntersection
             key={region.id}
-            $debug={DEBUG}
+            className={`${middleRegionWrapper}${DEBUG ? ` ${middleRegionWrapperDebug}` : ''}`}
             io={io}
             onIntersection={onIntersection}
             id={region.id}
@@ -184,7 +188,7 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
           />
         )
       })}
-      <BottomRegionWrapper $debug={DEBUG} id="::bottom" io={io} onIntersection={onIntersection} />
-    </RootWrapper>
+      <WithIntersection className={`${bottomRegionWrapper}${DEBUG ? ` ${bottomRegionWrapperDebug}` : ''}`} id="::bottom" io={io} onIntersection={onIntersection} />
+    </div>
   )
 })

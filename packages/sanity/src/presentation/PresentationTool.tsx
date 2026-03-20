@@ -38,7 +38,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
+import {container} from './PresentationTool.css'
 
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'
@@ -80,9 +80,6 @@ const PostMessagePreviewSnapshots = lazy(() => import('./editor/PostMessagePrevi
 const PostMessageSchema = lazy(() => import('./overlays/schema/PostMessageSchema'))
 const PostMessageTelemetry = lazy(() => import('./PostMessageTelemetry'))
 
-const Container = styled(Flex)`
-  overflow-x: auto;
-`
 
 export default function PresentationTool(props: {
   tool: Tool<PresentationPluginOptions>
@@ -531,7 +528,7 @@ export default function PresentationTool(props: {
         <PresentationNavigateProvider navigate={navigate}>
           <PresentationParamsProvider params={params}>
             <SharedStateProvider comlink={visualEditingComlink}>
-              <Container data-testid="presentation-root" height="fill">
+              <Flex className={container} data-testid="presentation-root" height="fill">
                 <Panels>
                   <PresentationNavigator />
                   <Panel
@@ -586,7 +583,7 @@ export default function PresentationTool(props: {
                     structureParams={structureParams}
                   />
                 </Panels>
-              </Container>
+              </Flex>
             </SharedStateProvider>
           </PresentationParamsProvider>
         </PresentationNavigateProvider>

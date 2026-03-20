@@ -13,7 +13,6 @@ import {
   useState,
 } from 'react'
 import {IntentLink} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
@@ -23,12 +22,8 @@ import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseI
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {useAgentBundles} from '../../store/agent/useAgentBundles'
-import {oversizedButtonStyle} from '../styles'
 import {type TargetPerspective} from '../types'
-
-const OversizedButton = styled(IntentLink)`
-  ${oversizedButtonStyle}
-`
+import {oversizedIntentLink} from './currentGlobalPerspectiveLabel.css'
 
 function AnimatedTextWidth({children, text}: {children: ReactNode; text: string}) {
   const textRef = useRef<HTMLDivElement>(null)
@@ -85,14 +80,15 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
         linkRef: ForwardedRef<HTMLAnchorElement>,
       ) {
         return (
-          <OversizedButton
+          <IntentLink
             {...intentProps}
+            className={oversizedIntentLink}
             ref={linkRef}
             intent={RELEASES_INTENT}
             params={{id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id)}}
           >
             {children}
-          </OversizedButton>
+          </IntentLink>
         )
       }),
     [selectedPerspective],

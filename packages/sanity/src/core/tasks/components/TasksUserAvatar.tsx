@@ -1,29 +1,12 @@
 import {UserIcon} from '@sanity/icons'
 import {type User} from '@sanity/types'
-import {type AvatarSize, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {type AvatarSize, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 
 import {Tooltip} from '../../../ui-components'
 import {AvatarSkeleton, UserAvatar} from '../../components'
 import {useUser} from '../../store'
-
-const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?: boolean}>(
-  (props) => {
-    const theme = getTheme_v2(props.theme)
-    return css`
-      min-height: ${theme.avatar.sizes[props.$size]?.size}px;
-      min-width: ${theme.avatar.sizes[props.$size]?.size}px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      ${props.$border ? 'box-shadow: inset 0 0 0 1px var(--card-border-color);' : ''};
-      ${props.$removeBg ? '--card-avatar-gray-bg-color: transparent;' : ''}
-    `
-  },
-)
+import * as classes from './TasksUserAvatar.css'
 
 export function TasksUserAvatar(props: {
   user?: User
@@ -33,6 +16,9 @@ export function TasksUserAvatar(props: {
 }) {
   const {user, size = 0, border = true} = props
   const [loadedUser, loading] = useUser(user?.id || '')
+  const theme = useThemeV2()
+
+  const sizeValue = theme.avatar.sizes[size]?.size ?? 0
 
   if (loading) {
     return <AvatarSkeleton $size={size} animated />
@@ -40,11 +26,14 @@ export function TasksUserAvatar(props: {
 
   if (!user || !loadedUser) {
     return (
-      <AvatarRoot $size={size} $border={border}>
+      <div
+        className={`${classes.avatarRoot} ${border ? classes.avatarRootBorder : ''}`}
+        style={assignInlineVars({[classes.sizeVar]: `${sizeValue}px`})}
+      >
         <Text size={size}>
           <UserIcon />
         </Text>
-      </AvatarRoot>
+      </div>
     )
   }
 
@@ -56,14 +45,17 @@ export function TasksUserAvatar(props: {
       fallbackPlacements={['top', 'top-start']}
       placement="top-end"
     >
-      <AvatarRoot $size={size} $removeBg={!!loadedUser?.imageUrl}>
+      <div
+        className={`${classes.avatarRoot} ${loadedUser?.imageUrl ? classes.avatarRootRemoveBg : ''}`}
+        style={assignInlineVars({[classes.sizeVar]: `${sizeValue}px`})}
+      >
         <UserAvatar
           user={loadedUser}
           size={size}
           {...(loadedUser?.imageUrl ? {color: undefined} : {})}
           {...(props.withTooltip ? {title: null} : {})}
         />
-      </AvatarRoot>
+      </div>
     </Tooltip>
   )
 }

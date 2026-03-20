@@ -15,11 +15,15 @@ import {
   useTranslation,
   useUnique,
 } from 'sanity'
-import {keyframes, styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
+import {
+  animatedSpinnerIcon,
+  subtleSpinnerIcon,
+  delayedSubtleSpinnerIcon,
+} from './DocumentListPane.css'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
 import {useShallowUnique} from './PaneContainer'
@@ -33,43 +37,6 @@ export type DocumentListPaneProps = BaseStructureToolPaneProps<'documentList'> &
   sortOrder?: SortOrder
   layout?: Exclude<GeneralPreviewLayoutKey, 'sheetList'>
 }
-
-const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`
-
-const fadeIn = keyframes`
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.1;
-  }
-  100% {
-    opacity: 0.4;
-  }
-`
-
-const AnimatedSpinnerIcon = styled(SpinnerIcon)`
-  animation: ${rotate} 500ms linear infinite;
-`
-
-const SubtleSpinnerIcon = styled(SpinnerIcon)`
-  animation: ${rotate} 1500ms linear infinite;
-  opacity: 0.4;
-`
-
-const DelayedSubtleSpinnerIcon = styled(SpinnerIcon)`
-  animation:
-    ${rotate} 1500ms linear infinite,
-    ${fadeIn} 1000ms linear;
-  opacity: 0.4;
-`
 
 /**
  * @internal
@@ -187,12 +154,12 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const textInputIcon = useMemo(() => {
     if (loadingVariant === 'spinner') {
-      return AnimatedSpinnerIcon
+      return <SpinnerIcon className={animatedSpinnerIcon} />
     }
     if (searchInputValue && loadingVariant === 'subtle') {
-      return SubtleSpinnerIcon
+      return <SpinnerIcon className={subtleSpinnerIcon} />
     }
-    return SearchIcon
+    return <SearchIcon />
   }, [loadingVariant, searchInputValue])
 
   useReconnectingToast(!connected)
@@ -208,9 +175,9 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           fontSize={[2, 2, 1]}
           icon={textInputIcon}
           iconRight={
-            !connected || (loadingVariant === 'subtle' && !searchInputValue)
-              ? DelayedSubtleSpinnerIcon
-              : null
+            !connected || (loadingVariant === 'subtle' && !searchInputValue) ? (
+              <SpinnerIcon className={delayedSubtleSpinnerIcon} />
+            ) : null
           }
           onChange={handleQueryChange}
           onClear={handleClearSearch}

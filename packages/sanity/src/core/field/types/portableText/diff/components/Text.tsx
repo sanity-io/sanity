@@ -1,11 +1,12 @@
 import {isKeySegment, type Path} from '@sanity/types'
+import {Box} from '@sanity/ui'
 import {type HTMLProps, type SyntheticEvent, useCallback, useContext, useMemo} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 
 import {useTranslation} from '../../../../../i18n'
 import {DiffCard} from '../../../../diff'
 import {type ObjectDiff, type StringDiff, type StringDiffSegment} from '../../../../types'
-import {InlineBox} from './styledComponents'
+import {inlineBox} from './styledComponents.css'
 
 interface TextProps {
   diff?: StringDiff
@@ -33,7 +34,7 @@ export function Text({
       </TextWithDiff>
     )
   }
-  return <InlineBox>{children}</InlineBox>
+  return <Box className={inlineBox}>{children}</Box>
 }
 
 function TextWithDiff({diff, childDiff, children, path, segment, ...restProps}: TextProps) {
@@ -84,10 +85,10 @@ function TextWithDiff({diff, childDiff, children, path, segment, ...restProps}: 
     ) : null
 
   return (
-    <InlineBox {...restProps} onClick={handleClick} data-changed="">
+    <Box className={inlineBox} {...restProps} onClick={handleClick} data-changed="">
       <span>
         <>{diffCard || children}</>
       </span>
-    </InlineBox>
+    </Box>
   )
 }

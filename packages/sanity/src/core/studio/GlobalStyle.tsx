@@ -1,13 +1,22 @@
-/* eslint-disable camelcase */
+ 
 
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {rgba} from '@sanity/ui/theme'
 import {type ComponentType} from 'react'
-import {createGlobalStyle, css} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 
 import {useWorkspace} from './workspace'
-
-const SCROLLBAR_SIZE = 12 // px
-const SCROLLBAR_BORDER_SIZE = 4 // px
+import {
+  resizerBgImageVar,
+  scrollbarBorderColorVar,
+  scrollbarMutedFgVar,
+  selectionBgVar,
+  formGutterSizeVar,
+  formGutterGapVar,
+  htmlBgVar,
+  fontFamilyVar,
+  fontWeightMediumVar,
+} from './GlobalStyle.css'
 
 // Construct a resize handle icon as a data URI, to be displayed in browsers that support the `::-webkit-resizer` selector.
 function buildResizeHandleDataUri(hexColor: string) {
@@ -21,73 +30,21 @@ export const GlobalStyle: ComponentType = () => {
     advancedVersionControl: {enabled: advancedVersionControlEnabled},
   } = useWorkspace()
 
-  return <GlobalStyleSheet $documentEditorGutterEnabled={advancedVersionControlEnabled} />
+  const {color, font, space} = useThemeV2()
+
+  return (
+    <div
+      style={assignInlineVars({
+        [resizerBgImageVar]: buildResizeHandleDataUri(color.icon),
+        [scrollbarBorderColorVar]: `var(--card-border-color, ${color.border})`,
+        [scrollbarMutedFgVar]: `var(--card-muted-fg-color, ${color.muted.fg})`,
+        [selectionBgVar]: rgba(color.focusRing, 0.3),
+        [formGutterSizeVar]: `${advancedVersionControlEnabled ? space[4] : 0}px`,
+        [formGutterGapVar]: `${advancedVersionControlEnabled ? space[3] : 0}px`,
+        [htmlBgVar]: color.bg,
+        [fontFamilyVar]: font.text.family,
+        [fontWeightMediumVar]: `${font.text.weights.medium}`,
+      })}
+    />
+  )
 }
-
-interface Props {
-  $documentEditorGutterEnabled: boolean
-}
-
-const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $documentEditorGutterEnabled}) => {
-  const {color, font, space} = getTheme_v2(theme)
-
-  return css`
-    ::-webkit-resizer {
-      background-image: ${buildResizeHandleDataUri(color.icon)};
-      background-repeat: no-repeat;
-      background-position: bottom right;
-    }
-
-    ::-webkit-scrollbar {
-      width: ${SCROLLBAR_SIZE}px;
-      height: ${SCROLLBAR_SIZE}px;
-    }
-
-    ::-webkit-scrollbar-corner {
-      background-color: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-clip: content-box;
-      background-color: var(--card-border-color, ${color.border});
-      border: ${SCROLLBAR_BORDER_SIZE}px solid transparent;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: var(--card-muted-fg-color, ${color.muted.fg});
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    *::selection {
-      background-color: ${rgba(color.focusRing, 0.3)};
-    }
-
-    :root {
-      --formGutterSize: ${$documentEditorGutterEnabled ? space[4] : 0}px;
-      --formGutterGap: ${$documentEditorGutterEnabled ? space[3] : 0}px;
-    }
-
-    html {
-      background-color: ${color.bg};
-    }
-
-    body {
-      scrollbar-gutter: stable;
-    }
-
-    #sanity {
-      font-family: ${font.text.family};
-    }
-
-    b {
-      font-weight: ${font.text.weights.medium};
-    }
-
-    strong {
-      font-weight: ${font.text.weights.medium};
-    }
-  `
-})

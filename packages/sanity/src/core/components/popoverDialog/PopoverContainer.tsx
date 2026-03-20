@@ -1,27 +1,16 @@
 import {
-  _responsive,
   Container,
   type ContainerProps,
   rem,
-  type ResponsiveWidthStyleProps,
-} from '@sanity/ui'
-import {forwardRef, type ReactNode, type Ref} from 'react'
-import {styled} from 'styled-components'
+useTheme_v2 as useThemeV2} from '@sanity/ui'
+ 
+import {forwardRef, type ReactNode, type Ref, useMemo} from 'react'
+
+import {styledContainer, widthVar} from './PopoverContainer.css'
 
 // This is a workaround to make sure that the Container gets the correct width when used inside a popover.
 // The default Container uses `maxWidth` which doesn't work well with popovers because the popover
 // calculates its width based on the content width.
-const StyledContainer = styled(Container)<ResponsiveWidthStyleProps>((props) => {
-  const {theme} = props
-  const {container, media} = theme.sanity
-
-  return _responsive(media, props.$width, (val) => ({
-    // Make sure that the Container gets the correct width when used inside a popover.
-    width: val === 'auto' ? 'none' : rem(container[val]),
-    // Make sure that the Container width is constrained by available space.
-    maxWidth: '100%',
-  }))
-})
 
 interface PopoverContainerProps extends ContainerProps {
   children: ReactNode
@@ -32,12 +21,23 @@ export const PopoverContainer = forwardRef(function PopoverContainer(
   ref: Ref<HTMLDivElement>,
 ) {
   const {width = [], ...restProps} = props
+  const theme = useThemeV2()
+  const {container} = theme
+  const widthArray = Array.isArray(width) ? width : [width]
+
+  // Compute the width value based on the first responsive width
+  const computedWidth = useMemo(() => {
+    const val = widthArray[0]
+    if (val === undefined || val === 'auto') return 'auto'
+    return rem(container[val])
+  }, [widthArray, container])
 
   return (
-    <StyledContainer
+    <Container
       {...restProps}
+      className={styledContainer}
       data-ui="PopoverContainer"
-      $width={Array.isArray(width) ? width : [width]}
+      style={{[widthVar]: computedWidth === 'auto' ? 'none' : computedWidth}}
       ref={ref}
     />
   )

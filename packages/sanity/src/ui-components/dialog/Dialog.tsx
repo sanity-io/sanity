@@ -64,7 +64,7 @@ export const Dialog = forwardRef(function Dialog(
     padding = true,
     zOffset,
     ...props
-  }: DialogProps & Pick<HTMLProps<HTMLDivElement>, 'onDragEnter' | 'onDrop'>,
+  }: DialogProps & Pick<HTMLProps<HTMLDivElement>, 'onDragEnter' | 'onDrop' | 'className'>,
   ref: Ref<HTMLDivElement>,
 ) {
   const {t} = useTranslation()

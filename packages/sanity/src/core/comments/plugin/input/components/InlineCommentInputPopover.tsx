@@ -2,19 +2,15 @@ import {type CurrentUser} from '@sanity/types'
 import {Stack, useClickOutsideEvent} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useCallback, useRef} from 'react'
-import {styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components'
 import {CommentInput, type CommentInputHandle, type CommentInputProps} from '../../../components'
 import {hasCommentMessageValue} from '../../../helpers'
+import {rootStack} from './InlineCommentInputPopover.css'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 
 const MotionPopover = motion.create(Popover)
-
-const RootStack = styled(Stack)`
-  width: 250px;
-`
 
 const VARIANTS: Variants = {
   hidden: {opacity: 0},
@@ -71,7 +67,7 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
   )
 
   const content = (
-    <RootStack padding={2} ref={contentElementRef}>
+    <Stack className={rootStack} padding={2} ref={contentElementRef}>
       <CommentInput
         currentUser={currentUser}
         focusLock
@@ -84,7 +80,7 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
         ref={commentInputRef}
         value={value}
       />
-    </RootStack>
+    </Stack>
   )
 
   return (

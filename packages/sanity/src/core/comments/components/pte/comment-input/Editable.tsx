@@ -5,59 +5,24 @@ import {
   usePortableTextEditorSelection,
 } from '@portabletext/editor'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
-import {useClickOutsideEvent} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {useClickOutsideEvent,useTheme_v2 as useThemeV2} from '@sanity/ui'
+ 
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import isEqual from 'lodash-es/isEqual.js'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {MentionsMenu, type MentionsMenuHandle} from '../../mentions'
 import {renderChild} from '../render'
+import {placeholderColorVar, placeholderWrapper, radiusVar, spaceVar, styledPopover} from './Editable.css'
 import {useCommentInput} from './useCommentInput'
 import {useCursorElement} from './useCursorElement'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 const EMPTY_ARRAY: [] = []
-
-const PlaceholderWrapper = styled.span((props) => {
-  const {color} = getTheme_v2(props.theme)
-  return css`
-    color: ${color.input.default.enabled.placeholder};
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-wrap: nowrap;
-    display: block;
-  `
-})
-
-const StyledPopover = styled(Popover)(({theme}) => {
-  const {space, radius} = theme.sanity
-
-  return css`
-    &[data-placement='bottom'] {
-      transform: translateY(${space[1]}px);
-    }
-
-    &[data-placement='top'] {
-      transform: translateY(-${space[1]}px);
-    }
-
-    [data-ui='Popover__wrapper'] {
-      border-radius: ${radius[3]}px;
-      display: flex;
-      flex-direction: column;
-      overflow: clip;
-      overflow: hidden;
-      position: relative;
-      width: 300px; // todo: improve
-    }
-  `
-})
 
 interface EditableProps {
   focusLock?: boolean
@@ -88,6 +53,7 @@ export function Editable(props: EditableProps) {
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [inputElement, setInputElement] = useState<HTMLDivElement | null>(null)
   const mentionsMenuRef = useRef<MentionsMenuHandle | null>(null)
+  const theme = useThemeV2()
 
   const selection = usePortableTextEditorSelection()
 
@@ -108,8 +74,17 @@ export function Editable(props: EditableProps) {
   })
 
   const renderPlaceholder = useCallback(
-    () => <PlaceholderWrapper>{placeholder}</PlaceholderWrapper>,
-    [placeholder],
+    () => (
+      <span
+        className={placeholderWrapper}
+        style={assignInlineVars({
+          [placeholderColorVar]: theme.color.input.default.enabled.placeholder,
+        })}
+      >
+        {placeholder}
+      </span>
+    ),
+    [placeholder, theme.color.input.default.enabled.placeholder],
   )
 
   useClickOutsideEvent(mentionsMenuOpen && closeMentions, () => [popoverRef.current])
@@ -205,7 +180,12 @@ export function Editable(props: EditableProps) {
 
   return (
     <div ref={setRootElement}>
-      <StyledPopover
+      <Popover
+        className={styledPopover}
+        style={assignInlineVars({
+          [spaceVar]: `${theme.space[1]}px`,
+          [radiusVar]: `${theme.radius[3]}px`,
+        })}
         arrow={false}
         constrainSize
         content={popoverContent}

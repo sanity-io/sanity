@@ -1,40 +1,19 @@
 import {ElementQuery} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {forwardRef, type ComponentProps} from 'react'
 
-const DateWithTooltipElementQuery: typeof ElementQuery = styled(ElementQuery)`
-  .date-small {
-    display: inline;
-  }
-  .date-medium {
-    display: none;
-  }
-  .date-large {
-    display: none;
-  }
+import {dateWithTooltipElementQuery} from './DateWithTooltipElementQuery.css'
 
-  &[data-eq-min~='1'] {
-    .date-small {
-      display: none;
-    }
-    .date-medium {
-      display: inline;
-    }
-    .date-large {
-      display: none;
-    }
-  }
-
-  &[data-eq-min~='2'] {
-    .date-small {
-      display: none;
-    }
-    .date-medium {
-      display: none;
-    }
-    .date-large {
-      display: inline;
-    }
-  }
-`
+const DateWithTooltipElementQuery: typeof ElementQuery = forwardRef<
+  HTMLDivElement,
+  ComponentProps<typeof ElementQuery>
+>(function DateWithTooltipElementQuery({className, ...props}, ref) {
+  return (
+    <ElementQuery
+      ref={ref}
+      className={[dateWithTooltipElementQuery, className].filter(Boolean).join(' ')}
+      {...props}
+    />
+  )
+}) as typeof ElementQuery
 
 export default DateWithTooltipElementQuery

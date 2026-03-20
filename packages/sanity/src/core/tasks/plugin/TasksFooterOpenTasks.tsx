@@ -1,21 +1,12 @@
 import {TaskIcon} from '@sanity/icons'
 import {Badge, useMediaIndex} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {useTasks, useTasksNavigation} from '../context'
 import {tasksLocaleNamespace} from '../i18n'
-
-const ButtonContainer = styled.div`
-  position: relative;
-  [data-ui='Badge'] {
-    position: absolute;
-    top: -2px;
-    right: -2px;
-  }
-`
+import * as classes from './TasksFooterOpenTasks.css'
 
 /**
  * Button that shows how many pending tasks are assigned to the current document.
@@ -50,7 +41,7 @@ export function TasksFooterOpenTasks() {
 
   if (mediaIndex < 3) {
     return (
-      <ButtonContainer>
+      <div className={classes.buttonContainer}>
         <Button
           mode="bleed"
           icon={TaskIcon}
@@ -65,7 +56,7 @@ export function TasksFooterOpenTasks() {
         <Badge data-testid="tasks-badge" tone="primary" fontSize={0}>
           {pendingTasks.length}
         </Badge>
-      </ButtonContainer>
+      </div>
     )
   }
   return (

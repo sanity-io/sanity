@@ -1,9 +1,2 @@
-import {Card} from '@sanity/ui'
-import {styled} from 'styled-components'
-
-export const Root = styled(Card)`
-  position: relative;
-  outline: none;
-`
-
-Root.displayName = 'PaneContent__root'
+// Styles moved to PaneContent.css.ts
+export {root as Root} from './PaneContent.css'

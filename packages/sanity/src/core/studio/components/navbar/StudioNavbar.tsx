@@ -1,4 +1,5 @@
 import {MenuIcon} from '@sanity/icons'
+import {rootLayer, rootCard} from './StudioNavbar.css'
 import {
   BoundaryElementProvider,
   Box,
@@ -13,7 +14,6 @@ import {
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {CapabilityGate} from '../../../components/CapabilityGate'
@@ -41,26 +41,7 @@ import {WorkspaceMenuButton} from './workspace'
 
 const EMPTY_ARRAY: [] = []
 
-const RootLayer = styled(Layer)`
-  min-height: auto;
-  position: relative;
 
-  &[data-search-open='true'] {
-    top: 0;
-    position: sticky;
-  }
-`
-
-const RootCard = styled(Card)`
-  line-height: 0;
-`
-
-const NavGrid = styled(Grid)`
-  grid-template-columns: auto auto auto;
-  @media screen and (min-width: ${({theme}) => `${theme.sanity.media[4]}px`}) {
-    grid-template-columns: 1fr auto 1fr;
-  }
-`
 
 /**
  * @hidden
@@ -186,8 +167,9 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
   return (
     <FreeTrialProvider>
-      <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
-        <RootCard
+      <Layer className={rootLayer} zOffset={100} data-search-open={searchFullscreenOpen}>
+        <Card
+          className={rootCard}
           tone={getReleaseTone(selectedPerspective)}
           borderBottom
           data-testid="studio-navbar"
@@ -195,7 +177,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
           padding={3}
           sizing="border"
         >
-          <NavGrid gap={1}>
+          <Grid gap={1} style={{gridTemplateColumns: mediaIndex >= 4 ? '1fr auto 1fr' : 'auto auto auto'}}>
             {/** Left flex */}
             <TooltipDelayGroupProvider>
               <Flex align="center" gap={2} justify="flex-start">
@@ -291,8 +273,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                 )}
               </Flex>
             </TooltipDelayGroupProvider>
-          </NavGrid>
-        </RootCard>
+          </Grid>
+        </Card>
 
         {!shouldRender.tools && (
           <NavDrawer
@@ -303,7 +285,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             tools={tools}
           />
         )}
-      </RootLayer>
+      </Layer>
     </FreeTrialProvider>
   )
 }

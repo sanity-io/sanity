@@ -9,7 +9,6 @@ import {
   useMemo,
 } from 'react'
 import {IntentLink, useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {FEATURES, useFeatureEnabled} from '../../hooks/useFeatureEnabled'
@@ -18,10 +17,7 @@ import {NavigatedToScheduledDrafts} from '../../releases/__telemetry__/navigatio
 import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
 import {useWorkspace} from '../../studio/workspace'
-
-const StyledLinkComponent = styled(IntentLink)`
-  text-decoration: none;
-`
+import {styledLinkComponent} from './ScheduledDraftsMenuItem.css'
 
 export const ScheduledDraftsMenuItem: ComponentType = () => {
   const router = useRouter()
@@ -51,8 +47,9 @@ export const ScheduledDraftsMenuItem: ComponentType = () => {
         ref: ForwardedRef<HTMLAnchorElement>,
       ) {
         return (
-          <StyledLinkComponent
+          <IntentLink
             {...restProps}
+            className={styledLinkComponent}
             intent={RELEASES_SCHEDULED_DRAFTS_INTENT}
             params={{view: 'drafts'}}
             ref={ref}

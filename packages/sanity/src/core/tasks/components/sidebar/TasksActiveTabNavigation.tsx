@@ -1,29 +1,18 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Flex, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, Flex, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
 
 import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useTasksNavigation} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
+import * as classes from './TasksActiveTabNavigation.css'
 
 interface TasksActiveTabNavigationProps {
   items: TaskDocument[]
 }
-
-const Divider = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return `
-    height: 25px;
-    width: 1px;
-    background-color: ${theme.color.input.default.enabled.border};
-  `
-})
 
 /**
  * @internal
@@ -35,6 +24,7 @@ export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
   const {selectedTask} = state
   const items = allItems.filter((t) => t.status === 'open')
   const currentItemIndex = items.findIndex((item) => item._id === selectedTask)
+  const theme = useThemeV2()
 
   const goToPreviousTask = useCallback(() => {
     const prevTaskId =
@@ -73,7 +63,12 @@ export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
           icon={ChevronRightIcon}
           onClick={goToNextTask}
         />
-        <Divider />
+        <div
+          className={classes.divider}
+          style={assignInlineVars({
+            [classes.bgColorVar]: theme.color.input.default.enabled.border,
+          })}
+        />
       </Flex>
     </TooltipDelayGroupProvider>
   )

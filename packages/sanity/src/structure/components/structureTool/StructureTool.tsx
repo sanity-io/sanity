@@ -3,7 +3,6 @@ import {isHotkey} from 'is-hotkey-esm'
 import {Fragment, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, StructureToolPane} from '../../panes'
@@ -11,17 +10,13 @@ import {ResolvedPanesProvider, useResolvedPanes} from '../../structureResolvers'
 import {type PaneNode, type RouterPanes} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 import {PaneLayout} from '../pane'
+import {styledPaneLayout} from './StructureTool.css'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 import {StructureTitle} from './StructureTitle'
 
 interface StructureToolProps {
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
 }
-
-const StyledPaneLayout = styled(PaneLayout)`
-  min-height: 100%;
-  min-width: 320px;
-`
 
 const isSaveHotkey = isHotkey('mod+s')
 
@@ -209,7 +204,8 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
   return (
     <ResolvedPanesProvider value={resolvedPanesValue}>
       <PortalProvider element={portalElement || null}>
-        <StyledPaneLayout
+        <PaneLayout
+          className={styledPaneLayout}
           flex={1}
           height={layoutCollapsed ? undefined : 'fill'}
           minWidth={media[1]}
@@ -262,7 +258,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
           {paneDataItems.length <= 1 && isResolvingIntent && (
             <LoadingPane paneKey="intent-resolver" />
           )}
-        </StyledPaneLayout>
+        </PaneLayout>
         <StructureTitle resolvedPanes={resolvedPanes} />
         <div data-portal="" ref={setPortalElement} />
       </PortalProvider>

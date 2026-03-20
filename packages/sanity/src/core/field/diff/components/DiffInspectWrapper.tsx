@@ -1,33 +1,23 @@
 import {Box, type BoxProps, Card, Code, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-import {type ExecutionProps, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
 import {pathToString} from '../../paths'
 import {type FieldChangeNode} from '../../types'
+import {codeWrapper, meta} from './DiffInspectWrapper.css'
 import {FromToArrow} from './FromToArrow'
 
 /** @internal */
 export interface DiffInspectWrapperProps {
   children: ReactNode
   change: FieldChangeNode
-  as?: ExecutionProps['as']
+  className?: string
+  style?: React.CSSProperties
 }
-
-const CodeWrapper = styled.pre`
-  overflow-x: auto;
-  position: relative;
-`
-
-const Meta = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-`
 
 /** @internal */
 export function DiffInspectWrapper(props: DiffInspectWrapperProps & BoxProps): React.JSX.Element {
-  const {children, as, change, ...restProps} = props
+  const {children, className, style: styleProp, change, ...restProps} = props
   const isHovering = useRef(false)
   const [isInspecting, setIsInspecting] = useState(false)
 
@@ -48,14 +38,14 @@ export function DiffInspectWrapper(props: DiffInspectWrapperProps & BoxProps): R
   }, [toggleInspect])
 
   return (
-    <Box as={as} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...restProps}>
+    <Box className={className} style={styleProp} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...restProps}>
       {isInspecting ? <DiffInspector change={change} /> : children}
     </Box>
   )
 }
 
 const MetaLabel = ({title}: {title: string}) => (
-  <Box padding={3} display="inline-block" as={Meta}>
+  <Box padding={3} display="inline-block" className={meta}>
     <Text muted size={1} weight="medium">
       {title}
     </Text>
@@ -66,7 +56,7 @@ function DiffInspector({change}: {change: FieldChangeNode}): React.JSX.Element |
   const {t} = useTranslation()
   return (
     <Stack space={3}>
-      <Card padding={3} tone="transparent" as={CodeWrapper} radius={1}>
+      <Card padding={3} tone="transparent" className={codeWrapper} radius={1}>
         <MetaLabel title={t('changes.inspector.meta-label')} />
         <Code language="json" size={1}>
           {printMeta({
@@ -79,7 +69,7 @@ function DiffInspector({change}: {change: FieldChangeNode}): React.JSX.Element |
           })}
         </Code>
       </Card>
-      <Card as={CodeWrapper} tone="critical" padding={3} radius={1}>
+      <Card className={codeWrapper} tone="critical" padding={3} radius={1}>
         <MetaLabel title={t('changes.inspector.from-label')} />
         <Code language="json" size={1}>
           {jsonify(change.diff.fromValue)}
@@ -88,7 +78,7 @@ function DiffInspector({change}: {change: FieldChangeNode}): React.JSX.Element |
       <Card>
         <FromToArrow direction="down" align="center" />
       </Card>
-      <Card as={CodeWrapper} tone="positive" padding={3} radius={1}>
+      <Card className={codeWrapper} tone="positive" padding={3} radius={1}>
         <MetaLabel title={t('changes.inspector.to-label')} />
         <Code language="json" size={1}>
           {jsonify(change.diff.toValue)}

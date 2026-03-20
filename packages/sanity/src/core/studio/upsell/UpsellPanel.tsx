@@ -1,33 +1,14 @@
 import {LaunchIcon} from '@sanity/icons'
-import {_responsive, Box, Card, Flex, type FlexDirection} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {Box, Card, Flex, type FlexDirection} from '@sanity/ui'
+ 
 
 import {Button} from '../../../ui-components'
 import {type UpsellData} from './types'
 import {UpsellDescriptionSerializer} from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
 
+import {descriptionRoot} from './UpsellPanel.css'
+
 type Layout = 'vertical' | 'horizontal'
-const Image = styled.img<{$direction: FlexDirection[]}>((props) => {
-  const {media} = getTheme_v2(props.theme)
-
-  const responsiveStyles = _responsive(media, props.$direction, (val) => {
-    return {
-      width: val === 'row' ? '50%' : '100%',
-      height: val === 'row' ? 'auto' : '180px',
-    }
-  })
-
-  return css`
-    object-fit: cover;
-    ${responsiveStyles}
-  `
-})
-
-const DescriptionRoot = styled(Box)`
-  margin: auto 0;
-`
 
 interface CommentsUpsellPanelProps {
   data: UpsellData
@@ -62,13 +43,13 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
     <Card radius={3} overflow={'hidden'} border={border}>
       <Flex direction={direction} gap={2}>
         {data.image && (
-          <Image
+          <img
             src={data.image.asset.url}
             alt={data.image.asset.altText ?? ''}
-            $direction={direction}
+            style={{objectFit: 'cover', width: layout === 'horizontal' ? '50%' : '100%', height: layout === 'horizontal' ? 'auto' : '180px'}}
           />
         )}
-        <DescriptionRoot paddingX={3} paddingY={layout === 'horizontal' ? HORIZONTAL_PADDING_Y : 3}>
+        <Box className={descriptionRoot} paddingX={3} paddingY={layout === 'horizontal' ? HORIZONTAL_PADDING_Y : 3}>
           <Flex gap={4} direction={'column'} align={align}>
             <UpsellDescriptionSerializer blocks={data.descriptionText} />
           </Flex>
@@ -100,7 +81,7 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
               onClick={onPrimaryClick}
             />
           </Flex>
-        </DescriptionRoot>
+        </Box>
       </Flex>
     </Card>
   )

@@ -1,6 +1,14 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
+import {
+  type AvatarSize,
+  Flex,
+  Stack,
+  type StackProps,
+  useLayer,
+  useTheme_v2 as useThemeV2,
+} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
   type KeyboardEvent,
   memo,
@@ -10,7 +18,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
@@ -30,6 +37,7 @@ import {
 } from '../../types'
 import {SpacerAvatar} from '../avatars'
 import {CommentInput, type CommentInputHandle} from '../pte'
+import {expandButton, fontWeightVar, ghostButton, styledThreadCard} from './CommentsListItem.css'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 
@@ -46,49 +54,6 @@ const DEFAULT_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = {
 
 // data-active = when the comment is selected
 // data-hovered = when the mouse is over the comment
-const StyledThreadCard = styled(ThreadCard)(() => {
-  return css`
-    position: relative;
-
-    &:has(> [data-ui='GhostButton']:focus:focus-visible) {
-      box-shadow:
-        inset 0 0 0 1px var(--card-border-color),
-        0 0 0 1px var(--card-bg-color),
-        0 0 0 2px var(--card-focus-ring-color);
-    }
-
-    // The hover styles is managed with the [data-hovered] attribute instead of the :hover pseudo class
-    // since we want to show the hover styles when hovering over the menu items in the context menu as well.
-    // The context menu is rendered using a portal, so the :hover pseudo class won't work when hovering over
-    // the menu items.
-    &:not([data-active='true']) {
-      @media (hover: hover) {
-        &[data-hovered='true'] {
-          [data-root-menu='true'] {
-            opacity: 1;
-          }
-        }
-      }
-    }
-  `
-})
-
-const ExpandButton = styled(Button)(({theme}) => {
-  const {medium} = theme.sanity.fonts.text.weights
-
-  return css`
-    font-weight: ${medium};
-  `
-})
-
-const GhostButton = styled.button`
-  opacity: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  left: 0;
-`
 
 export interface CommentsListItemProps {
   avatarConfig?: {
@@ -145,6 +110,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const replyInputRef = useRef<CommentInputHandle>(null)
+  const theme = useThemeV2()
 
   const {isTopLayer} = useLayer()
 
@@ -246,7 +212,8 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   }`
 
   return (
-    <StyledThreadCard
+    <ThreadCard
+      className={styledThreadCard}
       data-active={isSelected ? 'true' : 'false'}
       data-hovered={mouseOver ? 'true' : 'false'}
       data-testid="comments-list-item"
@@ -255,7 +222,9 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <GhostButton
+      <button
+        type="button"
+        className={ghostButton}
         data-ui="GhostButton"
         aria-label={t('list-item.go-to-field-button.aria-label')}
       />
@@ -298,7 +267,9 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
           <Flex gap={1} paddingY={1} sizing="border">
             <SpacerAvatar />
 
-            <ExpandButton
+            <Button
+              className={expandButton}
+              style={assignInlineVars({[fontWeightVar]: String(theme.font.text.weights.medium)})}
               iconRight={ChevronDownIcon}
               mode="bleed"
               onClick={handleExpand}
@@ -355,7 +326,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
           />
         )}
       </Stack>
-    </StyledThreadCard>
+    </ThreadCard>
   )
 })
 CommentsListItem.displayName = 'Memo(CommentsListItem)'

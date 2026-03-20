@@ -1,70 +1,68 @@
 import {type StringDiffSegment} from '@sanity/diff'
-import {type BadgeTone, type ButtonTone} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {type BadgeTone, type ButtonTone,useTheme_v2 as useThemeV2} from '@sanity/ui'
+ 
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ComponentType, type PropsWithChildren} from 'react'
-import {styled} from 'styled-components'
 
 import {RELEASE_TYPES_TONES} from '../../../../../releases/util/const'
 import {getReleaseTone} from '../../../../../releases/util/getReleaseTone'
 import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
-
-interface StyledSegmentProps {
-  $tone?: ButtonTone
-}
-
-export const Segment = styled.span<StyledSegmentProps>`
-  ${({theme, $tone}) => {
-    if (typeof $tone === 'undefined') {
-      return undefined
-    }
-
-    const {color} = getTheme_v2(theme)
-
-    return {
-      backgroundColor: color.button.bleed[$tone]?.pressed?.bg,
-      color: color.button.bleed[$tone]?.pressed?.fg,
-      textDecoration: 'none',
-    }
-  }}
-`
+import {bgColorVar, fgColorVar, segment} from './segments.css'
 
 interface SegmentProps {
   segment: StringDiffSegment<ProvenanceDiffAnnotation>
 }
 
-export const DeletedSegment: ComponentType<SegmentProps> = ({segment}) => (
-  <Segment
-    as="del"
-    data-text={segment.text}
-    contentEditable={false}
-    aria-hidden
-    inert
-    $tone="critical"
-  />
-)
+function useSegmentStyle(tone?: ButtonTone) {
+  const {color} = useThemeV2()
+  if (typeof tone === 'undefined') {
+    return undefined
+  }
+  const toneColors = color.button.bleed[tone]
+  return assignInlineVars({
+    [bgColorVar]: toneColors?.pressed?.bg || 'transparent',
+    [fgColorVar]: toneColors?.pressed?.fg || 'inherit',
+  })
+}
 
-export const InsertedSegment: ComponentType<PropsWithChildren<SegmentProps>> = ({
-  children,
-  segment,
-}) => {
+export const Segment = segment
+
+export const DeletedSegment: ComponentType<SegmentProps> = ({segment: seg}) => {
+  const style = useSegmentStyle('critical')
   return (
-    <Segment as="ins" $tone={segmentTone(segment)}>
-      {children}
-    </Segment>
+    <del
+      className={segment}
+      data-text={seg.text}
+      contentEditable={false}
+      aria-hidden
+      style={style}
+    />
   )
 }
 
-function segmentTone(segment: StringDiffSegment<ProvenanceDiffAnnotation>): BadgeTone | undefined {
+export const InsertedSegment: ComponentType<PropsWithChildren<SegmentProps>> = ({
+  children,
+  segment: seg,
+}) => {
+  const tone = segmentTone(seg)
+  const style = useSegmentStyle(tone)
+  return (
+    <ins className={segment} style={style}>
+      {children}
+    </ins>
+  )
+}
+
+function segmentTone(seg: StringDiffSegment<ProvenanceDiffAnnotation>): BadgeTone | undefined {
   if (
-    segment.action !== 'unchanged' &&
-    typeof segment.annotation.provenance.bundle !== 'undefined'
+    seg.action !== 'unchanged' &&
+    typeof seg.annotation.provenance.bundle !== 'undefined'
   ) {
-    if (segment.annotation.provenance.bundle === 'drafts') {
+    if (seg.annotation.provenance.bundle === 'drafts') {
       return RELEASE_TYPES_TONES.asap.tone
     }
 
-    return getReleaseTone(segment.annotation.provenance.bundle)
+    return getReleaseTone(seg.annotation.provenance.bundle)
   }
 
   return undefined

@@ -1,9 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
-import {styled} from 'styled-components'
-
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {fillHeight} from './ReleaseDashboardActivityPanel.css'
 import {Resizable} from '../../../components/resizer/Resizable'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -16,12 +15,7 @@ interface ReleaseDashboardActivityPanelProps {
   show: boolean
 }
 const MotionFlex = motion.create(Flex)
-const FillHeight = styled.div`
-  --card-border-color: transparent;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-`
+
 export function ReleaseDashboardActivityPanel({
   events,
   release,
@@ -40,7 +34,7 @@ export function ReleaseDashboardActivityPanel({
             transition={{type: 'spring', bounce: 0, duration: 0.2}}
           >
             <Resizable
-              as={FillHeight}
+              as="div" className={fillHeight}
               minWidth={320}
               maxWidth={800}
               initialWidth={320}

@@ -10,18 +10,15 @@ import {
 } from '@sanity/ui'
 import {forwardRef, type HTMLProps, isValidElement, type ReactNode, type Ref, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
-import {styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '..'
+import {subtitleText, previewWrapper} from './MenuItem.css'
 import {Hotkeys} from '../../core/components/Hotkeys'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0
 
 /* Using px value here to make title/subtitles align with icon */
-const SubtitleText = styled(Text)`
-  margin-top: 2px;
-`
 
 /** @internal */
 export type MenuItemProps = Pick<
@@ -55,11 +52,6 @@ export type MenuItemProps = Pick<
   __unstable_space?: number
 }
 
-const PreviewWrapper = styled(Box)`
-  height: 25px;
-  width: 25px;
-  overflow: hidden;
-`
 
 /**
  * Customized Sanity UI <MenuItem> that restricts usage of `children` to encourage simple,
@@ -95,14 +87,14 @@ export const MenuItem = forwardRef(function MenuItem(
     return (
       <Flex align="center" gap={2}>
         {preview && (
-          <PreviewWrapper
+          <Box className={previewWrapper}
             style={{opacity: disabled ? 0.25 : undefined}}
             paddingRight={__unstable_space ? 1 : 0}
           >
             <Flex align="center" height="fill" justify="center">
               {preview}
             </Flex>
-          </PreviewWrapper>
+          </Box>
         )}
         {Icon && (
           <Box paddingRight={1}>
@@ -118,9 +110,9 @@ export const MenuItem = forwardRef(function MenuItem(
               {text}
             </Text>
             {__unstable_subtitle && (
-              <SubtitleText size={SUBTITLE_FONT_SIZE} textOverflow="ellipsis" weight="medium" muted>
+              <Text className={subtitleText} size={SUBTITLE_FONT_SIZE} textOverflow="ellipsis" weight="medium" muted>
                 {__unstable_subtitle}
-              </SubtitleText>
+              </Text>
             )}
           </Stack>
         )}

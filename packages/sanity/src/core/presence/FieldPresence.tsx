@@ -6,7 +6,7 @@ import {FormFieldPresenceContext} from 'sanity/_singletons'
 
 import {UserAvatar} from '../components/userAvatar'
 import {AVATAR_DISTANCE, AVATAR_SIZE, DEFAULT_MAX_AVATARS_FIELDS} from './constants'
-import {FlexWrapper, InnerBox} from './FieldPresence.styled'
+import {flexWrapper, innerBox} from './FieldPresence.css'
 import {usePresenceReporter} from './overlay/tracker'
 import {PresenceTooltip} from './PresenceTooltip'
 import {type FormNodePresence} from './types'
@@ -54,10 +54,10 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
   ].filter(Boolean)
 
   return (
-    <FlexWrapper>
+    <div className={flexWrapper}>
       <div />
 
-      <InnerBox direction="row-reverse">
+      <div className={innerBox} style={{flexDirection: 'row-reverse'}}>
         {avatars.map(
           (av, i) =>
             av && (
@@ -76,8 +76,8 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
               </div>
             ),
         )}
-      </InnerBox>
-    </FlexWrapper>
+      </div>
+    </div>
   )
 })
 
@@ -104,7 +104,7 @@ export function FieldPresence(props: FieldPresenceProps) {
 
   return (
     <PresenceTooltip items={uniquePresence}>
-      <FlexWrapper ref={setElement} style={{minHeight: AVATAR_SIZE, minWidth: AVATAR_SIZE}} />
+      <div className={flexWrapper} ref={setElement} style={{minHeight: AVATAR_SIZE, minWidth: AVATAR_SIZE}} />
     </PresenceTooltip>
   )
 }

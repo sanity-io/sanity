@@ -1,7 +1,6 @@
 import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
 import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -10,6 +9,7 @@ import {EMPTY_ARRAY} from '../../../util'
 import {useTasks, useTasksNavigation} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
+import * as classes from './TasksHeaderDraftsMenu.css'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
@@ -17,10 +17,6 @@ const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
   portal: true,
 }
-
-const StyledMenu = styled(Menu)`
-  width: 220px;
-`
 
 interface TasksDraftsMenuItemProps {
   isSelected: boolean
@@ -82,7 +78,7 @@ export function TasksHeaderDraftsMenu() {
       button={<Button text={t('buttons.draft.text')} mode="ghost" iconRight={ChevronDownIcon} />}
       id="edit-task-menu"
       menu={
-        <StyledMenu>
+        <Menu className={classes.styledMenu}>
           <Box padding={3}>
             <Text size={1} weight="semibold">
               {t('panel.drafts.title')}
@@ -101,7 +97,7 @@ export function TasksHeaderDraftsMenu() {
               />
             )
           })}
-        </StyledMenu>
+        </Menu>
       }
       popover={MENU_BUTTON_POPOVER_PROPS}
     />

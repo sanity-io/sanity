@@ -6,34 +6,41 @@ import {
   type AvatarSize,
   type AvatarStatus,
   Skeleton,
-} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+useTheme_v2 as useThemeV2} from '@sanity/ui'
+ 
+ 
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ForwardedRef, forwardRef, useState} from 'react'
-import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
 import {useUser} from '../../store'
 import {useUserColor} from '../../user-color'
 import {isRecord} from '../../util'
+import {avatarSkeleton, avatarSizeVar} from './UserAvatar.css'
 
 interface AvatarSkeletonProps {
   $size?: AvatarSize
+  animated?: boolean
 }
 
 /**
  * A loading skeleton element representing a user avatar
  * @beta
  */
-export const AvatarSkeleton = styled(Skeleton)<AvatarSkeletonProps>((props) => {
-  const theme = getTheme_v2(props.theme)
-  const size = props.$size ?? 1
-  return css`
-    border-radius: 50%;
-    width: ${theme.avatar.sizes[size].size}px;
-    height: ${theme.avatar.sizes[size].size}px;
-  `
-})
+export function AvatarSkeleton(props: AvatarSkeletonProps & Record<string, unknown>) {
+  const {$size: size = 1, ...rest} = props
+  const theme = useThemeV2()
+
+  return (
+    <Skeleton
+      className={avatarSkeleton}
+      style={assignInlineVars({
+        [avatarSizeVar]: `${theme.avatar.sizes[size]?.size ?? theme.avatar.sizes[1].size}px`,
+      })}
+      {...rest}
+    />
+  )
+}
 
 /**
  * @hidden

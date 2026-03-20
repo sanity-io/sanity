@@ -1,6 +1,6 @@
-import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
+import {Box, Card, Flex, Skeleton, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
   AvatarSkeleton,
@@ -12,31 +12,20 @@ import {
   useTranslation,
   useUser,
 } from 'sanity'
-import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
+import {
+  iconBox,
+  iconColorVar,
+  iconBgVar,
+  avatarSizeVar,
+  nameSkeleton,
+  nameSkeletonLineHeightVar,
+} from './timelineItem.css'
 import {UserAvatarStack} from './userAvatarStack'
 import {type ChunksWithCollapsedDrafts} from './utils'
-
-const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
-  const theme = getTheme_v2(props.theme)
-  const color = props.$color
-
-  return css`
-    --card-icon-color: ${theme.color.avatar[color].fg};
-    background-color: ${theme.color.avatar[color].bg};
-    box-shadow: 0 0 0 1px var(--card-bg-color);
-
-    position: absolute;
-    width: ${theme.avatar.sizes[0].size}px;
-    height: ${theme.avatar.sizes[0].size}px;
-    right: -3px;
-    bottom: -3px;
-    border-radius: 50%;
-  `
-})
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ThemeColorAvatarColorKey> = {
   initial: 'blue',
@@ -63,16 +52,9 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
-const NameSkeleton = styled(Skeleton)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    width: 6ch;
-    height: ${theme.font.text.sizes[0].lineHeight}px;
-  `
-})
-
 const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
+  const themeV2 = useThemeV2()
 
   return (
     <Flex key={userId} align="center" gap={2} padding={1}>
@@ -80,7 +62,13 @@ const UserLine = ({userId}: {userId: string}) => {
       <Box>
         {loading || !user?.displayName ? (
           <Text size={1}>
-            <NameSkeleton animated />
+            <Skeleton
+              className={nameSkeleton}
+              animated
+              style={assignInlineVars({
+                [nameSkeletonLineHeightVar]: `${themeV2.font.text.sizes[0].lineHeight}px`,
+              })}
+            />
           </Text>
         ) : (
           <Text muted size={1}>
@@ -114,6 +102,7 @@ export function TimelineItem({
   optionsMenu,
 }: TimelineItemProps) {
   const {t} = useTranslation('studio')
+  const themeV2 = useThemeV2()
   const {type, endTimestamp: timestamp} = chunk
   const IconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
@@ -158,10 +147,19 @@ export function TimelineItem({
         <Flex align="center" gap={3}>
           <div style={{position: 'relative'}}>
             <UserAvatarStack maxLength={3} userIds={authorUserIds} size={2} />
-            <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
+            <Flex
+              align="center"
+              justify="center"
+              className={iconBox}
+              style={assignInlineVars({
+                [iconColorVar]: themeV2.color.avatar[TIMELINE_ITEM_EVENT_TONE[type]].fg,
+                [iconBgVar]: themeV2.color.avatar[TIMELINE_ITEM_EVENT_TONE[type]].bg,
+                [avatarSizeVar]: `${themeV2.avatar.sizes[0].size}px`,
+              })}
+            >
               {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
               <Text size={0}>{IconComponent && <IconComponent />}</Text>
-            </IconBox>
+            </Flex>
           </div>
           <Stack space={2}>
             <Text size={1} weight="medium">

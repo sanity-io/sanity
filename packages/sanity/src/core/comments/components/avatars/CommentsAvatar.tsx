@@ -1,13 +1,8 @@
 import {type User} from '@sanity/types'
-import {Avatar, type AvatarProps} from '@sanity/ui'
+import {Avatar, type AvatarProps, type AvatarSize} from '@sanity/ui'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
 
-const StyledAvatar = styled(Avatar)`
-  svg > ellipse {
-    stroke: transparent;
-  }
-`
+import {styledAvatar} from './CommentsAvatar.css'
 
 const SYMBOLS = /[^\p{Alpha}\p{White_Space}]/gu
 const WHITESPACE = /\p{White_Space}+/u
@@ -24,17 +19,18 @@ function nameToInitials(fullName: string) {
 
 interface CommentsAvatarProps extends AvatarProps {
   user: User | undefined | null
+  size?: AvatarSize
 }
 
 export function CommentsAvatar(props: CommentsAvatarProps) {
-  const {user: userProp, ...restProps} = props
-  const user = userProp as User
+  const {user, ...restProps} = props
   const initials = useMemo(() => nameToInitials(user?.displayName || ''), [user?.displayName])
 
-  if (!user) return <StyledAvatar {...restProps} />
+  if (!user) return <Avatar className={styledAvatar} {...restProps} />
 
   return (
-    <StyledAvatar
+    <Avatar
+      className={styledAvatar}
       initials={initials}
       src={user?.imageUrl}
       title={user?.displayName}

@@ -1,11 +1,15 @@
-import {styled} from 'styled-components'
+import { type ForwardedRef, forwardRef, type HTMLProps, createElement} from 'react'
 
-export const Scroller = styled.div`
-  position: relative;
-  height: 100%;
-  overflow: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: var(--scrollbar-width);
-  overscroll-behavior: contain;
-  will-change: scroll-position;
-`
+import {scroller} from './Scroller.css'
+
+export const Scroller = forwardRef(function Scroller(
+  props: HTMLProps<HTMLDivElement>,
+  ref: ForwardedRef<HTMLDivElement>,
+) {
+  const {className, ...rest} = props
+  return createElement('div', {
+    ...rest,
+    className: className ? `${scroller} ${className}` : scroller,
+    ref,
+  })
+})

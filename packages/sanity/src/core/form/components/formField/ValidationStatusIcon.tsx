@@ -1,15 +1,13 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
+import {errorIcon, infoIcon, warningIcon} from './ValidationStatusIcon.css'
 
-const StyledErrorOutlineIcon = styled(ErrorOutlineIcon)`
-  --card-icon-color: var(--card-badge-critical-icon-color);
-`
 function ValidationErrorIcon() {
   const {t} = useTranslation()
   return (
-    <StyledErrorOutlineIcon
+    <ErrorOutlineIcon
+      className={errorIcon}
       data-testid="input-validation-icon-error"
       aria-label={t('form.validation.has-error-aria-label')}
       aria-hidden
@@ -18,14 +16,11 @@ function ValidationErrorIcon() {
   )
 }
 
-const StyledWarningOutlineIcon = styled(WarningOutlineIcon)`
-  --card-icon-color: var(--card-badge-caution-icon-color);
-`
-
 function ValidationWarningIcon() {
   const {t} = useTranslation()
   return (
-    <StyledWarningOutlineIcon
+    <WarningOutlineIcon
+      className={warningIcon}
       data-testid="input-validation-icon-warning"
       aria-label={t('form.validation.has-warning-aria-label')}
       aria-hidden
@@ -34,13 +29,11 @@ function ValidationWarningIcon() {
   )
 }
 
-const StyledInfoOutlineIcon = styled(InfoOutlineIcon)`
-  --card-icon-color: var(--card-badge-primary-icon-color);
-`
 function ValidationInfoIcon() {
   const {t} = useTranslation()
   return (
-    <StyledInfoOutlineIcon
+    <InfoOutlineIcon
+      className={infoIcon}
       data-testid="input-validation-icon-info"
       aria-label={t('form.validation.has-info-aria-label')}
       aria-hidden

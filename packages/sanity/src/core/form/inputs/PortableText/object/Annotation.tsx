@@ -28,7 +28,7 @@ import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
-import {Root, TooltipBox} from './Annotation.styles'
+import {root as rootClass, tooltipBox} from './Annotation.css'
 
 interface AnnotationProps {
   children: React.JSX.Element
@@ -124,13 +124,13 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
           placement="bottom"
           portal="default"
           content={
-            <TooltipBox>
+            <Box className={tooltipBox}>
               <Markers
                 markers={markers}
                 renderCustomMarkers={renderCustomMarkers}
                 validation={validation}
               />
-            </TooltipBox>
+            </Box>
           }
         >
           {text}
@@ -312,8 +312,8 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
   }, [isLink, hasError, hasWarning])
 
   return (
-    <Root
-      $toneKey={toneKey}
+    <span
+      className={rootClass}
       aria-label={t('inputs.portable-text.annotation-aria-label')}
       data-link={isLink ? '' : undefined}
       data-error={hasError ? '' : undefined}
@@ -322,6 +322,6 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
       onClick={readOnly ? onOpen : undefined}
     >
       {textElement}
-    </Root>
+    </span>
   )
 }

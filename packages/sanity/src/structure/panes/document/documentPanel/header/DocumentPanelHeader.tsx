@@ -1,8 +1,9 @@
 import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
+ 
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {horizontalScroller, horizontalScrollerWithGradient, gradientColorVar} from './DocumentPanelHeader.css'
 import {
   type ForwardedRef,
   forwardRef,
@@ -14,7 +15,6 @@ import {
   useState,
 } from 'react'
 import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
-import {css, styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {
@@ -45,40 +45,6 @@ export interface DocumentPanelHeaderProps {
   menuItems: PaneMenuItem[]
 }
 
-const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return css`
-    scrollbar-width: none;
-    z-index: 1;
-    flex: 1;
-    position: relative;
-    > div {
-      &::-webkit-scrollbar {
-        width: 0;
-        height: 0;
-      }
-    }
-
-    ${
-      props.$showGradient &&
-      css`
-      &::after {
-        content: '';
-        display: block;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        width: 150px;
-        background: linear-gradient(to right, ${rgba(theme.color.bg, 0)}, var(--card-bg-color));
-        transition: 'opacity 300ms ease-out';
-        pointer-events: none;
-      }
-    `
-    }
-  `
-})
 
 export const DocumentPanelHeader = memo(
   forwardRef(function DocumentPanelHeader(
@@ -106,6 +72,10 @@ export const DocumentPanelHeader = memo(
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     const showGradient = useChipScrollPosition(scrollContainerRef)
+    const gradientStyle = useMemo(() => {
+      if (!showGradient) return undefined
+      return assignInlineVars({[gradientColorVar]: 'transparent'})
+    }, [showGradient])
     const telemetry = useTelemetry()
 
     const menuNodes = useMemo(
@@ -196,7 +166,10 @@ export const DocumentPanelHeader = memo(
         ) : (
           <Card hidden={collapsed} style={{lineHeight: 0}} borderBottom>
             <Flex gap={3} paddingY={3}>
-              <HorizontalScroller $showGradient={showGradient}>
+              <Card
+                className={`${horizontalScroller}${showGradient ? ` ${horizontalScrollerWithGradient}` : ''}`}
+                style={gradientStyle}
+              >
                 <Flex
                   flex={1}
                   gap={1}
@@ -207,7 +180,7 @@ export const DocumentPanelHeader = memo(
                 >
                   <DocumentPerspectiveList />
                 </Flex>
-              </HorizontalScroller>
+              </Card>
 
               <Box flex="none" paddingRight={3}>
                 <Flex align="center" gap={1}>

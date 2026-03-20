@@ -1,7 +1,6 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, Card, Flex} from '@sanity/ui'
 import {type ChangeEvent, forwardRef, useCallback, useEffect, useRef} from 'react'
-import {keyframes, styled} from 'styled-components'
 
 import {Button} from '../../../../../../ui-components'
 import {StatusButton} from '../../../../../components'
@@ -10,23 +9,9 @@ import {useSearchState} from '../contexts/search/useSearchState'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {CustomTextInput} from './common/CustomTextInput'
 
-const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`
+import {animatedSpinnerIcon, filterDiv} from './SearchHeader.css'
 
-const AnimatedSpinnerIcon = styled(SpinnerIcon)`
-  animation: ${rotate} 500ms linear infinite;
-`
-
-const FilterDiv = styled.div`
-  line-height: 0;
-  position: relative;
-`
+const AnimatedSpinnerIcon = (props: any) => <SpinnerIcon className={animatedSpinnerIcon} {...props} />
 
 interface SearchHeaderProps {
   ariaInputLabel?: string
@@ -128,7 +113,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
 
         {/* Filter toggle */}
         {fullscreen && (
-          <FilterDiv>
+          <div className={filterDiv}>
             <StatusButton
               aria-expanded={filtersVisible}
               aria-label={t('search.action.toggle-filters-aria-label', {
@@ -146,7 +131,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
                 }),
               }}
             />
-          </FilterDiv>
+          </div>
         )}
       </Flex>
     </Card>

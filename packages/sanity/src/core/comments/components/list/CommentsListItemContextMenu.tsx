@@ -1,6 +1,5 @@
 import {CheckmarkCircleIcon, EditIcon, LinkIcon, TrashIcon, UndoIcon} from '@sanity/icons'
 import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {
   Button,
@@ -16,6 +15,7 @@ import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption, type CommentStatus, type CommentsUIMode} from '../../types'
 import {ReactionIcon} from '../icons'
 import {CommentReactionsMenuButton} from '../reactions'
+import {floatingCard} from './CommentsListItemContextMenu.css'
 
 const renderMenuButton = ({
   open,
@@ -38,12 +38,6 @@ const renderMenuButton = ({
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
 }
-
-const FloatingCard = styled(Card)`
-  &:empty {
-    display: none;
-  }
-`
 
 interface CommentsListItemContextMenuProps {
   canDelete: boolean | undefined
@@ -86,7 +80,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
   return (
     <TooltipDelayGroupProvider>
       <Flex>
-        <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
+        <Card className={floatingCard} display="flex" shadow={2} padding={1} radius={2} sizing="border">
           {onReactionSelect && (
             <CommentReactionsMenuButton
               mode={mode}
@@ -166,7 +160,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
               popover={POPOVER_PROPS}
             />
           )}
-        </FloatingCard>
+        </Card>
       </Flex>
     </TooltipDelayGroupProvider>
   )

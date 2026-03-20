@@ -2,8 +2,6 @@ import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType, type UploadState} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ChangeIndicator} from '../../../../../changeIndicators'
 import {ContextMenuButton} from '../../../../../components/contextMenuButton'
@@ -26,28 +24,13 @@ import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {regenerateKeys} from '../../../../utils/regenerateKeys'
 import {useArrayValidation} from '../../common/ArrayValidationContext'
+import {previewCard} from './GridItem.css'
 import {CellLayout} from '../../layouts/CellLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../InsertMenuMenuItems'
 
 type GridItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
 
-const PreviewCard = styled(Card)`
-  border-top-right-radius: inherit;
-  border-top-left-radius: inherit;
-  height: 100%;
-  position: relative;
-
-  @media (hover: hover) {
-    &:hover {
-      filter: brightness(95%);
-    }
-  }
-
-  &:focus:focus-visible {
-    box-shadow: 0 0 0 2px var(--card-focus-ring-color);
-  }
-`
 
 function getTone({
   readOnly,
@@ -278,7 +261,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       selected={openPortal}
       readOnly={readOnly}
     >
-      <PreviewCard
+      <Card className={previewCard}
         tone="inherit"
         overflow="auto"
         forwardedAs="button"
@@ -309,7 +292,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
         })}
 
         {resolvingInitialValue && <LoadingBlock fill />}
-      </PreviewCard>
+      </Card>
     </CellLayout>
   )
 

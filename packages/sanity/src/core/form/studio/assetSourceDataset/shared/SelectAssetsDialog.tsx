@@ -15,14 +15,13 @@ import {
   useState,
 } from 'react'
 import {type Subscription} from 'rxjs'
-import {styled} from 'styled-components'
-
 import {Button, Dialog} from '../../../../../ui-components'
 import {useClient, useListFormat} from '../../../../hooks'
 import {Translate, useTranslation} from '../../../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {FileListView} from '../file/FileListView'
 import {ImageListView} from '../image/ImageListView'
+import {cardLoadMore} from './SelectAssetsDialog.css'
 
 const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'
@@ -92,12 +91,6 @@ const buildQuery = (
 `
 }
 
-const CardLoadMore = styled(Card)`
-  border-top: 1px solid var(--card-border-color);
-  position: sticky;
-  bottom: 0;
-  z-index: 200;
-`
 
 const SelectAssetsComponent = function SelectAssetsComponent(
   props: AssetSourceComponentProps,
@@ -274,7 +267,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
           />
         )}
         {assets.length > 0 && !isLastPage && (
-          <CardLoadMore tone="default" padding={4}>
+          <Card className={cardLoadMore} tone="default" padding={4}>
             <Flex direction="column">
               <Button
                 type="button"
@@ -286,7 +279,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
                 tone="primary"
               />
             </Flex>
-          </CardLoadMore>
+          </Card>
         )}
       </Stack>
     </Dialog>

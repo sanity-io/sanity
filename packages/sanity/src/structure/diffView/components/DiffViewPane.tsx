@@ -35,22 +35,13 @@ import {
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {CommentsEnabledContext, ReviewChangesContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
 import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
 import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
 import {type PathSyncChannel} from '../types/pathSyncChannel'
 import {findRelease} from '../utils/findRelease'
+import {diffViewPaneLayout, container} from './DiffViewPane.css'
 import {Scroller} from './Scroller'
-
-const DiffViewPaneLayout = styled(Card)`
-  position: relative;
-  grid-area: var(--grid-area);
-`
-
-const Container = styled(UiContainer)`
-  width: auto;
-`
 
 interface DiffViewPaneProps {
   documentType: string
@@ -106,7 +97,8 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
           containerElement={containerElement}
         >
           <BoundaryElementProvider element={boundaryElement}>
-            <DiffViewPaneLayout
+            <Card
+              className={diffViewPaneLayout}
               ref={setBoundaryElement}
               style={
                 {
@@ -127,15 +119,15 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
               >
                 <PortalProvider element={portalElement}>
                   <DialogProvider position="absolute">
-                    <Container ref={containerElement} padding={4} width={1}>
+                    <UiContainer className={container} ref={containerElement} padding={4} width={1}>
                       {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
                       <DocumentLayout documentId={documentId} documentType={documentType} />
-                    </Container>
+                    </UiContainer>
                   </DialogProvider>
                 </PortalProvider>
               </Scroller>
               <div data-testid="diffView-document-panel-portal" ref={setPortalElement} />
-            </DiffViewPaneLayout>
+            </Card>
           </BoundaryElementProvider>
         </VirtualizerScrollInstanceProvider>
       </ChangeIndicatorsTracker>

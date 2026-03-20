@@ -22,9 +22,9 @@ import {
   useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
-import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
+import {documentBox, scrollerVariants} from './DocumentPanel.css'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
@@ -61,23 +61,6 @@ interface DocumentPanelProps {
   footer: React.ReactNode
 }
 
-const DocumentBox = styled(Box)({
-  position: 'relative',
-})
-
-const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
-  if ($disabled) {
-    return {height: '100%'}
-  }
-
-  return css`
-    height: 100%;
-    overflow: auto;
-    position: relative;
-    scroll-behavior: smooth;
-    outline: none;
-  `
-})
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {
@@ -378,15 +361,15 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               {banners}
               <DocumentPanelSubHeader />
             </LegacyLayerProvider>
-            <DocumentBox flex={2}>
+            <Box className={documentBox} flex={2}>
               <PortalProvider element={portalElement} __unstable_elements={portalElements}>
                 <BoundaryElementProvider element={documentScrollElement}>
                   <VirtualizerScrollInstanceProvider
                     scrollElement={documentScrollElement}
                     containerElement={formContainerElement}
                   >
-                    <Scroller
-                      $disabled={layoutCollapsed || false}
+                    <ScrollContainer
+                      className={scrollerVariants[layoutCollapsed ? 'disabled' : 'enabled']}
                       data-testid="document-panel-scroller"
                       ref={setDocumentScrollElement}
                     >
@@ -396,7 +379,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                         ref={formContainerElement}
                       />
                       {activeViewNode}
-                    </Scroller>
+                    </ScrollContainer>
 
                     {inspectDialog}
 
@@ -404,7 +387,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   </VirtualizerScrollInstanceProvider>
                 </BoundaryElementProvider>
               </PortalProvider>
-            </DocumentBox>
+            </Box>
 
             {footer}
           </Flex>
