@@ -25,7 +25,9 @@ describe('colorSchemeStore', () => {
 
   test('default color scheme is system', () => {
     mockLocalStorage.getItem.mockReturnValue(null)
-    const unsubscribe = subscribe(() => { /* intentionally empty */ })
+    const unsubscribe = subscribe(() => {
+      /* intentionally empty */
+    })
     expect(getSnapshot()).toBe('system')
     unsubscribe()
   })

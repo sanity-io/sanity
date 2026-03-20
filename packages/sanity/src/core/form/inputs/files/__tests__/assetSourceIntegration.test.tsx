@@ -50,7 +50,9 @@ vi.mock('../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo', (
       aspectRatio: 16 / 9,
     },
     error: undefined,
-    retry: () => { /* intentionally empty */ },
+    retry: () => {
+      /* intentionally empty */
+    },
   }),
 }))
 

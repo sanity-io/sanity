@@ -28,7 +28,9 @@ vi.mock('../useVideoPlaybackInfo', () => ({
       aspectRatio: 16 / 9,
     },
     error: undefined,
-    retry: () => { /* intentionally empty */ },
+    retry: () => {
+      /* intentionally empty */
+    },
   }),
 }))
 

@@ -43,7 +43,9 @@ describe('useDocumentRevertStates', () => {
     vi.clearAllMocks()
     // Suppress expected console.error from the revert states pipeline
     // (async fetch errors during test teardown and intentional error tests)
-    vi.spyOn(console, 'error').mockImplementation(() => { /* intentionally empty */ })
+    vi.spyOn(console, 'error').mockImplementation(() => {
+      /* intentionally empty */
+    })
 
     mockUseClient.mockReturnValue(mockClient)
 

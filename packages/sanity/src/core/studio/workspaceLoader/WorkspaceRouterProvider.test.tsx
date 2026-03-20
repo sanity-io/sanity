@@ -75,7 +75,9 @@ describe('WorkspaceRouterProvider', () => {
   // TODO: This test has been broken by the addition of `ActiveWorkspaceMatcherProvider` to `TestProvider`.
   it('calls onUncaughtError when an error is caught', async () => {
     // React logs caught errors from error boundaries to console.error
-    vi.spyOn(console, 'error').mockImplementation(() => { /* intentionally empty */ })
+    vi.spyOn(console, 'error').mockImplementation(() => {
+      /* intentionally empty */
+    })
     const onUncaughtError = vi.fn()
 
     const ThrowErrorComponent = () => {

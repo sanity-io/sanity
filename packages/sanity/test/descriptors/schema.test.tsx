@@ -351,7 +351,9 @@ describe('Base features', () => {
             name: 'foo',
             type: 'string',
             options: {
-              a: () => { /* intentionally empty */ },
+              a: () => {
+                /* intentionally empty */
+              },
             } as object,
           })
         ).typeDef,

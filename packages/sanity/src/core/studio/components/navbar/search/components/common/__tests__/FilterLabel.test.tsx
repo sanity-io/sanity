@@ -80,7 +80,9 @@ describe('FilterLabel', () => {
   })
 
   test('handles missing operator descriptionKey', async () => {
-    vi.spyOn(console, 'warn').mockImplementation(() => { /* intentionally empty */ })
+    vi.spyOn(console, 'warn').mockImplementation(() => {
+      /* intentionally empty */
+    })
     const filterWithoutDescription: SearchFilter = {
       ...mockFilter,
       operatorType: 'unknown',

@@ -17,7 +17,9 @@ describe('appIdCache', () => {
   })
 
   it(`should suppress error and return undefined`, async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => { /* intentionally empty */ })
+    vi.spyOn(console, 'error').mockImplementation(() => {
+      /* intentionally empty */
+    })
     const cache = createAppIdCache()
     const appIdFetcher = vi.fn(async () => {
       throw new Error('simulated-error')

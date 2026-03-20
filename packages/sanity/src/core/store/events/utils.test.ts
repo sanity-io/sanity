@@ -8,7 +8,9 @@ import {
 import {addParentToEvents, sortEvents} from './utils'
 
 describe('addParentToEvents', () => {
-  it('should add the correct parentId to the events', () => { /* intentionally empty */ })
+  it('should add the correct parentId to the events', () => {
+    /* intentionally empty */
+  })
 })
 
 describe('sortEvents', () => {

@@ -51,7 +51,9 @@ export const PackageVersionInfoContext = createContext<PackageVersionInfoContext
   'sanity/_singletons/context/package-version-info',
   {
     isAutoUpdating: false,
-    checkForUpdates: () => { /* intentionally empty */ },
+    checkForUpdates: () => {
+      /* intentionally empty */
+    },
     get currentVersion(): never {
       throw new Error('PackageVersionInfoContext not provided')
     },

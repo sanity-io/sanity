@@ -58,9 +58,11 @@ export function getNextWidths(
       nextWidths[index] = nextWidth
 
       if (
-        deltaApplied.toPrecision(10).localeCompare(Math.abs(effectiveDelta).toPrecision(10), undefined, {
-          numeric: true,
-        }) >= 0
+        deltaApplied
+          .toPrecision(10)
+          .localeCompare(Math.abs(effectiveDelta).toPrecision(10), undefined, {
+            numeric: true,
+          }) >= 0
       ) {
         break
       }

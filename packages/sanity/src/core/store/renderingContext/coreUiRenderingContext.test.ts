@@ -50,7 +50,9 @@ it('parses the `_context` URL search parameter', async () => {
 })
 
 it('fails gracefully if the `_context` URL search parameter cannot be parsed', async () => {
-  vi.spyOn(console, 'warn').mockImplementation(() => { /* intentionally empty */ })
+  vi.spyOn(console, 'warn').mockImplementation(() => {
+    /* intentionally empty */
+  })
   const invalidCoreUiContextString = urlSearch(coreUiProductionContext).slice(0, -10)
 
   await expect(() => coreUiRenderingContext(invalidCoreUiContextString)).toMatchEmissions([

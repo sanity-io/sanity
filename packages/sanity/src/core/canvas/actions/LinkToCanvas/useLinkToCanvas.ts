@@ -145,7 +145,9 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
         map((organizationId) => {
           if (!organizationId) {
             // Users should not land at this stage, it is caught first in the action by disabling it
-            return () => { /* intentionally empty */ }
+            return () => {
+              /* intentionally empty */
+            }
           }
           const isStaging = client.config().apiHost === 'https://api.sanity.work'
 

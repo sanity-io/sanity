@@ -150,7 +150,9 @@ describe('schema validation inference', () => {
     })
 
     test("gives error if media can't be found", async () => {
-      vi.spyOn(console, 'warn').mockImplementation(() => { /* intentionally empty */ })
+      vi.spyOn(console, 'warn').mockImplementation(() => {
+        /* intentionally empty */
+      })
       client.fetch.mockImplementation(() => Promise.resolve(false))
 
       await expect(

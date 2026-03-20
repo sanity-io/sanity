@@ -180,7 +180,9 @@ describe('ReleaseMenuButton', () => {
 
       describe('when archiving fails', () => {
         beforeEach(async () => {
-          vi.spyOn(console, 'error').mockImplementation(() => { /* intentionally empty */ })
+          vi.spyOn(console, 'error').mockImplementation(() => {
+            /* intentionally empty */
+          })
           mockUseReleaseOperations.mockReturnValue({
             ...useReleaseOperationsMockReturn,
             archive: vi.fn().mockRejectedValue(new Error('some rejection reason')),
@@ -282,7 +284,9 @@ describe('ReleaseMenuButton', () => {
 
       describe('when deleting fails', () => {
         beforeEach(async () => {
-          vi.spyOn(console, 'error').mockImplementation(() => { /* intentionally empty */ })
+          vi.spyOn(console, 'error').mockImplementation(() => {
+            /* intentionally empty */
+          })
           mockUseReleaseOperations.mockReturnValue({
             ...useReleaseOperationsMockReturn,
             deleteRelease: vi.fn().mockRejectedValue(new Error('some rejection reason')),
@@ -550,7 +554,9 @@ describe('ReleaseMenuButton', () => {
 
       describe('when duplication fails', () => {
         beforeEach(() => {
-          vi.spyOn(console, 'error').mockImplementation(() => { /* intentionally empty */ })
+          vi.spyOn(console, 'error').mockImplementation(() => {
+            /* intentionally empty */
+          })
           duplicateReleaseMock.mockRejectedValue(new Error('some duplication error'))
         })
 

@@ -9,7 +9,9 @@ export const FullscreenPTEContext = createContext<FullscreenPTEContextValue>(
   'sanity/_singletons/context/fullscreen-pte',
   {
     getFullscreenPath: () => undefined,
-    setFullscreenPath: () => { /* intentionally empty */ },
+    setFullscreenPath: () => {
+      /* intentionally empty */
+    },
     hasAnyFullscreen: () => false,
     allFullscreenPaths: [],
   },
