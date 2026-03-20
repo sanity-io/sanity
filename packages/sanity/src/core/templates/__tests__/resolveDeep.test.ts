@@ -11,13 +11,13 @@ function generateNestedObjectTest(
   maxDepth: number,
   depth?: number,
 ): Record<string, any> {
-  depth = depth || 1
-  if (depth >= maxDepth) return obj
+  let currentDepth = depth || 1
+  if (currentDepth >= maxDepth) return obj
 
-  depth++
+  currentDepth++
   return {
     ...obj,
-    child: generateNestedObjectTest(obj, maxDepth, depth),
+    child: generateNestedObjectTest(obj, maxDepth, currentDepth),
   }
 }
 

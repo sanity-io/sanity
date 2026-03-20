@@ -17,7 +17,7 @@ const renderTest = async (props?: Partial<React.ComponentProps<typeof ReleaseDas
     resources: [releasesUsEnglishLocaleBundle],
   })
 
-  const rendered = render(
+  const view = render(
     <ReleaseDashboardFooter
       release={activeASAPRelease}
       events={[]}
@@ -36,7 +36,7 @@ const renderTest = async (props?: Partial<React.ComponentProps<typeof ReleaseDas
     {timeout: 5000, interval: 1000},
   )
 
-  return rendered
+  return view
 }
 
 describe('ReleaseDashboardFooter', () => {

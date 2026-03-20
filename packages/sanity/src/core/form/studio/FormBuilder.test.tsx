@@ -125,7 +125,7 @@ describe('FormBuilder', () => {
       return <FormBuilder {...formBuilderProps} />
     }
 
-    const result = render(
+    const view = render(
       <TestProvider>
         <TestForm />
       </TestProvider>,
@@ -222,7 +222,7 @@ describe('FormBuilder', () => {
       return <FormBuilder {...formBuilderProps} />
     }
 
-    const result = render(
+    const view = render(
       <TestProvider>
         <TestForm />
       </TestProvider>,

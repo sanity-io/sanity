@@ -62,11 +62,11 @@ describe('ScheduledPublishingEnabledProvider - previously used', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
     useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: false}})
 
-    const value = renderHook(useScheduledPublishingEnabled, {
+    const view = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
     })
 
-    expect(value.result.current).toEqual({
+    expect(view.result.current).toEqual({
       enabled: false,
       mode: null,
       // Workspace is not enabled, so we won't do a request to check if they have used it or not.
@@ -77,11 +77,11 @@ describe('ScheduledPublishingEnabledProvider - previously used', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
     useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: false}})
 
-    const value = renderHook(useScheduledPublishingEnabled, {
+    const view = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
     })
 
-    expect(value.result.current).toEqual({
+    expect(view.result.current).toEqual({
       enabled: false,
       mode: null,
       // Workspace is not enabled, so we won't do a request to check if they have used it or not.
@@ -93,11 +93,11 @@ describe('ScheduledPublishingEnabledProvider - previously used', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
     useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: true}})
 
-    const value = renderHook(useScheduledPublishingEnabled, {
+    const view = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
     })
 
-    expect(value.result.current).toEqual({
+    expect(view.result.current).toEqual({
       enabled: true,
       mode: 'default',
       hasUsedScheduledPublishing: {used: true, loading: false},
@@ -108,11 +108,11 @@ describe('ScheduledPublishingEnabledProvider - previously used', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
     useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: true}})
 
-    const value = renderHook(useScheduledPublishingEnabled, {
+    const view = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
     })
 
-    expect(value.result.current).toEqual({
+    expect(view.result.current).toEqual({
       enabled: true,
       mode: 'upsell',
       hasUsedScheduledPublishing: {used: true, loading: false},
@@ -123,11 +123,11 @@ describe('ScheduledPublishingEnabledProvider - previously used', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: true})
     useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: true}})
 
-    const value = renderHook(useScheduledPublishingEnabled, {
+    const view = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
     })
 
-    expect(value.result.current).toEqual({
+    expect(view.result.current).toEqual({
       enabled: false,
       mode: null,
       hasUsedScheduledPublishing: {used: true, loading: false},
@@ -142,11 +142,11 @@ describe('ScheduledPublishingEnabledProvider - previously used', () => {
     })
     useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: true}})
 
-    const value = renderHook(useScheduledPublishingEnabled, {
+    const view = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
     })
 
-    expect(value.result.current).toEqual({
+    expect(view.result.current).toEqual({
       enabled: false,
       mode: null,
       hasUsedScheduledPublishing: {used: true, loading: false},
@@ -182,11 +182,11 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
       },
     })
 
-    const value = renderHook(useScheduledPublishingEnabled, {
+    const view = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
     })
 
-    expect(value.result.current).toEqual({
+    expect(view.result.current).toEqual({
       enabled: false,
       mode: null,
       hasUsedScheduledPublishing: {used: false, loading: false},
@@ -200,11 +200,11 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: false},
     })
 
-    const value = renderHook(useScheduledPublishingEnabled, {
+    const view = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
     })
 
-    expect(value.result.current).toEqual({
+    expect(view.result.current).toEqual({
       enabled: false,
       mode: null,
       hasUsedScheduledPublishing: {used: false, loading: false},
@@ -218,11 +218,11 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: true},
     })
 
-    const value = renderHook(useScheduledPublishingEnabled, {
+    const view = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
     })
 
-    expect(value.result.current).toEqual({
+    expect(view.result.current).toEqual({
       enabled: true,
       mode: 'default',
       // Users have opted in, so we are not checking if they used it, we are just returning a default true value
@@ -236,11 +236,11 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: true},
     })
 
-    const value = renderHook(useScheduledPublishingEnabled, {
+    const view = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
     })
 
-    expect(value.result.current).toEqual({
+    expect(view.result.current).toEqual({
       enabled: true,
       mode: 'upsell',
       // Users have opted in, so we are not checking if they used it, we are just returning a default true value

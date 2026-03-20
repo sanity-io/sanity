@@ -13,7 +13,7 @@ vi.mock('./stickyParams', () => ({
 describe('IntentLink', () => {
   it('should resolve intent link with query params', () => {
     const router = route.create('/test', [route.intents('/intent')])
-    const component = render(
+    const view = render(
       <IntentLink
         intent="edit"
         params={{
@@ -31,14 +31,14 @@ describe('IntentLink', () => {
       },
     )
     // Component should render the query param in the href
-    expect(component.container.querySelector('a')?.href).toContain(
+    expect(view.container.querySelector('a')?.href).toContain(
       '/test/intent/edit/id=document-id-123;type=document-type/?aTestStickyParam=aStickyParam.value',
     )
   })
 
   it('should preserve sticky parameters when resolving intent link', () => {
     const router = route.create('/test', [route.intents('/intent')])
-    const component = render(
+    const view = render(
       <IntentLink
         intent="edit"
         params={{
@@ -61,14 +61,14 @@ describe('IntentLink', () => {
       },
     )
     // Component should render the query param in the href
-    expect(component.container.querySelector('a')?.href).toContain(
+    expect(view.container.querySelector('a')?.href).toContain(
       '/test/intent/edit/id=document-id-123;type=document-type/?aTestStickyParam=aStickyParam.value',
     )
   })
 
   it('should allow sticky parameters to be overridden when resolving intent link', () => {
     const router = route.create('/test', [route.intents('/intent')])
-    const component = render(
+    const view = render(
       <IntentLink
         intent="edit"
         params={{
@@ -92,10 +92,10 @@ describe('IntentLink', () => {
       },
     )
     // Component should render the query param in the href
-    expect(component.container.querySelector('a')?.href).toContain(
+    expect(view.container.querySelector('a')?.href).toContain(
       '/test/intent/edit/id=document-id-123;type=document-type/?aTestStickyParam=aStickyParam.value.to-be-defined',
     )
-    expect(component.container.querySelector('a')?.href).not.toContain(
+    expect(view.container.querySelector('a')?.href).not.toContain(
       'aTestStickyParam=aStickyParam.value.to-be-overridden',
     )
   })

@@ -29,26 +29,27 @@ export function getNextWidths(
   const widths = initialWidths || prevWidths
   const nextWidths = [...widths]
 
+  let effectiveDelta = delta
   {
-    const pivotPanel = delta < 0 ? panelAfter : panelBefore
+    const pivotPanel = effectiveDelta < 0 ? panelAfter : panelBefore
     const index = panels.findIndex((panel) => panel.id === pivotPanel.id)
     const width = widths[index]
-    const nextWidth = getNextWidth(pivotPanel, width + Math.abs(delta), containerWidth)
+    const nextWidth = getNextWidth(pivotPanel, width + Math.abs(effectiveDelta), containerWidth)
     if (width === nextWidth) {
       return widths
     }
-    delta = delta < 0 ? width - nextWidth : nextWidth - width
+    effectiveDelta = effectiveDelta < 0 ? width - nextWidth : nextWidth - width
   }
 
   let deltaApplied = 0
-  let pivotPanel = delta < 0 ? panelBefore : panelAfter
+  let pivotPanel = effectiveDelta < 0 ? panelBefore : panelAfter
   let index = panels.findIndex((panel) => panel.id === pivotPanel.id)
 
   while (true) {
     const panel = panels[index]
     const width = widths[index]
 
-    const deltaRemaining = Math.abs(delta) - Math.abs(deltaApplied)
+    const deltaRemaining = Math.abs(effectiveDelta) - Math.abs(deltaApplied)
 
     const nextWidth = getNextWidth(panel, width - deltaRemaining, containerWidth)
 
@@ -57,7 +58,7 @@ export function getNextWidths(
       nextWidths[index] = nextWidth
 
       if (
-        deltaApplied.toPrecision(10).localeCompare(Math.abs(delta).toPrecision(10), undefined, {
+        deltaApplied.toPrecision(10).localeCompare(Math.abs(effectiveDelta).toPrecision(10), undefined, {
           numeric: true,
         }) >= 0
       ) {
@@ -65,7 +66,7 @@ export function getNextWidths(
       }
     }
 
-    if (delta < 0) {
+    if (effectiveDelta < 0) {
       if (--index < 0) {
         break
       }
@@ -78,7 +79,7 @@ export function getNextWidths(
     return widths
   }
 
-  pivotPanel = delta < 0 ? panelAfter : panelBefore
+  pivotPanel = effectiveDelta < 0 ? panelAfter : panelBefore
   index = panels.findIndex((panel) => panel.id === pivotPanel.id)
   nextWidths[index] = widths[index] + deltaApplied
 

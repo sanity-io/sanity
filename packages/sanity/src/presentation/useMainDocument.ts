@@ -59,14 +59,14 @@ function getParamsFromResult(
 export function getRouteContext(route: Path, url: URL): DocumentResolverContext | undefined {
   const routes = Array.isArray(route) ? route : [route]
 
-  for (route of routes) {
+  for (const currentRoute of routes) {
     let {origin} = url
-    let path = route
+    let path = currentRoute
 
     // Handle absolute URLs
-    if (typeof route === 'string') {
+    if (typeof currentRoute === 'string') {
       try {
-        const absolute = new URL(route)
+        const absolute = new URL(currentRoute)
 
         // If we are dealing with an absolute URL, ensure the origins match
         if (absolute.origin !== origin) continue
@@ -87,7 +87,7 @@ export function getRouteContext(route: Path, url: URL): DocumentResolverContext 
         return {origin, params, path}
       }
     } catch (e) {
-      throw new Error(`"${route}" is not a valid route pattern`, {cause: e})
+      throw new Error(`"${currentRoute}" is not a valid route pattern`, {cause: e})
     }
   }
   return undefined

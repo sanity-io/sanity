@@ -98,7 +98,7 @@ const renderTest = async () => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
-  const result = render(
+  const view = render(
     <RouterProvider
       state={{
         releaseId: activeASAPRelease._id,
@@ -113,7 +113,7 @@ const renderTest = async () => {
 
   await flushMicrotasksThisIsACodeSmell()
 
-  return result
+  return view
 }
 
 const publishAgnosticTests = (title: string) => {

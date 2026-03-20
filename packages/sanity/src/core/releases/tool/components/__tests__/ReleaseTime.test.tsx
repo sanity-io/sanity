@@ -26,13 +26,13 @@ const renderTest = async (props: ComponentProps<typeof ReleaseTime>) => {
     resources: [releasesUsEnglishLocaleBundle],
   })
 
-  const rendered = render(<ReleaseTime {...props} />, {wrapper})
+  const view = render(<ReleaseTime {...props} />, {wrapper})
 
   await waitFor(() => {
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
   })
 
-  return rendered
+  return view
 }
 
 describe('ReleaseTime', () => {

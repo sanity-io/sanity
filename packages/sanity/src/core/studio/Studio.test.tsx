@@ -50,8 +50,8 @@ describe('Studio', () => {
     const node = document.createElement('div')
     document.body.appendChild(node)
 
-    const html = renderToString(<Studio config={config} />)
-    node.innerHTML = html
+    const view = renderToString(<Studio config={config} />)
+    node.innerHTML = view
 
     const root = await act(() => hydrateRoot(node, <Studio config={config} />))
     act(() => root.unmount())

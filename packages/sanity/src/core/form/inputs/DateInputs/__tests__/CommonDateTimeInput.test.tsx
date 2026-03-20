@@ -68,7 +68,7 @@ const CALENDAR_LABELS: CalendarLabels = {
 async function renderInput() {
   const onChange = vi.fn()
 
-  const ret = await renderStringInput({
+  const view = await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
       name: 'test',
@@ -93,7 +93,7 @@ async function renderInput() {
     },
   })
 
-  return {...ret, onChange}
+  return {...view, onChange}
 }
 
 // NOTE: for the tests to be deterministic we need this to ensure tests are run in a predefined time zone
