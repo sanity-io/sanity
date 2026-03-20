@@ -7,7 +7,7 @@ import {
   useVirtualizer,
   type VirtualizerOptions,
 } from '@tanstack/react-virtual'
-import {useCallback, useRef} from 'react'
+import {useCallback, useLayoutEffect, useRef, useState} from 'react'
 
 import {ArrayOfObjectsItem} from '../../../../members'
 import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
@@ -69,8 +69,35 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
   } = props
 
   const {space} = useTheme().sanity
-  const {scrollElement, containerElement} = useVirtualizerScrollInstance()
+  const {scrollElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)
+
+  // Resolve the effective scroll element. When the list is rendered inside a
+  // portal (e.g. a custom Dialog wrapping renderDefault), the context's
+  // scrollElement is not an ancestor. Detect this after mount and walk up the
+  // DOM to find the real scrollable ancestor by checking actual element
+  // dimensions (scrollHeight > clientHeight). This resolved element is used by
+  // both getScrollElement and observeElementOffset so that scrollToFn and
+  // offset tracking all target the correct container.
+  const [resolvedScrollElement, setResolvedScrollElement] = useState<HTMLElement | null>(
+    scrollElement,
+  )
+
+  useLayoutEffect(() => {
+    const el = parentRef.current
+    if (!scrollElement || !el || scrollElement.contains(el)) {
+      setResolvedScrollElement(scrollElement)
+      return
+    }
+
+    let ancestor: HTMLElement | null = el.parentElement
+    while (ancestor) {
+      if (ancestor.scrollHeight > ancestor.clientHeight) break
+      ancestor = ancestor.parentElement
+    }
+
+    setResolvedScrollElement(ancestor || scrollElement)
+  }, [scrollElement, members.length])
 
   /**
    * This is a custom range extractor that adds the activeDragItemIndex and focusedItem to the range
@@ -108,67 +135,30 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
    */
   const observeElementOffset = useCallback<
     VirtualizerOptions<HTMLElement, Element>['observeElementOffset']
-  >(
-    (instance, callback) => {
-      if (!instance.scrollElement) {
-        return undefined
-      }
+  >((instance, callback) => {
+    if (!instance.scrollElement) {
+      return undefined
+    }
 
-      const scroll = instance.scrollElement
-      const el = parentRef.current
+    const scroll = instance.scrollElement
 
-      // When the list is rendered inside a portal (e.g. a custom Dialog wrapping
-      // renderDefault), the context scroll element is not an ancestor. In that case
-      // scroll events on it won't reflect movement of this list, so fall back to
-      // tracking the Card's own position via request animation frame.
-      if (el && !scroll.contains(el)) {
-        let startTop = el.getBoundingClientRect().top
-        let lastOffset = 0
-        let rafId: number
+    const handleScroll = (evt?: Event) => {
+      const scrollTop = scroll.getBoundingClientRect().top
+      const parentTop = parentRef.current?.getBoundingClientRect().top ?? 0
+      callback(Math.floor(scrollTop - parentTop), Boolean(evt))
+    }
 
-        const check = () => {
-          const currentTop = el.getBoundingClientRect().top
-          // If the Card moved down it can't be from scrolling — the baseline
-          // must have shifted (dialog animation, content change above, resize).
-          if (currentTop > startTop) {
-            startTop = currentTop
-          }
-          const offset = Math.floor(startTop - currentTop)
-          if (offset !== lastOffset) {
-            lastOffset = offset
-            callback(offset, true)
-          }
-          rafId = requestAnimationFrame(check)
-        }
-        check()
-        return () => cancelAnimationFrame(rafId)
-      }
+    handleScroll()
 
-      const handleScroll = (evt?: Event) => {
-        const containerElementTop = containerElement.current?.getBoundingClientRect().top ?? 0
-        const parentElementTop = parentRef.current?.getBoundingClientRect().top ?? 0
+    scroll.addEventListener('scroll', handleScroll, {
+      capture: false,
+      passive: true,
+    })
 
-        // This is used to calculate the offsetTop of the parent element
-        // Instead of using the `offsetTop` which will use the nearest parent with `position: relative`
-        // We pass a component that we have more control over to avoid issues when wrapped in custom component
-        const itemOffset = Math.floor(parentElementTop - containerElementTop)
-
-        callback(scroll.scrollTop - itemOffset, Boolean(evt))
-      }
-
-      handleScroll()
-
-      instance.scrollElement.addEventListener('scroll', handleScroll, {
-        capture: false,
-        passive: true,
-      })
-
-      return () => {
-        scroll.removeEventListener('scroll', handleScroll)
-      }
-    },
-    [containerElement],
-  )
+    return () => {
+      scroll.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
 
   // This is the estimated size of an item in the list. The reason this is an estimate is because
   // custom components can have different dimensions and the library recalculate the size of the element
@@ -177,7 +167,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
   const virtualizer = useVirtualizer({
     count: members.length,
     estimateSize,
-    getScrollElement: useCallback(() => scrollElement, [scrollElement]),
+    getScrollElement: useCallback(() => resolvedScrollElement, [resolvedScrollElement]),
     observeElementOffset,
     rangeExtractor,
     getItemKey: useCallback((index: number) => memberKeys[index], [memberKeys]),
