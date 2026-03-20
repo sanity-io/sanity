@@ -25,7 +25,11 @@ export const DocumentTitle = ({
 }) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const isNewDocument = !displayed?._createdAt
-  const {value} = useValuePreview({enabled: !!displayed, schemaType, value: displayed})
+  const {value, isLoading: previewValueIsLoading} = useValuePreview({
+    enabled: !!displayed,
+    schemaType,
+    value: displayed,
+  })
 
   // if the document is deleted, we don't want to show the title
   const documentTitle = isDeleted
@@ -38,10 +42,10 @@ export const DocumentTitle = ({
 
   const newTitle = useConstructDocumentTitle(documentTitle)
   useEffect(() => {
-    if (!ready) return
+    if (!ready || previewValueIsLoading) return
     // Set the title as the document title
     document.title = newTitle
-  }, [documentTitle, ready, newTitle])
+  }, [documentTitle, ready, newTitle, previewValueIsLoading])
 
   return null
 }
