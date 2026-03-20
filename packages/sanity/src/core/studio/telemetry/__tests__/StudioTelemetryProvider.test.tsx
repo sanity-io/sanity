@@ -4,6 +4,9 @@ import {render} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+// Disable console.logging of telemetry events in tests
+import.meta.env.SANITY_STUDIO_DEBUG_TELEMETRY = ''
+
 // Mocks (these get hoisted automatically by vitest)
 vi.mock('@sanity/telemetry')
 vi.mock('@sanity/telemetry/react', () => ({
