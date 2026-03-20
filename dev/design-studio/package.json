@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@vanilla-extract/vite-plugin": "catalog:",
     "eslint": "catalog:",
     "rimraf": "catalog:"
   }

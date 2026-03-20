@@ -24,6 +24,8 @@ catalog:
   '@types/react-dom': ^19.2.3
   '@types/react-is': ^19.2.0
   '@typescript/native-preview': beta
+  '@vanilla-extract/css': ^1.19.0
+  '@vanilla-extract/vite-plugin': ^5.2.0
   '@vitejs/plugin-react': ^5.1.2
   babel-plugin-styled-components: ^2.1.4
   esbuild-register: ^3.6.0
