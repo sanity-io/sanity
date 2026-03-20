@@ -72,10 +72,6 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
   const {scrollElement, containerElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)
 
-  // Resolve the effective scroll element.
-  // When the list is rendered inside a portal, the context's
-  // scrollElement is not an ancestor.
-  // This resolved element so that virtualization is tracking the correct scroll element
   const [resolvedScrollElement, setResolvedScrollElement] = useState<HTMLElement | null>(
     scrollElement,
   )
