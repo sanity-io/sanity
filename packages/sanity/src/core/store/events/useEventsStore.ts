@@ -105,9 +105,16 @@ export function useEventsStore({
     if (!rev) {
       const [lastEvent] = events
 
-      // if the most recent event was a publish, use that event as the revision
-      if (lastEvent && isPublishDocumentVersionEvent(lastEvent)) {
-        return lastEvent.id
+      // if the most recent event was a publish, or delete version, use that event as the revision
+      if (lastEvent) {
+        if (isPublishDocumentVersionEvent(lastEvent)) {
+          return lastEvent.id
+        }
+        if (isDeleteDocumentVersionEvent(lastEvent)) {
+          // the versionRevisionId returned by this event is incorrect, see #content-releases-actions-history channel.
+          // We need to use the last edit event we can find to grab the revision id.
+          return events.find(isEditDocumentVersionEvent)?.revisionId
+        }
       }
     }
 

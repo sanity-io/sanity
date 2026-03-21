@@ -1,7 +1,4 @@
-import {useContext, useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {of} from 'rxjs'
-import {isDeleteDocumentVersionEvent, isDeleteDocumentGroupEvent} from 'sanity'
+import {useContext} from 'react'
 import {EventsContext} from 'sanity/_singletons'
 
 /**
@@ -10,33 +7,17 @@ import {EventsContext} from 'sanity/_singletons'
  * Once we remove the DocumentPaneWithLegacyTimelineStore option, we can remove this fallback.
  */
 const EventsContextFallback = {
-  events: [],
-  lastNonDeletedRevId: null,
-  getDocumentAtRevision: () => of({document: null, loading: false}),
+  revision: null,
 }
 /**
  * Returns the last revision of a deleted document.
- * It will only work in case the document is deleted to avoid overfetching the document history endpoint
+ * It will only work in case the document is deleted or was published to avoid over-fetching the document history endpoint
  */
 export const useDeletedDocumentLastRevision = () => {
-  const {events, lastNonDeletedRevId, getDocumentAtRevision} =
-    useContext(EventsContext) || EventsContextFallback
-
-  const isDeleted =
-    events.length > 0 &&
-    (isDeleteDocumentVersionEvent(events[0]) || isDeleteDocumentGroupEvent(events[0]))
-
-  const documentAtRevision$ = useMemo(() => {
-    if (!lastNonDeletedRevId || !isDeleted) {
-      return of({document: null, loading: false})
-    }
-    return getDocumentAtRevision(lastNonDeletedRevId)
-  }, [getDocumentAtRevision, lastNonDeletedRevId, isDeleted])
-
-  const documentAtRevision = useObservable(documentAtRevision$, null)
+  const {revision} = useContext(EventsContext) || EventsContextFallback
 
   return {
-    lastRevisionDocument: documentAtRevision?.document || null,
-    loading: documentAtRevision?.loading || false,
+    lastRevisionDocument: revision?.document || null,
+    loading: revision?.loading || false,
   }
 }
