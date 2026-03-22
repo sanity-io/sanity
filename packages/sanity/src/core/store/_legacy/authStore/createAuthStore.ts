@@ -13,7 +13,7 @@ import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {createLoginComponent} from './createLoginComponent'
-import {getSessionId} from './sessionId'
+import {getSessionId, hasSessionId} from './sessionId'
 import * as storage from './storage'
 import {type AuthState, type AuthStore} from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
@@ -246,33 +246,38 @@ export function _createAuthStore({
       return
     }
 
+    if (loginMethod === 'cookie') {
+      // Cookie mode: verify cookie auth and broadcast (no token needed)
+      const requestClient = clientFactory({
+        projectId,
+        dataset,
+        useCdn: true,
+        withCredentials: true,
+        apiVersion: '2021-06-07',
+        requestTagPrefix: 'sanity.studio',
+        headers: DEFAULT_STUDIO_CLIENT_HEADERS,
+        ...hostOptions,
+      })
+      await getCurrentUser(requestClient, broadcast)
+      broadcast(null)
+      return
+    }
+
+    // For 'dual' and 'token' modes: always trade the session for a token.
+    // In 'dual' mode, even if cookie auth works right now, we need a
+    // localStorage token as fallback for contexts where cookies are blocked
+    // (e.g. embedded studios in iframes, third-party cookie restrictions).
+    // The SID is the auth proof — no withCredentials needed.
     const requestClient = clientFactory({
       projectId,
       dataset,
       useCdn: true,
-      withCredentials: true,
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
       headers: DEFAULT_STUDIO_CLIENT_HEADERS,
       ...hostOptions,
     })
 
-    let currentUser
-    if (loginMethod === 'dual' || loginMethod === 'cookie') {
-      // try to get the current user by using the cookie credentials
-      currentUser = await getCurrentUser(requestClient, broadcast)
-    }
-
-    // If we have a user, or token authentication is explicitly disallowed (`cookie` mode),
-    // then we don't need/want to fetch a token
-    if (currentUser || loginMethod === 'cookie') {
-      // if that worked, then we don't need to fetch a token
-      broadcast(null)
-      return
-    }
-
-    // If we allow using token authentication, we should try to trade the session ID
-    // for a token and store it locally for subsequent use
     const token = await tradeSessionForToken(requestClient, sessionId)
     broadcast(token ?? null)
   }

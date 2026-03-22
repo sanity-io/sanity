@@ -38,3 +38,11 @@ export const getSessionId = (): string | null => {
   }
   return id
 }
+
+/**
+ * Non-consuming check for whether a session ID is pending exchange.
+ * Unlike `getSessionId()`, this does not consume the session ID.
+ *
+ * @internal
+ */
+export const hasSessionId = (): boolean => sessionId !== null
