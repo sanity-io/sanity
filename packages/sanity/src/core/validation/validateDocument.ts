@@ -11,7 +11,8 @@ import {
 } from '@sanity/types'
 import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
-import {flatten, uniqBy} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
+import uniqBy from 'lodash-es/uniqBy.js'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 

@@ -4,6 +4,7 @@ import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {mockUseRouterReturn} from '../../../../../../test/mocks/useRouter.mock'
+import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useProjectSubscriptionsMockReturn} from '../../../../hooks/__mocks__/useProjectSubscriptions.mock'
 import {
@@ -84,13 +85,20 @@ vi.mock('../../../../hooks/useProjectSubscriptions', () => ({
   useProjectSubscriptions: vi.fn(() => useProjectSubscriptionsMockReturn),
 }))
 
+vi.mock('../../../../hooks/useStudioUrl', () => ({
+  useStudioUrl: vi.fn(() => ({
+    studioUrl: 'http://localhost:3333',
+    buildIntentUrl: vi.fn((path: string) => `http://localhost:3333${path}`),
+  })),
+}))
+
 const mockRouterNavigate = vi.fn()
 
 const renderTest = async () => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
-  return render(
+  const result = render(
     <RouterProvider
       state={{
         releaseId: activeASAPRelease._id,
@@ -102,6 +110,10 @@ const renderTest = async () => {
     </RouterProvider>,
     {wrapper},
   )
+
+  await flushMicrotasksThisIsACodeSmell()
+
+  return result
 }
 
 const publishAgnosticTests = (title: string) => {

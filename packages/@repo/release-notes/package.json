@@ -1,6 +1,6 @@
 {
   "name": "@repo/release-notes",
-  "version": "5.12.0",
+  "version": "5.17.1",
   "private": true,
   "description": "Internal tool for updating release-notes",
   "license": "MIT",
@@ -30,11 +30,11 @@
     "@anthropic-ai/sdk": "^0.72.1",
     "@conventional-changelog/git-client": "^2.5.1",
     "@octokit/rest": "^22.0.0",
-    "@portabletext/toolkit": "^5.0.1",
+    "@portabletext/toolkit": "^5.0.2",
     "@sanity/client": "catalog:",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/mutate": "^0.16.1",
-    "@sanity/types": "workspace:^",
+    "@sanity/types": "workspace:*",
     "conventional-commits-parser": "^6.2.1",
     "date-fns": "^4.1.0",
     "description-to-co-authors": "^0.3.0",
@@ -44,7 +44,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@portabletext/markdown": "^1.1.3",
+    "@portabletext/markdown": "^1.1.4",
     "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",

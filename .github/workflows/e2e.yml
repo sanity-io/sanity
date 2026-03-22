@@ -4,8 +4,8 @@ permissions:
   pull-requests: write # for comment
 
 env:
-  CHROMIUM_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-chromium-{1}', github.event.number, github.run_id) || vars.SANITY_E2E_DATASET_STAGING }}
-  FIREFOX_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-firefox-{1}', github.event.number, github.run_id) || vars.SANITY_E2E_DATASET_STAGING }}
+  CHROMIUM_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-chromium-{1}', github.event.number, github.run_id) || format('main-chromium-{0}', github.run_id) }}
+  FIREFOX_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-firefox-{1}', github.event.number, github.run_id) || format('main-firefox-{0}', github.run_id) }}
 
 on:
   # Build on pushes branches that have a PR (including drafts)
@@ -24,7 +24,6 @@ jobs:
     runs-on: ubuntu-8core
     outputs:
       examples_only: ${{ steps.check_examples.outputs.path_only }}
-      cli_only: ${{ steps.check_cli.outputs.path_only }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -39,18 +38,12 @@ jobs:
         with:
           path: examples/
 
-      - name: Check if only CLI files changed
-        id: check_cli
-        uses: ./.github/actions/check-path-only
-        with:
-          path: packages/@sanity/cli/
-
       - uses: ./.github/actions/setup
-        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
 
       - name: Add PR Comment placeholder for e2e Preview Environment
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' && steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true' }}
+        if: ${{ github.event_name == 'pull_request' && steps.check_examples.outputs.path_only != 'true' }}
         with:
           comment-tag: "e2e-preview-url"
           message: |
@@ -60,7 +53,7 @@ jobs:
 
       - name: Add PR Comment placeholder for e2e report
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' && steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true' }}
+        if: ${{ github.event_name == 'pull_request' && steps.check_examples.outputs.path_only != 'true' }}
         with:
           comment-tag: "playwright-e2e-report"
           message: |
@@ -69,7 +62,7 @@ jobs:
             Waiting for E2E tests to finish…
 
       - name: Store Playwright's Version
-        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
@@ -77,7 +70,7 @@ jobs:
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
-        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         id: cache-playwright-browsers
         uses: actions/cache@v5
         with:
@@ -85,53 +78,48 @@ jobs:
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
-        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
   dataset-setup:
-    timeout-minutes: 30
-    runs-on: ubuntu-8core
-    needs: [install]
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        with:
+          fetch-depth: 0
+
+      - name: Check if only examples files changed
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
+
       - uses: ./.github/actions/setup
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
 
-      - name: Echo Vercel preview URL
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
-        run: echo ${{ github.event.deployment_status.target_url }}
-
-      - name: Build CLI
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
-        # This warms up the turborepo remote cache
-        run: pnpm build:cli --output-logs=full --log-order=grouped
-
-      - name: dataset setup on PR (chromium)
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
+      - name: Create dataset (chromium)
+        if: steps.check_examples.outputs.path_only != 'true'
         env:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
           SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
           SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
         run: |
           echo "Creating dataset: ${{ env.CHROMIUM_DATASET }}"
           pnpm e2e:setup
 
-      - name: dataset setup on PR (firefox)
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
+      - name: Create dataset (firefox)
+        if: steps.check_examples.outputs.path_only != 'true'
         env:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
           SANITY_E2E_DATASET: ${{ env.FIREFOX_DATASET }}
           SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
         run: |
           echo "Creating dataset: ${{ env.FIREFOX_DATASET }}"
           pnpm e2e:setup
-      # TODO: Add a dataset setup for main for each project [chromium, firefox]
+
   deploy-preview:
     runs-on: ubuntu-8core
     needs: [install]
@@ -142,49 +130,35 @@ jobs:
       preview_url: ${{ steps.deploy.outputs.DEPLOY_URL }}
     steps:
       - uses: actions/checkout@v6
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: needs.install.outputs.examples_only != 'true'
       - uses: ./.github/actions/setup
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: needs.install.outputs.examples_only != 'true'
 
       - name: Pull Vercel Environment Information
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: needs.install.outputs.examples_only != 'true'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
-        run: pnpm vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+        run: pnpm vercel pull --yes --environment=${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'production' || 'preview' }} --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
-      - name: Build Project Artifacts on PR
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
+      - name: Build Project Artifacts
+        if: needs.install.outputs.examples_only != 'true'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
-          VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
           SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
           SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
-        run: pnpm vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
-
-      - name: Build Project Artifacts on main
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
-          VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET_STAGING }}
-          # TODO: Set a new dataset for main in each run and it should be for each project [chromium, firefox]
-          # SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
-          # SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
-        run: pnpm vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+        run: pnpm vercel build ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '--prod' || '' }} --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: needs.install.outputs.examples_only != 'true'
         id: deploy
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
-          echo "DEPLOY_URL=$(pnpm vercel deploy --prebuilt --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
+          echo "DEPLOY_URL=$(pnpm vercel deploy --prebuilt ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '--prod' || '' }} --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
           -m githubDeployment="1" \
           -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
           -m githubCommitMessage="$COMMIT_MESSAGE" \
@@ -197,7 +171,7 @@ jobs:
           -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
 
       - name: Echo the preview URL
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: needs.install.outputs.examples_only != 'true'
         run: |
           if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
            echo "::error::Preview URL was not found. Deployment may have failed."
@@ -207,7 +181,7 @@ jobs:
 
       - name: Add PR Comment with preview URL
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
+        if: needs.install.outputs.examples_only != 'true' && github.event_name == 'pull_request'
         with:
           comment-tag: "e2e-preview-url"
           message: |
@@ -244,22 +218,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
+        # Be sure to update all instances in this file if updated, as well as github required checks
         project: [chromium, firefox]
         # Add more shards here if needed, but remember that the github required checks will have to be updated as well
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     steps:
       - uses: actions/checkout@v6
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: needs.install.outputs.examples_only != 'true'
       - name: Echo the base URL
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: needs.install.outputs.examples_only != 'true'
         run: echo "$SANITY_E2E_BASE_URL"
       - uses: ./.github/actions/setup
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: needs.install.outputs.examples_only != 'true'
 
       - name: Store Playwright's Version
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: needs.install.outputs.examples_only != 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
@@ -267,7 +241,7 @@ jobs:
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: needs.install.outputs.examples_only != 'true'
         id: cache-playwright-browsers
         uses: actions/cache/restore@v5
         with:
@@ -275,40 +249,19 @@ jobs:
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: needs.install.outputs.examples_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Run E2E tests on main
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Run E2E tests
+        if: needs.install.outputs.examples_only != 'true'
         env:
-          # Missing in docs but in use
-          # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
           PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET_STAGING }}
-        # As e2e:build ran in the `install` job, turbopack restores it from cache here
-        run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
-
-      - name: Run E2E tests on PR
-        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
-        env:
-          # Missing in docs but in use
-          # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
-          PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
           SANITY_E2E_DATASET: ${{ (matrix.project == 'chromium') && env.CHROMIUM_DATASET || env.FIREFOX_DATASET }}
-        # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v6
-        if: always() && needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+        if: always() && needs.install.outputs.examples_only != 'true'
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
           path: |
@@ -317,7 +270,7 @@ jobs:
           retention-days: 30
 
   merge-reports:
-    if: always() && needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+    if: always() && needs.install.outputs.examples_only != 'true'
     needs: [install, playwright-test]
     runs-on: ubuntu-8core
     steps:
@@ -342,13 +295,6 @@ jobs:
           path: playwright-report
           retention-days: 30
 
-      - name: Extract artifact URL
-        id: artifact-url
-        if: ${{ always() && steps.upload-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
-        run: |
-          URL=$(echo "${{ steps.upload-playwright-report.outputs.artifact-url }}")
-          echo "url=$URL" >> $GITHUB_OUTPUT
-
       - name: Add PR Comment with Report Link
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ always() && steps.upload-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
@@ -357,6 +303,6 @@ jobs:
           message: |
             ### 📊 Playwright Test Report
 
-            **[Download Full E2E Report](${{ steps.artifact-url.outputs.url }})**
+            **[Download Full E2E Report](${{ steps.upload-playwright-report.outputs.artifact-url }})**
 
             This report contains test results, including videos of failing tests.

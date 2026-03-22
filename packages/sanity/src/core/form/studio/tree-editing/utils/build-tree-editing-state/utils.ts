@@ -21,7 +21,7 @@ export function isArrayItemSelected(
 /**
  * Check if the path is an array item path
  */
-export function isArrayItemPath(path: Path): boolean {
+function isArrayItemPath(path: Path): boolean {
   if (path.length === 0) return false
 
   // Check if the last segment in the path has a key

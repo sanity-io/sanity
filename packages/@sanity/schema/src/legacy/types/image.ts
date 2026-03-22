@@ -1,4 +1,5 @@
-import {pick, startCase} from 'lodash-es'
+import pick from 'lodash-es/pick.js'
+import startCase from 'lodash-es/startCase.js'
 
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'

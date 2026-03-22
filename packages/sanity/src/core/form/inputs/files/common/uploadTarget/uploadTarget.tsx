@@ -1,6 +1,6 @@
 import {type AssetSource, type SchemaType} from '@sanity/types'
 import {Box, type CardTone, Flex, Text, useToast} from '@sanity/ui'
-import {uniqBy} from 'lodash-es'
+import uniqBy from 'lodash-es/uniqBy.js'
 import {
   type ComponentType,
   type ForwardedRef,
@@ -26,9 +26,14 @@ import {
   createDatasetFileAssetSource,
   createDatasetImageAssetSource,
 } from '../../../../studio/assetSourceDataset'
+import {
+  findMatchingSchemaType,
+  matchesSchemaTypeAccept,
+} from '../../../../studio/uploads/matchSchemaTypeAccept'
 import {resolveUploadAssetSources} from '../../../../studio/uploads/resolveUploadAssetSources'
 import {type InputOnSelectFileFunctionProps, type UploadEvent} from '../../../../types'
 import {useFormBuilder} from '../../../../useFormBuilder'
+import {getAssetSourcesWithUpload, isComponentModeAssetSource} from '../assetSourceUtils'
 import {DropMessage} from '../DropMessage'
 import {type FileInfo, fileTarget} from '../fileTarget'
 import {UploadDestinationPicker} from '../UploadDestinationPicker'
@@ -44,9 +49,19 @@ export interface UploadTargetProps {
   types: SchemaType[]
   isReadOnly?: boolean
   onUpload?: (event: UploadEvent) => void
-  onSetHoveringFiles?: (files: FileInfo[]) => void
   onSelectFile?: (props: InputOnSelectFileFunctionProps) => void
+  /**
+   * Called when an asset source with `uploadMode: 'component'` is selected (e.g. via drag-and-drop).
+   * Opens the asset source component for the user to select/upload files there.
+   */
+  onOpenSourceForUpload?: (assetSource: AssetSource) => void
+  onSetHoveringFiles?: (files: FileInfo[]) => void
   pasteTarget?: HTMLElement
+  /**
+   * When provided, use these asset sources instead of resolving from formBuilder.
+   * Useful when the parent already has a filtered list (e.g. VideoInput with Media Library only).
+   */
+  assetSources?: AssetSource[]
   tone?: CardTone
   children?: ReactNode
 }
@@ -70,8 +85,10 @@ export function uploadTarget<Props>(
     const {
       children,
       isReadOnly,
+      onOpenSourceForUpload,
       onSelectFile,
       onSetHoveringFiles,
+      assetSources: assetSourcesProp,
       types,
       tone: toneFromProps,
       pasteTarget,
@@ -84,10 +101,12 @@ export function uploadTarget<Props>(
 
     const formBuilder = useFormBuilder()
 
-    // Check if all image/file types in the types array have disableNew: true
+    // Check if all image/file/video types in the types array have disableNew: true
     // This centralizes the disableUpload logic so parent components don't need to compute it
     const disableUpload = useMemo(() => {
-      const assetTypes = types.filter((type) => _isType(type, 'image') || _isType(type, 'file'))
+      const assetTypes = types.filter(
+        (type) => _isType(type, 'image') || _isType(type, 'file') || _isType(type, 'sanity.video'),
+      )
       // Only disable upload if there are asset types AND all of them have disableNew
       return assetTypes.length > 0 && assetTypes.every((type) => type.options?.disableNew === true)
     }, [types])
@@ -145,6 +164,7 @@ export function uploadTarget<Props>(
           formBuilder,
           defaultImageAssetSource,
           defaultFileAssetSource,
+          assetSources: assetSourcesProp,
         })
 
         const ready = filesAndAssetSources.filter((entry) => entry.assetSource !== null)
@@ -152,6 +172,15 @@ export function uploadTarget<Props>(
 
         if (rejected.length > 0) {
           alertRejectedFiles(rejected)
+        }
+        const firstReady = ready[0]
+        if (
+          firstReady?.assetSource &&
+          isComponentModeAssetSource(firstReady.assetSource) &&
+          onOpenSourceForUpload
+        ) {
+          onOpenSourceForUpload(firstReady.assetSource)
+          return
         }
         if (onSelectFile) {
           ready.forEach((entry) => {
@@ -165,9 +194,11 @@ export function uploadTarget<Props>(
       },
       [
         alertRejectedFiles,
+        assetSourcesProp,
         defaultFileAssetSource,
         defaultImageAssetSource,
         formBuilder,
+        onOpenSourceForUpload,
         onSelectFile,
         types,
       ],
@@ -186,6 +217,7 @@ export function uploadTarget<Props>(
           formBuilder,
           defaultImageAssetSource,
           defaultFileAssetSource,
+          assetSources: assetSourcesProp,
         })
         const ready = filesAndAssetSources.filter((entry) => entry.assetSource !== null)
         if (ready.length === 0) {
@@ -196,10 +228,10 @@ export function uploadTarget<Props>(
           }
           return
         }
-        const allAssetSources = types.flatMap(
-          (type) => resolveUploadAssetSources?.(type, formBuilder) ?? [],
-        )
-        const uniqueAssetSources = uniqBy(allAssetSources, 'name')
+        const uploadAssetSources = assetSourcesProp
+          ? getAssetSourcesWithUpload(assetSourcesProp)
+          : types.flatMap((type) => resolveUploadAssetSources?.(type, formBuilder) ?? [])
+        const uniqueAssetSources = uniqBy(uploadAssetSources, 'name')
         if (uniqueAssetSources.length > 1 && assetSourceDestinationName.current === null) {
           setShowAssetSourceDestinationPicker(true)
           setFilesToUpload(files)
@@ -217,11 +249,24 @@ export function uploadTarget<Props>(
         formBuilder,
         handleUploadFiles,
         isReadOnly,
+        assetSourcesProp,
         types,
       ],
     )
 
     const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
+
+    const isFileAccepted = useCallback(
+      (file: FileInfo) => {
+        // When assetSourcesProp is provided, use schema-accept validation directly
+        // (resolveUploadAssetSources uses formBuilder's sources which may differ)
+        if (assetSourcesProp && assetSourcesProp.length > 0 && file.kind === 'file') {
+          return findMatchingSchemaType(file, types) !== null
+        }
+        return types.some((type) => resolveUploadAssetSources(type, formBuilder, file).length > 0)
+      },
+      [assetSourcesProp, formBuilder, types],
+    )
 
     const handleFilesOver = useCallback(
       (files: FileInfo[]) => {
@@ -229,10 +274,7 @@ export function uploadTarget<Props>(
           return
         }
         setHoveringFiles(files)
-        const acceptedFiles = files.filter((file) =>
-          // eslint-disable-next-line max-nested-callbacks
-          types.some((type) => resolveUploadAssetSources(type, formBuilder, file).length > 0),
-        )
+        const acceptedFiles = files.filter(isFileAccepted)
         const rejectedFilesCount = files.length - acceptedFiles.length
         if (rejectedFilesCount > 0) {
           setTone('critical')
@@ -246,7 +288,7 @@ export function uploadTarget<Props>(
           onSetHoveringFiles(files)
         }
       },
-      [disableUpload, formBuilder, isReadOnly, onSetHoveringFiles, types],
+      [disableUpload, isFileAccepted, isReadOnly, onSetHoveringFiles],
     )
 
     const handleFilesOut = useCallback(() => {
@@ -261,23 +303,34 @@ export function uploadTarget<Props>(
       setFilesToUpload([])
     }, [disableUpload, isReadOnly, onSetHoveringFiles])
 
-    const allAssetSourcesWithUpload = types.flatMap(
-      (type) => resolveUploadAssetSources?.(type, formBuilder) ?? [],
-    )
+    const allAssetSourcesWithUpload = assetSourcesProp
+      ? getAssetSourcesWithUpload(assetSourcesProp)
+      : types.flatMap((type) => resolveUploadAssetSources?.(type, formBuilder) ?? [])
     // Asset sources may be returned for multiple types (file, image), we need to deduplicate them in order to show a unique list
     const assetSourcesWithUploadByName = uniqBy(allAssetSourcesWithUpload, 'name')
 
     const handleSetAssetSourceDestination = useCallback(
       (assetSource: AssetSource | null) => {
-        assetSourceDestinationName.current = assetSource?.name ?? null
-        if (filesToUpload.length > 0 && assetSource) {
+        setShowAssetSourceDestinationPicker(false)
+        if (!assetSource) {
+          setFilesToUpload([])
+          assetSourceDestinationName.current = null
+          return
+        }
+        if (isComponentModeAssetSource(assetSource) && onOpenSourceForUpload) {
+          onOpenSourceForUpload(assetSource)
+          setFilesToUpload([])
+          assetSourceDestinationName.current = null
+          return
+        }
+        assetSourceDestinationName.current = assetSource.name
+        if (filesToUpload.length > 0) {
           handleUploadFiles(filesToUpload)
         }
         setFilesToUpload([])
-        setShowAssetSourceDestinationPicker(false)
         assetSourceDestinationName.current = null
       },
-      [filesToUpload, handleUploadFiles],
+      [filesToUpload, handleUploadFiles, onOpenSourceForUpload],
     )
 
     const handleUploadDestinationPickerClose = useCallback(() => {
@@ -327,7 +380,10 @@ export function uploadTarget<Props>(
 
 /**
  * Resolves an asset source with fallback to the default source when the resolved source
- * lacks an Uploader (e.g., sanity-plugin-media). This enables drag-and-drop for such plugins.
+ * lacks an Uploader. For picker-mode sources (with Uploader), returns the resolved source.
+ * For component-mode sources (uploadMode === 'component'), returns the resolved source
+ * so the asset source component can be opened. Only falls back to default when the
+ * resolved source is undefined.
  */
 function resolveAssetSourceWithFallback(
   resolvedSource: AssetSource | undefined,
@@ -337,6 +393,9 @@ function resolveAssetSourceWithFallback(
     return null
   }
   if (resolvedSource.Uploader) {
+    return resolvedSource
+  }
+  if (isComponentModeAssetSource(resolvedSource)) {
     return resolvedSource
   }
   return defaultSource
@@ -363,6 +422,7 @@ interface GetFilesAndAssetSourcesOptions {
   formBuilder: FIXME
   defaultImageAssetSource: AssetSource
   defaultFileAssetSource: AssetSource
+  assetSources?: AssetSource[]
 }
 
 function getFilesAndAssetSources(options: GetFilesAndAssetSourcesOptions): FileEntry[] {
@@ -373,23 +433,35 @@ function getFilesAndAssetSources(options: GetFilesAndAssetSourcesOptions): FileE
     formBuilder,
     defaultImageAssetSource,
     defaultFileAssetSource,
+    assetSources,
   } = options
   const imageType = types.find((type) => _isType(type, 'image'))
   const fileType = types.find((type) => _isType(type, 'file'))
+  const videoType = types.find((type) => _isType(type, 'sanity.video'))
 
   return files.map((file) => {
-    const resolvedImageSource = findMatchingAssetSource(
-      imageType,
-      formBuilder,
-      file,
-      assetSourceDestinationName,
-    )
+    // When assetSources prop is provided (e.g. from FileInput/ImageInput), use it for matching
+    const imageAssetSourceFromProp =
+      assetSources?.length && imageType && file.type.startsWith('image/')
+        ? (assetSources.find(
+            (src) => assetSourceDestinationName === null || src.name === assetSourceDestinationName,
+          ) ?? assetSources[0])
+        : undefined
+
+    const resolvedImageSource =
+      imageAssetSourceFromProp ??
+      findMatchingAssetSource(imageType, formBuilder, file, assetSourceDestinationName)
     const imageAssetSource = resolveAssetSourceWithFallback(
       resolvedImageSource,
       defaultImageAssetSource,
     )
 
-    if (imageType && file.type.startsWith('image/') && imageAssetSource) {
+    if (
+      imageType &&
+      file.type.startsWith('image/') &&
+      imageAssetSource &&
+      matchesSchemaTypeAccept(file, imageType, 'image')
+    ) {
       return {
         file,
         schemaType: imageType,
@@ -397,22 +469,66 @@ function getFilesAndAssetSources(options: GetFilesAndAssetSourcesOptions): FileE
       }
     }
 
-    const resolvedFileSource = findMatchingAssetSource(
-      fileType,
-      formBuilder,
-      file,
-      assetSourceDestinationName,
-    )
+    const fileAssetSourceFromProp =
+      assetSources?.length && fileType
+        ? (assetSources.find(
+            (src) => assetSourceDestinationName === null || src.name === assetSourceDestinationName,
+          ) ?? assetSources[0])
+        : undefined
+
+    const resolvedFileSource =
+      fileAssetSourceFromProp ??
+      findMatchingAssetSource(fileType, formBuilder, file, assetSourceDestinationName)
     const fileAssetSource = resolveAssetSourceWithFallback(
       resolvedFileSource,
       defaultFileAssetSource,
     )
 
     if (fileType && fileAssetSource) {
+      if (!matchesSchemaTypeAccept(file, fileType, 'file')) {
+        return {
+          file,
+          schemaType: fileType,
+          assetSource: null,
+        }
+      }
       return {
         file,
         schemaType: fileType,
         assetSource: fileAssetSource,
+      }
+    }
+
+    let videoAssetSource: AssetSource | null = null
+    if (
+      videoType &&
+      file.type.startsWith('video/') &&
+      matchesSchemaTypeAccept(file, videoType, 'video')
+    ) {
+      if (assetSources && assetSources.length > 0) {
+        const matchingSource = assetSources.find(
+          (src) => assetSourceDestinationName === null || src.name === assetSourceDestinationName,
+        )
+        videoAssetSource = matchingSource ?? assetSources[0] ?? null
+      } else {
+        const resolvedVideoSource = findMatchingAssetSource(
+          videoType,
+          formBuilder,
+          file,
+          assetSourceDestinationName,
+        )
+        videoAssetSource = resolveAssetSourceWithFallback(
+          resolvedVideoSource,
+          defaultFileAssetSource,
+        )
+      }
+    }
+
+    if (videoType && file.type.startsWith('video/') && videoAssetSource) {
+      return {
+        file,
+        schemaType: videoType,
+        assetSource: videoAssetSource,
       }
     }
 

@@ -54,7 +54,7 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function DragAndDropStory({
+function DragAndDropStory({
   focusPath,
   onPathFocus,
   document,

@@ -1,4 +1,4 @@
-import {omit} from 'lodash-es'
+import omit from 'lodash-es/omit.js'
 import {BehaviorSubject, type Observable} from 'rxjs'
 import {describe, expect, test} from 'vitest'
 

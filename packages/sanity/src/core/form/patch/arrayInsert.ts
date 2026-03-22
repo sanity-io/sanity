@@ -1,5 +1,5 @@
-export const BEFORE = 'before'
-export const AFTER = 'after'
+const BEFORE = 'before'
+const AFTER = 'after'
 
 export function arrayInsert(
   array: unknown[],

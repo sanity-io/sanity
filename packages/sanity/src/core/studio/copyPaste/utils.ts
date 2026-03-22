@@ -122,7 +122,7 @@ export async function writeClipboardItem(copyActionResult: SanityClipboardItem):
   }
 }
 
-export async function parseClipboardItem(item: ClipboardItem): Promise<SanityClipboardItem | null> {
+async function parseClipboardItem(item: ClipboardItem): Promise<SanityClipboardItem | null> {
   if (item.types.includes(MIMETYPE_SANITY_CLIPBOARD)) {
     const blob = await item.getType(MIMETYPE_SANITY_CLIPBOARD)
     const text = await blob.text()

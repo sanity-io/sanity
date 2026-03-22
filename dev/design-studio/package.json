@@ -1,6 +1,6 @@
 {
   "name": "design-studio",
-  "version": "5.12.0",
+  "version": "5.17.1",
   "private": true,
   "description": "Sanity Design Studio",
   "keywords": [
@@ -37,11 +37,12 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "styled-components": "catalog:"
+    "styled-components": "catalog:",
+    "vite": "catalog:"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "eslint": "catalog:",
-    "rimraf": "^5.0.10"
+    "rimraf": "catalog:"
   }
 }

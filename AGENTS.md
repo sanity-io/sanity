@@ -46,7 +46,6 @@ These checks run on every PR and **must pass**:
 | **ESLint**       | `pnpm lint`          | Full linting. Fix with `pnpm chore:lint:fix`             |
 | **Type Check**   | `pnpm check:types`   | TypeScript via tsgo + turbo                              |
 | **Unit Tests**   | `pnpm test`          | Vitest, sharded in CI                                    |
-| **CLI Tests**    | Runs via `pnpm test` | Tests for @sanity/cli                                    |
 | **Export Tests** | `pnpm test:exports`  | Ensures ESM/CJS/DTS work                                 |
 | **Dep Check**    | `pnpm depcheck`      | Finds unused/missing deps                                |
 | **PR Title**     | Conventional commits | e.g., `feat(scope): description`                         |
@@ -89,14 +88,13 @@ sanity/
 ### Key Packages
 
 - **`packages/sanity`** - Core studio package with all UI components
-- **`packages/@sanity/cli`** - CLI tool (`sanity` command)
 - **`packages/@sanity/types`** - TypeScript type definitions
 - **`packages/@sanity/schema`** - Schema compilation
 - **`packages/@sanity/mutator`** - Document mutation logic
 
 ## Build System
 
-- **Package Manager**: pnpm (version 10.28.1, enforced via `preinstall`)
+- **Package Manager**: pnpm (version 10.x, enforced via `preinstall`)
 - **Build Orchestration**: Turbo (caches builds)
 - **Versioning**: Lerna-lite with conventional commits
 
@@ -104,7 +102,6 @@ sanity/
 
 ```bash
 pnpm build              # Build all packages
-pnpm build:cli          # Build CLI only (faster)
 pnpm watch              # Watch mode for development
 ```
 
@@ -128,8 +125,11 @@ Unit tests run in jsdom with mocks and **do not require any authentication**:
 # Build first (required), then run all tests
 pnpm build && pnpm test
 
-# Run a specific test file
-pnpm test -- packages/sanity/src/core/hooks/useClient.test.ts
+# Run a single test file (IMPORTANT: use vitest directly with --project to avoid running all tests)
+pnpm vitest run --project=sanity packages/sanity/src/core/hooks/useClient.test.ts
+
+# Run a single test file with verbose output
+pnpm vitest run --project=sanity --reporter=verbose packages/sanity/src/core/hooks/useClient.test.ts
 
 # Watch mode for iterative development
 pnpm test -- --watch
@@ -137,6 +137,8 @@ pnpm test -- --watch
 # Run tests for a specific package
 pnpm test -- --project=sanity
 ```
+
+**Important:** Do NOT use `pnpm test -- path/to/file.test.ts` for running a single file — it runs all tests across all projects. Use `pnpm vitest run --project=<project> <path>` instead.
 
 Components that need auth context use `createMockAuthStore` in tests, so no real authentication is needed. This is the recommended way to verify most code changes.
 
@@ -282,32 +284,58 @@ pnpm test -- -u MyComponent
 
 Review snapshot changes carefully before committing.
 
-## Commit Message Format
+## Commit Message Format and PR Title (CRITICAL)
 
-This repo uses **conventional commits** for automated releases:
+This repo uses **conventional commits** for automated releases.
+
+**PR titles are validated by CI** using the [semantic-pull-request](https://github.com/amannn/action-semantic-pull-request) action. A PR with a non-conforming title **will fail CI**.
+
+### Format
 
 ```
-type(scope): description
+type(scope): lowercase description without special characters
+```
 
+### Rules
+
+1. **Type** is required and must be one of: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf`, `ci`
+2. **Scope** is required and should be the package or area affected (e.g., `groq`, `cli`, `form`, `deps`)
+3. **Description** must start with a lowercase letter
+4. **No backticks, quotes, or markdown** in the PR title — keep it plain text
+5. Use `fix` for bug fixes, `feat` for new features, `chore` for maintenance tasks
+
+### Choosing the Right Type
+
+- **`fix`** — Fixes a bug or resolves an issue (e.g., `fix(groq): resolve CJS type export issue`)
+- **`feat`** — Adds new functionality (e.g., `feat(form): add array input component`)
+- **`chore`** — Maintenance, dependency updates, CI changes (e.g., `chore(deps): update dependencies`)
+- **`docs`** — Documentation only (e.g., `docs(readme): improve installation instructions`)
+- **`refactor`** — Code restructuring without behavior change (e.g., `refactor(store): simplify document subscription logic`)
+- **`test`** — Adding or updating tests (e.g., `test(validation): add edge case coverage`)
+- **`perf`** — Performance improvements (e.g., `perf(search): optimize query execution`)
+- **`ci`** — CI/CD changes (e.g., `ci(e2e): add retry logic to flaky tests`)
+
+### Examples
+
+```
+# ✅ Good PR titles
+fix(groq): resolve CJS type export issue
 feat(form): add new array input component
-fix(cli): handle missing config file gracefully
 chore(deps): update dependencies
-docs(readme): improve installation instructions
-refactor(store): simplify document subscription logic
-test(validation): add edge case coverage
+
+# ❌ Bad PR titles
+feat(groq): add `types` condition     # no backticks allowed
+Fix(cli): Handle missing config        # type must be lowercase, description must start lowercase
+added new feature                       # missing type and scope
 ```
-
-**Types**: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf`, `ci`
-
-PR titles must follow this format (validated by CI).
 
 ## Pull Request Workflow
 
 **Always create PRs as drafts first.**
 
 ```bash
-# Create a draft PR
-gh pr create --draft --title "feat(scope): description" --body "..."
+# Create a draft PR — title MUST follow conventional commit format
+gh pr create --draft --title "fix(scope): description" --body "..."
 ```
 
 Workflow:

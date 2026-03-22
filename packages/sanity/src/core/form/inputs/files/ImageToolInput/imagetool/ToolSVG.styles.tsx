@@ -33,21 +33,21 @@ export interface StyledElementProps {
   $hovered?: boolean
 }
 
-export const getCropStrokeColor = (props: StyledElementProps & ThemeProps): string => {
+const getCropStrokeColor = (props: StyledElementProps & ThemeProps): string => {
   const {color} = getThemeV2(props.theme)
   if (props.$focused) return color.focusRing
   if (props.$hovered) return 'rgba(255, 255, 255, 1)'
   return 'rgba(255, 255, 255, .5)'
 }
 
-export const getHotspotStrokeColor = (props: StyledElementProps & ThemeProps): string => {
+const getHotspotStrokeColor = (props: StyledElementProps & ThemeProps): string => {
   const {color} = getThemeV2(props.theme)
   if (props.$focused) return color.focusRing
   if (props.$hovered) return 'rgba(255, 255, 255, 1)'
   return 'rgba(255, 255, 255, .5)'
 }
 
-export const getHandleStrokeColor = (props: StyledElementProps & ThemeProps): string => {
+const getHandleStrokeColor = (props: StyledElementProps & ThemeProps): string => {
   const {color} = getThemeV2(props.theme)
   if (props.$focused) return color.focusRing
   return '#000'
@@ -121,6 +121,36 @@ export const Guidelines = styled.g`
       stroke-opacity: 0.2;
       stroke-width: 1px;
       stroke-dasharray: 3, 3;
+      pointer-events: none;
+    `
+  }}
+`
+
+export const CropDimensionsBadgeGroup = styled.g<{$visible: boolean}>`
+  opacity: ${(props) => (props.$visible ? 1 : 0)};
+  transition: opacity 0.15s;
+`
+
+export const CropDimensionsBadgeRect = styled.rect`
+  ${(props) => {
+    const {color, radius} = getThemeV2(props.theme)
+    return css`
+      fill: ${color.focusRing};
+      rx: ${radius[1]}px;
+    `
+  }}
+`
+
+export const CropDimensionsBadgeText = styled.text`
+  ${(props) => {
+    const {font} = getThemeV2(props.theme)
+    const textSize = font.text.sizes[0]
+    return css`
+      fill: #fff;
+      font-family: ${font.text.family};
+      font-size: ${textSize.fontSize}px;
+      letter-spacing: ${textSize.letterSpacing}px;
+      font-weight: ${font.text.weights.medium};
       pointer-events: none;
     `
   }}

@@ -48,7 +48,7 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function NestedInputStory() {
+function NestedInputStory() {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <TestForm />

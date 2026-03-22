@@ -1,6 +1,6 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {type SchemaType} from '@sanity/types'
-import {difference} from 'lodash-es'
+import difference from 'lodash-es/difference.js'
 
 const ACTIONS_FLAG = '__experimental_actions'
 
@@ -47,7 +47,7 @@ const validateActions = (typeName: string, actions: string[]) => {
   return actions
 }
 
-export const resolveEnabledActions = (schemaType: SchemaType): string[] =>
+const resolveEnabledActions = (schemaType: SchemaType): string[] =>
   validateActions(schemaType.name, readActions(schemaType))
 
 export const isActionEnabled = (schemaType: SchemaType, action: string): boolean =>

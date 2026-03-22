@@ -9,6 +9,7 @@ import {
   activeScheduledRelease,
   activeASAPRelease,
   activeUndecidedRelease,
+  archivedScheduledRelease,
   scheduledRelease,
 } from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
@@ -62,6 +63,26 @@ describe('ReleaseTime', () => {
     })
 
     expect(screen.getByText('Estimated')).toBeInTheDocument()
+  })
+
+  it('renders the date without "Estimated" prefix for archived releases', async () => {
+    await renderTest({
+      release: archivedScheduledRelease,
+    })
+
+    expect(screen.queryByText('Estimated')).not.toBeInTheDocument()
+    expect(screen.queryByText('Scheduled')).not.toBeInTheDocument()
+    expect(screen.getByText('Oct 10, 2023', {exact: false})).toBeInTheDocument()
+  })
+
+  it('renders the date without "Estimated" prefix for published releases', async () => {
+    await renderTest({
+      release: {...archivedScheduledRelease, state: 'published' as const},
+    })
+
+    expect(screen.queryByText('Estimated')).not.toBeInTheDocument()
+    expect(screen.queryByText('Scheduled')).not.toBeInTheDocument()
+    expect(screen.getByText('Oct 10, 2023', {exact: false})).toBeInTheDocument()
   })
 
   it('renders nothing when releaseType is "scheduled" and publishDate is not available', async () => {

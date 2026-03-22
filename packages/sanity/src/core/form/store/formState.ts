@@ -17,14 +17,15 @@ import {
   type ObjectField,
   type ObjectSchemaType,
   type Path,
-  type SchemaType,
   type StringSchemaType,
   type ValidationMarker,
 } from '@sanity/types'
 import {resolveTypeName} from '@sanity/util/content'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
-import {castArray, isEqual as _isEqual} from 'lodash-es'
+import castArray from 'lodash-es/castArray.js'
+import _isEqual from 'lodash-es/isEqual.js'
 
+import {emptyValuesByType} from '../../field/diff/helpers'
 import {type FIXME} from '../../FIXME'
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
@@ -496,6 +497,7 @@ export function createPrepareFormState({
           kind: 'error',
           key: field.name,
           fieldName: field.name,
+          path: fieldPath,
           error: {
             type: 'INCOMPATIBLE_TYPE',
             expectedSchemaType: field.type,
@@ -516,6 +518,7 @@ export function createPrepareFormState({
           key: `field-${field.name}`,
           name: field.name,
           index: index,
+          path: fieldPath,
         }
       }
 
@@ -580,6 +583,7 @@ export function createPrepareFormState({
         key: `field-${field.name}`,
         name: field.name,
         index: index,
+        path: fieldPath,
 
         inSelectedGroup,
         groups: normalizedFieldGroupNames,
@@ -603,6 +607,7 @@ export function createPrepareFormState({
             kind: 'error',
             key: field.name,
             fieldName: field.name,
+            path: fieldPath,
             error: {
               type: 'INCOMPATIBLE_TYPE',
               expectedSchemaType: field.type,
@@ -617,6 +622,7 @@ export function createPrepareFormState({
             kind: 'error',
             key: field.name,
             fieldName: field.name,
+            path: fieldPath,
             error: {
               type: 'MIXED_ARRAY',
               schemaType: field.type,
@@ -630,6 +636,7 @@ export function createPrepareFormState({
             kind: 'error',
             key: field.name,
             fieldName: field.name,
+            path: fieldPath,
             error: {
               type: 'MISSING_KEYS',
               value: fieldValue,
@@ -644,6 +651,7 @@ export function createPrepareFormState({
             kind: 'error',
             key: field.name,
             fieldName: field.name,
+            path: fieldPath,
             error: {
               type: 'DUPLICATE_KEYS',
               duplicates: duplicateKeyEntries,
@@ -692,6 +700,7 @@ export function createPrepareFormState({
         return {
           kind: 'field',
           key: `field-${field.name}`,
+          path: fieldPath,
           name: field.name,
           index: index,
 
@@ -713,6 +722,7 @@ export function createPrepareFormState({
           return {
             kind: 'error',
             key: field.name,
+            path: fieldPath,
             fieldName: field.name,
             error: {
               type: 'INCOMPATIBLE_TYPE',
@@ -763,6 +773,7 @@ export function createPrepareFormState({
         return {
           kind: 'field',
           key: `field-${field.name}`,
+          path: fieldPath,
           name: field.name,
           index: index,
 
@@ -816,6 +827,7 @@ export function createPrepareFormState({
       return {
         kind: 'field',
         key: `field-${field.name}`,
+        path: fieldPath,
         name: field.name,
         index: index,
         open: startsWith(fieldPath, parent.openPath),
@@ -953,15 +965,18 @@ export function createPrepareFormState({
           (props.collapsedFieldSets?.children || {})[fieldSet.name]?.value ??
           defaultCollapsedState.collapsed
 
+        const fieldSetPath = pathFor(props.path.concat(fieldSet.name))
+
         return [
           {
             kind: 'fieldSet',
             key: `fieldset-${fieldSet.name}`,
+            path: fieldSetPath,
             _inSelectedGroup: isFieldEnabledByGroupFilter(groups, fieldSet.group, selectedGroup),
             groups: fieldSet.group ? castArray(fieldSet.group) : [],
             renderMembers: fieldSet.renderMembers,
             fieldSet: {
-              path: pathFor(props.path.concat(fieldSet.name)),
+              path: fieldSetPath,
               name: fieldSet.name,
               title: fieldSet.title,
               description: fieldSet.description,
@@ -1412,18 +1427,6 @@ export function createPrepareFormState({
 
   return prepareFormState
 }
-
-/**
- * A map of supported JSON types to valid empty values that may be used for diffing purposes when
- * the node has no underlying value to be compared with.
- */
-const emptyValuesByType = {
-  string: '',
-  number: 0,
-  boolean: false,
-  array: [],
-  object: {},
-} satisfies Record<SchemaType['jsonType'], unknown>
 
 /**
  * This utility creates the diff-related properties that are assigned to each node.

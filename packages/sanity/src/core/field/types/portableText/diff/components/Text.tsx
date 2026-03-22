@@ -36,7 +36,7 @@ export function Text({
   return <InlineBox>{children}</InlineBox>
 }
 
-export function TextWithDiff({diff, childDiff, children, path, segment, ...restProps}: TextProps) {
+function TextWithDiff({diff, childDiff, children, path, segment, ...restProps}: TextProps) {
   const {onSetFocus} = useContext(ReviewChangesContext)
   const {path: fullPath} = useContext(DiffContext)
   const spanSegment = useMemo(() => path.slice(-2, 1)[0], [path])

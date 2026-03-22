@@ -4,7 +4,6 @@ export * from './components'
 export * from './components/collapseMenu'
 export * from './components/scroll'
 export * from './config'
-export * from './create'
 export * from './environment'
 export * from './field'
 export * from './FIXME'
@@ -89,6 +88,7 @@ export {
 } from './theme'
 export * from './user-color'
 export * from './util'
+export {measureFirstEmission, measureFirstMatch} from './util/measureFirstEmission'
 export {
   Rule as ConcreteRuleClass,
   validateDocument,
@@ -101,6 +101,7 @@ export {type ReleaseDocument} from '@sanity/client'
 export {useCanvasCompanionDoc} from './canvas/actions/useCanvasCompanionDoc'
 export {useNavigateToCanvasDoc} from './canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from './canvas/utils/getDocumentIdForCanvasLink'
+export {useDivergenceNavigator} from './divergence/divergenceNavigator'
 export {useDocumentLimitsUpsellContext} from './limits/context/documents/DocumentLimitUpsellProvider'
 export {isDocumentLimitError} from './limits/context/documents/isDocumentLimitError'
 export {ReleaseAvatarIcon} from './releases/components/ReleaseAvatar'

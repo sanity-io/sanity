@@ -1,4 +1,4 @@
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {CommentsSelectedPathContext} from 'sanity/_singletons'
 

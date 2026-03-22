@@ -11,15 +11,14 @@ packages:
   - packages/sanity/fixtures/examples/*
 
 catalog:
-  '@playwright/experimental-ct-react': 1.57.0
-  '@playwright/test': 1.57.0
-  '@sanity/client': ^7.15.0
-  '@sanity/codegen': ^5.9.3
-  '@sanity/migrate': ^5.2.5
-  '@sanity/telemetry': ^0.8.1
+  '@playwright/experimental-ct-react': 1.58.2
+  '@playwright/test': 1.58.2
+  '@sanity/client': ^7.17.0
+  '@sanity/migrate': ^6.0.0
+  '@sanity/telemetry': ^0.9.0
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/pkg-utils': ^10.4.4
-  '@sanity/ui': ^3.1.13
+  '@sanity/pkg-utils': ^10.4.10
+  '@sanity/ui': ^3.1.14
   '@types/node': ^24.3.0
   '@types/react': ^19.2.11
   '@types/react-dom': ^19.2.3
@@ -27,14 +26,14 @@ catalog:
   '@typescript/native-preview': 7.0.0-dev.20260112.1
   '@vitejs/plugin-react': ^5.1.2
   babel-plugin-styled-components: ^2.1.4
-  esbuild: 0.27.3
   esbuild-register: ^3.6.0
   eslint: ^9.39.2
   globals: ^16.2.0
-  playwright: 1.57.0
+  playwright: 1.58.2
   react: ^19.2.4
   react-dom: ^19.2.4
   react-is: ^19.2.4
+  rimraf: ^6.1.3
   # Note: there is currently a test failure in src/core/form/inputs/files/FileInput/__tests__/fileInput.test.tsx
   # that blocks us from upgrading to jsdom@27 – once that test is passing, the jsdom override can be removed from
   # the workspace package.json.
@@ -50,9 +49,6 @@ catalog:
 overrides:
   # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
   '@sanity/ui@3': '$@sanity/ui'
-  # temporary workaround for portabletext taking in @sanity/types v4
-  # can be removed once portable text dependency is on sanity@5
-  '@sanity/types': '^5.0.0'
   # We are currently blocked from upgrading to jsdom 27 because of a strange build error related to the new version of
   # cssstyle required by jsdom 27. If this error is no longer present, it's safe to remove the following override.
   jsdom: 26.1.0
@@ -70,17 +66,20 @@ minimumReleaseAgeExclude:
   - '@sanity/*'
   - '@types/*'
   - '@typescript/*'
-  - csstype
+  - 'csstype'
+  - 'data-uri-to-buffer@7.0.0'
+  - 'eslint-plugin-oxlint'
   - 'get-it'
+  - 'get-uri@7.0.0'
   - 'groq-js'
   - 'oxfmt'
   - 'oxlint'
   - 'oxlint-tsgolint'
-  - 'eslint-plugin-oxlint'
   - 'react'
   - 'react-dom'
   - 'react-is'
   - 'react-rx'
+  - 'sanity-plugin-internationalized-array'
 
 trustPolicy: no-downgrade
 
@@ -88,6 +87,7 @@ trustPolicyExclude:
   - '@octokit/endpoint@9.0.6'
   - '@octokit/plugin-paginate-rest@9.2.2'
   - '@reduxjs/toolkit@2.9.0 || 2.10.1 || 2.11.0'
+  - '@sanity/cli'
   - '@sanity/mutate@0.11.0-canary.4'
   - '@sanity/sdk@2.1.2'
   - '@swc/core@1.13.5'

@@ -1,7 +1,6 @@
 import {MEDIA_LIBRARY_NAME, mediaLibrary} from '../../media-library/plugin'
 import {CANVAS_INTEGRATION_NAME, canvasIntegration} from '../canvas/canvasIntegrationPlugin'
 import {comments} from '../comments/plugin'
-import {createIntegration} from '../create/createIntegrationPlugin'
 import {releases, RELEASES_NAME} from '../releases/plugin'
 // oxlint-disable-next-line no-restricted-imports
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduled-publishing/plugin'
@@ -16,15 +15,14 @@ import {
   type WorkspaceOptions,
 } from './types'
 
-const defaultPlugins = [
+const defaultPlugins = (options: DefaultPluginsOptions) => [
   comments(),
   tasks(),
   scheduledPublishing(),
-  createIntegration(),
   releases(),
   canvasIntegration(),
   mediaLibrary(),
-  schedules(),
+  schedules(options),
   singleDocRelease(),
 ]
 
@@ -33,7 +31,7 @@ type DefaultPluginsOptions = DefaultPluginsWorkspaceOptions & {
 }
 
 export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: PluginOptions[]) {
-  return defaultPlugins.filter((plugin) => {
+  return defaultPlugins(options).filter((plugin) => {
     if (plugin.name === SCHEDULED_PUBLISHING_NAME) {
       // The scheduled publishing plugin is only included if other plugin is included by the user.
       return options.scheduledPublishing.enabled && !!plugins?.length

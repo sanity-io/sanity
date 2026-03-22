@@ -17,7 +17,7 @@ const MENU_POPOVER_PROPS: PopoverProps = {
   constrainSize: true,
 } as const
 
-export const InsertMenuGroups = memo(function InsertMenuGroups(props: Props) {
+const InsertMenuGroups = memo(function InsertMenuGroups(props: Props) {
   const {types, onInsert} = props
   const {t} = useTranslation()
   return (

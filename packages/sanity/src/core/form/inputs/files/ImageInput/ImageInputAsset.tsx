@@ -16,6 +16,7 @@ function ImageInputAssetComponent(props: {
   directUploads: boolean
   elementProps: BaseImageInputProps['elementProps']
   handleClearUploadState: () => void
+  onOpenSourceForUpload?: (assetSource: AssetSource) => void
   onSelectFile: (assetSource: AssetSource, file: File) => void
   inputProps: Omit<InputProps, 'renderDefault'>
   isStale: boolean
@@ -30,8 +31,10 @@ function ImageInputAssetComponent(props: {
   value: BaseImageInputValue | undefined
 }) {
   const {
+    assetSources,
     elementProps,
     handleClearUploadState,
+    onOpenSourceForUpload,
     onSelectFile,
     inputProps,
     isStale,
@@ -89,8 +92,10 @@ function ImageInputAssetComponent(props: {
           <UploadTargetCard
             {...elementProps}
             $border={hasValueOrUpload}
+            assetSources={assetSources}
             isReadOnly={readOnly}
             onFocus={handleFileTargetFocus}
+            onOpenSourceForUpload={onOpenSourceForUpload}
             onSelectFile={handleSelectFile}
             radius={2}
             sizing="border"

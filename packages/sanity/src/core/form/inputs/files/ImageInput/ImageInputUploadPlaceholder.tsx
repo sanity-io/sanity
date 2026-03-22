@@ -10,6 +10,11 @@ function ImageInputUploadPlaceholderComponent(props: {
   directUploads: boolean | undefined
   disableNew?: boolean
   onSelectFile: (assetSource: AssetSource, file: File) => void
+  /**
+   * Called when an asset source with `uploadMode: 'component'` is selected.
+   * The source should be rendered directly to handle file selection and upload internally.
+   */
+  onOpenSourceForUpload?: (assetSource: AssetSource) => void
   readOnly: boolean | undefined
   renderBrowser(): React.JSX.Element | null
   schemaType: BaseImageInputProps['schemaType']
@@ -18,6 +23,7 @@ function ImageInputUploadPlaceholderComponent(props: {
     assetSources,
     directUploads,
     disableNew,
+    onOpenSourceForUpload,
     onSelectFile,
     readOnly,
     renderBrowser,
@@ -42,6 +48,7 @@ function ImageInputUploadPlaceholderComponent(props: {
             browse={renderBrowser()}
             directUploads={directUploads}
             onUpload={handleOnUpload}
+            onOpenSourceForUpload={onOpenSourceForUpload}
             schemaType={schemaType}
             readOnly={readOnly}
             type="image"

@@ -1,6 +1,7 @@
 import {type BadgeTone} from '@sanity/ui'
 
 import {type TargetPerspective} from '../../perspective/types'
+import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {isReleaseDocument} from '../store/types'
 import {RELEASE_TYPES_TONES} from './const'
@@ -32,6 +33,8 @@ export function getReleaseTone(release: TargetPerspective): BadgeTone {
       return RELEASE_TYPES_TONES.scheduled.tone
     }
   }
+
+  if (isAgentBundleName(release)) return 'suggest'
 
   return 'default'
 }

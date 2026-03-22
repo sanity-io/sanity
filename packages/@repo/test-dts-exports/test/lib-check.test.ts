@@ -89,6 +89,15 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
+  // @sanity/codegen@5.10.1 has a type incompatibility due to conflicting @oclif/core versions (4.8.0 vs 4.8.2)
+  // This is a transitive dependency conflict we can't fix directly
+  if (
+    file.fileName.includes('node_modules/@sanity/codegen/dist/index.d.ts') &&
+    (code === 2417 || code === 2344)
+  ) {
+    return false
+  }
+
   return true
 })
 

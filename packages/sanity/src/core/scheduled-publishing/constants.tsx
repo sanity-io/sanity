@@ -51,13 +51,6 @@ export const DOCUMENT_HAS_WARNINGS_TEXT = 'This document has validation warnings
 export const DOCUMENT_HAS_ERRORS_TEXT =
   'This document has validation errors that should be resolved before its publish date.'
 
-export const FEATURE_NOT_SUPPORTED_TEXT = (
-  <>
-    Scheduled Publishing is only available on{' '}
-    <a href="https://sanity.io/pricing">Growth or higher plans</a>. Please upgrade to enable access.
-  </>
-)
-
 export const SCHEDULE_FAILED_TEXT = 'This schedule failed to run.'
 
 export const TOOL_TITLE = 'Schedules'

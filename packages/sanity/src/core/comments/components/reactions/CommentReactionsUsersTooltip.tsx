@@ -135,7 +135,7 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
   return elements
 }
 
-export function CommentReactionsUsersTooltipContent(
+function CommentReactionsUsersTooltipContent(
   props: Omit<CommentReactionsUsersTooltipProps, 'children'>,
 ) {
   const {currentUser, reactionName, userIds} = props

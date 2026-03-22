@@ -4,6 +4,7 @@ import {Box, Flex, Text} from '@sanity/ui'
 import {useTranslation} from '../../../i18n'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
+import {ARCHIVED_RELEASE_STATES} from '../../util/const'
 import {isReleaseScheduledOrScheduling} from '../../util/util'
 import {type TableRelease} from '../overview/ReleasesOverview'
 
@@ -31,27 +32,32 @@ export const ReleaseTime: React.FC<{release: TableRelease}> = ({release}) => {
 
   // For scheduled releases:
 
+  const isScheduledOrScheduling = isReleaseScheduledOrScheduling(release)
+  const isInArchivedView = ARCHIVED_RELEASE_STATES.includes(release.state)
+
   return (
     <Flex gap={1} align="center" wrap="wrap">
-      {isReleaseScheduledOrScheduling(release) && (
+      {isScheduledOrScheduling && (
         <Box paddingY={1}>
           <Text size={1} muted>
             <LockIcon data-testid="release-lock-icon" />
           </Text>
         </Box>
       )}
-      <Box paddingY={1}>
-        <Text size={1} muted>
-          {isReleaseScheduledOrScheduling(release)
-            ? tRelease('time.scheduled')
-            : tRelease('time.estimated')}
-        </Text>
-      </Box>
-      <Box paddingY={1}>
-        <Text size={1} muted>
-          {'·'}
-        </Text>
-      </Box>
+      {!isInArchivedView && (
+        <>
+          <Box paddingY={1}>
+            <Text size={1} muted>
+              {isScheduledOrScheduling ? tRelease('time.scheduled') : tRelease('time.estimated')}
+            </Text>
+          </Box>
+          <Box paddingY={1}>
+            <Text size={1} muted>
+              {'·'}
+            </Text>
+          </Box>
+        </>
+      )}
       <Box paddingY={1}>
         <Text size={1} weight="medium">
           {getReleaseTime(release)}

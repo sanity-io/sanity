@@ -4,7 +4,15 @@ import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {AnimatePresence, motion} from 'motion/react'
-import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  type CSSProperties,
+  type MouseEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Tooltip} from '../../../../ui-components'
@@ -91,11 +99,24 @@ export function ReleasesOverview() {
   const isDraftModelEnabled = document?.drafts?.enabled
 
   const router = useRouter()
+  const navigateRef = useRef(router.navigate)
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
 
   const [cardinalityView, setCardinalityView] = useState<CardinalityView>(
     getInitialCardinalityView({router, isScheduledDraftsEnabled, isReleasesEnabled}),
   )
+
+  const viewFromUrl = useMemo(
+    (): CardinalityView =>
+      new URLSearchParams(router.state._searchParams).get('view') === 'drafts'
+        ? 'drafts'
+        : 'releases',
+    [router.state._searchParams],
+  )
+
+  if (viewFromUrl !== cardinalityView) {
+    setCardinalityView(viewFromUrl)
+  }
 
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
@@ -143,6 +164,18 @@ export function ReleasesOverview() {
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
 
   const mediaIndex = useMediaIndex()
+  const isNarrowViewport = mediaIndex < 2
+
+  const narrowFilterStyle: CSSProperties | undefined = isNarrowViewport
+    ? {minWidth: '100%', order: 3}
+    : undefined
+  const narrowTimezoneStyle: CSSProperties | undefined = isNarrowViewport
+    ? {marginLeft: 'auto'}
+    : undefined
+  const timeZoneLabel = `${timeZone.abbreviation} (${timeZone.namePretty})`
+  const timeZoneButtonProps = isNarrowViewport
+    ? {tooltipProps: {content: timeZoneLabel}}
+    : {iconRight: ChevronDownIcon, text: timeZoneLabel}
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> => {
@@ -241,14 +274,19 @@ export function ReleasesOverview() {
   }, [])
 
   useEffect(() => {
-    router.navigate({
+    navigateRef.current = router.navigate
+  })
+
+  // Sync local state to URL when user interacts with filters
+  useEffect(() => {
+    navigateRef.current({
       _searchParams: buildReleasesSearchParams(
         releaseFilterDate,
         releaseGroupMode,
         isScheduledDraftsEnabled ? cardinalityView : 'releases',
       ),
     })
-  }, [releaseFilterDate, releaseGroupMode, cardinalityView, router, isScheduledDraftsEnabled])
+  }, [releaseFilterDate, releaseGroupMode, cardinalityView, isScheduledDraftsEnabled])
 
   const [hasMounted, setHasMounted] = useState(false)
 
@@ -428,21 +466,29 @@ export function ReleasesOverview() {
     cardinalityView === 'drafts' &&
     releases.some((release) => release.state === 'active' && isCardinalityOneRelease(release))
 
-  const renderCalendarFilter = useMemo(() => {
-    return (
+  const calendarFilterContent = useMemo(
+    () => (
+      <CalendarFilter
+        disabled={loading || releases.length === 0}
+        renderCalendarDay={createReleaseCalendarFilterDay(cardinalityView)}
+        selectedDate={releaseFilterDate}
+        onSelect={handleSelectFilterDate}
+        timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
+      />
+    ),
+    [loading, releases, releaseFilterDate, handleSelectFilterDate, cardinalityView],
+  )
+
+  const renderCalendarFilter = useMemo(
+    () => (
       <Flex flex="none">
         <Card borderRight flex="none" disabled>
-          <CalendarFilter
-            disabled={loading || releases.length === 0}
-            renderCalendarDay={createReleaseCalendarFilterDay(cardinalityView)}
-            selectedDate={releaseFilterDate}
-            onSelect={handleSelectFilterDate}
-            timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
-          />
+          {calendarFilterContent}
         </Card>
       </Flex>
-    )
-  }, [loading, releases, releaseFilterDate, handleSelectFilterDate, cardinalityView])
+    ),
+    [calendarFilterContent],
+  )
 
   const tableColumns = useMemo(() => {
     if (cardinalityView === 'drafts') {
@@ -499,9 +545,11 @@ export function ReleasesOverview() {
 
         <Flex direction="column" flex={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
-            <Flex align="center" flex={1} gap={3}>
+            <Flex align="center" flex={1} gap={3} wrap="wrap">
               <Inline>
-                {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
+                {!showCalendar && (
+                  <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
+                )}
                 <CardinalityViewPicker
                   cardinalityView={cardinalityView}
                   loading={loading}
@@ -513,7 +561,7 @@ export function ReleasesOverview() {
                 />
               </Inline>
 
-              <Flex flex={1} gap={1}>
+              <Flex flex={1} gap={1} style={narrowFilterStyle}>
                 {loadingOrHasReleases &&
                   (releaseFilterDate ? (
                     <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
@@ -521,13 +569,12 @@ export function ReleasesOverview() {
                     currentArchivedPicker
                   ))}
               </Flex>
-              <Flex flex="none" gap={2}>
+              <Flex flex="none" gap={2} style={narrowTimezoneStyle}>
                 <Button
                   icon={EarthGlobeIcon}
-                  iconRight={ChevronDownIcon}
                   mode="bleed"
-                  text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
                   onClick={dialogTimeZoneShow}
+                  {...timeZoneButtonProps}
                 />
                 {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
                 {loadingOrHasReleases && createReleaseButton}

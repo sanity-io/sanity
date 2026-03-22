@@ -84,7 +84,7 @@ function pollForReadyState(
 
 /**
  * Parses the asset instance ID from a Media Library GDR
- * @param assetRef - Reference string in format "media-library:ml[id]:[videoAssetInstanceId]"
+ * @param assetRef - Reference string in format "media-library:[libraryId]:[videoAssetInstanceId]"
  * @returns The asset instance ID
  * @throws Error if the reference format is invalid
  */
@@ -104,12 +104,6 @@ function parseAssetInstanceId(assetRef: string): string {
 
   if (resourceType !== 'media-library') {
     throw new Error(`Invalid resource type: expected "media-library", got "${resourceType}"`)
-  }
-
-  if (!mediaLibraryId.startsWith('ml')) {
-    throw new Error(
-      `Invalid media library ID: expected to start with "ml", got "${mediaLibraryId}"`,
-    )
   }
 
   if (!instanceId) {

@@ -5,6 +5,7 @@ import {isValidElementType} from 'react-is'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {getAssetSourceDisplayName, getAssetSourcesWithUpload} from './assetSourceUtils'
 
 interface UploadDestinationPickerProps {
   assetSources: AssetSource[]
@@ -17,7 +18,7 @@ export function UploadDestinationPicker(props: UploadDestinationPickerProps) {
   const {assetSources, onSelectAssetSource, text, onClose} = props
   const {t} = useTranslation()
 
-  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
+  const assetSourcesWithUpload = getAssetSourcesWithUpload(assetSources)
 
   const handleClick = useCallback(
     (event: React.MouseEvent) => {
@@ -74,7 +75,7 @@ export function UploadDestinationPicker(props: UploadDestinationPickerProps) {
                 <Flex align="center">
                   {isValidElementType(Icon) && <Icon style={{fontSize: '2rem'}} />}
                   <Box>
-                    <Text>{assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title}</Text>
+                    <Text>{getAssetSourceDisplayName(assetSource, t)}</Text>
                   </Box>
                 </Flex>
               </Button>

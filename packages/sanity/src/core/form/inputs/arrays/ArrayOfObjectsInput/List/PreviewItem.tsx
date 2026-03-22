@@ -22,7 +22,7 @@ import {
 } from '../../../../studio/tree-editing'
 import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
-import {randomKey} from '../../../../utils/randomKey'
+import {regenerateKeys} from '../../../../utils/regenerateKeys'
 import {useArrayValidation} from '../../common/ArrayValidationContext'
 import {RowLayout} from '../../layouts/RowLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
@@ -118,14 +118,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
 
   const handleDuplicate = useCallback(() => {
     onInsert({
-      items: [{...value, _key: randomKey()}],
+      items: [regenerateKeys(value)],
       position: 'after',
     })
   }, [onInsert, value])
 
   const handleCopy = useCallback(() => {
     onCopy({
-      items: [{...value, _key: randomKey()}],
+      items: [regenerateKeys(value)],
     })
   }, [onCopy, value])
 

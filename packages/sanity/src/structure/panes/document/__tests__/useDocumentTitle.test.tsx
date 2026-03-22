@@ -9,6 +9,21 @@ import {type DocumentPaneContextValue} from '../DocumentPaneContext'
 import {useDocumentPane} from '../useDocumentPane'
 import {useDocumentTitle} from '../useDocumentTitle'
 
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useTranslation: () => ({
+    t: (key: string, opts?: Record<string, string>) => {
+      if (key === 'panes.document-header-title.new.text' && opts?.schemaType) {
+        return `New ${opts.schemaType}`
+      }
+      if (key === 'panes.document-list-pane.error.text') {
+        return 'Encountered an error while fetching documents.'
+      }
+      return key
+    },
+  }),
+}))
+
 // Mock the useDocumentPane hook
 vi.mock('../useDocumentPane')
 

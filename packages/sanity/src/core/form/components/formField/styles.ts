@@ -5,8 +5,8 @@ export function focusRingBorderStyle(border: {color: string; width: number}): st
   return `inset 0 0 0 ${border.width}px ${border.color}`
 }
 
-export const AlignedBottomGrid = styled(Grid)`
-  align-items: flex-end;
+export const ColumnarGrid = styled(Grid)`
+  align-items: flex-start;
 `
 
 export function focusRingStyle(opts: {

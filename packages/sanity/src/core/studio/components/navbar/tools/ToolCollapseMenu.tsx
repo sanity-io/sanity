@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import {startCase} from 'lodash-es'
+import startCase from 'lodash-es/startCase.js'
 import {forwardRef, type Ref, useMemo, useState} from 'react'
 
 import {Button, type MenuButtonProps} from '../../../../../ui-components'

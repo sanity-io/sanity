@@ -30,7 +30,7 @@ export function getFieldGroupValidationLevel(
     const fieldPath = groupPath.concat(field.name)
 
     for (const v of validation) {
-      if (PathUtils.startsWith(v.path, fieldPath)) {
+      if (PathUtils.startsWith(fieldPath, v.path)) {
         if (v.level === 'error') {
           return 'error' // Early return - nothing can be higher priority
         }

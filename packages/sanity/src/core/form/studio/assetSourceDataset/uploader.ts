@@ -8,7 +8,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {uuid} from '@sanity/uuid'
-import {get} from 'lodash-es'
+import get from 'lodash-es/get.js'
 import {type Subscription} from 'rxjs'
 
 import {resolveUploader} from '../uploads/resolveUploader'
@@ -16,7 +16,7 @@ import {type CreateDatasetAssetSourceProps} from './createAssetSource'
 
 export {type SanityClient} from '@sanity/client'
 
-export class DatasetUploader implements AssetSourceUploader {
+class DatasetUploader implements AssetSourceUploader {
   private files: AssetSourceUploadFile[] = []
   private subscribers = new Set<AssetSourceUploadSubscriber>()
   private client: SanityClient

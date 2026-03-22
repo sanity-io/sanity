@@ -1,19 +1,15 @@
 import {type AssetSource} from '@sanity/types'
-import {Box, Card, type ThemeColorToneKey} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {Box, Card} from '@sanity/ui'
+import {useCallback, useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../core/changeIndicators/ChangeIndicator'
-import {PlaceholderText} from '../../../core/form/inputs/files/common/PlaceholderText'
-import {type FileInfo, FileTarget} from '../../../core/form/inputs/files/common/styles'
-import {UploadDestinationPicker} from '../../../core/form/inputs/files/common/UploadDestinationPicker'
+import {AssetSourceBrowser} from '../../../core/form/inputs/files/common/AssetSourceBrowser'
 import {UploadPlaceholder} from '../../../core/form/inputs/files/common/UploadPlaceholder'
 import {UploadProgress} from '../../../core/form/inputs/files/common/UploadProgress'
+import {UploadTargetCard} from '../../../core/form/inputs/files/common/uploadTarget/UploadTargetCard'
 import {UploadWarning} from '../../../core/form/inputs/files/common/UploadWarning'
-import {useTranslation} from '../../../core/i18n'
-import {Browser} from './Browser'
 import {InvalidVideoWarning} from './InvalidVideoWarning'
-import {CardOverlay, FlexContainer} from './styles'
-import {type VideoAssetProps} from './types'
+import {type VideoAssetInputProps} from './types'
 import {VideoPreview} from './VideoPreview'
 
 const ASSET_FIELD_PATH = ['asset']
@@ -23,42 +19,42 @@ const ASSET_FIELD_PATH = ['asset']
  * @param source - Source to check
  * @returns Whether or not the given source is a video source
  */
-function isVideoSource(source: any) {
-  return source?.asset?._ref?.startsWith('media-library:')
+function isVideoSource(source: unknown): source is {asset: {_ref: string}} {
+  if (typeof source !== 'object' || source === null || !('asset' in source)) {
+    return false
+  }
+  const asset = (source as {asset: unknown}).asset
+  if (typeof asset !== 'object' || asset === null || !('_ref' in asset)) {
+    return false
+  }
+  const ref = (asset as {_ref: unknown})._ref
+  return typeof ref === 'string' && ref.startsWith('media-library:')
 }
 
-export function VideoAsset(props: VideoAssetProps) {
+export function VideoAsset(props: VideoAssetInputProps) {
   const {
     assetSources,
     changed,
     clearField,
+    menuButtonRef,
     directUploads,
     elementProps,
-    hoveringFiles,
     isStale,
     isUploading,
     onCancelUpload,
     onClearUploadStatus,
+    onOpenSourceForUpload,
     onSelectAssets,
     onSelectFiles,
     onStale,
     path,
     readOnly,
-    resolveUploader,
     schemaType,
     setHoveringFiles,
     value,
   } = props
 
-  const {t} = useTranslation()
-
   const assetFieldPath = useMemo(() => path.concat(ASSET_FIELD_PATH), [path])
-
-  const [assetSourceDestination, setAssetSourceDestination] = useState<AssetSource | null>(null)
-  const [showDestinationSourcePicker, setShowDestinationSourcePicker] = useState<boolean>(false)
-  const [filesToUploadFromPaste, setFilesToUploadFromPaste] = useState<File[]>([])
-
-  const hasMultipleUploadSources = assetSources.filter((s) => Boolean(s.Uploader)).length > 1
 
   const handleFileTargetFocus = useCallback(
     (event: React.FocusEvent) => {
@@ -76,137 +72,23 @@ export function VideoAsset(props: VideoAssetProps) {
     [elementProps],
   )
 
-  const handleFilesOver = useCallback(
-    (fileInfo: FileInfo[]) => {
-      setHoveringFiles(fileInfo.filter((file) => file.kind !== 'string'))
-      let canUpload = true
-      const acceptedFiles = fileInfo.filter((file) => resolveUploader?.(schemaType, file))
-      const rejectedFilesCount = fileInfo.length - acceptedFiles.length
-
-      if (fileInfo.length > 0) {
-        if (rejectedFilesCount > 0 || directUploads === false) {
-          canUpload = false
-        }
-      }
-
-      if (hasMultipleUploadSources && canUpload) {
-        setShowDestinationSourcePicker(true)
-      }
-    },
-    [directUploads, hasMultipleUploadSources, resolveUploader, schemaType, setHoveringFiles],
-  )
-
-  const handleFilesOut = useCallback(() => {
-    setHoveringFiles([])
-    setShowDestinationSourcePicker(false)
-  }, [setHoveringFiles])
-
   const handleSelectFiles = useCallback(
-    (assetSource: AssetSource, files: globalThis.File[]) => {
+    (assetSource: AssetSource, files: File[]) => {
       if (directUploads && !readOnly) {
-        setHoveringFiles([])
         onSelectFiles(assetSource, files)
-      } else if (hoveringFiles.length > 0) {
-        handleFilesOut()
       }
     },
-    [
-      directUploads,
-      handleFilesOut,
-      hoveringFiles.length,
-      onSelectFiles,
-      readOnly,
-      setHoveringFiles,
-    ],
+    [directUploads, onSelectFiles, readOnly],
   )
 
-  const getVideoTone = useCallback(() => {
-    // Get the video tone
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))
-    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
-
-    if (hoveringFiles.length > 0) {
-      if (rejectedFilesCount > 0 || directUploads === false) {
-        return 'critical'
-      }
-    }
-
-    if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
-      return 'primary'
-    }
-    return value?._upload && value?.asset && readOnly ? 'transparent' : 'default'
-  }, [
-    directUploads,
-    hoveringFiles,
-    readOnly,
-    resolveUploader,
-    schemaType,
-    value?._upload,
-    value?.asset,
-  ])
+  const handleSelectFile = useCallback(
+    ({assetSource, file}: {assetSource: AssetSource; file: File}) => {
+      handleSelectFiles(assetSource, [file])
+    },
+    [handleSelectFiles],
+  )
 
   const hasValueOrUpload = Boolean(value?._upload || value?.asset)
-
-  const handleSetAssetSourceDestination = useCallback(
-    (assetSource: AssetSource | null) => {
-      setAssetSourceDestination(assetSource)
-      // If the destination menu is open from pasting files
-      // initiate the file selection after user has clicked the desired destination
-      if (assetSource && filesToUploadFromPaste.length > 0) {
-        setShowDestinationSourcePicker(false)
-        onSelectFiles(assetSource, filesToUploadFromPaste)
-        setFilesToUploadFromPaste([])
-        setAssetSourceDestination(null)
-      }
-    },
-    [filesToUploadFromPaste, onSelectFiles, setAssetSourceDestination],
-  )
-
-  const handleOnFiles = useCallback(
-    (files: globalThis.File[]) => {
-      const acceptedFiles = files.filter((file) => resolveUploader?.(schemaType, file))
-      const rejectedFilesCount = files.length - acceptedFiles.length
-
-      if (rejectedFilesCount > 0 || directUploads === false) {
-        return
-      }
-
-      if (files.length === 0) {
-        return
-      }
-      if (hasMultipleUploadSources) {
-        if (assetSourceDestination) {
-          onSelectFiles(assetSourceDestination, files)
-          setShowDestinationSourcePicker(false)
-          setAssetSourceDestination(null)
-          return
-        }
-        setShowDestinationSourcePicker(true)
-        setFilesToUploadFromPaste(files)
-      } else {
-        const firstAssetSourceWithUpload = assetSources.filter((s) => s.Uploader)[0]
-        if (firstAssetSourceWithUpload) {
-          onSelectFiles(firstAssetSourceWithUpload, files)
-        }
-        setShowDestinationSourcePicker(false)
-        setAssetSourceDestination(null)
-      }
-    },
-    [
-      assetSourceDestination,
-      assetSources,
-      directUploads,
-      hasMultipleUploadSources,
-      onSelectFiles,
-      resolveUploader,
-      schemaType,
-    ],
-  )
-
-  const handleUploadDestinationPickerClose = useCallback(() => {
-    setShowDestinationSourcePicker(false)
-    setAssetSourceDestination(null)
-  }, [])
 
   if (value && typeof value.asset !== 'undefined' && !value?._upload && !isVideoSource(value)) {
     return <InvalidVideoWarning onClearValue={clearField} />
@@ -228,57 +110,61 @@ export function VideoAsset(props: VideoAssetProps) {
             onStale={onStale}
           />
         ) : (
-          <FileTarget
+          <UploadTargetCard
             {...elementProps}
+            $border={hasValueOrUpload}
+            isReadOnly={readOnly}
             onFocus={handleFileTargetFocus}
-            tabIndex={0}
-            disabled={readOnly || directUploads === false}
-            onFiles={handleOnFiles}
-            onFilesOver={handleFilesOver}
-            onFilesOut={handleFilesOut}
-            tone={getVideoTone()}
-            $border={hasValueOrUpload || hoveringFiles.length > 0}
-            style={{padding: 1}}
-            sizing="border"
+            onOpenSourceForUpload={onOpenSourceForUpload}
+            onSelectFile={handleSelectFile}
+            onSetHoveringFiles={setHoveringFiles}
             radius={2}
+            assetSources={assetSources}
+            sizing="border"
+            style={{padding: 1}}
+            tabIndex={0}
+            types={[schemaType]}
           >
             <div style={{position: 'relative'}}>
-              {showDestinationSourcePicker && (
-                <UploadDestinationPicker
-                  assetSources={assetSources}
-                  onSelectAssetSource={handleSetAssetSourceDestination}
-                  onClose={handleUploadDestinationPickerClose}
-                  text={t(
-                    'inputs.files.common.placeholder.select-asset-source-upload-destination',
-                    {
-                      context: 'file',
-                    },
-                  )}
-                />
-              )}
               {!value?.asset && (
                 <FileUploadPlaceHolder {...props} onSelectFiles={handleSelectFiles} />
               )}
-              {value?.asset && hoveringFiles.length > 0 ? (
-                <AssetPlaceholder
-                  {...props}
-                  tone={getVideoTone()}
-                  onSelectFiles={handleSelectFiles}
-                />
-              ) : null}
               {!value?._upload && value?.asset && (
                 <VideoPreview {...props} onSelectAssets={onSelectAssets} />
               )}
             </div>
-          </FileTarget>
+          </UploadTargetCard>
         )}
       </ChangeIndicator>
     </>
   )
 }
 
-function FileUploadPlaceHolder(props: VideoAssetProps) {
-  const {assetSources, directUploads, hoveringFiles, onSelectFiles, readOnly, schemaType} = props
+function FileUploadPlaceHolder(props: VideoAssetInputProps) {
+  const {
+    assetSources,
+    directUploads,
+    hoveringFiles,
+    onOpenSourceForUpload,
+    onSelectFiles,
+    onSelectAssetSourceForBrowse,
+    readOnly,
+    schemaType,
+    setIsBrowseMenuOpen,
+    setSelectedAssetSource,
+  } = props
+
+  const browseElement = (
+    <AssetSourceBrowser
+      assetSources={assetSources}
+      readOnly={readOnly}
+      schemaType={schemaType}
+      onSelectAssetSource={(assetSource) => {
+        setIsBrowseMenuOpen(false)
+        ;(onSelectAssetSourceForBrowse ?? setSelectedAssetSource)(assetSource)
+      }}
+    />
+  )
 
   return (
     <>
@@ -296,9 +182,10 @@ function FileUploadPlaceHolder(props: VideoAssetProps) {
       >
         <UploadPlaceholder
           assetSources={assetSources}
-          browse={<Browser {...props} />}
+          browse={browseElement}
           directUploads={directUploads}
           hoveringFiles={hoveringFiles}
+          onOpenSourceForUpload={onOpenSourceForUpload}
           onUpload={onSelectFiles}
           readOnly={readOnly}
           schemaType={schemaType}
@@ -306,27 +193,5 @@ function FileUploadPlaceHolder(props: VideoAssetProps) {
         />
       </Card>
     </>
-  )
-}
-
-function AssetPlaceholder(props: VideoAssetProps & {tone: ThemeColorToneKey}) {
-  const {directUploads, schemaType, readOnly, resolveUploader, hoveringFiles, tone} = props
-
-  const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))
-  const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
-
-  return (
-    <CardOverlay radius={2} tone={tone}>
-      <FlexContainer align="center" justify="center" gap={2} flex={1}>
-        <PlaceholderText
-          directUploads={directUploads}
-          readOnly={readOnly}
-          hoveringFiles={hoveringFiles}
-          acceptedFiles={acceptedFiles}
-          rejectedFilesCount={rejectedFilesCount}
-          type="file"
-        />
-      </FlexContainer>
-    </CardOverlay>
   )
 }

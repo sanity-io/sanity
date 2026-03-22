@@ -118,7 +118,6 @@ npx sanity schema deploy
 
    ```ts
    defineDocumentFunction({
-     type: 'sanity.function.document',
      src: './functions/auto-changelog',
      memory: 2,
      timeout: 30,

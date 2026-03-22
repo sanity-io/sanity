@@ -1,7 +1,8 @@
 import {type SanityClient} from '@sanity/client'
 import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
-import {memoize, noop} from 'lodash-es'
+import memoize from 'lodash-es/memoize.js'
+import noop from 'lodash-es/noop.js'
 import {type ReactNode, Suspense, use, useState} from 'react'
 import {
   ChangeConnectorRoot,
@@ -24,6 +25,7 @@ import {route} from '../../../../src/router'
 import {RouterProvider} from '../../../../src/router/RouterProvider'
 import {Pane, PaneContent, PaneLayout} from '../../../../src/structure/components/pane'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
+import {DivergencesTestProvider} from '../../../../test/testUtils/DivergencesTestProvider'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 
 interface TestWrapperProps {
@@ -87,7 +89,7 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
   )
 }
 
-export const TestWrapperContents = (
+const TestWrapperContents = (
   props: TestWrapperProps & {
     client: SanityClient
   },
@@ -123,7 +125,9 @@ export const TestWrapperContents = (
                               <PaneLayout height="fill">
                                 <Pane id="test-pane">
                                   <PaneContent>
-                                    <Card padding={3}>{children}</Card>
+                                    <DivergencesTestProvider>
+                                      <Card padding={3}>{children}</Card>
+                                    </DivergencesTestProvider>
                                   </PaneContent>
                                 </Pane>
                               </PaneLayout>

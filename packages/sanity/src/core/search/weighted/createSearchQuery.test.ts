@@ -270,6 +270,26 @@ describe('createSearchQuery', () => {
       expect(query).toEqual(result)
     })
 
+    it('should generate null sorting override when nulls is specified', () => {
+      const {query} = createSearchQuery(
+        {
+          query: 'test',
+          types: [testType],
+        },
+        {
+          sort: [
+            {
+              direction: 'desc',
+              field: 'exampleField',
+              nulls: 'last',
+            },
+          ],
+        },
+      )
+
+      expect(query).toContain('order(select(defined(exampleField) => 0, 1),exampleField desc)')
+    })
+
     it('should order results by _id ASC if no sort field and direction is configured', () => {
       const {query} = createSearchQuery({
         query: 'test',

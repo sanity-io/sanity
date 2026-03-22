@@ -1,8 +1,8 @@
 import {useCallback, useMemo} from 'react'
 
-import {useStudioAppIdStore} from '../create/studio-app/useStudioAppIdStore'
 import {useProjectOrganizationId} from '../store/_legacy/project/useProjectOrganizationId'
 import {useRenderingContext} from '../store/renderingContext/useRenderingContext'
+import {useStudioAppIdStore} from '../store/studio-app/useStudioAppIdStore'
 import {useActiveWorkspace} from '../studio'
 import {useEnvAwareSanityWebsiteUrl} from '../studio/hooks/useEnvAwareSanityWebsiteUrl'
 import {getDashboardPath} from '../util/dashboardPath'
@@ -16,6 +16,7 @@ type StudioUrlModifier = {coreUi?: StudioUrlBuilder; studio?: StudioUrlBuilder} 
 interface UseStudioUrlReturnType {
   studioUrl: string
   buildStudioUrl: (modifiers: StudioUrlModifier) => string
+  buildIntentUrl: (intentLink: string) => string
 }
 
 /**
@@ -54,6 +55,8 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturnType => {
     sanityWebsiteUrl,
   ])
 
+  const basePath = activeWorkspace.basePath
+
   const buildStudioUrl = useCallback(
     ({coreUi, studio}: StudioUrlModifier) => {
       const urlModifier = isCoreUi ? coreUi : studio
@@ -63,7 +66,18 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturnType => {
     [isCoreUi, studioUrl],
   )
 
+  const buildIntentUrl = useCallback(
+    (intentLink: string) => {
+      if (isCoreUi && basePath !== '/') {
+        return `${studioUrl}${intentLink.slice(basePath.length)}`
+      }
+      return `${studioUrl}${intentLink}`
+    },
+    [basePath, isCoreUi, studioUrl],
+  )
+
   return {
+    buildIntentUrl,
     buildStudioUrl,
     studioUrl,
   }

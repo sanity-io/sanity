@@ -13,13 +13,11 @@ import {type AccessRequest} from './useRoleRequestsStatus'
 
 const MAX_NOTE_LENGTH = 150
 
-/** @internal */
-export const DialogBody = styled(Box)`
+const DialogBody = styled(Box)`
   box-sizing: border-box;
 `
 
-/** @internal */
-export const LoadingContainer = styled(Flex).attrs({
+const LoadingContainer = styled(Flex).attrs({
   align: 'center',
   direction: 'column',
   justify: 'center',

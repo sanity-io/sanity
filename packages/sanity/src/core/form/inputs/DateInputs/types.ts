@@ -3,7 +3,7 @@ export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (
   | {isValid: false; error?: string}
 )
 
-export type TimeZoneInformation = {
+type TimeZoneInformation = {
   abbreviation: string
   alternativeName: string
   mainCities: string

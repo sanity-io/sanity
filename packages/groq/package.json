@@ -1,6 +1,6 @@
 {
   "name": "groq",
-  "version": "5.12.0",
+  "version": "5.17.1",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "keywords": [
     "cms",
@@ -41,7 +41,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "pkg-utils build --strict --check --clean",
+    "build": "pkg-utils build --strict --check --clean && rimraf lib/groq.d.cts",
     "check:types": "(cd ../.. && tsgo --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
@@ -58,8 +58,13 @@
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
     "eslint": "catalog:",
-    "rimraf": "^5.0.10"
+    "rimraf": "catalog:"
   },
+  "browserslist": [
+    "node >=20.19",
+    "node >=22.12",
+    "baseline 2024"
+  ],
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
   }

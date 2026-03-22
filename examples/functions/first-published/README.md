@@ -122,7 +122,6 @@ Once you've tested your function locally and are satisfied with its behavior, yo
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'first-published',
          src: './functions/first-published',
          memory: 1,

@@ -2,7 +2,7 @@ import {type RestEndpointMethodTypes} from '@octokit/rest'
 import {type Commit} from 'conventional-commits-parser'
 import {type CoAuthor} from 'description-to-co-authors'
 
-import {type PortableTextBlock} from './utils/portabletext-markdown/types'
+import {type NormalizedMarkdownBlock} from './utils/portabletext-markdown/markdownToPortableText'
 
 export type KnownEnvVar =
   | 'RELEASE_NOTES_SANITY_DATASET'
@@ -23,20 +23,20 @@ export type PullRequestInfo = {
 export type StudioChangelogEntry = {
   _key: string
   _type: string
-  author: {
-    imageUrl: string
-    type: string
+  author?: {
+    imageUrl?: string
+    type?: string
     url: string
     username: string
   }
   coAuthors: CoAuthor[]
-  authorAssociation: string
+  authorAssociation?: string
   exclude: boolean
-  hash: string
-  pr: number
-  contents: PortableTextBlock[]
-  scope: number
+  hash?: string
+  pr?: number
+  contents: NormalizedMarkdownBlock[]
+  scope?: string
   subject: string
   header: string
-  type: string
+  type?: string
 }

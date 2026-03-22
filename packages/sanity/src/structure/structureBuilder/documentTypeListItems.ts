@@ -1,6 +1,6 @@
 import {StackCompactIcon, StackIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
-import {startCase} from 'lodash-es'
+import startCase from 'lodash-es/startCase.js'
 
 import {structureLocaleNamespace} from '../i18n'
 import {type DocumentListBuilder} from './DocumentList'
@@ -27,7 +27,7 @@ function isList(collection: Collection): collection is List {
   return collection.type === 'list'
 }
 
-export function getDocumentTypes({schema}: StructureContext): string[] {
+function getDocumentTypes({schema}: StructureContext): string[] {
   return schema
     .getTypeNames()
     .filter((n) => {

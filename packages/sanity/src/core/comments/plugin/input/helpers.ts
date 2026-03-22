@@ -3,7 +3,7 @@ import {useEffect, useMemo, useState} from 'react'
 /**
  * A function that creates a DOMRect from an array of elements.
  */
-export function createDomRectFromElements(elements: Element[]): DOMRect | null {
+function createDomRectFromElements(elements: Element[]): DOMRect | null {
   if (!elements || !elements.length) return null
 
   const rects = elements.map((el) => el.getBoundingClientRect())
@@ -106,8 +106,4 @@ export function getSelectionBoundingRect(): DOMRect | null {
   const rect = range?.getBoundingClientRect()
 
   return rect || null
-}
-
-export function isRangeInvalid(): boolean {
-  return false
 }

@@ -276,6 +276,7 @@ describe('useScheduledDraftMenuActions', () => {
     })
 
     it('should show error toast when operation fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {})
       const error = new Error('Pause failed')
       mockOperations.pauseScheduledDraft.mockRejectedValueOnce(error)
 
@@ -295,6 +296,7 @@ describe('useScheduledDraftMenuActions', () => {
           }),
         )
       })
+      expect(console.error).toHaveBeenCalledWith('Failed to pause scheduled draft:', error)
     })
   })
 

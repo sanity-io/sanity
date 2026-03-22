@@ -20,7 +20,7 @@ interface ValidationState {
   hasWarning: boolean
 }
 
-export function getValidationState(
+function getValidationState(
   validationMarkers: ValidationMarker[] = EMPTY_VALIDATION_STATUS.validation,
 ): ValidationState {
   const hasError = validationMarkers.filter(isValidationErrorMarker).length > 0

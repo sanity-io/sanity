@@ -39,7 +39,7 @@ function diffApply(current: string, patches: Patch[]) {
   })[0]
 }
 
-export const CHILD_SYMBOL = '\uF0D0'
+const CHILD_SYMBOL = '\uF0D0'
 function toPlainTextWithChildSeparators(inputBlock: PortableTextTextBlock) {
   return inputBlock.children
     .map((child) => (isPortableTextSpan(child) ? child.text.replaceAll(CHILD_SYMBOL, ' ') : ''))
@@ -174,17 +174,12 @@ export function buildRangeDecorationSelectionsFromComments(
   return decorators
 }
 
-export interface BuildCommentRangeDecorationsProps {
-  value: PortableTextBlock[] | undefined
-  comment: CommentDocument
-}
-
 interface ValidateTextSelectionCommentProps {
   comment: CommentDocument
   value: PortableTextBlock[]
 }
 
-export function validateTextSelectionComment(props: ValidateTextSelectionCommentProps): boolean {
+function validateTextSelectionComment(props: ValidateTextSelectionCommentProps): boolean {
   const {comment, value} = props
   if (!isTextSelectionComment(comment)) return false
 

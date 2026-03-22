@@ -1,0 +1,29 @@
+name: Bundle Stats
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  bundle-stats:
+    continue-on-error: true
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - uses: rexxars/bundle-stats@8a203ebfe0d207cab6fa587dbf912815e11c7a7a # v1
+        with:
+          packages: packages/sanity
+          build-command: pnpm build
+          only: "."
+          compare-npm: latest

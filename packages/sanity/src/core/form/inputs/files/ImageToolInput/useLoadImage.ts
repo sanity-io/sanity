@@ -8,7 +8,7 @@ function isBlob(src: string) {
   return src.startsWith('blob:')
 }
 
-export function loadImage(src: string): Observable<HTMLImageElement> {
+function loadImage(src: string): Observable<HTMLImageElement> {
   return new Observable((subscriber) => {
     const image = document.createElement('img')
 

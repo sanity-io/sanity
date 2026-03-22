@@ -1,5 +1,5 @@
 import {type PathSegment} from '@sanity/types'
-import {flatten} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
 
 import {prefixPath} from './patch'
 import {type FormPatch, type PatchArg} from './types'

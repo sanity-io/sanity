@@ -12,7 +12,7 @@ export function nearestIndexOf<T>(array: T[], startIdx: number, searchElement: T
  * It's *NOT* inclusive: If the predicate matches the element at the startIdx, startIdx will be returned
  * It prefers matches in the first half. If there's a tie it will pick the first element that comes before
  */
-export function nearestIndex<T>(
+function nearestIndex<T>(
   array: T[],
   startIdx: number,
   predicate: (element: T, index: number) => boolean,

@@ -1,7 +1,7 @@
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField} from '@sanity/types'
 
-export const mentionObject = defineField({
+const mentionObject = defineField({
   name: 'mention',
   type: 'object',
   fields: [

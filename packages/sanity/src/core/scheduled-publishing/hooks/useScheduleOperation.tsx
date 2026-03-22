@@ -55,7 +55,7 @@ function pluralize(word: string, count: number) {
 }
 // Proxy that generates type safe CustomEvents.
 // We infer our CustomEvent's `detail` using `UnpackCustomEventPayload`
-export const scheduleCustomEvent = <
+const scheduleCustomEvent = <
   T extends (typeof ScheduleEvents)[keyof typeof ScheduleEvents],
   D extends UnpackCustomEventPayload<WindowEventMap[T]>,
 >(

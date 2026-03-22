@@ -7,7 +7,7 @@ import {
   useVirtualizer,
   type VirtualizerOptions,
 } from '@tanstack/react-virtual'
-import {useCallback, useRef} from 'react'
+import {useCallback, useLayoutEffect, useRef, useState} from 'react'
 
 import {ArrayOfObjectsItem} from '../../../../members'
 import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
@@ -72,6 +72,26 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
   const {scrollElement, containerElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)
 
+  const [resolvedScrollElement, setResolvedScrollElement] = useState<HTMLElement | null>(
+    scrollElement,
+  )
+
+  useLayoutEffect(() => {
+    const el = parentRef.current
+    if (!scrollElement || !el || scrollElement.contains(el)) {
+      setResolvedScrollElement(scrollElement)
+      return
+    }
+
+    let ancestor: HTMLElement | null = el.parentElement
+    while (ancestor) {
+      if (ancestor.scrollHeight > ancestor.clientHeight) break
+      ancestor = ancestor.parentElement
+    }
+
+    setResolvedScrollElement(ancestor || scrollElement)
+  }, [scrollElement, members.length])
+
   /**
    * This is a custom range extractor that adds the activeDragItemIndex and focusedItem to the range
    * so that the item is always rendered and it can perform it's own actions
@@ -116,6 +136,28 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
 
       const scroll = instance.scrollElement
 
+      // When rendered inside a portal, the context's containerElement is not
+      // inside the resolved scroll ancestor.
+      // Fall back to purely visual positions for the offset calculation.
+      if (containerElement.current && !scroll.contains(containerElement.current)) {
+        const handleScroll = (evt?: Event) => {
+          const scrollTop = scroll.getBoundingClientRect().top
+          const parentTop = parentRef.current?.getBoundingClientRect().top ?? 0
+          callback(Math.floor(scrollTop - parentTop), Boolean(evt))
+        }
+
+        handleScroll()
+
+        scroll.addEventListener('scroll', handleScroll, {
+          capture: false,
+          passive: true,
+        })
+
+        return () => {
+          scroll.removeEventListener('scroll', handleScroll)
+        }
+      }
+
       const handleScroll = (evt?: Event) => {
         const containerElementTop = containerElement.current?.getBoundingClientRect().top ?? 0
         const parentElementTop = parentRef.current?.getBoundingClientRect().top ?? 0
@@ -149,7 +191,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
   const virtualizer = useVirtualizer({
     count: members.length,
     estimateSize,
-    getScrollElement: useCallback(() => scrollElement, [scrollElement]),
+    getScrollElement: useCallback(() => resolvedScrollElement, [resolvedScrollElement]),
     observeElementOffset,
     rangeExtractor,
     getItemKey: useCallback((index: number) => memberKeys[index], [memberKeys]),

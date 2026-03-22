@@ -154,7 +154,12 @@ const defaultOptions: InitOptions = {
   // We always use our "backend" for loading translations, allowing us to handle i18n resources
   // in a single place with a single approach. This means we shouldn't need to wait for the init,
   // as any missing translations will be loaded async (through react suspense).
-  initImmediate: true,
+  initAsync: true,
+
+  // Suppress ads in console
+  // for context see https://github.com/i18next/i18next/issues/2390
+  // Open source funding is tricky, but this is NOT the way
+  showSupportNotice: false,
 
   // Because we use i18next-react, we do not need to escale values
   interpolation: {

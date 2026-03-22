@@ -59,5 +59,3 @@ export function MultipleAnnotationsStory() {
     </TestWrapper>
   )
 }
-
-export default MultipleAnnotationsStory

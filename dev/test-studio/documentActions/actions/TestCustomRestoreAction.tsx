@@ -1,5 +1,5 @@
 import {RocketIcon} from '@sanity/icons'
-import {memoize} from 'lodash-es'
+import memoize from 'lodash-es/memoize.js'
 import {type DocumentActionComponent} from 'sanity'
 
 export const createTestCustomRestoreAction: (

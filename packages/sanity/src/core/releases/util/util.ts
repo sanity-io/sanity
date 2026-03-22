@@ -38,10 +38,6 @@ export function getDocumentIsInPerspective(
   return releaseId === perspective
 }
 
-export function isDraftOrPublished(versionName: string): boolean {
-  return versionName === 'drafts' || versionName === 'published'
-}
-
 /** @internal */
 export function getPublishDateFromRelease(release: ReleaseDocument): Date | null {
   const dateString = release.publishedAt || release.publishAt || release.metadata.intendedPublishAt

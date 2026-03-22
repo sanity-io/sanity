@@ -81,5 +81,3 @@ export function ObjectBlockStory() {
     </TestWrapper>
   )
 }
-
-export default ObjectBlockStory

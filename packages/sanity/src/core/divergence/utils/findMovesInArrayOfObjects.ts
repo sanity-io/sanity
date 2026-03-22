@@ -1,6 +1,6 @@
 import {lcs_dp as lcsDp} from '@algorithm.ts/lcs'
 import {type KeyedObject} from '@sanity/types'
-import {intersection} from 'lodash-es'
+import intersection from 'lodash-es/intersection.js'
 import {EMPTY, filter, from, map, type Observable, of, shareReplay, switchMap, toArray} from 'rxjs'
 
 import {
@@ -91,6 +91,7 @@ const findIntersectingKeysUsingSet: FindIntersectingKeys = (a, b) => {
   const aKeys = new Set(a.map(({_key}) => _key))
   const bKeys = new Set(b.map(({_key}) => _key))
 
+  // @ts-expect-error - `intersection()` newer than target envs, but is feature-tested (array fallback)
   const intersectingKeys = aKeys.intersection(bKeys)
 
   const [aIntersectingKeys, bIntersectingKeys] = [a, b].map((subject) =>

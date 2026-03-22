@@ -2,25 +2,23 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {isIndexSegment, isKeySegment, type Path, type PathSegment} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
-import {flatten, isEqual, last} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
+import isEqual from 'lodash-es/isEqual.js'
+import last from 'lodash-es/last.js'
 import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {CopyPasteContext} from 'sanity/_singletons'
 
-import {
-  type FormDocumentValue,
-  type FormPatch,
-  getPublishedId,
-  getValueAtPath,
-  insert,
-  PatchEvent,
-  set,
-  setIfMissing,
-  useClient,
-  useCurrentUser,
-  useSchema,
-  useTranslation,
-} from '../..'
+import {getValueAtPath} from '../../field/paths/helpers'
+import {insert, set, setIfMissing} from '../../form/patch/patch'
+import {PatchEvent} from '../../form/patch/PatchEvent'
+import {type FormPatch} from '../../form/patch/types'
+import {type FormDocumentValue} from '../../form/types/formDocumentValue'
+import {useClient} from '../../hooks/useClient'
+import {useSchema} from '../../hooks/useSchema'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../store/user/hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {getPublishedId} from '../../util/draftUtils'
 import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
 import {transferValue, type TransferValueOptions} from './transferValue'

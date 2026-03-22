@@ -3,7 +3,7 @@
 import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, Flex, Inline, Layer, Text, useToast} from '@sanity/ui'
-import {sortBy} from 'lodash-es'
+import sortBy from 'lodash-es/sortBy.js'
 import {
   type ComponentType,
   type ForwardedRef,
@@ -57,7 +57,7 @@ function getUploadCandidates(
     .filter((member) => member.uploader) as ResolvedUploader[]
 }
 
-export function uploadTarget<Props>(
+function uploadTarget<Props>(
   Component: ComponentType<Props>,
 ): ForwardRefExoticComponent<
   PropsWithoutRef<UploadTargetProps & Props> & RefAttributes<HTMLElement>
@@ -162,7 +162,7 @@ const StyledCard = styled(Card)`
 
 export const UploadTargetCard = withFocusRing(uploadTarget(StyledCard))
 
-export const Overlay = styled(Layer)`
+const Overlay = styled(Layer)`
   position: absolute;
   display: flex;
   flex-direction: column;

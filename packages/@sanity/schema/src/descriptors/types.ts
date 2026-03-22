@@ -6,7 +6,7 @@ import {
 } from '@sanity/descriptors'
 
 export type RegistryType = 'sanity.schema.registry'
-export type EncodedRegistry = EncodedSet<'sanity.schema.registry'>
+type EncodedRegistry = EncodedSet<'sanity.schema.registry'>
 export type EncodedNamedType = Encoded<'sanity.schema.namedType', NamedType>
 
 export type NamedType = {
@@ -39,7 +39,7 @@ export interface CommonTypeDef extends EncodableObject {
 }
 
 /** In some scenarios we need to encode special information. */
-export type Marker =
+type Marker =
   | FunctionMarker
   | UndefinedMarker
   | UnknownMarker
@@ -134,6 +134,7 @@ export type ObjectOrdering = {
 export type ObjectOrderingBy = {
   field: string
   direction: 'asc' | 'desc'
+  nulls?: 'first' | 'last'
 }
 
 export interface ReferenceTypeDef extends SubtypeDef {

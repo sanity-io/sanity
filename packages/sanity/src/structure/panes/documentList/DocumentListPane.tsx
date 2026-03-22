@@ -31,7 +31,7 @@ import {useDocumentList} from './useDocumentList'
  */
 export type DocumentListPaneProps = BaseStructureToolPaneProps<'documentList'> & {
   sortOrder?: SortOrder
-  layout?: Exclude<GeneralPreviewLayoutKey, 'sheetList'>
+  layout?: GeneralPreviewLayoutKey
 }
 
 const rotate = keyframes`

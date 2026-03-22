@@ -14,7 +14,7 @@ export const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 
-export function rootStyle({theme}: {theme: Theme}) {
+function rootStyle({theme}: {theme: Theme}) {
   const {color, radius} = theme.sanity
 
   return css`

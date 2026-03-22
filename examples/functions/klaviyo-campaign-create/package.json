@@ -3,8 +3,8 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@portabletext/to-html": "^5.0.1",
-    "@sanity/client": "^7.15.0",
+    "@portabletext/to-html": "^5.0.2",
+    "@sanity/client": "^7.17.0",
     "@sanity/functions": "^1.0.3"
   },
   "blueprintResourceItem": {

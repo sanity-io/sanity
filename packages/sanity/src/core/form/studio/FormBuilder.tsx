@@ -37,6 +37,7 @@ import {
   type ObjectInputProps,
   type RenderPreviewCallbackProps,
 } from '../types'
+import {pathToAnchorIdent} from '../utils/pathToAnchorIdent'
 import {DialogStackProvider} from './contexts/DialogStackProvider'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
@@ -60,6 +61,8 @@ export interface FormBuilderProps extends Omit<
   __internal_fieldActions?: DocumentFieldAction[]
   /** @internal Considered internal – do not use. */
   __internal_patchChannel: PatchChannel
+  /** @internal Considered internal – do not use. */
+  __internal_inspectOpen?: boolean
 
   autoFocus?: boolean
   changesOpen?: boolean
@@ -92,6 +95,7 @@ export function FormBuilder(props: FormBuilderProps) {
   const {
     __internal_fieldActions: fieldActions,
     __internal_patchChannel: patchChannel,
+    __internal_inspectOpen: inspectOpen,
     autoFocus,
     changesOpen,
     collapsedFieldSets,
@@ -223,6 +227,9 @@ export function FormBuilder(props: FormBuilderProps) {
         'onBlur': handleBlur,
         'onFocus': handleFocus,
         'aria-describedby': undefined, // Root input should not have any aria-describedby
+        'style': {
+          anchorName: pathToAnchorIdent('input', [id]),
+        },
       },
       focused,
       groups,
@@ -293,6 +300,7 @@ export function FormBuilder(props: FormBuilderProps) {
     <FormProvider
       __internal_fieldActions={fieldActions}
       __internal_patchChannel={patchChannel}
+      __internal_inspectOpen={inspectOpen}
       autoFocus={autoFocus}
       changesOpen={changesOpen}
       collapsedFieldSets={collapsedFieldSets}

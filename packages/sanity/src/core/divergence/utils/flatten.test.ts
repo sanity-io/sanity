@@ -22,9 +22,7 @@ it('should flatten simple objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -42,9 +40,7 @@ it('should flatten simple objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "beta",
             },
           ],
@@ -60,15 +56,11 @@ it('should flatten simple objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -84,15 +76,11 @@ it('should flatten simple objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "y",
-              },
+              "segment": "y",
               "type": "string",
             },
           ],
@@ -130,9 +118,7 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -158,9 +144,7 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "beta",
             },
           ],
@@ -176,15 +160,11 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -207,15 +187,11 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "b",
-              },
+              "segment": "b",
               "type": "gamma",
             },
           ],
@@ -232,21 +208,15 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "b",
-              },
+              "segment": "b",
               "type": "gamma",
             },
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -267,21 +237,15 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "b",
-              },
+              "segment": "b",
               "type": "gamma",
             },
             {
-              "segment": {
-                "_key": "c",
-              },
+              "segment": "c",
               "type": "array",
             },
           ],
@@ -299,21 +263,15 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "b",
-              },
+              "segment": "b",
               "type": "gamma",
             },
             {
-              "segment": {
-                "_key": "c",
-              },
+              "segment": "c",
               "type": "array",
             },
             {
@@ -335,21 +293,15 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "b",
-              },
+              "segment": "b",
               "type": "gamma",
             },
             {
-              "segment": {
-                "_key": "c",
-              },
+              "segment": "c",
               "type": "array",
             },
             {
@@ -371,21 +323,15 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "b",
-              },
+              "segment": "b",
               "type": "gamma",
             },
             {
-              "segment": {
-                "_key": "c",
-              },
+              "segment": "c",
               "type": "array",
             },
             {
@@ -405,15 +351,11 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "d",
-              },
+              "segment": "d",
               "type": "string",
             },
           ],
@@ -431,9 +373,7 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "delta",
             },
           ],
@@ -449,15 +389,11 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "delta",
             },
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -473,15 +409,11 @@ it('should flatten complex objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "delta",
             },
             {
-              "segment": {
-                "_key": "y",
-              },
+              "segment": "y",
               "type": "string",
             },
           ],
@@ -605,9 +537,7 @@ it('should flatten arrays of objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "alpha",
             },
           ],
@@ -625,15 +555,11 @@ it('should flatten arrays of objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "_key",
-              },
+              "segment": "_key",
               "type": "string",
             },
           ],
@@ -651,15 +577,11 @@ it('should flatten arrays of objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -680,15 +602,11 @@ it('should flatten arrays of objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "beta",
             },
           ],
@@ -707,21 +625,15 @@ it('should flatten arrays of objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -740,21 +652,15 @@ it('should flatten arrays of objects', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "y",
-              },
+              "segment": "y",
               "type": "string",
             },
           ],
@@ -842,9 +748,7 @@ it('should flatten complex arrays', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "d",
-              },
+              "segment": "d",
               "type": "alpha",
             },
           ],
@@ -862,15 +766,11 @@ it('should flatten complex arrays', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "d",
-              },
+              "segment": "d",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "_key",
-              },
+              "segment": "_key",
               "type": "string",
             },
           ],
@@ -888,15 +788,11 @@ it('should flatten complex arrays', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "d",
-              },
+              "segment": "d",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -914,15 +810,11 @@ it('should flatten complex arrays', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "d",
-              },
+              "segment": "d",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "d",
-              },
+              "segment": "d",
               "type": "string",
             },
           ],
@@ -942,15 +834,11 @@ it('should flatten complex arrays', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "d",
-              },
+              "segment": "d",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "f",
-              },
+              "segment": "f",
               "type": "array",
             },
           ],
@@ -969,15 +857,11 @@ it('should flatten complex arrays', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "d",
-              },
+              "segment": "d",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "f",
-              },
+              "segment": "f",
               "type": "array",
             },
             {
@@ -1044,15 +928,11 @@ it('skips unkeyed objects in arrays', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "_key",
-              },
+              "segment": "_key",
               "type": "string",
             },
           ],
@@ -1070,15 +950,11 @@ it('skips unkeyed objects in arrays', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -1121,15 +997,11 @@ it('skips objects and arrays when operating in compact mode', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -1146,21 +1018,15 @@ it('skips objects and arrays when operating in compact mode', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "b",
-              },
+              "segment": "b",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -1178,21 +1044,15 @@ it('skips objects and arrays when operating in compact mode', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "b",
-              },
+              "segment": "b",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "c",
-              },
+              "segment": "c",
               "type": "array",
             },
             {
@@ -1214,21 +1074,15 @@ it('skips objects and arrays when operating in compact mode', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "b",
-              },
+              "segment": "b",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "c",
-              },
+              "segment": "c",
               "type": "array",
             },
             {
@@ -1250,21 +1104,15 @@ it('skips objects and arrays when operating in compact mode', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "b",
-              },
+              "segment": "b",
               "type": "beta",
             },
             {
-              "segment": {
-                "_key": "c",
-              },
+              "segment": "c",
               "type": "array",
             },
             {
@@ -1284,15 +1132,11 @@ it('skips objects and arrays when operating in compact mode', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "a",
-              },
+              "segment": "a",
               "type": "alpha",
             },
             {
-              "segment": {
-                "_key": "d",
-              },
+              "segment": "d",
               "type": "string",
             },
           ],
@@ -1308,15 +1152,11 @@ it('skips objects and arrays when operating in compact mode', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "gamma",
             },
             {
-              "segment": {
-                "_key": "_type",
-              },
+              "segment": "_type",
               "type": "string",
             },
           ],
@@ -1332,15 +1172,11 @@ it('skips objects and arrays when operating in compact mode', () => {
           ],
           "flatPathArrayWithTypes": [
             {
-              "segment": {
-                "_key": "x",
-              },
+              "segment": "x",
               "type": "gamma",
             },
             {
-              "segment": {
-                "_key": "y",
-              },
+              "segment": "y",
               "type": "string",
             },
           ],

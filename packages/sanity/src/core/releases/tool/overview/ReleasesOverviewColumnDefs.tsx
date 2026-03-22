@@ -37,7 +37,7 @@ export const releasesOverviewColumnDefs: (
         id: 'metadata.title',
         sorting: true,
         width: null,
-        style: {minWidth: '50%', maxWidth: '50%'},
+        style: {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
         header: (props) => (
           <Flex
             {...props.headerProps}

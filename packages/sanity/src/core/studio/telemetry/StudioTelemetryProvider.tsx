@@ -24,10 +24,6 @@ import {type TelemetryContext} from './types'
 
 const sessionId = createSessionId()
 
-const DEBUG_TELEMETRY = !!(
-  typeof process !== 'undefined' && process.env?.SANITY_STUDIO_DEBUG_TELEMETRY
-)
-
 /** Telemetry only runs on client */
 const isClient = typeof window !== 'undefined'
 
@@ -95,7 +91,9 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   }, [orgId, activeTool, workspace.name, workspace.projectId, workspace.dataset])
 
   const storeOptions = useMemo((): CreateBatchedStoreOptions => {
-    if (DEBUG_TELEMETRY) {
+    const debugTelemetry = import.meta && import.meta.env?.SANITY_STUDIO_DEBUG_TELEMETRY === 'true'
+
+    if (debugTelemetry) {
       return debugLoggingStore
     }
     return {

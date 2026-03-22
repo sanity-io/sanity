@@ -1,5 +1,4 @@
 export * from './button'
-export * from './conditionalWrapper'
 export * from './confirmPopover'
 export * from './dialog'
 export * from './errorBoundary'

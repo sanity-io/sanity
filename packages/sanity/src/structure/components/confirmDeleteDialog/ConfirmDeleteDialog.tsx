@@ -9,13 +9,11 @@ import {DocTitle} from '../DocTitle'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
 import {useReferringDocuments} from './useReferringDocuments'
 
-/** @internal */
-export const DialogBody = styled(Box)`
+const DialogBody = styled(Box)`
   box-sizing: border-box;
 `
 
-/** @internal */
-export const LoadingContainer = styled(Flex).attrs({
+const LoadingContainer = styled(Flex).attrs({
   align: 'center',
   direction: 'column',
   justify: 'center',

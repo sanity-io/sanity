@@ -7,7 +7,17 @@ import {renderToString} from 'react-dom/server'
  */
 export function sanitizeFieldValue(name: string | React.JSX.Element): string {
   if (isValidElement(name)) {
-    return stripHtmlTags(renderToString(name))
+    try {
+      return stripHtmlTags(renderToString(name))
+    } catch (err) {
+      console.warn(
+        'A field title or description contains a React component that could not be rendered. ' +
+          'This is likely caused by a component that requires runtime context. ' +
+          'Use a string or JSX containing HTML elements only.',
+        err,
+      )
+      return ''
+    }
   }
 
   return typeof name === 'string' ? name : ''

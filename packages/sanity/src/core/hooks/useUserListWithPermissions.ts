@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import {type SanityDocument} from '@sanity/client'
 import {type User} from '@sanity/types'
-import {sortBy} from 'lodash-es'
+import sortBy from 'lodash-es/sortBy.js'
 import {useEffect, useMemo, useState} from 'react'
 import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switchMap} from 'rxjs'
 
@@ -13,6 +13,7 @@ import {
   useUserStore,
 } from '../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
+import {getSystemGroups$} from '../util/getSystemGroups$'
 import {useClient} from './useClient'
 
 type Loadable<T> = {
@@ -94,7 +95,7 @@ export function useUserListWithPermissions(
     )
 
     // 3. Get all the system groups. Use the cached response if it exists to avoid unnecessary requests.
-    const _systemGroup$ = client.observable.fetch('*[_type == "system.group"]').pipe(shareReplay(1))
+    const _systemGroup$ = getSystemGroups$(client.observable)
     return [_users$, _systemGroup$]
   }, [client.observable, projectStore, userStore])
 
@@ -104,7 +105,7 @@ export function useUserListWithPermissions(
       mergeMap(async ([users, groups]) => {
         const grantPromises = users?.map(async (user) => {
           const grants = groups.map((group: any) => {
-            if (group.members.includes(user.id)) {
+            if (group.members?.includes(user.id)) {
               return group.grants
             }
 

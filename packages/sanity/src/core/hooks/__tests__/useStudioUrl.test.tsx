@@ -1,9 +1,9 @@
 import {renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
-import {useStudioAppIdStore} from '../../create/studio-app/useStudioAppIdStore'
 import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
 import {useRenderingContext} from '../../store/renderingContext/useRenderingContext'
+import {useStudioAppIdStore} from '../../store/studio-app/useStudioAppIdStore'
 import {useActiveWorkspace} from '../../studio'
 import {useEnvAwareSanityWebsiteUrl} from '../../studio/hooks/useEnvAwareSanityWebsiteUrl'
 import {getDashboardPath} from '../../util/dashboardPath'
@@ -13,7 +13,7 @@ vi.mock('../../store/renderingContext/useRenderingContext', () => ({
   useRenderingContext: vi.fn(),
 }))
 
-vi.mock('../../create/studio-app/useStudioAppIdStore', () => ({
+vi.mock('../../store/studio-app/useStudioAppIdStore', () => ({
   useStudioAppIdStore: vi.fn(),
 }))
 
@@ -40,18 +40,18 @@ const mockUseProjectOrganizationId = useProjectOrganizationId as Mock
 const mockUseEnvAwareSanityWebsiteUrl = useEnvAwareSanityWebsiteUrl as Mock
 const mockGetDashboardPath = getDashboardPath as Mock
 
-function setupStudioContext() {
+function setupStudioContext(basePath = '/') {
   mockUseRenderingContext.mockReturnValue(null)
   mockUseStudioAppIdStore.mockReturnValue({studioApp: null, loading: false})
-  mockUseActiveWorkspace.mockReturnValue({activeWorkspace: {name: 'default'}})
+  mockUseActiveWorkspace.mockReturnValue({activeWorkspace: {name: 'default', basePath}})
   mockUseProjectOrganizationId.mockReturnValue({value: null, loading: false})
   mockUseEnvAwareSanityWebsiteUrl.mockReturnValue('https://www.sanity.io')
 }
 
-function setupCoreUiContext() {
+function setupCoreUiContext(basePath = '/') {
   mockUseRenderingContext.mockReturnValue({name: 'coreUi'})
   mockUseStudioAppIdStore.mockReturnValue({studioApp: {appId: 'my-app'}, loading: false})
-  mockUseActiveWorkspace.mockReturnValue({activeWorkspace: {name: 'default'}})
+  mockUseActiveWorkspace.mockReturnValue({activeWorkspace: {name: 'default', basePath}})
   mockUseProjectOrganizationId.mockReturnValue({value: 'org-123', loading: false})
   mockUseEnvAwareSanityWebsiteUrl.mockReturnValue('https://www.sanity.io')
   mockGetDashboardPath.mockReturnValue(
@@ -137,6 +137,48 @@ describe('useStudioUrl', () => {
       })
 
       expect(built).toBe(window.location.origin)
+    })
+  })
+
+  describe('buildIntentUrl', () => {
+    it('returns origin + full intent link in studio context (default basePath /)', () => {
+      setupStudioContext()
+      const {result} = renderHook(() => useStudioUrl())
+      expect(result.current.buildIntentUrl('/intent/edit/id=doc1;type=article')).toBe(
+        `${window.location.origin}/intent/edit/id=doc1;type=article`,
+      )
+    })
+
+    it('preserves basePath in intent link in studio context', () => {
+      setupStudioContext('/test')
+      const {result} = renderHook(() => useStudioUrl())
+      expect(result.current.buildIntentUrl('/test/intent/edit/id=doc1;type=article')).toBe(
+        `${window.location.origin}/test/intent/edit/id=doc1;type=article`,
+      )
+    })
+
+    it('appends intent link without stripping in coreUi context when basePath is /', () => {
+      setupCoreUiContext('/')
+      const {result} = renderHook(() => useStudioUrl())
+      expect(result.current.buildIntentUrl('/intent/edit/id=doc1;type=article')).toBe(
+        'https://www.sanity.io/organizations/org-123/apps/my-app/workspaces/default/intent/edit/id=doc1;type=article',
+      )
+    })
+
+    it('strips basePath from intent link in coreUi context', () => {
+      setupCoreUiContext('/test')
+      const {result} = renderHook(() => useStudioUrl())
+      expect(result.current.buildIntentUrl('/test/intent/edit/id=doc1;type=article')).toBe(
+        'https://www.sanity.io/organizations/org-123/apps/my-app/workspaces/default/intent/edit/id=doc1;type=article',
+      )
+    })
+
+    it('strips multi-segment basePath from intent link in coreUi context', () => {
+      setupCoreUiContext('/admin/studio')
+      const {result} = renderHook(() => useStudioUrl())
+      expect(result.current.buildIntentUrl('/admin/studio/intent/edit/id=doc1;type=article')).toBe(
+        'https://www.sanity.io/organizations/org-123/apps/my-app/workspaces/default/intent/edit/id=doc1;type=article',
+      )
     })
   })
 })

@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.1](https://github.com/sanity-io/sanity/compare/v5.17.0...v5.17.1) (2026-03-17)
+
+**Note:** Version bump only for package sanity-test-studio
+
+## [5.17.0](https://github.com/sanity-io/sanity/compare/v5.16.0...v5.17.0) (2026-03-17)
+
+### Features
+
+* **sanity:** add CSS anchor names to inputs ([05dc683](https://github.com/sanity-io/sanity/commit/05dc683c3b153326c92290e78c8fe163a21cc9cd)) by Ash (ash@sanity.io)
+* **schema:** add ability to control undefined/null sorting ([#12367](https://github.com/sanity-io/sanity/issues/12367)) ([d5f6875](https://github.com/sanity-io/sanity/commit/d5f6875ffdc01d146f4cb35142ea39c558d9fbf4)) by Bjørge Næss (bjoerge@gmail.com)
+* **test-studio:** switch on Advanced Version Control ([042b8ee](https://github.com/sanity-io/sanity/commit/042b8ee3eb558eab6d35945f6b2127efd81ac9af)) by Ash (ash@sanity.io)
+
+## [5.16.0](https://github.com/sanity-io/sanity/compare/v5.15.0...v5.16.0) (2026-03-14)
+
+**Note:** Version bump only for package sanity-test-studio
+
+## [5.15.0](https://github.com/sanity-io/sanity/compare/v5.14.1...v5.15.0) (2026-03-12)
+
+### Features
+
+* upgrade to new `@sanity/cli` ([#12200](https://github.com/sanity-io/sanity/issues/12200)) ([902075d](https://github.com/sanity-io/sanity/commit/902075d3a4567223745988ab706a6009a86419b7)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+
+### Bug Fixes
+
+* make sure that columns in formFields are aligned to the top ([#12357](https://github.com/sanity-io/sanity/issues/12357)) ([8a06dc6](https://github.com/sanity-io/sanity/commit/8a06dc619c943b52525ea24055eac8dfcef08513)) by RitaDias (rita@sanity.io)
+
+## [5.14.1](https://github.com/sanity-io/sanity/compare/v5.14.0...v5.14.1) (2026-03-10)
+
+**Note:** Version bump only for package sanity-test-studio
+
+## [5.14.0](https://github.com/sanity-io/sanity/compare/v5.13.0...v5.14.0) (2026-03-10)
+
+### Features
+
+* add currentUser to validation context + fix hidden issue showing the wrong value on validation ([#12221](https://github.com/sanity-io/sanity/issues/12221)) ([9db645e](https://github.com/sanity-io/sanity/commit/9db645e03f859ad6b077f2c3e6d5e45a223b6628)) by RitaDias (rita@sanity.io)
+
+### Bug Fixes
+
+* add warnings when element is not valid instead of crashing studio ([#12262](https://github.com/sanity-io/sanity/issues/12262)) ([1786aca](https://github.com/sanity-io/sanity/commit/1786aca228c6364c88a0ed76b7eaad8a943fe919)) by RitaDias (rita@sanity.io)
+* **core:** use @portabletext/html for HTML deserialization ([608d1d4](https://github.com/sanity-io/sanity/commit/608d1d40ebf7b139a3a2f2ae4e3df0ebe6f4e4b8)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **deps:** Update portabletext ([#12295](https://github.com/sanity-io/sanity/issues/12295)) ([152a879](https://github.com/sanity-io/sanity/commit/152a8796a409f2dadef866d14c8af35f68111b7b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* issue where cross dataset reference inputs in dialog were closing dialog ([#12304](https://github.com/sanity-io/sanity/issues/12304)) ([0e38d8e](https://github.com/sanity-io/sanity/commit/0e38d8e1e6b0fb72ecfa9fe2904df20b4cc5a42e)) by RitaDias (rita@sanity.io)
+* render group validation for nested fields ([#12309](https://github.com/sanity-io/sanity/issues/12309)) ([5791448](https://github.com/sanity-io/sanity/commit/5791448bbd3dc8cb1db9ccc916b9c1ad7de004f8)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+## [5.13.0](https://github.com/sanity-io/sanity/compare/v5.12.0...v5.13.0) (2026-03-03)
+
+### Features
+
+* **arrays:** disability ability to add further items when at validation max limit ([#12127](https://github.com/sanity-io/sanity/issues/12127)) ([0e037a1](https://github.com/sanity-io/sanity/commit/0e037a16a03ae2fed904fcfdd032b2e66f52e8da)) by Jordan Lawrence (jordanl17@me.com)
+* **presentation:** add icon and showHref to DocumentLocation ([#12048](https://github.com/sanity-io/sanity/issues/12048)) ([74bb885](https://github.com/sanity-io/sanity/commit/74bb8853b2f3c2bf6d61577235411dd0a26812f5)) by Sam Hemingway (65196819+SamHemingway@users.noreply.github.com)
+* primitive types accept grid as options but didn't show the grid, now it does ([#12263](https://github.com/sanity-io/sanity/issues/12263)) ([383e06e](https://github.com/sanity-io/sanity/commit/383e06eb6074a30e06750e52abeb394b45fb224e)) by RitaDias (rita@sanity.io)
+
+### Bug Fixes
+
+* **deps:** upgrade @portabletext/* packages to v6 ([#12278](https://github.com/sanity-io/sanity/issues/12278)) ([501a6f3](https://github.com/sanity-io/sanity/commit/501a6f3f0f214997fbd16afef09ea5558863ad4f)) by Christian Grøngaard (christian.groengaard@sanity.io)
+* ordering by multiple object fields ([#12265](https://github.com/sanity-io/sanity/issues/12265)) ([49a7a55](https://github.com/sanity-io/sanity/commit/49a7a555e03215b795e3ea55600684642b54d2af)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* upgrade `@portabletext/block-tools` to 5.0.5 ([#12287](https://github.com/sanity-io/sanity/issues/12287)) ([773ee46](https://github.com/sanity-io/sanity/commit/773ee466ca7c48a77bc7a8bf6820d58316321604)) by Christian Grøngaard (christian.groengaard@sanity.io)
+
 ## [5.12.0](https://github.com/sanity-io/sanity/compare/v5.11.0...v5.12.0) (2026-02-24)
 
 ### Bug Fixes

@@ -1,6 +1,6 @@
 {
   "name": "@repo/test-dts-exports",
-  "version": "5.12.0",
+  "version": "5.17.1",
   "private": true,
   "description": "Checks that we're exporting typings correctly",
   "exports": {
@@ -8,12 +8,11 @@
   },
   "scripts": {
     "generate:dts-exports": "node generate.mjs",
-    "postgenerate:dts-exports": "oxfmt test/fixtures/**",
     "lint": "eslint .",
+    "postgenerate:dts-exports": "oxfmt test/fixtures/**",
     "test": "vitest run"
   },
   "dependencies": {
-    "@sanity/cli": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/mutator": "workspace:*",
     "@sanity/schema": "workspace:*",

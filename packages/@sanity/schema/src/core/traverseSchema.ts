@@ -1,4 +1,5 @@
-import {flatten, uniq} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
+import uniq from 'lodash-es/uniq.js'
 
 import {getDupes} from '../sanity/validation/utils/getDupes'
 
@@ -19,7 +20,7 @@ export type Visitor = (typeDef: SchemaTypeDef, arg1: VisitContext) => SchemaType
 
 const NOOP_VISITOR: Visitor = (typeDef) => typeDef
 
-export class UnknownType {
+class UnknownType {
   name: string
 
   constructor(name: string) {

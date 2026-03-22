@@ -1,5 +1,5 @@
 import {type Schema} from '@sanity/types'
-import {isObject} from 'lodash-es'
+import isObject from 'lodash-es/isObject.js'
 import {type PreviewLayoutKey} from 'sanity'
 import {type StructureBuilder} from 'sanity/structure'
 
@@ -56,6 +56,7 @@ export function _buildTypeGroup(
                     .child(
                       S.documentList()
                         .defaultLayout(defaultLayout)
+                        .menuItems(S.documentTypeList(typeName).getMenuItems() || [])
                         .canHandleIntent((intentName, params) => {
                           return (
                             TYPE_GROUP_SUPPORTED_INTENTS.has(intentName) && typeName === params.type

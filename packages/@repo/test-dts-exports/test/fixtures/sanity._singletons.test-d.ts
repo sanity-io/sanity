@@ -33,7 +33,6 @@ import type {
   DocumentLimitUpsellContext,
   DocumentLimitUpsellContextValue,
   DocumentPaneContext,
-  DocumentSheetListContext,
   EnhancedObjectDialogContext,
   EventsContext,
   FieldActionsContext,
@@ -88,7 +87,6 @@ import type {
   ReviewChangesContext,
   RouterContext,
   RouterHistoryContext,
-  SanityCreateConfigContext,
   ScheduledPublishingEnabledContext,
   ScheduledPublishingEnabledContextValue,
   SchedulePublishUpsellContext,
@@ -212,9 +210,6 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentPaneContext', () => {
     expectTypeOf<typeof DocumentPaneContext>().not.toBeNever()
-  })
-  test('DocumentSheetListContext', () => {
-    expectTypeOf<typeof DocumentSheetListContext>().not.toBeNever()
   })
   test('EnhancedObjectDialogContext', () => {
     expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()
@@ -377,9 +372,6 @@ describe('sanity/_singletons', () => {
   })
   test('RouterHistoryContext', () => {
     expectTypeOf<typeof RouterHistoryContext>().not.toBeNever()
-  })
-  test('SanityCreateConfigContext', () => {
-    expectTypeOf<typeof SanityCreateConfigContext>().not.toBeNever()
   })
   test('ScheduledPublishingEnabledContext', () => {
     expectTypeOf<typeof ScheduledPublishingEnabledContext>().not.toBeNever()

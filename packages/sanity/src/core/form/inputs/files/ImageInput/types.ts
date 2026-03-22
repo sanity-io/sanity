@@ -16,7 +16,7 @@ import {type ObjectInputProps} from '../../../types'
  * @hidden
  * @internal
  */
-export type FileInfo = {
+type FileInfo = {
   type: string // mime type
   kind: string // 'file' or 'string'
 }

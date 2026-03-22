@@ -19,11 +19,13 @@ import {useTranslation} from '../../../i18n'
 import {FieldPresence} from '../../../presence'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
+import {FormNodeDivergenceDetail} from '../../components/FormNodeDivergenceDetail'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {set, unset} from '../../patch'
 import {type ObjectItem, type ObjectItemProps} from '../../types'
 import {randomKey} from '../../utils/randomKey'
+import {regenerateKeys} from '../../utils/regenerateKeys'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../arrays/ArrayOfObjectsInput/InsertMenuMenuItems'
 import {useArrayValidation} from '../arrays/common/ArrayValidationContext'
@@ -119,14 +121,14 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
 
   const handleDuplicate = useCallback(() => {
     onInsert({
-      items: [{...value, _key: randomKey()}],
+      items: [regenerateKeys(value)],
       position: 'after',
     })
   }, [onInsert, value])
 
   const handleCopy = useCallback(() => {
     onCopy({
-      items: [{...value, _key: randomKey()}],
+      items: [regenerateKeys(value)],
     })
   }, [onCopy, value])
 
@@ -349,6 +351,9 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               validation={validation}
               inputId={inputId}
               deprecated={schemaType.deprecated}
+              schemaType={schemaType}
+              path={path}
+              readOnly={readOnly}
             >
               {children}
             </FormFieldSet>
@@ -381,8 +386,10 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     </ReferenceItemRefProvider>
   )
   return (
-    <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
-      <Box paddingX={1}>{item}</Box>
-    </ChangeIndicator>
+    <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
+      <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
+        <Box paddingX={1}>{item}</Box>
+      </ChangeIndicator>
+    </FormNodeDivergenceDetail>
   )
 }

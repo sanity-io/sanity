@@ -6,7 +6,7 @@ import {
   DialogProvider,
   PortalProvider,
 } from '@sanity/ui'
-import {noop} from 'lodash-es'
+import noop from 'lodash-es/noop.js'
 import {
   type ComponentType,
   type CSSProperties,

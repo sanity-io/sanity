@@ -4,6 +4,7 @@ import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
+import {isValid} from 'date-fns/isValid'
 import {parse} from 'date-fns/parse'
 import {setDate} from 'date-fns/setDate'
 import {setHours} from 'date-fns/setHours'
@@ -181,7 +182,12 @@ export const Calendar = forwardRef(function Calendar(
     (event: FormEvent<HTMLInputElement>) => {
       const nextValue = event.currentTarget.value
       if (nextValue) {
+        // avoids native time input segment navigation resetting while typing.
+        setTimeValue(nextValue)
         const date = parse(nextValue, 'HH:mm', new Date())
+        if (!isValid(date)) {
+          return
+        }
         handleTimeChange(date.getHours(), date.getMinutes())
       } else {
         // Setting the timeValue to undefined will let the input behave correctly as a time input while the user types.

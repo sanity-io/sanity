@@ -21,7 +21,7 @@ export type GeneralPreviewLayoutKey = 'compact' | 'default' | 'media' | 'detail'
  * @hidden
  * @beta
  */
-export type GeneralDocumentListLayoutKey = GeneralPreviewLayoutKey | 'sheetList'
+export type GeneralDocumentListLayoutKey = GeneralPreviewLayoutKey
 
 /**
  * Preview layout key. See also {@link GeneralPreviewLayoutKey} and {@link PortableTextPreviewLayoutKey}

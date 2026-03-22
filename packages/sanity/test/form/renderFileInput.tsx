@@ -30,6 +30,7 @@ export type TestRenderFileInputCallback = (
 
 export async function renderFileInput(options: {
   assetSources?: BaseFileInputProps['assetSources']
+  configOverrides?: Record<string, unknown>
   fieldDefinition: SchemaTypeDefinition<'file'>
   observeAsset?: BaseFileInputProps['observeAsset']
   props?: TestRenderProps
@@ -38,6 +39,7 @@ export async function renderFileInput(options: {
 }) {
   const {
     assetSources = STUB_ASSET_SOURCES,
+    configOverrides,
     fieldDefinition,
     observeAsset = STUB_OBSERVE_ASSET,
     props,
@@ -66,6 +68,7 @@ export async function renderFileInput(options: {
   }
 
   const result = await renderObjectInput({
+    configOverrides,
     fieldDefinition: fieldDefinition as FieldDefinition<'object'>,
     props,
     render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),

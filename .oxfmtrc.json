@@ -5,9 +5,9 @@
   "singleQuote": true,
   "bracketSpacing": false,
   "quoteProps": "consistent",
-  "experimentalSortImports": {
+  "sortImports": {
     "groups": [
-      ["side-effect", "side-effect-style"],
+      ["side_effect", "side_effect_style"],
       ["builtin", "subpath"],
       ["external"],
       ["internal"],
@@ -17,7 +17,9 @@
     "newlinesBetween": true,
     "sortSideEffects": false
   },
-  "experimentalSortPackageJson": {},
+  "sortPackageJson": {
+    "sortScripts": true
+  },
   "overrides": [
     {
       "files": ["*.yml", "*.yaml"],

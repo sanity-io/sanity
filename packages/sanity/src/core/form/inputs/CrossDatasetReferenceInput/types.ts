@@ -21,7 +21,7 @@ export interface SearchState {
 }
 
 /** @internal */
-export type CrossDatasetSearchFunction = (query: string) => Observable<CrossDatasetSearchHit[]>
+type CrossDatasetSearchFunction = (query: string) => Observable<CrossDatasetSearchHit[]>
 
 /** @internal */
 export interface CrossDatasetSearchHit {

@@ -276,10 +276,6 @@ import type {
   createHookFromObservableFactory,
   CreateIfNotExistsMutation,
   createKeyValueStore,
-  CreateLinkedActionsProps,
-  CreateLinkedDocumentBannerContentProps,
-  CreateLinkedSanityDocument,
-  CreateLinkMetadata,
   CreateLiveDocumentEvent,
   createMockAuthStore,
   CreateMutation,
@@ -659,7 +655,6 @@ import type {
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
-  getSanityCreateLinkMetadata,
   getSchemaTypeTitle,
   getSearchableTypes,
   getTemplatePermissions,
@@ -846,10 +841,6 @@ import type {
   isReleasePerspective,
   isReleaseScheduledOrScheduling,
   isRemovedItemDiff,
-  isSanityCreateExcludedType,
-  isSanityCreateLinked,
-  isSanityCreateLinkedDocument,
-  isSanityCreateStartCompatibleDoc,
   isSanityDefinedAction,
   isSanityDocument,
   isScheduleDocumentVersionEvent,
@@ -1209,8 +1200,6 @@ import type {
   SANITY_VERSION,
   SanityClient,
   SanityClipboardItem,
-  SanityCreateConfigContextValue,
-  SanityCreateConfigProvider,
   SanityCreateOptions,
   SanityDefaultPreview,
   SanityDefaultPreviewProps,
@@ -1573,7 +1562,6 @@ import type {
   UserStore,
   UserStoreOptions,
   UserWithPermission,
-  useSanityCreateConfig,
   useScheduledDraftsEnabled,
   useSchema,
   useSearchMaxFieldDepth,
@@ -2492,18 +2480,6 @@ describe('sanity', () => {
   })
   test('createKeyValueStore', () => {
     expectTypeOf<typeof createKeyValueStore>().toBeFunction()
-  })
-  test('CreateLinkedActionsProps', () => {
-    expectTypeOf<CreateLinkedActionsProps>().toBeObject()
-  })
-  test('CreateLinkedDocumentBannerContentProps', () => {
-    expectTypeOf<CreateLinkedDocumentBannerContentProps>().toBeObject()
-  })
-  test('CreateLinkedSanityDocument', () => {
-    expectTypeOf<CreateLinkedSanityDocument>().toBeObject()
-  })
-  test('CreateLinkMetadata', () => {
-    expectTypeOf<CreateLinkMetadata>().toBeObject()
   })
   test('CreateLiveDocumentEvent', () => {
     expectTypeOf<CreateLiveDocumentEvent>().toBeObject()
@@ -3656,9 +3632,6 @@ describe('sanity', () => {
   test('getReleaseTone', () => {
     expectTypeOf<typeof getReleaseTone>().toBeFunction()
   })
-  test('getSanityCreateLinkMetadata', () => {
-    expectTypeOf<typeof getSanityCreateLinkMetadata>().toBeFunction()
-  })
   test('getSchemaTypeTitle', () => {
     expectTypeOf<typeof getSchemaTypeTitle>().toBeFunction()
   })
@@ -4218,18 +4191,6 @@ describe('sanity', () => {
   })
   test('isRemovedItemDiff', () => {
     expectTypeOf<typeof isRemovedItemDiff>().toBeFunction()
-  })
-  test('isSanityCreateExcludedType', () => {
-    expectTypeOf<typeof isSanityCreateExcludedType>().toBeFunction()
-  })
-  test('isSanityCreateLinked', () => {
-    expectTypeOf<typeof isSanityCreateLinked>().toBeFunction()
-  })
-  test('isSanityCreateLinkedDocument', () => {
-    expectTypeOf<typeof isSanityCreateLinkedDocument>().toBeFunction()
-  })
-  test('isSanityCreateStartCompatibleDoc', () => {
-    expectTypeOf<typeof isSanityCreateStartCompatibleDoc>().toBeFunction()
   })
   test('isSanityDefinedAction', () => {
     expectTypeOf<typeof isSanityDefinedAction>().not.toBeNever()
@@ -5314,12 +5275,6 @@ describe('sanity', () => {
   })
   test('SanityClipboardItem', () => {
     expectTypeOf<SanityClipboardItem>().toBeObject()
-  })
-  test('SanityCreateConfigContextValue', () => {
-    expectTypeOf<SanityCreateConfigContextValue>().toBeObject()
-  })
-  test('SanityCreateConfigProvider', () => {
-    expectTypeOf<typeof SanityCreateConfigProvider>().toBeFunction()
   })
   test('SanityCreateOptions', () => {
     expectTypeOf<SanityCreateOptions>().toBeObject()
@@ -6418,9 +6373,6 @@ describe('sanity', () => {
   })
   test('UserWithPermission', () => {
     expectTypeOf<UserWithPermission>().toBeObject()
-  })
-  test('useSanityCreateConfig', () => {
-    expectTypeOf<typeof useSanityCreateConfig>().toBeFunction()
   })
   test('useScheduledDraftsEnabled', () => {
     expectTypeOf<typeof useScheduledDraftsEnabled>().toBeFunction()

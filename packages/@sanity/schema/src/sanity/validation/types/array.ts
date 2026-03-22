@@ -1,5 +1,6 @@
 import humanizeList from 'humanize-list'
-import {flatten, partition} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
+import partition from 'lodash-es/partition.js'
 
 import {coreTypeNames} from '../../coreTypes'
 import {error, HELP_IDS, warning} from '../createValidationResult'

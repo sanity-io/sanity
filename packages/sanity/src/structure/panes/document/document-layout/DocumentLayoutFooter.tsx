@@ -1,12 +1,11 @@
 import {DialogProvider, type DialogProviderProps, PortalProvider} from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useMemo} from 'react'
-import {getSanityCreateLinkMetadata, useZIndex} from 'sanity'
+import {useZIndex} from 'sanity'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {PaneFooter} from '../../../components'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {DocumentStatusBar} from '../statusBar'
-import {useDocumentPane} from '../useDocumentPane'
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // We use the `position: fixed` for dialogs on narrower screens (first two media breakpoints).
@@ -27,13 +26,11 @@ export function DocumentLayoutFooter({
 }) {
   const zOffsets = useZIndex()
 
-  const {value} = useDocumentPane()
   const portalElements = useMemo(
     () => ({[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}),
     [documentPanelPortalElement],
   )
 
-  const createLinkMetadata = getSanityCreateLinkMetadata(value)
   return (
     // These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane
     // The portal element comes from `DocumentPanel`.
@@ -41,10 +38,7 @@ export function DocumentLayoutFooter({
       <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
         <PaneFooter ref={setFooterElement} padding={1}>
           <TooltipDelayGroupProvider>
-            <DocumentStatusBar
-              actionsBoxRef={setActionsBoxElement}
-              createLinkMetadata={createLinkMetadata}
-            />
+            <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
           </TooltipDelayGroupProvider>
         </PaneFooter>
       </DialogProvider>

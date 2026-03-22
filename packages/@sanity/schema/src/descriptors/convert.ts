@@ -14,7 +14,8 @@ import {
   type Schema,
   type SchemaType,
 } from '@sanity/types'
-import {isEqual, isObject} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
+import isObject from 'lodash-es/isObject.js'
 
 import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
@@ -269,7 +270,7 @@ type Options = {
   duplicateArrayElements: Map<ArrayElement, string>
 }
 
-export function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): TypeDef {
+function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): TypeDef {
   const common = convertCommonTypeDef(schemaType, path, opts)
 
   if (!schemaType.type) {
@@ -841,10 +842,12 @@ function maybeOrderingBy(val: unknown): ObjectOrderingBy | undefined {
     'direction' in val && (val.direction === 'asc' || val.direction === 'desc')
       ? val.direction
       : undefined
+  const nulls =
+    'nulls' in val && (val.nulls === 'first' || val.nulls === 'last') ? val.nulls : undefined
 
   if (!field || !direction) return undefined
 
-  return {field, direction}
+  return {field, direction, ...(nulls && {nulls})}
 }
 
 /**

@@ -1,8 +1,9 @@
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import QuickLRU from 'quick-lru'
 import {
   debounceTime,
   distinctUntilChanged,
+  EMPTY,
   filter,
   map,
   mergeMap,
@@ -27,30 +28,35 @@ import {delayTask} from './utils/delayTask'
 
 export interface CollatedDocumentDivergencesState {
   state: 'pending' | 'ready'
+  upstreamId: string | undefined
   divergences: Record<string, Divergence>
 }
 
-interface Instance {
+/**
+ * @internal
+ */
+export interface CollatedDocumentDivergencesInstance {
   observable: Observable<CollatedDocumentDivergencesState>
   context: Subject<FindDivergencesContext>
 }
 
 interface CollatedDocumentDivergencesContext {
-  upstreamId: string
-  subjectId: string
+  upstreamId: string | undefined
+  subjectId: string | undefined
 }
 
 const DEBOUNCE_DURATION = 1_000
 const CACHE_MAX_SIZE = 10
 
 let cacheWriteChannel: Subject<string>
-let cache: QuickLRU<string, Instance>
+let cache: QuickLRU<string, CollatedDocumentDivergencesInstance>
 
 /**
  * @internal
  */
 export const collateDocumentDivergencesInitialState: CollatedDocumentDivergencesState = {
   state: 'pending',
+  upstreamId: undefined,
   divergences: {},
 }
 
@@ -69,7 +75,7 @@ export const collateDocumentDivergencesInitialState: CollatedDocumentDivergences
 export function collateDocumentDivergences({
   upstreamId,
   subjectId,
-}: CollatedDocumentDivergencesContext): Instance {
+}: CollatedDocumentDivergencesContext): CollatedDocumentDivergencesInstance {
   initialiseCache()
 
   const cacheKey = getCacheKey({upstreamId, subjectId})
@@ -81,6 +87,13 @@ export function collateDocumentDivergences({
 
   const context = new Subject<FindDivergencesContext>()
   const markName = ['collateDocumentDivergences', cacheKey].join('.')
+
+  if (typeof upstreamId === 'undefined' || typeof subjectId === 'undefined') {
+    return {
+      observable: EMPTY,
+      context,
+    }
+  }
 
   const observable: Observable<CollatedDocumentDivergencesState> = context.pipe(
     debounceTime(DEBOUNCE_DURATION),
@@ -109,10 +122,12 @@ export function collateDocumentDivergences({
         map<Record<string, Divergence>, CollatedDocumentDivergencesState>((divergences) => ({
           ...state,
           state: 'ready',
+          upstreamId,
           divergences,
         })),
         startWith<CollatedDocumentDivergencesState>({
           ...state,
+          upstreamId,
           state: 'pending',
         }),
       )
@@ -121,7 +136,7 @@ export function collateDocumentDivergences({
     shareReplay(1),
   )
 
-  const instance: Instance = {context, observable}
+  const instance: CollatedDocumentDivergencesInstance = {context, observable}
 
   cache.set(cacheKey, instance)
   cacheWriteChannel.next(cacheKey)
@@ -139,6 +154,10 @@ export function peekCollatedDocumentDivergences({
   subjectId,
 }: CollatedDocumentDivergencesContext): Observable<CollatedDocumentDivergencesState> {
   initialiseCache()
+
+  if (typeof upstreamId === 'undefined' || typeof subjectId === 'undefined') {
+    return EMPTY
+  }
 
   const cacheKey = getCacheKey({upstreamId, subjectId})
   const instance = cache.get(cacheKey)

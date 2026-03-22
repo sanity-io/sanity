@@ -1,12 +1,13 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
 import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sanity/types'
 import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
-import {get, startCase} from 'lodash-es'
+import get from 'lodash-es/get.js'
 import {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
 import {type Source} from '../../../../../../../../../config'
+import {getAssetSourceDisplayName} from '../../../../../../../../../form/inputs/files/common/assetSourceUtils'
 import {sourceName as defaultSourceName} from '../../../../../../../../../form/studio/assetSourceDataset'
 import {useClient} from '../../../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../../../i18n'
@@ -158,10 +159,9 @@ export function SearchFilterAssetInput(type?: AssetType) {
                             key={source.name}
                             icon={source.icon || ImageIcon}
                             onClick={() => handleSelectAssetSource(source)}
-                            text={
-                              (source.i18nKey ? t(source.i18nKey) : source.title) ||
-                              startCase(source.name)
-                            }
+                            text={getAssetSourceDisplayName(source, t, {
+                              useStartCaseForName: true,
+                            })}
                           />
                         ))}
                       </Menu>

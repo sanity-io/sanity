@@ -315,69 +315,71 @@ export function ReferenceInput(props: ReferenceInputProps) {
   )
 
   return (
-    <ReferenceInputPreview {...props}>
-      <Stack space={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
-        <Stack space={2}>
-          {isWeakRefToNonexistent ? (
-            <Alert
-              data-testid="alert-nonexistent-document"
-              title={t('inputs.reference.error.nonexistent-document-title')}
-              suffix={
-                <Stack padding={2}>
-                  <Button
-                    text={t('inputs.reference.error.nonexistent-document.clear-button-label')}
-                    onClick={handleClear}
+    <div style={props.elementProps.style}>
+      <ReferenceInputPreview {...props}>
+        <Stack space={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
+          <Stack space={2}>
+            {isWeakRefToNonexistent ? (
+              <Alert
+                data-testid="alert-nonexistent-document"
+                title={t('inputs.reference.error.nonexistent-document-title')}
+                suffix={
+                  <Stack padding={2}>
+                    <Button
+                      text={t('inputs.reference.error.nonexistent-document.clear-button-label')}
+                      onClick={handleClear}
+                    />
+                  </Stack>
+                }
+              >
+                <Text size={1}>
+                  <Translate
+                    i18nKey="inputs.reference.error.nonexistent-document-description"
+                    t={t}
+                    values={{documentId: value._ref}}
                   />
-                </Stack>
-              }
-            >
-              <Text size={1}>
-                <Translate
-                  i18nKey="inputs.reference.error.nonexistent-document-description"
-                  t={t}
-                  values={{documentId: value._ref}}
-                />
-              </Text>
-            </Alert>
-          ) : null}
-          <AutocompleteContainer ref={setAutocompletePopoverReferenceElement}>
-            <ReferenceAutocomplete
-              {...elementProps}
-              path={path}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              data-testid="autocomplete"
-              loading={searchState.isLoading}
-              referenceElement={autocompletePopoverReferenceElement}
-              options={hits}
-              radius={2}
-              placeholder={t('inputs.reference.search-placeholder')}
-              onKeyDown={handleAutocompleteKeyDown}
-              readOnly={loadableReferenceInfo.isLoading || readOnly}
-              onQueryChange={handleQueryChange}
-              searchString={searchState.searchString}
-              onChange={handleChange}
-              filterOption={NO_FILTER}
-              renderOption={renderOption as any}
-              renderValue={renderValue}
-              openButton={{onClick: handleAutocompleteOpenButtonClick}}
-              portalRef={autoCompletePortalRef}
-              value={value?._ref}
-            />
-
-            {createOptions.length > 0 && (
-              <CreateButton
-                id={`${id}-selectTypeMenuButton`}
-                readOnly={readOnly}
-                createOptions={createOptions}
-                onCreate={handleCreateNew}
-                onKeyDown={handleCreateButtonKeyDown}
-                menuRef={createButtonMenuPortalRef}
+                </Text>
+              </Alert>
+            ) : null}
+            <AutocompleteContainer ref={setAutocompletePopoverReferenceElement}>
+              <ReferenceAutocomplete
+                {...elementProps}
+                path={path}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                data-testid="autocomplete"
+                loading={searchState.isLoading}
+                referenceElement={autocompletePopoverReferenceElement}
+                options={hits}
+                radius={2}
+                placeholder={t('inputs.reference.search-placeholder')}
+                onKeyDown={handleAutocompleteKeyDown}
+                readOnly={loadableReferenceInfo.isLoading || readOnly}
+                onQueryChange={handleQueryChange}
+                searchString={searchState.searchString}
+                onChange={handleChange}
+                filterOption={NO_FILTER}
+                renderOption={renderOption as any}
+                renderValue={renderValue}
+                openButton={{onClick: handleAutocompleteOpenButtonClick}}
+                portalRef={autoCompletePortalRef}
+                value={value?._ref}
               />
-            )}
-          </AutocompleteContainer>
+
+              {createOptions.length > 0 && (
+                <CreateButton
+                  id={`${id}-selectTypeMenuButton`}
+                  readOnly={readOnly}
+                  createOptions={createOptions}
+                  onCreate={handleCreateNew}
+                  onKeyDown={handleCreateButtonKeyDown}
+                  menuRef={createButtonMenuPortalRef}
+                />
+              )}
+            </AutocompleteContainer>
+          </Stack>
         </Stack>
-      </Stack>
-    </ReferenceInputPreview>
+      </ReferenceInputPreview>
+    </div>
   )
 }

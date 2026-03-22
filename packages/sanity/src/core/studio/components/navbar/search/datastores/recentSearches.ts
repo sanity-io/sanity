@@ -1,5 +1,6 @@
 import {type ObjectSchemaType, type Schema} from '@sanity/types'
-import {isEqual, omit} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
+import omit from 'lodash-es/omit.js'
 import {useMemo} from 'react'
 
 import {useSchema} from '../../../../../hooks'
@@ -34,7 +35,7 @@ export const MAX_RECENT_SEARCHES = 5
  * This is a bit of a blunt instrument: in future we could look to validate individual filter values and
  * remove outdated entries individually.
  */
-export const RECENT_SEARCH_VERSION = 3
+const RECENT_SEARCH_VERSION = 3
 
 export type RecentSearch = SearchTerms & {
   __recent: {

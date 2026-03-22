@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.1](https://github.com/sanity-io/sanity/compare/v5.17.0...v5.17.1) (2026-03-17)
+
+**Note:** Version bump only for package @sanity/schema
+
+## [5.17.0](https://github.com/sanity-io/sanity/compare/v5.16.0...v5.17.0) (2026-03-17)
+
+### Features
+
+* **schema:** add ability to control undefined/null sorting ([#12367](https://github.com/sanity-io/sanity/issues/12367)) ([d5f6875](https://github.com/sanity-io/sanity/commit/d5f6875ffdc01d146f4cb35142ea39c558d9fbf4)) by Bjørge Næss (bjoerge@gmail.com)
+
+## [5.16.0](https://github.com/sanity-io/sanity/compare/v5.15.0...v5.16.0) (2026-03-14)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.29.0 ([#12384](https://github.com/sanity-io/sanity/issues/12384)) ([d230b6a](https://github.com/sanity-io/sanity/commit/d230b6aeaadccd58befd53d776ad2935d32f63f8)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.15.0](https://github.com/sanity-io/sanity/compare/v5.14.1...v5.15.0) (2026-03-12)
+
+### Features
+
+* upgrade to new `@sanity/cli` ([#12200](https://github.com/sanity-io/sanity/issues/12200)) ([902075d](https://github.com/sanity-io/sanity/commit/902075d3a4567223745988ab706a6009a86419b7)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+
+## [5.14.1](https://github.com/sanity-io/sanity/compare/v5.14.0...v5.14.1) (2026-03-10)
+
+**Note:** Version bump only for package @sanity/schema
+
+## [5.14.0](https://github.com/sanity-io/sanity/compare/v5.13.0...v5.14.0) (2026-03-10)
+
+### Bug Fixes
+
+* add warnings when element is not valid instead of crashing studio ([#12262](https://github.com/sanity-io/sanity/issues/12262)) ([1786aca](https://github.com/sanity-io/sanity/commit/1786aca228c6364c88a0ed76b7eaad8a943fe919)) by RitaDias (rita@sanity.io)
+
+## [5.13.0](https://github.com/sanity-io/sanity/compare/v5.12.0...v5.13.0) (2026-03-03)
+
+### Bug Fixes
+
+* update fileAsset and imageAsset required fields ([#12261](https://github.com/sanity-io/sanity/issues/12261)) ([2de42c8](https://github.com/sanity-io/sanity/commit/2de42c82d6a0e328e995fa20a07e980028e4e070)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
 ## [5.12.0](https://github.com/sanity-io/sanity/compare/v5.11.0...v5.12.0) (2026-02-24)
 
 **Note:** Version bump only for package @sanity/schema

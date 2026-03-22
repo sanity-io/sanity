@@ -9,7 +9,7 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
-import {throttle} from 'lodash-es'
+import throttle from 'lodash-es/throttle.js'
 import {type RefObject, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 
@@ -25,7 +25,6 @@ import {
   useFormState,
 } from '.'
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
-import {isSanityCreateLinkedDocument} from '../create/createUtils'
 import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
@@ -262,7 +261,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const upstreamEditState = useEditState(
     documentId,
     documentType,
-    'low',
+    'default',
     getVersionFromId(upstreamId ?? ''),
   )
 
@@ -278,7 +277,21 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const subscription = presenceStore
       .documentPresence(value._id, {excludeVersions: true})
       .subscribe((nextPresence) => {
-        setPresence(nextPresence)
+        setPresence((prev) => {
+          if (
+            prev.length === nextPresence.length &&
+            prev.every(
+              // eslint-disable-next-line max-nested-callbacks
+              (p, i) =>
+                p.sessionId === nextPresence[i].sessionId &&
+                p.lastActiveAt === nextPresence[i].lastActiveAt &&
+                p.path === nextPresence[i].path,
+            )
+          ) {
+            return prev
+          }
+          return nextPresence
+        })
       })
     return () => {
       subscription.unsubscribe()
@@ -322,7 +335,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   })
 
   const isNonExistent = !value?._id
-  const isCreateLinked = isSanityCreateLinkedDocument(value)
 
   const ready = connectionState === 'connected' && editState.ready && !initialValue?.loading
 
@@ -339,7 +351,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   )
   const {isLockedByCanvas} = useCanvasCompanionDoc(value._id)
 
-  // eslint-disable-next-line complexity
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
     const updateActionDisabled = !isActionEnabled(schemaType, 'update')
@@ -392,7 +403,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       createActionDisabled ||
       reconnecting ||
       isLocked ||
-      isCreateLinked ||
       willBeUnpublished ||
       isReleaseLocked
 
@@ -413,7 +423,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     liveEdit,
     releaseId,
     ready,
-    isCreateLinked,
     isReleaseLocked,
     readOnlyProp,
   ])
@@ -428,16 +437,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const handleChange = (event: PatchEvent) => patchRef.current(event)
 
   useInsertionEffect(() => {
-    // Create-linked documents enter a read-only state in Studio. However, unlinking a Create-linked
-    // document necessitates patching it. This renders it impossible to unlink a Create-linked
-    // document.
-    //
-    // Excluding Create-linked documents from this check is a simple way to ensure they can be
-    // unlinked.
-    //
-    // This does mean `handleChange` can be used to patch any part of a Create-linked document,
     // which would otherwise be read-only.
-    if (readOnly && !isCreateLinked) {
+    if (readOnly) {
       patchRef.current = () => {
         throw new Error('Attempted to patch a read-only document')
       }
@@ -454,15 +455,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         patch.execute(toMutationPatches(event.patches), initialValue?.value)
       }
     }
-  }, [
-    editState.draft,
-    editState.published,
-    initialValue,
-    patch,
-    telemetry,
-    readOnly,
-    isCreateLinked,
-  ])
+  }, [editState.draft, editState.published, initialValue, patch, telemetry, readOnly])
 
   const formDocumentValue = useMemo(() => {
     if (getFormDocumentValue) return getFormDocumentValue(value)

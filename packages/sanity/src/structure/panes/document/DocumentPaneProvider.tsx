@@ -6,8 +6,17 @@ import {
   type SanityDocumentLike,
 } from '@sanity/types'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
+  type ComponentType,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {
+  DivergencesProvider,
   type DocumentActionsContext,
   type DocumentActionsVersionType,
   type DocumentFieldAction,
@@ -26,6 +35,7 @@ import {
   selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
+  useDocumentDivergences,
   useDocumentForm,
   useDocumentIdStack,
   usePerspective,
@@ -35,7 +45,7 @@ import {
   useUnique,
   useWorkspace,
 } from 'sanity'
-import {DocumentPaneContext} from 'sanity/_singletons'
+import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
@@ -45,7 +55,10 @@ import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
-import {type DocumentPaneContextValue} from './DocumentPaneContext'
+import {
+  type DocumentPaneContextValue,
+  type DocumentPaneInfoContextValue,
+} from './DocumentPaneContext'
 import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
@@ -324,15 +337,9 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   const handlePathOpen = useCallback(
     (path: Path) => {
-      // Update internal open path
       onPathOpen(path)
 
       if (enhancedObjectDialogEnabled) {
-        /**
-         * Before we used to set the path open based on the focus path
-         * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
-         * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
-         */
         const nextPath = pathToString(path)
         if (params.path !== nextPath) {
           setPaneParams({...params, path: nextPath})
@@ -475,12 +482,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   )
 
   useEffect(() => {
-    setDocumentMeta({
-      documentId,
-      documentType,
-      schemaType: schemaType!,
-      onChange,
-    })
+    setDocumentMeta({documentId, documentType, schemaType: schemaType!, onChange})
   }, [documentId, documentType, schemaType, onChange, setDocumentMeta])
 
   const compareValue = useMemo(
@@ -631,42 +633,94 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     ],
   )
 
+  const documentPaneInfo: DocumentPaneInfoContextValue = useMemo(
+    () => ({
+      actions,
+      badges,
+      documentId,
+      documentIdRaw,
+      documentType,
+      fieldActions,
+      index,
+      menuItemGroups: menuItemGroups || [],
+      maximized,
+      onPaneClose: handlePaneClose,
+      onPaneSplit: handlePaneSplit,
+      onSetMaximizedPane,
+      paneKey,
+      schemaType: schemaType!,
+      title,
+      views,
+      unstable_languageFilter: languageFilter,
+    }),
+    [
+      actions,
+      badges,
+      documentId,
+      documentIdRaw,
+      documentType,
+      fieldActions,
+      index,
+      menuItemGroups,
+      maximized,
+      handlePaneClose,
+      handlePaneSplit,
+      onSetMaximizedPane,
+      paneKey,
+      schemaType,
+      title,
+      views,
+      languageFilter,
+    ],
+  )
+
   const pathRef = useRef<string | undefined>(undefined)
-  useEffect(() => {
-    if (ready && params.path) {
-      const {path, ...restParams} = params
+  const paramPath = params.path
 
-      // Only trigger a programmatic focus when the URL path changed AND the
-      // form's openPath doesn't already reflect it.  When handlePathOpen updates
-      // both the form state and the URL, the form is already in sync — calling
-      // onProgrammaticFocus again would re-set focusPath/openPath and cause
-      // cascading state updates that flicker nested dialogs.
-      const currentOpenPathString = pathToString(openPath)
-      if (path !== pathRef.current && path !== currentOpenPathString) {
-        const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
-        onProgrammaticFocus(pathFromUrl)
-      }
+  const syncPathFromUrl = useEffectEvent((urlPath: string) => {
+    const {path: _path, ...restParams} = params
 
-      if (!enhancedObjectDialogEnabled) {
-        // remove the `path`-param from url after we have consumed it as the initial focus path
-        paneRouter.setParams(restParams)
-      }
+    // Only trigger a programmatic focus when the URL path changed AND the
+    // form's openPath doesn't already reflect it.  When handlePathOpen updates
+    // both the form state and the URL, the form is already in sync — calling
+    // onProgrammaticFocus again would re-set focusPath/openPath and cause
+    // cascading state updates that flicker nested dialogs.
+    const currentOpenPathString = pathToString(openPath)
+    if (urlPath !== pathRef.current && urlPath !== currentOpenPathString) {
+      const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(urlPath))
+      onProgrammaticFocus(pathFromUrl)
     }
-    pathRef.current = params.path
+
+    if (!enhancedObjectDialogEnabled) {
+      paneRouter.setParams(restParams)
+    }
+  })
+
+  useEffect(() => {
+    if (ready && paramPath) {
+      syncPathFromUrl(paramPath)
+    }
+    pathRef.current = paramPath
 
     return undefined
-  }, [
-    formStateRef,
-    onProgrammaticFocus,
-    paneRouter,
-    params,
-    ready,
-    enhancedObjectDialogEnabled,
-    openPath,
-  ])
+  }, [paramPath, ready])
 
   return (
-    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    <DocumentPaneInfoContext.Provider value={documentPaneInfo}>
+      <DocumentPaneContext.Provider value={documentPane}>
+        <DivergencesProvider
+          upstreamEditState={upstreamEditState}
+          editState={editState}
+          subjectId={documentId}
+          schemaType={formState.schemaType}
+          displayedId={value._id}
+          formState={formState}
+        >
+          <DivergenceAutofocus onProgrammaticFocus={onProgrammaticFocus} />
+          {children}
+        </DivergencesProvider>
+      </DocumentPaneContext.Provider>
+    </DocumentPaneInfoContext.Provider>
   )
 }
 
@@ -708,4 +762,22 @@ function getDocumentVersionType(
   }
 
   return version
+}
+
+const DivergenceAutofocus: ComponentType<
+  Pick<ReturnType<typeof useDocumentForm>, 'onProgrammaticFocus'>
+> = ({onProgrammaticFocus}) => {
+  const divergenceNavigator = useDocumentDivergences()
+
+  const focusDivergentPath = useEffectEvent(() => {
+    if (typeof divergenceNavigator.state.focusedDivergence !== 'undefined') {
+      onProgrammaticFocus(pathFromString(divergenceNavigator.state.focusedDivergence))
+    }
+  })
+
+  useEffect(() => {
+    focusDivergentPath()
+  }, [divergenceNavigator.state.focusedDivergence])
+
+  return null
 }

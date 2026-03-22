@@ -1,10 +1,12 @@
 import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
+import {useToast} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -18,8 +20,14 @@ import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
-import {createDocumentStore, type DocumentStore, type LatencyReportEvent} from './document'
+import {
+  createDocumentStore,
+  type DocumentPairLoadedEvent,
+  type DocumentStore,
+  type LatencyReportEvent,
+} from './document'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
+import {DocumentPairLoadingMeasured} from './document/__telemetry__/documentPairLoading.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
 import {createGrantsStore, type GrantsStore} from './grants'
@@ -33,6 +41,10 @@ import {createUserStore, type UserStore} from './user'
  * Latencies below this value will not be logged
  */
 const IGNORE_LATENCY_BELOW_MS = 1000
+
+/** Minimum time between slow commit toast notifications */
+const SLOW_COMMIT_TOAST_COOLDOWN_MS = 30_000
+const slowCommitCooldown = {lastToastAt: 0}
 
 /**
  * @hidden
@@ -137,7 +149,7 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
  * @hidden
  * @beta */
 export function useDocumentStore(): DocumentStore {
-  const {getClient, i18n} = useSource()
+  const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
   const templates = useTemplates()
   const resourceCache = useResourceCache()
@@ -151,6 +163,8 @@ export function useDocumentStore(): DocumentStore {
   }, [workspace.__internal_serverDocumentActions?.enabled])
 
   const telemetry = useTelemetry()
+  const toast = useToast()
+  const {t} = useTranslation()
 
   const handleSyncErrorRecovery = useCallback(
     (error: OutOfSyncError) => {
@@ -172,11 +186,43 @@ export function useDocumentStore(): DocumentStore {
     [telemetry],
   )
 
+  const handleSlowCommit = useCallback(() => {
+    const now = Date.now()
+    if (now - slowCommitCooldown.lastToastAt < SLOW_COMMIT_TOAST_COOLDOWN_MS) return
+    slowCommitCooldown.lastToastAt = now
+    toast.push({
+      title: t('document-store.slow-commit.title'),
+      description: t('document-store.slow-commit.description'),
+      status: 'warning',
+    })
+  }, [toast, t])
+
+  const handleDocumentPairLoaded = useCallback(
+    (event: DocumentPairLoadedEvent) => {
+      telemetry.log(DocumentPairLoadingMeasured, {
+        durationMs: event.durationMs,
+        fromCache: event.fromCache,
+        hasPublished: event.hasPublished,
+        hasDraft: event.hasDraft,
+        hasVersion: event.hasVersion,
+      })
+    },
+    [telemetry],
+  )
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
         namespace: 'documentStore',
-        dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n, workspace],
+        dependencies: [
+          getClient,
+          documentPreviewStore,
+          historyStore,
+          schema,
+          i18n,
+          workspace,
+          currentUser,
+        ],
       }) ||
       createDocumentStore({
         getClient,
@@ -186,15 +232,26 @@ export function useDocumentStore(): DocumentStore {
         schema,
         i18n,
         serverActionsEnabled,
+        currentUser,
         extraOptions: {
           onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
+          onSlowCommit: handleSlowCommit,
+          onDocumentPairLoaded: handleDocumentPairLoaded,
         },
       })
 
     resourceCache.set({
       namespace: 'documentStore',
-      dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n, workspace],
+      dependencies: [
+        getClient,
+        documentPreviewStore,
+        historyStore,
+        schema,
+        i18n,
+        workspace,
+        currentUser,
+      ],
       value: documentStore,
     })
 
@@ -207,10 +264,13 @@ export function useDocumentStore(): DocumentStore {
     schema,
     i18n,
     workspace,
+    currentUser,
     templates,
     serverActionsEnabled,
     handleReportLatency,
     handleSyncErrorRecovery,
+    handleSlowCommit,
+    handleDocumentPairLoaded,
   ])
 }
 

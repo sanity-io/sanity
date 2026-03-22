@@ -1,16 +1,27 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {usePerspective} from 'sanity'
-import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
+import {
+  type Mock,
+  type MockedFunction,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {usePaneRouter} from '../../../../../components'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
+import {type DocumentPaneInfoContextValue} from '../../../DocumentPaneContext'
+import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'
 import {CopyDocumentActions} from '../CopyDocumentActions'
 
 const mockResolveIntentLink = vi.hoisted(() => vi.fn(() => '/mock-intent-link'))
-const mockBuildStudioUrl = vi.hoisted(() =>
-  vi.fn(({studio}: {studio?: (url: string) => string}) => studio?.('http://localhost:3333') ?? ''),
+const mockBuildIntentUrl = vi.hoisted(() =>
+  vi.fn((intentLink: string) => `http://localhost:3333${intentLink}`),
 )
 const mockTelemetryLog = vi.hoisted(() => vi.fn())
 const mockClipboardWriteText = vi.hoisted(() => vi.fn(() => Promise.resolve()))
@@ -28,7 +39,7 @@ vi.mock('sanity', async (importOriginal) => ({
   usePerspective: vi.fn(() => DEFAULT_PERSPECTIVE),
   useStudioUrl: vi.fn(() => ({
     studioUrl: 'http://localhost:3333',
-    buildStudioUrl: mockBuildStudioUrl,
+    buildIntentUrl: mockBuildIntentUrl,
   })),
   useTranslation: vi.fn(() => ({
     t: (key: string) => key,
@@ -57,13 +68,17 @@ vi.mock('../../../useDocumentPane', () => ({
   })),
 }))
 
+vi.mock('../../../useDocumentPaneInfo')
+
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(() => ({log: mockTelemetryLog})),
 }))
 
 const mockUsePerspective = usePerspective as Mock
 const mockUsePaneRouter = usePaneRouter as Mock
-
+const mockUseDocumentPaneInfo = useDocumentPaneInfo as MockedFunction<
+  () => Partial<DocumentPaneInfoContextValue>
+>
 let wrapper: React.ComponentType<{children: React.ReactNode}>
 
 beforeAll(async () => {
@@ -81,6 +96,10 @@ describe('CopyDocumentActions', () => {
 
     mockUsePerspective.mockReturnValue(DEFAULT_PERSPECTIVE)
     mockUsePaneRouter.mockReturnValue({params: {}, setParams: vi.fn()})
+    mockUseDocumentPaneInfo.mockReturnValue({
+      documentType: 'article',
+      documentId: 'doc-123',
+    })
   })
 
   async function clickMenuItem(testId: string) {
@@ -147,6 +166,7 @@ describe('CopyDocumentActions', () => {
       render(<CopyDocumentActions />, {wrapper})
       await clickMenuItem('copy-link-to-document')
 
+      expect(mockBuildIntentUrl).toHaveBeenCalledWith('/intent/edit/id=doc-123;type=article')
       expect(mockClipboardWriteText).toHaveBeenCalledWith(
         'http://localhost:3333/intent/edit/id=doc-123;type=article',
       )

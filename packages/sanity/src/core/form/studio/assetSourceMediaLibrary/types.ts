@@ -57,14 +57,6 @@ export interface SanityMediaLibraryConfig {
   }
 }
 
-export type AssetDialogAction = {
-  type: 'delete' | 'close'
-}
-
-export interface AssetMenuAction {
-  type: 'delete' | 'showUsage'
-}
-
 /**
  * The type that is returned from the Media Library for an selected asset item
  * @internal

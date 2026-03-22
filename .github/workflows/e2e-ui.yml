@@ -6,7 +6,7 @@ on:
   workflow_call:
     secrets:
       TURBO_TOKEN:
-      SANITY_E2E_SESSION_TOKEN_NEW:
+      SANITY_E2E_WRITE_TOKEN:
         required: true
 
 jobs:
@@ -67,10 +67,6 @@ jobs:
           done
           exit 1
 
-      - name: Build CLI
-        # This warms up the turborepo remote cache
-        run: pnpm build:cli --output-logs=full --log-order=grouped
-
   install:
     needs: [prepare, build-cli]
     timeout-minutes: 30
@@ -81,7 +77,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
+        # Be sure to update all instances in this file if updated, as well as github required checks
         project: [chromium, firefox]
     steps:
       - uses: actions/checkout@v6
@@ -120,18 +116,11 @@ jobs:
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Build CLI
-        # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
-        run: pnpm build:cli --output-logs=full --log-order=grouped
-
       - name: Cache E2E test studio on PR
         # Always run with PRs logic, to ensure tests run by the UI repo doesn't conflict with tests run by the sanity repo
         # if: ${{ github.event_name == 'pull_request' }}
         env:
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
           # the id is based on the PR number and the workflow run id
@@ -148,7 +137,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
+        # Be sure to update all instances in this file if updated, as well as github required checks
         project: [chromium, firefox]
         # Add more shards here if needed, but remember that the github required checks will have to be updated as well
         shardIndex: [1, 2, 3, 4]
@@ -188,13 +177,8 @@ jobs:
         # Always run with PRs logic, to ensure tests run by the UI repo doesn't conflict with tests run by the sanity repo
         # if: ${{ github.event_name == 'pull_request' }}
         env:
-          # Missing in docs but in use
-          # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
           PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
           # the id is based on the PR number and the workflow run id

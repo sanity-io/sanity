@@ -1,5 +1,5 @@
-import {htmlToBlocks} from '@portabletext/block-tools'
 import {type OnPasteFn, type PortableTextBlock} from '@portabletext/editor'
+import {htmlToPortableText} from '@portabletext/html'
 import {useCallback, useMemo} from 'react'
 import {PortableTextInput, type PortableTextInputProps, type PortableTextMarker} from 'sanity'
 
@@ -10,15 +10,16 @@ export function CustomContentInput(inputProps: PortableTextInputProps) {
   const {value} = inputProps
 
   const handlePaste: OnPasteFn = useCallback((input) => {
-    const {event, type, path} = input
+    const {event, schemaTypes, path} = input
     const html = event.clipboardData.getData('text/html')
     // check if schema has the code type
-    const hasCodeType = type.of.map(({name}) => name).includes('code')
+    const hasCodeType = schemaTypes.blockObjects.map(({name}) => name).includes('code')
     if (!hasCodeType) {
       console.log('Run `sanity install @sanity/code-input, and add `type: "code"` to your schema.')
     }
     if (html && hasCodeType) {
-      const blocks = htmlToBlocks(html, type, {
+      const blocks = htmlToPortableText(html, {
+        schema: schemaTypes,
         rules: [
           {
             deserialize(el, next, block) {

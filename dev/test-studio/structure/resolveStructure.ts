@@ -12,7 +12,6 @@ import {
   RocketIcon,
   SyncIcon,
   TerminalIcon,
-  ThListIcon,
   UsersIcon,
   WarningFilledIcon,
 } from '@sanity/icons'
@@ -535,12 +534,6 @@ export const structure: StructureResolver = (
 
           return listItem.child(
             S.documentTypeList(listItemId).menuItems([
-              S.menuItem()
-                .title('Table view')
-                .group('layout')
-                .action('setLayout')
-                .params({layout: 'sheetList'})
-                .icon(ThListIcon),
               ...(S.documentTypeList(listItemId).getMenuItems() || []),
             ]),
           )

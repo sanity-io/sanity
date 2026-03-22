@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "5.12.0",
+  "version": "5.17.1",
   "description": "",
   "keywords": [
     "cms",
@@ -70,7 +70,7 @@
     "@sanity/generate-help-url": "^4.0.0",
     "@sanity/types": "workspace:*",
     "arrify": "^2.0.1",
-    "groq-js": "^1.27.1",
+    "groq-js": "^1.29.0",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
     "lodash-es": "^4.17.22",
@@ -88,7 +88,12 @@
     "@types/react": "catalog:",
     "@typescript/native-preview": "catalog:",
     "eslint": "catalog:",
-    "rimraf": "^5.0.10",
+    "rimraf": "catalog:",
     "vitest": "catalog:"
-  }
+  },
+  "browserslist": [
+    "node >=20.19",
+    "node >=22.12",
+    "baseline 2024"
+  ]
 }

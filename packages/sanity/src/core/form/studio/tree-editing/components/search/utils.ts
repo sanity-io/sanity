@@ -1,4 +1,4 @@
-import {deburr} from 'lodash-es'
+import deburr from 'lodash-es/deburr.js'
 
 import {type DialogItem} from '../../types'
 import {type SearchableTreeEditingMenuItem} from './types'
@@ -6,7 +6,7 @@ import {type SearchableTreeEditingMenuItem} from './types'
 /**
  * Flattens a list of items and their children into a single list.
  */
-export function flattenItems(items: DialogItem[]): DialogItem[] {
+function flattenItems(items: DialogItem[]): DialogItem[] {
   const result: DialogItem[] = items.reduce((acc: DialogItem[], item: DialogItem) => {
     if (item?.children) {
       return [...acc, item, ...flattenItems(item.children)]

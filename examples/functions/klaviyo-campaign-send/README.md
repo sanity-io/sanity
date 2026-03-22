@@ -91,7 +91,6 @@ This function is built to be compatible with the [Sanity E-commerce template](ht
    export default defineBlueprint({
      resources: [
        defineDocumentFunction({
-         type: 'sanity.function.document',
          name: 'klaviyo-campaign-send',
          memory: 1,
          timeout: 30,

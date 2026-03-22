@@ -181,10 +181,10 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const handleFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
       if (event.currentTarget === focusElementRef.current) {
-        onPathFocus?.([])
+        onPathFocus?.(path)
       }
     },
-    [onPathFocus],
+    [onPathFocus, path],
   )
 
   const handleAutocompleteFocus = useCallback(
@@ -279,7 +279,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   ])
 
   return (
-    <>
+    <div style={props.elementProps.style}>
       {!featureInfo.isLoading && !featureInfo.enabled && (
         <DisabledFeatureWarning value={value} onClearValue={handleClear} />
       )}
@@ -428,6 +428,6 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
           )}
         </Stack>
       )}
-    </>
+    </div>
   )
 }

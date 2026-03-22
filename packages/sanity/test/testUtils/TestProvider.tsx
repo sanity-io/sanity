@@ -1,19 +1,16 @@
 import {type SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {createMemoryHistory} from 'history'
-import {noop} from 'lodash-es'
-import {type ReactNode} from 'react'
+import noop from 'lodash-es/noop.js'
+import {type ComponentType, type PropsWithChildren} from 'react'
 import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
 import {vi} from 'vitest'
 
 import {ResolvedPanesProvider} from '../../src/_singletons/context/ResolvedPanesContext'
 import {
-  CopyPasteProvider,
   type LocaleResourceBundle,
   ResourceCacheProvider,
   type SingleWorkspace,
-  SourceProvider,
-  WorkspaceProvider,
   type WorkspaceSummary,
 } from '../../src/core'
 import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
@@ -24,8 +21,12 @@ import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/Ass
 import {DocumentLimitUpsellProvider} from '../../src/core/limits/context/documents/DocumentLimitUpsellProvider'
 import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/usePerspective.mock'
 import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
+import {CopyPasteProvider} from '../../src/core/studio/copyPaste/CopyPasteProvider'
+import {SourceProvider} from '../../src/core/studio/source'
+import {WorkspaceProvider} from '../../src/core/studio/workspace'
 import {route, RouterProvider} from '../../src/router'
 import {type Panes} from '../../src/structure/structureResolvers'
+import {DivergencesTestProvider} from './DivergencesTestProvider'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 // Mock the useUpsellData hook to prevent API calls in tests
@@ -76,7 +77,7 @@ export async function createTestProvider({
 
   const router = route.create('/')
 
-  await i18next.init()
+  await i18next.init({showSupportNotice: false})
 
   const routerState = {}
   const activeWorkspace = {name: 'default'} as WorkspaceSummary
@@ -88,45 +89,45 @@ export async function createTestProvider({
     ready: true,
   }
 
-  function TestProvider({children}: {children: ReactNode}) {
-    return (
-      <RouterProvider router={router} state={routerState} onNavigate={noop}>
-        <ThemeProvider theme={studioTheme}>
-          <LocaleProviderBase locales={locales} i18next={i18next} projectId="test" sourceId="test">
-            <ResourceCacheProvider>
-              <ToastProvider>
-                <LayerProvider>
-                  <WorkspaceProvider workspace={workspace}>
-                    <SourceProvider source={workspace.unstable_sources[0]}>
-                      <ActiveWorkspaceMatcherProvider
-                        activeWorkspace={activeWorkspace}
-                        setActiveWorkspace={noop}
-                        history={history}
-                      >
-                        <ResolvedPanesProvider value={resolvedPanes}>
-                          <CopyPasteProvider>
-                            <ResourceCacheProvider>
-                              <AddonDatasetContext.Provider value={addonDatasetContextValue}>
-                                <PerspectiveContext.Provider value={perspectiveContextValueMock}>
-                                  <DocumentLimitUpsellProvider>
-                                    <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
-                                  </DocumentLimitUpsellProvider>
-                                </PerspectiveContext.Provider>
-                              </AddonDatasetContext.Provider>
-                            </ResourceCacheProvider>
-                          </CopyPasteProvider>
-                        </ResolvedPanesProvider>
-                      </ActiveWorkspaceMatcherProvider>
-                    </SourceProvider>
-                  </WorkspaceProvider>
-                </LayerProvider>
-              </ToastProvider>
-            </ResourceCacheProvider>
-          </LocaleProviderBase>
-        </ThemeProvider>
-      </RouterProvider>
-    )
-  }
+  const TestProvider: ComponentType<PropsWithChildren> = ({children}) => (
+    <RouterProvider router={router} state={routerState} onNavigate={noop}>
+      <ThemeProvider theme={studioTheme}>
+        <LocaleProviderBase locales={locales} i18next={i18next} projectId="test" sourceId="test">
+          <ResourceCacheProvider>
+            <ToastProvider>
+              <LayerProvider>
+                <WorkspaceProvider workspace={workspace}>
+                  <SourceProvider source={workspace.unstable_sources[0]}>
+                    <ActiveWorkspaceMatcherProvider
+                      activeWorkspace={activeWorkspace}
+                      setActiveWorkspace={noop}
+                      history={history}
+                    >
+                      <ResolvedPanesProvider value={resolvedPanes}>
+                        <CopyPasteProvider>
+                          <ResourceCacheProvider>
+                            <AddonDatasetContext.Provider value={addonDatasetContextValue}>
+                              <PerspectiveContext.Provider value={perspectiveContextValueMock}>
+                                <DocumentLimitUpsellProvider>
+                                  <AssetLimitUpsellProvider>
+                                    <DivergencesTestProvider>{children}</DivergencesTestProvider>
+                                  </AssetLimitUpsellProvider>
+                                </DocumentLimitUpsellProvider>
+                              </PerspectiveContext.Provider>
+                            </AddonDatasetContext.Provider>
+                          </ResourceCacheProvider>
+                        </CopyPasteProvider>
+                      </ResolvedPanesProvider>
+                    </ActiveWorkspaceMatcherProvider>
+                  </SourceProvider>
+                </WorkspaceProvider>
+              </LayerProvider>
+            </ToastProvider>
+          </ResourceCacheProvider>
+        </LocaleProviderBase>
+      </ThemeProvider>
+    </RouterProvider>
+  )
 
   return TestProvider
 }

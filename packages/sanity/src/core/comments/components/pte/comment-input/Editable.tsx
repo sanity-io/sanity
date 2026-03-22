@@ -8,7 +8,7 @@ import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {useClickOutsideEvent} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -35,7 +35,7 @@ const PlaceholderWrapper = styled.span((props) => {
   `
 })
 
-export const StyledPopover = styled(Popover)(({theme}) => {
+const StyledPopover = styled(Popover)(({theme}) => {
   const {space, radius} = theme.sanity
 
   return css`
@@ -69,7 +69,7 @@ interface EditableProps {
   renderBlock: RenderBlockFunction
 }
 
-export interface EditableHandle {
+interface EditableHandle {
   setShowMentionOptions: (show: boolean) => void
 }
 

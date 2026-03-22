@@ -9,7 +9,9 @@ import {type ComponentType, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {type DocumentFieldActionNode} from '../../../config'
-import {FormField, FormFieldSet} from '../../components'
+import {FormField, FormFieldSet, FormRow} from '../../components'
+import {FormDivergenceIndicator} from '../../components/FormDivergenceIndicator'
+import {FormNodeDivergenceDetail} from '../../components/FormNodeDivergenceDetail'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
@@ -24,23 +26,68 @@ function BooleanField(field: FieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const focused = Boolean(field.inputProps.focused)
 
+  // Boolean fields do not compose `FormField` or `FormFieldSet` components, so
+  // their content does not implicitly get rendered inside a `FormRow` like
+  // other fields' content does. Instead, the `FormRow` container is explicitly
+  // rendered here.
   return (
-    <>
-      {documentId && field.actions && field.actions.length > 0 && (
-        <FieldActionsResolver
-          actions={field.actions}
-          documentId={documentId}
-          documentType={field.schemaType.name}
-          onActions={setFieldActionNodes}
+    <FormNodeDivergenceDetail path={field.path} readOnly={field.inputProps.readOnly}>
+      <FormRow gutterStartCell={<FormDivergenceIndicator path={field.path} />}>
+        {documentId && field.actions && field.actions.length > 0 && (
+          <FieldActionsResolver
+            actions={field.actions}
+            documentId={documentId}
+            documentType={field.schemaType.name}
+            onActions={setFieldActionNodes}
+            path={field.path}
+            schemaType={field.schemaType}
+          />
+        )}
+        <ChangeIndicator
+          hasFocus={Boolean(field.inputProps.focused)}
+          isChanged={field.inputProps.changed}
           path={field.path}
-          schemaType={field.schemaType}
-        />
-      )}
-      <ChangeIndicator
-        hasFocus={Boolean(field.inputProps.focused)}
-        isChanged={field.inputProps.changed}
-        path={field.path}
-      >
+        >
+          <FieldActionsProvider
+            __internal_slot={field.__internal_slot}
+            __internal_comments={field.__internal_comments}
+            actions={fieldActionsNodes}
+            focused={focused}
+            path={field.path}
+          >
+            {field.children}
+          </FieldActionsProvider>
+        </ChangeIndicator>
+      </FormRow>
+    </FormNodeDivergenceDetail>
+  )
+}
+
+function DateTimeField(field: FieldProps) {
+  /*
+     To account for the time zone picker, all title logic is being moved into the DateTimeInput component.
+   */
+  const documentId = usePublishedId()
+  const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
+  const focused = Boolean(field.inputProps.focused)
+
+  // DateTime fields do not compose `FormField` or `FormFieldSet` components, so
+  // their content does not implicitly get rendered inside a `FormRow` like
+  // other fields' content does. Instead, the `FormRow` container is explicitly
+  // rendered here.
+  return (
+    <FormNodeDivergenceDetail path={field.path} readOnly={field.inputProps.readOnly}>
+      <FormRow gutterStartCell={<FormDivergenceIndicator path={field.path} />}>
+        {documentId && field.actions && field.actions.length > 0 && (
+          <FieldActionsResolver
+            actions={field.actions}
+            documentId={documentId}
+            documentType={field.schemaType.name}
+            onActions={setFieldActionNodes}
+            path={field.path}
+            schemaType={field.schemaType}
+          />
+        )}
         <FieldActionsProvider
           __internal_slot={field.__internal_slot}
           __internal_comments={field.__internal_comments}
@@ -50,41 +97,8 @@ function BooleanField(field: FieldProps) {
         >
           {field.children}
         </FieldActionsProvider>
-      </ChangeIndicator>
-    </>
-  )
-}
-
-function DateTimeField(field: FieldProps) {
-  /*
-    To account for the time zone picker, all title logic is being moved into the DateTimeInput component.
-  */
-  const documentId = usePublishedId()
-  const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
-  const focused = Boolean(field.inputProps.focused)
-
-  return (
-    <>
-      {documentId && field.actions && field.actions.length > 0 && (
-        <FieldActionsResolver
-          actions={field.actions}
-          documentId={documentId}
-          documentType={field.schemaType.name}
-          onActions={setFieldActionNodes}
-          path={field.path}
-          schemaType={field.schemaType}
-        />
-      )}
-      <FieldActionsProvider
-        __internal_slot={field.__internal_slot}
-        __internal_comments={field.__internal_comments}
-        actions={fieldActionsNodes}
-        focused={focused}
-        path={field.path}
-      >
-        {field.children}
-      </FieldActionsProvider>
-    </>
+      </FormRow>
+    </FormNodeDivergenceDetail>
   )
 }
 
@@ -125,6 +139,8 @@ function PrimitiveField(field: FieldProps) {
             title={field.title}
             validation={field.validation}
             deprecated={field.schemaType.deprecated}
+            path={field.path}
+            readOnly={field.inputProps.readOnly}
           >
             <ChangeIndicator
               hasFocus={focused}
@@ -190,10 +206,13 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
           level={field.level}
           onCollapse={field.onCollapse}
           onExpand={field.onExpand}
+          schemaType={field.schemaType}
           title={field.title}
           validation={field.validation}
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
+          path={field.path}
+          readOnly={field.inputProps.readOnly}
         >
           {field.children}
         </FormFieldSet>
@@ -244,6 +263,9 @@ function ImageOrFileField(field: ObjectFieldProps) {
           validation={field.validation}
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
+          path={field.path}
+          schemaType={field.schemaType}
+          readOnly={field.inputProps.readOnly}
         >
           {field.children}
         </FormFieldSet>

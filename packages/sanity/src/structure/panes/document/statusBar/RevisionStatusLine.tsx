@@ -8,7 +8,7 @@ import {styled} from 'styled-components'
 
 import {useDocumentPane} from '../useDocumentPane'
 
-export const StatusText = styled(Text)`
+const StatusText = styled(Text)`
   color: var(--card-muted-fg-color);
 
   em {

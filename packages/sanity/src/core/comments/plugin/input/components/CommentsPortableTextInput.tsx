@@ -11,7 +11,8 @@ import {isPortableTextTextBlock} from '@sanity/types'
 import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
-import {debounce, isEqual} from 'lodash-es'
+import debounce from 'lodash-es/debounce.js'
+import isEqual from 'lodash-es/isEqual.js'
 import {AnimatePresence} from 'motion/react'
 import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
@@ -70,7 +71,7 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
   return <CommentsPortableTextInputInner {...props} mode={mode} />
 }
 
-export const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputInner(
+const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputInner(
   props: PortableTextInputProps & {mode: CommentsUIMode},
 ) {
   const {mode} = props

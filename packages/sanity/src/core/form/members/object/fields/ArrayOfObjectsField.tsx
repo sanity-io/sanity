@@ -5,7 +5,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {noop} from 'lodash-es'
+import noop from 'lodash-es/noop.js'
 import {
   type FocusEvent,
   type ReactElement,
@@ -49,6 +49,7 @@ import {
 import {useFormBuilder} from '../../../useFormBuilder'
 import {ensureKey} from '../../../utils/ensureKey'
 import * as is from '../../../utils/is'
+import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 
@@ -328,8 +329,17 @@ export function ArrayOfObjectsField(props: {
       'id': member.field.id,
       'ref': focusRef,
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
+      'style': {
+        anchorName: pathToAnchorIdent('input', member.field.path),
+      },
     }),
-    [handleBlur, handleFocus, member.field.id, member.field.schemaType.description],
+    [
+      handleBlur,
+      handleFocus,
+      member.field.id,
+      member.field.path,
+      member.field.schemaType.description,
+    ],
   )
 
   const formBuilder = useFormBuilder()

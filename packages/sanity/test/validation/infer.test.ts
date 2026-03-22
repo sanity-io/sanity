@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
-import {has} from 'lodash-es'
+import has from 'lodash-es/has.js'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {type Workspace} from '../../src/core/config'
@@ -150,6 +150,7 @@ describe('schema validation inference', () => {
     })
 
     test("gives error if media can't be found", async () => {
+      vi.spyOn(console, 'warn').mockImplementation(() => {})
       client.fetch.mockImplementation(() => Promise.resolve(false))
 
       await expect(
@@ -169,6 +170,9 @@ describe('schema validation inference', () => {
           path: ['imageField'],
         },
       ])
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining('The asset could not be found in the Media Library'),
+      )
     })
 
     test("gives error if media doesn't validate according to media validation rule", async () => {

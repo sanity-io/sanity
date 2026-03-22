@@ -1,7 +1,7 @@
 import {AccessDeniedIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
 import {Box, Inline, Text} from '@sanity/ui'
-import {startCase} from 'lodash-es'
+import startCase from 'lodash-es/startCase.js'
 import {Fragment, useCallback} from 'react'
 
 import {useListFormat} from '../hooks/useListFormat'

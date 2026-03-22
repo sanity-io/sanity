@@ -1,5 +1,5 @@
 import {Card, Stack} from '@sanity/ui'
-import {get} from 'lodash-es'
+import get from 'lodash-es/get.js'
 import {PureComponent} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
@@ -160,6 +160,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
     } = this.props
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
+    const isGrid = schemaType.options?.layout === 'grid'
 
     // Note: we need this in order to generate new id's when items are moved around in the list
     // without it, dndkit will restore focus on the original index of the dragged item
@@ -189,7 +190,10 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
                     onItemMoveEnd={this.handleItemMoveEnd}
                     items={membersWithSortIds.map((m) => m.id)}
                     sortable={isSortable}
-                    gap={1}
+                    gap={isGrid ? 3 : 1}
+                    columns={isGrid ? [2, 3, 4] : 1}
+                    padding={isGrid ? 1 : undefined}
+                    margin={isGrid ? 1 : undefined}
                   >
                     {membersWithSortIds.map(({member, id}, index) => {
                       return (

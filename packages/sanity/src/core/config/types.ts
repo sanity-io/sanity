@@ -1054,8 +1054,8 @@ export interface Source {
     /**
      * Control whether advanced version control functionality is enabled.
      *
-     * Advanced version control provides features such as inline content diffs in Studio to make
-     * resolving conflicts across document versions easier.
+     * Advanced version control helps editors identify and resolve divergences
+     * between document versions.
      *
      * @beta
      */

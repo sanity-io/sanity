@@ -1,6 +1,7 @@
 import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {memoize, uniq} from 'lodash-es'
+import memoize from 'lodash-es/memoize.js'
+import uniq from 'lodash-es/uniq.js'
 import {type RawPatch} from 'mendoza'
 import {EMPTY, finalize, type Observable, of} from 'rxjs'
 import {concatMap, map, scan, shareReplay} from 'rxjs/operators'

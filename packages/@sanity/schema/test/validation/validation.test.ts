@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import {SquareIcon} from '@sanity/icons'
-import {flatten} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
 import {describe, expect, test} from 'vitest'
 
 import {validateSchema} from '../../src/sanity/validateSchema'
@@ -454,6 +454,33 @@ describe('Validation test', () => {
         expect(warnings).toHaveLength(0)
       }
     })
+  })
+
+  test('warns when field title or description is not a string', () => {
+    const schemaDef = [
+      {
+        name: 'myDocument',
+        type: 'document',
+        fields: [
+          {
+            name: 'myField',
+            type: 'string',
+            title: {something: 'not a string'},
+            description: {something: 'not a string'},
+          },
+        ],
+      },
+    ]
+
+    const validation = validateSchema(schemaDef)
+    const myDocument = validation.get('myDocument')
+    const field = myDocument.fields[0]
+    const warnings = field._problems.filter(
+      (p: any) => p.severity === 'warning' && p.message.includes('non-string'),
+    )
+    expect(warnings).toHaveLength(2)
+    expect(warnings[0].message).toContain('title')
+    expect(warnings[1].message).toContain('description')
   })
 
   describe('block annotations with custom types', () => {

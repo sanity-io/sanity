@@ -11,23 +11,31 @@ import {type PortableTextBlock, type PortableTextMarkdownBlock} from './portable
 
 export type ClientLike = {assets: {upload: SanityClient['assets']['upload']}}
 
-export async function uploadImages(client: ClientLike, blocks: PortableTextMarkdownBlock[]) {
+export async function uploadImages(
+  client: ClientLike,
+  blocks: PortableTextMarkdownBlock[],
+  options: {dryRun?: boolean},
+) {
   return pMap(blocks, async (block) => {
     if (block._type === 'block') {
-      return uploadInlineImages(client, block)
+      return uploadInlineImages(client, block, {dryRun: options.dryRun})
     }
     if (block._type !== 'image') {
       return block
     }
-    const asset = await uploadImage(client, block.src, {
-      preserveFilename: false,
-      tag: 'release-note-image',
-      source: {
-        id: block._key,
-        name: 'studio-release-automation',
-        url: block.src,
-      },
-    })
+    let asset = {_id: 'placeholder'}
+    if (!options.dryRun) {
+      asset = await uploadImage(client, block.src, {
+        preserveFilename: false,
+        tag: 'release-note-image',
+        source: {
+          id: block._key,
+          name: 'studio-release-automation',
+          url: block.src,
+        },
+      })
+    }
+
     return {
       _type: 'image',
       alt: block.alt,
@@ -37,18 +45,25 @@ export async function uploadImages(client: ClientLike, blocks: PortableTextMarkd
   })
 }
 
-async function uploadInlineImages(client: ClientLike, block: PortableTextBlock) {
+async function uploadInlineImages(
+  client: ClientLike,
+  block: PortableTextBlock,
+  {dryRun}: {dryRun?: boolean},
+) {
   const children = await pMap(block.children, async (span) => {
     if (span._type === 'image') {
-      const asset = await uploadImage(client, span.src, {
-        preserveFilename: false,
-        tag: 'release-note-image',
-        source: {
-          id: span._key,
-          name: 'studio-release-automation',
-          url: span.src,
-        },
-      })
+      let asset = {_id: 'placehoder'}
+      if (!dryRun) {
+        asset = await uploadImage(client, span.src, {
+          preserveFilename: false,
+          tag: 'release-note-image',
+          source: {
+            id: span._key,
+            name: 'studio-release-automation',
+            url: span.src,
+          },
+        })
+      }
       return {
         _type: 'image' as const,
         asset: {_ref: asset._id, _type: 'reference'},
@@ -63,7 +78,7 @@ async function uploadInlineImages(client: ClientLike, block: PortableTextBlock) 
   }
 }
 
-export async function uploadImage(
+async function uploadImage(
   client: ClientLike,
   url: string,
   metadata: UploadClientConfig,

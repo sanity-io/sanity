@@ -26,4 +26,5 @@ export const usEnglishLocale = defineLocale({
  * @internal
  * @hidden
  */
+/** @alias */
 export const defaultLocale = usEnglishLocale

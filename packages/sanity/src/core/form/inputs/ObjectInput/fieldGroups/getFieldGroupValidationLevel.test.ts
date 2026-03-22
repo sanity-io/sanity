@@ -5,6 +5,15 @@ import {describe, expect, test} from 'vitest'
 import {type FormFieldGroup} from '../../../store'
 import {getFieldGroupValidationLevel} from './getFieldGroupValidationLevel'
 
+const createValidation = (
+  level: 'error' | 'warning' | 'info',
+  path: FormNodeValidation['path'],
+): FormNodeValidation => ({
+  message: 'Test message',
+  level,
+  path,
+})
+
 describe('getFieldGroupValidationLevel', () => {
   const createGroup = (fieldName: string, groupName: string = 'group1'): FormFieldGroup => ({
     name: groupName,
@@ -15,15 +24,6 @@ describe('getFieldGroupValidationLevel', () => {
         group: groupName,
       },
     ] as ObjectField[],
-  })
-
-  const createValidation = (
-    level: 'error' | 'warning' | 'info',
-    path: string[],
-  ): FormNodeValidation => ({
-    message: 'Test message',
-    level,
-    path,
   })
 
   describe('single validation level', () => {
@@ -129,6 +129,13 @@ describe('getFieldGroupValidationLevel', () => {
       const group = createGroup('level3')
 
       expect(getFieldGroupValidationLevel(group, ['level1', 'level2'], validation)).toBe('warning')
+    })
+
+    test('should include nested validation under grouped array objects', () => {
+      const validation = [createValidation('error', ['specifications', {_key: 'spec1'}, 'value'])]
+      const group = createGroup('specifications')
+
+      expect(getFieldGroupValidationLevel(group, [], validation)).toBe('error')
     })
   })
 
