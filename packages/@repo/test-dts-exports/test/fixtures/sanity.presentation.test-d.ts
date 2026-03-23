@@ -29,7 +29,6 @@ import type {
   PreviewHeaderProps,
   PreviewProps,
   PreviewUrlOption,
-  PreviewUrlResolver,
   PreviewUrlResolverOptions,
   Serializable,
   SerializableArray,

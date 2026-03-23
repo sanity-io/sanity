@@ -8,8 +8,6 @@ import type {
   createCliConfig,
   defineCliConfig,
   getCliClient,
-  getStudioEnvironmentVariables,
-  StudioEnvVariablesOptions,
 } from 'sanity/cli'
 import {describe, expectTypeOf, test} from 'vitest'
 
