@@ -131,6 +131,8 @@ export interface TransferValueOptions {
   client?: ClientWithFetch
 }
 
+type ReadOnlyContext = {currentUser: CurrentUser | null}
+
 /**
  * Takes the path and checks if any ancestor is read-only
  * ["a", "b", "c"] - ["a"], ["a", "b"], ["a", "b", "c"],
@@ -146,8 +148,7 @@ function resolveReadOnlyAncestor({
   schemaType: SchemaType
   currentUser: CurrentUser | null
 }): boolean {
-  const isReadOnly = path.find((_, index) => {
-    // Iterates on each of the path segments and checks if the current path is read-only
+  return path.some((_, index) => {
     const currentPath = path.slice(0, index + 1)
     const schemaTypeAtPath = resolveSchemaTypeForPath(schemaType, currentPath, value)
     if (!schemaTypeAtPath) {
@@ -161,8 +162,6 @@ function resolveReadOnlyAncestor({
       path: currentPath,
     })
   })
-
-  return Boolean(isReadOnly)
 }
 
 export async function transferValue({
@@ -346,6 +345,7 @@ export async function transferValue({
     sourceSchemaTypeAtPath.jsonType === 'object' &&
     targetSchemaTypeAtPath.jsonType === 'object'
   ) {
+    const isDocumentLevelPaste = targetPath.length === 0
     return collateObjectValue({
       sourceValue: sourceValueAtPath as TypedObject,
       targetSchemaType: targetSchemaTypeAtPath as ObjectSchemaType,
@@ -355,6 +355,7 @@ export async function transferValue({
       errors,
       keyGenerator,
       options,
+      readOnlyContext: isDocumentLevelPaste ? {currentUser} : undefined,
     })
   }
 
@@ -446,6 +447,7 @@ async function collateObjectValue({
   errors,
   keyGenerator,
   options,
+  readOnlyContext,
 }: {
   sourceValue: unknown
   targetSchemaType: ObjectSchemaType
@@ -455,6 +457,7 @@ async function collateObjectValue({
   errors: TransferValueError[]
   keyGenerator: () => string
   options: TransferValueOptions
+  readOnlyContext?: ReadOnlyContext
 }) {
   if (isEmptyValue(sourceValue)) {
     return {
@@ -710,8 +713,28 @@ async function collateObjectValue({
   }
 
   const objectMembers = targetSchemaType.fields
+  const skippedReadOnlyFieldNames: string[] = []
+  const parentValue = readOnlyContext
+    ? getValueAtPath(targetRootValue as TypedObject, targetRootPath)
+    : undefined
 
   for (const member of objectMembers) {
+    if (readOnlyContext) {
+      const fieldPath = targetRootPath.concat(member.name)
+      const isFieldReadOnly = resolveConditionalProperty(member.type.readOnly, {
+        value: getValueAtPath(targetRootValue as TypedObject, fieldPath),
+        parent: parentValue,
+        document: targetRootValue as ConditionalPropertyCallbackContext['document'],
+        currentUser: readOnlyContext.currentUser,
+        path: fieldPath,
+      })
+
+      if (isFieldReadOnly) {
+        skippedReadOnlyFieldNames.push(member.type.title ?? member.name)
+        continue
+      }
+    }
+
     const memberSchemaType = member.type
     const memberIsArray = isArraySchemaType(memberSchemaType)
     const memberIsObject = isObjectSchemaType(memberSchemaType)
@@ -740,10 +763,11 @@ async function collateObjectValue({
         targetPath: [],
         targetSchemaType: memberSchemaType,
         targetRootValue,
-        targetRootPath,
+        targetRootPath: targetRootPath.concat(member.name),
         errors,
         options,
         keyGenerator,
+        readOnlyContext,
       })
 
       if (!isEmptyValue(collated.targetValue)) {
@@ -761,6 +785,7 @@ async function collateObjectValue({
         errors,
         options,
         keyGenerator,
+        readOnlyContext,
       })
 
       // Return early because we have set the markDefs one level up
@@ -786,6 +811,31 @@ async function collateObjectValue({
         targetValue[member.name] = []
       }
     }
+  }
+
+  const MAX_DISPLAYED_READONLY_FIELDS = 3
+  if (skippedReadOnlyFieldNames.length > 0) {
+    const isTruncated = skippedReadOnlyFieldNames.length > MAX_DISPLAYED_READONLY_FIELDS
+    errors.push({
+      level: 'warning',
+      sourceValue,
+      i18n: isTruncated
+        ? {
+            key: 'copy-paste.on-paste.validation.read-only-fields-skipped-truncated.description',
+            args: {
+              fieldNames: skippedReadOnlyFieldNames
+                .slice(0, MAX_DISPLAYED_READONLY_FIELDS)
+                .join(', '),
+              count: skippedReadOnlyFieldNames.length - MAX_DISPLAYED_READONLY_FIELDS,
+            },
+          }
+        : {
+            key: 'copy-paste.on-paste.validation.read-only-fields-skipped.description',
+            args: {
+              fieldNames: skippedReadOnlyFieldNames.join(', '),
+            },
+          },
+    })
   }
 
   const valueAtTargetPath = getValueAtPath(targetValue, targetPath)
@@ -852,6 +902,7 @@ async function collateArrayValue({
   errors,
   options,
   keyGenerator,
+  readOnlyContext,
 }: {
   sourceValue: unknown
   targetRootValue: unknown
@@ -860,6 +911,7 @@ async function collateArrayValue({
   errors: TransferValueError[]
   options: TransferValueOptions
   keyGenerator: () => string
+  readOnlyContext?: ReadOnlyContext
 }): Promise<{
   targetValue: unknown
   errors: TransferValueError[]
@@ -951,6 +1003,7 @@ async function collateArrayValue({
             errors,
             options,
             keyGenerator,
+            readOnlyContext,
           }),
         ),
       )
