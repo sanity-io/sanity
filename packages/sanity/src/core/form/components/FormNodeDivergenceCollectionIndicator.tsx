@@ -1,9 +1,10 @@
 import {type Path} from '@sanity/types'
 import {AnimatePresence} from 'motion/react'
-import {type ComponentType} from 'react'
+import {type PropsWithChildren, type ComponentType} from 'react'
 
 import {DivergenceCollectionIndicator} from '../../divergence/components/DivergenceCollectionIndicator'
 import {
+  type DivergenceNavigator,
   selectDivergenceCount,
   selectFirstDescendantDivergence,
 } from '../../divergence/divergenceNavigator'
@@ -14,8 +15,24 @@ interface Props {
   path: Path
 }
 
-export const FormNodeDivergenceCollectionIndicator: ComponentType<Props> = ({path}) => {
+export const FormNodeDivergenceCollectionIndicator: ComponentType<Props> = (props) => {
   const divergenceNavigator = useDocumentDivergences()
+
+  if (!divergenceNavigator.enabled) {
+    return null
+  }
+
+  return (
+    <FormNodeDivergenceCollectionIndicatorEnabled
+      {...props}
+      divergenceNavigator={divergenceNavigator}
+    />
+  )
+}
+
+const FormNodeDivergenceCollectionIndicatorEnabled: ComponentType<
+  PropsWithChildren<Props & {divergenceNavigator: DivergenceNavigator & {enabled: true}}>
+> = ({divergenceNavigator, path}) => {
   const divergenceCount = selectDivergenceCount(divergenceNavigator.state, path)
 
   const firstDescendantDivergence = selectFirstDescendantDivergence(divergenceNavigator.state, path)

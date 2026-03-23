@@ -127,6 +127,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const perspective = usePerspective()
 
   const {
+    advancedVersionControl: {enabled: advancedVersionControlEnabled},
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
@@ -705,6 +706,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     <DocumentPaneInfoContext.Provider value={documentPaneInfo}>
       <DocumentPaneContext.Provider value={documentPane}>
         <DivergencesProvider
+          enabled={advancedVersionControlEnabled}
           upstreamEditState={upstreamEditState}
           editState={editState}
           subjectId={documentId}
@@ -770,16 +772,22 @@ const DivergenceAutofocus: ComponentType<
   Pick<ReturnType<typeof useDocumentForm>, 'onProgrammaticFocus'>
 > = ({onProgrammaticFocus}) => {
   const divergenceNavigator = useDocumentDivergences()
+  const focusedDivergence = divergenceNavigator.enabled
+    ? divergenceNavigator.state.focusedDivergence
+    : undefined
 
   const focusDivergentPath = useEffectEvent(() => {
-    if (typeof divergenceNavigator.state.focusedDivergence !== 'undefined') {
+    if (
+      divergenceNavigator.enabled &&
+      typeof divergenceNavigator.state.focusedDivergence !== 'undefined'
+    ) {
       onProgrammaticFocus(pathFromString(divergenceNavigator.state.focusedDivergence))
     }
   })
 
   useEffect(() => {
     focusDivergentPath()
-  }, [divergenceNavigator.state.focusedDivergence])
+  }, [focusedDivergence])
 
   return null
 }

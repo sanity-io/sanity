@@ -6,7 +6,6 @@ import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
-import {selectDivergence} from '../../../../divergence/divergenceNavigator'
 import {pathToString} from '../../../../field'
 import {EMPTY_ARRAY} from '../../../../util'
 import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
@@ -112,7 +111,6 @@ export function TextBlock(props: TextBlockProps) {
   const {onChange} = useFormCallbacks()
   const hoveredChange = useHoveredChange()
   const divergenceNavigator = useDocumentDivergences()
-  const divergence = selectDivergence(divergenceNavigator.state, path)
 
   /**
    * Save the last valid memberItem data to prevent DOM mutations during text selection.
@@ -130,7 +128,9 @@ export function TextBlock(props: TextBlockProps) {
   const changeHovered =
     hoveredChange && pathToString(hoveredChange?.path || []) === pathToString(path)
 
-  const isFocusedDivergence = divergenceNavigator.state.focusedDivergence === pathToString(path)
+  const isFocusedDivergence =
+    divergenceNavigator.enabled &&
+    divergenceNavigator.state.focusedDivergence === pathToString(path)
 
   const presence = useChildPresence(path, true)
   // Include all presence paths pointing either directly to a block, or directly to a block child
