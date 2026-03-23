@@ -149,7 +149,9 @@ export {
 export {resolveSchemaTypes} from '../core/config/resolveSchemaTypes'
 export {SchemaError} from '../core/config/SchemaError'
 export type * from '../core/config/studio/types'
+// eslint-disable-next-line import/export -- runtime value + type-only re-export from same module, no actual conflict
 export {DECISION_PARAMETERS_SCHEMA} from '../core/config/types'
+// eslint-disable-next-line import/export -- runtime value + type-only re-export from same module, no actual conflict
 export type * from '../core/config/types'
 export {
   getConfigContextFromSource,
