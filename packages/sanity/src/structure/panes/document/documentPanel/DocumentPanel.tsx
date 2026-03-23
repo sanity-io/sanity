@@ -255,16 +255,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         isCardinalityOneRelease(release) &&
         (isReleaseScheduledOrScheduling(release) || isPausedCardinalityOneRelease(release)),
     )
-    const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
-
-    if (selectedPerspective === 'drafts' && scheduledCardinalityOneRelease && displayedIsDraft) {
-      return (
-        <ScheduledDraftOverrideBanner
-          releaseId={scheduledCardinalityOneRelease._id}
-          draftDocument={displayed}
-        />
-      )
-    }
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
     const isCurrentVersionGoingToUnpublish =
@@ -320,9 +310,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
 
     if (activeView.type !== 'form' || isPermissionsLoading) return null
+    const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
 
     return (
       <>
+        {selectedPerspective === 'drafts' && scheduledCardinalityOneRelease && displayedIsDraft && (
+          <ScheduledDraftOverrideBanner
+            releaseId={scheduledCardinalityOneRelease._id}
+            draftDocument={displayed}
+          />
+        )}
         {!permissions?.granted && (
           <InsufficientPermissionBanner requiredPermission={requiredPermission} />
         )}
