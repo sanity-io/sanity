@@ -345,7 +345,7 @@ export async function transferValue({
     sourceSchemaTypeAtPath.jsonType === 'object' &&
     targetSchemaTypeAtPath.jsonType === 'object'
   ) {
-    const isDocumentLevelPaste = targetPath.length === 0
+    const isDocumentLevelPaste = targetRootPath.length === 0
     return collateObjectValue({
       sourceValue: sourceValueAtPath as TypedObject,
       targetSchemaType: targetSchemaTypeAtPath as ObjectSchemaType,
@@ -731,6 +731,12 @@ async function collateObjectValue({
 
       if (isFieldReadOnly) {
         skippedReadOnlyFieldNames.push(member.type.title ?? member.name)
+        const existingValue = parentValue
+          ? (parentValue as Record<string, unknown>)[member.name]
+          : undefined
+        if (existingValue !== undefined) {
+          targetValue[member.name] = existingValue
+        }
         continue
       }
     }
@@ -767,7 +773,6 @@ async function collateObjectValue({
         errors,
         options,
         keyGenerator,
-        readOnlyContext,
       })
 
       if (!isEmptyValue(collated.targetValue)) {
@@ -785,7 +790,6 @@ async function collateObjectValue({
         errors,
         options,
         keyGenerator,
-        readOnlyContext,
       })
 
       // Return early because we have set the markDefs one level up
@@ -902,7 +906,6 @@ async function collateArrayValue({
   errors,
   options,
   keyGenerator,
-  readOnlyContext,
 }: {
   sourceValue: unknown
   targetRootValue: unknown
@@ -911,7 +914,6 @@ async function collateArrayValue({
   errors: TransferValueError[]
   options: TransferValueOptions
   keyGenerator: () => string
-  readOnlyContext?: ReadOnlyContext
 }): Promise<{
   targetValue: unknown
   errors: TransferValueError[]
@@ -1003,7 +1005,6 @@ async function collateArrayValue({
             errors,
             options,
             keyGenerator,
-            readOnlyContext,
           }),
         ),
       )

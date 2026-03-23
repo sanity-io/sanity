@@ -1742,7 +1742,7 @@ describe('transferValue', () => {
     function pasteDocumentLevel(
       targetSchema: ReturnType<typeof createSchema>,
       sourceValue: Record<string, unknown>,
-      overrides?: {currentUser?: typeof currentUser},
+      overrides?: {currentUser?: typeof currentUser; targetRootValue?: Record<string, unknown>},
     ) {
       const docType = sourceValue._type as string
       return transferValue({
@@ -1752,7 +1752,7 @@ describe('transferValue', () => {
         targetDocumentSchemaType: targetSchema.get(docType)!,
         targetRootSchemaType: targetSchema.get(docType)!,
         targetPath: [],
-        targetRootValue: {},
+        targetRootValue: overrides?.targetRootValue ?? {},
         targetRootPath: [],
         currentUser: overrides?.currentUser ?? currentUser,
       })
@@ -1914,22 +1914,24 @@ describe('transferValue', () => {
         'copy-paste.on-paste.validation.read-only-target.description',
       )
     })
+
+    const staticReadOnlySchema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'testDoc',
+          type: 'document',
+          fields: [
+            {name: 'category', type: 'string', title: 'Category', readOnly: true},
+            {name: 'code', type: 'string', title: 'Internal Code', readOnly: true},
+            {name: 'description', type: 'string'},
+          ],
+        },
+      ],
+    })
+
     test('should skip static readOnly fields when pasting at document level', async () => {
-      const targetSchema = createSchema({
-        name: 'default',
-        types: [
-          {
-            name: 'testDoc',
-            type: 'document',
-            fields: [
-              {name: 'category', type: 'string', title: 'Category', readOnly: true},
-              {name: 'code', type: 'string', title: 'Internal Code', readOnly: true},
-              {name: 'description', type: 'string'},
-            ],
-          },
-        ],
-      })
-      const result = await pasteDocumentLevel(targetSchema, {
+      const result = await pasteDocumentLevel(staticReadOnlySchema, {
         _type: 'testDoc',
         _id: 'xxx',
         category: 'A',
@@ -1986,6 +1988,42 @@ describe('transferValue', () => {
       })
       expect(copied.targetValue).toEqual({_type: 'testDoc', name: 'Knut'})
       expect(copied.errors).toEqual([])
+    })
+
+    test('should preserve existing target values for readOnly fields when pasting at document level', async () => {
+      const result = await pasteDocumentLevel(
+        staticReadOnlySchema,
+        {
+          _type: 'testDoc',
+          _id: 'xxx',
+          category: 'source-A',
+          code: 'source-CODE',
+          description: 'source-desc',
+        },
+        {
+          targetRootValue: {
+            _type: 'testDoc',
+            category: 'existing-A',
+            code: 'existing-CODE',
+            description: 'old-desc',
+          },
+        },
+      )
+
+      expect(result.targetValue).toEqual({
+        _type: 'testDoc',
+        category: 'existing-A',
+        code: 'existing-CODE',
+        description: 'source-desc',
+      })
+      expect(result.errors).toHaveLength(1)
+      expect(result.errors[0]).toMatchObject({
+        level: 'warning',
+        i18n: {
+          key: 'copy-paste.on-paste.validation.read-only-fields-skipped.description',
+          args: {fieldNames: 'Category, Internal Code'},
+        },
+      })
     })
 
     test('inherits readOnly from parent array', async () => {
