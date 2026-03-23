@@ -79,6 +79,8 @@ export function sendFeedback(payload: FeedbackPayload): string {
       ...tags,
       sentiment,
       contactConsent: String(contactConsent),
+      contactEmail: email ?? '',
+      contactName: name ?? '',
       type: 'feedback',
       source,
     },
