@@ -6,7 +6,7 @@ import {styled} from 'styled-components'
 
 import {DocumentStatus} from '../../../../../../../components/documentStatus/DocumentStatus'
 import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator/DocumentStatusIndicator'
-import type {GeneralPreviewLayoutKey} from '../../../../../../../components/previews/types'
+import {type GeneralPreviewLayoutKey} from '../../../../../../../components/previews/types'
 import {type PerspectiveStack} from '../../../../../../../perspective/types'
 import {DocumentPreviewPresence} from '../../../../../../../presence/DocumentPreviewPresence'
 import {SanityDefaultPreview} from '../../../../../../../preview/components/SanityDefaultPreview'
@@ -14,7 +14,7 @@ import {getPreviewStateObservable} from '../../../../../../../preview/utils/getP
 import {getPreviewValueWithFallback} from '../../../../../../../preview/utils/getPreviewValueWithFallback'
 import {useDocumentVersionInfo} from '../../../../../../../releases/store/useDocumentVersionInfo'
 import {useDocumentPreviewStore} from '../../../../../../../store/_legacy/datastores'
-import type {DocumentPresence} from '../../../../../../../store/_legacy/presence/types'
+import {type DocumentPresence} from '../../../../../../../store/_legacy/presence/types'
 
 interface SearchResultItemPreviewProps {
   documentId: string

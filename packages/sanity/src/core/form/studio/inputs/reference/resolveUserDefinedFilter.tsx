@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {get} from '@sanity/util/paths'
 
-import type {Source} from '../../../../config/types'
+import {type Source} from '../../../../config/types'
 
 export async function resolveUserDefinedFilter(ctx: {
   options: ReferenceOptions | undefined

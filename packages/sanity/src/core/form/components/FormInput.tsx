@@ -8,15 +8,15 @@ import {Translate} from '../../i18n/Translate'
 import {ArrayOfObjectsItem} from '../members/array/items/ArrayOfObjectsItem'
 import {MemberItemError} from '../members/array/MemberItemError'
 import {MemberField} from '../members/object/MemberField'
-import type {FieldMember} from '../store/types/members'
-import type {ArrayOfObjectsInputProps, ObjectInputProps} from '../types/inputProps'
-import type {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {type FieldMember} from '../store/types/members'
+import {type ArrayOfObjectsInputProps, type ObjectInputProps} from '../types/inputProps'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../types/renderCallback'
 import {isArrayInputProps, isObjectInputProps} from '../utils/asserters'
 

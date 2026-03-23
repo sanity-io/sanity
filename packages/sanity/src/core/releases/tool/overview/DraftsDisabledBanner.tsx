@@ -1,4 +1,4 @@
-import type {ReleaseDocument} from '@sanity/client'
+import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'

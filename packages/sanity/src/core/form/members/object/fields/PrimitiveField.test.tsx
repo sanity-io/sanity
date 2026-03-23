@@ -8,7 +8,7 @@ import {type FIXME} from '../../../../FIXME'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
 import {set} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
-import type {FieldMember} from '../../../store/types/members'
+import {type FieldMember} from '../../../store/types/members'
 import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
 import {
   FormCallbacksProvider,

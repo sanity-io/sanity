@@ -9,7 +9,7 @@ import {
 } from 'react'
 import {FieldActionsContext, type FieldActionsContextValue} from 'sanity/_singletons'
 
-import type {DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {pathToString} from '../../../field/paths/helpers'
 import {supportsTouch} from '../../../util/supportsTouch'
 import {type FieldCommentsProps} from '../../types/fieldProps'

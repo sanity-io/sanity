@@ -6,15 +6,15 @@ import {
   isArrayOfPrimitivesFormNode,
   isObjectFormNode,
 } from '../../form/store/types/asserters'
-import type {
-  ArrayOfObjectsItemMember,
-  FieldMember,
-  ArrayOfObjectsMember,
-  ArrayOfPrimitivesMember,
-  ArrayOfPrimitivesItemMember,
+import {
+  type ArrayOfObjectsItemMember,
+  type FieldMember,
+  type ArrayOfObjectsMember,
+  type ArrayOfPrimitivesMember,
+  type ArrayOfPrimitivesItemMember,
 } from '../../form/store/types/members'
-import type {ObjectArrayFormNode, BaseFormNode} from '../../form/store/types/nodes'
-import type {FormState} from '../../form/store/useFormState'
+import {type ObjectArrayFormNode, type BaseFormNode} from '../../form/store/types/nodes'
+import {type FormState} from '../../form/store/useFormState'
 
 type Member = FieldMember | ArrayOfObjectsItemMember | ArrayOfPrimitivesItemMember
 

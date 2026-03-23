@@ -2,9 +2,9 @@ import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/t
 import {type ReactNode, useMemo} from 'react'
 import {FormBuilderContext} from 'sanity/_singletons'
 
-import type {DocumentFieldAction} from '../config/document/fieldActions/types'
-import type {Source} from '../config/types'
-import type {FormNodePresence} from '../presence/types'
+import {type DocumentFieldAction} from '../config/document/fieldActions/types'
+import {type Source} from '../config/types'
+import {type FormNodePresence} from '../presence/types'
 import {EMPTY_ARRAY} from '../util/empty'
 import {DocumentIdProvider} from './contexts/DocumentIdProvider'
 import {HoveredFieldProvider} from './field/HoveredFieldProvider'
@@ -12,21 +12,21 @@ import {type FormBuilderContextValue} from './FormBuilderContext'
 import {ArrayOfObjectsFunctions} from './inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
-import type {PatchChannel} from './patch/PatchChannel'
-import type {PatchEvent} from './patch/PatchEvent'
-import type {FormFieldGroup} from './store/types/fieldGroup'
-import type {StateTree} from './store/types/state'
+import {type PatchChannel} from './patch/PatchChannel'
+import {type PatchEvent} from './patch/PatchEvent'
+import {type FormFieldGroup} from './store/types/fieldGroup'
+import {type StateTree} from './store/types/state'
 import {FormCallbacksProvider} from './studio/contexts/FormCallbacks'
 import {PresenceProvider} from './studio/contexts/Presence'
 import {ValidationProvider} from './studio/contexts/Validation'
-import type {FormBuilderFilterFieldFn} from './types/_transitional'
-import type {
-  RenderAnnotationCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderItemCallback,
-  RenderPreviewCallback,
+import {type FormBuilderFilterFieldFn} from './types/_transitional'
+import {
+  type RenderAnnotationCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderItemCallback,
+  type RenderPreviewCallback,
 } from './types/renderCallback'
 
 export interface FormBuilderProviderProps {

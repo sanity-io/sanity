@@ -2,7 +2,7 @@ import {type ComponentType, type ReactNode, useDeferredValue} from 'react'
 import {WorkspacesContext} from 'sanity/_singletons'
 
 import {prepareConfig} from '../../config/prepareConfig'
-import type {Config} from '../../config/types'
+import {type Config} from '../../config/types'
 import {type WorkspacesContextValue} from './WorkspacesContext'
 
 /** @internal */

@@ -8,7 +8,7 @@ import {ContextMenuButton} from '../../../../../components/contextMenuButton/Con
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {unset} from '../../../../patch/patch'
 import {PatchEvent} from '../../../../patch/PatchEvent'
-import type {ArrayItemError} from '../../../../store/types/memberErrors'
+import {type ArrayItemError} from '../../../../store/types/memberErrors'
 import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
 import {CellLayout} from '../../layouts/CellLayout'
 import {IncompatibleItemType} from './IncompatibleItemType'

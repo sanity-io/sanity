@@ -2,7 +2,7 @@ import {useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
 import {useTranslation} from '../i18n/hooks/useTranslation'
-import type {UpsellDialogViewedInfo} from '../studio/upsell/__telemetry__/upsell.telemetry'
+import {type UpsellDialogViewedInfo} from '../studio/upsell/__telemetry__/upsell.telemetry'
 import {type UpsellData} from '../studio/upsell/types'
 import {useUpsellData} from './useUpsellData'
 

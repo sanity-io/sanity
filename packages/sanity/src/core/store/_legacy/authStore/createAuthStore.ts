@@ -8,7 +8,7 @@ import memoize from 'lodash-es/memoize.js'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
-import type {AuthConfig, LoginMethod} from '../../../config/types'
+import {type AuthConfig, type LoginMethod} from '../../../config/types'
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors/CorsOriginError'
 import {createBroadcastChannel} from './createBroadcastChannel'

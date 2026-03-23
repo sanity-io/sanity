@@ -5,7 +5,7 @@ import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {StatusIcon} from '../../../components/formField/ValidationStatusIcon'
-import type {FormFieldGroup} from '../../../store/types/fieldGroup'
+import {type FormFieldGroup} from '../../../store/types/fieldGroup'
 import {useChildValidation} from '../../../studio/contexts/Validation'
 import {getFieldGroupValidationLevel} from './getFieldGroupValidationLevel'
 import {GroupOption, GroupTab} from './GroupTab'

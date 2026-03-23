@@ -2,7 +2,7 @@ import {CheckmarkCircleIcon} from '@sanity/icons'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../ui-components/button/Button'
-import type {NavbarProps} from '../../config/studio/types'
+import {type NavbarProps} from '../../config/studio/types'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
 import {useTasksNavigation} from '../context/navigation/useTasksNavigation'

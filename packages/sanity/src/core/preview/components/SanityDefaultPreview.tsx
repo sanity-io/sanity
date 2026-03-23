@@ -20,7 +20,7 @@ import {
 import {isValidElementType} from 'react-is'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
-import type {PreviewMediaDimensions, PreviewProps} from '../../components/previews/types'
+import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews/types'
 import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
 import {useImageUrl} from '../../form/inputs/files/ImageInput/useImageUrl'
 import {useClient} from '../../hooks/useClient'

@@ -4,7 +4,7 @@ import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {PresenceOverlay} from '../../../../presence/overlay/PresenceOverlay'
-import type {InputProps} from '../../../types/inputProps'
+import {type InputProps} from '../../../types/inputProps'
 import {ImageToolInput} from '../ImageToolInput/ImageToolInput'
 import {type BaseImageInputProps} from './types'
 

@@ -1,11 +1,11 @@
 import {type ComponentType} from 'react'
 
-import type {PreviewProps} from '../../components/previews/types'
+import {type PreviewProps} from '../../components/previews/types'
 import {useMiddlewareComponents} from '../../config/components/useMiddlewareComponents'
-import type {BlockAnnotationProps, BlockProps} from '../types/blockProps'
-import type {FieldProps} from '../types/fieldProps'
-import type {InputProps} from '../types/inputProps'
-import type {ItemProps} from '../types/itemProps'
+import {type BlockAnnotationProps, type BlockProps} from '../types/blockProps'
+import {type FieldProps} from '../types/fieldProps'
+import {type InputProps} from '../types/inputProps'
+import {type ItemProps} from '../types/itemProps'
 import {
   DefaultAnnotation,
   DefaultBlock,

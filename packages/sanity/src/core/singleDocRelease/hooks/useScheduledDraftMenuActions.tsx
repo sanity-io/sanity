@@ -3,7 +3,7 @@ import {CalendarIcon, EditIcon, PublishIcon, TrashIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 
-import type {MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import {type MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {Translate} from '../../i18n/Translate'
 import {getErrorMessage} from '../../util/getErrorMessage'

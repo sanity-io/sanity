@@ -4,7 +4,7 @@ import {startsWith} from '@sanity/util/paths'
 import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
-import type {FormNodePresence} from '../../../../presence/types'
+import {type FormNodePresence} from '../../../../presence/types'
 import {EMPTY_ARRAY} from '../../../../util/empty'
 import {useFormFieldPresence} from '../../../studio/contexts/Presence'
 import {UserPresenceCursor} from './UserPresenceCursor'

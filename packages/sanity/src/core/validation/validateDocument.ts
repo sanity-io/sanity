@@ -16,7 +16,7 @@ import uniqBy from 'lodash-es/uniqBy.js'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
-import type {SourceClientOptions, Workspace} from '../config/types'
+import {type SourceClientOptions, type Workspace} from '../config/types'
 import {resolveConditionalProperty} from '../form/store/conditional-property/resolveConditionalProperty'
 import {getFallbackLocaleSource} from '../i18n/fallback'
 import {type ValidationContext} from './types'

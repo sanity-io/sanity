@@ -7,11 +7,11 @@ import {isValidElement as reactIsValidElement, useMemo} from 'react'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {DefaultPreview} from '../../../components/previews/general/DefaultPreview'
-import type {PreviewMediaDimensions} from '../../../components/previews/types'
+import {type PreviewMediaDimensions} from '../../../components/previews/types'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type FIXME} from '../../../FIXME'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import type {DocumentAvailability} from '../../../preview/types'
+import {type DocumentAvailability} from '../../../preview/types'
 import {StyledPreviewFlex} from './CrossDatasetReferencePreview.styled'
 
 /**

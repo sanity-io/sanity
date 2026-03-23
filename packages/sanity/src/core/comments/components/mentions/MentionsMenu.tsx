@@ -12,9 +12,9 @@ import {
 import {styled} from 'styled-components'
 
 import {CommandList} from '../../../components/commandList/CommandList'
-import type {CommandListHandle} from '../../../components/commandList/types'
+import {type CommandListHandle} from '../../../components/commandList/types'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
-import type {UserWithPermission} from '../../../hooks/useUserListWithPermissions'
+import {type UserWithPermission} from '../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 import {MentionsMenuItem} from './MentionsMenuItem'

@@ -8,7 +8,7 @@ import {
 import {type ComponentType, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
-import type {DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {FormDivergenceIndicator} from '../../components/FormDivergenceIndicator'
 import {FormField} from '../../components/formField/FormField'
 import {FormFieldSet} from '../../components/formField/FormFieldSet'
@@ -18,8 +18,8 @@ import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider} from '../../field/actions/FieldActionsProvider'
 import {FieldActionsResolver} from '../../field/actions/FieldActionsResolver'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
-import type {FieldMember} from '../../store/types/members'
-import type {ArrayFieldProps, FieldProps, ObjectFieldProps} from '../../types/fieldProps'
+import {type FieldMember} from '../../store/types/members'
+import {type ArrayFieldProps, type FieldProps, type ObjectFieldProps} from '../../types/fieldProps'
 import {getTypeChain} from './helpers'
 
 const EMPTY_ARRAY: never[] = []

@@ -11,7 +11,7 @@ import {useTranslation} from '../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../releases/i18n'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
-import type {DocumentPresence} from '../store/_legacy/presence/types'
+import {type DocumentPresence} from '../store/_legacy/presence/types'
 import {getVersionFromId} from '../util/draftUtils'
 import {isNonNullable} from '../util/isNonNullable'
 

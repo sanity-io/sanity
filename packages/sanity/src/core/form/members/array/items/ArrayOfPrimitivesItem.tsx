@@ -9,16 +9,16 @@ import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {getEmptyValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
 import {insert, set, unset} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
-import type {PatchArg} from '../../../patch/types'
-import type {ArrayOfPrimitivesItemMember} from '../../../store/types/members'
+import {type PatchArg} from '../../../patch/types'
+import {type ArrayOfPrimitivesItemMember} from '../../../store/types/members'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import type {ArrayInputCopyEvent} from '../../../types/event'
-import type {FormDocumentValue} from '../../../types/formDocumentValue'
-import type {PrimitiveInputProps} from '../../../types/inputProps'
-import type {PrimitiveItemProps} from '../../../types/itemProps'
-import type {
-  RenderArrayOfPrimitivesItemCallback,
-  RenderInputCallback,
+import {type ArrayInputCopyEvent} from '../../../types/event'
+import {type FormDocumentValue} from '../../../types/formDocumentValue'
+import {type PrimitiveInputProps} from '../../../types/inputProps'
+import {type PrimitiveItemProps} from '../../../types/itemProps'
+import {
+  type RenderArrayOfPrimitivesItemCallback,
+  type RenderInputCallback,
 } from '../../../types/renderCallback'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'

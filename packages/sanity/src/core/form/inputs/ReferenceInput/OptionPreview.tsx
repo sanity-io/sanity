@@ -2,7 +2,7 @@ import {type ReferenceSchemaType} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import type {RenderPreviewCallback} from '../../types/renderCallback'
+import {type RenderPreviewCallback} from '../../types/renderCallback'
 import {ReferencePreview} from './ReferencePreview'
 
 /**

@@ -1,4 +1,4 @@
-import type {LayoutProps} from '../../config/studio/types'
+import {type LayoutProps} from '../../config/studio/types'
 import {AddonDatasetProvider} from '../../studio/addonDataset/AddonDatasetProvider'
 import {TasksEnabledProvider} from '../context/enabled/TasksEnabledProvider'
 import {useTasksEnabled} from '../context/enabled/useTasksEnabled'

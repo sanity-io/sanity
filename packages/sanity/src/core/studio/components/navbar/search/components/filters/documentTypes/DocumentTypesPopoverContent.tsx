@@ -6,10 +6,10 @@ import {styled} from 'styled-components'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {CommandList} from '../../../../../../../components/commandList/CommandList'
-import type {
-  CommandListGetItemSelectedCallback,
-  CommandListHandle,
-  CommandListRenderItemCallback,
+import {
+  type CommandListGetItemSelectedCallback,
+  type CommandListHandle,
+  type CommandListRenderItemCallback,
 } from '../../../../../../../components/commandList/types'
 import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'

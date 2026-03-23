@@ -1,7 +1,7 @@
 import {TaskIcon} from '@sanity/icons'
 import {useCallback, useMemo} from 'react'
 
-import type {DocumentActionDescription} from '../../config/document/actions'
+import {type DocumentActionDescription} from '../../config/document/actions'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
 import {useTasksNavigation} from '../context/navigation/useTasksNavigation'

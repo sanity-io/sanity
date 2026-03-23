@@ -4,7 +4,7 @@ import {useCallback} from 'react'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {TextWithTone} from '../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import type {TFunction} from '../../i18n/types'
+import {type TFunction} from '../../i18n/types'
 import {commentsLocaleNamespace} from '../i18n'
 
 function getDialogCopy(

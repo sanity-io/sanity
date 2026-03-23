@@ -3,7 +3,7 @@ import {type PortableTextBlock} from '@sanity/types'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import type {PatchEvent} from '../../patch/PatchEvent'
+import {type PatchEvent} from '../../patch/PatchEvent'
 import {
   type RenderBlockActionsCallback,
   type RenderBlockActionsProps,

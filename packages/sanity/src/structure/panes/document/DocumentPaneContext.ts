@@ -21,7 +21,7 @@ import {
   type TimelineStore,
 } from 'sanity'
 
-import type {View} from '../../structureBuilder/types'
+import {type View} from '../../structureBuilder/types'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 
 /** @internal */

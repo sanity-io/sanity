@@ -7,8 +7,8 @@ import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switc
 
 import {useProjectStore, useUserStore} from '../store/_legacy/datastores'
 import {grantsPermissionOn} from '../store/_legacy/grants/grantsStore'
-import type {DocumentValuePermission} from '../store/_legacy/grants/types'
-import type {ProjectData} from '../store/_legacy/project/types'
+import {type DocumentValuePermission} from '../store/_legacy/grants/types'
+import {type ProjectData} from '../store/_legacy/project/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {getSystemGroups$} from '../util/getSystemGroups$'
 import {useClient} from './useClient'

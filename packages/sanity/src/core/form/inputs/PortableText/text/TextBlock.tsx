@@ -13,16 +13,18 @@ import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDe
 import {useDocumentDivergences} from '../../../contexts/DivergencesProvider'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useChildPresence} from '../../../studio/contexts/Presence'
-import type {RenderCustomMarkers} from '../../../types/_transitional'
-import {type RenderBlockActionsCallback} from '../../../types/_transitional'
-import type {BlockProps} from '../../../types/blockProps'
-import type {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {
+  type RenderCustomMarkers,
+  type RenderBlockActionsCallback,
+} from '../../../types/_transitional'
+import {type BlockProps} from '../../../types/blockProps'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {ReviewChangesHighlightBlock} from '../_common/ReviewChangesHighlightBlock'

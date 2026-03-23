@@ -10,10 +10,10 @@ import {useWorkspace} from '../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {createHookFromObservableFactory} from '../../../util/createHookFromObservableFactory'
 import {getDraftId, getIdPair, getPublishedId} from '../../../util/draftUtils'
-import type {PartialExcept} from '../../../util/PartialExcept'
+import {type PartialExcept} from '../../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
-import type {DocumentStoreExtraOptions} from '../document/getPairListener'
+import {type DocumentStoreExtraOptions} from '../document/getPairListener'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {

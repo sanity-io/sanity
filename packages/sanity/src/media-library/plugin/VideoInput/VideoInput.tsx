@@ -5,7 +5,7 @@ import {type Observable} from 'rxjs'
 
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../core/form/inputs/files/common/assetSource'
 import {AssetSourceDialog} from '../../../core/form/inputs/files/common/AssetSourceDialog'
-import type {FileInfo} from '../../../core/form/inputs/files/common/fileTarget/fileTarget'
+import {type FileInfo} from '../../../core/form/inputs/files/common/fileTarget/fileTarget'
 import {useAssetSource} from '../../../core/form/inputs/files/common/useAssetSource'
 import {MemberDecoration} from '../../../core/form/members/object/MemberDecoration'
 import {MemberField} from '../../../core/form/members/object/MemberField'
@@ -15,7 +15,7 @@ import {useRenderMembers} from '../../../core/form/members/object/useRenderMembe
 import {unset} from '../../../core/form/patch/patch'
 import {resolveUploader} from '../../../core/form/studio/uploads/resolveUploader'
 import {type UploaderResolver} from '../../../core/form/studio/uploads/types'
-import type {ObjectInputProps} from '../../../core/form/types/inputProps'
+import {type ObjectInputProps} from '../../../core/form/types/inputProps'
 import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
 import {
   type VideoAsset,

@@ -16,8 +16,8 @@ import {
 } from '@sanity/types'
 import {type ReactNode} from 'react'
 
-import type {FormNodePresence} from '../../presence/types'
-import type {PortableTextMarker} from './_transitional'
+import {type FormNodePresence} from '../../presence/types'
+import {type PortableTextMarker} from './_transitional'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,

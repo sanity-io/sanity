@@ -12,14 +12,14 @@ import {
 } from 'sanity'
 
 import {type _PaneMenuItem} from './components/pane/types'
-import type {Intent} from './structureBuilder/Intent'
-import type {MenuItem as StructureToolMenuItem} from './structureBuilder/MenuItem'
-import type {
-  DefaultDocumentNodeResolver,
-  StructureBuilder,
-  StructureContext,
-  UserComponent,
-  View,
+import {type Intent} from './structureBuilder/Intent'
+import {type MenuItem as StructureToolMenuItem} from './structureBuilder/MenuItem'
+import {
+  type DefaultDocumentNodeResolver,
+  type StructureBuilder,
+  type StructureContext,
+  type UserComponent,
+  type View,
 } from './structureBuilder/types'
 
 /** @internal */

@@ -1,11 +1,15 @@
 import {type ComponentType} from 'react'
 
-import type {PreviewProps} from '../../components/previews/types'
-import type {PluginOptions} from '../../config/types'
-import type {BlockAnnotationProps, BlockProps, PortableTextPluginsProps} from '../types/blockProps'
-import type {FieldProps} from '../types/fieldProps'
-import type {InputProps} from '../types/inputProps'
-import type {ItemProps} from '../types/itemProps'
+import {type PreviewProps} from '../../components/previews/types'
+import {type PluginOptions} from '../../config/types'
+import {
+  type BlockAnnotationProps,
+  type BlockProps,
+  type PortableTextPluginsProps,
+} from '../types/blockProps'
+import {type FieldProps} from '../types/fieldProps'
+import {type InputProps} from '../types/inputProps'
+import {type ItemProps} from '../types/itemProps'
 
 export function pickInputComponent(
   plugin: PluginOptions,

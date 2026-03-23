@@ -5,7 +5,7 @@ import {type CalendarLabels} from '../../../components/inputs/DateInputs/calenda
 import {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {set, unset} from '../../patch/patch'
-import type {StringInputProps} from '../../types/inputProps'
+import {type StringInputProps} from '../../types/inputProps'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels} from './utils'
 

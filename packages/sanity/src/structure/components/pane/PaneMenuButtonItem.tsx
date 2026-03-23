@@ -6,8 +6,8 @@ import {useIntentLink} from 'sanity/router'
 
 import {MenuGroup} from '../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import type {PopoverProps} from '../../../ui-components/popover/Popover'
-import type {Intent} from '../../structureBuilder/Intent'
+import {type PopoverProps} from '../../../ui-components/popover/Popover'
+import {type Intent} from '../../structureBuilder/Intent'
 import {toLowerCaseNoSpaces} from '../../util/toLowerCaseNoSpaces'
 import {type _PaneMenuItem, type _PaneMenuNode} from './types'
 

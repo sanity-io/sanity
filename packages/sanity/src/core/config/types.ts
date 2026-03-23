@@ -17,28 +17,28 @@ import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 import {type Router, type RouterState} from 'sanity/router'
 
-import type {
-  FormBuilderCustomMarkersComponent,
-  FormBuilderMarkersComponent,
+import {
+  type FormBuilderCustomMarkersComponent,
+  type FormBuilderMarkersComponent,
 } from '../form/types/_transitional'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
-import type {AuthStore} from '../store/_legacy/authStore/types'
+import {type AuthStore} from '../store/_legacy/authStore/types'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
-import type {InitialValueTemplateItem, Template, TemplateItem} from '../templates/types'
+import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
 import {type StudioTheme} from '../theme'
 import {type AuthConfig} from './auth/types'
-import type {DocumentActionComponent} from './document/actions'
-import type {DocumentBadgeComponent} from './document/badges'
-import type {
-  DocumentFieldAction,
-  DocumentFieldActionsResolver,
-  DocumentFieldActionsResolverContext,
+import {type DocumentActionComponent} from './document/actions'
+import {type DocumentBadgeComponent} from './document/badges'
+import {
+  type DocumentFieldAction,
+  type DocumentFieldActionsResolver,
+  type DocumentFieldActionsResolverContext,
 } from './document/fieldActions/types'
-import type {DocumentInspector} from './document/inspector'
-import type {FormComponents} from './form/types'
+import {type DocumentInspector} from './document/inspector'
+import {type FormComponents} from './form/types'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
-import type {StudioComponents, StudioComponentsPluginOptions} from './studio/types'
+import {type StudioComponents, type StudioComponentsPluginOptions} from './studio/types'
 
 /**
  * @hidden

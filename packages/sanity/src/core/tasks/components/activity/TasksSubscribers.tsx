@@ -5,8 +5,8 @@ import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {set} from '../../../form/patch/patch'
-import type {PatchEvent} from '../../../form/patch/PatchEvent'
-import type {FormPatch} from '../../../form/patch/types'
+import {type PatchEvent} from '../../../form/patch/PatchEvent'
+import {type FormPatch} from '../../../form/patch/types'
 import {type TaskDocument} from '../../types'
 import {TasksUserAvatar} from '../TasksUserAvatar'
 

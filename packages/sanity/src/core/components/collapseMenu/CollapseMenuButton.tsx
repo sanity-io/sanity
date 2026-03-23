@@ -7,7 +7,7 @@ import {
 } from 'react'
 
 import {Button, type ButtonProps} from '../../../ui-components/button/Button'
-import type {TooltipProps} from '../../../ui-components/tooltip/Tooltip'
+import {type TooltipProps} from '../../../ui-components/tooltip/Tooltip'
 
 /** @internal */
 export interface CommonProps extends Omit<ButtonProps, 'text' | 'iconRight'> {

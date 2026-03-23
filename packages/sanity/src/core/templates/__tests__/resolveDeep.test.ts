@@ -2,8 +2,7 @@ import {type InitialValueResolverContext} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
 import {defaultTemplatesForSchema} from '../prepare'
-import {resolveInitialValue} from '../resolve'
-import {resolveValue} from '../resolve'
+import {resolveInitialValue, resolveValue} from '../resolve'
 import {schema} from './schema'
 
 function generateNestedObjectTest(

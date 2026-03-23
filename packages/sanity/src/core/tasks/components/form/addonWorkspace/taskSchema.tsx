@@ -1,6 +1,6 @@
 import {defineField, defineType} from '@sanity/types'
 
-import type {ArrayFieldProps, ObjectFieldProps} from '../../../../form/types/fieldProps'
+import {type ArrayFieldProps, type ObjectFieldProps} from '../../../../form/types/fieldProps'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 import {type FormMode} from '../../../types'
 import {AssigneeCreateFormField} from '../fields/assignee/AssigneeCreateFormField'

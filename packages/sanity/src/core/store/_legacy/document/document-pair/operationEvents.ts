@@ -18,7 +18,7 @@ import {
   throttleTime,
 } from 'rxjs/operators'
 
-import type {HistoryStore} from '../../history/createHistoryStore'
+import {type HistoryStore} from '../../history/createHistoryStore'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
@@ -31,7 +31,7 @@ import {duplicate} from './operations/duplicate'
 import {patch} from './operations/patch'
 import {publish} from './operations/publish'
 import {restore} from './operations/restore'
-import type {OperationArgs, OperationsAPI} from './operations/types'
+import {type OperationArgs, type OperationsAPI} from './operations/types'
 import {unpublish} from './operations/unpublish'
 import {del as serverDel} from './serverOperations/delete'
 import {discardChanges as serverDiscardChanges} from './serverOperations/discardChanges'

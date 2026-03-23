@@ -7,7 +7,7 @@ import {FormFieldBaseHeader} from '../components/formField/FormFieldBaseHeader'
 import {FormFieldHeaderText} from '../components/formField/FormFieldHeaderText'
 import {FormFieldStatus} from '../components/formField/FormFieldStatus'
 import {useFieldActions} from '../field/actions/useFieldActions'
-import type {BooleanInputProps} from '../types/inputProps'
+import {type BooleanInputProps} from '../types/inputProps'
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;

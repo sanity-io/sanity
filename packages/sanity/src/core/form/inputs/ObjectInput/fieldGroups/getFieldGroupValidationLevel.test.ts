@@ -2,7 +2,7 @@ import {ALL_FIELDS_GROUP_NAME} from '@sanity/schema/_internal'
 import {type FormNodeValidation, type ObjectField} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
-import type {FormFieldGroup} from '../../../store/types/fieldGroup'
+import {type FormFieldGroup} from '../../../store/types/fieldGroup'
 import {getFieldGroupValidationLevel} from './getFieldGroupValidationLevel'
 
 const createValidation = (

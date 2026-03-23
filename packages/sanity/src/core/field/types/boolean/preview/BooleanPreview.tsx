@@ -1,5 +1,5 @@
-import type {UserColor} from '../../../../user-color/types'
-import type {FieldPreviewComponent} from '../../../preview/types'
+import {type UserColor} from '../../../../user-color/types'
+import {type FieldPreviewComponent} from '../../../preview/types'
 
 type BooleanProps = {
   checked: boolean | undefined | null

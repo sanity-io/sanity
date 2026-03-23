@@ -1,8 +1,8 @@
 import {type BooleanSchemaType, type FieldDefinition} from '@sanity/types'
 
-import type {
-  BooleanInputProps,
-  PrimitiveInputElementProps,
+import {
+  type BooleanInputProps,
+  type PrimitiveInputElementProps,
 } from '../../src/core/form/types/inputProps'
 import {renderInput, type RenderInputResult, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'

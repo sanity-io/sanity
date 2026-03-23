@@ -25,7 +25,7 @@ import {FormNodeDivergenceDetail} from '../../components/FormNodeDivergenceDetai
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {set, unset} from '../../patch/patch'
-import type {ObjectItem, ObjectItemProps} from '../../types/itemProps'
+import {type ObjectItem, type ObjectItemProps} from '../../types/itemProps'
 import {randomKey} from '../../utils/randomKey'
 import {regenerateKeys} from '../../utils/regenerateKeys'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'

@@ -6,7 +6,7 @@ import {useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {set, unset} from '../../../patch/patch'
-import type {ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
+import {type ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
 import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'
 
 function isPrimitiveOption(option: unknown): option is NormalizedPrimitiveOption {

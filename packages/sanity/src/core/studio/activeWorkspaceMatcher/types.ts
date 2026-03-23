@@ -1,4 +1,4 @@
-import type {WorkspacesContextValue} from '../workspaces/WorkspacesContext'
+import {type WorkspacesContextValue} from '../workspaces/WorkspacesContext'
 
 /** @internal */
 export type NormalizedWorkspace = {

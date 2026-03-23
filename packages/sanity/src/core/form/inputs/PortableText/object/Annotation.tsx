@@ -9,15 +9,15 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../../util/empty'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {useChildPresence} from '../../../studio/contexts/Presence'
-import type {RenderCustomMarkers} from '../../../types/_transitional'
-import type {BlockAnnotationProps} from '../../../types/blockProps'
-import type {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {type RenderCustomMarkers} from '../../../types/_transitional'
+import {type BlockAnnotationProps} from '../../../types/blockProps'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'

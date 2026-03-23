@@ -8,7 +8,7 @@ import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import type {ArrayInputFunctionsProps} from '../../../types/_transitional'
+import {type ArrayInputFunctionsProps} from '../../../types/_transitional'
 import {useArrayValidation} from '../common/ArrayValidationContext'
 
 /**

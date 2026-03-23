@@ -1,7 +1,11 @@
 import {type ComponentType} from 'react'
 
-import type {ActiveToolLayoutProps, NavbarProps, ToolMenuProps} from '../../config/studio/types'
-import type {PluginOptions} from '../../config/types'
+import {
+  type ActiveToolLayoutProps,
+  type NavbarProps,
+  type ToolMenuProps,
+} from '../../config/studio/types'
+import {type PluginOptions} from '../../config/types'
 
 export function pickToolMenuComponent(
   plugin: PluginOptions,

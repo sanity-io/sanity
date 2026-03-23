@@ -17,7 +17,7 @@ import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {set, unset} from '../patch/patch'
 import {PatchEvent} from '../patch/PatchEvent'
-import type {StringInputProps} from '../types/inputProps'
+import {type StringInputProps} from '../types/inputProps'
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number,

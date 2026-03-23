@@ -25,7 +25,7 @@ import {
   type ResolvedUploader,
   type UploaderResolver,
 } from '../../../studio/uploads/types'
-import type {UploadEvent} from '../../../types/event'
+import {type UploadEvent} from '../../../types/event'
 import {type FileInfo, fileTarget} from '../../files/common/fileTarget/fileTarget'
 
 export interface UploadTargetProps {

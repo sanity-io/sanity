@@ -4,8 +4,7 @@ import {
   type SingleDocReleaseEnabledContextValue,
 } from 'sanity/_singletons'
 
-import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
-import {FEATURES} from '../../hooks/useFeatureEnabled'
+import {useFeatureEnabled, FEATURES} from '../../hooks/useFeatureEnabled'
 import {useScheduledDraftsEnabled} from '../hooks/useScheduledDraftsEnabled'
 
 interface SingleDocReleaseEnabledProviderProps {

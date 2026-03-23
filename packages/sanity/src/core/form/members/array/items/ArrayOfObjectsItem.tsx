@@ -13,8 +13,8 @@ import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {insert, setIfMissing, unset} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
-import type {PatchArg} from '../../../patch/types'
-import type {ArrayOfObjectsItemMember} from '../../../store/types/members'
+import {type PatchArg} from '../../../patch/types'
+import {type ArrayOfObjectsItemMember} from '../../../store/types/members'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
@@ -24,17 +24,17 @@ import {
   RemovedObject,
 } from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
-import type {ArrayInputCopyEvent, ArrayInputInsertEvent} from '../../../types/event'
-import type {FormDocumentValue} from '../../../types/formDocumentValue'
-import type {ObjectInputProps} from '../../../types/inputProps'
-import type {ObjectItem, ObjectItemProps} from '../../../types/itemProps'
-import type {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {type ArrayInputCopyEvent, type ArrayInputInsertEvent} from '../../../types/event'
+import {type FormDocumentValue} from '../../../types/formDocumentValue'
+import {type ObjectInputProps} from '../../../types/inputProps'
+import {type ObjectItem, type ObjectItemProps} from '../../../types/itemProps'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../../types/renderCallback'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'

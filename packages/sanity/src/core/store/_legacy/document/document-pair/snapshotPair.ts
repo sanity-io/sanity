@@ -3,8 +3,8 @@ import {type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {filter, map, publishReplay, refCount} from 'rxjs/operators'
 
-import type {BufferedDocumentEvent} from '../buffered-doc/createBufferedDocument'
-import type {MutationPayload, SnapshotEvent} from '../buffered-doc/types'
+import {type BufferedDocumentEvent} from '../buffered-doc/createBufferedDocument'
+import {type MutationPayload, type SnapshotEvent} from '../buffered-doc/types'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {
   type IdPair,

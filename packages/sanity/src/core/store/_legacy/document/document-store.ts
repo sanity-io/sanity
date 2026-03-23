@@ -3,11 +3,11 @@ import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@
 import {type Observable} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
-import type {SourceClientOptions} from '../../../config/types'
-import type {LocaleSource} from '../../../i18n/types'
-import type {DocumentPreviewStore} from '../../../preview/documentPreviewStore'
+import {type SourceClientOptions} from '../../../config/types'
+import {type LocaleSource} from '../../../i18n/types'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import type {Template} from '../../../templates/types'
+import {type Template} from '../../../templates/types'
 import {
   getIdPair,
   getPublishedId,
@@ -16,8 +16,8 @@ import {
   isVersionId,
 } from '../../../util/draftUtils'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
-import type {ValidationStatus} from '../../../validation/validateDocumentWithReferences'
-import type {HistoryStore} from '../history/createHistoryStore'
+import {type ValidationStatus} from '../../../validation/validateDocumentWithReferences'
+import {type HistoryStore} from '../history/createHistoryStore'
 import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pair/checkoutPair'
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
@@ -28,11 +28,11 @@ import {
   operationEvents,
   type OperationSuccess,
 } from './document-pair/operationEvents'
-import type {OperationsAPI} from './document-pair/operations/types'
+import {type OperationsAPI} from './document-pair/operations/types'
 import {validation} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
-import type {InitialValueMsg} from './initialValue/types'
+import {type InitialValueMsg} from './initialValue/types'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
 import {type IdPair} from './types'

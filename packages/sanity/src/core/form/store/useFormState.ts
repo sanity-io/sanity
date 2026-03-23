@@ -7,14 +7,14 @@ import {
 import {useMemo, useState} from 'react'
 
 import {type TargetPerspective} from '../../perspective/types'
-import type {FormNodePresence} from '../../presence/types'
+import {type FormNodePresence} from '../../presence/types'
 import {isGoingToUnpublish} from '../../releases/util/isGoingToUnpublish'
 import {useCurrentUser} from '../../store/user/hooks'
 import {EMPTY_ARRAY} from '../../util/empty'
 import {createCallbackResolver} from './conditional-property/createCallbackResolver'
 import {createPrepareFormState} from './formState'
-import type {NodeChronologyProps, ObjectFormNode} from './types/nodes'
-import type {StateTree} from './types/state'
+import {type NodeChronologyProps, type ObjectFormNode} from './types/nodes'
+import {type StateTree} from './types/state'
 import {immutableReconcile} from './utils/immutableReconcile'
 
 /** @internal */

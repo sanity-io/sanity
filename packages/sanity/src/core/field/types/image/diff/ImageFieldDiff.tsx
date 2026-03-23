@@ -2,7 +2,7 @@ import {type Image} from '@sanity/types'
 import {Box, Card, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import type {TFunction} from '../../../../i18n/types'
+import {type TFunction} from '../../../../i18n/types'
 import {getAnnotationAtPath} from '../../../diff/annotations/helpers'
 import {ChangeList} from '../../../diff/components/ChangeList'
 import {DiffCard} from '../../../diff/components/DiffCard'

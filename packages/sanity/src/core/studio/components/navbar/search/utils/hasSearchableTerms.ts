@@ -1,4 +1,4 @@
-import type {SearchTerms} from '../../../../../search/common/types'
+import {type SearchTerms} from '../../../../../search/common/types'
 
 /**
  * Check if current search terms are valid.

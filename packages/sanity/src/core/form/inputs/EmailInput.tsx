@@ -1,6 +1,6 @@
 import {TextInput} from '@sanity/ui'
 
-import type {StringInputProps} from '../types/inputProps'
+import {type StringInputProps} from '../types/inputProps'
 
 /**
  *

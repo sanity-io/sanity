@@ -2,7 +2,7 @@ import {ALL_FIELDS_GROUP_NAME} from '@sanity/schema/_internal'
 import {type FormNodeValidation, type Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 
-import type {FormFieldGroup} from '../../../store/types/fieldGroup'
+import {type FormFieldGroup} from '../../../store/types/fieldGroup'
 
 export function getFieldGroupValidationLevel(
   group: FormFieldGroup,

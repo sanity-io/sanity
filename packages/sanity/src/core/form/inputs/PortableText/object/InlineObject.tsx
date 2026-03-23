@@ -13,15 +13,15 @@ import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../../util/empty'
 import {useChildPresence} from '../../../studio/contexts/Presence'
-import type {RenderCustomMarkers} from '../../../types/_transitional'
-import type {BlockProps} from '../../../types/blockProps'
-import type {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {type RenderCustomMarkers} from '../../../types/_transitional'
+import {type BlockProps} from '../../../types/blockProps'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'

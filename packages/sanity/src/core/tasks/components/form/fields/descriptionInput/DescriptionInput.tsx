@@ -6,7 +6,7 @@ import {css, styled} from 'styled-components'
 
 import {CommentInput} from '../../../../../comments/components/pte/comment-input/CommentInput'
 import {set} from '../../../../../form/patch/patch'
-import type {ArrayFieldProps} from '../../../../../form/types/fieldProps'
+import {type ArrayFieldProps} from '../../../../../form/types/fieldProps'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useCurrentUser} from '../../../../../store/user/hooks'
 import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'

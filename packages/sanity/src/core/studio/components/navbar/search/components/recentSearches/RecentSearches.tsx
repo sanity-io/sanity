@@ -4,9 +4,9 @@ import {styled} from 'styled-components'
 
 import {Button} from '../../../../../../../ui-components/button/Button'
 import {CommandList} from '../../../../../../components/commandList/CommandList'
-import type {
-  CommandListHandle,
-  CommandListRenderItemCallback,
+import {
+  type CommandListHandle,
+  type CommandListRenderItemCallback,
 } from '../../../../../../components/commandList/types'
 import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../contexts/search/useSearchState'

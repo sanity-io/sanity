@@ -4,7 +4,7 @@ import {PureComponent} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {ArrayOfPrimitivesItem} from '../../../members/array/items/ArrayOfPrimitivesItem'
-import type {ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
+import {type ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
 import {ArrayValidationProvider} from '../common/ArrayValidationContext'

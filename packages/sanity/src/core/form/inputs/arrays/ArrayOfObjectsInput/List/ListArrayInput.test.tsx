@@ -4,8 +4,8 @@ import {render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
-import type {ArrayOfObjectsInputProps} from '../../../../types/inputProps'
-import type {ObjectItem} from '../../../../types/itemProps'
+import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import {type ObjectItem} from '../../../../types/itemProps'
 import {useArrayValidation} from '../../common/ArrayValidationContext'
 import {ListArrayInput} from './ListArrayInput'
 

@@ -7,7 +7,7 @@ import {DocumentChangeContext} from 'sanity/_singletons'
 
 import {Button} from '../../../ui-components/button/Button'
 import {emptyValuesByType} from '../../field/diff/helpers'
-import type {DiffComponent, DiffComponentOptions} from '../../field/types'
+import {type DiffComponent, type DiffComponentOptions} from '../../field/types'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type DivergenceNavigator, type ReachableDivergence} from '../divergenceNavigator'
 import {useDivergenceController} from '../hooks/useDivergenceController'

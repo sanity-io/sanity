@@ -1,6 +1,10 @@
 import {isArraySchemaType, isObjectSchemaType} from '@sanity/types'
 
-import type {ArrayOfObjectsInputProps, InputProps, ObjectInputProps} from '../types/inputProps'
+import {
+  type ArrayOfObjectsInputProps,
+  type InputProps,
+  type ObjectInputProps,
+} from '../types/inputProps'
 
 export function isObjectInputProps(
   inputProps: InputProps | Omit<InputProps, 'renderDefault'>,

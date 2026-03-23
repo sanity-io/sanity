@@ -1,8 +1,8 @@
 import {type FieldDefinition, type NumberSchemaType} from '@sanity/types'
 
-import type {
-  NumberInputProps,
-  PrimitiveInputElementProps,
+import {
+  type NumberInputProps,
+  type PrimitiveInputElementProps,
 } from '../../src/core/form/types/inputProps'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'

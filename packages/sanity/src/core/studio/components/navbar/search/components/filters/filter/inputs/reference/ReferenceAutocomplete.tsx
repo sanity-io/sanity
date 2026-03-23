@@ -7,7 +7,7 @@ import {Popover} from '../../../../../../../../../../ui-components/popover/Popov
 import {useSchema} from '../../../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../../../../../i18n/Translate'
-import type {SearchHit} from '../../../../../../../../../search/common/types'
+import {type SearchHit} from '../../../../../../../../../search/common/types'
 import {getPublishedId} from '../../../../../../../../../util/draftUtils'
 import {POPOVER_RADIUS} from '../../../../../constants'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'

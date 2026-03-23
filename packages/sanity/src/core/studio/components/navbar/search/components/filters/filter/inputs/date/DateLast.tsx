@@ -2,7 +2,7 @@ import {Box, Flex, Select, TextInput} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useRef, useState} from 'react'
 
 import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
-import type {StudioLocaleResourceKeys} from '../../../../../../../../../i18n/types'
+import {type StudioLocaleResourceKeys} from '../../../../../../../../../i18n/types'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorDateLastValue} from '../../../../../definitions/operators/dateOperators'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'

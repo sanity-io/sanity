@@ -17,7 +17,7 @@ import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
-import type {UserWithPermission} from '../../../../../hooks/useUserListWithPermissions'
+import {type UserWithPermission} from '../../../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'

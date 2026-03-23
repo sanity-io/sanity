@@ -10,7 +10,7 @@ import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField/FormField'
 import {unset} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
-import type {MixedArrayError} from '../../../store/types/memberErrors'
+import {type MixedArrayError} from '../../../store/types/memberErrors'
 
 interface Props {
   error: MixedArrayError

@@ -6,20 +6,20 @@ import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {applyAll} from '../../../patch/applyPatch'
 import {setIfMissing, unset} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
-import type {PatchArg} from '../../../patch/types'
-import type {FieldMember} from '../../../store/types/members'
-import type {ObjectFormNode} from '../../../store/types/nodes'
+import {type PatchArg} from '../../../patch/types'
+import {type FieldMember} from '../../../store/types/members'
+import {type ObjectFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import type {ObjectFieldProps} from '../../../types/fieldProps'
-import type {ArrayOfObjectsInputProps, ObjectInputProps} from '../../../types/inputProps'
-import type {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {type ObjectFieldProps} from '../../../types/fieldProps'
+import {type ArrayOfObjectsInputProps, type ObjectInputProps} from '../../../types/inputProps'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../../types/renderCallback'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'

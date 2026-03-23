@@ -11,7 +11,7 @@ import {useWorkspace} from '../../studio/workspace'
 import {EMPTY_ARRAY} from '../../util/empty'
 import {createPatchChannel} from '../patch/PatchChannel'
 import {useFormState} from '../store/useFormState'
-import type {FormDocumentValue} from '../types/formDocumentValue'
+import {type FormDocumentValue} from '../types/formDocumentValue'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
 import {useEnhancedObjectDialog} from './tree-editing/context/enabled/useEnhancedObjectDialog'
 

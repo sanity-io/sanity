@@ -5,8 +5,8 @@ import {beforeEach, describe, expect, it, test} from 'vitest'
 import {pathToString} from '../../../field/paths/helpers'
 import {createPrepareFormState, type PrepareFormState} from '../formState'
 import {isObjectFormNode} from '../types/asserters'
-import type {FieldMember} from '../types/members'
-import type {ObjectFormNode} from '../types/nodes'
+import {type FieldMember} from '../types/members'
+import {type ObjectFormNode} from '../types/nodes'
 import {DEFAULT_PROPS} from './shared'
 
 type CollapsibleOptions = {

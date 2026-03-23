@@ -2,7 +2,7 @@ import {useEffect, useMemo} from 'react'
 
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {prepareConfig} from '../../../../config/prepareConfig'
-import type {Config} from '../../../../config/types'
+import {type Config} from '../../../../config/types'
 import {useClient} from '../../../../hooks/useClient'
 import {ResourceCacheProvider} from '../../../../store/_legacy/ResourceCacheProvider'
 import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'

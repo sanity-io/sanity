@@ -15,7 +15,10 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {getFallbackLocaleSource} from '../../../../i18n/fallback'
-import type {DocumentAvailability, DraftsModelDocumentAvailability} from '../../../../preview/types'
+import {
+  type DocumentAvailability,
+  type DraftsModelDocumentAvailability,
+} from '../../../../preview/types'
 import {createSchema} from '../../../../schema/createSchema'
 import {editState, type EditStateFor} from './editState'
 import {validation} from './validation'

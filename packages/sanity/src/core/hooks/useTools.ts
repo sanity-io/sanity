@@ -1,4 +1,4 @@
-import type {Tool} from '../config/types'
+import {type Tool} from '../config/types'
 import {useSource} from '../studio/source'
 
 /**

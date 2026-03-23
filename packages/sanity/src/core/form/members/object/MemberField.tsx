@@ -1,14 +1,14 @@
 import {memo} from 'react'
 
 import {type FIXME} from '../../../FIXME'
-import type {FieldMember} from '../../store/types/members'
-import type {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {type FieldMember} from '../../store/types/members'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../types/renderCallback'
 import {ArrayOfObjectsField} from './fields/ArrayOfObjectsField'
 import {ArrayOfPrimitivesField} from './fields/ArrayOfPrimitivesField'

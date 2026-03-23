@@ -8,7 +8,7 @@ import {
   type LoadingTuple,
 } from '../../util/createHookFromObservableFactory'
 import {useUserStore} from '../_legacy/datastores'
-import type {UserStore} from '../_legacy/user/userStore'
+import {type UserStore} from '../_legacy/user/userStore'
 
 const useUserViaUserStore = createHookFromObservableFactory(
   ([userStore, userId]: [UserStore, string]) => {

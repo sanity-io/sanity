@@ -3,7 +3,7 @@ import {type ButtonTone} from '@sanity/ui'
 import difference from 'lodash-es/difference.js'
 import startCase from 'lodash-es/startCase.js'
 
-import type {TFunction} from '../../../../../../../i18n/types'
+import {type TFunction} from '../../../../../../../i18n/types'
 import {isNonNullable} from '../../../../../../../util/isNonNullable'
 import {
   type SearchFieldDefinition,

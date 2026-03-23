@@ -3,7 +3,7 @@ import {useConfigContextFromSource, useDocumentStore, usePerspective, useSource}
 import {StructureToolContext} from 'sanity/_singletons'
 
 import {createStructureBuilder} from './structureBuilder/createStructureBuilder'
-import type {DefaultDocumentNodeResolver} from './structureBuilder/types'
+import {type DefaultDocumentNodeResolver} from './structureBuilder/types'
 import {
   type StructureResolver,
   type StructureToolContextValue,

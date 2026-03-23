@@ -2,7 +2,7 @@ import debugit from 'debug'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {LiveUserApplicationContext} from 'sanity/_singletons'
 
-import type {UserApplication} from '../../store/userApplications/userApplicationCache'
+import {type UserApplication} from '../../store/userApplications/userApplicationCache'
 import {useUserApplicationCache} from '../../store/userApplications/UserApplicationCacheProvider'
 import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {findUserApplication} from './liveUserApplication'

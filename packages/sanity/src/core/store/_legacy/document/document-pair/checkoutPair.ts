@@ -26,8 +26,8 @@ import {
   type BufferedDocumentEvent,
   createBufferedDocument,
 } from '../buffered-doc/createBufferedDocument'
-import type {CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
-import type {MutationPayload, RemoteSnapshotEvent} from '../buffered-doc/types'
+import {type CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
+import {type MutationPayload, type RemoteSnapshotEvent} from '../buffered-doc/types'
 import {
   type DocumentStoreExtraOptions,
   getPairListener,

@@ -2,9 +2,9 @@ import {Box, Flex, Text} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useMemo, useState} from 'react'
 
 import {CommandList} from '../../../../../../../components/commandList/CommandList'
-import type {
-  CommandListGetItemDisabledCallback,
-  CommandListRenderItemCallback,
+import {
+  type CommandListGetItemDisabledCallback,
+  type CommandListRenderItemCallback,
 } from '../../../../../../../components/commandList/types'
 import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'

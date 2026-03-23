@@ -13,9 +13,9 @@ import {
 import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components/button/Button'
-import type {UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import type {CommentsSelectedPath} from '../../context/selected-path/types'
+import {type CommentsSelectedPath} from '../../context/selected-path/types'
 import {commentIntentIfDiffers, hasCommentMessageValue} from '../../helpers'
 import {applyCommentIdAttr} from '../../hooks/useCommentsScroll'
 import {commentsLocaleNamespace} from '../../i18n'

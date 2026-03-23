@@ -2,11 +2,11 @@ import {type ClientPerspective} from '@sanity/client'
 import {type SchemaType} from '@sanity/types'
 import {type ButtonTone, type CardTone} from '@sanity/ui'
 
-import type {
-  SearchHit,
-  SearchOptions,
-  SearchSort,
-  SearchTerms,
+import {
+  type SearchHit,
+  type SearchOptions,
+  type SearchSort,
+  type SearchTerms,
 } from '../../../../search/common/types'
 import {type SearchFieldDefinition} from './definitions/fields'
 import {type SearchFilterDefinition} from './definitions/filters'

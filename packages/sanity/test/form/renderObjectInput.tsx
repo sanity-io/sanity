@@ -1,8 +1,8 @@
 import {type FieldDefinition, type ObjectSchemaType} from '@sanity/types'
 import {vi} from 'vitest'
 
-import type {FieldMember} from '../../src/core/form/store/types/members'
-import type {ObjectFormNode} from '../../src/core/form/store/types/nodes'
+import {type FieldMember} from '../../src/core/form/store/types/members'
+import {type ObjectFormNode} from '../../src/core/form/store/types/nodes'
 import {
   defaultRenderAnnotation,
   defaultRenderBlock,
@@ -12,7 +12,7 @@ import {
   defaultRenderItem,
   defaultRenderPreview,
 } from '../../src/core/form/studio/defaults'
-import type {ComplexElementProps, ObjectInputProps} from '../../src/core/form/types/inputProps'
+import {type ComplexElementProps, type ObjectInputProps} from '../../src/core/form/types/inputProps'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'
 

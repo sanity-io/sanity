@@ -5,7 +5,7 @@ import {combineLatest, EMPTY, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
 import {createPathObserver} from '../../../../../preview/createPathObserver'
-import type {DocumentAvailability} from '../../../../../preview/types'
+import {type DocumentAvailability} from '../../../../../preview/types'
 import {getPreviewPaths} from '../../../../../preview/utils/getPreviewPaths'
 import {prepareForPreview} from '../../../../../preview/utils/prepareForPreview'
 import {isRecord} from '../../../../../util/isRecord'

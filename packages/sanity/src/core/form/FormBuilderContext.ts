@@ -1,20 +1,20 @@
 import {type AssetSource, type ObjectSchemaType, type Path} from '@sanity/types'
 
-import type {PatchChannel} from './patch/PatchChannel'
-import type {FormFieldGroup} from './store/types/fieldGroup'
-import type {StateTree} from './store/types/state'
-import type {
-  FormBuilderCustomMarkersComponent,
-  FormBuilderFilterFieldFn,
-  FormBuilderMarkersComponent,
+import {type PatchChannel} from './patch/PatchChannel'
+import {type FormFieldGroup} from './store/types/fieldGroup'
+import {type StateTree} from './store/types/state'
+import {
+  type FormBuilderCustomMarkersComponent,
+  type FormBuilderFilterFieldFn,
+  type FormBuilderMarkersComponent,
 } from './types/_transitional'
-import type {
-  RenderAnnotationCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderItemCallback,
-  RenderPreviewCallback,
+import {
+  type RenderAnnotationCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderItemCallback,
+  type RenderPreviewCallback,
 } from './types/renderCallback'
 
 /**

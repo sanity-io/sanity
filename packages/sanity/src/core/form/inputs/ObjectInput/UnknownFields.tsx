@@ -16,9 +16,9 @@ import {Translate} from '../../../i18n/Translate'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
 import {unset} from '../../patch/patch'
-import type {PatchEvent} from '../../patch/PatchEvent'
-import type {FormPatch} from '../../patch/types'
-import type {RenderPreviewCallback} from '../../types/renderCallback'
+import {type PatchEvent} from '../../patch/PatchEvent'
+import {type FormPatch} from '../../patch/types'
+import {type RenderPreviewCallback} from '../../types/renderCallback'
 
 type Props = {
   fieldNames: string[]

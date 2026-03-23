@@ -10,8 +10,8 @@ import {
 import {useCallback, useLayoutEffect, useRef, useState} from 'react'
 
 import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
-import type {ArrayOfObjectsInputProps} from '../../../../types/inputProps'
-import type {ObjectItem} from '../../../../types/itemProps'
+import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import {type ObjectItem} from '../../../../types/itemProps'
 import {Item, List} from '../../common/list'
 import {ErrorItem} from './ErrorItem'
 import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'

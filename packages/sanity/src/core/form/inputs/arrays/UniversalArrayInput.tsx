@@ -1,7 +1,10 @@
 import {useMemo} from 'react'
 
 import {isArrayOfPrimitivesInputProps} from '../../types/asserters'
-import type {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps} from '../../types/inputProps'
+import {
+  type ArrayOfObjectsInputProps,
+  type ArrayOfPrimitivesInputProps,
+} from '../../types/inputProps'
 import {ArrayOfObjectsInput} from './ArrayOfObjectsInput/ArrayOfObjectsInput'
 import {ArrayOfOptionsInput} from './ArrayOfOptionsInput/ArrayOfOptionsInput'
 import {ArrayOfPrimitivesInput} from './ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'

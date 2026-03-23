@@ -36,9 +36,9 @@ import {
 } from 'react'
 import {type CSSProperties} from 'styled-components'
 
-import type {PatchEvent} from '../patch/PatchEvent'
-import type {FormPatch} from '../patch/types'
-import type {FormFieldGroup} from '../store/types/fieldGroup'
+import {type PatchEvent} from '../patch/PatchEvent'
+import {type FormPatch} from '../patch/types'
+import {type FormFieldGroup} from '../store/types/fieldGroup'
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
@@ -47,9 +47,9 @@ import {
   type ObjectFormNode,
   type StringFormNode,
 } from '../store/types/nodes'
-import type {UploaderResolver} from '../studio/uploads/types'
-import type {RenderBlockActionsCallback} from './_transitional'
+import {type UploaderResolver} from '../studio/uploads/types'
 import {
+  type RenderBlockActionsCallback,
   type ArrayInputFunctionsProps,
   type PortableTextMarker,
   type RenderCustomMarkers,

@@ -2,10 +2,10 @@ import {type SearchStrategy} from '@sanity/types'
 
 import {isReleasePerspective, RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
 import {versionedClient} from '../studioClient'
-import type {
-  Groq2024SearchResults,
-  SearchStrategyFactory,
-  WeightedSearchResults,
+import {
+  type Groq2024SearchResults,
+  type SearchStrategyFactory,
+  type WeightedSearchResults,
 } from './common/types'
 import {createGroq2024Search} from './groq2024/createGroq2024Search'
 import {createWeightedSearch} from './weighted/createWeightedSearch'

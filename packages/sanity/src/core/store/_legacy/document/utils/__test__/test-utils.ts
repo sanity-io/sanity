@@ -1,4 +1,4 @@
-import type {MutationPayload} from '../../buffered-doc/types'
+import {type MutationPayload} from '../../buffered-doc/types'
 import {type MutationEvent} from '../../types'
 
 export function mutationEvent({

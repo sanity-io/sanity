@@ -4,7 +4,7 @@ import {initReactI18next} from 'react-i18next'
 
 import {localeBundlesReducer, localeDefReducer} from '../config/configPropertyReducers'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
-import type {SourceOptions} from '../config/types'
+import {type SourceOptions} from '../config/types'
 import {createSanityI18nBackend} from './backend'
 import {DEBUG_I18N, maybeWrapT} from './debug'
 import {studioLocaleNamespace} from './localeNamespaces'

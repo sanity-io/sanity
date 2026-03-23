@@ -1,9 +1,9 @@
 import {firstValueFrom} from 'rxjs'
 
 import {type WorkspaceSummary} from '../../config/types'
-import type {
-  UserApplication,
-  UserApplicationCache,
+import {
+  type UserApplication,
+  type UserApplicationCache,
 } from '../../store/userApplications/userApplicationCache'
 
 function getAppUrl(app: UserApplication, internalHost: string): string {

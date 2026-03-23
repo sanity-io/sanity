@@ -17,7 +17,7 @@ import {AnimatePresence} from 'motion/react'
 import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {useFieldActions} from '../../../../form/field/actions/useFieldActions'
-import type {EditorChange, PortableTextInputProps} from '../../../../form/types/inputProps'
+import {type EditorChange, type PortableTextInputProps} from '../../../../form/types/inputProps'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
 import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineHighlightSpan'

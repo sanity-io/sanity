@@ -3,12 +3,12 @@ import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import type {DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {FieldPresence} from '../../../presence/FieldPresence'
-import type {FormNodePresence} from '../../../presence/types'
+import {type FormNodePresence} from '../../../presence/types'
 import {calcAvatarStackWidth} from '../../../presence/utils'
 import {FieldActionMenu} from '../../field/actions/FieldActionMenu'
-import type {FieldCommentsProps} from '../../types/fieldProps'
+import {type FieldCommentsProps} from '../../types/fieldProps'
 
 const Root = styled(Flex)<{
   $floatingCardWidth: number

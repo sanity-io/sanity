@@ -3,7 +3,7 @@ import {useObservable} from 'react-rx'
 
 import {useRecordDocumentHistoryEvent} from '../hooks/useRecordDocumentHistoryEvent'
 import {useRenderingContextStore} from '../store/_legacy/datastores'
-import type {EditStateFor} from '../store/_legacy/document/document-pair/editState'
+import {type EditStateFor} from '../store/_legacy/document/document-pair/editState'
 import {useActiveWorkspace} from '../studio/activeWorkspaceMatcher/useActiveWorkspace'
 
 /**

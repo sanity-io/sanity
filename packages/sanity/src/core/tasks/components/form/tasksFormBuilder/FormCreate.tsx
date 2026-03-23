@@ -5,7 +5,7 @@ import {useCallback, useEffect, useEffectEvent, useState} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {set} from '../../../../form/patch/patch'
-import type {ObjectInputProps} from '../../../../form/types/inputProps'
+import {type ObjectInputProps} from '../../../../form/types/inputProps'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {TaskCreated} from '../../../__telemetry__/tasks.telemetry'
 import {useTasksNavigation} from '../../../context/navigation/useTasksNavigation'

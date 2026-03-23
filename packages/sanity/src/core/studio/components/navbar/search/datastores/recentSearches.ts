@@ -4,7 +4,7 @@ import omit from 'lodash-es/omit.js'
 import {useMemo} from 'react'
 
 import {useSchema} from '../../../../../hooks/useSchema'
-import type {SearchTerms} from '../../../../../search/common/types'
+import {type SearchTerms} from '../../../../../search/common/types'
 import {useSource} from '../../../../source'
 import {
   createFieldDefinitionDictionary,

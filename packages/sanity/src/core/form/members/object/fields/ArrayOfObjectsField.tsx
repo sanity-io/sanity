@@ -25,30 +25,30 @@ import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '
 import {applyAll} from '../../../patch/applyPatch'
 import {insert, set, setIfMissing, unset} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
-import type {PatchArg} from '../../../patch/types'
-import type {FieldMember} from '../../../store/types/members'
-import type {ArrayOfObjectsFormNode} from '../../../store/types/nodes'
+import {type PatchArg} from '../../../patch/types'
+import {type FieldMember} from '../../../store/types/members'
+import {type ArrayOfObjectsFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {resolveUploader as defaultResolveUploader} from '../../../studio/uploads/resolveUploader'
 import {type FileLike} from '../../../studio/uploads/types'
 import {createInitialUploadPatches} from '../../../studio/uploads/utils'
-import type {ArrayInputInsertEvent, ArrayInputMoveItemEvent} from '../../../types/event'
-import type {ArrayFieldProps} from '../../../types/fieldProps'
-import type {
-  ArrayOfObjectsInputProps,
-  InputOnSelectFileFunctionProps,
-  OnPathFocusPayload,
+import {type ArrayInputInsertEvent, type ArrayInputMoveItemEvent} from '../../../types/event'
+import {type ArrayFieldProps} from '../../../types/fieldProps'
+import {
+  type ArrayOfObjectsInputProps,
+  type InputOnSelectFileFunctionProps,
+  type OnPathFocusPayload,
 } from '../../../types/inputProps'
-import type {ObjectItem} from '../../../types/itemProps'
-import type {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {type ObjectItem} from '../../../types/itemProps'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {ensureKey} from '../../../utils/ensureKey'

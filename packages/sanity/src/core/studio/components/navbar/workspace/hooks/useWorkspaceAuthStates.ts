@@ -1,7 +1,7 @@
 import {combineLatest} from 'rxjs'
 import {map} from 'rxjs/operators'
 
-import type {WorkspaceSummary} from '../../../../../config/types'
+import {type WorkspaceSummary} from '../../../../../config/types'
 import {createHookFromObservableFactory} from '../../../../../util/createHookFromObservableFactory'
 
 export const useWorkspaceAuthStates = createHookFromObservableFactory(

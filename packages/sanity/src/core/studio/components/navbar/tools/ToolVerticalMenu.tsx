@@ -3,7 +3,7 @@ import startCase from 'lodash-es/startCase.js'
 import {forwardRef, type Ref, useMemo} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import type {Tool} from '../../../../config/types'
+import {type Tool} from '../../../../config/types'
 import {ToolLink, type ToolLinkProps} from './ToolLink'
 
 interface ToolVerticalMenuProps {

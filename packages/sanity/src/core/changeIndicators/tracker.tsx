@@ -9,7 +9,7 @@ import {
   useTrackerStore,
   useTrackerStoreReporter,
 } from '../components/react-track-elements/hooks'
-import type {Reported, ReporterHook} from '../components/react-track-elements/types'
+import {type Reported, type ReporterHook} from '../components/react-track-elements/types'
 import {type ChangeIndicatorTrackerContextValue} from './types'
 
 export * from './types'

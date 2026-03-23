@@ -4,7 +4,7 @@ import {catchError, map} from 'rxjs/operators'
 
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {ConfigResolutionError} from '../../config/ConfigResolutionError'
-import type {Source, Workspace, WorkspaceSummary} from '../../config/types'
+import {type Source, type Workspace, type WorkspaceSummary} from '../../config/types'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 import {SourceProvider} from '../source'
 import {WorkspaceProvider} from '../workspace'

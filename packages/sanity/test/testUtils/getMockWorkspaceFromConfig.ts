@@ -2,11 +2,11 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 
 import {createWorkspaceFromConfig} from '../../src/core/config/resolveConfig'
-import type {
-  SchemaPluginOptions,
-  SingleWorkspace,
-  Source,
-  Workspace,
+import {
+  type SchemaPluginOptions,
+  type SingleWorkspace,
+  type Source,
+  type Workspace,
 } from '../../src/core/config/types'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
 

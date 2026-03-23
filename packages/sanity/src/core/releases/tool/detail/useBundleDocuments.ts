@@ -26,7 +26,7 @@ import {
 
 import {useSchema} from '../../../hooks/useSchema'
 import {type LocaleSource} from '../../../i18n/types'
-import type {DocumentPreviewStore} from '../../../preview/documentPreviewStore'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio/source'
 import {schedulerYield} from '../../../util/schedulerYield'

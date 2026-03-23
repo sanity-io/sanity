@@ -1,14 +1,14 @@
 import {memo} from 'react'
 
 import {FormRow} from '../../components/layout/FormRow'
-import type {ObjectMember} from '../../store/types/members'
-import type {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {type ObjectMember} from '../../store/types/members'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../types/renderCallback'
 import {MemberDecoration} from './MemberDecoration'
 import {MemberField} from './MemberField'

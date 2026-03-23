@@ -6,7 +6,7 @@ import {
 import {isKeySegment} from '@sanity/types'
 import {memo, useCallback, useMemo} from 'react'
 
-import type {PopoverProps} from '../../../../../ui-components/popover/Popover'
+import {type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {CollapseMenu} from '../../../../components/collapseMenu/CollapseMenu'
 import {CollapseMenuButton} from '../../../../components/collapseMenu/CollapseMenuButton'
 import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'

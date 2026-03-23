@@ -1,7 +1,7 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
-import type {UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {hasCommentMessageValue} from '../../helpers'

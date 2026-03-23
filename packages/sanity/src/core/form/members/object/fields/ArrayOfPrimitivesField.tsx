@@ -19,24 +19,31 @@ import {type PrimitiveValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput
 import {applyAll} from '../../../patch/applyPatch'
 import {insert, set, setIfMissing, unset} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
-import type {PatchArg} from '../../../patch/types'
-import type {FieldMember} from '../../../store/types/members'
-import type {ArrayOfPrimitivesFormNode} from '../../../store/types/nodes'
+import {type PatchArg} from '../../../patch/types'
+import {type FieldMember} from '../../../store/types/members'
+import {type ArrayOfPrimitivesFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {accepts} from '../../../studio/uploads/accepts'
 import {readAsText} from '../../../studio/uploads/file/readAsText'
-import type {Uploader, UploaderResolver, UploadProgressEvent} from '../../../studio/uploads/types'
-import type {ArrayInputMoveItemEvent, UploadEvent} from '../../../types/event'
-import type {ArrayOfPrimitivesFieldProps} from '../../../types/fieldProps'
-import type {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
-import type {
-  RenderAnnotationCallback,
-  RenderArrayOfPrimitivesItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {
+  type Uploader,
+  type UploaderResolver,
+  type UploadProgressEvent,
+} from '../../../studio/uploads/types'
+import {type ArrayInputMoveItemEvent, type UploadEvent} from '../../../types/event'
+import {type ArrayOfPrimitivesFieldProps} from '../../../types/fieldProps'
+import {
+  type ArrayOfObjectsInputProps,
+  type ArrayOfPrimitivesInputProps,
+} from '../../../types/inputProps'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfPrimitivesItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../../types/renderCallback'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'

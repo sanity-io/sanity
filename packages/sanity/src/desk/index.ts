@@ -9,13 +9,13 @@ import {PaneLayout as _PaneLayout} from '../structure/components/pane/PaneLayout
  *
  * @deprecated Use `sanity/structure` instead.
  */
-import type {
-  BackLinkProps as _BackLinkProps,
-  ChildLinkProps as _ChildLinkProps,
-  EditReferenceOptions as _EditReferenceOptions,
-  PaneRouterContextValue as _PaneRouterContextValue,
-  ParameterizedLinkProps as _ParameterizedLinkProps,
-  ReferenceChildLinkProps as _ReferenceChildLinkProps,
+import {
+  type BackLinkProps as _BackLinkProps,
+  type ChildLinkProps as _ChildLinkProps,
+  type EditReferenceOptions as _EditReferenceOptions,
+  type PaneRouterContextValue as _PaneRouterContextValue,
+  type ParameterizedLinkProps as _ParameterizedLinkProps,
+  type ReferenceChildLinkProps as _ReferenceChildLinkProps,
 } from '../structure/components/paneRouter/types'
 import {usePaneRouter as _usePaneRouter} from '../structure/components/paneRouter/usePaneRouter'
 import {
@@ -25,18 +25,18 @@ import {
 import {DocumentInspectorHeader as _DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
 import {DocumentPane as _DocumentPane} from '../structure/panes/document/DocumentPane'
 import {DocumentPaneProviderWrapper as _DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'
-import type {DocumentPaneProviderProps as _DocumentPaneProviderProps} from '../structure/panes/document/types'
+import {type DocumentPaneProviderProps as _DocumentPaneProviderProps} from '../structure/panes/document/types'
 import {useDocumentPane as _useDocumentPane} from '../structure/panes/document/useDocumentPane'
 import {useDocumentTitle as _useDocumentTitle} from '../structure/panes/document/useDocumentTitle'
 import {
   DocumentListPane as _DocumentListPane,
   type DocumentListPaneProps as _DocumentListPaneProps,
 } from '../structure/panes/documentList/index'
-import type {
-  ChildObservable as _ChildObservable,
-  ChildResolver as _ChildResolver,
-  ChildResolverOptions as _ChildResolverOptions,
-  ItemChild as _ItemChild,
+import {
+  type ChildObservable as _ChildObservable,
+  type ChildResolver as _ChildResolver,
+  type ChildResolverOptions as _ChildResolverOptions,
+  type ItemChild as _ItemChild,
 } from '../structure/structureBuilder/ChildResolver'
 import {
   type BuildableComponent as _BuildableComponent,
@@ -135,26 +135,26 @@ import {
   HELP_URL as _HELP_URL,
   SerializeError as _SerializeError,
 } from '../structure/structureBuilder/SerializeError'
-import type {
-  Builder as _Builder,
-  Child as _Child,
-  Collection as _Collection,
-  CollectionBuilder as _CollectionBuilder,
-  Divider as _Divider,
-  DocumentNode as _DocumentNode,
-  EditorNode as _EditorNode,
-  SerializeOptions as _SerializeOptions,
-  SerializePath as _SerializePath,
-  StructureNode as _StructureNode,
+import {
+  type Builder as _Builder,
+  type Child as _Child,
+  type Collection as _Collection,
+  type CollectionBuilder as _CollectionBuilder,
+  type Divider as _Divider,
+  type DocumentNode as _DocumentNode,
+  type EditorNode as _EditorNode,
+  type SerializeOptions as _SerializeOptions,
+  type SerializePath as _SerializePath,
+  type StructureNode as _StructureNode,
 } from '../structure/structureBuilder/StructureNodes'
-import type {
-  DefaultDocumentNodeContext as _DefaultDocumentNodeContext,
-  DefaultDocumentNodeResolver as _DefaultDocumentNodeResolver,
-  StructureBuilder as _StructureBuilder,
-  StructureContext as _StructureContext,
-  UserComponent as _UserComponent,
-  UserViewComponent as _UserViewComponent,
-  View as _View,
+import {
+  type DefaultDocumentNodeContext as _DefaultDocumentNodeContext,
+  type DefaultDocumentNodeResolver as _DefaultDocumentNodeResolver,
+  type StructureBuilder as _StructureBuilder,
+  type StructureContext as _StructureContext,
+  type UserComponent as _UserComponent,
+  type UserViewComponent as _UserViewComponent,
+  type View as _View,
 } from '../structure/structureBuilder/types'
 import {
   type ComponentView as _ComponentView,
@@ -176,31 +176,31 @@ import {
   StructureToolProvider as _DeskToolProvider,
   type StructureToolProviderProps as _DeskToolProviderProps,
 } from '../structure/StructureToolProvider'
-import type {
-  CustomComponentPaneNode as _CustomComponentPaneNode,
-  DocumentFieldMenuActionNode as _DocumentFieldMenuActionNode,
-  DocumentListPaneNode as _DocumentListPaneNode,
-  DocumentPaneNode as _DocumentPaneNode,
-  ListPaneNode as _ListPaneNode,
-  PaneListItem as _PaneListItem,
-  PaneListItemDivider as _PaneListItemDivider,
-  PaneMenuItem as _PaneMenuItem,
-  PaneMenuItemGroup as _PaneMenuItemGroup,
-  PaneNode as _PaneNode,
-  PaneNodeResolver as _PaneNodeResolver,
-  RouterPaneGroup as _RouterPaneGroup,
-  RouterPanes as _RouterPanes,
-  RouterPaneSibling as _RouterPaneSibling,
-  RouterPaneSiblingContext as _RouterPaneSiblingContext,
-  SerializablePaneNode as _SerializablePaneNode,
-  StructureResolver as _StructureResolver,
-  StructureResolverContext as _StructureResolverContext,
-  StructureToolContextValue as _DeskToolContextValue,
-  StructureToolFeatures as _DeskToolFeatures,
-  StructureToolMenuItem as _DeskToolMenuItem,
-  StructureToolOptions as _DeskToolOptions,
-  StructureToolPaneActionHandler as _DeskToolPaneActionHandler,
-  UnresolvedPaneNode as _UnresolvedPaneNode,
+import {
+  type CustomComponentPaneNode as _CustomComponentPaneNode,
+  type DocumentFieldMenuActionNode as _DocumentFieldMenuActionNode,
+  type DocumentListPaneNode as _DocumentListPaneNode,
+  type DocumentPaneNode as _DocumentPaneNode,
+  type ListPaneNode as _ListPaneNode,
+  type PaneListItem as _PaneListItem,
+  type PaneListItemDivider as _PaneListItemDivider,
+  type PaneMenuItem as _PaneMenuItem,
+  type PaneMenuItemGroup as _PaneMenuItemGroup,
+  type PaneNode as _PaneNode,
+  type PaneNodeResolver as _PaneNodeResolver,
+  type RouterPaneGroup as _RouterPaneGroup,
+  type RouterPanes as _RouterPanes,
+  type RouterPaneSibling as _RouterPaneSibling,
+  type RouterPaneSiblingContext as _RouterPaneSiblingContext,
+  type SerializablePaneNode as _SerializablePaneNode,
+  type StructureResolver as _StructureResolver,
+  type StructureResolverContext as _StructureResolverContext,
+  type StructureToolContextValue as _DeskToolContextValue,
+  type StructureToolFeatures as _DeskToolFeatures,
+  type StructureToolMenuItem as _DeskToolMenuItem,
+  type StructureToolOptions as _DeskToolOptions,
+  type StructureToolPaneActionHandler as _DeskToolPaneActionHandler,
+  type UnresolvedPaneNode as _UnresolvedPaneNode,
 } from '../structure/types'
 import {useStructureTool as _useStructureTool} from '../structure/useStructureTool'
 

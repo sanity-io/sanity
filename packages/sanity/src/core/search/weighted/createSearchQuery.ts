@@ -11,12 +11,12 @@ import words from 'lodash-es/words.js'
 
 import {deriveSearchWeightsFromType} from '../common/deriveSearchWeightsFromType'
 import {toOrderClause} from '../common/toOrderClause'
-import type {
-  SearchFactoryOptions,
-  SearchOptions,
-  SearchPath,
-  SearchSpec,
-  SearchTerms,
+import {
+  type SearchFactoryOptions,
+  type SearchOptions,
+  type SearchPath,
+  type SearchSpec,
+  type SearchTerms,
 } from '../common/types'
 import {FINDABILITY_MVI} from '../constants'
 

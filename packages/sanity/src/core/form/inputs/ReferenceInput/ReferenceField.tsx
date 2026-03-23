@@ -1,14 +1,14 @@
 import {type ReferenceSchemaType} from '@sanity/types'
 import {useRef, useState} from 'react'
 
-import type {DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {FormField} from '../../components/formField/FormField'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider} from '../../field/actions/FieldActionsProvider'
 import {FieldActionsResolver} from '../../field/actions/FieldActionsResolver'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
-import type {ObjectFieldProps} from '../../types/fieldProps'
+import {type ObjectFieldProps} from '../../types/fieldProps'
 
 interface ReferenceFieldProps extends Omit<ObjectFieldProps, 'renderDefault'> {
   schemaType: ReferenceSchemaType

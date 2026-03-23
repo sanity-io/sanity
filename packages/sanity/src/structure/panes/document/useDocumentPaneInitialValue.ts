@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 import {useInitialValue, useTemplates, useUnique} from 'sanity'
 
-import type {PaneRouterContextValue} from '../../components/paneRouter/types'
+import {type PaneRouterContextValue} from '../../components/paneRouter/types'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {type DocumentPaneNode} from '../../types'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'

@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type Asset, type FileSchemaType, type ImageSchemaType, type SchemaType} from '@sanity/types'
 import {useCallback, useRef} from 'react'
 
-import type {PatchEvent} from '../../../patch/PatchEvent'
+import {type PatchEvent} from '../../../patch/PatchEvent'
 import {type FormPatch} from '../../../patch/types'
 import {useAssetSourceActionState} from './useAssetSourceActionState'
 import {useAssetSourceUploader} from './useAssetSourceUploader'

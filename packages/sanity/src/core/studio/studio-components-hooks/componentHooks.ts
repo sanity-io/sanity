@@ -1,7 +1,11 @@
 import {type ComponentType} from 'react'
 
 import {useMiddlewareComponents} from '../../config/components/useMiddlewareComponents'
-import type {ActiveToolLayoutProps, NavbarProps, ToolMenuProps} from '../../config/studio/types'
+import {
+  type ActiveToolLayoutProps,
+  type NavbarProps,
+  type ToolMenuProps,
+} from '../../config/studio/types'
 import {StudioActiveToolLayout} from '../components/navbar/StudioActiveToolLayout'
 import {StudioNavbar} from '../components/navbar/StudioNavbar'
 import {StudioToolMenu} from '../components/navbar/tools/StudioToolMenu'

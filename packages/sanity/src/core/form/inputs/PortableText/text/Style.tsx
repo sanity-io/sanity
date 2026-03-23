@@ -1,7 +1,7 @@
 import {type BlockStyleRenderProps} from '@portabletext/editor'
 import {useCallback, useMemo} from 'react'
 
-import type {BlockStyleProps} from '../../../types/blockProps'
+import {type BlockStyleProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 

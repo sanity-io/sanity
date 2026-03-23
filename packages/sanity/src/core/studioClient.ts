@@ -1,6 +1,6 @@
 import {type ClientConfig, type SanityClient} from '@sanity/client'
 
-import type {SourceClientOptions} from './config/types'
+import {type SourceClientOptions} from './config/types'
 import {SANITY_VERSION} from './version'
 
 /**

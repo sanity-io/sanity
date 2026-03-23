@@ -6,7 +6,7 @@ import {
   useTrackerStore,
   useTrackerStoreReporter,
 } from '../../components/react-track-elements/hooks'
-import type {Reported, ReporterHook} from '../../components/react-track-elements/types'
+import {type Reported, type ReporterHook} from '../../components/react-track-elements/types'
 import {type FieldPresenceData} from '../types'
 
 export type ReportedPresenceData = Reported<FieldPresenceData>

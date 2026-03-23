@@ -31,8 +31,8 @@ import {
   matchesSchemaTypeAccept,
 } from '../../../../studio/uploads/matchSchemaTypeAccept'
 import {resolveUploadAssetSources} from '../../../../studio/uploads/resolveUploadAssetSources'
-import type {UploadEvent} from '../../../../types/event'
-import type {InputOnSelectFileFunctionProps} from '../../../../types/inputProps'
+import {type UploadEvent} from '../../../../types/event'
+import {type InputOnSelectFileFunctionProps} from '../../../../types/inputProps'
 import {useFormBuilder} from '../../../../useFormBuilder'
 import {getAssetSourcesWithUpload, isComponentModeAssetSource} from '../assetSourceUtils'
 import {DropMessage} from '../DropMessage'

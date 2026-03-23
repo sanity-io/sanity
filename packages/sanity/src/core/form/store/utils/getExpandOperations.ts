@@ -4,13 +4,13 @@ import castArray from 'lodash-es/castArray.js'
 import {isMemberArrayOfObjects, isMemberObject} from '../../members/object/fields/asserters'
 import {ALL_FIELDS_GROUP} from '../constants'
 import {isArrayOfObjectsFormNode, isObjectFormNode} from '../types/asserters'
-import type {
-  ArrayOfObjectsItemMember,
-  FieldMember,
-  FieldSetMember,
-  ObjectMember,
+import {
+  type ArrayOfObjectsItemMember,
+  type FieldMember,
+  type FieldSetMember,
+  type ObjectMember,
 } from '../types/members'
-import type {ArrayOfObjectsFormNode, BaseFormNode, ObjectFormNode} from '../types/nodes'
+import {type ArrayOfObjectsFormNode, type BaseFormNode, type ObjectFormNode} from '../types/nodes'
 
 /** @internal */
 export interface ExpandPathOperation {

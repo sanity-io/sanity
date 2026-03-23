@@ -7,8 +7,8 @@ import {
 } from '../../../../../media-library/plugin/schemas/types'
 import {type FIXME} from '../../../../FIXME'
 import {set, setIfMissing, unset} from '../../../patch/patch'
-import type {PatchEvent} from '../../../patch/PatchEvent'
-import type {FormPatch} from '../../../patch/types'
+import {type PatchEvent} from '../../../patch/PatchEvent'
+import {type FormPatch} from '../../../patch/types'
 import {
   type Uploader,
   type UploaderResolver,

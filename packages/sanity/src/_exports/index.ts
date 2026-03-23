@@ -498,13 +498,13 @@ export {
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
 } from '../core/releases/util/util'
-// eslint-disable-next-line no-restricted-imports -- public API surface, these must remain exported
+// oxlint-disable-next-line no-restricted-imports -- public API surface, these must remain exported
 export {EditScheduleForm} from '../core/scheduled-publishing/components/editScheduleForm/EditScheduleForm'
-// eslint-disable-next-line no-restricted-imports -- public API surface, these must remain exported
+// oxlint-disable-next-line no-restricted-imports -- public API surface, these must remain exported
 export type * from '../core/scheduled-publishing/contexts/Schedules'
-// eslint-disable-next-line no-restricted-imports -- public API alias
+// oxlint-disable-next-line no-restricted-imports -- public API surface, these must remain exported
 export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/plugin/documentActions/schedule/ScheduleAction'
-// eslint-disable-next-line no-restricted-imports -- public API surface, these must remain exported
+// oxlint-disable-next-line no-restricted-imports -- public API surface, these must remain exported
 export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
 export {createSchema} from '../core/schema/createSchema'
 export type * from '../core/schema/descriptors'

@@ -1,4 +1,4 @@
-import type {LocaleResourceBundle} from '../../../core/i18n/types'
+import {type LocaleResourceBundle} from '../../../core/i18n/types'
 
 /**
  * The locale namespace for the media library plugin.

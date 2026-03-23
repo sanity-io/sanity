@@ -1,7 +1,7 @@
 import {type BlockListItemRenderProps} from '@portabletext/editor'
 import {useMemo} from 'react'
 
-import type {BlockListItemProps} from '../../../types/blockProps'
+import {type BlockListItemProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 
 const DefaultComponent = (dProps: BlockListItemProps) => {

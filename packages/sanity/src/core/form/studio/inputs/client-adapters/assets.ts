@@ -4,7 +4,7 @@ import {from, Observable, of as observableOf} from 'rxjs'
 import {catchError, map, mergeMap, startWith} from 'rxjs/operators'
 
 import {type VideoAsset} from '../../../../../media-library/plugin/schemas/types'
-import type {DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
+import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
 import {DEFAULT_API_VERSION} from '../../assetSourceMediaLibrary/constants'
 import {sourceName as MEDIA_LIBRARY_SOURCE_NAME} from '../../assetSourceMediaLibrary/createAssetSource'
 import {type UploadOptions} from '../../uploads/types'

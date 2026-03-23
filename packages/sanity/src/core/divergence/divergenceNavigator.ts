@@ -18,8 +18,8 @@ import {
   switchScan,
 } from 'rxjs'
 
-import type {DiffComponent, DiffComponentOptions} from '../field/types'
-import type {FormState} from '../form/store/useFormState'
+import {type DiffComponent, type DiffComponentOptions} from '../field/types'
+import {type FormState} from '../form/store/useFormState'
 import {useWorkspace} from '../studio/workspace'
 import {type CollatedDocumentDivergencesState} from './collateDocumentDivergences'
 import {type Divergence, type DivergenceAtPath} from './readDocumentDivergences'

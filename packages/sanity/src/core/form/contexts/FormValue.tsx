@@ -4,7 +4,7 @@ import {type ReactNode, useContext, useMemo} from 'react'
 import {FormValueContext} from 'sanity/_singletons'
 
 import {getValueAtPath} from '../../field/paths/helpers'
-import type {FormDocumentValue} from '../types/formDocumentValue'
+import {type FormDocumentValue} from '../types/formDocumentValue'
 
 /**
  * @internal

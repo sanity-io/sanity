@@ -5,7 +5,7 @@ import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {set} from '../../../../../form/patch/patch'
-import type {StringInputProps} from '../../../../../form/types/inputProps'
+import {type StringInputProps} from '../../../../../form/types/inputProps'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'
