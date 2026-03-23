@@ -5,6 +5,7 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
 import {useTranslation} from '../../../../../i18n'
+import {defaultResolveItemComponent} from '../../../../studio/inputResolver/itemResolver'
 import {
   type ArrayOfObjectsInputProps,
   type ObjectItem,
@@ -14,7 +15,6 @@ import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetC
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
-import {PreviewItem} from './PreviewItem'
 import {useMemoCompare} from './useMemoCompare'
 import {useVisibilityDetection} from './useVisibilityDetection'
 import {VirtualizedArrayList} from './VirtualizedArrayList'
@@ -45,10 +45,13 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   } = props
   const {t} = useTranslation()
 
-  const renderItem = useCallback(
-    (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => <PreviewItem {...itemProps} />,
-    [],
-  )
+  // Resolves the item component locally. The threaded props.renderItem accumulates callback
+  // wrapping through ancestor form components, breaking previews at deep nesting levels (#4780).
+  // Local resolution avoids this while preserving custom and reference-type item components.
+  const renderItem = useCallback((itemProps: Omit<ObjectItemProps, 'renderDefault'>) => {
+    const ItemComponent = defaultResolveItemComponent(itemProps.schemaType)
+    return <ItemComponent {...itemProps} />
+  }, [])
 
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)

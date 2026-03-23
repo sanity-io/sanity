@@ -2,7 +2,7 @@ import {type ArraySchemaType} from '@sanity/types'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
-import {describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
 import {useArrayValidation} from '../../common/ArrayValidationContext'
@@ -16,8 +16,14 @@ vi.mock('../../../files/common/uploadTarget/UploadTargetCard', () => ({
   UploadTargetCard: ({children}: {children: ReactNode}) => <div>{children}</div>,
 }))
 
+const virtualizedArrayListMock = vi.fn((_props: Record<string, unknown>) => null)
 vi.mock('./VirtualizedArrayList', () => ({
-  VirtualizedArrayList: () => null,
+  VirtualizedArrayList: (props: Record<string, unknown>) => virtualizedArrayListMock(props),
+}))
+
+const resolveItemComponentMock = vi.fn()
+vi.mock('../../../../studio/inputResolver/itemResolver', () => ({
+  defaultResolveItemComponent: (schemaType: unknown) => resolveItemComponentMock(schemaType),
 }))
 
 vi.mock('./useVisibilityDetection', () => ({
@@ -62,6 +68,12 @@ function renderListArrayInput(options: {max?: number; memberCount: number}) {
 }
 
 describe('ListArrayInput', () => {
+  beforeEach(() => {
+    virtualizedArrayListMock.mockClear()
+    resolveItemComponentMock.mockClear()
+    resolveItemComponentMock.mockReturnValue(() => null)
+  })
+
   it('provides ArrayValidationContext to children', () => {
     renderListArrayInput({memberCount: 0})
 
@@ -72,5 +84,36 @@ describe('ListArrayInput', () => {
     renderListArrayInput({max: 3, memberCount: 3})
 
     expect(screen.getByTestId('max-reached')).toHaveTextContent('true')
+  })
+
+  it('passes renderItem as a function to VirtualizedArrayList', () => {
+    renderListArrayInput({memberCount: 1})
+
+    expect(virtualizedArrayListMock).toHaveBeenCalledTimes(1)
+    const passedProps = virtualizedArrayListMock.mock.calls[0][0] as Record<string, unknown>
+    expect(passedProps).toHaveProperty('renderItem')
+    expect(typeof passedProps.renderItem).toBe('function')
+  })
+
+  it('resolves item component from schemaType via defaultResolveItemComponent', () => {
+    function StubItemComponent() {
+      return null
+    }
+    resolveItemComponentMock.mockReturnValue(StubItemComponent)
+
+    renderListArrayInput({memberCount: 1})
+
+    const passedProps = virtualizedArrayListMock.mock.calls[0][0] as Record<string, unknown>
+    const renderItem = passedProps.renderItem as (props: Record<string, unknown>) => unknown
+
+    const itemSchemaType = {name: 'myCustomItem', jsonType: 'object'}
+    const renderedElement = renderItem({schemaType: itemSchemaType}) as {
+      type: unknown
+      props: Record<string, unknown>
+    }
+
+    expect(resolveItemComponentMock).toHaveBeenCalledWith(itemSchemaType)
+    expect(renderedElement.type).toBe(StubItemComponent)
+    expect(renderedElement.props).toEqual(expect.objectContaining({schemaType: itemSchemaType}))
   })
 })
