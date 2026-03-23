@@ -22,12 +22,12 @@ import {useClient} from '../../hooks/useClient'
 import {type EditStateFor} from '../../store'
 import {selectUpstreamVersion} from '../../store/_legacy/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
-import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isPublishedId} from '../../util/draftUtils'
 import {type FormState} from '../store'
 
-interface Props extends PropsWithChildren {
+interface PropsEnabled extends PropsWithChildren {
+  enabled: true
   formState: FormState
   upstreamEditState: EditStateFor
   editState: EditStateFor
@@ -36,10 +36,24 @@ interface Props extends PropsWithChildren {
   schemaType: ObjectSchemaType
 }
 
+interface PropsDisabled extends PropsWithChildren {
+  enabled: false
+}
+
+type Props = PropsEnabled | PropsDisabled
+
 /**
  * @internal
  */
-export const DivergencesProvider: ComponentType<Props> = ({
+export const DivergencesProvider: ComponentType<Props> = (props) => {
+  if (props.enabled) {
+    return <DivergencesProviderEnabled {...props} />
+  }
+
+  return <DocumentDivergencesContext.Provider value={{enabled: false}} {...props} />
+}
+
+const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
   formState,
   upstreamEditState,
   editState,
@@ -48,10 +62,6 @@ export const DivergencesProvider: ComponentType<Props> = ({
   displayedId,
   children,
 }) => {
-  const {
-    advancedVersionControl: {enabled: advancedVersionControlEnabled},
-  } = useWorkspace()
-
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   const upstreamHead = selectUpstreamVersion(upstreamEditState)
@@ -63,10 +73,7 @@ export const DivergencesProvider: ComponentType<Props> = ({
     : (editState.version ?? editState.draft)
 
   const collatedDivergences =
-    !advancedVersionControlEnabled ||
-    !hasUpstreamVersion ||
-    typeof upstreamId === 'undefined' ||
-    typeof subjectId === 'undefined'
+    !hasUpstreamVersion || typeof upstreamId === 'undefined' || typeof subjectId === 'undefined'
       ? {
           context: new Subject<FindDivergencesContext>(),
           observable: of(collateDocumentDivergencesInitialState),
@@ -100,7 +107,7 @@ export const DivergencesProvider: ComponentType<Props> = ({
   })
 
   return (
-    <DocumentDivergencesContext.Provider value={divergenceNavigator}>
+    <DocumentDivergencesContext.Provider value={{enabled: true, ...divergenceNavigator}}>
       {children}
     </DocumentDivergencesContext.Provider>
   )

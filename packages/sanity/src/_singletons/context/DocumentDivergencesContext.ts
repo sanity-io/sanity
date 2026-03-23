@@ -5,7 +5,9 @@ import type {DivergenceNavigator} from '../../core/divergence/divergenceNavigato
 /**
  * @internal
  */
-export type DocumentDivergencesContextValue = DivergenceNavigator
+export type DocumentDivergencesContextValue =
+  | (DivergenceNavigator & {enabled: true})
+  | {enabled: false}
 
 /**
  * @internal

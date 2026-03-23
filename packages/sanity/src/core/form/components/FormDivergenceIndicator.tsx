@@ -3,7 +3,7 @@ import {AnimatePresence} from 'motion/react'
 import {type ComponentType} from 'react'
 
 import {DivergenceIndicator} from '../../divergence/components/DivergenceIndicator'
-import {selectDivergence} from '../../divergence/divergenceNavigator'
+import {type DivergenceNavigator, selectDivergence} from '../../divergence/divergenceNavigator'
 import {useVersionRelease} from '../../divergence/hooks/useVersionRelease'
 import {useDocumentDivergences} from '../contexts/DivergencesProvider'
 
@@ -13,15 +13,25 @@ interface Props {
 
 export const FormDivergenceIndicator: ComponentType<Props> = (props) => {
   const divergenceNavigator = useDocumentDivergences()
-  const divergence = selectDivergence(divergenceNavigator.state, props.path)
 
+  if (!divergenceNavigator.enabled) {
+    return null
+  }
+
+  return <FormDivergenceIndicatorEnabled {...props} divergenceNavigator={divergenceNavigator} />
+}
+
+const FormDivergenceIndicatorEnabled: ComponentType<
+  Props & {divergenceNavigator: DivergenceNavigator & {enabled: true}}
+> = ({divergenceNavigator, path}) => {
+  const divergence = selectDivergence(divergenceNavigator.state, path)
   const {release: upstreamBundle} = useVersionRelease(divergenceNavigator.state.upstreamId ?? '')
 
   return (
     <AnimatePresence>
       {divergence && divergence.divergences[0][1].status === 'unresolved' && (
         <DivergenceIndicator
-          {...props}
+          path={path}
           divergenceNavigator={divergenceNavigator}
           divergence={divergence}
           upstreamBundle={upstreamBundle}
