@@ -71,7 +71,7 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
     const testName = JSON.stringify(name)
     const decls = exps.get(name)
     if (!decls || decls.length === 0) {
-      testContent += `test.todo(${testName} /* FIXME: no declarations found */)
+      testContent += `test.todo(${testName} /* note: no declarations found */)
 `
 
       continue
@@ -141,7 +141,7 @@ function getTestContent(syntaxKindName, exportName, genericParams) {
       return `expectTypeOf<typeof ${exportName}>().toBeObject();
 `
     default:
-      return `// FIXME: ${syntaxKindName} isn't implemented in generate.mjs yet
+      return `// note: ${syntaxKindName} isn't implemented in generate.mjs yet
 `
   }
 }
