@@ -30,6 +30,7 @@ jobs:
     name: Test (node ${{ matrix.node }}) - ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
     runs-on: ubuntu-8core
     needs: [check]
+    if: needs.check.outputs.has_code_changes == 'true'
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -50,21 +51,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-        if: needs.check.outputs.has_code_changes == 'true'
         with:
           fetch-depth: 0
 
       - uses: ./.github/actions/setup
-        if: needs.check.outputs.has_code_changes == 'true'
         with:
           node-version: ${{ matrix.node }}
 
       - name: Build packages
-        if: needs.check.outputs.has_code_changes == 'true'
         run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Test
-        if: needs.check.outputs.has_code_changes == 'true'
         id: test
         run: |
           # Base arguments for all test runs
@@ -79,7 +76,7 @@ jobs:
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
-        if: ${{ !cancelled() && matrix.node == '20' && needs.check.outputs.has_code_changes == 'true' }}
+        if: ${{ !cancelled() && matrix.node == '20' }}
         uses: actions/upload-artifact@v6
         with:
           name: blob-report-${{ github.run_id }}-${{ matrix.shardIndex }}
@@ -95,13 +92,14 @@ jobs:
     steps:
       - name: Check test matrix status
         run: |
-          if [ "${{ needs.test.result }}" != "success" ]; then
-            echo "Test matrix failed with status: ${{ needs.test.result }}"
+          result="${{ needs.test.result }}"
+          if [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
+            echo "Test matrix failed with status: $result"
             exit 1
           fi
 
   report-coverage:
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check.outputs.has_code_changes == 'true' }}
     needs: [check, test]
     runs-on: ubuntu-8core
     permissions:
@@ -110,15 +108,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-        if: needs.check.outputs.has_code_changes == 'true'
         with:
           fetch-depth: 0
 
       - uses: ./.github/actions/setup
-        if: needs.check.outputs.has_code_changes == 'true'
 
       - name: "Download coverage artifacts"
-        if: needs.check.outputs.has_code_changes == 'true'
         uses: actions/download-artifact@v7
         with:
           path: .vitest-reports
@@ -126,12 +121,11 @@ jobs:
           merge-multiple: true
 
       - name: Merged report
-        if: needs.check.outputs.has_code_changes == 'true'
         id: merge_reports
         continue-on-error: true
         run: |
           pnpm vitest run --merge-reports --coverage
 
       - name: Report coverage
-        if: needs.check.outputs.has_code_changes == 'true' && steps.merge_reports.outcome == 'success'
+        if: steps.merge_reports.outcome == 'success'
         uses: davelosert/vitest-coverage-report-action@5b6122e3a819a3be7b27fc961b7faafb3bf00e4d # v2
