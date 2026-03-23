@@ -1,11 +1,12 @@
-import {HelpCircleIcon} from '@sanity/icons'
-import {Menu} from '@sanity/ui'
+import {FeedbackIcon, HelpCircleIcon} from '@sanity/icons'
+import {Menu, MenuDivider} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import semver from 'semver'
 import {styled} from 'styled-components'
 
-import {MenuButton} from '../../../../../ui-components'
+import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
+import {FeedbackDialog} from '../../../../feedback'
 import {useTranslation} from '../../../../i18n'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
@@ -52,9 +53,14 @@ export function ResourcesButton() {
     setStudioInfoDialogOpen(true)
   }, [])
 
+  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false)
+  const handleOpenFeedback = useCallback(() => setFeedbackDialogOpen(true), [])
+  const handleCloseFeedback = useCallback(() => setFeedbackDialogOpen(false), [])
+
   return (
     <>
       {studioInfoDialogOpen && <StudioInfoDialog onClose={handleStudioInfoDialogClose} />}
+      {feedbackDialogOpen && <FeedbackDialog onClose={handleCloseFeedback} />}
       <MenuButton
         button={
           <StatusButton
@@ -69,6 +75,12 @@ export function ResourcesButton() {
         id="menu-button-resources"
         menu={
           <StyledMenu data-testid="menu-button-resources">
+            <MenuItem
+              icon={FeedbackIcon}
+              text={t('feedback.menu-item')}
+              onClick={handleOpenFeedback}
+            />
+            <MenuDivider />
             <ResourcesMenuItems
               currentVersion={currentVersion}
               latestTaggedVersion={latestTaggedVersion}

@@ -616,6 +616,47 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Tooltip for free trial navbar button, once trial has ended */
   'free-trial.tooltip.trial-finished': 'Upgrade your project',
 
+  /** Title of the feedback dialog */
+  'feedback.dialog.title': 'Share feedback with Sanity',
+  /** Label for the sentiment question */
+  'feedback.sentiment.label': 'How easy or difficult is Sanity to use?',
+  /** Sentiment option: happy */
+  'feedback.sentiment.happy': 'Easy',
+  /** Sentiment option: neutral */
+  'feedback.sentiment.neutral': 'Not sure',
+  /** Sentiment option: unhappy */
+  'feedback.sentiment.unhappy': 'Difficult',
+  /** Label for the message field */
+  'feedback.message.label': 'What is working? What could be better?',
+  /** Placeholder for the message field */
+  'feedback.message.placeholder': 'Tell us what you think…',
+  /** Label for the image attachment section */
+  'feedback.attachment.label': 'Attach an image',
+  /** Drop zone text for image attachment */
+  'feedback.attachment.drop-zone': 'Drag or paste file here',
+  /** Upload button text */
+  'feedback.attachment.upload': 'Upload',
+  /** Remove attached image button text */
+  'feedback.attachment.remove': 'Remove',
+  /** Browse button text */
+  'feedback.attachment.browse': 'Browse',
+  /** Label for the contact consent toggle */
+  'feedback.consent.label': 'Can the Sanity team follow up with you about this feedback?',
+  /** Consent toggle: yes */
+  'feedback.consent.yes': 'Yes',
+  /** Consent toggle: no */
+  'feedback.consent.no': 'No',
+  /** Submit button text */
+  'feedback.submit': 'Send feedback',
+  /** Cancel button text */
+  'feedback.cancel': 'Cancel',
+  /** Toast message after successful submission */
+  'feedback.success': 'Feedback submitted, thank you!',
+  /** Toast message after failed submission */
+  'feedback.error': 'Failed to submit feedback',
+  /** Label for "send feedback" in the help resources menu */
+  'feedback.menu-item': 'Send feedback',
+
   /**
    * Label for "contact sales" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
