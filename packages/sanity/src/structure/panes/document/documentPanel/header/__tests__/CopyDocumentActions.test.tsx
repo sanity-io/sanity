@@ -54,7 +54,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
   })),
 }))
 
-vi.mock('../../../../../components', () => ({
+vi.mock('../../../../../components/paneRouter/usePaneRouter', () => ({
   usePaneRouter: vi.fn(() => ({
     params: {},
     setParams: vi.fn(),

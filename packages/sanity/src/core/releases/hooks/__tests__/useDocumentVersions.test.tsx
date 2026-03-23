@@ -29,7 +29,7 @@ vi.mock('../useDocumentVersions', async () => {
   }
 })
 
-vi.mock('../../../store', () => ({
+vi.mock('../../../store/_legacy/datastores', () => ({
   useDocumentPreviewStore: vi.fn(),
 }))
 

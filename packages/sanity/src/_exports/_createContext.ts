@@ -1,1 +1,1 @@
-export type * from '../_createContext/createGlobalScopedContext'
+export {createGlobalScopedContext as createContext} from '../_createContext/createGlobalScopedContext'

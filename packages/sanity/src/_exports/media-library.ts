@@ -1,1 +1,1 @@
-export type * from '../media-library/plugin/schemas/defineVideoField'
+export * from '../media-library/plugin/schemas/defineVideoField'

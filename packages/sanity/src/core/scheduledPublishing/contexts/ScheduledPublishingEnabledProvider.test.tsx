@@ -11,7 +11,7 @@ import {
   useScheduledPublishingEnabled,
 } from './ScheduledPublishingEnabledProvider'
 
-vi.mock('../../hooks')
+vi.mock('../../hooks/useFeatureEnabled')
 
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({}),

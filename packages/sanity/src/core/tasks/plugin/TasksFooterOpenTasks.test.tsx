@@ -17,13 +17,14 @@ vi.mock('react-i18next', async (importOriginal) => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 
-vi.mock('../../hooks', () => ({
+vi.mock('../../hooks/useFeatureEnabled', async (importOriginal) => ({
+  ...(await importOriginal()),
   useFeatureEnabled: vi.fn().mockReturnValue({enabled: true, isLoading: false}),
 }))
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({tasks: {enabled: true}}),
 }))
-vi.mock('../store', () => ({useTasksStore: vi.fn()}))
+vi.mock('../store/useTasksStore', () => ({useTasksStore: vi.fn()}))
 vi.mock('../context/isLastPane/useIsLastPane', () => ({
   useIsLastPane: vi.fn().mockReturnValue(true),
 }))

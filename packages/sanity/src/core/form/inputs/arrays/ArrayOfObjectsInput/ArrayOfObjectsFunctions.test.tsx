@@ -12,7 +12,7 @@ vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: () => ({log: vi.fn()}),
 }))
 
-vi.mock('../../../../i18n', () => ({
+vi.mock('../../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 

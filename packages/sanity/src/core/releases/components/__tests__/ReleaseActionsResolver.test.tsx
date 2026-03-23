@@ -10,7 +10,7 @@ import {activeASAPRelease} from '../../__fixtures__/release.fixture'
 import {documentsInRelease} from '../../tool/detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleaseActionsResolver} from '../ReleaseActionsResolver'
 
-vi.mock('../../../components/hookCollection', () => ({
+vi.mock('../../../components/hookCollection/GetHookCollectionState', () => ({
   GetHookCollectionState: vi.fn(({children, hooks, args}) => {
     const states = hooks.map((hook: ReleaseActionComponent) => hook(args)).filter(Boolean)
     return children({states})

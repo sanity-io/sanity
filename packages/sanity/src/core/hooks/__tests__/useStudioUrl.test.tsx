@@ -21,7 +21,7 @@ vi.mock('../../store/_legacy/project/useProjectOrganizationId', () => ({
   useProjectOrganizationId: vi.fn(),
 }))
 
-vi.mock('../../studio', () => ({
+vi.mock('../../studio/activeWorkspaceMatcher/useActiveWorkspace', () => ({
   useActiveWorkspace: vi.fn(),
 }))
 

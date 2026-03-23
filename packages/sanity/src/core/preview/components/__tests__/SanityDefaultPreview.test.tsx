@@ -9,7 +9,7 @@ import {_previewComponents} from '../_previewComponents'
 import {SanityDefaultPreview} from '../SanityDefaultPreview'
 
 vi.mock('@sanity/asset-utils')
-vi.mock('../../../hooks')
+vi.mock('../../../hooks/useClient')
 vi.mock('../../../form/inputs/files/ImageInput/useImageUrl')
 vi.mock('@sanity/image-url')
 

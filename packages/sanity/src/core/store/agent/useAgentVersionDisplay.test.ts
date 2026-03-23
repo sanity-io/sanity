@@ -11,7 +11,9 @@ const OTHER = 'agent-other1'
 const RELEASE = 'rABC123'
 
 vi.mock('./useAgentBundles', () => ({useAgentBundles: vi.fn(() => mockState)}))
-vi.mock('../../i18n', () => ({useTranslation: () => ({t: (key: string) => key})}))
+vi.mock('../../i18n/hooks/useTranslation', () => ({
+  useTranslation: () => ({t: (key: string) => key}),
+}))
 
 let mockState: AgentBundlesState = {bundles: [], loading: true}
 

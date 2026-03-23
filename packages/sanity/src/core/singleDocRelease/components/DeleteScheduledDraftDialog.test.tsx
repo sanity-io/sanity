@@ -16,8 +16,8 @@ import {DeleteScheduledDraftDialog} from './DeleteScheduledDraftDialog'
 vi.mock('../hooks/useScheduledDraftDocument')
 vi.mock('../hooks/useScheduleDraftOperations')
 vi.mock('../../releases/store/useDocumentVersionInfo')
-vi.mock('../../hooks', async () => {
-  const actual = await vi.importActual('../../hooks')
+vi.mock('../../hooks/useSchema', async () => {
+  const actual = await vi.importActual('../../hooks/useSchema')
   return {
     ...actual,
     useSchema: vi.fn(),

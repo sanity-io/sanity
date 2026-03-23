@@ -13,7 +13,7 @@ vi.mock('@sanity/telemetry/react', () => ({
   TelemetryProvider: ({children}: {children: ReactNode}) => children,
   DeferredTelemetryProvider: ({children}: {children: ReactNode}) => children,
 }))
-vi.mock('../../../hooks')
+vi.mock('../../../hooks/useClient')
 vi.mock('../../workspace')
 vi.mock('../../../store/_legacy/project/useProjectOrganizationId')
 vi.mock('sanity/router')
