@@ -29,7 +29,11 @@ import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {SANITY_VERSION} from '../../version'
 import {type ErrorInfo, type ErrorReporter} from '../errorReporter'
 
-const SANITY_DSN = 'https://8914c8dde7e1ebce191f15af8bf6b7b9@sentry.sanity.io/4507342122123264'
+/** @internal
+ * The Sentry project DSN for the Sanity Studio project in Sentry.
+ */
+export const STUDIO_DSN =
+  'https://8914c8dde7e1ebce191f15af8bf6b7b9@sentry.sanity.io/4507342122123264'
 
 const IS_EMBEDDED_STUDIO = !('__sanityErrorChannel' in globalScope)
 
@@ -39,7 +43,7 @@ const DEBUG_ERROR_REPORTING =
 const IS_BROWSER = typeof window !== 'undefined'
 
 const clientOptions: BrowserOptions = {
-  dsn: SANITY_DSN,
+  dsn: STUDIO_DSN,
   release: SANITY_VERSION,
   environment: isDev ? 'development' : 'production',
   debug: DEBUG_ERROR_REPORTING,
@@ -94,7 +98,7 @@ export function getSentryErrorReporter(): ErrorReporter {
     // This normally shouldn't happen, but if we're initialized and already using the Sanity DSN,
     // then assume we can reuse the global client
     const isSentryInitialized = sentryIsInitialized()
-    const hasThirdPartySentry = isSentryInitialized && getClient()?.getOptions().dsn === SANITY_DSN
+    const hasThirdPartySentry = isSentryInitialized && getClient()?.getOptions().dsn === STUDIO_DSN
     if (isSentryInitialized && !hasThirdPartySentry) {
       client = getClient()
       scope = getCurrentScope()

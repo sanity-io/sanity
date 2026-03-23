@@ -28,14 +28,18 @@ export interface DynamicFeedbackTags {
   url: string
 }
 
+/** Matches Sentry's accepted tag value types. */
+export type TagValue = string | number | boolean
+
 /** The full feedback payload sent to Sentry. */
 export interface FeedbackPayload {
+  dsn: string
   name?: string
   email?: string
   message: string
   sentiment: Sentiment
   contactConsent: boolean
   source: string
-  tags: Record<string, string>
+  tags: Record<string, TagValue>
   attachments?: {filename: string; data: Uint8Array}[]
 }

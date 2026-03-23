@@ -13,12 +13,16 @@ import {ImageAttachment} from './ImageAttachment'
 /** @internal */
 export interface FeedbackDialogProps {
   onClose: () => void
+  /** Sentry DSN to send feedback to. */
+  dsn: string
+  /** Identifies where this feedback was triggered from (e.g. 'studio-help-menu'). */
+  source: string
   /** Extra tags merged with base + dynamic tags. Can override defaults. */
-  extraTags?: Record<string, string>
-  /** Override the source identifier. Defaults to 'studio-help-menu'. */
-  source?: string
+  extraTags?: Record<string, string | number | boolean>
   /** Override the dialog title. */
   title?: string
+  /** Override the sentiment question (e.g., 'How easy or difficult is PTE to use?'). */
+  sentimentLabel?: string
 }
 
 const SENTIMENTS: {value: Sentiment; icon: typeof FaceHappyIcon; labelKey: string}[] = [
@@ -29,7 +33,7 @@ const SENTIMENTS: {value: Sentiment; icon: typeof FaceHappyIcon; labelKey: strin
 
 /** @internal */
 export function FeedbackDialog(props: FeedbackDialogProps) {
-  const {onClose, extraTags, source = 'studio-help-menu', title: dialogTitle} = props
+  const {onClose, dsn, source, extraTags, title: dialogTitle, sentimentLabel} = props
   const dialogId = useId()
   const {t} = useTranslation()
   const toast = useToast()
@@ -94,6 +98,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
       }
 
       sendFeedback({
+        dsn,
         name: userName,
         email: userEmail,
         message: trimmedMessage,
@@ -120,6 +125,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
       setSubmitting(false)
     }
   }, [
+    dsn,
     message,
     sentiment,
     imageFile,
@@ -146,7 +152,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
           {/* Sentiment */}
           <Stack space={3}>
             <Text size={1} weight="medium">
-              {t('feedback.sentiment.label')}
+              {sentimentLabel ?? t('feedback.sentiment.label')}
             </Text>
             <Flex gap={2}>
               {SENTIMENTS.map((option) => {

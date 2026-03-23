@@ -2,8 +2,6 @@ import {
   BrowserClient,
   defaultStackParser,
   getClient,
-  getCurrentScope,
-  init,
   isInitialized as sentryIsInitialized,
   makeFetchTransport,
   Scope,
@@ -13,53 +11,47 @@ import {isDev} from '../environment'
 import {SANITY_VERSION} from '../version'
 import {type FeedbackPayload} from './types'
 
-const FEEDBACK_DSN = 'https://8914c8dde7e1ebce191f15af8bf6b7b9@sentry.sanity.io/4507342122123264'
+const clientsByDsn = new Map<string, Scope>()
 
-let feedbackClient: BrowserClient | undefined
-let feedbackScope: Scope | undefined
+function getFeedbackScope(dsn: string): Scope {
+  const globalClient = sentryIsInitialized() ? getClient() : undefined
+  const globalDsn = globalClient?.getOptions().dsn
 
-function getFeedbackClient(): {client: BrowserClient; scope: Scope} {
-  if (feedbackClient && feedbackScope) {
-    return {client: feedbackClient, scope: feedbackScope}
+  if (globalClient && globalDsn === dsn) {
+    const scope = new Scope()
+    scope.setClient(globalClient)
+    return scope
   }
 
-  if (!sentryIsInitialized()) {
-    init({
-      dsn: FEEDBACK_DSN,
-      release: SANITY_VERSION,
-      environment: isDev ? 'development' : 'production',
-      defaultIntegrations: false,
-      integrations: [],
-      sendDefaultPii: true,
-    })
-
-    feedbackClient = getClient()
-    feedbackScope = getCurrentScope()
-  } else {
-    feedbackClient = new BrowserClient({
-      dsn: FEEDBACK_DSN,
-      release: SANITY_VERSION,
-      environment: isDev ? 'development' : 'production',
-      stackParser: defaultStackParser,
-      integrations: [],
-      transport: makeFetchTransport,
-    })
-
-    feedbackScope = new Scope()
-    feedbackScope.setClient(feedbackClient)
-    feedbackClient.init()
+  const cached = clientsByDsn.get(dsn)
+  if (cached) {
+    return cached
   }
 
-  return {client: feedbackClient!, scope: feedbackScope}
+  const client = new BrowserClient({
+    dsn,
+    release: SANITY_VERSION,
+    environment: isDev ? 'development' : 'production',
+    stackParser: defaultStackParser,
+    integrations: [],
+    transport: makeFetchTransport,
+  })
+
+  const scope = new Scope()
+  scope.setClient(client)
+  client.init()
+
+  clientsByDsn.set(dsn, scope)
+  return scope
 }
 
 /**
- * Send user feedback to Sentry. Framework-agnostic — no React dependency.
+ * Send user feedback to Sentry
  *
  * @internal
  */
 export function sendFeedback(payload: FeedbackPayload): string {
-  const {scope} = getFeedbackClient()
+  const scope = getFeedbackScope(payload.dsn)
 
   const {message, name, email, source, sentiment, contactConsent, tags, attachments} = payload
 

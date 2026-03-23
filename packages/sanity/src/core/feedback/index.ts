@@ -7,4 +7,5 @@ export {
   type DynamicFeedbackTags,
   type FeedbackPayload,
   type Sentiment,
+  type TagValue,
 } from './types'

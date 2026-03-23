@@ -6,6 +6,7 @@ import {styled} from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
+import {STUDIO_DSN} from '../../../../error/sentry/sentryErrorReporter'
 import {FeedbackDialog} from '../../../../feedback'
 import {useTranslation} from '../../../../i18n'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
@@ -60,7 +61,9 @@ export function ResourcesButton() {
   return (
     <>
       {studioInfoDialogOpen && <StudioInfoDialog onClose={handleStudioInfoDialogClose} />}
-      {feedbackDialogOpen && <FeedbackDialog onClose={handleCloseFeedback} />}
+      {feedbackDialogOpen && (
+        <FeedbackDialog dsn={STUDIO_DSN} source="studio-help-menu" onClose={handleCloseFeedback} />
+      )}
       <MenuButton
         button={
           <StatusButton
