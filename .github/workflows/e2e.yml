@@ -218,9 +218,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Be sure to update all instances in this file if updated, as well as github required checks
         project: [chromium, firefox]
-        # Add more shards here if needed, but remember that the github required checks will have to be updated as well
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     steps:
@@ -268,6 +266,19 @@ jobs:
             e2e/blob-report
             e2e/results
           retention-days: 30
+
+  e2e-status:
+    name: "E2E Status"
+    runs-on: ubuntu-latest
+    needs: [playwright-test]
+    if: always()
+    steps:
+      - name: Check E2E test matrix status
+        run: |
+          if [ "${{ needs.playwright-test.result }}" != "success" ]; then
+            echo "E2E test matrix failed with status: ${{ needs.playwright-test.result }}"
+            exit 1
+          fi
 
   merge-reports:
     if: always() && needs.install.outputs.examples_only != 'true'

@@ -81,6 +81,19 @@ jobs:
           include-hidden-files: true
           retention-days: 1
 
+  test-status:
+    name: "Test Status"
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: always()
+    steps:
+      - name: Check test matrix status
+        run: |
+          if [ "${{ needs.test.result }}" != "success" ]; then
+            echo "Test matrix failed with status: ${{ needs.test.result }}"
+            exit 1
+          fi
+
   report-coverage:
     if: ${{ !cancelled() }}
     needs: test
