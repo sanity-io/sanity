@@ -150,6 +150,7 @@ export {resolveSchemaTypes} from '../core/config/resolveSchemaTypes'
 export {SchemaError} from '../core/config/SchemaError'
 export type * from '../core/config/studio/types'
 export {DECISION_PARAMETERS_SCHEMA} from '../core/config/types'
+export type * from '../core/config/types'
 export {
   getConfigContextFromSource,
   useConfigContextFromSource,
