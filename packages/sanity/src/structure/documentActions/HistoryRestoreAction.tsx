@@ -24,7 +24,7 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
   const {t} = useTranslation(structureLocaleNamespace)
 
   const handleConfirm = useCallback(() => {
-    restore.execute(revision)
+    restore.execute(revision!)
     setConfirmDialogOpen(false)
   }, [restore, revision])
 
