@@ -148,7 +148,8 @@ function resolveReadOnlyAncestor({
   schemaType: SchemaType
   currentUser: CurrentUser | null
 }): boolean {
-  return path.some((_, index) => {
+  const isReadOnly = path.find((_, index) => {
+    // Iterates on each of the path segments and checks if the current path is read-only
     const currentPath = path.slice(0, index + 1)
     const schemaTypeAtPath = resolveSchemaTypeForPath(schemaType, currentPath, value)
     if (!schemaTypeAtPath) {
@@ -162,6 +163,8 @@ function resolveReadOnlyAncestor({
       path: currentPath,
     })
   })
+
+  return Boolean(isReadOnly)
 }
 
 export async function transferValue({
@@ -714,26 +717,25 @@ async function collateObjectValue({
 
   const objectMembers = targetSchemaType.fields
   const skippedReadOnlyFieldNames: string[] = []
-  const parentValue = readOnlyContext
-    ? getValueAtPath(targetRootValue as TypedObject, targetRootPath)
+  const documentValue = readOnlyContext ? (targetRootValue as Record<string, unknown>) : undefined
+  const parentValue = documentValue
+    ? (getValueAtPath(documentValue, targetRootPath) as Record<string, unknown>)
     : undefined
 
   for (const member of objectMembers) {
-    if (readOnlyContext) {
+    if (readOnlyContext && documentValue) {
       const fieldPath = targetRootPath.concat(member.name)
       const isFieldReadOnly = resolveConditionalProperty(member.type.readOnly, {
-        value: getValueAtPath(targetRootValue as TypedObject, fieldPath),
+        value: getValueAtPath(documentValue, fieldPath),
         parent: parentValue,
-        document: targetRootValue as ConditionalPropertyCallbackContext['document'],
+        document: documentValue,
         currentUser: readOnlyContext.currentUser,
         path: fieldPath,
       })
 
       if (isFieldReadOnly) {
         skippedReadOnlyFieldNames.push(member.type.title ?? member.name)
-        const existingValue = parentValue
-          ? (parentValue as Record<string, unknown>)[member.name]
-          : undefined
+        const existingValue = parentValue?.[member.name]
         if (existingValue !== undefined) {
           targetValue[member.name] = existingValue
         }
