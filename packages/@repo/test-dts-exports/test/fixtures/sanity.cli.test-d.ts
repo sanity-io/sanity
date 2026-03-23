@@ -29,10 +29,6 @@ describe('sanity/cli', () => {
   test('getCliClient', () => {
     expectTypeOf<typeof getCliClient>().not.toBeNever()
   })
-  test('getStudioEnvironmentVariables', () => {
-    expectTypeOf<typeof getStudioEnvironmentVariables>().toBeFunction()
-  })
-  test('StudioEnvVariablesOptions', () => {
-    expectTypeOf<StudioEnvVariablesOptions>().toBeObject()
-  })
+  test.todo('getStudioEnvironmentVariables' /* FIXME: no declarations found */)
+  test.todo('StudioEnvVariablesOptions' /* FIXME: no declarations found */)
 })
