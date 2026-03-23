@@ -26,5 +26,19 @@ export default defineType({
       description: 'A relative URL field',
       validation: (Rule) => Rule.uri({allowRelative: true}),
     },
+    {
+      name: 'httpsOnlyRelative',
+      type: 'url',
+      title: 'HTTPS-only, relative allowed',
+      description: 'Accepts https URLs and relative paths like /example',
+      validation: (Rule) => Rule.uri({scheme: ['https'], allowRelative: true}),
+    },
+    {
+      name: 'httpAndHttpsRelative',
+      type: 'url',
+      title: 'HTTP/HTTPS, relative allowed',
+      description: 'Accepts http and https URLs and relative paths',
+      validation: (Rule) => Rule.uri({scheme: ['http', 'https'], allowRelative: true}),
+    },
   ],
 })
