@@ -16,6 +16,7 @@ export interface BaseFeedbackTags {
   sessionId: string
   userId: string
   plugins: string
+  pluginsCount: number
 }
 
 /** Tags that update as the user navigates. */

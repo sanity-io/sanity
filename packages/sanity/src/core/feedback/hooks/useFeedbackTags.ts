@@ -40,7 +40,7 @@ function resolvePluginNames(workspace: object): string[] {
 export function useFeedbackTags(): {
   baseTags: BaseFeedbackTags
   dynamicTags: DynamicFeedbackTags
-  allTags: Record<string, string>
+  allTags: BaseFeedbackTags & DynamicFeedbackTags
   userName: string | undefined
   userEmail: string | undefined
   userId: string
@@ -77,7 +77,8 @@ export function useFeedbackTags(): {
       projectId,
       sessionId,
       userId,
-      plugins: JSON.stringify(pluginNames),
+      plugins: pluginNames.join(','),
+      pluginsCount: pluginNames.length,
     }),
     [projectId, userId, pluginNames],
   )
@@ -93,7 +94,7 @@ export function useFeedbackTags(): {
     [activeTool, workspace.name, workspace.projectId, workspace.dataset],
   )
 
-  const allTags = useMemo<Record<string, string>>(
+  const allTags = useMemo<BaseFeedbackTags & DynamicFeedbackTags>(
     () => ({...baseTags, ...dynamicTags}),
     [baseTags, dynamicTags],
   )
