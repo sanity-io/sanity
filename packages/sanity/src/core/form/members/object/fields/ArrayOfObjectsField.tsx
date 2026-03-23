@@ -17,35 +17,39 @@ import {
 } from 'react'
 import {tap} from 'rxjs/operators'
 
-import {useTranslation} from '../../../../i18n'
-import {useResolveInitialValueForType} from '../../../../store'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useResolveInitialValueForType} from '../../../../store/_legacy/document/useResolveInitialValueForType'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../inputs/files/common/assetSource'
-import {insert, type PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
-import {type ArrayOfObjectsFormNode, type FieldMember} from '../../../store'
+import {insert, set, setIfMissing, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type PatchArg} from '../../../patch/types'
+import {type FieldMember} from '../../../store/types/members'
+import {type ArrayOfObjectsFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {resolveUploader as defaultResolveUploader} from '../../../studio/uploads/resolveUploader'
 import {type FileLike} from '../../../studio/uploads/types'
 import {createInitialUploadPatches} from '../../../studio/uploads/utils'
+import {type ArrayInputInsertEvent, type ArrayInputMoveItemEvent} from '../../../types/event'
+import {type ArrayFieldProps} from '../../../types/fieldProps'
 import {
-  type ArrayFieldProps,
-  type ArrayInputInsertEvent,
-  type ArrayInputMoveItemEvent,
   type ArrayOfObjectsInputProps,
   type InputOnSelectFileFunctionProps,
-  type ObjectItem,
   type OnPathFocusPayload,
+} from '../../../types/inputProps'
+import {type ObjectItem} from '../../../types/itemProps'
+import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {ensureKey} from '../../../utils/ensureKey'
 import * as is from '../../../utils/is'

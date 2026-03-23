@@ -3,13 +3,13 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type ReleaseActionComponent} from '../../../config/releases/actions'
 import {type Source} from '../../../config/types'
-import {useSource} from '../../../studio'
+import {useSource} from '../../../studio/source'
 import {activeASAPRelease} from '../../__fixtures__/release.fixture'
 import {documentsInRelease} from '../../tool/detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {type DocumentInRelease} from '../../tool/detail/useBundleDocuments'
 import {useCustomReleaseActions} from '../useCustomReleaseActions'
 
-vi.mock('../../../studio', () => ({
+vi.mock('../../../studio/source', () => ({
   useSource: vi.fn(),
 }))
 

@@ -5,7 +5,7 @@ import {
   type AssetSourceUploader,
 } from '@sanity/types'
 
-import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
+import {type FileInfo} from '../../../core/form/inputs/files/common/fileTarget/fileTarget'
 import {type BaseVideoInputProps} from './VideoInput'
 
 export interface VideoAssetInputProps extends Omit<BaseVideoInputProps, 'renderDefault'> {

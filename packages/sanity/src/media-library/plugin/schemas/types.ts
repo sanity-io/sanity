@@ -10,7 +10,7 @@ import {
   type ValidationBuilder,
 } from '@sanity/types'
 
-import {isRecord} from '../../../core/util'
+import {isRecord} from '../../../core/util/isRecord'
 
 /** @public */
 export interface VideoOptions extends ObjectOptions {

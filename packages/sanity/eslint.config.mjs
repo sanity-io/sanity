@@ -322,6 +322,15 @@ export default defineConfig([
       ],
     },
   },
+  // The _exports files use `export {X} from '...'` + `export type * from '...'` for the same
+  // module. ESLint import/export flags this as duplicate but there's no actual conflict since
+  // `export type *` only re-exports types. oxlint handles this correctly.
+  {
+    files: ['src/_exports/**/*'],
+    rules: {
+      'import/export': 'off',
+    },
+  },
   {
     files: ['**/*.test.*'],
     rules: {

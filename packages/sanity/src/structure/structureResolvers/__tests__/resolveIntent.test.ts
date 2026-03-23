@@ -1,7 +1,8 @@
 /* this has to be imported after createStructureBuilder due to what looks like a circular import issue */
 import {describe, expect, it, vi} from 'vitest'
 // oxfmt-ignore
-import {createStructureBuilder, SerializeError} from '../../structureBuilder'
+import { createStructureBuilder } from '../../structureBuilder/createStructureBuilder';
+import {SerializeError} from '../../structureBuilder/SerializeError'
 // oxfmt-ignore
 import {type SchemaPluginOptions} from 'sanity'
 

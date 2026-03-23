@@ -3,7 +3,7 @@ import {useCallback, useMemo} from 'react'
 import {useProjectOrganizationId} from '../store/_legacy/project/useProjectOrganizationId'
 import {useRenderingContext} from '../store/renderingContext/useRenderingContext'
 import {useStudioAppIdStore} from '../store/studio-app/useStudioAppIdStore'
-import {useActiveWorkspace} from '../studio'
+import {useActiveWorkspace} from '../studio/activeWorkspaceMatcher/useActiveWorkspace'
 import {useEnvAwareSanityWebsiteUrl} from '../studio/hooks/useEnvAwareSanityWebsiteUrl'
 import {getDashboardPath} from '../util/dashboardPath'
 

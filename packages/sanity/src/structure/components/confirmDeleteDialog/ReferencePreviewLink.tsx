@@ -10,7 +10,7 @@ import {
 } from 'sanity'
 
 import {PaneItemPreview} from '../paneItem/PaneItemPreview'
-import {usePaneRouter} from '../paneRouter'
+import {usePaneRouter} from '../paneRouter/usePaneRouter'
 
 const EMPTY_ARRAY: [] = []
 

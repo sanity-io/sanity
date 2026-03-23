@@ -2,8 +2,9 @@ import {CropIcon} from '@sanity/icons'
 import {Skeleton} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, type RefObject} from 'react'
 
-import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {MenuActionsWrapper} from '../common/MenuActionsWrapper.styled'
 import {OptionsMenuPopover} from '../common/OptionsMenuPopover'
 

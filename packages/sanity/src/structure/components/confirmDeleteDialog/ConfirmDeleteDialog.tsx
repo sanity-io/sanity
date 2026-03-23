@@ -3,7 +3,7 @@ import {useCallback, useId, useMemo} from 'react'
 import {getPublishedId, LoadingBlock, useDocumentVersions, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
 import {DocTitle} from '../DocTitle'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'

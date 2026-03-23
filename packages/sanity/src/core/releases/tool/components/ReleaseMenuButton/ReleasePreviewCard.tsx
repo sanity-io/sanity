@@ -2,7 +2,8 @@ import {type ReleaseDocument} from '@sanity/client'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {ReleaseAvatar, ReleaseTitle} from '../../../components'
+import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
+import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {ReleaseTime} from '../ReleaseTime'
 
 export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {

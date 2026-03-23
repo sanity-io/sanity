@@ -1,7 +1,7 @@
 import {
   type TrackerContextGetSnapshot,
   type TrackerContextStore,
-} from '../components/react-track-elements'
+} from '../components/react-track-elements/hooks'
 import {type ChangeIndicatorTrackerContextValue} from './types'
 
 /**

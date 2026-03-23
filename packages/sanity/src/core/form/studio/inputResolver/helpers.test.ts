@@ -2,7 +2,7 @@ import {groupProblems, validateSchema} from '@sanity/schema/_internal'
 import {defineField, defineType, type ObjectSchemaType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
-import {createSchema} from '../../../schema'
+import {createSchema} from '../../../schema/createSchema'
 import {getFieldLevel} from './helpers'
 
 describe('inputResolver/helpers', () => {

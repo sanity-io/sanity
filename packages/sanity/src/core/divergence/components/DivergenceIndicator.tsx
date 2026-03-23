@@ -6,7 +6,7 @@ import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components/button/Button'
 import {pathToAnchorIdent} from '../../form/utils/pathToAnchorIdent'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
 import {type DivergenceNavigator, type ReachableDivergence} from '../divergenceNavigator'
 

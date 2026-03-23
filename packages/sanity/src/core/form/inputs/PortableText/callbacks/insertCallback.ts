@@ -1,6 +1,7 @@
 import {type PortableTextBlock} from '@sanity/types'
 
-import {insert, PatchEvent} from '../../../patch'
+import {insert} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {type InsertCallback} from './types'
 
 export function createInsertCallback(options: {

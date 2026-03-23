@@ -2,16 +2,14 @@ import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {useRelativeTime} from '../../hooks'
-import {useTranslation} from '../../i18n'
+import {useRelativeTime} from '../../hooks/useRelativeTime'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  ReleaseAvatar,
-  useActiveReleases,
-  type VersionInfoDocumentStub,
-} from '../../releases'
+import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
+import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useWorkspace} from '../../studio/workspace'
 
 interface DocumentStatusProps {

@@ -1,11 +1,11 @@
 import {AddUserIcon, CogIcon} from '@sanity/icons'
 import {Card, Stack} from '@sanity/ui'
 
-import {Button} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
-import {FreeTrial} from '../free-trial'
+import {FreeTrial} from '../free-trial/FreeTrial'
 import {useCanInviteProjectMembers} from '../useCanInviteMembers'
 
 export function ManageMenu() {

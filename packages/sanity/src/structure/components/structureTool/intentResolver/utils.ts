@@ -2,7 +2,7 @@ import {uuid} from '@sanity/uuid'
 import {firstValueFrom} from 'rxjs'
 import {type DocumentStore} from 'sanity'
 
-import {PaneResolutionError} from '../../../structureResolvers'
+import {PaneResolutionError} from '../../../structureResolvers/PaneResolutionError'
 
 export async function ensureDocumentIdAndType(
   documentStore: DocumentStore,

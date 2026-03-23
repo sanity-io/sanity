@@ -4,7 +4,7 @@ import {DialogStackContext, type DialogStackEntry} from 'sanity/_singletons'
 
 import {stringToPath} from '../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../util/empty'
-import {useFullscreenPTE} from '../../inputs/PortableText/contexts/fullscreen'
+import {useFullscreenPTE} from '../../inputs/PortableText/contexts/fullscreen/useFullscreenPTE'
 import {useFormCallbacks} from './FormCallbacks'
 
 interface DialogStackProviderProps {

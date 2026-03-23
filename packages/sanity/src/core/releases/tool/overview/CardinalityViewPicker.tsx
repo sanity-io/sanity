@@ -5,9 +5,9 @@ import {Flex, Menu, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {MenuButton} from '../../../../ui-components/menuButton'
-import {MenuItem} from '../../../../ui-components/menuItem'
-import {useTranslation} from '../../../i18n'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {
   NavigatedToReleasesOverview,

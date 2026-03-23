@@ -1,4 +1,4 @@
-import {type StudioLocaleResourceKeys} from '../../../../../../../../../../../i18n'
+import {type StudioLocaleResourceKeys} from '../../../../../../../../../../../i18n/types'
 
 export const SHORT_WEEK_DAY_KEYS: StudioLocaleResourceKeys[] = [
   'calendar.weekday-names.short.monday',

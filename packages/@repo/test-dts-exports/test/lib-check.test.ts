@@ -89,6 +89,26 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
+  // DTS bundler emits internal references to `_exports` directory that aren't resolvable externally
+  if (
+    file.fileName.includes('packages/sanity/lib/') &&
+    code === 2307 &&
+    typeof messageText === 'string' &&
+    messageText.includes('_exports')
+  ) {
+    return false
+  }
+
+  // @sanity/descriptors is an internal package not published as a standalone module
+  if (
+    file.fileName.includes('packages/sanity/lib/') &&
+    code === 2307 &&
+    typeof messageText === 'string' &&
+    messageText.includes('@sanity/descriptors')
+  ) {
+    return false
+  }
+
   // @sanity/codegen@5.10.1 has a type incompatibility due to conflicting @oclif/core versions (4.8.0 vs 4.8.2)
   // This is a transitive dependency conflict we can't fix directly
   if (

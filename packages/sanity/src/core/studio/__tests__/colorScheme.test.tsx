@@ -3,7 +3,7 @@ import {userEvent} from '@testing-library/user-event'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {ColorSchemeLocalStorageProvider, ColorSchemeProvider} from '../colorScheme'
 
 describe('ColorScheme', () => {

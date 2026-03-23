@@ -1,7 +1,7 @@
 import {LockIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ARCHIVED_RELEASE_STATES} from '../../util/const'

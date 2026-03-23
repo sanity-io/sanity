@@ -15,7 +15,7 @@ vi.mock('../router/RouterHistoryContext', () => ({
   RouterHistoryProvider: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
 }))
 
-vi.mock('../router', () => ({
+vi.mock('../router/router', () => ({
   createRouter: () => ({
     getBasePath: vi.fn(),
     decode: vi.fn(),

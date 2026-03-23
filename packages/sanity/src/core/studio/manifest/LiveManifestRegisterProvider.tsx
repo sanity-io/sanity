@@ -3,7 +3,7 @@ import debugit from 'debug'
 import {useEffect} from 'react'
 
 import {useLiveUserApplication} from '../liveUserApplication/useLiveUserApplication'
-import {useWorkspaces} from '../workspaces'
+import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {registerStudioManifest} from './registerLiveStudioManifest'
 
 const debug = debugit('sanity:manifest')

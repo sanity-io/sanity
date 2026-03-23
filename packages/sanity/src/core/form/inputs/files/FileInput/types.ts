@@ -5,7 +5,7 @@ import {
   type FileAsset,
 } from '@sanity/types'
 
-import {type FileInfo} from '../common/styles'
+import {type FileInfo} from '../common/fileTarget/fileTarget'
 import {type AssetAccessPolicy} from '../types'
 import {type BaseFileInputProps} from './FileInput'
 

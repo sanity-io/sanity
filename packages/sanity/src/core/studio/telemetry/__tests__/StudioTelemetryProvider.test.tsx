@@ -13,7 +13,7 @@ vi.mock('@sanity/telemetry/react', () => ({
   TelemetryProvider: ({children}: {children: ReactNode}) => children,
   DeferredTelemetryProvider: ({children}: {children: ReactNode}) => children,
 }))
-vi.mock('../../../hooks')
+vi.mock('../../../hooks/useClient')
 vi.mock('../../workspace')
 vi.mock('../../../store/_legacy/project/useProjectOrganizationId')
 vi.mock('sanity/router')
@@ -34,7 +34,7 @@ import {createBatchedStore, createSessionId, SessionId} from '@sanity/telemetry'
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {useRouterState} from 'sanity/router'
 
-import {useClient} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
 import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
 import {useWorkspace} from '../../workspace'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'

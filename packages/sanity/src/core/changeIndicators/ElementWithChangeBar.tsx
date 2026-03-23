@@ -2,7 +2,7 @@ import {useLayer} from '@sanity/ui'
 import {type ReactNode, useContext, useMemo} from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
-import {Tooltip} from '../../ui-components'
+import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {
   ChangeBar,

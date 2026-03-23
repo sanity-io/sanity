@@ -12,9 +12,10 @@ import {
 } from 'react'
 import {styled} from 'styled-components'
 
-import {useFormBuilder} from '../..'
-import {Popover} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
+import {useFormBuilder} from '../../useFormBuilder'
 
 const StyledPopover = styled(Popover)`
   & > div {

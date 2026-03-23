@@ -1,7 +1,10 @@
 import {type FieldDefinition, type StringSchemaType} from '@sanity/types'
 
-import {type PrimitiveInputElementProps, type StringInputProps} from '../../src/core'
 import {prepareDiffProps} from '../../src/core/form/store/formState'
+import {
+  type PrimitiveInputElementProps,
+  type StringInputProps,
+} from '../../src/core/form/types/inputProps'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'
 

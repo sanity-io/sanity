@@ -6,7 +6,7 @@ import {
   type Path,
 } from '@sanity/types'
 
-import {type UserColor, type UserColorManager} from '../../../user-color'
+import {type UserColor, type UserColorManager} from '../../../user-color/types'
 import {pathToString, stringToPath} from '../../paths/helpers'
 import {
   type Annotation,

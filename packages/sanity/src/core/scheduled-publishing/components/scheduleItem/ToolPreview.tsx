@@ -10,7 +10,7 @@ import useDialogScheduleEdit from '../../hooks/useDialogScheduleEdit'
 import {usePublishedId} from '../../hooks/usePublishedId'
 import {type Schedule} from '../../types'
 import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
-import {ScheduleContextMenu} from '../scheduleContextMenu'
+import {ScheduleContextMenu} from '../scheduleContextMenu/ScheduleContextMenu'
 import PreviewWrapper from './PreviewWrapper'
 
 interface Props {

@@ -12,7 +12,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'

@@ -6,7 +6,7 @@ import {useCallback} from 'react'
 import {formatBytes} from '../../../../../../../../../../form/inputs/common/helper'
 import {observeFileAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
 import {WithReferencedAsset} from '../../../../../../../../../../form/utils/WithReferencedAsset'
-import {useDocumentPreviewStore} from '../../../../../../../../../../store'
+import {useDocumentPreviewStore} from '../../../../../../../../../../store/_legacy/datastores'
 
 interface FileReferencePreviewProps {
   reference: ReferenceValue

@@ -10,7 +10,7 @@ import {
   createMockAssetSourceWithMediaLibraryUploader,
   observeVideoAssetStub,
 } from '../../../../../test/fixtures/assetSourceMocks'
-import {renderVideoInput} from '../../../../../test/form'
+import {renderVideoInput} from '../../../../../test/form/renderVideoInput'
 import {getDataTestIdPrefix} from '../../../../core/form/inputs/files/common/AssetSourceBrowser'
 import {BaseVideoInput} from '../VideoInput'
 

@@ -1,7 +1,7 @@
 import {type ReactNode, useContext, useMemo} from 'react'
 import {DocumentIdContext} from 'sanity/_singletons'
 
-import {getPublishedId} from '../../util'
+import {getPublishedId} from '../../util/draftUtils'
 
 export function DocumentIdProvider(props: {id: string; children: ReactNode}) {
   const value = useMemo(() => ({id: props.id}), [props.id])

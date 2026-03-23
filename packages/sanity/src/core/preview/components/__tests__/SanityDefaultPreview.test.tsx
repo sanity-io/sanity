@@ -4,12 +4,12 @@ import {render} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useImageUrl} from '../../../form/inputs/files/ImageInput/useImageUrl'
-import {useClient} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
 import {_previewComponents} from '../_previewComponents'
 import {SanityDefaultPreview} from '../SanityDefaultPreview'
 
 vi.mock('@sanity/asset-utils')
-vi.mock('../../../hooks')
+vi.mock('../../../hooks/useClient')
 vi.mock('../../../form/inputs/files/ImageInput/useImageUrl')
 vi.mock('@sanity/image-url')
 

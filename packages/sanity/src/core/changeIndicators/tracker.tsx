@@ -5,12 +5,11 @@ import {
 } from 'sanity/_singletons'
 
 import {
-  type Reported,
-  type ReporterHook,
   type TrackerContextGetSnapshot,
   useTrackerStore,
   useTrackerStoreReporter,
-} from '../components/react-track-elements'
+} from '../components/react-track-elements/hooks'
+import {type Reported, type ReporterHook} from '../components/react-track-elements/types'
 import {type ChangeIndicatorTrackerContextValue} from './types'
 
 export * from './types'

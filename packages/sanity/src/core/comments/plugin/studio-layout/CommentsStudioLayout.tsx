@@ -1,8 +1,8 @@
-import {type LayoutProps} from '../../../config'
-import {useFeatureEnabled} from '../../../hooks'
-import {FEATURES} from '../../../hooks/useFeatureEnabled'
-import {AddonDatasetProvider} from '../../../studio'
-import {CommentsOnboardingProvider, CommentsUpsellProvider} from '../../context'
+import {type LayoutProps} from '../../../config/studio/types'
+import {useFeatureEnabled, FEATURES} from '../../../hooks/useFeatureEnabled'
+import {AddonDatasetProvider} from '../../../studio/addonDataset/AddonDatasetProvider'
+import {CommentsOnboardingProvider} from '../../context/onboarding/CommentsOnboardingProvider'
+import {CommentsUpsellProvider} from '../../context/upsell/CommentsUpsellProvider'
 
 export function CommentsStudioLayout(props: LayoutProps) {
   const {enabled, isLoading} = useFeatureEnabled(FEATURES.studioComments)

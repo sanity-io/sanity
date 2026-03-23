@@ -1,6 +1,7 @@
 import {type PortableTextBlock} from '@sanity/types'
 
-import {PatchEvent, set} from '../../../patch'
+import {set} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {type SetCallback} from './types'
 
 export function createSetCallback(options: {

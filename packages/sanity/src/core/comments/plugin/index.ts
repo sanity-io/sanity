@@ -1,10 +1,10 @@
-import {definePlugin} from '../../config'
+import {definePlugin} from '../../config/definePlugin'
 import {commentsUsEnglishLocaleBundle} from '../i18n'
-import {CommentsDocumentLayout} from './document-layout'
-import {CommentsField} from './field'
-import {CommentsInput} from './input'
+import {CommentsDocumentLayout} from './document-layout/CommentsDocumentLayout'
+import {CommentsField} from './field/CommentsField'
+import {CommentsInput} from './input/CommentsInput'
 import {commentsInspector} from './inspector'
-import {CommentsStudioLayout} from './studio-layout'
+import {CommentsStudioLayout} from './studio-layout/CommentsStudioLayout'
 
 export const comments = definePlugin({
   name: 'sanity/comments',

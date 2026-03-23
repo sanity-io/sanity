@@ -19,13 +19,13 @@ import {
 import {readMostRecentSharedTransaction} from '../../divergence/readMostRecentSharedTransaction'
 import {type ResolutionMarker} from '../../divergence/types/ResolutionMarker'
 import {useClient} from '../../hooks/useClient'
-import {type EditStateFor} from '../../store'
+import {type EditStateFor} from '../../store/_legacy/document/document-pair/editState'
 import {selectUpstreamVersion} from '../../store/_legacy/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isPublishedId} from '../../util/draftUtils'
-import {type FormState} from '../store'
+import {type FormState} from '../store/useFormState'
 
 interface Props extends PropsWithChildren {
   formState: FormState

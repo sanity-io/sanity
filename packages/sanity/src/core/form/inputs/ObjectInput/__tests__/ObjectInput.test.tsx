@@ -3,8 +3,8 @@ import {screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
-import {renderObjectInput} from '../../../../../../test/form'
-import {type RenderFieldCallback, type RenderInputCallback} from '../../../types'
+import {renderObjectInput} from '../../../../../../test/form/renderObjectInput'
+import {type RenderFieldCallback, type RenderInputCallback} from '../../../types/renderCallback'
 import {ObjectInput} from '../ObjectInput'
 
 const defs = {

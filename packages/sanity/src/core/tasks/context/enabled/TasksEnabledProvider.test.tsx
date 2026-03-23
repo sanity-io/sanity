@@ -1,12 +1,12 @@
 import {renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {useFeatureEnabled} from '../../../hooks'
+import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../../studio/workspace'
 import {TasksEnabledProvider} from './TasksEnabledProvider'
 import {useTasksEnabled} from './useTasksEnabled'
 
-vi.mock('../../../hooks')
+vi.mock('../../../hooks/useFeatureEnabled')
 
 vi.mock('../../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({}),

@@ -2,7 +2,7 @@ import {render} from '@testing-library/react'
 import {usePerspective} from 'sanity'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {usePaneRouter} from '../../../../components'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {CommentsWrapper} from '../CommentsWrapper'
 
 const mockResolveIntentLink = vi.hoisted(() => vi.fn(() => '/mock-intent-link'))
@@ -33,7 +33,7 @@ vi.mock('sanity/router', () => ({
   })),
 }))
 
-vi.mock('../../../../components', () => ({
+vi.mock('../../../../components/paneRouter/usePaneRouter', () => ({
   usePaneRouter: vi.fn(() => ({
     params: {},
     setParams: vi.fn(),

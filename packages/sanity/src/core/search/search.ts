@@ -6,9 +6,9 @@ import {
   type Groq2024SearchResults,
   type SearchStrategyFactory,
   type WeightedSearchResults,
-} from './common'
-import {createGroq2024Search} from './groq2024'
-import {createWeightedSearch} from './weighted'
+} from './common/types'
+import {createGroq2024Search} from './groq2024/createGroq2024Search'
+import {createWeightedSearch} from './weighted/createWeightedSearch'
 
 const searchStrategies = {
   groqLegacy: createWeightedSearch,

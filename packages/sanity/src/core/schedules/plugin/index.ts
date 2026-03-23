@@ -1,7 +1,7 @@
 import {route} from 'sanity/router'
 
-import {type DefaultPluginsWorkspaceOptions} from '../../config'
 import {definePlugin} from '../../config/definePlugin'
+import {type DefaultPluginsWorkspaceOptions} from '../../config/types'
 import {releasesUsEnglishLocaleBundle} from '../../releases/i18n'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {ReleasesStudioLayout} from '../../releases/plugin/ReleasesStudioLayout'

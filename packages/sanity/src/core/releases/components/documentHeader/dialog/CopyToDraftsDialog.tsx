@@ -1,8 +1,8 @@
 import {Text} from '@sanity/ui'
 import {memo, useCallback, useTransition} from 'react'
 
-import {Dialog} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useCopyToDrafts} from '../../../hooks/useCopyToDrafts'
 import {releasesLocaleNamespace} from '../../../i18n'
 
