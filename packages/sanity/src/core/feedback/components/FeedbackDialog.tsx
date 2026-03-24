@@ -4,9 +4,7 @@ import {type ChangeEvent, type ClipboardEvent, useCallback, useId, useMemo, useS
 
 import {Button, Dialog} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
-import {useTelemetryConsent} from '../../studio/telemetry/useTelemetryConsent'
-import {sendFeedback} from '../feedbackClient'
-import {useFeedbackTags} from '../hooks/useFeedbackTags'
+import {useInStudioFeedback} from '../hooks/useInStudioFeedback'
 import {type Sentiment} from '../types'
 import {ImageAttachment} from './ImageAttachment'
 
@@ -38,8 +36,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
   const {t} = useTranslation()
   const toast = useToast()
 
-  const telemetryConsent = useTelemetryConsent()
-  const {allTags, userName, userEmail} = useFeedbackTags()
+  const {sendFeedback, telemetryConsent} = useInStudioFeedback()
 
   const [sentiment, setSentiment] = useState<Sentiment | null>(null)
   const [message, setMessage] = useState('')
@@ -75,8 +72,6 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     }
   }, [])
 
-  const mergedTags = useMemo(() => ({...allTags, ...extraTags}), [allTags, extraTags])
-
   // Contact consent — only shown if telemetry is granted or if the user has set up an attachment or message
   const showContactConsent = useMemo(() => {
     return telemetryConsent === 'granted' || message.trim() || imageFile
@@ -99,13 +94,11 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
 
       sendFeedback({
         dsn,
-        name: userName,
-        email: userEmail,
+        source,
         message: trimmedMessage,
         sentiment,
         contactConsent,
-        source,
-        tags: mergedTags,
+        extraTags,
         attachments,
       })
 
@@ -129,11 +122,10 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     message,
     sentiment,
     imageFile,
-    userName,
-    userEmail,
     contactConsent,
     source,
-    mergedTags,
+    extraTags,
+    sendFeedback,
     toast,
     t,
     onClose,

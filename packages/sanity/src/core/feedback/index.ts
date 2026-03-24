@@ -1,7 +1,11 @@
 export {useTelemetryConsent} from '../studio/telemetry/useTelemetryConsent'
 export {FeedbackDialog, type FeedbackDialogProps} from './components/FeedbackDialog'
-export {sendFeedback} from './feedbackClient'
 export {useFeedbackTags} from './hooks/useFeedbackTags'
+export {
+  type SendFeedbackOptions,
+  useInStudioFeedback,
+  type UseInStudioFeedbackReturn,
+} from './hooks/useInStudioFeedback'
 export {
   type BaseFeedbackTags,
   type DynamicFeedbackTags,

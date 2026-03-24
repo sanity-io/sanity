@@ -50,7 +50,7 @@ function getFeedbackScope(dsn: string): Scope {
  *
  * @internal
  */
-export function sendFeedback(payload: FeedbackPayload): string {
+export function sendFeedbackToSentry(payload: FeedbackPayload): string {
   const scope = getFeedbackScope(payload.dsn)
 
   const {message, name, email, source, sentiment, contactConsent, tags, attachments} = payload
