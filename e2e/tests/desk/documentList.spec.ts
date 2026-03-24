@@ -15,7 +15,6 @@ test(`navigating document creates only one listener connection`, async ({page, b
   // For now, only test in other browsers except firefox due to flakiness in Firefox with the requests
   test.skip(browserName === 'firefox')
 
-  test.slow()
   await page.goto('/content')
 
   let authorListenersCount = 0

@@ -5,7 +5,6 @@ import {test} from '../../studio-test'
 test.describe('In PTE - references in popover', () => {
   test.beforeEach(async ({page, createDraftDocument, browserName}, testInfo) => {
     test.skip(browserName === 'firefox', 'Firefox has timing issues with PTE editor interaction')
-    test.slow()
     await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
 
     // Important since the having two documents side by side is vital to the test
@@ -46,8 +45,6 @@ test.describe('In PTE - references in popover', () => {
   test('you should be able to create a new reference document and change the fields while the popover is open', async ({
     page,
   }) => {
-    test.slow()
-
     // Create a new reference document
     await expect(page.locator('[data-testid^="create-new-document-select-text"]')).toBeVisible()
     await page.locator('[data-testid^="create-new-document-select-text"]').click()
@@ -68,7 +65,6 @@ test.describe('In PTE - references in popover', () => {
   test('you should be able to add an existing document as reference and keep the link if picking a document that goes outside of the modal viewport', async ({
     page,
   }) => {
-    test.slow()
     // Press arrow for existing references
     await expect(
       page.getByTestId('reference-input').getByRole('button', {name: 'Open'}),

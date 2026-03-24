@@ -9,7 +9,6 @@ test(`document panel displays correct title for published document`, async ({
   page,
   createDraftDocument,
 }) => {
-  test.slow()
   const title = 'Test Title'
 
   await createDraftDocument('/content/book')

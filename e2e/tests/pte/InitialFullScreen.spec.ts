@@ -11,7 +11,6 @@ test.describe('Initial full screen', () => {
     await createDraftDocument('/content/input-standard;portable-text;initialFullScreenPTE')
 
     test.skip(browserName === 'firefox')
-    test.slow()
     await expect(page.getByTestId('fullscreen-button-collapse')).toBeVisible()
     await page.getByTestId('fullscreen-button-collapse').click()
     await expect(

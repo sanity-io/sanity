@@ -82,7 +82,7 @@ const playwrightConfig: PlaywrightTestConfig = {
   testDir: TESTS_PATH,
 
   /* Maximum time one test can run for. */
-  timeout: 30 * 1000,
+  timeout: 60_000,
 
   fullyParallel: true,
 
@@ -91,12 +91,12 @@ const playwrightConfig: PlaywrightTestConfig = {
      * Maximum time expect() should wait for the condition to be met.
      * For example in `await expect(locator).toHaveText();`
      */
-    timeout: 1000 * 60 * 5,
+    timeout: 30_000,
   },
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
   outputDir: ARTIFACT_OUTPUT_PATH,
 
-  retries: 1,
+  retries: 2,
   reporter: excludeGithub([['list'], ['blob']]),
   use: {
     actionTimeout: 10000,

@@ -5,7 +5,6 @@ import {test} from '../../studio-test'
 test.describe('Enhanced Object Dialog - breadcrumb navigation', () => {
   test.beforeEach(async ({createDraftDocument, page, browserName}) => {
     test.skip(browserName === 'firefox')
-    test.slow()
 
     await createDraftDocument('/content/input-debug;objectsDebug')
 
