@@ -296,7 +296,7 @@ describe('user interaction happy paths', () => {
     // (https://github.com/sanity-io/design/blob/b956686c2c663c4f21910f7d3d0be0a27663f5f4/packages/%40sanity/ui/src/components/autocomplete/autocompleteOption.tsx#L16-L20)
     // if this tests suddenly fails this expectation, it can be removed along with the waiting
     expect(onChange).toHaveBeenCalledTimes(0)
-    await waitForElementToBeRemoved(() => screen.getByTestId('autocomplete-popover'))
+    await waitForElementToBeRemoved(() => screen.queryByTestId('autocomplete-popover'))
     //----
 
     expect(onChange).toHaveBeenCalledTimes(1)
@@ -409,7 +409,7 @@ describe('user interaction happy paths', () => {
     // if this tests suddenly fails this expectation, it can be removed along with the waiting
     expect(onChange).toHaveBeenCalledTimes(0)
     // await wait(1)
-    await waitForElementToBeRemoved(() => screen.getByTestId('autocomplete-popover'))
+    await waitForElementToBeRemoved(() => screen.queryByTestId('autocomplete-popover'))
     //----
 
     expect(onChange).toHaveBeenCalledTimes(1)

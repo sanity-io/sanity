@@ -36,7 +36,7 @@ describe('createDefaultIcon', () => {
     const {container} = renderIcon('🟢')
     // When the title is only emojis, after filtering there should be no letters
     // The component should handle this gracefully (empty text)
-    // eslint-disable-next-line testing-library/no-node-access -- SVG has no accessible role to query by
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- SVG has no accessible role to query by
     const svg = container.querySelector('svg')
     expect(svg).toBeInTheDocument()
   })

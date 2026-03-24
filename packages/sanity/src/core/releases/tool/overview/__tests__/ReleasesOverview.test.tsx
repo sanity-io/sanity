@@ -678,9 +678,8 @@ describe('ReleasesOverview', () => {
     })
 
     describe('narrow viewport layout', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         vi.mocked(useMediaIndex).mockReturnValue(1)
-        await rerender()
       })
 
       afterEach(() => {
@@ -688,6 +687,7 @@ describe('ReleasesOverview', () => {
       })
 
       it('opens the calendar filter as a dialog instead of a sidebar', async () => {
+        await rerender()
         const filterButton = screen.getByRole('button', {name: 'calendar'})
         expect(filterButton).toBeInTheDocument()
         await userEvent.click(filterButton)
@@ -696,7 +696,8 @@ describe('ReleasesOverview', () => {
         expect(dialog).toBeInTheDocument()
       })
 
-      it('hides the timezone text and shows only the icon', () => {
+      it('hides the timezone text and shows only the icon', async () => {
+        await rerender()
         expect(screen.queryByText('SCT (Sanity/Oslo)')).not.toBeInTheDocument()
       })
     })
