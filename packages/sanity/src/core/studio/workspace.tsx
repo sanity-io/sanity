@@ -1,3 +1,4 @@
+import {SDKStudioContext} from '@sanity/sdk-react'
 import {useContext} from 'react'
 import {WorkspaceContext} from 'sanity/_singletons'
 
@@ -14,7 +15,11 @@ export function WorkspaceProvider({
   children,
   workspace,
 }: WorkspaceProviderProps): React.JSX.Element {
-  return <WorkspaceContext.Provider value={workspace}>{children}</WorkspaceContext.Provider>
+  return (
+    <WorkspaceContext.Provider value={workspace}>
+      <SDKStudioContext.Provider value={workspace}>{children}</SDKStudioContext.Provider>
+    </WorkspaceContext.Provider>
+  )
 }
 
 /**
