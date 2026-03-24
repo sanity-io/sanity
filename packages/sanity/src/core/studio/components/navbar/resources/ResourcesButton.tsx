@@ -9,6 +9,7 @@ import {StatusButton} from '../../../../components'
 import {STUDIO_DSN} from '../../../../error/sentry/sentryErrorReporter'
 import {FeedbackDialog} from '../../../../feedback'
 import {useTranslation} from '../../../../i18n'
+import {useRenderingContext} from '../../../../store/renderingContext/useRenderingContext'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useGetHelpResources} from './helper-functions/hooks'
@@ -22,6 +23,8 @@ const StyledMenu = styled(Menu)`
 
 export function ResourcesButton() {
   const {t} = useTranslation()
+  const renderingContext = useRenderingContext()
+  const isInDashboard = renderingContext?.name === 'coreUi'
   const {userApplication, isLoading: isLoadingUserApplication} = useLiveUserApplication()
 
   const {value, error, isLoading} = useGetHelpResources()
@@ -83,12 +86,16 @@ export function ResourcesButton() {
         id="menu-button-resources"
         menu={
           <StyledMenu data-testid="menu-button-resources">
-            <MenuItem
-              icon={FeedbackIcon}
-              text={t('feedback.menu-item')}
-              onClick={handleOpenFeedback}
-            />
-            <MenuDivider />
+            {!isInDashboard && (
+              <>
+                <MenuItem
+                  icon={FeedbackIcon}
+                  text={t('feedback.menu-item')}
+                  onClick={handleOpenFeedback}
+                />
+                <MenuDivider />
+              </>
+            )}
             <ResourcesMenuItems
               currentVersion={currentVersion}
               latestTaggedVersion={latestTaggedVersion}
