@@ -122,6 +122,12 @@ const getDocumentAtRevision = (
       const draft = documents.find((res) => res._id === draftId)
       const version = versionId ? documents.find((res) => res._id === versionId) : undefined
 
+      if (revision !== 'lastRevision') {
+        if (version?._rev === revision) return version
+        if (draft?._rev === revision) return draft
+        if (published?._rev === revision) return published
+        return undefined
+      }
       return version || draft || published
     })
 
