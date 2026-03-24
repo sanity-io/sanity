@@ -27,6 +27,9 @@ function getFeedbackClient(dsn: string): Scope {
     stackParser: defaultStackParser,
     integrations: [],
     transport: makeFetchTransport,
+    transportOptions: {
+      fetchOptions: {mode: 'no-cors'},
+    },
   })
 
   const scope = new Scope()
