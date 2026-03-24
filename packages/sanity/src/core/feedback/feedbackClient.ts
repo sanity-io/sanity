@@ -1,11 +1,4 @@
-import {
-  BrowserClient,
-  defaultStackParser,
-  getClient,
-  isInitialized as sentryIsInitialized,
-  makeFetchTransport,
-  Scope,
-} from '@sentry/react'
+import {BrowserClient, defaultStackParser, makeFetchTransport, Scope} from '@sentry/react'
 
 import {isDev} from '../environment'
 import {SANITY_VERSION} from '../version'
@@ -14,21 +7,13 @@ import {type FeedbackPayload} from './types'
 const clientsByDsn = new Map<string, Scope>()
 
 /**
- * Get the Sentry scope for a given DSN.
- * @param dsn - Sentry DSN to get the scope for.
+ * Get or create a dedicated Sentry client and scope for sending feedback.
+ * Each DSN gets its own client with the feedback tunnel.
+ * @param dsn - Sentry DSN for the target project.
  * Format: `https://[key]@[host]/[project-id]`
- * @returns The Sentry scope.
+ * @returns The Sentry scope bound to a feedback-specific client.
  */
-function getFeedbackScope(dsn: string): Scope {
-  const globalClient = sentryIsInitialized() ? getClient() : undefined
-  const globalDsn = globalClient?.getOptions().dsn
-
-  if (globalClient && globalDsn === dsn) {
-    const scope = new Scope()
-    scope.setClient(globalClient)
-    return scope
-  }
-
+function getFeedbackClient(dsn: string): Scope {
   const cached = clientsByDsn.get(dsn)
   if (cached) {
     return cached
@@ -36,6 +21,7 @@ function getFeedbackScope(dsn: string): Scope {
 
   const client = new BrowserClient({
     dsn,
+    tunnel: 'https://www.sanity.io/ingest/feedback',
     release: SANITY_VERSION,
     environment: isDev ? 'development' : 'production',
     stackParser: defaultStackParser,
@@ -57,7 +43,7 @@ function getFeedbackScope(dsn: string): Scope {
  * @internal
  */
 export function sendFeedbackToSentry(payload: FeedbackPayload): string {
-  const scope = getFeedbackScope(payload.dsn)
+  const scope = getFeedbackClient(payload.dsn)
 
   const {
     message,
