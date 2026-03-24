@@ -86,8 +86,6 @@ test.describe('Custom Release Actions', () => {
   const createCustomActionTests = (contextName: string, setupPath: string, isOverview: boolean) => {
     test.describe(contextName, () => {
       test.beforeEach(async ({page}) => {
-        test.slow()
-
         // Navigate and wait for the releases API response to complete
         // This ensures the release data is fully loaded before interacting with the page
         await Promise.all([
@@ -125,7 +123,6 @@ test.describe('Custom Release Actions', () => {
       })
 
       test('should verify context data', async ({page}) => {
-        test.slow()
         const consoleMessages: string[] = []
         page.on('console', (msg) => {
           consoleMessages.push(msg.text())

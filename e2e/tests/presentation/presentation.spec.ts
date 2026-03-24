@@ -4,15 +4,12 @@ import {test} from '../../studio-test'
 
 test.describe('Presentation', () => {
   test.beforeEach(async ({page}) => {
-    test.slow()
-
     await page.goto('/presentation')
     // Wait for presentation to be visible
     await expect(page.getByTestId('presentation-root')).toBeVisible()
   })
 
   test('should be able to load a simple preview', async ({page}) => {
-    test.slow()
     const root = page.getByTestId('presentation-root')
     await expect(root).toBeVisible()
     const previewIframe = root.locator('iframe')
@@ -30,7 +27,6 @@ test.describe('Presentation', () => {
   test('should be able to toggle preview viewport', async ({page, browserName}) => {
     // For now, only test in other browsers except firefox due to flakiness in Firefox with the requests
     test.skip(browserName === 'firefox')
-    test.slow()
 
     const root = page.getByTestId('presentation-root')
     const previewIframe = root.locator('iframe')

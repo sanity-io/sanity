@@ -160,7 +160,6 @@ test.describe('displayedDocument', () => {
     }) => {
       skipIfBrowser(browserName)
 
-      test.slow()
       // specific document set up for this test in mind
       await page.goto(`/content/species;${publishedDocument._id}`)
 
@@ -180,7 +179,6 @@ test.describe('displayedDocument', () => {
   test.describe('draft pinned - No draft, no publish, with version', () => {
     test(`single version - shows version displayed`, async ({page, browserName}) => {
       skipIfBrowser(browserName)
-      test.slow()
 
       // specific document set up for this test in mind
       await page.goto(`/content/species;${singleASAPVersionDocument._id}`)
@@ -203,7 +201,6 @@ test.describe('displayedDocument', () => {
     test('multiple version - shows first version displayed', async ({page, browserName}) => {
       skipIfBrowser(browserName)
 
-      test.slow()
       // specific document set up for this test in mind
       await page.goto(`/content/species;${multipleVersionsDocId}`)
       const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
@@ -225,7 +222,6 @@ test.describe('displayedDocument', () => {
     })
 
     test(`displayed document is read only`, async ({page, browserName}) => {
-      test.slow()
       skipIfBrowser(browserName)
       // specific document set up for this test in mind
       await page.goto(`/content/species;${singleASAPVersionDocument._id}`)
@@ -243,7 +239,6 @@ test.describe('displayedDocument', () => {
 
   test.describe('published pinned', () => {
     test('draft, publish, no version - shows draft displayed', async ({page, browserName}) => {
-      test.slow()
       skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
@@ -268,7 +263,6 @@ test.describe('displayedDocument', () => {
       page,
       browserName,
     }) => {
-      test.slow()
       skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
@@ -297,7 +291,6 @@ test.describe('displayedDocument', () => {
       _testContext,
       browserName,
     }) => {
-      test.slow()
       skipIfBrowser(browserName)
 
       const customDraft = await createDocument(sanityClient, {
@@ -327,7 +320,6 @@ test.describe('displayedDocument', () => {
       page,
       browserName,
     }) => {
-      test.slow()
       skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
@@ -356,7 +348,6 @@ test.describe('displayedDocument', () => {
       page,
       browserName,
     }) => {
-      test.slow()
       skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
@@ -384,7 +375,6 @@ test.describe('displayedDocument', () => {
       page,
       browserName,
     }) => {
-      test.slow()
       skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
@@ -413,7 +403,6 @@ test.describe('displayedDocument', () => {
       sanityClient,
       browserName,
     }) => {
-      test.slow()
       skipIfBrowser(browserName)
 
       const dataset = sanityClient.config().dataset
@@ -454,7 +443,6 @@ test.describe('displayedDocument', () => {
       _testContext,
       browserName,
     }) => {
-      test.slow()
       skipIfBrowser(browserName)
 
       const documentId = _testContext.getUniqueDocumentId()

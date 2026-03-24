@@ -15,7 +15,6 @@ test.describe('auto-updating studio behavior', () => {
       browserName === 'firefox',
       'Firefox has timing issues with dynamically injected import maps',
     )
-    test.slow()
 
     // Set up route interception BEFORE navigating so all requests are caught
     await page.route('https://sanity-cdn.**/v1/modules/sanity/latest/**', (route) => {

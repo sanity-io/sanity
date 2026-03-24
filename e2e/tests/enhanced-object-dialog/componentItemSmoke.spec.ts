@@ -6,7 +6,6 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
   test.beforeEach(async ({createDraftDocument}) => {
     // wait for form to be attached
     await createDraftDocument('/content/input-debug;objectsDebug')
-    test.slow()
   })
 
   test(`opening - when creating new item with custom components.item, the modal should open`, async ({

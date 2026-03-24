@@ -116,7 +116,6 @@ test('clicking custom sort order and direction sets value in storage', async ({
 test('clicking list view sets value in storage', async ({page, sanityClient, browserName}) => {
   // For now, only test in Chromium due to flakiness in Firefox and WebKit
   test.skip(browserName !== 'chromium')
-  test.slow()
 
   await page.goto('/content/author')
 

@@ -6,7 +6,6 @@ import {test} from '../../studio-test'
 test.describe('Validation test', () => {
   test.describe('should not throw error when a validation error is present', () => {
     test('and the one array item has been deleted', async ({page, createDraftDocument}) => {
-      test.slow()
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks
@@ -71,8 +70,6 @@ test.describe('Validation test', () => {
       page,
       createDraftDocument,
     }) => {
-      test.slow()
-
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks
@@ -151,8 +148,6 @@ test.describe('Validation test', () => {
       page,
       createDraftDocument,
     }) => {
-      test.slow()
-
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks

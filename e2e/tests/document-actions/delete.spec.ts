@@ -44,7 +44,6 @@ test(`deleted document shows the right name from last revision`, async ({
   page,
   createDraftDocument,
 }) => {
-  test.slow()
   const documentName = 'John Doe'
   const publishButton = page.getByTestId('action-publish')
   const paneFooter = page.getByTestId('pane-footer-document-status')

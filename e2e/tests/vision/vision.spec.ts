@@ -5,8 +5,6 @@ import {encodeQueryString, getVisionRegions, openVisionTool} from './utils'
 
 test.describe('Vision', () => {
   test('should be possible to type an execute a query', async ({page, sanityClient}) => {
-    test.slow()
-
     const bookTitle = 'Test Book'
     const bookDocument = await sanityClient.create({
       _type: 'book',

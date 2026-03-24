@@ -22,7 +22,7 @@ interface DocumentStatusOptions {
 }
 
 const DEFAULT_OPTIONS: DocumentStatusOptions = {
-  timeout: 60_000,
+  timeout: 30_000,
   useInnerText: true,
 }
 
