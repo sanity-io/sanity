@@ -13,7 +13,7 @@ import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {createLoginComponent} from './createLoginComponent'
-import {getSessionId} from './sessionId'
+import {clearSessionId, getSessionId} from './sessionId'
 import * as storage from './storage'
 import {type AuthState, type AuthStore} from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
@@ -240,6 +240,8 @@ export function _createAuthStore({
 
   async function handleCallbackUrl() {
     const sessionId = getSessionId()
+    // workaround for https://github.com/vercel/next.js/issues/91819
+    clearSessionId()
 
     if (!sessionId) {
       broadcast(loginMethod === 'cookie' ? null : getToken(projectId))
