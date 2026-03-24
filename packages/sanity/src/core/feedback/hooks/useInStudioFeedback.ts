@@ -13,11 +13,19 @@ export interface SendFeedbackOptions {
   dsn: string
   /** Tracks the tag schema for this feedback source. Bump when tags change. */
   feedbackVersion: string
+  /** Identifies where this feedback was triggered from (e.g. 'studio-help-menu'). */
   source: string
+  /** The message the user is sending feedback. */
   message: string
+  /** The sentiment of the user sending feedback. */
   sentiment: Sentiment
+  /** Whether the user has given consent to contact them based on the feedback form.
+   * Only shows if the user has granted telemetry consent or has set up an attachment or message.
+   */
   contactConsent: boolean
+  /** The tags to send with the feedback. */
   extraTags?: Record<string, TagValue>
+  /** The attachments to send with the feedback. */
   attachments?: {filename: string; data: Uint8Array}[]
 }
 
