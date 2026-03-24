@@ -286,7 +286,7 @@
     "@types/wicg-task-scheduling": "^2024.1.0",
     "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "@vitest/expect": "^4.0.18",
+    "@vitest/expect": "^4.1.0",
     "babel-plugin-react-compiler": "1.0.0",
     "babel-plugin-styled-components": "catalog:",
     "blob-polyfill": "^9.0.20240710",
