@@ -40,6 +40,11 @@ class DatasetUploader implements AssetSourceUploader {
     this.subscribers.forEach((fn) => fn(event))
   }
 
+  private teardownFileSubscription(fileId: string): void {
+    this.subscriptions.get(fileId)?.unsubscribe()
+    this.subscriptions.delete(fileId)
+  }
+
   upload(
     files: globalThis.File[],
     options?: {
@@ -91,11 +96,11 @@ class DatasetUploader implements AssetSourceUploader {
                 type: 'error',
                 files: this.files.filter((erroredFile) => erroredFile.status === 'error'),
               })
-              this.subscriptions.get(fileId)?.unsubscribe()
+              this.teardownFileSubscription(fileId)
             },
             complete: () => {
               this.updateFile(uploadFile.id, {status: 'complete'})
-              this.subscriptions.get(fileId)?.unsubscribe()
+              this.teardownFileSubscription(fileId)
             },
           }),
         )
@@ -105,18 +110,30 @@ class DatasetUploader implements AssetSourceUploader {
   }
 
   abort(file?: AssetSourceUploadFile): void {
+    const targets: AssetSourceUploadFile[] = []
     if (file) {
       const target = this.files.find((f) => f.id === file.id)
       if (target && ['pending', 'uploading'].includes(target.status)) {
-        this.updateFile(target.id, {status: 'aborted'})
+        targets.push(target)
       }
     } else {
       for (const target of this.files) {
         if (['pending', 'uploading'].includes(target.status)) {
-          this.updateFile(target.id, {status: 'aborted'})
+          targets.push(target)
         }
       }
     }
+
+    // Stop dataset upload streams first; otherwise progress patches can arrive after
+    // all-complete has unset `_upload`, which breaks the patch applier.
+    for (const target of targets) {
+      this.teardownFileSubscription(target.id)
+    }
+
+    for (const target of targets) {
+      this.updateFile(target.id, {status: 'aborted'})
+    }
+
     this.emit({
       type: 'abort',
       files: this.files.filter((abortedFile) => abortedFile.status === 'aborted'),
@@ -161,6 +178,10 @@ class DatasetUploader implements AssetSourceUploader {
   }
 
   reset(): void {
+    for (const subscription of this.subscriptions.values()) {
+      subscription.unsubscribe()
+    }
+    this.subscriptions.clear()
     this.files = []
   }
 }
