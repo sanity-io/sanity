@@ -44,6 +44,11 @@ export interface FeedbackPayload {
    */
   feedbackVersion: string
   /**
+   * The user's telemetry consent status.
+   * When not 'granted', PII (name, email, userId) is stripped and IP is anonymised.
+   */
+  telemetryConsent: 'loading' | 'granted' | 'denied'
+  /**
    * The name of the user sending feedback.
    */
   name?: string

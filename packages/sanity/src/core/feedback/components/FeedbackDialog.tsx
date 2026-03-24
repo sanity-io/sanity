@@ -108,7 +108,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
 
   // Contact consent — only shown if telemetry is granted or if the user has set up an attachment or message
   const showContactConsent = useMemo(() => {
-    return telemetryConsent === 'granted' || message.trim() || imageFile
+    return telemetryConsent === 'granted' && (message.trim() || imageFile)
   }, [telemetryConsent, message, imageFile])
 
   const handleSubmit = useCallback(async () => {

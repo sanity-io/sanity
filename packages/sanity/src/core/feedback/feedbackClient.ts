@@ -56,15 +56,21 @@ export function sendFeedbackToSentry(payload: FeedbackPayload): string {
     sentiment,
     contactConsent,
     feedbackVersion,
+    telemetryConsent,
     tags,
     attachments,
   } = payload
 
+  const hasConsent = telemetryConsent === 'granted'
+
+  const {userId: _userId, ...safeTags} = tags
+  const eventTags = hasConsent ? tags : safeTags
+
   const feedbackEvent = {
     contexts: {
       feedback: {
-        contactEmail: email,
-        name,
+        contactEmail: hasConsent ? email : undefined,
+        name: hasConsent ? name : undefined,
         message,
         url: tags.url,
         source,
@@ -73,12 +79,12 @@ export function sendFeedbackToSentry(payload: FeedbackPayload): string {
     type: 'feedback' as const,
     level: 'info' as const,
     tags: {
-      ...tags,
+      ...eventTags,
       feedbackVersion,
       sentiment,
       contactConsent: String(contactConsent),
-      contactEmail: email ?? '',
-      contactName: name ?? '',
+      contactEmail: hasConsent ? email : '',
+      contactName: hasConsent ? name : '',
       type: 'feedback',
       source,
     },

@@ -67,6 +67,7 @@ export function useInStudioFeedback(): UseInStudioFeedbackReturn {
       return sendFeedbackToSentry({
         dsn,
         feedbackVersion,
+        telemetryConsent,
         name: userName,
         email: userEmail,
         message,
@@ -77,7 +78,7 @@ export function useInStudioFeedback(): UseInStudioFeedbackReturn {
         attachments,
       })
     },
-    [allTags, userName, userEmail],
+    [allTags, userName, userEmail, telemetryConsent],
   )
 
   return {sendFeedback, telemetryConsent}
