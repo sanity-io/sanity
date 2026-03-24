@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.18.0](https://github.com/sanity-io/sanity/compare/v5.17.1...v5.18.0) (2026-03-24)
+
+### Features
+
+* **core:** add support for pre-auth telemetry event buffering ([#12469](https://github.com/sanity-io/sanity/issues/12469)) ([3e65551](https://github.com/sanity-io/sanity/commit/3e655518f4d17da8c6c9947673e526594c83528a)) by Bjørge Næss (bjoerge@gmail.com)
+
+### Bug Fixes
+
+* **auth:** workaround Next.js replaceState bug ([#12498](https://github.com/sanity-io/sanity/issues/12498)) ([00644f5](https://github.com/sanity-io/sanity/commit/00644f5a36b4b40acca63d1e42d4d19f39d932f4)) by Bjørge Næss (bjoerge@gmail.com)
+* **core:** deprecate `useTimeLineStore`,  use events store to get deleted document ([#12481](https://github.com/sanity-io/sanity/issues/12481)) ([9e36cda](https://github.com/sanity-io/sanity/commit/9e36cda2a41944c198ada537378f8600149e2a18)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** fix false positive Node.js runtime detection in Next.js ([#12490](https://github.com/sanity-io/sanity/issues/12490)) ([29239c3](https://github.com/sanity-io/sanity/commit/29239c35943657761a58e9026692a2bc8ab59013)) by Bjørge Næss (bjoerge@gmail.com)
+* **core:** getDocumentAtRevision prefer revision match ([#12495](https://github.com/sanity-io/sanity/issues/12495)) ([e65a28e](https://github.com/sanity-io/sanity/commit/e65a28e4f5043b73a970fec064ceead7c6c98d25)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** prevent crash when group.members is null ([#12463](https://github.com/sanity-io/sanity/issues/12463)) ([e2f5c21](https://github.com/sanity-io/sanity/commit/e2f5c2156e668c0b9553d09deffb96d3aaa41cf5)) by Lokesh Tiwari (120388284+TiwariLokesh@users.noreply.github.com)
+* **deps:** update dependency @sanity/cli to ^6.1.8 ([#12457](https://github.com/sanity-io/sanity/issues/12457)) ([4cfc7ac](https://github.com/sanity-io/sanity/commit/4cfc7ac9beb52b762751cb04afa02d1e6fbc4830)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/cli to ^6.2.0 ([#12474](https://github.com/sanity-io/sanity/issues/12474)) ([3ef4201](https://github.com/sanity-io/sanity/commit/3ef420188e2b7cd8c1961a2fb6d0e8147b136e74)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/cli to ^6.2.1 ([#12503](https://github.com/sanity-io/sanity/issues/12503)) ([276b1d0](https://github.com/sanity-io/sanity/commit/276b1d08eb0b093ac9b2fbe3341ed4e6a2c6fed4)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **form:** pass selectedAssets to asset sources ([#12479](https://github.com/sanity-io/sanity/issues/12479)) ([eb77f48](https://github.com/sanity-io/sanity/commit/eb77f48a9ce28a7146826b58ffec3c2699b716eb)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* **form:** unsubscribe dataset uploader streams on abort ([#12500](https://github.com/sanity-io/sanity/issues/12500)) ([c886920](https://github.com/sanity-io/sanity/commit/c886920863d10a57ef21846d36c4ea4177e9b88c)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* **sanity:** add missing `DivergencesProvider` to task form ([9695374](https://github.com/sanity-io/sanity/commit/96953742cf68c7d2aafcd70c32ef9c9dff209359)) by Ash (ash@sanity.io)
+* virtualization issues using the dialog and renderDefaults ([#12398](https://github.com/sanity-io/sanity/issues/12398)) ([b5c0733](https://github.com/sanity-io/sanity/commit/b5c0733a01d9d1b115b0c0e659cda4efe11d2c47)) by RitaDias (rita@sanity.io)
+
 ## [5.17.1](https://github.com/sanity-io/sanity/compare/v5.17.0...v5.17.1) (2026-03-17)
 
 ### Bug Fixes
