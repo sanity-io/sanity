@@ -4,6 +4,9 @@ import {isDev} from '../environment'
 import {SANITY_VERSION} from '../version'
 import {type FeedbackPayload} from './types'
 
+/** @internal */
+export const FEEDBACK_TUNNEL_URL = 'https://www.sanity.io/ingest/feedback'
+
 const clientsByDsn = new Map<string, Scope>()
 
 /**
@@ -21,7 +24,7 @@ function getFeedbackClient(dsn: string): Scope {
 
   const client = new BrowserClient({
     dsn,
-    tunnel: 'https://www.sanity.io/ingest/feedback',
+    tunnel: FEEDBACK_TUNNEL_URL,
     release: SANITY_VERSION,
     environment: isDev ? 'development' : 'production',
     stackParser: defaultStackParser,
