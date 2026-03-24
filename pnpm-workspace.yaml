@@ -17,7 +17,7 @@ catalog:
   '@sanity/migrate': ^6.0.0
   '@sanity/telemetry': ^0.9.0
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/pkg-utils': ^10.4.10
+  '@sanity/pkg-utils': ^10.4.12
   '@sanity/ui': ^3.1.14
   '@types/node': ^24.3.0
   '@types/react': ^19.2.11
