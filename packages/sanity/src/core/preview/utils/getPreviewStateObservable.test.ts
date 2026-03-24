@@ -30,9 +30,8 @@ function createMockDocumentPreviewStore() {
         return {
           pipe: () => ({
             subscribe: () => ({
-              unsubscribe: () => {
-                /* intentionally empty */
-              },
+              // eslint-disable-next-line no-empty-function
+              unsubscribe: () => {},
             }),
           }),
         }

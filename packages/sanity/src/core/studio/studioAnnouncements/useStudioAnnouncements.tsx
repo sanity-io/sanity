@@ -10,9 +10,8 @@ export function useStudioAnnouncements(): StudioAnnouncementsContextValue {
     return {
       studioAnnouncements: [],
       unseenAnnouncements: [],
-      onDialogOpen: () => {
-        /* intentionally empty */
-      },
+      // eslint-disable-next-line no-empty-function
+      onDialogOpen: () => {},
     }
   }
 

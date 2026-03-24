@@ -64,9 +64,8 @@ describe('createReleaseMetadataAggregator', () => {
   })
 
   it('should handle fetch errors with loading states', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {
-      /* intentionally empty */
-    })
+    // eslint-disable-next-line no-empty-function
+    vi.spyOn(console, 'error').mockImplementation(() => {})
     const error = new Error('Fetch failed')
     mockClient.observable.fetch.mockReturnValue(
       new Observable((subscriber) => subscriber.error(error)),

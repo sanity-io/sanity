@@ -80,9 +80,8 @@ describe('FilterLabel', () => {
   })
 
   test('handles missing operator descriptionKey', async () => {
-    vi.spyOn(console, 'warn').mockImplementation(() => {
-      /* intentionally empty */
-    })
+    // eslint-disable-next-line no-empty-function
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
     const filterWithoutDescription: SearchFilter = {
       ...mockFilter,
       operatorType: 'unknown',

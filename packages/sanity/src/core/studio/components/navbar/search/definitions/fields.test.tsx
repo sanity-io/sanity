@@ -245,9 +245,8 @@ describe('createFieldDefinitions', () => {
   })
 
   it('should return empty string when title contains a custom React component that cannot render', () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
-      /* intentionally empty */
-    })
+    // eslint-disable-next-line no-empty-function
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
     function ThrowsOnRender(props: {children: React.ReactNode}) {
       throw new Error('should not render')

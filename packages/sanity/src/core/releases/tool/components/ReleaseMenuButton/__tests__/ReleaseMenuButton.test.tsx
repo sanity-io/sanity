@@ -180,9 +180,8 @@ describe('ReleaseMenuButton', () => {
 
       describe('when archiving fails', () => {
         beforeEach(async () => {
-          vi.spyOn(console, 'error').mockImplementation(() => {
-            /* intentionally empty */
-          })
+          // eslint-disable-next-line no-empty-function
+          vi.spyOn(console, 'error').mockImplementation(() => {})
           mockUseReleaseOperations.mockReturnValue({
             ...useReleaseOperationsMockReturn,
             archive: vi.fn().mockRejectedValue(new Error('some rejection reason')),
@@ -284,9 +283,8 @@ describe('ReleaseMenuButton', () => {
 
       describe('when deleting fails', () => {
         beforeEach(async () => {
-          vi.spyOn(console, 'error').mockImplementation(() => {
-            /* intentionally empty */
-          })
+          // eslint-disable-next-line no-empty-function
+          vi.spyOn(console, 'error').mockImplementation(() => {})
           mockUseReleaseOperations.mockReturnValue({
             ...useReleaseOperationsMockReturn,
             deleteRelease: vi.fn().mockRejectedValue(new Error('some rejection reason')),
@@ -554,9 +552,8 @@ describe('ReleaseMenuButton', () => {
 
       describe('when duplication fails', () => {
         beforeEach(() => {
-          vi.spyOn(console, 'error').mockImplementation(() => {
-            /* intentionally empty */
-          })
+          // eslint-disable-next-line no-empty-function
+          vi.spyOn(console, 'error').mockImplementation(() => {})
           duplicateReleaseMock.mockRejectedValue(new Error('some duplication error'))
         })
 

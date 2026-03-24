@@ -51,9 +51,8 @@ export const PackageVersionInfoContext = createContext<PackageVersionInfoContext
   'sanity/_singletons/context/package-version-info',
   {
     isAutoUpdating: false,
-    checkForUpdates: () => {
-      /* intentionally empty */
-    },
+    // eslint-disable-next-line no-empty-function
+    checkForUpdates: () => {},
     get currentVersion(): never {
       throw new Error('PackageVersionInfoContext not provided')
     },

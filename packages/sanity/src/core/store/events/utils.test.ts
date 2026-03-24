@@ -8,9 +8,8 @@ import {
 import {addParentToEvents, sortEvents} from './utils'
 
 describe('addParentToEvents', () => {
-  it('should add the correct parentId to the events', () => {
-    /* intentionally empty */
-  })
+  // eslint-disable-next-line no-empty-function
+  it('should add the correct parentId to the events', () => {})
 })
 
 describe('sortEvents', () => {

@@ -384,9 +384,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                 )
               }
               selected
-              onClick={() => {
-                /* intentionally empty */
-              }}
+              // eslint-disable-next-line no-empty-function
+              onClick={() => {}}
               locked={false}
               tone={getReleaseTone(filteredReleases.inCreation!)}
               text={displayTitle}

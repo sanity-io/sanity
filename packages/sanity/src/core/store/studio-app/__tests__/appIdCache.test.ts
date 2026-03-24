@@ -17,9 +17,8 @@ describe('appIdCache', () => {
   })
 
   it(`should suppress error and return undefined`, async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {
-      /* intentionally empty */
-    })
+    // eslint-disable-next-line no-empty-function
+    vi.spyOn(console, 'error').mockImplementation(() => {})
     const cache = createAppIdCache()
     const appIdFetcher = vi.fn(async () => {
       throw new Error('simulated-error')

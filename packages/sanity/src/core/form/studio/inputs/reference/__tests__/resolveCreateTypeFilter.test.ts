@@ -168,9 +168,8 @@ describe('resolveCreateTypeFilter', () => {
 
   describe('error handling and fallbacks', () => {
     test('returns all types when filter throws error', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
-        /* intentionally empty */
-      })
+      // eslint-disable-next-line no-empty-function
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
       const result = resolveCreateTypeFilter({
         schemaType: createSchemaType(['book', 'author'], () => {
@@ -200,9 +199,8 @@ describe('resolveCreateTypeFilter', () => {
     })
 
     test('returns all types when filter returns non-array', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
-        /* intentionally empty */
-      })
+      // eslint-disable-next-line no-empty-function
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
       const result = resolveCreateTypeFilter({
         schemaType: createSchemaType(['book', 'author'], () => 'book' as any),
@@ -246,9 +244,8 @@ describe('resolveCreateTypeFilter', () => {
     })
 
     test('returns all types when filter returns objects without type property', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
-        /* intentionally empty */
-      })
+      // eslint-disable-next-line no-empty-function
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
       const result = resolveCreateTypeFilter({
         schemaType: createSchemaType(

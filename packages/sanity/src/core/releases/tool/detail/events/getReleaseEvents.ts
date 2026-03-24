@@ -42,12 +42,10 @@ const notEnabledActivityEvents: ReturnType<typeof getReleaseActivityEvents> = {
     loading: false,
     error: null,
   }),
-  reloadEvents: () => {
-    /* intentionally empty */
-  },
-  loadMore: () => {
-    /* intentionally empty */
-  },
+  // eslint-disable-next-line no-empty-function
+  reloadEvents: () => {},
+  // eslint-disable-next-line no-empty-function
+  loadMore: () => {},
 }
 
 /**

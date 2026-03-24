@@ -32,9 +32,8 @@ vi.mock('../../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo'
       aspectRatio: 16 / 9,
     },
     error: undefined,
-    retry: () => {
-      /* intentionally empty */
-    },
+    // eslint-disable-next-line no-empty-function
+    retry: () => {},
   }),
 }))
 vi.mock('../../../../../../media-library/plugin/VideoInput/VideoPlayer', () => ({
@@ -60,25 +59,21 @@ function createMockDataTransfer(files: File[]): DataTransfer {
     files: fileList,
     items: {
       length: files.length,
-      add: () => {
-        /* intentionally empty */
-      },
-      clear: () => {
-        /* intentionally empty */
-      },
+      // eslint-disable-next-line no-empty-function
+      add: () => {},
+      // eslint-disable-next-line no-empty-function
+      clear: () => {},
       get: () => null,
-      remove: () => {
-        /* intentionally empty */
-      },
+      // eslint-disable-next-line no-empty-function
+      remove: () => {},
       *[Symbol.iterator]() {
         for (const f of files) {
           yield {
             kind: 'file' as const,
             type: f.type,
             getAsFile: () => f,
-            getAsString: () => {
-              /* intentionally empty */
-            },
+            // eslint-disable-next-line no-empty-function
+            getAsString: () => {},
             webkitGetAsEntry: () => null,
           } as DataTransferItem
         }

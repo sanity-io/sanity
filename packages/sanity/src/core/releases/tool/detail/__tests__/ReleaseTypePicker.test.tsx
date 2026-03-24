@@ -279,9 +279,8 @@ describe('ReleaseTypePicker', () => {
       mockUseReleaseOperations.mockReturnValue({
         ...useReleaseOperationsMockReturn,
         updateRelease: vi.fn().mockImplementation(() => {
-          return new Promise(() => {
-            /* intentionally empty */
-          })
+          // eslint-disable-next-line no-empty-function
+          return new Promise(() => {})
         }),
       })
       await renderComponent()

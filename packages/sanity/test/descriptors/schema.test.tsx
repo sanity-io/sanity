@@ -351,9 +351,8 @@ describe('Base features', () => {
             name: 'foo',
             type: 'string',
             options: {
-              a: () => {
-                /* intentionally empty */
-              },
+              // eslint-disable-next-line no-empty-function
+              a: () => {},
             } as object,
           })
         ).typeDef,

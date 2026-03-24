@@ -539,19 +539,16 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
     const customization: any = {
       recursiveObject, // this one will be cut off at max-depth
       serializableProp: 'dummy',
-      nonSerializableProp: () => {
-        /* intentionally empty */
-      },
+      // eslint-disable-next-line no-empty-function
+      nonSerializableProp: () => {},
       options: {
         serializableOption: true,
-        nonSerializableOption: () => {
-          /* intentionally empty */
-        },
+        // eslint-disable-next-line no-empty-function
+        nonSerializableOption: () => {},
         nested: {
           serializableOption: 1,
-          nonSerializableOption: () => {
-            /* intentionally empty */
-          },
+          // eslint-disable-next-line no-empty-function
+          nonSerializableOption: () => {},
         },
       },
     }
