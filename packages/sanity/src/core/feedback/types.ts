@@ -33,7 +33,16 @@ export type TagValue = string | number | boolean
 
 /** The full feedback payload sent to Sentry. */
 export interface FeedbackPayload {
+  /**
+   * Sentry DSN to send feedback to.
+   * Format: `https://[key]@[host]/[project-id]`
+   */
   dsn: string
+  /**
+   * Tracks the tag schema for this feedback source. Bump when tags or meaningful changes are made.
+   * Similar to version in telemetry consent.
+   */
+  feedbackVersion: string
   name?: string
   email?: string
   message: string

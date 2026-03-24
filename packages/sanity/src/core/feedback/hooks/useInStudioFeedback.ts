@@ -5,9 +5,14 @@ import {sendFeedbackToSentry} from '../feedbackClient'
 import {type Sentiment, type TagValue} from '../types'
 import {useFeedbackTags} from './useFeedbackTags'
 
-/** Options accepted by the `send` function returned from {@link useInStudioFeedback}. */
+/** Options accepted by the `sendFeedback` function returned from {@link useInStudioFeedback}. */
 export interface SendFeedbackOptions {
+  /** Sentry DSN to send feedback to.
+   * Format: `https://[key]@[host]/[project-id]`
+   */
   dsn: string
+  /** Tracks the tag schema for this feedback source. Bump when tags change. */
+  feedbackVersion: string
   source: string
   message: string
   sentiment: Sentiment
@@ -40,10 +45,20 @@ export function useInStudioFeedback(): UseInStudioFeedbackReturn {
 
   const sendFeedback = useCallback(
     (opts: SendFeedbackOptions): string => {
-      const {dsn, source, message, sentiment, contactConsent, extraTags, attachments} = opts
+      const {
+        dsn,
+        feedbackVersion,
+        source,
+        message,
+        sentiment,
+        contactConsent,
+        extraTags,
+        attachments,
+      } = opts
 
       return sendFeedbackToSentry({
         dsn,
+        feedbackVersion,
         name: userName,
         email: userEmail,
         message,

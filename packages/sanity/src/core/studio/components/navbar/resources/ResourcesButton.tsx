@@ -62,7 +62,12 @@ export function ResourcesButton() {
     <>
       {studioInfoDialogOpen && <StudioInfoDialog onClose={handleStudioInfoDialogClose} />}
       {feedbackDialogOpen && (
-        <FeedbackDialog dsn={STUDIO_DSN} source="studio-help-menu" onClose={handleCloseFeedback} />
+        <FeedbackDialog
+          dsn={STUDIO_DSN}
+          feedbackVersion="1"
+          source="studio-help-menu"
+          onClose={handleCloseFeedback}
+        />
       )}
       <MenuButton
         button={

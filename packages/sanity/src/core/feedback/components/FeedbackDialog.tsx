@@ -11,8 +11,14 @@ import {ImageAttachment} from './ImageAttachment'
 /** @internal */
 export interface FeedbackDialogProps {
   onClose: () => void
-  /** Sentry DSN to send feedback to. */
+  /** Sentry DSN to send feedback to.
+   * Format: `https://[key]@[host]/[project-id]`
+   */
   dsn: string
+  /** Tracks the tag schema for this feedback source. Bump when tags or larger changes are made.
+   * Similar to version in telemetry consent.
+   */
+  feedbackVersion: string
   /** Identifies where this feedback was triggered from (e.g. 'studio-help-menu'). */
   source: string
   /** Extra tags merged with base + dynamic tags. Can override defaults. */
@@ -31,7 +37,15 @@ const SENTIMENTS: {value: Sentiment; icon: typeof FaceHappyIcon; labelKey: strin
 
 /** @internal */
 export function FeedbackDialog(props: FeedbackDialogProps) {
-  const {onClose, dsn, source, extraTags, title: dialogTitle, sentimentLabel} = props
+  const {
+    onClose,
+    dsn,
+    feedbackVersion,
+    source,
+    extraTags,
+    title: dialogTitle,
+    sentimentLabel,
+  } = props
   const dialogId = useId()
   const {t} = useTranslation()
   const toast = useToast()
@@ -94,6 +108,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
 
       sendFeedback({
         dsn,
+        feedbackVersion,
         source,
         message: trimmedMessage,
         sentiment,
@@ -119,6 +134,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     }
   }, [
     dsn,
+    feedbackVersion,
     message,
     sentiment,
     imageFile,

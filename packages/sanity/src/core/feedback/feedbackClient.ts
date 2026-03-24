@@ -13,6 +13,12 @@ import {type FeedbackPayload} from './types'
 
 const clientsByDsn = new Map<string, Scope>()
 
+/**
+ * Get the Sentry scope for a given DSN.
+ * @param dsn - Sentry DSN to get the scope for.
+ * Format: `https://[key]@[host]/[project-id]`
+ * @returns The Sentry scope.
+ */
 function getFeedbackScope(dsn: string): Scope {
   const globalClient = sentryIsInitialized() ? getClient() : undefined
   const globalDsn = globalClient?.getOptions().dsn
@@ -53,7 +59,17 @@ function getFeedbackScope(dsn: string): Scope {
 export function sendFeedbackToSentry(payload: FeedbackPayload): string {
   const scope = getFeedbackScope(payload.dsn)
 
-  const {message, name, email, source, sentiment, contactConsent, tags, attachments} = payload
+  const {
+    message,
+    name,
+    email,
+    source,
+    sentiment,
+    contactConsent,
+    feedbackVersion,
+    tags,
+    attachments,
+  } = payload
 
   const feedbackEvent = {
     contexts: {
@@ -69,6 +85,7 @@ export function sendFeedbackToSentry(payload: FeedbackPayload): string {
     level: 'info' as const,
     tags: {
       ...tags,
+      feedbackVersion,
       sentiment,
       contactConsent: String(contactConsent),
       contactEmail: email ?? '',
