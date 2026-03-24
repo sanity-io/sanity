@@ -13,6 +13,7 @@ export interface ImageAttachmentProps {
   imageFile: File | null
   showAttachment: boolean
   dragOver: boolean
+  error: string | null
   onFiles: (files: File[]) => void
   onFilesOver: () => void
   onFilesOut: () => void
@@ -26,6 +27,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
     imageFile,
     showAttachment,
     dragOver,
+    error,
     onFiles,
     onFilesOver,
     onFilesOut,
@@ -101,6 +103,11 @@ export function ImageAttachment(props: ImageAttachmentProps) {
           />
         </Flex>
       </FileTargetCard>
+      {error && (
+        <Text size={1} style={{color: 'var(--card-badge-critical-fg-color)'}}>
+          {error}
+        </Text>
+      )}
     </Stack>
   )
 }

@@ -56,35 +56,55 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
   const [message, setMessage] = useState('')
   const [contactConsent, setContactConsent] = useState(false)
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const [attachmentError, setAttachmentError] = useState<string | null>(null)
   const [showAttachment, setShowAttachment] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+
+  const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20 MB
 
   const handleMessageChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.currentTarget.value)
   }, [])
 
-  const handleFiles = useCallback((files: File[]) => {
-    const img = files.find((f) => f.type.startsWith('image/'))
-    if (img) setImageFile(img)
-  }, [])
+  const handleFiles = useCallback(
+    (files: File[]) => {
+      const img = files.find((f) => f.type.startsWith('image/'))
+      if (!img) return
+      if (img.size > MAX_FILE_SIZE) {
+        setAttachmentError(t('feedback.attachment.error.size'))
+        return
+      }
+      setAttachmentError(null)
+      setImageFile(img)
+    },
+    [MAX_FILE_SIZE, t],
+  )
 
   const handleFilesOver = useCallback(() => setDragOver(true), [])
   const handleFilesOut = useCallback(() => setDragOver(false), [])
 
-  const handlePaste = useCallback((event: ClipboardEvent) => {
-    const items = event.clipboardData?.items
-    if (!items) return
-    for (const item of items) {
-      if (item.type.startsWith('image/')) {
-        const file = item.getAsFile()
-        if (file) {
-          setImageFile(file)
-          break
+  const handlePaste = useCallback(
+    (event: ClipboardEvent) => {
+      const items = event.clipboardData?.items
+      if (!items) return
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile()
+          if (file) {
+            if (file.size > MAX_FILE_SIZE) {
+              setAttachmentError(t('feedback.attachment.error.size'))
+            } else {
+              setAttachmentError(null)
+              setImageFile(file)
+            }
+            break
+          }
         }
       }
-    }
-  }, [])
+    },
+    [MAX_FILE_SIZE, t],
+  )
 
   // Contact consent — only shown if telemetry is granted or if the user has set up an attachment or message
   const showContactConsent = useMemo(() => {
@@ -199,10 +219,14 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
             imageFile={imageFile}
             showAttachment={showAttachment}
             dragOver={dragOver}
+            error={attachmentError}
             onFiles={handleFiles}
             onFilesOver={handleFilesOver}
             onFilesOut={handleFilesOut}
-            onRemove={() => setImageFile(null)}
+            onRemove={() => {
+              setImageFile(null)
+              setAttachmentError(null)
+            }}
             onExpand={() => setShowAttachment(true)}
           />
 
