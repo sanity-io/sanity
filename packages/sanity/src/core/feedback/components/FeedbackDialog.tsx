@@ -1,5 +1,5 @@
 import {FaceHappyIcon, FaceIndifferentIcon, FaceSadIcon} from '@sanity/icons'
-import {Box, Flex, Stack, Switch, Text, TextArea, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Switch, Text, TextArea, useToast} from '@sanity/ui'
 import {type ChangeEvent, type ClipboardEvent, useCallback, useId, useMemo, useState} from 'react'
 
 import {Button, Dialog} from '../../../ui-components'
@@ -176,11 +176,12 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
       onClose={onClose}
       onClickOutside={onClose}
       width={1}
+      padding={false}
     >
-      <Box onPaste={handlePaste}>
+      <Card paddingX={4} paddingY={5} borderTop onPaste={handlePaste}>
         <Stack space={5}>
           {/* Sentiment */}
-          <Stack space={3}>
+          <Stack space={2}>
             <Text size={1} weight="medium">
               {sentimentLabel ?? t('feedback.sentiment.label')}
             </Text>
@@ -214,56 +215,59 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
               onChange={handleMessageChange}
               placeholder={t('feedback.message.placeholder')}
             />
+
+            {/* Image attachment */}
+            <ImageAttachment
+              imageFile={imageFile}
+              showAttachment={showAttachment}
+              dragOver={dragOver}
+              error={attachmentError}
+              onFiles={handleFiles}
+              onFilesOver={handleFilesOver}
+              onFilesOut={handleFilesOut}
+              onRemove={() => {
+                setImageFile(null)
+                setAttachmentError(null)
+              }}
+              onExpand={() => setShowAttachment(true)}
+            />
           </Stack>
 
-          {/* Image attachment */}
-          <ImageAttachment
-            imageFile={imageFile}
-            showAttachment={showAttachment}
-            dragOver={dragOver}
-            error={attachmentError}
-            onFiles={handleFiles}
-            onFilesOver={handleFilesOver}
-            onFilesOut={handleFilesOut}
-            onRemove={() => {
-              setImageFile(null)
-              setAttachmentError(null)
-            }}
-            onExpand={() => setShowAttachment(true)}
-          />
-
           {showContactConsent && (
-            <Flex align="center" justify="space-between">
+            <Stack space={2}>
               <Box flex={1} paddingRight={3}>
                 <Text size={1} weight="medium">
                   {t('feedback.consent.label')}
                 </Text>
               </Box>
               <Flex align="center" gap={2}>
-                <Text size={1} muted>
-                  {contactConsent ? t('feedback.consent.yes') : t('feedback.consent.no')}
-                </Text>
                 <Switch
                   checked={contactConsent}
                   onChange={() => setContactConsent((prev) => !prev)}
                 />
-              </Flex>
-            </Flex>
-          )}
 
-          {/* Actions */}
-          <Flex gap={2} justify="flex-end">
-            <Button mode="ghost" text={t('feedback.cancel')} onClick={onClose} />
-            <Button
-              tone="primary"
-              text={t('feedback.submit')}
-              onClick={handleSubmit}
-              disabled={!sentiment || submitting}
-              loading={submitting}
-            />
-          </Flex>
+                <Text size={1} muted>
+                  {contactConsent ? t('feedback.consent.yes') : t('feedback.consent.no')}
+                </Text>
+              </Flex>
+            </Stack>
+          )}
         </Stack>
-      </Box>
+      </Card>
+
+      {/* Actions */}
+      <Card padding={3} borderTop>
+        <Flex gap={2} justify="flex-end">
+          <Button mode="ghost" text={t('feedback.cancel')} onClick={onClose} />
+          <Button
+            tone="primary"
+            text={t('feedback.submit')}
+            onClick={handleSubmit}
+            disabled={!sentiment || submitting}
+            loading={submitting}
+          />
+        </Flex>
+      </Card>
     </Dialog>
   )
 }
