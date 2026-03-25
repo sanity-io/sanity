@@ -1,12 +1,14 @@
 /* oxlint-disable no-console */
 import {DocumentId, getPublishedId, getVersionNameFromId, isVersionId} from '@sanity/id-utils'
 
-import {client} from '../client'
-import {octokit} from '../octokit'
+import {getClient} from '../client'
+import {getOctokit} from '../octokit'
 import {type StudioChangelogEntry} from '../types'
 import {stripPr} from '../utils/stripPrNumber'
 
 export async function publishReleases(options: {dryRun: boolean; targetVersion: string}) {
+  const client = getClient()
+  const octokit = getOctokit()
   const changelogDocuments = await client.fetch<{_id: string; changelog: StudioChangelogEntry[]}[]>(
     '*[_type=="apiChange" && releaseAutomation.source == "studio" && releaseAutomation.tentativeVersion == $version]',
     {version: options.targetVersion},

@@ -3,4 +3,11 @@ import {readEnv} from '@repo/utils'
 
 import {type KnownEnvVar} from './types'
 
-export const octokit = new Octokit({auth: readEnv<KnownEnvVar>('GITHUB_TOKEN')})
+let _octokit: Octokit | undefined
+
+export function getOctokit(): Octokit {
+  if (!_octokit) {
+    _octokit = new Octokit({auth: readEnv<KnownEnvVar>('GITHUB_TOKEN')})
+  }
+  return _octokit
+}
