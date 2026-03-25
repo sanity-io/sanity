@@ -73,7 +73,7 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
                     with the same content as the original document, but with a new ID.
                   </Text>
                   <TextInput
-                    placeholder="Enter a name for the anonymous version"
+                    placeholder="agent-<version-name>"
                     type="text"
                     name="name"
                     label="Name"
