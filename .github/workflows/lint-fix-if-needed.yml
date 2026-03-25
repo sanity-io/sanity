@@ -29,7 +29,7 @@ jobs:
           key: prettier-${{ hashFiles('pnpm-lock.yaml') }}
       - run: pnpm lint:fix
       - run: pnpm chore:format:fix
-      - uses: actions/create-github-app-token@v2
+      - uses: actions/create-github-app-token@v3
         # Run even if `pnpm lint:fix` fails
         if: always()
         id: app-token
