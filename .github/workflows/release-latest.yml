@@ -39,10 +39,10 @@ jobs:
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
 
-      - name: Get version from lerna.json
+      - name: Get version
         id: release-as
         run: |
-          version=$(jq -r .version lerna.json)
+          version=$(jq -r .version package.json)
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Validate version
@@ -63,10 +63,10 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v6
-      - name: Get version from lerna.json
+      - name: Get version
         id: release-as
         run: |
-          version=$(jq -r .version lerna.json)
+          version=$(jq -r .version package.json)
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Configure git
