@@ -22,7 +22,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
   const {documentId, documentType} = useDocumentPaneInfo()
   const documentTitleInfo = useDocumentTitle()
   const titleError = documentTitleInfo.error
-  const event: any = useDocumentOperationEvent(documentId, documentType)
+  const event = useDocumentOperationEvent(documentId, documentType)
   const prevEvent = useRef(event)
   const paneRouter = usePaneRouter()
   const {t} = useTranslation(structureLocaleNamespace)
@@ -33,7 +33,8 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
     if (
       !documentTitleInfo.title &&
       !titleError &&
-      !IGNORE_OPS.includes(event?.op) &&
+      event &&
+      !IGNORE_OPS.includes(event.op) &&
       typeof documentPaneValue.title === 'string' &&
       event?.type === 'success'
     ) {
@@ -81,7 +82,9 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
             t={t}
             values={{
               op: event.op,
-              title: documentTitle,
+              // When we publish a version and a draft exists, the document title will be the draft
+              // title. So in this case we will just say "Version was published" and not the document title
+              title: event.idPair.versionId ? 'Version' : documentTitle,
             }}
             components={{
               Strong: 'strong',

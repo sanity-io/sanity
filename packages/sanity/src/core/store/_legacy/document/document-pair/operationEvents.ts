@@ -114,6 +114,7 @@ export interface OperationError {
   op: keyof OperationsAPI
   id: string
   error: Error
+  idPair: IdPair
 }
 
 /**
@@ -124,6 +125,7 @@ export interface OperationSuccess {
   /** @internal */
   op: keyof OperationsAPI
   id: string
+  idPair: IdPair
 }
 
 interface IntermediarySuccess {
