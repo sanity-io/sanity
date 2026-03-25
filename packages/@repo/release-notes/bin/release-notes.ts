@@ -29,9 +29,13 @@ await yargs(process.argv.slice(2))
     builder: (cmd) =>
       cmd.options({
         preid: {
-          description: 'Prerelease identifier (next, canary, next-major)',
+          description: 'Prerelease identifier (e.g. next, canary, next-major)',
           type: 'string',
-          choices: ['next', 'canary', 'next-major'] as const,
+        },
+        suffixType: {
+          description: 'Suffix strategy for prerelease versions',
+          type: 'string',
+          choices: ['commit', 'timestamp'] as const,
         },
         dryRun: {
           description: 'Print the new version without writing files',
@@ -42,6 +46,7 @@ await yargs(process.argv.slice(2))
       try {
         await bump({
           preid: args.preid,
+          suffixType: args.suffixType,
           dryRun: args.dryRun,
         })
       } catch (error) {

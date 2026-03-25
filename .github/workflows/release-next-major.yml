@@ -35,7 +35,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Bump next-major versions
-        run: pnpm --silent release-notes bump --preid=next-major
+        run: pnpm --silent release-notes bump --preid=next-major --suffixType=timestamp
 
       - name: Re-install after version bump
         run: pnpm install --fix-lockfile
