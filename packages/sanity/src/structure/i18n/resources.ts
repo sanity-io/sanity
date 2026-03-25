@@ -183,6 +183,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the reference change banner if the reason is that the reference has been deleted */
   'banners.reference-changed-banner.reason-removed.text':
     'This reference has been removed since you opened it.',
+  /** The text that appears for the action button to add the current document to the global bundle, this happens when user is viewing an anonymous bundle */
+  'banners.release.action.add-to-bundle': 'Add to bundle',
   /** The text that appears for the action button to add the current document to the global release */
   'banners.release.action.add-to-release': 'Add to release',
   /** The text that appears for the action button to add the current document to the global release */
