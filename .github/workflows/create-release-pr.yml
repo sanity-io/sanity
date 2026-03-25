@@ -56,10 +56,12 @@ jobs:
       - name: Update version
         run: pnpm --silent release-notes bump
 
+      - name: Get version
+        id: release-as
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
       - name: Write CHANGELOG.md files
-        run: |
-          VERSION=$(jq -r .version package.json)
-          pnpm --silent release-notes write-changelog-files --version=$VERSION
+        run: pnpm --silent release-notes write-changelog-files --version=${{ steps.release-as.outputs.version }}
 
       - name: Sync workspace lockfile
         run: pnpm install --lockfile-only
@@ -67,12 +69,7 @@ jobs:
       - name: Get version commit message
         id: version-commit
         run: |
-          VERSION=$(jq -r .version package.json)
-          echo "message=chore(release): publish v$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Get version
-        id: release-as
-        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+          echo "message=chore(release): publish v${{ steps.release-as.outputs.version }}" >> $GITHUB_OUTPUT
 
       - name: Prepare content release with release note document
         id: release-notes
