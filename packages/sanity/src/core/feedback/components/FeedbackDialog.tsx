@@ -133,9 +133,11 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
         feedbackVersion,
         source,
         message: finalMessage,
-        sentiment,
-        contactConsent,
-        extraTags,
+        extraTags: {
+          ...extraTags,
+          sentiment,
+          contactConsent: String(contactConsent),
+        },
         attachments,
       })
 

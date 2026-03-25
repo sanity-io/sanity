@@ -63,15 +63,6 @@ export interface FeedbackPayload {
    */
   message: string
   /**
-   * The sentiment of the user sending feedback.
-   */
-  sentiment: Sentiment
-  /**
-   * Whether the user has given consent to contact them based on the feedback form.
-   * Only shows if the user has granted telemetry consent or has set up an attachment or message.
-   */
-  contactConsent: boolean
-  /**
    * The source of the feedback.
    * Identifies where this feedback was triggered from (e.g. 'studio-help-menu').
    */

@@ -51,18 +51,8 @@ function getFeedbackClient(dsn: string): Scope {
 export function sendFeedbackToSentry(payload: FeedbackPayload): string {
   const scope = getFeedbackClient(payload.dsn)
 
-  const {
-    message,
-    name,
-    email,
-    source,
-    sentiment,
-    contactConsent,
-    feedbackVersion,
-    telemetryConsent,
-    tags,
-    attachments,
-  } = payload
+  const {message, name, email, source, feedbackVersion, telemetryConsent, tags, attachments} =
+    payload
 
   const hasConsent = telemetryConsent === 'granted'
 
@@ -84,8 +74,6 @@ export function sendFeedbackToSentry(payload: FeedbackPayload): string {
     tags: {
       ...eventTags,
       feedbackVersion,
-      sentiment,
-      contactConsent: String(contactConsent),
       contactEmail: hasConsent ? email : '',
       contactName: hasConsent ? name : '',
       telemetryConsent,
