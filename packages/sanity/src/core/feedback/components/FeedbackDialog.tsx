@@ -112,8 +112,10 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
   }, [telemetryConsent, message, imageFile])
 
   const handleSubmit = useCallback(async () => {
-    const trimmedMessage = message.trim()
-    if (!trimmedMessage || !sentiment) return
+    const finalMessage: string = message
+      ? message.trim()
+      : `[Sentiment only] User rated experience as: ${sentiment}`
+    if (!sentiment) return
 
     setSubmitting(true)
     try {
@@ -130,7 +132,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
         dsn,
         feedbackVersion,
         source,
-        message: trimmedMessage,
+        message: finalMessage,
         sentiment,
         contactConsent,
         extraTags,
@@ -256,7 +258,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
               tone="primary"
               text={t('feedback.submit')}
               onClick={handleSubmit}
-              disabled={!message.trim() || !sentiment || submitting}
+              disabled={!sentiment || submitting}
               loading={submitting}
             />
           </Flex>

@@ -15,7 +15,11 @@ export interface SendFeedbackOptions {
   feedbackVersion: string
   /** Identifies where this feedback was triggered from (e.g. 'studio-help-menu'). */
   source: string
-  /** The message the user is sending feedback. */
+  /**
+   * The message the user is sending feedback.
+   * It's mandatory as without it, Sentry will ignore the feedback upon receiving it.
+   * (Mandatory Sentry field)
+   */
   message: string
   /** The sentiment of the user sending feedback. */
   sentiment: Sentiment

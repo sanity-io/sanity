@@ -58,6 +58,8 @@ export interface FeedbackPayload {
   email?: string
   /**
    * The message the user is sending feedback.
+   * It's mandatory as without it, Sentry will ignore the feedback upon receiving it.
+   * (Mandatory Sentry field)
    */
   message: string
   /**
