@@ -7,6 +7,7 @@ import {
   type DocumentActionDescription,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
+  useSetPerspective,
 } from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
 
@@ -14,6 +15,7 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
   const [open, setOpen] = useState<boolean>(false)
   const [status, setStatus] = useState<'idle' | 'creating' | 'created' | 'error'>('idle')
   const [error, setError] = useState<Error | null>(null)
+  const setPerspective = useSetPerspective()
   const toggleOpen = () => setOpen((v) => !v)
   const {displayed} = useDocumentPane()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -39,6 +41,7 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
       })
       setStatus('created')
       toggleOpen()
+      setPerspective(versionId)
     } catch (err) {
       setStatus('error')
       if (err instanceof Error) {

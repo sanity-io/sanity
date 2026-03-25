@@ -77,14 +77,17 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
         status: 'success',
         title: (
           <Translate
-            context={event.op}
+            context={
+              // When we publish a version and a draft exists, the document title will be the draft
+              // title. So in this case we will just say "Version was published" and not the document title
+              // So we use this special operation key which doesn't use the documentTitle
+              event.op === 'publish' && event.idPair.versionId ? 'publishVersion' : event.op
+            }
             i18nKey="panes.document-operation-results.operation-success"
             t={t}
             values={{
               op: event.op,
-              // When we publish a version and a draft exists, the document title will be the draft
-              // title. So in this case we will just say "Version was published" and not the document title
-              title: event.idPair.versionId ? 'Version' : documentTitle,
+              title: documentTitle,
             }}
             components={{
               Strong: 'strong',
