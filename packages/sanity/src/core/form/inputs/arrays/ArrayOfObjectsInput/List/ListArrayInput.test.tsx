@@ -21,9 +21,11 @@ vi.mock('./VirtualizedArrayList', () => ({
   VirtualizedArrayList: (props: Record<string, unknown>) => virtualizedArrayListMock(props),
 }))
 
-const resolveItemComponentMock = vi.fn()
-vi.mock('../../../../studio/inputResolver/itemResolver', () => ({
-  defaultResolveItemComponent: (schemaType: unknown) => resolveItemComponentMock(schemaType),
+function MockDefaultItem() {
+  return null
+}
+vi.mock('../../../../form-components-hooks/components', () => ({
+  DefaultItem: MockDefaultItem,
 }))
 
 vi.mock('./useVisibilityDetection', () => ({
@@ -51,7 +53,7 @@ function createSchemaType(max?: number): ArraySchemaType {
 }
 
 function renderListArrayInput(options: {max?: number; memberCount: number}) {
-  const members = Array.from({length: options.memberCount}, (_, i) => ({key: `key-${i}`}))
+  const members = Array.from({length: options.memberCount}, (_, idx) => ({key: `key-${idx}`}))
   const props = {
     arrayFunctions: ValidationProbe,
     elementProps: {id: 'test', onFocus: vi.fn(), onBlur: vi.fn(), ref: {current: null}},
@@ -70,8 +72,6 @@ function renderListArrayInput(options: {max?: number; memberCount: number}) {
 describe('ListArrayInput', () => {
   beforeEach(() => {
     virtualizedArrayListMock.mockClear()
-    resolveItemComponentMock.mockClear()
-    resolveItemComponentMock.mockReturnValue(() => null)
   })
 
   it('provides ArrayValidationContext to children', () => {
@@ -95,25 +95,19 @@ describe('ListArrayInput', () => {
     expect(typeof passedProps.renderItem).toBe('function')
   })
 
-  it('resolves item component from schemaType via defaultResolveItemComponent', () => {
-    function StubItemComponent() {
-      return null
-    }
-    resolveItemComponentMock.mockReturnValue(StubItemComponent)
-
+  it('renders DefaultItem with item props for schema-aware component resolution', () => {
     renderListArrayInput({memberCount: 1})
 
     const passedProps = virtualizedArrayListMock.mock.calls[0][0] as Record<string, unknown>
     const renderItem = passedProps.renderItem as (props: Record<string, unknown>) => unknown
-
     const itemSchemaType = {name: 'myCustomItem', jsonType: 'object'}
-    const renderedElement = renderItem({schemaType: itemSchemaType}) as {
+
+    const element = renderItem({schemaType: itemSchemaType}) as {
       type: unknown
       props: Record<string, unknown>
     }
 
-    expect(resolveItemComponentMock).toHaveBeenCalledWith(itemSchemaType)
-    expect(renderedElement.type).toBe(StubItemComponent)
-    expect(renderedElement.props).toEqual(expect.objectContaining({schemaType: itemSchemaType}))
+    expect(element.type).toBe(MockDefaultItem)
+    expect(element.props).toEqual(expect.objectContaining({schemaType: itemSchemaType}))
   })
 })

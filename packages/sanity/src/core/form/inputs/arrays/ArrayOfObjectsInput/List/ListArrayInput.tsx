@@ -5,7 +5,7 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
 import {useTranslation} from '../../../../../i18n'
-import {defaultResolveItemComponent} from '../../../../studio/inputResolver/itemResolver'
+import {DefaultItem} from '../../../../form-components-hooks/components'
 import {
   type ArrayOfObjectsInputProps,
   type ObjectItem,
@@ -45,13 +45,12 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   } = props
   const {t} = useTranslation()
 
-  // Resolves the item component locally. The threaded props.renderItem accumulates callback
-  // wrapping through ancestor form components, breaking previews at deep nesting levels (#4780).
-  // Local resolution avoids this while preserving custom and reference-type item components.
-  const renderItem = useCallback((itemProps: Omit<ObjectItemProps, 'renderDefault'>) => {
-    const ItemComponent = defaultResolveItemComponent(itemProps.schemaType)
-    return <ItemComponent {...itemProps} />
-  }, [])
+  // Resolves locally to avoid the deep nesting preview bug (#4780) caused by
+  // props.renderItem accumulating callback wrapping through ancestor components.
+  const renderItem = useCallback(
+    (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => <DefaultItem {...itemProps} />,
+    [],
+  )
 
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
