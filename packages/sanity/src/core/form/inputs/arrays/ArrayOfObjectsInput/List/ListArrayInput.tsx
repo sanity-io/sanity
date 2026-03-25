@@ -5,7 +5,7 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
 import {useTranslation} from '../../../../../i18n'
-import {DefaultItem} from '../../../../form-components-hooks/components'
+import {useItemComponent} from '../../../../form-components-hooks/componentHooks'
 import {
   type ArrayOfObjectsInputProps,
   type ObjectItem,
@@ -47,9 +47,10 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   // Resolves locally to avoid the deep nesting preview bug (#4780) caused by
   // props.renderItem accumulating callback wrapping through ancestor components.
+  const ItemComponent = useItemComponent()
   const renderItem = useCallback(
-    (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => <DefaultItem {...itemProps} />,
-    [],
+    (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => <ItemComponent {...itemProps} />,
+    [ItemComponent],
   )
 
   // Stores the index of the item being dragged

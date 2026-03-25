@@ -1,4 +1,4 @@
-import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const deepNestedAccordion = defineType({
   title: 'Accordion',

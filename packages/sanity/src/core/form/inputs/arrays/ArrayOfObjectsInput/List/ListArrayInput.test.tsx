@@ -21,11 +21,11 @@ vi.mock('./VirtualizedArrayList', () => ({
   VirtualizedArrayList: (props: Record<string, unknown>) => virtualizedArrayListMock(props),
 }))
 
-function MockDefaultItem() {
+function MockItemComponent() {
   return null
 }
-vi.mock('../../../../form-components-hooks/components', () => ({
-  DefaultItem: MockDefaultItem,
+vi.mock('../../../../form-components-hooks/componentHooks', () => ({
+  useItemComponent: () => MockItemComponent,
 }))
 
 vi.mock('./useVisibilityDetection', () => ({
@@ -95,7 +95,7 @@ describe('ListArrayInput', () => {
     expect(typeof passedProps.renderItem).toBe('function')
   })
 
-  it('renders DefaultItem with item props for schema-aware component resolution', () => {
+  it('renders middleware-resolved item component for schema-aware component resolution', () => {
     renderListArrayInput({memberCount: 1})
 
     const passedProps = virtualizedArrayListMock.mock.calls[0][0] as Record<string, unknown>
@@ -107,7 +107,7 @@ describe('ListArrayInput', () => {
       props: Record<string, unknown>
     }
 
-    expect(element.type).toBe(MockDefaultItem)
+    expect(element.type).toBe(MockItemComponent)
     expect(element.props).toEqual(expect.objectContaining({schemaType: itemSchemaType}))
   })
 })
