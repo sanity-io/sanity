@@ -113,25 +113,6 @@ export default defineType({
                       name: 'description',
                       type: 'string',
                     }),
-                    // Extra nesting level to reproduce #4780: previews break at deep array nesting
-                    defineField({
-                      name: 'level3array',
-                      title: 'Level 3 Array',
-                      type: 'array',
-                      of: [
-                        defineArrayMember({
-                          name: 'level3item',
-                          title: 'Level 3 Item',
-                          type: 'object',
-                          fields: [
-                            defineField({
-                              name: 'title',
-                              type: 'string',
-                            }),
-                          ],
-                        }),
-                      ],
-                    }),
                   ],
                 }),
               ],
@@ -761,6 +742,11 @@ export default defineType({
           ],
         }),
       ],
+    }),
+    defineField({
+      name: 'deeplyNestedBody',
+      title: 'Deeply nested body',
+      type: 'deepNested.body',
     }),
   ],
 })

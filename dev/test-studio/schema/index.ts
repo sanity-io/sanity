@@ -29,6 +29,13 @@ import customNumber from './debug/customNumber'
 import dateTimeValidation from './debug/dateTimeValidation'
 import dateValidation from './debug/dateValidation'
 import {decorations} from './debug/decorations'
+import {
+  deepNestedAccordion,
+  deepNestedBody,
+  deepNestedContent,
+  deepNestedRichContent,
+  deepNestedRow,
+} from './debug/deeplyNestedArrayPreview'
 import {deprecatedDocument} from './debug/deprecatedDocument'
 import {
   deprecatedFields,
@@ -298,6 +305,11 @@ export function createSchemaTypes(projectId: string) {
     patchOnMountDebug,
     simpleArrayOfObjects,
     arrayCapabilities,
+    deepNestedAccordion,
+    deepNestedBody,
+    deepNestedContent,
+    deepNestedRichContent,
+    deepNestedRow,
     allFieldsGroupHidden,
     simpleReferences,
     reservedFieldNames,
