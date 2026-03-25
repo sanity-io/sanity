@@ -3,6 +3,8 @@ import {type CurrentUser} from '@sanity/types'
 import {type ComponentType} from 'react'
 import {type Observable} from 'rxjs'
 
+import {type LoginMethod} from '../../../config'
+
 /**
  * The interface used by the Studio that produces a `SanityClient` and
  * `CurrentUser` that gets passed to the resulting `Workspace`s and `Source`s.
@@ -45,7 +47,7 @@ export interface AuthStore {
    * the Studio loads (e.g. to trade a session ID for a token in cookie-less
    * mode). Within the Studio, this is called within the `AuthBoundary`.
    */
-  handleCallbackUrl?: () => Promise<void>
+  handleCallbackUrl?: () => Promise<HandleCallbackResult>
 }
 
 /**
@@ -91,3 +93,13 @@ export type LoginComponentProps =
       /** @deprecated use redirectPath instead */
       basePath?: string
     }
+
+/** @internal */
+export interface HandleCallbackResult {
+  loginMethod: LoginMethod
+  flow: 'no-session' | 'cookie-auth' | 'token-exchange'
+  success: boolean
+  durationMs: number
+  tokenExchangeDurationMs?: number
+  failureReason?: string
+}
