@@ -36,10 +36,15 @@ export async function publishReleases(options: {dryRun: boolean; targetVersion: 
   if (isVersionId(changelogDocumentId)) {
     const releaseId = getVersionNameFromId(changelogDocumentId)
     if (options.dryRun) {
+      console.log(`[DRY RUN] Unsetting releaseAutomation on document ${changelogDocumentId}`)
       console.log(
         `[DRY RUN] Publishing content release ${releaseId} for version ${options.targetVersion}`,
       )
     } else {
+      // Unset releaseAutomation before publishing to avoid validation issues post-release
+      console.log(`Unsetting releaseAutomation on document ${changelogDocumentId}`)
+      await client.patch(changelogDocumentId).unset(['releaseAutomation']).commit()
+
       console.log(`Publishing content release ${releaseId} for version ${options.targetVersion}`)
       await client.releases.publish({releaseId})
       console.log(
