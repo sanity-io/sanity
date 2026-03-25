@@ -37,9 +37,6 @@ jobs:
       - name: Bump canary versions
         run: pnpm --silent release-notes bump --preid=canary
 
-      - name: Re-install after version bump
-        run: pnpm install --fix-lockfile
-
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
 

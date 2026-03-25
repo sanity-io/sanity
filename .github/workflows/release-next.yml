@@ -40,9 +40,6 @@ jobs:
       - name: Bump next versions
         run: pnpm --silent release-notes bump --preid=next --suffixType=commits-ahead
 
-      - name: Re-install after version bump
-        run: pnpm install --fix-lockfile
-
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
 
