@@ -46,10 +46,7 @@ test('clicking inspect mode sets value in storage', async ({
     value: 'raw',
   })
 
-  // Wait for the UI to stabilize
-  await page.waitForTimeout(500)
-
-  // Set up listener for the second network request
+  // Set up listener for the second network request before clicking
   const keyValueRequest2 = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })

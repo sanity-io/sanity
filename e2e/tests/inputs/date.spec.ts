@@ -29,7 +29,7 @@ test.skip(`date input shows validation on entering date in the text field`, asyn
 }) => {
   await createDraftDocument('/content/input-debug;dateValidation')
 
-  await page.waitForSelector(`data-testid=field-requiredDate`)
+  await expect(page.getByTestId('field-requiredDate')).toBeVisible()
 
   await page.getByTestId('field-requiredDate').getByTestId('date-input').fill('2023-01-01')
 
@@ -61,7 +61,7 @@ test(`date input shows validation on entering date in the textfield and onBlur`,
 }) => {
   await createDraftDocument('/content/input-debug;dateValidation')
 
-  await page.waitForSelector(`data-testid=field-requiredDate`)
+  await expect(page.getByTestId('field-requiredDate')).toBeVisible()
 
   await page.getByTestId('field-requiredDate').getByTestId('date-input').fill('2023-01-01')
   await page.getByTestId('field-requiredDate').getByTestId('date-input').blur()

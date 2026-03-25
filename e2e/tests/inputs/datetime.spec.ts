@@ -8,7 +8,7 @@ test(`datetime input shows validation on selecting date from datepicker`, async 
 }) => {
   await createDraftDocument('/content/input-debug;dateTimeValidation')
 
-  await page.waitForSelector(`data-testid=field-requiredDatetime`)
+  await expect(page.getByTestId('field-requiredDatetime')).toBeVisible()
 
   await page.getByTestId('field-requiredDatetime').getByTestId('select-date-button').click()
   await page.getByTestId('date-input-dialog').getByTestId('date-input').fill('2023')
@@ -28,7 +28,7 @@ test.skip(`datetime input shows validation on entering date in the textfield`, a
 }) => {
   await createDraftDocument('/content/input-debug;dateTimeValidation')
 
-  await page.waitForSelector(`data-testid=field-requiredDatetime`)
+  await expect(page.getByTestId('field-requiredDatetime')).toBeVisible()
 
   await page
     .getByTestId('field-requiredDatetime')
