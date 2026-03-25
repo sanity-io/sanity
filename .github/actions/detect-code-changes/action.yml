@@ -39,5 +39,4 @@ runs:
             - '!skills/**'
             - '!catalog-info.yaml'
             - '!knip.jsonc'
-            - '!lerna.json'
             - '!.env.example'
