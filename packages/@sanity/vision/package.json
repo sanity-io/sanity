@@ -100,7 +100,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "rimraf": "catalog:",
-    "sanity": "^5.18.0",
+    "sanity": "workspace:*",
     "styled-components": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

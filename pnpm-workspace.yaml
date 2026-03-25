@@ -54,7 +54,6 @@ overrides:
   jsdom: 26.1.0
   vitest: $vitest
 
-preferWorkspacePackages: true
 linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
