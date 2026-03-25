@@ -5,6 +5,7 @@ import {type Commit, type CommitBase, type CommitMeta} from 'conventional-commit
 import {type pMapSkip} from 'p-map'
 import yargs from 'yargs'
 
+import {bump} from '../src/commands/bump'
 import {commentPrAfterMerge} from '../src/commands/commentPrAfterMerge'
 import {createOrUpdateChangelogDocs} from '../src/commands/createOrUpdateChangelogDocs'
 import {draftReleaseNotes} from '../src/commands/draftReleaseNotes'
@@ -14,12 +15,42 @@ import {writePrChecks} from '../src/commands/writePrChecks'
 import {type KnownEnvVar, type PullRequest} from '../src/types'
 import {stripPr} from '../src/utils/stripPrNumber'
 
-const ADMIN_STUDIO_URL = readEnv<KnownEnvVar>('RELEASE_NOTES_ADMIN_STUDIO_URL')
+function getAdminStudioUrl(): string {
+  return readEnv<KnownEnvVar>('RELEASE_NOTES_ADMIN_STUDIO_URL')
+}
 
 // oxlint-disable-next-line no-unused-expressions
 await yargs(process.argv.slice(2))
   .strict()
   .usage('$0 <command>')
+  .command({
+    command: 'bump',
+    describe: 'Bump version for all monorepo packages based on conventional commits',
+    builder: (cmd) =>
+      cmd.options({
+        preid: {
+          description: 'Prerelease identifier (next, canary, next-major)',
+          type: 'string',
+          choices: ['next', 'canary', 'next-major'] as const,
+        },
+        dryRun: {
+          description: 'Print the new version without writing files',
+          type: 'boolean',
+        },
+      }),
+    handler: async (args) => {
+      try {
+        await bump({
+          preid: args.preid,
+          dryRun: args.dryRun,
+        })
+      } catch (error) {
+        // oxlint-disable-next-line no-console
+        console.error(error)
+        process.exit(1)
+      }
+    },
+  })
   .command({
     command: 'generate-changelog',
     describe: 'Generate release note documents for release PR',
@@ -112,8 +143,7 @@ await yargs(process.argv.slice(2))
           demandOption: true,
         },
         baseVersion: {
-          description:
-            'Current base version. E.g. the current version in package.json / lerna.json',
+          description: 'Current base version. E.g. the current version in package.json',
           type: 'string',
           demandOption: true,
         },
@@ -123,7 +153,7 @@ await yargs(process.argv.slice(2))
         await commentPrAfterMerge({
           baseVersion: args.baseVersion,
           commit: args.commit,
-          adminStudioBaseUrl: ADMIN_STUDIO_URL,
+          adminStudioBaseUrl: getAdminStudioUrl(),
         })
       } catch (error) {
         // oxlint-disable-next-line no-console
@@ -144,8 +174,7 @@ await yargs(process.argv.slice(2))
     builder: (cmd) =>
       cmd.options({
         baseVersion: {
-          description:
-            'Current base version. E.g. the current version in package.json / lerna.json',
+          description: 'Current base version. E.g. the current version in package.json',
           type: 'string',
           demandOption: true,
         },
@@ -217,7 +246,7 @@ function generateChangeLogSummary(tentativeVersion: string, result: GenerateChan
 
 Merging this PR will publish **\`v${tentativeVersion}\`** to npm 🚀
 
-:scroll: **[Draft changelog](${ADMIN_STUDIO_URL}/intent/edit/id=${changelogDocumentId.published}/?perspective=${releaseId})**
+:scroll: **[Draft changelog](${getAdminStudioUrl()}/intent/edit/id=${changelogDocumentId.published}/?perspective=${releaseId})**
 
 ### Changes to be released
 
@@ -241,7 +270,7 @@ function formatEntry({
   const entryKey = conventionalCommit.hash!.slice(0, 8)
   const originalCommitMessage = stripPr(conventionalCommit.subject || '', pr.number)
   const entryPath = encodeURIComponent(`changelog[_key=="${entryKey}"]`)
-  const changelogEntryUrl = `${ADMIN_STUDIO_URL}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
+  const changelogEntryUrl = `${getAdminStudioUrl()}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
 
   const byline = pr.user?.login ? `[${pr.user?.login}](${pr.user.html_url})` : ''
   const releaseNoteLink = `[:pencil:&nbsp;Edit](${changelogEntryUrl})`
