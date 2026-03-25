@@ -37,7 +37,7 @@ function resolvePluginNames(workspace: object): string[] {
  *
  * @internal
  */
-export function useFeedbackTags(): {
+export function useStudioFeedbackTags(): {
   baseTags: BaseFeedbackTags
   dynamicTags: DynamicFeedbackTags
   allTags: BaseFeedbackTags & DynamicFeedbackTags

@@ -3,7 +3,7 @@ import {useCallback} from 'react'
 import {useTelemetryConsent} from '../../studio/telemetry/useTelemetryConsent'
 import {sendFeedbackToSentry} from '../feedbackClient'
 import {type TagValue} from '../types'
-import {useFeedbackTags} from './useFeedbackTags'
+import {useStudioFeedbackTags} from './useStudioFeedbackTags'
 
 /** Options accepted by the `sendFeedback` function returned from {@link useInStudioFeedback}. */
 export interface SendFeedbackOptions {
@@ -37,8 +37,7 @@ export interface UseInStudioFeedbackReturn {
 /**
  * Hook that encapsulates tag collection and feedback submission.
  *
- * Consumers only need to provide the fields they control (message,
- * dsn, source, etc.).
+ * Consumers only need to provide the fields they control (message, dsn, source, etc.).
  *
  * Base tags (userAgent, studioVersion, plugins, …) and
  * dynamic tags (activeTool, url, …) are gathered automatically.
@@ -46,7 +45,7 @@ export interface UseInStudioFeedbackReturn {
  * @internal
  */
 export function useInStudioFeedback(): UseInStudioFeedbackReturn {
-  const {allTags, userName, userEmail} = useFeedbackTags()
+  const {allTags, userName, userEmail} = useStudioFeedbackTags()
   const telemetryConsent = useTelemetryConsent()
 
   const sendFeedback = useCallback(
