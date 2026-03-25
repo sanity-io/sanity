@@ -41,7 +41,6 @@
         "sanity-tsdoc",
         // Knip doesn't understand `cd perf/studio && pnpm preview`
         "preview",
-
       ],
     },
     "packages/sanity": {
