@@ -1,18 +1,18 @@
-import {FeedbackIcon, HelpCircleIcon} from '@sanity/icons'
-import {Menu, MenuDivider} from '@sanity/ui'
+import {HelpCircleIcon} from '@sanity/icons'
+import {Menu} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import semver from 'semver'
 import {styled} from 'styled-components'
 
-import {MenuButton, MenuItem} from '../../../../../ui-components'
+import {MenuButton} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
 import {STUDIO_DSN} from '../../../../error/sentry/sentryErrorReporter'
 import {FeedbackDialog} from '../../../../feedback'
-import {useFeedbackAvailable} from '../../../../feedback/hooks/useFeedbackAvailable'
 import {useTranslation} from '../../../../i18n'
 import {useRenderingContext} from '../../../../store/renderingContext/useRenderingContext'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
+import {FeedbackMenuItem} from './FeedbackMenuItem'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
 import {StudioInfoDialog} from './StudioInfoDialog'
@@ -26,8 +26,6 @@ export function ResourcesButton() {
   const {t} = useTranslation()
   const renderingContext = useRenderingContext()
   const isInDashboard = renderingContext?.name === 'coreUi'
-  const feedbackAvailable = useFeedbackAvailable()
-  const showFeedbackMenuItem = !isInDashboard && feedbackAvailable === true
   const {userApplication, isLoading: isLoadingUserApplication} = useLiveUserApplication()
 
   const {value, error, isLoading} = useGetHelpResources()
@@ -89,16 +87,7 @@ export function ResourcesButton() {
         id="menu-button-resources"
         menu={
           <StyledMenu data-testid="menu-button-resources">
-            {showFeedbackMenuItem && (
-              <>
-                <MenuItem
-                  icon={FeedbackIcon}
-                  text={t('feedback.menu-item')}
-                  onClick={handleOpenFeedback}
-                />
-                <MenuDivider />
-              </>
-            )}
+            {!isInDashboard && <FeedbackMenuItem dsn={STUDIO_DSN} onClick={handleOpenFeedback} />}
             <ResourcesMenuItems
               currentVersion={currentVersion}
               latestTaggedVersion={latestTaggedVersion}
