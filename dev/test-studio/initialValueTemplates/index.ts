@@ -1,3 +1,4 @@
+import {CogIcon, RocketIcon} from '@sanity/icons'
 import {type Template} from 'sanity'
 
 export const resolveInitialValueTemplates: Template[] = [
@@ -6,6 +7,7 @@ export const resolveInitialValueTemplates: Template[] = [
     title: 'Developer',
     description: `Selects the role "Developer" for you, so you don't have to`,
     schemaType: 'author',
+    icon: CogIcon,
     value: () => ({role: 'developer'}),
   },
   {
@@ -13,6 +15,7 @@ export const resolveInitialValueTemplates: Template[] = [
     title: 'Author unlocked',
     description: 'An unlocked author',
     schemaType: 'author',
+    icon: RocketIcon,
     value: {locked: false},
   },
   {

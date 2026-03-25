@@ -1,6 +1,7 @@
 import {type CurrentUser} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
-import {type MouseEvent, useCallback, useMemo} from 'react'
+import {Box, Card, Flex, Text} from '@sanity/ui'
+import {isValidElement, type MouseEvent, useCallback, useMemo} from 'react'
+import {isValidElementType} from 'react-is'
 import {useIntentLink} from 'sanity/router'
 
 import {Tooltip} from '../../../../../ui-components'
@@ -43,6 +44,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   )
 
   const {title} = useI18nText(option)
+  const {icon: Icon} = option
 
   return (
     <Tooltip
@@ -64,7 +66,17 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
           padding={preview === 'inline' ? 3 : 4}
           radius={2}
         >
-          <Text size={preview === 'inline' ? 1 : undefined}>{title}</Text>
+          <Flex align="center" gap={3}>
+            {Icon && (
+              <Box>
+                <Text size={preview === 'inline' ? 1 : undefined}>
+                  {isValidElement(Icon) && Icon}
+                  {isValidElementType(Icon) && <Icon />}
+                </Text>
+              </Box>
+            )}
+            <Text size={preview === 'inline' ? 1 : undefined}>{title}</Text>
+          </Flex>
         </Card>
       </div>
     </Tooltip>
