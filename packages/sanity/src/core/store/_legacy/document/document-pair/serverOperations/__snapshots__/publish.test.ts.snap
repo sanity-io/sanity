@@ -99,3 +99,31 @@ exports[`publish > execute > throws an error if the client has no draft snaphot 
   "transaction": [],
 }
 `;
+
+exports[`publish > execute > uses the version id as draftId when publishing a version 1`] = `
+{
+  "listen": [],
+  "observable": {
+    "action": [
+      {
+        "actions": {
+          "actionType": "sanity.action.document.publish",
+          "draftId": "versions.release-id.my-id",
+          "ifPublishedRevisionId": undefined,
+          "publishedId": "my-id",
+        },
+        "options": {
+          "tag": "document.publish",
+        },
+      },
+    ],
+    "create": [],
+    "fetch": [],
+    "getDocuments": [],
+    "listen": [],
+    "request": [],
+  },
+  "request": [],
+  "transaction": [],
+}
+`;
