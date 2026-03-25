@@ -35,7 +35,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Bump canary versions
-        run: pnpm --silent release-notes bump --preid=canary --suffixType=timestamp
+        run: pnpm --silent release-notes bump --preid=canary
 
       - name: Re-install after version bump
         run: pnpm install --fix-lockfile

@@ -33,9 +33,10 @@ await yargs(process.argv.slice(2))
           type: 'string',
         },
         suffixType: {
-          description: 'Suffix strategy for prerelease versions',
+          description: 'Prerelease suffix strategy: timestamp (default) or commit count',
           type: 'string',
-          choices: ['commit', 'timestamp'] as const,
+          choices: ['timestamp', 'commits-ahead'] as const,
+          default: 'timestamp' as const,
         },
         dryRun: {
           description: 'Print the new version without writing files',
