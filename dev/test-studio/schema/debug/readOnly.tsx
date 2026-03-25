@@ -9,13 +9,12 @@ export default {
       name: 'title',
       type: 'string',
       title: 'Title',
-      description: 'This is a basic string field',
-      readOnly: true,
+      description: 'Type a value, then generate the slug below to test read-only copy-paste',
     },
     {
       name: 'slug',
       type: 'slug',
-      readOnly: true,
+      readOnly: ({value}: {value: {current?: string}}) => Boolean(value?.current),
       options: {
         source: (document) => document.title,
         maxLength: 96,
