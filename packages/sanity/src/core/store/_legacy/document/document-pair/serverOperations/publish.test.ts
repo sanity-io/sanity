@@ -87,6 +87,7 @@ describe('publish', () => {
         idPair: {
           draftId: 'drafts.my-id',
           publishedId: 'my-id',
+          versionId: 'versions.release-id.my-id',
         },
         snapshots: {
           draft: {
