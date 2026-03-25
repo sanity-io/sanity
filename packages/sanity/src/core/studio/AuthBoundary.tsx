@@ -1,6 +1,11 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock'
+import {
+  AuthBoundaryResolved,
+  SessionTokenExchangeCompleted,
+} from './__telemetry__/authBoundary.telemetry'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
 import {AuthenticateScreen, NotAuthenticatedScreen, RequestAccessScreen} from './screens'
 
@@ -25,10 +30,25 @@ export function AuthBoundary({
   )
   const [loginProvider, setLoginProvider] = useState<string | undefined>()
   const {activeWorkspace} = useActiveWorkspace()
+  const telemetry = useTelemetry()
+  const [mountTime] = useState(() => performance.now())
+  useEffect(() => {
+    if (loggedIn !== 'loading') {
+      telemetry.log(AuthBoundaryResolved, {
+        durationMs: Math.round(performance.now() - mountTime),
+        result: loggedIn,
+      })
+    }
+  }, [loggedIn, telemetry, mountTime])
 
   useEffect(() => {
-    activeWorkspace.auth.handleCallbackUrl?.().catch(handleError)
-  }, [activeWorkspace.auth])
+    activeWorkspace.auth
+      .handleCallbackUrl?.()
+      .then((result) => {
+        telemetry.log(SessionTokenExchangeCompleted, result)
+      })
+      .catch(handleError)
+  }, [activeWorkspace.auth, telemetry])
 
   useEffect(() => {
     const subscription = activeWorkspace.auth.state.subscribe({
