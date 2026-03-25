@@ -88,6 +88,7 @@ export function sendFeedbackToSentry(payload: FeedbackPayload): string {
       contactConsent: String(contactConsent),
       contactEmail: hasConsent ? email : '',
       contactName: hasConsent ? name : '',
+      telemetryConsent,
       type: 'feedback',
       source,
     },
