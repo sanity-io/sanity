@@ -107,7 +107,6 @@ function writeVersion(packagePath: string, newVersion: string): void {
 export async function bump(options: BumpOptions = {}): Promise<void> {
   const {preid, suffixType = 'timestamp', dryRun} = options
 
-  // Gather all external state
   const currentVersion = readRootVersion()
   const git = readGitInfo()
   const semverIncrement = await getVersionBump(MONOREPO_ROOT)
