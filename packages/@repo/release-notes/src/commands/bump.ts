@@ -102,8 +102,6 @@ function writeVersion(packagePath: string, newVersion: string): void {
   writeFileSync(pkgJsonPath, `${JSON.stringify(pkg, null, 2)}\n`)
 }
 
-// -- Entry point --
-
 export async function bump(options: BumpOptions = {}): Promise<void> {
   const {preid, suffixType = 'timestamp', dryRun} = options
 
@@ -116,8 +114,13 @@ export async function bump(options: BumpOptions = {}): Promise<void> {
   console.error(`Semver increment: ${semverIncrement}`)
 
   // Compute new version
-  const suffix = preid ? computeSuffix(suffixType, git, now) : undefined
-  const newVersion = computeVersion(currentVersion, semverIncrement, preid, suffix)
+  const suffix = preid
+    ? suffixType === 'commits-ahead'
+      ? `${git.commitCount}+${git.commitHash}`
+      : `${formatTimestamp(now)}+${git.commitHash}`
+    : undefined
+
+  const newVersion = computeVersion({currentVersion, semverIncrement, preid, suffix})
 
   console.error(`New version: ${newVersion}`)
 
