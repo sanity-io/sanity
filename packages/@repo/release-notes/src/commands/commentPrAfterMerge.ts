@@ -1,8 +1,8 @@
 /* oxlint-disable no-console */
-import {type RestEndpointMethodTypes} from '@octokit/rest'
+import {type Octokit, type RestEndpointMethodTypes} from '@octokit/rest'
 
 import {REPO} from '../constants'
-import {octokit} from '../octokit'
+import {getOctokit} from '../octokit'
 import {getMergedPRForCommit} from '../utils/github'
 import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
 import {markdownToPortableText} from '../utils/portabletext-markdown/markdownToPortableText'
@@ -15,6 +15,7 @@ export async function commentPrAfterMerge(options: {
   baseVersion: string
   adminStudioBaseUrl: string
 }) {
+  const octokit = getOctokit()
   const pr = await getMergedPRForCommit('sanity-io', 'sanity', options.commit)
   if (!pr) {
     throw new Error('No PR found for this commit')
@@ -42,7 +43,7 @@ export async function commentPrAfterMerge(options: {
     return
   }
 
-  const collaborators = await getCollaborators(pullRequest)
+  const collaborators = await getCollaborators(octokit, pullRequest)
 
   const {releaseId, changelogDocumentId} = getSanityDocumentIdsForBaseVersion(options.baseVersion)
 
@@ -64,10 +65,13 @@ ${
 
 ${authorIsBot ? '`*beep boop*`' : `Thanks for your contribution, ${mention(collaborators.author)}! 🎉`}`
 
-  await createOrUpdateComment({commit: options.commit, pr: pr.number, body: commentBody})
+  await createOrUpdateComment(octokit, {commit: options.commit, pr: pr.number, body: commentBody})
 }
 
-async function createOrUpdateComment(options: {commit: string; pr: number; body: string}) {
+async function createOrUpdateComment(
+  octokit: Octokit,
+  options: {commit: string; pr: number; body: string},
+) {
   const idempotencyMarker = `[idempotency-key]:#release-notes-reminder\n`
 
   const {data: existingComments} = await octokit.rest.issues.listComments({
@@ -117,7 +121,7 @@ type PullRequest = RestEndpointMethodTypes['pulls']['get']['response']['data']
  * - external: A boolean indicating if the author is external to the organization.
  * - approvers: An array of users who have approved the pull request and belong to the internal associations.
  */
-async function getCollaborators(pullRequest: PullRequest) {
+async function getCollaborators(octokit: Octokit, pullRequest: PullRequest) {
   const author = pullRequest.user
   const isExternalContribution = !INTERNAL_ASSOCIATIONS.includes(pullRequest.author_association)
 
