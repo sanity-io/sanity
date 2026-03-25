@@ -1,35 +1,38 @@
+import {execSync} from 'node:child_process'
 import fs from 'node:fs'
 import path, {dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import chalk from 'chalk'
-import {globSync} from 'glob'
 import semver from 'semver'
-
-interface LernaConfig {
-  packages: string[]
-}
 
 interface PackageJson {
   name: string
 }
 
-const corePkg: PackageJson = JSON.parse(
-  fs.readFileSync(path.join(dirname(fileURLToPath(import.meta.url)), '..', 'package.json'), 'utf8'),
-)
-const config: LernaConfig = JSON.parse(
-  fs.readFileSync(path.join(dirname(fileURLToPath(import.meta.url)), '..', 'lerna.json'), 'utf8'),
-)
-
-if (!('packages' in config) || !Array.isArray(config.packages)) {
-  throw new Error('Lerna config is missing "packages" array')
+interface PnpmPackage {
+  name: string
+  path: string
 }
+
+const rootPath = path.join(dirname(fileURLToPath(import.meta.url)), '..')
+
+const corePkg: PackageJson = JSON.parse(
+  fs.readFileSync(path.join(rootPath, 'package.json'), 'utf8'),
+)
 
 if (!('name' in corePkg) || typeof corePkg.name !== 'string') {
   throw new Error('Core package.json is missing "name" string')
 }
 
-const rootPath = path.join(dirname(fileURLToPath(import.meta.url)), '..')
+const pnpmOutput = execSync('pnpm ls -r --json --depth -1', {
+  cwd: rootPath,
+  encoding: 'utf-8',
+  maxBuffer: 10 * 1024 * 1024,
+})
+
+const pnpmPackages: PnpmPackage[] = JSON.parse(pnpmOutput)
+
 const stripRange = (version: string) => version.replace(/^[~^]/, '')
 const sortRanges = (ranges: string[]) =>
   ranges.sort((a, b) => {
@@ -39,19 +42,12 @@ const sortRanges = (ranges: string[]) =>
       return 1
     }
   })
-const patterns = config.packages.map((pkg) => path.join(pkg, 'package.json'))
 
-const pkgs = patterns
-  .flatMap((pattern) => globSync(pattern))
-  .map((file) => path.join(rootPath, file))
-  .map((file) => ({contents: fs.readFileSync(file, 'utf8'), file}))
-  .map(({contents, file}) => ({file, pkg: JSON.parse(contents)}))
-  .concat([
-    {
-      file: path.join(rootPath, 'package.json'),
-      pkg: corePkg,
-    },
-  ])
+const pkgs = pnpmPackages
+  .map((pkg) => ({
+    file: path.join(pkg.path, 'package.json'),
+    pkg: JSON.parse(fs.readFileSync(path.join(pkg.path, 'package.json'), 'utf8')),
+  }))
   .map(({file, pkg}) => ({
     file,
     name: pkg.name,
