@@ -56,6 +56,11 @@ jobs:
       - name: Update version
         run: pnpm --silent release-notes bump
 
+      - name: Write CHANGELOG.md files
+        run: |
+          VERSION=$(jq -r .version package.json)
+          pnpm --silent release-notes write-changelog-files --version=$VERSION
+
       - name: Sync workspace lockfile
         run: pnpm install --lockfile-only
 

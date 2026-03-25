@@ -10,6 +10,7 @@ import {commentPrAfterMerge} from '../src/commands/commentPrAfterMerge'
 import {createOrUpdateChangelogDocs} from '../src/commands/createOrUpdateChangelogDocs'
 import {draftReleaseNotes} from '../src/commands/draftReleaseNotes'
 import {publishReleases} from '../src/commands/publishReleases'
+import {writeChangelogFiles} from '../src/commands/writeChangelogFiles'
 import {writeCommitCheck} from '../src/commands/writeCommitCheck'
 import {writePrChecks} from '../src/commands/writePrChecks'
 import {type KnownEnvVar, type PullRequest} from '../src/types'
@@ -48,6 +49,34 @@ await yargs(process.argv.slice(2))
         await bump({
           preid: args.preid,
           suffixType: args.suffixType,
+          dryRun: args.dryRun,
+        })
+      } catch (error) {
+        // oxlint-disable-next-line no-console
+        console.error(error)
+        process.exit(1)
+      }
+    },
+  })
+  .command({
+    command: 'write-changelog-files',
+    describe: 'Write CHANGELOG.md entries to root and all public packages',
+    builder: (cmd) =>
+      cmd.version(false).options({
+        version: {
+          description: 'The version to generate the changelog entry for, e.g. 5.19.0',
+          type: 'string',
+          demandOption: true,
+        },
+        dryRun: {
+          description: 'Print changelog to stdout without writing files',
+          type: 'boolean',
+        },
+      }),
+    handler: async (args) => {
+      try {
+        await writeChangelogFiles({
+          version: args.version,
           dryRun: args.dryRun,
         })
       } catch (error) {

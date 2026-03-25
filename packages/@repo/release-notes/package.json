@@ -35,6 +35,7 @@
     "@sanity/id-utils": "^1.0.0",
     "@sanity/mutate": "^0.16.1",
     "@sanity/types": "workspace:*",
+    "conventional-changelog": "^7.2.0",
     "conventional-changelog-conventionalcommits": "^9.1.0",
     "conventional-commits-parser": "^6.2.1",
     "conventional-recommended-bump": "^11.2.0",
