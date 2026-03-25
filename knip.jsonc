@@ -99,6 +99,10 @@
     },
     "packages/@repo/release-notes": {
       "project": ["src/**/*.ts"],
+      "ignoreDependencies": [
+        // Dynamically loaded by conventional-recommended-bump via loadPreset('conventionalcommits')
+        "conventional-changelog-conventionalcommits",
+      ],
     },
     "packages/@repo/utils": {
       "project": ["src/**/*.ts"],
