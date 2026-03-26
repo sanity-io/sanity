@@ -75,7 +75,7 @@ function formatTimestamp(now: Date): string {
   ].join('')
 }
 
-function computeVersion({
+export function computeVersion({
   currentVersion,
   semverIncrement,
   suffix,
