@@ -15,7 +15,10 @@ import * as PathUtils from '@sanity/util/paths'
 import findIndex from 'lodash-es/findIndex.js'
 
 import {getValueAtPath} from '../../field'
-import {resolveConditionalProperty} from '../../form'
+import {
+  missingConditionalPropertyGetClient,
+  resolveConditionalPropertyState,
+} from '../../form/store/conditional-property/resolveConditionalProperty'
 import {getSchemaTypeTitle} from '../../schema'
 import {type CommentListBreadcrumbs} from '../types'
 
@@ -53,6 +56,7 @@ interface BuildCommentBreadcrumbsProps {
   fieldPath: string
   schemaType: SchemaType
   currentUser: CurrentUser
+  getClient?: ConditionalPropertyCallbackContext['getClient']
 }
 
 /**
@@ -69,7 +73,7 @@ interface BuildCommentBreadcrumbsProps {
 export function buildCommentBreadcrumbs(
   props: BuildCommentBreadcrumbsProps,
 ): CommentListBreadcrumbs {
-  const {currentUser, schemaType, fieldPath, documentValue} = props
+  const {currentUser, schemaType, fieldPath, documentValue, getClient} = props
   const paths = PathUtils.fromString(fieldPath)
   const fieldPaths: CommentListBreadcrumbs = []
 
@@ -91,6 +95,7 @@ export function buildCommentBreadcrumbs(
       parent: parentValue,
       value: currentValue,
       path: currentPath,
+      getClient: getClient ?? missingConditionalPropertyGetClient,
     }
 
     // If the field is a key segment and the parent value is an array, we'll
@@ -112,7 +117,10 @@ export function buildCommentBreadcrumbs(
 
     // If we find a field in the schema type, we'll add it to the breadcrumb trail.
     if (field?.type) {
-      const hidden = resolveConditionalProperty(field.type.hidden, conditionalContext)
+      const hidden = resolveConditionalPropertyState(field.type.hidden, conditionalContext, {
+        checkPropertyName: 'hidden',
+        pendingValue: true,
+      }).value
 
       fieldPaths.push({
         invalid: hidden,
@@ -157,7 +165,14 @@ export function buildCommentBreadcrumbs(
           .flat()
 
         const anonymousField = allCurrentFields?.find((f) => f?.name === seg)
-        const hidden = resolveConditionalProperty(anonymousField?.type?.hidden, conditionalContext)
+        const hidden = resolveConditionalPropertyState(
+          anonymousField?.type?.hidden,
+          conditionalContext,
+          {
+            checkPropertyName: 'hidden',
+            pendingValue: true,
+          },
+        ).value
 
         if (anonymousField) {
           fieldPaths.push({
@@ -185,16 +200,24 @@ export function buildCommentBreadcrumbs(
       const currentTitle = getSchemaTypeTitle(currentField?.type)
 
       // Resolve the hidden property of the object field
-      const objectFieldHidden = resolveConditionalProperty(
+      const objectFieldHidden = resolveConditionalPropertyState(
         objectField?.type?.hidden,
         conditionalContext,
-      )
+        {
+          checkPropertyName: 'hidden',
+          pendingValue: true,
+        },
+      ).value
 
       // Resolve the hidden property of the current field
-      const currentFieldHidden = resolveConditionalProperty(
+      const currentFieldHidden = resolveConditionalPropertyState(
         currentField?.type.hidden,
         conditionalContext,
-      )
+        {
+          checkPropertyName: 'hidden',
+          pendingValue: true,
+        },
+      ).value
 
       // If the object field or the current field is hidden, we'll mark it as invalid.
       const isHidden = objectFieldHidden || currentFieldHidden

@@ -48,6 +48,8 @@ import type {
   BooleanOptions,
   BooleanRule,
   BooleanSchemaType,
+  AsyncConditionalProperty,
+  AsyncConditionalPropertyCallback,
   CanvasAppOptions,
   CanvasNotificationPayload,
   CollapseOptions,
@@ -507,11 +509,22 @@ describe('@sanity/types', () => {
   test('ConditionalProperty', () => {
     expectTypeOf<ConditionalProperty>().not.toBeNever()
   })
+  test('AsyncConditionalProperty', () => {
+    expectTypeOf<AsyncConditionalProperty>().not.toBeNever()
+  })
   test('ConditionalPropertyCallback', () => {
     expectTypeOf<ConditionalPropertyCallback>().not.toBeNever()
   })
+  test('AsyncConditionalPropertyCallback', () => {
+    expectTypeOf<AsyncConditionalPropertyCallback>().not.toBeNever()
+  })
   test('ConditionalPropertyCallbackContext', () => {
     expectTypeOf<ConditionalPropertyCallbackContext>().toBeObject()
+  })
+  test('ConditionalPropertyCallbackContext getClient', () => {
+    expectTypeOf<ConditionalPropertyCallbackContext['getClient']>().toEqualTypeOf<
+      InitialValueResolverContext['getClient']
+    >()
   })
   test('CreateIfNotExistsMutation', () => {
     expectTypeOf<CreateIfNotExistsMutation>().toBeObject()

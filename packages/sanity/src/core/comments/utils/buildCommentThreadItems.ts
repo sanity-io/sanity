@@ -1,5 +1,9 @@
 import {type SanityDocument} from '@sanity/client'
-import {type CurrentUser, type SchemaType} from '@sanity/types'
+import {
+  type ConditionalPropertyCallbackContext,
+  type CurrentUser,
+  type SchemaType,
+} from '@sanity/types'
 
 import {isTextSelectionComment} from '../helpers'
 import {type CommentDocument, type CommentThreadItem} from '../types'
@@ -12,6 +16,7 @@ type BuildCommentThreadItemsProps =
       comments: CommentDocument[]
       currentUser: CurrentUser
       documentValue: Partial<SanityDocument> | null
+      getClient?: ConditionalPropertyCallbackContext['getClient']
       schemaType: SchemaType
       type: 'field'
     }
@@ -65,6 +70,7 @@ export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): Co
         currentUser,
         documentValue,
         fieldPath: parentComment.target.path?.field || '',
+        getClient: props.getClient,
         schemaType,
       })
 

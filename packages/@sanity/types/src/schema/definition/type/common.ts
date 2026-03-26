@@ -1,6 +1,11 @@
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type ConditionalProperty, type DeprecatedProperty, type I18nTextRecord} from '../../types'
+import {
+  type AsyncConditionalProperty,
+  type ConditionalProperty,
+  type DeprecatedProperty,
+  type I18nTextRecord,
+} from '../../types'
 import {type ObjectOptions} from './object'
 
 /** @public */
@@ -9,7 +14,7 @@ export interface FieldsetDefinition {
   title?: string
   description?: string
   group?: string
-  hidden?: ConditionalProperty
+  hidden?: AsyncConditionalProperty
   readOnly?: ConditionalProperty
   options?: ObjectOptions
 }
@@ -18,7 +23,7 @@ export interface FieldsetDefinition {
 export type FieldGroupDefinition = {
   name: string
   title?: string
-  hidden?: ConditionalProperty
+  hidden?: AsyncConditionalProperty
   icon?: ComponentType
   default?: boolean
   i18n?: I18nTextRecord<'title'>
@@ -73,7 +78,7 @@ export interface BaseSchemaDefinition {
   name: string
   title?: string
   description?: string | React.JSX.Element
-  hidden?: ConditionalProperty
+  hidden?: AsyncConditionalProperty
   readOnly?: ConditionalProperty
   icon?: ComponentType | ReactNode
   validation?: unknown

@@ -6,10 +6,26 @@ import {type StateTree} from '../types/state'
 import {getId} from '../utils/getId'
 import {getItemType} from '../utils/getItemType'
 import {immutableReconcile} from '../utils/immutableReconcile'
+import {stableStringify} from '../utils/stableStringify'
 import {
   type ConditionalPropertyCallbackContext,
-  resolveConditionalProperty,
+  missingConditionalPropertyGetClient,
+  resolveConditionalPropertyState,
 } from './resolveConditionalProperty'
+
+type CallbackResolverListener = () => void
+
+interface ConditionalValueCacheEntry {
+  isPending: boolean
+  value: boolean
+}
+
+type ResolvePropertyValue = (
+  propertyValue: unknown,
+  context: ConditionalPropertyCallbackContext,
+  key: string,
+  pendingValue: boolean,
+) => boolean
 
 interface ResolveCallbackStateOptions {
   property: 'readOnly' | 'hidden'
@@ -17,9 +33,11 @@ interface ResolveCallbackStateOptions {
   parent: unknown
   document: unknown
   currentUser: Omit<CurrentUser, 'role'> | null
+  getClient?: ConditionalPropertyCallbackContext['getClient']
   schemaType: SchemaType
   level: number
   path: Path
+  resolvePropertyValue: ResolvePropertyValue
 }
 
 function resolveCallbackState({
@@ -27,19 +45,23 @@ function resolveCallbackState({
   parent,
   document,
   currentUser,
+  getClient,
   schemaType,
   level,
   property,
   path,
+  resolvePropertyValue,
 }: ResolveCallbackStateOptions): StateTree<boolean> | undefined {
+  const pendingValue = property === 'hidden'
   const context: ConditionalPropertyCallbackContext = {
     value,
     parent,
     document: document as ConditionalPropertyCallbackContext['document'],
     currentUser,
     path,
+    getClient: getClient ?? missingConditionalPropertyGetClient,
   }
-  const selfValue = resolveConditionalProperty(schemaType[property], context)
+  const selfValue = resolvePropertyValue(schemaType[property], context, 'self', pendingValue)
 
   // we don't have to calculate the children if the current value is true
   // because readOnly and hidden inherit. If the parent is readOnly or hidden
@@ -62,12 +84,14 @@ function resolveCallbackState({
         const childResult = resolveCallbackState({
           currentUser,
           document,
+          getClient,
           parent: value,
           value: (value as any)?.[fieldset.field.name],
           schemaType: fieldset.field.type,
           level: level + 1,
           property,
           path: [...path, fieldset.field.name],
+          resolvePropertyValue,
         })
         if (!childResult) continue
 
@@ -75,7 +99,12 @@ function resolveCallbackState({
         continue
       }
 
-      const fieldsetValue = resolveConditionalProperty(fieldset.hidden, context)
+      const fieldsetValue = resolvePropertyValue(
+        fieldset.hidden,
+        context,
+        `fieldset:${fieldset.name}`,
+        true,
+      )
       if (fieldsetValue) {
         children[`fieldset:${fieldset.name}`] = {
           value: fieldsetValue,
@@ -86,12 +115,14 @@ function resolveCallbackState({
         const childResult = resolveCallbackState({
           currentUser,
           document,
+          getClient,
           parent: value,
           value: (value as any)?.[field.name],
           schemaType: field.type,
           level: level + 1,
           property,
           path: [...path, field.name],
+          resolvePropertyValue,
         })
         if (!childResult) continue
 
@@ -102,7 +133,12 @@ function resolveCallbackState({
     for (const group of schemaType.groups ?? EMPTY_ARRAY) {
       // should only be true for `'hidden'`
       if (property in group) {
-        const groupResult = resolveConditionalProperty(group[property as 'hidden'], context)
+        const groupResult = resolvePropertyValue(
+          group[property as 'hidden'],
+          context,
+          `group:${group.name}`,
+          pendingValue,
+        )
         if (!groupResult) continue
 
         children[`group:${group.name}`] = {value: groupResult}
@@ -119,12 +155,14 @@ function resolveCallbackState({
         const childResult = resolveCallbackState({
           currentUser,
           document,
+          getClient,
           level: level + 1,
           value: item,
           parent: value,
           schemaType: itemType,
           property,
           path: [...path, {_key: item._key}],
+          resolvePropertyValue,
         })
         if (!childResult) continue
 
@@ -144,6 +182,7 @@ export interface CreateCallbackResolverOptions<TProperty extends 'hidden' | 'rea
 export type ResolveRootCallbackStateOptions<TProperty extends 'hidden' | 'readOnly'> = {
   documentValue: unknown
   currentUser: Omit<CurrentUser, 'role'> | null
+  getClient?: ConditionalPropertyCallbackContext['getClient']
   schemaType: SchemaType
 } & {[K in TProperty]?: boolean}
 
@@ -151,24 +190,60 @@ export type RootCallbackResolver<TProperty extends 'hidden' | 'readOnly'> = (
   options: ResolveRootCallbackStateOptions<TProperty>,
 ) => StateTree<boolean> | undefined
 
+export interface RootCallbackResolverWithSubscribe<
+  TProperty extends 'hidden' | 'readOnly',
+> extends RootCallbackResolver<TProperty> {
+  subscribe: (listener: CallbackResolverListener) => () => void
+  getVersion: () => number
+}
+
 export function createCallbackResolver<TProperty extends 'hidden' | 'readOnly'>({
   property,
-}: CreateCallbackResolverOptions<TProperty>): RootCallbackResolver<TProperty> {
+}: CreateCallbackResolverOptions<TProperty>): RootCallbackResolverWithSubscribe<TProperty> {
   const stableTrue = {value: true}
   let last: {serializedHash: string; result: StateTree<boolean> | undefined} | null = null
+  let activeRootHash: string | null = null
+  let activeCache = new Map<string, ConditionalValueCacheEntry>()
+  const listeners = new Set<CallbackResolverListener>()
+  let version = 0
+
+  const notifyListeners = () => {
+    last = null
+    version += 1
+    for (const listener of listeners) {
+      listener()
+    }
+  }
+
+  const subscribe = (listener: CallbackResolverListener) => {
+    listeners.add(listener)
+
+    return () => {
+      listeners.delete(listener)
+    }
+  }
+
+  const getVersion = () => version
 
   function callbackResult({
     currentUser,
     documentValue,
+    getClient,
     schemaType,
     ...options
   }: ResolveRootCallbackStateOptions<TProperty>) {
     const hash = {
-      currentUser: getId(currentUser),
+      currentUser: currentUser?.id ?? null,
       schemaType: getId(schemaType),
-      document: getId(documentValue),
+      document: stableStringify(documentValue),
     }
     const serializedHash = JSON.stringify(hash)
+
+    if (activeRootHash !== serializedHash) {
+      activeRootHash = serializedHash
+      activeCache = new Map<string, ConditionalValueCacheEntry>()
+      last = null
+    }
 
     if (property in options) {
       if (options[property] === true) {
@@ -178,17 +253,61 @@ export function createCallbackResolver<TProperty extends 'hidden' | 'readOnly'>(
 
     if (last?.serializedHash === serializedHash) return last.result
 
+    const resolvePropertyValue: ResolvePropertyValue = (
+      propertyValue,
+      context,
+      key,
+      pendingValue,
+    ) => {
+      const cacheKey = JSON.stringify([context.path, key])
+      const cachedValue = activeCache.get(cacheKey)
+
+      if (cachedValue) {
+        return cachedValue.value
+      }
+
+      const state = resolveConditionalPropertyState(propertyValue as any, context, {
+        checkPropertyName: property,
+        pendingValue,
+      })
+
+      activeCache.set(cacheKey, {
+        isPending: state.isPending,
+        value: state.value,
+      })
+
+      if (state.isPending && state.promise) {
+        const rootHashForResolution = serializedHash
+
+        void state.promise.then((resolvedValue) => {
+          if (activeRootHash !== rootHashForResolution) {
+            return
+          }
+
+          activeCache.set(cacheKey, {
+            isPending: false,
+            value: resolvedValue,
+          })
+          notifyListeners()
+        })
+      }
+
+      return state.value
+    }
+
     const result = immutableReconcile(
       last?.result ?? null,
       resolveCallbackState({
         currentUser,
         document: documentValue,
+        getClient,
         level: 0,
         parent: null,
         schemaType,
         value: documentValue,
         property,
         path: [],
+        resolvePropertyValue,
       }),
     )
 
@@ -199,6 +318,9 @@ export function createCallbackResolver<TProperty extends 'hidden' | 'readOnly'>(
 
     return result
   }
+
+  callbackResult.subscribe = subscribe
+  callbackResult.getVersion = getVersion
 
   return callbackResult
 }

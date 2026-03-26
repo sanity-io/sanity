@@ -236,6 +236,8 @@ import type {
   ComposableOption,
   ComputeDiff,
   ConcreteRuleClass,
+  AsyncConditionalProperty,
+  AsyncConditionalPropertyCallback,
   ConditionalIndexAccess,
   ConditionalProperty,
   ConditionalPropertyCallback,
@@ -2360,6 +2362,12 @@ describe('sanity', () => {
   test('ConcreteRuleClass', () => {
     expectTypeOf<typeof ConcreteRuleClass>().not.toBeNever()
   })
+  test('AsyncConditionalProperty', () => {
+    expectTypeOf<AsyncConditionalProperty>().not.toBeNever()
+  })
+  test('AsyncConditionalPropertyCallback', () => {
+    expectTypeOf<AsyncConditionalPropertyCallback>().not.toBeNever()
+  })
   test('ConditionalIndexAccess', () => {
     expectTypeOf<ConditionalIndexAccess<any, any>>().not.toBeNever()
   })
@@ -2371,6 +2379,20 @@ describe('sanity', () => {
   })
   test('ConditionalPropertyCallbackContext', () => {
     expectTypeOf<ConditionalPropertyCallbackContext>().toBeObject()
+  })
+  test('ConditionalPropertyCallbackContext getClient', () => {
+    expectTypeOf<ConditionalPropertyCallbackContext['getClient']>().toEqualTypeOf<
+      InitialValueResolverContext['getClient']
+    >()
+  })
+  test('defineField accepts async hidden callback', () => {
+    const fieldDefinition = {
+      hidden: async () => true,
+      name: 'fieldWithAsyncHidden',
+      type: 'string',
+    } satisfies StringDefinition & {name: string}
+
+    expectTypeOf(fieldDefinition).not.toBeNever()
   })
   test('Config', () => {
     expectTypeOf<Config>().not.toBeNever()

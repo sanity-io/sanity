@@ -281,6 +281,65 @@ describe('validateItem', () => {
     ])
   })
 
+  it('treats pending async hidden as hidden for validation', async () => {
+    const contexts: Array<{
+      path: ValidationContext['path']
+      hidden?: boolean
+    }> = []
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'asyncHiddenDoc',
+          type: 'document',
+          fields: [
+            {
+              name: 'details',
+              type: 'string',
+              hidden: (() => new Promise<boolean>(() => {})) as any,
+              validation: (rule: RuleWithSkip, context?: ValidationContext) => {
+                contexts.push({
+                  path: context?.path,
+                  hidden: context?.hidden,
+                })
+                return context?.hidden ? rule.skip() : rule.required()
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    const document: SanityDocument = {
+      _id: 'async-hidden-doc-id',
+      _type: 'asyncHiddenDoc',
+      _createdAt: '2024-01-01T00:00:00.000Z',
+      _updatedAt: '2024-01-01T00:00:00.000Z',
+      _rev: 'async-hidden-doc-rev',
+    }
+
+    const result = await validateItem({
+      getClient,
+      schema,
+      value: document,
+      document,
+      parent: undefined,
+      path: [],
+      type: schema.get('asyncHiddenDoc'),
+      i18n: getFallbackLocaleSource(),
+      environment: 'studio',
+      getDocumentExists: undefined,
+    })
+
+    expect(result).toHaveLength(0)
+    expect(contexts).toMatchObject([
+      {
+        path: ['details'],
+        hidden: true,
+      },
+    ])
+  })
+
   it('propagates hidden through hidden arrays', async () => {
     const contexts: Array<{
       path: ValidationContext['path']

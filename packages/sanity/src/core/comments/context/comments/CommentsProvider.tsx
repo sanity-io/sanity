@@ -94,7 +94,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
 
-  const {name: workspaceName, dataset, projectId} = useWorkspace()
+  const {name: workspaceName, dataset, projectId, getClient} = useWorkspace()
 
   const documentValue = useMemo(() => {
     if (releaseId) return editState.version
@@ -171,6 +171,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         comments: sorted,
         currentUser,
         documentValue,
+        getClient,
         schemaType,
         type,
       })
@@ -179,7 +180,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       open: items.filter((item) => item.parentComment.status === 'open'),
       resolved: items.filter((item) => item.parentComment.status === 'resolved'),
     }
-  }, [currentUser, data, documentValue, schemaType, sortOrder, type])
+  }, [currentUser, data, documentValue, getClient, schemaType, sortOrder, type])
 
   const getThreadLength = useCallback(
     (threadId: string) => {

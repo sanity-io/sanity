@@ -147,3 +147,74 @@ test('it "upward propagates" hidden fields', () => {
   const fieldNames = result.members.map((member) => member.kind === 'field' && member.name)
   expect(fieldNames).not.toContain('author')
 })
+
+test('it hides a subtree while parent hidden is pending', () => {
+  const schemaType = getBookType({
+    author: {hidden: () => new Promise<boolean>(() => {})},
+  })
+  const documentValue = {_id: 'foo', _type: 'book'}
+  const result = prepareFormState({
+    ...DEFAULT_PROPS,
+    schemaType,
+    hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue, schemaType}),
+    documentValue,
+  })
+
+  expect(result).not.toBe(null)
+  if (result === null) {
+    throw new Error('should not be hidden')
+  }
+
+  const fieldNames = result.members.map((member) => member.kind === 'field' && member.name)
+  expect(fieldNames).not.toContain('author')
+})
+
+test('it reveals a field after async hidden resolves to false', async () => {
+  let resolveHidden!: (value: boolean) => void
+  const hiddenPromise = new Promise<boolean>((resolve) => {
+    resolveHidden = resolve
+  })
+  const schemaType: ObjectSchemaType = getBookType({
+    subtitle: {hidden: () => hiddenPromise},
+  })
+
+  const documentValue = {_id: 'foo', _type: 'book'}
+  const pendingResult = prepareFormState({
+    ...DEFAULT_PROPS,
+    hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue, schemaType}),
+    schemaType,
+    documentValue,
+    comparisonValue: documentValue,
+  })
+
+  expect(pendingResult).not.toBe(null)
+  if (pendingResult === null) {
+    throw new Error('should not be hidden')
+  }
+
+  expect(
+    pendingResult.members.map((member) => member.kind === 'field' && member.name),
+  ).not.toContain('subtitle')
+
+  resolveHidden(false)
+  await hiddenPromise
+  await Promise.resolve()
+  await Promise.resolve()
+
+  const resolvedResult = prepareFormState({
+    ...DEFAULT_PROPS,
+    hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue, schemaType}),
+    schemaType,
+    documentValue,
+    comparisonValue: documentValue,
+  })
+
+  expect(resolvedResult).not.toBe(null)
+  if (resolvedResult === null) {
+    throw new Error('should not be hidden')
+  }
+
+  expect(resolvedResult.members.map((member) => member.kind === 'field' && member.name)).toContain(
+    'subtitle',
+  )
+})

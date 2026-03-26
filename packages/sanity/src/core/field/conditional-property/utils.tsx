@@ -1,54 +1,57 @@
-import {type ConditionalProperty, type ConditionalPropertyCallbackContext} from '@sanity/types'
-import {useMemo} from 'react'
+import {
+  type AsyncConditionalProperty,
+  type ConditionalProperty,
+  type ConditionalPropertyCallbackContext,
+} from '@sanity/types'
+import {useEffect, useMemo, useState} from 'react'
 
-import {isRecord} from '../../util'
-
-function isThenable(value: unknown): value is Promise<unknown> {
-  return isRecord(value) && typeof value?.then === 'function'
-}
+import {resolveConditionalPropertyState} from '../../form/store/conditional-property/resolveConditionalProperty'
 
 export function useCheckCondition(
-  checkProperty: ConditionalProperty,
+  checkProperty: AsyncConditionalProperty | ConditionalProperty,
   checkPropertyName: string,
   context: ConditionalPropertyCallbackContext,
 ): boolean {
-  const {currentUser, document, parent, value, path} = context
+  const {currentUser, document, getClient, parent, value, path} = context
+  const [resolvedAsyncValue, setResolvedAsyncValue] = useState<boolean | undefined>(undefined)
 
-  return useMemo(() => {
-    let isTrueIsh = false
-
-    if (typeof checkProperty === 'boolean' || checkProperty === undefined) {
-      return checkProperty || false
-    }
-
-    try {
-      isTrueIsh = checkProperty({
+  const result = useMemo(() => {
+    return resolveConditionalPropertyState(
+      checkProperty,
+      {
+        currentUser,
         document,
+        getClient,
         parent,
         value,
-        currentUser,
         path,
-      })
-    } catch (err) {
-      console.error(
-        `An error occurred while running the callback from \`${checkPropertyName}\`: ${err.message}`,
-      )
-      return false
+      },
+      {
+        checkPropertyName,
+        pendingValue: checkPropertyName === 'hidden',
+      },
+    )
+  }, [checkProperty, document, getClient, parent, value, currentUser, checkPropertyName, path])
+
+  useEffect(() => {
+    setResolvedAsyncValue(undefined)
+
+    if (!result.isPending || !result.promise) {
+      return
     }
 
-    if (isThenable(isTrueIsh)) {
-      console.warn(
-        `The \`${checkPropertyName}\` option is either a promise or a promise returning function. Async callbacks for \`${checkPropertyName}\` option is not currently supported.`,
-      )
-      return false
-    }
+    let cancelled = false
 
-    if (typeof isTrueIsh === 'undefined') {
-      console.warn(
-        `The \`${checkPropertyName}\` option is or returned \`undefined\`. \`${checkPropertyName}\` should return a boolean.`,
-      )
-    }
+    void result.promise.then((nextValue) => {
+      if (!cancelled) {
+        setResolvedAsyncValue(nextValue)
+      }
+    })
 
-    return isTrueIsh
-  }, [checkProperty, document, parent, value, currentUser, checkPropertyName, path])
+    return () => {
+      cancelled = true
+    }
+  }, [result.isPending, result.promise])
+
+  return resolvedAsyncValue ?? result.value
 }

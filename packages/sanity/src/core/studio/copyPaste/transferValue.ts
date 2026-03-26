@@ -38,7 +38,10 @@ import last from 'lodash-es/last.js'
 
 import {getValueAtPath} from '../../field/paths/helpers'
 import {type FIXME} from '../../FIXME'
-import {resolveConditionalProperty} from '../../form/store/conditional-property/resolveConditionalProperty'
+import {
+  missingConditionalPropertyGetClient,
+  resolveConditionalProperty,
+} from '../../form/store/conditional-property/resolveConditionalProperty'
 import {accepts} from '../../form/studio/uploads/accepts'
 import {randomKey} from '../../form/utils/randomKey'
 import {getIdPair} from '../../util/draftUtils'
@@ -123,6 +126,7 @@ const defaultKeyGenerator = () => randomKey(12)
 
 interface ClientWithFetch {
   fetch: <R = FIXME, Q = Record<string, unknown>>(query: string, params?: Q) => Promise<R>
+  withConfig?: (options: {apiVersion: string}) => SanityClient
 }
 
 export interface TransferValueOptions {
@@ -131,7 +135,10 @@ export interface TransferValueOptions {
   client?: ClientWithFetch
 }
 
-type ReadOnlyContext = {currentUser: CurrentUser | null}
+type ReadOnlyContext = {
+  currentUser: CurrentUser | null
+  getClient: ConditionalPropertyCallbackContext['getClient']
+}
 
 /**
  * Takes the path and checks if any ancestor is read-only
@@ -142,11 +149,13 @@ function resolveReadOnlyAncestor({
   value,
   schemaType,
   currentUser,
+  getClient,
 }: {
   path: Path
   value?: unknown
   schemaType: SchemaType
   currentUser: CurrentUser | null
+  getClient: ConditionalPropertyCallbackContext['getClient']
 }): boolean {
   const isReadOnly = path.find((_, index) => {
     // Iterates on each of the path segments and checks if the current path is read-only
@@ -161,6 +170,7 @@ function resolveReadOnlyAncestor({
       document: value as ConditionalPropertyCallbackContext['document'],
       currentUser,
       path: currentPath,
+      getClient,
     })
   })
 
@@ -204,6 +214,9 @@ export async function transferValue({
   errors: TransferValueError[]
 }> {
   const errors: TransferValueError[] = []
+  const getClient =
+    options.client?.withConfig ??
+    (missingConditionalPropertyGetClient as ConditionalPropertyCallbackContext['getClient'])
 
   if (!sourceRootSchemaType) {
     throw new Error('Source root schema type is not defined')
@@ -236,6 +249,7 @@ export async function transferValue({
     document: targetRootValue as ConditionalPropertyCallbackContext['document'],
     currentUser,
     path: targetRootPath,
+    getClient,
   })
   const targetSchemaTypeAtPathReadOnly = resolveConditionalProperty(
     targetSchemaTypeAtPath.readOnly,
@@ -245,6 +259,7 @@ export async function transferValue({
       document: targetRootValue as ConditionalPropertyCallbackContext['document'],
       currentUser,
       path: targetPath,
+      getClient,
     },
   )
 
@@ -253,6 +268,7 @@ export async function transferValue({
     value: targetRootValue,
     schemaType: targetDocumentSchemaType,
     currentUser,
+    getClient,
   })
 
   if (targetRootSchemaTypeReadOnly || targetSchemaTypeAtPathReadOnly || isAncestorReadOnly) {
@@ -358,7 +374,7 @@ export async function transferValue({
       errors,
       keyGenerator,
       options,
-      readOnlyContext: isDocumentLevelPaste ? {currentUser} : undefined,
+      readOnlyContext: isDocumentLevelPaste ? {currentUser, getClient} : undefined,
     })
   }
 
@@ -731,6 +747,7 @@ async function collateObjectValue({
         document: documentValue,
         currentUser: readOnlyContext.currentUser,
         path: fieldPath,
+        getClient: readOnlyContext.getClient,
       })
 
       if (isFieldReadOnly) {

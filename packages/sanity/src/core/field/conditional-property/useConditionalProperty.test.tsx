@@ -1,9 +1,25 @@
 import {type ConditionalPropertyCallback} from '@sanity/types'
-import {renderHook} from '@testing-library/react'
+import {renderHook, waitFor} from '@testing-library/react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
-import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {type ConditionalPropertyProps, useConditionalProperty} from './useConditionalProperty'
+
+const mockCurrentUser = {
+  email: 'doug@sanity.io',
+  id: 'doug',
+  name: 'Doug',
+  role: 'admin',
+  roles: [{name: 'administrator', title: 'Administrator'}],
+}
+const mockGetClient = vi.fn()
+
+vi.mock('../../store', () => ({
+  useCurrentUser: () => mockCurrentUser,
+}))
+
+vi.mock('../../studio', () => ({
+  useSource: () => ({getClient: mockGetClient}),
+}))
 
 const dummyDocument = {
   _createdAt: '2021-11-04T15:41:48Z',
@@ -40,17 +56,14 @@ afterEach(() => {
 })
 
 describe('Conditional property resolver', () => {
-  it('calls callback function', async () => {
-    const TestWrapper = await createTestProvider()
+  it('calls callback function', () => {
     const callbackFn = vi.fn(() => true)
 
-    renderHook(
-      () =>
-        useConditionalProperty({
-          checkProperty: callbackFn,
-          ...DEFAULT_PROPS,
-        }),
-      {wrapper: TestWrapper},
+    renderHook(() =>
+      useConditionalProperty({
+        checkProperty: callbackFn,
+        ...DEFAULT_PROPS,
+      }),
     )
 
     expect(callbackFn).toBeCalled()
@@ -58,153 +71,162 @@ describe('Conditional property resolver', () => {
     expect(callbackFn.mock.calls).toMatchSnapshot()
   })
 
-  it('resolves callback to true', async () => {
-    const TestWrapper = await createTestProvider()
-    const {result} = renderHook(
-      () =>
-        useConditionalProperty({
-          checkProperty: vi.fn(() => true),
-          ...DEFAULT_PROPS,
-        }),
-      {wrapper: TestWrapper},
+  it('passes getClient through field hook callbacks', () => {
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkProperty: vi.fn(({getClient}) => getClient === mockGetClient),
+        ...DEFAULT_PROPS,
+      }),
+    )
+
+    expect(result.current).toBe(true)
+  })
+
+  it('resolves callback to true', () => {
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkProperty: vi.fn(() => true),
+        ...DEFAULT_PROPS,
+      }),
     )
     expect(result.current).toBeTruthy()
   })
 
-  it('returns false with callback that returns false', async () => {
-    const TestWrapper = await createTestProvider()
-    const {result} = renderHook(
-      () =>
-        useConditionalProperty({
-          checkProperty: vi.fn(() => false),
-          ...DEFAULT_PROPS,
-        }),
-      {wrapper: TestWrapper},
+  it('returns false with callback that returns false', () => {
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkProperty: vi.fn(() => false),
+        ...DEFAULT_PROPS,
+      }),
     )
     expect(result.current).toBe(false)
   })
 
-  it('returns false if document title does not match', async () => {
-    const TestWrapper = await createTestProvider()
-    const {result} = renderHook(
-      () =>
-        useConditionalProperty({
-          checkProperty: vi.fn<ConditionalPropertyCallback>(
-            ({document}) => document?.title !== 'Hello world',
-          ),
-          ...DEFAULT_PROPS,
-        }),
-      {wrapper: TestWrapper},
+  it('returns false if document title does not match', () => {
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkProperty: vi.fn<ConditionalPropertyCallback>(
+          ({document}) => document?.title !== 'Hello world',
+        ),
+        ...DEFAULT_PROPS,
+      }),
     )
     expect(result.current).toBeFalsy()
   })
 
-  it('returns true if document is published', async () => {
-    const TestWrapper = await createTestProvider()
-    const {result} = renderHook(
-      () =>
-        useConditionalProperty({
-          checkProperty: vi.fn<ConditionalPropertyCallback>(({document}) =>
-            Boolean(document?.isPublished),
-          ),
-          ...DEFAULT_PROPS,
-        }),
-      {wrapper: TestWrapper},
+  it('returns true if document is published', () => {
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkProperty: vi.fn<ConditionalPropertyCallback>(({document}) =>
+          Boolean(document?.isPublished),
+        ),
+        ...DEFAULT_PROPS,
+      }),
     )
     expect(result.current).toBeTruthy()
   })
 
-  it('returns undefined because callback returns undefined', async () => {
+  it('returns false because callback returns undefined', () => {
     const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
-    const TestWrapper = await createTestProvider()
-    const {result} = renderHook(
-      () =>
-        useConditionalProperty({
-          checkProperty: vi.fn(() => undefined) as any,
-          ...DEFAULT_PROPS,
-        }),
-      {wrapper: TestWrapper},
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkProperty: vi.fn(() => undefined) as any,
+        ...DEFAULT_PROPS,
+      }),
     )
-    expect(result.current).toBe(undefined)
+    expect(result.current).toBe(false)
     expect(consoleSpy).toHaveBeenCalledWith(
       'The `testKey` option is or returned `undefined`. `testKey` should return a boolean.',
     )
   })
 
-  it('returns true because value matches', async () => {
-    const TestWrapper = await createTestProvider()
-    const {result} = renderHook(
-      () =>
-        useConditionalProperty({
-          checkProperty: vi.fn<ConditionalPropertyCallback>(({value}) => value === 'test value'),
-          ...DEFAULT_PROPS,
-          value: 'test value',
-        }),
-      {wrapper: TestWrapper},
+  it('returns true because value matches', () => {
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkProperty: vi.fn<ConditionalPropertyCallback>(({value}) => value === 'test value'),
+        ...DEFAULT_PROPS,
+        value: 'test value',
+      }),
     )
     expect(result.current).toBeTruthy()
   })
 
-  it('returns false because value does not match', async () => {
-    const TestWrapper = await createTestProvider()
-    const {result} = renderHook(
-      () =>
-        useConditionalProperty({
-          checkProperty: vi.fn<ConditionalPropertyCallback>(({value}) => value === 'test'),
-          ...DEFAULT_PROPS,
-          value: 'test value',
-        }),
-      {wrapper: TestWrapper},
+  it('returns false because value does not match', () => {
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkProperty: vi.fn<ConditionalPropertyCallback>(({value}) => value === 'test'),
+        ...DEFAULT_PROPS,
+        value: 'test value',
+      }),
     )
     expect(result.current).toBeFalsy()
   })
 
-  it('returns true when the current user does not have role "developer"', async () => {
-    const TestWrapper = await createTestProvider()
-    const {result} = renderHook(
-      () =>
-        useConditionalProperty({
-          checkProperty: vi.fn<ConditionalPropertyCallback>(
-            ({currentUser}) => !currentUser?.roles.some((role) => role.name === 'developer'),
-          ),
-          ...DEFAULT_PROPS,
-          value: 'test value',
-        }),
-      {wrapper: TestWrapper},
+  it('returns true when the current user does not have role "developer"', () => {
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkProperty: vi.fn<ConditionalPropertyCallback>(
+          ({currentUser}) => !currentUser?.roles.some((role) => role.name === 'developer'),
+        ),
+        ...DEFAULT_PROPS,
+        value: 'test value',
+      }),
     )
     expect(result.current).toBeTruthy()
   })
 
-  it('returns true when the current user has role "administrator"', async () => {
-    const TestWrapper = await createTestProvider()
-    const {result} = renderHook(
-      () =>
-        useConditionalProperty({
-          checkProperty: vi.fn<ConditionalPropertyCallback>(({currentUser}) =>
-            Boolean(currentUser?.roles.some((role) => role.name === 'administrator')),
-          ),
-          ...DEFAULT_PROPS,
-          value: 'test value',
-        }),
-      {wrapper: TestWrapper},
+  it('returns true when the current user has role "administrator"', () => {
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkProperty: vi.fn<ConditionalPropertyCallback>(({currentUser}) =>
+          Boolean(currentUser?.roles.some((role) => role.name === 'administrator')),
+        ),
+        ...DEFAULT_PROPS,
+        value: 'test value',
+      }),
     )
     expect(result.current).toBeTruthy()
   })
 
-  it('returns true when sibling field is not empty', async () => {
-    const TestWrapper = await createTestProvider()
-    const {result} = renderHook(
-      () =>
-        useConditionalProperty({
-          checkPropertyKey: 'hidden',
-          document: dummyDocument,
-          value: dummyDocument.venue.address,
-          parent: dummyDocument.venue,
-          path: [],
-          checkProperty: vi.fn<ConditionalPropertyCallback>(({parent}) => Boolean(parent.location)),
-        }),
-      {wrapper: TestWrapper},
+  it('returns true when sibling field is not empty', () => {
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkPropertyKey: 'hidden',
+        document: dummyDocument,
+        value: dummyDocument.venue.address,
+        parent: dummyDocument.venue,
+        path: [],
+        checkProperty: vi.fn<ConditionalPropertyCallback>(({parent}) => Boolean(parent.location)),
+      }),
     )
     expect(result.current).toBeTruthy()
+  })
+
+  it('treats pending async hidden as hidden and updates after resolution', async () => {
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    let resolveHidden!: (value: boolean) => void
+    const hiddenPromise = new Promise<boolean>((resolve) => {
+      resolveHidden = resolve
+    })
+
+    const {result} = renderHook(() =>
+      useConditionalProperty({
+        checkPropertyKey: 'hidden',
+        document: dummyDocument,
+        value: dummyDocument.venue.address,
+        parent: dummyDocument.venue,
+        path: [],
+        checkProperty: (() => hiddenPromise) as any,
+      }),
+    )
+
+    expect(result.current).toBe(true)
+    expect(consoleSpy).not.toHaveBeenCalled()
+
+    resolveHidden(false)
+
+    await waitFor(() => {
+      expect(result.current).toBe(false)
+    })
   })
 })

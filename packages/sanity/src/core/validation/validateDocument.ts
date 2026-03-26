@@ -17,7 +17,7 @@ import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {type SourceClientOptions, type Workspace} from '../config'
-import {resolveConditionalProperty} from '../form/store/conditional-property/resolveConditionalProperty'
+import {resolveConditionalPropertyState} from '../form/store/conditional-property/resolveConditionalProperty'
 import {getFallbackLocaleSource} from '../i18n/fallback'
 import {type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
@@ -352,13 +352,21 @@ function validateItemObservable({
     }
     return (
       ancestorHiddenValue ||
-      resolveConditionalProperty(schemaType.hidden, {
-        ...restOfContext,
-        parent: schemaParent,
-        value: schemaValue,
-        path: schemaPath || [],
-        currentUser: restOfContext.currentUser ?? null,
-      })
+      resolveConditionalPropertyState(
+        schemaType.hidden,
+        {
+          ...restOfContext,
+          getClient: restOfContext.getClient,
+          parent: schemaParent,
+          value: schemaValue,
+          path: schemaPath || [],
+          currentUser: restOfContext.currentUser ?? null,
+        },
+        {
+          checkPropertyName: 'hidden',
+          pendingValue: true,
+        },
+      ).value
     )
   }
   const hidden = resolveHiddenForType(type, value, parent, path, ancestorHidden)

@@ -469,6 +469,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     documentValue: formDocumentValue,
     readOnly,
     comparisonValue: comparisonValue || value,
+    getClient: workspace.getClient,
     focusPath,
     openPath,
     perspective: selectedPerspective,

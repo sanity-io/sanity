@@ -28,6 +28,12 @@ const stringWithHiddenCallback = defineField({
   hidden: () => true,
 })
 
+const stringWithAsyncHiddenCallback = defineField({
+  name: 'stringWithAsyncHiddenCallback',
+  type: 'string',
+  hidden: () => new Promise<boolean>(() => {}),
+})
+
 const objectField = defineField({
   name: 'myObject',
   title: 'My object title',
@@ -156,6 +162,7 @@ const schema = Schema.compile({
         stringWithoutTitleField,
         objectField,
         stringWithHiddenCallback,
+        stringWithAsyncHiddenCallback,
         arrayOfObjectsField,
         nestedArrayOfObjectsField,
         arrayWithAnonymousObjectField,
@@ -213,6 +220,19 @@ describe('comments: buildCommentBreadcrumbs', () => {
 
     expect(crumbs).toEqual([
       {invalid: true, isArrayItem: false, title: 'String With Hidden Callback'},
+    ])
+  })
+
+  test('should invalidate the breadcrumb while async hidden is pending', () => {
+    const crumbs = buildCommentBreadcrumbs({
+      currentUser: CURRENT_USER,
+      documentValue: {},
+      fieldPath: 'stringWithAsyncHiddenCallback',
+      schemaType: schema.get('testDocument'),
+    })
+
+    expect(crumbs).toEqual([
+      {invalid: true, isArrayItem: false, title: 'String With Async Hidden Callback'},
     ])
   })
 

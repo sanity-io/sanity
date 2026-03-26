@@ -1,3 +1,32 @@
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+function getDocumentIds(id) {
+  if (!id) return {draftId: null, publishedId: null}
+
+  const publishedId = id.replace(/^drafts\./, '')
+  const draftId = id.startsWith('drafts.') ? id : `drafts.${id}`
+
+  return {draftId, publishedId}
+}
+
+async function resolveAsyncHidden(document, getClient) {
+  const delayMs =
+    typeof document?.asyncHiddenDelayMs === 'number' ? document.asyncHiddenDelayMs : 1500
+
+  // Simulate an external lookup so async hidden can be tested manually in Studio.
+  await wait(delayMs)
+
+  const {draftId, publishedId} = getDocumentIds(document?._id)
+  if (!publishedId) return true
+
+  const showAsyncField = await getClient({apiVersion: '2026-03-26'}).fetch(
+    `coalesce(*[_id in [$draftId, $publishedId]] | order(_updatedAt desc)[0].showAsyncField, false)`,
+    {draftId, publishedId},
+  )
+
+  return !showAsyncField
+}
+
 export default {
   name: 'conditionalFieldsTest',
   type: 'document',
@@ -24,6 +53,49 @@ export default {
       type: 'boolean',
       description: 'Is published?',
       // readOnly: () => true,
+    },
+    {
+      name: 'showAsyncField',
+      type: 'boolean',
+      title: 'Show async field',
+      description:
+        'Controls the async hidden examples below. Toggle this, wait for autosave, then wait for the configured delay.',
+      initialValue: false,
+    },
+    {
+      name: 'asyncHiddenDelayMs',
+      type: 'number',
+      title: 'Async hidden delay (ms)',
+      description: 'Artificial delay used before the client lookup resolves.',
+      initialValue: 1500,
+    },
+    {
+      name: 'asyncHiddenField',
+      type: 'string',
+      title: 'Async hidden field',
+      description:
+        'This field should stay hidden while the async callback is pending, then appear only when the saved document says "Show async field" is enabled.',
+      hidden: async ({document, getClient}) => resolveAsyncHidden(document, getClient),
+    },
+    {
+      name: 'asyncHiddenObject',
+      type: 'object',
+      title: 'Async hidden object',
+      description:
+        'This object exercises subtree hiding. Its children should remain hidden until the client lookup resolves to false.',
+      hidden: async ({document, getClient}) => resolveAsyncHidden(document, getClient),
+      fields: [
+        {
+          name: 'details',
+          type: 'string',
+          description: 'Only visible when the async object becomes visible.',
+        },
+        {
+          name: 'nestedField',
+          type: 'string',
+          description: 'Useful for verifying child fields do not flash during pending resolution.',
+        },
+      ],
     },
     {
       name: 'readOnlyIfTitleIsReadOnly',

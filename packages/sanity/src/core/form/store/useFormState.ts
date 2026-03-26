@@ -1,10 +1,11 @@
 import {
+  type ConditionalPropertyCallbackContext,
   type ObjectSchemaType,
   type Path,
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {useMemo, useState} from 'react'
+import {useMemo, useRef, useState, useSyncExternalStore} from 'react'
 
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
@@ -15,6 +16,7 @@ import {createCallbackResolver} from './conditional-property/createCallbackResol
 import {createPrepareFormState} from './formState'
 import {type NodeChronologyProps, type ObjectFormNode, type StateTree} from './types'
 import {immutableReconcile} from './utils/immutableReconcile'
+import {stableStringify} from './utils/stableStringify'
 
 /** @internal */
 export type FormState<
@@ -27,6 +29,7 @@ export interface UseFormStateOptions extends Pick<NodeChronologyProps, 'hasUpstr
   schemaType: ObjectSchemaType
   documentValue: unknown
   comparisonValue: unknown
+  getClient?: ConditionalPropertyCallbackContext['getClient']
   openPath: Path
   focusPath: Path
   perspective: TargetPerspective
@@ -47,6 +50,7 @@ export function useFormState<
 >({
   comparisonValue,
   documentValue,
+  getClient,
   fieldGroupState,
   collapsedFieldSets,
   collapsedPaths,
@@ -67,6 +71,22 @@ export function useFormState<
   const [prepareHiddenState] = useState(() => createCallbackResolver({property: 'hidden'}))
   const [prepareReadOnlyState] = useState(() => createCallbackResolver({property: 'readOnly'}))
   const [prepareFormState] = useState(() => createPrepareFormState())
+  const hiddenResolverVersion = useSyncExternalStore(
+    prepareHiddenState.subscribe,
+    prepareHiddenState.getVersion,
+    prepareHiddenState.getVersion,
+  )
+  const readOnlyResolverVersion = useSyncExternalStore(
+    prepareReadOnlyState.subscribe,
+    prepareReadOnlyState.getVersion,
+    prepareReadOnlyState.getVersion,
+  )
+  const documentValueSnapshot = stableStringify(documentValue)
+  const comparisonValueSnapshot = stableStringify(comparisonValue)
+  const documentValueRef = useRef(documentValue)
+  const comparisonValueRef = useRef(comparisonValue)
+  documentValueRef.current = documentValue
+  comparisonValueRef.current = comparisonValue
 
   const [reconcileFieldGroupState] = useState(() => {
     let last: StateTree<string> | undefined
@@ -108,26 +128,36 @@ export function useFormState<
   )
 
   const {hidden, readOnly} = useMemo(() => {
-    return {
+    void hiddenResolverVersion
+    void readOnlyResolverVersion
+
+    const nextState = {
       hidden: prepareHiddenState({
         currentUser,
-        documentValue: documentValue,
+        documentValue: documentValueRef.current,
+        getClient,
         schemaType,
       }),
       readOnly: prepareReadOnlyState({
         currentUser,
-        documentValue: documentValue,
+        documentValue: documentValueRef.current,
+        getClient,
         schemaType,
         readOnly: inputReadOnly,
       }),
     }
+
+    return nextState
   }, [
+    hiddenResolverVersion,
     prepareHiddenState,
     currentUser,
-    documentValue,
+    documentValueRef,
+    getClient,
     schemaType,
     prepareReadOnlyState,
     inputReadOnly,
+    readOnlyResolverVersion,
   ])
 
   // if a version is going to be unpublished, we don't want to show the validation errors
@@ -135,14 +165,14 @@ export function useFormState<
   const isVersionGoingToUnpublish =
     documentValue && isGoingToUnpublish(documentValue as SanityDocument)
 
-  return useMemo(() => {
+  const formState = useMemo(() => {
     return prepareFormState({
       schemaType,
       fieldGroupState: reconciledFieldGroupState,
       collapsedFieldSets: reconciledCollapsedFieldsets,
       collapsedPaths: reconciledCollapsedPaths,
-      documentValue,
-      comparisonValue,
+      documentValue: documentValueRef.current,
+      comparisonValue: comparisonValueRef.current,
       focusPath,
       openPath,
       readOnly,
@@ -161,8 +191,8 @@ export function useFormState<
     reconciledFieldGroupState,
     reconciledCollapsedFieldsets,
     reconciledCollapsedPaths,
-    documentValue,
-    comparisonValue,
+    documentValueRef,
+    comparisonValueRef,
     focusPath,
     openPath,
     perspective,
@@ -176,4 +206,6 @@ export function useFormState<
     hasUpstreamVersion,
     displayInlineChanges,
   ])
+
+  return formState
 }

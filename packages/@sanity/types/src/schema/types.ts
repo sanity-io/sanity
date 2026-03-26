@@ -153,6 +153,7 @@ export interface ConditionalPropertyCallbackContext {
   value: any
   currentUser: Omit<CurrentUser, 'role'> | null
   path: Path
+  getClient: (options: {apiVersion: string}) => SanityClient
 }
 
 /** @public */
@@ -160,6 +161,14 @@ export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackC
 
 /** @public */
 export type ConditionalProperty = boolean | ConditionalPropertyCallback | undefined
+
+/** @public */
+export type AsyncConditionalPropertyCallback = (
+  context: ConditionalPropertyCallbackContext,
+) => Promise<boolean> | boolean
+
+/** @public */
+export type AsyncConditionalProperty = boolean | AsyncConditionalPropertyCallback | undefined
 
 /** @public */
 export interface DeprecatedProperty {
@@ -238,7 +247,7 @@ export interface BaseSchemaType extends Partial<DeprecationConfiguration> {
   type?: SchemaType
   liveEdit?: boolean
   readOnly?: ConditionalProperty
-  hidden?: ConditionalProperty
+  hidden?: AsyncConditionalProperty
   icon?: ComponentType
   initialValue?: InitialValueProperty<any, any>
   validation?: SchemaValidationValue
@@ -400,7 +409,7 @@ export interface SlugSchemaType extends ObjectSchemaType {
 
 /** @public */
 export type ObjectFieldType<T extends SchemaType = SchemaType> = T & {
-  hidden?: ConditionalProperty
+  hidden?: AsyncConditionalProperty
   readOnly?: ConditionalProperty
 }
 
@@ -419,7 +428,7 @@ export interface FieldGroup {
   title?: string
   description?: string
   i18n?: I18nTextRecord<'title'>
-  hidden?: ConditionalProperty
+  hidden?: AsyncConditionalProperty
   default?: boolean
   fields?: ObjectField[]
 }
@@ -465,7 +474,7 @@ export interface ObjectSchemaTypeWithOptions extends Omit<ObjectSchemaType, 'opt
 export interface SingleFieldSet {
   single: true
   field: ObjectField
-  hidden?: ConditionalProperty
+  hidden?: AsyncConditionalProperty
   readOnly?: ConditionalProperty
   group?: string | string[]
 }
@@ -481,7 +490,7 @@ export interface MultiFieldSet {
     columns?: number
   }
   fields: ObjectField[]
-  hidden?: ConditionalProperty
+  hidden?: AsyncConditionalProperty
   readOnly?: ConditionalProperty
 }
 
