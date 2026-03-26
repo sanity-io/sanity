@@ -5,7 +5,7 @@ import {SANITY_VERSION} from '../version'
 import {type FeedbackPayload} from './types'
 
 /** @internal */
-export const FEEDBACK_TUNNEL_URL = 'https://www.sanity.io/ingest/feedback'
+export const FEEDBACK_TUNNEL_URL = 'https://api.sanity.work/vX/intake/feedback'
 
 const clientsByDsn = new Map<string, Scope>()
 
@@ -30,9 +30,6 @@ function getFeedbackClient(dsn: string): Scope {
     stackParser: defaultStackParser,
     integrations: [],
     transport: makeFetchTransport,
-    transportOptions: {
-      fetchOptions: {mode: 'no-cors'},
-    },
   })
 
   const scope = new Scope()
