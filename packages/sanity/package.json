@@ -65,6 +65,9 @@
       ],
       "structure": [
         "./lib/structure.d.ts"
+      ],
+      "workbench": [
+        "./lib/workbench.d.ts"
       ]
     }
   },
@@ -124,6 +127,11 @@
       "monorepo": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
+    "./workbench": {
+      "source": "./src/_exports/workbench.ts",
+      "monorepo": "./src/_exports/workbench.ts",
+      "default": "./lib/workbench.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -139,6 +147,7 @@
       "./structure": "./lib/structure.js",
       "./media-library": "./lib/media-library.js",
       "./migrate": "./lib/migrate.js",
+      "./workbench": "./lib/workbench.js",
       "./package.json": "./package.json"
     }
   },
@@ -146,7 +155,7 @@
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.check.json --erasableSyntaxOnly)",
-    "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
+    "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js workbench.js lib",
     "coverage": "vitest --coverage",
     "docs:typedocs:cleanup": "rimraf docs",
     "docs:typedocs:generate": "typedoc --options typedoc.config.json",
@@ -179,7 +188,7 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^1.0.0",
-    "@sanity/cli": "^6.5.0",
+    "@sanity/cli": "workbench",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.6",
     "@sanity/comlink": "^4.0.1",
@@ -207,6 +216,7 @@
     "@sanity/ui": "catalog:",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.2",
+    "@sanity/workbench": "latest",
     "@sentry/react": "^8.55.0",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.24",
