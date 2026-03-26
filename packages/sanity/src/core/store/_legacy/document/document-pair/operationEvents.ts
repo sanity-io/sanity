@@ -45,7 +45,7 @@ interface ExecuteArgs {
   operationName: keyof OperationsAPI
   idPair: IdPair
   typeName: string
-  storeKey: string
+  storeKey?: string
   extraArgs: any[]
 }
 
@@ -99,8 +99,8 @@ export function emitOperation(
   operationName: keyof OperationsAPI,
   idPair: IdPair,
   typeName: string,
-  storeKey: string,
   extraArgs: any[],
+  storeKey?: string,
 ): void {
   operationCalls$.next({operationName, idPair, typeName, storeKey, extraArgs})
 }
@@ -153,7 +153,7 @@ export const operationEvents = memoize(
   }) => {
     const storeKey = getOperationStoreKey(ctx.client)
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
-      filter((op) => op.storeKey === storeKey),
+      filter((op) => op.storeKey === storeKey || !op.storeKey),
       groupBy((op) => op.idPair.publishedId),
       mergeMap((groups$) =>
         groups$.pipe(
@@ -208,7 +208,7 @@ export const operationEvents = memoize(
         (window as any).SLOW ? timer(10000).pipe(map(() => result)) : of(result),
       ),
       tap((result) => {
-        emitOperation('commit', result.args.idPair, result.args.typeName, result.args.storeKey, [])
+        emitOperation('commit', result.args.idPair, result.args.typeName, [], result.args.storeKey)
       }),
     )
 

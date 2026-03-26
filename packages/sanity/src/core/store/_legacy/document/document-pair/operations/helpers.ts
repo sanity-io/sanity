@@ -43,7 +43,7 @@ export const GUARDED: OperationsAPI = {
 const createEmitter =
   (operationName: keyof OperationsAPI, idPair: IdPair, typeName: string, storeKey: string) =>
   (...executeArgs: any[]) =>
-    emitOperation(operationName, idPair, typeName, storeKey, executeArgs)
+    emitOperation(operationName, idPair, typeName, executeArgs, storeKey)
 
 function wrap<ExtraArgs extends any[], DisabledReason extends string>(
   opName: keyof OperationsAPI,
