@@ -1,4 +1,4 @@
-import {type ArraySchemaType} from '@sanity/types'
+import {type ArraySchemaType, type FormNodeValidation} from '@sanity/types'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
@@ -44,7 +44,11 @@ function createSchemaType(max?: number): ArraySchemaType {
   } as ArraySchemaType
 }
 
-function renderListArrayInput(options: {max?: number; memberCount: number}) {
+function renderListArrayInput(options: {
+  max?: number
+  memberCount: number
+  validation?: FormNodeValidation[]
+}) {
   const members = Array.from({length: options.memberCount}, (_, i) => ({key: `key-${i}`}))
   const props = {
     arrayFunctions: ValidationProbe,
@@ -52,6 +56,7 @@ function renderListArrayInput(options: {max?: number; memberCount: number}) {
     members,
     schemaType: createSchemaType(options.max),
     focusPath: [],
+    validation: options.validation,
   } as unknown as ArrayOfObjectsInputProps<ObjectItem>
 
   return render(<ListArrayInput {...props} />, {
@@ -72,5 +77,22 @@ describe('ListArrayInput', () => {
     renderListArrayInput({max: 3, memberCount: 3})
 
     expect(screen.getByTestId('max-reached')).toHaveTextContent('true')
+  })
+
+  it('applies critical tone to empty state card when there are validation errors', () => {
+    const errorValidation: FormNodeValidation[] = [
+      {level: 'error', message: 'Array is required', path: []},
+    ]
+    const {container} = renderListArrayInput({memberCount: 0, validation: errorValidation})
+
+    const emptyCard = container.querySelector('[data-ui="Card"]')
+    expect(emptyCard).toHaveAttribute('data-tone', 'critical')
+  })
+
+  it('does not apply critical tone to empty state card when there are no errors', () => {
+    const {container} = renderListArrayInput({memberCount: 0})
+
+    const emptyCard = container.querySelector('[data-ui="Card"]')
+    expect(emptyCard).not.toHaveAttribute('data-tone', 'critical')
   })
 })

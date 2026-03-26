@@ -105,6 +105,7 @@ export function SelectInput(props: StringInputProps) {
       onChange={handleChange}
       readOnly={readOnly}
       tone={tone}
+      customValidity={validationError}
     />
   ) : (
     <Card tone={tone} radius={2}>
