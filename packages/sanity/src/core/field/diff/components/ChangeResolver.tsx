@@ -1,4 +1,8 @@
-import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
+import {
+  type AsyncConditionalProperty,
+  type ConditionalProperty,
+  type SanityDocument,
+} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {Fragment} from 'react'
 
@@ -12,7 +16,7 @@ import {GroupChange} from './GroupChange'
 export interface ChangeResolverProps {
   change: ChangeNode
   readOnly?: ConditionalProperty
-  hidden?: ConditionalProperty
+  hidden?: AsyncConditionalProperty
   addParentWrapper?: boolean
 }
 

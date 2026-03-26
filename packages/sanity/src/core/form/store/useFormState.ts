@@ -2,7 +2,7 @@ import {
   type ConditionalPropertyCallbackContext,
   type ObjectSchemaType,
   type Path,
-  type SanityDocument,
+  type SanityDocumentLike,
   type ValidationMarker,
 } from '@sanity/types'
 import {useMemo, useRef, useState, useSyncExternalStore} from 'react'
@@ -85,7 +85,9 @@ export function useFormState<
   const comparisonValueSnapshot = stableStringify(comparisonValue)
   const documentValueRef = useRef(documentValue)
   const comparisonValueRef = useRef(comparisonValue)
+  // eslint-disable-next-line react-hooks/refs -- keep the latest document value available to snapshot-keyed memos without changing object identity semantics that async hidden relies on
   documentValueRef.current = documentValue
+  // eslint-disable-next-line react-hooks/refs -- keep the latest comparison value in sync for the memoized form-state computation without regressing async hidden updates
   comparisonValueRef.current = comparisonValue
 
   const [reconcileFieldGroupState] = useState(() => {
@@ -130,16 +132,19 @@ export function useFormState<
   const {hidden, readOnly} = useMemo(() => {
     void hiddenResolverVersion
     void readOnlyResolverVersion
+    void documentValueSnapshot
 
     const nextState = {
       hidden: prepareHiddenState({
         currentUser,
+        // eslint-disable-next-line react-hooks/refs -- read the latest document value while the memo is invalidated by snapshots and resolver versions, preserving working async hidden behavior for in-place mutations
         documentValue: documentValueRef.current,
         getClient,
         schemaType,
       }),
       readOnly: prepareReadOnlyState({
         currentUser,
+        // eslint-disable-next-line react-hooks/refs -- same rationale as hidden: keep readOnly resolution aligned with the current document without breaking snapshot-based invalidation
         documentValue: documentValueRef.current,
         getClient,
         schemaType,
@@ -153,6 +158,7 @@ export function useFormState<
     prepareHiddenState,
     currentUser,
     documentValueRef,
+    documentValueSnapshot,
     getClient,
     schemaType,
     prepareReadOnlyState,
@@ -163,15 +169,21 @@ export function useFormState<
   // if a version is going to be unpublished, we don't want to show the validation errors
   // in the form
   const isVersionGoingToUnpublish =
-    documentValue && isGoingToUnpublish(documentValue as SanityDocument)
+    documentValue && isGoingToUnpublish(documentValue as SanityDocumentLike)
 
   const formState = useMemo(() => {
+    void documentValueSnapshot
+    void comparisonValueSnapshot
+
+    // eslint-disable-next-line react-hooks/refs -- prepareFormState must see the latest document/comparison refs while this memo remains keyed by snapshots to preserve the working async hidden behavior
     return prepareFormState({
       schemaType,
       fieldGroupState: reconciledFieldGroupState,
       collapsedFieldSets: reconciledCollapsedFieldsets,
       collapsedPaths: reconciledCollapsedPaths,
+      // eslint-disable-next-line react-hooks/refs -- prepareFormState is keyed by the surrounding memo deps; using the ref preserves the latest value without reintroducing the async hidden regression
       documentValue: documentValueRef.current,
+      // eslint-disable-next-line react-hooks/refs -- mirror the current comparison snapshot for the memoized form-state build
       comparisonValue: comparisonValueRef.current,
       focusPath,
       openPath,
@@ -193,6 +205,8 @@ export function useFormState<
     reconciledCollapsedPaths,
     documentValueRef,
     comparisonValueRef,
+    documentValueSnapshot,
+    comparisonValueSnapshot,
     focusPath,
     openPath,
     perspective,

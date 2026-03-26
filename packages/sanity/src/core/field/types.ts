@@ -12,6 +12,7 @@ import {
 } from '@sanity/diff'
 import {
   type ArraySchemaType,
+  type AsyncConditionalProperty,
   type BooleanSchemaType,
   type ConditionalProperty,
   type NumberSchemaType,
@@ -235,7 +236,7 @@ export interface GroupChangeNode {
   titlePath: ChangeTitlePath
   schemaType?: SchemaType
   readOnly?: ConditionalProperty
-  hidden?: ConditionalProperty
+  hidden?: AsyncConditionalProperty
   fieldsetName?: string
 }
 
@@ -255,7 +256,7 @@ export interface FieldChangeNode {
   diffComponent?: DiffComponent
   parentSchema?: ArraySchemaType | ObjectSchemaType
   readOnly?: ConditionalProperty
-  hidden?: ConditionalProperty
+  hidden?: AsyncConditionalProperty
 }
 
 /** @internal */

@@ -34,19 +34,16 @@ export function useCheckCondition(
   }, [checkProperty, document, getClient, parent, value, currentUser, checkPropertyName, path])
 
   useEffect(() => {
+    let cancelled = false
     setResolvedAsyncValue(undefined)
 
-    if (!result.isPending || !result.promise) {
-      return
+    if (result.isPending && result.promise) {
+      void result.promise.then((nextValue) => {
+        if (!cancelled) {
+          setResolvedAsyncValue(nextValue)
+        }
+      })
     }
-
-    let cancelled = false
-
-    void result.promise.then((nextValue) => {
-      if (!cancelled) {
-        setResolvedAsyncValue(nextValue)
-      }
-    })
 
     return () => {
       cancelled = true

@@ -84,7 +84,7 @@ export function resolveConditionalPropertyState(
         isPending: true,
         promise: result
           .then((resolvedValue) => {
-            return  resolvedValue
+            return Boolean(resolvedValue)
           })
           .catch((error) => {
             console.error(
@@ -102,7 +102,7 @@ export function resolveConditionalPropertyState(
     }
 
     return {
-      value:  result,
+      value: Boolean(result),
       isPending: false,
     }
   } catch (error) {
