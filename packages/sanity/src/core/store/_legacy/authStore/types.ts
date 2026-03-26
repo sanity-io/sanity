@@ -94,12 +94,28 @@ export type LoginComponentProps =
       basePath?: string
     }
 
-/** @internal */
+/**
+ * Result returned from `handleCallbackUrl` describing what happened during
+ * the auth callback flow. Used for telemetry and diagnostics.
+ *
+ * @internal
+ */
 export interface HandleCallbackResult {
+  /** The login method configured for this auth store (e.g. `'cookie'` or `'token'`). */
   loginMethod: LoginMethod
+  /**
+   * Which auth flow was taken:
+   * - `'no-session'`: No session ID was present; no auth exchange was attempted.
+   * - `'cookie-auth'`: Attempted cookie-based authentication via `/users/me`.
+   * - `'token-exchange'`: Traded a session ID for a persistent token.
+   */
   flow: 'no-session' | 'cookie-auth' | 'token-exchange'
+  /** Whether the auth flow completed successfully. */
   success: boolean
+  /** Total wall-clock time for the callback handling, in milliseconds. */
   durationMs: number
+  /** Time spent on the session-to-token exchange specifically. Only set for `'token-exchange'` flow. */
   tokenExchangeDurationMs?: number
+  /** Human-readable reason for failure. Only set when `success` is `false`. */
   failureReason?: string
 }
