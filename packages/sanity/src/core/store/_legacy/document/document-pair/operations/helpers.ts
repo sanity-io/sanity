@@ -1,4 +1,5 @@
 import {type IdPair} from '../../types'
+import {getOperationStoreKey} from '../getOperationStoreKey'
 import {emitOperation} from '../operationEvents'
 import {publish} from '../operations/publish'
 import {del as serverDel} from '../serverOperations/delete'
@@ -40,9 +41,9 @@ export const GUARDED: OperationsAPI = {
   restore: createOperationGuard('restore'),
 }
 const createEmitter =
-  (operationName: keyof OperationsAPI, idPair: IdPair, typeName: string) =>
+  (operationName: keyof OperationsAPI, idPair: IdPair, typeName: string, storeKey: string) =>
   (...executeArgs: any[]) =>
-    emitOperation(operationName, idPair, typeName, executeArgs)
+    emitOperation(operationName, idPair, typeName, storeKey, executeArgs)
 
 function wrap<ExtraArgs extends any[], DisabledReason extends string>(
   opName: keyof OperationsAPI,
@@ -50,9 +51,10 @@ function wrap<ExtraArgs extends any[], DisabledReason extends string>(
   operationArgs: OperationArgs,
 ): Operation<ExtraArgs, DisabledReason> {
   const disabled = op.disabled(operationArgs)
+  const storeKey = getOperationStoreKey(operationArgs.client)
   return {
     disabled,
-    execute: createEmitter(opName, operationArgs.idPair, operationArgs.typeName),
+    execute: createEmitter(opName, operationArgs.idPair, operationArgs.typeName, storeKey),
   }
 }
 
