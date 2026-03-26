@@ -19,11 +19,14 @@ export const publish: OperationImpl<[], DisabledReason> = {
     if (!snapshots.draft && !snapshots.version) {
       throw new Error('cannot execute "publish" when draft or version is missing')
     }
+    if (idPair.versionId && !snapshots.version) {
+      throw new Error('cannot execute "publish" when version is missing but versionId is provided')
+    }
 
     return actionsApiClient(client, idPair).observable.action(
       {
         actionType: 'sanity.action.document.publish',
-        draftId: (snapshots.draft?._id || snapshots.version?._id)!,
+        draftId: (snapshots.version?._id || snapshots.draft?._id)!,
         publishedId: idPair.publishedId,
         // Optimistic locking using `ifPublishedRevisionId` ensures that concurrent publish action
         // invocations do not override each other.

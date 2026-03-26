@@ -3,6 +3,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
+  isAgentBundleName,
   getVersionInlineBadge,
   LATEST,
   ReleaseTitle,
@@ -122,7 +123,9 @@ export function DocumentNotInReleaseBanner({
         isScheduledRelease
           ? undefined
           : {
-              text: t('banners.release.action.add-to-release'),
+              text: isAgentBundleName(currentRelease)
+                ? t('banners.release.action.add-to-bundle')
+                : t('banners.release.action.add-to-release'),
               tone: tone,
               disabled: Boolean(versionCreateState),
               onClick: handleAddToRelease,
