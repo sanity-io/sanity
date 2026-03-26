@@ -36,6 +36,17 @@ describe('computeVersion', () => {
     ).toBe('6.0.0')
   })
 
+  it('bumps a major prerelease', () => {
+    expect(
+      computeVersion({
+        currentVersion: '5.18.0',
+        semverIncrement: 'major',
+        preid: 'next-major',
+        suffix: '20260326120000+abc1234',
+      }),
+    ).toBe('6.0.0-next-major.20260326120000+abc1234')
+  })
+
   it('produces a prerelease version with preid and suffix', () => {
     expect(
       computeVersion({
