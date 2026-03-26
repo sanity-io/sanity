@@ -1037,5 +1037,8 @@ exports[`exports snapshot 1`] = `
     "usePaneRouter": "function",
     "useStructureTool": "function",
   },
+  "./workbench": {
+    "renderWorkbench": "function",
+  },
 }
 `;
