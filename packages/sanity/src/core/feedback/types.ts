@@ -1,3 +1,5 @@
+import {type ConsentStatus} from '../studio/telemetry/telemetryConsent'
+
 /** @internal */
 export type Sentiment = 'happy' | 'neutral' | 'unhappy'
 
@@ -47,7 +49,7 @@ export interface FeedbackPayload {
    * The user's telemetry consent status.
    * When not 'granted', PII (name, email, userId) is stripped and IP is anonymised.
    */
-  telemetryConsent: 'loading' | 'granted' | 'denied'
+  telemetryConsent: ConsentStatus
   /**
    * The name of the user sending feedback.
    */

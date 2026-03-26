@@ -1,5 +1,6 @@
 import {useCallback} from 'react'
 
+import {type ConsentStatus} from '../../studio/telemetry/telemetryConsent'
 import {useTelemetryConsent} from '../../studio/telemetry/useTelemetryConsent'
 import {sendFeedbackToSentry} from '../feedbackClient'
 import {type TagValue} from '../types'
@@ -31,7 +32,7 @@ export interface SendFeedbackOptions {
 export interface UseInStudioFeedbackReturn {
   /** Send feedback. Base and dynamic tags are included automatically. */
   sendFeedback: (opts: SendFeedbackOptions) => string
-  telemetryConsent: 'loading' | 'granted' | 'denied'
+  telemetryConsent: ConsentStatus
 }
 
 /**
