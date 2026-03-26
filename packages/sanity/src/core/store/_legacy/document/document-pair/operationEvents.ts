@@ -23,6 +23,7 @@ import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {consistencyStatus} from './consistencyStatus'
+import {getOperationStoreKey} from './getOperationStoreKey'
 import {operationArgs} from './operationArgs'
 import {type OperationArgs, type OperationsAPI} from './operations'
 import {commit} from './operations/commit'
@@ -44,6 +45,7 @@ interface ExecuteArgs {
   operationName: keyof OperationsAPI
   idPair: IdPair
   typeName: string
+  storeKey?: string
   extraArgs: any[]
 }
 
@@ -98,8 +100,9 @@ export function emitOperation(
   idPair: IdPair,
   typeName: string,
   extraArgs: any[],
+  storeKey?: string,
 ): void {
-  operationCalls$.next({operationName, idPair, typeName, extraArgs})
+  operationCalls$.next({operationName, idPair, typeName, storeKey, extraArgs})
 }
 
 // These are the operations that cannot be performed while the document is in an inconsistent state
@@ -148,7 +151,9 @@ export const operationEvents = memoize(
     serverActionsEnabled: Observable<boolean>
     extraOptions?: DocumentStoreExtraOptions
   }) => {
+    const storeKey = getOperationStoreKey(ctx.client)
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
+      filter((op) => op.storeKey === storeKey || !op.storeKey),
       groupBy((op) => op.idPair.publishedId),
       mergeMap((groups$) =>
         groups$.pipe(
@@ -203,7 +208,7 @@ export const operationEvents = memoize(
         (window as any).SLOW ? timer(10000).pipe(map(() => result)) : of(result),
       ),
       tap((result) => {
-        emitOperation('commit', result.args.idPair, result.args.typeName, [])
+        emitOperation('commit', result.args.idPair, result.args.typeName, [], result.args.storeKey)
       }),
     )
 
