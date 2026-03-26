@@ -114,7 +114,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
   const handleSubmit = useCallback(async () => {
     const finalMessage: string = message
       ? message.trim()
-      : `[Sentiment only] User rated experience as: ${sentiment}`
+      : `The user submitted a ${sentiment} sentiment rating without additional comments.`
     if (!sentiment) return
 
     setSubmitting(true)
