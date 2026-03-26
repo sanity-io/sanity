@@ -5,7 +5,7 @@ import {SANITY_VERSION} from '../version'
 import {type FeedbackPayload} from './types'
 
 /** @internal */
-export const FEEDBACK_TUNNEL_URL = 'https://api.sanity.work/vX/intake/feedback'
+export const FEEDBACK_TUNNEL_URL = 'https://api.sanity.io/vX/intake/feedback'
 
 const clientsByDsn = new Map<string, Scope>()
 

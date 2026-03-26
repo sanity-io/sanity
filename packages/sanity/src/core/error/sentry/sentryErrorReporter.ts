@@ -44,7 +44,7 @@ const IS_BROWSER = typeof window !== 'undefined'
 
 const clientOptions: BrowserOptions = {
   dsn: STUDIO_DSN,
-  tunnel: 'https://api.sanity.work/vX/intake/tracing',
+  tunnel: 'https://api.sanity.io/vX/intake/tracing',
   release: SANITY_VERSION,
   environment: isDev ? 'development' : 'production',
   debug: DEBUG_ERROR_REPORTING,
