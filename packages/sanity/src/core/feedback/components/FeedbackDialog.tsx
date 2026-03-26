@@ -35,6 +35,8 @@ const SENTIMENTS: {value: Sentiment; icon: typeof FaceHappyIcon; labelKey: strin
   {value: 'unhappy', icon: FaceSadIcon, labelKey: 'feedback.sentiment.unhappy'},
 ]
 
+const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20 MB
+
 /** @internal */
 export function FeedbackDialog(props: FeedbackDialogProps) {
   const {
@@ -61,8 +63,6 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
   const [submitting, setSubmitting] = useState(false)
   const [dragOver, setDragOver] = useState(false)
 
-  const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20 MB
-
   const handleMessageChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.currentTarget.value)
   }, [])
@@ -78,7 +78,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
       setAttachmentError(null)
       setImageFile(img)
     },
-    [MAX_FILE_SIZE, t],
+    [t],
   )
 
   const handleFilesOver = useCallback(() => setDragOver(true), [])
@@ -103,7 +103,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
         }
       }
     },
-    [MAX_FILE_SIZE, t],
+    [t],
   )
 
   // Contact consent — only shown if telemetry is granted or if the user has set up an attachment or message
