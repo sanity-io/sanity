@@ -248,7 +248,7 @@ export function _createAuthStore({
       broadcast(loginMethod === 'cookie' ? null : getToken(projectId))
       return {
         loginMethod,
-        flow: 'no-session',
+        flow: 'already-authenticated',
         success: true,
         durationMs: Math.round(performance.now() - startTime),
       }

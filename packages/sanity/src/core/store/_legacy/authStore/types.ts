@@ -105,11 +105,11 @@ export interface HandleCallbackResult {
   loginMethod: LoginMethod
   /**
    * Which auth flow was taken:
-   * - `'no-session'`: No session ID was present; no auth exchange was attempted.
+   * - `'already-authenticated'`: User was already authenticated; no exchange needed.
    * - `'cookie-auth'`: Attempted cookie-based authentication via `/users/me`.
    * - `'token-exchange'`: Traded a session ID for a persistent token.
    */
-  flow: 'no-session' | 'cookie-auth' | 'token-exchange'
+  flow: 'already-authenticated' | 'cookie-auth' | 'token-exchange'
   /** Whether the auth flow completed successfully. */
   success: boolean
   /** Total wall-clock time for the callback handling, in milliseconds. */
