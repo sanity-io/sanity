@@ -397,7 +397,7 @@ function resolveSource({
   /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
-  const defaultAssetSources = createDatasetAssetSources(config, context.client)
+  const defaultAssetSources = createDatasetAssetSources(config, client)
   const mediaLibraryAssetSources = createMediaLibraryAssetSources(config)
 
   let templates!: Source['templates']
