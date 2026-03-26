@@ -69,7 +69,7 @@ jobs:
         # TODO: Fix webkit caching when downloading from cache
         # for some reason it doesn't work without installing again
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps ${{ matrix.project }}
 
       - name: Build packages
         # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
@@ -105,7 +105,7 @@ jobs:
   merge-reports:
     if: always() && needs.install.outputs.has_code_changes == 'true'
     needs: [install, playwright-ct-test]
-    runs-on: ubuntu-8core
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
