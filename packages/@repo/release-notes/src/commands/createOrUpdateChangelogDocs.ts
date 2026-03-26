@@ -1,7 +1,7 @@
 // oxlint-disable no-console
 import {ConventionalGitClient} from '@conventional-changelog/git-client'
 import {MONOREPO_ROOT} from '@repo/utils'
-import {ClientError} from '@sanity/client'
+import {type SanityClient, ClientError} from '@sanity/client'
 import {
   at,
   createIfNotExists,
@@ -17,7 +17,7 @@ import {format} from 'date-fns/format'
 import {descriptionToCoAuthors} from 'description-to-co-authors'
 import pMap from 'p-map'
 
-import {client} from '../client'
+import {getClient} from '../client'
 import {STUDIO_PLATFORM_DOCUMENT_ID} from '../constants'
 import {type PullRequestInfo, type StudioChangelogEntry} from '../types'
 import {getCommits, getSemverTags} from '../utils/getCommits'
@@ -38,6 +38,7 @@ export async function createOrUpdateChangelogDocs(args: {
   dryRun?: boolean
 }) {
   const {tentativeVersion, baseVersion, dryRun} = args
+  const client = getClient()
 
   // We obfuscate the base version id so we can use in the changelog document ids
   // Without obfuscating, the document id for the changelog document would include the
@@ -56,6 +57,7 @@ export async function createOrUpdateChangelogDocs(args: {
     getSanityDocumentIdsForBaseVersion(baseVersion)
 
   await ensureContentRelease(
+    client,
     releaseId,
     `Studio release v${tentativeVersion}`,
     `Content release for the upcoming Studio release (tentatively v${tentativeVersion})`,
@@ -93,7 +95,7 @@ export async function createOrUpdateChangelogDocs(args: {
       at('releaseAutomation', setIfMissing({})),
       at('releaseAutomation.tentativeVersion', set(tentativeVersion)),
       at('releaseAutomation.source', set('studio')),
-      ...(await mergeChangelogBody(changelogDocumentId.version, commitsWithPrs, {dryRun})),
+      ...(await mergeChangelogBody(client, changelogDocumentId.version, commitsWithPrs, {dryRun})),
       at('publishedAt', set(new Date())),
       at(
         'version',
@@ -124,12 +126,15 @@ async function toArray<T>(it: AsyncIterableIterator<T>): Promise<T[]> {
 }
 
 async function mergeChangelogBody(
+  client: SanityClient,
   id: string,
   entries: PullRequestInfo[],
   {dryRun}: {dryRun?: boolean},
 ) {
   const currentDocument = (await client.getDocument(id)) || {}
-  const changelogEntryPatches = await pMap(entries, async (entry) => createEntry(entry, {dryRun}))
+  const changelogEntryPatches = await pMap(entries, async (entry) =>
+    createEntry(client, entry, {dryRun}),
+  )
   const updated = applyPatches(
     [at('changelog', setIfMissing([])), ...changelogEntryPatches.flat()],
     currentDocument,
@@ -138,11 +143,12 @@ async function mergeChangelogBody(
   return [at('changelog', set(updated.changelog.filter(Boolean)))]
 }
 
-function createEntry(info: PullRequestInfo, {dryRun}: {dryRun?: boolean}) {
-  return info.pr && info.pr.body ? getReleaseNotesMutations(info, {dryRun}) : []
+function createEntry(client: SanityClient, info: PullRequestInfo, {dryRun}: {dryRun?: boolean}) {
+  return info.pr && info.pr.body ? getReleaseNotesMutations(client, info, {dryRun}) : []
 }
 
 async function getReleaseNotesMutations(
+  client: SanityClient,
   {pr, conventionalCommit}: PullRequestInfo,
   options: {dryRun?: boolean},
 ) {
@@ -200,14 +206,19 @@ async function getReleaseNotesMutations(
   return [at('changelog', insertIfMissing(entry, 'before', 0))]
 }
 
-async function ensureContentRelease(id: string, title: string, description: string) {
+async function ensureContentRelease(
+  client: SanityClient,
+  id: string,
+  title: string,
+  description: string,
+) {
   const created = await client.releases
     .create({
       releaseId: id,
     })
     .then(
       () => true,
-      (err) => {
+      (err: unknown) => {
         if (
           err instanceof ClientError &&
           err.statusCode === 409 &&

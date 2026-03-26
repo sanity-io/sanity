@@ -21,10 +21,6 @@
     ".": {
       "project": ["*.{ts,mts,mjs}"],
       "ignoreDependencies": [
-        // Knip does not have a Lerna plugin yet
-        "@lerna-lite/list",
-        "@lerna-lite/publish",
-        "conventional-changelog-conventionalcommits",
         // Knip does not parse scripts in actions/github-script
         "dotenv",
         // keeping it a dev dependency speeds up 'npx only-allow pnpm' in package.json's preinstall script
@@ -103,6 +99,10 @@
     },
     "packages/@repo/release-notes": {
       "project": ["src/**/*.ts"],
+      "ignoreDependencies": [
+        // Dynamically loaded by conventional-recommended-bump via loadPreset('conventionalcommits')
+        "conventional-changelog-conventionalcommits",
+      ],
     },
     "packages/@repo/utils": {
       "project": ["src/**/*.ts"],

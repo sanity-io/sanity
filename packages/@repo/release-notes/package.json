@@ -35,11 +35,15 @@
     "@sanity/id-utils": "^1.0.0",
     "@sanity/mutate": "^0.16.1",
     "@sanity/types": "workspace:*",
+    "conventional-changelog": "^7.2.0",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
     "conventional-commits-parser": "^6.2.1",
+    "conventional-recommended-bump": "^11.2.0",
     "date-fns": "^4.1.0",
     "description-to-co-authors": "^0.3.0",
     "lodash-es": "^4.17.22",
     "p-map": "^7.0.3",
+    "semver": "^7.7.4",
     "turndown": "^7.2.2",
     "yargs": "^17.7.2"
   },
@@ -50,6 +54,7 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@types/lodash-es": "^4.17.12",
+    "@types/semver": "^7.5.0",
     "@types/turndown": "^5.0.6",
     "@types/yargs": "^17.0.33",
     "vitest": "catalog:"

@@ -82,7 +82,6 @@
     {
       "description": "Ensure internal and important packages open a PRs right away, without waiting for manual approval",
       "matchPackageNames": [
-        "lerna",
         "@portabletext/editor",
         "@portabletext/html",
         "@sanity/bifur-client",

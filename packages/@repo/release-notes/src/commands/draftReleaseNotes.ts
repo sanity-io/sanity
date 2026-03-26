@@ -1,11 +1,12 @@
 /* oxlint-disable no-console */
 import {at, patch, SanityEncoder, set, setIfMissing} from '@sanity/mutate'
 
-import {client} from '../client'
+import {getClient} from '../client'
 import {generateHumanReadableReleaseNotes} from '../utils/generateHumanReadableReleaseNotes'
 import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
 
 export async function draftReleaseNotes(options: {baseVersion: string}) {
+  const client = getClient()
   const {changelogDocumentId} = getSanityDocumentIdsForBaseVersion(options.baseVersion)
   const changelogDocument = await client.getDocument(changelogDocumentId.version)
   if (!changelogDocument) {
