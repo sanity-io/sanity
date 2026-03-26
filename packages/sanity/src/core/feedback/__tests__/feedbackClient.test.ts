@@ -1,14 +1,16 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {type FeedbackPayload} from '../types'
+
 const mockCaptureEvent = vi.fn().mockReturnValue('mock-event-id')
 
 vi.mock('@sentry/react', () => {
   return {
     BrowserClient: class MockBrowserClient {
-      init() {}
+      init = vi.fn()
     },
     Scope: class MockScope {
-      setClient() {}
+      setClient = vi.fn()
       captureEvent = mockCaptureEvent
     },
     defaultStackParser: {},
@@ -19,10 +21,8 @@ vi.mock('@sentry/react', () => {
 vi.mock('../../environment', () => ({isDev: false}))
 vi.mock('../../version', () => ({SANITY_VERSION: '3.0.0-test'}))
 
-import {type FeedbackPayload} from '../types'
-
 describe('sendFeedbackToSentry', () => {
-  let sendFeedbackToSentry: typeof import('../feedbackClient').sendFeedbackToSentry
+  let sendFeedbackToSentry: (payload: FeedbackPayload) => string
 
   beforeEach(async () => {
     vi.resetModules()

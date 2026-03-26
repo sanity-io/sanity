@@ -1,5 +1,11 @@
 import {renderHook} from '@testing-library/react'
+import {useRouterState} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+
+import {useClient} from '../../hooks'
+import {useCurrentUser} from '../../store/user/hooks'
+import {useWorkspace} from '../../studio/workspace'
+import {useStudioFeedbackTags} from '../hooks/useStudioFeedbackTags'
 
 vi.mock('../../hooks', () => ({
   useClient: vi.fn(),
@@ -16,13 +22,6 @@ vi.mock('sanity/router', () => ({
 vi.mock('../../version', () => ({
   SANITY_VERSION: '3.0.0-test',
 }))
-
-import {useRouterState} from 'sanity/router'
-
-import {useClient} from '../../hooks'
-import {useCurrentUser} from '../../store/user/hooks'
-import {useWorkspace} from '../../studio/workspace'
-import {useStudioFeedbackTags} from '../hooks/useStudioFeedbackTags'
 
 describe('useStudioFeedbackTags', () => {
   const mockWorkspace = {
