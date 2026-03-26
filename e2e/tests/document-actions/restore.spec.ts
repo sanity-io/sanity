@@ -2,6 +2,7 @@ import {expect} from '@playwright/test'
 
 import {
   expectCreatedOrEditedStatus,
+  expectEditedStatus,
   expectPublishedStatus,
 } from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
@@ -38,8 +39,8 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
   await titleInput.fill(titleB)
   await expect(titleInput).toHaveValue(titleB)
 
-  // Wait for the document to be published.
-  await page.waitForTimeout(2_000)
+  // Wait for the document to be saved before publishing.
+  await expectEditedStatus(documentStatus)
   await publishButton.click()
   await expectPublishedStatus(documentStatus)
 
@@ -83,9 +84,7 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   await createDraftDocument('/content/input-debug;documentActionsTest')
 
   // waits for the top most form layer to finish loading
-  await page.waitForSelector('[data-testid="document-panel-scroller"]', {
-    state: 'visible',
-  })
+  await expect(page.getByTestId('document-panel-scroller')).toBeVisible()
 
   await titleInput.fill(titleA)
   // Wait for the document to finish saving
@@ -103,8 +102,8 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   await titleInput.fill(titleB)
   await expect(titleInput).toHaveValue(titleB)
 
-  // Wait for the document to be published.
-  await page.waitForTimeout(2_000)
+  // Wait for the document to be saved before publishing.
+  await expectEditedStatus(documentStatus)
   await publishKeypress()
   await expectPublishedStatus(documentStatus)
 
@@ -167,8 +166,8 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   await titleInput.fill(titleB)
   await expect(titleInput).toHaveValue(titleB)
 
-  // Wait for the document to be published.
-  await page.waitForTimeout(2_000)
+  // Wait for the document to be saved before publishing.
+  await expectEditedStatus(documentStatus)
   await publishButton.click()
   await expectPublishedStatus(documentStatus)
 
