@@ -1,6 +1,8 @@
 import {type SanityClient} from '@sanity/client'
-import {firstValueFrom, of} from 'rxjs'
+import {type Observable, firstValueFrom, of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+
+import {type ConsentStatus} from '../telemetryConsent'
 
 describe('getTelemetryConsent$', () => {
   function createMockClient(projectId: string, status = 'granted') {
@@ -12,7 +14,7 @@ describe('getTelemetryConsent$', () => {
     } as unknown as SanityClient
   }
 
-  let getTelemetryConsent$: typeof import('../telemetryConsent').getTelemetryConsent$
+  let getTelemetryConsent$: (client: SanityClient) => Observable<ConsentStatus>
 
   beforeEach(async () => {
     vi.resetModules()
