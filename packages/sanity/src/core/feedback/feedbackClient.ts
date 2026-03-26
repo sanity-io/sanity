@@ -74,8 +74,7 @@ export function sendFeedbackToSentry(payload: FeedbackPayload): string {
     tags: {
       ...eventTags,
       feedbackVersion,
-      contactEmail: hasConsent ? email : '',
-      contactName: hasConsent ? name : '',
+      ...(hasConsent ? {contactEmail: email ?? '', contactName: name ?? ''} : {}),
       telemetryConsent,
       type: 'feedback',
       source,
