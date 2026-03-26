@@ -47,7 +47,7 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
       if (err instanceof Error) {
         setError(err)
       } else {
-        setError(new Error('Unknown error'))
+        setError(new Error('Unknown error', {cause: err}))
       }
     }
   }
