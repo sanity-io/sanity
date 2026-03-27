@@ -573,7 +573,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
       {...responsivePaddingProps}
     >
       {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
-      <PointerOverlayDiv aria-hidden="true" data-enabled ref={setPointerOverlayElement} />
+      <PointerOverlayDiv aria-hidden="true" data-enabled="false" ref={setPointerOverlayElement} />
       {virtualizer && (
         <VirtualListChildBox
           forwardedAs="ul"
