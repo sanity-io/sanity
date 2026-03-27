@@ -15,7 +15,7 @@ import {createBroadcastChannel} from './createBroadcastChannel'
 import {createLoginComponent} from './createLoginComponent'
 import {clearSessionId, getSessionId} from './sessionId'
 import * as storage from './storage'
-import {type AuthState, type AuthStore} from './types'
+import {type AuthState, type AuthStore, type HandleCallbackResult} from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 
 /** @internal */
@@ -238,14 +238,20 @@ export function _createAuthStore({
     shareReplay(1),
   )
 
-  async function handleCallbackUrl() {
+  async function handleCallbackUrl(): Promise<HandleCallbackResult> {
+    const startTime = performance.now()
     const sessionId = getSessionId()
     // workaround for https://github.com/vercel/next.js/issues/91819
     clearSessionId()
 
     if (!sessionId) {
       broadcast(loginMethod === 'cookie' ? null : getToken(projectId))
-      return
+      return {
+        loginMethod,
+        flow: 'already-authenticated',
+        success: true,
+        durationMs: Math.round(performance.now() - startTime),
+      }
     }
 
     const requestClient = clientFactory({
@@ -270,13 +276,40 @@ export function _createAuthStore({
     if (currentUser || loginMethod === 'cookie') {
       // if that worked, then we don't need to fetch a token
       broadcast(null)
-      return
+      return {
+        loginMethod,
+        flow: 'cookie-auth',
+        success: !!currentUser,
+        durationMs: Math.round(performance.now() - startTime),
+        failureReason: currentUser ? undefined : 'cookie auth failed, login method is cookie-only',
+      }
     }
 
     // If we allow using token authentication, we should try to trade the session ID
     // for a token and store it locally for subsequent use
-    const token = await tradeSessionForToken(requestClient, sessionId)
-    broadcast(token ?? null)
+    const tokenExchangeStart = performance.now()
+    try {
+      const token = await tradeSessionForToken(requestClient, sessionId)
+      broadcast(token ?? null)
+      return {
+        loginMethod,
+        flow: 'token-exchange',
+        success: !!token,
+        durationMs: Math.round(performance.now() - startTime),
+        tokenExchangeDurationMs: Math.round(performance.now() - tokenExchangeStart),
+        failureReason: token ? undefined : 'token exchange returned empty token',
+      }
+    } catch (err) {
+      broadcast(null)
+      return {
+        loginMethod,
+        flow: 'token-exchange',
+        success: false,
+        durationMs: Math.round(performance.now() - startTime),
+        tokenExchangeDurationMs: Math.round(performance.now() - tokenExchangeStart),
+        failureReason: err instanceof Error ? err.message : 'token exchange failed',
+      }
+    }
   }
 
   async function tradeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {
