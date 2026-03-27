@@ -117,6 +117,13 @@ export type PluginPostMessageUploadFilesRequest = {
   files: {id: string; file: File}[]
 }
 
+/**
+ * Studio host → plugin: user clicked Done to insert the current upload selection.
+ */
+export type PluginPostMessageConfirmUploadSelection = {
+  type: 'confirmUploadSelection'
+}
+
 export type PluginPostMessageAbortUploadRequest = {
   type: 'abortUploadRequest'
   files?: {id: string}[]
@@ -142,6 +149,7 @@ export type PluginPostMessage =
   | PluginPostMessagePageLoaded
   | PluginPostMessagePageUnloaded
   | PluginPostMessageUploadFilesRequest
+  | PluginPostMessageConfirmUploadSelection
   | PluginPostMessageAbortUploadRequest
   | PluginPostMessageUploadFilesProgress
   | PluginPostMessageUploadFilesResponse

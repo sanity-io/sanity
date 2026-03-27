@@ -34,7 +34,6 @@ import {filterMediaValidationMarkers} from './validation'
 
 export interface SelectAssetsDialogProps {
   dialogHeaderTitle?: ReactNode
-  open: boolean
   onClose: () => void
   onSelect: (assetFromSource: AssetFromSource[]) => void
   ref: React.Ref<HTMLDivElement>
@@ -59,7 +58,6 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const {
     dialogHeaderTitle,
     onClose,
-    open,
     onSelect,
     selectionType = 'single',
     ref,
@@ -182,9 +180,6 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   )
 
   const {setIframe} = usePluginPostMessage(appHost, handlePluginMessage)
-  if (!open) {
-    return null
-  }
 
   return (
     <AppDialog

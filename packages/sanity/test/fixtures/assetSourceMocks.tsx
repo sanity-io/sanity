@@ -164,7 +164,9 @@ export function createMockAssetSourceWithMediaLibraryUploader(
     name,
     title,
     component: MockUploadComponent,
-    Uploader: uploadMode === 'picker' ? MediaLibraryUploader : undefined,
+    // Real Media Library sources use uploadMode: 'component' together with MediaLibraryUploader
+    // so drag-drop can post files into the iframe; keep Uploader in both modes for integration tests.
+    Uploader: MediaLibraryUploader,
     uploadMode: uploadMode === 'component' ? ('component' as const) : undefined,
     openInSource: (asset) => {
       if (asset?.source?.name !== name) return undefined

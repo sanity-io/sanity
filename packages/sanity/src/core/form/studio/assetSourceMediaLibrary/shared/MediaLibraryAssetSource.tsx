@@ -15,7 +15,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
-    accept, // TODO: make the plugin respect this filter?
+    accept,
     action = 'select',
     assetSource,
     assetToOpen,
@@ -25,7 +25,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     onChangeAction,
     onClose,
     onSelect,
-    selectedAssets, // TODO: allow for pre-selected assets?
+    selectedAssets: _selectedAssets, // TODO: allow for pre-selected assets?
     schemaType,
     uploader,
   } = props
@@ -48,30 +48,29 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
 
   return (
     <MediaLibraryProvider projectId={projectId} libraryId={libraryIdProp}>
-      <UploadAssetsDialog
-        open={action === 'upload'}
-        onClose={onClose}
-        onSelect={onSelect}
-        schemaType={schemaType}
-        uploader={uploader}
-      />
       <PortalProvider element={portalElement}>
-        <SelectAssetsDialog
-          dialogHeaderTitle={
-            dialogHeaderTitle ||
-            t('asset-sources.media-library.select-dialog.title', {
-              context: selectAssetType,
-              targetTitle: schemaType?.title,
-            })
-          }
-          open={action === 'select'}
-          ref={ref}
-          onClose={onClose}
-          onSelect={onSelect}
-          selection={[]}
-          schemaType={schemaType}
-          selectAssetType={selectAssetType}
-        />
+        {action === 'upload' && (
+          <UploadAssetsDialog
+            accept={accept}
+            assetSource={assetSource}
+            onClose={onClose}
+            onSelect={onSelect}
+            schemaType={schemaType}
+            selectAssetType={selectAssetType}
+            uploader={uploader}
+          />
+        )}
+        {action === 'select' && (
+          <SelectAssetsDialog
+            dialogHeaderTitle={dialogHeaderTitle}
+            ref={ref}
+            onClose={onClose}
+            onSelect={onSelect}
+            selection={[]}
+            schemaType={schemaType}
+            selectAssetType={selectAssetType}
+          />
+        )}
         {action === 'openInSource' && assetToOpen && (
           <OpenInSourceDialog
             asset={assetToOpen}

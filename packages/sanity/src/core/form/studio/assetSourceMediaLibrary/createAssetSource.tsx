@@ -50,6 +50,7 @@ export function createSanityMediaLibraryImageSource(
     icon: props.icon || ImageIcon,
     Uploader: MediaLibraryUploader,
     openInSource,
+    uploadMode: 'component',
   }
 }
 
@@ -70,5 +71,6 @@ export function createSanityMediaLibraryFileSource(
     icon: props.icon || DocumentIcon,
     Uploader: MediaLibraryUploader,
     openInSource,
+    uploadMode: 'component',
   }
 }

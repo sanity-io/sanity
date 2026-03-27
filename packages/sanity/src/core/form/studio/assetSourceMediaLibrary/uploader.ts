@@ -93,7 +93,11 @@ export class MediaLibraryUploader implements AssetSourceUploader {
     if (data.error) target.error = data.error
     if (data.progress !== undefined && data.progress !== target.progress) {
       target.progress = data.progress
-      this.emit({type: 'progress', file: target, progress: target.progress * 100})
+      this.emit({
+        type: 'progress',
+        file: target,
+        progress: target.progress * 100,
+      })
     }
     if (data.status && data.status !== target.status) {
       if (
