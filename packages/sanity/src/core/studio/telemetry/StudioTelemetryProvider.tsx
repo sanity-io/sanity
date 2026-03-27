@@ -21,7 +21,7 @@ import {SANITY_VERSION} from '../../version'
 import {useWorkspace} from '../workspace'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
-import {debugLoggingStore} from './utils/debugLoggingStore.ts'
+import {debugLoggingStore} from './utils/debugLoggingStore'
 
 const sessionId = createSessionId()
 
