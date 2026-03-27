@@ -160,8 +160,23 @@ export function IncomingReferencesList() {
 
   const emptyMessage = t('incoming-references-pane.no-references-found')
 
+  const showEmptyState =
+    !references?.loading &&
+    references?.list.length === 0 &&
+    !crossDatasetRefs?.loading &&
+    crossDatasetRefs?.list.length === 0
+
   return (
     <>
+      {showEmptyState && (
+        <Card border radius={3} padding={1} tone="default">
+          <Box paddingY={3} paddingX={2}>
+            <Text size={1} muted>
+              {t('incoming-references-pane.no-references')}
+            </Text>
+          </Box>
+        </Card>
+      )}
       {references?.loading ? (
         <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
       ) : (
