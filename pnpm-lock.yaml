@@ -1855,9 +1855,6 @@ importers:
       '@sanity/visual-editing-csm':
         specifier: ^3.0.6
         version: 3.0.6(@sanity/client@7.20.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
-      '@sentry/types':
-        specifier: ^8.55.0
-        version: 8.55.0
       '@testing-library/jest-dom':
         specifier: ^6.9.1
         version: 6.9.1
@@ -5381,10 +5378,6 @@ packages:
     engines: {node: '>=14.18'}
     peerDependencies:
       react: ^16.14.0 || 17.x || 18.x || 19.x
-
-  '@sentry/types@8.55.0':
-    resolution: {integrity: sha512-6LRT0+r6NWQ+RtllrUW2yQfodST0cJnkOmdpHA75vONgBUhpKwiJ4H7AmgfoTET8w29pU6AnntaGOe0LJbOmog==}
-    engines: {node: '>=14.18'}
 
   '@shikijs/engine-oniguruma@3.22.0':
     resolution: {integrity: sha512-DyXsOG0vGtNtl7ygvabHd7Mt5EY8gCNqR9Y7Lpbbd/PbJvgWrqaKzH1JW6H6qFkuUa8aCxoiYVv8/YfFljiQxA==}
@@ -15153,10 +15146,6 @@ snapshots:
       '@sentry/core': 8.55.0
       hoist-non-react-statics: 3.3.2
       react: 19.2.4
-
-  '@sentry/types@8.55.0':
-    dependencies:
-      '@sentry/core': 8.55.0
 
   '@shikijs/engine-oniguruma@3.22.0':
     dependencies:
