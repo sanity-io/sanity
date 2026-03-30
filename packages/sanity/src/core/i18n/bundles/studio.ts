@@ -557,7 +557,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title of the feedback dialog */
   'feedback.dialog.title': 'Share feedback with Sanity',
   /** Toast message after failed submission */
-  'feedback.error': 'Failed to submit feedback with error: {{error}}',
+  'feedback.error': 'Failed to submit feedback with error',
   /** Label for "send feedback" in the help resources menu */
   'feedback.menu-item': 'Send feedback',
   /** Label for the message field */

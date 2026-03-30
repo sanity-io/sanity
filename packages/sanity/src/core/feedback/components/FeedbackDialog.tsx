@@ -148,10 +148,11 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
       })
       setSubmitting(false)
       onClose()
-    } catch {
+    } catch (err) {
       toast.push({
-        status: 'error',
-        title: t('feedback.error', {error: error.message}),
+        status: 'warning',
+        title: t('feedback.error'),
+        description: err.message,
         closable: true,
       })
       setSubmitting(false)
