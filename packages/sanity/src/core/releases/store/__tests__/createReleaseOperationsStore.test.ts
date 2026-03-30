@@ -527,24 +527,25 @@ describe('createReleaseOperationsStore', () => {
       )
 
       expect(mockClient.releases.create).toHaveBeenCalled()
-      expect(mockClient.action).toHaveBeenCalledWith([
-        {
-          actionType: 'sanity.action.document.version.create',
-          document: {
-            ...releaseDocuments[0],
-            _id: 'versions.rPublished-copy.doc1',
+      expect(mockClient.action).toHaveBeenCalledWith(
+        [
+          {
+            actionType: 'sanity.action.document.version.create',
+            baseId: 'doc1',
+            publishedId: 'doc1',
+            versionId: 'versions.rPublished-copy.doc1',
           },
-          publishedId: 'doc1',
-        },
-        {
-          actionType: 'sanity.action.document.version.create',
-          document: {
-            ...releaseDocuments[1],
-            _id: 'versions.rPublished-copy.doc2',
+          {
+            actionType: 'sanity.action.document.version.create',
+            baseId: 'doc2',
+            publishedId: 'doc2',
+            versionId: 'versions.rPublished-copy.doc2',
           },
-          publishedId: 'doc2',
+        ],
+        {
+          tag: 'duplicate-release.create-members',
         },
-      ])
+      )
     })
 
     it('should handle errors when creating the release', async () => {
