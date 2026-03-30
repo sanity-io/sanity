@@ -199,6 +199,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
                     onClick={() => setSentiment(option.value)}
                     icon={Icon}
                     text={t(option.labelKey)}
+                    style={{cursor: 'pointer'}}
                   />
                 )
               })}

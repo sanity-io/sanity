@@ -2,27 +2,20 @@ import {FeedbackIcon} from '@sanity/icons'
 import {MenuDivider} from '@sanity/ui'
 
 import {MenuItem} from '../../../../../ui-components'
-import {useFeedbackAvailable} from '../../../../feedback/hooks/useFeedbackAvailable'
 import {useTranslation} from '../../../../i18n'
 
 interface FeedbackMenuItemProps {
-  dsn: string
   onClick: () => void
 }
 
 /**
- * Feedback menu item that checks tunnel availability on mount.
- * Since this renders inside the menu popover, the check only fires
- * when the menu opens.
+ * Feedback menu item rendered inside the help menu.
  *
  * @internal
  */
 export function FeedbackMenuItem(props: FeedbackMenuItemProps) {
-  const {dsn, onClick} = props
+  const {onClick} = props
   const {t} = useTranslation()
-  const available = useFeedbackAvailable(dsn)
-
-  if (!available) return null
 
   return (
     <>

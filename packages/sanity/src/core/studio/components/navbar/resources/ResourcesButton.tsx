@@ -8,6 +8,7 @@ import {MenuButton} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
 import {STUDIO_DSN} from '../../../../error/sentry/sentryErrorReporter'
 import {FeedbackDialog} from '../../../../feedback'
+import {useFeedbackAvailable} from '../../../../feedback/hooks/useFeedbackAvailable'
 import {useTranslation} from '../../../../i18n'
 import {useRenderingContext} from '../../../../store/renderingContext/useRenderingContext'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
@@ -26,6 +27,7 @@ export function ResourcesButton() {
   const {t} = useTranslation()
   const renderingContext = useRenderingContext()
   const isInDashboard = renderingContext?.name === 'coreUi'
+  const feedbackAvailable = useFeedbackAvailable(STUDIO_DSN)
   const {userApplication, isLoading: isLoadingUserApplication} = useLiveUserApplication()
 
   const {value, error, isLoading} = useGetHelpResources()
@@ -87,7 +89,9 @@ export function ResourcesButton() {
         id="menu-button-resources"
         menu={
           <StyledMenu data-testid="menu-button-resources">
-            {!isInDashboard && <FeedbackMenuItem dsn={STUDIO_DSN} onClick={handleOpenFeedback} />}
+            {!isInDashboard && feedbackAvailable && (
+              <FeedbackMenuItem onClick={handleOpenFeedback} />
+            )}
             <ResourcesMenuItems
               currentVersion={currentVersion}
               latestTaggedVersion={latestTaggedVersion}

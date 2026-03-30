@@ -1,4 +1,4 @@
-import {UploadIcon} from '@sanity/icons'
+import {BinaryDocumentIcon, UploadIcon} from '@sanity/icons'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 
 import {Button} from '../../../ui-components'
@@ -38,14 +38,18 @@ export function ImageAttachment(props: ImageAttachmentProps) {
 
   if (!showAttachment && !imageFile) {
     return (
-      <Text
-        size={1}
+      <Flex
         as="span"
+        align="center"
+        gap={1}
         style={{color: 'var(--card-link-color)', cursor: 'pointer'}}
         onClick={onExpand}
       >
-        {t('feedback.attachment.label')}
-      </Text>
+        <UploadIcon style={{fontSize: '1em'}} />
+        <Text size={1} as="span" style={{color: 'inherit'}}>
+          {t('feedback.attachment.label')}
+        </Text>
+      </Flex>
     )
   }
 
@@ -89,7 +93,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
         <Flex align="center" justify="space-between">
           <Flex align="center" gap={2}>
             <Text size={1} muted>
-              <UploadIcon />
+              <BinaryDocumentIcon />
             </Text>
             <Text size={1} muted>
               {t('feedback.attachment.drop-zone')}
