@@ -41,11 +41,13 @@ function getFeedbackClient(dsn: string): Scope {
 }
 
 /**
- * Send user feedback to Sentry
+ * Send user feedback to Sentry.
+ * Waits for the transport to flush so network-level failures
+ * (ad blockers, timeouts) propagate to the caller.
  *
  * @internal
  */
-export function sendFeedbackToSentry(payload: FeedbackPayload): string {
+export async function sendFeedbackToSentry(payload: FeedbackPayload): Promise<string> {
   const scope = getFeedbackClient(payload.dsn)
 
   const {message, name, email, source, feedbackVersion, telemetryConsent, tags, attachments} =
@@ -80,5 +82,12 @@ export function sendFeedbackToSentry(payload: FeedbackPayload): string {
 
   const hint = attachments?.length ? {attachments} : {}
 
-  return scope.captureEvent(feedbackEvent, hint)
+  const eventId = scope.captureEvent(feedbackEvent, hint)
+
+  const client = scope.getClient()
+  if (client) {
+    await client.flush(10_000)
+  }
+
+  return eventId
 }

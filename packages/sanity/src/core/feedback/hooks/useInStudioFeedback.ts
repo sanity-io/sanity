@@ -31,7 +31,7 @@ export interface SendFeedbackOptions {
 /** @internal */
 export interface UseInStudioFeedbackReturn {
   /** Send feedback. Base and dynamic tags are included automatically. */
-  sendFeedback: (opts: SendFeedbackOptions) => string
+  sendFeedback: (opts: SendFeedbackOptions) => Promise<string>
   telemetryConsent: ConsentStatus
 }
 
@@ -50,7 +50,7 @@ export function useInStudioFeedback(): UseInStudioFeedbackReturn {
   const telemetryConsent = useTelemetryConsent()
 
   const sendFeedback = useCallback(
-    (opts: SendFeedbackOptions): string => {
+    (opts: SendFeedbackOptions): Promise<string> => {
       const {dsn, feedbackVersion, source, message, extraTags, attachments} = opts
 
       return sendFeedbackToSentry({

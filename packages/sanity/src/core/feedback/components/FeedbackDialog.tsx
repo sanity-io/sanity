@@ -128,7 +128,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
         })
       }
 
-      sendFeedback({
+      await sendFeedback({
         dsn,
         feedbackVersion,
         source,
@@ -151,7 +151,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     } catch {
       toast.push({
         status: 'error',
-        title: t('feedback.error'),
+        title: t('feedback.error', {error: error.message}),
         closable: true,
       })
       setSubmitting(false)
