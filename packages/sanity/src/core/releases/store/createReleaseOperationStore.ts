@@ -235,7 +235,9 @@ export function createReleaseOperationsStore(options: {
           publishedId: getPublishedId(releaseDocument._id),
         }),
       )
-      await client.action(duplicateVersionDocumentActions)
+      await client.action(duplicateVersionDocumentActions, {
+        tag: 'duplicate-release.create-members',
+      })
     }
   }
 
