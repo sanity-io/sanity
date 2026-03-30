@@ -3,6 +3,7 @@ import {
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
+import {type CurrentUser} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import memoize from 'lodash-es/memoize.js'
 import {defer} from 'rxjs'
@@ -164,6 +165,40 @@ const getCurrentUser = async (
 }
 
 /**
+ * Probe whether a given auth method works by calling /users/me.
+ * Returns the user if authenticated, null otherwise. Unlike `getCurrentUser`,
+ * this function has no side effects (no token clearing, no CORS checks) -
+ * it's only used during the post-login probe phase.
+ */
+async function probeCurrentUser(client: SanityClient): Promise<CurrentUser | null> {
+  try {
+    const user = await client.request({uri: '/users/me', tag: 'users.probe'})
+    // /users/me returns an empty object (not a 401) when unauthenticated,
+    // so we check for a string `id` field to confirm a real user
+    return typeof user?.id === 'string' ? user : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Exchange a session ID for both a cookie and a token via /auth/exchange.
+ * The endpoint sets a Set-Cookie header (stored under the Studio's partition key
+ * because this is a fetch with credentials from the Studio's origin) and returns
+ * the token in the response body.
+ */
+async function exchangeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {
+  const {token} = await client.request<{success: boolean; token: string}>({
+    method: 'GET',
+    uri: '/auth/exchange',
+    query: {sid: sessionId},
+    tag: 'auth.exchange',
+  })
+
+  return token
+}
+
+/**
  * @internal
  */
 export function _createAuthStore({
@@ -181,12 +216,6 @@ export function _createAuthStore({
 
   const clientFactory = clientFactoryOption ?? createSanityClient
 
-  // // TODO: there is currently a bug where the AuthBoundary flashes the
-  // // `NotAuthenticatedComponent` on the first load after a login with
-  // // cookieless mode. A potential solution to fix this bug is to delay
-  // // emitting `state$` until the session ID has been converted to a token
-  // const firstMessage = messages.pipe(first())
-
   const token$ = messages.pipe(
     startWith(isCookielessCompatibleLoginMethod(loginMethod) ? getToken(projectId) : null),
   )
@@ -202,8 +231,6 @@ export function _createAuthStore({
   }
 
   const state$ = token$.pipe(
-    // // see above
-    // debounce(() => firstMessage),
     map((token) =>
       clientFactory({
         projectId,
@@ -244,6 +271,8 @@ export function _createAuthStore({
     // workaround for https://github.com/vercel/next.js/issues/91819
     clearSessionId()
 
+    // No session ID means this is a normal cold load, not a post-login redirect.
+    // Broadcast the existing token (if any) so state$ can check /users/me.
     if (!sessionId) {
       broadcast(loginMethod === 'cookie' ? null : getToken(projectId))
       return {
@@ -254,10 +283,15 @@ export function _createAuthStore({
       }
     }
 
-    const requestClient = clientFactory({
+    // --- Post-login redirect: we have a session ID from the auth provider ---
+
+    // Step 1: Exchange the session ID for a token (and a cookie as a side effect).
+    // The fetch uses credentials: include so the browser stores the Set-Cookie
+    // under the correct partition key (the Studio's origin).
+    const exchangeClient = clientFactory({
       projectId,
       dataset,
-      useCdn: true,
+      useCdn: false,
       withCredentials: true,
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
@@ -265,63 +299,132 @@ export function _createAuthStore({
       ...hostOptions,
     })
 
-    let currentUser
-    if (loginMethod === 'dual' || loginMethod === 'cookie') {
-      // try to get the current user by using the cookie credentials
-      currentUser = await getCurrentUser(requestClient, broadcast)
-    }
-
-    // If we have a user, or token authentication is explicitly disallowed (`cookie` mode),
-    // then we don't need/want to fetch a token
-    if (currentUser || loginMethod === 'cookie') {
-      // if that worked, then we don't need to fetch a token
-      broadcast(null)
-      return {
-        loginMethod,
-        flow: 'cookie-auth',
-        success: !!currentUser,
-        durationMs: Math.round(performance.now() - startTime),
-        failureReason: currentUser ? undefined : 'cookie auth failed, login method is cookie-only',
-      }
-    }
-
-    // If we allow using token authentication, we should try to trade the session ID
-    // for a token and store it locally for subsequent use
-    const tokenExchangeStart = performance.now()
+    let token: string
+    const exchangeStart = performance.now()
     try {
-      const token = await tradeSessionForToken(requestClient, sessionId)
-      broadcast(token ?? null)
-      return {
-        loginMethod,
-        flow: 'token-exchange',
-        success: !!token,
-        durationMs: Math.round(performance.now() - startTime),
-        tokenExchangeDurationMs: Math.round(performance.now() - tokenExchangeStart),
-        failureReason: token ? undefined : 'token exchange returned empty token',
-      }
+      token = await exchangeSessionForToken(exchangeClient, sessionId)
     } catch (err) {
       broadcast(null)
       return {
         loginMethod,
-        flow: 'token-exchange',
+        flow: 'exchange',
         success: false,
         durationMs: Math.round(performance.now() - startTime),
-        tokenExchangeDurationMs: Math.round(performance.now() - tokenExchangeStart),
-        failureReason: err instanceof Error ? err.message : 'token exchange failed',
+        exchangeDurationMs: Math.round(performance.now() - exchangeStart),
+        failureReason: err instanceof Error ? err.message : 'exchange failed',
+        error: {
+          type: 'auth-failed',
+          message: 'Failed to exchange session for credentials. Please try logging in again.',
+        },
       }
     }
-  }
+    const exchangeDurationMs = Math.round(performance.now() - exchangeStart)
 
-  async function tradeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {
-    const {token} = await client.request<{token: string}>({
-      method: 'GET',
-      uri: `/auth/fetch`,
-      query: {sid: sessionId},
-      tag: 'auth.fetch-token',
-    })
+    // Step 2: Probe which auth methods work by calling /users/me.
+    // We create separate clients for each probe to isolate the auth mechanisms.
+    // Only create the clients we actually need for the configured login method.
+    const probeStart = performance.now()
 
-    saveToken({token, projectId})
-    return token
+    const probeClientOptions = {
+      projectId,
+      dataset,
+      useCdn: false,
+      apiVersion: '2021-06-07',
+      requestTagPrefix: 'sanity.studio',
+      headers: DEFAULT_STUDIO_CLIENT_HEADERS,
+      ...hostOptions,
+    } as const
+
+    let cookieUser: CurrentUser | null = null
+    let tokenUser: CurrentUser | null = null
+
+    if (loginMethod === 'dual') {
+      // Dual mode: probe both methods in parallel
+      const [cookieResult, tokenResult] = await Promise.allSettled([
+        probeCurrentUser(clientFactory({...probeClientOptions, withCredentials: true})),
+        probeCurrentUser(clientFactory({...probeClientOptions, token})),
+      ])
+      cookieUser = cookieResult.status === 'fulfilled' ? cookieResult.value : null
+      tokenUser = tokenResult.status === 'fulfilled' ? tokenResult.value : null
+    } else if (loginMethod === 'cookie') {
+      // Cookie-only mode: only probe cookies
+      cookieUser = await probeCurrentUser(
+        clientFactory({...probeClientOptions, withCredentials: true}),
+      )
+    } else {
+      // Token-only mode: only probe token
+      tokenUser = await probeCurrentUser(clientFactory({...probeClientOptions, token}))
+    }
+
+    const probeDurationMs = Math.round(performance.now() - probeStart)
+    const durationMs = Math.round(performance.now() - startTime)
+
+    // Step 3: Determine the outcome based on which probes succeeded.
+
+    // Prefer cookie auth when available (avoids storing tokens in localStorage)
+    if (cookieUser) {
+      broadcast(null)
+      return {
+        loginMethod,
+        flow: 'exchange',
+        success: true,
+        durationMs,
+        exchangeDurationMs,
+        probeDurationMs,
+        authMethod: 'cookie',
+      }
+    }
+
+    if (tokenUser) {
+      saveToken({token, projectId})
+      broadcast(token)
+      return {
+        loginMethod,
+        flow: 'exchange',
+        success: true,
+        durationMs,
+        exchangeDurationMs,
+        probeDurationMs,
+        authMethod: 'token',
+      }
+    }
+
+    // Neither probe succeeded
+    broadcast(null)
+
+    if (loginMethod === 'cookie') {
+      return {
+        loginMethod,
+        flow: 'exchange',
+        success: false,
+        durationMs,
+        exchangeDurationMs,
+        probeDurationMs,
+        failureReason: 'cookie probe failed in cookie-only mode',
+        error: {
+          type: 'cookie-blocked',
+          message:
+            'Authentication could not be completed because this browser appears to block ' +
+            'third-party cookies. This studio is configured to use cookie-based authentication ' +
+            'only. Try using a different browser, disabling strict cookie blocking, or ask the ' +
+            'studio administrator to enable token-based authentication.',
+        },
+      }
+    }
+
+    return {
+      loginMethod,
+      flow: 'exchange',
+      success: false,
+      durationMs,
+      exchangeDurationMs,
+      probeDurationMs,
+      failureReason: 'all auth probes failed',
+      error: {
+        type: 'auth-failed',
+        message: 'Authentication failed. Please try logging in again.',
+      },
+    }
   }
 
   async function logout() {

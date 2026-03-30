@@ -77,16 +77,18 @@ function createHrefForProvider({
   params.set('origin', `${window.location.origin}${redirectPath}`)
   params.set('projectId', projectId)
 
-  // Setting `type=token` will return the sid as part of the _query_, which may end up in
-  // server access logs and similar. Instead, use `withSid=true` to return the sid as part
-  // of the _hash_ instead, which is only accessible to the client. Other auth types will
-  // use the `type` parameter - `dual` will automatically use the hash, so do not need the
-  // additional parameter.
   if (loginMethod === 'token') {
+    // Token-only mode: don't set a type (avoids cookie being set server-side).
+    // withSid=true returns the sid in the URL hash instead of the query string,
+    // keeping it out of server access logs.
     params.set('withSid', 'true')
   } else {
-    params.set('type', loginMethod)
+    // Both 'dual' and 'cookie' modes use type=dual so the backend returns both
+    // a cookie (via /transfer redirect) and a sid in the hash. The Studio then
+    // probes which auth method actually works after calling /auth/exchange.
+    params.set('type', 'dual')
   }
+
   return `${url}?${params}`
 }
 
