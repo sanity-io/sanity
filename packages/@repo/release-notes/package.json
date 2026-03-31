@@ -48,7 +48,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@portabletext/markdown": "^1.1.4",
+    "@portabletext/markdown": "^1.2.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
