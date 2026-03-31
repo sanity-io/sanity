@@ -128,4 +128,4 @@ jobs:
 
       - name: Report coverage
         if: steps.merge_reports.outcome == 'success'
-        uses: davelosert/vitest-coverage-report-action@bd52af59d9cd548ea7cd405044d2458042e6d888 # v2
+        uses: davelosert/vitest-coverage-report-action@c0c9b09c93750ee1d8335d14e94ce3d6fc61df50 # v2
