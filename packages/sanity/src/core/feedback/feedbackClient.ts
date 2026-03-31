@@ -53,16 +53,21 @@ export async function sendFeedbackToSentry(payload: FeedbackPayload): Promise<st
   const {message, name, email, source, feedbackVersion, telemetryConsent, tags, attachments} =
     payload
 
-  const hasConsent = telemetryConsent === 'granted'
+  const hasTelemetryConsent = telemetryConsent === 'granted'
+  const hasContactConsent = String(tags.contactConsent) === 'true'
+  // Keep in mind that users should be made aware that their name and email are shared with the Sanity team
+  // In the UI, even if they have given us consent
+  const shareName = hasTelemetryConsent || hasContactConsent
+  const shareEmail = hasTelemetryConsent || hasContactConsent
 
   const {userId: _userId, ...safeTags} = tags
-  const eventTags = hasConsent ? tags : safeTags
+  const eventTags = hasTelemetryConsent ? tags : safeTags
 
   const feedbackEvent = {
     contexts: {
       feedback: {
-        contactEmail: hasConsent ? email : undefined,
-        name: hasConsent ? name : undefined,
+        contactEmail: shareEmail ? email : undefined,
+        name: shareName ? name : undefined,
         message,
         url: tags.url,
         source,
@@ -73,7 +78,8 @@ export async function sendFeedbackToSentry(payload: FeedbackPayload): Promise<st
     tags: {
       ...eventTags,
       feedbackVersion,
-      ...(hasConsent ? {contactEmail: email ?? '', contactName: name ?? ''} : {}),
+      ...(shareName ? {contactName: name ?? ''} : {}),
+      ...(shareEmail ? {contactEmail: email ?? ''} : {}),
       telemetryConsent,
       type: 'feedback',
       source,

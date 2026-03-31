@@ -125,6 +125,61 @@ describe('sendFeedbackToSentry', () => {
     })
   })
 
+  describe('when telemetry is denied but contact consent is given', () => {
+    it('includes name and email in contexts', async () => {
+      await sendFeedbackToSentry(
+        makePayload({
+          telemetryConsent: 'denied',
+          tags: {
+            userId: 'user-123',
+            studioVersion: '3.0.0',
+            url: 'http://localhost:3333',
+            contactConsent: 'true',
+          },
+        }),
+      )
+
+      const [event] = mockCaptureEvent.mock.calls[0]
+      expect(event.contexts.feedback.contactEmail).toBe('test@example.com')
+      expect(event.contexts.feedback.name).toBe('Test User')
+    })
+
+    it('includes contactEmail and contactName in tags', async () => {
+      await sendFeedbackToSentry(
+        makePayload({
+          telemetryConsent: 'denied',
+          tags: {
+            userId: 'user-123',
+            studioVersion: '3.0.0',
+            url: 'http://localhost:3333',
+            contactConsent: 'true',
+          },
+        }),
+      )
+
+      const [event] = mockCaptureEvent.mock.calls[0]
+      expect(event.tags.contactEmail).toBe('test@example.com')
+      expect(event.tags.contactName).toBe('Test User')
+    })
+
+    it('still strips userId from tags', async () => {
+      await sendFeedbackToSentry(
+        makePayload({
+          telemetryConsent: 'denied',
+          tags: {
+            userId: 'user-123',
+            studioVersion: '3.0.0',
+            url: 'http://localhost:3333',
+            contactConsent: 'true',
+          },
+        }),
+      )
+
+      const [event] = mockCaptureEvent.mock.calls[0]
+      expect(event.tags).not.toHaveProperty('userId')
+    })
+  })
+
   it('includes feedbackVersion, telemetryConsent, type, and source in tags', async () => {
     await sendFeedbackToSentry(makePayload())
 

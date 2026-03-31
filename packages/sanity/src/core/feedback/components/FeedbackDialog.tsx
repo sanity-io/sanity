@@ -1,6 +1,6 @@
 import {FaceHappyIcon, FaceIndifferentIcon, FaceSadIcon} from '@sanity/icons'
-import {Box, Card, Flex, Stack, Switch, Text, TextArea, useToast} from '@sanity/ui'
-import {type ChangeEvent, type ClipboardEvent, useCallback, useId, useMemo, useState} from 'react'
+import {Card, Flex, Stack, Switch, Text, TextArea, useToast} from '@sanity/ui'
+import {type ChangeEvent, type ClipboardEvent, useCallback, useId, useState} from 'react'
 
 import {Button, Dialog} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
@@ -52,7 +52,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
   const {t} = useTranslation()
   const toast = useToast()
 
-  const {sendFeedback, telemetryConsent} = useInStudioFeedback()
+  const {sendFeedback} = useInStudioFeedback()
 
   const [sentiment, setSentiment] = useState<Sentiment | null>(null)
   const [message, setMessage] = useState('')
@@ -105,11 +105,6 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     },
     [t],
   )
-
-  // Contact consent — only shown if telemetry is granted or if the user has set up an attachment or message
-  const showContactConsent = useMemo(() => {
-    return telemetryConsent === 'granted' && (message.trim() || imageFile)
-  }, [telemetryConsent, message, imageFile])
 
   const handleSubmit = useCallback(async () => {
     const finalMessage: string = message
@@ -237,13 +232,17 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
             />
           </Stack>
 
-          {showContactConsent && (
-            <Stack space={2}>
-              <Box flex={1} paddingRight={3}>
+          {(message.trim() || imageFile) && (
+            <Stack space={4}>
+              <Stack space={3} paddingRight={3}>
                 <Text size={1} weight="medium">
                   {t('feedback.consent.label')}
                 </Text>
-              </Box>
+
+                <Text size={1} muted>
+                  {t('feedback.consent.disclaimer')}
+                </Text>
+              </Stack>
               <Flex align="center" gap={2}>
                 <Switch
                   checked={contactConsent}
