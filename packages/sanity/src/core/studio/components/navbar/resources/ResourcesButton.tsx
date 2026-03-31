@@ -27,7 +27,7 @@ export function ResourcesButton() {
   const {t} = useTranslation()
   const renderingContext = useRenderingContext()
   const isInDashboard = renderingContext?.name === 'coreUi'
-  const feedbackAvailable = useFeedbackAvailable(STUDIO_DSN)
+  const feedbackAvailable = useFeedbackAvailable({dsn: STUDIO_DSN, skip: isInDashboard})
   const {userApplication, isLoading: isLoadingUserApplication} = useLiveUserApplication()
 
   const {value, error, isLoading} = useGetHelpResources()

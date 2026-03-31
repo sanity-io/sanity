@@ -2,6 +2,12 @@ import {useEffect, useState} from 'react'
 
 import {FEEDBACK_TUNNEL_URL} from '../feedbackClient'
 
+interface UseFeedbackAvailableOptions {
+  dsn: string
+  /** When `true`, skips the tunnel check and returns `false` immediately. Defaults to `false`. */
+  skip?: boolean
+}
+
 /**
  * Checks whether the Sentry feedback tunnel is operational by sending
  * a minimal valid envelope (header only, no items — Sentry accepts it
@@ -9,11 +15,16 @@ import {FEEDBACK_TUNNEL_URL} from '../feedbackClient'
  *
  * @internal
  */
-export function useFeedbackAvailable(dsn: string): boolean | null {
+export function useFeedbackAvailable(options: UseFeedbackAvailableOptions): boolean | null {
+  const {dsn, skip = false} = options
   const [available, setAvailable] = useState<boolean | null>(null)
 
   useEffect(() => {
-    // Minimal valid envelope (header only, no items)
+    if (skip) {
+      setAvailable(false)
+      return
+    }
+
     // eslint-disable-next-line camelcase
     const body = `${JSON.stringify({dsn, sent_at: new Date().toISOString()})}\n`
 
@@ -26,7 +37,7 @@ export function useFeedbackAvailable(dsn: string): boolean | null {
 
       .then((response) => setAvailable(response.ok))
       .catch(() => setAvailable(false))
-  }, [dsn])
+  }, [dsn, skip])
 
   return available
 }
