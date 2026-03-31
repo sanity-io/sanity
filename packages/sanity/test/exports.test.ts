@@ -8,6 +8,8 @@ const EXCLUDE = [
   // This is causing trouble if running without first "pnpm build"
   // also, it's internal, so not much point in tracking
   './_internal',
+  // Styles are exported as a raw asset file rather than a JS module entrypoint
+  './styles.css',
 ]
 
 it('exports snapshot', async () => {

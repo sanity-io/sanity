@@ -22,14 +22,6 @@ export default defineConfig({
   // consumer's bundler handles external tree-shaking anyway.
   rollup: {
     treeshake: {moduleSideEffects: true},
-    output: {
-      intro: (chunkInfo) => {
-        if (chunkInfo.isEntry && chunkInfo.name === 'index') {
-          return `import './bundle.css'`
-        }
-        return ''
-      },
-    },
     vanillaExtract: true,
   },
 })

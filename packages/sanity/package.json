@@ -28,10 +28,14 @@
     "lib",
     "dist",
     "static",
+    "styles.css",
     "mock-browser-env-stub-loader.mjs"
   ],
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./styles.css",
+    "./lib/bundle.css"
+  ],
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "typesVersions": {
@@ -121,6 +125,7 @@
       "monorepo": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
+    "./styles.css": "./styles.css",
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -136,6 +141,7 @@
       "./structure": "./lib/structure.js",
       "./media-library": "./lib/media-library.js",
       "./migrate": "./lib/migrate.js",
+      "./styles.css": "./styles.css",
       "./package.json": "./package.json"
     }
   },
