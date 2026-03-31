@@ -3,8 +3,8 @@ import {useRouterState} from 'sanity/router'
 
 import {useClient} from '../../hooks'
 import {useProjectSubscriptions} from '../../hooks/useProjectSubscriptions'
-import {useOrganizationName} from '../../store/_legacy/project/useOrganizationName'
 import {useProject} from '../../store/_legacy/project/useProject'
+import {useProjectOrganizationData} from '../../store/_legacy/project/useProjectOrganizationData'
 import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
 import {useCurrentUser} from '../../store/user/hooks'
 import {useWorkspace} from '../../studio/workspace'
@@ -55,7 +55,8 @@ export function useStudioFeedbackTags(): {
   const projectId = client.config().projectId ?? ''
 
   const {value: orgId} = useProjectOrganizationId()
-  const orgName = useOrganizationName(orgId)
+  const {value: orgData} = useProjectOrganizationData()
+  const orgName = orgData?.name ?? ''
   const {value: projectData} = useProject()
   const {projectSubscriptions} = useProjectSubscriptions()
 

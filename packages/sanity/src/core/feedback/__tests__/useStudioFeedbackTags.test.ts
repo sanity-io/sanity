@@ -17,8 +17,10 @@ vi.mock('../../hooks/useProjectSubscriptions', () => ({
     error: null,
   }),
 }))
-vi.mock('../../store/_legacy/project/useOrganizationName', () => ({
-  useOrganizationName: vi.fn().mockReturnValue('Sanity Inc'),
+vi.mock('../../store/_legacy/project/useProjectOrganizationData', () => ({
+  useProjectOrganizationData: vi
+    .fn()
+    .mockReturnValue({value: {name: 'Sanity Inc'}, loading: false}),
 }))
 vi.mock('../../store/_legacy/project/useProjectOrganizationId', () => ({
   useProjectOrganizationId: vi.fn().mockReturnValue({value: 'org-123', loading: false}),
