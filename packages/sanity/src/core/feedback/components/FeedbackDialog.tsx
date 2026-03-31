@@ -3,7 +3,7 @@ import {Card, Flex, Stack, Switch, Text, TextArea, useToast} from '@sanity/ui'
 import {type ChangeEvent, type ClipboardEvent, useCallback, useId, useState} from 'react'
 
 import {Button, Dialog} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
+import {Translate, useTranslation} from '../../i18n'
 import {useInStudioFeedback} from '../hooks/useInStudioFeedback'
 import {type Sentiment} from '../types'
 import {ImageAttachment} from './ImageAttachment'
@@ -241,6 +241,23 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
 
                 <Text size={1} muted>
                   {t('feedback.consent.disclaimer')}
+                </Text>
+                <Text size={1} muted>
+                  <Translate
+                    t={t}
+                    i18nKey="feedback.consent.disclaimer.privacy"
+                    components={{
+                      PrivacyLink: ({children}) => (
+                        <a
+                          href="https://www.sanity.io/legal/privacy"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {children}
+                        </a>
+                      ),
+                    }}
+                  />
                 </Text>
               </Stack>
               <Flex align="center" gap={2}>

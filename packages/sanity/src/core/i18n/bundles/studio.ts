@@ -549,7 +549,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Cancel button text */
   'feedback.cancel': 'Cancel',
   /** Consent disclaimer shown when the user agrees to follow up */
-  'feedback.consent.disclaimer': `We'd love to learn more. Selecting yes shares your name and email with the Sanity team.`,
+  'feedback.consent.disclaimer':
+    'By selecting yes, you agree to share your name and email with the Sanity team.',
+  /** Consent disclaimer privacy policy link */
+  'feedback.consent.disclaimer.privacy': 'See our <PrivacyLink>Privacy Policy</PrivacyLink>.',
   /** Label for the contact consent toggle */
   'feedback.consent.label': 'Can we follow up with you about this feedback?',
   /** Consent toggle: no */

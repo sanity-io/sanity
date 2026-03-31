@@ -162,7 +162,7 @@ describe('sendFeedbackToSentry', () => {
       expect(event.tags.contactName).toBe('Test User')
     })
 
-    it('still strips userId from tags', async () => {
+    it('preserves userId in tags', async () => {
       await sendFeedbackToSentry(
         makePayload({
           telemetryConsent: 'denied',
@@ -176,7 +176,7 @@ describe('sendFeedbackToSentry', () => {
       )
 
       const [event] = mockCaptureEvent.mock.calls[0]
-      expect(event.tags).not.toHaveProperty('userId')
+      expect(event.tags.userId).toBe('user-123')
     })
   })
 
