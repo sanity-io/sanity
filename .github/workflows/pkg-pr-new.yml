@@ -42,7 +42,7 @@ jobs:
           pnpx pkg-pr-new publish --pnpm --no-template --json output.json --comment=off --compact ${{ steps.pre-flight.outputs.packages }}
 
       - name: Post or update comment
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
