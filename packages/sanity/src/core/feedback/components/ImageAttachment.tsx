@@ -38,17 +38,15 @@ export function ImageAttachment(props: ImageAttachmentProps) {
 
   if (!showAttachment && !imageFile) {
     return (
-      <Flex
-        as="span"
-        align="center"
-        gap={1}
-        style={{color: 'var(--card-link-color)', cursor: 'pointer'}}
-        onClick={onExpand}
-      >
-        <UploadIcon style={{fontSize: '1em'}} />
-        <Text size={1} as="span" style={{color: 'inherit'}}>
-          {t('feedback.attachment.label')}
-        </Text>
+      <Flex>
+        <Button
+          mode="bleed"
+          tone="primary"
+          icon={UploadIcon}
+          text={t('feedback.attachment.label')}
+          onClick={onExpand}
+          style={{cursor: 'pointer'}}
+        />
       </Flex>
     )
   }
