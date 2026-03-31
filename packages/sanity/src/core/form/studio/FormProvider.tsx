@@ -14,6 +14,7 @@ import {
   useItemComponent,
   usePreviewComponent,
 } from '../form-components-hooks'
+import {type FormWidth} from '../FormBuilderContext'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {type PatchChannel, type PatchEvent} from '../patch'
 import {type FormFieldGroup, type StateTree} from '../store'
@@ -57,6 +58,7 @@ export interface FormProviderProps {
   readOnly?: boolean
   schemaType: ObjectSchemaType
   validation: ValidationMarker[]
+  formWidth?: FormWidth
 }
 
 /**
@@ -89,6 +91,7 @@ export function FormProvider(props: FormProviderProps) {
     readOnly,
     schemaType,
     validation,
+    formWidth,
   } = props
 
   const {file, image} = useSource().form
@@ -169,6 +172,7 @@ export function FormProvider(props: FormProviderProps) {
       renderItem={renderItem}
       renderPreview={renderPreview}
       schemaType={schemaType}
+      formWidth={formWidth}
       validation={validation}
     >
       {children}

@@ -160,3 +160,39 @@ test.describe('maximized document - with enhanced object dialog', () => {
     ).not.toBeVisible()
   })
 })
+
+test.describe('maximized document - form width', () => {
+  test('form width increases in focus mode', async ({page, createDraftDocument}) => {
+    await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
+
+    await expect(page.getByTestId('focus-pane-button-focus')).toBeVisible()
+    await expect(page.getByTestId('field-text')).toBeVisible()
+    await expect(page.locator('.pt-editable .pt-block').first()).toBeVisible()
+
+    const formContainer = page.getByTestId('form-container')
+    const normalMaxWidthFC = await formContainer.evaluate((el) =>
+      Number.parseFloat(window.getComputedStyle(el).maxWidth),
+    )
+
+    const firstBlock = page.locator('.pt-editable .pt-block').first()
+    const normalMaxWidthPTE = await firstBlock.evaluate((el) =>
+      Number.parseFloat(window.getComputedStyle(el).maxWidth),
+    )
+
+    await page.getByTestId('focus-pane-button-focus').click()
+
+    await expect(page.getByTestId('focus-pane-button-collapse')).toBeVisible()
+
+    const focusedMaxWidthFC = await formContainer.evaluate((el) =>
+      Number.parseFloat(window.getComputedStyle(el).maxWidth),
+    )
+    const focusedMaxWidthPTE = await firstBlock.evaluate((el) =>
+      Number.parseFloat(window.getComputedStyle(el).maxWidth),
+    )
+
+    expect(normalMaxWidthPTE).toBe(640)
+    expect(normalMaxWidthFC).toBe(640)
+    expect(focusedMaxWidthPTE).toBe(960)
+    expect(focusedMaxWidthFC).toBe(960)
+  })
+})

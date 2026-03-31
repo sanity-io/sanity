@@ -22,6 +22,7 @@ import {
   useItemComponent,
   usePreviewComponent,
 } from '../form-components-hooks'
+import {type FormWidth} from '../FormBuilderContext'
 import {FullscreenPTEProvider} from '../inputs/PortableText/contexts/fullscreen'
 import {type FormPatch, type PatchChannel, PatchEvent} from '../patch'
 import {type StateTree} from '../store'
@@ -86,6 +87,7 @@ export interface FormBuilderProps extends Omit<
   validation: ValidationMarker[]
   value: FormDocumentValue | undefined
   compareValue?: SanityDocument
+  formWidth?: FormWidth
 }
 
 /**
@@ -121,6 +123,7 @@ export function FormBuilder(props: FormBuilderProps) {
     validation,
     value,
     compareValue,
+    formWidth,
   } = props
 
   const handleCollapseField = useCallback(
@@ -320,6 +323,7 @@ export function FormBuilder(props: FormBuilderProps) {
       validation={validation}
       readOnly={readOnly}
       schemaType={schemaType}
+      formWidth={formWidth}
     >
       <GetFormValueProvider value={value}>
         <FormValueProvider value={value}>

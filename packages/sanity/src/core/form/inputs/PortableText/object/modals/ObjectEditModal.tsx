@@ -3,6 +3,7 @@ import {type ReactNode, useCallback, useMemo} from 'react'
 
 import {EnhancedObjectDialog, useEnhancedObjectDialog} from '../../../..'
 import {useTranslation} from '../../../../../i18n'
+import {useFormBuilder} from '../../../../useFormBuilder'
 import {_getModalOption} from '../helpers'
 import {DefaultEditDialog} from './DialogModal'
 import {PopoverEditDialog} from './PopoverModal'
@@ -32,7 +33,7 @@ export function ObjectEditModal(props: {
   const modalType = schemaModalOption?.type || defaultType
 
   const {enabled: nestedObjectNavigationEnabled} = useEnhancedObjectDialog()
-
+  const {formWidth} = useFormBuilder()
   const schemaTypeTitle = schemaType.i18nTitleKey
     ? t(schemaType.i18nTitleKey)
     : schemaType.title || schemaType.name
@@ -69,7 +70,7 @@ export function ObjectEditModal(props: {
       type="dialog"
       onClose={onClose}
       header={modalTitle}
-      width={1}
+      width={formWidth}
       autofocus={autoFocus}
     >
       {props.children}
