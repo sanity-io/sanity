@@ -17,10 +17,10 @@ import {
   init,
   isInitialized as sentryIsInitialized,
   linkedErrorsIntegration,
+  makeFetchTransport,
   Scope,
   withScope,
 } from '@sentry/react'
-import {type Transport} from '@sentry/types'
 
 import {isDev} from '../../environment'
 import {hasSanityPackageInImportMap} from '../../environment/importMap'
@@ -28,7 +28,6 @@ import {globalScope} from '../../util/globalScope'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {SANITY_VERSION} from '../../version'
 import {type ErrorInfo, type ErrorReporter} from '../errorReporter'
-import {type BufferedTransport, makeBufferedTransport} from './makeBufferedTransport'
 
 const SANITY_DSN = 'https://8914c8dde7e1ebce191f15af8bf6b7b9@sentry.sanity.io/4507342122123264'
 
@@ -45,7 +44,6 @@ const clientOptions: BrowserOptions = {
   environment: isDev ? 'development' : 'production',
   debug: DEBUG_ERROR_REPORTING,
   enabled: IS_BROWSER && (!isDev || DEBUG_ERROR_REPORTING),
-  transport: makeBufferedTransport,
 }
 
 const integrations = [
@@ -112,7 +110,7 @@ export function getSentryErrorReporter(): ErrorReporter {
         stackParser: defaultStackParser,
         integrations,
         beforeSend,
-        transport: makeBufferedTransport,
+        transport: makeFetchTransport,
       })
 
       scope = new Scope()
@@ -188,28 +186,9 @@ export function getSentryErrorReporter(): ErrorReporter {
     return eventId ? {eventId} : null
   }
 
-  function isBufferedTransport(transport: Transport | undefined): transport is BufferedTransport {
-    return !!transport && 'setConsent' in transport && typeof transport.setConsent === 'function'
-  }
-
-  function enable() {
-    const transport = client?.getTransport()
-    if (isBufferedTransport(transport)) {
-      void transport.setConsent(true)
-    }
-  }
-  function disable() {
-    const transport = client?.getTransport()
-    if (isBufferedTransport(transport)) {
-      void transport.setConsent(false)
-    }
-  }
-
   return {
     initialize,
     reportError,
-    enable,
-    disable,
   }
 }
 
@@ -304,6 +283,26 @@ function setAsUnhandled(event: ErrorEvent) {
  */
 function beforeSend(event: ErrorEvent): ErrorEvent {
   setAsUnhandled(event)
+  return scrubPii(event)
+}
+
+/**
+ * Strips personally identifiable information from a Sentry event so that
+ * error reports never contain data that could identify a user.
+ *
+ * @param event - The event to scrub
+ * @returns The scrubbed event
+ * @internal
+ */
+function scrubPii<T extends ErrorEvent>(event: T): T {
+  delete event.user
+  // kept out due to concerns around headers being sent to Sentry
+  delete event.request
+
+  // Prevent Sentry from inferring IP from the HTTP request
+  // oxlint-disable-next-line camelcase -- Sentry SDK field name
+  event.user = {ip_address: '0.0.0.0'} // eslint-disable-line camelcase
+
   return event
 }
 
