@@ -15,6 +15,10 @@ export interface BaseFeedbackTags {
   reactVersion: string
   environment: string
   projectId: string
+  projectName: string
+  orgId: string
+  orgName: string
+  planTier: string
   sessionId: string
   userId: string
   plugins: string

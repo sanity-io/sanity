@@ -2,6 +2,10 @@ import {useCallback, useMemo, version as reactVersion} from 'react'
 import {useRouterState} from 'sanity/router'
 
 import {useClient} from '../../hooks'
+import {useProjectSubscriptions} from '../../hooks/useProjectSubscriptions'
+import {useOrganizationName} from '../../store/_legacy/project/useOrganizationName'
+import {useProject} from '../../store/_legacy/project/useProject'
+import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
 import {useCurrentUser} from '../../store/user/hooks'
 import {useWorkspace} from '../../studio/workspace'
 import {SANITY_VERSION} from '../../version'
@@ -50,6 +54,11 @@ export function useStudioFeedbackTags(): {
   const client = useClient({apiVersion: '2023-12-18'})
   const projectId = client.config().projectId ?? ''
 
+  const {value: orgId} = useProjectOrganizationId()
+  const orgName = useOrganizationName(orgId)
+  const {value: projectData} = useProject()
+  const {projectSubscriptions} = useProjectSubscriptions()
+
   const activeTool = useRouterState(
     useCallback(
       (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : ''),
@@ -75,12 +84,24 @@ export function useStudioFeedbackTags(): {
           ? 'development'
           : 'production',
       projectId,
+      projectName: projectData?.displayName ?? '',
+      orgId: orgId ?? '',
+      orgName,
+      planTier: projectSubscriptions?.plan?.name ?? '',
       sessionId,
       userId,
       plugins: pluginNames.join(','),
       pluginsCount: pluginNames.length,
     }),
-    [projectId, userId, pluginNames],
+    [
+      projectId,
+      projectData?.displayName,
+      orgId,
+      orgName,
+      projectSubscriptions?.plan?.name,
+      userId,
+      pluginNames,
+    ],
   )
 
   const dynamicTags = useMemo<DynamicFeedbackTags>(

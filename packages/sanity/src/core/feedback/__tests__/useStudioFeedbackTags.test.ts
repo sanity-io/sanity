@@ -10,6 +10,22 @@ import {useStudioFeedbackTags} from '../hooks/useStudioFeedbackTags'
 vi.mock('../../hooks', () => ({
   useClient: vi.fn(),
 }))
+vi.mock('../../hooks/useProjectSubscriptions', () => ({
+  useProjectSubscriptions: vi.fn().mockReturnValue({
+    projectSubscriptions: {plan: {name: 'Growth'}},
+    isLoading: false,
+    error: null,
+  }),
+}))
+vi.mock('../../store/_legacy/project/useOrganizationName', () => ({
+  useOrganizationName: vi.fn().mockReturnValue('Sanity Inc'),
+}))
+vi.mock('../../store/_legacy/project/useProjectOrganizationId', () => ({
+  useProjectOrganizationId: vi.fn().mockReturnValue({value: 'org-123', loading: false}),
+}))
+vi.mock('../../store/_legacy/project/useProject', () => ({
+  useProject: vi.fn().mockReturnValue({value: {displayName: 'My Project'}}),
+}))
 vi.mock('../../store/user/hooks', () => ({
   useCurrentUser: vi.fn(),
 }))
@@ -97,6 +113,16 @@ describe('useStudioFeedbackTags', () => {
 
     expect(baseTags.plugins).toBe('plugin-a,plugin-b-child,plugin-c')
     expect(baseTags.pluginsCount).toBe(3)
+  })
+
+  it('returns orgId, orgName, projectName, and planTier', () => {
+    const {result} = renderHook(() => useStudioFeedbackTags())
+    const {baseTags} = result.current
+
+    expect(baseTags.orgId).toBe('org-123')
+    expect(baseTags.orgName).toBe('Sanity Inc')
+    expect(baseTags.projectName).toBe('My Project')
+    expect(baseTags.planTier).toBe('Growth')
   })
 
   it('handles missing current user gracefully', () => {
