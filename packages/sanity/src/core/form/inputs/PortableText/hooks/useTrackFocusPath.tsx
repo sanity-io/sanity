@@ -114,6 +114,11 @@ export function useTrackFocusPath(props: Props): void {
 
         // Select and focus the editor if we produced a path
         if (path.length) {
+          console.warn('[useTrackFocusPath] forcing select', {
+            focusPath,
+            selectionFocusPath: selection?.focus.path,
+            targetPath: path,
+          })
           PortableTextEditor.select(editor, {
             anchor: {path, offset: 0},
             focus: {path, offset: 0},

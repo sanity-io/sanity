@@ -1,132 +1,161 @@
 import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabletext/editor'
 import {type PortableTextBlock} from '@sanity/types'
-import {memo, useCallback, useEffect, useRef, useState} from 'react'
+import {
+  createContext,
+  memo,
+  type MouseEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import {CommentInlineHighlightSpan} from '../../components'
 import {applyInlineCommentIdAttr} from '../../hooks'
-import {type CommentDocument} from '../../types'
+import {type CommentDocument, type CommentRangeEntry} from '../../types'
 import {buildRangeDecorationSelectionsFromComments} from './buildRangeDecorationSelectionsFromComments'
+
+const EMPTY_ARRAY: string[] = []
+
+/**
+ * Context that tracks all comment IDs at the current nesting level.
+ * When decorations overlap, the PTE renders nested spans -- each decoration
+ * reads the parent IDs from context, adds its own, and provides the combined
+ * set to its children.
+ */
+const OverlappingCommentsContext = createContext<string[]>(EMPTY_ARRAY)
+
+/**
+ * Context for dynamic state that changes independently of decoration
+ * structure (selection, payload). The PTE editor only re-renders decorations
+ * when selection/payload change (deep equality check). Hover and selected
+ * states change frequently without affecting structure, so decoration
+ * components read them from this context to get React re-renders without
+ * needing the PTE to diff decorations.
+ */
+export interface CommentDecorationStateContextValue {
+  hoveredCommentIds: ReadonlySet<string>
+  selectedThreadId: string | null
+  onClick: (commentId: string, allCommentIds: string[]) => void
+  onHoverStart: (commentId: string) => void
+  onHoverEnd: (commentId: string) => void
+}
+
+const EMPTY_SET: ReadonlySet<string> = new Set()
+const noop = () => {}
+
+export const CommentDecorationStateContext = createContext<CommentDecorationStateContextValue>({
+  hoveredCommentIds: EMPTY_SET,
+  selectedThreadId: null,
+  onClick: noop,
+  onHoverStart: noop,
+  onHoverEnd: noop,
+})
 
 interface CommentRangeDecorationProps {
   children: React.ReactNode
   commentId: string
-  currentHoveredCommentId: string | null
-  onClick: (commentId: string) => void
-  onHoverEnd: (commentId: null) => void
-  onHoverStart: (commentId: string) => void
-  selectedThreadId: string | null
   threadId: string
 }
 
 const CommentRangeDecoration = memo(function CommentRangeDecoration(
   props: CommentRangeDecorationProps,
 ) {
-  const {
-    children,
-    commentId,
-    currentHoveredCommentId,
-    onClick,
-    onHoverEnd,
-    onHoverStart,
-    selectedThreadId,
-    threadId,
-  } = props
+  const {children, commentId, threadId} = props
   const decoratorRef = useRef<HTMLSpanElement | null>(null)
   const [isNested, setIsNested] = useState(false)
   const [parentCommentId, setParentCommentId] = useState<string | null>(null)
 
+  const {hoveredCommentIds, selectedThreadId, onClick, onHoverStart, onHoverEnd} = useContext(
+    CommentDecorationStateContext,
+  )
+
+  const parentCommentIds = useContext(OverlappingCommentsContext)
+  const allCommentIds = useMemo(
+    () => [...parentCommentIds, commentId],
+    [parentCommentIds, commentId],
+  )
+
   useEffect(() => {
-    // Get the previous and next sibling of the decorator element
     const prevEl = decoratorRef.current?.previousSibling as HTMLElement | null
     const nextEl = decoratorRef.current?.nextSibling as HTMLElement | null
 
-    // If there is no previous or next sibling, then the decorator is not nested
     if (!prevEl || !nextEl) {
       setIsNested(false)
       return
     }
 
-    // We use the `applyInlineCommentIdAttr` to get the key of the data attribute
-    // used for the inline comment id on the decorator element.
     const [key] = Object.keys(applyInlineCommentIdAttr(''))
 
     const prevId = prevEl.getAttribute(key)
     const nextId = nextEl.getAttribute(key)
 
-    const isEqual = prevId === nextId
-
-    const isNestedDecorator = Boolean(prevId && nextId && isEqual)
+    const isNestedDecorator = Boolean(prevId && nextId && prevId === nextId)
     setParentCommentId(isNestedDecorator ? prevId : null)
-
     setIsNested(isNestedDecorator)
   }, [])
 
   const handleMouseEnter = useCallback(() => onHoverStart(commentId), [commentId, onHoverStart])
-  const handleMouseLeave = useCallback(() => onHoverEnd(null), [onHoverEnd])
-  const handleClick = useCallback(() => onClick(commentId), [commentId, onClick])
+  const handleMouseLeave = useCallback(() => onHoverEnd(commentId), [commentId, onHoverEnd])
+  const handleClick = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation()
+      onClick(commentId, allCommentIds)
+    },
+    [commentId, allCommentIds, onClick],
+  )
 
   const hovered =
-    currentHoveredCommentId === commentId ||
-    (currentHoveredCommentId === parentCommentId && isNested)
-
+    hoveredCommentIds.has(commentId) ||
+    (parentCommentId !== null && hoveredCommentIds.has(parentCommentId) && isNested)
   const selected = selectedThreadId === threadId
 
   return (
-    <CommentInlineHighlightSpan
-      isAdded
-      isHovered={hovered || selected}
-      isNested={isNested}
-      onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      ref={decoratorRef}
-      {...applyInlineCommentIdAttr(threadId)}
-    >
-      {children}
-    </CommentInlineHighlightSpan>
+    <OverlappingCommentsContext.Provider value={allCommentIds}>
+      <CommentInlineHighlightSpan
+        isAdded
+        isHovered={hovered || selected}
+        isNested={isNested}
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        ref={decoratorRef}
+        {...applyInlineCommentIdAttr(threadId)}
+      >
+        {children}
+      </CommentInlineHighlightSpan>
+    </OverlappingCommentsContext.Provider>
   )
 })
 CommentRangeDecoration.displayName = 'Memo(CommentRangeDecoration)'
 
 interface BuildRangeDecorationsProps {
   comments: CommentDocument[]
-  currentHoveredCommentId: string | null
-  onDecorationClick: (commentId: string) => void
-  onDecorationHoverEnd: (commentId: null) => void
-  onDecorationHoverStart: (commentId: string) => void
+  commentRangeEntries: CommentRangeEntry[]
   onDecorationMoved: (details: RangeDecorationOnMovedDetails) => void
-  selectedThreadId: string | null
   value: PortableTextBlock[] | undefined
 }
 
 /**
  * @internal
  */
-export function buildCommentRangeDecorations(props: BuildRangeDecorationsProps) {
-  const {
-    comments,
-    currentHoveredCommentId,
-    onDecorationClick,
-    onDecorationHoverEnd,
-    onDecorationHoverStart,
-    onDecorationMoved,
-    selectedThreadId,
-    value,
-  } = props
-  const rangeSelections = buildRangeDecorationSelectionsFromComments({comments, value})
+export interface BuildCommentRangeDecorationsResult {
+  decorations: RangeDecoration[]
+  detachedCommentIds: string[]
+}
 
-  const decorations = rangeSelections.map(({selection, comment, range}) => {
+export function buildCommentRangeDecorations(
+  props: BuildRangeDecorationsProps,
+): BuildCommentRangeDecorationsResult {
+  const {comments, commentRangeEntries, onDecorationMoved, value} = props
+  const result = buildRangeDecorationSelectionsFromComments({comments, commentRangeEntries, value})
+
+  const decorations = result.decorations.map(({selection, comment}) => {
     const decoration: RangeDecoration = {
       component: ({children}) => (
-        <CommentRangeDecoration
-          commentId={comment._id}
-          currentHoveredCommentId={currentHoveredCommentId}
-          onClick={onDecorationClick}
-          onHoverEnd={onDecorationHoverEnd}
-          onHoverStart={onDecorationHoverStart}
-          selectedThreadId={selectedThreadId}
-          threadId={comment.threadId}
-        >
+        <CommentRangeDecoration commentId={comment._id} threadId={comment.threadId}>
           {children}
         </CommentRangeDecoration>
       ),
@@ -134,10 +163,9 @@ export function buildCommentRangeDecorations(props: BuildRangeDecorationsProps) 
       selection,
       payload: {
         commentId: comment._id,
-        range,
       },
     }
     return decoration
   })
-  return decorations
+  return {decorations, detachedCommentIds: result.detachedCommentIds}
 }

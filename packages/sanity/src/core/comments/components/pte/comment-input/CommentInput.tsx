@@ -11,7 +11,7 @@ import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
-import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
+import {type AvatarSize, Stack} from '@sanity/ui'
 import {
   type FocusEvent,
   type FormEvent,
@@ -32,6 +32,56 @@ import {renderBlock as defaultRenderBlock} from '../render'
 import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
 import {CommentInputInner} from './CommentInputInner'
 import {CommentInputProvider} from './CommentInputProvider'
+
+function isFocusableElement(el: HTMLElement): boolean {
+  if (el.tabIndex >= 0 && el.getAttribute('tabIndex') !== null) return true
+  const tag = el.tagName
+  if (tag === 'INPUT') {
+    const input = el as HTMLInputElement
+    return !input.disabled && input.type !== 'hidden'
+  }
+  if (tag === 'BUTTON' || tag === 'SELECT' || tag === 'TEXTAREA') {
+    return !(el as HTMLButtonElement).disabled
+  }
+  if (tag === 'A') return !!(el as HTMLAnchorElement).href
+  return false
+}
+
+function attemptFocusPreventScroll(el: HTMLElement): boolean {
+  if (!isFocusableElement(el)) return false
+  try {
+    el.focus({preventScroll: true})
+  } catch {
+    // ignore
+  }
+  return document.activeElement === el
+}
+
+function focusFirstDescendantPreventScroll(element: HTMLElement): boolean {
+  for (let i = 0; i < element.childNodes.length; i++) {
+    const child = element.childNodes[i]
+    if (
+      child instanceof HTMLElement &&
+      (attemptFocusPreventScroll(child) || focusFirstDescendantPreventScroll(child))
+    ) {
+      return true
+    }
+  }
+  return false
+}
+
+function focusLastDescendantPreventScroll(element: HTMLElement): boolean {
+  for (let i = element.childNodes.length - 1; i >= 0; i--) {
+    const child = element.childNodes[i]
+    if (
+      child instanceof HTMLElement &&
+      (attemptFocusPreventScroll(child) || focusLastDescendantPreventScroll(child))
+    ) {
+      return true
+    }
+  }
+  return false
+}
 
 /**
  * `EditorProvider` doesn't have a `ref` prop. This plugin takes care of
@@ -224,12 +274,12 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
         const innerEl = innerRef.current
 
         if (innerEl && target === preDivRef.current) {
-          focusLastDescendant(innerEl)
+          focusLastDescendantPreventScroll(innerEl)
           return
         }
 
         if (innerEl && target === postDivRef.current) {
-          focusFirstDescendant(innerEl)
+          focusFirstDescendantPreventScroll(innerEl)
         }
       },
       [focusLock],

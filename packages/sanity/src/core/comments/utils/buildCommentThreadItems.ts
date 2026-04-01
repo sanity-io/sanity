@@ -68,17 +68,7 @@ export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): Co
         schemaType,
       })
 
-      // NOTE: Keep this code commented out for now as we might want to use it later.
-      let hasTextSelection = false
-
-      // If the comment is a text selection comment, we need to make sure that
-      // we can successfully build a range decoration selection from it.
-      if (isTextSelectionComment(parentComment)) {
-        hasTextSelection = Boolean(
-          parentComment.target.path?.selection &&
-          parentComment.target.path.selection.value.some((v) => v.text),
-        )
-      }
+      const hasTextSelection = isTextSelectionComment(parentComment)
 
       // Check if the comment has an invalid breadcrumb. The breadcrumbs can be invalid if:
       // - The field is hidden by conditional fields
@@ -87,7 +77,9 @@ export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): Co
       const hasInvalidBreadcrumb = crumbs.some((bc) => bc.invalid)
 
       // If the comment has an invalid breadcrumb or selection, we will omit it from the list.
-      if (hasInvalidBreadcrumb) return undefined
+      if (hasInvalidBreadcrumb) {
+        return undefined
+      }
 
       const replies = comments?.filter((r) => r.parentCommentId === parentComment._id)
       const commentsCount = [parentComment, ...replies].length

@@ -1,12 +1,12 @@
 import {
-  type EditorChange,
   type EditorEmittedEvent,
   EditorProvider,
   type EditorSelection,
-  type InvalidValue,
+  type InvalidValueResolution,
   type Patch,
   PortableTextEditor,
   type RangeDecoration,
+  type RangeDecorationShift,
   useEditor,
   usePortableTextEditor,
 } from '@portabletext/editor'
@@ -17,6 +17,7 @@ import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {
+  type FocusEvent,
   forwardRef,
   type ReactNode,
   startTransition,
@@ -55,7 +56,35 @@ import {
   type PresenceCursorDecorationsHookProps,
   usePresenceCursorDecorations,
 } from './presence-cursors'
+import {shiftsToSystemRangePatches} from './rangeDecorationPatches'
 import {usePatches} from './usePatches'
+
+/**
+ * Internal change type produced by `EditorChangePlugin`. Replaces the
+ * `EditorChange` type that was removed from `@portabletext/editor` in v6.
+ *
+ * @internal
+ */
+export type EditorChange =
+  | {type: 'blur'; event: FocusEvent<HTMLDivElement>}
+  | {type: 'error'; name: string; level: string; description: string}
+  | {type: 'focus'; event: FocusEvent<HTMLDivElement>}
+  | {
+      type: 'invalidValue'
+      resolution: InvalidValueResolution | null
+      value: PortableTextBlock[] | undefined
+    }
+  | {type: 'loading'; isLoading: boolean}
+  | {
+      type: 'mutation'
+      snapshot: PortableTextBlock[] | undefined
+      patches: Patch[]
+      rangeDecorationShifts?: RangeDecorationShift[]
+    }
+  | {type: 'patch'; patch: Patch}
+  | {type: 'ready'}
+  | {type: 'selection'; selection: EditorSelection}
+  | {type: 'value'; value: PortableTextBlock[] | undefined}
 
 function keyGenerator() {
   return randomKey(12)
@@ -147,7 +176,10 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     })
 
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
-  const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
+  const [invalidValue, setInvalidValue] = useState<Extract<
+    EditorChange,
+    {type: 'invalidValue'}
+  > | null>(null)
   const [isActive, setIsActive] = useState(initialActive ?? true)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [ready, setReady] = useState(false)
@@ -248,9 +280,15 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
       switch (change.type) {
-        case 'mutation':
-          onChange(toFormPatches(change.patches))
+        case 'mutation': {
+          const contentPatches = toFormPatches(change.patches)
+          const rangePatches = shiftsToSystemRangePatches(
+            change.rangeDecorationShifts,
+            change.snapshot,
+          )
+          onChange([...contentPatches, ...rangePatches])
           break
+        }
         case 'selection':
           setFocusPathFromEditorSelection(change.selection)
           break
@@ -448,6 +486,7 @@ function EditorChangePlugin(
             type: 'mutation',
             snapshot: event.value,
             patches: event.patches,
+            rangeDecorationShifts: event.rangeDecorationShifts,
           })
           break
         case 'patch': {

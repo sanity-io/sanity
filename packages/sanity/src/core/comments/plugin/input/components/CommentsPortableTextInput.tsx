@@ -1,25 +1,27 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-nested-callbacks */
 import {
-  type EditorChange,
   type EditorSelection,
   type PortableTextBlock,
   PortableTextEditor,
   type RangeDecoration,
   type RangeDecorationOnMovedDetails,
 } from '@portabletext/editor'
-import {isPortableTextTextBlock} from '@sanity/types'
+import {isKeySegment, isPortableTextTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
-import {debounce, isEqual} from 'lodash-es'
+import {debounce} from 'lodash-es'
 import {AnimatePresence} from 'motion/react'
 import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type PortableTextInputProps, useFieldActions} from '../../../../form'
+import {type PortableTextInputProps, useFieldActions, useFormValue} from '../../../../form'
+import {type EditorChange} from '../../../../form/inputs/PortableText/PortableTextInput'
+import {documentPatch, insert, setIfMissing} from '../../../../form/patch'
 import {useCurrentUser} from '../../../../store'
 import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
 import {CommentInlineHighlightSpan} from '../../../components'
+import {COMMENT_RANGES_FIELD} from '../../../constants'
 import {isTextSelectionComment} from '../../../helpers'
 import {
   useComments,
@@ -31,20 +33,88 @@ import {
 import {
   type CommentDocument,
   type CommentMessage,
-  type CommentsTextSelectionItem,
+  type CommentRangeEntry,
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../../types'
 import {
   buildCommentRangeDecorations,
-  buildRangeDecorationSelectionsFromComments,
-  buildTextSelectionFromFragment,
+  type BuildCommentRangeDecorationsResult,
+  CommentDecorationStateContext,
+  type CommentDecorationStateContextValue,
+  editorSelectionToRange,
+  normalizeCommentRange,
 } from '../../../utils'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 
 const EMPTY_ARRAY: [] = []
+const EMPTY_SET: ReadonlySet<string> = new Set()
+
+function getFragmentAtSelection(
+  value: PortableTextBlock[],
+  selection: EditorSelection,
+): PortableTextBlock[] {
+  if (!selection) return EMPTY_ARRAY
+
+  const sel = selection.backward ? {anchor: selection.focus, focus: selection.anchor} : selection
+
+  const anchorBlockKey = isKeySegment(sel.anchor.path[0]) ? sel.anchor.path[0]._key : null
+  const focusBlockKey = isKeySegment(sel.focus.path[0]) ? sel.focus.path[0]._key : null
+  if (!anchorBlockKey || !focusBlockKey) return EMPTY_ARRAY
+
+  const anchorIdx = value.findIndex((b) => b._key === anchorBlockKey)
+  const focusIdx = value.findIndex((b) => b._key === focusBlockKey)
+  if (anchorIdx === -1 || focusIdx === -1) return EMPTY_ARRAY
+
+  const blocks = value.slice(anchorIdx, focusIdx + 1)
+
+  return blocks.map((block, i): PortableTextBlock => {
+    if (!isPortableTextTextBlock(block)) return block
+
+    const isFirst = i === 0
+    const isLast = i === blocks.length - 1
+    const isSingleBlock = blocks.length === 1
+
+    const anchorSpanKey = isKeySegment(sel.anchor.path[2]) ? sel.anchor.path[2]._key : null
+    const focusSpanKey = isKeySegment(sel.focus.path[2]) ? sel.focus.path[2]._key : null
+
+    const trimmedChildren = block.children
+      .map((child) => {
+        if (typeof child.text !== 'string') return child
+
+        const isAnchorSpan = isFirst && child._key === anchorSpanKey
+        const isFocusSpan = isLast && child._key === focusSpanKey
+
+        if (isSingleBlock && isAnchorSpan && isFocusSpan) {
+          return {...child, text: child.text.slice(sel.anchor.offset, sel.focus.offset)}
+        }
+        if (isAnchorSpan) {
+          return {...child, text: child.text.slice(sel.anchor.offset)}
+        }
+        if (isFocusSpan) {
+          return {...child, text: child.text.slice(0, sel.focus.offset)}
+        }
+        return child
+      })
+      .filter((child) => {
+        if (isFirst && anchorSpanKey) {
+          const anchorSpanIdx = block.children.findIndex((c) => c._key === anchorSpanKey)
+          const childIdx = block.children.findIndex((c) => c._key === child._key)
+          if (childIdx < anchorSpanIdx) return false
+        }
+        if (isLast && focusSpanKey) {
+          const focusSpanIdx = block.children.findIndex((c) => c._key === focusSpanKey)
+          const childIdx = block.children.findIndex((c) => c._key === child._key)
+          if (childIdx > focusSpanIdx) return false
+        }
+        return true
+      })
+
+    return {...block, children: trimmedChildren} as PortableTextTextBlock
+  })
+}
 
 const AI_ASSIST_TYPE = 'sanity.assist.instruction.prompt'
 
@@ -85,21 +155,43 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
   const {scrollToComment, scrollToGroup} = useCommentsScroll()
   const {handleOpenDialog} = useCommentsUpsell()
   const [mousePressed, setMousePressed] = useState<boolean>(false)
+  const mousePressedRef = useRef<boolean>(false)
+  const [editorReady, setEditorReady] = useState<boolean>(false)
 
   const editorRef = useRef<PortableTextEditor | null>(null)
+  const pendingDetaches = useRef<Set<string>>(new Set())
+
+  const commentRangeEntries = (useFormValue([COMMENT_RANGES_FIELD]) ||
+    EMPTY_ARRAY) as CommentRangeEntry[]
 
   // A reference to the authoring decoration element that highlights the selected text
   // when starting to author a comment.
   const [authoringDecorationElement, setAuthoringDecorationElement] =
     useState<HTMLSpanElement | null>(null)
 
-  const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
   const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
 
   const [currentSelection, setCurrentSelection] = useState<EditorSelection | null>(null)
-  const [currentSelectionRect, setCurrenSelectionRect] = useState<DOMRect | null>(null)
+  const [hasSelectionRect, setHasSelectionRect] = useState<boolean>(false)
+  const currentSelectionRectRef = useRef<DOMRect | null>(null)
 
-  const [currentHoveredCommentId, setCurrentHoveredCommentId] = useState<string | null>(null)
+  const [hoveredCommentIds, setHoveredCommentIds] = useState<ReadonlySet<string>>(EMPTY_SET)
+
+  const handleHoverStart = useCallback((commentId: string) => {
+    setHoveredCommentIds((prev) => {
+      const next = new Set(prev)
+      next.add(commentId)
+      return next
+    })
+  }, [])
+
+  const handleHoverEnd = useCallback((commentId: string) => {
+    setHoveredCommentIds((prev) => {
+      const next = new Set(prev)
+      next.delete(commentId)
+      return next
+    })
+  }, [])
 
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
 
@@ -118,14 +210,15 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
 
   const handleSetCurrentSelectionRect = useCallback(() => {
     const rect = getSelectionBoundingRect()
-    setCurrenSelectionRect(rect)
+    currentSelectionRectRef.current = rect
+    setHasSelectionRect(rect !== null)
   }, [])
 
   const resetStates = useCallback(() => {
     setCurrentSelection(null)
-    setCurrenSelectionRect(null)
+    currentSelectionRectRef.current = null
+    setHasSelectionRect(false)
     setNextCommentSelection(null)
-    setNextCommentValue(null)
     setCanSubmit(false)
     setAuthoringDecorationElement(null)
     setFragment(null)
@@ -150,6 +243,12 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     resetStates()
   }, [resetStates])
 
+  const handleCommentInputUnmount = useCallback(() => {
+    if (editorRef.current) {
+      PortableTextEditor.focus(editorRef.current)
+    }
+  }, [])
+
   const textComments = useMemo(() => {
     return comments.data.open
       .filter((comment) => comment.fieldPath === stringFieldPath)
@@ -157,68 +256,104 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
       .map((c) => c.parentComment)
   }, [comments.data.open, stringFieldPath])
 
-  const handleSubmit = useCallback(() => {
-    if (!nextCommentSelection || !editorRef.current) return
+  const handleSubmit = useCallback(
+    (message: CommentMessage) => {
+      if (!nextCommentSelection || !editorRef.current) return
 
-    const editorValue = PortableTextEditor.getValue(editorRef.current)
+      const editorValue = PortableTextEditor.getValue(editorRef.current)
 
-    if (!editorValue) return
+      if (!editorValue) return
 
-    const textSelection = buildTextSelectionFromFragment({
-      fragment: fragment || EMPTY_ARRAY,
-      selection: nextCommentSelection,
-      value: editorValue,
-    })
+      const commentId = uuid()
+      const threadId = uuid()
 
-    const threadId = uuid()
+      const range = editorSelectionToRange(nextCommentSelection, editorValue)
 
-    void operation.create({
-      type: 'field',
-      contentSnapshot: fragment,
-      fieldPath: stringFieldPath,
-      message: nextCommentValue,
-      parentCommentId: undefined,
-      reactions: EMPTY_ARRAY,
-      selection: textSelection,
-      status: 'open',
-      threadId,
-    })
+      void operation.create({
+        id: commentId,
+        type: 'field',
+        contentSnapshot: fragment,
+        fieldPath: stringFieldPath,
+        message,
+        parentCommentId: undefined,
+        reactions: EMPTY_ARRAY,
+        range: range ? commentId : undefined,
+        status: 'open',
+        threadId,
+      })
 
-    // Open the inspector when a new comment is added
-    onCommentsOpen?.()
+      // Create the range entry on the main document so the Content Lake
+      // knows about this anchor. Uses documentPatch() so the patches
+      // bypass the form tree's path prefixing and target the document
+      // root directly.
+      if (range) {
+        const normalized = normalizeCommentRange(range, editorValue)
+        props.onChange([
+          documentPatch(setIfMissing([], [COMMENT_RANGES_FIELD])),
+          documentPatch(
+            insert(
+              [
+                {
+                  _key: commentId,
+                  field: stringFieldPath,
+                  start: {
+                    path: `[_key=='${normalized.anchor.blockKey}']`,
+                    position: normalized.anchor.offset,
+                  },
+                  end: {
+                    path: `[_key=='${normalized.focus.blockKey}']`,
+                    position: normalized.focus.offset,
+                  },
+                  reference: {
+                    _type: 'collaboration.comment',
+                    _id: commentId,
+                  },
+                },
+              ],
+              'after',
+              [COMMENT_RANGES_FIELD, -1],
+            ),
+          ),
+        ])
+      }
 
-    // Set the status to 'open' so that the comment is visible
-    if (status === 'resolved') {
-      setStatus('open')
-    }
+      // Open the inspector when a new comment is added
+      onCommentsOpen?.()
 
-    // Set the selected path to the new comment
-    setSelectedPath({
-      fieldPath: stringFieldPath,
-      threadId,
-      origin: 'form',
-    })
+      // Set the status to 'open' so that the comment is visible
+      if (status === 'resolved') {
+        setStatus('open')
+      }
 
-    // Scroll to the comment
-    scrollToGroup(threadId)
+      // Set the selected path to the new comment
+      setSelectedPath({
+        fieldPath: stringFieldPath,
+        threadId,
+        origin: 'form',
+      })
 
-    resetStates()
-  }, [
-    nextCommentSelection,
-    operation,
-    stringFieldPath,
-    nextCommentValue,
-    onCommentsOpen,
-    status,
-    setSelectedPath,
-    scrollToGroup,
-    resetStates,
-    setStatus,
-    fragment,
-  ])
+      // Scroll to the comment
+      scrollToGroup(threadId)
+
+      resetStates()
+    },
+    [
+      nextCommentSelection,
+      operation,
+      stringFieldPath,
+      onCommentsOpen,
+      status,
+      setSelectedPath,
+      scrollToGroup,
+      resetStates,
+      setStatus,
+      fragment,
+      props,
+    ],
+  )
 
   const handleDecoratorClick = useCallback(
-    (commentId: string) => {
+    (commentId: string, _allCommentIds: string[]) => {
       const comment = getComment(commentId)
       if (!comment) return
 
@@ -260,156 +395,122 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
       // If the mouse is not down, we want to set the current selection rect
       // when the selection changes. Otherwise, we want to wait until the mouse
       // is up to set the current selection rect (see `handleMouseUp`).
-      if (!mousePressed) {
+      if (!mousePressedRef.current) {
         handleSetCurrentSelectionRect()
       }
 
       setCurrentSelection(selection)
       setCanSubmit(true)
     },
-    [getFragment, handleSetCurrentSelectionRect, mousePressed],
+    [getFragment, handleSetCurrentSelectionRect],
   )
 
   const debounceSelectionChange = useDebounceSelectionChange(handleSelectionChange)
 
   const handleMouseDown = useCallback(() => {
-    startTransition(() => setMousePressed(true))
+    mousePressedRef.current = true
+    setMousePressed(true)
   }, [])
 
   const handleMouseUp = useCallback(() => {
-    startTransition(() => setMousePressed(false))
+    mousePressedRef.current = false
+    setMousePressed(false)
 
     // When the mouse is up, we want to set the current selection rect.
     handleSetCurrentSelectionRect()
   }, [handleSetCurrentSelectionRect])
 
-  const handleRangeDecorationMoved = useCallback((details: RangeDecorationOnMovedDetails) => {
-    const {rangeDecoration, newSelection} = details
+  const debouncedCommentUpdateMap = useRef(new Map<string, ReturnType<typeof debounce>>())
 
-    const commentId = rangeDecoration.payload?.commentId as undefined | string
+  const debouncedCommentUpdate = useCallback(
+    (commentId: string, payload: CommentUpdatePayload) => {
+      let fn = debouncedCommentUpdateMap.current.get(commentId)
+      if (!fn) {
+        fn = debounce((p: CommentUpdatePayload) => {
+          void operation.update(commentId, p)
+          debouncedCommentUpdateMap.current.delete(commentId)
+        }, 1000)
+        debouncedCommentUpdateMap.current.set(commentId, fn)
+      }
+      fn(payload)
+    },
+    [operation],
+  )
 
-    // Update the range decoration with the new selection.
-    setAddedCommentsDecorations((prev) => {
-      const next = prev.map((p) => {
-        if (p.payload?.commentId === commentId) {
-          const nextDecoration: RangeDecoration = {
-            ...rangeDecoration,
-            selection: newSelection,
-            payload: {...rangeDecoration.payload, dirty: true},
+  useEffect(
+    () => () => {
+      for (const fn of debouncedCommentUpdateMap.current.values()) {
+        fn.flush()
+      }
+    },
+    [debouncedCommentUpdate],
+  )
+
+  // onMoved handles *local* visual state and updates the comment's
+  // `contentSnapshot` in the addon dataset. Range positions on the main
+  // document are updated transactionally by `shiftsToSystemRangePatches`
+  // in PortableTextInput -- we don't duplicate that here.
+  const handleRangeDecorationMoved = useCallback(
+    (details: RangeDecorationOnMovedDetails) => {
+      const {rangeDecoration, newSelection, origin} = details
+
+      const commentId = rangeDecoration.payload?.commentId as undefined | string
+
+      setAddedCommentsDecorations((prev) => {
+        return prev.map((p) => {
+          if (p.payload?.commentId === commentId) {
+            return {
+              ...rangeDecoration,
+              selection: newSelection,
+              payload: rangeDecoration.payload,
+            }
           }
-          return nextDecoration
-        }
-        return p
-      })
-      return next
-    })
-  }, [])
-
-  const updateCommentRange = useCallback(() => {
-    const decoratorsToUpdate = addedCommentsDecorations.filter(
-      (decorator) => decorator.payload?.dirty,
-    )
-    if (decoratorsToUpdate.length === 0) return
-
-    decoratorsToUpdate.forEach((decorator) => {
-      const commentId = decorator.payload?.commentId as undefined | string
-      const comment = getComment(commentId || '')
-
-      // If the comment no longer exists, remove the range decoration.
-      if (!comment) {
-        return
-      }
-
-      // The below code will update the comment object to reflect the new selection
-      if (!editorRef.current) return
-      const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
-
-      const [updatedDecoration] = buildRangeDecorationSelectionsFromComments({
-        comments: [comment],
-        value: editorValue,
+          return p
+        })
       })
 
-      const nextRange = updatedDecoration?.range ? [updatedDecoration.range] : EMPTY_ARRAY
+      if (origin === 'local' && commentId && editorRef.current) {
+        const comment = getComment(commentId)
+        if (!comment) return
 
-      const nextValue: CommentsTextSelectionItem[] = updatedDecoration
-        ? [
-            ...(comment.target.path?.selection?.value
-              .filter((r) => r._key !== nextRange[0]?._key)
-              .concat(nextRange)
-              .flat()
-              .sort((a, b) => a._key.localeCompare(b._key)) || EMPTY_ARRAY),
-          ]
-        : EMPTY_ARRAY
+        const editorValue = PortableTextEditor.getValue(editorRef.current)
+        if (!editorValue) return
 
-      const nextComment: CommentUpdatePayload = {
-        target: {
-          ...comment.target,
-          path: {
-            ...comment.target?.path,
-            field: comment.target.path?.field || '',
-            selection: {
-              type: 'text',
-              value: nextValue,
-            },
-          },
-        },
+        const fragmentForUpdate = getFragmentAtSelection(editorValue, newSelection)
+        if (!fragmentForUpdate || fragmentForUpdate.length === 0) return
+
+        debouncedCommentUpdate(comment._id, {
+          contentSnapshot: fragmentForUpdate,
+        })
       }
+    },
+    [debouncedCommentUpdate, getComment],
+  )
 
-      const hasChanged = !isEqual(comment.target, nextComment.target)
-
-      if (hasChanged) {
-        void operation.update(comment._id, nextComment)
-      }
-    })
-
-    // Mark the range decorations as not dirty
-    setAddedCommentsDecorations((prev) => {
-      const next = prev.map((p) => {
-        const isDirty = decoratorsToUpdate.find(
-          (d) => d.payload?.commentId === p.payload?.commentId,
-        )?.payload?.dirty
-
-        if (isDirty) {
-          const nextDecoration: RangeDecoration = {
-            ...p,
-            payload: {...p.payload, dirty: false},
-          }
-          return nextDecoration
-        }
-        return p
-      })
-      return next.filter((p) => p.selection !== null)
-    })
-  }, [addedCommentsDecorations, getComment, operation])
+  const EMPTY_BUILD_RESULT: BuildCommentRangeDecorationsResult = useMemo(
+    () => ({decorations: EMPTY_ARRAY, detachedCommentIds: EMPTY_ARRAY}),
+    [],
+  )
 
   const handleBuildRangeDecorations = useCallback(
-    (commentsToDecorate: CommentDocument[]) => {
-      if (!editorRef.current) return EMPTY_ARRAY
+    (commentsToDecorate: CommentDocument[]): BuildCommentRangeDecorationsResult => {
+      if (!editorRef.current) return EMPTY_BUILD_RESULT
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
       return buildCommentRangeDecorations({
         comments: commentsToDecorate,
-        currentHoveredCommentId,
-        onDecorationClick: handleDecoratorClick,
-        onDecorationHoverEnd: setCurrentHoveredCommentId,
-        onDecorationHoverStart: setCurrentHoveredCommentId,
+        commentRangeEntries,
         onDecorationMoved: handleRangeDecorationMoved,
-        selectedThreadId: selectedPath?.threadId || null,
         value: editorValue,
       })
     },
-    [
-      currentHoveredCommentId,
-      handleDecoratorClick,
-      handleRangeDecorationMoved,
-      selectedPath?.threadId,
-    ],
+    [EMPTY_BUILD_RESULT, commentRangeEntries, handleRangeDecorationMoved],
   )
 
   const onEditorChange = useCallback(
     (change: EditorChange) => {
-      if (change.type === 'mutation') {
-        updateCommentRange()
+      if (change.type === 'ready') {
+        setEditorReady(true)
       }
       if (change.type === 'blur') {
         blurred.current = true
@@ -418,7 +519,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
         debounceSelectionChange(change.selection)
       }
     },
-    [debounceSelectionChange, updateCommentRange],
+    [debounceSelectionChange],
   )
 
   // The range decoration for the comment input. This is used to position the
@@ -437,42 +538,14 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     }
   }, [nextCommentSelection])
 
-  // All the range decorations
-  const rangeDecorations: RangeDecoration[] = [
-    // Existing range decorations
-    ...(props?.rangeDecorations || EMPTY_ARRAY),
-    // The range decoration when adding a comment
-    ...(authoringDecoration ? [authoringDecoration] : EMPTY_ARRAY),
-    // The range decorations for existing comments
-    ...addedCommentsDecorations,
-  ]
-
-  const [currentSelectionIsOverlapping, setCurrentSelectionIsOverlapping] = useState<boolean>(false)
-  useEffect(() => {
-    startTransition(() =>
-      setCurrentSelectionIsOverlapping(() => {
-        if (!currentSelection || addedCommentsDecorations.length === 0) return false
-
-        return addedCommentsDecorations.some((d) => {
-          if (!editorRef.current) return false
-
-          const testA = PortableTextEditor.isSelectionsOverlapping(
-            editorRef.current,
-            currentSelection,
-            d.selection,
-          )
-
-          const testB = PortableTextEditor.isSelectionsOverlapping(
-            editorRef.current,
-            d.selection,
-            currentSelection,
-          )
-
-          return testA || testB
-        })
-      }),
-    )
-  }, [addedCommentsDecorations, currentSelection])
+  const rangeDecorations = useMemo(
+    (): RangeDecoration[] => [
+      ...(props?.rangeDecorations || EMPTY_ARRAY),
+      ...(authoringDecoration ? [authoringDecoration] : EMPTY_ARRAY),
+      ...addedCommentsDecorations,
+    ],
+    [props?.rangeDecorations, authoringDecoration, addedCommentsDecorations],
+  )
 
   // The scroll element used to update the reference element for the
   // popover on scroll.
@@ -493,12 +566,12 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
   })
 
   const selectionReferenceElement = useMemo(() => {
-    if (!currentSelectionRect) return null
+    if (!hasSelectionRect) return null
 
     return {
-      getBoundingClientRect: () => currentSelectionRect,
+      getBoundingClientRect: () => currentSelectionRectRef.current!,
     } as HTMLElement
-  }, [currentSelectionRect])
+  }, [hasSelectionRect])
 
   // This effect is needed to update the reference element for the popover
   // when the current selection changes so that it is always positioned
@@ -512,62 +585,81 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     }
   }, [currentSelection, scrollElement, handleSetCurrentSelectionRect])
 
-  // This is effect is needed to handle remote changes to the comments.
-  // That is, when another user adds, updates or deletes a comment, we need
-  // to update the range decorations to reflect these changes in the UI.
+  // Rebuild decorations when comments or document-level range entries change.
+  // Comments whose range collapsed to zero length are detached: their range
+  // is removed so they become field-level comments.
   useEffect(() => {
-    const nextDecorations = handleBuildRangeDecorations(textComments)
+    // The PTE editor initialises with a placeholder block before syncing the
+    // real document value.  Running the rebuild against the placeholder would
+    // fail to resolve every comment's blockKey, permanently detaching them.
+    // Wait for the 'ready' event which signals the actual value is loaded.
+    if (!editorReady) return
 
-    // The `dirty` flag is used to keep track of range decorations that
-    // have been moved. When a range decoration is moved, we need to update
-    // the comment document. However, when receiving updates from the server,
-    // the `dirty` flag will be removed. Therefore, we need to make sure
-    // that the `dirty` flag is preserved so that we can update the comment.
-    startTransition(() =>
-      setAddedCommentsDecorations((current) => {
-        return nextDecorations.map((nextDecoration) => {
-          const prevDecoration = current.find(
-            (p) => p.payload?.commentId === nextDecoration.payload?.commentId,
-          )
+    const {decorations: nextDecorations, detachedCommentIds} =
+      handleBuildRangeDecorations(textComments)
 
-          if (prevDecoration?.payload?.dirty) {
-            return {
-              ...nextDecoration,
-              payload: {...nextDecoration.payload, dirty: prevDecoration.payload.dirty},
-            }
-          }
+    for (const detachedId of detachedCommentIds) {
+      if (pendingDetaches.current.has(detachedId)) continue
+      pendingDetaches.current.add(detachedId)
 
-          return nextDecoration
-        })
-      }),
-    )
-  }, [handleBuildRangeDecorations, textComments])
+      const comment = getComment(detachedId)
+      if (!comment) continue
+
+      void operation.update(detachedId, {
+        contentSnapshot: [],
+        target: {
+          ...comment.target,
+          path: {
+            field: comment.target.path?.field || '',
+          },
+        },
+      })
+    }
+
+    startTransition(() => setAddedCommentsDecorations(nextDecorations))
+  }, [editorReady, getComment, handleBuildRangeDecorations, operation, textComments])
 
   const showFloatingButton = Boolean(
     currentSelection && canSubmit && selectionReferenceElement && !mousePressed,
   )
   const showFloatingInput = Boolean(nextCommentSelection && popoverAuthoringReferenceElement)
 
+  const decorationStateContextValue: CommentDecorationStateContextValue = useMemo(
+    () => ({
+      hoveredCommentIds,
+      selectedThreadId: selectedPath?.threadId || null,
+      onClick: handleDecoratorClick,
+      onHoverStart: handleHoverStart,
+      onHoverEnd: handleHoverEnd,
+    }),
+    [
+      hoveredCommentIds,
+      selectedPath?.threadId,
+      handleDecoratorClick,
+      handleHoverStart,
+      handleHoverEnd,
+    ],
+  )
+
   return (
-    <>
+    <CommentDecorationStateContext.Provider value={decorationStateContextValue}>
       <BoundaryElementProvider element={boundaryElement}>
         <AnimatePresence>
           {showFloatingInput && currentUser && (
             <InlineCommentInputPopover
               currentUser={currentUser}
               mentionOptions={mentionOptions}
-              onChange={setNextCommentValue}
               onClickOutside={resetStates}
               onDiscardConfirm={handleCommentDiscardConfirm}
               onSubmit={handleSubmit}
+              onUnmount={handleCommentInputUnmount}
               referenceElement={popoverAuthoringReferenceElement}
-              value={nextCommentValue}
             />
           )}
 
           {showFloatingButton && !showFloatingInput && (
             <FloatingButtonPopover
-              disabled={currentSelectionIsOverlapping || Boolean(addonDatasetError)}
+              disabled={Boolean(addonDatasetError)}
               onClick={handleSelectCurrentSelection}
               onClickOutside={resetStates}
               referenceElement={selectionReferenceElement}
@@ -585,7 +677,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
           onFullScreenChange={setIsFullScreen}
         />
       </Stack>
-    </>
+    </CommentDecorationStateContext.Provider>
   )
 })
 

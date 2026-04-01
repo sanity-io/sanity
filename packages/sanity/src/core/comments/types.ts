@@ -64,21 +64,19 @@ export type CommentStatus = 'open' | 'resolved'
  * @beta
  * @hidden
  */
-export interface CommentsTextSelectionItem {
-  _key: string
-  text: string
+export interface CommentRangePoint {
+  blockKey: string
+  offset: number
 }
 
 /**
  * @beta
  * @hidden
  */
-export interface CommentTextSelection {
-  type: 'text'
-  value: CommentsTextSelectionItem[]
+export interface CommentRange {
+  anchor: CommentRangePoint
+  focus: CommentRangePoint
 }
-
-type CommentPathSelection = CommentTextSelection
 
 /**
  * @beta
@@ -86,7 +84,21 @@ type CommentPathSelection = CommentTextSelection
  */
 export interface CommentPath {
   field: string
-  selection?: CommentPathSelection
+  /** ID referencing the entry in the document's `commentRanges` field. */
+  range?: string
+}
+
+/**
+ * Shape of an entry in the document-level `commentRanges` array.
+ * The `_key` matches the comment ID.
+ * @internal
+ */
+export interface CommentRangeEntry {
+  _key: string
+  field: string
+  start: {path?: string; position: number}
+  end: {path?: string; position: number}
+  reference: {_type: string; _id: string}
 }
 
 /**
@@ -280,7 +292,8 @@ export interface CommentFieldCreatePayload extends CommentBaseCreatePayload {
    * The stringified path to the field where the comment was created.
    */
   fieldPath: string
-  selection?: CommentPathSelection
+  /** ID referencing the entry in the document's `commentRanges` field. */
+  range?: string
 }
 
 /**

@@ -11,7 +11,7 @@ import {
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {Schema} from '@sanity/schema'
-import {defineArrayMember, defineField, isKeySegment, type PortableTextBlock} from '@sanity/types'
+import {defineArrayMember, defineField, type PortableTextBlock} from '@sanity/types'
 import {Box, Button, Card, Code, Container, Flex, Label, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {isEqual} from 'lodash-es'
@@ -28,11 +28,14 @@ import {
 } from 'react'
 
 import {useCurrentUser} from '../../store'
-import {type CommentDocument} from '../types'
+import {type CommentDocument, type CommentRangeEntry} from '../types'
 import {
   buildCommentRangeDecorations,
   buildCommentThreadItems,
-  buildTextSelectionFromFragment,
+  CommentDecorationStateContext,
+  type CommentDecorationStateContextValue,
+  editorSelectionToRange,
+  normalizeCommentRange,
 } from '../utils'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
@@ -158,12 +161,29 @@ function UpdateValuePlugin(props: {value: PortableTextBlock[] | undefined}) {
 export default function CommentInlineHighlightDebugStory() {
   const [value, setValue] = useState<PortableTextBlock[]>(INITIAL_VALUE)
   const [commentDocuments, setCommentDocuments] = useState<CommentDocument[]>([])
+  const [commentRangeEntries, setCommentRangeEntries] = useState<CommentRangeEntry[]>([])
   const [canAddComment, setCanAddComment] = useState<boolean>(false)
   const editorRef = useRef<PortableTextEditor | null>(null)
   const currentUser = useCurrentUser()
   const [rangeDecorations, setRangeDecorations] = useState<RangeDecoration[]>([])
 
-  const [currentHoveredCommentId, setCurrentHoveredCommentId] = useState<string | null>(null)
+  const [hoveredCommentIds, setHoveredCommentIds] = useState<ReadonlySet<string>>(new Set())
+
+  const handleHoverStart = useCallback((commentId: string) => {
+    setHoveredCommentIds((prev) => {
+      const next = new Set(prev)
+      next.add(commentId)
+      return next
+    })
+  }, [])
+
+  const handleHoverEnd = useCallback((commentId: string) => {
+    setHoveredCommentIds((prev) => {
+      const next = new Set(prev)
+      next.delete(commentId)
+      return next
+    })
+  }, [])
 
   const comments = useMemo(() => {
     if (!currentUser) return []
@@ -186,92 +206,52 @@ export default function CommentInlineHighlightDebugStory() {
   const buildRangeDecorationsCallback = () =>
     buildCommentRangeDecorations({
       comments: comments.map((c) => c.parentComment),
+      commentRangeEntries,
       value,
-      onDecorationHoverStart: setCurrentHoveredCommentId,
-      onDecorationHoverEnd: setCurrentHoveredCommentId,
-      currentHoveredCommentId,
       onDecorationMoved: (details) => {
         const {rangeDecoration, newSelection} = details
-        setRangeDecorations(buildRangeDecorationsCallback())
+        setRangeDecorations(buildRangeDecorationsCallback().decorations)
         const commentId = rangeDecoration.payload?.commentId as undefined | string
-        const range = rangeDecoration.payload?.range as undefined | {_key: string; text: string}
-        if (commentId && range) {
-          let currentBlockKey = ''
-          const previousBlockKey =
-            rangeDecoration.selection &&
-            isKeySegment(rangeDecoration.selection?.focus.path[0]) &&
-            rangeDecoration.selection?.focus.path[0]?._key
-
-          // Find out if the range has been moved to a different block
-          if (
-            newSelection?.focus.path[0] &&
-            isKeySegment(newSelection.focus.path[0]) &&
-            rangeDecoration.selection?.focus.path[0]
-          ) {
-            currentBlockKey = newSelection.focus.path[0]._key
-          }
-          setCommentDocuments((prev) => {
-            return prev.map((comment) => {
-              if (comment._id === commentId) {
-                const newComment = {
-                  ...comment,
-                  target: {
-                    ...comment.target,
-                    path: {
-                      ...comment.target.path,
-                      selection: {
-                        type: 'text',
-                        value: [
-                          ...(comment.target.path?.selection?.value
-                            .filter((r) => r._key !== range._key)
-                            .concat(currentBlockKey ? {...range, _key: currentBlockKey} : [])
-                            .flat() || []),
-                        ],
-                      },
-                    },
+        if (commentId && newSelection) {
+          const newRange = editorSelectionToRange(newSelection, value)
+          if (newRange) {
+            const normalized = normalizeCommentRange(newRange, value)
+            setCommentRangeEntries((prev) =>
+              prev.map((entry) => {
+                if (entry._key !== commentId) return entry
+                return {
+                  ...entry,
+                  start: {
+                    path: `[_key=='${normalized.anchor.blockKey}']`,
+                    position: normalized.anchor.offset,
                   },
-                } as CommentDocument
-                return newComment
-              }
-              return comment
-            })
-          })
+                  end: {
+                    path: `[_key=='${normalized.focus.blockKey}']`,
+                    position: normalized.focus.offset,
+                  },
+                }
+              }),
+            )
+          }
         }
-      },
-      selectedThreadId: null,
-      onDecorationClick: () => {
-        // ...
       },
     })
 
-  const handleEvent = useCallback(
-    (event: EditorEmittedEvent) => {
-      if (event.type === 'mutation') {
-        setValue(event.value || [])
-      }
+  const handleEvent = useCallback((event: EditorEmittedEvent) => {
+    if (event.type === 'mutation') {
+      setValue(event.value || [])
+    }
 
-      if (event.type === 'selection') {
-        const overlapping = rangeDecorations.some((d) => {
-          if (!editorRef.current) return false
+    if (event.type === 'selection') {
+      const hasRange = event.selection?.anchor.offset !== event.selection?.focus.offset
 
-          return PortableTextEditor.isSelectionsOverlapping(
-            editorRef.current,
-            event.selection,
-            d.selection,
-          )
-        })
-
-        const hasRange = event.selection?.anchor.offset !== event.selection?.focus.offset
-
-        setCanAddComment(!overlapping && hasRange)
-      }
-    },
-    [rangeDecorations],
-  )
+      setCanAddComment(hasRange)
+    }
+  }, [])
 
   const buildRangeDecorationsCallbackEvent = useEffectEvent(() => buildRangeDecorationsCallback())
   useEffect(() => {
-    const next = buildRangeDecorationsCallbackEvent()
+    const {decorations: next} = buildRangeDecorationsCallbackEvent()
     startTransition(() =>
       setRangeDecorations((prev) => {
         if (
@@ -289,22 +269,33 @@ export default function CommentInlineHighlightDebugStory() {
 
   const handleAddComment = () => {
     if (!editorRef.current) return
-    const fragment = PortableTextEditor.getFragment(editorRef.current) || []
     const editorSelection = PortableTextEditor.getSelection(editorRef.current)
     const editorValue = PortableTextEditor.getValue(editorRef.current)
     if (!editorValue) return
 
-    const textSelection = buildTextSelectionFromFragment({
-      fragment,
-      value: editorValue,
-      selection: editorSelection,
-    })
+    const range = editorSelectionToRange(editorSelection, editorValue)
+    if (!range) return
 
-    if (!textSelection) return
+    const commentId = uuid()
+    const normalized = normalizeCommentRange(range, editorValue)
+
+    const entry: CommentRangeEntry = {
+      _key: commentId,
+      field: 'body',
+      start: {
+        path: `[_key=='${normalized.anchor.blockKey}']`,
+        position: normalized.anchor.offset,
+      },
+      end: {
+        path: `[_key=='${normalized.focus.blockKey}']`,
+        position: normalized.focus.offset,
+      },
+      reference: {_type: 'collaboration.comment', _id: commentId},
+    }
 
     const comment: CommentDocument = {
       _createdAt: new Date().toISOString(),
-      _id: uuid(),
+      _id: commentId,
       _rev: 'foo',
       _type: 'comment',
       authorId: currentUser?.id || '',
@@ -317,10 +308,7 @@ export default function CommentInlineHighlightDebugStory() {
         documentType: 'article',
         path: {
           field: 'body',
-          selection: {
-            type: 'text',
-            value: textSelection.value,
-          },
+          range: commentId,
         },
         document: {
           _dataset: 'foo',
@@ -332,9 +320,21 @@ export default function CommentInlineHighlightDebugStory() {
       },
     }
 
+    setCommentRangeEntries((prev) => [...prev, entry])
     setCommentDocuments((prev) => [...prev, comment])
-    setRangeDecorations(buildRangeDecorationsCallback())
+    setRangeDecorations(buildRangeDecorationsCallback().decorations)
   }
+
+  const decorationStateContextValue: CommentDecorationStateContextValue = useMemo(
+    () => ({
+      hoveredCommentIds,
+      selectedThreadId: null,
+      onClick: () => {},
+      onHoverStart: handleHoverStart,
+      onHoverEnd: handleHoverEnd,
+    }),
+    [hoveredCommentIds, handleHoverStart, handleHoverEnd],
+  )
 
   return (
     <Flex align="center" justify="center" height="fill" sizing="border" overflow="hidden">
@@ -344,28 +344,30 @@ export default function CommentInlineHighlightDebugStory() {
             <Stack space={2}>
               <Card padding={3} border style={{minHeight: 150}}>
                 <Text>
-                  <EditorProvider
-                    initialConfig={{
-                      schemaDefinition: sanitySchemaToPortableTextSchema(pteSchema.get('body')),
-                      initialValue: value,
-                    }}
-                  >
-                    <EditorRefPlugin ref={editorRef} />
-                    <EventListenerPlugin on={handleEvent} />
-                    <UpdateValuePlugin value={value} />
-                    <PortableTextEditable
-                      spellCheck={false}
-                      style={INLINE_STYLE}
-                      renderDecorator={(decoratorProps) => (
-                        <strong>{decoratorProps.children}</strong>
-                      )}
-                      renderBlock={(blockProps) => (
-                        <div style={{paddingBottom: '1em'}}>{blockProps.children}</div>
-                      )}
-                      tabIndex={0}
-                      rangeDecorations={rangeDecorations}
-                    />
-                  </EditorProvider>
+                  <CommentDecorationStateContext.Provider value={decorationStateContextValue}>
+                    <EditorProvider
+                      initialConfig={{
+                        schemaDefinition: sanitySchemaToPortableTextSchema(pteSchema.get('body')),
+                        initialValue: value,
+                      }}
+                    >
+                      <EditorRefPlugin ref={editorRef} />
+                      <EventListenerPlugin on={handleEvent} />
+                      <UpdateValuePlugin value={value} />
+                      <PortableTextEditable
+                        spellCheck={false}
+                        style={INLINE_STYLE}
+                        renderDecorator={(decoratorProps) => (
+                          <strong>{decoratorProps.children}</strong>
+                        )}
+                        renderBlock={(blockProps) => (
+                          <div style={{paddingBottom: '1em'}}>{blockProps.children}</div>
+                        )}
+                        tabIndex={0}
+                        rangeDecorations={rangeDecorations}
+                      />
+                    </EditorProvider>
+                  </CommentDecorationStateContext.Provider>
                 </Text>
               </Card>
 

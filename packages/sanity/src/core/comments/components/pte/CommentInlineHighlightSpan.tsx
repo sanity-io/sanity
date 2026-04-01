@@ -1,26 +1,23 @@
 import {hues} from '@sanity/color'
 import {type Theme} from '@sanity/ui'
 import {forwardRef} from 'react'
-import {css, styled} from 'styled-components'
+import {css, styled, useTheme} from 'styled-components'
 
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 
 export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
   const isDark = theme.sanity.v2?.color._dark
 
-  // Colors used when a comment is added
-  const addedBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 800 : 100].hex
+  // Semi-transparent backgrounds so overlapping comments visually stack
+  const addedBg = `${hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 800 : 100].hex}66`
   const addedBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 700 : 300].hex
 
-  const addedHoverBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 700 : 200].hex
+  const addedHoverBg = `${hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 700 : 200].hex}8C`
   const addedHoverBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 600 : 400].hex
 
-  // Colors used when a comment is added and it is a nested comment
-  const addedNestedBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 700 : 200].hex
-  const addedNesterBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 600 : 400].hex
+  const addedNestedBg = `${hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 700 : 200].hex}66`
+  const addedNestedBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 600 : 400].hex
 
-  // Colors used when a comment is being authored.
-  // For now, we use the same colors as when a comment is added.
   const authoringBg = addedBg
   const authoringBorder = addedBorder
 
@@ -30,10 +27,12 @@ export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
       background-color 100ms ease,
       border-color 100ms ease;
 
-    // Make sure that child elements appropriately blend with the
-    // background of the highlight span
-    * {
-      mix-blend-mode: ${isDark ? 'screen' : 'multiply'};
+    & * {
+      mix-blend-mode: multiply;
+    }
+
+    &[data-dark='true'] * {
+      mix-blend-mode: screen;
     }
 
     &[data-inline-comment-state='added'][data-inline-comment-nested='false'] {
@@ -43,10 +42,11 @@ export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
 
     &[data-inline-comment-state='added'][data-inline-comment-nested='true'] {
       background-color: ${addedNestedBg};
-      border-bottom: 2px solid ${addedNesterBorder};
+      border-bottom: 2px solid ${addedNestedBorder};
     }
 
-    &[data-inline-comment-state='added'][data-inline-comment-nested='false'][data-hovered='true'] {
+    &[data-inline-comment-state='added'][data-inline-comment-nested='false'][data-hovered='true'],
+    &[data-inline-comment-state='added'][data-inline-comment-nested='false']:hover:not([data-hovered='true']) {
       background-color: ${addedHoverBg};
       border-bottom: 2px solid ${addedHoverBorder};
     }
@@ -76,10 +76,13 @@ export const CommentInlineHighlightSpan = forwardRef(function CommentInlineHighl
   const {children, isAdded, isAuthoring, isHovered, isNested, ...rest} = props
 
   const state = isAdded ? 'added' : isAuthoring ? 'authoring' : undefined
+  const theme = useTheme() as Theme
+  const isDark = theme.sanity.v2?.color._dark
 
   return (
     <HighlightSpan
       {...rest}
+      data-dark={isDark ? 'true' : 'false'}
       data-hovered={isHovered ? 'true' : 'false'}
       data-inline-comment-nested={isNested ? 'true' : 'false'}
       data-inline-comment-state={state}

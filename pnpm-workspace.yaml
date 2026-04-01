@@ -87,6 +87,7 @@ trustPolicy: no-downgrade
 
 trustPolicyExclude:
   - '@octokit/endpoint@9.0.6'
+  - '@portabletext/editor@6.0.1-canary.3 || 6.0.1-canary.4'
   - '@octokit/plugin-paginate-rest@9.2.2'
   - '@reduxjs/toolkit@2.9.0 || 2.10.1 || 2.11.0'
   - '@sanity/mutate@0.11.0-canary.4'

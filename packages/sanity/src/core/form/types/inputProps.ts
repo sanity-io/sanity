@@ -1,5 +1,4 @@
 import {
-  type EditorChange,
   type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
@@ -33,6 +32,7 @@ import {
   type MutableRefObject,
 } from 'react'
 
+import {type EditorChange} from '../inputs/PortableText/PortableTextInput'
 import {type FormPatch, type PatchEvent} from '../patch'
 import {type FormFieldGroup} from '../store'
 import {

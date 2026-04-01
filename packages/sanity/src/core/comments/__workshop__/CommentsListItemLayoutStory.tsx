@@ -62,15 +62,7 @@ const MOCK_COMMENT: CommentDocument = {
 
     path: {
       field: 'field',
-      selection: {
-        type: 'text',
-        value: [
-          {
-            _key: 'key',
-            text: 'This some some value that this <comment>comment is referencing</comment>',
-          },
-        ],
-      },
+      range: 'mock-range-key',
     },
   },
 }

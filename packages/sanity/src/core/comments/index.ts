@@ -1,7 +1,6 @@
 // this file exports the public api for comments (ends up in the sanity package) – be mindful of what gets re-exported
 export {
   CommentDeleteDialog,
-  CommentDisabledIcon,
   CommentInlineHighlightSpan,
   CommentInput,
   type CommentInputHandle,
@@ -28,10 +27,6 @@ export {
 // dont need this in the public api
 //export * from './store'
 export * from './types'
-export {
-  buildCommentRangeDecorations,
-  buildRangeDecorationSelectionsFromComments,
-  buildTextSelectionFromFragment,
-} from './utils'
+export {buildCommentRangeDecorations, buildRangeDecorationSelectionsFromComments} from './utils'
 // // NOTE: don't re-export `./plugin` because it causes a circular import in config
 // export * from './plugin'

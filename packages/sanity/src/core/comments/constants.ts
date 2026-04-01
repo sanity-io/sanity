@@ -10,6 +10,15 @@ export const COMMENTS_INSPECTOR_NAME = 'sanity/comments'
 
 export const COMMENTS_HIGHLIGHT_HUE_KEY: ColorHueKey = 'yellow'
 
+/**
+ * Top-level document field where inline-comment range anchors are stored.
+ * Change this value to relocate the range data (e.g. to `'_system'` + nested
+ * `'ranges'` once the Content Lake schema supports it on every document).
+ *
+ * @internal
+ */
+export const COMMENT_RANGES_FIELD = 'commentRanges'
+
 // These should not be alphabetized as the current order is intentional
 export const COMMENT_REACTION_OPTIONS: CommentReactionOption[] = [
   {

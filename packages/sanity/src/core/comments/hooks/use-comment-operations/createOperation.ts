@@ -149,7 +149,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
 
         path: {
           field: comment.fieldPath,
-          selection: comment.selection,
+          range: comment.range,
         },
         document: {
           _dataset: dataset,

@@ -140,7 +140,6 @@ import type {
   buildCommentRangeDecorations,
   buildLegacyTheme,
   buildRangeDecorationSelectionsFromComments,
-  buildTextSelectionFromFragment,
   CanvasAppOptions,
   CanvasNotificationPayload,
   CapabilityGate,
@@ -191,7 +190,6 @@ import type {
   CommentContext,
   CommentCreatePayload,
   CommentDeleteDialog,
-  CommentDisabledIcon,
   CommentDocument,
   CommentFieldCreatePayload,
   CommentInlineHighlightSpan,
@@ -204,6 +202,8 @@ import type {
   CommentOperations,
   CommentPath,
   CommentPostPayload,
+  CommentRange,
+  CommentRangePoint,
   CommentReactionItem,
   CommentReactionOption,
   CommentReactionShortNames,
@@ -218,11 +218,9 @@ import type {
   CommentsSelectedPath,
   CommentsSelectedPathProvider,
   CommentStatus,
-  CommentsTextSelectionItem,
   CommentsType,
   CommentsUIMode,
   CommentTaskCreatePayload,
-  CommentTextSelection,
   CommentThreadItem,
   CommentUpdateOperationOptions,
   CommentUpdatePayload,
@@ -2084,9 +2082,6 @@ describe('sanity', () => {
   test('buildRangeDecorationSelectionsFromComments', () => {
     expectTypeOf<typeof buildRangeDecorationSelectionsFromComments>().toBeFunction()
   })
-  test('buildTextSelectionFromFragment', () => {
-    expectTypeOf<typeof buildTextSelectionFromFragment>().toBeFunction()
-  })
   test('CanvasAppOptions', () => {
     expectTypeOf<CanvasAppOptions>().toBeObject()
   })
@@ -2237,9 +2232,6 @@ describe('sanity', () => {
   test('CommentDeleteDialog', () => {
     expectTypeOf<typeof CommentDeleteDialog>().toBeFunction()
   })
-  test('CommentDisabledIcon', () => {
-    expectTypeOf<typeof CommentDisabledIcon>().not.toBeNever()
-  })
   test('CommentDocument', () => {
     expectTypeOf<CommentDocument>().toBeObject()
   })
@@ -2275,6 +2267,12 @@ describe('sanity', () => {
   })
   test('CommentPostPayload', () => {
     expectTypeOf<CommentPostPayload>().not.toBeNever()
+  })
+  test('CommentRange', () => {
+    expectTypeOf<CommentRange>().toBeObject()
+  })
+  test('CommentRangePoint', () => {
+    expectTypeOf<CommentRangePoint>().toBeObject()
   })
   test('CommentReactionItem', () => {
     expectTypeOf<CommentReactionItem>().toBeObject()
@@ -2318,9 +2316,6 @@ describe('sanity', () => {
   test('CommentStatus', () => {
     expectTypeOf<CommentStatus>().not.toBeNever()
   })
-  test('CommentsTextSelectionItem', () => {
-    expectTypeOf<CommentsTextSelectionItem>().toBeObject()
-  })
   test('CommentsType', () => {
     expectTypeOf<CommentsType>().not.toBeNever()
   })
@@ -2329,9 +2324,6 @@ describe('sanity', () => {
   })
   test('CommentTaskCreatePayload', () => {
     expectTypeOf<CommentTaskCreatePayload>().toBeObject()
-  })
-  test('CommentTextSelection', () => {
-    expectTypeOf<CommentTextSelection>().toBeObject()
   })
   test('CommentThreadItem', () => {
     expectTypeOf<CommentThreadItem>().toBeObject()

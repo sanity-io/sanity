@@ -3,11 +3,17 @@ import {orderBy} from 'lodash-es'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {CommentsContext} from 'sanity/_singletons'
 
-import {useEditState, useSchema, useUserListWithPermissions} from '../../../hooks'
+import {
+  useDocumentOperation,
+  useEditState,
+  useSchema,
+  useUserListWithPermissions,
+} from '../../../hooks'
 import {type ReleaseId} from '../../../perspective/types'
 import {useCurrentUser} from '../../../store'
 import {useAddonDataset, useWorkspace} from '../../../studio'
 import {getPublishedId} from '../../../util'
+import {COMMENT_RANGES_FIELD} from '../../constants'
 import {
   type CommentOperationsHookOptions,
   useCommentOperations,
@@ -95,6 +101,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const currentUser = useCurrentUser()
 
   const {name: workspaceName, dataset, projectId} = useWorkspace()
+  const {patch} = useDocumentOperation(publishedId, documentType, releaseId)
 
   const documentValue = useMemo(() => {
     if (releaseId) return editState.version
@@ -240,6 +247,18 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     [dispatch],
   )
 
+  const handleOnRemove = useCallback(
+    (id: string) => {
+      const comment = getComment(id)
+      dispatch({type: 'COMMENT_DELETED', id})
+
+      if (comment?.target.path?.range) {
+        patch.execute([{unset: [`${COMMENT_RANGES_FIELD}[_key=="${id}"]`]}])
+      }
+    },
+    [dispatch, getComment, patch],
+  )
+
   const {operation} = useCommentOperations(
     useMemo(
       (): CommentOperationsHookOptions => ({
@@ -268,6 +287,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         // event from the real time listener.
         onCreate: handleOnCreate,
         onCreateError: handleOnCreateError,
+        onRemove: handleOnRemove,
         onUpdate: handleOnUpdate,
         onTransactionStart: handleOnTransactionStart,
         getCommentLink,
@@ -288,6 +308,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         createAddonDataset,
         handleOnCreate,
         handleOnCreateError,
+        handleOnRemove,
         handleOnUpdate,
         handleOnTransactionStart,
         getCommentLink,

@@ -74,14 +74,11 @@ async function postCommentUpdate(props: UpdateOperationProps) {
 export async function updateOperation(props: UpdateOperationProps): Promise<void> {
   const {id, comment, throttled: throttledProp} = props
 
-  const hasEditedMessage = 'message' in comment
+  const isUserModification = 'message' in comment || 'status' in comment
 
-  const editedComment: CommentUpdatePayload = {
-    ...comment,
-    lastEditedAt: new Date().toISOString(),
-  }
-
-  const nextComment: CommentUpdatePayload = hasEditedMessage ? editedComment : comment
+  const nextComment: CommentUpdatePayload = isUserModification
+    ? {...comment, lastEditedAt: new Date().toISOString()}
+    : comment
 
   if (!throttledProp) {
     await postCommentUpdate({

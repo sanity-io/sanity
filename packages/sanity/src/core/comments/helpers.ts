@@ -45,13 +45,11 @@ export function commentIntentIfDiffers(
 }
 
 /**
- * A function that checks whether a comment is a text selection comment
+ * A function that checks whether a comment is a text selection comment.
+ * Returns true when the comment has a stored range.
  * @internal
  */
 export function isTextSelectionComment(comment: CommentDocument): boolean {
   if (!comment) return false
-
-  return Boolean(
-    comment?.target?.path?.selection?.type === 'text' && comment?.target?.path?.selection?.value,
-  )
+  return Boolean(comment?.target?.path?.range)
 }
