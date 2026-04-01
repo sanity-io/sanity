@@ -14,6 +14,8 @@ export const FormContainer = styled.div((props) => {
     padding-inline: ${space[4]}px;
     padding-block-start: ${space[5]}px;
     padding-block-end: ${space[9]}px;
-    max-width: calc(${container[1]}px + (var(--formGutterSize, 0px) * 2) + (var(--formGutterGap, 0px) * 2));
+    max-width: calc(
+      ${container[1]}px + (var(--formGutterSize, 0px) * 2) + (var(--formGutterGap, 0px) * 2)
+    );
   `
 })
