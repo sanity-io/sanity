@@ -74,6 +74,15 @@ export default defineType({
       type: 'array',
       of: [{type: 'reference', to: [{type: 'author'}]}],
     },
+    {
+      name: 'arrayOfReferencesNoArrayFunctions',
+      title: 'Array of references to authors (no ArrayFunctions)',
+      type: 'array',
+      of: [{type: 'reference', to: [{type: 'author'}]}],
+      options: {
+        disableActions: ['add'],
+      },
+    },
     predefinedStringArray,
     defineField({
       name: 'inlineEditingArray',
