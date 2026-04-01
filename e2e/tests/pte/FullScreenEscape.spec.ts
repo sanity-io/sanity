@@ -38,7 +38,9 @@ test.describe('Portable Text Input - FullScreen Escape', () => {
     page,
     browserName,
   }) => {
-    test.skip(browserName === 'firefox')
+    // In Firefox the annotation <span> layout isn't ready by the time PopoverEditDialog
+    // reads its position, so @sanity/ui's Popover keeps the hidden attribute.
+    test.skip(browserName === 'firefox', 'PopoverEditDialog stays hidden in Firefox (timing issue)')
 
     await page.getByTestId('document-panel-portal').getByRole('textbox').click()
     await page.getByTestId('document-panel-portal').getByRole('textbox').fill('test')
