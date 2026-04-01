@@ -10,6 +10,8 @@
     "github>sanity-io/renovate-config:workarounds-esm",
     "github>sanity-io/renovate-config:dedupe"
   ],
+  "branchConcurrentLimit": 3,
+  "prConcurrentLimit": 5,
   "minimumReleaseAge": "3 days",
   "packageRules": [
     {
