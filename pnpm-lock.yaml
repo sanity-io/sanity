@@ -1498,6 +1498,12 @@ importers:
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
+      '@vanilla-extract/css':
+        specifier: 'catalog:'
+        version: 1.20.1(babel-plugin-macros@3.1.0)
+      '@vanilla-extract/vite-plugin':
+        specifier: 'catalog:'
+        version: 5.2.2(@types/node@24.10.13)(babel-plugin-macros@3.1.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(vite@7.3.2(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.3))(yaml@2.8.3)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 5.2.0(vite@7.3.2(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.3))
