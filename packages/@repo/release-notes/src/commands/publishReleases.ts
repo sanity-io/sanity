@@ -133,10 +133,3 @@ To initiate a new Sanity Studio project or learn more about upgrading, please re
 ${vars.changelog}
 `
 }
-
-function conventionalPrefix(entry: StudioChangelogEntry) {
-  if (!entry.type) {
-    return ''
-  }
-  return `${entry.type}${entry.scope ? `(${entry.scope})` : ''}: `
-}
