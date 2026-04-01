@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.19.0](https://github.com/sanity-io/sanity/compare/v5.18.0...v5.19.0) (2026-04-01)
+
+### Features
+
+* add feedbackDialog and sendFeedback methods  ([#12497](https://github.com/sanity-io/sanity/issues/12497)) ([0477e25](https://github.com/sanity-io/sanity/commit/0477e2527979552a7949d441ee95318b8e807e37))
+* **sanity:** tag version creation request during release duplication ([5b90d9a](https://github.com/sanity-io/sanity/commit/5b90d9a72eda977f390002f8e64e65fdb73015fb))
+* **telemetry:** track auth store timings ([#12529](https://github.com/sanity-io/sanity/issues/12529)) ([468ff0b](https://github.com/sanity-io/sanity/commit/468ff0bc547f5eab8e080f903e2f101c02f5ecac))
+
+### Bug Fixes
+
+* **auth:** return stats from handleCallbackResult ([#12522](https://github.com/sanity-io/sanity/issues/12522)) ([9d4bd08](https://github.com/sanity-io/sanity/commit/9d4bd08efc477db2b43ae88071ed3d23798574d7))
+* **core:** prevent PointerOverlayDiv from blocking clicks on initial render in CommandList ([#12480](https://github.com/sanity-io/sanity/issues/12480)) ([9ca91b5](https://github.com/sanity-io/sanity/commit/9ca91b5e53c6f6d6716f2076fc18124460ed9faf))
+* **core:** prevent task form operations from leaking into the main workspace store ([#12523](https://github.com/sanity-io/sanity/issues/12523)) ([5439954](https://github.com/sanity-io/sanity/commit/54399547923c650ee256a2c93fbaec029f39c25c))
+* **core:** publishing anonymous versions  ([#12514](https://github.com/sanity-io/sanity/issues/12514)) ([a1c9e4b](https://github.com/sanity-io/sanity/commit/a1c9e4b8bd9cd93ab2b276f9a642aad31b65e92c))
+* **deps:** bump misc sanity packages ([#12470](https://github.com/sanity-io/sanity/issues/12470)) ([5c56d11](https://github.com/sanity-io/sanity/commit/5c56d11297184275ebd874a47955c3a506d29602))
+* **deps:** update [@portabletext](https://github.com/portabletext) packages to latest versions ([#12538](https://github.com/sanity-io/sanity/issues/12538)) ([6095f0d](https://github.com/sanity-io/sanity/commit/6095f0d2a05615e986c89914bef071bec1eda77f))
+* **deps:** update @sanity/cli to v6.3.0 ([#12537](https://github.com/sanity-io/sanity/issues/12537)) ([1976167](https://github.com/sanity-io/sanity/commit/19761674059e9d977c8bc80f66aab26381c95fb9))
+* **deps:** update @sanity/cli to v6.3.1 ([#12546](https://github.com/sanity-io/sanity/issues/12546)) ([27690b4](https://github.com/sanity-io/sanity/commit/27690b458c5dda5589d1b99a4e09e0631315a6e9))
+* pasting a document into a schema with read-only fields will exclude those fields from paste ([#12488](https://github.com/sanity-io/sanity/issues/12488)) ([500e413](https://github.com/sanity-io/sanity/commit/500e41315c1c792c0235a3f12e6b4450bc504c83))
+* **release-notes:** unset releaseAutomation before publishing content release ([#12505](https://github.com/sanity-io/sanity/issues/12505)) ([3643a20](https://github.com/sanity-io/sanity/commit/3643a207ca7eeae788c8d90d1ddf9dcbb377c94c))
+* **sanity:** log deprecation warning once ([#12526](https://github.com/sanity-io/sanity/issues/12526)) ([abc296d](https://github.com/sanity-io/sanity/commit/abc296dc90d7ec7d9218248c70850eec0ec0ec4c))
+* show initial value template icons in new document pickers ([#12508](https://github.com/sanity-io/sanity/issues/12508)) ([990a3c4](https://github.com/sanity-io/sanity/commit/990a3c4a90e99747c081af6f4689a035b7437e68))
+* **structure:** add empty state to incoming refs inspector ([#12524](https://github.com/sanity-io/sanity/issues/12524)) ([0add49d](https://github.com/sanity-io/sanity/commit/0add49d8583112ae7b3c4bc28f9bd20fbff01e23))
+* **validation:** allow relative URLs when scheme excludes http ([#12486](https://github.com/sanity-io/sanity/issues/12486)) ([d5c2b1c](https://github.com/sanity-io/sanity/commit/d5c2b1ca31014526cf1178c34443879131bd9452))
 
 ## [5.18.0](https://github.com/sanity-io/sanity/compare/v5.17.1...v5.18.0) (2026-03-24)
 
