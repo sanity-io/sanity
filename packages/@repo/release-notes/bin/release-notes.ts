@@ -303,7 +303,7 @@ function formatEntry({
   releaseId: GenerateChangeLogResult['releaseId']
 }) {
   const entryKey = conventionalCommit.hash!.slice(0, 8)
-  const originalCommitMessage = stripPr(conventionalCommit.subject || '', pr.number)
+  const originalCommitMessage = stripPr(conventionalCommit.header || '', pr.number)
   const entryPath = encodeURIComponent(`changelog[_key=="${entryKey}"]`)
   const changelogEntryUrl = `${getAdminStudioUrl()}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
 
