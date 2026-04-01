@@ -16,8 +16,8 @@ export function useVisibilityDetection(parentRef: RefObject<HTMLElement | null>)
       const entry = entries[0]
       if (!entry) return
 
-      const {width, height} = entry.contentRect
-      const isNowVisible = width > 0 && height > 0
+      const {width} = entry.contentRect
+      const isNowVisible = width > 0
       const wasVisible = prevVisible.current
 
       if (wasVisible === isNowVisible) return
