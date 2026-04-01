@@ -139,5 +139,8 @@
       "prBodyTemplate": "{{{header}}}{{{table}}}{{{warnings}}}{{{notes}}}{{{configDescription}}}{{{controls}}}{{{footer}}}\n### Notes for release\n{{{changelogs}}}"
     }
   ],
+  "toolSettings": {
+    "nodeMaxMemory": "1024"
+  },
   "ignorePaths": ["packages/sanity/fixtures/examples/prj-with-react-19/package.json"]
 }
