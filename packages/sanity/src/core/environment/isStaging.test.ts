@@ -1,57 +1,65 @@
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
-import * as importMap from './importMap'
-import {isStaging} from './isStaging'
-
-const getSanityImportMapUrlSpy = vi.spyOn(importMap, 'getSanityImportMapUrl')
+vi.mock('./importMap', () => ({
+  getSanityImportMapUrl: vi.fn(),
+}))
 
 afterEach(() => {
-  getSanityImportMapUrlSpy.mockReset()
-  // Clean up any global __SANITY_STAGING__ we may have set
+  vi.resetModules()
+  vi.restoreAllMocks()
   // @ts-expect-error: __SANITY_STAGING__ is a global env variable
   delete globalThis.__SANITY_STAGING__
 })
 
+async function loadIsStaging(): Promise<boolean> {
+  const mod = await import('./isStaging')
+  return mod.isStaging
+}
+
 describe('isStaging', () => {
-  it('should return false when no staging signals are present', () => {
-    getSanityImportMapUrlSpy.mockReturnValue(undefined)
-    expect(isStaging()).toBe(false)
+  it('should return false when no staging signals are present', async () => {
+    const {getSanityImportMapUrl} = await import('./importMap')
+    vi.mocked(getSanityImportMapUrl).mockReturnValue(undefined)
+    expect(await loadIsStaging()).toBe(false)
   })
 
-  it('should return true when __SANITY_STAGING__ is true', () => {
+  it('should return true when __SANITY_STAGING__ is true', async () => {
     // @ts-expect-error: __SANITY_STAGING__ is a global env variable
     globalThis.__SANITY_STAGING__ = true
-    getSanityImportMapUrlSpy.mockReturnValue(undefined)
-    expect(isStaging()).toBe(true)
+    expect(await loadIsStaging()).toBe(true)
   })
 
-  it('should return false when __SANITY_STAGING__ is false', () => {
+  it('should return false when __SANITY_STAGING__ is false', async () => {
     // @ts-expect-error: __SANITY_STAGING__ is a global env variable
     globalThis.__SANITY_STAGING__ = false
-    getSanityImportMapUrlSpy.mockReturnValue(undefined)
-    expect(isStaging()).toBe(false)
+    const {getSanityImportMapUrl} = await import('./importMap')
+    vi.mocked(getSanityImportMapUrl).mockReturnValue(undefined)
+    expect(await loadIsStaging()).toBe(false)
   })
 
-  it('should return true when import map points to staging CDN', () => {
-    getSanityImportMapUrlSpy.mockReturnValue(
+  it('should return true when import map points to staging CDN', async () => {
+    const {getSanityImportMapUrl} = await import('./importMap')
+    vi.mocked(getSanityImportMapUrl).mockReturnValue(
       'https://sanity-cdn.work/v1/modules/by-app/abc123/sanity',
     )
-    expect(isStaging()).toBe(true)
+    expect(await loadIsStaging()).toBe(true)
   })
 
-  it('should return false when import map points to production CDN', () => {
-    getSanityImportMapUrlSpy.mockReturnValue(
+  it('should return false when import map points to production CDN', async () => {
+    const {getSanityImportMapUrl} = await import('./importMap')
+    vi.mocked(getSanityImportMapUrl).mockReturnValue(
       'https://sanity-cdn.com/v1/modules/by-app/abc123/sanity',
     )
-    expect(isStaging()).toBe(false)
+    expect(await loadIsStaging()).toBe(false)
   })
 
-  it('should return true when both build-time flag and import map indicate staging', () => {
+  it('should return true when both build-time flag and import map indicate staging', async () => {
     // @ts-expect-error: __SANITY_STAGING__ is a global env variable
     globalThis.__SANITY_STAGING__ = true
-    getSanityImportMapUrlSpy.mockReturnValue(
+    const {getSanityImportMapUrl} = await import('./importMap')
+    vi.mocked(getSanityImportMapUrl).mockReturnValue(
       'https://sanity-cdn.work/v1/modules/by-app/abc123/sanity',
     )
-    expect(isStaging()).toBe(true)
+    expect(await loadIsStaging()).toBe(true)
   })
 })

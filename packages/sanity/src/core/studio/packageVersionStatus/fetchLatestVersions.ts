@@ -4,7 +4,7 @@ import {isStaging} from '../../environment/isStaging'
 
 // e2e tests also check for this URL pattern -- please update if it changes!
 const MODULES_URL_VERSION = 'v1'
-const MODULES_HOST = isStaging() ? 'https://sanity-cdn.work' : 'https://sanity-cdn.com'
+const MODULES_HOST = isStaging ? 'https://sanity-cdn.work' : 'https://sanity-cdn.com'
 const MODULES_URL = `${MODULES_HOST}/${MODULES_URL_VERSION}/modules`
 
 function currentUnixTimestamp() {

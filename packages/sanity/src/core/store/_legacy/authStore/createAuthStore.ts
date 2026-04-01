@@ -196,7 +196,7 @@ export function _createAuthStore({
   const hostOptions: {apiHost?: string} = {}
   if (apiHost) {
     hostOptions.apiHost = apiHost
-  } else if (isStaging()) {
+  } else if (isStaging) {
     hostOptions.apiHost = 'https://api.sanity.work'
   }
 

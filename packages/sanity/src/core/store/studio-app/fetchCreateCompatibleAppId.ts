@@ -27,7 +27,7 @@ export interface CompatibleStudioAppId {
   studioApps: StudioApp[]
 }
 
-const internalUrlSuffix = isStaging() ? 'studio.sanity.work' : 'sanity.studio'
+const internalUrlSuffix = isStaging ? 'studio.sanity.work' : 'sanity.studio'
 
 async function fetchStudiosWithUrl(
   client: SanityClient,
