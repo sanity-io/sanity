@@ -140,7 +140,7 @@
     }
   ],
   "toolSettings": {
-    "nodeMaxMemory": 1536
+    "nodeMaxMemory": 2048
   },
   "ignorePaths": ["packages/sanity/fixtures/examples/prj-with-react-19/package.json"]
 }
