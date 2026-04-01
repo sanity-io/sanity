@@ -125,7 +125,12 @@ await yargs(process.argv.slice(2))
         })
         if (args.outputFormat === 'pr-description') {
           // oxlint-disable-next-line no-console
-          console.log(generateChangeLogSummary(args.tentativeVersion, result))
+          console.log(
+            generateChangeLogSummary(
+              {tentativeVersion: args.tentativeVersion, baseVersion: args.baseVersion},
+              result,
+            ),
+          )
         } else {
           // oxlint-disable-next-line no-console
           console.log(result)
@@ -257,7 +262,10 @@ type GenerateChangeLogResult = {
   releaseId: string
 }
 
-function generateChangeLogSummary(tentativeVersion: string, result: GenerateChangeLogResult) {
+function generateChangeLogSummary(
+  {tentativeVersion, baseVersion}: {tentativeVersion: string; baseVersion: string},
+  result: GenerateChangeLogResult,
+) {
   const {changelogDocumentId, commitsWithPrs, releaseId} = result
 
   const commitCount = commitsWithPrs.length
@@ -276,15 +284,28 @@ function generateChangeLogSummary(tentativeVersion: string, result: GenerateChan
           )
           .join('\n')
 
+  const changelogUrl = `${getAdminStudioUrl()}/intent/edit/id=${changelogDocumentId.published}/?perspective=${releaseId}`
+  const contentReleaseUrl = `${getAdminStudioUrl()}/intent/release/id=${releaseId}/?perspective=${releaseId}`
+
   return `
-🤖 I have created a release **squib** **squob**
+🤖 I have created a release \`**squib**\` \`**squob**\`
 
-Merging this PR will publish **\`v${tentativeVersion}\`** to npm 🚀
+📜 A [content release](${contentReleaseUrl}) has been created with a [changelog document](${changelogUrl}) that includes release notes from all PRs included in this release.
 
-:scroll: **[Draft changelog](${getAdminStudioUrl()}/intent/edit/id=${changelogDocumentId.published}/?perspective=${releaseId})**
+Note: Entries in the changelog document can be safely edited and will never be overwritten by automation.
 
-### Changes to be released
+### 🚀 Steps to release
+1. Mark this PR as ready for review to block open PRs from being merged while release is in progress
+2. Ensure the [content release](${contentReleaseUrl}) is ready to go and passes validation
+3. Merge this PR
 
+Once this PR is merged, automation will take care of the rest by:
+- Publishing **\`v${tentativeVersion}\`** of all public packages in this repo to the npm registry and tagging as \`latest\`
+- Publishing the [content release](${contentReleaseUrl}) for **\`v${tentativeVersion}\`**
+- Tagging, creating, and publishing a GitHub Release for **\`v${tentativeVersion}\`**
+- Building and uploading bundles for Auto Updating Studios
+
+### Pending changes
 Author | Message | PR | Commit | Note
 ------------ | ------------- | ------------- | ------------- | -------------
 ${entriesSection}
