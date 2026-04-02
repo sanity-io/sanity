@@ -11,7 +11,7 @@ on:
 
 jobs:
   renovate:
-    uses: sanity-io/sanity-actions/.github/workflows/renovate.yml@jw/selfhosted-renovate
+    uses: sanity-io/sanity-actions/.github/workflows/renovate.yml@main
     with:
       log-level: debug
       autodiscover: false
