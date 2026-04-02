@@ -195,3 +195,24 @@ function parseParams({
     },
   } as ParamsSuccess
 }
+
+/**
+ * Given the previous and current states, determine whether the view became
+ * active (entered) or became inactive (exited).
+ *
+ * @internal
+ */
+export function selectActiveTransition(
+  previousState: Pick<DiffViewState, 'isActive'> | undefined,
+  state: Pick<DiffViewState, 'isActive'>,
+): 'entered' | 'exited' | undefined {
+  if (!previousState?.isActive && state.isActive) {
+    return 'entered'
+  }
+
+  if (previousState?.isActive && !state.isActive) {
+    return 'exited'
+  }
+
+  return undefined
+}
