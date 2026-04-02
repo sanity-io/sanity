@@ -1,4 +1,5 @@
 name: Renovate
+
 on:
   schedule:
     - cron: "0 */2 * * *" # Every 2 hours
@@ -9,10 +10,59 @@ on:
     types: [edited]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}
+
+permissions:
+  contents: read
+
 jobs:
   renovate:
-    uses: sanity-io/sanity-actions/.github/workflows/renovate.yml@main
-    with:
-      log-level: debug
-      autodiscover: false
-    secrets: inherit
+    # Filter out noise: only run for schedule, manual dispatch, merged Renovate PRs,
+    # and human-edited issues (not bot updates to the Dependency Dashboard).
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'renovate/')) ||
+      (github.event_name == 'issues' && github.event.sender.type != 'Bot')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Generate Renovate runner config
+        id: config
+        env:
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          CONFIG_FILE="$GITHUB_WORKSPACE/.renovate-runner-config.json5"
+
+          cat > "$CONFIG_FILE" <<'EOF'
+          {
+            $schema: "https://docs.renovatebot.com/renovate-schema.json",
+            onboarding: false,
+            requireConfig: "optional",
+          EOF
+
+          echo "  repositories: [\"$REPOSITORY\"]," >> "$CONFIG_FILE"
+          echo '}' >> "$CONFIG_FILE"
+
+          echo "Generated config:"
+          cat "$CONFIG_FILE"
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@3633cede7d4d4598438e654eac4a695e46004420 # v46.1.7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          configurationFile: .renovate-runner-config.json5
+        env:
+          GITHUB_COM_TOKEN: ${{ github.token }}
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          LOG_LEVEL: debug
