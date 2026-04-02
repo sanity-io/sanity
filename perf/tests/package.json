@@ -19,7 +19,6 @@
     "@sanity/client": "catalog:",
     "@sanity/uuid": "^3.0.2",
     "dotenv": "^16.6.1",
-    "execa": "^2.1.0",
     "lodash-es": "^4.18.1",
     "rxjs": "^7.8.2",
     "tinyglobby": "^0.2.15"

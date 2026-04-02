@@ -1,6 +1,10 @@
-import execa from 'execa'
+import {execFile, execFileSync} from 'node:child_process'
+import {promisify} from 'node:util'
+
 import partition from 'lodash-es/partition.js'
 import uniq from 'lodash-es/uniq.js'
+
+const execFileAsync = promisify(execFile)
 
 const placeholders = {
   commit: '%H',
@@ -82,21 +86,21 @@ function getGitArgs(format: string) {
 export async function getGitInfo<Field extends GitField>(
   fields: Field[],
 ): Promise<{[K in Field]: string}> {
-  const output = execa('git', getGitArgs(createFormat(fields)))
-  return parseOutput(fields, (await output).stdout)
+  const output = await execFileAsync('git', getGitArgs(createFormat(fields)))
+  return parseOutput(fields, output.stdout)
 }
 
 export function getGitInfoSync(fields: GitField[]) {
-  const res = execa.sync('git', getGitArgs(createFormat(fields)))
-  return parseOutput(fields, res.stdout)
+  const stdout = execFileSync('git', getGitArgs(createFormat(fields)), {encoding: 'utf-8'})
+  return parseOutput(fields, stdout)
 }
 
 const CURRENT_BRANCH_ARGS = ['rev-parse', '--abbrev-ref', 'HEAD']
 
 export function getCurrentBranch() {
-  return execa('git', CURRENT_BRANCH_ARGS).then((res) => res.stdout)
+  return execFileAsync('git', CURRENT_BRANCH_ARGS).then((res) => res.stdout)
 }
 
 export function getCurrentBranchSync() {
-  return execa.sync('git', CURRENT_BRANCH_ARGS).stdout
+  return execFileSync('git', CURRENT_BRANCH_ARGS, {encoding: 'utf-8'})
 }
