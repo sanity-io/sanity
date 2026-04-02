@@ -26,6 +26,7 @@ const bucket = storage.bucket(readEnv<KnownEnvVar>('GCLOUD_BUCKET'))
 const mimeTypes: Record<string, string | undefined> = {
   '.mjs': 'application/javascript',
   '.map': 'application/json',
+  '.css': 'text/css',
 }
 
 /**

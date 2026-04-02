@@ -13,6 +13,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@types/lodash-es": "^4.17.12",
+    "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "eslint": "catalog:",
     "lodash-es": "^4.18.1",
