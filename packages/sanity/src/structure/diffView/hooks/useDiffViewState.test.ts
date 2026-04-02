@@ -2,7 +2,7 @@ import {renderHook} from '@testing-library/react'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {it as baseIt, describe, expect, vi} from 'vitest'
 
-import {useDiffViewState} from './useDiffViewState'
+import {selectActiveTransition, useDiffViewState} from './useDiffViewState'
 
 vi.mock('sanity/router', () => ({
   useRouter: vi.fn(),
@@ -360,5 +360,31 @@ describe('useDiffViewState', () => {
         },
       })
     })
+  })
+})
+
+describe('selectActiveTransition', () => {
+  it('returns "entered" when transitioning from inactive to active', () => {
+    expect(selectActiveTransition({isActive: false}, {isActive: true})).toBe('entered')
+  })
+
+  it('returns "entered" when transitioning from undefined to active', () => {
+    expect(selectActiveTransition(undefined, {isActive: true})).toBe('entered')
+  })
+
+  it('returns "exited" when transitioning from active to inactive', () => {
+    expect(selectActiveTransition({isActive: true}, {isActive: false})).toBe('exited')
+  })
+
+  it('returns undefined when isActive remains false', () => {
+    expect(selectActiveTransition({isActive: false}, {isActive: false})).toBeUndefined()
+  })
+
+  it('returns undefined when isActive remains true', () => {
+    expect(selectActiveTransition({isActive: true}, {isActive: true})).toBeUndefined()
+  })
+
+  it('returns undefined when previous state is undefined and state is inactive', () => {
+    expect(selectActiveTransition(undefined, {isActive: false})).toBeUndefined()
   })
 })
