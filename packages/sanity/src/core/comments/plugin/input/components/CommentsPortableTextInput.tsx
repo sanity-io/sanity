@@ -551,20 +551,19 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   return (
     <>
       <BoundaryElementProvider element={boundaryElement}>
+        {showFloatingInput && currentUser && (
+          <InlineCommentInputPopover
+            currentUser={currentUser}
+            mentionOptions={mentionOptions}
+            onChange={setNextCommentValue}
+            onClickOutside={resetStates}
+            onDiscardConfirm={handleCommentDiscardConfirm}
+            onSubmit={handleSubmit}
+            referenceElement={popoverAuthoringReferenceElement}
+            value={nextCommentValue}
+          />
+        )}
         <AnimatePresence>
-          {showFloatingInput && currentUser && (
-            <InlineCommentInputPopover
-              currentUser={currentUser}
-              mentionOptions={mentionOptions}
-              onChange={setNextCommentValue}
-              onClickOutside={resetStates}
-              onDiscardConfirm={handleCommentDiscardConfirm}
-              onSubmit={handleSubmit}
-              referenceElement={popoverAuthoringReferenceElement}
-              value={nextCommentValue}
-            />
-          )}
-
           {showFloatingButton && !showFloatingInput && (
             <FloatingButtonPopover
               disabled={currentSelectionIsOverlapping || Boolean(addonDatasetError)}
