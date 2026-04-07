@@ -1,22 +1,29 @@
 import {
   type ClientConfig as SanityClientConfig,
+  ClientError,
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
+import {type CurrentUser} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import memoize from 'lodash-es/memoize.js'
-import {defer} from 'rxjs'
-import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
+import {combineLatest, defer, EMPTY, firstValueFrom, fromEvent, merge} from 'rxjs'
+import {distinctUntilChanged, map, shareReplay, switchMap, tap} from 'rxjs/operators'
 
-import {type AuthConfig, type LoginMethod} from '../../../config'
+import {type AuthConfig} from '../../../config'
 import {isStaging} from '../../../environment/isStaging'
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
-import {CorsOriginError} from '../cors'
-import {createBroadcastChannel} from './createBroadcastChannel'
+import {createBroadcastState} from './createBroadcastState'
 import {createLoginComponent} from './createLoginComponent'
-import {clearSessionId, getSessionId} from './sessionId'
-import * as storage from './storage'
-import {type AuthState, type AuthStore, type HandleCallbackResult} from './types'
+import {createTokenStorage} from './createTokenStorage'
+import {consumeHashToken} from './hashToken'
+import {clearHashSessionId, getHashSessionId} from './sessionId'
+import {
+  type AuthState,
+  type AuthStore,
+  type HandleCallbackResult,
+  type AuthProbeResult,
+} from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 
 /** @internal */
@@ -26,98 +33,10 @@ export interface AuthStoreOptions extends AuthConfig {
   dataset: string
 }
 
-const getStorageKey = (projectId: string): string => {
-  // Project ID is part of the localStorage key so that different projects can
-  // store their separate tokens, and it's easier to do book keeping.
-  if (!projectId) throw new Error('Invalid project id')
-  return `__studio_auth_token_${projectId}`
-}
-
-const getHashToken = (): string | null => {
-  if (typeof window === 'undefined' || typeof window.location !== 'object') {
-    return null
-  }
-
-  // Token pattern used for extracting tokens from URL hash
-  const tokenPattern = /token=([^&]{32,})&?/
-  const [, tokenParam] = window.location.hash.match(tokenPattern) || []
-  if (!tokenParam) {
-    return null
-  }
-
-  // Remove the token from URL for security
-  const newHash = window.location.hash.replace(tokenPattern, '')
-  const newUrl = new URL(window.location.href)
-  newUrl.hash = newHash.length > 1 ? newHash : ''
-  history.replaceState(null, '', newUrl)
-
-  return tokenParam
-}
-
-const getAuthOptions = (
-  loginMethod: LoginMethod,
-  token: string | null,
-): {token: string} | {withCredentials: boolean} | null => {
-  if (loginMethod === 'cookie') {
-    return {withCredentials: true}
-  }
-
-  if (loginMethod === 'token') {
-    return token ? {token} : null
-  }
-
-  return token ? {token} : {withCredentials: true}
-}
-
-const getStoredToken = (projectId: string): string | null => {
-  try {
-    const item = storage.getItem(getStorageKey(projectId))
-    if (!item) return null
-
-    const {token} = JSON.parse(item) as {token: string}
-    return token && typeof token === 'string' ? token : null
-  } catch (err) {
-    console.error(err)
-    return null
-  }
-}
-
-const getToken = (projectId: string): string | null => {
-  const storedToken = getStoredToken(projectId)
-  const hashToken = getHashToken()
-
-  // Prefer hash token over stored token when available and different
-  if (hashToken && (!storedToken || hashToken !== storedToken)) {
-    saveToken({token: hashToken, projectId})
-    return hashToken
-  }
-
-  return storedToken || null
-}
-
-const clearToken = (projectId: string): void => {
-  try {
-    storage.removeItem(getStorageKey(projectId))
-  } catch (err) {
-    console.error('Failed to clear auth token from storage:', err)
-  }
-}
-
-const saveToken = ({token, projectId}: {token: string; projectId: string}): void => {
-  try {
-    storage.setItem(
-      getStorageKey(projectId),
-      JSON.stringify({token, time: new Date().toISOString()}),
-    )
-  } catch (err) {
-    console.error('Failed to save auth token to storage:', err)
-  }
-}
-
 const getCurrentUser = async (
   client: SanityClient,
-  broadcastToken: (token: string | null) => void,
-) => {
+  onUnauthorized?: () => void,
+): Promise<CurrentUser | undefined> => {
   try {
     const user = await client.request({
       uri: '/users/me',
@@ -125,32 +44,13 @@ const getCurrentUser = async (
     })
 
     // if the user came back with an id, assume it's a full CurrentUser
-    return typeof user?.id === 'string' ? user : null
+    return typeof user?.id === 'string' ? user : undefined
   } catch (err) {
-    // 401 means the user had some kind of credentials, but failed to authenticate,
-    // we should clear any local token in this case and treat it as if the used was
-    // logged out
+    // 401 means the user had some kind of credentials, but failed to authenticate.
+    // Clear any stale local token so we don't keep retrying with bad credentials.
     if (err.statusCode === 401) {
-      clearToken(client.config().projectId || '')
-      broadcastToken(null)
-      return null
-    }
-
-    // Request failed for a non-auth reason, see if this was a CORS-error by
-    // checking the `/ping` endpoint, which allows all origins
-    const invalidCorsConfig = await client
-      .request({uri: '/ping', withCredentials: false, tag: 'cors-check'})
-      .then(
-        () => true, // Request succeeded, so likely the CORS origin is disallowed
-        () => false, // Request failed, so likely a network error of some kind
-      )
-
-    if (invalidCorsConfig) {
-      // Throw a specific error on CORS-errors, to allow us to show a customized dialog
-      throw new CorsOriginError({
-        isStaging: client.config().apiHost.endsWith('.work'),
-        projectId: client.config()?.projectId,
-      })
+      onUnauthorized?.()
+      return undefined
     }
 
     // Some non-CORS error - is it one of those undefinable network errors?
@@ -164,6 +64,68 @@ const getCurrentUser = async (
   }
 }
 
+const UNAUTHENTICATED = {authenticated: false} as const
+// Uses the experimental API version for access to /auth/id and /auth/exchange endpoints
+const API_VERSION = 'vX'
+
+/**
+ * Probe whether a given auth method works by calling /auth/id.
+ */
+const probeCurrentUser = (client: SanityClient): Promise<AuthProbeResult> => {
+  return client
+    .withConfig({apiVersion: API_VERSION})
+    .request<{id: string; expiry: number}>({
+      uri: '/auth/id',
+      tag: 'auth.check-id',
+    })
+    .then(
+      (response) => {
+        // Note: currently this endpoint responds with 401 when user is not authenticated
+        // so response.id will always be set here.
+        // However, to align with /users/me, this endpoint may be changed to
+        // return 200 OK with `{}` as the response (see SRE-3648)
+        return typeof response?.id === 'string'
+          ? {
+              authenticated: true,
+              id: response.id,
+              expiry: new Date(response.expiry * 1000).toISOString(),
+            }
+          : UNAUTHENTICATED
+      },
+      (err) => {
+        if (err instanceof ClientError && err.statusCode === 401) {
+          return UNAUTHENTICATED
+        }
+        throw err
+      },
+    )
+}
+
+/**
+ * Exchange a session ID for both a cookie and a token via /auth/exchange.
+ * The endpoint sets a Set-Cookie header (stored under the Studio's partition key
+ * because this is a fetch with credentials from the Studio's origin) and returns
+ * the token in the response body.
+ */
+async function exchangeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {
+  const {token} = await client.request<{token: string}>({
+    method: 'GET',
+    uri: `/auth/fetch`,
+    query: {sid: sessionId},
+    tag: 'auth.fetch-token',
+  })
+  return token
+}
+
+const COMMON_CLIENT_OPTIONS = {
+  apiVersion: API_VERSION,
+  useCdn: false,
+  perspective: 'raw',
+  requestTagPrefix: 'sanity.studio',
+  allowReconfigure: false,
+  headers: DEFAULT_STUDIO_CLIENT_HEADERS,
+} as const
+
 /**
  * @internal
  */
@@ -175,22 +137,53 @@ export function _createAuthStore({
   loginMethod = 'dual',
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
-  // this broadcast channel receives either a token as a `string` or `null`.
-  // a new client will be created from it, otherwise, it'll only trigger a retry
-  // for cookie-based auth
-  const {broadcast, messages} = createBroadcastChannel<string | null>(`dual_mode_auth_${projectId}`)
+  // Precedence when initializing auth:
+  // * if loginMethod == 'dual':
+  //    1. token in hash (if exists) – will be written as new localStorage token
+  //    2. token in localStorage (if it exists)
+  //    3. HTTP cookie
+  // * if loginMethod == "token"
+  //    1. token in hash (if exists) – will be written as new localStorage token
+  //    2. token in localStorage (if it exists)
+  // * if loginMethod == "cookie"
+  //    1. HTTP cookie
+
+  const tokenStorage = createTokenStorage(
+    `__studio_auth_token_${projectId}`,
+    (currentTokenValue) => {
+      // sets the initial value
+      if (!isCookielessCompatibleLoginMethod(loginMethod)) {
+        // note: this will also clear any existing tokens
+        return undefined
+      }
+      const hashToken = consumeHashToken()
+      // use hash token if it exists
+      return hashToken ? {token: hashToken} : currentTokenValue
+    },
+  )
+
+  const token$ = merge(
+    tokenStorage.value,
+    // Listen for hash changes and consume any token found in the hash.
+    // The tap triggers tokenStorage.update() which pushes to the BehaviorSubject
+    // backing tokenStorage.value — so the actual emission comes from that stream.
+    // switchMap to EMPTY so this branch produces no direct values.
+    fromEvent(document, 'hashchange').pipe(
+      tap(() => {
+        const hashToken = consumeHashToken()
+        if (hashToken) {
+          tokenStorage.update({token: hashToken})
+        }
+      }),
+      switchMap(() => EMPTY),
+    ),
+  )
+
+  const invalidateCookieAuth = createBroadcastState(
+    `__studio_auth_cookie_invalidations_${projectId}`,
+  )
 
   const clientFactory = clientFactoryOption ?? createSanityClient
-
-  // // TODO: there is currently a bug where the AuthBoundary flashes the
-  // // `NotAuthenticatedComponent` on the first load after a login with
-  // // cookieless mode. A potential solution to fix this bug is to delay
-  // // emitting `state$` until the session ID has been converted to a token
-  // const firstMessage = messages.pipe(first())
-
-  const token$ = messages.pipe(
-    startWith(isCookielessCompatibleLoginMethod(loginMethod) ? getToken(projectId) : null),
-  )
 
   // Allow configuration of `apiHost` through source configuration
   const hostOptions: {apiHost?: string} = {}
@@ -200,30 +193,66 @@ export function _createAuthStore({
     hostOptions.apiHost = 'https://api.sanity.work'
   }
 
-  const state$ = token$.pipe(
-    // // see above
-    // debounce(() => firstMessage),
-    map((token) =>
+  const cookieClient$ = invalidateCookieAuth.value.pipe(
+    // note: invalidating cookie auth does not trigger any change to client options – it's important
+    // that we emit a new object to signal change (i.e. no distinctUntilChanged)
+    map(() =>
       clientFactory({
+        ...COMMON_CLIENT_OPTIONS,
+        ...hostOptions,
         projectId,
         dataset,
-        apiVersion: '2021-06-07',
-        useCdn: false,
-        ...getAuthOptions(loginMethod, token),
-        perspective: 'raw',
-        requestTagPrefix: 'sanity.studio',
-        ignoreBrowserTokenWarning: true,
-        allowReconfigure: false,
-        headers: DEFAULT_STUDIO_CLIENT_HEADERS,
-        ...hostOptions,
+        withCredentials: true,
       }),
     ),
+    shareReplay({bufferSize: 1, refCount: true}),
+  )
+
+  const tokenClient$ = token$.pipe(
+    distinctUntilChanged(isEqual),
+    map((storedToken) => {
+      return {
+        ...COMMON_CLIENT_OPTIONS,
+        ...hostOptions,
+        projectId,
+        dataset,
+        ...(storedToken ? {token: storedToken.token, ignoreBrowserTokenWarning: true} : {}),
+      }
+    }),
+    map((clientConfig) => clientFactory(clientConfig)),
+    shareReplay({bufferSize: 1, refCount: true}),
+  )
+
+  const dualClient$ = token$.pipe(
+    distinctUntilChanged(isEqual),
+    map((storedToken) => {
+      return {
+        ...COMMON_CLIENT_OPTIONS,
+        ...hostOptions,
+        projectId,
+        dataset,
+        ...(storedToken
+          ? {token: storedToken.token, ignoreBrowserTokenWarning: true}
+          : {withCredentials: true}),
+      }
+    }),
+    map((clientConfig) => clientFactory(clientConfig)),
+    shareReplay({bufferSize: 1, refCount: true}),
+  )
+
+  // loginMethod is constant per auth store instance — select the right stream directly
+  const workspaceClient$ =
+    loginMethod === 'dual' ? dualClient$ : loginMethod === 'cookie' ? cookieClient$ : tokenClient$
+
+  const authState$ = workspaceClient$.pipe(
     switchMap((client) =>
       defer(async (): Promise<AuthState> => {
-        const currentUser = await getCurrentUser(client, broadcast)
-
+        const currentUser = await getCurrentUser(client, () => {
+          // Clear stale token on 401 so we don't keep retrying with bad credentials
+          tokenStorage.update(undefined)
+        })
         return {
-          currentUser,
+          currentUser: currentUser || null,
           client,
           authenticated: !!currentUser,
         }
@@ -234,17 +263,17 @@ export function _createAuthStore({
       // Using isEqual is OK since the currentUser object being a small data structure.
       isEqual(prev.currentUser, next.currentUser),
     ),
-    shareReplay(1),
+    shareReplay({bufferSize: 1, refCount: true}),
   )
 
   async function handleCallbackUrl(): Promise<HandleCallbackResult> {
     const startTime = performance.now()
-    const sessionId = getSessionId()
+    const sessionId = getHashSessionId()
     // workaround for https://github.com/vercel/next.js/issues/91819
-    clearSessionId()
+    clearHashSessionId()
 
     if (!sessionId) {
-      broadcast(loginMethod === 'cookie' ? null : getToken(projectId))
+      // No session ID means this is a normal cold load, not a post-login redirect.
       return {
         loginMethod,
         flow: 'already-authenticated',
@@ -253,104 +282,122 @@ export function _createAuthStore({
       }
     }
 
-    const requestClient = clientFactory({
+    // Client used to exchange SID (Session ID) for a token (and a cookie as a side effect)
+    const exchangeClient = clientFactory({
+      ...COMMON_CLIENT_OPTIONS,
+      ...hostOptions,
       projectId,
       dataset,
-      useCdn: true,
       withCredentials: true,
-      apiVersion: '2021-06-07',
-      requestTagPrefix: 'sanity.studio',
-      headers: DEFAULT_STUDIO_CLIENT_HEADERS,
-      ...hostOptions,
     })
 
-    let currentUser
-    if (loginMethod === 'dual' || loginMethod === 'cookie') {
-      // try to get the current user by using the cookie credentials
-      currentUser = await getCurrentUser(requestClient, broadcast)
-    }
-
-    // If we have a user, or token authentication is explicitly disallowed (`cookie` mode),
-    // then we don't need/want to fetch a token
-    if (currentUser || loginMethod === 'cookie') {
-      // if that worked, then we don't need to fetch a token
-      broadcast(null)
-      return {
-        loginMethod,
-        flow: 'cookie-auth',
-        success: !!currentUser,
-        durationMs: Math.round(performance.now() - startTime),
-        failureReason: currentUser ? undefined : 'cookie auth failed, login method is cookie-only',
-      }
-    }
-
-    // If we allow using token authentication, we should try to trade the session ID
-    // for a token and store it locally for subsequent use
-    const tokenExchangeStart = performance.now()
+    const exchangeStart = performance.now()
+    let token: string | undefined
     try {
-      const token = await tradeSessionForToken(requestClient, sessionId)
-      broadcast(token ?? null)
-      return {
-        loginMethod,
-        flow: 'token-exchange',
-        success: !!token,
-        durationMs: Math.round(performance.now() - startTime),
-        tokenExchangeDurationMs: Math.round(performance.now() - tokenExchangeStart),
-        failureReason: token ? undefined : 'token exchange returned empty token',
-      }
+      token = await exchangeSessionForToken(exchangeClient, sessionId)
     } catch (err) {
-      broadcast(null)
       return {
         loginMethod,
-        flow: 'token-exchange',
+        flow: 'exchange',
         success: false,
         durationMs: Math.round(performance.now() - startTime),
-        tokenExchangeDurationMs: Math.round(performance.now() - tokenExchangeStart),
-        failureReason: err instanceof Error ? err.message : 'token exchange failed',
+        exchangeDurationMs: Math.round(performance.now() - exchangeStart),
+        failureReason: err instanceof Error ? err.message : 'exchange failed',
+        error: {
+          type: 'auth-failed',
+          message: 'Failed to exchange session for credentials. Please try logging in again.',
+        },
       }
     }
-  }
 
-  async function tradeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {
-    const {token} = await client.request<{token: string}>({
-      method: 'GET',
-      uri: `/auth/fetch`,
-      query: {sid: sessionId},
-      tag: 'auth.fetch-token',
-    })
+    const exchangeDurationMs = Math.round(performance.now() - exchangeStart)
 
-    saveToken({token, projectId})
-    return token
+    if (loginMethod === 'dual' || loginMethod === 'cookie') {
+      // Try to check if the user is authenticated by using the cookie credentials.
+      // We can re-use the exchangeClient here because it's configured with withCredentials.
+      const probeStart = performance.now()
+      const authProbe = await probeCurrentUser(exchangeClient)
+      const probeDurationMs = Math.round(performance.now() - probeStart)
+      const durationMs = Math.round(performance.now() - startTime)
+
+      if (authProbe.authenticated) {
+        // broadcast to other tabs
+        invalidateCookieAuth.update()
+        return {
+          flow: 'exchange',
+          loginMethod,
+          success: true,
+          durationMs,
+          exchangeDurationMs,
+          probeDurationMs,
+          authMethod: 'cookie',
+        }
+      } else if (loginMethod === 'cookie') {
+        // We failed to set cookie and can't fallback to token
+        return {
+          loginMethod,
+          flow: 'exchange',
+          success: false,
+          durationMs,
+          exchangeDurationMs,
+          probeDurationMs,
+          failureReason: 'cookie probe failed in cookie-only mode',
+          error: {
+            type: 'cookie-blocked',
+            message:
+              'Authentication could not be completed because this browser appears to block ' +
+              'third-party cookies. This studio is configured to use cookie-based authentication ' +
+              'only. Try using a different browser, disabling strict cookie blocking, or ask the ' +
+              'studio administrator to enable token-based authentication.',
+          },
+        }
+      }
+    }
+
+    // Fallback to token auth (dual mode with failed cookie probe), or explicit loginMethod: 'token'.
+    // Store the token so subscribers re-init clients with it.
+    tokenStorage.update({token})
+
+    return {
+      loginMethod,
+      flow: 'exchange',
+      success: !!token,
+      durationMs: Math.round(performance.now() - startTime),
+      exchangeDurationMs,
+      authMethod: 'token',
+      failureReason: token ? undefined : 'token exchange returned empty token',
+    }
   }
 
   async function logout() {
-    const token = getToken(projectId)
-    const requestClient = clientFactory({
-      projectId,
-      dataset,
-      useCdn: true,
-      ...getAuthOptions(loginMethod, token),
-      apiVersion: '2021-06-07',
-      requestTagPrefix: 'sanity.studio',
-      headers: DEFAULT_STUDIO_CLIENT_HEADERS,
-      ...hostOptions,
-    })
-
-    clearToken(projectId)
-    await requestClient.request<void>({uri: '/auth/logout', method: 'POST'})
-    broadcast(null)
+    const [cookieClient, tokenClient] = await firstValueFrom(
+      combineLatest([cookieClient$, tokenClient$]),
+    )
+    // Destroy both token and cookie when logging out.
+    // Note that tokenClient might not actually be configured with a token —
+    // that's ok, since the logout endpoint will then just respond with 204.
+    await Promise.all([
+      tokenClient.request({uri: '/auth/logout', method: 'POST'}).then(() =>
+        // This will update token auth subscribers and re-init clients
+        tokenStorage.update(undefined),
+      ),
+      cookieClient.request({uri: '/auth/logout', method: 'POST'}).then(() =>
+        // Broadcast cookie invalidation to other tabs
+        invalidateCookieAuth.update(),
+      ),
+    ])
   }
 
   const LoginComponent = createLoginComponent({
     ...providerOptions,
-    getClient: () => state$.pipe(map((state) => state.client)),
+    getClient: () => authState$.pipe(map((state) => state.client)),
     loginMethod,
   })
 
   return {
     handleCallbackUrl,
-    token: token$,
-    state: state$,
+    token: token$.pipe(map((t) => t?.token || null)),
+    state: authState$,
     LoginComponent,
     logout,
   }

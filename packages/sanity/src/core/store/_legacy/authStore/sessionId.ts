@@ -30,7 +30,7 @@ function consumeSessionId(): string | null {
  * Provides a workaround for https://github.com/vercel/next.js/issues/91819
  * Can be removed once that's fixed
  */
-export function clearSessionId(): void {
+export function clearHashSessionId(): void {
   consumeSessionId()
 }
 
@@ -39,7 +39,7 @@ export function clearSessionId(): void {
 // until react mounts). Once it is consumed and loaded once, we don't want to
 // keep it in-memory here, so we clear it out.
 let sessionId = consumeSessionId()
-export const getSessionId = (): string | null => {
+export const getHashSessionId = (): string | null => {
   const id = sessionId
   if (id) {
     sessionId = null

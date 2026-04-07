@@ -47,6 +47,8 @@ catalog:
   typescript: 5.9.3
 
 overrides:
+  # TODO: Remove before merge
+  "@sanity/client": https://pkg.pr.new/sanity-io/client/@sanity/client@9171634
   # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
   '@sanity/ui@3': '$@sanity/ui'
   # We are currently blocked from upgrading to jsdom 27 because of a strange build error related to the new version of
