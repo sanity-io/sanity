@@ -1,4 +1,4 @@
-import {defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'withObjectFieldsOrder',
@@ -43,6 +43,28 @@ export default defineType({
       type: 'image',
       options: {hotspot: true},
     },
+    defineField({
+      name: 'relatedAuthors',
+      title: 'Related authors',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'reference',
+          to: [{type: 'author'}],
+        }),
+      ],
+    }),
+    defineField({
+      name: 'tags',
+      title: 'Tags',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [defineField({name: 'label', title: 'Label', type: 'string'})],
+        }),
+      ],
+    }),
   ],
   orderings: [
     {
@@ -93,6 +115,16 @@ export default defineType({
       title: 'Cover image size',
       name: 'coverImageSize',
       by: [{field: 'coverImage.asset.size', direction: 'asc'}],
+    },
+    {
+      title: 'First related author name (asc)',
+      name: 'firstRelatedAuthorAsc',
+      by: [{field: 'relatedAuthors[0].name', direction: 'asc'}],
+    },
+    {
+      title: 'First tag label (asc)',
+      name: 'firstTagLabelAsc',
+      by: [{field: 'tags[0].label', direction: 'asc'}],
     },
     {
       title: 'Updated at, then title',

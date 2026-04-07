@@ -37,6 +37,11 @@ const mockSchema = Schema.compile({
       fields: [{name: 'size', type: 'number'}],
     },
     {
+      name: 'arrayOrderingValue',
+      type: 'document',
+      fields: [{name: 'value', type: 'string'}],
+    },
+    {
       name: 'withObjectFieldsOrder',
       type: 'document',
       fields: [
@@ -82,10 +87,38 @@ const mockSchema = Schema.compile({
         },
       ],
     },
+    {
+      name: 'withArrayFields',
+      type: 'document',
+      fields: [
+        {name: 'title', type: 'string'},
+        {
+          name: 'items',
+          type: 'array',
+          of: [{type: 'reference', to: [{type: 'arrayOrderingValue'}]}],
+        },
+        {
+          name: 'tags',
+          type: 'array',
+          of: [
+            {
+              type: 'object',
+              fields: [{name: 'label', type: 'string'}],
+            },
+          ],
+        },
+        {
+          name: 'mixedContent',
+          type: 'array',
+          of: [{type: 'string'}, {type: 'number'}],
+        },
+      ],
+    },
   ],
 })
 
 const withObjectFieldsOrder = mockSchema.get('withObjectFieldsOrder') as SchemaType
+const withArrayFields = mockSchema.get('withArrayFields') as SchemaType
 
 describe('getExtendedProjection', () => {
   test('keeps simple field ordering projection', () => {
@@ -202,5 +235,63 @@ describe('getExtendedProjection', () => {
     expect(() => getExtendedProjection(withObjectFieldsOrder, orderBy, true)).toThrow(
       'The current ordering config targeted the nonexistent field "fi"',
     )
+  })
+
+  test('handles array index with reference dereference', () => {
+    const orderBy: SortOrderingItem[] = [{field: 'items[0].value', direction: 'asc'}]
+
+    expect(getExtendedProjection(withArrayFields, orderBy)).toBe('items[0]->{value}')
+  })
+
+  test('handles array index with object field access', () => {
+    const orderBy: SortOrderingItem[] = [{field: 'tags[0].label', direction: 'asc'}]
+
+    expect(getExtendedProjection(withArrayFields, orderBy)).toBe('tags[0]{label}')
+  })
+
+  test('handles array index as leaf without further nesting', () => {
+    const orderBy: SortOrderingItem[] = [{field: 'tags[0]', direction: 'asc'}]
+
+    expect(getExtendedProjection(withArrayFields, orderBy)).toBe('tags[0]')
+  })
+
+  test('handles mixed array and non-array orderings', () => {
+    const orderBy: SortOrderingItem[] = [
+      {field: 'items[0].value', direction: 'asc'},
+      {field: 'title', direction: 'asc'},
+    ]
+
+    expect(getExtendedProjection(withArrayFields, orderBy)).toBe('items[0]->{value}, title')
+  })
+
+  test('throws in strict mode when array access is used on non-array field', () => {
+    const orderBy: SortOrderingItem[] = [{field: 'title[0]', direction: 'asc'}]
+
+    expect(() => getExtendedProjection(withArrayFields, orderBy, true)).toThrow(
+      'used array access on non-array field "title"',
+    )
+  })
+
+  test('handles keyed segment with reference dereference', () => {
+    const orderBy: SortOrderingItem[] = [{field: 'items[_key=="abc"].value', direction: 'asc'}]
+
+    expect(getExtendedProjection(withArrayFields, orderBy)).toBe('items[_key=="abc"]->{value}')
+  })
+
+  test('throws in strict mode when array access is used on multi-type array with nested path', () => {
+    const orderBy: SortOrderingItem[] = [{field: 'mixedContent[0].nested', direction: 'asc'}]
+
+    expect(() => getExtendedProjection(withArrayFields, orderBy, true)).toThrow(
+      'Array ordering requires a single member type',
+    )
+  })
+
+  test('skips empty field strings gracefully', () => {
+    const orderBy: SortOrderingItem[] = [
+      {field: '', direction: 'asc'},
+      {field: 'title', direction: 'asc'},
+    ]
+
+    expect(getExtendedProjection(withArrayFields, orderBy)).toBe('title')
   })
 })
