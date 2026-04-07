@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.20.0](https://github.com/sanity-io/sanity/compare/v5.19.0...v5.20.0) (2026-04-07)
+
+### Features
+
+* **core:** adds useProjectOrganizationData hook ([#12539](https://github.com/sanity-io/sanity/issues/12539)) ([f180ebf](https://github.com/sanity-io/sanity/commit/f180ebfc15cdfa4b582cd8a8a8ec1fd4c6d58942))
+
+### Bug Fixes
+
+* **form:** add deeply nested array preview types and integrate into schema ([#12489](https://github.com/sanity-io/sanity/issues/12489)) ([35af7f5](https://github.com/sanity-io/sanity/commit/35af7f5669f3acd86360f99ca268046b2f82e1fd))
+* **sanity:** add missing perspective when calling `observeDocumentTypeFromId` for references ([80e57e9](https://github.com/sanity-io/sanity/commit/80e57e96f82e6aea329785ca1749dfe0ee791a7f))
+* **sanity:** array input with no `ArrayFunctions` vanishing after pane expansion ([d7c56cd](https://github.com/sanity-io/sanity/commit/d7c56cd693fcc72fe15ccd2ea0dc25b8273c8d3b))
+* **sanity:** inline comment input re-animate on every value change ([fa34c76](https://github.com/sanity-io/sanity/commit/fa34c76df4342e5292799297c7debd66f3ab0f7a))
 ## [5.19.0](https://github.com/sanity-io/sanity/compare/v5.18.0...v5.19.0) (2026-04-01)
 
 ### Features
