@@ -7,6 +7,7 @@ import {
 import {toString as pathToString} from '@sanity/util/paths'
 
 import {isRecord} from '../../util'
+import {resolvePreviewReferencePath} from './resolvePreviewReferencePath'
 import {type SearchPath, type SearchSpec} from './types'
 
 interface SearchWeightEntry {
@@ -187,6 +188,29 @@ const getPreviewWeights = (
       ]),
   )
 
+  // Resolve preview paths that cross reference boundaries into GROQ dereference paths.
+  // getLeafWeights skips reference types, so paths like `author.name` need separate resolution.
+  const referenceWeights: Record<string, SearchWeightEntry> = {}
+  for (const [selectionKey, rawSelectionPath] of Object.entries(select)) {
+    const previewWeight =
+      PREVIEW_FIELD_WEIGHT_MAP[selectionKey as keyof typeof PREVIEW_FIELD_WEIGHT_MAP]
+    if (typeof previewWeight !== 'number') continue
+
+    const normalizedPath = rawSelectionPath.replace(/\.\d+/g, '[]')
+    if (nestedWeightsBySelectionPath[normalizedPath]) continue
+
+    if (isSchemaType(schemaType)) {
+      const resolved = resolvePreviewReferencePath(schemaType, rawSelectionPath)
+      if (resolved) {
+        referenceWeights[resolved.groqPath] = {
+          path: resolved.groqPath,
+          weight: previewWeight,
+          type: resolved.fieldType,
+        }
+      }
+    }
+  }
+
   if (isCrossDataset) {
     return Object.fromEntries(
       Object.entries(selectionKeysBySelectionPath).map(([path, previewFieldName]) => {
@@ -203,10 +227,11 @@ const getPreviewWeights = (
     )
   }
 
-  return getLeafWeights(schemaType, maxDepth, (type, path) => {
+  const leafResult = getLeafWeights(schemaType, maxDepth, (type, path) => {
     const nested = nestedWeightsBySelectionPath[getFullyQualifiedPath(type, path)]
     return nested ? nested.weight : null
   })
+  return {...leafResult, ...referenceWeights}
 }
 
 export interface DeriveSearchWeightsFromTypeOptions {

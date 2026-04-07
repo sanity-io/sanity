@@ -298,6 +298,54 @@ describe('createSearchQuery', () => {
   })
 
   describe('search config', () => {
+    it('should include reference dereference paths for schemas with references in preview.select', () => {
+      const {query} = createSearchQuery(
+        {
+          query: 'test',
+          types: [
+            Schema.compile({
+              types: [
+                defineType({
+                  name: 'author',
+                  type: 'document',
+                  fields: [
+                    defineField({
+                      name: 'name',
+                      type: 'string',
+                    }),
+                  ],
+                }),
+                defineType({
+                  name: 'book',
+                  type: 'document',
+                  preview: {
+                    select: {
+                      title: 'title',
+                      subtitle: 'author.name',
+                    },
+                  },
+                  fields: [
+                    defineField({
+                      name: 'title',
+                      type: 'string',
+                    }),
+                    defineField({
+                      name: 'author',
+                      type: 'reference',
+                      to: [{type: 'author'}],
+                    }),
+                  ],
+                }),
+              ],
+            }).get('book'),
+          ],
+        },
+        '',
+      )
+
+      expect(query).toContain('author->name match text::query($__query)')
+    })
+
     it('should handle indexed array fields in an optimized manner', () => {
       const {query} = createSearchQuery(
         {

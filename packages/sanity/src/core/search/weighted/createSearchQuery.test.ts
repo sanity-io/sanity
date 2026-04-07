@@ -355,6 +355,61 @@ describe('createSearchQuery', () => {
     })
   })
 
+  describe('reference dereference paths', () => {
+    it('should include dereference syntax for preview.select paths that cross reference boundaries', () => {
+      const bookSchema = Schema.compile({
+        types: [
+          defineType({
+            name: 'author',
+            type: 'document',
+            fields: [
+              defineField({
+                name: 'name',
+                type: 'string',
+              }),
+            ],
+          }),
+          defineType({
+            name: 'book',
+            type: 'document',
+            preview: {
+              select: {
+                title: 'title',
+                subtitle: 'author.name',
+              },
+            },
+            fields: [
+              defineField({
+                name: 'title',
+                type: 'string',
+              }),
+              defineField({
+                name: 'author',
+                type: 'reference',
+                to: [{type: 'author'}],
+              }),
+            ],
+          }),
+        ],
+      })
+
+      const {query, searchSpec} = createSearchQuery({
+        query: 'hemingway',
+        types: [bookSchema.get('book')],
+      })
+
+      expect(query).toContain('author->name match $t0')
+
+      expect(query).toContain('"w3": author->name')
+
+      const bookSpec = searchSpec.find((spec) => spec.typeName === 'book')
+      expect(bookSpec?.paths).toContainEqual({
+        weight: 5,
+        path: 'author->name',
+      })
+    })
+  })
+
   describe('search config', () => {
     it('should handle indexed array fields in an optimized manner', () => {
       const {query} = createSearchQuery({
