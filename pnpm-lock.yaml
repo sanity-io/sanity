@@ -644,8 +644,8 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       lodash-es:
-        specifier: ^4.17.22
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       qs:
         specifier: ^6.14.1
         version: 6.14.1
@@ -753,8 +753,8 @@ importers:
         specifier: workspace:*
         version: link:../utils
       lodash-es:
-        specifier: ^4.17.22
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       read-package-up:
         specifier: ^11.0.0
         version: 11.0.0
@@ -859,8 +859,8 @@ importers:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
       lodash-es:
-        specifier: ^4.17.22
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       vite:
         specifier: 'catalog:'
         version: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.3)
@@ -928,8 +928,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       lodash-es:
-        specifier: ^4.17.22
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       p-map:
         specifier: ^7.0.3
         version: 7.0.4
@@ -1074,8 +1074,8 @@ importers:
         specifier: ^16.6.1
         version: 16.6.1
       lodash-es:
-        specifier: ^4.17.22
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       ora:
         specifier: ^8.2.0
         version: 8.2.0
@@ -1136,8 +1136,8 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3(supports-color@8.1.1)
       lodash-es:
-        specifier: ^4.17.22
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -1200,8 +1200,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0
       lodash-es:
-        specifier: ^4.17.22
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       object-inspect:
         specifier: ^1.13.4
         version: 1.13.4
@@ -1404,8 +1404,8 @@ importers:
         specifier: ^2.2.3
         version: 2.2.3
       lodash-es:
-        specifier: ^4.17.22
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       quick-lru:
         specifier: ^5.1.1
         version: 5.1.1
@@ -1723,8 +1723,8 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0
       lodash-es:
-        specifier: ^4.17.22
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       mendoza:
         specifier: ^3.0.8
         version: 3.0.8
@@ -2028,8 +2028,8 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
       lodash-es:
-        specifier: ^4.17.22
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -2089,8 +2089,8 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
       lodash-es:
-        specifier: ^4.17.22
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       minimist:
         specifier: ^1.2.8
         version: 1.2.8
@@ -2793,6 +2793,9 @@ packages:
   '@codemirror/commands@6.10.2':
     resolution: {integrity: sha512-vvX1fsih9HledO1c9zdotZYUZnE4xV0m6i3m25s5DIfXofuprk6cRcLUZvSk3CASUbwjQX21tOGbkY2BH8TpnQ==}
 
+  '@codemirror/commands@6.10.3':
+    resolution: {integrity: sha512-JFRiqhKu+bvSkDLI+rUhJwSxQxYb759W5GBezE8Uc8mHLqC9aV/9aTC7yJSqCtB3F00pylrLCwnyS91Ap5ej4Q==}
+
   '@codemirror/lang-css@6.3.1':
     resolution: {integrity: sha512-kr5fwBGiGtmz6l0LSJIbno9QrifNMUusivHbnA1H6Dmqy4HZFte3UAICix1VuKo0lMPKQr2rqB+0BkKi/S3Ejg==}
 
@@ -2820,6 +2823,9 @@ packages:
   '@codemirror/language@6.12.2':
     resolution: {integrity: sha512-jEPmz2nGGDxhRTg3lTpzmIyGKxz3Gp3SJES4b0nAuE5SWQoKdT5GoQ69cwMmFd+wvFUhYirtDTr0/DRHpQAyWg==}
 
+  '@codemirror/language@6.12.3':
+    resolution: {integrity: sha512-QwCZW6Tt1siP37Jet9Tb02Zs81TQt6qQrZR2H+eGMcFsL1zMrk2/b9CLC7/9ieP1fjIUMgviLWMmgiHoJrj+ZA==}
+
   '@codemirror/legacy-modes@6.5.2':
     resolution: {integrity: sha512-/jJbwSTazlQEDOQw2FJ8LEEKVS72pU0lx6oM54kGpL8t/NJ2Jda3CZ4pcltiKTdqYSRk3ug1B3pil1gsjA6+8Q==}
 
@@ -2832,11 +2838,17 @@ packages:
   '@codemirror/state@6.5.4':
     resolution: {integrity: sha512-8y7xqG/hpB53l25CIoit9/ngxdfoG+fx+V3SHBrinnhOtLvKHRyAJJuHzkWrR4YXXLX8eXBsejgAAxHUOdW1yw==}
 
+  '@codemirror/state@6.6.0':
+    resolution: {integrity: sha512-4nbvra5R5EtiCzr9BTHiTLc+MLXK2QGiAVYMyi8PkQd3SR+6ixar/Q/01Fa21TBIDOZXgeWV4WppsQolSreAPQ==}
+
   '@codemirror/theme-one-dark@6.1.3':
     resolution: {integrity: sha512-NzBdIvEJmx6fjeremiGp3t/okrLPYT0d9orIc7AFun8oZcRk58aejkqhv6spnz4MLAevrKNPMQYXEWMg4s+sKA==}
 
   '@codemirror/view@6.39.17':
     resolution: {integrity: sha512-Aim4lFqhbijnchl83RLfABWueSGs1oUCSv0mru91QdhpXQeNKprIdRO9LWA4cYkJvuYTKGJN7++9MXx8XW43ag==}
+
+  '@codemirror/view@6.41.0':
+    resolution: {integrity: sha512-6H/qadXsVuDY219Yljhohglve8xf4B8xJkVOEWfA5uiYKiTFppjqsvsfR5iPA0RbvRBoOyTZpbLIxe9+0UR8xA==}
 
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -8749,6 +8761,9 @@ packages:
   lodash-es@4.17.23:
     resolution: {integrity: sha512-kVI48u3PZr38HdYz98UmfPnXl2DXrpdctLrFLCd3kOx1xUkOmpFPx7gCWWM5MPkL/fD8zb+Ph0QzjGFs4+hHWg==}
 
+  lodash-es@4.18.1:
+    resolution: {integrity: sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A==}
+
   lodash.debounce@4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
 
@@ -12294,6 +12309,13 @@ snapshots:
       '@codemirror/view': 6.39.17
       '@lezer/common': 1.5.1
 
+  '@codemirror/commands@6.10.3':
+    dependencies:
+      '@codemirror/language': 6.12.3
+      '@codemirror/state': 6.6.0
+      '@codemirror/view': 6.41.0
+      '@lezer/common': 1.5.1
+
   '@codemirror/lang-css@6.3.1':
     dependencies:
       '@codemirror/autocomplete': 6.20.1
@@ -12370,6 +12392,15 @@ snapshots:
       '@lezer/lr': 1.4.8
       style-mod: 4.1.3
 
+  '@codemirror/language@6.12.3':
+    dependencies:
+      '@codemirror/state': 6.6.0
+      '@codemirror/view': 6.41.0
+      '@lezer/common': 1.5.1
+      '@lezer/highlight': 1.2.3
+      '@lezer/lr': 1.4.8
+      style-mod: 4.1.3
+
   '@codemirror/legacy-modes@6.5.2':
     dependencies:
       '@codemirror/language': 6.12.2
@@ -12390,16 +12421,27 @@ snapshots:
     dependencies:
       '@marijn/find-cluster-break': 1.0.2
 
+  '@codemirror/state@6.6.0':
+    dependencies:
+      '@marijn/find-cluster-break': 1.0.2
+
   '@codemirror/theme-one-dark@6.1.3':
     dependencies:
-      '@codemirror/language': 6.12.2
-      '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.39.17
+      '@codemirror/language': 6.12.3
+      '@codemirror/state': 6.6.0
+      '@codemirror/view': 6.41.0
       '@lezer/highlight': 1.2.3
 
   '@codemirror/view@6.39.17':
     dependencies:
       '@codemirror/state': 6.5.4
+      crelt: 1.0.6
+      style-mod: 4.1.3
+      w3c-keyname: 2.2.8
+
+  '@codemirror/view@6.41.0':
+    dependencies:
+      '@codemirror/state': 6.6.0
       crelt: 1.0.6
       style-mod: 4.1.3
       w3c-keyname: 2.2.8
@@ -14158,7 +14200,7 @@ snapshots:
       date-fns: 3.6.0
       get-random-values-esm: 1.0.2
       lodash: 4.17.23
-      lodash-es: 4.17.23
+      lodash-es: 4.18.1
       react: 19.2.4
       react-fast-compare: 3.2.2
       rxjs: 7.8.2
@@ -14264,7 +14306,7 @@ snapshots:
       isomorphic-dompurify: 2.36.0
       json5: 2.2.3
       jsonc-parser: 3.3.1
-      lodash-es: 4.17.23
+      lodash-es: 4.18.1
       minimist: 1.2.8
       nanoid: 5.1.6
       node-html-parser: 7.0.2
@@ -14381,7 +14423,7 @@ snapshots:
       groq: link:packages/groq
       groq-js: 1.29.0
       json5: 2.2.3
-      lodash-es: 4.17.23
+      lodash-es: 4.18.1
       prettier: 3.8.1
       reselect: 5.1.1
       tsconfig-paths: 4.2.0
@@ -14563,7 +14605,7 @@ snapshots:
       '@sanity/icons': 3.7.4(react@19.2.4)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 3.1.14(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
-      lodash-es: 4.17.23
+      lodash-es: 4.18.1
       react: 19.2.4
       react-is: 19.2.4
     transitivePeerDependencies:
@@ -14576,7 +14618,7 @@ snapshots:
       '@sanity/icons': 3.7.4(react@19.2.4)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 3.1.14(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(styled-components@6.3.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
-      lodash-es: 4.17.23
+      lodash-es: 4.18.1
       react: 19.2.4
       react-is: 19.2.4
     transitivePeerDependencies:
@@ -14828,7 +14870,7 @@ snapshots:
       '@sanity/mutate': 0.12.6(debug@4.4.3)
       '@sanity/types': 3.99.0(@types/react@19.2.14)(debug@4.4.3)
       groq: 3.88.1-typegen-experimental.0
-      lodash-es: 4.17.23
+      lodash-es: 4.18.1
       reselect: 5.1.1
       rxjs: 7.8.2
       zustand: 5.0.11(@types/react@19.2.14)(immer@11.1.4)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
@@ -16618,12 +16660,12 @@ snapshots:
   codemirror@6.0.2:
     dependencies:
       '@codemirror/autocomplete': 6.20.1
-      '@codemirror/commands': 6.10.2
-      '@codemirror/language': 6.12.2
+      '@codemirror/commands': 6.10.3
+      '@codemirror/language': 6.12.3
       '@codemirror/lint': 6.9.5
       '@codemirror/search': 6.6.0
-      '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.39.17
+      '@codemirror/state': 6.6.0
+      '@codemirror/view': 6.41.0
 
   color-convert@2.0.1:
     dependencies:
@@ -18859,6 +18901,8 @@ snapshots:
 
   lodash-es@4.17.23: {}
 
+  lodash-es@4.18.1: {}
+
   lodash.debounce@4.0.8: {}
 
   lodash.isplainobject@4.0.6: {}
@@ -19732,7 +19776,7 @@ snapshots:
     dependencies:
       '@icons/material': 0.2.4(react@19.2.4)
       lodash: 4.17.23
-      lodash-es: 4.17.23
+      lodash-es: 4.18.1
       material-colors: 1.2.6
       prop-types: 15.8.1
       react: 19.2.4
@@ -20249,7 +20293,7 @@ snapshots:
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.4)
       '@sanity/ui': 3.1.14(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
-      lodash-es: 4.17.23
+      lodash-es: 4.18.1
       react: 19.2.4
       react-photo-album: 3.4.0(@types/react@19.2.14)(react@19.2.4)
       sanity: link:packages/sanity
@@ -20268,7 +20312,7 @@ snapshots:
       '@sanity/ui': 3.1.14(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       '@sanity/util': 4.22.0(@types/react@19.2.14)
       framer-motion: 12.34.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      lodash-es: 4.17.23
+      lodash-es: 4.18.1
       react: 19.2.4
       sanity: link:packages/sanity
     transitivePeerDependencies:
