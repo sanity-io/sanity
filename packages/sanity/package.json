@@ -221,7 +221,7 @@
     "isomorphic-dompurify": "2.26.0",
     "json-reduce": "^3.0.0",
     "json-stable-stringify": "^1.3.0",
-    "lodash-es": "^4.17.22",
+    "lodash-es": "^4.18.1",
     "mendoza": "^3.0.8",
     "motion": "^12.27.1",
     "nano-pubsub": "^3.0.0",
