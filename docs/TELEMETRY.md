@@ -32,18 +32,18 @@ StudioProvider
 Events are defined using `defineEvent()` from `@sanity/telemetry`. Each event has a name, version, description, and optional typed payload and sampling rate.
 
 ```typescript
-import { defineEvent } from "@sanity/telemetry";
+import {defineEvent} from '@sanity/telemetry'
 
 interface DocumentPublishedInfo {
-  publishedImmediately: boolean;
-  previouslyPublished: boolean;
+  publishedImmediately: boolean
+  previouslyPublished: boolean
 }
 
 export const DocumentPublished = defineEvent<DocumentPublishedInfo>({
-  name: "Document Published",
+  name: 'Document Published',
   version: 1,
   description: 'User clicked the "Publish" button in the document pane',
-});
+})
 ```
 
 ### Optional Sampling
@@ -52,11 +52,11 @@ Events can specify a `maxSampleRate` (in milliseconds) to throttle high-frequenc
 
 ```typescript
 export const PerformanceINPMeasuredV2 = defineEvent<INPMetricWithAttribution>({
-  name: "Performance INP Measured",
+  name: 'Performance INP Measured',
   version: 2,
-  description: "Interaction to Next Paint with attribution",
+  description: 'Interaction to Next Paint with attribution',
   maxSampleRate: 30_000, // At most once every 30 seconds
-});
+})
 ```
 
 ### Event Definition Convention
@@ -87,18 +87,18 @@ src/
 Components log events using the `useTelemetry()` hook from `@sanity/telemetry/react`:
 
 ```typescript
-import { useTelemetry } from "@sanity/telemetry/react";
-import { DocumentPublished } from "./__telemetry__/documentActions.telemetry";
+import {useTelemetry} from '@sanity/telemetry/react'
+import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
 
 function MyComponent() {
-  const telemetry = useTelemetry();
+  const telemetry = useTelemetry()
 
   const handlePublish = () => {
     telemetry.log(DocumentPublished, {
       publishedImmediately: true,
       previouslyPublished: false,
-    });
-  };
+    })
+  }
 }
 ```
 
@@ -109,13 +109,13 @@ For features with multiple events, a dedicated hook encapsulates the telemetry l
 ```typescript
 // useCommentsTelemetry.ts
 export function useCommentsTelemetry() {
-  const telemetry = useTelemetry();
+  const telemetry = useTelemetry()
 
   return {
     linkCopied: () => telemetry.log(CommentLinkCopied),
     viewedFromLink: () => telemetry.log(CommentViewedFromLink),
     listViewChanged: () => telemetry.log(CommentListViewChanged),
-  };
+  }
 }
 ```
 
@@ -293,31 +293,31 @@ Tracked automatically via `web-vitals/attribution` library:
 
    ```typescript
    // src/core/myFeature/__telemetry__/myFeature.telemetry.ts
-   import { defineEvent } from "@sanity/telemetry";
+   import {defineEvent} from '@sanity/telemetry'
 
    interface MyEventData {
-     actionType: string;
+     actionType: string
    }
 
    export const MyFeatureUsed = defineEvent<MyEventData>({
-     name: "My Feature Used",
+     name: 'My Feature Used',
      version: 1,
-     description: "User interacted with my feature",
-   });
+     description: 'User interacted with my feature',
+   })
    ```
 
 2. **Log the event** from your component:
 
    ```typescript
-   import { useTelemetry } from "@sanity/telemetry/react";
-   import { MyFeatureUsed } from "./__telemetry__/myFeature.telemetry";
+   import {useTelemetry} from '@sanity/telemetry/react'
+   import {MyFeatureUsed} from './__telemetry__/myFeature.telemetry'
 
    function MyFeature() {
-     const telemetry = useTelemetry();
+     const telemetry = useTelemetry()
 
      const handleAction = (type: string) => {
-       telemetry.log(MyFeatureUsed, { actionType: type });
-     };
+       telemetry.log(MyFeatureUsed, {actionType: type})
+     }
    }
    ```
 
