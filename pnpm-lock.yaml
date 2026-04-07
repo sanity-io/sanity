@@ -1382,6 +1382,9 @@ importers:
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@19.2.4)
+      '@sanity/lezer-groq':
+        specifier: ^1.0.3
+        version: 1.0.3
       '@sanity/ui':
         specifier: 'catalog:'
         version: 3.1.14(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
@@ -1644,6 +1647,9 @@ importers:
       '@sanity/preview-url-secret':
         specifier: ^4.0.4
         version: 4.0.4(@sanity/client@7.20.0(debug@4.4.3))
+      '@sanity/prism-groq':
+        specifier: ^1.1.2
+        version: 1.1.2(prismjs@1.27.0)
       '@sanity/schema':
         specifier: workspace:*
         version: link:../@sanity/schema
@@ -5132,6 +5138,9 @@ packages:
       sanity: ^3.36.4 || ^4.0.0-0 || ^5
       styled-components: ^6.1
 
+  '@sanity/lezer-groq@1.0.3':
+    resolution: {integrity: sha512-Vw27wIH+eoqcefadRTmeV2f6hnpocwUk3f2HhkQ15beCy8YkzEeV8Gp+gG/nJP8Y4nYzjbK1XOSP88ju2T8YEA==}
+
   '@sanity/logos@2.2.2':
     resolution: {integrity: sha512-KIWFL7nYEOINXIzaTF9aVhd481hFF/ak+SRnpgksYuJXlo2hbY/UoEJBz6KhsEP5dfO/NwqG82QrkwzLvd6izA==}
     engines: {node: '>=14.0.0'}
@@ -5197,6 +5206,14 @@ packages:
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/client': ^7.18.0
+
+  '@sanity/prism-groq@1.1.2':
+    resolution: {integrity: sha512-McMw9U5kuYAgIwyNodhFKdarM0cPme6UYBR6ms6YBNEO8Qqu5zGHydUeORaJ/w4qdFKGB1oWjBjy525ed6LXaQ==}
+    peerDependencies:
+      prismjs: '>=1.0.0'
+    peerDependenciesMeta:
+      prismjs:
+        optional: true
 
   '@sanity/react-loader@2.0.8':
     resolution: {integrity: sha512-uNua40Hgjxk/GE1ibGVYdspCkIHfgn0DzyI65Q5Hf7CElSsMSNUtB9NGCsRXhNriOQ/Jse1lmvLoqPFM9WSBZw==}
@@ -14597,6 +14614,13 @@ snapshots:
       - react-dom
       - react-is
 
+  '@sanity/lezer-groq@1.0.3':
+    dependencies:
+      '@codemirror/language': 6.12.2
+      '@lezer/common': 1.5.1
+      '@lezer/highlight': 1.2.3
+      '@lezer/lr': 1.4.8
+
   '@sanity/logos@2.2.2(react@19.2.4)':
     dependencies:
       '@sanity/color': 3.0.6
@@ -14736,6 +14760,10 @@ snapshots:
     dependencies:
       '@sanity/client': 7.20.0(debug@4.4.3)
       '@sanity/uuid': 3.0.2
+
+  '@sanity/prism-groq@1.1.2(prismjs@1.27.0)':
+    optionalDependencies:
+      prismjs: 1.27.0
 
   '@sanity/react-loader@2.0.8(@sanity/types@packages+@sanity+types)(react@19.2.4)(typescript@5.9.3)':
     dependencies:
