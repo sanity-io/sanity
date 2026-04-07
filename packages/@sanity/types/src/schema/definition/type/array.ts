@@ -2,7 +2,11 @@ import {type InsertMenuOptions} from '@sanity/insert-menu'
 
 import {type FieldReference} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
-import {type InitialValueProperty, type SchemaValidationValue} from '../../types'
+import {
+  type AutocompleteString,
+  type InitialValueProperty,
+  type SchemaValidationValue,
+} from '../../types'
 import {
   type IntrinsicDefinitions,
   type IntrinsicTypeName,
@@ -100,7 +104,9 @@ export type IntrinsicArrayOfDefinition = {
 export type ArrayOfType<
   TType extends IntrinsicTypeName = IntrinsicTypeName,
   TAlias extends IntrinsicTypeName | undefined = undefined,
-> = IntrinsicArrayOfDefinition[TType] | ArrayOfEntry<TypeAliasDefinition<string, TAlias>>
+> =
+  | IntrinsicArrayOfDefinition[TType]
+  | ArrayOfEntry<TypeAliasDefinition<AutocompleteString, TAlias>>
 
 /** @public */
 export interface ArrayDefinition extends BaseSchemaDefinition {
