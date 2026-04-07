@@ -38,11 +38,7 @@ describe('decodePath', () => {
   })
 
   test('decodes complex paths with periods in keys', () => {
-    expect(decodePath('items[_key=="v1.0.0"].name')).toEqual([
-      'items',
-      {_key: 'v1.0.0'},
-      'name',
-    ])
+    expect(decodePath('items[_key=="v1.0.0"].name')).toEqual(['items', {_key: 'v1.0.0'}, 'name'])
   })
 
   test('decodes paths with single-quoted keys containing periods', () => {
@@ -54,11 +50,7 @@ describe('decodePath', () => {
   })
 
   test('handles multiple key segments', () => {
-    expect(decodePath('a[_key=="b.c"][_type=="d.e"]')).toEqual([
-      'a',
-      {_key: 'b.c'},
-      {_type: 'd.e'},
-    ])
+    expect(decodePath('a[_key=="b.c"][_type=="d.e"]')).toEqual(['a', {_key: 'b.c'}, {_type: 'd.e'}])
   })
 })
 
