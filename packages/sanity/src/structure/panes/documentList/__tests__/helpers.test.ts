@@ -2,7 +2,12 @@ import {Schema} from '@sanity/schema'
 import {type ObjectSchemaType} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
-import {applyOrderingFunctions, fieldExtendsType, findStaticTypesInFilter} from '../helpers'
+import {
+  applyOrderingFunctions,
+  fieldExtendsType,
+  findStaticTypesInFilter,
+  validateSortOrder,
+} from '../helpers'
 
 const mockSchema = Schema.compile({
   name: 'default',
@@ -165,6 +170,98 @@ describe('fieldExtendsType()', () => {
     )!
 
     expect(fieldExtendsType(field, 'number')).toBe(false)
+  })
+})
+
+describe('validateSortOrder()', () => {
+  const fallback = {by: [{field: '_updatedAt', direction: 'desc' as const}]}
+
+  test('returns sort order unchanged when all fields are built-in', () => {
+    const sortOrder = {by: [{field: '_updatedAt', direction: 'desc' as const}]}
+    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+    expect(result).toBe(sortOrder)
+  })
+
+  test('returns sort order unchanged when custom field exists in schema', () => {
+    const sortOrder = {by: [{field: 'title', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+    expect(result).toBe(sortOrder)
+  })
+
+  test('returns fallback when custom field does not exist in schema', () => {
+    const sortOrder = {by: [{field: 'displayTitle', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+    expect(result).toBe(fallback)
+  })
+
+  test('returns fallback when any field in a multi-field sort is invalid', () => {
+    const sortOrder = {
+      by: [
+        {field: '_updatedAt', direction: 'desc' as const},
+        {field: 'nonExistentField', direction: 'asc' as const},
+      ],
+    }
+    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+    expect(result).toBe(fallback)
+  })
+
+  test('returns sort order as-is when schemaType is undefined', () => {
+    const sortOrder = {by: [{field: 'anyField', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, undefined, fallback)
+    expect(result).toBe(sortOrder)
+  })
+
+  test.each(['_id', '_type', '_rev', '_createdAt', '_updatedAt'])(
+    'accepts built-in field %s',
+    (field) => {
+      const sortOrder = {by: [{field, direction: 'asc' as const}]}
+      const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+      expect(result).toBe(sortOrder)
+    },
+  )
+
+  test('validates nested field paths correctly', () => {
+    const validNested = {by: [{field: 'title.en', direction: 'asc' as const}]}
+    expect(validateSortOrder(validNested, mockSchema.get('article'), fallback)).toBe(validNested)
+
+    const invalidNested = {by: [{field: 'title.fr', direction: 'asc' as const}]}
+    expect(validateSortOrder(invalidNested, mockSchema.get('article'), fallback)).toBe(fallback)
+  })
+
+  test('cross-workspace scenario: sort order valid in one schema but not another', () => {
+    const workspaceBSchema = Schema.compile({
+      name: 'workspaceB',
+      types: [
+        {
+          name: 'page',
+          type: 'document',
+          fields: [{name: 'title', type: 'string'}],
+        },
+      ],
+    })
+
+    const sortByDisplayTitle = {
+      by: [{field: 'displayTitle', direction: 'asc' as const}],
+      extendedProjection: 'displayTitle',
+    }
+
+    const result = validateSortOrder(sortByDisplayTitle, workspaceBSchema.get('page'), fallback)
+    expect(result).toBe(fallback)
+  })
+
+  test('passes through sort order with empty by array', () => {
+    const sortOrder = {by: []}
+    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+    expect(result).toBe(sortOrder)
+  })
+
+  test('preserves extendedProjection on valid sort order', () => {
+    const sortOrder = {
+      by: [{field: 'title', direction: 'asc' as const}],
+      extendedProjection: 'title',
+    }
+    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+    expect(result).toBe(sortOrder)
   })
 })
 

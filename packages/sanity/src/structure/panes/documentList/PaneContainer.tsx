@@ -1,11 +1,13 @@
 import {Card, Code} from '@sanity/ui'
 import isEqual from 'lodash-es/isEqual.js'
-import {memo, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {
   EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
+  type ObjectSchemaType,
   SourceProvider,
   useI18nText,
+  useSchema,
   useSource,
 } from 'sanity'
 import shallowEquals from 'shallow-equals'
@@ -18,7 +20,7 @@ import {useStructureToolSetting} from '../../useStructureToolSetting'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'
-import {findStaticTypesInFilter} from './helpers'
+import {findStaticTypesInFilter, validateSortOrder} from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder} from './types'
 
@@ -129,22 +131,37 @@ export const PaneContainer = memo(function PaneContainer(
     defaultSortOrder,
   )
 
-  // Custom menu item state for tracking selected state of custom menu items
-  // Uses local state (doesn't persist across refreshes) to avoid keyValueStore allowlist issues
+  const schema = useSchema()
+  const validatedSortOrder = useMemo(() => {
+    if (!sortOrderRaw) return sortOrderRaw
+    const schemaType = typeName ? (schema.get(typeName) as ObjectSchemaType | undefined) : undefined
+    return validateSortOrder(sortOrderRaw, schemaType, defaultSortOrder)
+  }, [sortOrderRaw, typeName, schema, defaultSortOrder])
+
+  const handleSetSortOrder = useCallback(
+    async (newSortOrder: SortOrder) => {
+      const schemaType = typeName
+        ? (schema.get(typeName) as ObjectSchemaType | undefined)
+        : undefined
+      const validated = validateSortOrder(newSortOrder, schemaType, defaultSortOrder)
+      await setSortOrder(validated)
+    },
+    [setSortOrder, typeName, schema, defaultSortOrder],
+  )
+
   const [customMenuItemState, setCustomMenuItemState] = useState<CustomMenuItemState>({})
 
-  // Add auto-generated IDs to menu items that don't have one
   const menuItemsWithIds = useMemo(() => addIdsToMenuItems(menuItems), [menuItems])
 
   const menuItemsWithSelectedState = useMemo(
     () =>
       addSelectedStateToMenuItems({
         menuItems: menuItemsWithIds,
-        sortOrderRaw,
+        sortOrderRaw: validatedSortOrder,
         layout,
         customMenuItemState,
       }),
-    [customMenuItemState, layout, menuItemsWithIds, sortOrderRaw],
+    [customMenuItemState, layout, menuItemsWithIds, validatedSortOrder],
   )
 
   return (
@@ -170,11 +187,11 @@ export const PaneContainer = memo(function PaneContainer(
           menuItemGroups={menuItemGroups}
           menuItems={menuItemsWithSelectedState}
           setLayout={setLayout}
-          setSortOrder={setSortOrder}
+          setSortOrder={handleSetSortOrder}
           setCustomMenuItemState={setCustomMenuItemState}
           title={title}
         />
-        <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
+        <DocumentListPane {...props} sortOrder={validatedSortOrder} layout={layout} />
       </Pane>
     </SourceProvider>
   )

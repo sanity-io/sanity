@@ -55,6 +55,32 @@ export function applyOrderingFunctions(order: SortOrder, schemaType: ObjectSchem
   return orderBy.every((item, index) => item === order.by[index]) ? order : {...order, by: orderBy}
 }
 
+const BUILT_IN_SORT_FIELDS = new Set(['_id', '_type', '_rev', '_createdAt', '_updatedAt'])
+
+/**
+ * Validates that all fields referenced in a sort order exist in the given schema type.
+ * Built-in document fields are always considered valid. Returns the fallback when any
+ * custom field is missing, which prevents crashes when a persisted sort order from one
+ * workspace references fields absent in another workspace's schema.
+ */
+export function validateSortOrder(
+  sortOrder: SortOrder,
+  schemaType: ObjectSchemaType | undefined,
+  fallback: SortOrder,
+): SortOrder {
+  if (!schemaType) {
+    return sortOrder
+  }
+
+  const allFieldsValid = sortOrder.by.every(
+    (entry) =>
+      BUILT_IN_SORT_FIELDS.has(entry.field) ||
+      Boolean(tryResolveSchemaTypeForPath(schemaType, entry.field)),
+  )
+
+  return allFieldsValid ? sortOrder : fallback
+}
+
 function tryResolveSchemaTypeForPath(baseType: SchemaType, path: string): SchemaType | undefined {
   const pathSegments = PathUtils.fromString(path)
 
