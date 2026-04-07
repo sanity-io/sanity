@@ -310,9 +310,6 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
-      globby:
-        specifier: ^11.1.0
-        version: 11.1.0
       ora:
         specifier: ^8.2.0
         version: 8.2.0
@@ -331,6 +328,9 @@ importers:
       source-map:
         specifier: ^0.7.6
         version: 0.7.6
+      tinyglobby:
+        specifier: ^0.2.15
+        version: 0.2.15
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -637,9 +637,6 @@ importers:
       chokidar:
         specifier: ^3.6.0
         version: 3.6.0
-      globby:
-        specifier: ^11.1.0
-        version: 11.1.0
       history:
         specifier: ^5.3.0
         version: 5.3.0
@@ -2024,15 +2021,15 @@ importers:
       execa:
         specifier: ^2.1.0
         version: 2.1.0
-      globby:
-        specifier: ^11.1.0
-        version: 11.1.0
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
+      tinyglobby:
+        specifier: ^0.2.15
+        version: 0.2.15
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -2085,9 +2082,6 @@ importers:
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
-      globby:
-        specifier: ^11.1.0
-        version: 11.1.0
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
@@ -2103,6 +2097,9 @@ importers:
       semver:
         specifier: ^7.7.3
         version: 7.7.4
+      tinyglobby:
+        specifier: ^0.2.15
+        version: 0.2.15
 
 packages:
 

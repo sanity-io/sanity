@@ -4,7 +4,7 @@ import {parseArgs} from 'node:util'
 
 import {createClient} from '@sanity/client'
 import {config} from 'dotenv'
-import globby from 'globby'
+import {glob} from 'tinyglobby'
 
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
 import {findEnv, readEnv} from './config/envVars'
@@ -32,7 +32,7 @@ async function main(args: {
   label?: string
 }) {
   const currentBranch = getCurrentBranchSync()
-  const testFiles = await globby(`${__dirname}/tests/**/${args.pattern || '*'}.test.ts`)
+  const testFiles = await glob(`${__dirname}/tests/**/${args.pattern || '*'}.test.ts`)
   const branch = args.branch || findEnv('PERF_TEST_BRANCH') || currentBranch
   const headless = args.headless ?? findEnv('PERF_TEST_HEADLESS') !== 'false'
 

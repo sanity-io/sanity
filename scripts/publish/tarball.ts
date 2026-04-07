@@ -4,7 +4,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import chalk from 'chalk'
-import globby from 'globby'
+import {glob} from 'tinyglobby'
 
 main().catch((err) => {
   console.error(chalk.red(err))
@@ -21,7 +21,7 @@ async function main() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const root = require('../../package.json')
   const workspaces = root.workspaces as string[]
-  const pkgJsonPaths = await globby(workspaces.map((p) => `${p}/package.json`))
+  const pkgJsonPaths = await glob(workspaces.map((p) => `${p}/package.json`))
 
   const versions: Record<string, string> = {}
 
