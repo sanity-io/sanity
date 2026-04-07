@@ -58,15 +58,19 @@ export const defaultConfig: UserConfig = {
 }
 
 /**
- * Strips CSS imports from JS chunks in the bundle output.
+ * Strips CSS imports from JS chunks in the bundle output, but ONLY for CSS
+ * files that were produced by the current build (e.g., by vanilla-extract).
  *
  * When building CDN bundles, CSS is served separately via `<link>` tags
  * (injected by the CLI's runtime script). The JS bundles should not contain
- * CSS import side-effects, as the module server only serves JS and CSS as
- * separate files — it does not resolve CSS imports from within JS modules.
+ * CSS import side-effects for these extracted CSS files, as the module server
+ * serves JS and CSS as separate files.
  *
- * This plugin runs in the `generateBundle` hook and removes any
- * `import './foo.css'` or `import "foo.css"` statements from JS chunks.
+ * CSS imports from third-party packages that were bundled in (and whose CSS
+ * was processed by Vite into the same output) are safe to strip too — their
+ * styles end up in the combined CSS asset served via `<link>`. But imports
+ * referencing CSS files NOT present in the bundle output are left untouched,
+ * since stripping them could lose styles that aren't in our CSS output.
  */
 export function stripCssImportsPlugin(): Plugin {
   return {
@@ -75,15 +79,32 @@ export function stripCssImportsPlugin(): Plugin {
     enforce: 'post',
 
     generateBundle(_options, bundle) {
+      // 1. Collect CSS asset filenames produced by this build
+      //    (e.g., vanilla-extract output, Vite-processed CSS imports)
+      const cssAssetNames = new Set<string>()
+      for (const [fileName, entry] of Object.entries(bundle)) {
+        if (entry.type === 'asset' && fileName.endsWith('.css')) {
+          cssAssetNames.add(fileName)
+        }
+      }
+
+      if (cssAssetNames.size === 0) return
+
+      // 2. Only strip imports that reference these specific CSS assets
       for (const [, chunk] of Object.entries(bundle)) {
         if (chunk.type !== 'chunk') continue
 
-        // Remove CSS import statements from JS chunks
-        // Matches: import './index.css', import "./style.css", import './foo-bar.css';
-        chunk.code = chunk.code.replace(
-          /import\s+['"][^'"]*\.css['"];?\n?/g,
-          '/* css served separately via <link> tag */\n',
-        )
+        for (const cssName of cssAssetNames) {
+          const escaped = cssName.replace(/\./g, '\\.')
+          const pattern = new RegExp(
+            `import\\s+['"][^'"]*${escaped}['"];?\\n?`,
+            'g',
+          )
+          chunk.code = chunk.code.replace(
+            pattern,
+            '/* css served separately via <link> tag */\n',
+          )
+        }
       }
     },
   }
