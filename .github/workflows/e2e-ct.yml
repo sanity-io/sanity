@@ -92,7 +92,7 @@ jobs:
     name: "E2E CT Status"
     runs-on: ubuntu-latest
     needs: [playwright-ct-test]
-    if: always()
+    if: ${{ !cancelled() }}
     steps:
       - name: Check E2E CT test matrix status
         run: |
