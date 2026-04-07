@@ -41,7 +41,7 @@
     "conventional-recommended-bump": "^11.2.0",
     "date-fns": "^4.1.0",
     "description-to-co-authors": "^0.3.0",
-    "lodash-es": "^4.17.22",
+    "lodash-es": "^4.18.1",
     "p-map": "^7.0.3",
     "semver": "^7.7.4",
     "turndown": "^7.2.2",

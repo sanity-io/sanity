@@ -73,7 +73,7 @@
     "groq-js": "^1.29.0",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
-    "lodash-es": "^4.17.22",
+    "lodash-es": "^4.18.1",
     "object-inspect": "^1.13.4"
   },
   "devDependencies": {
