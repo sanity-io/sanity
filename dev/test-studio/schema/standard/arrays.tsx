@@ -752,5 +752,10 @@ export default defineType({
         }),
       ],
     }),
+    defineField({
+      name: 'deeplyNestedBody',
+      title: 'Deeply nested body',
+      type: 'deepNested.body',
+    }),
   ],
 })
