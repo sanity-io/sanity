@@ -242,7 +242,7 @@ jobs:
     name: "E2E Status"
     runs-on: ubuntu-latest
     needs: [playwright-test]
-    if: always()
+    if: ${{ !cancelled() }}
     steps:
       - name: Check E2E test matrix status
         run: |
