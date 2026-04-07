@@ -20,6 +20,7 @@ import {
   type RenderPreviewCallback,
 } from '../../../types'
 import {createProtoValue} from '../../../utils/createProtoValue'
+import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'
 
 /**
@@ -182,8 +183,17 @@ export const ObjectField = function ObjectField(props: {
       'id': member.field.id,
       'ref': focusRef,
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
+      'style': {
+        anchorName: pathToAnchorIdent('input', member.field.path),
+      },
     }),
-    [handleBlur, handleFocus, member.field.id, member.field.schemaType.description],
+    [
+      handleBlur,
+      handleFocus,
+      member.field.id,
+      member.field.schemaType.description,
+      member.field.path,
+    ],
   )
 
   const inputProps = useMemo((): Omit<ObjectInputProps, 'renderDefault'> => {

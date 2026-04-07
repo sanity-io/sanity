@@ -231,11 +231,14 @@ export function createReleaseOperationsStore(options: {
       const duplicateVersionDocumentActions: CreateVersionAction[] = releaseDocuments.map(
         (releaseDocument) => ({
           actionType: 'sanity.action.document.version.create',
-          document: {...releaseDocument, _id: getVersionId(releaseDocument._id, versionId)},
+          baseId: releaseDocument._id,
           publishedId: getPublishedId(releaseDocument._id),
+          versionId: getVersionId(releaseDocument._id, versionId),
         }),
       )
-      await client.action(duplicateVersionDocumentActions)
+      await client.action(duplicateVersionDocumentActions, {
+        tag: 'duplicate-release.create-members',
+      })
     }
   }
 

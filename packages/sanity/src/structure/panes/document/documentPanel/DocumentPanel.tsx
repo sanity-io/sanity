@@ -1,7 +1,6 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
-  getSanityCreateLinkMetadata,
   getVersionFromId,
   isCardinalityOneRelease,
   isDraftId,
@@ -11,7 +10,6 @@ import {
   isPerspectiveWriteable,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
-  isSanityCreateLinked,
   isSystemBundle,
   LegacyLayerProvider,
   type ReleaseDocument,
@@ -41,7 +39,6 @@ import {
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
-import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
@@ -101,8 +98,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     permissions,
     isPermissionsLoading,
   } = useDocumentPane()
-  const createLinkMetadata = getSanityCreateLinkMetadata(value)
-  const showCreateBanner = isSanityCreateLinked(createLinkMetadata)
 
   const {params} = usePaneRouter()
   const {collapsed: layoutCollapsed} = usePaneLayout()
@@ -260,16 +255,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         isCardinalityOneRelease(release) &&
         (isReleaseScheduledOrScheduling(release) || isPausedCardinalityOneRelease(release)),
     )
-    const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
-
-    if (selectedPerspective === 'drafts' && scheduledCardinalityOneRelease && displayedIsDraft) {
-      return (
-        <ScheduledDraftOverrideBanner
-          releaseId={scheduledCardinalityOneRelease._id}
-          draftDocument={displayed}
-        />
-      )
-    }
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
     const isCurrentVersionGoingToUnpublish =
@@ -325,10 +310,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
 
     if (activeView.type !== 'form' || isPermissionsLoading) return null
+    const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
 
     return (
       <>
-        {showCreateBanner && <CreateLinkedBanner />}
+        {selectedPerspective === 'drafts' && scheduledCardinalityOneRelease && displayedIsDraft && (
+          <ScheduledDraftOverrideBanner
+            releaseId={scheduledCardinalityOneRelease._id}
+            draftDocument={displayed}
+          />
+        )}
         {!permissions?.granted && (
           <InsufficientPermissionBanner requiredPermission={requiredPermission} />
         )}
@@ -354,7 +345,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     ready,
     activeView.type,
     isPermissionsLoading,
-    showCreateBanner,
     permissions?.granted,
     requiredPermission,
     documentId,

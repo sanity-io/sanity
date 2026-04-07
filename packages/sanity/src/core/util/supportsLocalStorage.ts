@@ -11,7 +11,13 @@ export const supportsLocalStorage = (() => {
   // bail out in non-browser environments — even if browser globals have been
   // mocked (e.g., jsdom in CLI commands/tests). `process.versions` is set by
   // all major server-side runtimes and is not faked by jsdom.
-  if (typeof process !== 'undefined' && typeof process.versions !== 'undefined') {
+  // Note that `process.versions` may also be defined by frameworks.
+  // E.g. Next.js/Turbopack polyfills it and sets it to an empty object
+  if (
+    typeof process !== 'undefined' &&
+    typeof process.versions !== 'undefined' &&
+    typeof process.versions.node !== 'undefined'
+  ) {
     return false
   }
 

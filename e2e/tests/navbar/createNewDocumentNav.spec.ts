@@ -16,7 +16,7 @@ test('create new document from menu button', async ({page, baseURL}) => {
   // https://github.com/sanity-io/sanity/blob/6d5b4e88c4cb0fbd41fcebbaebabd88e9fac16b5/packages/sanity/src/core/components/commandList/CommandList.tsx#L596
   await page.getByTestId('create-new-author').click({force: true})
 
-  await page.waitForSelector('data-testid=document-pane')
+  await expect(page.getByTestId('document-pane')).toBeVisible()
 
   expect(page.url()).toMatch(/(chromium|firefox)\/content\/author;[0-9a-fA-F-]/)
 })

@@ -26,6 +26,14 @@ function consumeSessionId(): string | null {
   return sidParam
 }
 
+/**
+ * Provides a workaround for https://github.com/vercel/next.js/issues/91819
+ * Can be removed once that's fixed
+ */
+export function clearSessionId(): void {
+  consumeSessionId()
+}
+
 // this module consumes the session ID as a side-effect as soon as its loaded
 // to remove the session ID from the history (vs waiting to remove the sid hash
 // until react mounts). Once it is consumed and loaded once, we don't want to

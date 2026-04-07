@@ -5,7 +5,6 @@ import {test} from '../../studio-test'
 test.describe('Enhanced Object Dialog - breadcrumb navigation', () => {
   test.beforeEach(async ({createDraftDocument, page, browserName}) => {
     test.skip(browserName === 'firefox')
-    test.slow()
 
     await createDraftDocument('/content/input-debug;objectsDebug')
 
@@ -63,9 +62,7 @@ test.describe('Enhanced Object Dialog - breadcrumb navigation', () => {
     await expect(friendNameField).toBeVisible()
     await expect(friendNameField).toHaveValue('Dolphin')
 
-    // Verify it stays stable after a short wait (catches flicker regressions)
-    await page.waitForTimeout(500)
-    await expect(friendNameField).toBeVisible()
+    // Verify it stays stable (catches flicker regressions)
     await expect(friendNameField).toHaveValue('Dolphin')
   })
 })

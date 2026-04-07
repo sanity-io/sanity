@@ -1739,6 +1739,25 @@ describe('transferValue', () => {
       })
     }
 
+    function pasteDocumentLevel(
+      targetSchema: ReturnType<typeof createSchema>,
+      sourceValue: Record<string, unknown>,
+      overrides?: {currentUser?: typeof currentUser; targetRootValue?: Record<string, unknown>},
+    ) {
+      const docType = sourceValue._type as string
+      return transferValue({
+        sourceRootSchemaType: targetSchema.get(docType)!,
+        sourcePath: [],
+        sourceValue,
+        targetDocumentSchemaType: targetSchema.get(docType)!,
+        targetRootSchemaType: targetSchema.get(docType)!,
+        targetPath: [],
+        targetRootValue: overrides?.targetRootValue ?? {},
+        targetRootPath: [],
+        currentUser: overrides?.currentUser ?? currentUser,
+      })
+    }
+
     test('can copy into readOnly boolean field is false', async () => {
       const targetSchema = getTargetSchema(false)
       const sourceValue = {_type: 'author', _id: 'xxx', name: 'Knut'}
@@ -1895,6 +1914,118 @@ describe('transferValue', () => {
         'copy-paste.on-paste.validation.read-only-target.description',
       )
     })
+
+    const staticReadOnlySchema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'testDoc',
+          type: 'document',
+          fields: [
+            {name: 'category', type: 'string', title: 'Category', readOnly: true},
+            {name: 'code', type: 'string', title: 'Internal Code', readOnly: true},
+            {name: 'description', type: 'string'},
+          ],
+        },
+      ],
+    })
+
+    test('should skip static readOnly fields when pasting at document level', async () => {
+      const result = await pasteDocumentLevel(staticReadOnlySchema, {
+        _type: 'testDoc',
+        _id: 'xxx',
+        category: 'A',
+        code: 'CODE-001',
+        description: 'Hello',
+      })
+
+      expect(result.targetValue).toEqual({_type: 'testDoc', description: 'Hello'})
+      expect(result.errors).toHaveLength(1)
+      expect(result.errors[0]).toMatchObject({
+        level: 'warning',
+        i18n: {
+          key: 'copy-paste.on-paste.validation.read-only-fields-skipped.description',
+          args: {fieldNames: 'Category, Internal Code'},
+        },
+      })
+    })
+
+    test('should respect conditional readOnly when pasting at document level', async () => {
+      const conditionalReadOnlySchema = createSchema({
+        name: 'default',
+        types: [
+          {
+            name: 'testDoc',
+            type: 'document',
+            fields: [
+              {
+                name: 'name',
+                type: 'string',
+                readOnly: ({currentUser: user}: ConditionalPropertyCallbackContext) =>
+                  user?.name !== 'allowedUser',
+              },
+            ],
+          },
+        ],
+      })
+      const sourceValue = {_type: 'testDoc', _id: 'xxx', name: 'Knut'}
+
+      const skipped = await pasteDocumentLevel(conditionalReadOnlySchema, sourceValue, {
+        currentUser: {...currentUser, name: 'notAllowed'},
+      })
+      expect(skipped.targetValue).toEqual({_type: 'testDoc'})
+      expect(skipped.errors).toHaveLength(1)
+      expect(skipped.errors[0]).toMatchObject({
+        level: 'warning',
+        i18n: {
+          key: 'copy-paste.on-paste.validation.read-only-fields-skipped.description',
+          args: {fieldNames: 'Name'},
+        },
+      })
+
+      const copied = await pasteDocumentLevel(conditionalReadOnlySchema, sourceValue, {
+        currentUser: {...currentUser, name: 'allowedUser'},
+      })
+      expect(copied.targetValue).toEqual({_type: 'testDoc', name: 'Knut'})
+      expect(copied.errors).toEqual([])
+    })
+
+    test('should preserve existing target values for readOnly fields when pasting at document level', async () => {
+      const result = await pasteDocumentLevel(
+        staticReadOnlySchema,
+        {
+          _type: 'testDoc',
+          _id: 'xxx',
+          category: 'source-A',
+          code: 'source-CODE',
+          description: 'source-desc',
+        },
+        {
+          targetRootValue: {
+            _type: 'testDoc',
+            category: 'existing-A',
+            code: 'existing-CODE',
+            description: 'old-desc',
+          },
+        },
+      )
+
+      expect(result.targetValue).toEqual({
+        _type: 'testDoc',
+        category: 'existing-A',
+        code: 'existing-CODE',
+        description: 'source-desc',
+      })
+      expect(result.errors).toHaveLength(1)
+      expect(result.errors[0]).toMatchObject({
+        level: 'warning',
+        i18n: {
+          key: 'copy-paste.on-paste.validation.read-only-fields-skipped.description',
+          args: {fieldNames: 'Category, Internal Code'},
+        },
+      })
+    })
+
     test('inherits readOnly from parent array', async () => {
       const targetSchema = createSchema({
         name: 'default',

@@ -65,7 +65,7 @@ export const ScheduleFilters = (props: ScheduleFiltersProps) => {
                 ))}
               </Menu>
             }
-            placement="bottom"
+            popover={{placement: 'bottom'}}
           />
         )}
       </Box>

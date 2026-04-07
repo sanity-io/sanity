@@ -39,7 +39,12 @@ export function selectEffectFromHash({
   upstreamParentIsArray,
   path,
 }: SelectEffectFromHashContext): Exclude<DivergenceEffect, 'move'> {
-  if (fromString(path).at(-1) === '_type' && fromHash !== toHash) {
+  if (
+    fromString(path).at(-1) === '_type' &&
+    fromHash !== UNDEFINED_SHA1 &&
+    toHash !== UNDEFINED_SHA1 &&
+    fromHash !== toHash
+  ) {
     return 'changeObjectType'
   }
 

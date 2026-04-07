@@ -7,8 +7,6 @@ import {
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getVersionId,
-  isDeleteDocumentGroupEvent,
-  isDeleteDocumentVersionEvent,
   PerspectiveProvider,
   useArchivedReleases,
   useEditState,
@@ -86,10 +84,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
       sinceDocument: eventsStore.sinceRevision?.document || null,
       ready: !eventsStore.loading,
       isPristine: Boolean(eventsStore.events.length === 0),
-      lastNonDeletedRevId:
-        eventsStore.events.find(
-          (e) => !isDeleteDocumentGroupEvent(e) && !isDeleteDocumentVersionEvent(e),
-        )?.id || null,
+      lastNonDeletedRevId: eventsStore.lastNonDeletedRevId,
     }),
     [eventsStore, rev],
   )

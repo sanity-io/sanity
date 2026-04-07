@@ -1,8 +1,8 @@
-import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {measureFpsForInput} from '../../helpers/measureFpsForInput'
+import {uploadFileAssets, uploadImageAssets} from '../../helpers/uploadAsset'
 import {defineEfpsTest} from '../../types'
 import {type Synthetic, type SyntheticObject} from './sanity.types'
 
@@ -54,20 +54,24 @@ export default defineEfpsTest({
   name: 'synthetic',
   configPath: import.meta.resolve?.('./sanity.config.ts'),
   document: async ({client}) => {
-    const imageAsset = await client.assets.upload(
-      'image',
-      fs.createReadStream(path.join(dirname, 'assets', 'image.webp')),
-      {source: {id: 'image', name: 'synthetic-test'}},
-    )
-    const fileAsset = await client.assets.upload(
-      'file',
-      fs.createReadStream(path.join(dirname, 'assets', 'file.txt')),
-      {
-        source: {id: 'file', name: 'synthetic-test'},
-        contentType: 'text/plain',
-        filename: 'file.txt',
-      },
-    )
+    const [[imageAsset], [fileAsset]] = await Promise.all([
+      uploadImageAssets(client, [
+        {
+          filePath: path.join(dirname, 'assets', 'image.webp'),
+          options: {source: {id: 'image', name: 'synthetic-test'}},
+        },
+      ]),
+      uploadFileAssets(client, [
+        {
+          filePath: path.join(dirname, 'assets', 'file.txt'),
+          options: {
+            source: {id: 'file', name: 'synthetic-test'},
+            contentType: 'text/plain',
+            filename: 'file.txt',
+          },
+        },
+      ]),
+    ])
 
     const reference = await client.createOrReplace({
       _id: 'synthetic-reference',

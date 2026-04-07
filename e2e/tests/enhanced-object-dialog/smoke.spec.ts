@@ -40,7 +40,6 @@ test.describe('Enhanced Object Dialog - open and close', () => {
 test.describe('Enhanced Object Dialog - nested open and close via breadcrumb root', () => {
   test.beforeEach(async ({createDraftDocument, page, browserName}) => {
     test.skip(browserName === 'firefox')
-    test.slow()
 
     await createDraftDocument('/content/input-debug;objectsDebug')
 
@@ -84,7 +83,6 @@ test.describe('Enhanced Object Dialog - when tab focusing on an array item', () 
   test.beforeEach(async ({createDraftDocument, page, browserName}) => {
     // Skip Firefox due to flakiness with click/fill interactions
     test.skip(browserName === 'firefox')
-    test.slow()
 
     // wait for form to be attached
     await createDraftDocument('/content/input-debug;objectsDebug')
@@ -122,7 +120,6 @@ test.describe('Enhanced Object Dialog - when tab focusing on an array item', () 
   test(`When pressing enter on an array item, the tree editing modal should open`, async ({
     page,
   }) => {
-    test.slow()
     // Focus the array item directly rather than relying on Tab order
     await page
       .getByTestId('field-animals')

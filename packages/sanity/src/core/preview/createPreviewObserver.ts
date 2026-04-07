@@ -83,7 +83,7 @@ export function createPreviewObserver(context: {
       // Previewing references actually means getting the referenced value,
       // and preview using the preview config of its type
       // We do this since there's no way of knowing the type of the referenced value by looking at the reference value alone
-      return observeDocumentTypeFromId(value._ref).pipe(
+      return observeDocumentTypeFromId(value._ref, undefined, perspective).pipe(
         switchMap((typeName) => {
           if (typeName) {
             const refType = type.to.find((toType) => toType.name === typeName)

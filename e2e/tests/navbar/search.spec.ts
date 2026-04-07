@@ -8,8 +8,6 @@ test('searching creates unique saved searches', async ({
   createDraftDocument,
   sanityClient,
 }) => {
-  test.slow()
-
   const dataset = sanityClient.config().dataset
   await createDraftDocument('/content/book')
 

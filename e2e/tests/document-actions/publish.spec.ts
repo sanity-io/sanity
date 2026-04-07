@@ -9,7 +9,6 @@ test(`document panel displays correct title for published document`, async ({
   page,
   createDraftDocument,
 }) => {
-  test.slow()
   const title = 'Test Title'
 
   await createDraftDocument('/content/book')
@@ -22,9 +21,6 @@ test(`document panel displays correct title for published document`, async ({
 
   // Focus the publish button to trigger the tooltip showing the keyboard shortcut
   await page.getByTestId('action-publish').focus()
-
-  // There is a delay before the tooltip opens, let's explicitly wait for it
-  await page.waitForTimeout(300)
 
   // Now look for the tooltip to appear, with platform-aware keyboard shortcuts
   // It'll have a data-testid of 'document-status-bar-hotkeys'

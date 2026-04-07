@@ -20,8 +20,14 @@ import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
-import {createDocumentStore, type DocumentStore, type LatencyReportEvent} from './document'
+import {
+  createDocumentStore,
+  type DocumentPairLoadedEvent,
+  type DocumentStore,
+  type LatencyReportEvent,
+} from './document'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
+import {DocumentPairLoadingMeasured} from './document/__telemetry__/documentPairLoading.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
 import {createGrantsStore, type GrantsStore} from './grants'
@@ -191,6 +197,19 @@ export function useDocumentStore(): DocumentStore {
     })
   }, [toast, t])
 
+  const handleDocumentPairLoaded = useCallback(
+    (event: DocumentPairLoadedEvent) => {
+      telemetry.log(DocumentPairLoadingMeasured, {
+        durationMs: event.durationMs,
+        fromCache: event.fromCache,
+        hasPublished: event.hasPublished,
+        hasDraft: event.hasDraft,
+        hasVersion: event.hasVersion,
+      })
+    },
+    [telemetry],
+  )
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
@@ -218,6 +237,7 @@ export function useDocumentStore(): DocumentStore {
           onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
           onSlowCommit: handleSlowCommit,
+          onDocumentPairLoaded: handleDocumentPairLoaded,
         },
       })
 
@@ -250,6 +270,7 @@ export function useDocumentStore(): DocumentStore {
     handleReportLatency,
     handleSyncErrorRecovery,
     handleSlowCommit,
+    handleDocumentPairLoaded,
   ])
 }
 

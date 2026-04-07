@@ -220,10 +220,21 @@ export function createDocumentStore({
               result.args.idPair.publishedId === publishedId && result.args.typeName === type,
           ),
           map((result): OperationSuccess | OperationError => {
-            const {operationName, idPair: documentIds} = result.args
+            const {operationName, idPair} = result.args
             return result.type === 'success'
-              ? {type: 'success', op: operationName, id: documentIds.publishedId}
-              : {type: 'error', op: operationName, id: documentIds.publishedId, error: result.error}
+              ? {
+                  type: 'success',
+                  op: operationName,
+                  id: idPair.publishedId,
+                  idPair,
+                }
+              : {
+                  type: 'error',
+                  op: operationName,
+                  id: idPair.publishedId,
+                  error: result.error,
+                  idPair,
+                }
           }),
         )
       },

@@ -8,6 +8,7 @@ import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
 import {useCopyPaste} from '../../../../studio'
+import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
@@ -37,6 +38,7 @@ import {
 } from '../../../types'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
+import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 
@@ -309,8 +311,11 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       'id': member.item.id,
       'ref': focusRef,
       'aria-describedby': createDescriptionId(member.item.id, member.item.schemaType.description),
+      'style': {
+        anchorName: pathToAnchorIdent('input', member.item.path),
+      },
     }),
-    [handleBlur, handleFocus, member.item.id, member.item.schemaType.description],
+    [handleBlur, handleFocus, member.item.id, member.item.schemaType.description, member.item.path],
   )
 
   const inputProps = useMemo((): Omit<ObjectInputProps, 'renderDefault'> => {
@@ -431,7 +436,14 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
         inputProps={inputProps}
         render={renderItem}
       >
-        <RenderInput {...inputProps} render={renderInput} />
+        <RenderInput
+          {...inputProps}
+          render={(...renderProps) => (
+            <FormNodeDivergenceDetail path={member.item.path} readOnly={member.item.readOnly}>
+              {renderInput(...renderProps)}
+            </FormNodeDivergenceDetail>
+          )}
+        />
       </RenderItem>
     </FormCallbacksProvider>
   )

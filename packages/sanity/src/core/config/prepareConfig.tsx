@@ -101,6 +101,15 @@ function normalizeIcon(
 }
 
 const preparedWorkspaces = new WeakMap<SingleWorkspace | WorkspaceOptions, WorkspaceSummary>()
+let hasWarnedAboutDeprecatedConfigContextClient = false
+
+function warnDeprecatedConfigContextClientOnce() {
+  if (hasWarnedAboutDeprecatedConfigContextClient) return
+  hasWarnedAboutDeprecatedConfigContextClient = true
+  console.warn(
+    '`configContext.client` is deprecated and will be removed in the next release! Use `context.getClient({apiVersion: "2021-06-07"})` instead',
+  )
+}
 
 // Create media library sources with configuration
 const createMediaLibraryAssetSources = (config: PluginOptions) => {
@@ -378,9 +387,7 @@ function resolveSource({
 
       return Object.defineProperty(acc, key, {
         get() {
-          console.warn(
-            '`configContext.client` is deprecated and will be removed in the next release! Use `context.getClient({apiVersion: "2021-06-07"})` instead',
-          )
+          warnDeprecatedConfigContextClientOnce()
           return original
         },
       })
@@ -390,7 +397,7 @@ function resolveSource({
   /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
-  const defaultAssetSources = createDatasetAssetSources(config, context.client)
+  const defaultAssetSources = createDatasetAssetSources(config, client)
   const mediaLibraryAssetSources = createMediaLibraryAssetSources(config)
 
   let templates!: Source['templates']
@@ -747,10 +754,6 @@ function resolveSource({
       eventsAPI: {
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
-      },
-      create: {
-        startInCreateEnabled: false,
-        fallbackStudioOrigin: undefined,
       },
     },
     // eslint-disable-next-line camelcase

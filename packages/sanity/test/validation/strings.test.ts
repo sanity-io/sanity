@@ -146,6 +146,15 @@ describe('string', () => {
     )
   })
 
+  test('uri constraint (allowRelative with restrictive scheme)', async () => {
+    const rule = Rule.string().uri({scheme: ['https'], allowRelative: true})
+    await expect(rule.validate('/example', context)).resolves.toHaveLength(0)
+    await expect(rule.validate('https://example.com', context)).resolves.toHaveLength(0)
+    await expect(rule.validate('http://example.com', context)).resolves.toMatchSnapshot(
+      'uri: absolute URL still rejects disallowed scheme',
+    )
+  })
+
   test('custom rule with string', async () => {
     const rule = Rule.string().custom<string>((val) =>
       val.split('').reverse().join('') === val ? true : 'Must be a palindrome!',

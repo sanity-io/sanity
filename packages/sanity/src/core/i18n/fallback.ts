@@ -25,7 +25,7 @@ const fallbackLocales: LocaleSource['locales'] = [defaultLocale]
 export const getFallbackLocaleSource: () => LocaleSource = memoize(
   function getFallbackLocaleSource(): LocaleSource {
     const i18n = getFallbackI18nInstance()
-    void i18n.init()
+    void i18n.init({showSupportNotice: false})
     return {
       currentLocale: defaultLocale,
       locales: fallbackLocales,
@@ -49,6 +49,7 @@ function getFallbackI18nInstance() {
     ns: Array.from(namespaces),
     defaultNS: studioLocaleNamespace,
     initImmediate: true,
+    showSupportNotice: false,
     partialBundledLanguages: true,
     fallbackLng: defaultLocale.id,
     lng: defaultLocale.id,

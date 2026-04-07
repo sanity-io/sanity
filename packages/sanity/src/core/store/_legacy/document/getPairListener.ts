@@ -43,6 +43,15 @@ export interface LatencyReportEvent {
 }
 
 /** @internal */
+export interface DocumentPairLoadedEvent {
+  durationMs: number
+  fromCache: boolean
+  hasPublished: boolean
+  hasDraft: boolean
+  hasVersion: boolean
+}
+
+/** @internal */
 export interface DocumentStoreExtraOptions {
   tag?: string
 
@@ -54,6 +63,7 @@ export interface DocumentStoreExtraOptions {
   onSyncErrorRecovery?(error: OutOfSyncError): void
   onReportLatency?: (event: LatencyReportEvent) => void
   onSlowCommit?: () => void
+  onDocumentPairLoaded?: (event: DocumentPairLoadedEvent) => void
 }
 
 /** @internal */

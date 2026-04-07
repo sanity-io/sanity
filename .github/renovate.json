@@ -10,6 +10,8 @@
     "github>sanity-io/renovate-config:workarounds-esm",
     "github>sanity-io/renovate-config:dedupe"
   ],
+  "branchConcurrentLimit": 3,
+  "prConcurrentLimit": 5,
   "minimumReleaseAge": "3 days",
   "packageRules": [
     {
@@ -54,6 +56,7 @@
       "matchPackageNames": [
         "@portabletext/*",
         "@sanity/bifur-client",
+        "@sanity/cli",
         "@sanity/client",
         "@sanity/import",
         "@sanity/export",
@@ -81,10 +84,10 @@
     {
       "description": "Ensure internal and important packages open a PRs right away, without waiting for manual approval",
       "matchPackageNames": [
-        "lerna",
         "@portabletext/editor",
         "@portabletext/html",
         "@sanity/bifur-client",
+        "@sanity/cli",
         "@sanity/client",
         "@sanity/comlink",
         "@sanity/eslint-config-i18n",
@@ -129,7 +132,15 @@
       "description": "Always upgrade oxlint together",
       "groupName": "oxlint",
       "matchPackageNames": ["oxlint", "eslint-plugin-oxlint", "oxlint-tsgolint"]
+    },
+    {
+      "description": "Include release notes in PR description for @sanity/cli updates",
+      "matchPackageNames": ["@sanity/cli"],
+      "prBodyTemplate": "{{{header}}}{{{table}}}{{{warnings}}}{{{notes}}}{{{configDescription}}}{{{controls}}}{{{footer}}}\n### Notes for release\n{{{changelogs}}}"
     }
   ],
+  "toolSettings": {
+    "nodeMaxMemory": 2560
+  },
   "ignorePaths": ["packages/sanity/fixtures/examples/prj-with-react-19/package.json"]
 }

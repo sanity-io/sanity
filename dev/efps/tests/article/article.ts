@@ -1,9 +1,9 @@
-import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {measureFpsForInput} from '../../helpers/measureFpsForInput'
 import {measureFpsForPte} from '../../helpers/measureFpsForPte'
+import {uploadImageAssets} from '../../helpers/uploadAsset'
 import {defineEfpsTest} from '../../types'
 import document from './document'
 import {author, categories} from './references'
@@ -24,22 +24,19 @@ export default defineEfpsTest({
   name: 'article',
   configPath: import.meta.resolve?.('./sanity.config.ts'),
   document: async ({client}) => {
-    const images = (await fs.promises.readdir(path.join(dirname, './assets'))).filter((name) =>
-      name.endsWith('.webp'),
-    )
-
-    const imageAssets = await Promise.all(
-      images
-        .filter((name) => name.endsWith('.webp'))
-        .map((imageName) =>
-          client.assets.upload(
-            'image',
-            fs.createReadStream(path.join(dirname, './assets', imageName)),
-            {
-              source: {id: imageName, name: 'article-test'},
-            },
-          ),
-        ),
+    const imageAssets = await uploadImageAssets(
+      client,
+      [
+        'image1.webp',
+        'image2.webp',
+        'image3.webp',
+        'image4.webp',
+        'image5.webp',
+        'image6.webp',
+      ].map((imageName) => ({
+        filePath: path.join(dirname, './assets', imageName),
+        options: {source: {id: imageName, name: 'article-test'}},
+      })),
     )
     const [asset1, asset2, asset3, asset4, asset5, asset6] = imageAssets
 

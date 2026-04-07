@@ -15,7 +15,6 @@ test(`navigating document creates only one listener connection`, async ({page, b
   // For now, only test in other browsers except firefox due to flakiness in Firefox with the requests
   test.skip(browserName === 'firefox')
 
-  test.slow()
   await page.goto('/content')
 
   let authorListenersCount = 0
@@ -51,7 +50,7 @@ test(`navigating document creates only one listener connection`, async ({page, b
     }
   })
 
-  await page.waitForSelector('[data-testid="structure-tool-list-pane"]')
+  await expect(page.getByTestId('structure-tool-list-pane')).toBeVisible()
 
   // Scroll the items to click into view.
   await page.evaluate(() => {

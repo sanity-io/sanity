@@ -33,7 +33,7 @@ import {
 import {resolveUploadAssetSources} from '../../../../studio/uploads/resolveUploadAssetSources'
 import {type InputOnSelectFileFunctionProps, type UploadEvent} from '../../../../types'
 import {useFormBuilder} from '../../../../useFormBuilder'
-import {isComponentModeAssetSource} from '../assetSourceUtils'
+import {getAssetSourcesWithUpload, isComponentModeAssetSource} from '../assetSourceUtils'
 import {DropMessage} from '../DropMessage'
 import {type FileInfo, fileTarget} from '../fileTarget'
 import {UploadDestinationPicker} from '../UploadDestinationPicker'
@@ -228,10 +228,10 @@ export function uploadTarget<Props>(
           }
           return
         }
-        const allAssetSources = assetSourcesProp
-          ? assetSourcesProp
+        const uploadAssetSources = assetSourcesProp
+          ? getAssetSourcesWithUpload(assetSourcesProp)
           : types.flatMap((type) => resolveUploadAssetSources?.(type, formBuilder) ?? [])
-        const uniqueAssetSources = uniqBy(allAssetSources, 'name')
+        const uniqueAssetSources = uniqBy(uploadAssetSources, 'name')
         if (uniqueAssetSources.length > 1 && assetSourceDestinationName.current === null) {
           setShowAssetSourceDestinationPicker(true)
           setFilesToUpload(files)
@@ -304,7 +304,7 @@ export function uploadTarget<Props>(
     }, [disableUpload, isReadOnly, onSetHoveringFiles])
 
     const allAssetSourcesWithUpload = assetSourcesProp
-      ? assetSourcesProp
+      ? getAssetSourcesWithUpload(assetSourcesProp)
       : types.flatMap((type) => resolveUploadAssetSources?.(type, formBuilder) ?? [])
     // Asset sources may be returned for multiple types (file, image), we need to deduplicate them in order to show a unique list
     const assetSourcesWithUploadByName = uniqBy(allAssetSourcesWithUpload, 'name')

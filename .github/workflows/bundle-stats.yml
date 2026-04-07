@@ -20,8 +20,14 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/detect-code-changes
+        id: changes
+
       - uses: ./.github/actions/setup
-      - uses: rexxars/bundle-stats@v1
+        if: steps.changes.outputs.has_changes == 'true'
+      - uses: rexxars/bundle-stats@1bc291f60df8eafeb2793bc5592a1c7b812d5684 # v1
+        if: steps.changes.outputs.has_changes == 'true'
         with:
           packages: packages/sanity
           build-command: pnpm build

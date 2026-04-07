@@ -6,7 +6,7 @@ on:
   workflow_call:
     secrets:
       TURBO_TOKEN:
-      SANITY_E2E_SESSION_TOKEN_NEW:
+      SANITY_E2E_WRITE_TOKEN:
         required: true
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
       - uses: actions/setup-node@v6
         with:
           node-version: lts/*
@@ -31,7 +31,7 @@ jobs:
       - name: Namespace version with build run id
         run: npm version --no-git-commit-hooks --no-git-tag-version "${{ steps.npm-version.outputs.NPM_VERSION }}-gh.${{ github.run_id }}"
       - run: pnpm pack --pack-destination ./artifacts
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -52,7 +52,7 @@ jobs:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
 
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -84,7 +84,7 @@ jobs:
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -120,10 +120,7 @@ jobs:
         # Always run with PRs logic, to ensure tests run by the UI repo doesn't conflict with tests run by the sanity repo
         # if: ${{ github.event_name == 'pull_request' }}
         env:
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
           # the id is based on the PR number and the workflow run id
@@ -150,7 +147,7 @@ jobs:
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -180,13 +177,8 @@ jobs:
         # Always run with PRs logic, to ensure tests run by the UI repo doesn't conflict with tests run by the sanity repo
         # if: ${{ github.event_name == 'pull_request' }}
         env:
-          # Missing in docs but in use
-          # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
           PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
           # the id is based on the PR number and the workflow run id
@@ -194,7 +186,7 @@ jobs:
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
@@ -212,7 +204,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: playwright-report-*
           merge-multiple: true
@@ -227,7 +219,7 @@ jobs:
           fi
 
       - name: Upload HTML report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always() && hashFiles('playwright-report/**') != ''
         with:
           name: full-html-report--attempt-${{ github.run_attempt }}

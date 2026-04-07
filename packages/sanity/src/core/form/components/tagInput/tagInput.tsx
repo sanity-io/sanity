@@ -235,7 +235,7 @@ export const TagInput = forwardRef(
 
       if (inputElement) {
         inputElement.style.width = '0'
-        inputElement.style.width = `${inputElement.scrollWidth}px`
+        inputElement.style.width = `calc(${inputElement.scrollWidth}px + 1rem)`
       }
     }, [inputValue])
 

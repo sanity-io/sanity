@@ -309,6 +309,20 @@ exports[`string > uppercase constraint > uppercase: some lowercase 2`] = `
 
 exports[`string > uppercase constraint > uppercase: valid 1`] = `[]`;
 
+exports[`string > uri constraint (allowRelative with restrictive scheme) > uri: absolute URL still rejects disallowed scheme 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Does not match allowed protocols/schemes",
+    },
+    "level": "error",
+    "message": "Does not match allowed protocols/schemes",
+    "path": [],
+  },
+]
+`;
+
 exports[`string > uri constraint (credentials) > uri: credentials specified but not allowed 1`] = `
 [
   {

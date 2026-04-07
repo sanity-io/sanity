@@ -1,0 +1,42 @@
+name: Detect code changes
+description: >
+  Returns whether the PR contains code changes, excluding docs,
+  config files, IDE settings, and other non-code files.
+outputs:
+  has_changes:
+    description: "'true' if code files changed, 'false' otherwise"
+    value: ${{ steps.filter.outputs.code }}
+runs:
+  using: composite
+  steps:
+    - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
+      id: filter
+      with:
+        filters: |
+          code:
+            - '**'
+            - '!**/*.md'
+            - '!LICENSE'
+            - '!.editorconfig'
+            - '!.prettierrc'
+            - '!.prettierignore'
+            - '!.oxfmtrc.json'
+            - '!.claude/**'
+            - '!.cursor/**'
+            - '!.agents/**'
+            - '!.vscode/**'
+            - '!.gitignore'
+            - '!.husky/**'
+            - '!.github/CODEOWNERS'
+            - '!.github/ISSUE_TEMPLATE/**'
+            - '!.github/PULL_REQUEST_TEMPLATE.md'
+            - '!.github/renovate.json'
+            - '!.github/skills/**'
+            - '!.github/workflows/**'
+            - '!.tsdoc/**'
+            - '!docs/**'
+            - '!examples/**'
+            - '!skills/**'
+            - '!catalog-info.yaml'
+            - '!knip.jsonc'
+            - '!.env.example'

@@ -11,14 +11,14 @@ packages:
   - packages/sanity/fixtures/examples/*
 
 catalog:
-  '@playwright/experimental-ct-react': 1.57.0
-  '@playwright/test': 1.57.0
-  '@sanity/client': ^7.17.0
+  '@playwright/experimental-ct-react': 1.58.2
+  '@playwright/test': 1.58.2
+  '@sanity/client': ^7.18.0
   '@sanity/migrate': ^6.0.0
-  '@sanity/telemetry': ^0.8.1
+  '@sanity/telemetry': ^0.9.0
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/pkg-utils': ^10.4.8
-  '@sanity/ui': ^3.1.13
+  '@sanity/pkg-utils': ^10.4.10
+  '@sanity/ui': ^3.1.14
   '@types/node': ^24.3.0
   '@types/react': ^19.2.11
   '@types/react-dom': ^19.2.3
@@ -29,7 +29,7 @@ catalog:
   esbuild-register: ^3.6.0
   eslint: ^9.39.2
   globals: ^16.2.0
-  playwright: 1.57.0
+  playwright: 1.58.2
   react: ^19.2.4
   react-dom: ^19.2.4
   react-is: ^19.2.4
@@ -49,9 +49,6 @@ catalog:
 overrides:
   # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
   '@sanity/ui@3': '$@sanity/ui'
-  # temporary workaround for portabletext taking in @sanity/types v4
-  # can be removed once portable text dependency is on sanity@5
-  '@sanity/types': '^5.0.0'
   # We are currently blocked from upgrading to jsdom 27 because of a strange build error related to the new version of
   # cssstyle required by jsdom 27. If this error is no longer present, it's safe to remove the following override.
   jsdom: 26.1.0
@@ -69,6 +66,7 @@ minimumReleaseAgeExclude:
   - '@sanity/*'
   - '@types/*'
   - '@typescript/*'
+  - '@vercel/stega'
   - 'csstype'
   - 'data-uri-to-buffer@7.0.0'
   - 'eslint-plugin-oxlint'

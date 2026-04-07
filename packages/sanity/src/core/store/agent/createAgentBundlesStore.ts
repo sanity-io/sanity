@@ -98,9 +98,8 @@ function listenToBundles(
   client: SanityClient,
   organizationId: string,
 ): Observable<AgentBundlesState> {
-  const globalClient = client.withConfig({useProjectHostname: false})
-  const {token, withCredentials} = globalClient.config()
-  const url = globalClient.getUrl(`/agent/${organizationId}/bundles/mine/listen`)
+  const {token, withCredentials} = client.config()
+  const url = client.getUrl(`/agent/${organizationId}/bundles/mine/listen`)
 
   const esOptions: PolyfillEventSourceInit = {}
   if (token || withCredentials) esOptions.withCredentials = true

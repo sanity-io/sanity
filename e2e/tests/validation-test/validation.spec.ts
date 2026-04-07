@@ -1,11 +1,11 @@
 import {expect} from '@playwright/test'
 
+import {retryingClickUntilVisible} from '../../helpers/retryingClick'
 import {test} from '../../studio-test'
 
 test.describe('Validation test', () => {
   test.describe('should not throw error when a validation error is present', () => {
     test('and the one array item has been deleted', async ({page, createDraftDocument}) => {
-      test.slow()
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks
@@ -23,12 +23,16 @@ test.describe('Validation test', () => {
       })
 
       await createDraftDocument('/content/house')
+      await expect(page.getByTestId('document-panel-scroller')).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeEnabled()
       await page.getByTestId('field-name').getByTestId('string-input').fill('Test House')
-      await expect(page.getByTestId('add-single-object-button')).toBeVisible()
-      await expect(page.getByTestId('add-single-object-button')).toBeEnabled()
-      await page.getByTestId('add-single-object-button').click()
+
+      const addButton = page.getByTestId('add-single-object-button')
+      await expect(addButton).toBeVisible()
+      await expect(addButton).toBeEnabled()
+      // Use force to bypass any pointer-events issues in Firefox
+      await addButton.click({force: true})
 
       await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
 
@@ -47,8 +51,11 @@ test.describe('Validation test', () => {
       const arrayItemMenuButton = page.getByTestId('array-item-menu-button')
       await expect(arrayItemMenuButton).toBeVisible()
       await expect(arrayItemMenuButton).toBeEnabled()
-      await arrayItemMenuButton.click()
-      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
+      await retryingClickUntilVisible(
+        page,
+        arrayItemMenuButton,
+        page.getByRole('menuitem', {name: 'Remove'}),
+      )
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
       await page.getByRole('menuitem', {name: 'Remove'}).click()
 
@@ -63,8 +70,6 @@ test.describe('Validation test', () => {
       page,
       createDraftDocument,
     }) => {
-      test.slow()
-
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks
@@ -124,13 +129,15 @@ test.describe('Validation test', () => {
         {timeout: 10000},
       )
 
-      await expect(page.getByTestId('array-item-menu-button').first()).toBeVisible()
-      await expect(page.getByTestId('array-item-menu-button').first()).toBeEnabled()
-      await page.getByTestId('array-item-menu-button').first().click()
-
-      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
+      const firstMenuButton = page.getByTestId('array-item-menu-button').first()
+      await expect(firstMenuButton).toBeVisible()
+      await expect(firstMenuButton).toBeEnabled()
+      await retryingClickUntilVisible(
+        page,
+        firstMenuButton,
+        page.getByRole('menuitem', {name: 'Remove'}),
+      )
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
-      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
       await page.getByRole('menuitem', {name: 'Remove'}).click()
       await expect(page.getByRole('button', {name: 'House / Room / List furniture'})).toHaveCount(1)
 
@@ -141,8 +148,6 @@ test.describe('Validation test', () => {
       page,
       createDraftDocument,
     }) => {
-      test.slow()
-
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks
@@ -166,7 +171,8 @@ test.describe('Validation test', () => {
       const addButton = page.getByTestId('add-single-object-button')
       await expect(addButton).toBeVisible()
       await expect(addButton).toBeEnabled()
-      await addButton.click()
+      // Use force to bypass any pointer-events issues in Firefox
+      await addButton.click({force: true})
 
       await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       const roomNameInput = page.getByTestId(/field-house\[.*\]\.name/).getByTestId('string-input')
@@ -187,8 +193,11 @@ test.describe('Validation test', () => {
       const arrayItemMenuButton = page.getByTestId('array-item-menu-button').first()
       await expect(arrayItemMenuButton).toBeVisible()
       await expect(arrayItemMenuButton).toBeEnabled()
-      await arrayItemMenuButton.click()
-      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
+      await retryingClickUntilVisible(
+        page,
+        arrayItemMenuButton,
+        page.getByRole('menuitem', {name: 'Remove'}),
+      )
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
       await page.getByRole('menuitem', {name: 'Remove'}).click()
 

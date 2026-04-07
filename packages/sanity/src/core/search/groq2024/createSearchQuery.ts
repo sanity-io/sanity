@@ -8,6 +8,7 @@ import groupBy from 'lodash-es/groupBy.js'
 
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
 import {prefixLast} from '../common/token'
+import {toOrderClause} from '../common/toOrderClause'
 import {
   type SearchFactoryOptions,
   type SearchOptions,
@@ -35,21 +36,6 @@ function isSchemaType(
   maybeSchemaType: SchemaType | CrossDatasetType | undefined,
 ): maybeSchemaType is SchemaType {
   return typeof maybeSchemaType !== 'undefined' && 'name' in maybeSchemaType
-}
-
-function toOrderClause(orderBy: SearchSort[]): string {
-  function wrapFieldWithFn(ordering: SearchSort): string {
-    return ordering.mapWith ? `${ordering.mapWith}(${ordering.field})` : ordering.field
-  }
-
-  return (orderBy || [])
-    .map((ordering) =>
-      [wrapFieldWithFn(ordering), (ordering.direction || '').toLowerCase()]
-        .map((str) => str.trim())
-        .filter(Boolean)
-        .join(' '),
-    )
-    .join(',')
 }
 
 /**

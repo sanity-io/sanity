@@ -21,29 +21,12 @@ import {SANITY_VERSION} from '../../version'
 import {useWorkspace} from '../workspace'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
+import {debugLoggingStore} from './utils/debugLoggingStore'
 
 const sessionId = createSessionId()
 
-const DEBUG_TELEMETRY = !!(
-  typeof process !== 'undefined' && process.env?.SANITY_STUDIO_DEBUG_TELEMETRY
-)
-
 /** Telemetry only runs on client */
 const isClient = typeof window !== 'undefined'
-
-// oxlint-disable no-console
-const debugLoggingStore: CreateBatchedStoreOptions = {
-  flushInterval: 1000,
-  resolveConsent: () => Promise.resolve({status: 'granted'}),
-  sendEvents: async (batch) => {
-    console.log('[telemetry] submit events (noop): %O', batch)
-  },
-  sendBeacon: (batch) => {
-    console.log('[telemetry] submit events (noop): %O', batch)
-    return true
-  },
-}
-// oxlint-enable no-console
 
 export function StudioTelemetryProvider(props: {children: ReactNode}) {
   const client = useClient({apiVersion: 'v2023-12-18'})
@@ -95,7 +78,9 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   }, [orgId, activeTool, workspace.name, workspace.projectId, workspace.dataset])
 
   const storeOptions = useMemo((): CreateBatchedStoreOptions => {
-    if (DEBUG_TELEMETRY) {
+    const debugTelemetry = import.meta && import.meta.env?.SANITY_STUDIO_DEBUG_TELEMETRY === 'true'
+
+    if (debugTelemetry) {
       return debugLoggingStore
     }
     return {

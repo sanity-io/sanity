@@ -7,8 +7,10 @@ import {
   isCreateOrReplaceMutation,
 } from '@sanity/types'
 import {applyPatch} from 'mendoza'
+import QuickLRU from 'quick-lru'
 import {
   type Observable,
+  catchError,
   concat,
   concatMap,
   EMPTY,
@@ -40,6 +42,8 @@ interface PartialTransactionAccumulation extends Omit<
 
 const PAGE_LENGTH = 50
 
+let cache: QuickLRU<string, Observable<TransactionLogEventWithEffects | undefined>> | undefined
+
 /**
  * Find the most recent transaction shared by two documents, following each base
  * document link found in the `_system.base` field in order to construct the
@@ -67,7 +71,18 @@ export function readMostRecentSharedTransaction({
     return EMPTY
   }
 
-  return merge(
+  cache ??= new QuickLRU({
+    maxSize: 250,
+  })
+
+  const cacheKey = [a, b].join(';')
+  const cachedReader = cache.get(cacheKey)
+
+  if (typeof cachedReader !== 'undefined') {
+    return cachedReader
+  }
+
+  const reader = merge(
     readTransactionsFollowingLineage({documentId: a, client, getTransactionsLogs}).pipe(
       map((transaction) => ['a', transaction] satisfies SourceTransaction),
     ),
@@ -107,8 +122,19 @@ export function readMostRecentSharedTransaction({
       const [, transaction] = accumulation.currentTransaction
       return transaction
     }),
+    catchError((error) => {
+      cache?.delete(cacheKey)
+      throw error
+    }),
   )
+
+  cache.set(cacheKey, reader)
+  return reader
 }
+
+let lineageCache:
+  | QuickLRU<string, Observable<TransactionLogEventWithEffects & TransactionLogEventWithMutations>>
+  | undefined
 
 /**
  * Read the entire history of a document, following each base document link
@@ -139,6 +165,17 @@ export function readTransactionsFollowingLineage({
     )
   }
 
+  lineageCache ??= new QuickLRU({
+    maxSize: 250,
+  })
+
+  const cacheKey = [documentId, baseRevisionId, cursor].join(';')
+  const cachedReader = lineageCache.get(cacheKey)
+
+  if (typeof cachedReader !== 'undefined') {
+    return cachedReader
+  }
+
   const request = getTransactionsLogs(client, documentId, {
     limit: PAGE_LENGTH,
     excludeContent: true,
@@ -146,9 +183,10 @@ export function readTransactionsFollowingLineage({
     reverse: true,
     includeIdentifiedDocumentsOnly: true,
     toTransaction: cursor ?? baseRevisionId,
+    tag: 'sanity.studio.divergences.read-version-lineage',
   })
 
-  return from(request).pipe(
+  const reader = from(request).pipe(
     switchMap((transactions) => from(transactions)),
     concatMap((transaction, index) => {
       const isCursor = transaction.id === cursor
@@ -196,7 +234,14 @@ export function readTransactionsFollowingLineage({
 
       return concat(of(transaction), maybeReadNextPage)
     }),
+    catchError((error) => {
+      lineageCache?.delete(cacheKey)
+      throw error
+    }),
   )
+
+  lineageCache.set(cacheKey, reader)
+  return reader
 }
 
 function isVersionCreateTransaction(

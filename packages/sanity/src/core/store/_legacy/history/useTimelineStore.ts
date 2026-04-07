@@ -88,6 +88,7 @@ export interface TimelineStore {
  * ranges and fetch more transactions. It can also be used with
  * `useSyncExternalStore` to subscribe to selected state changes.
  *
+ * @deprecated Use events store instead, this will be removed in a future release
  * @internal
  * */
 export function useTimelineStore({

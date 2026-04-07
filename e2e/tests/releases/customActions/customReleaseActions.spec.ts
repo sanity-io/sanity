@@ -1,5 +1,6 @@
 import {expect, type Page} from '@playwright/test'
 
+import {retryingClickUntilVisible} from '../../../helpers/retryingClick'
 import {test} from '../../../studio-test'
 import {speciesDocumentNameASAP} from '../utils/__fixtures__/documents'
 import {partialASAPReleaseMetadata} from '../utils/__fixtures__/releases'
@@ -51,24 +52,27 @@ test.describe('Custom Release Actions', () => {
   })
 
   const openReleaseMenu = async (page: Page, isOverview: boolean) => {
-    if (isOverview) {
-      // On overview page, wait for the release to appear and then click its menu button
-      const releaseRow = page.getByRole('row').filter({hasText: uniqueReleaseTitle}).first()
-      await expect(releaseRow).toBeVisible()
+    const menuButton = isOverview
+      ? page
+          .getByRole('row')
+          .filter({hasText: uniqueReleaseTitle})
+          .first()
+          .getByTestId('release-menu-button')
+      : page.getByTestId('release-menu-button')
 
-      const menuButton = releaseRow.getByTestId('release-menu-button')
-      await expect(menuButton).toBeVisible()
-      await expect(menuButton).toBeEnabled()
-      // Use force click to bypass vercel-live-feedback overlay
-      await menuButton.click({force: true})
-    } else {
-      // On individual release page, wait for the menu button and click it
-      const menuButton = page.getByTestId('release-menu-button')
-      await expect(menuButton).toBeVisible()
-      await expect(menuButton).toBeEnabled()
-      // Use force click to bypass vercel-live-feedback overlay
-      await menuButton.click({force: true})
-    }
+    await expect(menuButton).toBeVisible()
+    await expect(menuButton).toBeEnabled()
+
+    // A built-in menu item that is always present for active ASAP releases.
+    // Used to verify the menu actually opened after clicking the button.
+    // On the overview page, subscription updates can re-render the table and
+    // swallow the click, so retrying with portal diagnostics helps debug failures.
+    await retryingClickUntilVisible(
+      page,
+      menuButton,
+      page.getByTestId('archive-release-menu-item'),
+      {maxRetries: 5},
+    )
   }
 
   const expectCustomActionInMenu = async (page: Page) => {
@@ -82,8 +86,6 @@ test.describe('Custom Release Actions', () => {
   const createCustomActionTests = (contextName: string, setupPath: string, isOverview: boolean) => {
     test.describe(contextName, () => {
       test.beforeEach(async ({page}) => {
-        test.slow()
-
         // Navigate and wait for the releases API response to complete
         // This ensures the release data is fully loaded before interacting with the page
         await Promise.all([
@@ -95,8 +97,13 @@ test.describe('Custom Release Actions', () => {
 
         // Wait for page-specific elements to be ready
         if (isOverview) {
-          // On overview page, wait for the releases table
+          // On overview page, wait for the releases table and the specific release row.
+          // The table may render before all releases are loaded from subscriptions,
+          // so waiting for the row ensures our test release data is available.
           await expect(page.getByRole('table')).toBeVisible()
+          await expect(page.getByRole('row').filter({hasText: uniqueReleaseTitle})).toBeVisible({
+            timeout: 30_000,
+          })
         } else {
           // On individual release page, wait for the menu button
           await expect(page.getByTestId('release-menu-button')).toBeVisible()
@@ -116,7 +123,6 @@ test.describe('Custom Release Actions', () => {
       })
 
       test('should verify context data', async ({page}) => {
-        test.slow()
         const consoleMessages: string[] = []
         page.on('console', (msg) => {
           consoleMessages.push(msg.text())

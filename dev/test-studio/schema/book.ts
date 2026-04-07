@@ -134,6 +134,26 @@ export default defineType({
         {field: 'title', direction: 'asc'},
       ],
     },
+    {
+      title: 'Publication year desc (nulls last)',
+      name: 'publicationYearDescNullsLast',
+      by: [{field: 'publicationYear', direction: 'desc', nulls: 'last'}],
+    },
+    {
+      title: 'Publication year desc (nulls first, default)',
+      name: 'publicationYearDescNullsFirst',
+      by: [{field: 'publicationYear', direction: 'desc', nulls: 'first'}],
+    },
+    {
+      title: 'Publication year asc (nulls first)',
+      name: 'publicationYearAscNullsFirst',
+      by: [{field: 'publicationYear', direction: 'asc', nulls: 'first'}],
+    },
+    {
+      title: 'Publication year asc (nulls last, default)',
+      name: 'publicationYearAscNullsLast',
+      by: [{field: 'publicationYear', direction: 'asc', nulls: 'last'}],
+    },
   ],
   preview: {
     select: {

@@ -164,7 +164,6 @@ describe('resolveConfig', () => {
       {name: 'sanity/comments'},
       {name: 'sanity/tasks'},
       {name: 'sanity/scheduled-publishing'},
-      {name: 'sanity/create-integration'},
       {name: 'sanity/releases'},
       {name: 'sanity/canvas-integration'},
       {name: 'sanity/schedules'},
@@ -276,7 +275,6 @@ describe('resolveConfig', () => {
     expect(workspace.__internal.options.plugins).toMatchObject([
       {name: 'sanity/comments'},
       {name: 'sanity/tasks'},
-      {name: 'sanity/create-integration'},
       {name: 'sanity/releases'},
       {name: 'sanity/canvas-integration'},
       {name: 'sanity/schedules'},
