@@ -105,7 +105,7 @@ export function IncomingReferencesList() {
         documentPreviewStore,
         getClient,
       }).pipe(
-        map(({documents}) => {
+        map(({documents, loading}) => {
           const documentsByType = documents.reduce(
             (acc, doc) => {
               const type = doc._type
@@ -117,9 +117,11 @@ export function IncomingReferencesList() {
             },
             {} as Record<string, SanityDocument[]>,
           )
-          return Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs}))
+          return {
+            list: Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs})),
+            loading,
+          }
         }),
-        map((list) => ({list, loading: false})),
       ),
     [documentId, documentPreviewStore, getClient],
   )
@@ -128,7 +130,7 @@ export function IncomingReferencesList() {
   const crossDatasetIncomingRefs$ = useMemo(
     () =>
       getCrossDatasetIncomingReferences({documentId, client, documentPreviewStore}).pipe(
-        map(({documents}) => {
+        map(({documents, loading}) => {
           const documentsByType = documents.reduce(
             (acc, doc) => {
               const type = doc.type
@@ -140,9 +142,11 @@ export function IncomingReferencesList() {
             },
             {} as Record<string, CrossDatasetIncomingReferenceDocument[]>,
           )
-          return Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs}))
+          return {
+            list: Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs})),
+            loading,
+          }
         }),
-        map((list) => ({list, loading: false})),
       ),
     [client, documentId, documentPreviewStore],
   )
