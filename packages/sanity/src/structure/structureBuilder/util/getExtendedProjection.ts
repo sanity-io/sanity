@@ -1,4 +1,13 @@
-import {type SchemaType, type SortOrderingItem} from '@sanity/types'
+import {
+  isIndexSegment,
+  isIndexTuple,
+  isKeySegment,
+  isReferenceSchemaType,
+  type PathSegment,
+  type SchemaType,
+  type SortOrderingItem,
+} from '@sanity/types'
+import {fromString as pathFromString} from '@sanity/util/paths'
 
 const IMPLICIT_SCHEMA_TYPE_FIELDS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
 
@@ -18,26 +27,63 @@ function getOrCreateChildNode(
   reference: boolean,
 ): ProjectionNode {
   const node = nodes.get(fieldName)
-  if (node) return node
+  if (node) {
+    node.reference ||= reference
+    return node
+  }
   const createdNode: ProjectionNode = {reference, children: new Map()}
   nodes.set(fieldName, createdNode)
   return createdNode
 }
 
+function reportError(message: string, strict: boolean): void {
+  if (strict) throw new Error(message)
+  console.warn(message)
+}
+
 /**
- * Recursively walks a dot-path (eg `author.bestFriend.name`) against the schema
- * and builds a merged projection tree.
+ * Given a resolved node key, field type, and remaining path, inserts into the projection tree.
+ * Handles leaf nodes, reference dereferencing, and nested object recursion.
+ */
+function recurseIntoField(
+  nodes: Map<string, ProjectionNode>,
+  nodeKey: string,
+  fieldType: SchemaType,
+  tail: PathSegment[],
+  strict: boolean,
+): void {
+  if (tail.length === 0) {
+    getOrCreateChildNode(nodes, nodeKey, false)
+    return
+  }
+
+  if (isReferenceSchemaType(fieldType) && 'to' in fieldType) {
+    const refNode = getOrCreateChildNode(nodes, nodeKey, true)
+    fieldType.to.forEach((refType) => joinReferences(refNode.children, refType, tail, strict))
+    return
+  }
+
+  const node = getOrCreateChildNode(nodes, nodeKey, false)
+  joinReferences(node.children, fieldType, tail, strict)
+}
+
+/**
+ * Recursively walks a parsed path against the schema and builds a merged projection tree.
  *
- * Recursion flow:
- * - `head` is the current path segment, `tail` is the remaining path.
- * - We resolve `head` in the current schema type.
- * - If this is the last path segment (`tail.length === 0`), we store the field and stop.
- * - If `head` is a reference field, we recurse into each `to` type using `tail`.
- * - Otherwise we recurse into the nested object type using `tail`.
+ * Handles three segment types from `PathUtils.fromString`:
+ * - **String**: field name lookup (e.g., `author`, `name`)
+ * - **Number**: array index (e.g., `[0]`) - folded into parent field's node key
+ * - **KeyedSegment**: keyed array access (e.g., `[_key=="abc"]`) - same folding
  *
  * Example (`translations.se`):
- * - first call: `head=translations`, `tail=['se']` - not last segment, recurse into `translations`.
- * - second call: `head=se`, `tail=[]` - last segment, store `se` and stop.
+ * - first call: `head=translations`, `rest=['se']` - not last segment, recurse into `translations`.
+ * - second call: `head=se`, `rest=[]` - last segment, store `se` and stop.
+ *
+ * Example (`items[0].value` where `items` is an array of references):
+ * - `head=items`, `rest=[0, 'value']` - next segment is an index, so consume it.
+ * - `nodeKey` becomes `items[0]`, member type is a reference, recurse into ref target.
+ * - inner call: `head=value`, `rest=[]` - last segment, store `value` and stop.
+ * - final projection: `items[0]->{value}`
  *
  * Because this writes into a shared `nodes` map, overlapping orderings are merged
  * naturally while traversing (instead of being merged afterwards from strings).
@@ -45,44 +91,77 @@ function getOrCreateChildNode(
 function joinReferences(
   nodes: Map<string, ProjectionNode>,
   schemaType: SchemaType,
-  path: string[],
+  path: PathSegment[],
   strict: boolean,
 ) {
-  const [head, ...tail] = path
-  if (!head || !('fields' in schemaType)) {
+  const [head, ...rest] = path
+  if (!head || typeof head !== 'string') {
+    return
+  }
+
+  if (!('fields' in schemaType)) {
+    reportError(
+      `The current ordering config attempted to traverse into field "${head}" on non-object schema type "${schemaType.name}"`,
+      strict,
+    )
     return
   }
 
   const schemaField = schemaType.fields.find((field) => field.name === head)
   if (!schemaField) {
     if (!IMPLICIT_SCHEMA_TYPE_FIELDS.includes(head)) {
-      const errorMessage = `The current ordering config targeted the nonexistent field "${head}" on schema type "${schemaType.name}". It should be one of ${schemaType.fields.map((field) => field.name).join(', ')}`
-      if (strict) {
-        throw new Error(errorMessage)
-      } else {
-        console.warn(errorMessage)
-      }
+      reportError(
+        `The current ordering config targeted the nonexistent field "${head}" on schema type "${schemaType.name}". It should be one of ${schemaType.fields.map((field) => field.name).join(', ')}`,
+        strict,
+      )
     }
     return
   }
 
-  if (tail.length === 0) {
-    if (!nodes.has(head)) {
-      nodes.set(head, {reference: false, children: new Map()})
-    }
+  const nextSegment = rest[0]
+  const hasArrayAccessor =
+    nextSegment !== undefined &&
+    (isIndexSegment(nextSegment) || isKeySegment(nextSegment) || isIndexTuple(nextSegment))
+
+  if (!hasArrayAccessor) {
+    recurseIntoField(nodes, head, schemaField.type, rest, strict)
     return
   }
 
-  if ('to' in schemaField.type && schemaField.type.name === 'reference') {
-    const refTypes = getOrCreateChildNode(nodes, head, true)
-    schemaField.type.to.forEach((refType) =>
-      joinReferences(refTypes.children, refType, tail, strict),
+  // Range slices are not meaningful for ordering projections.
+  if (isIndexTuple(nextSegment)) {
+    reportError(
+      `The current ordering config used a range slice on "${head}" on schema type "${schemaType.name}". Range slices are not supported for ordering.`,
+      strict,
     )
     return
   }
 
-  const node = getOrCreateChildNode(nodes, head, false)
-  joinReferences(node.children, schemaField.type, tail, strict)
+  if (schemaField.type.jsonType !== 'array') {
+    reportError(
+      `The current ordering config used array access on non-array field "${head}" on schema type "${schemaType.name}"`,
+      strict,
+    )
+    return
+  }
+
+  const members = (
+    'of' in schemaField.type && Array.isArray(schemaField.type.of) ? schemaField.type.of : []
+  ) as SchemaType[]
+  if (members.length !== 1) {
+    reportError(
+      `The current ordering config used array access on multi-type array field "${head}" on schema type "${schemaType.name}". Array ordering requires a single member type.`,
+      strict,
+    )
+    return
+  }
+
+  const nodeKey =
+    head + (typeof nextSegment === 'number' ? `[${nextSegment}]` : `[_key=="${nextSegment._key}"]`)
+  const tail = rest.slice(1)
+  const memberType = members[0]
+
+  recurseIntoField(nodes, nodeKey, memberType, tail, strict)
 }
 
 /**
@@ -111,7 +190,7 @@ function joinReferences(
 function createProjection(tree: Map<string, ProjectionNode>): string {
   return [...tree.entries()]
     .map(([fieldName, node]) => {
-      if (!node.children || node.children.size === 0) {
+      if (node.children.size === 0) {
         return fieldName
       }
 
@@ -128,7 +207,7 @@ function createProjection(tree: Map<string, ProjectionNode>): string {
  * Builds the extended projection needed for sorting on nested fields.
  *
  * For each sort field in `orderBy`, we:
- * 1) split the field path by `.`
+ * 1) parse the field path into typed segments (supporting array indices and keyed access)
  * 2) recursively walk the schema and insert into a shared projection tree
  * 3) render the merged tree into a stable projection string
  */
@@ -140,7 +219,8 @@ export function getExtendedProjection(
   const nodes = new Map<string, ProjectionNode>()
 
   orderBy.forEach((ordering) => {
-    joinReferences(nodes, schemaType, ordering.field.split('.'), strict)
+    if (!ordering.field) return
+    joinReferences(nodes, schemaType, pathFromString(ordering.field), strict)
   })
 
   return createProjection(nodes)
