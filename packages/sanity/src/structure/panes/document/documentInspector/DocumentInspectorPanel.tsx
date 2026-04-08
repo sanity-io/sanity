@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
 import {useCallback} from 'react'
-import {Resizable} from 'sanity'
+import {DivergencesProvider, Resizable} from 'sanity'
 
 import {usePane} from '../../../components'
 import {useStructureTool} from '../../../useStructureTool'
@@ -28,8 +28,18 @@ export function DocumentInspectorPanel(
   if (collapsed || !inspector) return null
 
   const Component = inspector.component
+
+  // No document/form shown in an inspector (e.g. a task, or AI assist
+  // instruction) is expected to support divergences itself. Therefore,
+  // divergences are switched off for the entire inspector subtree, regardless
+  // of whether the workspace has switched them on.
+  //
+  // This prevents redundant form gutters being rendered in the already
+  // limited space available to inspectors.
   const element = (
-    <Component onClose={handleClose} documentId={documentId} documentType={documentType} />
+    <DivergencesProvider enabled={false}>
+      <Component onClose={handleClose} documentId={documentId} documentType={documentType} />
+    </DivergencesProvider>
   )
 
   if (features.resizablePanes) {
