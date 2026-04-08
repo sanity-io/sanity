@@ -9,6 +9,7 @@ import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths
 import {
   type ComponentType,
   useCallback,
+  useContext,
   useEffect,
   useEffectEvent,
   useMemo,
@@ -44,7 +45,11 @@ import {
   useUnique,
   useWorkspace,
 } from 'sanity'
-import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
+import {
+  DocumentDivergencesContext,
+  DocumentPaneContext,
+  DocumentPaneInfoContext,
+} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
@@ -702,11 +707,21 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     return undefined
   }, [paramPath, ready])
 
+  const divergencesContext = useContext(DocumentDivergencesContext)
+
   return (
     <DocumentPaneInfoContext.Provider value={documentPaneInfo}>
       <DocumentPaneContext.Provider value={documentPane}>
         <DivergencesProvider
-          enabled={advancedVersionControlEnabled}
+          // If `DocumentPaneProvider` is rendered as a descendant of another
+          // instance of `DivergencesProvider`, inherit its enabled state,
+          // rather than overriding it.
+          //
+          // This allows `DocumentPaneProvider` to appear as a descendant of
+          // `DivergencesProvider` with `enabled` explicitly set to `false`,
+          // without that explicit opt-out being overriden by the workspace's
+          // `advancedVersionControl.enabled` configuration.
+          enabled={divergencesContext?.enabled ?? advancedVersionControlEnabled}
           upstreamEditState={upstreamEditState}
           editState={editState}
           subjectId={documentId}
