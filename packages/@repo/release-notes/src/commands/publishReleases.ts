@@ -1,12 +1,14 @@
 /* oxlint-disable no-console */
 import {DocumentId, getPublishedId, getVersionNameFromId, isVersionId} from '@sanity/id-utils'
 
-import {client} from '../client'
-import {octokit} from '../octokit'
+import {getClient} from '../client'
+import {getOctokit} from '../octokit'
 import {type StudioChangelogEntry} from '../types'
 import {stripPr} from '../utils/stripPrNumber'
 
 export async function publishReleases(options: {dryRun: boolean; targetVersion: string}) {
+  const client = getClient()
+  const octokit = getOctokit()
   const changelogDocuments = await client.fetch<{_id: string; changelog: StudioChangelogEntry[]}[]>(
     '*[_type=="apiChange" && releaseAutomation.source == "studio" && releaseAutomation.tentativeVersion == $version]',
     {version: options.targetVersion},
@@ -36,10 +38,15 @@ export async function publishReleases(options: {dryRun: boolean; targetVersion: 
   if (isVersionId(changelogDocumentId)) {
     const releaseId = getVersionNameFromId(changelogDocumentId)
     if (options.dryRun) {
+      console.log(`[DRY RUN] Unsetting releaseAutomation on document ${changelogDocumentId}`)
       console.log(
         `[DRY RUN] Publishing content release ${releaseId} for version ${options.targetVersion}`,
       )
     } else {
+      // Unset releaseAutomation before publishing to avoid validation issues post-release
+      console.log(`Unsetting releaseAutomation on document ${changelogDocumentId}`)
+      await client.patch(changelogDocumentId).unset(['releaseAutomation']).commit()
+
       console.log(`Publishing content release ${releaseId} for version ${options.targetVersion}`)
       await client.releases.publish({releaseId})
       console.log(
@@ -125,11 +132,4 @@ To initiate a new Sanity Studio project or learn more about upgrading, please re
 # 📓 Full changelog
 ${vars.changelog}
 `
-}
-
-function conventionalPrefix(entry: StudioChangelogEntry) {
-  if (!entry.type) {
-    return ''
-  }
-  return `${entry.type}${entry.scope ? `(${entry.scope})` : ''}: `
 }

@@ -4,7 +4,6 @@ import {retryingClickUntilVisible} from '../../helpers/retryingClick'
 import {test} from '../../studio-test'
 
 test('media plugin should open from input', async ({page, createDraftDocument}) => {
-  test.slow()
   await createDraftDocument('/content/input-standard;imagesTest')
 
   // wait for input to be visible (nth(1) = mainImage, first image field in imagesTest schema)
@@ -27,7 +26,6 @@ test('media plugin should open from input', async ({page, createDraftDocument}) 
 })
 
 test('open media plugin from navbar', async ({page}) => {
-  test.slow()
   await page.goto('/')
   await expect(page.getByTestId('parent-config-studio-tool-menu')).toBeVisible()
 

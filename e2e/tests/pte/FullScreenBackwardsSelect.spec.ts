@@ -7,7 +7,6 @@ import {test} from '../../studio-test'
 test.skip('Portable Text Input - Fullscreen Backwards Select', () => {
   test.beforeEach(async ({page, createDraftDocument, browserName}) => {
     test.skip(browserName === 'firefox')
-    test.slow()
     await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
 
     const pteEditor = page.getByTestId('field-text')
@@ -55,7 +54,6 @@ test.skip('Portable Text Input - Fullscreen Backwards Select', () => {
     browserName,
   }) => {
     test.skip(browserName === 'firefox')
-    test.slow()
 
     const portal = page.getByTestId('document-panel-portal')
 

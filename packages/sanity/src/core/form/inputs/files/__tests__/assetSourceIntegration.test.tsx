@@ -3,6 +3,7 @@
  * Tests the shared asset source behavior: upload flow, browse flow, empty state, no sources fallback.
  */
 import {createImageUrlBuilder} from '@sanity/image-url'
+import {type AssetSource} from '@sanity/types'
 import {screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
@@ -15,6 +16,7 @@ import {
 } from '../../../../../../test/fixtures/assetSourceMocks'
 import {renderFileInput, renderImageInput, renderVideoInput} from '../../../../../../test/form'
 import {BaseVideoInput} from '../../../../../media-library/plugin/VideoInput/VideoInput'
+import {MediaLibraryUploader} from '../../../studio/assetSourceMediaLibrary/uploader'
 import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'
 import {BaseFileInput} from '../FileInput'
 import {BaseImageInput} from '../ImageInput'
@@ -538,6 +540,49 @@ describe.each(BROWSE_AFTER_UPLOAD_CONFIGS)(
         {timeout: 5000},
       )
       expect(screen.getByTestId('mock-upload-component')).toHaveTextContent('Open in Source')
+    }, 15000)
+
+    it('passes selectedAssets when opened via browse with existing value', async () => {
+      const SelectedAssetsTestSource: AssetSource = {
+        name: 'media-library-mock',
+        title: 'Test',
+        component: (props) => (
+          <div
+            data-testid="selected-assets-test"
+            data-selected-assets-count={props.selectedAssets.length}
+          />
+        ),
+        Uploader: MediaLibraryUploader,
+      }
+
+      const baseOptions = {
+        assetSources: [SelectedAssetsTestSource],
+        fieldDefinition,
+        observeAsset: observeAsset as any,
+        props: {documentValue},
+        render: (inputProps: any) => <BaseInput {...(inputProps as any)} />,
+      }
+      const renderOptions =
+        imageUrlBuilder !== undefined ? {...baseOptions, imageUrlBuilder} : baseOptions
+
+      await renderFn(renderOptions as any)
+
+      const optionsButton = await screen.findByTestId('options-menu-button', {}, {timeout: 5000})
+      await userEvent.click(optionsButton)
+      const browseButton = await screen.findByTestId(
+        getBrowseTestIdForConfig(),
+        {},
+        {timeout: 5000},
+      )
+      await userEvent.click(browseButton)
+
+      await waitFor(
+        () => {
+          const el = screen.getByTestId('selected-assets-test')
+          expect(el).toHaveAttribute('data-selected-assets-count', '1')
+        },
+        {timeout: 5000},
+      )
     }, 15000)
 
     it('disables browse and clear when readOnly', async () => {

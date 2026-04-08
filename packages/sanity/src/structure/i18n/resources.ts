@@ -183,6 +183,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the reference change banner if the reason is that the reference has been deleted */
   'banners.reference-changed-banner.reason-removed.text':
     'This reference has been removed since you opened it.',
+  /** The text that appears for the action button to add the current document to the global bundle, this happens when user is viewing an anonymous bundle */
+  'banners.release.action.add-to-bundle': 'Add to bundle',
   /** The text that appears for the action button to add the current document to the global release */
   'banners.release.action.add-to-release': 'Add to release',
   /** The text that appears for the action button to add the current document to the global release */
@@ -483,6 +485,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'incoming-references-input.types-not-defined':
     'No incoming references defined for this type, see the docs for more information.',
 
+  /** The text shown if there are no incoming references in the inspector */
+  'incoming-references-pane.no-references': 'No incoming references found.',
   /** The text shown if there are no incoming references for a type */
   'incoming-references-pane.no-references-found': 'No references of this type found.',
   /** The text shown if there is no schema type found for a document in the incoming references pane */
@@ -604,6 +608,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text when a publish operation succeeded  */
   'panes.document-operation-results.operation-success_publish':
     '<Strong>{{title}}</Strong> was published',
+  /** The text when a publish operation succeeded in an anonymous version */
+  'panes.document-operation-results.operation-success_publishVersion': 'Version was published',
   /** The text when a restore operation succeeded  */
   'panes.document-operation-results.operation-success_restore':
     '<Strong>{{title}}</Strong> was restored',

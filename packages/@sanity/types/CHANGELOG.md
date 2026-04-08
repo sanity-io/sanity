@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.20.0](https://github.com/sanity-io/sanity/compare/v5.19.0...v5.20.0) (2026-04-07)
+
+### Bug Fixes
+
+* **types:** preserve type autocomplete for defineField inside defineType ([#12576](https://github.com/sanity-io/sanity/issues/12576)) ([d566c31](https://github.com/sanity-io/sanity/commit/d566c31254a4d1d13d905eff0912be445ed69ac6))
+
+## [5.18.0](https://github.com/sanity-io/sanity/compare/v5.17.1...v5.18.0) (2026-03-24)
+
+**Note:** Version bump only for package @sanity/types
 
 ## [5.17.1](https://github.com/sanity-io/sanity/compare/v5.17.0...v5.17.1) (2026-03-17)
 

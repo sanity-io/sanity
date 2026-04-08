@@ -192,6 +192,10 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
 
   // The PTE is implicitly expanded when inspecting a divergence within it.
   const controlImplicitExpandedState = useEffectEvent(() => {
+    if (!divergenceNavigator.enabled) {
+      return
+    }
+
     const focusedDivergenceDescendsNode =
       typeof divergenceNavigator.state.focusedDivergence !== 'undefined' &&
       startsWith(path, fromString(divergenceNavigator.state.focusedDivergence))
@@ -214,7 +218,10 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     }
   })
 
-  useEffect(() => controlImplicitExpandedState(), [divergenceNavigator.state.focusedDivergence])
+  const focusedDivergence = divergenceNavigator.enabled
+    ? divergenceNavigator.state.focusedDivergence
+    : undefined
+  useEffect(() => controlImplicitExpandedState(), [focusedDivergence])
 
   const toast = useToast()
 

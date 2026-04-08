@@ -32,7 +32,7 @@ runs:
       run: pnpm vercel env pull .env.tmp --yes --environment=${{ inputs.environment }} --token=${{ inputs.token }}
 
     - name: Load Vercel environment variables into GITHUB_ENV
-      uses: actions/github-script@v6
+      uses: actions/github-script@v8
       with:
         script: |
           const dotenv = require('dotenv')

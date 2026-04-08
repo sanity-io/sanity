@@ -105,7 +105,7 @@ export function IncomingReferencesList() {
         documentPreviewStore,
         getClient,
       }).pipe(
-        map(({documents}) => {
+        map(({documents, loading}) => {
           const documentsByType = documents.reduce(
             (acc, doc) => {
               const type = doc._type
@@ -117,9 +117,11 @@ export function IncomingReferencesList() {
             },
             {} as Record<string, SanityDocument[]>,
           )
-          return Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs}))
+          return {
+            list: Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs})),
+            loading,
+          }
         }),
-        map((list) => ({list, loading: false})),
       ),
     [documentId, documentPreviewStore, getClient],
   )
@@ -128,7 +130,7 @@ export function IncomingReferencesList() {
   const crossDatasetIncomingRefs$ = useMemo(
     () =>
       getCrossDatasetIncomingReferences({documentId, client, documentPreviewStore}).pipe(
-        map(({documents}) => {
+        map(({documents, loading}) => {
           const documentsByType = documents.reduce(
             (acc, doc) => {
               const type = doc.type
@@ -140,9 +142,11 @@ export function IncomingReferencesList() {
             },
             {} as Record<string, CrossDatasetIncomingReferenceDocument[]>,
           )
-          return Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs}))
+          return {
+            list: Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs})),
+            loading,
+          }
         }),
-        map((list) => ({list, loading: false})),
       ),
     [client, documentId, documentPreviewStore],
   )
@@ -160,8 +164,23 @@ export function IncomingReferencesList() {
 
   const emptyMessage = t('incoming-references-pane.no-references-found')
 
+  const showEmptyState =
+    !references?.loading &&
+    references?.list.length === 0 &&
+    !crossDatasetRefs?.loading &&
+    crossDatasetRefs?.list.length === 0
+
   return (
     <>
+      {showEmptyState && (
+        <Card border radius={3} padding={1} tone="default">
+          <Box paddingY={3} paddingX={2}>
+            <Text size={1} muted>
+              {t('incoming-references-pane.no-references')}
+            </Text>
+          </Box>
+        </Card>
+      )}
       {references?.loading ? (
         <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
       ) : (

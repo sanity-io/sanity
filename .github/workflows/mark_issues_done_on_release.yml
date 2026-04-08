@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Mark Growth Linear issues Done
         id: mark-growth-issues-done

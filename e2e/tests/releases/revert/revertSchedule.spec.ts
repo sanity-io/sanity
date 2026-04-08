@@ -24,7 +24,6 @@ test.describe('Revert Scheduled', () => {
 
   test.beforeEach(async ({sanityClient, browserName, page, _testContext}) => {
     skipIfBrowser(browserName)
-    test.slow()
     const dataset = sanityClient.config().dataset
 
     await createRelease({

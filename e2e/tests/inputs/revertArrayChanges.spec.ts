@@ -8,7 +8,6 @@ test.describe('Array revert changes', () => {
     page,
     createDraftDocument,
   }) => {
-    test.slow()
     // Create a draft document
     await createDraftDocument('/content/input-standard;arraysTest')
 

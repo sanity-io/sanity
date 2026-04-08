@@ -183,6 +183,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                 <MenuItem
                   as={Link}
                   data-as={disabled ? 'button' : 'a'}
+                  icon={item.icon}
                   text={title}
                   aria-label={
                     disabled ? t('pane-header.disabled-created-button.aria-label') : title

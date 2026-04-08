@@ -480,6 +480,8 @@ export interface EventsStore {
     error: Error | null
   }>
   expandEvent: (event: DocumentGroupEvent) => Promise<void>
+  lastNonDeletedRevId: string | null
+  getDocumentAtRevision: (revision: string) => Observable<EventsStoreRevision | null>
 }
 
 /**

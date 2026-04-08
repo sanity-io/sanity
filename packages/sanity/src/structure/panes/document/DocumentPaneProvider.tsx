@@ -41,7 +41,6 @@ import {
   usePerspective,
   useSchema,
   useSource,
-  useTranslation,
   useUnique,
   useWorkspace,
 } from 'sanity'
@@ -49,9 +48,9 @@ import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
+import {DocumentTitle} from '../../components/structureTool/StructureTitle'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
-import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
-import {structureLocaleNamespace} from '../../i18n'
+import {useDeletedDocumentLastRevision} from '../../hooks/useDeletedDocumentLastRevision'
 import {type PaneMenuItem} from '../../types'
 import {InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
@@ -128,10 +127,10 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const perspective = usePerspective()
 
   const {
+    advancedVersionControl: {enabled: advancedVersionControlEnabled},
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
-    beta,
   } = useWorkspace()
 
   const enhancedObjectDialogEnabled = true
@@ -174,7 +173,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
-  const {lastRevisionDocument} = useDocumentLastRev(documentId, documentType)
+  const {lastRevisionDocument} = useDeletedDocumentLastRevision()
 
   /**
    * Determine if the current document is deleted.
@@ -368,8 +367,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
   const previewUrl = usePreviewUrl(value)
-
-  const {t} = useTranslation(structureLocaleNamespace)
 
   const fieldActions: DocumentFieldAction[] = useMemo(
     () => (schemaType ? fieldActionsResolver({documentId, documentType, schemaType}) : []),
@@ -709,6 +706,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     <DocumentPaneInfoContext.Provider value={documentPaneInfo}>
       <DocumentPaneContext.Provider value={documentPane}>
         <DivergencesProvider
+          enabled={advancedVersionControlEnabled}
           upstreamEditState={upstreamEditState}
           editState={editState}
           subjectId={documentId}
@@ -717,6 +715,12 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
           formState={formState}
         >
           <DivergenceAutofocus onProgrammaticFocus={onProgrammaticFocus} />
+          <DocumentTitle
+            isDeleted={isDeleted}
+            displayed={displayed}
+            ready={ready}
+            schemaType={schemaType}
+          />
           {children}
         </DivergencesProvider>
       </DocumentPaneContext.Provider>
@@ -768,16 +772,22 @@ const DivergenceAutofocus: ComponentType<
   Pick<ReturnType<typeof useDocumentForm>, 'onProgrammaticFocus'>
 > = ({onProgrammaticFocus}) => {
   const divergenceNavigator = useDocumentDivergences()
+  const focusedDivergence = divergenceNavigator.enabled
+    ? divergenceNavigator.state.focusedDivergence
+    : undefined
 
   const focusDivergentPath = useEffectEvent(() => {
-    if (typeof divergenceNavigator.state.focusedDivergence !== 'undefined') {
+    if (
+      divergenceNavigator.enabled &&
+      typeof divergenceNavigator.state.focusedDivergence !== 'undefined'
+    ) {
       onProgrammaticFocus(pathFromString(divergenceNavigator.state.focusedDivergence))
     }
   })
 
   useEffect(() => {
     focusDivergentPath()
-  }, [divergenceNavigator.state.focusedDivergence])
+  }, [focusedDivergence])
 
   return null
 }

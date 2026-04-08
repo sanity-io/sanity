@@ -4,7 +4,6 @@ import {test} from '../../studio-test'
 
 test.describe('maximized document', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
-    test.slow()
     await createDraftDocument('/content/input-standard;referenceTest')
 
     await expect(page.getByTestId('focus-pane-button-focus')).toBeVisible()
@@ -38,8 +37,6 @@ test.describe('maximized document', () => {
   })
 
   test('navigation to referenced document works when document is maximized', async ({page}) => {
-    test.slow()
-
     await page.getByTestId('focus-pane-button-focus').click()
 
     await expect(page.locator('#selfOrEmpty-selectTypeMenuButton')).toBeVisible()
@@ -73,8 +70,6 @@ test.describe('maximized document', () => {
   })
 
   test('pane focuses on the middle pane, will close references to the right', async ({page}) => {
-    test.slow()
-
     // set first reference
     await expect(page.locator('#selfOrEmpty-selectTypeMenuButton')).toBeVisible()
     await page.locator('#selfOrEmpty-selectTypeMenuButton').click()

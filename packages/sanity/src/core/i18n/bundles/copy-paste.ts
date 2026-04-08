@@ -22,6 +22,12 @@ const copyPasteLocaleStrings = defineLocalesResources('copy-paste', {
 
   /** The validation message that is shown when pasting a value into a read-only target */
   'copy-paste.on-paste.validation.read-only-target.description': 'The target is read-only',
+  /** The validation message that is shown when read-only fields are skipped during document paste */
+  'copy-paste.on-paste.validation.read-only-fields-skipped.description':
+    'Skipped read-only fields: {{fieldNames}}',
+  /** The validation message for skipped read-only fields when truncated */
+  'copy-paste.on-paste.validation.read-only-fields-skipped-truncated.description':
+    'Skipped read-only fields: {{fieldNames}} and {{count}} more',
   /** The validation message that is shown when the source and target schema types are incompatible */
   'copy-paste.on-paste.validation.schema-type-incompatible.description':
     'Source and target schema types are not compatible',

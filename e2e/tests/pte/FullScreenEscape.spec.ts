@@ -4,7 +4,6 @@ import {test} from '../../studio-test'
 
 test.describe('Portable Text Input - FullScreen Escape', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
-    test.slow()
     await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
 
     const pteEditor = page.getByTestId('field-text')
@@ -28,8 +27,6 @@ test.describe('Portable Text Input - FullScreen Escape', () => {
   })
 
   test('you should be able to use scape to close full screen mode', async ({page}) => {
-    test.slow()
-
     // Escape should close the fullscreen mode
     await page.keyboard.press('Escape')
     await expect(
@@ -41,8 +38,9 @@ test.describe('Portable Text Input - FullScreen Escape', () => {
     page,
     browserName,
   }) => {
-    test.slow()
-    test.skip(browserName === 'firefox')
+    // In Firefox the annotation <span> layout isn't ready by the time PopoverEditDialog
+    // reads its position, so @sanity/ui's Popover keeps the hidden attribute.
+    test.skip(browserName === 'firefox', 'PopoverEditDialog stays hidden in Firefox (timing issue)')
 
     await page.getByTestId('document-panel-portal').getByRole('textbox').click()
     await page.getByTestId('document-panel-portal').getByRole('textbox').fill('test')

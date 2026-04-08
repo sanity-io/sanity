@@ -139,10 +139,10 @@ export function AssetSourceDialog<
     [Component, commonProps],
   )
 
-  // When action is 'select', we're opening the picker to choose a new asset. Skip loading the
-  // current asset—many asset sources (e.g. Media Library) don't need it, and media-library refs
-  // can't be observed via documentPreviewStore, so loading would hang on the skeleton.
-  if (value?.asset && observeAsset && action !== 'select') {
+  // Load the current asset when the field has a value, so asset sources receive it in
+  // selectedAssets. Note: media-library refs may not resolve via documentPreviewStore
+  // (observeVideoAsset handles them; observeImageAsset/observeFileAsset use the dataset).
+  if (value?.asset && observeAsset) {
     return (
       <WithReferencedAsset
         observeAsset={observeAsset}

@@ -67,7 +67,9 @@ export const stringValidators: Validators = {
     }
 
     const urlScheme = url.protocol.replace(/:$/, '')
-    const matchesAllowedScheme = options.scheme.some((scheme) => scheme.test(urlScheme))
+    const isRelative = isRelativeUrl(strValue)
+    const matchesAllowedScheme =
+      isRelative || options.scheme.some((scheme) => scheme.test(urlScheme))
     if (!matchesAllowedScheme) {
       return message || i18n.t('validation:string.url.disallowed-scheme', {scheme: urlScheme})
     }

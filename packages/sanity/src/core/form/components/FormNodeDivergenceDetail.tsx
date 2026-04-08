@@ -4,7 +4,7 @@ import {AnimatePresence, motion} from 'motion/react'
 import {type ComponentType, type PropsWithChildren, Fragment, useEffect, useRef} from 'react'
 
 import {DivergenceDetail} from '../../divergence/components/DivergenceDetail'
-import {selectDivergence} from '../../divergence/divergenceNavigator'
+import {type DivergenceNavigator, selectDivergence} from '../../divergence/divergenceNavigator'
 import {useWorkspace} from '../../studio/workspace'
 import {useDocumentDivergences} from '../contexts/DivergencesProvider'
 
@@ -26,15 +26,27 @@ export interface FormNodeDivergenceDetailProps {
  */
 export const FormNodeDivergenceDetail: ComponentType<
   PropsWithChildren<FormNodeDivergenceDetailProps>
-> = ({children, path, readOnly}) => {
+> = (props) => {
   const {
     advancedVersionControl: {enabled: advancedVersionControlEnabled},
   } = useWorkspace()
 
+  const divergenceNavigator = useDocumentDivergences()
+
+  if (!divergenceNavigator.enabled) {
+    return props.children
+  }
+
+  return <FormNodeDivergenceDetailEnabled {...props} divergenceNavigator={divergenceNavigator} />
+}
+
+const FormNodeDivergenceDetailEnabled: ComponentType<
+  PropsWithChildren<
+    FormNodeDivergenceDetailProps & {divergenceNavigator: DivergenceNavigator & {enabled: true}}
+  >
+> = ({divergenceNavigator, children, path, readOnly}) => {
   const containerElement = useRef<HTMLDivElement | null>(null)
   const divergenceDetailContainerElement = useRef<HTMLDivElement | null>(null)
-
-  const divergenceNavigator = useDocumentDivergences()
   const divergence = selectDivergence(divergenceNavigator.state, path)
 
   useEffect(() => {
@@ -61,10 +73,6 @@ export const FormNodeDivergenceDetail: ComponentType<
   // Only use a portal if the browser supports anchor positioning. If the browser does not support
   // anchor positioning, the element is rendered alongside the subject in the document.
   const MaybePortal = canUseAnchorPositioning ? Portal : Fragment
-
-  if (!advancedVersionControlEnabled) {
-    return children
-  }
 
   return (
     <div ref={containerElement}>

@@ -20,12 +20,12 @@ const REFETCH_INTERVAL = 5 * 60 * 1000 // 5 minutes
  * This value will be cached for 5 minutes, after that internal the cache will be refreshed.
  * If you need to be 100% sure the organizationId is up to date, you can call the `/projects/${projectId}` endpoint directly.
  */
-const getOrganizationId = memoize(
+const getProjectOrg = memoize(
   (client: SanityClient) => {
     return client.observable
       .request<ProjectData>({
         url: `/projects/${client.config().projectId}`,
-        tag: 'get-org-id',
+        tag: 'get-project-org',
         query: {
           includeMembers: 'false',
           includeFeatures: 'false',
@@ -33,7 +33,6 @@ const getOrganizationId = memoize(
         },
       })
       .pipe(
-        map((res) => res.organizationId),
         catchError(() => {
           return of(null)
         }),
@@ -47,6 +46,16 @@ const getOrganizationId = memoize(
         }),
       )
   },
+  (client) => `${client.config().projectId}-${client.config().dataset}`,
+)
+
+const getOrganizationId = memoize(
+  (client: SanityClient) => getProjectOrg(client).pipe(map((res) => res?.organizationId ?? null)),
+  (client) => `${client.config().projectId}-${client.config().dataset}`,
+)
+
+const getOrganizationData = memoize(
+  (client: SanityClient) => getProjectOrg(client).pipe(map((res) => res?.organization ?? null)),
   (client) => `${client.config().projectId}-${client.config().dataset}`,
 )
 
@@ -78,10 +87,13 @@ export function createProjectStore(context: {client: SanityClient}): ProjectStor
     })
     .pipe(shareReplay(1))
 
+  const projectOrgData$ = getProjectOrg(versionedClient)
+
   return {
     get,
     getDatasets,
     getGrants: () => grants$,
-    getOrganizationId: () => getOrganizationId(versionedClient),
+    getOrganizationData: () => projectOrgData$.pipe(map((res) => res?.organization ?? null)),
+    getOrganizationId: () => projectOrgData$.pipe(map((res) => res?.organizationId ?? null)),
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "sanity-perf-tests",
-  "version": "5.17.1",
+  "version": "5.20.0",
   "private": true,
   "description": "Sanity Studio perf tests",
   "license": "MIT",
@@ -20,9 +20,9 @@
     "@sanity/uuid": "^3.0.2",
     "dotenv": "^16.6.1",
     "execa": "^2.1.0",
-    "globby": "^11.1.0",
-    "lodash-es": "^4.17.22",
-    "rxjs": "^7.8.2"
+    "lodash-es": "^4.18.1",
+    "rxjs": "^7.8.2",
+    "tinyglobby": "^0.2.15"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

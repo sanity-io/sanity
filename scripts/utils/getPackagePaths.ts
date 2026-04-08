@@ -1,29 +1,27 @@
-import fs from 'node:fs'
+import {execSync} from 'node:child_process'
 import path, {dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
-import {globSync} from 'glob'
+const rootPath = path.join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 
-interface LernaConfig {
-  packages: string[]
+interface PnpmPackage {
+  name: string
+  path: string
 }
-
-const config: LernaConfig = JSON.parse(
-  fs.readFileSync(
-    path.join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'lerna.json'),
-    'utf8',
-  ),
-)
-
-if (!('packages' in config) || !Array.isArray(config.packages)) {
-  throw new Error('Lerna config is missing "packages" array')
-}
-
-const patterns = config.packages.map((pkg) => path.join(pkg, 'package.json'))
 
 /**
  * @internal
  */
 export function getManifestPaths(): string[] {
-  return patterns.flatMap((pattern) => globSync(pattern))
+  const output = execSync('pnpm ls -r --json --depth -1', {
+    cwd: rootPath,
+    encoding: 'utf-8',
+    maxBuffer: 10 * 1024 * 1024,
+  })
+
+  const packages: PnpmPackage[] = JSON.parse(output)
+
+  return packages
+    .map((pkg) => path.relative(rootPath, path.join(pkg.path, 'package.json')))
+    .filter((p) => p !== 'package.json') // exclude root
 }

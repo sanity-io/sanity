@@ -1,6 +1,6 @@
 {
   "name": "sanity-root",
-  "version": "0.0.0",
+  "version": "5.20.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -80,12 +80,6 @@
     "preinstall": "npx --loglevel=silent -y only-allow pnpm",
     "prepublishOnly": "pnpm build",
     "publish:tarball": "node -r esbuild-register scripts/publish/tarball",
-    "release": "pnpm build && lerna publish --exact --force-publish",
-    "release:canary": "RELEASE_TAG=canary pnpm release:tag",
-    "release:current-branch": "RELEASE_TAG=`git rev-parse --abbrev-ref HEAD | sed 's/\\//\\_/g'` pnpm release:tag",
-    "release:notes": "tsx scripts/printReleaseNotesTemplate",
-    "release:rc": "pnpm build && lerna publish --force-publish --dist-tag=dev-preview --preid=rc --exact",
-    "release:tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; pnpm build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
     "start": "pnpm dev",
     "test": "pnpm test:vitest",
     "test:changed": "vitest --changed",
@@ -98,9 +92,6 @@
     "watch": "pnpm --filter @sanity/* --filter sanity watch"
   },
   "devDependencies": {
-    "@lerna-lite/cli": "^4.11.0",
-    "@lerna-lite/list": "^4.11.0",
-    "@lerna-lite/publish": "^4.11.1",
     "@repo/bundle-manager": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/release-notes": "workspace:*",
@@ -109,18 +100,17 @@
     "@types/node": "^24.6.1",
     "@typescript/native-preview": "catalog:",
     "@vitest/coverage-v8": "^4.0.18",
-    "conventional-changelog-conventionalcommits": "^9.1.0",
     "dotenv": "^16.6.1",
     "dotenv-flow": "^4.1.0",
     "esbuild-register": "catalog:",
     "eslint": "catalog:",
     "eslint-formatter-gha": "^2.0.1",
     "husky": "^9.1.7",
-    "knip": "^5.83.1",
+    "knip": "^5.88.1",
     "lint-staged": "^16.2.7",
     "npm-run-all2": "^6.2.6",
     "only-allow": "^1.2.2",
-    "oxfmt": "^0.36.0",
+    "oxfmt": "^0.44.0",
     "oxlint": "1.43.0",
     "oxlint-tsgolint": "0.11.4",
     "playwright": "catalog:",
@@ -141,6 +131,6 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@10.30.3",
+  "packageManager": "pnpm@10.32.1",
   "//": "pnpm settings moved to pnpm-workspace.yaml"
 }

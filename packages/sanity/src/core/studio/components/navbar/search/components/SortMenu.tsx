@@ -99,8 +99,7 @@ export function SortMenu() {
               })}
             </Menu>
           }
-          placement="bottom-start"
-          popover={{portal: true, radius: 2}}
+          popover={{placement: 'bottom-start', portal: true, radius: 2}}
         />
       </SortMenuContentFlex>
     </Card>

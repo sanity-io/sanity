@@ -1,9 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import globby from 'globby'
 import {type CDPSession} from 'playwright'
 import SourceMap from 'source-map'
+import {glob} from 'tinyglobby'
 
 type CpuProfile = Extract<
   Awaited<ReturnType<CDPSession['send']>>,
@@ -15,7 +15,7 @@ export async function remapCpuProfile(
   sourceMapsDir: string,
 ): Promise<CpuProfile> {
   const sourceMaps = new Map()
-  const sourceMapFiles = await globby(path.join(sourceMapsDir, '**/*.map'))
+  const sourceMapFiles = await glob(path.join(sourceMapsDir, '**/*.map'))
 
   for (const sourceMapFile of sourceMapFiles) {
     const mapContent = await fs.promises.readFile(sourceMapFile, 'utf8')

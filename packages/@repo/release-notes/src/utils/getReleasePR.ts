@@ -1,8 +1,8 @@
 import {REPO} from '../constants'
-import {octokit} from '../octokit'
+import {getOctokit} from '../octokit'
 
 export async function getReleasePr() {
-  const {data: releasePrs} = await octokit.pulls.list({
+  const {data: releasePrs} = await getOctokit().pulls.list({
     ...REPO,
     state: 'open',
     head: `${REPO.owner}:ci/release-main`,

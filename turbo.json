@@ -83,8 +83,7 @@
   ],
   "globalDependencies": [
     "pnpm-workspace.yaml",
-    ".oxlintrc.json",
-    "lerna.json"
+    ".oxlintrc.json"
   ],
   "tasks": {
     "build": {
