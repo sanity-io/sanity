@@ -58,10 +58,10 @@ export function applyOrderingFunctions(order: SortOrder, schemaType: ObjectSchem
 const BUILT_IN_SORT_FIELDS = new Set(['_id', '_type', '_rev', '_createdAt', '_updatedAt'])
 
 /**
- * Validates that all fields referenced in a sort order exist in the given schema type.
- * Built-in document fields are always considered valid. Returns the fallback when any
- * custom field is missing, which prevents crashes when a persisted sort order from one
- * workspace references fields absent in another workspace's schema.
+ * Checks that every field in a sort order resolves against the schema type.
+ * Built-in document fields (_id, _createdAt, etc.) always pass. Returns
+ * the fallback when any field is missing - typically when a persisted sort
+ * order from one workspace references fields absent in another.
  */
 export function validateSortOrder(
   sortOrder: SortOrder,

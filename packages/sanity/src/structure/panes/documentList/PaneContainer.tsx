@@ -9,11 +9,13 @@ import {
   useI18nText,
   useSchema,
   useSource,
+  useTranslation,
 } from 'sanity'
 import shallowEquals from 'shallow-equals'
 
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
+import {structureLocaleNamespace} from '../../i18n'
 import {assignId} from '../../structureResolvers/assignId'
 import {type PaneMenuItem} from '../../types'
 import {useStructureToolSetting} from '../../useStructureToolSetting'
@@ -40,13 +42,25 @@ const addIdsToMenuItems = (menuItems?: PaneMenuItem[]): PaneMenuItem[] | undefin
   })
 }
 
-const addSelectedStateToMenuItems = (options: {
+/**
+ * @internal exported for testing
+ */
+export const addSelectedStateToMenuItems = (options: {
   menuItems?: PaneMenuItem[]
   sortOrderRaw?: SortOrder
   layout?: GeneralDocumentListLayoutKey
   customMenuItemState?: CustomMenuItemState
+  schemaType?: ObjectSchemaType
+  disabledSortReason?: string
 }) => {
-  const {menuItems, sortOrderRaw, layout, customMenuItemState = {}} = options
+  const {
+    menuItems,
+    sortOrderRaw,
+    layout,
+    customMenuItemState = {},
+    schemaType,
+    disabledSortReason,
+  } = options
 
   return menuItems?.map((item) => {
     if (item.params?.layout) {
@@ -57,9 +71,16 @@ const addSelectedStateToMenuItems = (options: {
     }
 
     if (item?.params?.by) {
+      const itemSortOrder: SortOrder = {by: item.params.by}
+      const isInvalidSortOrder =
+        validateSortOrder(itemSortOrder, schemaType, DEFAULT_ORDERING) !== itemSortOrder
+
       return {
         ...item,
         selected: isEqual(sortOrderRaw?.by, item?.params?.by || EMPTY_ARRAY),
+        ...(isInvalidSortOrder && {
+          disabled: {reason: disabledSortReason},
+        }),
       }
     }
 
@@ -132,26 +153,30 @@ export const PaneContainer = memo(function PaneContainer(
   )
 
   const schema = useSchema()
+  const schemaType = useMemo(
+    () => (typeName ? (schema.get(typeName) as ObjectSchemaType | undefined) : undefined),
+    [typeName, schema],
+  )
+  const {t} = useTranslation(structureLocaleNamespace)
+
   const validatedSortOrder = useMemo(() => {
     if (!sortOrderRaw) return sortOrderRaw
-    const schemaType = typeName ? (schema.get(typeName) as ObjectSchemaType | undefined) : undefined
     return validateSortOrder(sortOrderRaw, schemaType, defaultSortOrder)
-  }, [sortOrderRaw, typeName, schema, defaultSortOrder])
+  }, [sortOrderRaw, schemaType, defaultSortOrder])
 
   const handleSetSortOrder = useCallback(
     async (newSortOrder: SortOrder) => {
-      const schemaType = typeName
-        ? (schema.get(typeName) as ObjectSchemaType | undefined)
-        : undefined
       const validated = validateSortOrder(newSortOrder, schemaType, defaultSortOrder)
       await setSortOrder(validated)
     },
-    [setSortOrder, typeName, schema, defaultSortOrder],
+    [setSortOrder, schemaType, defaultSortOrder],
   )
 
   const [customMenuItemState, setCustomMenuItemState] = useState<CustomMenuItemState>({})
 
   const menuItemsWithIds = useMemo(() => addIdsToMenuItems(menuItems), [menuItems])
+
+  const disabledSortReason = t('panes.document-list-pane.sort-order.disabled-reason')
 
   const menuItemsWithSelectedState = useMemo(
     () =>
@@ -160,8 +185,17 @@ export const PaneContainer = memo(function PaneContainer(
         sortOrderRaw: validatedSortOrder,
         layout,
         customMenuItemState,
+        schemaType,
+        disabledSortReason,
       }),
-    [customMenuItemState, layout, menuItemsWithIds, validatedSortOrder],
+    [
+      customMenuItemState,
+      disabledSortReason,
+      layout,
+      menuItemsWithIds,
+      schemaType,
+      validatedSortOrder,
+    ],
   )
 
   return (
