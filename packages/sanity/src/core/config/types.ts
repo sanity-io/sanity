@@ -592,7 +592,7 @@ export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
  * @public
  */
 export interface WorkspaceHiddenContext {
-  /** The authenticated user, or `null` before auth completes. */
+  /** The authenticated user, or `null` if unavailable. */
   currentUser: CurrentUser | null
 }
 
@@ -615,8 +615,16 @@ export interface WorkspaceOptions extends SourceOptions {
    * Hides this workspace from the studio UI. Client-side only -
    * enforce access control server-side via Sanity's RBAC system.
    *
-   * Callbacks receive `{ currentUser }` once auth resolves.
+   * Callbacks receive `{ currentUser }` after auth resolves.
    * Before auth completes, `currentUser` is `null` and the workspace stays visible.
+   *
+   * @example Hide a workspace from non-admin users
+   * ```ts
+   * hidden: ({currentUser}) => {
+   *   if (currentUser === null) return false
+   *   return !currentUser.roles.some((role) => role.name === 'administrator')
+   * }
+   * ```
    *
    * @public
    */
