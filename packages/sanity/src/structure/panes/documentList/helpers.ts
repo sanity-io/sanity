@@ -92,6 +92,15 @@ function tryResolveSchemaTypeForPath(baseType: SchemaType, path: string): Schema
 
     if (typeof segment === 'string') {
       current = getFieldTypeByName(current, segment)
+
+      if (current && isReferenceSchemaType(current)) {
+        const [refType, otherRefType] = current.to || []
+        if (otherRefType || !refType) {
+          return undefined
+        }
+        current = refType
+      }
+
       continue
     }
 

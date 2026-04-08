@@ -38,6 +38,24 @@ const mockSchema = Schema.compile({
       type: 'datetime',
     },
     {
+      name: 'author',
+      title: 'Author',
+      type: 'document',
+      fields: [
+        {name: 'name', type: 'string'},
+        {name: 'bestFriend', type: 'reference', to: [{type: 'author'}]},
+      ],
+    },
+    {
+      name: 'book',
+      title: 'Book',
+      type: 'document',
+      fields: [
+        {name: 'title', type: 'string'},
+        {name: 'author', type: 'reference', to: [{type: 'author'}]},
+      ],
+    },
+    {
       name: 'article',
       title: 'Article',
       type: 'document',
@@ -176,12 +194,6 @@ describe('fieldExtendsType()', () => {
 describe('validateSortOrder()', () => {
   const fallback = {by: [{field: '_updatedAt', direction: 'desc' as const}]}
 
-  test('returns sort order unchanged when all fields are built-in', () => {
-    const sortOrder = {by: [{field: '_updatedAt', direction: 'desc' as const}]}
-    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
-    expect(result).toBe(sortOrder)
-  })
-
   test('returns sort order unchanged when custom field exists in schema', () => {
     const sortOrder = {by: [{field: 'title', direction: 'asc' as const}]}
     const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
@@ -220,12 +232,14 @@ describe('validateSortOrder()', () => {
     },
   )
 
-  test('validates nested field paths correctly', () => {
-    const validNested = {by: [{field: 'title.en', direction: 'asc' as const}]}
-    expect(validateSortOrder(validNested, mockSchema.get('article'), fallback)).toBe(validNested)
+  test('accepts valid nested field path', () => {
+    const sortOrder = {by: [{field: 'title.en', direction: 'asc' as const}]}
+    expect(validateSortOrder(sortOrder, mockSchema.get('article'), fallback)).toBe(sortOrder)
+  })
 
-    const invalidNested = {by: [{field: 'title.fr', direction: 'asc' as const}]}
-    expect(validateSortOrder(invalidNested, mockSchema.get('article'), fallback)).toBe(fallback)
+  test('returns fallback for invalid nested field path', () => {
+    const sortOrder = {by: [{field: 'title.fr', direction: 'asc' as const}]}
+    expect(validateSortOrder(sortOrder, mockSchema.get('article'), fallback)).toBe(fallback)
   })
 
   test('cross-workspace scenario: sort order valid in one schema but not another', () => {
@@ -246,6 +260,24 @@ describe('validateSortOrder()', () => {
     }
 
     const result = validateSortOrder(sortByDisplayTitle, workspaceBSchema.get('page'), fallback)
+    expect(result).toBe(fallback)
+  })
+
+  test('accepts sort order with single-target reference path', () => {
+    const sortOrder = {by: [{field: 'author.name', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, mockSchema.get('book'), fallback)
+    expect(result).toBe(sortOrder)
+  })
+
+  test('accepts sort order with deeply nested reference path', () => {
+    const sortOrder = {by: [{field: 'author.bestFriend.name', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, mockSchema.get('book'), fallback)
+    expect(result).toBe(sortOrder)
+  })
+
+  test('returns fallback when referenced field does not exist on target type', () => {
+    const sortOrder = {by: [{field: 'author.nonExistent', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, mockSchema.get('book'), fallback)
     expect(result).toBe(fallback)
   })
 
