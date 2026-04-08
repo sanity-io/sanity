@@ -6,23 +6,23 @@ import {Button} from '../../../../../../ui-components'
 import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {useTranslation} from '../../../../../i18n'
 import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher'
-import {useWorkspaces} from '../../../../workspaces'
+import {useVisibleWorkspaces} from '../../../../workspaces'
 import {WORKSPACES_DOCS_URL} from '../constants'
 import {useWorkspaceAuthStates} from '../hooks'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
 
 export function WorkspaceAuth() {
-  const workspaces = useWorkspaces()
+  const {visibleWorkspaces, allWorkspaces} = useVisibleWorkspaces()
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
-  const [authStates] = useWorkspaceAuthStates(workspaces)
+  const [authStates] = useWorkspaceAuthStates(allWorkspaces)
   const [selectedWorkspaceName, setSelectedWorkspaceName] = useState<string | null>(
     activeWorkspace?.name || null,
   )
   const selectedWorkspace =
-    workspaces.length === 1
-      ? workspaces[0]
-      : workspaces.find((workspace) => workspace.name === selectedWorkspaceName)
+    visibleWorkspaces.length === 1
+      ? visibleWorkspaces[0]
+      : visibleWorkspaces.find((workspace) => workspace.name === selectedWorkspaceName)
   const LoginComponent = selectedWorkspace?.auth?.LoginComponent
 
   const handleBack = useCallback(() => setSelectedWorkspaceName(null), [])
@@ -33,7 +33,7 @@ export function WorkspaceAuth() {
   if (LoginComponent && selectedWorkspace) {
     return (
       <Stack space={2}>
-        {workspaces.length > 1 && (
+        {visibleWorkspaces.length > 1 && (
           <Flex>
             <Button
               icon={ArrowLeftIcon}
@@ -92,7 +92,7 @@ export function WorkspaceAuth() {
       }
     >
       <Stack space={1} paddingX={1} paddingY={2}>
-        {workspaces.map((workspace) => {
+        {visibleWorkspaces.map((workspace) => {
           const authState = authStates[workspace.name]
           const state = authState.authenticated
             ? 'logged-in'

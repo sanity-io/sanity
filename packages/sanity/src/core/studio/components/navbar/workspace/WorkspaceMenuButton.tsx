@@ -14,7 +14,7 @@ import {useCallback, useState} from 'react'
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
-import {useWorkspaces} from '../../../workspaces'
+import {useVisibleWorkspaces} from '../../../workspaces'
 import {useWorkspaceAuthStates} from './hooks'
 import {ManageMenu} from './ManageMenu'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
@@ -27,9 +27,9 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 export function WorkspaceMenuButton() {
-  const workspaces = useWorkspaces()
+  const {visibleWorkspaces, allWorkspaces} = useVisibleWorkspaces()
   const {activeWorkspace} = useActiveWorkspace()
-  const [authStates] = useWorkspaceAuthStates(workspaces)
+  const [authStates] = useWorkspaceAuthStates(allWorkspaces)
   const {t} = useTranslation()
   const [scrollbarWidth, setScrollbarWidth] = useState(0)
 
@@ -66,8 +66,8 @@ export function WorkspaceMenuButton() {
       menu={
         !disabled && authStates ? (
           <Menu padding={0} style={{maxWidth: '350px', minWidth: '250px', overflowY: 'hidden'}}>
-            <ManageMenu multipleWorkspaces={workspaces.length > 1} />
-            {workspaces.length > 1 && (
+            <ManageMenu multipleWorkspaces={visibleWorkspaces.length > 1} />
+            {visibleWorkspaces.length > 1 && (
               <>
                 <MenuDivider style={{padding: 0}} />
                 <Box paddingTop={2} paddingBottom={1}>
@@ -78,7 +78,7 @@ export function WorkspaceMenuButton() {
                   </Box>
 
                   <Stack ref={stackRef} space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
-                    {workspaces.map((workspace) => {
+                    {visibleWorkspaces.map((workspace) => {
                       const authState = authStates[workspace.name]
 
                       const state = authState.authenticated

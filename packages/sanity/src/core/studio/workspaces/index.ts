@@ -1,5 +1,6 @@
 export * from './helpers'
 export * from './types'
+export * from './useVisibleWorkspaces'
 export * from './useWorkspaces'
 export * from './validateWorkspaces'
 export * from './WorkspacesContext'

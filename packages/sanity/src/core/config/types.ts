@@ -587,12 +587,40 @@ export type AsyncConfigPropertyReducer<TValue, TContext> = (
 export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 
 /**
+ * Context passed to workspace `hidden` callbacks.
+ *
+ * @public
+ */
+export interface WorkspaceHiddenContext {
+  /** The authenticated user, or `null` before auth completes. */
+  currentUser: CurrentUser | null
+}
+
+/**
+ * A boolean or callback that returns `true` to hide the workspace from the UI.
+ *
+ * @public
+ */
+export type WorkspaceHiddenProperty = boolean | ((context: WorkspaceHiddenContext) => boolean)
+
+/**
  * @hidden
  * @beta
  */
 export interface WorkspaceOptions extends SourceOptions {
   basePath: string
   subtitle?: string
+
+  /**
+   * Hides this workspace from the studio UI. Client-side only -
+   * enforce access control server-side via Sanity's RBAC system.
+   *
+   * Callbacks receive `{ currentUser }` once auth resolves.
+   * Before auth completes, `currentUser` is `null` and the workspace stays visible.
+   *
+   * @public
+   */
+  hidden?: WorkspaceHiddenProperty
   /**
    * The workspace logo
    *
@@ -1077,6 +1105,8 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   customIcon: boolean
   subtitle?: string
   basePath: string
+  /** @see WorkspaceHiddenProperty */
+  hidden?: WorkspaceHiddenProperty
   auth: AuthStore
   projectId: string
   dataset: string
