@@ -9,6 +9,8 @@ export const FormContainer = styled.div((props) => {
   const {space, container} = getTheme_v2(props.theme)
 
   return css`
+    --formGutterSize: calc(${space[4]}px * var(--formGutterEnabled));
+    --formGutterGap: calc(${space[3]}px * var(--formGutterEnabled));
     box-sizing: border-box;
     margin-inline: auto;
     padding-inline: ${space[4]}px;

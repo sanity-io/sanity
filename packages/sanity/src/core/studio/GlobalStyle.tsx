@@ -29,7 +29,7 @@ interface Props {
 }
 
 const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $documentEditorGutterEnabled}) => {
-  const {color, font, space} = getTheme_v2(theme)
+  const {color, font} = getTheme_v2(theme)
 
   return css`
     ::-webkit-resizer {
@@ -63,11 +63,6 @@ const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $documentEditorGutter
 
     *::selection {
       background-color: ${rgba(color.focusRing, 0.3)};
-    }
-
-    :root {
-      --formGutterSize: ${$documentEditorGutterEnabled ? space[4] : 0}px;
-      --formGutterGap: ${$documentEditorGutterEnabled ? space[3] : 0}px;
     }
 
     html {
