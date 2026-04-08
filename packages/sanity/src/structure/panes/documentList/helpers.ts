@@ -1,4 +1,5 @@
 import {
+  isArraySchemaType,
   isIndexSegment,
   isKeySegment,
   isReferenceSchemaType,
@@ -105,28 +106,29 @@ function tryResolveSchemaTypeForPath(baseType: SchemaType, path: string): Schema
     }
 
     const isArrayAccessor = isKeySegment(segment) || isIndexSegment(segment)
-    if (!isArrayAccessor || current.jsonType !== 'array') {
+    if (!isArrayAccessor || !isArraySchemaType(current)) {
       return undefined
     }
 
-    const [memberType, otherType] = current.of || []
-    if (otherType || !memberType) {
+    if (current.of.length !== 1) {
       // Can't figure out the type without knowing the value
       return undefined
     }
+
+    const memberType: SchemaType = current.of[0]
 
     if (!isReferenceSchemaType(memberType)) {
       current = memberType
       continue
     }
 
-    const [refType, otherRefType] = memberType.to || []
-    if (otherRefType || !refType) {
+    const refTargets: SchemaType[] = memberType.to || []
+    if (refTargets.length !== 1) {
       // Can't figure out the type without knowing the value
       return undefined
     }
 
-    current = refType
+    current = refTargets[0]
   }
 
   return current
