@@ -617,6 +617,8 @@ export interface WorkspaceOptions extends SourceOptions {
    *
    * Callbacks receive `{ currentUser }` after auth resolves.
    * Before auth completes, `currentUser` is `null` and the workspace stays visible.
+   * Workspaces with callback-based `hidden` show a brief loading state on initial
+   * page load while auth resolves, regardless of the callback's return value.
    *
    * @example Hide a workspace from non-admin users
    * ```ts
