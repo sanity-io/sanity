@@ -22,6 +22,11 @@ type ProjectionNode = {
   children: Map<string, ProjectionNode>
 }
 
+type ProjectionOptions = {
+  strict: boolean
+  orderingName?: string
+}
+
 /**
  * Returns an existing child projection node or creates a new one.
  * We use this while walking order paths so repeated paths like
@@ -68,8 +73,7 @@ function recurseIntoField(
   nodeKey: string,
   fieldType: SchemaType,
   tail: PathSegment[],
-  strict: boolean,
-  orderingName?: string,
+  options: ProjectionOptions,
 ): void {
   if (tail.length === 0) {
     getOrCreateChildNode(nodes, nodeKey, false)
@@ -78,14 +82,12 @@ function recurseIntoField(
 
   if (isReferenceSchemaType(fieldType) && 'to' in fieldType) {
     const refNode = getOrCreateChildNode(nodes, nodeKey, true)
-    fieldType.to.forEach((refType) =>
-      joinReferences(refNode.children, refType, tail, strict, orderingName),
-    )
+    fieldType.to.forEach((refType) => joinReferences(refNode.children, refType, tail, options))
     return
   }
 
   const node = getOrCreateChildNode(nodes, nodeKey, false)
-  joinReferences(node.children, fieldType, tail, strict, orderingName)
+  joinReferences(node.children, fieldType, tail, options)
 }
 
 /**
@@ -113,13 +115,14 @@ function joinReferences(
   nodes: Map<string, ProjectionNode>,
   schemaType: SchemaType,
   path: PathSegment[],
-  strict: boolean,
-  orderingName?: string,
+  options: ProjectionOptions,
 ) {
   const [head, ...rest] = path
   if (!head || typeof head !== 'string') {
     return
   }
+
+  const {strict, orderingName} = options
 
   if (!('fields' in schemaType)) {
     reportError(
@@ -147,7 +150,7 @@ function joinReferences(
     (isIndexSegment(nextSegment) || isKeySegment(nextSegment) || isIndexTuple(nextSegment))
 
   if (!hasArrayAccessor) {
-    recurseIntoField(nodes, head, schemaField.type, rest, strict, orderingName)
+    recurseIntoField(nodes, head, schemaField.type, rest, options)
     return
   }
 
@@ -184,7 +187,7 @@ function joinReferences(
   const tail = rest.slice(1)
   const memberType = members[0]
 
-  recurseIntoField(nodes, nodeKey, memberType, tail, strict, orderingName)
+  recurseIntoField(nodes, nodeKey, memberType, tail, options)
 }
 
 /**
@@ -241,10 +244,11 @@ export function getExtendedProjection(
   orderingName?: string,
 ): string {
   const nodes = new Map<string, ProjectionNode>()
+  const options: ProjectionOptions = {strict, orderingName}
 
   orderBy.forEach((ordering) => {
     if (!ordering.field) return
-    joinReferences(nodes, schemaType, pathFromString(ordering.field), strict, orderingName)
+    joinReferences(nodes, schemaType, pathFromString(ordering.field), options)
   })
 
   return createProjection(nodes)
