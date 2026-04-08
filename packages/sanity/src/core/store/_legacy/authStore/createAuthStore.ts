@@ -9,6 +9,7 @@ import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
 import {type AuthConfig, type LoginMethod} from '../../../config'
+import {isStaging} from '../../../environment/isStaging'
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors'
 import {createBroadcastChannel} from './createBroadcastChannel'
@@ -195,9 +196,7 @@ export function _createAuthStore({
   const hostOptions: {apiHost?: string} = {}
   if (apiHost) {
     hostOptions.apiHost = apiHost
-    // @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
-  } else if (typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__ === true) {
-    /* __SANITY_STAGING__ is a global variable set by the vite config */
+  } else if (isStaging) {
     hostOptions.apiHost = 'https://api.sanity.work'
   }
 
