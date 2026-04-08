@@ -294,6 +294,14 @@ describe('getExtendedProjection', () => {
     )
   })
 
+  test('throws in strict mode when range slice is used in ordering', () => {
+    const orderBy: SortOrderingItem[] = [{field: 'items[0:5].value', direction: 'asc'}]
+
+    expect(() => getExtendedProjection(withArrayFields, orderBy, true)).toThrow(
+      'Range slices are not supported for ordering',
+    )
+  })
+
   test('upgrades existing non-reference node to reference when same key is reused', () => {
     const orderBy: SortOrderingItem[] = [
       {field: 'items[0]', direction: 'asc'},

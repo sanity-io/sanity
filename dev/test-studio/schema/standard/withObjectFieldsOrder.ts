@@ -1,4 +1,4 @@
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {defineType} from 'sanity'
 
 export default defineType({
   name: 'withObjectFieldsOrder',
@@ -43,28 +43,28 @@ export default defineType({
       type: 'image',
       options: {hotspot: true},
     },
-    defineField({
+    {
       name: 'relatedAuthors',
       title: 'Related authors',
       type: 'array',
       of: [
-        defineArrayMember({
+        {
           type: 'reference',
           to: [{type: 'author'}],
-        }),
+        },
       ],
-    }),
-    defineField({
+    },
+    {
       name: 'tags',
       title: 'Tags',
       type: 'array',
       of: [
-        defineArrayMember({
+        {
           type: 'object',
-          fields: [defineField({name: 'label', title: 'Label', type: 'string'})],
-        }),
+          fields: [{name: 'label', title: 'Label', type: 'string'}],
+        },
       ],
-    }),
+    },
   ],
   orderings: [
     {
