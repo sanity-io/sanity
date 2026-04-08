@@ -1,4 +1,4 @@
-import {AddonDatasetProvider, type Tool, useClient} from 'sanity'
+import {type Tool, useClient} from 'sanity'
 
 import {DEFAULT_API_VERSION} from './apiVersions'
 import {VisionContainer} from './containers/VisionContainer'
@@ -18,9 +18,7 @@ function SanityVision(props: SanityVisionProps) {
 
   return (
     <VisionErrorBoundary>
-      <AddonDatasetProvider>
-        <VisionContainer client={client} config={config} />
-      </AddonDatasetProvider>
+      <VisionContainer client={client} config={config} />
     </VisionErrorBoundary>
   )
 }

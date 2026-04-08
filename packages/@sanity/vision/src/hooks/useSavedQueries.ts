@@ -2,7 +2,9 @@ import {type ListenOptions} from '@sanity/client'
 import {uuid} from '@sanity/uuid' // Import the UUID library
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {map, startWith} from 'rxjs/operators'
-import {type KeyValueStoreValue, useAddonDataset, useCurrentUser, useKeyValueStore} from 'sanity'
+import {type KeyValueStoreValue, useClient, useCurrentUser, useKeyValueStore} from 'sanity'
+
+import {DEFAULT_API_VERSION} from '../apiVersions'
 
 const STORED_QUERIES_NAMESPACE = 'studio.vision-tool.saved-queries'
 const SHARED_QUERY_DOCUMENT_TYPE = 'vision.sharedQuery'
@@ -59,7 +61,7 @@ export function useSavedQueries(): {
   error: Error | undefined
 } {
   const keyValueStore = useKeyValueStore()
-  const {client: addonDatasetClient, createAddonDataset} = useAddonDataset()
+  const workspaceClient = useClient({apiVersion: DEFAULT_API_VERSION})
   const currentUser = useCurrentUser()
 
   const [value, setValue] = useState<StoredQueries>(defaultValue)
@@ -111,15 +113,10 @@ export function useSavedQueries(): {
   }, [personalQueries])
 
   useEffect(() => {
-    if (!addonDatasetClient) {
-      setSharedQueries([])
-      return undefined
-    }
-
     let cancelled = false
 
     const fetchSharedQueries = async () => {
-      const docs = await addonDatasetClient.fetch<SharedQueryDocument[]>(SHARED_QUERIES_QUERY, {
+      const docs = await workspaceClient.fetch<SharedQueryDocument[]>(SHARED_QUERIES_QUERY, {
         sharedQueryType: SHARED_QUERY_DOCUMENT_TYPE,
       })
       const nextDocs = docs || []
@@ -134,7 +131,7 @@ export function useSavedQueries(): {
       }
     })
 
-    const sub = addonDatasetClient.observable
+    const sub = workspaceClient.observable
       .listen(
         `*[_type == $sharedQueryType]`,
         {
@@ -155,21 +152,13 @@ export function useSavedQueries(): {
       cancelled = true
       sub.unsubscribe()
     }
-  }, [addonDatasetClient, mapSharedQueries])
+  }, [workspaceClient, mapSharedQueries])
 
   const queries = useMemo(() => {
     return [...sharedQueries, ...value.queries].sort((a, b) => {
       return new Date(b.savedAt || 0).getTime() - new Date(a.savedAt || 0).getTime()
     })
   }, [sharedQueries, value.queries])
-
-  const getAddonDatasetClient = useCallback(async () => {
-    if (addonDatasetClient) {
-      return addonDatasetClient
-    }
-
-    return createAddonDataset()
-  }, [addonDatasetClient, createAddonDataset])
 
   const saveQuery = useCallback(
     async (query: Omit<QueryConfig, '_key'>) => {
@@ -183,17 +172,8 @@ export function useSavedQueries(): {
           return
         }
 
-        const client = await getAddonDatasetClient()
-        if (!client) {
-          setSaveQueryError(
-            new Error('No addon dataset client found. Unable to save shared query.'),
-          )
-          setSaving(false)
-          return
-        }
-
         try {
-          const createdDoc = (await client.create({
+          const createdDoc = (await workspaceClient.create({
             _type: SHARED_QUERY_DOCUMENT_TYPE,
             authorId: currentUser.id,
             savedAt: query.savedAt,
@@ -220,7 +200,7 @@ export function useSavedQueries(): {
       }
       setSaving(false)
     },
-    [currentUser, getAddonDatasetClient, keyValueStore, mapSharedQueries, value.queries],
+    [currentUser, workspaceClient, keyValueStore, mapSharedQueries, value.queries],
   )
 
   const updateQuery = useCallback(
@@ -235,16 +215,8 @@ export function useSavedQueries(): {
           return
         }
 
-        if (!addonDatasetClient) {
-          setSaveQueryError(
-            new Error('No addon dataset client found. Unable to update shared query.'),
-          )
-          setSaving(false)
-          return
-        }
-
         try {
-          const updatedDoc = (await addonDatasetClient
+          const updatedDoc = (await workspaceClient
             .patch(query._key)
             .set({
               savedAt: query.savedAt,
@@ -279,7 +251,7 @@ export function useSavedQueries(): {
       }
       setSaving(false)
     },
-    [addonDatasetClient, currentUser, keyValueStore, mapSharedQueries, value.queries],
+    [workspaceClient, currentUser, keyValueStore, mapSharedQueries, value.queries],
   )
 
   const deleteQuery = useCallback(
@@ -296,16 +268,8 @@ export function useSavedQueries(): {
           return
         }
 
-        if (!addonDatasetClient) {
-          setDeleteQueryError(
-            new Error('No addon dataset client found. Unable to delete shared query.'),
-          )
-          clearDeleting()
-          return
-        }
-
         try {
-          await addonDatasetClient.delete(key)
+          await workspaceClient.delete(key)
           setSharedQueries((prev) => prev.filter((query) => query._key !== key))
         } catch (err) {
           setDeleteQueryError(err as Error)
@@ -325,7 +289,7 @@ export function useSavedQueries(): {
       }
       clearDeleting()
     },
-    [addonDatasetClient, currentUser, keyValueStore, sharedQueries, value.queries],
+    [workspaceClient, currentUser, keyValueStore, sharedQueries, value.queries],
   )
 
   return {
