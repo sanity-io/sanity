@@ -6,7 +6,7 @@ import {type RefObject, type ComponentType, Fragment} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
 
 import {Button} from '../../../ui-components/button/Button'
-import {emptyValuesByType, type DiffComponent, type DiffComponentOptions} from '../../field'
+import {type DiffComponent, type DiffComponentOptions} from '../../field'
 import {useTranslation} from '../../i18n'
 import {type DivergenceNavigator, type ReachableDivergence} from '../divergenceNavigator'
 import {useDivergenceController} from '../hooks/useDivergenceController'
@@ -56,9 +56,8 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
   const diff = isLoading
     ? undefined
     : diffInput<any>(
-        wrap(upstreamBase?.value?.value ?? emptyValuesByType[divergence.schemaType.jsonType], {}),
-        wrap(upstreamHead?.value?.value ?? emptyValuesByType[divergence.schemaType.jsonType], {}),
-        {},
+        wrap(upstreamBase?.value?.value ?? null, {}),
+        wrap(upstreamHead?.value?.value ?? null, {}),
       )
 
   const DiffComponent = normalizeDiffComponent(divergence.diffComponent)
