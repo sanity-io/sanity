@@ -75,14 +75,8 @@ export function ActiveWorkspaceMatcher({
         search: history.location.search,
         hash: history.location.hash,
       })
-    } else if (matchedWorkspaceIsHidden && firstVisibleWorkspace) {
-      history.replace({
-        pathname: firstVisibleWorkspace.basePath,
-        search: history.location.search,
-        hash: history.location.hash,
-      })
     }
-  }, [history, result, matchedWorkspaceIsHidden, firstVisibleWorkspace])
+  }, [history, result])
 
   switch (result.type) {
     case 'match': {
@@ -93,9 +87,6 @@ export function ActiveWorkspaceMatcher({
       }
 
       if (matchedWorkspaceIsHidden) {
-        if (firstVisibleWorkspace) {
-          return <LoadingComponent />
-        }
         return <NotFoundComponent onNavigateToDefaultWorkspace={handleNavigateToDefaultWorkspace} />
       }
 
