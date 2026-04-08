@@ -150,14 +150,14 @@ function ensureRefractorLanguages() {
   _refractorRegistered = true
   void import('react-refractor').then(({registerLanguage}) =>
     Promise.all([
-      import('refractor/bash').then((m) => m.default),
-      import('refractor/javascript').then((m) => m.default),
-      import('refractor/json').then((m) => m.default),
-      import('refractor/jsx').then((m) => m.default),
-      import('refractor/typescript').then((m) => m.default),
-      import('@sanity/prism-groq').then((m) => m.refractorGroq),
+      import('refractor/bash'),
+      import('refractor/javascript'),
+      import('refractor/json'),
+      import('refractor/jsx'),
+      import('refractor/typescript'),
+      import('@sanity/prism-groq').then((m) => ({default: m.refractorGroq})),
     ])
-      .then((languages) => languages.forEach((lang) => registerLanguage(lang)))
+      .then((languages) => languages.forEach((lang) => registerLanguage(lang.default)))
       .catch((error) =>
         console.warn('Failed to load syntax highlighting languages for code blocks', error),
       ),
