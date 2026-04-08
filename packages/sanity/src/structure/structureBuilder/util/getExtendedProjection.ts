@@ -27,7 +27,10 @@ function getOrCreateChildNode(
   reference: boolean,
 ): ProjectionNode {
   const node = nodes.get(fieldName)
-  if (node) return node
+  if (node) {
+    node.reference ||= reference
+    return node
+  }
   const createdNode: ProjectionNode = {reference, children: new Map()}
   nodes.set(fieldName, createdNode)
   return createdNode
@@ -50,16 +53,11 @@ function recurseIntoField(
   strict: boolean,
 ): void {
   if (tail.length === 0) {
-    if (!nodes.has(nodeKey)) {
-      nodes.set(nodeKey, {reference: false, children: new Map()})
-    }
+    getOrCreateChildNode(nodes, nodeKey, false)
     return
   }
 
-  const isReference =
-    isReferenceSchemaType(fieldType) || ('to' in fieldType && fieldType.name === 'reference')
-
-  if (isReference && 'to' in fieldType) {
+  if (isReferenceSchemaType(fieldType) && 'to' in fieldType) {
     const refNode = getOrCreateChildNode(nodes, nodeKey, true)
     fieldType.to.forEach((refType) => joinReferences(refNode.children, refType, tail, strict))
     return
@@ -97,7 +95,15 @@ function joinReferences(
   strict: boolean,
 ) {
   const [head, ...rest] = path
-  if (!head || typeof head !== 'string' || !('fields' in schemaType)) {
+  if (!head || typeof head !== 'string') {
+    return
+  }
+
+  if (!('fields' in schemaType)) {
+    reportError(
+      `The current ordering config attempted to traverse into field "${head}" on non-object schema type "${schemaType.name}"`,
+      strict,
+    )
     return
   }
 
@@ -117,13 +123,12 @@ function joinReferences(
     nextSegment !== undefined &&
     (isIndexSegment(nextSegment) || isKeySegment(nextSegment) || isIndexTuple(nextSegment))
 
-  // When there's no array accessor, use the field directly.
   if (!hasArrayAccessor) {
     recurseIntoField(nodes, head, schemaField.type, rest, strict)
     return
   }
 
-  // Reject range slices like [0:5] - they don't make sense for ordering.
+  // Range slices are not meaningful for ordering projections.
   if (isIndexTuple(nextSegment)) {
     reportError(
       `The current ordering config used a range slice on "${head}" on schema type "${schemaType.name}". Range slices are not supported for ordering.`,
@@ -141,7 +146,7 @@ function joinReferences(
   }
 
   const members = (
-    'of' in schemaField.type && schemaField.type.of ? schemaField.type.of : []
+    'of' in schemaField.type && Array.isArray(schemaField.type.of) ? schemaField.type.of : []
   ) as SchemaType[]
   if (members.length !== 1) {
     reportError(
@@ -185,7 +190,7 @@ function joinReferences(
 function createProjection(tree: Map<string, ProjectionNode>): string {
   return [...tree.entries()]
     .map(([fieldName, node]) => {
-      if (!node.children || node.children.size === 0) {
+      if (node.children.size === 0) {
         return fieldName
       }
 

@@ -237,6 +237,14 @@ describe('getExtendedProjection', () => {
     )
   })
 
+  test('throws in strict mode when traversing into a non-object schema type', () => {
+    const orderBy: SortOrderingItem[] = [{field: 'title.foo', direction: 'asc'}]
+
+    expect(() => getExtendedProjection(withObjectFieldsOrder, orderBy, true)).toThrow(
+      'attempted to traverse into field "foo" on non-object schema type',
+    )
+  })
+
   test('handles array index with reference dereference', () => {
     const orderBy: SortOrderingItem[] = [{field: 'items[0].value', direction: 'asc'}]
 
@@ -284,6 +292,15 @@ describe('getExtendedProjection', () => {
     expect(() => getExtendedProjection(withArrayFields, orderBy, true)).toThrow(
       'Array ordering requires a single member type',
     )
+  })
+
+  test('upgrades existing non-reference node to reference when same key is reused', () => {
+    const orderBy: SortOrderingItem[] = [
+      {field: 'items[0]', direction: 'asc'},
+      {field: 'items[0].value', direction: 'asc'},
+    ]
+
+    expect(getExtendedProjection(withArrayFields, orderBy)).toBe('items[0]->{value}')
   })
 
   test('skips empty field strings gracefully', () => {
