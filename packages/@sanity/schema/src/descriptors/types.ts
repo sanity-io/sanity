@@ -114,6 +114,9 @@ export type ObjectFieldset = {
   title?: string
   description?: string
   group?: string
+  hidden?: true | FunctionMarker
+  readOnly?: true | FunctionMarker
+  options?: EncodableValue
 }
 
 export type ObjectGroup = {
