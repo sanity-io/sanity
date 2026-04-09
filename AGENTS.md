@@ -153,6 +153,8 @@ pnpm dev  # Starts at http://localhost:3333
 - Uses staging API by default (`api.sanity.work`)
 - Session persists in browser, so subsequent visits won't require re-authentication
 
+**External contributors:** The dev studio uses internal Sanity projects by default. To use your own project, copy `dev/test-studio/.env.example` to `dev/test-studio/.env` and fill in your project ID and dataset. Only the default workspace reads these overrides.
+
 Use the dev studio when you need to:
 
 - Visually verify UI changes

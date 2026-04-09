@@ -1,21 +1,22 @@
 import path from 'node:path'
 
+import {loadEnvFiles} from '@repo/utils'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
+loadEnvFiles()
+
 const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
+
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID || (isStaging ? 'exx11uqh' : 'ppsg7ml5')
+const dataset = process.env.SANITY_STUDIO_DATASET || (isStaging ? 'playground' : 'test')
 const reactCompilerAllowList = /\/(?:sanity|@sanity\/vision)\/src\/.*\.tsx?$/
 
 export default defineCliConfig({
-  api: isStaging
-    ? {
-        projectId: 'exx11uqh',
-        dataset: 'playground',
-      }
-    : {
-        projectId: 'ppsg7ml5',
-        dataset: 'test',
-      },
+  api: {
+    projectId,
+    dataset,
+  },
   // Can be overriden by:
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
   // B) creating a `.env` file locally that sets the same env variable as above
@@ -42,6 +43,14 @@ export default defineCliConfig({
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     const nextConfig = mergeConfig(viteConfig, {
+      define: {
+        'process.env.SANITY_STUDIO_PROJECT_ID': JSON.stringify(
+          process.env.SANITY_STUDIO_PROJECT_ID || '',
+        ),
+        'process.env.SANITY_STUDIO_DATASET': JSON.stringify(
+          process.env.SANITY_STUDIO_DATASET || '',
+        ),
+      },
       server: {
         warmup: {
           clientFiles: [
