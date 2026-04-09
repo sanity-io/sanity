@@ -1,9 +1,13 @@
 import {render, screen} from '@testing-library/react'
 import {createMemoryHistory} from 'history'
+import {type ReactNode} from 'react'
+import {VisibleWorkspacesContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
 
 import {type WorkspaceSummary} from '../../../config/types'
 import {type AuthState} from '../../../store/_legacy/authStore/types'
+import {evaluateWorkspaceHidden} from '../../workspaces/useVisibleWorkspaces'
+import {type VisibleWorkspacesContextValue} from '../../workspaces/VisibleWorkspacesProvider'
 import {ActiveWorkspaceMatcher} from '../ActiveWorkspaceMatcher'
 
 function LoadingComponent() {
@@ -63,52 +67,51 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
   }
 }
 
-const mockVisibleWorkspaces = vi.fn<
-  () => {
-    visibleWorkspaces: WorkspaceSummary[]
-    allWorkspaces: WorkspaceSummary[]
-    authStates: Record<string, AuthState> | undefined
-    loading: boolean
-  }
->()
-
-vi.mock('../../workspaces', async (importOriginal) => {
-  const actual: Record<string, unknown> = await importOriginal()
-  return {
-    ...actual,
-    useVisibleWorkspaces: () => mockVisibleWorkspaces(),
-  }
-})
-
-function setupMock(
+function createContextValue(
   workspaces: WorkspaceSummary[],
   authStates: Record<string, AuthState> | undefined,
-) {
-  mockVisibleWorkspaces.mockReturnValue({
-    visibleWorkspaces: workspaces.filter((workspace) => workspace.hidden !== true),
+): VisibleWorkspacesContextValue {
+  return {
+    visibleWorkspaces: workspaces.filter(
+      (workspace) => !evaluateWorkspaceHidden(workspace, authStates?.[workspace.name]),
+    ),
     allWorkspaces: workspaces,
     authStates,
-    loading: authStates === undefined,
-  })
+  }
+}
+
+function TestWrapper({
+  children,
+  contextValue,
+}: {
+  children: ReactNode
+  contextValue: VisibleWorkspacesContextValue
+}) {
+  return (
+    <VisibleWorkspacesContext.Provider value={contextValue}>
+      {children}
+    </VisibleWorkspacesContext.Provider>
+  )
 }
 
 describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
   it('renders children when workspace is visible', () => {
     const workspace = createWorkspace({name: 'default', basePath: '/default'})
     const authState = createAuthState()
-
-    setupMock([workspace], {default: authState})
+    const contextValue = createContextValue([workspace], {default: authState})
 
     const history = createMemoryHistory({initialEntries: ['/default']})
 
     render(
-      <ActiveWorkspaceMatcher
-        unstable_history={history}
-        LoadingComponent={LoadingComponent}
-        NotFoundComponent={NotFoundComponent}
-      >
-        <div data-testid="children">Workspace content</div>
-      </ActiveWorkspaceMatcher>,
+      <TestWrapper contextValue={contextValue}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Workspace content</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('children')).toBeDefined()
@@ -123,19 +126,20 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
       hidden: () => true,
     })
     const authState = createAuthState()
-
-    setupMock([workspace], {admin: authState})
+    const contextValue = createContextValue([workspace], {admin: authState})
 
     const history = createMemoryHistory({initialEntries: ['/admin']})
 
     render(
-      <ActiveWorkspaceMatcher
-        unstable_history={history}
-        LoadingComponent={LoadingComponent}
-        NotFoundComponent={NotFoundComponent}
-      >
-        <div data-testid="children">Should not render</div>
-      </ActiveWorkspaceMatcher>,
+      <TestWrapper contextValue={contextValue}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Should not render</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('not-found')).toBeDefined()
@@ -148,19 +152,20 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
       basePath: '/admin',
       hidden: () => true,
     })
-
-    setupMock([workspace], undefined)
+    const contextValue = createContextValue([workspace], undefined)
 
     const history = createMemoryHistory({initialEntries: ['/admin']})
 
     render(
-      <ActiveWorkspaceMatcher
-        unstable_history={history}
-        LoadingComponent={LoadingComponent}
-        NotFoundComponent={NotFoundComponent}
-      >
-        <div data-testid="children">Should not render</div>
-      </ActiveWorkspaceMatcher>,
+      <TestWrapper contextValue={contextValue}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Should not render</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('loading')).toBeDefined()
@@ -176,7 +181,7 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     })
     const visibleWorkspace = createWorkspace({name: 'visible', basePath: '/visible'})
 
-    setupMock([hiddenWorkspace, visibleWorkspace], {
+    const contextValue = createContextValue([hiddenWorkspace, visibleWorkspace], {
       hidden: createAuthState(),
       visible: createAuthState(),
     })
@@ -184,13 +189,15 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     const history = createMemoryHistory({initialEntries: ['/hidden']})
 
     render(
-      <ActiveWorkspaceMatcher
-        unstable_history={history}
-        LoadingComponent={LoadingComponent}
-        NotFoundComponent={NotFoundComponent}
-      >
-        <div data-testid="children">Should not render</div>
-      </ActiveWorkspaceMatcher>,
+      <TestWrapper contextValue={contextValue}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Should not render</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('not-found')).toBeDefined()
@@ -218,18 +225,20 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
       },
     })
 
-    setupMock([workspace], {admin: authState})
+    const contextValue = createContextValue([workspace], {admin: authState})
 
     const history = createMemoryHistory({initialEntries: ['/admin']})
 
     render(
-      <ActiveWorkspaceMatcher
-        unstable_history={history}
-        LoadingComponent={LoadingComponent}
-        NotFoundComponent={NotFoundComponent}
-      >
-        <div data-testid="children">Admin content</div>
-      </ActiveWorkspaceMatcher>,
+      <TestWrapper contextValue={contextValue}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Admin content</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('children')).toBeDefined()
