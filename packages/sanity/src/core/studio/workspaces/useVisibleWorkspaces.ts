@@ -5,11 +5,6 @@ import {type WorkspaceSummary} from '../../config/types'
 import {type AuthState} from '../../store/_legacy/authStore/types'
 import {type VisibleWorkspacesContextValue} from './VisibleWorkspacesProvider'
 
-/** @internal */
-export interface VisibleWorkspacesResult extends VisibleWorkspacesContextValue {
-  loading: boolean
-}
-
 /**
  * Evaluates a workspace's `hidden` property against the given auth state.
  * Falls open (returns `false`) when auth state is unavailable or the callback throws.
@@ -48,13 +43,10 @@ export function evaluateWorkspaceHidden(
  *
  * @internal
  */
-export function useVisibleWorkspaces(): VisibleWorkspacesResult {
+export function useVisibleWorkspaces(): VisibleWorkspacesContextValue {
   const context = useContext(VisibleWorkspacesContext)
   if (context === null) {
     throw new Error('useVisibleWorkspaces: missing VisibleWorkspacesProvider in component tree')
   }
-  return {
-    ...context,
-    loading: context.authStates === undefined,
-  }
+  return context
 }

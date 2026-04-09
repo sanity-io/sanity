@@ -66,10 +66,6 @@ export function ActiveWorkspaceMatcher({
     allStaticallyHidden ? allWorkspaces : candidateWorkspaces,
   )
 
-  const matchedWorkspaceIsHidden =
-    result.type === 'match' &&
-    evaluateWorkspaceHidden(result.workspace, authStates?.[result.workspace.name])
-
   useEffect(() => {
     if (result.type === 'redirect') {
       history.replace({
@@ -83,6 +79,10 @@ export function ActiveWorkspaceMatcher({
   switch (result.type) {
     case 'match': {
       const matchedWorkspace = result.workspace
+      const matchedWorkspaceIsHidden = evaluateWorkspaceHidden(
+        matchedWorkspace,
+        authStates?.[matchedWorkspace.name],
+      )
 
       if (typeof matchedWorkspace.hidden === 'function' && authStates === undefined) {
         return <LoadingComponent />

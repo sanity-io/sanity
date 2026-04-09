@@ -1,6 +1,6 @@
 import {describe, expect, it, vi} from 'vitest'
 
-import {type WorkspaceSummary} from '../../../config/types'
+import {type WorkspaceHiddenContext, type WorkspaceSummary} from '../../../config/types'
 import {type AuthState} from '../../../store/_legacy/authStore/types'
 import {evaluateWorkspaceHidden} from '../useVisibleWorkspaces'
 
@@ -159,11 +159,7 @@ describe('useVisibleWorkspaces', () => {
     })
 
     describe('role-based filtering pattern', () => {
-      const adminOnlyCallback = ({
-        currentUser,
-      }: {
-        currentUser: {roles: {name: string}[]} | null
-      }) => {
+      const adminOnlyCallback = ({currentUser}: WorkspaceHiddenContext) => {
         if (currentUser === null) return false
         return !currentUser.roles.some((role) => role.name === 'administrator')
       }
