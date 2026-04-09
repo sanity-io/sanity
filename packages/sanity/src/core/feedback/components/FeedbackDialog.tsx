@@ -1,5 +1,5 @@
 import {FaceHappyIcon, FaceIndifferentIcon, FaceSadIcon} from '@sanity/icons'
-import {Card, Flex, Stack, Switch, Text, TextArea, useToast} from '@sanity/ui'
+import {Card, Flex, Stack, Switch, Text, TextArea} from '@sanity/ui'
 import {
   type ChangeEvent,
   type ClipboardEvent,
@@ -35,6 +35,14 @@ export interface FeedbackDialogProps {
   title?: string
   /** Override the sentiment question (e.g., 'How easy or difficult is PTE to use?'). */
   sentimentLabel?: string
+  /** User's name. Overrides the value from FeedbackContext when provided. */
+  userName?: string
+  /** User's email. Overrides the value from FeedbackContext when provided. */
+  userEmail?: string
+  /** Called after feedback is submitted successfully. */
+  onSuccess?: () => void
+  /** Called when feedback submission fails. */
+  onError?: (error: Error) => void
 }
 
 const SENTIMENTS: {value: Sentiment; icon: typeof FaceHappyIcon; labelKey: string}[] = [
@@ -55,12 +63,22 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     extraTags,
     title: dialogTitle,
     sentimentLabel,
+    userName: userNameProp,
+    userEmail: userEmailProp,
+    onSuccess,
+    onError,
   } = props
   const dialogId = useId()
   const {t} = useTranslation()
-  const toast = useToast()
 
-  const {telemetryConsent, userName, userEmail, tags} = useContext(FeedbackContext)
+  const {
+    telemetryConsent,
+    userName: contextUserName,
+    userEmail: contextUserEmail,
+    tags,
+  } = useContext(FeedbackContext)
+  const resolvedName = userNameProp ?? contextUserName
+  const resolvedEmail = userEmailProp ?? contextUserEmail
 
   const [sentiment, setSentiment] = useState<Sentiment | null>(null)
   const [message, setMessage] = useState('')
@@ -135,8 +153,8 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
         dsn,
         feedbackVersion,
         telemetryConsent,
-        name: userName,
-        email: userEmail,
+        name: resolvedName,
+        email: resolvedEmail,
         message: finalMessage,
         source,
         tags: {
@@ -148,28 +166,19 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
         attachments,
       })
 
-      toast.push({
-        status: 'success',
-        title: t('feedback.success'),
-        closable: true,
-      })
       setSubmitting(false)
+      if (onSuccess) onSuccess()
       onClose()
     } catch (err) {
-      toast.push({
-        status: 'warning',
-        title: t('feedback.error'),
-        description: err.message,
-        closable: true,
-      })
       setSubmitting(false)
+      if (onError) onError(err instanceof Error ? err : new Error(String(err)))
     }
   }, [
     dsn,
     feedbackVersion,
     telemetryConsent,
-    userName,
-    userEmail,
+    resolvedName,
+    resolvedEmail,
     tags,
     message,
     sentiment,
@@ -177,8 +186,8 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     contactConsent,
     source,
     extraTags,
-    toast,
-    t,
+    onSuccess,
+    onError,
     onClose,
   ])
 
@@ -247,7 +256,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
             />
           </Stack>
 
-          {(message.trim() || imageFile) && (
+          {(message.trim() || imageFile) && (resolvedName || resolvedEmail) && (
             <Stack space={4}>
               <Stack space={3} paddingRight={3}>
                 <Text size={1} weight="medium">
