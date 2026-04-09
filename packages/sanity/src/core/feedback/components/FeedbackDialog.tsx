@@ -1,3 +1,5 @@
+/* eslint-disable @sanity/i18n/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string */
 import {FaceHappyIcon, FaceIndifferentIcon, FaceSadIcon} from '@sanity/icons'
 import {Card, Flex, Stack, Switch, Text, TextArea} from '@sanity/ui'
 import {
@@ -11,7 +13,6 @@ import {
 import {FeedbackContext} from 'sanity/_singletons'
 
 import {Button, Dialog} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
 import {sendFeedbackToSentry} from '../feedbackClient'
 import {type Sentiment} from '../types'
 import {ImageAttachment} from './ImageAttachment'
@@ -45,13 +46,14 @@ export interface FeedbackDialogProps {
   onError?: (error: Error) => void
 }
 
-const SENTIMENTS: {value: Sentiment; icon: typeof FaceHappyIcon; labelKey: string}[] = [
-  {value: 'happy', icon: FaceHappyIcon, labelKey: 'feedback.sentiment.happy'},
-  {value: 'neutral', icon: FaceIndifferentIcon, labelKey: 'feedback.sentiment.neutral'},
-  {value: 'unhappy', icon: FaceSadIcon, labelKey: 'feedback.sentiment.unhappy'},
+const SENTIMENTS: {value: Sentiment; icon: typeof FaceHappyIcon; label: string}[] = [
+  {value: 'happy', icon: FaceHappyIcon, label: 'Easy'},
+  {value: 'neutral', icon: FaceIndifferentIcon, label: 'Not sure'},
+  {value: 'unhappy', icon: FaceSadIcon, label: 'Difficult'},
 ]
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20 MB
+const ATTACHMENT_SIZE_ERROR = 'Image must be under 20 MB'
 
 /** @internal */
 export function FeedbackDialog(props: FeedbackDialogProps) {
@@ -69,7 +71,6 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     onError,
   } = props
   const dialogId = useId()
-  const {t} = useTranslation()
 
   const {
     telemetryConsent,
@@ -93,44 +94,38 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     setMessage(event.currentTarget.value)
   }, [])
 
-  const handleFiles = useCallback(
-    (files: File[]) => {
-      const img = files.find((f) => f.type.startsWith('image/'))
-      if (!img) return
-      if (img.size > MAX_FILE_SIZE) {
-        setAttachmentError(t('feedback.attachment.error.size'))
-        return
-      }
-      setAttachmentError(null)
-      setImageFile(img)
-    },
-    [t],
-  )
+  const handleFiles = useCallback((files: File[]) => {
+    const img = files.find((f) => f.type.startsWith('image/'))
+    if (!img) return
+    if (img.size > MAX_FILE_SIZE) {
+      setAttachmentError(ATTACHMENT_SIZE_ERROR)
+      return
+    }
+    setAttachmentError(null)
+    setImageFile(img)
+  }, [])
 
   const handleFilesOver = useCallback(() => setDragOver(true), [])
   const handleFilesOut = useCallback(() => setDragOver(false), [])
 
-  const handlePaste = useCallback(
-    (event: ClipboardEvent) => {
-      const items = event.clipboardData?.items
-      if (!items) return
-      for (const item of Array.from(items)) {
-        if (item.type.startsWith('image/')) {
-          const file = item.getAsFile()
-          if (file) {
-            if (file.size > MAX_FILE_SIZE) {
-              setAttachmentError(t('feedback.attachment.error.size'))
-            } else {
-              setAttachmentError(null)
-              setImageFile(file)
-            }
-            break
+  const handlePaste = useCallback((event: ClipboardEvent) => {
+    const items = event.clipboardData?.items
+    if (!items) return
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile()
+        if (file) {
+          if (file.size > MAX_FILE_SIZE) {
+            setAttachmentError(ATTACHMENT_SIZE_ERROR)
+          } else {
+            setAttachmentError(null)
+            setImageFile(file)
           }
+          break
         }
       }
-    },
-    [t],
-  )
+    }
+  }, [])
 
   const handleSubmit = useCallback(async () => {
     const finalMessage: string = message
@@ -194,7 +189,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
   return (
     <Dialog
       id={dialogId}
-      header={dialogTitle ?? t('feedback.dialog.title')}
+      header={dialogTitle ?? 'Share feedback with Sanity'}
       onClose={onClose}
       onClickOutside={onClose}
       width={1}
@@ -202,10 +197,9 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     >
       <Card paddingX={4} paddingY={5} borderTop onPaste={handlePaste}>
         <Stack space={5}>
-          {/* Sentiment */}
           <Stack space={2}>
             <Text size={1} weight="medium">
-              {sentimentLabel ?? t('feedback.sentiment.label')}
+              {sentimentLabel ?? 'How easy or difficult is Sanity to use?'}
             </Text>
             <Flex gap={2}>
               {SENTIMENTS.map((option) => {
@@ -218,7 +212,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
                     tone={isSelected ? 'primary' : 'default'}
                     onClick={() => setSentiment(option.value)}
                     icon={Icon}
-                    text={t(option.labelKey)}
+                    text={option.label}
                     style={{cursor: 'pointer'}}
                   />
                 )
@@ -226,20 +220,18 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
             </Flex>
           </Stack>
 
-          {/* Message */}
           <Stack space={3}>
             <Text size={1} weight="medium">
-              {t('feedback.message.label')}
+              What is working? What could be better?
             </Text>
             <TextArea
               fontSize={1}
               rows={4}
               value={message}
               onChange={handleMessageChange}
-              placeholder={t('feedback.message.placeholder')}
+              placeholder="Describe your issue or request..."
             />
 
-            {/* Image attachment */}
             <ImageAttachment
               imageFile={imageFile}
               showAttachment={showAttachment}
@@ -260,11 +252,11 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
             <Stack space={4}>
               <Stack space={3} paddingRight={3}>
                 <Text size={1} weight="medium">
-                  {t('feedback.consent.label')}
+                  Can we follow up with you about this feedback?
                 </Text>
-
                 <Text size={1} muted>
-                  {t('feedback.consent.disclaimer')}
+                  We&apos;d love to learn more. Selecting yes shares your name and email with the
+                  Sanity team.
                 </Text>
               </Stack>
               <Flex align="center" gap={2}>
@@ -272,9 +264,8 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
                   checked={contactConsent}
                   onChange={() => setContactConsent((prev) => !prev)}
                 />
-
                 <Text size={1} muted>
-                  {contactConsent ? t('feedback.consent.yes') : t('feedback.consent.no')}
+                  {contactConsent ? 'Yes' : 'No'}
                 </Text>
               </Flex>
             </Stack>
@@ -282,13 +273,12 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
         </Stack>
       </Card>
 
-      {/* Actions */}
       <Card padding={3} borderTop>
         <Flex gap={2} justify="flex-end">
-          <Button mode="ghost" text={t('feedback.cancel')} onClick={onClose} />
+          <Button mode="ghost" text="Cancel" onClick={onClose} />
           <Button
             tone="primary"
-            text={t('feedback.submit')}
+            text="Send feedback"
             onClick={handleSubmit}
             disabled={!sentiment || submitting}
             loading={submitting}
