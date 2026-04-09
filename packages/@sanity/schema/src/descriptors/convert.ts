@@ -157,10 +157,15 @@ export class DescriptorConverter {
   }
 }
 
+function getOwnProps(schemaType: SchemaType): Record<string, unknown> {
+  // OWN_PROPS_NAME is only set on subtypes, not the core types.
+  return OWN_PROPS_NAME in schemaType
+    ? (schemaType as any)[OWN_PROPS_NAME]
+    : (schemaType as unknown as Record<string, unknown>)
+}
+
 function convertCommonTypeDef(schemaType: SchemaType, path: string, opts: Options): CommonTypeDef {
-  // Note that OWN_PROPS_NAME is only set on subtypes, not the core types.
-  // We might consider setting OWN_PROPS_NAME on _all_ types to avoid this branch.
-  const ownProps = OWN_PROPS_NAME in schemaType ? (schemaType as any)[OWN_PROPS_NAME] : schemaType
+  const ownProps = getOwnProps(schemaType)
 
   let fields: ObjectField[] | undefined
   if (Array.isArray(ownProps.fields)) {
@@ -312,7 +317,8 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
     }
     case 'reference':
     case 'globalDocumentReference':
-    case 'crossDatasetReference':
+    case 'crossDatasetReference': {
+      const ownProps = getOwnProps(schemaType)
       return {
         extends: schemaType.type.name,
         to: filterStringKey(
@@ -321,8 +327,10 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
             // The `toType.type` case is for crossDatasetReferences/crossDatasetReference
             .map((toType) => ({name: toType.name || toType.type?.name || toType.type})),
         ),
+        weak: maybeTrue(ownProps.weak),
         ...common,
       } satisfies ReferenceTypeDef
+    }
     default:
       return {extends: schemaType.type.name, ...common} satisfies SubtypeDef
   }

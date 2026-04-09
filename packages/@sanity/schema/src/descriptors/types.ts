@@ -140,7 +140,7 @@ export type ObjectOrderingBy = {
 export interface ReferenceTypeDef extends SubtypeDef {
   extends: 'reference' | 'crossDatasetReference' | 'globalDocumentReference'
   to: ReferenceTarget[]
-  weak?: boolean
+  weak?: true
 }
 
 export type ReferenceTarget = {
