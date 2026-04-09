@@ -1,7 +1,7 @@
 import {createContext} from 'sanity/_createContext'
 
-import {type TagValue} from '../../core/feedback/types'
-import {type ConsentStatus} from '../../core/studio/telemetry/telemetryConsent'
+import type {TagValue} from '../../core/feedback/types'
+import type {ConsentStatus} from '../../core/studio/telemetry/telemetryConsent'
 
 /** @internal */
 export interface FeedbackContextValue {
