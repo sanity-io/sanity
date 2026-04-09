@@ -577,6 +577,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-list-pane.search-input.aria-label': 'Search list',
   /** The search input for the search input on the document list pane */
   'panes.document-list-pane.search-input.placeholder': 'Search list',
+  /** The tooltip text shown when a sort menu item references fields not present in the current schema */
+  'panes.document-list-pane.sort-order.disabled-reason':
+    'This sorting option uses fields that are not part of this document type',
   /** The summary title when displaying an error for a document operation result */
   'panes.document-operation-results.error.summary.title': 'Details',
   /** The text when a generic operation failed (fallback, generally not shown)  */

@@ -10,10 +10,21 @@ import {
 import {fromString as pathFromString} from '@sanity/util/paths'
 
 const IMPLICIT_SCHEMA_TYPE_FIELDS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
+const warnedMessages = new Set<string>()
+
+/** @internal */
+export function _resetWarningCache(): void {
+  warnedMessages.clear()
+}
 
 type ProjectionNode = {
   reference: boolean
   children: Map<string, ProjectionNode>
+}
+
+type ProjectionOptions = {
+  strict: boolean
+  orderingName?: string
 }
 
 /**
@@ -38,7 +49,19 @@ function getOrCreateChildNode(
 
 function reportError(message: string, strict: boolean): void {
   if (strict) throw new Error(message)
-  console.warn(message)
+  if (!warnedMessages.has(message)) {
+    warnedMessages.add(message)
+    console.warn(message)
+  }
+}
+
+/**
+ * Builds an error message prefix that includes the ordering name when available.
+ */
+function formatOrderingLabel(orderingName: string | undefined): string {
+  return orderingName
+    ? `The sort ordering "${orderingName}" references`
+    : 'A sort ordering references'
 }
 
 /**
@@ -50,7 +73,7 @@ function recurseIntoField(
   nodeKey: string,
   fieldType: SchemaType,
   tail: PathSegment[],
-  strict: boolean,
+  options: ProjectionOptions,
 ): void {
   if (tail.length === 0) {
     getOrCreateChildNode(nodes, nodeKey, false)
@@ -59,12 +82,12 @@ function recurseIntoField(
 
   if (isReferenceSchemaType(fieldType) && 'to' in fieldType) {
     const refNode = getOrCreateChildNode(nodes, nodeKey, true)
-    fieldType.to.forEach((refType) => joinReferences(refNode.children, refType, tail, strict))
+    fieldType.to.forEach((refType) => joinReferences(refNode.children, refType, tail, options))
     return
   }
 
   const node = getOrCreateChildNode(nodes, nodeKey, false)
-  joinReferences(node.children, fieldType, tail, strict)
+  joinReferences(node.children, fieldType, tail, options)
 }
 
 /**
@@ -92,16 +115,18 @@ function joinReferences(
   nodes: Map<string, ProjectionNode>,
   schemaType: SchemaType,
   path: PathSegment[],
-  strict: boolean,
+  options: ProjectionOptions,
 ) {
   const [head, ...rest] = path
   if (!head || typeof head !== 'string') {
     return
   }
 
+  const {strict, orderingName} = options
+
   if (!('fields' in schemaType)) {
     reportError(
-      `The current ordering config attempted to traverse into field "${head}" on non-object schema type "${schemaType.name}"`,
+      `${formatOrderingLabel(orderingName)} the field "${head}" on non-object schema type "${schemaType.name}"`,
       strict,
     )
     return
@@ -110,8 +135,9 @@ function joinReferences(
   const schemaField = schemaType.fields.find((field) => field.name === head)
   if (!schemaField) {
     if (!IMPLICIT_SCHEMA_TYPE_FIELDS.includes(head)) {
+      const validFields = schemaType.fields.map((field) => field.name).join(', ')
       reportError(
-        `The current ordering config targeted the nonexistent field "${head}" on schema type "${schemaType.name}". It should be one of ${schemaType.fields.map((field) => field.name).join(', ')}`,
+        `${formatOrderingLabel(orderingName)} the nonexistent field "${head}" on schema type "${schemaType.name}". Valid fields are: ${validFields}`,
         strict,
       )
     }
@@ -124,14 +150,14 @@ function joinReferences(
     (isIndexSegment(nextSegment) || isKeySegment(nextSegment) || isIndexTuple(nextSegment))
 
   if (!hasArrayAccessor) {
-    recurseIntoField(nodes, head, schemaField.type, rest, strict)
+    recurseIntoField(nodes, head, schemaField.type, rest, options)
     return
   }
 
   // Range slices are not meaningful for ordering projections.
   if (isIndexTuple(nextSegment)) {
     reportError(
-      `The current ordering config used a range slice on "${head}" on schema type "${schemaType.name}". Range slices are not supported for ordering.`,
+      `${formatOrderingLabel(orderingName)} a range slice on "${head}" on schema type "${schemaType.name}". Range slices are not supported for ordering.`,
       strict,
     )
     return
@@ -139,7 +165,7 @@ function joinReferences(
 
   if (schemaField.type.jsonType !== 'array') {
     reportError(
-      `The current ordering config used array access on non-array field "${head}" on schema type "${schemaType.name}"`,
+      `${formatOrderingLabel(orderingName)} array access on non-array field "${head}" on schema type "${schemaType.name}"`,
       strict,
     )
     return
@@ -150,7 +176,7 @@ function joinReferences(
   ) as SchemaType[]
   if (members.length !== 1) {
     reportError(
-      `The current ordering config used array access on multi-type array field "${head}" on schema type "${schemaType.name}". Array ordering requires a single member type.`,
+      `${formatOrderingLabel(orderingName)} array access on multi-type array field "${head}" on schema type "${schemaType.name}". Array ordering requires a single member type.`,
       strict,
     )
     return
@@ -161,7 +187,7 @@ function joinReferences(
   const tail = rest.slice(1)
   const memberType = members[0]
 
-  recurseIntoField(nodes, nodeKey, memberType, tail, strict)
+  recurseIntoField(nodes, nodeKey, memberType, tail, options)
 }
 
 /**
@@ -215,12 +241,14 @@ export function getExtendedProjection(
   schemaType: SchemaType,
   orderBy: SortOrderingItem[],
   strict: boolean = false,
+  orderingName?: string,
 ): string {
   const nodes = new Map<string, ProjectionNode>()
+  const options: ProjectionOptions = {strict, orderingName}
 
   orderBy.forEach((ordering) => {
     if (!ordering.field) return
-    joinReferences(nodes, schemaType, pathFromString(ordering.field), strict)
+    joinReferences(nodes, schemaType, pathFromString(ordering.field), options)
   })
 
   return createProjection(nodes)
