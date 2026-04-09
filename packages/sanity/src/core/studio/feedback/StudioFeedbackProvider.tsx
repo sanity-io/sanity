@@ -10,7 +10,7 @@ export function StudioFeedbackProvider({children}: {children: ReactNode}) {
   const telemetryConsent = useTelemetryConsent()
 
   const value = useMemo<FeedbackContextValue>(
-    () => ({telemetryConsent, userName, userEmail, tags: allTags}),
+    () => ({telemetryConsent, userName, userEmail, tags: {...allTags}}),
     [telemetryConsent, userName, userEmail, allTags],
   )
 
