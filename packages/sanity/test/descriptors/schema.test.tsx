@@ -911,6 +911,165 @@ describe('Base features', () => {
       })
     })
 
+    test('uri validation serializes scheme', async () => {
+      expect(
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.uri({scheme: ['https', /.*foo.*/]}),
+          })
+        ).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {
+                type: 'uri',
+                scheme: [
+                  'https',
+                  {
+                    type: 'regex',
+                    pattern: '.*foo.*',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    test('uri validation serializes relativeOnly', async () => {
+      expect(
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.uri({relativeOnly: true}),
+          })
+        ).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'uri', relativeOnly: true}],
+          },
+        ],
+      })
+    })
+
+    test('uri validation serializes allowCredentials', async () => {
+      expect(
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.uri({allowCredentials: true}),
+          })
+        ).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'uri', allowCredentials: true}],
+          },
+        ],
+      })
+    })
+
+    test('uri validation serializes all options together', async () => {
+      expect(
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) =>
+              rule.uri({
+                scheme: ['https'],
+                allowRelative: true,
+                relativeOnly: false,
+                allowCredentials: true,
+              }),
+          })
+        ).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {
+                type: 'uri',
+                scheme: ['https'],
+                allowRelative: true,
+                allowCredentials: true,
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    test('uri validation preserves regex source for non-string schemes', async () => {
+      expect(
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.uri({scheme: [/^https?$/]}),
+          })
+        ).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'uri', scheme: [{type: 'regex', pattern: '^https?$'}]}],
+          },
+        ],
+      })
+    })
+
+    test('uri validation recovers anchored regex to plain string', async () => {
+      // Rule.uri() wraps plain strings as /^str$/, and convertSchemeValue should
+      // recover them back to plain strings. Test with an explicit anchored regex.
+      expect(
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.uri({scheme: [/^http$/]}),
+          })
+        ).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'uri', scheme: ['http']}],
+          },
+        ],
+      })
+    })
+
+    test('uri validation preserves regex flags via inline modifiers', async () => {
+      expect(
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.uri({scheme: [/^http$/i]}),
+          })
+        ).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'uri', scheme: [{type: 'regex', pattern: '(?i)^http$'}]}],
+          },
+        ],
+      })
+    })
+
     test('enum validation (valid)', async () => {
       expect(
         (
@@ -1285,7 +1444,7 @@ describe('Base features', () => {
           level: 'error',
           rules: [
             {type: 'enum', values: ['a', 'b', 'c']},
-            {type: 'uri', allowRelative: false},
+            {type: 'uri', scheme: ['http', 'https']},
           ],
         },
         {

@@ -210,5 +210,11 @@ export type Rule =
   | {type: 'length'; value: string | FieldReference}
   | {type: 'precision'; value: string | FieldReference}
   | {type: 'regex'; pattern: string; invert?: true}
-  | {type: 'uri'; allowRelative?: boolean}
+  | {
+      type: 'uri'
+      scheme?: (string | {type: 'regex'; pattern: string})[]
+      allowRelative?: boolean
+      relativeOnly?: boolean
+      allowCredentials?: boolean
+    }
   | {type: 'custom'; name?: string; optional?: true}
