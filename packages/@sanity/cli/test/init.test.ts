@@ -827,7 +827,8 @@ describeCliTest('CLI: `sanity init`', () => {
       })
     })
 
-    describe('remote templates', () => {
+    describe.skip('remote templates', () => {
+      // Remote templates are not part of the sanity/main branch, so when trying to run this tests it will fail.
       testConcurrent('initializes a project from a GitHub repository shorthand', async () => {
         const testRunArgs = getTestRunArgs()
         const outpath = 'test-remote-template-shorthand'
