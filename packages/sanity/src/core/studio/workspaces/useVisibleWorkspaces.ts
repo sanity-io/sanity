@@ -1,14 +1,12 @@
-import {useMemo} from 'react'
+import {useContext} from 'react'
+import {VisibleWorkspacesContext} from 'sanity/_singletons'
 
 import {type WorkspaceSummary} from '../../config/types'
 import {type AuthState} from '../../store/_legacy/authStore/types'
-import {useWorkspaceAuthStates} from '../components/navbar/workspace/hooks'
-import {useWorkspaces} from './useWorkspaces'
+import {type VisibleWorkspacesContextValue} from './VisibleWorkspacesProvider'
 
 /** @internal */
-export interface VisibleWorkspacesResult {
-  visibleWorkspaces: WorkspaceSummary[]
-  allWorkspaces: WorkspaceSummary[]
+export interface VisibleWorkspacesResult extends VisibleWorkspacesContextValue {
   loading: boolean
 }
 
@@ -44,21 +42,19 @@ export function evaluateWorkspaceHidden(
   return false
 }
 
-/** @internal */
+/**
+ * Returns visible workspaces and auth states from the nearest
+ * `VisibleWorkspacesProvider`.
+ *
+ * @internal
+ */
 export function useVisibleWorkspaces(): VisibleWorkspacesResult {
-  const allWorkspaces = useWorkspaces()
-  const [authStates] = useWorkspaceAuthStates(allWorkspaces)
-
-  const loading = authStates === null
-
-  const visibleWorkspaces = useMemo(() => {
-    return allWorkspaces.filter(
-      (workspace) => !evaluateWorkspaceHidden(workspace, authStates?.[workspace.name]),
-    )
-  }, [allWorkspaces, authStates])
-
-  return useMemo(
-    () => ({visibleWorkspaces, allWorkspaces, loading}),
-    [visibleWorkspaces, allWorkspaces, loading],
-  )
+  const context = useContext(VisibleWorkspacesContext)
+  if (context === null) {
+    throw new Error('useVisibleWorkspaces: missing VisibleWorkspacesProvider in component tree')
+  }
+  return {
+    ...context,
+    loading: context.authStates === undefined,
+  }
 }

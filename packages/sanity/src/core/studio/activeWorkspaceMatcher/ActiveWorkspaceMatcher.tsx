@@ -1,9 +1,8 @@
 import {createBrowserHistory, createMemoryHistory} from 'history'
 import {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
 
-import {useWorkspaceAuthStates} from '../components/navbar/workspace/hooks'
 import {type RouterHistory} from '../router'
-import {evaluateWorkspaceHidden, useWorkspaces} from '../workspaces'
+import {evaluateWorkspaceHidden, useVisibleWorkspaces} from '../workspaces'
 import {ActiveWorkspaceMatcherProvider} from './ActiveWorkspaceMatcherProvider'
 import {useSyncPathnameWithWorkspace} from './useSyncPathnameWithWorkspace'
 
@@ -25,12 +24,11 @@ export function ActiveWorkspaceMatcher({
   NotFoundComponent,
   unstable_history: historyProp,
 }: ActiveWorkspaceMatcherProps) {
-  const allWorkspaces = useWorkspaces()
+  const {allWorkspaces, authStates} = useVisibleWorkspaces()
   const candidateWorkspaces = useMemo(
     () => allWorkspaces.filter((workspace) => workspace.hidden !== true),
     [allWorkspaces],
   )
-  const [authStates] = useWorkspaceAuthStates(allWorkspaces)
   const history = useMemo(() => historyProp || createHistory(), [historyProp])
 
   const firstVisibleWorkspace = useMemo(
@@ -82,7 +80,7 @@ export function ActiveWorkspaceMatcher({
     case 'match': {
       const matchedWorkspace = result.workspace
 
-      if (typeof matchedWorkspace.hidden === 'function' && authStates === null) {
+      if (typeof matchedWorkspace.hidden === 'function' && authStates === undefined) {
         return <LoadingComponent />
       }
 

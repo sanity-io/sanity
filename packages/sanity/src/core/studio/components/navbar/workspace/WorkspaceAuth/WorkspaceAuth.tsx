@@ -8,14 +8,12 @@ import {useTranslation} from '../../../../../i18n'
 import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher'
 import {useVisibleWorkspaces} from '../../../../workspaces'
 import {WORKSPACES_DOCS_URL} from '../constants'
-import {useWorkspaceAuthStates} from '../hooks'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
 
 export function WorkspaceAuth() {
-  const {visibleWorkspaces, allWorkspaces} = useVisibleWorkspaces()
+  const {visibleWorkspaces, authStates} = useVisibleWorkspaces()
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
-  const [authStates] = useWorkspaceAuthStates(allWorkspaces)
   const [selectedWorkspaceName, setSelectedWorkspaceName] = useState<string | null>(
     activeWorkspace?.name || null,
   )

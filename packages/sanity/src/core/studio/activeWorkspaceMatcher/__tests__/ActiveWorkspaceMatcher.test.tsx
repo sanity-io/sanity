@@ -63,28 +63,41 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
   }
 }
 
-const mockUseWorkspaces = vi.fn<() => WorkspaceSummary[]>()
-const mockUseWorkspaceAuthStates = vi.fn<() => [Record<string, AuthState> | null]>()
+const mockVisibleWorkspaces = vi.fn<
+  () => {
+    visibleWorkspaces: WorkspaceSummary[]
+    allWorkspaces: WorkspaceSummary[]
+    authStates: Record<string, AuthState> | undefined
+    loading: boolean
+  }
+>()
 
 vi.mock('../../workspaces', async (importOriginal) => {
   const actual: Record<string, unknown> = await importOriginal()
   return {
     ...actual,
-    useWorkspaces: () => mockUseWorkspaces(),
+    useVisibleWorkspaces: () => mockVisibleWorkspaces(),
   }
 })
 
-vi.mock('../../components/navbar/workspace/hooks', () => ({
-  useWorkspaceAuthStates: () => mockUseWorkspaceAuthStates(),
-}))
+function setupMock(
+  workspaces: WorkspaceSummary[],
+  authStates: Record<string, AuthState> | undefined,
+) {
+  mockVisibleWorkspaces.mockReturnValue({
+    visibleWorkspaces: workspaces.filter((workspace) => workspace.hidden !== true),
+    allWorkspaces: workspaces,
+    authStates,
+    loading: authStates === undefined,
+  })
+}
 
 describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
   it('renders children when workspace is visible', () => {
     const workspace = createWorkspace({name: 'default', basePath: '/default'})
     const authState = createAuthState()
 
-    mockUseWorkspaces.mockReturnValue([workspace])
-    mockUseWorkspaceAuthStates.mockReturnValue([{default: authState}])
+    setupMock([workspace], {default: authState})
 
     const history = createMemoryHistory({initialEntries: ['/default']})
 
@@ -111,8 +124,7 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     })
     const authState = createAuthState()
 
-    mockUseWorkspaces.mockReturnValue([workspace])
-    mockUseWorkspaceAuthStates.mockReturnValue([{admin: authState}])
+    setupMock([workspace], {admin: authState})
 
     const history = createMemoryHistory({initialEntries: ['/admin']})
 
@@ -137,8 +149,7 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
       hidden: () => true,
     })
 
-    mockUseWorkspaces.mockReturnValue([workspace])
-    mockUseWorkspaceAuthStates.mockReturnValue([null])
+    setupMock([workspace], undefined)
 
     const history = createMemoryHistory({initialEntries: ['/admin']})
 
@@ -165,13 +176,10 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     })
     const visibleWorkspace = createWorkspace({name: 'visible', basePath: '/visible'})
 
-    mockUseWorkspaces.mockReturnValue([hiddenWorkspace, visibleWorkspace])
-    mockUseWorkspaceAuthStates.mockReturnValue([
-      {
-        hidden: createAuthState(),
-        visible: createAuthState(),
-      },
-    ])
+    setupMock([hiddenWorkspace, visibleWorkspace], {
+      hidden: createAuthState(),
+      visible: createAuthState(),
+    })
 
     const history = createMemoryHistory({initialEntries: ['/hidden']})
 
@@ -210,8 +218,7 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
       },
     })
 
-    mockUseWorkspaces.mockReturnValue([workspace])
-    mockUseWorkspaceAuthStates.mockReturnValue([{admin: authState}])
+    setupMock([workspace], {admin: authState})
 
     const history = createMemoryHistory({initialEntries: ['/admin']})
 
