@@ -1,10 +1,18 @@
 import {FaceHappyIcon, FaceIndifferentIcon, FaceSadIcon} from '@sanity/icons'
 import {Card, Flex, Stack, Switch, Text, TextArea, useToast} from '@sanity/ui'
-import {type ChangeEvent, type ClipboardEvent, useCallback, useId, useState} from 'react'
+import {
+  type ChangeEvent,
+  type ClipboardEvent,
+  useCallback,
+  useContext,
+  useId,
+  useState,
+} from 'react'
+import {FeedbackContext} from 'sanity/_singletons'
 
 import {Button, Dialog} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
-import {useInStudioFeedback} from '../hooks/useInStudioFeedback'
+import {sendFeedbackToSentry} from '../feedbackClient'
 import {type Sentiment} from '../types'
 import {ImageAttachment} from './ImageAttachment'
 
@@ -52,7 +60,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
   const {t} = useTranslation()
   const toast = useToast()
 
-  const {sendFeedback} = useInStudioFeedback()
+  const {telemetryConsent, userName, userEmail, tags} = useContext(FeedbackContext)
 
   const [sentiment, setSentiment] = useState<Sentiment | null>(null)
   const [message, setMessage] = useState('')
@@ -123,12 +131,16 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
         })
       }
 
-      await sendFeedback({
+      await sendFeedbackToSentry({
         dsn,
         feedbackVersion,
-        source,
+        telemetryConsent,
+        name: userName,
+        email: userEmail,
         message: finalMessage,
-        extraTags: {
+        source,
+        tags: {
+          ...tags,
           ...extraTags,
           sentiment,
           contactConsent: String(contactConsent),
@@ -155,13 +167,16 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
   }, [
     dsn,
     feedbackVersion,
+    telemetryConsent,
+    userName,
+    userEmail,
+    tags,
     message,
     sentiment,
     imageFile,
     contactConsent,
     source,
     extraTags,
-    sendFeedback,
     toast,
     t,
     onClose,
