@@ -60,7 +60,11 @@ export function ActiveWorkspaceMatcher({
     }
   }, [setActiveWorkspaceName, firstVisibleWorkspace])
 
-  const result = useSyncPathnameWithWorkspace(history, candidateWorkspaces)
+  const allStaticallyHidden = candidateWorkspaces.length === 0
+  const result = useSyncPathnameWithWorkspace(
+    history,
+    allStaticallyHidden ? allWorkspaces : candidateWorkspaces,
+  )
 
   const matchedWorkspaceIsHidden =
     result.type === 'match' &&

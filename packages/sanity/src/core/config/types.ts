@@ -615,10 +615,8 @@ export interface WorkspaceOptions extends SourceOptions {
    * Hides this workspace from the studio UI. Client-side only -
    * enforce access control server-side via Sanity's RBAC system.
    *
-   * Callbacks receive `{ currentUser }` after auth resolves.
-   * Before auth completes, `currentUser` is `null` and the workspace stays visible.
-   * All callback workspaces show a brief loading state on initial page load
-   * while auth resolves.
+   * Callbacks are evaluated once auth state is available.
+   * Before auth resolves, callback-hidden workspaces are treated as visible.
    *
    * @example Hide a workspace from non-admin users
    * ```ts

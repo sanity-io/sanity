@@ -244,4 +244,33 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     expect(screen.getByTestId('children')).toBeDefined()
     expect(screen.queryByTestId('not-found')).toBeNull()
   })
+
+  it('renders NotFoundComponent without crashing when all workspaces are statically hidden', () => {
+    const hiddenOne = createWorkspace({name: 'hidden-one', basePath: '/hidden-one', hidden: true})
+    const hiddenTwo = createWorkspace({name: 'hidden-two', basePath: '/hidden-two', hidden: true})
+
+    const contextValue = createContextValue([hiddenOne, hiddenTwo], {
+      'hidden-one': createAuthState(),
+      'hidden-two': createAuthState(),
+    })
+
+    const history = createMemoryHistory({initialEntries: ['/hidden-one']})
+
+    expect(() =>
+      render(
+        <TestWrapper contextValue={contextValue}>
+          <ActiveWorkspaceMatcher
+            unstable_history={history}
+            LoadingComponent={LoadingComponent}
+            NotFoundComponent={NotFoundComponent}
+          >
+            <div data-testid="children">Should not render</div>
+          </ActiveWorkspaceMatcher>
+        </TestWrapper>,
+      ),
+    ).not.toThrow()
+
+    expect(screen.getByTestId('not-found')).toBeDefined()
+    expect(screen.queryByTestId('children')).toBeNull()
+  })
 })
