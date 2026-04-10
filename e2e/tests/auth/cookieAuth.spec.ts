@@ -1,6 +1,8 @@
 // eslint-disable-next-line no-restricted-imports -- auth tests use raw Playwright (no studio-test fixtures)
 import {expect, type Page, test} from '@playwright/test'
 
+import {watchForStudioErrors} from '../../helpers/studioErrors'
+
 // The auth-test-studio uses projectId: 'ppsg7ml5' with production API (api.sanity.io)
 // and loginMethod: 'cookie'. We mock all API responses so no real credentials are needed.
 const STUDIO_URL = 'http://localhost:3340/cookie'
@@ -120,13 +122,11 @@ async function setupMockAuth(page: Page) {
 }
 
 test.describe('Cookie auth: cross-tab sync', () => {
-  test('logout in one tab reflects in another tab via BroadcastChannel', async ({browser}) => {
-    // Use a single browser context so both pages share BroadcastChannel and cookies
-    const context = await browser.newContext({
-      viewport: {width: 1728, height: 1000},
-      reducedMotion: 'reduce',
-    })
+  test.beforeEach(async ({context}) => {
+    watchForStudioErrors(context)
+  })
 
+  test('logout in one tab reflects in another tab via BroadcastChannel', async ({context}) => {
     const page1 = await context.newPage()
     const page2 = await context.newPage()
 
@@ -170,16 +170,9 @@ test.describe('Cookie auth: cross-tab sync', () => {
     ).toBeVisible({
       timeout: 15_000,
     })
-
-    await context.close()
   })
 
-  test('login after logout syncs across tabs via BroadcastChannel', async ({browser}) => {
-    const context = await browser.newContext({
-      viewport: {width: 1728, height: 1000},
-      reducedMotion: 'reduce',
-    })
-
+  test('login after logout syncs across tabs via BroadcastChannel', async ({context}) => {
     const page1 = await context.newPage()
     const page1Auth = await setupMockAuth(page1)
 
@@ -227,16 +220,9 @@ test.describe('Cookie auth: cross-tab sync', () => {
     await expect(page2.locator('[data-testid="studio-navbar"]')).toBeVisible({
       timeout: 30_000,
     })
-
-    await context.close()
   })
 
-  test('single tab logout shows login screen', async ({browser}) => {
-    const context = await browser.newContext({
-      viewport: {width: 1728, height: 1000},
-      reducedMotion: 'reduce',
-    })
-
+  test('single tab logout shows login screen', async ({context}) => {
     const page = await context.newPage()
     await setupMockAuth(page)
 
@@ -255,7 +241,5 @@ test.describe('Cookie auth: cross-tab sync', () => {
         timeout: 15_000,
       },
     )
-
-    await context.close()
   })
 })
