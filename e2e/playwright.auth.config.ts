@@ -1,17 +1,26 @@
 import {defineConfig, devices} from '@playwright/test'
 
 const CI = process.env.CI === 'true'
-const PORT = 3341
+const PORT = 3340
 
 /**
  * Playwright config for auth-related e2e tests.
- * Uses dev/auth-test-studio on port 3341 with loginMethod: 'cookie'.
+ * Uses dev/auth-test-studio on port 3340 with cookie and token workspaces.
  * Tests mock all auth APIs — no real credentials needed.
+ *
+ * Local dev: start the studio yourself first:
+ *   pnpm --filter auth-test-studio dev --port 3340
+ *
+ * CI: the webServer block auto-starts the preview server.
  */
 export default defineConfig({
   testDir: './tests/auth',
   timeout: 60_000,
   fullyParallel: false,
+  // Run one test at a time. Cookie and token workspaces share the same projectId
+  // (and therefore the same BroadcastChannel names and localStorage keys), so
+  // running them concurrently in the same browser could cause cross-contamination.
+  workers: 1,
   expect: {
     timeout: 30_000,
   },
@@ -33,11 +42,17 @@ export default defineConfig({
       use: {...devices['Desktop Chrome']},
     },
   ],
-  webServer: {
-    command: `pnpm sanity preview --port ${PORT}`,
-    port: PORT,
-    cwd: '../dev/auth-test-studio',
-    reuseExistingServer: !CI,
-    stdout: 'pipe',
-  },
+  // In local dev, the studio must already be running on the port.
+  // In CI, Playwright starts the preview server automatically.
+  ...(CI
+    ? {
+        webServer: {
+          command: `pnpm sanity preview --port ${PORT}`,
+          port: PORT,
+          cwd: '../dev/auth-test-studio',
+          reuseExistingServer: false,
+          stdout: 'pipe',
+        },
+      }
+    : {}),
 })

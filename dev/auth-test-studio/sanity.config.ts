@@ -16,15 +16,37 @@ const PRODUCTION = {
 
 export const apiConfig = USE_STAGING ? STAGING : PRODUCTION
 
-export default defineConfig({
-  plugins: [structureTool()],
-  name: 'default',
-  title: 'Auth testing Studio',
+const shared = {
   ...apiConfig,
-  auth: {
-    loginMethod: 'cookie',
-  },
+  plugins: [structureTool()],
   schema: {
-    types: [{type: 'document', name: 'empty', fields: [{type: 'string', name: 'title'}]}],
+    types: [
+      {
+        type: 'document',
+        name: 'empty',
+        fields: [{type: 'string', name: 'title'}],
+      },
+    ],
   },
-})
+}
+
+export default defineConfig([
+  {
+    ...shared,
+    name: 'cookie',
+    title: 'Cookie Auth Studio',
+    basePath: '/cookie',
+    auth: {
+      loginMethod: 'cookie',
+    },
+  },
+  {
+    ...shared,
+    name: 'token',
+    title: 'Token Auth Studio',
+    basePath: '/token',
+    auth: {
+      loginMethod: 'token',
+    },
+  },
+])

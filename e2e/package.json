@@ -14,7 +14,7 @@
     "setup": "tsx -r dotenv-flow/config scripts/setup",
     "start": "pnpm --filter studio-e2e-testing preview",
     "test": "playwright test",
-    "test:auth": "pnpm --filter auth-test-studio build && playwright test --config=playwright.auth.config.ts"
+    "test:auth": "playwright test --config=playwright.auth.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "catalog:",

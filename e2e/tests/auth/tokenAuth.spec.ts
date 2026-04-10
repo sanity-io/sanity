@@ -2,8 +2,10 @@
 import {expect, type Page, test} from '@playwright/test'
 
 // The auth-test-studio uses projectId: 'ppsg7ml5' with production API (api.sanity.io)
-// and loginMethod: 'cookie'. We mock all API responses so no real credentials are needed.
-const STUDIO_URL = 'http://localhost:3340/cookie'
+// and loginMethod: 'token'. We mock all API responses so no real credentials are needed.
+const STUDIO_URL = 'http://localhost:3340/token'
+const PROJECT_ID = 'ppsg7ml5'
+const TOKEN_STORAGE_KEY = `__studio_auth_token_storage_v1_${PROJECT_ID}`
 
 const MOCK_USER = {
   id: 'mock-user-123',
@@ -27,14 +29,12 @@ const MOCK_PROVIDERS = {
   thirdPartyLogin: true,
 }
 
-const MOCK_AUTH_PROBE = {
-  id: 'mock-user-123',
-  expiry: Math.floor(Date.now() / 1000) + 3600,
-}
+const MOCK_TOKEN = 'mock-token-abc123'
 
 /**
- * Set up route mocks for an authenticated user.
- * Returns an object with a `logOut` method that switches /users/me to return 401.
+ * Set up route mocks for a token-authenticated user.
+ * Token auth stores the token in localStorage and uses it in API request headers
+ * (instead of HTTP cookies). The auth store reads the token from localStorage on init.
  */
 async function setupMockAuth(page: Page) {
   let authenticated = true
@@ -68,15 +68,9 @@ async function setupMockAuth(page: Page) {
     })
   })
 
-  // Mock /auth/id probe
+  // Mock /auth/id probe — for token mode this is probed during SID exchange.
+  // Return 401 so the auth store falls through to token storage (not cookie).
   await page.route('**/auth/id*', (route) => {
-    if (authenticated) {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(MOCK_AUTH_PROBE),
-      })
-    }
     return route.fulfill({
       status: 401,
       contentType: 'application/json',
@@ -85,6 +79,15 @@ async function setupMockAuth(page: Page) {
         error: 'Unauthorized',
         message: 'Not authenticated',
       }),
+    })
+  })
+
+  // Mock /auth/fetch?sid=... — SID-to-token exchange
+  await page.route('**/auth/fetch*', (route) => {
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({token: MOCK_TOKEN}),
     })
   })
 
@@ -119,9 +122,22 @@ async function setupMockAuth(page: Page) {
   }
 }
 
-test.describe('Cookie auth: cross-tab sync', () => {
+/**
+ * Seed localStorage with a mock token before navigation.
+ * The auth store reads from localStorage on init when loginMethod is 'token'.
+ */
+async function seedToken(page: Page) {
+  await page.addInitScript(
+    ({key, token}) => {
+      localStorage.setItem(key, JSON.stringify({token}))
+    },
+    {key: TOKEN_STORAGE_KEY, token: MOCK_TOKEN},
+  )
+}
+
+test.describe('Token auth: cross-tab sync', () => {
   test('logout in one tab reflects in another tab via BroadcastChannel', async ({browser}) => {
-    // Use a single browser context so both pages share BroadcastChannel and cookies
+    // Use a single browser context so both pages share BroadcastChannel and localStorage
     const context = await browser.newContext({
       viewport: {width: 1728, height: 1000},
       reducedMotion: 'reduce',
@@ -133,6 +149,10 @@ test.describe('Cookie auth: cross-tab sync', () => {
     // Set up authenticated mocks for both pages
     const page1Auth = await setupMockAuth(page1)
     const page2Auth = await setupMockAuth(page2)
+
+    // Seed token in localStorage so both pages start authenticated
+    await seedToken(page1)
+    await seedToken(page2)
 
     // Load tabs sequentially to avoid broadcast races during init
     await page1.goto(STUDIO_URL)
@@ -156,8 +176,6 @@ test.describe('Cookie auth: cross-tab sync', () => {
     await page1.getByText('Sign out').click()
 
     // Page1 should show the login screen
-    // Note: Sanity UI's <Heading> renders as a <div>, not an <h1>–<h6>,
-    // so we use a data-ui selector + text match instead of getByRole("heading")
     await expect(
       page1.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
     ).toBeVisible({
@@ -182,6 +200,7 @@ test.describe('Cookie auth: cross-tab sync', () => {
 
     const page1 = await context.newPage()
     const page1Auth = await setupMockAuth(page1)
+    await seedToken(page1)
 
     // 1. Load page1 first and wait for it to be fully authenticated
     await page1.goto(STUDIO_URL)
@@ -192,6 +211,7 @@ test.describe('Cookie auth: cross-tab sync', () => {
     // 2. Then load page2 — sequential to avoid broadcast race during init
     const page2 = await context.newPage()
     const page2Auth = await setupMockAuth(page2)
+    await seedToken(page2)
     await page2.goto(STUDIO_URL)
     await expect(page2.locator('[data-testid="studio-navbar"]')).toBeVisible({
       timeout: 30_000,
@@ -211,12 +231,14 @@ test.describe('Cookie auth: cross-tab sync', () => {
       page1.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
     ).toBeVisible({timeout: 15_000})
 
-    // 4. Simulate login in page1 by navigating back to the studio.
-    //    With cookie auth, the server sets the cookie during the provider redirect,
-    //    so the studio loads fresh and /users/me returns the authenticated user.
+    // 4. Simulate login in page1 by navigating with #sid=<session-id>.
+    //    For token auth, the auth store:
+    //    a) Exchanges the SID for a token via GET /auth/fetch?sid=...
+    //    b) Stores the token in localStorage via tokenStorage.update({token})
+    //    c) Broadcasts the new token to other tabs via BroadcastChannel
     page1Auth.logIn()
     page2Auth.logIn()
-    await page1.goto(STUDIO_URL)
+    await page1.goto(`${STUDIO_URL}#sid=mock-session-id-12345678`)
 
     // Page1 should be authenticated again (navbar visible)
     await expect(page1.locator('[data-testid="studio-navbar"]')).toBeVisible({
@@ -239,6 +261,7 @@ test.describe('Cookie auth: cross-tab sync', () => {
 
     const page = await context.newPage()
     await setupMockAuth(page)
+    await seedToken(page)
 
     await page.goto(STUDIO_URL)
     await expect(page.locator('[data-testid="studio-navbar"]')).toBeVisible({
