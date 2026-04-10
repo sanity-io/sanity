@@ -227,7 +227,10 @@ function convertCommonTypeDef(schemaType: SchemaType, path: string, opts: Option
     )
   }
 
-  const reason = ownProps.deprecated?.reason
+  const reason =
+    isObject(ownProps.deprecated) && 'reason' in ownProps.deprecated
+      ? ownProps.deprecated.reason
+      : undefined
 
   let orderings: ObjectOrdering[] | undefined
   if (Array.isArray(ownProps.orderings)) {
