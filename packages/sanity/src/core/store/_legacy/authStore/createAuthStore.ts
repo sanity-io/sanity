@@ -7,8 +7,28 @@ import {
 import {type CurrentUser} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import memoize from 'lodash-es/memoize.js'
-import {combineLatest, concat, EMPTY, firstValueFrom, fromEvent, merge, of, skip} from 'rxjs'
-import {distinctUntilChanged, map, mergeMap, shareReplay, switchMap, tap} from 'rxjs/operators'
+import {
+  combineLatest,
+  concat,
+  EMPTY,
+  firstValueFrom,
+  fromEvent,
+  merge,
+  of,
+  ReplaySubject,
+  skip,
+  timer,
+} from 'rxjs'
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  mergeMap,
+  share,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs/operators'
 
 import {type AuthConfig} from '../../../config'
 import {isStaging} from '../../../environment/isStaging'
@@ -135,7 +155,7 @@ export function _createAuthStore({
   //    1. HTTP cookie
 
   const tokenStorage = createBroadcastStorage<{token?: string}>(
-    `__studio_auth_token_storage_v1_${projectId}`,
+    `__studio_auth_token_${projectId}`,
     // sets the initial value
     (currentTokenValue) => {
       if (!isCookielessCompatibleLoginMethod(loginMethod)) {
@@ -153,9 +173,9 @@ export function _createAuthStore({
   // But whenever we fetch the user in one tab we can broadcast the status to other tabs. If a tab
   // has a different status that what it received from another tab, it fetches. This ensures all
   // tabs converge on the same auth state
-  const cookieAuthState = createBroadcastState<{authenticated: boolean}>(
+  const cookieAuthState = createBroadcastState<{authenticated: boolean | 'pending'}>(
     `__studio_auth_cookie_state_${projectId}`,
-    () => undefined,
+    () => ({authenticated: 'pending'}),
   )
 
   const clientFactory = clientFactoryOption ?? createSanityClient
@@ -272,6 +292,7 @@ export function _createAuthStore({
     tokenClient$,
     dualClient$,
     cookieAuthState.value.pipe(
+      filter((v) => v?.authenticated !== 'pending'),
       distinctUntilChanged(isEqual),
       map(({authenticated}) => (authenticated ? cookieClient : undefined)),
     ),
@@ -307,7 +328,7 @@ export function _createAuthStore({
       // sync with other tabs
       cookieAuthState.update({authenticated: s.authenticated})
     }),
-    shareReplay({bufferSize: 1, refCount: true}),
+    share({connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(1000)}),
   )
 
   async function handleCallbackUrl(): Promise<HandleCallbackResult> {
