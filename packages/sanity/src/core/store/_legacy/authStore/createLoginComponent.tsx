@@ -2,6 +2,7 @@
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
 import {Badge, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 import {Button, type ButtonProps} from '../../../../ui-components'
@@ -57,7 +58,7 @@ async function getProviders({
 }
 
 interface CreateLoginComponentOptions extends AuthConfig {
-  getClient: () => Observable<SanityClient>
+  client$: Observable<SanityClient>
 }
 
 interface CreateHrefForProviderOptions {
@@ -91,13 +92,11 @@ function createHrefForProvider({
 }
 
 export function createLoginComponent({
-  getClient,
+  client$,
   loginMethod,
   redirectOnSingle,
   ...providerOptions
 }: CreateLoginComponentOptions) {
-  const useClient = createHookFromObservableFactory(getClient)
-
   function LoginComponent({projectId, ...props}: LoginComponentProps) {
     const redirectPath = props.redirectPath || props.basePath || '/'
 
@@ -113,7 +112,7 @@ export function createLoginComponent({
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
 
-    const [client] = useClient()
+    const client = useObservable(client$)
 
     const getProviderData = useCallback(async () => {
       let providers = [] as AuthProvider[]

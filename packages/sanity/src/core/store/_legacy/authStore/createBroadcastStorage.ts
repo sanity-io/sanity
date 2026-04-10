@@ -5,13 +5,11 @@ import {
   createMemoryStorage,
 } from './createBroadcastState'
 
-export type TokenValue = {token: string}
-
-export function createTokenStorage(
+export function createBroadcastStorage<T>(
   localStorageKey: string,
-  initial: (current: TokenValue | undefined) => TokenValue | undefined,
+  initial: (current: T | undefined) => T | undefined,
 ) {
-  return createBroadcastState<TokenValue>(
+  return createBroadcastState<T>(
     `${localStorageKey}_broadcast`,
     initial,
     supportsLocalStorage ? createLocalStorageStorage(localStorageKey) : createMemoryStorage(),

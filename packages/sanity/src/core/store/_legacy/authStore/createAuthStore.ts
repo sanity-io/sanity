@@ -7,22 +7,30 @@ import {
 import {type CurrentUser} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import memoize from 'lodash-es/memoize.js'
-import {combineLatest, defer, EMPTY, firstValueFrom, fromEvent, merge} from 'rxjs'
-import {distinctUntilChanged, map, shareReplay, switchMap, tap} from 'rxjs/operators'
+import {combineLatest, concat, EMPTY, firstValueFrom, fromEvent, merge, of, skip} from 'rxjs'
+import {
+  distinct,
+  distinctUntilChanged,
+  map,
+  mergeMap,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs/operators'
 
 import {type AuthConfig} from '../../../config'
 import {isStaging} from '../../../environment/isStaging'
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {createBroadcastState} from './createBroadcastState'
+import {createBroadcastStorage} from './createBroadcastStorage'
 import {createLoginComponent} from './createLoginComponent'
-import {createTokenStorage} from './createTokenStorage'
 import {consumeHashToken} from './hashToken'
 import {clearHashSessionId, getHashSessionId} from './sessionId'
 import {
+  type AuthProbeResult,
   type AuthState,
   type AuthStore,
   type HandleCallbackResult,
-  type AuthProbeResult,
 } from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 
@@ -33,10 +41,7 @@ export interface AuthStoreOptions extends AuthConfig {
   dataset: string
 }
 
-const getCurrentUser = async (
-  client: SanityClient,
-  onUnauthorized?: () => void,
-): Promise<CurrentUser | undefined> => {
+const getCurrentUser = async (client: SanityClient): Promise<CurrentUser | undefined> => {
   try {
     const user = await client.request({
       uri: '/users/me',
@@ -46,34 +51,22 @@ const getCurrentUser = async (
     // if the user came back with an id, assume it's a full CurrentUser
     return typeof user?.id === 'string' ? user : undefined
   } catch (err) {
-    // 401 means the user had some kind of credentials, but failed to authenticate.
-    // Clear any stale local token so we don't keep retrying with bad credentials.
     if (err.statusCode === 401) {
-      onUnauthorized?.()
       return undefined
     }
-
-    // Some non-CORS error - is it one of those undefinable network errors?
-    if (err.isNetworkError && !err.message && err.request && err.request.url) {
-      const host = new URL(err.request.url).host
-      throw new Error(`Unknown network error attempting to reach ${host}`, {cause: err})
-    }
-
-    // Some other error, just throw it
     throw err
   }
 }
 
 const UNAUTHENTICATED = {authenticated: false} as const
-// Uses the experimental API version for access to /auth/id and /auth/exchange endpoints
-const API_VERSION = 'vX'
+
+const API_VERSION = 'v2026-04-09'
 
 /**
  * Probe whether a given auth method works by calling /auth/id.
  */
 const probeCurrentUser = (client: SanityClient): Promise<AuthProbeResult> => {
   return client
-    .withConfig({apiVersion: API_VERSION})
     .request<{id: string; expiry: number}>({
       uri: '/auth/id',
       tag: 'auth.check-id',
@@ -100,13 +93,11 @@ const probeCurrentUser = (client: SanityClient): Promise<AuthProbeResult> => {
       },
     )
 }
-
-/**
- * Exchange a session ID for both a cookie and a token via /auth/exchange.
- * The endpoint sets a Set-Cookie header (stored under the Studio's partition key
- * because this is a fetch with credentials from the Studio's origin) and returns
- * the token in the response body.
- */
+// the flow:
+// on init, all auth stores fetches the current auth state once, then broadcasts it state to other tabs
+// of an auth store receives a state update from another tab taht doesn't matches its local state
+// it refetches state and broadcasts again
+// then, sets up a listener for tab broadcasts and re-checks based on that
 async function exchangeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {
   const {token} = await client.request<{token: string}>({
     method: 'GET',
@@ -148,39 +139,28 @@ export function _createAuthStore({
   // * if loginMethod == "cookie"
   //    1. HTTP cookie
 
-  const tokenStorage = createTokenStorage(
-    `__studio_auth_token_${projectId}`,
+  const tokenStorage = createBroadcastStorage<{token?: string}>(
+    `__studio_auth_token_storage_v1_${projectId}`,
+    // sets the initial value
     (currentTokenValue) => {
-      // sets the initial value
       if (!isCookielessCompatibleLoginMethod(loginMethod)) {
-        // note: this will also clear any existing tokens
+        // note: this will also clear any existing state
         return undefined
       }
       const hashToken = consumeHashToken()
-      // use hash token if it exists
-      return hashToken ? {token: hashToken} : currentTokenValue
+      // use hash token if it exists, assume authenticated
+      return hashToken ? {token: hashToken, authenticated: true} : currentTokenValue
     },
   )
 
-  const token$ = merge(
-    tokenStorage.value,
-    // Listen for hash changes and consume any token found in the hash.
-    // The tap triggers tokenStorage.update() which pushes to the BehaviorSubject
-    // backing tokenStorage.value — so the actual emission comes from that stream.
-    // switchMap to EMPTY so this branch produces no direct values.
-    fromEvent(document, 'hashchange').pipe(
-      tap(() => {
-        const hashToken = consumeHashToken()
-        if (hashToken) {
-          tokenStorage.update({token: hashToken})
-        }
-      }),
-      switchMap(() => EMPTY),
-    ),
-  )
-
-  const invalidateCookieAuth = createBroadcastState(
-    `__studio_auth_cookie_invalidations_${projectId}`,
+  // We have no way of detecting cookie state change across tabs
+  // e.g. user logs in one tab while being logged out in another.
+  // But whenever we fetch the user in one tab we can broadcast the status to other tabs. If a tab
+  // has a different status that what it received from another tab, it fetches. This ensures all
+  // tabs converge on the same auth state
+  const cookieAuthState = createBroadcastState<{authenticated: boolean}>(
+    `__studio_auth_cookie_state_${projectId}`,
+    () => undefined,
   )
 
   const clientFactory = clientFactoryOption ?? createSanityClient
@@ -193,76 +173,142 @@ export function _createAuthStore({
     hostOptions.apiHost = 'https://api.sanity.work'
   }
 
-  const cookieClient$ = invalidateCookieAuth.value.pipe(
-    // note: invalidating cookie auth does not trigger any change to client options – it's important
-    // that we emit a new object to signal change (i.e. no distinctUntilChanged)
-    map(() =>
-      clientFactory({
-        ...COMMON_CLIENT_OPTIONS,
-        ...hostOptions,
-        projectId,
-        dataset,
-        withCredentials: true,
-      }),
-    ),
-    shareReplay({bufferSize: 1, refCount: true}),
-  )
+  const cookieClient = clientFactory({
+    ...COMMON_CLIENT_OPTIONS,
+    ...hostOptions,
+    projectId,
+    dataset,
+    withCredentials: true,
+  })
 
-  const tokenClient$ = token$.pipe(
-    distinctUntilChanged(isEqual),
-    map((storedToken) => {
+  const currentTokenState = tokenStorage.get()
+
+  const initialTokenClient = clientFactory({
+    ...COMMON_CLIENT_OPTIONS,
+    ...hostOptions,
+    projectId,
+    dataset,
+    ...(currentTokenState?.token
+      ? {token: currentTokenState.token, ignoreBrowserTokenWarning: true}
+      : {}),
+  })
+
+  const initialDualClient = clientFactory({
+    ...COMMON_CLIENT_OPTIONS,
+    ...hostOptions,
+    projectId,
+    dataset,
+    ...(currentTokenState?.token
+      ? {token: currentTokenState.token, ignoreBrowserTokenWarning: true}
+      : {withCredentials: true}),
+  })
+
+  // note: cookie client is constant and doesn't change over time (e.g., based on token updates)
+  // both dual and token clients will update when a new token is configured
+  const initialWorkspaceClient =
+    loginMethod === 'dual'
+      ? initialDualClient
+      : loginMethod === 'cookie'
+        ? cookieClient
+        : initialTokenClient
+
+  const initial$ = of(initialWorkspaceClient).pipe(
+    mergeMap(async (client): Promise<AuthState> => {
+      const currentUser = await getCurrentUser(client)
       return {
-        ...COMMON_CLIENT_OPTIONS,
-        ...hostOptions,
-        projectId,
-        dataset,
-        ...(storedToken ? {token: storedToken.token, ignoreBrowserTokenWarning: true} : {}),
+        client,
+        authenticated: Boolean(currentUser?.id),
+        currentUser: currentUser || null,
       }
     }),
-    map((clientConfig) => clientFactory(clientConfig)),
-    shareReplay({bufferSize: 1, refCount: true}),
   )
 
-  const dualClient$ = token$.pipe(
-    distinctUntilChanged(isEqual),
-    map((storedToken) => {
-      return {
-        ...COMMON_CLIENT_OPTIONS,
-        ...hostOptions,
-        projectId,
-        dataset,
-        ...(storedToken
-          ? {token: storedToken.token, ignoreBrowserTokenWarning: true}
-          : {withCredentials: true}),
+  // Listen for hash changes and consume any token found in the hash.
+  // The tap triggers tokenStorage.update() which pushes to the BehaviorSubject
+  // backing tokenStorage.value — so the actual emission comes from that stream.
+  // switchMap to EMPTY so this branch produces no direct values.
+  const hashTokenChange = fromEvent(document, 'hashchange').pipe(
+    tap(() => {
+      const hashToken = consumeHashToken()
+      if (hashToken) {
+        tokenStorage.update({token: hashToken})
       }
     }),
-    map((clientConfig) => clientFactory(clientConfig)),
-    shareReplay({bufferSize: 1, refCount: true}),
+    switchMap(() => EMPTY),
   )
 
-  // loginMethod is constant per auth store instance — select the right stream directly
-  const workspaceClient$ =
-    loginMethod === 'dual' ? dualClient$ : loginMethod === 'cookie' ? cookieClient$ : tokenClient$
+  const tokenClient$ = concat(
+    of(initialTokenClient),
+    merge(hashTokenChange, tokenStorage.value.pipe(skip(1)))
+      .pipe(
+        map((nextTokenState) => {
+          return clientFactory({
+            ...COMMON_CLIENT_OPTIONS,
+            ...hostOptions,
+            projectId,
+            dataset,
+            ...(nextTokenState?.token
+              ? {token: nextTokenState.token, ignoreBrowserTokenWarning: true}
+              : {}),
+          })
+        }),
+      )
+      .pipe(shareReplay({bufferSize: 1, refCount: true})),
+  )
 
-  const authState$ = workspaceClient$.pipe(
-    switchMap((client) =>
-      defer(async (): Promise<AuthState> => {
-        const currentUser = await getCurrentUser(client, () => {
-          // Clear stale token on 401 so we don't keep retrying with bad credentials
-          tokenStorage.update(undefined)
+  const dualClient$ = concat(
+    of(initialDualClient),
+    merge(hashTokenChange, tokenStorage.value.pipe(skip(1))).pipe(
+      map((nextTokenState) => {
+        return clientFactory({
+          ...COMMON_CLIENT_OPTIONS,
+          ...hostOptions,
+          projectId,
+          dataset,
+          ...(nextTokenState?.token
+            ? {token: nextTokenState.token, ignoreBrowserTokenWarning: true}
+            : {withCredentials: true}),
         })
+      }),
+      shareReplay({bufferSize: 1, refCount: true}),
+    ),
+  )
+
+  const workspaceClient$ = combineLatest([
+    tokenClient$,
+    dualClient$,
+    cookieAuthState.value.pipe(
+      distinctUntilChanged(isEqual),
+      map(() => cookieClient),
+    ),
+  ]).pipe(
+    map(([tokenClient, dualClient, _cookieClient]) => {
+      return loginMethod === 'dual'
+        ? dualClient
+        : loginMethod === 'cookie'
+          ? _cookieClient
+          : tokenClient
+    }),
+  )
+
+  const authState$ = concat(
+    initial$,
+    workspaceClient$.pipe(
+      skip(1),
+      mergeMap(async (client): Promise<AuthState> => {
+        const currentUser = await getCurrentUser(client)
         return {
-          currentUser: currentUser || null,
           client,
-          authenticated: !!currentUser,
+          authenticated: Boolean(currentUser?.id),
+          currentUser: currentUser || null,
         }
       }),
     ),
-    distinctUntilChanged((prev, next) =>
-      // Only notify subscribers if the the currentUser object has changed.
-      // Using isEqual is OK since the currentUser object being a small data structure.
-      isEqual(prev.currentUser, next.currentUser),
-    ),
+  ).pipe(
+    tap((s) => {
+      // sync with other tabs
+      cookieAuthState.update({authenticated: s.authenticated})
+    }),
     shareReplay({bufferSize: 1, refCount: true}),
   )
 
@@ -274,6 +320,7 @@ export function _createAuthStore({
 
     if (!sessionId) {
       // No session ID means this is a normal cold load, not a post-login redirect.
+
       return {
         loginMethod,
         flow: 'already-authenticated',
@@ -320,9 +367,10 @@ export function _createAuthStore({
       const probeDurationMs = Math.round(performance.now() - probeStart)
       const durationMs = Math.round(performance.now() - startTime)
 
+      // sync with other tabs
+      cookieAuthState.update({authenticated: authProbe.authenticated})
+
       if (authProbe.authenticated) {
-        // broadcast to other tabs
-        invalidateCookieAuth.update()
         return {
           flow: 'exchange',
           loginMethod,
@@ -370,12 +418,15 @@ export function _createAuthStore({
   }
 
   async function logout() {
-    const [cookieClient, tokenClient] = await firstValueFrom(
-      combineLatest([cookieClient$, tokenClient$]),
-    )
+    const tokenClient = await firstValueFrom(tokenClient$)
+
     // Destroy both token and cookie when logging out.
-    // Note that tokenClient might not actually be configured with a token —
+    // Note that the initialTokenClient might not actually be configured with a token —
     // that's ok, since the logout endpoint will then just respond with 204.
+    //
+    // Also note that even if the studio is configured with loginMethod=token, an
+    // auth cookie may still be set on the project api domain. When the user hits
+    // the log-out button, we need to make sure we destroy both
     await Promise.all([
       tokenClient.request({uri: '/auth/logout', method: 'POST'}).then(() =>
         // This will update token auth subscribers and re-init clients
@@ -383,20 +434,19 @@ export function _createAuthStore({
       ),
       cookieClient.request({uri: '/auth/logout', method: 'POST'}).then(() =>
         // Broadcast cookie invalidation to other tabs
-        invalidateCookieAuth.update(),
+        cookieAuthState.update({authenticated: false}),
       ),
     ])
   }
 
   const LoginComponent = createLoginComponent({
     ...providerOptions,
-    getClient: () => authState$.pipe(map((state) => state.client)),
+    client$: authState$.pipe(map((state) => state.client)),
     loginMethod,
   })
 
   return {
     handleCallbackUrl,
-    token: token$.pipe(map((t) => t?.token || null)),
     state: authState$,
     LoginComponent,
     logout,

@@ -1,7 +1,7 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
-const USE_STAGING = true
+const USE_STAGING = false
 
 const STAGING = {
   projectId: 'exx11uqh',
@@ -22,7 +22,7 @@ export default defineConfig({
   title: 'Auth testing Studio',
   ...apiConfig,
   auth: {
-    loginMethod: 'dual',
+    loginMethod: 'cookie',
   },
   schema: {
     types: [{type: 'document', name: 'empty', fields: [{type: 'string', name: 'title'}]}],

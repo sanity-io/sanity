@@ -2,6 +2,7 @@ import {BehaviorSubject, type Observable} from 'rxjs'
 
 export interface BroadcastedState<T> {
   value: Observable<T | undefined>
+  get(): T | undefined
   update(value: T | undefined): void
   dispose(): void
 }
@@ -83,6 +84,7 @@ export function createBroadcastState<T>(
 
   return {
     value: subject.asObservable(),
+    get: () => subject.getValue(),
     update(value: T | undefined) {
       storage.store(value)
       const stringified = JSON.stringify(value === undefined ? null : value)
