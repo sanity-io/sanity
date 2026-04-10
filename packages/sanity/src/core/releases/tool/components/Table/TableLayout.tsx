@@ -1,5 +1,4 @@
-import {Box, Stack} from '@sanity/ui'
-import {type ReactNode} from 'react'
+import {type CSSProperties, type ReactNode, useMemo} from 'react'
 
 interface TableLayoutProps {
   isEmptyState: boolean
@@ -8,50 +7,35 @@ interface TableLayoutProps {
   contentHeight?: string
 }
 
+const emptyTableStyle: CSSProperties = {
+  width: '100%',
+  height: '100%',
+  display: 'grid',
+  gridTemplateRows: 'auto 1fr',
+}
+
+const defaultTableStyle: CSSProperties = {
+  width: '100%',
+}
+
 /**
  * @internal
  */
 export const TableLayout = ({isEmptyState, header, content, contentHeight}: TableLayoutProps) => {
-  if (isEmptyState) {
-    // Empty state layout - use CSS Grid to fill height
-    return (
-      <div style={{height: '100%'}}>
-        <table
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'grid',
-            gridTemplateRows: 'auto 1fr',
-          }}
-        >
-          {header}
-          <tbody
-            style={{
-              height: '100%',
-              position: 'relative',
-              overflow: 'hidden',
-            }}
-          >
-            {content}
-          </tbody>
-        </table>
-      </div>
-    )
-  }
+  const tbodyStyle = useMemo<CSSProperties>(
+    () =>
+      isEmptyState
+        ? {height: '100%', position: 'relative', overflow: 'hidden'}
+        : {height: contentHeight, position: 'relative'},
+    [isEmptyState, contentHeight],
+  )
 
-  // Normal content layout - use original scrollable structure
   return (
-    <Stack as="table">
-      {header}
-      <Box
-        style={{
-          height: contentHeight,
-          position: 'relative',
-        }}
-        as="tbody"
-      >
-        {content}
-      </Box>
-    </Stack>
+    <div style={{height: '100%'}}>
+      <table style={isEmptyState ? emptyTableStyle : defaultTableStyle}>
+        {header}
+        <tbody style={tbodyStyle}>{content}</tbody>
+      </table>
+    </div>
   )
 }
