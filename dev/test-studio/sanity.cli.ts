@@ -8,15 +8,18 @@ loadEnvFiles()
 
 const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID || (isStaging ? 'exx11uqh' : 'ppsg7ml5')
-const dataset = process.env.SANITY_STUDIO_DATASET || (isStaging ? 'playground' : 'test')
 const reactCompilerAllowList = /\/(?:sanity|@sanity\/vision)\/src\/.*\.tsx?$/
 
 export default defineCliConfig({
-  api: {
-    projectId,
-    dataset,
-  },
+  api: isStaging
+    ? {
+        projectId: 'exx11uqh',
+        dataset: 'playground',
+      }
+    : {
+        projectId: 'ppsg7ml5',
+        dataset: 'test',
+      },
   // Can be overriden by:
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
   // B) creating a `.env` file locally that sets the same env variable as above
