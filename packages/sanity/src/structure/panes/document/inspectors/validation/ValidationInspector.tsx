@@ -106,7 +106,12 @@ function ValidationCard(props: {
     (event: MouseEvent) => {
       // Allow text selection: if the user selected text, don't navigate
       const selection = window.getSelection()
-      if (selection && selection.toString().length > 0) {
+      if (
+        selection &&
+        selection.toString().length > 0 &&
+        // It's selecting inside the card, so don't navigate
+        event.currentTarget.contains(selection.anchorNode)
+      ) {
         return
       }
       onOpen(marker.path)
