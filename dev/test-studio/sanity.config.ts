@@ -57,8 +57,8 @@ import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
 
-const customProjectId = process.env.SANITY_STUDIO_PROJECT_ID
-const customDataset = process.env.SANITY_STUDIO_DATASET
+const customProjectId = import.meta.env?.SANITY_STUDIO_PROJECT_ID || ''
+const customDataset = import.meta.env?.SANITY_STUDIO_DATASET || ''
 
 const envConfig = {
   // use this for production workspaces

@@ -45,15 +45,21 @@ export default defineCliConfig({
   vite(viteConfig: UserConfig, {command, mode}): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
+    // Only inject custom project overrides during local dev, not CI builds
+    const localDevDefines =
+      command === 'serve'
+        ? {
+            'import.meta.env.SANITY_STUDIO_PROJECT_ID': JSON.stringify(
+              process.env.SANITY_STUDIO_PROJECT_ID || '',
+            ),
+            'import.meta.env.SANITY_STUDIO_DATASET': JSON.stringify(
+              process.env.SANITY_STUDIO_DATASET || '',
+            ),
+          }
+        : {}
+
     const nextConfig = mergeConfig(viteConfig, {
-      define: {
-        'process.env.SANITY_STUDIO_PROJECT_ID': JSON.stringify(
-          process.env.SANITY_STUDIO_PROJECT_ID || '',
-        ),
-        'process.env.SANITY_STUDIO_DATASET': JSON.stringify(
-          process.env.SANITY_STUDIO_DATASET || '',
-        ),
-      },
+      define: localDevDefines,
       server: {
         warmup: {
           clientFiles: [
