@@ -3,6 +3,7 @@ import {MenuDivider} from '@sanity/ui'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {feedbackLocaleNamespace} from '../../../../i18n/localeNamespaces'
 
 interface FeedbackMenuItemProps {
   onClick: () => void
@@ -15,7 +16,7 @@ interface FeedbackMenuItemProps {
  */
 export function FeedbackMenuItem(props: FeedbackMenuItemProps) {
   const {onClick} = props
-  const {t} = useTranslation()
+  const {t} = useTranslation(feedbackLocaleNamespace)
 
   return (
     <>
