@@ -724,9 +724,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
           enabled={divergencesContext?.enabled ?? advancedVersionControlEnabled}
           upstreamEditState={upstreamEditState}
           editState={editState}
-          subjectId={documentId}
+          subjectId={value._id}
           schemaType={formState.schemaType}
-          displayedId={value._id}
           formState={formState}
         >
           <DivergenceAutofocus onProgrammaticFocus={onProgrammaticFocus} />
