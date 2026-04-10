@@ -55,14 +55,6 @@ const feedbackLocaleStrings = defineLocalesResources('feedback', {
 } as const)
 
 /**
- * The i18n resource keys for feedback.
- *
- * @alpha
- * @hidden
- */
-export type FeedbackLocaleResourceKeys = keyof typeof feedbackLocaleStrings
-
-/**
  * Locale resources for the feedback namespace, eg US English locale resources.
  *
  * @beta
