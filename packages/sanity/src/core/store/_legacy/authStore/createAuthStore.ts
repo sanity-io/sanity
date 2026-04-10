@@ -8,15 +8,7 @@ import {type CurrentUser} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import memoize from 'lodash-es/memoize.js'
 import {combineLatest, concat, EMPTY, firstValueFrom, fromEvent, merge, of, skip} from 'rxjs'
-import {
-  distinct,
-  distinctUntilChanged,
-  map,
-  mergeMap,
-  shareReplay,
-  switchMap,
-  tap,
-} from 'rxjs/operators'
+import {distinctUntilChanged, map, mergeMap, shareReplay, switchMap, tap} from 'rxjs/operators'
 
 import {type AuthConfig} from '../../../config'
 import {isStaging} from '../../../environment/isStaging'
@@ -41,11 +33,14 @@ export interface AuthStoreOptions extends AuthConfig {
   dataset: string
 }
 
-const getCurrentUser = async (client: SanityClient): Promise<CurrentUser | undefined> => {
+const getCurrentUser = async (
+  client: SanityClient,
+  tag: string,
+): Promise<CurrentUser | undefined> => {
   try {
     const user = await client.request({
       uri: '/users/me',
-      tag: 'users.get-current',
+      tag: `users.get-current${tag ? `.${tag}` : ''}`,
     })
 
     // if the user came back with an id, assume it's a full CurrentUser
@@ -214,7 +209,7 @@ export function _createAuthStore({
 
   const initial$ = of(initialWorkspaceClient).pipe(
     mergeMap(async (client): Promise<AuthState> => {
-      const currentUser = await getCurrentUser(client)
+      const currentUser = await getCurrentUser(client, 'initial')
       return {
         client,
         authenticated: Boolean(currentUser?.id),
@@ -270,16 +265,15 @@ export function _createAuthStore({
             : {withCredentials: true}),
         })
       }),
-      shareReplay({bufferSize: 1, refCount: true}),
     ),
-  )
+  ).pipe(shareReplay({bufferSize: 1, refCount: true}))
 
   const workspaceClient$ = combineLatest([
     tokenClient$,
     dualClient$,
     cookieAuthState.value.pipe(
       distinctUntilChanged(isEqual),
-      map(() => cookieClient),
+      map(({authenticated}) => (authenticated ? cookieClient : undefined)),
     ),
   ]).pipe(
     map(([tokenClient, dualClient, _cookieClient]) => {
@@ -289,6 +283,7 @@ export function _createAuthStore({
           ? _cookieClient
           : tokenClient
     }),
+    distinctUntilChanged(),
   )
 
   const authState$ = concat(
@@ -296,7 +291,10 @@ export function _createAuthStore({
     workspaceClient$.pipe(
       skip(1),
       mergeMap(async (client): Promise<AuthState> => {
-        const currentUser = await getCurrentUser(client)
+        if (!client) {
+          return {client: cookieClient, authenticated: false, currentUser: null}
+        }
+        const currentUser = await getCurrentUser(client, 'update')
         return {
           client,
           authenticated: Boolean(currentUser?.id),
