@@ -4,6 +4,8 @@ import {test as baseTest} from '@playwright/test'
 import {createClient, type SanityClient, type SanityDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 
+import {watchForStudioErrors} from './helpers/studioErrors'
+
 class _TestSanityContext {
   documentIds: Set<string>
 
@@ -66,7 +68,9 @@ interface SanityFixtures {
 export const test = baseTest.extend<SanityFixtures>({
   // Extends the goto function to preserve the base pathname if it exists in the baseURL
   // This is used to ensure the navigation goes to the correct workspace.
-  async page({page, baseURL}, use) {
+  async page({page, context, baseURL}, use) {
+    watchForStudioErrors(context)
+
     const originalGoto = page.goto.bind(page)
     const baseUrl = new URL(baseURL || '')
     const basePath = baseUrl.pathname
