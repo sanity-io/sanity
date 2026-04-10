@@ -2,6 +2,7 @@ import {useToast} from '@sanity/ui'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../i18n'
+import {feedbackLocaleNamespace} from '../../i18n/localeNamespaces'
 import {StudioFeedbackProvider} from '../../studio/feedback/StudioFeedbackProvider'
 import {FeedbackDialog, type FeedbackDialogProps} from './FeedbackDialog'
 
@@ -10,7 +11,7 @@ export type StudioFeedbackDialogProps = Omit<FeedbackDialogProps, 'onSuccess' | 
 
 function StudioFeedbackDialogInner(props: StudioFeedbackDialogProps) {
   const toast = useToast()
-  const {t} = useTranslation()
+  const {t} = useTranslation(feedbackLocaleNamespace)
 
   const handleSuccess = useCallback(() => {
     toast.push({status: 'success', title: t('feedback.success'), closable: true})

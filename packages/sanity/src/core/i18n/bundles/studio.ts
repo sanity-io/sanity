@@ -534,13 +534,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Error message shown when an action cannot be performed */
   'errors.unable-to-perform-action': 'Unable to perform this action',
 
-  /** Toast message after failed submission */
-  'feedback.error': 'Failed to submit feedback with error',
-  /** Label for "send feedback" in the help resources menu */
-  'feedback.menu-item': 'Send feedback',
-  /** Toast message after successful submission */
-  'feedback.success': 'Feedback submitted, thank you!',
-
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
     'The value of the <code>_key</code> property must be a unique string.',

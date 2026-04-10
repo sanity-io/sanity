@@ -4,6 +4,7 @@ import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {Button} from '../../../ui-components'
 import {FileInputButton} from '../../form/inputs/files/common/FileInputButton/FileInputButton'
 import {fileTarget} from '../../form/inputs/files/common/fileTarget'
+import {useFeedbackTranslation} from '../i18n/useFeedbackTranslation'
 
 const FileTargetCard = fileTarget(Card)
 
@@ -33,6 +34,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
     onRemove,
     onExpand,
   } = props
+  const {t} = useFeedbackTranslation()
 
   if (!showAttachment && !imageFile) {
     return (
@@ -41,7 +43,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
           mode="bleed"
           tone="primary"
           icon={UploadIcon}
-          text="Attach an image"
+          text={t('feedback.attachment.label')}
           onClick={onExpand}
           style={{cursor: 'pointer'}}
         />
@@ -53,14 +55,19 @@ export function ImageAttachment(props: ImageAttachmentProps) {
     return (
       <Stack space={3}>
         <Text size={1} weight="medium">
-          Attach an image
+          {t('feedback.attachment.label')}
         </Text>
         <Card padding={3} radius={2} border>
           <Flex align="center" justify="space-between">
             <Text size={1} muted>
               {imageFile.name}
             </Text>
-            <Button mode="bleed" tone="critical" text="Remove" onClick={onRemove} />
+            <Button
+              mode="bleed"
+              tone="critical"
+              text={t('feedback.attachment.remove')}
+              onClick={onRemove}
+            />
           </Flex>
         </Card>
       </Stack>
@@ -70,7 +77,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
   return (
     <Stack space={3}>
       <Text size={1} weight="medium">
-        Attach an image
+        {t('feedback.attachment.label')}
       </Text>
       <FileTargetCard
         padding={3}
@@ -87,10 +94,15 @@ export function ImageAttachment(props: ImageAttachmentProps) {
               <BinaryDocumentIcon />
             </Text>
             <Text size={1} muted>
-              Drag or paste file here
+              {t('feedback.attachment.drop-zone')}
             </Text>
           </Flex>
-          <FileInputButton mode="ghost" text="Browse" accept="image/*" onSelect={onFiles} />
+          <FileInputButton
+            mode="ghost"
+            text={t('feedback.attachment.browse')}
+            accept="image/*"
+            onSelect={onFiles}
+          />
         </Flex>
       </FileTargetCard>
       {error && (
