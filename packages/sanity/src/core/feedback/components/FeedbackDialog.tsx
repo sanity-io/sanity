@@ -1,10 +1,18 @@
 import {FaceHappyIcon, FaceIndifferentIcon, FaceSadIcon} from '@sanity/icons'
-import {Card, Flex, Stack, Switch, Text, TextArea, useToast} from '@sanity/ui'
-import {type ChangeEvent, type ClipboardEvent, useCallback, useId, useState} from 'react'
+import {Card, Flex, Stack, Switch, Text, TextArea} from '@sanity/ui'
+import {
+  type ChangeEvent,
+  type ClipboardEvent,
+  useCallback,
+  useContext,
+  useId,
+  useState,
+} from 'react'
+import {FeedbackContext} from 'sanity/_singletons'
 
 import {Button, Dialog} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
-import {useInStudioFeedback} from '../hooks/useInStudioFeedback'
+import {sendFeedbackToSentry} from '../feedbackClient'
+import {useFeedbackTranslation} from '../i18n/useFeedbackTranslation'
 import {type Sentiment} from '../types'
 import {ImageAttachment} from './ImageAttachment'
 
@@ -27,6 +35,14 @@ export interface FeedbackDialogProps {
   title?: string
   /** Override the sentiment question (e.g., 'How easy or difficult is PTE to use?'). */
   sentimentLabel?: string
+  /** User's name. Overrides the value from FeedbackContext when provided. */
+  userName?: string
+  /** User's email. Overrides the value from FeedbackContext when provided. */
+  userEmail?: string
+  /** Called after feedback is submitted successfully. */
+  onSuccess?: () => void
+  /** Called when feedback submission fails. */
+  onError?: (error: Error) => void
 }
 
 const SENTIMENTS: {value: Sentiment; icon: typeof FaceHappyIcon; labelKey: string}[] = [
@@ -47,12 +63,22 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     extraTags,
     title: dialogTitle,
     sentimentLabel,
+    userName: userNameProp,
+    userEmail: userEmailProp,
+    onSuccess,
+    onError,
   } = props
   const dialogId = useId()
-  const {t} = useTranslation()
-  const toast = useToast()
+  const {t} = useFeedbackTranslation()
 
-  const {sendFeedback} = useInStudioFeedback()
+  const {
+    telemetryConsent,
+    userName: contextUserName,
+    userEmail: contextUserEmail,
+    tags,
+  } = useContext(FeedbackContext)
+  const resolvedName = userNameProp ?? contextUserName
+  const resolvedEmail = userEmailProp ?? contextUserEmail
 
   const [sentiment, setSentiment] = useState<Sentiment | null>(null)
   const [message, setMessage] = useState('')
@@ -123,12 +149,16 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
         })
       }
 
-      await sendFeedback({
+      await sendFeedbackToSentry({
         dsn,
         feedbackVersion,
-        source,
+        telemetryConsent,
+        name: resolvedName,
+        email: resolvedEmail,
         message: finalMessage,
-        extraTags: {
+        source,
+        tags: {
+          ...tags,
           ...extraTags,
           sentiment,
           contactConsent: String(contactConsent),
@@ -136,34 +166,28 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
         attachments,
       })
 
-      toast.push({
-        status: 'success',
-        title: t('feedback.success'),
-        closable: true,
-      })
       setSubmitting(false)
+      if (onSuccess) onSuccess()
       onClose()
     } catch (err) {
-      toast.push({
-        status: 'warning',
-        title: t('feedback.error'),
-        description: err.message,
-        closable: true,
-      })
       setSubmitting(false)
+      if (onError) onError(err instanceof Error ? err : new Error(String(err)))
     }
   }, [
     dsn,
     feedbackVersion,
+    telemetryConsent,
+    resolvedName,
+    resolvedEmail,
+    tags,
     message,
     sentiment,
     imageFile,
     contactConsent,
     source,
     extraTags,
-    sendFeedback,
-    toast,
-    t,
+    onSuccess,
+    onError,
     onClose,
   ])
 
@@ -178,7 +202,6 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     >
       <Card paddingX={4} paddingY={5} borderTop onPaste={handlePaste}>
         <Stack space={5}>
-          {/* Sentiment */}
           <Stack space={2}>
             <Text size={1} weight="medium">
               {sentimentLabel ?? t('feedback.sentiment.label')}
@@ -202,7 +225,6 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
             </Flex>
           </Stack>
 
-          {/* Message */}
           <Stack space={3}>
             <Text size={1} weight="medium">
               {t('feedback.message.label')}
@@ -215,7 +237,6 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
               placeholder={t('feedback.message.placeholder')}
             />
 
-            {/* Image attachment */}
             <ImageAttachment
               imageFile={imageFile}
               showAttachment={showAttachment}
@@ -232,13 +253,12 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
             />
           </Stack>
 
-          {(message.trim() || imageFile) && (
+          {(message.trim() || imageFile) && (resolvedName || resolvedEmail) && (
             <Stack space={4}>
               <Stack space={3} paddingRight={3}>
                 <Text size={1} weight="medium">
                   {t('feedback.consent.label')}
                 </Text>
-
                 <Text size={1} muted>
                   {t('feedback.consent.disclaimer')}
                 </Text>
@@ -248,7 +268,6 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
                   checked={contactConsent}
                   onChange={() => setContactConsent((prev) => !prev)}
                 />
-
                 <Text size={1} muted>
                   {contactConsent ? t('feedback.consent.yes') : t('feedback.consent.no')}
                 </Text>
@@ -258,7 +277,6 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
         </Stack>
       </Card>
 
-      {/* Actions */}
       <Card padding={3} borderTop>
         <Flex gap={2} justify="flex-end">
           <Button mode="ghost" text={t('feedback.cancel')} onClick={onClose} />

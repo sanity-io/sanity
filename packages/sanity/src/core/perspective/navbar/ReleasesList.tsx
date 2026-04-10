@@ -162,15 +162,17 @@ export function ReleasesList({
           ))}
         </Stack>
       )}
-      {areReleasesEnabled && (
-        <StickyBottomCard borderTop paddingY={1} paddingX={2}>
-          <Stack space={1}>
-            <ScheduledDraftsMenuItem />
-            <ViewContentReleasesMenuItem />
-            <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
-          </Stack>
-        </StickyBottomCard>
-      )}
+      <StickyBottomCard borderTop paddingY={1} paddingX={2}>
+        <Stack space={1}>
+          <ScheduledDraftsMenuItem />
+          {areReleasesEnabled && (
+            <>
+              <ViewContentReleasesMenuItem />
+              <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
+            </>
+          )}
+        </Stack>
+      </StickyBottomCard>
     </Card>
   )
 }

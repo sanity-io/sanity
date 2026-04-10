@@ -1,5 +1,11 @@
+export {StudioFeedbackProvider} from '../studio/feedback/StudioFeedbackProvider'
 export {useTelemetryConsent} from '../studio/telemetry/useTelemetryConsent'
 export {FeedbackDialog, type FeedbackDialogProps} from './components/FeedbackDialog'
+export {
+  StudioFeedbackDialog,
+  type StudioFeedbackDialogProps,
+} from './components/StudioFeedbackDialog'
+export {useFeedback, type UseFeedbackReturn} from './hooks/useFeedback'
 export {
   type SendFeedbackOptions,
   useInStudioFeedback,
@@ -13,3 +19,4 @@ export {
   type Sentiment,
   type TagValue,
 } from './types'
+export {FeedbackContext, type FeedbackContextValue} from 'sanity/_singletons'

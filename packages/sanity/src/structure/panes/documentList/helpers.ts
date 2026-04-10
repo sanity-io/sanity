@@ -1,4 +1,5 @@
 import {
+  isArraySchemaType,
   isIndexSegment,
   isKeySegment,
   isReferenceSchemaType,
@@ -55,6 +56,32 @@ export function applyOrderingFunctions(order: SortOrder, schemaType: ObjectSchem
   return orderBy.every((item, index) => item === order.by[index]) ? order : {...order, by: orderBy}
 }
 
+const BUILT_IN_SORT_FIELDS = new Set(['_id', '_type', '_rev', '_createdAt', '_updatedAt'])
+
+/**
+ * Checks that every field in a sort order resolves against the schema type.
+ * Built-in document fields (_id, _createdAt, etc.) always pass. Returns
+ * the fallback when any field is missing - typically when a persisted sort
+ * order from one workspace references fields absent in another.
+ */
+export function validateSortOrder(
+  sortOrder: SortOrder,
+  schemaType: ObjectSchemaType | undefined,
+  fallback: SortOrder,
+): SortOrder {
+  if (!schemaType) {
+    return sortOrder
+  }
+
+  const allFieldsValid = sortOrder.by.every(
+    (entry) =>
+      BUILT_IN_SORT_FIELDS.has(entry.field) ||
+      Boolean(tryResolveSchemaTypeForPath(schemaType, entry.field)),
+  )
+
+  return allFieldsValid ? sortOrder : fallback
+}
+
 function tryResolveSchemaTypeForPath(baseType: SchemaType, path: string): SchemaType | undefined {
   const pathSegments = PathUtils.fromString(path)
 
@@ -66,32 +93,42 @@ function tryResolveSchemaTypeForPath(baseType: SchemaType, path: string): Schema
 
     if (typeof segment === 'string') {
       current = getFieldTypeByName(current, segment)
+
+      if (current && isReferenceSchemaType(current)) {
+        const [refType, otherRefType] = current.to || []
+        if (otherRefType || !refType) {
+          return undefined
+        }
+        current = refType
+      }
+
       continue
     }
 
     const isArrayAccessor = isKeySegment(segment) || isIndexSegment(segment)
-    if (!isArrayAccessor || current.jsonType !== 'array') {
+    if (!isArrayAccessor || !isArraySchemaType(current)) {
       return undefined
     }
 
-    const [memberType, otherType] = current.of || []
-    if (otherType || !memberType) {
+    if (current.of.length !== 1) {
       // Can't figure out the type without knowing the value
       return undefined
     }
+
+    const memberType: SchemaType = current.of[0]
 
     if (!isReferenceSchemaType(memberType)) {
       current = memberType
       continue
     }
 
-    const [refType, otherRefType] = memberType.to || []
-    if (otherRefType || !refType) {
+    const refTargets: SchemaType[] = memberType.to || []
+    if (refTargets.length !== 1) {
       // Can't figure out the type without knowing the value
       return undefined
     }
 
-    current = refType
+    current = refTargets[0]
   }
 
   return current

@@ -391,6 +391,10 @@ export function getOrderingMenuItemsForSchemaType(
   return (
     type.orderings ? type.orderings.concat(DEFAULT_ORDERING_OPTIONS) : DEFAULT_ORDERING_OPTIONS
   ).map((ordering: SortOrdering) =>
-    getOrderingMenuItem(context, ordering, getExtendedProjection(type, ordering.by)),
+    getOrderingMenuItem(
+      context,
+      ordering,
+      getExtendedProjection(type, ordering.by, false, ordering.title),
+    ),
   )
 }

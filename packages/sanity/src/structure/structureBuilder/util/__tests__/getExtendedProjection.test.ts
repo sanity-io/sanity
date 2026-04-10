@@ -1,8 +1,8 @@
 import {Schema} from '@sanity/schema'
 import {type SchemaType, type SortOrderingItem} from '@sanity/types'
-import {describe, expect, test, vi} from 'vitest'
+import {afterEach, describe, expect, test, vi} from 'vitest'
 
-import {getExtendedProjection} from '../getExtendedProjection'
+import {_resetWarningCache, getExtendedProjection} from '../getExtendedProjection'
 
 const mockSchema = Schema.compile({
   name: 'default',
@@ -121,6 +121,11 @@ const withObjectFieldsOrder = mockSchema.get('withObjectFieldsOrder') as SchemaT
 const withArrayFields = mockSchema.get('withArrayFields') as SchemaType
 
 describe('getExtendedProjection', () => {
+  afterEach(() => {
+    _resetWarningCache()
+    vi.restoreAllMocks()
+  })
+
   test('keeps simple field ordering projection', () => {
     const orderBy: SortOrderingItem[] = [{field: 'publicationYear', direction: 'asc'}]
 
@@ -221,11 +226,29 @@ describe('getExtendedProjection', () => {
     )
   })
 
+  test('includes ordering name in warning when provided', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const orderBy: SortOrderingItem[] = [{field: 'missingField', direction: 'asc'}]
+
+    getExtendedProjection(withObjectFieldsOrder, orderBy, false, 'By missing field')
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('The sort ordering "By missing field" references'),
+    )
+  })
+
+  test('uses generic label when ordering name is not provided', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const orderBy: SortOrderingItem[] = [{field: 'missingField', direction: 'asc'}]
+
+    getExtendedProjection(withObjectFieldsOrder, orderBy)
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('A sort ordering references'))
+  })
+
   test('throws in strict mode when ordering targets missing top-level field', () => {
     const orderBy: SortOrderingItem[] = [{field: 'missingField', direction: 'asc'}]
 
     expect(() => getExtendedProjection(withObjectFieldsOrder, orderBy, true)).toThrow(
-      'The current ordering config targeted the nonexistent field "missingField"',
+      'A sort ordering references the nonexistent field "missingField"',
     )
   })
 
@@ -233,7 +256,7 @@ describe('getExtendedProjection', () => {
     const orderBy: SortOrderingItem[] = [{field: 'translations.fi', direction: 'asc'}]
 
     expect(() => getExtendedProjection(withObjectFieldsOrder, orderBy, true)).toThrow(
-      'The current ordering config targeted the nonexistent field "fi"',
+      'A sort ordering references the nonexistent field "fi"',
     )
   })
 
@@ -241,7 +264,7 @@ describe('getExtendedProjection', () => {
     const orderBy: SortOrderingItem[] = [{field: 'title.foo', direction: 'asc'}]
 
     expect(() => getExtendedProjection(withObjectFieldsOrder, orderBy, true)).toThrow(
-      'attempted to traverse into field "foo" on non-object schema type',
+      'the field "foo" on non-object schema type',
     )
   })
 
@@ -276,7 +299,7 @@ describe('getExtendedProjection', () => {
     const orderBy: SortOrderingItem[] = [{field: 'title[0]', direction: 'asc'}]
 
     expect(() => getExtendedProjection(withArrayFields, orderBy, true)).toThrow(
-      'used array access on non-array field "title"',
+      'array access on non-array field "title"',
     )
   })
 
