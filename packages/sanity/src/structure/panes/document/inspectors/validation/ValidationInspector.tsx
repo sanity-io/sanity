@@ -12,7 +12,7 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
-import {type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
+import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {type DocumentInspectorProps, isGoingToUnpublish, useTranslation} from 'sanity'
 
 import {ErrorBoundary} from '../../../../../ui-components'
@@ -102,7 +102,22 @@ function ValidationCard(props: {
   value: Partial<SanityDocument> | null
 }) {
   const {marker, onOpen, schemaType, value} = props
-  const handleOpen = useCallback(() => onOpen(marker.path), [marker, onOpen])
+  const handleClick = useCallback(
+    (event: MouseEvent) => {
+      // Allow text selection: if the user selected text, don't navigate
+      const selection = window.getSelection()
+      if (
+        selection &&
+        selection.toString().length > 0 &&
+        // It's selecting inside the card, so don't navigate
+        event.currentTarget.contains(selection.anchorNode)
+      ) {
+        return
+      }
+      onOpen(marker.path)
+    },
+    [marker, onOpen],
+  )
   const [errorInfo, setErrorInfo] = useState<{error: Error; info: ErrorInfo} | null>(null)
   const Icon = MARKER_ICON[marker.level]
 
@@ -118,9 +133,10 @@ function ValidationCard(props: {
         <Card
           __unstable_focusRing
           as="button"
-          onClick={handleOpen}
+          onClick={handleClick}
           padding={3}
           radius={2}
+          style={{userSelect: 'text'}}
           tone={MARKER_TONE[marker.level]}
         >
           <Flex align="flex-start" gap={3}>

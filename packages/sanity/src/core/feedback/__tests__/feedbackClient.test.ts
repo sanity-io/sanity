@@ -13,6 +13,7 @@ vi.mock('@sentry/react', () => {
     },
     Scope: class MockScope {
       setClient = vi.fn()
+      setUser = vi.fn()
       captureEvent = mockCaptureEvent
       getClient = vi.fn().mockReturnValue(mockClient)
     },
@@ -88,20 +89,34 @@ describe('sendFeedbackToSentry', () => {
   })
 
   describe('when telemetry consent is denied', () => {
-    it('strips PII from contexts', async () => {
-      await sendFeedbackToSentry(makePayload({telemetryConsent: 'denied'}))
+    it('strips PII from contexts when no explicit identity is provided', async () => {
+      await sendFeedbackToSentry(
+        makePayload({telemetryConsent: 'denied', name: undefined, email: undefined}),
+      )
 
       const [event] = mockCaptureEvent.mock.calls[0]
       expect(event.contexts.feedback.contactEmail).toBeUndefined()
       expect(event.contexts.feedback.name).toBeUndefined()
     })
 
-    it('omits contactEmail and contactName from tags', async () => {
-      await sendFeedbackToSentry(makePayload({telemetryConsent: 'denied'}))
+    it('omits contactEmail and contactName from tags when no explicit identity', async () => {
+      await sendFeedbackToSentry(
+        makePayload({telemetryConsent: 'denied', name: undefined, email: undefined}),
+      )
 
       const [event] = mockCaptureEvent.mock.calls[0]
       expect(event.tags).not.toHaveProperty('contactEmail')
       expect(event.tags).not.toHaveProperty('contactName')
+    })
+
+    it('includes PII when explicitly provided despite denied consent', async () => {
+      await sendFeedbackToSentry(makePayload({telemetryConsent: 'denied'}))
+
+      const [event] = mockCaptureEvent.mock.calls[0]
+      expect(event.contexts.feedback.contactEmail).toBe('test@example.com')
+      expect(event.contexts.feedback.name).toBe('Test User')
+      expect(event.tags.contactEmail).toBe('test@example.com')
+      expect(event.tags.contactName).toBe('Test User')
     })
 
     it('strips userId from tags', async () => {
@@ -113,8 +128,10 @@ describe('sendFeedbackToSentry', () => {
   })
 
   describe('when telemetry consent is loading', () => {
-    it('treats loading as denied (strips PII)', async () => {
-      await sendFeedbackToSentry(makePayload({telemetryConsent: 'loading'}))
+    it('treats loading as denied (strips PII when no explicit identity)', async () => {
+      await sendFeedbackToSentry(
+        makePayload({telemetryConsent: 'loading', name: undefined, email: undefined}),
+      )
 
       const [event] = mockCaptureEvent.mock.calls[0]
       expect(event.contexts.feedback.contactEmail).toBeUndefined()

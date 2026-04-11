@@ -174,11 +174,7 @@ export function extractSchema(
 
     if (typeName === 'document' && isObjectType(schemaType)) {
       const defaultAttributes = documentDefaultFields(schemaType.name)
-
       const object = createObject(schemaType)
-      if (object.type === 'unknown') {
-        return null
-      }
 
       return {
         name: schemaType.name,
@@ -284,9 +280,7 @@ export function extractSchema(
 
     throw new Error(`Type "${schemaType.name}" not found`)
   }
-  function createObject(
-    schemaType: ObjectSchemaType | SanitySchemaType,
-  ): ObjectTypeNode | UnknownTypeNode {
+  function createObject(schemaType: ObjectSchemaType | SanitySchemaType): ObjectTypeNode {
     const attributes: Record<string, ObjectAttribute> = {}
 
     const fields = gatherFields(schemaType)
@@ -338,11 +332,6 @@ export function extractSchema(
       attributes.asset
     ) {
       attributes.asset.optional = false
-    }
-
-    // Ignore empty objects
-    if (Object.keys(attributes).length === 0) {
-      return {type: 'unknown'} satisfies UnknownTypeNode
     }
 
     if (schemaType.type?.name !== 'document' && schemaType.name !== 'object') {

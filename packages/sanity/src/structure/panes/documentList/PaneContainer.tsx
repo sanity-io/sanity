@@ -1,24 +1,28 @@
 import {Card, Code} from '@sanity/ui'
 import isEqual from 'lodash-es/isEqual.js'
-import {memo, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {
   EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
+  type ObjectSchemaType,
   SourceProvider,
   useI18nText,
+  useSchema,
   useSource,
+  useTranslation,
 } from 'sanity'
 import shallowEquals from 'shallow-equals'
 
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
+import {structureLocaleNamespace} from '../../i18n'
 import {assignId} from '../../structureResolvers/assignId'
 import {type PaneMenuItem} from '../../types'
 import {useStructureToolSetting} from '../../useStructureToolSetting'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'
-import {findStaticTypesInFilter} from './helpers'
+import {findStaticTypesInFilter, validateSortOrder} from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder} from './types'
 
@@ -38,13 +42,25 @@ const addIdsToMenuItems = (menuItems?: PaneMenuItem[]): PaneMenuItem[] | undefin
   })
 }
 
-const addSelectedStateToMenuItems = (options: {
+/**
+ * @internal exported for testing
+ */
+export const addSelectedStateToMenuItems = (options: {
   menuItems?: PaneMenuItem[]
   sortOrderRaw?: SortOrder
   layout?: GeneralDocumentListLayoutKey
   customMenuItemState?: CustomMenuItemState
+  schemaType?: ObjectSchemaType
+  disabledSortReason?: string
 }) => {
-  const {menuItems, sortOrderRaw, layout, customMenuItemState = {}} = options
+  const {
+    menuItems,
+    sortOrderRaw,
+    layout,
+    customMenuItemState = {},
+    schemaType,
+    disabledSortReason,
+  } = options
 
   return menuItems?.map((item) => {
     if (item.params?.layout) {
@@ -55,9 +71,16 @@ const addSelectedStateToMenuItems = (options: {
     }
 
     if (item?.params?.by) {
+      const itemSortOrder: SortOrder = {by: item.params.by}
+      const isInvalidSortOrder =
+        validateSortOrder(itemSortOrder, schemaType, DEFAULT_ORDERING) !== itemSortOrder
+
       return {
         ...item,
         selected: isEqual(sortOrderRaw?.by, item?.params?.by || EMPTY_ARRAY),
+        ...(isInvalidSortOrder && {
+          disabled: {reason: disabledSortReason},
+        }),
       }
     }
 
@@ -129,22 +152,50 @@ export const PaneContainer = memo(function PaneContainer(
     defaultSortOrder,
   )
 
-  // Custom menu item state for tracking selected state of custom menu items
-  // Uses local state (doesn't persist across refreshes) to avoid keyValueStore allowlist issues
+  const schema = useSchema()
+  const schemaType = useMemo(
+    () => (typeName ? (schema.get(typeName) as ObjectSchemaType | undefined) : undefined),
+    [typeName, schema],
+  )
+  const {t} = useTranslation(structureLocaleNamespace)
+
+  const validatedSortOrder = useMemo(() => {
+    if (!sortOrderRaw) return sortOrderRaw
+    return validateSortOrder(sortOrderRaw, schemaType, defaultSortOrder)
+  }, [sortOrderRaw, schemaType, defaultSortOrder])
+
+  const handleSetSortOrder = useCallback(
+    async (newSortOrder: SortOrder) => {
+      const validated = validateSortOrder(newSortOrder, schemaType, defaultSortOrder)
+      await setSortOrder(validated)
+    },
+    [setSortOrder, schemaType, defaultSortOrder],
+  )
+
   const [customMenuItemState, setCustomMenuItemState] = useState<CustomMenuItemState>({})
 
-  // Add auto-generated IDs to menu items that don't have one
   const menuItemsWithIds = useMemo(() => addIdsToMenuItems(menuItems), [menuItems])
+
+  const disabledSortReason = t('panes.document-list-pane.sort-order.disabled-reason')
 
   const menuItemsWithSelectedState = useMemo(
     () =>
       addSelectedStateToMenuItems({
         menuItems: menuItemsWithIds,
-        sortOrderRaw,
+        sortOrderRaw: validatedSortOrder,
         layout,
         customMenuItemState,
+        schemaType,
+        disabledSortReason,
       }),
-    [customMenuItemState, layout, menuItemsWithIds, sortOrderRaw],
+    [
+      customMenuItemState,
+      disabledSortReason,
+      layout,
+      menuItemsWithIds,
+      schemaType,
+      validatedSortOrder,
+    ],
   )
 
   return (
@@ -170,11 +221,11 @@ export const PaneContainer = memo(function PaneContainer(
           menuItemGroups={menuItemGroups}
           menuItems={menuItemsWithSelectedState}
           setLayout={setLayout}
-          setSortOrder={setSortOrder}
+          setSortOrder={handleSetSortOrder}
           setCustomMenuItemState={setCustomMenuItemState}
           title={title}
         />
-        <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
+        <DocumentListPane {...props} sortOrder={validatedSortOrder} layout={layout} />
       </Pane>
     </SourceProvider>
   )

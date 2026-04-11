@@ -4,7 +4,7 @@ import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {Button} from '../../../ui-components'
 import {FileInputButton} from '../../form/inputs/files/common/FileInputButton/FileInputButton'
 import {fileTarget} from '../../form/inputs/files/common/fileTarget'
-import {useTranslation} from '../../i18n'
+import {useFeedbackTranslation} from '../i18n/useFeedbackTranslation'
 
 const FileTargetCard = fileTarget(Card)
 
@@ -34,7 +34,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
     onRemove,
     onExpand,
   } = props
-  const {t} = useTranslation()
+  const {t} = useFeedbackTranslation()
 
   if (!showAttachment && !imageFile) {
     return (
