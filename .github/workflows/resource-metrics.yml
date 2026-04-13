@@ -1,0 +1,125 @@
+name: Resource Metrics
+
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  collect:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/detect-code-changes
+        id: changes
+
+      - uses: ./.github/actions/setup
+        if: steps.changes.outputs.has_changes == 'true'
+
+      - name: Build packages
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm build
+
+      - name: Build perf studio
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm --filter perf-studio build
+
+      - name: Store Playwright's Version
+        if: steps.changes.outputs.has_changes == 'true'
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm playwright --version | sed 's/Version //')
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers
+        if: steps.changes.outputs.has_changes == 'true'
+        id: cache-playwright-browsers
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+
+      - name: Install Playwright Browsers
+        if: steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps chromium
+
+      - name: Start perf studio preview server
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          cd perf/studio
+          pnpm start &
+          # Wait for the server to be ready
+          npx wait-on http://localhost:3300 --timeout 30000
+
+      - name: Restore reference metrics from cache
+        if: steps.changes.outputs.has_changes == 'true' && github.event_name == 'pull_request'
+        id: reference-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: perf/resource-metrics/results/experiment.json
+          key: resource-metrics-main-${{ github.event.pull_request.base.sha }}
+          restore-keys: |
+            resource-metrics-main-
+
+      # Rename the cached file so the experiment run doesn't overwrite it
+      - name: Rename cached reference
+        if: steps.changes.outputs.has_changes == 'true' && github.event_name == 'pull_request' && steps.reference-cache.outputs.cache-hit == 'true'
+        run: mv perf/resource-metrics/results/experiment.json perf/resource-metrics/results/reference.json
+
+      - name: Run resource metrics
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          STUDIO_URL: http://localhost:3300
+          RESOURCE_METRICS_STUDIO_TOKEN: ${{ secrets.PERF_TEST_SANITY_TOKEN }}
+          RESOURCE_METRICS_WRITE_TOKEN: ${{ secrets.PERF_TEST_METRICS_TOKEN }}
+          REFERENCE_RESULTS_PATH: ${{ steps.reference-cache.outputs.cache-hit == 'true' && 'perf/resource-metrics/results/reference.json' || '' }}
+          HEADLESS: "true"
+        run: pnpm --filter resource-metrics start
+
+      # On main: cache the results for future PR comparisons
+      - name: Save metrics to cache (main only)
+        if: steps.changes.outputs.has_changes == 'true' && github.ref_name == 'main'
+        uses: actions/cache/save@v5
+        with:
+          path: perf/resource-metrics/results/experiment.json
+          key: resource-metrics-main-${{ github.sha }}
+
+      - name: Comment on PR with report
+        if: steps.changes.outputs.has_changes == 'true' && github.event_name == 'pull_request' && steps.reference-cache.outputs.cache-hit == 'true'
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        with:
+          comment-tag: "resource-metrics-report"
+          file-path: perf/resource-metrics/results/resource-metrics-report.md
+
+      - name: Comment on PR (no reference available)
+        if: steps.changes.outputs.has_changes == 'true' && github.event_name == 'pull_request' && steps.reference-cache.outputs.cache-hit != 'true'
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        with:
+          comment-tag: "resource-metrics-report"
+          message: |
+            ### 📊 Resource Metrics Report
+
+            No reference data from `main` available yet. Metrics will be compared once `main` has a cached run.
+
+            **This run's metrics have been recorded and will be available for future comparisons.**
+
+      - uses: actions/upload-artifact@v7
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          name: resource-metrics-results
+          path: perf/resource-metrics/results/
+          retention-days: 30

@@ -1,0 +1,20 @@
+{
+  "name": "resource-metrics",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Studio resource metrics collection and regression detection",
+  "type": "module",
+  "scripts": {
+    "start": "tsx ./index.ts",
+    "test": "pnpm start",
+    "write:report": "tsx ./formatReport.ts"
+  },
+  "devDependencies": {
+    "@sanity/client": "catalog:",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
+    "dotenv": "^16.6.1",
+    "playwright": "catalog:",
+    "tsx": "^4.21.0"
+  }
+}

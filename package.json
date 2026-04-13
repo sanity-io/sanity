@@ -81,6 +81,8 @@
     "preinstall": "npx --loglevel=silent -y only-allow pnpm",
     "prepublishOnly": "pnpm build",
     "publish:tarball": "node -r esbuild-register scripts/publish/tarball",
+    "resource-metrics:test": "cd perf/resource-metrics && pnpm test",
+    "resource-metrics:write:report": "cd perf/resource-metrics && pnpm write:report",
     "start": "pnpm dev",
     "test": "pnpm test:vitest",
     "test:changed": "vitest --changed",
