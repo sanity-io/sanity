@@ -33,12 +33,13 @@ const production = {
 
 const env = USE_STAGING ? staging : production.ppsg7ml5
 
-// ── SSO provider example ────────────────────────────────────────────────────
-// Replace with your own SSO provider URL to test custom/enterprise SSO login.
+// ── SSO provider ────────────────────────────────────────────────────────────
+// Uses the Sanity.io SAML SSO endpoint. Replace the URL suffix with your own
+// SSO configuration ID to test a different SSO provider.
 const ssoProvider = {
   name: 'saml',
-  title: 'Company SSO',
-  url: `https://api.sanity.io/v1/auth/login/saml?projectId=${env.projectId}`,
+  title: 'Sanity.io SSO',
+  url: 'https://api.sanity.io/v2021-10-01/auth/saml/login/a9fd8216',
 }
 
 const github = {
