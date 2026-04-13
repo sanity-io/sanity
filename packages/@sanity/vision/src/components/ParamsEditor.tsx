@@ -4,6 +4,7 @@ import debounce from 'lodash-es/debounce.js'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 
+import {paramsExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
 import {tryParseParams} from '../util/tryParseParams'
@@ -52,6 +53,7 @@ export function ParamsEditor(props: ParamsEditorProps) {
         ref={editorRef}
         initialValue={props.value || defaultValue}
         onChange={handleChange}
+        extensions={paramsExtensions}
       />
     </Card>
   )

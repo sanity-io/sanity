@@ -1,3 +1,4 @@
+import {type Extension} from '@codemirror/state'
 import {useTheme} from '@sanity/ui'
 import CodeMirror, {
   EditorSelection,
@@ -6,7 +7,6 @@ import CodeMirror, {
 } from '@uiw/react-codemirror'
 import {forwardRef, useCallback, useImperativeHandle, useRef, useState} from 'react'
 
-import {codemirrorExtensions} from './extensions'
 import {useCodemirrorTheme} from './useCodemirrorTheme'
 import {EditorRoot} from './VisionCodeMirror.styled'
 
@@ -18,6 +18,7 @@ export const VisionCodeMirror = forwardRef<
   VisionCodeMirrorHandle,
   Pick<ReactCodeMirrorProps, 'onChange'> & {
     initialValue: ReactCodeMirrorProps['value']
+    extensions: Extension[]
   }
 >((props, ref) => {
   // The value prop is only passed for initial value, and is not updated when the parent component updates the value.
@@ -54,7 +55,7 @@ export const VisionCodeMirror = forwardRef<
         ref={codeMirrorRef}
         basicSetup={false}
         theme={theme}
-        extensions={codemirrorExtensions}
+        extensions={props.extensions}
         value={initialValue}
         onChange={props.onChange}
       />

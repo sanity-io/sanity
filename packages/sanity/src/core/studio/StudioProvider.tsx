@@ -155,6 +155,7 @@ function ensureRefractorLanguages() {
       import('refractor/json'),
       import('refractor/jsx'),
       import('refractor/typescript'),
+      import('@sanity/prism-groq').then((m) => ({default: m.refractorGroq})),
     ])
       .then((languages) => languages.forEach((lang) => registerLanguage(lang.default)))
       .catch((error) =>
