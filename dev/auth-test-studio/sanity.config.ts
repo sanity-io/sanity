@@ -80,23 +80,23 @@ const workspaces = [
   // redirectOnSingle — skips the provider chooser when only one provider is configured
   {
     ...env,
-    name: 'cookie-redirect',
+    name: 'cookie-redirectOnSingle',
     title: 'Cookie + redirectOnSingle',
-    basePath: '/cookie-redirect',
+    basePath: '/cookie-redirectOnSingle',
     auth: {loginMethod: 'cookie', redirectOnSingle: true, providers: [github], mode: 'replace'},
   },
   {
     ...env,
-    name: 'token-redirect',
+    name: 'token-redirectOnSingle',
     title: 'Token + redirectOnSingle',
-    basePath: '/token-redirect',
+    basePath: '/token-redirectOnSingle',
     auth: {loginMethod: 'token', redirectOnSingle: true, providers: [github], mode: 'replace'},
   },
   {
     ...env,
-    name: 'dual-redirect',
+    name: 'dual-redirectOnSingle',
     title: 'Dual + redirectOnSingle',
-    basePath: '/dual-redirect',
+    basePath: '/dual-redirectOnSingle',
     auth: {loginMethod: 'dual', redirectOnSingle: true, providers: [github], mode: 'replace'},
   },
 
@@ -119,9 +119,9 @@ const workspaces = [
   // SSO + redirectOnSingle — skips provider chooser, redirects straight to SSO
   {
     ...env,
-    name: 'sso-cookie-redirect',
-    title: 'SSO (cookie) + redirect',
-    basePath: '/sso-cookie-redirect',
+    name: 'sso-cookie-redirectOnSingle',
+    title: 'SSO (cookie) + redirectOnSingle',
+    basePath: '/sso-cookie-redirectOnSingle',
     auth: {
       loginMethod: 'cookie',
       redirectOnSingle: true,
@@ -131,9 +131,9 @@ const workspaces = [
   },
   {
     ...env,
-    name: 'sso-token-redirect',
-    title: 'SSO (token) + redirect',
-    basePath: '/sso-token-redirect',
+    name: 'sso-token-redirectOnSingle',
+    title: 'SSO (token) + redirectOnSingle',
+    basePath: '/sso-token-redirectOnSingle',
     auth: {
       loginMethod: 'token',
       redirectOnSingle: true,
@@ -143,9 +143,9 @@ const workspaces = [
   },
   {
     ...env,
-    name: 'sso-dual-redirect',
-    title: 'SSO (dual) + redirect',
-    basePath: '/sso-dual-redirect',
+    name: 'sso-dual-redirectOnSingle',
+    title: 'SSO (dual) + redirectOnSingle',
+    basePath: '/sso-dual-redirectOnSingle',
     auth: {
       loginMethod: 'dual',
       redirectOnSingle: true,

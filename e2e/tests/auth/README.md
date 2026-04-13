@@ -95,25 +95,25 @@ To verify cross-tab auth sync manually with a real Sanity account:
 
 The auth-test-studio includes SSO workspaces that replace the default providers with a single SAML provider. These require a real SSO provider URL configured in `dev/auth-test-studio/sanity.config.ts`.
 
-- `/sso/cookie` — SSO with cookie auth
-- `/sso/token` — SSO with token auth
-- `/sso/redirect` — SSO with `redirectOnSingle` (skips provider chooser, redirects straight to SSO)
+- `/sso-cookie` — SSO with cookie auth
+- `/sso-token` — SSO with token auth
+- `/sso-dual-redirectOnSingle` — SSO with `redirectOnSingle` (skips provider chooser, redirects straight to SSO)
 
 ### Available workspaces
 
-| Path                   | Login method   | Notes                      |
-| ---------------------- | -------------- | -------------------------- |
-| `/cookie`              | cookie         | Used by e2e tests          |
-| `/token`               | token          | Used by e2e tests          |
-| `/dual`                | dual (default) | Cookie with token fallback |
-| `/cookie-redirect`     | cookie         | Skips provider chooser     |
-| `/token-redirect`      | token          | Skips provider chooser     |
-| `/dual-redirect`       | dual           | Skips provider chooser     |
-| `/sso-cookie`          | cookie         | Single SSO provider        |
-| `/sso-token`           | token          | Single SSO provider        |
-| `/sso-cookie-redirect` | cookie         | SSO + redirectOnSingle     |
-| `/sso-token-redirect`  | token          | SSO + redirectOnSingle     |
-| `/sso-dual-redirect`   | dual           | SSO + redirectOnSingle     |
+| Path                           | Login method   | Notes                      |
+| ------------------------------ | -------------- | -------------------------- |
+| `/cookie`                      | cookie         | Used by e2e tests          |
+| `/token`                       | token          | Used by e2e tests          |
+| `/dual`                        | dual (default) | Cookie with token fallback |
+| `/cookie-redirectOnSingle`     | cookie         | Skips provider chooser     |
+| `/token-redirectOnSingle`      | token          | Skips provider chooser     |
+| `/dual-redirectOnSingle`       | dual           | Skips provider chooser     |
+| `/sso-cookie`                  | cookie         | Single SSO provider        |
+| `/sso-token`                   | token          | Single SSO provider        |
+| `/sso-cookie-redirectOnSingle` | cookie         | SSO + redirectOnSingle     |
+| `/sso-token-redirectOnSingle`  | token          | SSO + redirectOnSingle     |
+| `/sso-dual-redirectOnSingle`   | dual           | SSO + redirectOnSingle     |
 
 ### What to watch for
 
