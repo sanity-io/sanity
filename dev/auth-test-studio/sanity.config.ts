@@ -99,6 +99,20 @@ const workspaces = [
       mode: 'replace',
     },
   },
+  {
+    ...env,
+    name: 'dual-redirect',
+    title: 'Dual + redirectOnSingle',
+    basePath: '/dual/redirect-on-single',
+    auth: {
+      loginMethod: 'dual',
+      redirectOnSingle: true,
+      providers: [
+        {name: 'github', title: 'GitHub', url: 'https://api.sanity.io/v1/auth/login/github'},
+      ],
+      mode: 'replace',
+    },
+  },
 
   // SSO — replaces default providers with a single SSO provider
   {
@@ -125,9 +139,33 @@ const workspaces = [
   },
   {
     ...env,
-    name: 'sso-redirect',
-    title: 'SSO + redirectOnSingle',
-    basePath: '/sso/redirect',
+    name: 'sso-cookie-redirect',
+    title: 'SSO (cookie) + redirectOnSingle',
+    basePath: '/sso/cookie/redirect',
+    auth: {
+      loginMethod: 'cookie',
+      redirectOnSingle: true,
+      providers: [ssoProvider],
+      mode: 'replace',
+    },
+  },
+  {
+    ...env,
+    name: 'sso-token-redirect',
+    title: 'SSO (token) + redirectOnSingle',
+    basePath: '/sso/token/redirect',
+    auth: {
+      loginMethod: 'token',
+      redirectOnSingle: true,
+      providers: [ssoProvider],
+      mode: 'replace',
+    },
+  },
+  {
+    ...env,
+    name: 'sso-dual-redirect',
+    title: 'SSO (dual) + redirectOnSingle',
+    basePath: '/sso/dual/redirect',
     auth: {
       loginMethod: 'dual',
       redirectOnSingle: true,
@@ -137,4 +175,4 @@ const workspaces = [
   },
 ] satisfies Config[]
 
-export default defineConfig(workspaces.map((w) => ({...shared, ...w})))
+export default defineConfig(workspaces.map((workspace) => ({...shared, ...workspace})))
