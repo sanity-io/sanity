@@ -72,7 +72,7 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
       <Container width={1}>
         <Stack space={5}>
           <Flex justify="space-between" align="center" gap={2}>
-            <Heading as="h1">{t('schema-errors.title', 'Schema errors')}</Heading>
+            <Heading as="h1">{t('schema-errors.title')}</Heading>
             <Button
               text={t(
                 'about-dialog.version-info.copy-to-clipboard-button.text',
@@ -84,20 +84,18 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
           {context && (
             <Card padding={4} radius={2} shadow={1} tone="caution">
               <Stack space={3}>
-                <Text weight="semibold">
-                  {t('schema-errors.source-info.title', 'Error location')}
-                </Text>
+                <Text weight="semibold">{t('schema-errors.source-info.title')}</Text>
                 <Stack space={2}>
                   <Text size={1}>
-                    <strong>{t('schema-errors.source-info.source', 'Source:')}</strong>{' '}
+                    <strong>{t('schema-errors.source-info.source')}</strong>{' '}
                     <Code size={1}>{context.sourceName}</Code>
                   </Text>
                   <Text size={1}>
-                    <strong>{t('schema-errors.source-info.project', 'Project:')}</strong>{' '}
+                    <strong>{t('schema-errors.source-info.project')}</strong>{' '}
                     <Code size={1}>{context.projectId}</Code>
                   </Text>
                   <Text size={1}>
-                    <strong>{t('schema-errors.source-info.dataset', 'Dataset:')}</strong>{' '}
+                    <strong>{t('schema-errors.source-info.dataset')}</strong>{' '}
                     <Code size={1}>{context.dataset}</Code>
                   </Text>
                 </Stack>
