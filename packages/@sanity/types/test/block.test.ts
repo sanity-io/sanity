@@ -16,12 +16,8 @@ describe('block types', () => {
         title: 'Custom PTE',
         icon: () => null,
         description: 'Description',
-        initialValue: () =>
-          Promise.resolve({
-            _type: 'block',
-            _key: 'initial',
-            children: [{_type: 'span' as const, _key: 'span1', text: '', marks: []}],
-          }),
+        // @ts-expect-error initialValue is not supported on block types
+        initialValue: {_type: 'block'},
         validation: (Rule) => [
           Rule.required()
             .required()
