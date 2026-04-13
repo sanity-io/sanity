@@ -29,7 +29,6 @@ import type {
   PreviewHeaderProps,
   PreviewProps,
   PreviewUrlOption,
-  PreviewUrlResolver,
   PreviewUrlResolverOptions,
   Serializable,
   SerializableArray,
@@ -121,7 +120,7 @@ describe('sanity/presentation', () => {
   test('PreviewUrlOption', () => {
     expectTypeOf<PreviewUrlOption>().not.toBeNever()
   })
-  test.todo('PreviewUrlResolver' /* FIXME: no declarations found */)
+  test.todo('PreviewUrlResolver' /* no declarations found */)
   test('PreviewUrlResolverOptions', () => {
     expectTypeOf<PreviewUrlResolverOptions>().toBeObject()
   })
