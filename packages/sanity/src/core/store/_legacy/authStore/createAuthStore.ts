@@ -54,19 +54,16 @@ export interface AuthStoreOptions extends AuthConfig {
   /**
    * Retrieves the session ID from the URL hash for the auth callback flow.
    * Called by `handleCallbackUrl` to obtain the session ID that is exchanged
-   * for a token or cookie. Defaults to `getHashSessionId` which consumes the
-   * `#sid=…` fragment at module load time.
+   * for a token or cookie.
    * @internal
    */
-  getSessionId?: () => string | undefined
+  getSessionId: () => string | undefined
   /**
    * Extracts and consumes a `#token=…` fragment from the URL hash.
    * Called at init to pick up hash tokens and on `hashchange` events.
-   * Defaults to `consumeHashToken` from `./hashToken` which reads
-   * `window.location.hash` and strips the token via `history.replaceState`.
    * @internal
    */
-  consumeHashToken?: () => string | undefined
+  consumeHashToken: () => string | undefined
 }
 
 const getCurrentUser = async (
@@ -157,8 +154,8 @@ export function _createAuthStore({
   dataset,
   apiHost,
   loginMethod = 'dual',
-  getSessionId = defaultGetSessionId,
-  consumeHashToken = defaultConsumeHashToken,
+  getSessionId,
+  consumeHashToken,
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
   // Precedence when initializing auth:
@@ -504,6 +501,21 @@ function hash(value: unknown): string {
 }
 
 /**
+ * Public options for `createAuthStore`. The `getSessionId` and `consumeHashToken`
+ * dependencies are wired automatically using the default implementations.
  * @internal
  */
-export const createAuthStore: typeof _createAuthStore = memoize(_createAuthStore, hash)
+export type CreateAuthStoreOptions = Omit<AuthStoreOptions, 'getSessionId' | 'consumeHashToken'>
+
+/**
+ * @internal
+ */
+export const createAuthStore = memoize(
+  (options: CreateAuthStoreOptions): AuthStore =>
+    _createAuthStore({
+      ...options,
+      getSessionId: defaultGetSessionId,
+      consumeHashToken: defaultConsumeHashToken,
+    }),
+  hash,
+)
