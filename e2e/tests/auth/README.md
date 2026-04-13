@@ -91,6 +91,27 @@ To verify cross-tab auth sync manually with a real Sanity account:
 2. Click user menu then "Sign out"
 3. **Verify**: the login screen appears
 
+### SSO (http://localhost:3340/sso/cookie, /sso/token, /sso/redirect)
+
+The auth-test-studio includes SSO workspaces that replace the default providers with a single SAML provider. These require a real SSO provider URL configured in `dev/auth-test-studio/sanity.config.ts`.
+
+- `/sso/cookie` — SSO with cookie auth
+- `/sso/token` — SSO with token auth
+- `/sso/redirect` — SSO with `redirectOnSingle` (skips provider chooser, redirects straight to SSO)
+
+### Available workspaces
+
+| Path                         | Login method   | Notes                      |
+| ---------------------------- | -------------- | -------------------------- |
+| `/cookie`                    | cookie         | Used by e2e tests          |
+| `/token`                     | token          | Used by e2e tests          |
+| `/dual`                      | dual (default) | Cookie with token fallback |
+| `/cookie/redirect-on-single` | cookie         | Skips provider chooser     |
+| `/token/redirect-on-single`  | token          | Skips provider chooser     |
+| `/sso/cookie`                | cookie         | Single SSO provider        |
+| `/sso/token`                 | token          | Single SSO provider        |
+| `/sso/redirect`              | dual           | SSO + redirectOnSingle     |
+
 ### What to watch for
 
 - Cross-tab sync should happen within a few seconds with no refresh

@@ -1,65 +1,11 @@
 import {type Config, defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
+// ── Environment toggle ──────────────────────────────────────────────────────
+// Set to true to use the staging API (api.sanity.work) instead of production.
 const USE_STAGING = false
 
-const STAGING_WITH_COOKIE_AUTH = {
-  name: 'cookie',
-  title: '[staging] Cookie',
-  projectId: 'exx11uqh',
-  dataset: 'playground',
-  basePath: '/cookie',
-  apiHost: 'https://api.sanity.work',
-  auth: {
-    loginMethod: 'cookie',
-  },
-} satisfies Config
-
-const STAGING_WITH_TOKEN_AUTH = {
-  name: 'token',
-  title: '[staging] Token',
-  projectId: 'exx11uqh',
-  dataset: 'playground',
-  basePath: '/token',
-  apiHost: 'https://api.sanity.work',
-  auth: {
-    loginMethod: 'token',
-  },
-} satisfies Config
-
-const PRODUCTION_WITH_COOKIE_AUTH = {
-  name: 'cookie',
-  title: 'Cookie',
-  projectId: 'ppsg7ml5',
-  dataset: 'test',
-  basePath: '/cookie/default',
-  auth: {
-    loginMethod: 'cookie',
-  },
-} satisfies Config
-
-const PRODUCTION_WITH_TOKEN_AUTH = {
-  name: 'token',
-  title: 'Token',
-  projectId: 'q5caobza',
-  dataset: 'production',
-  basePath: '/token/default',
-  auth: {
-    loginMethod: 'token',
-  },
-} satisfies Config
-
-const PRODUCTION_WITH_DUAL_AUTH = {
-  name: 'dual',
-  title: 'Dual',
-  projectId: 'q5caobza',
-  dataset: 'production',
-  basePath: '/token/dual',
-  auth: {
-    loginMethod: 'dual',
-  },
-} satisfies Config
-
+// ── Shared config ───────────────────────────────────────────────────────────
 const shared = {
   plugins: [structureTool()],
   schema: {
@@ -73,72 +19,122 @@ const shared = {
   },
 }
 
-export const PROJECTS = USE_STAGING
-  ? ([
-      STAGING_WITH_TOKEN_AUTH,
-      STAGING_WITH_COOKIE_AUTH,
-      {
-        ...STAGING_WITH_TOKEN_AUTH,
-        title: `${STAGING_WITH_TOKEN_AUTH.title} – redirectOnSingle`,
-        basePath: '/token/redirect-on-single',
-        name: `${STAGING_WITH_TOKEN_AUTH.name}_redirectOnSingle`,
-        auth: {...STAGING_WITH_TOKEN_AUTH.auth, redirectOnSingle: true},
-      },
-      {
-        ...STAGING_WITH_COOKIE_AUTH,
-        title: `${STAGING_WITH_COOKIE_AUTH.title} – redirectOnSingle`,
-        basePath: '/cookie/redirect-on-single',
-        name: `${STAGING_WITH_COOKIE_AUTH.name}_redirectOnSingle`,
+// ── Project configs per environment ─────────────────────────────────────────
+const staging = {
+  projectId: 'exx11uqh',
+  dataset: 'playground',
+  apiHost: 'https://api.sanity.work',
+} as const
 
-        auth: {...STAGING_WITH_COOKIE_AUTH.auth, redirectOnSingle: true},
-      },
-    ] satisfies Config)
-  : ([
-      PRODUCTION_WITH_COOKIE_AUTH,
-      PRODUCTION_WITH_TOKEN_AUTH,
-      PRODUCTION_WITH_DUAL_AUTH,
-      {
-        ...PRODUCTION_WITH_COOKIE_AUTH,
-        title: `${PRODUCTION_WITH_COOKIE_AUTH.title} – redirectOnSingle`,
-        name: `${PRODUCTION_WITH_COOKIE_AUTH.name}-redirect-on-single`,
-        basePath: '/cookie/redirect-on-single',
-        auth: {
-          ...PRODUCTION_WITH_COOKIE_AUTH.auth,
-          redirectOnSingle: true,
-          providers: [
-            {name: 'github', title: 'GitHub', url: 'https://api.sanity.io/v1/auth/login/github'},
-          ],
-          mode: 'replace',
-        },
-      },
-      {
-        ...PRODUCTION_WITH_TOKEN_AUTH,
-        title: `${PRODUCTION_WITH_TOKEN_AUTH.title} – redirectOnSingle`,
-        name: `${PRODUCTION_WITH_TOKEN_AUTH.name}-redirect-on-single`,
-        basePath: '/token/redirect-on-single',
-        auth: {
-          ...PRODUCTION_WITH_TOKEN_AUTH.auth,
-          redirectOnSingle: true,
-          providers: [
-            {name: 'github', title: 'GitHub', url: 'https://api.sanity.io/v1/auth/login/github'},
-          ],
-          mode: 'replace',
-        },
-      },
-      {
-        ...PRODUCTION_WITH_DUAL_AUTH,
-        title: `${PRODUCTION_WITH_DUAL_AUTH.title} – redirectOnSingle`,
-        name: `${PRODUCTION_WITH_DUAL_AUTH.name}-redirect-on-single`,
-        basePath: '/dual/redirect-on-single',
-        auth: {
-          ...PRODUCTION_WITH_DUAL_AUTH.auth,
-          redirectOnSingle: true,
-          providers: [
-            {name: 'github', title: 'GitHub', url: 'https://api.sanity.io/v1/auth/login/sanity'},
-          ],
-          mode: 'replace',
-        },
-      },
-    ] satisfies Config[])
+const production = {
+  ppsg7ml5: {projectId: 'ppsg7ml5', dataset: 'test'},
+  q5caobza: {projectId: 'q5caobza', dataset: 'production'},
+} as const
 
-export default defineConfig(PROJECTS.map((p) => ({...shared, ...p})))
+const env = USE_STAGING ? staging : production.ppsg7ml5
+
+// ── SSO provider example ────────────────────────────────────────────────────
+// Replace with your own SSO provider URL to test custom/enterprise SSO login.
+const ssoProvider = {
+  name: 'saml',
+  title: 'Company SSO',
+  url: `https://api.sanity.io/v1/auth/login/saml?projectId=${env.projectId}`,
+}
+
+// ── Workspace definitions ───────────────────────────────────────────────────
+// Base paths must match what e2e tests expect:
+//   - /cookie  (cookieAuth.spec.ts)
+//   - /token   (tokenAuth.spec.ts)
+
+const workspaces: Config[] = [
+  // Default login methods
+  {
+    ...env,
+    name: 'cookie',
+    title: 'Cookie auth',
+    basePath: '/cookie',
+    auth: {loginMethod: 'cookie'},
+  },
+  {
+    ...env,
+    name: 'token',
+    title: 'Token auth',
+    basePath: '/token',
+    auth: {loginMethod: 'token'},
+  },
+  {
+    ...env,
+    name: 'dual',
+    title: 'Dual auth (default)',
+    basePath: '/dual',
+    auth: {loginMethod: 'dual'},
+  },
+
+  // redirectOnSingle — skips the provider chooser when only one provider is configured
+  {
+    ...env,
+    name: 'cookie-redirect',
+    title: 'Cookie + redirectOnSingle',
+    basePath: '/cookie/redirect-on-single',
+    auth: {
+      loginMethod: 'cookie',
+      redirectOnSingle: true,
+      providers: [
+        {name: 'github', title: 'GitHub', url: 'https://api.sanity.io/v1/auth/login/github'},
+      ],
+      mode: 'replace',
+    },
+  },
+  {
+    ...env,
+    name: 'token-redirect',
+    title: 'Token + redirectOnSingle',
+    basePath: '/token/redirect-on-single',
+    auth: {
+      loginMethod: 'token',
+      redirectOnSingle: true,
+      providers: [
+        {name: 'github', title: 'GitHub', url: 'https://api.sanity.io/v1/auth/login/github'},
+      ],
+      mode: 'replace',
+    },
+  },
+
+  // SSO — replaces default providers with a single SSO provider
+  {
+    ...env,
+    name: 'sso-cookie',
+    title: 'SSO (cookie)',
+    basePath: '/sso/cookie',
+    auth: {
+      loginMethod: 'cookie',
+      providers: [ssoProvider],
+      mode: 'replace',
+    },
+  },
+  {
+    ...env,
+    name: 'sso-token',
+    title: 'SSO (token)',
+    basePath: '/sso/token',
+    auth: {
+      loginMethod: 'token',
+      providers: [ssoProvider],
+      mode: 'replace',
+    },
+  },
+  {
+    ...env,
+    name: 'sso-redirect',
+    title: 'SSO + redirectOnSingle',
+    basePath: '/sso/redirect',
+    auth: {
+      loginMethod: 'dual',
+      redirectOnSingle: true,
+      providers: [ssoProvider],
+      mode: 'replace',
+    },
+  },
+]
+
+export default defineConfig(workspaces.map((w) => ({...shared, ...w})))
