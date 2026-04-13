@@ -4,7 +4,7 @@
   "main": "index.ts",
   "dependencies": {
     "@portabletext/to-html": "^5.0.2",
-    "@sanity/client": "^7.17.0",
+    "@sanity/client": "^7.20.0",
     "@sanity/functions": "^1.0.3"
   },
   "blueprintResourceItem": {

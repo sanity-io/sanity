@@ -34,6 +34,7 @@ import type {
   DefaultDocumentNodeResolver,
   defaultInitialValueTemplateItems,
   defaultIntentChecker,
+  defineIncomingReferenceDecoration,
   Divider,
   DocumentBuilder,
   DocumentFieldMenuActionNode,
@@ -71,13 +72,17 @@ import type {
   getOrderingMenuItemsForSchemaType,
   getTypeNamesFromFilter,
   HELP_URL,
+  IncomingReferenceAction,
+  IncomingReferencesOptions,
   InitialValueTemplateItemBuilder,
   Intent,
   IntentChecker,
   IntentJsonParams,
   IntentParams,
   isDocumentListItem,
+  isIncomingReferenceCreation,
   ItemChild,
+  KnownMenuItemParams,
   List,
   ListBuilder,
   ListDisplayOptions,
@@ -254,7 +259,12 @@ describe('sanity/structure', () => {
     expectTypeOf<typeof defaultInitialValueTemplateItems>().toBeFunction()
   })
   test('defaultIntentChecker', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    expectTypeOf<typeof defaultIntentChecker>().toBeFunction()
     expectTypeOf<typeof defaultIntentChecker>().not.toBeNever()
+  })
+  test('defineIncomingReferenceDecoration', () => {
+    expectTypeOf<typeof defineIncomingReferenceDecoration>().toBeFunction()
   })
   test('Divider', () => {
     expectTypeOf<Divider>().toBeObject()
@@ -367,6 +377,12 @@ describe('sanity/structure', () => {
   test('HELP_URL', () => {
     expectTypeOf<typeof HELP_URL>().not.toBeNever()
   })
+  test('IncomingReferenceAction', () => {
+    expectTypeOf<IncomingReferenceAction>().not.toBeNever()
+  })
+  test('IncomingReferencesOptions', () => {
+    expectTypeOf<IncomingReferencesOptions>().not.toBeNever()
+  })
   test('InitialValueTemplateItemBuilder', () => {
     expectTypeOf<InitialValueTemplateItemBuilder>().not.toBeNever()
   })
@@ -385,8 +401,14 @@ describe('sanity/structure', () => {
   test('isDocumentListItem', () => {
     expectTypeOf<typeof isDocumentListItem>().toBeFunction()
   })
+  test('isIncomingReferenceCreation', () => {
+    expectTypeOf<typeof isIncomingReferenceCreation>().toBeFunction()
+  })
   test('ItemChild', () => {
     expectTypeOf<ItemChild>().not.toBeNever()
+  })
+  test('KnownMenuItemParams', () => {
+    expectTypeOf<KnownMenuItemParams>().toBeObject()
   })
   test('List', () => {
     expectTypeOf<List>().toBeObject()

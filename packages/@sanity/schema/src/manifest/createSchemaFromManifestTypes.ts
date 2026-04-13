@@ -243,8 +243,26 @@ function applyRuleSpec(rule: IRule, ruleSpec: unknown): IRule {
       break
 
     case 'uri':
-      if (isObject(constraint) && 'options' in constraint) {
-        return rule.uri(constraint.options as UriValidationOptions)
+      if (isObject(constraint) && 'options' in constraint && isObject(constraint.options)) {
+        const uriOptions = {...(constraint.options as Record<string, unknown>)}
+        // Scheme values are stored as RegExp.toString() strings (e.g., "/^http$/") during
+        // manifest serialization, or as {type: 'regex', pattern} objects in the descriptor
+        // format. Convert both back to RegExp so rule.uri() doesn't double-wrap them.
+        if ('scheme' in uriOptions && Array.isArray(uriOptions.scheme)) {
+          uriOptions.scheme = uriOptions.scheme.map((s: unknown) => {
+            // Manifest serialization stores RegExp as "/pattern/flags" strings via
+            // RegExp.toString(). Only convert those back to RegExp. Plain strings
+            // (e.g. "https" from the descriptor format) are passed through so that
+            // rule.uri() can anchor them correctly.
+            if (typeof s === 'string') {
+              if (/^\/(.*)\/([gimuy]*)$/.test(s)) return stringToRegExp(s)
+              return s
+            }
+            if (isRegexPattern(s)) return regexPatternToRegExp(s)
+            return s
+          })
+        }
+        return rule.uri(uriOptions as UriValidationOptions)
       }
       break
 
@@ -290,4 +308,25 @@ function stringToRegExp(str: string): RegExp {
   }
   // Fallback if the format doesn't match
   return new RegExp(str)
+}
+
+function isRegexPattern(val: unknown): val is {type: 'regex'; pattern: string} {
+  return (
+    typeof val === 'object' &&
+    val !== null &&
+    'type' in val &&
+    (val as {type: unknown}).type === 'regex' &&
+    'pattern' in val &&
+    typeof (val as {pattern: unknown}).pattern === 'string'
+  )
+}
+
+function regexPatternToRegExp(val: {type: 'regex'; pattern: string}): RegExp {
+  // Inline modifiers like (?i) are used to encode flags in a portable way.
+  // Extract them to reconstruct the RegExp with proper flags.
+  const match = val.pattern.match(/^\(\?([a-z]+)\)(.*)$/)
+  if (match) {
+    return new RegExp(match[2], match[1])
+  }
+  return new RegExp(val.pattern)
 }

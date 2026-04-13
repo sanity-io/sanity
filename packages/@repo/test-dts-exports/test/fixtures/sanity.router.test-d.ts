@@ -147,6 +147,8 @@ describe('sanity/router', () => {
     expectTypeOf<RouterState>().not.toBeNever()
   })
   test('RouteScope', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    expectTypeOf<typeof RouteScope>().toBeFunction()
     expectTypeOf<typeof RouteScope>().not.toBeNever()
   })
   test('RouteScopeProps', () => {
