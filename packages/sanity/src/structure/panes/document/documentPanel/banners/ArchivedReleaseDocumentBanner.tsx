@@ -14,26 +14,32 @@ import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
-export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
+export function ArchivedReleaseDocumentBanner({
+  releaseId,
+}: {releaseId?: string} = {}): React.JSX.Element {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
   const {data: archivedReleases} = useArchivedReleases()
 
   const {params, setParams} = usePaneRouter()
+  // Use the explicit releaseId prop (for archived scheduled drafts) or
+  // fall back to the historyVersion param (for archived releases)
+  const effectiveReleaseId = releaseId ?? params?.historyVersion
   const handleGoBack = () => {
     setParams({
       ...params,
       rev: params?.historyEvent || undefined,
       since: undefined,
       historyVersion: undefined,
+      scheduledDraft: undefined,
     })
   }
 
   const release = useMemo(() => {
     return archivedReleases.find(
-      (r) => getReleaseIdFromReleaseDocumentId(r._id) === params?.historyVersion,
+      (r) => getReleaseIdFromReleaseDocumentId(r._id) === effectiveReleaseId,
     )
-  }, [archivedReleases, params?.historyVersion])
+  }, [archivedReleases, effectiveReleaseId])
 
   const description = useMemo(() => {
     if (release?.state === 'published') {
