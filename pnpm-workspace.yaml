@@ -13,7 +13,7 @@ packages:
 catalog:
   '@playwright/experimental-ct-react': 1.58.2
   '@playwright/test': 1.58.2
-  '@sanity/client': ^7.20.0
+  '@sanity/client': ^7.21.0
   '@sanity/migrate': ^6.0.0
   '@sanity/telemetry': ^0.9.0
   '@sanity/eslint-config-i18n': ^2.0.0
