@@ -1,4 +1,4 @@
-import {type Config, defineConfig} from 'sanity'
+import {type Config, createAuthStore, defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
 // ── Environment toggle ──────────────────────────────────────────────────────
@@ -101,20 +101,30 @@ const workspaces = [
     auth: {loginMethod: 'dual', redirectOnSingle: true, providers: [github], mode: 'replace'},
   },
 
-  // SSO — replaces default providers with a single SSO provider
+  // SSO — uses createAuthStore with a single SAML provider replacing defaults
   {
     ...env,
     name: 'sso-cookie',
     title: 'SSO (cookie)',
     basePath: '/sso-cookie',
-    auth: {loginMethod: 'cookie', providers: [ssoProvider], mode: 'replace'},
+    auth: createAuthStore({
+      ...env,
+      loginMethod: 'cookie',
+      providers: [ssoProvider],
+      mode: 'replace',
+    }),
   },
   {
     ...env,
     name: 'sso-token',
     title: 'SSO (token)',
     basePath: '/sso-token',
-    auth: {loginMethod: 'token', providers: [ssoProvider], mode: 'replace'},
+    auth: createAuthStore({
+      ...env,
+      loginMethod: 'token',
+      providers: [ssoProvider],
+      mode: 'replace',
+    }),
   },
 
   // SSO + redirectOnSingle — skips provider chooser, redirects straight to SSO
@@ -123,36 +133,39 @@ const workspaces = [
     name: 'sso-cookie-redirectOnSingle',
     title: 'SSO (cookie) + redirectOnSingle',
     basePath: '/sso-cookie-redirectOnSingle',
-    auth: {
+    auth: createAuthStore({
+      ...env,
       loginMethod: 'cookie',
       redirectOnSingle: true,
       providers: [ssoProvider],
       mode: 'replace',
-    },
+    }),
   },
   {
     ...env,
     name: 'sso-token-redirectOnSingle',
     title: 'SSO (token) + redirectOnSingle',
     basePath: '/sso-token-redirectOnSingle',
-    auth: {
+    auth: createAuthStore({
+      ...env,
       loginMethod: 'token',
       redirectOnSingle: true,
       providers: [ssoProvider],
       mode: 'replace',
-    },
+    }),
   },
   {
     ...env,
     name: 'sso-dual-redirectOnSingle',
     title: 'SSO (dual) + redirectOnSingle',
     basePath: '/sso-dual-redirectOnSingle',
-    auth: {
+    auth: createAuthStore({
+      ...env,
       loginMethod: 'dual',
       redirectOnSingle: true,
       providers: [ssoProvider],
       mode: 'replace',
-    },
+    }),
   },
 ] satisfies Config[]
 
