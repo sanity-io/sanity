@@ -101,19 +101,19 @@ The auth-test-studio includes SSO workspaces that replace the default providers 
 
 ### Available workspaces
 
-| Path                         | Login method   | Notes                      |
-| ---------------------------- | -------------- | -------------------------- |
-| `/cookie`                    | cookie         | Used by e2e tests          |
-| `/token`                     | token          | Used by e2e tests          |
-| `/dual`                      | dual (default) | Cookie with token fallback |
-| `/cookie/redirect-on-single` | cookie         | Skips provider chooser     |
-| `/token/redirect-on-single`  | token          | Skips provider chooser     |
-| `/dual/redirect-on-single`   | dual           | Skips provider chooser     |
-| `/sso/cookie`                | cookie         | Single SSO provider        |
-| `/sso/token`                 | token          | Single SSO provider        |
-| `/sso/cookie/redirect`       | cookie         | SSO + redirectOnSingle     |
-| `/sso/token/redirect`        | token          | SSO + redirectOnSingle     |
-| `/sso/dual/redirect`         | dual           | SSO + redirectOnSingle     |
+| Path                   | Login method   | Notes                      |
+| ---------------------- | -------------- | -------------------------- |
+| `/cookie`              | cookie         | Used by e2e tests          |
+| `/token`               | token          | Used by e2e tests          |
+| `/dual`                | dual (default) | Cookie with token fallback |
+| `/cookie-redirect`     | cookie         | Skips provider chooser     |
+| `/token-redirect`      | token          | Skips provider chooser     |
+| `/dual-redirect`       | dual           | Skips provider chooser     |
+| `/sso-cookie`          | cookie         | Single SSO provider        |
+| `/sso-token`           | token          | Single SSO provider        |
+| `/sso-cookie-redirect` | cookie         | SSO + redirectOnSingle     |
+| `/sso-token-redirect`  | token          | SSO + redirectOnSingle     |
+| `/sso-dual-redirect`   | dual           | SSO + redirectOnSingle     |
 
 ### What to watch for
 

@@ -41,8 +41,15 @@ const ssoProvider = {
   url: `https://api.sanity.io/v1/auth/login/saml?projectId=${env.projectId}`,
 }
 
+const github = {
+  name: 'github',
+  title: 'GitHub',
+  url: 'https://api.sanity.io/v1/auth/login/github',
+}
+
 // ── Workspace definitions ───────────────────────────────────────────────────
-// Base paths must match what e2e tests expect:
+// All basePaths must have the same number of segments (Sanity requirement).
+// The e2e tests expect:
 //   - /cookie  (cookieAuth.spec.ts)
 //   - /token   (tokenAuth.spec.ts)
 
@@ -75,43 +82,22 @@ const workspaces = [
     ...env,
     name: 'cookie-redirect',
     title: 'Cookie + redirectOnSingle',
-    basePath: '/cookie/redirect-on-single',
-    auth: {
-      loginMethod: 'cookie',
-      redirectOnSingle: true,
-      providers: [
-        {name: 'github', title: 'GitHub', url: 'https://api.sanity.io/v1/auth/login/github'},
-      ],
-      mode: 'replace',
-    },
+    basePath: '/cookie-redirect',
+    auth: {loginMethod: 'cookie', redirectOnSingle: true, providers: [github], mode: 'replace'},
   },
   {
     ...env,
     name: 'token-redirect',
     title: 'Token + redirectOnSingle',
-    basePath: '/token/redirect-on-single',
-    auth: {
-      loginMethod: 'token',
-      redirectOnSingle: true,
-      providers: [
-        {name: 'github', title: 'GitHub', url: 'https://api.sanity.io/v1/auth/login/github'},
-      ],
-      mode: 'replace',
-    },
+    basePath: '/token-redirect',
+    auth: {loginMethod: 'token', redirectOnSingle: true, providers: [github], mode: 'replace'},
   },
   {
     ...env,
     name: 'dual-redirect',
     title: 'Dual + redirectOnSingle',
-    basePath: '/dual/redirect-on-single',
-    auth: {
-      loginMethod: 'dual',
-      redirectOnSingle: true,
-      providers: [
-        {name: 'github', title: 'GitHub', url: 'https://api.sanity.io/v1/auth/login/github'},
-      ],
-      mode: 'replace',
-    },
+    basePath: '/dual-redirect',
+    auth: {loginMethod: 'dual', redirectOnSingle: true, providers: [github], mode: 'replace'},
   },
 
   // SSO — replaces default providers with a single SSO provider
@@ -119,29 +105,23 @@ const workspaces = [
     ...env,
     name: 'sso-cookie',
     title: 'SSO (cookie)',
-    basePath: '/sso/cookie',
-    auth: {
-      loginMethod: 'cookie',
-      providers: [ssoProvider],
-      mode: 'replace',
-    },
+    basePath: '/sso-cookie',
+    auth: {loginMethod: 'cookie', providers: [ssoProvider], mode: 'replace'},
   },
   {
     ...env,
     name: 'sso-token',
     title: 'SSO (token)',
-    basePath: '/sso/token',
-    auth: {
-      loginMethod: 'token',
-      providers: [ssoProvider],
-      mode: 'replace',
-    },
+    basePath: '/sso-token',
+    auth: {loginMethod: 'token', providers: [ssoProvider], mode: 'replace'},
   },
+
+  // SSO + redirectOnSingle — skips provider chooser, redirects straight to SSO
   {
     ...env,
     name: 'sso-cookie-redirect',
-    title: 'SSO (cookie) + redirectOnSingle',
-    basePath: '/sso/cookie/redirect',
+    title: 'SSO (cookie) + redirect',
+    basePath: '/sso-cookie-redirect',
     auth: {
       loginMethod: 'cookie',
       redirectOnSingle: true,
@@ -152,8 +132,8 @@ const workspaces = [
   {
     ...env,
     name: 'sso-token-redirect',
-    title: 'SSO (token) + redirectOnSingle',
-    basePath: '/sso/token/redirect',
+    title: 'SSO (token) + redirect',
+    basePath: '/sso-token-redirect',
     auth: {
       loginMethod: 'token',
       redirectOnSingle: true,
@@ -164,8 +144,8 @@ const workspaces = [
   {
     ...env,
     name: 'sso-dual-redirect',
-    title: 'SSO (dual) + redirectOnSingle',
-    basePath: '/sso/dual/redirect',
+    title: 'SSO (dual) + redirect',
+    basePath: '/sso-dual-redirect',
     auth: {
       loginMethod: 'dual',
       redirectOnSingle: true,
