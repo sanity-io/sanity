@@ -105,7 +105,7 @@ export function StudioProvider({
   return (
     <DeferredTelemetryProvider>
       <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
-        <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
+        <ToastProvider zOffset={Z_OFFSET.toast}>
           <StudioErrorBoundary primaryProjectId={primaryProjectId}>
             <StudioRootErrorHandler primaryProjectId={primaryProjectId}>
               <WorkspacesProvider
