@@ -35,6 +35,7 @@ import {
   type InitialSnapshotEvent,
   type LatencyReportEvent,
   type ListenerEvent,
+  type MutationPerformanceEvent,
 } from '../getPairListener'
 import {
   type IdPair,
@@ -244,15 +245,26 @@ function submitCommitRequest(
   )
 }
 
+type PerfTimings = {
+  firstMutationReceivedAt?: number
+  apiRequestSentAt: number
+  apiResponseReceivedAt: number
+}
+
 type LatencyTrackingEvent = {
   transactionId: string
   submittedAt: Date
   receivedAt: Date
   deltaMs: number
+  perfTimings?: PerfTimings
 }
 
+type LatencyTrackingEntry =
+  | {type: 'submit'; transactionId: string; timestamp: Date; perfTimings?: PerfTimings}
+  | {type: 'receive'; transactionId: string; timestamp: Date}
+
 type LatencyTrackingState = {
-  pending: {type: 'receive' | 'submit'; transactionId: string; timestamp: Date}[]
+  pending: LatencyTrackingEntry[]
   event: LatencyTrackingEvent | undefined
 }
 
@@ -265,7 +277,8 @@ export function checkoutPair(
 ): Pair {
   const {publishedId, draftId, versionId} = idPair
 
-  const {onReportLatency, onSyncErrorRecovery, onSlowCommit, tag} = options
+  const {onReportLatency, onSyncErrorRecovery, onSlowCommit, onReportMutationPerformance, tag} =
+    options
 
   const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
 
@@ -306,9 +319,19 @@ export function checkoutPair(
     mergeMap((commitRequest) =>
       serverActionsEnabled.pipe(
         take(1),
-        mergeMap((canUseServerActions) =>
-          submitCommitRequest(client, idPair, commitRequest, canUseServerActions),
-        ),
+        mergeMap((canUseServerActions) => {
+          const apiRequestSentAt = Date.now()
+          return submitCommitRequest(client, idPair, commitRequest, canUseServerActions).pipe(
+            map((result) => ({
+              ...result,
+              _perfTimings: {
+                firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
+                apiRequestSentAt,
+                apiResponseReceivedAt: Date.now(),
+              },
+            })),
+          )
+        }),
       ),
     ),
     share(),
@@ -329,12 +352,13 @@ export function checkoutPair(
   // Note: we're only subscribing to this for the side-effect
   const combinedEvents = defer(() =>
     merge(
-      onReportLatency
+      onReportLatency || onReportMutationPerformance
         ? reportLatency({
             commits$: commits$,
             listenerEvents$: listenerEvents$,
             client,
             onReportLatency,
+            onReportMutationPerformance,
           })
         : merge(commits$, listenerEvents$),
       slowCommitWarning$,
@@ -375,12 +399,13 @@ export function checkoutPair(
 }
 
 function reportLatency(options: {
-  commits$: Observable<MultipleActionResult | MutationResult>
+  commits$: Observable<(MultipleActionResult | MutationResult) & {_perfTimings?: PerfTimings}>
   listenerEvents$: Observable<ListenerEvent>
   client: SanityClient
-  onReportLatency: (event: LatencyReportEvent) => void
+  onReportLatency?: (event: LatencyReportEvent) => void
+  onReportMutationPerformance?: (event: MutationPerformanceEvent) => void
 }) {
-  const {client, commits$, listenerEvents$, onReportLatency} = options
+  const {client, commits$, listenerEvents$, onReportLatency, onReportMutationPerformance} = options
   // Note: this request happens once and the result is then cached indefinitely
   const shardInfo = fetch(client.getUrl(client.getDataUrl('ping')), {
     signal: AbortSignal.timeout(FETCH_SHARD_TIMEOUT),
@@ -389,21 +414,26 @@ function reportLatency(options: {
     .catch(() => undefined)
 
   const submittedMutations = commits$.pipe(
-    map((ev) => ({
-      type: 'submit' as const,
-      transactionId: ev.transactionId,
-      timestamp: new Date(),
-    })),
+    map(
+      (ev): LatencyTrackingEntry => ({
+        type: 'submit' as const,
+        transactionId: ev.transactionId,
+        timestamp: new Date(),
+        perfTimings: ev._perfTimings,
+      }),
+    ),
     share(),
   )
 
   const receivedMutations = listenerEvents$.pipe(
     filter((ev) => ev.type === 'mutation'),
-    map((ev) => ({
-      type: 'receive' as const,
-      transactionId: ev.transactionId,
-      timestamp: new Date(),
-    })),
+    map(
+      (ev): LatencyTrackingEntry => ({
+        type: 'receive' as const,
+        transactionId: ev.transactionId,
+        timestamp: new Date(),
+      }),
+    ),
     share(),
   )
 
@@ -421,8 +451,9 @@ function reportLatency(options: {
             event: {
               transactionId: event.transactionId,
               submittedAt: submitEvent.timestamp,
-              receivedAt: submitEvent.timestamp,
+              receivedAt: receiveEvent.timestamp,
               deltaMs: receiveEvent.timestamp.getTime() - submitEvent.timestamp.getTime(),
+              perfTimings: submitEvent.type === 'submit' ? submitEvent.perfTimings : undefined,
             },
             pending: state.pending.toSpliced(matchingIndex, 1),
           }
@@ -433,9 +464,35 @@ function reportLatency(options: {
     ),
     map((state) => state.event),
     filter((event) => !!event),
-    withLatestFrom(shardInfo),
-    tap(([event, shard]) =>
-      onReportLatency?.({latencyMs: event.deltaMs, shard, transactionId: event.transactionId}),
-    ),
+    withLatestFrom(from(shardInfo).pipe(startWith(undefined))),
+    tap(([event, shard]) => {
+      try {
+        onReportLatency?.({latencyMs: event.deltaMs, shard, transactionId: event.transactionId})
+      } catch {
+        // Telemetry callbacks must never kill the document pipeline
+      }
+
+      if (onReportMutationPerformance && event.perfTimings) {
+        const {firstMutationReceivedAt, apiRequestSentAt, apiResponseReceivedAt} = event.perfTimings
+        const listenerReceivedAt = event.receivedAt.getTime()
+
+        if (firstMutationReceivedAt !== undefined) {
+          try {
+            onReportMutationPerformance({
+              transactionId: event.transactionId,
+              debounceMs: Math.max(0, apiRequestSentAt - firstMutationReceivedAt),
+              apiMs: Math.max(0, apiResponseReceivedAt - apiRequestSentAt),
+              // Listener and API response race each other — both are triggered
+              // server-side after the mutation is committed. Measure callback from
+              // when the request was sent, not when the HTTP response arrived.
+              callbackMs: Math.max(0, listenerReceivedAt - apiRequestSentAt),
+              shard,
+            })
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }
+      }
+    }),
   )
 }
