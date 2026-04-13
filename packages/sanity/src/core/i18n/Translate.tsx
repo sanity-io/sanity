@@ -114,7 +114,21 @@ export function Translate(props: TranslationProps) {
   const formatters: FormatterFns = {
     list: (listValues) => listFormat.format(listValues),
   }
-  return <>{render(tokens, props.values, props.components || {}, formatters)}</>
+  const componentMap = props.components || {}
+  let content: ReactNode
+  try {
+    content = render(tokens, props.values, componentMap, formatters)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.warn(`Translate: Failed to render translation for key "${props.i18nKey}": ${message}`)
+    // Fall back to the interpolated translation as plain text so the user
+    // sees readable content instead of a raw i18n key
+    content = props.t(props.i18nKey, {
+      context: props.context,
+      replace: props.values,
+    })
+  }
+  return <>{content}</>
 }
 
 function render(
