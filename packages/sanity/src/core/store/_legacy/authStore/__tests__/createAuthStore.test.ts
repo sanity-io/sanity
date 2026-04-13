@@ -150,7 +150,7 @@ describe('createAuthStore: cross-tab sync', () => {
       const store2Unauth = waitForState(store2, (s) => !s.authenticated)
 
       // Trigger logout on store1
-      await (store1.logout!() as unknown as Promise<void>)
+      await store1.logout!()
 
       // Store2 should receive the broadcast and become unauthenticated
       const state2 = await store2Unauth
