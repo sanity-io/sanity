@@ -41,6 +41,15 @@ const MOCK_TOKEN = 'mock-token-abc123'
 async function setupMockAuth(page: Page) {
   let authenticated = true
 
+  // Catch-all: return empty 200 for any Sanity API request not handled by mocks below.
+  // The token workspace uses a fake token, so unmocked endpoints would return 401
+  // from real servers and potentially trigger the studio error boundary.
+  // Registered first so specific mocks below take priority (later routes win).
+  const emptyOk = (route: import('@playwright/test').Route) =>
+    route.fulfill({status: 200, contentType: 'application/json', body: '[]'})
+  await page.route('**/*.api.sanity.io/**', emptyOk)
+  await page.route('**/api.sanity.io/**', emptyOk)
+
   // Mock /users/me — returns mock user or 401 depending on auth state
   await page.route('**/users/me*', (route) => {
     if (authenticated) {
@@ -231,6 +240,7 @@ test.describe('Token auth: cross-tab sync', () => {
     //    c) Broadcasts the new token to other tabs via BroadcastChannel
     page1Auth.logIn()
     page2Auth.logIn()
+
     await page1.goto(`${STUDIO_URL}#sid=mock-session-id-12345678`)
 
     // Page1 should be authenticated again (navbar visible)
