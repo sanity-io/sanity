@@ -1,143 +1,17 @@
 // eslint-disable-next-line no-restricted-imports -- auth tests use raw Playwright (no studio-test fixtures)
-import {expect, type Page, test} from '@playwright/test'
+import {expect, test} from '@playwright/test'
 
 import {watchForStudioErrors} from '../../helpers/studioErrors'
+import {MOCK_TOKEN, PROJECT_ID, setupMockAuth} from './helpers'
 
-// The auth-test-studio uses projectId: 'ppsg7ml5' with production API (api.sanity.io)
-// and loginMethod: 'token'. We mock all API responses so no real credentials are needed.
 const STUDIO_URL = 'http://localhost:3340/token'
-const PROJECT_ID = 'ppsg7ml5'
-const TOKEN_STORAGE_KEY = `__studio_auth_token_storage_v1_${PROJECT_ID}`
-
-const MOCK_USER = {
-  id: 'mock-user-123',
-  name: 'Test User',
-  email: 'test@example.com',
-  profileImage: '',
-  provider: 'google',
-  role: '',
-  roles: [{name: 'administrator', title: 'Administrator'}],
-}
-
-const MOCK_PROVIDERS = {
-  providers: [
-    {
-      name: 'google',
-      title: 'Google',
-      url: 'https://api.sanity.io/v1/auth/login/google',
-      logo: null,
-    },
-  ],
-  thirdPartyLogin: true,
-}
-
-const MOCK_TOKEN = 'mock-token-abc123'
-
-/**
- * Set up route mocks for a token-authenticated user.
- * Token auth stores the token in localStorage and uses it in API request headers
- * (instead of HTTP cookies). The auth store reads the token from localStorage on init.
- */
-async function setupMockAuth(page: Page) {
-  let authenticated = true
-
-  // Catch-all: return empty 200 for any Sanity API request not handled by mocks below.
-  // The token workspace uses a fake token, so unmocked endpoints would return 401
-  // from real servers and potentially trigger the studio error boundary.
-  // Registered first so specific mocks below take priority (later routes win).
-  const emptyOk = (route: import('@playwright/test').Route) =>
-    route.fulfill({status: 200, contentType: 'application/json', body: '[]'})
-  await page.route('**/*.api.sanity.io/**', emptyOk)
-  await page.route('**/api.sanity.io/**', emptyOk)
-
-  // Mock /users/me — returns mock user or 401 depending on auth state
-  await page.route('**/users/me*', (route) => {
-    if (authenticated) {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(MOCK_USER),
-      })
-    }
-    return route.fulfill({
-      status: 401,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: 'Not authenticated',
-      }),
-    })
-  })
-
-  // Mock /auth/providers
-  await page.route('**/auth/providers*', (route) => {
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(MOCK_PROVIDERS),
-    })
-  })
-
-  // Mock /auth/id probe — for token mode this is probed during SID exchange.
-  // Return 401 so the auth store falls through to token storage (not cookie).
-  await page.route('**/auth/id*', (route) => {
-    return route.fulfill({
-      status: 401,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: 'Not authenticated',
-      }),
-    })
-  })
-
-  // Mock /auth/fetch?sid=... — SID-to-token exchange
-  await page.route('**/auth/fetch*', (route) => {
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({token: MOCK_TOKEN}),
-    })
-  })
-
-  // Mock /auth/logout
-  await page.route('**/auth/logout*', (route) => {
-    authenticated = false
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ok: true}),
-    })
-  })
-
-  // Block trial/journey dialog and announcements overlay
-  await page.route('**/journey/**', (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: 'null',
-    }),
-  )
-
-  return {
-    /** Simulate server-side logout so subsequent /users/me calls return 401 */
-    logOut() {
-      authenticated = false
-    },
-    /** Simulate server-side login so subsequent /users/me calls return the mock user */
-    logIn() {
-      authenticated = true
-    },
-  }
-}
+const TOKEN_STORAGE_KEY = `__studio_auth_token_${PROJECT_ID}`
 
 /**
  * Seed localStorage with a mock token before navigation.
  * The auth store reads from localStorage on init when loginMethod is 'token'.
  */
-async function seedToken(page: Page) {
+async function seedToken(page: import('@playwright/test').Page) {
   await page.addInitScript(
     ({key, token}) => {
       localStorage.setItem(key, JSON.stringify({token}))
@@ -156,8 +30,8 @@ test.describe('Token auth: cross-tab sync', () => {
     const page2 = await context.newPage()
 
     // Set up authenticated mocks for both pages
-    const page1Auth = await setupMockAuth(page1)
-    const page2Auth = await setupMockAuth(page2)
+    const page1Auth = await setupMockAuth(page1, {cookieProbeSucceeds: false, catchAll: true})
+    const page2Auth = await setupMockAuth(page2, {cookieProbeSucceeds: false, catchAll: true})
 
     // Seed token in localStorage so both pages start authenticated
     await seedToken(page1)
@@ -201,7 +75,7 @@ test.describe('Token auth: cross-tab sync', () => {
 
   test('login after logout syncs across tabs via BroadcastChannel', async ({context}) => {
     const page1 = await context.newPage()
-    const page1Auth = await setupMockAuth(page1)
+    const page1Auth = await setupMockAuth(page1, {cookieProbeSucceeds: false, catchAll: true})
     await seedToken(page1)
 
     // 1. Load page1 first and wait for it to be fully authenticated
@@ -212,7 +86,7 @@ test.describe('Token auth: cross-tab sync', () => {
 
     // 2. Then load page2 — sequential to avoid broadcast race during init
     const page2 = await context.newPage()
-    const page2Auth = await setupMockAuth(page2)
+    const page2Auth = await setupMockAuth(page2, {cookieProbeSucceeds: false, catchAll: true})
     await seedToken(page2)
     await page2.goto(STUDIO_URL)
     await expect(page2.locator('[data-testid="studio-navbar"]')).toBeVisible({
@@ -256,7 +130,7 @@ test.describe('Token auth: cross-tab sync', () => {
 
   test('single tab logout shows login screen', async ({context}) => {
     const page = await context.newPage()
-    await setupMockAuth(page)
+    await setupMockAuth(page, {cookieProbeSucceeds: false, catchAll: true})
     await seedToken(page)
 
     await page.goto(STUDIO_URL)
