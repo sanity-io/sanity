@@ -111,6 +111,7 @@ The auth-test-studio includes SSO workspaces that replace the default providers 
 | `/dual-redirectOnSingle`       | dual           | Skips provider chooser     |
 | `/sso-cookie`                  | cookie         | Single SSO provider        |
 | `/sso-token`                   | token          | Single SSO provider        |
+| `/sso-dual`                    | dual           | Single SSO provider        |
 | `/sso-cookie-redirectOnSingle` | cookie         | SSO + redirectOnSingle     |
 | `/sso-token-redirectOnSingle`  | token          | SSO + redirectOnSingle     |
 | `/sso-dual-redirectOnSingle`   | dual           | SSO + redirectOnSingle     |

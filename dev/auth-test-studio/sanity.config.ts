@@ -38,8 +38,8 @@ const env = USE_STAGING ? staging : production.ppsg7ml5
 // SSO configuration ID to test a different SSO provider.
 const ssoProvider = {
   name: 'saml',
-  title: 'Sanity.io SSO',
-  url: 'https://api.sanity.io/v2021-10-01/auth/saml/login/a9fd8216',
+  title: 'saml',
+  url: 'https://api.sanity.io/v2026-04-13/auth/saml/login/91cadf2a',
 }
 
 const github = {
@@ -122,6 +122,18 @@ const workspaces = [
     auth: createAuthStore({
       ...env,
       loginMethod: 'token',
+      providers: [ssoProvider],
+      mode: 'replace',
+    }),
+  },
+  {
+    ...env,
+    name: 'sso-dual',
+    title: 'SSO (dual)',
+    basePath: '/sso-dual',
+    auth: createAuthStore({
+      ...env,
+      loginMethod: 'dual',
       providers: [ssoProvider],
       mode: 'replace',
     }),
