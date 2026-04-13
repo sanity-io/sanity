@@ -23,12 +23,14 @@ import {
 import {
   createDocumentStore,
   type DocumentPairLoadedEvent,
+  type DocumentRebaseTelemetryEvent,
   type DocumentStore,
   type LatencyReportEvent,
   type MutationPerformanceEvent,
 } from './document'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {DocumentPairLoadingMeasured} from './document/__telemetry__/documentPairLoading.telemetry'
+import {DocumentRebaseOccurred} from './document/__telemetry__/documentRebase.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {MutationPerformanceMeasured} from './document/__telemetry__/mutationPerformance.telemetry'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
@@ -219,6 +221,13 @@ export function useDocumentStore(): DocumentStore {
     [telemetry],
   )
 
+  const handleDocumentRebase = useCallback(
+    (event: DocumentRebaseTelemetryEvent) => {
+      telemetry.log(DocumentRebaseOccurred, event)
+    },
+    [telemetry],
+  )
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
@@ -248,6 +257,7 @@ export function useDocumentStore(): DocumentStore {
           onSlowCommit: handleSlowCommit,
           onDocumentPairLoaded: handleDocumentPairLoaded,
           onReportMutationPerformance: handleReportMutationPerformance,
+          onDocumentRebase: handleDocumentRebase,
         },
       })
 
@@ -282,6 +292,7 @@ export function useDocumentStore(): DocumentStore {
     handleSlowCommit,
     handleDocumentPairLoaded,
     handleReportMutationPerformance,
+    handleDocumentRebase,
   ])
 }
 

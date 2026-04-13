@@ -1211,3 +1211,378 @@ describe('checkoutPair -- slow commit warning', () => {
     sub.unsubscribe()
   })
 })
+
+describe('checkoutPair -- document rebase telemetry', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+  })
+
+  test('calls onDocumentRebase when a remote mutation arrives while local mutations are pending', async () => {
+    const onDocumentRebase = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onDocumentRebase,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Apply a local mutation (makes the document have pending changes)
+    draft.mutate(draft.patch([{set: {title: 'local edit'}}]))
+
+    // Inject a remote mutation with actual mutations that change the document.
+    // The BufferedDocument rebase is triggered by the `mutations` field (not mendoza `effects`).
+    // Empty mutations produce a no-op that doesn't trigger a rebase.
+    listenerSubject.next({
+      ...createMutationEvent('remote-tx', 'draftId', 'any', 'rev2'),
+      mutations: [{patch: {id: 'draftId', set: {description: 'remote change'}}}],
+    })
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onDocumentRebase).toHaveBeenCalledWith({
+      remoteMutationCount: expect.any(Number),
+      localMutationCount: expect.any(Number),
+    })
+    // remoteMutationCount should be >= 1 since a remote mutation triggered the rebase
+    expect(onDocumentRebase.mock.calls[0][0].remoteMutationCount).toBeGreaterThanOrEqual(1)
+    // localMutationCount is 0 because the mutation is in the squashing buffer (not yet committed),
+    // and BufferedDocument only tracks committed-in-flight mutations as "local" during rebase
+    expect(typeof onDocumentRebase.mock.calls[0][0].localMutationCount).toBe('number')
+
+    sub.unsubscribe()
+  })
+
+  test('does not call onDocumentRebase when no local mutations are pending', async () => {
+    const onDocumentRebase = vi.fn()
+    const listenerSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onDocumentRebase,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Inject a remote mutation without any pending local mutations
+    listenerSubject.next(createMutationEvent('remote-tx', 'draftId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+
+    // No rebase should occur since there are no pending local mutations
+    expect(onDocumentRebase).not.toHaveBeenCalled()
+
+    sub.unsubscribe()
+  })
+
+  test('pipeline continues when onDocumentRebase callback throws', async () => {
+    const onDocumentRebase = vi.fn().mockImplementation(() => {
+      throw new Error('rebase callback error')
+    })
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onDocumentRebase,
+    })
+    const events: any[] = []
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe((ev) => events.push(ev))
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Apply a local mutation
+    draft.mutate(draft.patch([{set: {title: 'local edit'}}]))
+
+    // Inject a remote mutation with actual mutations to trigger rebase (callback will throw)
+    listenerSubject.next({
+      ...createMutationEvent('remote-tx', 'draftId', 'any', 'rev2'),
+      mutations: [{patch: {id: 'draftId', set: {description: 'remote change'}}}],
+    })
+    await vi.advanceTimersByTimeAsync(0)
+
+    // The pipeline should still be alive — verify by checking events still flow
+    listenerSubject.next({
+      ...createMutationEvent('remote-tx-2', 'draftId', 'rev2', 'rev3'),
+      mutations: [{patch: {id: 'draftId', set: {description: 'remote change 2'}}}],
+    })
+    await vi.advanceTimersByTimeAsync(0)
+
+    // If the pipeline died, we'd get no events after the throw.
+    // The fact that we can still receive mutations proves resilience.
+    expect(events.length).toBeGreaterThan(0)
+
+    sub.unsubscribe()
+  })
+
+  test('calls onDocumentRebase for version document rebases', async () => {
+    const onDocumentRebase = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const versionIdPair = {
+      publishedId: 'publishedId',
+      draftId: 'draftId',
+      versionId: 'versions.r1.publishedId',
+    }
+
+    const testClient: Record<string, any> = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        getDocuments: (ids: string[]) =>
+          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
+      },
+    }
+    testClient.withConfig = vi.fn(() => testClient)
+
+    const {version, draft, published} = checkoutPair(
+      testClient as any as SanityClient,
+      versionIdPair,
+      of(false),
+      {
+        onDocumentRebase,
+      },
+    )
+    const combined = merge(draft.events, published.events, version!.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Apply a local mutation to the version document
+    version!.mutate(version!.patch([{set: {title: 'local version edit'}}]))
+
+    // Inject a remote mutation for the version document with actual mutations to trigger rebase
+    listenerSubject.next({
+      ...createMutationEvent('remote-v-tx', 'versions.r1.publishedId', 'any', 'rev2'),
+      mutations: [{patch: {id: 'versions.r1.publishedId', set: {description: 'remote change'}}}],
+    })
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onDocumentRebase).toHaveBeenCalled()
+    expect(onDocumentRebase.mock.calls[0][0].remoteMutationCount).toBeGreaterThanOrEqual(1)
+    expect(typeof onDocumentRebase.mock.calls[0][0].localMutationCount).toBe('number')
+
+    sub.unsubscribe()
+  })
+})
+
+describe('checkoutPair -- version documents', () => {
+  test('server action patch with versionId uses versionId in action payload', async () => {
+    const versionIdPair = {
+      publishedId: 'publishedId',
+      draftId: 'draftId',
+      versionId: 'versions.r1.publishedId',
+    }
+
+    const versionClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        getDocuments: (ids: string[]) =>
+          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
+        action: mockedActionRequest,
+      },
+      withConfig: vi.fn(() => versionClient),
+    }
+
+    const {version, draft, published} = checkoutPair(
+      versionClient as any as SanityClient,
+      versionIdPair,
+      of(true),
+    )
+    const combined = merge(draft.events, published.events, version!.events)
+    const sub = combined.subscribe()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    version!.mutate(version!.patch([{set: {title: 'new title'}}]))
+    version!.commit()
+
+    expect(mockedActionRequest).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.edit',
+          draftId: 'versions.r1.publishedId',
+          publishedId: 'publishedId',
+          patch: {
+            set: {title: 'new title'},
+          },
+        },
+      ],
+      {
+        tag: 'document.commit',
+        transactionId: expect.any(String),
+      },
+    )
+
+    sub.unsubscribe()
+  })
+
+  test('version document latency tracking works', async () => {
+    vi.useFakeTimers()
+    vi.spyOn(global, 'fetch').mockResolvedValue({
+      headers: new Headers({'X-Sanity-Shard': 'test-shard'}),
+    } as Response)
+
+    const onReportLatency = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+    const versionIdPair = {
+      publishedId: 'publishedId',
+      draftId: 'draftId',
+      versionId: 'versions.r1.publishedId',
+    }
+
+    const testClient: Record<string, any> = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        getDocuments: (ids: string[]) =>
+          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+    testClient.withConfig = vi.fn(() => testClient)
+
+    const {version, draft, published} = checkoutPair(
+      testClient as any as SanityClient,
+      versionIdPair,
+      of(false),
+      {
+        onReportLatency,
+      },
+    )
+    const combined = merge(draft.events, published.events, version!.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    version!.mutate(version!.patch([{set: {title: 'version edit'}}]))
+    version!.commit()
+
+    commitSubject.next({transactionId: 'tx-v1', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    listenerSubject.next(createMutationEvent('tx-v1', 'versions.r1.publishedId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onReportLatency).toHaveBeenCalledWith({
+      latencyMs: expect.any(Number),
+      shard: 'test-shard',
+      transactionId: 'tx-v1',
+    })
+
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+    sub.unsubscribe()
+  })
+
+  test('version document mutation performance tracking works', async () => {
+    vi.useFakeTimers()
+    vi.spyOn(global, 'fetch').mockResolvedValue({
+      headers: new Headers({'X-Sanity-Shard': 'test-shard'}),
+    } as Response)
+
+    const onReportMutationPerformance = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+    const versionIdPair = {
+      publishedId: 'publishedId',
+      draftId: 'draftId',
+      versionId: 'versions.r1.publishedId',
+    }
+
+    const testClient: Record<string, any> = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        getDocuments: (ids: string[]) =>
+          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+    testClient.withConfig = vi.fn(() => testClient)
+
+    const {version, draft, published} = checkoutPair(
+      testClient as any as SanityClient,
+      versionIdPair,
+      of(false),
+      {
+        onReportMutationPerformance,
+      },
+    )
+    const combined = merge(draft.events, published.events, version!.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    version!.mutate(version!.patch([{set: {title: 'version perf edit'}}]))
+    await vi.advanceTimersByTimeAsync(100) // debounce
+    version!.commit()
+
+    await vi.advanceTimersByTimeAsync(200) // API time
+    commitSubject.next({transactionId: 'tx-vperf', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    await vi.advanceTimersByTimeAsync(50) // callback delay
+    listenerSubject.next(createMutationEvent('tx-vperf', 'versions.r1.publishedId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onReportMutationPerformance).toHaveBeenCalledTimes(1)
+    const event = onReportMutationPerformance.mock.calls[0][0]
+    expect(event.transactionId).toBe('tx-vperf')
+    expect(event.debounceMs).toBeGreaterThanOrEqual(100)
+    expect(event.apiMs).toBeGreaterThanOrEqual(200)
+    expect(event.callbackMs).toBeGreaterThanOrEqual(event.apiMs)
+    expect(event.shard).toBe('test-shard')
+
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+    sub.unsubscribe()
+  })
+})

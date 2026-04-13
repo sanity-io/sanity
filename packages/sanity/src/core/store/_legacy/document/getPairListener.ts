@@ -61,6 +61,12 @@ export interface MutationPerformanceEvent {
 }
 
 /** @internal */
+export interface DocumentRebaseTelemetryEvent {
+  remoteMutationCount: number
+  localMutationCount: number
+}
+
+/** @internal */
 export interface DocumentStoreExtraOptions {
   tag?: string
 
@@ -74,6 +80,7 @@ export interface DocumentStoreExtraOptions {
   onSlowCommit?: () => void
   onDocumentPairLoaded?: (event: DocumentPairLoadedEvent) => void
   onReportMutationPerformance?: (event: MutationPerformanceEvent) => void
+  onDocumentRebase?: (event: DocumentRebaseTelemetryEvent) => void
 }
 
 /** @internal */

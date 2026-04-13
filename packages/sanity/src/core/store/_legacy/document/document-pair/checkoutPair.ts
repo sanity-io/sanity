@@ -26,6 +26,7 @@ import {
   type BufferedDocumentEvent,
   type CommitRequest,
   createBufferedDocument,
+  type DocumentRebaseEvent,
   type MutationPayload,
   type RemoteSnapshotEvent,
 } from '../buffered-doc'
@@ -277,8 +278,14 @@ export function checkoutPair(
 ): Pair {
   const {publishedId, draftId, versionId} = idPair
 
-  const {onReportLatency, onSyncErrorRecovery, onSlowCommit, onReportMutationPerformance, tag} =
-    options
+  const {
+    onReportLatency,
+    onSyncErrorRecovery,
+    onSlowCommit,
+    onReportMutationPerformance,
+    onDocumentRebase,
+    tag,
+  } = options
 
   const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
 
@@ -349,6 +356,22 @@ export function checkoutPair(
       )
     : EMPTY
 
+  const rebaseEvents$ = onDocumentRebase
+    ? merge(draft.events, published.events, ...(version ? [version.events] : [])).pipe(
+        filter((ev): ev is DocumentRebaseEvent & {type: 'rebase'} => ev.type === 'rebase'),
+        tap((ev) => {
+          try {
+            onDocumentRebase({
+              remoteMutationCount: ev.remoteMutations.length,
+              localMutationCount: ev.localMutations.length,
+            })
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }),
+      )
+    : EMPTY
+
   // Note: we're only subscribing to this for the side-effect
   const combinedEvents = defer(() =>
     merge(
@@ -362,6 +385,7 @@ export function checkoutPair(
           })
         : merge(commits$, listenerEvents$),
       slowCommitWarning$,
+      rebaseEvents$,
     ),
   ).pipe(
     mergeMap(() => EMPTY),
