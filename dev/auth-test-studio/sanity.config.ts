@@ -46,7 +46,7 @@ const ssoProvider = {
 //   - /cookie  (cookieAuth.spec.ts)
 //   - /token   (tokenAuth.spec.ts)
 
-const workspaces: Config[] = [
+const workspaces = [
   // Default login methods
   {
     ...env,
@@ -135,6 +135,6 @@ const workspaces: Config[] = [
       mode: 'replace',
     },
   },
-]
+] satisfies Config[]
 
 export default defineConfig(workspaces.map((w) => ({...shared, ...w})))
