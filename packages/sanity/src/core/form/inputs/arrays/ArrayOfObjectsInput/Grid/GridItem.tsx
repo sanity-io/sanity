@@ -116,8 +116,10 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   useScrollIntoViewOnFocusWithin(previewCardRef, open)
 
   useDidUpdate(focused, (hadFocus, hasFocus) => {
-    if (!hadFocus && hasFocus && previewCardRef.current) {
+    if (!hadFocus && hasFocus && previewCardRef.current && !open) {
       // Note: if editing an inline item, focus is handled by the item input itself and no ref is being set
+      // Skip when the dialog is open to prevent stealing focus from elements inside the dialog
+      // (e.g. reference links), which would interrupt the user's interaction on the first click.
       previewCardRef.current?.focus()
     }
   })
