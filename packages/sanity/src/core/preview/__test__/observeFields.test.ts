@@ -256,4 +256,193 @@ describe('observeFields', () => {
       .unsubscribe()
     expect(syncValue).toBe(null)
   })
+
+  describe('invalidation filter with perspective', () => {
+    it('should re-fetch when the observed document itself is mutated (with perspective)', async () => {
+      let fetchCount = 0
+      const client: ClientLike = {
+        observable: {
+          fetch: () => {
+            fetchCount++
+            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
+          },
+        },
+        withConfig: () => client,
+      }
+      const channel = new Subject<InvalidationChannelEvent>()
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+
+      const values: any[] = []
+      const sub = observe('foo', ['title'], undefined, ['drafts']).subscribe((v) => values.push(v))
+
+      channel.next({type: 'connected'})
+      await new Promise((r) => setTimeout(r, 200))
+      const afterConnect = fetchCount
+
+      channel.next({type: 'mutation', documentId: 'foo', visibility: 'query'})
+      await new Promise((r) => setTimeout(r, 200))
+
+      expect(fetchCount).toBeGreaterThan(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should re-fetch when the draft version of observed document is mutated', async () => {
+      let fetchCount = 0
+      const client: ClientLike = {
+        observable: {
+          fetch: () => {
+            fetchCount++
+            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
+          },
+        },
+        withConfig: () => client,
+      }
+      const channel = new Subject<InvalidationChannelEvent>()
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+
+      const sub = observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+
+      channel.next({type: 'connected'})
+      await new Promise((r) => setTimeout(r, 200))
+      const afterConnect = fetchCount
+
+      channel.next({type: 'mutation', documentId: 'drafts.foo', visibility: 'query'})
+      await new Promise((r) => setTimeout(r, 200))
+
+      expect(fetchCount).toBeGreaterThan(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should re-fetch when a versioned document matching the observed doc is mutated', async () => {
+      let fetchCount = 0
+      const client: ClientLike = {
+        observable: {
+          fetch: () => {
+            fetchCount++
+            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
+          },
+        },
+        withConfig: () => client,
+      }
+      const channel = new Subject<InvalidationChannelEvent>()
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+
+      const sub = observe('foo', ['title'], undefined, ['drafts', 'summer']).subscribe(() => {})
+
+      channel.next({type: 'connected'})
+      await new Promise((r) => setTimeout(r, 200))
+      const afterConnect = fetchCount
+
+      channel.next({
+        type: 'mutation',
+        documentId: 'versions.summer.foo',
+        visibility: 'query',
+      })
+      await new Promise((r) => setTimeout(r, 200))
+
+      expect(fetchCount).toBeGreaterThan(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should NOT re-fetch when an unrelated document is mutated (with perspective)', async () => {
+      let fetchCount = 0
+      const client: ClientLike = {
+        observable: {
+          fetch: () => {
+            fetchCount++
+            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
+          },
+        },
+        withConfig: () => client,
+      }
+      const channel = new Subject<InvalidationChannelEvent>()
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+
+      const sub = observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+
+      channel.next({type: 'connected'})
+      await new Promise((r) => setTimeout(r, 200))
+      const afterConnect = fetchCount
+
+      channel.next({type: 'mutation', documentId: 'trigger-doc', visibility: 'query'})
+      channel.next({type: 'mutation', documentId: 'drafts.other-doc', visibility: 'query'})
+      channel.next({type: 'mutation', documentId: 'versions.summer.bar', visibility: 'query'})
+      await new Promise((r) => setTimeout(r, 200))
+
+      expect(fetchCount).toBe(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should NOT re-fetch for a version outside the active perspective stack', async () => {
+      let fetchCount = 0
+      const client: ClientLike = {
+        observable: {
+          fetch: () => {
+            fetchCount++
+            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
+          },
+        },
+        withConfig: () => client,
+      }
+      const channel = new Subject<InvalidationChannelEvent>()
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+
+      const sub = observe('foo', ['title'], undefined, ['drafts', 'summer']).subscribe(() => {})
+
+      channel.next({type: 'connected'})
+      await new Promise((r) => setTimeout(r, 200))
+      const afterConnect = fetchCount
+
+      channel.next({
+        type: 'mutation',
+        documentId: 'versions.winter.foo',
+        visibility: 'query',
+      })
+      await new Promise((r) => setTimeout(r, 200))
+
+      expect(fetchCount).toBe(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should always re-fetch on connected event regardless of perspective', async () => {
+      let fetchCount = 0
+      const client: ClientLike = {
+        observable: {
+          fetch: () => {
+            fetchCount++
+            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
+          },
+        },
+        withConfig: () => client,
+      }
+      const channel = new Subject<InvalidationChannelEvent>()
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+
+      const sub = observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+
+      channel.next({type: 'connected'})
+      await new Promise((r) => setTimeout(r, 200))
+
+      expect(fetchCount).toBeGreaterThan(0)
+      sub.unsubscribe()
+    })
+  })
 })

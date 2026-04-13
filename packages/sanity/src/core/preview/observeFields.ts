@@ -222,11 +222,15 @@ export function createObserveFields(options: {
           return true
         }
         if (hasPerspective) {
-          // if a perspective stack was provided, we need to refetch if we receive a mutation
-          // for a document whose _id matches either:
-          // - the published _id (since it's always implied)
-          // - any version id matching the provided perspectives
-          return idMatchesPerspective(perspective, documentId)
+          // With perspectives, refetch only when the mutated document is a
+          // version of the observed document (same base/published id) AND that
+          // version is relevant to the current perspective stack (e.g. drafts,
+          // a specific release). This avoids refetching for unrelated documents
+          // or versions outside the active perspective.
+          return (
+            getPublishedId(event.documentId) === getPublishedId(documentId) &&
+            idMatchesPerspective(perspective, documentId)
+          )
         }
         // if not using perspective, refetch previews for the document that was actually changed
         return event.documentId === documentId
