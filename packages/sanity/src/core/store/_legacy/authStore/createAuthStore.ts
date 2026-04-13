@@ -36,8 +36,8 @@ import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {createBroadcastState} from './createBroadcastState'
 import {createBroadcastStorage} from './createBroadcastStorage'
 import {createLoginComponent} from './createLoginComponent'
-import {consumeHashToken} from './hashToken'
-import {clearHashSessionId, getHashSessionId} from './sessionId'
+import {consumeHashToken as defaultConsumeHashToken} from './hashToken'
+import {clearHashSessionId, getHashSessionId as defaultGetSessionId} from './sessionId'
 import {
   type AuthProbeResult,
   type AuthState,
@@ -51,6 +51,22 @@ export interface AuthStoreOptions extends AuthConfig {
   clientFactory?: (options: SanityClientConfig) => SanityClient
   projectId: string
   dataset: string
+  /**
+   * Retrieves the session ID from the URL hash for the auth callback flow.
+   * Called by `handleCallbackUrl` to obtain the session ID that is exchanged
+   * for a token or cookie. Defaults to `getHashSessionId` which consumes the
+   * `#sid=…` fragment at module load time.
+   * @internal
+   */
+  getSessionId?: () => string | undefined
+  /**
+   * Extracts and consumes a `#token=…` fragment from the URL hash.
+   * Called at init to pick up hash tokens and on `hashchange` events.
+   * Defaults to `consumeHashToken` from `./hashToken` which reads
+   * `window.location.hash` and strips the token via `history.replaceState`.
+   * @internal
+   */
+  consumeHashToken?: () => string | undefined
 }
 
 const getCurrentUser = async (
@@ -141,6 +157,8 @@ export function _createAuthStore({
   dataset,
   apiHost,
   loginMethod = 'dual',
+  getSessionId = defaultGetSessionId,
+  consumeHashToken = defaultConsumeHashToken,
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
   // Precedence when initializing auth:
@@ -333,7 +351,7 @@ export function _createAuthStore({
 
   async function handleCallbackUrl(): Promise<HandleCallbackResult> {
     const startTime = performance.now()
-    const sessionId = getHashSessionId()
+    const sessionId = getSessionId()
     // workaround for https://github.com/vercel/next.js/issues/91819
     clearHashSessionId()
 

@@ -28,21 +28,21 @@ describe('sessionId', () => {
     const {getHashSessionId: getSessionId} = await import('../sessionId')
 
     expect(getSessionId()).toBe('12345678901234567890')
-    expect(getSessionId()).toBeNull()
+    expect(getSessionId()).toBeUndefined()
   })
 
   it('returns null when hash has no valid session ID', async () => {
     window.location.hash = '#other=value'
 
     const {getHashSessionId: getSessionId} = await import('../sessionId')
-    expect(getSessionId()).toBeNull()
+    expect(getSessionId()).toBeUndefined()
   })
 
   it('rejects session IDs shorter than 20 characters', async () => {
     window.location.hash = '#sid=short'
 
     const {getHashSessionId: getSessionId} = await import('../sessionId')
-    expect(getSessionId()).toBeNull()
+    expect(getSessionId()).toBeUndefined()
   })
 
   it('preserves other hash params when consuming the session ID', async () => {

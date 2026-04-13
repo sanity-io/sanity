@@ -1,10 +1,10 @@
 // Trailing '&' included so we can replace `#sid=foo&bar=baz` with `#bar=baz`
 const sidPattern = /sid=([^&]{20,})&?/
 
-function consumeSessionId(): string | null {
+function consumeSessionId(): string | undefined {
   // Are we in a browser-like environment?
   if (typeof window === 'undefined' || typeof window.location !== 'object') {
-    return null
+    return undefined
   }
 
   // Does the hash contain a valid session ID?
@@ -14,7 +14,7 @@ function consumeSessionId(): string | null {
   // the first _group_, being the actual _value_ of the parameter, thus the leading comma
   const [, sidParam] = hash.match(sidPattern) || []
   if (!sidParam) {
-    return null
+    return undefined
   }
 
   // Remove the parameter from the URL
@@ -39,10 +39,10 @@ export function clearHashSessionId(): void {
 // until react mounts). Once it is consumed and loaded once, we don't want to
 // keep it in-memory here, so we clear it out.
 let sessionId = consumeSessionId()
-export const getHashSessionId = (): string | null => {
+export const getHashSessionId = (): string | undefined => {
   const id = sessionId
   if (id) {
-    sessionId = null
+    sessionId = undefined
   }
   return id
 }
