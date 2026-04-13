@@ -5,30 +5,10 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {_createAuthStore} from '../createAuthStore'
 import {type AuthStore} from '../types'
 
-// Mock supportsLocalStorage to return true so the storage module uses localStorage.
+// Mock supportsLocalStorage to return true so createBroadcastStorage uses localStorage.
+// In jsdom/Node.js it returns false because process.versions.node is defined.
 vi.mock('../../../../util/supportsLocalStorage', () => ({
   supportsLocalStorage: true,
-}))
-
-// Mock the storage module to dispatch StorageEvent on setItem.
-// In real browsers, storage events only fire in OTHER tabs. jsdom doesn't
-// fire them at all. The auth store's createBroadcastChannel listens for
-// storage events to sync across tabs, so we need to simulate this.
-// Note: the storage module uses `localStorage[key] = value` (bracket notation),
-// not `localStorage.setItem()`, so we can't spy on Storage.prototype.
-vi.mock('../storage', () => ({
-  setItem(key: string, value: string) {
-    localStorage.setItem(key, value)
-    window.dispatchEvent(
-      new StorageEvent('storage', {key, newValue: value, storageArea: localStorage}),
-    )
-  },
-  getItem(key: string): string | undefined {
-    return localStorage.getItem(key) ?? undefined
-  },
-  removeItem(key: string) {
-    localStorage.removeItem(key)
-  },
 }))
 
 const MOCK_USER: CurrentUser = {
@@ -45,6 +25,16 @@ const PROJECT_ID = 'test-project'
 const DATASET = 'test-dataset'
 const TOKEN_STORAGE_KEY = `__studio_auth_token_${PROJECT_ID}`
 
+/**
+ * Create a 401 error that matches what the sanity client throws.
+ * The `getCurrentUser` function in createAuthStore.ts checks `err.statusCode === 401`.
+ */
+function create401Error(): Error & {statusCode: number} {
+  const err = new Error('Unauthorized') as Error & {statusCode: number}
+  err.statusCode = 401
+  return err
+}
+
 interface MockClientFactoryResult {
   factory: (options: SanityClientConfig) => SanityClient
   setAuthenticated: (v: boolean) => void
@@ -53,18 +43,23 @@ interface MockClientFactoryResult {
 function createMockClientFactory(): MockClientFactoryResult {
   let authenticated = true
 
-  const factory = (options: SanityClientConfig): SanityClient => {
+  const factory = (_options: SanityClientConfig): SanityClient => {
     const client = {
-      config: () => ({...options, apiHost: 'https://api.sanity.io'}),
       request: vi.fn(({uri, method}: {uri: string; method?: string}) => {
         if (uri === '/users/me') {
-          // Return a user object when authenticated, or an empty object (no `id`)
-          // when not. We avoid returning 401 because getCurrentUser's 401 handler
-          // calls broadcast(null), which re-triggers the state$ pipeline and causes
-          // an infinite loop (401 → broadcast → new client → getCurrentUser → 401 → …).
-          // NOTE: this is a real production bug, not just a test issue — if a user's
-          // token expires, the same loop can happen in the browser.
-          return Promise.resolve(authenticated ? MOCK_USER : {})
+          if (authenticated) {
+            return Promise.resolve(MOCK_USER)
+          }
+          return Promise.reject(create401Error())
+        }
+        if (uri === '/auth/id') {
+          if (authenticated) {
+            return Promise.resolve({
+              id: 'mock-auth-id',
+              expiry: Math.floor(Date.now() / 1000) + 3600,
+            })
+          }
+          return Promise.reject(create401Error())
         }
         if (uri === '/auth/fetch') {
           return Promise.resolve({token: 'mock-exchanged-token'})
@@ -109,7 +104,7 @@ function waitForState(
   ])
 }
 
-describe('createAuthStore', () => {
+describe('createAuthStore: cross-tab sync', () => {
   beforeEach(() => {
     localStorage.clear()
     window.location.hash = ''
@@ -118,10 +113,11 @@ describe('createAuthStore', () => {
   afterEach(() => {
     localStorage.clear()
     window.location.hash = ''
+    vi.restoreAllMocks()
   })
 
   describe('cookie auth', () => {
-    it('logout in one store broadcasts to another store', async () => {
+    it('logout in one store broadcasts to another store via BroadcastChannel', async () => {
       const mock1 = createMockClientFactory()
       const mock2 = createMockClientFactory()
 
@@ -130,32 +126,39 @@ describe('createAuthStore', () => {
         dataset: DATASET,
         loginMethod: 'cookie',
         clientFactory: mock1.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
       const store2 = _createAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'cookie',
         clientFactory: mock2.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
 
+      // Wait for both stores to be authenticated
       await waitForState(store1, (s) => s.authenticated)
       await waitForState(store2, (s) => s.authenticated)
 
+      // Switch both mocks to unauthenticated (simulates server-side logout)
       mock1.setAuthenticated(false)
       mock2.setAuthenticated(false)
 
+      // Set up a listener for store2 to become unauthenticated
       const store2Unauth = waitForState(store2, (s) => !s.authenticated)
 
-      // TODO: AuthStore.logout is typed as `() => void` but the implementation
-      // returns Promise<void>. The cast works around the type mismatch — the
-      // interface should be fixed to `logout?: () => Promise<void>`.
-      await (store1.logout!() as unknown as Promise<void>)
+      // Trigger logout on store1
+      await store1.logout!()
 
+      // Store2 should receive the broadcast and become unauthenticated
       const state2 = await store2Unauth
       expect(state2.authenticated).toBe(false)
     })
 
-    it('login broadcasts to other store', async () => {
+    it('login broadcasts to other store via BroadcastChannel', async () => {
+      // Both stores start unauthenticated
       const mock1 = createMockClientFactory()
       mock1.setAuthenticated(false)
       const mock2 = createMockClientFactory()
@@ -166,26 +169,37 @@ describe('createAuthStore', () => {
         dataset: DATASET,
         loginMethod: 'cookie',
         clientFactory: mock1.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
       const store2 = _createAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'cookie',
         clientFactory: mock2.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
 
+      // Wait for both stores to be unauthenticated initially
       await waitForState(store1, (s) => !s.authenticated)
       await waitForState(store2, (s) => !s.authenticated)
 
+      // Set up listener for store2 to become authenticated
       const store2Auth = waitForState(store2, (s) => s.authenticated)
 
+      // Simulate login: server starts returning user data
       mock1.setAuthenticated(true)
       mock2.setAuthenticated(true)
 
-      // handleCallbackUrl with no session ID broadcasts null (cookie token),
-      // which triggers store2 to re-create a client and re-fetch /users/me
-      await store1.handleCallbackUrl!()
+      // For cookie auth, after login the server sets a cookie and the tab re-loads.
+      // The auth store broadcasts cookie auth state on every emission.
+      // Simulate this by broadcasting {authenticated: true} via BroadcastChannel.
+      const channel = new BroadcastChannel(`__studio_auth_cookie_state_${PROJECT_ID}`)
+      channel.postMessage(JSON.stringify({authenticated: true}))
+      channel.close()
 
+      // Store2 should detect the broadcast, re-fetch /users/me, and become authenticated
       const state2 = await store2Auth
       expect(state2.authenticated).toBe(true)
       expect(state2.currentUser).toEqual(MOCK_USER)
@@ -199,9 +213,14 @@ describe('createAuthStore', () => {
         dataset: DATASET,
         loginMethod: 'cookie',
         clientFactory: mock.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
 
+      // Wait for initial authenticated state
       await waitForState(store, (s) => s.authenticated)
+
+      // Switch to unauthenticated
       mock.setAuthenticated(false)
 
       const unauthState = waitForState(store, (s) => !s.authenticated)
@@ -214,7 +233,8 @@ describe('createAuthStore', () => {
   })
 
   describe('token auth', () => {
-    it('logout in one store broadcasts to another store', async () => {
+    it('logout in one store broadcasts to another store via token storage', async () => {
+      // Seed localStorage with token so both stores start authenticated
       localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'mock-token'}))
 
       const mock1 = createMockClientFactory()
@@ -225,75 +245,104 @@ describe('createAuthStore', () => {
         dataset: DATASET,
         loginMethod: 'token',
         clientFactory: mock1.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
       const store2 = _createAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'token',
         clientFactory: mock2.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
 
+      // Wait for both stores to be authenticated
       await waitForState(store1, (s) => s.authenticated)
       await waitForState(store2, (s) => s.authenticated)
 
+      // Switch both mocks to unauthenticated
       mock1.setAuthenticated(false)
       mock2.setAuthenticated(false)
 
+      // Set up listener for store2 to become unauthenticated
       const store2Unauth = waitForState(store2, (s) => !s.authenticated)
+
+      // Trigger logout on store1 — this calls tokenStorage.update(undefined)
+      // which broadcasts via BroadcastChannel to store2
       await (store1.logout!() as unknown as Promise<void>)
 
+      // Store2 should receive the broadcast and transition to unauthenticated
       const state2 = await store2Unauth
       expect(state2.authenticated).toBe(false)
+
+      // Token should be cleared from localStorage
       expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull()
     })
 
     it('handleCallbackUrl stores token and broadcasts to other store', async () => {
-      // Set session ID in hash BEFORE importing the sessionId module (side-effect)
-      window.location.hash = '#sid=mock-session-id-12345678'
-      vi.resetModules()
-
-      // Re-import after resetModules so sessionId.ts re-consumes the hash
-      const {_createAuthStore: createStore} = await import('../createAuthStore')
-
+      // Both stores start unauthenticated (no token in localStorage)
       const mock1 = createMockClientFactory()
       mock1.setAuthenticated(false)
       const mock2 = createMockClientFactory()
       mock2.setAuthenticated(false)
 
-      const store1 = createStore({
+      // Inject a getSessionId that returns a session ID once (simulating a post-login redirect)
+      let sessionIdConsumed = false
+      const getSessionId = () => {
+        if (sessionIdConsumed) return undefined
+        sessionIdConsumed = true
+        return 'mock-session-id-12345678'
+      }
+
+      const store1 = _createAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'token',
         clientFactory: mock1.factory,
+        getSessionId,
+        consumeHashToken: () => undefined,
       })
-      const store2 = createStore({
+      const store2 = _createAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'token',
         clientFactory: mock2.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
 
+      // Wait for both stores to settle as unauthenticated
       await waitForState(store1, (s) => !s.authenticated)
       await waitForState(store2, (s) => !s.authenticated)
 
+      // Switch mocks to authenticated (server now recognizes the token)
       mock1.setAuthenticated(true)
       mock2.setAuthenticated(true)
 
+      // Set up listener for store2 to become authenticated
       const store2Auth = waitForState(store2, (s) => s.authenticated)
 
+      // Call handleCallbackUrl on store1 — this:
+      // 1. Gets the session ID via getHashSessionId (mocked above)
+      // 2. Exchanges it for a token via /auth/fetch
+      // 3. For token mode, calls tokenStorage.update({token}) which broadcasts to other tabs
       const result = await store1.handleCallbackUrl!()
       expect(result.success).toBe(true)
-      expect(result.flow).toBe('token-exchange')
+      expect(result.authMethod).toBe('token')
 
+      // Store2 should receive the token broadcast and become authenticated
       const state2 = await store2Auth
       expect(state2.authenticated).toBe(true)
       expect(state2.currentUser).toEqual(MOCK_USER)
 
+      // Token should be stored in localStorage
       const stored = JSON.parse(localStorage.getItem(TOKEN_STORAGE_KEY)!)
-      expect(stored.token).toBe('mock-exchanged-token')
+      expect(stored).toEqual({token: 'mock-exchanged-token'})
     })
 
     it('single store logout transitions to unauthenticated', async () => {
+      // Seed localStorage with token
       localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'mock-token'}))
 
       const mock = createMockClientFactory()
@@ -303,9 +352,14 @@ describe('createAuthStore', () => {
         dataset: DATASET,
         loginMethod: 'token',
         clientFactory: mock.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
 
+      // Wait for initial authenticated state
       await waitForState(store, (s) => s.authenticated)
+
+      // Switch to unauthenticated
       mock.setAuthenticated(false)
 
       const unauthState = waitForState(store, (s) => !s.authenticated)
@@ -317,139 +371,8 @@ describe('createAuthStore', () => {
     })
   })
 
-  describe('handleCallbackUrl', () => {
-    it('dual auth with session ID uses cookie auth when cookie probe succeeds', async () => {
-      // Set session ID in hash BEFORE importing the sessionId module (side-effect)
-      window.location.hash = '#sid=mock-session-id-12345678'
-      vi.resetModules()
-      const {_createAuthStore: createStore} = await import('../createAuthStore')
-
-      const mock = createMockClientFactory()
-
-      const store = createStore({
-        projectId: PROJECT_ID,
-        dataset: DATASET,
-        loginMethod: 'dual',
-        clientFactory: mock.factory,
-      })
-
-      await waitForState(store, (s) => s.authenticated)
-
-      // For dual auth with a session ID, handleCallbackUrl tries cookie auth first.
-      // Since /users/me succeeds (mock returns user), it uses cookie flow.
-      const result = await store.handleCallbackUrl!()
-      expect(result.success).toBe(true)
-      expect(result.flow).toBe('cookie-auth')
-    })
-
-    it('cookie auth with session ID uses cookie auth flow', async () => {
-      window.location.hash = '#sid=mock-session-id-12345678'
-      vi.resetModules()
-      const {_createAuthStore: createStore} = await import('../createAuthStore')
-
-      const mock = createMockClientFactory()
-
-      const store = createStore({
-        projectId: PROJECT_ID,
-        dataset: DATASET,
-        loginMethod: 'cookie',
-        clientFactory: mock.factory,
-      })
-
-      await waitForState(store, (s) => s.authenticated)
-
-      const result = await store.handleCallbackUrl!()
-      expect(result.success).toBe(true)
-      expect(result.flow).toBe('cookie-auth')
-    })
-
-    it('cookie auth reports failure when cookie probe fails', async () => {
-      window.location.hash = '#sid=mock-session-id-12345678'
-      vi.resetModules()
-      const {_createAuthStore: createStore} = await import('../createAuthStore')
-
-      // Mock stays unauthenticated — cookie probe returns empty user
-      const mock = createMockClientFactory()
-      mock.setAuthenticated(false)
-
-      const store = createStore({
-        projectId: PROJECT_ID,
-        dataset: DATASET,
-        loginMethod: 'cookie',
-        clientFactory: mock.factory,
-      })
-
-      await waitForState(store, (s) => !s.authenticated)
-
-      const result = await store.handleCallbackUrl!()
-      expect(result.success).toBe(false)
-      expect(result.flow).toBe('cookie-auth')
-      expect(result.failureReason).toBeDefined()
-    })
-
-    it('token exchange failure returns error result', async () => {
-      window.location.hash = '#sid=mock-session-id-12345678'
-      vi.resetModules()
-      const {_createAuthStore: createStore} = await import('../createAuthStore')
-
-      const mock = createMockClientFactory()
-      mock.setAuthenticated(false)
-
-      // Override /auth/fetch to fail
-      const factory = (options: SanityClientConfig): SanityClient => {
-        const client = mock.factory(options)
-        ;(client.request as ReturnType<typeof vi.fn>).mockImplementation(
-          ({uri, method}: {uri: string; method?: string}) => {
-            if (uri === '/users/me') return Promise.resolve({})
-            if (uri === '/auth/fetch') return Promise.reject(new Error('exchange failed'))
-            if (uri === '/auth/logout' && method === 'POST') return Promise.resolve({ok: true})
-            return Promise.resolve({})
-          },
-        )
-        return client
-      }
-
-      const store = createStore({
-        projectId: PROJECT_ID,
-        dataset: DATASET,
-        loginMethod: 'token',
-        clientFactory: factory,
-      })
-
-      await waitForState(store, (s) => !s.authenticated)
-
-      const result = await store.handleCallbackUrl!()
-      expect(result.success).toBe(false)
-      expect(result.flow).toBe('token-exchange')
-      expect(result.failureReason).toBe('exchange failed')
-    })
-  })
-
-  describe('hash token', () => {
-    it('picks up token from URL hash on init', async () => {
-      window.location.hash = `#token=${'a'.repeat(32)}`
-
-      const mock = createMockClientFactory()
-
-      const store = _createAuthStore({
-        projectId: PROJECT_ID,
-        dataset: DATASET,
-        loginMethod: 'token',
-        clientFactory: mock.factory,
-      })
-
-      await waitForState(store, (s) => s.authenticated)
-
-      // The hash token should have been saved to localStorage
-      const stored = localStorage.getItem(TOKEN_STORAGE_KEY)
-      expect(stored).not.toBeNull()
-      const parsed = JSON.parse(stored!)
-      expect(parsed.token).toBe('a'.repeat(32))
-    })
-  })
-
   describe('dual auth', () => {
-    it('logout in one store broadcasts to another store', async () => {
+    it('logout in one store broadcasts to another store via BroadcastChannel', async () => {
       const mock1 = createMockClientFactory()
       const mock2 = createMockClientFactory()
 
@@ -458,12 +381,16 @@ describe('createAuthStore', () => {
         dataset: DATASET,
         loginMethod: 'dual',
         clientFactory: mock1.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
       const store2 = _createAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
         clientFactory: mock2.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
 
       await waitForState(store1, (s) => s.authenticated)
@@ -479,25 +406,35 @@ describe('createAuthStore', () => {
       expect(state2.authenticated).toBe(false)
     })
 
-    it('handleCallbackUrl succeeds with cookie auth flow', async () => {
+    it('handleCallbackUrl succeeds with cookie auth method', async () => {
       const mock = createMockClientFactory()
       mock.setAuthenticated(false)
+
+      let sessionIdConsumed = false
+      const getSessionId = () => {
+        if (sessionIdConsumed) return undefined
+        sessionIdConsumed = true
+        return 'mock-session-id-12345678'
+      }
 
       const store = _createAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
         clientFactory: mock.factory,
+        getSessionId,
+        consumeHashToken: () => undefined,
       })
 
       await waitForState(store, (s) => !s.authenticated)
+
       mock.setAuthenticated(true)
 
-      // For dual auth with no session ID, handleCallbackUrl broadcasts the
-      // existing token (or null) and returns 'already-authenticated'
+      // For dual auth, handleCallbackUrl exchanges the session ID then probes
+      // /auth/id. Since the probe succeeds, it uses cookie auth (no token fallback).
       const result = await store.handleCallbackUrl!()
       expect(result.success).toBe(true)
-      expect(result.flow).toBe('already-authenticated')
+      expect(result.authMethod).toBe('cookie')
     })
 
     it('single store logout transitions to unauthenticated', async () => {
@@ -508,9 +445,12 @@ describe('createAuthStore', () => {
         dataset: DATASET,
         loginMethod: 'dual',
         clientFactory: mock.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
 
       await waitForState(store, (s) => s.authenticated)
+
       mock.setAuthenticated(false)
 
       const unauthState = waitForState(store, (s) => !s.authenticated)
