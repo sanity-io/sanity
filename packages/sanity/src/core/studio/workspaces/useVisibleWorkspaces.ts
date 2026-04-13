@@ -29,7 +29,10 @@ export function evaluateWorkspaceHidden(
     try {
       return hidden({currentUser: authState.currentUser})
     } catch (error) {
-      console.warn(`Error evaluating \`hidden\` callback for workspace "${workspace.name}":`, error)
+      console.error(
+        `Error evaluating \`hidden\` callback for workspace "${workspace.name}":`,
+        error,
+      )
       return false
     }
   }

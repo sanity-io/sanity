@@ -2,7 +2,7 @@ import {createBrowserHistory, createMemoryHistory} from 'history'
 import {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
 
 import {type RouterHistory} from '../router'
-import {evaluateWorkspaceHidden, useVisibleWorkspaces} from '../workspaces'
+import {useVisibleWorkspaces, useWorkspaces} from '../workspaces'
 import {ActiveWorkspaceMatcherProvider} from './ActiveWorkspaceMatcherProvider'
 import {useSyncPathnameWithWorkspace} from './useSyncPathnameWithWorkspace'
 
@@ -24,47 +24,28 @@ export function ActiveWorkspaceMatcher({
   NotFoundComponent,
   unstable_history: historyProp,
 }: ActiveWorkspaceMatcherProps) {
-  const {allWorkspaces, authStates} = useVisibleWorkspaces()
-  const candidateWorkspaces = useMemo(
-    () => allWorkspaces.filter((workspace) => workspace.hidden !== true),
-    [allWorkspaces],
-  )
+  const allWorkspaces = useWorkspaces()
+  const {visibleWorkspaces, authStates} = useVisibleWorkspaces()
   const history = useMemo(() => historyProp || createHistory(), [historyProp])
-
-  const firstVisibleWorkspace = useMemo(
-    () =>
-      candidateWorkspaces.find(
-        (workspace) => !evaluateWorkspaceHidden(workspace, authStates?.[workspace.name]),
-      ),
-    [candidateWorkspaces, authStates],
-  )
 
   const setActiveWorkspaceName = useCallback(
     (workspaceName: string) => {
-      const foundWorkspace = candidateWorkspaces.find(
-        (workspace) => workspace.name === workspaceName,
-      )
-      if (
-        foundWorkspace &&
-        !evaluateWorkspaceHidden(foundWorkspace, authStates?.[foundWorkspace.name])
-      ) {
+      const foundWorkspace = visibleWorkspaces.find((workspace) => workspace.name === workspaceName)
+      if (foundWorkspace) {
         history.push(foundWorkspace.basePath)
       }
     },
-    [history, candidateWorkspaces, authStates],
+    [history, visibleWorkspaces],
   )
 
   const handleNavigateToDefaultWorkspace = useCallback(() => {
+    const firstVisibleWorkspace = visibleWorkspaces[0]
     if (firstVisibleWorkspace) {
       setActiveWorkspaceName(firstVisibleWorkspace.name)
     }
-  }, [setActiveWorkspaceName, firstVisibleWorkspace])
+  }, [setActiveWorkspaceName, visibleWorkspaces])
 
-  const allStaticallyHidden = candidateWorkspaces.length === 0
-  const result = useSyncPathnameWithWorkspace(
-    history,
-    allStaticallyHidden ? allWorkspaces : candidateWorkspaces,
-  )
+  const result = useSyncPathnameWithWorkspace(history, allWorkspaces)
 
   useEffect(() => {
     if (result.type === 'redirect') {
@@ -79,16 +60,16 @@ export function ActiveWorkspaceMatcher({
   switch (result.type) {
     case 'match': {
       const matchedWorkspace = result.workspace
-      const matchedWorkspaceIsHidden = evaluateWorkspaceHidden(
-        matchedWorkspace,
-        authStates?.[matchedWorkspace.name],
-      )
 
       if (typeof matchedWorkspace.hidden === 'function' && authStates === undefined) {
         return <LoadingComponent />
       }
 
-      if (matchedWorkspaceIsHidden) {
+      const matchedWorkspaceIsVisible = visibleWorkspaces.some(
+        (workspace) => workspace.name === matchedWorkspace.name,
+      )
+
+      if (!matchedWorkspaceIsVisible) {
         return <NotFoundComponent onNavigateToDefaultWorkspace={handleNavigateToDefaultWorkspace} />
       }
 

@@ -1,7 +1,7 @@
 import {render, screen} from '@testing-library/react'
 import {createMemoryHistory} from 'history'
 import {type ReactNode} from 'react'
-import {VisibleWorkspacesContext} from 'sanity/_singletons'
+import {VisibleWorkspacesContext, WorkspacesContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
 
 import {type WorkspaceSummary} from '../../../config/types'
@@ -75,7 +75,6 @@ function createContextValue(
     visibleWorkspaces: workspaces.filter(
       (workspace) => !evaluateWorkspaceHidden(workspace, authStates?.[workspace.name]),
     ),
-    allWorkspaces: workspaces,
     authStates,
   }
 }
@@ -83,14 +82,18 @@ function createContextValue(
 function TestWrapper({
   children,
   contextValue,
+  allWorkspaces,
 }: {
   children: ReactNode
   contextValue: VisibleWorkspacesContextValue
+  allWorkspaces: WorkspaceSummary[]
 }) {
   return (
-    <VisibleWorkspacesContext.Provider value={contextValue}>
-      {children}
-    </VisibleWorkspacesContext.Provider>
+    <WorkspacesContext.Provider value={allWorkspaces}>
+      <VisibleWorkspacesContext.Provider value={contextValue}>
+        {children}
+      </VisibleWorkspacesContext.Provider>
+    </WorkspacesContext.Provider>
   )
 }
 
@@ -98,12 +101,13 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
   it('renders children when workspace is visible', () => {
     const workspace = createWorkspace({name: 'default', basePath: '/default'})
     const authState = createAuthState()
-    const contextValue = createContextValue([workspace], {default: authState})
+    const workspaces = [workspace]
+    const contextValue = createContextValue(workspaces, {default: authState})
 
     const history = createMemoryHistory({initialEntries: ['/default']})
 
     render(
-      <TestWrapper contextValue={contextValue}>
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
         <ActiveWorkspaceMatcher
           unstable_history={history}
           LoadingComponent={LoadingComponent}
@@ -126,12 +130,13 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
       hidden: () => true,
     })
     const authState = createAuthState()
-    const contextValue = createContextValue([workspace], {admin: authState})
+    const workspaces = [workspace]
+    const contextValue = createContextValue(workspaces, {admin: authState})
 
     const history = createMemoryHistory({initialEntries: ['/admin']})
 
     render(
-      <TestWrapper contextValue={contextValue}>
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
         <ActiveWorkspaceMatcher
           unstable_history={history}
           LoadingComponent={LoadingComponent}
@@ -152,12 +157,13 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
       basePath: '/admin',
       hidden: () => true,
     })
-    const contextValue = createContextValue([workspace], undefined)
+    const workspaces = [workspace]
+    const contextValue = createContextValue(workspaces, undefined)
 
     const history = createMemoryHistory({initialEntries: ['/admin']})
 
     render(
-      <TestWrapper contextValue={contextValue}>
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
         <ActiveWorkspaceMatcher
           unstable_history={history}
           LoadingComponent={LoadingComponent}
@@ -181,7 +187,8 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     })
     const visibleWorkspace = createWorkspace({name: 'visible', basePath: '/visible'})
 
-    const contextValue = createContextValue([hiddenWorkspace, visibleWorkspace], {
+    const workspaces = [hiddenWorkspace, visibleWorkspace]
+    const contextValue = createContextValue(workspaces, {
       hidden: createAuthState(),
       visible: createAuthState(),
     })
@@ -189,7 +196,7 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     const history = createMemoryHistory({initialEntries: ['/hidden']})
 
     render(
-      <TestWrapper contextValue={contextValue}>
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
         <ActiveWorkspaceMatcher
           unstable_history={history}
           LoadingComponent={LoadingComponent}
@@ -225,12 +232,13 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
       },
     })
 
-    const contextValue = createContextValue([workspace], {admin: authState})
+    const workspaces = [workspace]
+    const contextValue = createContextValue(workspaces, {admin: authState})
 
     const history = createMemoryHistory({initialEntries: ['/admin']})
 
     render(
-      <TestWrapper contextValue={contextValue}>
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
         <ActiveWorkspaceMatcher
           unstable_history={history}
           LoadingComponent={LoadingComponent}
@@ -249,7 +257,8 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     const hiddenOne = createWorkspace({name: 'hidden-one', basePath: '/hidden-one', hidden: true})
     const hiddenTwo = createWorkspace({name: 'hidden-two', basePath: '/hidden-two', hidden: true})
 
-    const contextValue = createContextValue([hiddenOne, hiddenTwo], {
+    const workspaces = [hiddenOne, hiddenTwo]
+    const contextValue = createContextValue(workspaces, {
       'hidden-one': createAuthState(),
       'hidden-two': createAuthState(),
     })
@@ -258,7 +267,7 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
 
     expect(() =>
       render(
-        <TestWrapper contextValue={contextValue}>
+        <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
           <ActiveWorkspaceMatcher
             unstable_history={history}
             LoadingComponent={LoadingComponent}

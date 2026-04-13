@@ -10,7 +10,6 @@ import {useWorkspaces} from './useWorkspaces'
 /** @internal */
 export interface VisibleWorkspacesContextValue {
   visibleWorkspaces: WorkspaceSummary[]
-  allWorkspaces: WorkspaceSummary[]
   authStates: Record<string, AuthState> | undefined
 }
 
@@ -24,7 +23,6 @@ export function VisibleWorkspacesProvider({children}: {children: ReactNode}) {
       visibleWorkspaces: allWorkspaces.filter(
         (workspace) => !evaluateWorkspaceHidden(workspace, authStates?.[workspace.name]),
       ),
-      allWorkspaces,
       authStates,
     }),
     [allWorkspaces, authStates],

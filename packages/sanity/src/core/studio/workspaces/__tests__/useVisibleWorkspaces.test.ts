@@ -92,8 +92,8 @@ describe('useVisibleWorkspaces', () => {
         expect(hiddenCallback).toHaveBeenCalledWith({currentUser: null})
       })
 
-      it('returns false and logs a warning when the callback throws', () => {
-        const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      it('returns false and logs an error when the callback throws', () => {
+        const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
         const callbackError = new Error('callback failed')
         const workspace = createWorkspace({
           name: 'broken-workspace',
@@ -103,12 +103,12 @@ describe('useVisibleWorkspaces', () => {
         })
 
         expect(evaluateWorkspaceHidden(workspace, createAuthState())).toBe(false)
-        expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
           'Error evaluating `hidden` callback for workspace "broken-workspace":',
           callbackError,
         )
 
-        consoleWarnSpy.mockRestore()
+        consoleErrorSpy.mockRestore()
       })
     })
 
