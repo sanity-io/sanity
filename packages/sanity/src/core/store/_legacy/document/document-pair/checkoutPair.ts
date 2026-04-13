@@ -14,6 +14,7 @@ import {
   mergeMap,
   scan,
   share,
+  startWith,
   switchMap,
   take,
   takeUntil,
@@ -52,6 +53,9 @@ import {operationsApiClient} from './utils/operationsApiClient'
 
 /** Timeout on request that fetches shard name before reporting latency */
 const FETCH_SHARD_TIMEOUT = 20_000
+
+/** TTL for unmatched entries in the latency tracking pending array */
+const PENDING_ENTRY_TTL = 60_000
 
 /** Duration after which a commit is considered slow and a warning is surfaced to the user */
 const SLOW_COMMIT_TIMEOUT_MS = 50_000
@@ -260,12 +264,14 @@ type LatencyTrackingEvent = {
   perfTimings?: PerfTimings
 }
 
-type LatencyTrackingEntry =
+type LatencyTrackingPendingEntry =
   | {type: 'submit'; transactionId: string; timestamp: Date; perfTimings?: PerfTimings}
   | {type: 'receive'; transactionId: string; timestamp: Date}
 
+type LatencyTrackingEntry = LatencyTrackingPendingEntry | {type: 'reset'}
+
 type LatencyTrackingState = {
-  pending: LatencyTrackingEntry[]
+  pending: LatencyTrackingPendingEntry[]
   event: LatencyTrackingEvent | undefined
 }
 
@@ -431,11 +437,16 @@ function reportLatency(options: {
 }) {
   const {client, commits$, listenerEvents$, onReportLatency, onReportMutationPerformance} = options
   // Note: this request happens once and the result is then cached indefinitely
-  const shardInfo = fetch(client.getUrl(client.getDataUrl('ping')), {
-    signal: AbortSignal.timeout(FETCH_SHARD_TIMEOUT),
-  })
-    .then((response) => response.headers.get('X-Sanity-Shard') || undefined)
-    .catch(() => undefined)
+  let shardInfo: Promise<string | undefined>
+  try {
+    shardInfo = fetch(client.getUrl(client.getDataUrl('ping')), {
+      signal: AbortSignal.timeout(FETCH_SHARD_TIMEOUT),
+    })
+      .then((response) => response.headers.get('X-Sanity-Shard') || undefined)
+      .catch(() => undefined)
+  } catch {
+    shardInfo = Promise.resolve(undefined)
+  }
 
   const submittedMutations = commits$.pipe(
     map(
@@ -461,16 +472,32 @@ function reportLatency(options: {
     share(),
   )
 
-  return merge(submittedMutations, receivedMutations).pipe(
+  // Clear pending entries on reconnection to avoid matching stale pre-reconnect
+  // submit entries with post-reconnect listener events (which would produce
+  // wildly inaccurate latency measurements).
+  const reconnectionResets = listenerEvents$.pipe(
+    filter((ev) => ev.type === 'reconnect' || ev.type === 'welcome' || ev.type === 'welcomeback'),
+    map((): LatencyTrackingEntry => ({type: 'reset'})),
+  )
+
+  return merge(submittedMutations, receivedMutations, reconnectionResets).pipe(
     scan(
       (state: LatencyTrackingState, event): LatencyTrackingState => {
-        const matchingIndex = state.pending.findIndex(
-          (e) => e.transactionId === event.transactionId,
+        if (event.type === 'reset') {
+          return {event: undefined, pending: []}
+        }
+
+        // Evict stale entries to prevent unbounded growth from remote/duplicate mutations
+        const now = Date.now()
+        const pending = state.pending.filter((e) => now - e.timestamp.getTime() < PENDING_ENTRY_TTL)
+
+        const matchingIndex = pending.findIndex(
+          (e) => e.transactionId === event.transactionId && e.type !== event.type,
         )
         if (matchingIndex > -1) {
-          const matching = state.pending[matchingIndex]
+          const matching = pending[matchingIndex]
           const [submitEvent, receiveEvent] =
-            matching.type == 'submit' ? [matching, event] : [event, matching]
+            matching.type === 'submit' ? [matching, event] : [event, matching]
           return {
             event: {
               transactionId: event.transactionId,
@@ -479,10 +506,14 @@ function reportLatency(options: {
               deltaMs: receiveEvent.timestamp.getTime() - submitEvent.timestamp.getTime(),
               perfTimings: submitEvent.type === 'submit' ? submitEvent.perfTimings : undefined,
             },
-            pending: state.pending.toSpliced(matchingIndex, 1),
+            // Remove the matched entry and any other entries with the same transactionId
+            // (e.g., duplicate receive events from multi-document transactions)
+            pending: pending.filter(
+              (e, i) => i !== matchingIndex && e.transactionId !== event.transactionId,
+            ),
           }
         }
-        return {event: undefined, pending: state.pending.concat(event)}
+        return {event: undefined, pending: pending.concat(event)}
       },
       {event: undefined, pending: []},
     ),

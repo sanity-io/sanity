@@ -865,6 +865,53 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
     sub.unsubscribe()
   })
 
+  test('pipeline survives when client.getUrl throws synchronously', async () => {
+    const onReportLatency = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: () => {
+        throw new Error('client not configured')
+      },
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'test'}}]))
+    draft.commit()
+
+    commitSubject.next({transactionId: 'tx1', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    listenerSubject.next(createMutationEvent('tx1', 'draftId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Should report with shard=undefined since getUrl threw
+    expect(onReportLatency).toHaveBeenCalledWith({
+      latencyMs: expect.any(Number),
+      shard: undefined,
+      transactionId: 'tx1',
+    })
+
+    sub.unsubscribe()
+  })
+
   test('pipeline continues when onReportLatency callback throws', async () => {
     const onReportLatency = vi.fn().mockImplementationOnce(() => {
       throw new Error('callback error')
@@ -1040,6 +1087,678 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
 
     sub.unsubscribe()
   })
+
+  test('evicts stale pending entries after PENDING_ENTRY_TTL (60s)', async () => {
+    const onReportLatency = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Submit a commit — this adds a 'submit' entry to pending
+    draft.mutate(draft.patch([{set: {title: 'test'}}]))
+    draft.commit()
+
+    commitSubject.next({transactionId: 'tx-stale', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Advance past the 60s TTL without receiving a matching listener event
+    await vi.advanceTimersByTimeAsync(61_000)
+
+    // Now do a fresh commit cycle — the stale entry should be evicted during the scan
+    const commitSubject2 = new Subject()
+    testClient.dataRequest.mockReturnValue(commitSubject2)
+
+    draft.mutate(draft.patch([{set: {title: 'test2'}}]))
+    draft.commit()
+
+    commitSubject2.next({transactionId: 'tx-fresh', results: []})
+    commitSubject2.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Now inject the stale listener event — it should NOT match because the entry was evicted
+    listenerSubject.next(createMutationEvent('tx-stale', 'draftId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Only the fresh cycle should report (once it gets its listener event)
+    expect(onReportLatency).not.toHaveBeenCalledWith(
+      expect.objectContaining({transactionId: 'tx-stale'}),
+    )
+
+    // Complete the fresh cycle
+    listenerSubject.next(createMutationEvent('tx-fresh', 'draftId', 'rev2', 'rev3'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onReportLatency).toHaveBeenCalledWith(
+      expect.objectContaining({transactionId: 'tx-fresh'}),
+    )
+
+    sub.unsubscribe()
+  })
+
+  test('evicts stale receive entries from remote mutations after PENDING_ENTRY_TTL', async () => {
+    const onReportLatency = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Inject several remote mutation events (no matching commits — these are from other users)
+    listenerSubject.next(createMutationEvent('remote-tx-1', 'draftId', 'any', 'rev2'))
+    listenerSubject.next(createMutationEvent('remote-tx-2', 'draftId', 'rev2', 'rev3'))
+    listenerSubject.next(createMutationEvent('remote-tx-3', 'draftId', 'rev3', 'rev4'))
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Advance past the 60s TTL — these receive entries should be evicted
+    await vi.advanceTimersByTimeAsync(61_000)
+
+    // Now do a normal commit cycle — should work cleanly without stale entries interfering
+    draft.mutate(draft.patch([{set: {title: 'my edit'}}]))
+    draft.commit()
+
+    commitSubject.next({transactionId: 'tx-local', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    listenerSubject.next(createMutationEvent('tx-local', 'draftId', 'rev4', 'rev5'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Only the local commit should trigger a latency report
+    expect(onReportLatency).toHaveBeenCalledTimes(1)
+    expect(onReportLatency).toHaveBeenCalledWith(
+      expect.objectContaining({transactionId: 'tx-local'}),
+    )
+
+    sub.unsubscribe()
+  })
+
+  test('latency tracking works through server actions path', async () => {
+    const onReportLatency = vi.fn()
+    const listenerSubject = new Subject()
+    const actionSubject = new Subject()
+
+    const testClient: Record<string, any> = {
+      ...client,
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => actionSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+    testClient.withConfig = vi.fn(() => testClient)
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(true), {
+      onReportLatency,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'test via actions'}}]))
+    draft.commit()
+
+    // Resolve the action with a transactionId
+    actionSubject.next({transactionId: 'tx-action-1'})
+    actionSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Inject matching listener mutation event
+    listenerSubject.next(createMutationEvent('tx-action-1', 'draftId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onReportLatency).toHaveBeenCalledWith({
+      latencyMs: expect.any(Number),
+      shard: 'test-shard',
+      transactionId: 'tx-action-1',
+    })
+
+    sub.unsubscribe()
+  })
+
+  test('duplicate listener events for same transactionId do not produce spurious matches', async () => {
+    const onReportLatency = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'test'}}]))
+    draft.commit()
+
+    // Simulate multi-document transaction: two listener events with the same transactionId
+    // (e.g., draft and published both mutated in the same server action)
+    listenerSubject.next(createMutationEvent('tx-multi', 'draftId', 'any', 'rev2'))
+    listenerSubject.next(createMutationEvent('tx-multi', 'publishedId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+
+    // The two receive events should NOT match each other (they're both receives)
+    expect(onReportLatency).not.toHaveBeenCalled()
+
+    // Now resolve the commit — the submit should match one of the receives
+    commitSubject.next({transactionId: 'tx-multi', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Should report exactly once (submit matched with the first receive)
+    expect(onReportLatency).toHaveBeenCalledTimes(1)
+    expect(onReportLatency).toHaveBeenCalledWith(
+      expect.objectContaining({transactionId: 'tx-multi'}),
+    )
+
+    sub.unsubscribe()
+  })
+
+  test('latencyMs can be negative when listener arrives before commit resolves', async () => {
+    const onReportLatency = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'test'}}]))
+    draft.commit()
+
+    // Listener mutation arrives BEFORE commit resolves
+    listenerSubject.next(createMutationEvent('tx1', 'draftId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Advance time so that the submit timestamp is later than the receive timestamp
+    await vi.advanceTimersByTimeAsync(100)
+
+    commitSubject.next({transactionId: 'tx1', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onReportLatency).toHaveBeenCalledTimes(1)
+    // Raw measurement: negative means listener beat the HTTP response
+    expect(onReportLatency.mock.calls[0][0].latencyMs).toBeLessThan(0)
+
+    sub.unsubscribe()
+  })
+
+  test('welcomeback event clears stale pending entries', async () => {
+    const onReportLatency = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Mutate and commit — creates a submit entry
+    draft.mutate(draft.patch([{set: {title: 'test'}}]))
+    draft.commit()
+
+    commitSubject.next({transactionId: 'tx-before-welcomeback', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Inject a welcomeback event — should clear all pending entries just like reconnect
+    listenerSubject.next({type: 'welcomeback'})
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Inject a listener mutation with the old txId — should NOT match
+    listenerSubject.next(createMutationEvent('tx-before-welcomeback', 'draftId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onReportLatency).not.toHaveBeenCalled()
+
+    sub.unsubscribe()
+  })
+
+  test('reconnection clears stale pending entries', async () => {
+    const onReportLatency = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Mutate and commit — creates a submit entry with txId 'tx-before-reconnect'
+    draft.mutate(draft.patch([{set: {title: 'test'}}]))
+    draft.commit()
+
+    commitSubject.next({transactionId: 'tx-before-reconnect', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Inject a reconnect event — should clear all pending entries
+    listenerSubject.next({type: 'reconnect'})
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Inject a listener mutation with the old txId — should NOT match because reconnection cleared pending
+    listenerSubject.next(createMutationEvent('tx-before-reconnect', 'draftId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onReportLatency).not.toHaveBeenCalled()
+
+    sub.unsubscribe()
+  })
+
+  test('multi-doc orphaned receives are cleaned up after match', async () => {
+    const onReportLatency = vi.fn()
+    const listenerSubject = new Subject()
+    let commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // First mutation cycle
+    draft.mutate(draft.patch([{set: {title: 'multi-doc test'}}]))
+    draft.commit()
+
+    // Inject 3 listener mutation events with the same txId but different documentIds
+    // (simulates a multi-document transaction)
+    listenerSubject.next(createMutationEvent('tx-multi-doc', 'draftId', 'any', 'rev2'))
+    listenerSubject.next(createMutationEvent('tx-multi-doc', 'otherDoc1', 'any', 'rev2'))
+    listenerSubject.next(createMutationEvent('tx-multi-doc', 'otherDoc2', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Now resolve the commit with the same txId
+    commitSubject.next({transactionId: 'tx-multi-doc', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Should report exactly once (submit matched with one receive, orphans cleaned up)
+    expect(onReportLatency).toHaveBeenCalledTimes(1)
+    expect(onReportLatency).toHaveBeenCalledWith(
+      expect.objectContaining({transactionId: 'tx-multi-doc'}),
+    )
+
+    // Second mutation cycle — proves the pipeline is clean and orphans don't interfere
+    commitSubject = new Subject()
+    testClient.dataRequest.mockReturnValue(commitSubject)
+
+    draft.mutate(draft.patch([{set: {title: 'second cycle'}}]))
+    draft.commit()
+
+    commitSubject.next({transactionId: 'tx-second', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    listenerSubject.next(createMutationEvent('tx-second', 'draftId', 'rev2', 'rev3'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Should produce exactly one more report (total 2)
+    expect(onReportLatency).toHaveBeenCalledTimes(2)
+    expect(onReportLatency).toHaveBeenLastCalledWith(
+      expect.objectContaining({transactionId: 'tx-second'}),
+    )
+
+    sub.unsubscribe()
+  })
+
+  test('reports latency and mutation performance for published document path', async () => {
+    const onReportLatency = vi.fn()
+    const onReportMutationPerformance = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency,
+      onReportMutationPerformance,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Use PUBLISHED instead of draft
+    published.mutate(published.patch([{set: {title: 'published edit'}}]))
+    await vi.advanceTimersByTimeAsync(100) // debounce time
+    published.commit()
+
+    await vi.advanceTimersByTimeAsync(200) // API time
+    commitSubject.next({transactionId: 'tx-pub', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Listener event for the PUBLISHED document ID
+    await vi.advanceTimersByTimeAsync(50) // callback delay
+    listenerSubject.next(createMutationEvent('tx-pub', 'publishedId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onReportLatency).toHaveBeenCalledTimes(1)
+    expect(onReportLatency).toHaveBeenCalledWith({
+      latencyMs: expect.any(Number),
+      shard: 'test-shard',
+      transactionId: 'tx-pub',
+    })
+
+    expect(onReportMutationPerformance).toHaveBeenCalledTimes(1)
+    const perfEvent = onReportMutationPerformance.mock.calls[0][0]
+    expect(perfEvent.transactionId).toBe('tx-pub')
+    expect(perfEvent.debounceMs).toBeGreaterThanOrEqual(100)
+    expect(perfEvent.apiMs).toBeGreaterThanOrEqual(200)
+    expect(perfEvent.callbackMs).toBeGreaterThanOrEqual(perfEvent.apiMs)
+    expect(perfEvent.shard).toBe('test-shard')
+
+    sub.unsubscribe()
+  })
+
+  test('firstMutationReceivedAt resets on snapshot (reconnection), preventing stale debounceMs', async () => {
+    const onReportMutationPerformance = vi.fn()
+    const listenerSubject = new Subject()
+    let commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportMutationPerformance,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Step 1: Mutate the draft — this sets firstMutationReceivedAt
+    draft.mutate(draft.patch([{set: {title: 'before snapshot'}}]))
+
+    // Step 2: Advance time significantly (simulating a long gap before reconnection)
+    await vi.advanceTimersByTimeAsync(5000)
+
+    // Step 3: Inject a snapshot event — simulates reconnection resetting the document
+    listenerSubject.next({
+      type: 'snapshot',
+      documentId: 'draftId',
+      document: {_id: 'draftId', _type: 'any', _rev: 'newRev', _createdAt: '', _updatedAt: ''},
+    })
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Step 4: Fresh commit subject for the new mutation
+    commitSubject = new Subject()
+    testClient.dataRequest.mockReturnValue(commitSubject)
+
+    // Step 5: Mutate again AFTER the snapshot and commit
+    draft.mutate(draft.patch([{set: {title: 'after snapshot'}}]))
+    await vi.advanceTimersByTimeAsync(50) // small debounce
+    draft.commit()
+
+    await vi.advanceTimersByTimeAsync(100)
+    commitSubject.next({transactionId: 'tx-post-snapshot', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    listenerSubject.next(createMutationEvent('tx-post-snapshot', 'draftId', 'newRev', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onReportMutationPerformance).toHaveBeenCalledTimes(1)
+    const event = onReportMutationPerformance.mock.calls[0][0]
+    // debounceMs should be ~50ms (from post-snapshot mutation), NOT ~5050ms
+    // (which would happen if firstMutationReceivedAt wasn't reset by the snapshot)
+    expect(event.debounceMs).toBeGreaterThanOrEqual(50)
+    expect(event.debounceMs).toBeLessThan(1000)
+    expect(event.transactionId).toBe('tx-post-snapshot')
+
+    sub.unsubscribe()
+  })
+
+  test('handles concurrent draft and published commits independently', async () => {
+    const onReportLatency = vi.fn()
+    const listenerSubject = new Subject()
+    const draftCommitSubject = new Subject()
+    const publishedCommitSubject = new Subject()
+    let callCount = 0
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => {
+        callCount++
+        return callCount === 1 ? draftCommitSubject : publishedCommitSubject
+      }),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Start both draft and published commits concurrently
+    draft.mutate(draft.patch([{set: {title: 'draft edit'}}]))
+    draft.commit()
+
+    published.mutate(published.patch([{set: {title: 'published edit'}}]))
+    published.commit()
+
+    // Resolve both commits with different transactionIds
+    draftCommitSubject.next({transactionId: 'tx-draft', results: []})
+    draftCommitSubject.complete()
+    publishedCommitSubject.next({transactionId: 'tx-pub', results: []})
+    publishedCommitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Inject listener events for both
+    listenerSubject.next(createMutationEvent('tx-draft', 'draftId', 'any', 'rev2'))
+    listenerSubject.next(createMutationEvent('tx-pub', 'publishedId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Both should be reported independently
+    expect(onReportLatency).toHaveBeenCalledTimes(2)
+    expect(onReportLatency).toHaveBeenCalledWith(
+      expect.objectContaining({transactionId: 'tx-draft'}),
+    )
+    expect(onReportLatency).toHaveBeenCalledWith(expect.objectContaining({transactionId: 'tx-pub'}))
+
+    sub.unsubscribe()
+  })
+
+  test('debounceMs reflects time from first mutation, not last', async () => {
+    const onReportMutationPerformance = vi.fn()
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportMutationPerformance,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // First mutation at T=0 (sets firstMutationReceivedAt)
+    draft.mutate(draft.patch([{set: {title: 'first'}}]))
+
+    // More mutations at T+100 and T+200 (should NOT update firstMutationReceivedAt)
+    await vi.advanceTimersByTimeAsync(100)
+    draft.mutate(draft.patch([{set: {title: 'second'}}]))
+
+    await vi.advanceTimersByTimeAsync(100)
+    draft.mutate(draft.patch([{set: {title: 'third'}}]))
+
+    // Commit at T+300 (debounce should be ~300, not ~100 from last mutation)
+    await vi.advanceTimersByTimeAsync(100)
+    draft.commit()
+
+    await vi.advanceTimersByTimeAsync(100)
+    commitSubject.next({transactionId: 'tx1', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    listenerSubject.next(createMutationEvent('tx1', 'draftId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onReportMutationPerformance).toHaveBeenCalledTimes(1)
+    const event = onReportMutationPerformance.mock.calls[0][0]
+    // debounceMs should reflect time from FIRST mutation to API request (~300ms)
+    expect(event.debounceMs).toBeGreaterThanOrEqual(300)
+    // Should NOT be close to 100 (which would mean it measured from last mutation)
+    expect(event.debounceMs).toBeLessThan(500)
+
+    sub.unsubscribe()
+  })
 })
 
 describe('checkoutPair -- slow commit warning', () => {
@@ -1207,6 +1926,47 @@ describe('checkoutPair -- slow commit warning', () => {
 
     await vi.advanceTimersByTimeAsync(50_000)
     expect(onSlowCommit).toHaveBeenCalledTimes(2)
+
+    sub.unsubscribe()
+  })
+
+  test('slow commit timer cancelled by pending end event', async () => {
+    const onSlowCommit = vi.fn()
+    const listenerSubject = new Subject()
+
+    const slowClient = {
+      ...client,
+      dataRequest: vi.fn(() => NEVER),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+    }
+
+    const {draft, published} = checkoutPair(slowClient as any as SanityClient, idPair, of(false), {
+      onSlowCommit,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Start a commit that will never resolve HTTP-wise
+    draft.mutate(draft.patch([{set: {title: 'hanging save'}}]))
+    draft.commit()
+
+    // Advance to 40s (before 50s threshold)
+    await vi.advanceTimersByTimeAsync(40_000)
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    // Inject pending end event — simulates the server acknowledging the mutation
+    // via WebSocket while the HTTP request is still hanging
+    listenerSubject.next({type: 'pending', phase: 'end'})
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Advance past 50s — timer should have been cancelled by the pending end event
+    await vi.advanceTimersByTimeAsync(15_000)
+    expect(onSlowCommit).not.toHaveBeenCalled()
 
     sub.unsubscribe()
   })
