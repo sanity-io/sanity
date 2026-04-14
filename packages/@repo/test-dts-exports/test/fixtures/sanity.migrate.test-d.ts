@@ -3,9 +3,13 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
+  ALLOWED_PROPERTIES,
+  AllowedMethods,
+  AnyArray,
   AnyOp,
   APIConfig,
   append,
+  ArrayElement,
   ArrayOp,
   AsyncIterableMigration,
   at,
@@ -30,6 +34,7 @@ import type {
   DocumentMigrationReturnValue,
   dryRun,
   ExportAPIConfig,
+  FetchOptions,
   filter,
   fromDocuments,
   fromExportArchive,
@@ -55,13 +60,16 @@ import type {
   MigrationContext,
   MigrationProgress,
   MigrationRunnerConfig,
+  MigrationRunnerOptions,
   Mutation,
   NodeMigration,
   NodeMigrationReturnValue,
   NodePatch,
   NodePatchList,
+  NormalizeReadOnlyArray,
   NumberOp,
   Operation,
+  Optional,
   parse,
   parseJSON,
   patch,
@@ -73,6 +81,7 @@ import type {
   RelativePosition,
   replace,
   ReplaceOp,
+  RestrictedClient,
   run,
   safeJsonParser,
   SanityDocument,
@@ -89,14 +98,25 @@ import type {
   toFetchOptionsIterable,
   transaction,
   Transaction,
+  TransactionPayload,
   truncate,
   TruncateOp,
+  Tuplify,
   unset,
   UnsetOp,
 } from 'sanity/migrate'
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/migrate', () => {
+  test('ALLOWED_PROPERTIES', () => {
+    expectTypeOf<typeof ALLOWED_PROPERTIES>().not.toBeNever()
+  })
+  test('AllowedMethods', () => {
+    expectTypeOf<AllowedMethods>().not.toBeNever()
+  })
+  test('AnyArray', () => {
+    expectTypeOf<AnyArray<any>>().not.toBeNever()
+  })
   test('AnyOp', () => {
     expectTypeOf<AnyOp>().not.toBeNever()
   })
@@ -105,6 +125,9 @@ describe('sanity/migrate', () => {
   })
   test('append', () => {
     expectTypeOf<typeof append>().toBeFunction()
+  })
+  test('ArrayElement', () => {
+    expectTypeOf<ArrayElement<any>>().not.toBeNever()
   })
   test('ArrayOp', () => {
     expectTypeOf<ArrayOp>().not.toBeNever()
@@ -177,6 +200,9 @@ describe('sanity/migrate', () => {
   })
   test('ExportAPIConfig', () => {
     expectTypeOf<ExportAPIConfig>().toBeObject()
+  })
+  test('FetchOptions', () => {
+    expectTypeOf<FetchOptions>().toBeObject()
   })
   test('filter', () => {
     expectTypeOf<typeof filter>().toBeFunction()
@@ -253,6 +279,9 @@ describe('sanity/migrate', () => {
   test('MigrationRunnerConfig', () => {
     expectTypeOf<MigrationRunnerConfig>().toBeObject()
   })
+  test('MigrationRunnerOptions', () => {
+    expectTypeOf<MigrationRunnerOptions>().toBeObject()
+  })
   test('Mutation', () => {
     expectTypeOf<Mutation<any>>().not.toBeNever()
   })
@@ -268,11 +297,17 @@ describe('sanity/migrate', () => {
   test('NodePatchList', () => {
     expectTypeOf<NodePatchList>().not.toBeNever()
   })
+  test('NormalizeReadOnlyArray', () => {
+    expectTypeOf<NormalizeReadOnlyArray<any>>().not.toBeNever()
+  })
   test('NumberOp', () => {
     expectTypeOf<NumberOp>().not.toBeNever()
   })
   test('Operation', () => {
     expectTypeOf<Operation>().not.toBeNever()
+  })
+  test('Optional', () => {
+    expectTypeOf<Optional<any, any>>().not.toBeNever()
   })
   test('parse', () => {
     expectTypeOf<typeof parse>().toBeFunction()
@@ -306,6 +341,9 @@ describe('sanity/migrate', () => {
   })
   test('ReplaceOp', () => {
     expectTypeOf<ReplaceOp<any, any>>().not.toBeNever()
+  })
+  test('RestrictedClient', () => {
+    expectTypeOf<RestrictedClient>().not.toBeNever()
   })
   test('run', () => {
     expectTypeOf<typeof run>().toBeFunction()
@@ -356,11 +394,17 @@ describe('sanity/migrate', () => {
   test('Transaction', () => {
     expectTypeOf<Transaction>().toBeObject()
   })
+  test('TransactionPayload', () => {
+    expectTypeOf<TransactionPayload>().toBeObject()
+  })
   test('truncate', () => {
     expectTypeOf<typeof truncate>().toBeFunction()
   })
   test('TruncateOp', () => {
     expectTypeOf<TruncateOp>().not.toBeNever()
+  })
+  test('Tuplify', () => {
+    expectTypeOf<Tuplify<any>>().not.toBeNever()
   })
   test('unset', () => {
     expectTypeOf<typeof unset>().not.toBeNever()

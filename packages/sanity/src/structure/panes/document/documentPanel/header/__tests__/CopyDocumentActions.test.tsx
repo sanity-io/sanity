@@ -1,21 +1,11 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {usePerspective} from 'sanity'
-import {
-  type Mock,
-  type MockedFunction,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest'
+import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {usePaneRouter} from '../../../../../components'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
-import {type DocumentPaneInfoContextValue} from '../../../DocumentPaneContext'
 import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'
 import {CopyDocumentActions} from '../CopyDocumentActions'
 
@@ -76,9 +66,7 @@ vi.mock('@sanity/telemetry/react', () => ({
 
 const mockUsePerspective = usePerspective as Mock
 const mockUsePaneRouter = usePaneRouter as Mock
-const mockUseDocumentPaneInfo = useDocumentPaneInfo as MockedFunction<
-  () => Partial<DocumentPaneInfoContextValue>
->
+const mockUseDocumentPaneInfo = useDocumentPaneInfo as Mock
 let wrapper: React.ComponentType<{children: React.ReactNode}>
 
 beforeAll(async () => {
@@ -99,6 +87,7 @@ describe('CopyDocumentActions', () => {
     mockUseDocumentPaneInfo.mockReturnValue({
       documentType: 'article',
       documentId: 'doc-123',
+      schemaType: {liveEdit: false},
     })
   })
 
@@ -197,6 +186,19 @@ describe('CopyDocumentActions', () => {
       await clickMenuItem('copy-document-id')
 
       expect(mockClipboardWriteText).toHaveBeenCalledWith('drafts.doc-123')
+    })
+
+    it('copies {docId} for live edit document types', async () => {
+      mockUseDocumentPaneInfo.mockReturnValue({
+        documentType: 'settings',
+        documentId: 'doc-123',
+        schemaType: {liveEdit: true},
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-document-id')
+
+      expect(mockClipboardWriteText).toHaveBeenCalledWith('doc-123')
     })
 
     it('copies {docId} for published perspective', async () => {

@@ -120,7 +120,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       >
         <IntentButton
           aria-label={getI18nText(firstItem).title}
-          icon={firstItem.icon || AddIcon}
+          icon={AddIcon}
           intent={intent}
           mode="bleed"
           disabled={disabled}

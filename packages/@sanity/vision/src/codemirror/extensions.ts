@@ -17,9 +17,9 @@ import {
   keymap,
   lineNumbers,
 } from '@codemirror/view'
+import {groq} from '@sanity/lezer-groq'
 
-export const codemirrorExtensions: Extension[] = [
-  [javascriptLanguage],
+const sharedExtensions: Extension[] = [
   lineNumbers(),
   highlightActiveLine(),
   highlightActiveLineGutter(),
@@ -44,3 +44,7 @@ export const codemirrorExtensions: Extension[] = [
       .filter(Boolean),
   ),
 ]
+
+export const groqExtensions: Extension[] = [groq(), ...sharedExtensions]
+
+export const paramsExtensions: Extension[] = [javascriptLanguage, ...sharedExtensions]

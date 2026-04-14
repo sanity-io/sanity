@@ -114,6 +114,9 @@ export type ObjectFieldset = {
   title?: string
   description?: string
   group?: string
+  hidden?: true | FunctionMarker
+  readOnly?: true | FunctionMarker
+  options?: EncodableValue
 }
 
 export type ObjectGroup = {
@@ -140,7 +143,7 @@ export type ObjectOrderingBy = {
 export interface ReferenceTypeDef extends SubtypeDef {
   extends: 'reference' | 'crossDatasetReference' | 'globalDocumentReference'
   to: ReferenceTarget[]
-  weak?: boolean
+  weak?: true
 }
 
 export type ReferenceTarget = {
@@ -210,5 +213,11 @@ export type Rule =
   | {type: 'length'; value: string | FieldReference}
   | {type: 'precision'; value: string | FieldReference}
   | {type: 'regex'; pattern: string; invert?: true}
-  | {type: 'uri'; allowRelative?: boolean}
+  | {
+      type: 'uri'
+      scheme?: (string | {type: 'regex'; pattern: string})[]
+      allowRelative?: boolean
+      relativeOnly?: boolean
+      allowCredentials?: boolean
+    }
   | {type: 'custom'; name?: string; optional?: true}
