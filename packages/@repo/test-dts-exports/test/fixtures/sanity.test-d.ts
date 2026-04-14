@@ -299,7 +299,6 @@ import type {
   createSanityMediaLibraryImageSource,
   createSchema,
   createSearch,
-  createSharedResizeObserver,
   createSourceFromConfig,
   CreateSquashedMutation,
   createSWR,
@@ -1220,7 +1219,6 @@ import type {
   ReporterHook,
   ResetEvent,
   Resizable,
-  resizeObserver,
   resolveConditionalProperty,
   resolveConfig,
   resolveDiffComponent,
@@ -1314,7 +1312,6 @@ import type {
   SetActiveGroupOperation,
   setAtPath,
   setIfMissing,
-  SharedResizeObserver,
   SingleDocReleaseProvider,
   SingleFieldSet,
   SingleMutationResult,
@@ -2620,9 +2617,6 @@ describe('sanity', () => {
   })
   test('createSearch', () => {
     expectTypeOf<typeof createSearch>().not.toBeNever()
-  })
-  test('createSharedResizeObserver', () => {
-    expectTypeOf<typeof createSharedResizeObserver>().not.toBeNever()
   })
   test('createSourceFromConfig', () => {
     expectTypeOf<typeof createSourceFromConfig>().toBeFunction()
@@ -5400,9 +5394,6 @@ describe('sanity', () => {
   test('Resizable', () => {
     expectTypeOf<typeof Resizable>().toBeFunction()
   })
-  test('resizeObserver', () => {
-    expectTypeOf<typeof resizeObserver>().not.toBeNever()
-  })
   test('resolveConditionalProperty', () => {
     expectTypeOf<typeof resolveConditionalProperty>().toBeFunction()
   })
@@ -5683,9 +5674,6 @@ describe('sanity', () => {
   })
   test('setIfMissing', () => {
     expectTypeOf<typeof setIfMissing>().toBeFunction()
-  })
-  test('SharedResizeObserver', () => {
-    expectTypeOf<SharedResizeObserver>().toBeObject()
   })
   test('SingleDocReleaseProvider', () => {
     expectTypeOf<typeof SingleDocReleaseProvider>().toBeFunction()
