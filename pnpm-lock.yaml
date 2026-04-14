@@ -1673,8 +1673,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(@sanity/client@7.21.0)(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
-        specifier: ^4.0.4
-        version: 4.0.4(@sanity/client@7.21.0)
+        specifier: ^4.0.5
+        version: 4.0.5(@sanity/client@7.21.0)
       '@sanity/prism-groq':
         specifier: ^1.1.2
         version: 1.1.2(prismjs@1.27.0)
@@ -5380,6 +5380,12 @@ packages:
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/client': ^7.18.0
+
+  '@sanity/preview-url-secret@4.0.5':
+    resolution: {integrity: sha512-49MozhFS8U5RxnNL3+WtCgX2v554dtmoR79amzT4dYu1beV+6BQGcro1VeC+bgW9XeZCg6o2rCKbvnu7ukQbKg==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@sanity/client': ^7.21.0
 
   '@sanity/prism-groq@1.1.2':
     resolution: {integrity: sha512-McMw9U5kuYAgIwyNodhFKdarM0cPme6UYBR6ms6YBNEO8Qqu5zGHydUeORaJ/w4qdFKGB1oWjBjy525ed6LXaQ==}
@@ -14968,6 +14974,11 @@ snapshots:
       - '@sanity/types'
 
   '@sanity/preview-url-secret@4.0.4(@sanity/client@7.21.0)':
+    dependencies:
+      '@sanity/client': 7.21.0
+      '@sanity/uuid': 3.0.2
+
+  '@sanity/preview-url-secret@4.0.5(@sanity/client@7.21.0)':
     dependencies:
       '@sanity/client': 7.21.0
       '@sanity/uuid': 3.0.2
