@@ -1,10 +1,4 @@
-import {
-  diffItem,
-  type DiffOptions,
-  type InsertAfterPatch,
-  type SetPatch,
-  type UnsetPatch,
-} from '@sanity/diff-patch'
+import {diffValue, type SanityPatchOperations} from '@sanity/diff-patch'
 import {
   isIndexSegment,
   isKeyedObject,
@@ -21,6 +15,7 @@ import {
   getValueAtPath,
   isEmptyObject,
   pathToString,
+  stringToPath,
 } from '../../paths'
 import {
   type ArrayDiff,
@@ -31,10 +26,6 @@ import {
   type ObjectDiff,
 } from '../../types'
 import {flattenChangeNode, isAddedAction, isSubpathOf, pathSegmentOfCorrectType} from './helpers'
-
-const diffOptions: DiffOptions = {
-  diffMatchPatch: {enabled: false, lengthThresholdAbsolute: 30, lengthThresholdRelative: 1.2},
-}
 
 export function undoChange(
   change: ChangeNode,
@@ -205,30 +196,63 @@ function buildUndoPatches(
   path: Path,
   stubbedPaths: Set<string>,
 ): PatchOperations[] {
-  const patches = diffItem(diff.toValue, diff.fromValue, diffOptions, path)
+  const patchOps = diffValue(diff.toValue, diff.fromValue, path)
 
-  const inserts = patches
-    .filter((patch): patch is InsertAfterPatch => patch.op === 'insert')
-    .map(({after, items}) => ({insert: {after: pathToString(after), items}}) as any)
+  const inserts = patchOps
+    .filter(
+      (op): op is SanityPatchOperations & {insert: NonNullable<SanityPatchOperations['insert']>} =>
+        'insert' in op && op.insert !== undefined,
+    )
+    .map(({insert}) => ({insert}) as PatchOperations)
 
-  const unsets = patches
-    .filter((patch): patch is UnsetPatch => patch.op === 'unset')
-    .reduce((acc, patch) => acc.concat(pathToString(patch.path)), [] as string[])
+  const unsets = patchOps
+    .filter(
+      (op): op is SanityPatchOperations & {unset: string[]} =>
+        'unset' in op && op.unset !== undefined,
+    )
+    .flatMap((op) => op.unset)
 
   const stubs: PatchOperations[] = []
 
   let hasSets = false
-  const sets = patches
-    .filter((patch): patch is SetPatch => patch.op === 'set')
+  const sets = patchOps
+    .filter(
+      (op): op is SanityPatchOperations & {set: Record<string, unknown>} =>
+        'set' in op && op.set !== undefined,
+    )
     .reduce(
-      (acc, patch) => {
-        hasSets = true
-        stubs.push(...getParentStubs(patch.path, rootDiff, stubbedPaths))
-        acc[pathToString(patch.path)] = patch.value
+      (acc, op) => {
+        for (const [pathStr, value] of Object.entries(op.set)) {
+          hasSets = true
+          stubs.push(...getParentStubs(stringToPath(pathStr), rootDiff, stubbedPaths))
+          acc[pathStr] = value
+        }
         return acc
       },
       {} as Record<string, unknown>,
     )
+
+  // Handle diffMatchPatch operations by treating them as set operations for undo purposes
+  const diffMatchPatches = patchOps.filter(
+    (op): op is SanityPatchOperations & {diffMatchPatch: Record<string, string>} =>
+      'diffMatchPatch' in op && op.diffMatchPatch !== undefined,
+  )
+
+  if (diffMatchPatches.length > 0) {
+    hasSets = true
+    for (const op of diffMatchPatches) {
+      for (const pathStr of Object.keys(op.diffMatchPatch)) {
+        // For undo, we want to restore the original value, not apply a DMP patch.
+        // Use the fromValue at this path instead.
+        const parsedPath = stringToPath(pathStr)
+        stubs.push(...getParentStubs(parsedPath, rootDiff, stubbedPaths))
+        sets[pathStr] = getValueAtPath(
+          diff.fromValue as Record<string, unknown>,
+          parsedPath.slice(path.length),
+        )
+      }
+    }
+  }
 
   return [
     ...stubs,
