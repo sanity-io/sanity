@@ -52,6 +52,21 @@ export interface DocumentPairLoadedEvent {
 }
 
 /** @internal */
+export interface MutationPerformanceEvent {
+  transactionId: string
+  debounceMs: number
+  apiMs: number
+  callbackMs: number
+  shard?: string
+}
+
+/** @internal */
+export interface DocumentRebaseTelemetryEvent {
+  remoteMutationCount: number
+  localMutationCount: number
+}
+
+/** @internal */
 export interface DocumentStoreExtraOptions {
   tag?: string
 
@@ -64,6 +79,8 @@ export interface DocumentStoreExtraOptions {
   onReportLatency?: (event: LatencyReportEvent) => void
   onSlowCommit?: () => void
   onDocumentPairLoaded?: (event: DocumentPairLoadedEvent) => void
+  onReportMutationPerformance?: (event: MutationPerformanceEvent) => void
+  onDocumentRebase?: (event: DocumentRebaseTelemetryEvent) => void
 }
 
 /** @internal */
