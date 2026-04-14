@@ -1539,9 +1539,6 @@ importers:
       '@isaacs/ttlcache':
         specifier: ^1.4.1
         version: 1.4.1
-      '@juggle/resize-observer':
-        specifier: ^3.4.0
-        version: 3.4.0
       '@mux/mux-player-react':
         specifier: ^3.10.2
         version: 3.10.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
