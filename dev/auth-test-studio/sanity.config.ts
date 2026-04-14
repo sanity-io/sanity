@@ -1,4 +1,4 @@
-import {type Config, createAuthStore, defineConfig} from 'sanity'
+import {createAuthStore, defineConfig, type WorkspaceOptions} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
 // ── Environment toggle ──────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ const production = {
   q5caobza: {projectId: 'q5caobza', dataset: 'production'},
 } as const
 
-const env = USE_STAGING ? staging : production.ppsg7ml5
+const envs = USE_STAGING ? [staging] : [production.ppsg7ml5, production.q5caobza]
 
 // ── SSO provider ────────────────────────────────────────────────────────────
 // Uses the Sanity.io SAML SSO endpoint. Replace the URL suffix with your own
@@ -54,131 +54,150 @@ const github = {
 //   - /cookie  (cookieAuth.spec.ts)
 //   - /token   (tokenAuth.spec.ts)
 
-const workspaces = [
-  // Default login methods
-  {
-    ...env,
-    name: 'cookie',
-    title: 'Cookie auth',
-    basePath: '/cookie',
-    auth: {loginMethod: 'cookie'},
-  },
-  {
-    ...env,
-    name: 'token',
-    title: 'Token auth',
-    basePath: '/token',
-    auth: {loginMethod: 'token'},
-  },
-  {
-    ...env,
-    name: 'dual',
-    title: 'Dual auth (default)',
-    basePath: '/dual',
-    auth: {loginMethod: 'dual'},
-  },
+function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: string}) {
+  // When there are multiple envs (production), prefix names/paths with the project ID
+  const prefix = envs.length > 1 ? `${env.projectId}-` : ''
+  const pathPrefix = envs.length > 1 ? `/${env.projectId}` : ''
+  const titleSuffix = envs.length > 1 ? ` (${env.projectId})` : ''
 
-  // redirectOnSingle — skips the provider chooser when only one provider is configured
-  {
-    ...env,
-    name: 'cookie-redirectOnSingle',
-    title: 'Cookie + redirectOnSingle',
-    basePath: '/cookie-redirectOnSingle',
-    auth: {loginMethod: 'cookie', redirectOnSingle: true, providers: [github], mode: 'replace'},
-  },
-  {
-    ...env,
-    name: 'token-redirectOnSingle',
-    title: 'Token + redirectOnSingle',
-    basePath: '/token-redirectOnSingle',
-    auth: {loginMethod: 'token', redirectOnSingle: true, providers: [github], mode: 'replace'},
-  },
-  {
-    ...env,
-    name: 'dual-redirectOnSingle',
-    title: 'Dual + redirectOnSingle',
-    basePath: '/dual-redirectOnSingle',
-    auth: {loginMethod: 'dual', redirectOnSingle: true, providers: [github], mode: 'replace'},
-  },
+  return [
+    // Default login methods
+    {
+      ...shared,
+      ...env,
+      name: `${prefix}cookie`,
+      title: `Cookie auth${titleSuffix}`,
+      basePath: `${pathPrefix}/cookie`,
+      auth: {loginMethod: 'cookie'},
+    },
+    {
+      ...shared,
+      ...env,
+      name: `${prefix}token`,
+      title: `Token auth${titleSuffix}`,
+      basePath: `${pathPrefix}/token`,
+      auth: {loginMethod: 'token'},
+    },
+    {
+      ...shared,
+      ...env,
+      name: `${prefix}dual`,
+      title: `Dual auth (default)${titleSuffix}`,
+      basePath: `${pathPrefix}/dual`,
+      auth: {loginMethod: 'dual'},
+    },
 
-  // SSO — uses createAuthStore with a single SAML provider replacing defaults
-  {
-    ...env,
-    name: 'sso-cookie',
-    title: 'SSO (cookie)',
-    basePath: '/sso-cookie',
-    auth: createAuthStore({
+    // redirectOnSingle — skips the provider chooser when only one provider is configured
+    {
+      ...shared,
       ...env,
-      loginMethod: 'cookie',
-      providers: [ssoProvider],
-      mode: 'replace',
-    }),
-  },
-  {
-    ...env,
-    name: 'sso-token',
-    title: 'SSO (token)',
-    basePath: '/sso-token',
-    auth: createAuthStore({
+      name: `${prefix}cookie-redirectOnSingle`,
+      title: `Cookie + redirectOnSingle${titleSuffix}`,
+      basePath: `${pathPrefix}/cookie-redirectOnSingle`,
+      auth: {loginMethod: 'cookie', redirectOnSingle: true, providers: [github], mode: 'replace'},
+    },
+    {
+      ...shared,
       ...env,
-      loginMethod: 'token',
-      providers: [ssoProvider],
-      mode: 'replace',
-    }),
-  },
-  {
-    ...env,
-    name: 'sso-dual',
-    title: 'SSO (dual)',
-    basePath: '/sso-dual',
-    auth: createAuthStore({
+      name: `${prefix}token-redirectOnSingle`,
+      title: `Token + redirectOnSingle${titleSuffix}`,
+      basePath: `${pathPrefix}/token-redirectOnSingle`,
+      auth: {loginMethod: 'token', redirectOnSingle: true, providers: [github], mode: 'replace'},
+    },
+    {
+      ...shared,
       ...env,
-      loginMethod: 'dual',
-      providers: [ssoProvider],
-      mode: 'replace',
-    }),
-  },
+      name: `${prefix}dual-redirectOnSingle`,
+      title: `Dual + redirectOnSingle${titleSuffix}`,
+      basePath: `${pathPrefix}/dual-redirectOnSingle`,
+      auth: {loginMethod: 'dual', redirectOnSingle: true, providers: [github], mode: 'replace'},
+    },
 
-  // SSO + redirectOnSingle — skips provider chooser, redirects straight to SSO
-  {
-    ...env,
-    name: 'sso-cookie-redirectOnSingle',
-    title: 'SSO (cookie) + redirectOnSingle',
-    basePath: '/sso-cookie-redirectOnSingle',
-    auth: createAuthStore({
+    // SSO — uses createAuthStore with a single SAML provider replacing defaults
+    {
+      ...shared,
       ...env,
-      loginMethod: 'cookie',
-      redirectOnSingle: true,
-      providers: [ssoProvider],
-      mode: 'replace',
-    }),
-  },
-  {
-    ...env,
-    name: 'sso-token-redirectOnSingle',
-    title: 'SSO (token) + redirectOnSingle',
-    basePath: '/sso-token-redirectOnSingle',
-    auth: createAuthStore({
+      name: `${prefix}sso-cookie`,
+      title: `SSO (cookie)${titleSuffix}`,
+      basePath: `${pathPrefix}/sso-cookie`,
+      auth: createAuthStore({
+        ...env,
+        loginMethod: 'cookie',
+        providers: [ssoProvider],
+        mode: 'replace',
+      }),
+    },
+    {
+      ...shared,
       ...env,
-      loginMethod: 'token',
-      redirectOnSingle: true,
-      providers: [ssoProvider],
-      mode: 'replace',
-    }),
-  },
-  {
-    ...env,
-    name: 'sso-dual-redirectOnSingle',
-    title: 'SSO (dual) + redirectOnSingle',
-    basePath: '/sso-dual-redirectOnSingle',
-    auth: createAuthStore({
+      name: `${prefix}sso-token`,
+      title: `SSO (token)${titleSuffix}`,
+      basePath: `${pathPrefix}/sso-token`,
+      auth: createAuthStore({
+        ...env,
+        loginMethod: 'token',
+        providers: [ssoProvider],
+        mode: 'replace',
+      }),
+    },
+    {
+      ...shared,
       ...env,
-      loginMethod: 'dual',
-      redirectOnSingle: true,
-      providers: [ssoProvider],
-      mode: 'replace',
-    }),
-  },
-] satisfies Config[]
+      name: `${prefix}sso-dual`,
+      title: `SSO (dual)${titleSuffix}`,
+      basePath: `${pathPrefix}/sso-dual`,
+      auth: createAuthStore({
+        ...env,
+        loginMethod: 'dual',
+        providers: [ssoProvider],
+        mode: 'replace',
+      }),
+    },
 
-export default defineConfig(workspaces.map((workspace) => ({...shared, ...workspace})))
+    // SSO + redirectOnSingle — skips provider chooser, redirects straight to SSO
+    {
+      ...shared,
+      ...env,
+      name: `${prefix}sso-cookie-redirectOnSingle`,
+      title: `SSO (cookie) + redirectOnSingle${titleSuffix}`,
+      basePath: `${pathPrefix}/sso-cookie-redirectOnSingle`,
+      auth: createAuthStore({
+        ...env,
+        loginMethod: 'cookie',
+        redirectOnSingle: true,
+        providers: [ssoProvider],
+        mode: 'replace',
+      }),
+    },
+    {
+      ...shared,
+      ...env,
+      name: `${prefix}sso-token-redirectOnSingle`,
+      title: `SSO (token) + redirectOnSingle${titleSuffix}`,
+      basePath: `${pathPrefix}/sso-token-redirectOnSingle`,
+      auth: createAuthStore({
+        ...env,
+        loginMethod: 'token',
+        redirectOnSingle: true,
+        providers: [ssoProvider],
+        mode: 'replace',
+      }),
+    },
+    {
+      ...shared,
+      ...env,
+      name: `${prefix}sso-dual-redirectOnSingle`,
+      title: `SSO (dual) + redirectOnSingle${titleSuffix}`,
+      basePath: `${pathPrefix}/sso-dual-redirectOnSingle`,
+      auth: createAuthStore({
+        ...env,
+        loginMethod: 'dual',
+        redirectOnSingle: true,
+        providers: [ssoProvider],
+        mode: 'replace',
+      }),
+    },
+  ] satisfies WorkspaceOptions[]
+}
+
+export default defineConfig(envs.flatMap(createWorkspaces))
