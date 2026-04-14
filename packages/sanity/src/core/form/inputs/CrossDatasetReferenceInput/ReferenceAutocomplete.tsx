@@ -11,6 +11,7 @@ import {styled} from 'styled-components'
 
 import {Popover} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
+import {AUTOCOMPLETE_POPOVER_BOUNDARY} from '../referenceAutocompletePopoverBoundary'
 
 const StyledPopover = styled(Popover)`
   & > div {
@@ -59,6 +60,8 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         fallbackPlacements={FALLBACK_PLACEMENTS}
         arrow={false}
         constrainSize
+        floatingBoundary={AUTOCOMPLETE_POPOVER_BOUNDARY}
+        referenceBoundary={AUTOCOMPLETE_POPOVER_BOUNDARY}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         content={
