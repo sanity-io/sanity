@@ -17,20 +17,21 @@ export function ImageTool(props: ImageToolProps) {
 
   // Set up resize observer to track container size changes
   useLayoutEffect(() => {
-    if (!containerRef.current) return undefined
+    const element = containerRef.current
+    if (!element) return undefined
 
-    setContainerWidth(containerRef.current.clientWidth)
-    setContainerHeight(containerRef.current.clientHeight)
+    setContainerWidth(element.clientWidth)
+    setContainerHeight(element.clientHeight)
 
     const observer = new ResizeObserver((entries) => {
-      const entry = entries[0]
+      const entry = entries.find((e) => e.target === element)
       if (entry) {
         setContainerWidth(entry.contentRect.width)
         setContainerHeight(entry.contentRect.height)
       }
     })
 
-    observer.observe(containerRef.current)
+    observer.observe(element)
 
     return () => observer.disconnect()
   }, [])
