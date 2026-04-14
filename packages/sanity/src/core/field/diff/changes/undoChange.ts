@@ -246,10 +246,7 @@ function buildUndoPatches(
         // Use the fromValue at this path instead.
         const parsedPath = stringToPath(pathStr)
         stubs.push(...getParentStubs(parsedPath, rootDiff, stubbedPaths))
-        sets[pathStr] = getValueAtPath(
-          diff.fromValue as Record<string, unknown>,
-          parsedPath.slice(path.length),
-        )
+        sets[pathStr] = getValueAtPath(diff.fromValue, parsedPath.slice(path.length))
       }
     }
   }
