@@ -161,7 +161,6 @@
     "@dnd-kit/sortable": "^7.0.2",
     "@dnd-kit/utilities": "^3.2.2",
     "@isaacs/ttlcache": "^1.4.1",
-    "@juggle/resize-observer": "^3.4.0",
     "@mux/mux-player-react": "^3.10.2",
     "@portabletext/editor": "^6.6.2",
     "@portabletext/html": "^1.0.1",

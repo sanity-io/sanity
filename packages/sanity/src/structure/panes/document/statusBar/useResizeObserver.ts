@@ -1,5 +1,4 @@
 import {useLayoutEffect} from 'react'
-import {resizeObserver} from 'sanity'
 
 export function useResizeObserver({
   element,
@@ -9,14 +8,17 @@ export function useResizeObserver({
   onResize: (event: ResizeObserverEntry) => void
 }): void {
   useLayoutEffect(() => {
-    if (element) {
-      resizeObserver.observe(element, onResize)
-    }
+    if (!element) return undefined
 
-    return () => {
-      if (element) {
-        resizeObserver.unobserve(element)
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries.find((e) => e.target === element)
+      if (entry) {
+        onResize(entry)
       }
-    }
+    })
+
+    observer.observe(element)
+
+    return () => observer.disconnect()
   }, [element, onResize])
 }
