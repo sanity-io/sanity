@@ -1,7 +1,6 @@
 import {useLayoutEffect, useRef, useState} from 'react'
 
 import {LoadingBlock} from '../../../../../components/loadingBlock'
-import {resizeObserver} from '../../../../../util/resizeObserver'
 import {ImageLoader} from './ImageLoader'
 import {ResizeSVG} from './Resize'
 import {ToolSVG} from './ToolSVG'
@@ -19,15 +18,21 @@ export function ImageTool(props: ImageToolProps) {
   // Set up resize observer to track container size changes
   useLayoutEffect(() => {
     if (!containerRef.current) return undefined
-    const updateSize = (entry: ResizeObserverEntry) => {
-      setContainerWidth(entry.contentRect.width)
-      setContainerHeight(entry.contentRect.height)
-    }
-    if (containerRef.current) {
-      setContainerWidth(containerRef.current.clientWidth)
-      setContainerHeight(containerRef.current.clientHeight)
-    }
-    return resizeObserver.observe(containerRef.current, updateSize)
+
+    setContainerWidth(containerRef.current.clientWidth)
+    setContainerHeight(containerRef.current.clientHeight)
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0]
+      if (entry) {
+        setContainerWidth(entry.contentRect.width)
+        setContainerHeight(entry.contentRect.height)
+      }
+    })
+
+    observer.observe(containerRef.current)
+
+    return () => observer.disconnect()
   }, [])
 
   return (
