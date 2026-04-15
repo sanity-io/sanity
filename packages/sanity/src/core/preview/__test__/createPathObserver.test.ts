@@ -254,7 +254,7 @@ describe('createPathObserver', () => {
       // re-fetches on mutation events), but the key assertion is that the total
       // number of fetches is bounded, not proportional to mutation count * tree depth.
       const totalFetches = fetchCallCount
-      // In the HAR, the unfixed version produced 28+ fetches for the same document.
+      // In a HAR where we have identified the issue, the unfixed version produced too many unneded fetches for the same document.
       // With the fix, observeFields may still refetch per invalidation, but
       // the recursive observePaths won't amplify each refetch into additional queries.
       expect(totalFetches).toBeLessThan(20)
