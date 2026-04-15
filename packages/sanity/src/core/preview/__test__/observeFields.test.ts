@@ -1,6 +1,6 @@
 import {firstValueFrom, of, Subject} from 'rxjs'
 import {take, tap} from 'rxjs/operators'
-import {describe, expect, it} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type SanityClient} from '../../form/studio/assetSourceDataset/uploader'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../../util/const'
@@ -267,6 +267,14 @@ describe('observeFields', () => {
   describe('invalidation filter with perspective', () => {
     const SETTLE_TIME = 200
 
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
     function setupPerspectiveTest() {
       let fetchCount = 0
       const client: ClientLike = {
@@ -295,7 +303,7 @@ describe('observeFields', () => {
 
     async function connectAndSettle(channel: Subject<InvalidationChannelEvent>) {
       channel.next({type: 'connected'})
-      await new Promise((r) => setTimeout(r, SETTLE_TIME))
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
     }
 
     it('should re-fetch when the observed document itself is mutated (with perspective)', async () => {
@@ -306,7 +314,7 @@ describe('observeFields', () => {
       const afterConnect = harness.fetchCount
 
       sendMutations(harness.channel, 'foo')
-      await new Promise((r) => setTimeout(r, SETTLE_TIME))
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
 
       expect(harness.fetchCount).toBeGreaterThan(afterConnect)
       sub.unsubscribe()
@@ -320,7 +328,7 @@ describe('observeFields', () => {
       const afterConnect = harness.fetchCount
 
       sendMutations(harness.channel, 'drafts.foo')
-      await new Promise((r) => setTimeout(r, SETTLE_TIME))
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
 
       expect(harness.fetchCount).toBeGreaterThan(afterConnect)
       sub.unsubscribe()
@@ -336,7 +344,7 @@ describe('observeFields', () => {
       const afterConnect = harness.fetchCount
 
       sendMutations(harness.channel, 'versions.summer.foo')
-      await new Promise((r) => setTimeout(r, SETTLE_TIME))
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
 
       expect(harness.fetchCount).toBeGreaterThan(afterConnect)
       sub.unsubscribe()
@@ -350,7 +358,7 @@ describe('observeFields', () => {
       const afterConnect = harness.fetchCount
 
       sendMutations(harness.channel, ['trigger-doc', 'drafts.other-doc', 'versions.summer.bar'])
-      await new Promise((r) => setTimeout(r, SETTLE_TIME))
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
 
       expect(harness.fetchCount).toBe(afterConnect)
       sub.unsubscribe()
@@ -366,7 +374,7 @@ describe('observeFields', () => {
       const afterConnect = harness.fetchCount
 
       sendMutations(harness.channel, 'versions.winter.foo')
-      await new Promise((r) => setTimeout(r, SETTLE_TIME))
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
 
       expect(harness.fetchCount).toBe(afterConnect)
       sub.unsubscribe()
@@ -380,7 +388,7 @@ describe('observeFields', () => {
       const afterConnect = harness.fetchCount
 
       sendMutations(harness.channel, 'versions.summer.foo')
-      await new Promise((r) => setTimeout(r, SETTLE_TIME))
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
 
       expect(harness.fetchCount).toBe(afterConnect)
       sub.unsubscribe()
@@ -394,7 +402,7 @@ describe('observeFields', () => {
       const afterConnect = harness.fetchCount
 
       sendMutations(harness.channel, 'drafts.foo')
-      await new Promise((r) => setTimeout(r, SETTLE_TIME))
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
 
       expect(harness.fetchCount).toBe(afterConnect)
       sub.unsubscribe()

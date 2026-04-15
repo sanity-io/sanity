@@ -361,5 +361,64 @@ describe('createPathObserver', () => {
 
       unsubscribe()
     })
+
+    it('should resolve nested paths through references', () => {
+      const observeFields = vi.fn(
+        (id: string, fields: string[]): Observable<Record<string, unknown> | null> => {
+          if (id === 'book1') {
+            return of({
+              _id: 'book1',
+              _rev: 'rev1',
+              _type: 'book',
+              author: {_ref: 'author1', _type: 'reference'},
+            })
+          }
+          if (id === 'author1') {
+            return of({
+              _id: 'author1',
+              _rev: 'rev1',
+              _type: 'author',
+              name: 'Alice',
+            })
+          }
+          return of(null)
+        },
+      )
+
+      const observePaths = createPathObserver({observeFields})
+      const {values, unsubscribe} = collectEmissions(
+        observePaths({_type: 'reference', _ref: 'book1'}, [['author', 'name']]),
+      )
+
+      expect(values.length).toBeGreaterThanOrEqual(1)
+      const last = values[values.length - 1]
+      expect(last).toMatchObject({author: {name: 'Alice'}})
+      expect(observeFields).toHaveBeenCalledWith('author1', ['name'], undefined, undefined)
+
+      unsubscribe()
+    })
+
+    it('should resolve paths on documents passed by _id (not _ref)', () => {
+      const observeFields = vi.fn(
+        (_id: string, _fields: string[]): Observable<Record<string, unknown> | null> => {
+          return of({
+            _id: 'doc1',
+            _rev: 'rev1',
+            _type: 'test',
+            title: 'Direct',
+          })
+        },
+      )
+
+      const observePaths = createPathObserver({observeFields})
+      const {values, unsubscribe} = collectEmissions(
+        observePaths({_id: 'doc1', _type: 'test'}, ['title']),
+      )
+
+      expect(values).toHaveLength(1)
+      expect(values[0]).toMatchObject({title: 'Direct'})
+
+      unsubscribe()
+    })
   })
 })
