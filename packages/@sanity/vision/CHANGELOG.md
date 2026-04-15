@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.21.0](https://github.com/sanity-io/sanity/compare/v5.20.0...v5.21.0) (2026-04-15)
+
+### Features
+
+* **vision:** groq syntax highlighting ([#12594](https://github.com/sanity-io/sanity/issues/12594)) ([95a1dce](https://github.com/sanity-io/sanity/commit/95a1dcee4f388be8c5d6212d118986e1e1742abc))
 
 ## [5.18.0](https://github.com/sanity-io/sanity/compare/v5.17.1...v5.18.0) (2026-03-24)
 

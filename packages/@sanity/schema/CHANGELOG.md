@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.21.0](https://github.com/sanity-io/sanity/compare/v5.20.0...v5.21.0) (2026-04-15)
+
+### Bug Fixes
+
+* **schema:** convert missing descriptor properties and expand test coverage ([#12607](https://github.com/sanity-io/sanity/issues/12607)) ([b89b88f](https://github.com/sanity-io/sanity/commit/b89b88f0a8e46914f967da43ae5d6ff7d8d91792))
+* **schema:** support extracting object type without fields ([#12605](https://github.com/sanity-io/sanity/issues/12605)) ([ea79806](https://github.com/sanity-io/sanity/commit/ea7980663fcdb60b8457118bcb35486b60a7307e))
 
 ## [5.18.0](https://github.com/sanity-io/sanity/compare/v5.17.1...v5.18.0) (2026-03-24)
 
