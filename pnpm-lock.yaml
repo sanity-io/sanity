@@ -2078,8 +2078,8 @@ importers:
         specifier: 'catalog:'
         version: 24.10.13
       esbuild:
-        specifier: 0.27.4
-        version: 0.27.4
+        specifier: 0.28.0
+        version: 0.28.0
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -15896,7 +15896,7 @@ snapshots:
       '@vanilla-extract/babel-plugin-debug-ids': 1.2.2
       '@vanilla-extract/css': 1.20.1(babel-plugin-macros@3.1.0)
       dedent: 1.7.1(babel-plugin-macros@3.1.0)
-      esbuild: 0.27.4
+      esbuild: 0.28.0
       eval: 0.1.8
       find-up: 5.0.0
       javascript-stringify: 2.1.0
