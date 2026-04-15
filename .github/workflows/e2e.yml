@@ -1,6 +1,6 @@
 name: End-to-End Tests
 permissions:
-  contents: read # for checkout
+  contents: write # for checkout and commit comments
   pull-requests: write # for comment
 
 env:
@@ -266,7 +266,7 @@ jobs:
           retention-days: 30
 
   deploy-report:
-    needs: [install, deploy-preview, merge-reports]
+    needs: [install, deploy-preview, playwright-test, merge-reports]
     if: always() && needs.install.outputs.has_code_changes == 'true' && needs.merge-reports.result == 'success'
     runs-on: ubuntu-latest
     outputs:
@@ -335,6 +335,14 @@ jobs:
           echo "## E2E Test Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**[View Full Report](${{ steps.deploy.outputs.REPORT_URL }})**" >> $GITHUB_STEP_SUMMARY
+
+      - name: Add commit comment with report link
+        if: github.event_name == 'push' && steps.deploy.outputs.REPORT_URL != '' && needs.playwright-test.result == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/${{ github.repository }}/commits/${{ github.sha }}/comments \
+            -f body="**[E2E Test Report](${{ steps.deploy.outputs.REPORT_URL }})**"
 
   update-comment-on-failure:
     needs: [install, deploy-preview, playwright-test, deploy-report]
