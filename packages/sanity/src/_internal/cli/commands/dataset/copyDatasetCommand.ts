@@ -16,6 +16,7 @@ Options
   --detach Start the copy without waiting for it to finish
   --attach <job-id> Attach to the running copy process to show progress
   --skip-history Don't preserve document history on copy
+  --skip-content-releases Don't copy content release documents to the target dataset
   --list Lists all dataset copy jobs corresponding to a certain criteria.
   --offset Start position in the list of jobs. Default 0. With --list.
   --limit Maximum number of jobs returned. Default 10. Maximum 1000. With --list.
@@ -25,6 +26,7 @@ Examples
   sanity dataset copy <source-dataset>
   sanity dataset copy <source-dataset> <target-dataset>
   sanity dataset copy --skip-history <source-dataset> <target-dataset>
+  sanity dataset copy --skip-content-releases <source-dataset> <target-dataset>
   sanity dataset copy --detach <source-dataset> <target-dataset>
   sanity dataset copy --attach <job-id>
   sanity dataset copy --list
@@ -44,6 +46,7 @@ interface CopyDatasetFlags {
   'offset'?: number
   'limit'?: number
   'skip-history'?: boolean
+  'skip-content-releases'?: boolean
 }
 
 interface CopyDatasetResponse {
@@ -57,6 +60,7 @@ function parseCliFlags(args: {argv?: string[]}) {
     .option('limit', {type: 'number'})
     .option('offset', {type: 'number'})
     .option('skip-history', {type: 'boolean'})
+    .option('skip-content-releases', {type: 'boolean'})
     .option('detach', {type: 'boolean'}).argv
 }
 
@@ -178,6 +182,7 @@ const copyDatasetCommand: CliCommandDefinition<CopyDatasetFlags> = {
 
     const [sourceDataset, targetDataset] = args.argsWithoutOptions
     const shouldSkipHistory = Boolean(flags['skip-history'])
+    const shouldSkipContentReleases = Boolean(flags['skip-content-releases'])
 
     const nameError = sourceDataset && validateDatasetName(sourceDataset)
     if (nameError) {
@@ -212,6 +217,7 @@ const copyDatasetCommand: CliCommandDefinition<CopyDatasetFlags> = {
         body: {
           targetDataset: targetDatasetName,
           skipHistory: shouldSkipHistory,
+          skipContentReleases: shouldSkipContentReleases,
         },
       })
 
