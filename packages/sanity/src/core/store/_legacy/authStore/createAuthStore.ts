@@ -461,7 +461,13 @@ export function _createAuthStore({
     }
   }
 
+  // Tracks whether the current unauthenticated state came from an explicit
+  // logout action. Used by LoginComponent to suppress redirectOnSingle after
+  // logout (so the user can pick a different account).
+  let _didLogOut = false
+
   async function logout() {
+    _didLogOut = true
     const tokenClient = await firstValueFrom(tokenClient$)
 
     // Destroy both token and cookie when logging out.
@@ -487,6 +493,7 @@ export function _createAuthStore({
     ...providerOptions,
     client$: authState$.pipe(map((state) => state.client)),
     loginMethod,
+    wasLogout: () => _didLogOut,
   })
 
   return {

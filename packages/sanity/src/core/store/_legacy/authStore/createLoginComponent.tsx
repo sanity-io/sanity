@@ -58,6 +58,13 @@ async function getProviders({
 
 interface CreateLoginComponentOptions extends AuthConfig {
   client$: Observable<SanityClient>
+  /**
+   * Returns true if the user explicitly logged out in this session.
+   * Used to suppress `redirectOnSingle` after logout — redirecting immediately
+   * would log the user back in, defeating the purpose of logging out
+   * (e.g. to switch accounts).
+   */
+  wasLogout: () => boolean
 }
 
 interface CreateHrefForProviderOptions {
@@ -94,6 +101,7 @@ export function createLoginComponent({
   client$,
   loginMethod,
   redirectOnSingle,
+  wasLogout,
   ...providerOptions
 }: CreateLoginComponentOptions) {
   function LoginComponent({projectId, ...props}: LoginComponentProps) {
@@ -149,9 +157,11 @@ export function createLoginComponent({
     const {providers, lastUsedProvider, isLoading} = providerData
 
     // only create a direct URL if `redirectOnSingle` is true and there is only
-    // one provider available
+    // one provider available. Skip the redirect after an explicit logout so the
+    // user can pick a different account instead of being logged back in immediately.
     const redirectUrlForRedirectOnSingle =
       redirectOnSingle &&
+      !wasLogout() &&
       providers?.length === 1 &&
       providers?.[0] &&
       createHrefForProvider({
