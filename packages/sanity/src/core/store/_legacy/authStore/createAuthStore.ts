@@ -302,14 +302,15 @@ export function _createAuthStore({
     ),
   ).pipe(shareReplay({bufferSize: 1, refCount: true}))
 
+  const cookieAuthChanged$ = cookieAuthState.value.pipe(
+    filter((v) => v?.authenticated !== 'pending'),
+    distinctUntilChanged(isEqual),
+  )
+
   const workspaceClient$ = combineLatest([
     tokenClient$,
     dualClient$,
-    cookieAuthState.value.pipe(
-      filter((v) => v?.authenticated !== 'pending'),
-      distinctUntilChanged(isEqual),
-      map(({authenticated}) => (authenticated ? cookieClient : undefined)),
-    ),
+    cookieAuthChanged$.pipe(map(({authenticated}) => (authenticated ? cookieClient : undefined))),
   ]).pipe(
     map(([tokenClient, dualClient, _cookieClient]) => {
       return loginMethod === 'dual'
@@ -321,10 +322,20 @@ export function _createAuthStore({
     distinctUntilChanged(),
   )
 
+  // For dual mode, workspaceClient$ always emits the same dualClient reference,
+  // so cookie auth state changes alone won't pass distinctUntilChanged above.
+  // Merge in cookie state changes to trigger a re-check with the current dualClient.
+  const dualCookieRecheck$ =
+    loginMethod === 'dual'
+      ? cookieAuthChanged$.pipe(
+          skip(1),
+          switchMap(() => dualClient$),
+        )
+      : EMPTY
+
   const authState$ = concat(
     initial$,
-    workspaceClient$.pipe(
-      skip(1),
+    merge(workspaceClient$.pipe(skip(1)), dualCookieRecheck$).pipe(
       mergeMap(async (client): Promise<AuthState> => {
         if (!client) {
           return {client: cookieClient, authenticated: false, currentUser: null}
