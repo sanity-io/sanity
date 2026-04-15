@@ -419,6 +419,74 @@ describe('observeFields', () => {
       sub.unsubscribe()
     })
 
+    it('should NOT re-fetch when the same base document is mutated in an out-of-stack version while observing drafts', async () => {
+      let fetchCount = 0
+      const client: ClientLike = {
+        observable: {
+          fetch: () => {
+            fetchCount++
+            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
+          },
+        },
+        withConfig: () => client,
+      }
+      const channel = new Subject<InvalidationChannelEvent>()
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+
+      const sub = observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+
+      channel.next({type: 'connected'})
+      await new Promise((r) => setTimeout(r, 200))
+      const afterConnect = fetchCount
+
+      channel.next({
+        type: 'mutation',
+        documentId: 'versions.summer.foo',
+        visibility: 'query',
+      })
+      await new Promise((r) => setTimeout(r, 200))
+
+      expect(fetchCount).toBe(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should NOT re-fetch when the same base document is mutated in drafts while observing a version perspective', async () => {
+      let fetchCount = 0
+      const client: ClientLike = {
+        observable: {
+          fetch: () => {
+            fetchCount++
+            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
+          },
+        },
+        withConfig: () => client,
+      }
+      const channel = new Subject<InvalidationChannelEvent>()
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+
+      const sub = observe('foo', ['title'], undefined, ['summer']).subscribe(() => {})
+
+      channel.next({type: 'connected'})
+      await new Promise((r) => setTimeout(r, 200))
+      const afterConnect = fetchCount
+
+      channel.next({
+        type: 'mutation',
+        documentId: 'drafts.foo',
+        visibility: 'query',
+      })
+      await new Promise((r) => setTimeout(r, 200))
+
+      expect(fetchCount).toBe(afterConnect)
+      sub.unsubscribe()
+    })
+
     it('should always re-fetch on connected event regardless of perspective', async () => {
       let fetchCount = 0
       const client: ClientLike = {
