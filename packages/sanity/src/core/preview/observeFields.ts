@@ -229,7 +229,7 @@ export function createObserveFields(options: {
           // or versions outside the active perspective.
           return (
             getPublishedId(event.documentId) === getPublishedId(documentId) &&
-            idMatchesPerspective(perspective, documentId)
+            idMatchesPerspective(perspective, event.documentId)
           )
         }
         // if not using perspective, refetch previews for the document that was actually changed
