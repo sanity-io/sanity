@@ -38,25 +38,15 @@ jobs:
       - uses: ./.github/actions/setup
         if: steps.changes.outputs.has_changes == 'true'
 
-      - name: Add PR Comment placeholder for e2e Preview Environment
+      - name: Add PR Comment placeholder for E2E status
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' && steps.changes.outputs.has_changes == 'true' }}
         with:
-          comment-tag: "e2e-preview-url"
+          comment-tag: "e2e-status"
           message: |
-            ### 🧪 E2E Preview environment
+            ### 🧪 E2E Tests
 
-            Waiting for preview deployment to finish…
-
-      - name: Add PR Comment placeholder for e2e report
-        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' && steps.changes.outputs.has_changes == 'true' }}
-        with:
-          comment-tag: "playwright-e2e-report"
-          message: |
-            ### 📊 Playwright Test Report
-
-            Waiting for E2E tests to finish…
+            Setting up preview environment and running tests…
 
       - name: Store Playwright's Version
         if: steps.changes.outputs.has_changes == 'true'
@@ -155,29 +145,26 @@ jobs:
           fi
           echo "Preview URL: ${{ steps.deploy.outputs.DEPLOY_URL }}"
 
-      - name: Add PR Comment with preview URL
+      - name: Update PR Comment with preview URL
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: github.event_name == 'pull_request'
         with:
-          comment-tag: "e2e-preview-url"
+          comment-tag: "e2e-status"
           message: |
-            ### 🧪 [E2E Preview environment](${{ steps.deploy.outputs.DEPLOY_URL }})
+            ### 🧪 E2E Tests
+
+            **Report:** Tests are running, report will appear here when done.
+            **Preview:** ${{ steps.deploy.outputs.DEPLOY_URL }}
 
             <details>
-            <summary> 🔑 Environment Variables for Local Testing</summary>
-
-            This is the preview URL for the E2E tests: **${{ steps.deploy.outputs.DEPLOY_URL }}**
-
-            To run the E2E tests locally, you can use the following environment variables, then run `pnpm test:e2e --ui` to open the Playwright test runner.
-
-            💬 Remember to build the project first with `pnpm build:e2e`.
+            <summary>Environment variables for local testing</summary>
 
             ```
-              SANITY_E2E_PROJECT_ID=${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-              SANITY_E2E_BASE_URL=${{ steps.deploy.outputs.DEPLOY_URL }}
-              SANITY_E2E_DATASET="update depending the project you want to test (${{ env.CHROMIUM_DATASET }} || ${{ env.FIREFOX_DATASET }} )"
-              SANITY_E2E_DATASET_CHROMIUM=${{ env.CHROMIUM_DATASET }}
-              SANITY_E2E_DATASET_FIREFOX=${{ env.FIREFOX_DATASET }}
+            SANITY_E2E_PROJECT_ID=${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+            SANITY_E2E_BASE_URL=${{ steps.deploy.outputs.DEPLOY_URL }}
+            SANITY_E2E_DATASET=${{ env.CHROMIUM_DATASET }}
+            SANITY_E2E_DATASET_CHROMIUM=${{ env.CHROMIUM_DATASET }}
+            SANITY_E2E_DATASET_FIREFOX=${{ env.FIREFOX_DATASET }}
             ```
 
             </details>
@@ -279,7 +266,7 @@ jobs:
           retention-days: 30
 
   deploy-report:
-    needs: [install, merge-reports]
+    needs: [install, deploy-preview, merge-reports]
     if: always() && needs.install.outputs.has_code_changes == 'true' && needs.merge-reports.result == 'success'
     runs-on: ubuntu-latest
     outputs:
@@ -316,27 +303,35 @@ jobs:
             -m githubRunId="${{ github.run_id }}" \
             | tail -n 1)" >> $GITHUB_OUTPUT
 
-      - name: Add PR Comment with Report Link
+      - name: Update PR Comment with report link
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: github.event_name == 'pull_request'
         with:
-          comment-tag: "playwright-e2e-report"
+          comment-tag: "e2e-status"
           message: |
-            ### 📊 Playwright Test Report
+            ### 🧪 E2E Tests
 
-            **[View Full E2E Report](${{ steps.deploy.outputs.REPORT_URL }})**
+            **Report:** ${{ steps.deploy.outputs.REPORT_URL }}
+            **Preview:** ${{ needs.deploy-preview.outputs.preview_url }}
 
-            This report contains test results, including videos and traces of failing tests.
+            Includes test results, traces and videos of any failures.
 
             <details>
-            <summary>Alternative: Download report as ZIP</summary>
+            <summary>Environment variables for local testing</summary>
 
-            Download from the [Actions artifacts](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+            ```
+            SANITY_E2E_PROJECT_ID=${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+            SANITY_E2E_BASE_URL=${{ needs.deploy-preview.outputs.preview_url }}
+            SANITY_E2E_DATASET=${{ env.CHROMIUM_DATASET }}
+            SANITY_E2E_DATASET_CHROMIUM=${{ env.CHROMIUM_DATASET }}
+            SANITY_E2E_DATASET_FIREFOX=${{ env.FIREFOX_DATASET }}
+            ```
+
             </details>
 
       - name: Write Job Summary
         if: always() && steps.deploy.outputs.REPORT_URL != ''
         run: |
-          echo "## 📊 Playwright Test Report" >> $GITHUB_STEP_SUMMARY
+          echo "## E2E Test Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**[View Full E2E Report](${{ steps.deploy.outputs.REPORT_URL }})**" >> $GITHUB_STEP_SUMMARY
+          echo "**[View Full Report](${{ steps.deploy.outputs.REPORT_URL }})**" >> $GITHUB_STEP_SUMMARY
