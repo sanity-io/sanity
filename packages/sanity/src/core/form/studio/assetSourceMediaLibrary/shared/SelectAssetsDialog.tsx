@@ -12,6 +12,7 @@ import {
 } from '@sanity/types'
 import {Box, Card, Flex, useTheme, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {encodeJsonParams} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components'
 import {useFormValue} from '../../../../form'
@@ -126,8 +127,23 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       scheme: dark ? 'dark' : 'light',
       selectAssetTypes: selectAssetType ? [selectAssetType] : [],
       selectionType,
+      pickerPersistenceKey:
+        encodeJsonParams({
+          projectId: workspace.projectId,
+          dataset: workspace.dataset,
+          workspaceName: workspace.name,
+        }) || undefined,
     }),
-    [selectionType, selectAssetType, dark, authType, pluginFilters],
+    [
+      selectionType,
+      selectAssetType,
+      dark,
+      authType,
+      pluginFilters,
+      workspace.projectId,
+      workspace.dataset,
+      workspace.name,
+    ],
   )
   const iframeUrl = usePluginFrameUrl('/assets', params)
 
