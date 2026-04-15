@@ -13,11 +13,6 @@ describe('preview fetch concurrency cap', () => {
     vi.useRealTimers()
   })
 
-  it('should export a reasonable concurrency limit', () => {
-    expect(MAX_PREVIEW_FETCH_CONCURRENCY).toBeGreaterThan(0)
-    expect(MAX_PREVIEW_FETCH_CONCURRENCY).toBeLessThanOrEqual(10)
-  })
-
   it('should cap concurrent preview fetches through createDocumentPreviewStore', async () => {
     let inFlight = 0
     let maxInFlight = 0

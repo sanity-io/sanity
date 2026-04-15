@@ -1,7 +1,12 @@
 export * from './components/Preview'
 export * from './components/PreviewLoader'
 export * from './components/SanityDefaultPreview'
-export * from './documentPreviewStore'
+export type {
+  DocumentPreviewStore,
+  DocumentPreviewStoreOptions,
+  ObserveForPreviewFn,
+} from './documentPreviewStore'
+export {createDocumentPreviewStore} from './documentPreviewStore'
 export * from './types'
 export {unstable_useObserveDocument, useUnstableObserveDocument} from './useObserveDocument'
 export * from './useValuePreview'
