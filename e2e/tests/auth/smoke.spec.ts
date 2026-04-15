@@ -13,7 +13,7 @@ test.describe('Auth smoke test', () => {
     const page = await context.newPage()
     await setupMockAuth(page, {catchAll: true})
     await page.goto(`${BASE_URL}/cookie`)
-    await expect(page.locator('[data-testid="studio-navbar"]')).toBeVisible({timeout: 30_000})
+    await expect(page.locator('[data-testid="studio-navbar"]')).toBeVisible()
   })
 
   test('single tab logout shows login screen', async ({context}) => {
@@ -21,14 +21,14 @@ test.describe('Auth smoke test', () => {
     const mock = await setupMockAuth(page, {catchAll: true})
 
     await page.goto(`${BASE_URL}/cookie`)
-    await expect(page.locator('[data-testid="studio-navbar"]')).toBeVisible({timeout: 30_000})
+    await expect(page.locator('[data-testid="studio-navbar"]')).toBeVisible()
 
     mock.logOut()
     await page.locator('[id="user-menu"]').click()
     await page.getByText('Sign out').click()
 
-    await expect(page.locator('[data-ui="Heading"]:has-text("Choose login provider")')).toBeVisible(
-      {timeout: 15_000},
-    )
+    await expect(
+      page.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
+    ).toBeVisible()
   })
 })

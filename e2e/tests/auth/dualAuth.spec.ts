@@ -22,10 +22,10 @@ test.describe('Dual auth: cross-tab sync', () => {
     const page2Auth = await setupMockAuth(page2, {catchAll: true})
 
     await page1.goto(STUDIO_URL)
-    await expect(page1.locator('[data-testid="studio-navbar"]')).toBeVisible({timeout: 30_000})
+    await expect(page1.locator('[data-testid="studio-navbar"]')).toBeVisible()
 
     await page2.goto(STUDIO_URL)
-    await expect(page2.locator('[data-testid="studio-navbar"]')).toBeVisible({timeout: 30_000})
+    await expect(page2.locator('[data-testid="studio-navbar"]')).toBeVisible()
 
     page1Auth.logOut()
     page2Auth.logOut()
@@ -35,11 +35,11 @@ test.describe('Dual auth: cross-tab sync', () => {
 
     await expect(
       page1.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
-    ).toBeVisible({timeout: 15_000})
+    ).toBeVisible()
 
     await expect(
       page2.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
-    ).toBeVisible({timeout: 15_000})
+    ).toBeVisible()
   })
 
   test('login after logout syncs across tabs via BroadcastChannel', async ({context}) => {
@@ -47,12 +47,12 @@ test.describe('Dual auth: cross-tab sync', () => {
     const page1Auth = await setupMockAuth(page1, {catchAll: true})
 
     await page1.goto(STUDIO_URL)
-    await expect(page1.locator('[data-testid="studio-navbar"]')).toBeVisible({timeout: 30_000})
+    await expect(page1.locator('[data-testid="studio-navbar"]')).toBeVisible()
 
     const page2 = await context.newPage()
     const page2Auth = await setupMockAuth(page2, {catchAll: true})
     await page2.goto(STUDIO_URL)
-    await expect(page2.locator('[data-testid="studio-navbar"]')).toBeVisible({timeout: 30_000})
+    await expect(page2.locator('[data-testid="studio-navbar"]')).toBeVisible()
 
     // Logout from page2
     page1Auth.logOut()
@@ -62,18 +62,18 @@ test.describe('Dual auth: cross-tab sync', () => {
 
     await expect(
       page2.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
-    ).toBeVisible({timeout: 15_000})
+    ).toBeVisible()
     await expect(
       page1.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
-    ).toBeVisible({timeout: 15_000})
+    ).toBeVisible()
 
     // Simulate login by navigating back (cookie auth flow)
     page1Auth.logIn()
     page2Auth.logIn()
     await page1.goto(STUDIO_URL)
 
-    await expect(page1.locator('[data-testid="studio-navbar"]')).toBeVisible({timeout: 30_000})
-    await expect(page2.locator('[data-testid="studio-navbar"]')).toBeVisible({timeout: 30_000})
+    await expect(page1.locator('[data-testid="studio-navbar"]')).toBeVisible()
+    await expect(page2.locator('[data-testid="studio-navbar"]')).toBeVisible()
   })
 
   test('single tab logout shows login screen', async ({context}) => {
@@ -81,13 +81,13 @@ test.describe('Dual auth: cross-tab sync', () => {
     await setupMockAuth(page, {catchAll: true})
 
     await page.goto(STUDIO_URL)
-    await expect(page.locator('[data-testid="studio-navbar"]')).toBeVisible({timeout: 30_000})
+    await expect(page.locator('[data-testid="studio-navbar"]')).toBeVisible()
 
     await page.locator('[id="user-menu"]').click()
     await page.getByText('Sign out').click()
 
-    await expect(page.locator('[data-ui="Heading"]:has-text("Choose login provider")')).toBeVisible(
-      {timeout: 15_000},
-    )
+    await expect(
+      page.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
+    ).toBeVisible()
   })
 })

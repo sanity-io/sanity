@@ -26,7 +26,7 @@ test.describe('SSO', () => {
       await page.goto(`${BASE_URL}/${path}`)
 
       // The login screen should show the SAML provider button
-      await expect(page.locator('text=saml')).toBeVisible({timeout: 15_000})
+      await expect(page.locator('text=saml')).toBeVisible()
     })
   }
 
@@ -43,7 +43,7 @@ test.describe('SSO', () => {
       await page.goto(`${BASE_URL}/${path}`)
 
       // Should redirect directly to the SAML SSO login URL
-      await page.waitForURL('**/auth/saml/login/**', {timeout: 15_000})
+      await page.waitForURL('**/auth/saml/login/**')
     })
   }
 })

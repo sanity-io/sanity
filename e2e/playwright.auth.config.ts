@@ -12,13 +12,19 @@ const PORT = 3340
  *   pnpm --filter auth-test-studio dev --port 3340
  *
  * CI: the webServer block auto-starts the preview server.
+ *
+ * NOTE: If running locally against the Vite dev server, page loads are much
+ * slower (~20s vs ~1s with the preview server). You may need to increase the
+ * timeouts below, or build and run the preview server instead:
+ *   pnpm build --filter=auth-test-studio...
+ *   pnpm --filter auth-test-studio start --port 3340
  */
 export default defineConfig({
   testDir: './tests/auth',
   timeout: 60_000,
   fullyParallel: true,
   expect: {
-    timeout: 30_000,
+    timeout: 10_000,
   },
   outputDir: './results-auth',
   retries: 1,

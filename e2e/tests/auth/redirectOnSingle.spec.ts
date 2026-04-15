@@ -29,7 +29,7 @@ test.describe('redirectOnSingle', () => {
       await page.goto(`${BASE_URL}/${path}`)
 
       // The studio should redirect to the GitHub auth URL (the only provider).
-      await page.waitForURL('**/auth/login/github*', {timeout: 15_000})
+      await page.waitForURL('**/auth/login/github*')
     })
   }
 
@@ -47,7 +47,7 @@ test.describe('redirectOnSingle', () => {
 
       await expect(
         page.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
-      ).toBeVisible({timeout: 15_000})
+      ).toBeVisible()
     })
   }
 
@@ -68,7 +68,7 @@ test.describe('redirectOnSingle', () => {
       const mock = await setupMockAuth(page, {catchAll: true})
 
       await page.goto(`${BASE_URL}/${path}`)
-      await expect(page.locator('[data-testid="studio-navbar"]')).toBeVisible({timeout: 30_000})
+      await expect(page.locator('[data-testid="studio-navbar"]')).toBeVisible()
 
       mock.logOut()
       await page.locator('[id="user-menu"]').click()
@@ -77,7 +77,7 @@ test.describe('redirectOnSingle', () => {
       // After logout, the login screen should appear — NOT a redirect to the provider.
       await expect(
         page.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
-      ).toBeVisible({timeout: 15_000})
+      ).toBeVisible()
 
       // Verify the URL stayed on localhost (no redirect to auth provider)
       expect(page.url()).toContain('localhost:3340')
