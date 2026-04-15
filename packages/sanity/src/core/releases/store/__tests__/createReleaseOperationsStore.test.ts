@@ -16,8 +16,13 @@ import {
 
 describe('createReleaseOperationsStore', () => {
   let mockClient: any
+  let mockTransaction: any
 
   beforeEach(() => {
+    mockTransaction = {
+      delete: vi.fn().mockReturnThis(),
+      commit: vi.fn().mockResolvedValue(undefined),
+    }
     mockClient = {
       config: vi.fn().mockReturnValue({dataset: 'test-dataset'}),
       action: vi.fn().mockResolvedValue(undefined),
@@ -31,7 +36,9 @@ describe('createReleaseOperationsStore', () => {
         unarchive: vi.fn().mockResolvedValue(undefined),
         delete: vi.fn().mockResolvedValue(undefined),
       },
-      getDocument: vi.fn(),
+      fetch: vi.fn().mockResolvedValue([]),
+      getDocument: vi.fn().mockResolvedValue(null),
+      transaction: vi.fn().mockReturnValue(mockTransaction),
       createVersion: vi.fn().mockResolvedValue(undefined),
       discardVersion: vi.fn().mockResolvedValue(undefined),
       unpublishVersion: vi.fn().mockResolvedValue(undefined),
@@ -82,6 +89,85 @@ describe('createReleaseOperationsStore', () => {
       },
       undefined,
     )
+  })
+
+  describe('publishRelease draft cleanup', () => {
+    it('should discard matching drafts after publishing a release', async () => {
+      const store = createStore()
+
+      // Set up: release has one document
+      mockClient.fetch.mockResolvedValueOnce(['versions.rASAP.doc1'])
+
+      // Draft and published match
+      const sharedContent = {_type: 'article', title: 'Hello'}
+      mockClient.getDocument
+        .mockResolvedValueOnce({_id: 'drafts.doc1', _rev: 'rev-1', ...sharedContent})
+        .mockResolvedValueOnce({_id: 'doc1', _rev: 'rev-2', ...sharedContent})
+
+      await store.publishRelease(activeASAPRelease._id)
+
+      expect(mockClient.releases.publish).toHaveBeenCalled()
+      expect(mockClient.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('partOfRelease'),
+        {releaseId: 'rASAP'},
+        expect.objectContaining({tag: 'release.pre-publish-query'}),
+      )
+      expect(mockTransaction.delete).toHaveBeenCalledWith('drafts.doc1')
+      expect(mockTransaction.commit).toHaveBeenCalledWith(
+        expect.objectContaining({tag: 'release.post-publish-draft-cleanup'}),
+      )
+    })
+
+    it('should not discard drafts that differ from published after release publish', async () => {
+      const store = createStore()
+
+      mockClient.fetch.mockResolvedValueOnce(['versions.rASAP.doc1'])
+
+      // Draft and published differ
+      mockClient.getDocument
+        .mockResolvedValueOnce({
+          _id: 'drafts.doc1',
+          _rev: 'rev-1',
+          _type: 'article',
+          title: 'Draft',
+        })
+        .mockResolvedValueOnce({
+          _id: 'doc1',
+          _rev: 'rev-2',
+          _type: 'article',
+          title: 'Published',
+        })
+
+      await store.publishRelease(activeASAPRelease._id)
+
+      expect(mockClient.releases.publish).toHaveBeenCalled()
+      expect(mockTransaction.delete).not.toHaveBeenCalled()
+    })
+
+    it('should skip draft cleanup for dry run publishes', async () => {
+      const store = createStore()
+      const opts = {dryRun: true}
+
+      await store.publishRelease(activeASAPRelease._id, opts)
+
+      expect(mockClient.releases.publish).toHaveBeenCalled()
+      expect(mockClient.fetch).not.toHaveBeenCalled()
+    })
+
+    it('should not fail publish if draft cleanup fails', async () => {
+      const store = createStore()
+
+      mockClient.fetch.mockResolvedValueOnce(['versions.rASAP.doc1'])
+
+      // Make getDocument throw to simulate cleanup failure
+      mockClient.getDocument.mockRejectedValue(new Error('Network error'))
+
+      // Should not throw despite cleanup failure
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      await expect(store.publishRelease(activeASAPRelease._id)).resolves.not.toThrow()
+      expect(warnSpy).toHaveBeenCalled()
+      warnSpy.mockRestore()
+    })
   })
 
   it('should schedule a release', async () => {

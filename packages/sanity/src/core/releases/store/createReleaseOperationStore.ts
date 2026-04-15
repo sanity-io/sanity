@@ -11,6 +11,7 @@ import {
 import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
+import {discardMatchingDrafts} from '../util/discardMatchingDrafts'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {isReleaseLimitError} from './isReleaseLimitError'
 
@@ -112,11 +113,45 @@ export function createReleaseOperationsStore(options: {
     )
   }
 
-  const handlePublishRelease = (releaseId: string, opts?: BaseActionOptions) =>
-    handleReleaseLimitError(
-      client.releases.publish({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts),
+  const handlePublishRelease = async (
+    releaseId: string,
+    opts?: BaseActionOptions,
+  ): Promise<SingleActionResult> => {
+    const resolvedReleaseId = getReleaseIdFromReleaseDocumentId(releaseId)
+
+    // Collect the published IDs of documents in the release BEFORE publishing,
+    // because after publish the version documents may no longer exist.
+    let publishedIdsForCleanup: string[] = []
+    if (!opts?.dryRun) {
+      try {
+        const versionIds = await client.fetch<string[]>(
+          `*[sanity::partOfRelease($releaseId)]._id`,
+          {releaseId: resolvedReleaseId},
+          {tag: 'release.pre-publish-query'},
+        )
+        publishedIdsForCleanup = [...new Set((versionIds || []).map((id) => getPublishedId(id)))]
+      } catch {
+        // If the pre-publish query fails, proceed with publish but skip cleanup
+      }
+    }
+
+    const result = await handleReleaseLimitError(
+      client.releases.publish({releaseId: resolvedReleaseId}, opts),
       opts,
     )
+
+    // After successful publish, clean up matching drafts
+    if (!opts?.dryRun && publishedIdsForCleanup.length > 0) {
+      try {
+        await discardMatchingDrafts(client, publishedIdsForCleanup)
+      } catch (error) {
+        // Draft cleanup is best-effort; don't fail the publish if cleanup fails
+        console.warn('Failed to clean up drafts after release publish:', error)
+      }
+    }
+
+    return result
+  }
 
   const handleScheduleRelease = (releaseId: string, publishAt: Date, opts?: BaseActionOptions) =>
     handleReleaseLimitError(

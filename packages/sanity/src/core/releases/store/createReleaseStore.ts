@@ -5,12 +5,14 @@ import {
   concat,
   concatWith,
   count,
+  EMPTY,
   filter,
   from,
   merge,
   type Observable,
   of,
   type OperatorFunction,
+  pairwise,
   pipe,
   scan,
   shareReplay,
@@ -18,10 +20,11 @@ import {
   switchMap,
   tap,
 } from 'rxjs'
-import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
+import {distinctUntilChanged, map, mergeMap, startWith} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../preview'
 import {listenQuery} from '../../store/_legacy'
+import {discardMatchingDraftsForRelease} from '../util/discardMatchingDrafts'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
@@ -145,6 +148,41 @@ export function createReleaseStore(context: {
     startWith(INITIAL_STATE),
     shareReplay(1),
   )
+
+  // Side-effect: when a release transitions to 'published' (e.g., via scheduled publish),
+  // clean up any drafts that now match their published counterparts.
+  const draftCleanup$ = state$.pipe(
+    pairwise(),
+    mergeMap(([prevState, nextState]) => {
+      const newlyPublishedReleases: ReleaseDocument[] = []
+      for (const [id, release] of nextState.releases) {
+        if (release.state === 'published') {
+          const prevRelease = prevState.releases.get(id)
+          // Only trigger for releases that just transitioned to 'published'
+          if (prevRelease && prevRelease.state !== 'published') {
+            newlyPublishedReleases.push(release)
+          }
+        }
+      }
+
+      if (newlyPublishedReleases.length === 0) return EMPTY
+
+      return from(
+        Promise.all(
+          newlyPublishedReleases.map((release) =>
+            discardMatchingDraftsForRelease(client, release).catch((err) => {
+              console.warn('Failed to clean up drafts after release publish:', err)
+            }),
+          ),
+        ),
+      )
+    }),
+    catchError(() => EMPTY),
+  )
+
+  // Subscribe to the cleanup observable to activate the side-effect.
+  // This is a fire-and-forget subscription that lives for the app lifecycle.
+  draftCleanup$.subscribe()
 
   const errorCount$ = state$.pipe(releaseStoreErrorCount(), shareReplay(1))
 
