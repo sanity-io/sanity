@@ -26,4 +26,22 @@ describe('StringInputPortableText', () => {
       expect(input).toHaveTextContent('test')
     })
   })
+
+  it('wires up focusRef so programmatic focus works', async () => {
+    const {focusRef} = await renderStringInput({
+      render: (inputProps) => <StringInputPortableText {...inputProps} value="test" />,
+      fieldDefinition: {
+        type: 'string',
+        name: 'string',
+        title: 'String',
+      },
+    })
+
+    // The FocusBridgePlugin should have assigned an object with a focus method
+    // to the ref, allowing PrimitiveField to call focusRef.current.focus()
+    await waitFor(() => {
+      expect(focusRef.current).toBeDefined()
+      expect(typeof focusRef.current?.focus).toBe('function')
+    })
+  })
 })
