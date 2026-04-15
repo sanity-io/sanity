@@ -190,7 +190,7 @@ describe('createPathObserver', () => {
   })
 
   describe('integration: query count with real observeFields pipeline', () => {
-    it('should not re-fetch when invalidation events arrive but document has not changed', async () => {
+    it('should not amplify fetches through subscription tree rebuilds when document has not changed', async () => {
       let fetchCallCount = 0
 
       const client: ClientLike = {
