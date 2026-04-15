@@ -6,6 +6,7 @@ import {
   type WelcomeEvent,
 } from '@sanity/client'
 import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
+import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
@@ -140,6 +141,13 @@ export interface DocumentPreviewStoreOptions {
   client: SanityClient
 }
 
+/** Caps concurrent preview fetches to leave connection headroom for SSE and other API calls.
+ *
+ * @internal */
+export const MAX_PREVIEW_FETCH_CONCURRENCY = 4
+
+const limitPreviewConcurrency = createClientConcurrencyLimiter(MAX_PREVIEW_FETCH_CONCURRENCY)
+
 /** @internal */
 export function createDocumentPreviewStore({
   client,
@@ -156,8 +164,9 @@ export function createDocumentPreviewStore({
     map((event) => (event.type === 'welcome' ? {type: 'connected' as const} : event)),
   )
 
+  const previewClient = limitPreviewConcurrency(versionedClient)
   const observeDocument = createObserveDocument({client, mutationChannel: globalListener})
-  const observeFields = createObserveFields({client: versionedClient, invalidationChannel})
+  const observeFields = createObserveFields({client: previewClient, invalidationChannel})
   const observePaths = createPathObserver({observeFields})
 
   function observeDocumentTypeFromId(
