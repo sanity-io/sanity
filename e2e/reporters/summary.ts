@@ -13,38 +13,45 @@ import type {FullResult, Reporter, TestCase} from '@playwright/test/reporter'
  *   npx playwright merge-reports --reporter html,./e2e/reporters/summary.ts blob-reports
  */
 export default class SummaryReporter implements Reporter {
-  private passed = 0
-  private failed = 0
-  private flaky = 0
-  private skipped = 0
-  private failedFiles = new Set<string>()
+  private tests: TestCase[] = []
 
   onTestEnd(test: TestCase) {
-    switch (test.outcome()) {
-      case 'expected':
-        this.passed++
-        break
-      case 'unexpected':
-        this.failed++
-        if (test.location.file) this.failedFiles.add(test.location.file)
-        break
-      case 'flaky':
-        this.flaky++
-        break
-      case 'skipped':
-        this.skipped++
-        break
-    }
+    this.tests.push(test)
   }
 
   onEnd(_result: FullResult) {
     const cwd = process.cwd()
-    const failedFiles = [...this.failedFiles].map((f) => path.relative(cwd, f))
+    const counts = {passed: 0, failed: 0, flaky: 0, skipped: 0}
+    const failedFileSet = new Set<string>()
+
+    // Deduplicate by test ID — onTestEnd is called per attempt (including retries),
+    // so we only want the last attempt for each test.
+    const lastByTestId = new Map<string, TestCase>()
+    for (const test of this.tests) {
+      lastByTestId.set(test.id, test)
+    }
+
+    for (const test of lastByTestId.values()) {
+      switch (test.outcome()) {
+        case 'expected':
+          counts.passed++
+          break
+        case 'unexpected':
+          counts.failed++
+          if (test.location.file) failedFileSet.add(test.location.file)
+          break
+        case 'flaky':
+          counts.flaky++
+          break
+        case 'skipped':
+          counts.skipped++
+          break
+      }
+    }
+
+    const failedFiles = [...failedFileSet].map((f) => path.relative(cwd, f))
     const summary = {
-      passed: this.passed,
-      failed: this.failed,
-      flaky: this.flaky,
-      skipped: this.skipped,
+      ...counts,
       failedFiles,
       // Pre-formatted for use in shell code blocks: each file on its own line with \
       failedFilesFormatted: failedFiles.join(' \\\n  '),
