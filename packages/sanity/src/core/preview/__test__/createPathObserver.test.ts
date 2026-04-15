@@ -1,5 +1,5 @@
 import {BehaviorSubject, type Observable, of, Subject} from 'rxjs'
-import {describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type SanityClient} from '../../form/studio/assetSourceDataset/uploader'
 import {createPathObserver} from '../createPathObserver'
@@ -190,12 +190,20 @@ describe('createPathObserver', () => {
   })
 
   describe('integration: query count with real observeFields pipeline', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
     it('should not amplify fetches through subscription tree rebuilds when document has not changed', async () => {
       let fetchCallCount = 0
 
       const client: ClientLike = {
         observable: {
-          fetch: (_query: string) => {
+          fetch: () => {
             fetchCallCount++
             return of([
               [
@@ -204,8 +212,6 @@ describe('createPathObserver', () => {
                   _rev: 'rev1',
                   _type: 'contentList',
                   name: 'Main Content',
-                  _createdAt: '2025-01-01T00:00:00Z',
-                  _updatedAt: '2025-01-01T00:00:00Z',
                 },
               ],
             ])
@@ -225,39 +231,76 @@ describe('createPathObserver', () => {
         observePaths({_type: 'reference', _ref: 'mainContentList'}, ['name']),
       )
 
-      // Initial connect triggers the first fetch
       invalidationChannel.next({type: 'connected'})
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      await vi.advanceTimersByTimeAsync(200)
 
       const fetchCountAfterConnect = fetchCallCount
       expect(fetchCountAfterConnect).toBeGreaterThanOrEqual(1)
       expect(values.length).toBeGreaterThanOrEqual(1)
 
-      // Simulate 10 mutation events for the same document (same _rev comes back each time).
-      // This reproduces the HAR scenario: global listener fires repeatedly,
-      // observeFields re-fetches, but the document hasn't actually changed.
       for (let i = 0; i < 10; i++) {
         invalidationChannel.next({
           type: 'mutation',
           documentId: 'mainContentList',
           visibility: 'query',
         })
-        await new Promise((resolve) => setTimeout(resolve, 150))
+        await vi.advanceTimersByTimeAsync(200)
       }
 
-      // Without the fix: switchMap would rebuild the subscription tree on each
-      // re-emission, causing recursive observePaths calls and additional fetches.
-      // With the fix: distinctUntilChanged(_rev) suppresses identical emissions,
-      // so no subscription tree rebuild occurs.
-      //
-      // We allow some fetches from the invalidation channel (observeFields still
-      // re-fetches on mutation events), but the key assertion is that the total
-      // number of fetches is bounded, not proportional to mutation count * tree depth.
-      const totalFetches = fetchCallCount
-      // In a HAR where we have identified the issue, the unfixed version produced too many unneded fetches for the same document.
-      // With the fix, observeFields may still refetch per invalidation, but
-      // the recursive observePaths won't amplify each refetch into additional queries.
-      expect(totalFetches).toBeLessThan(20)
+      // Each mutation triggers at most one fetch via observeFields (no amplification
+      // from the recursive subscription tree thanks to distinctUntilChanged on _rev).
+      expect(fetchCallCount).toBeLessThanOrEqual(fetchCountAfterConnect + 10)
+
+      unsubscribe()
+    })
+
+    it('should propagate new emissions downstream when _rev changes between fetches', async () => {
+      let fetchCallCount = 0
+
+      const client: ClientLike = {
+        observable: {
+          fetch: () => {
+            fetchCallCount++
+            return of([
+              [
+                {
+                  _id: 'mainContentList',
+                  _rev: `rev${fetchCallCount}`,
+                  _type: 'contentList',
+                  name: `Content v${fetchCallCount}`,
+                },
+              ],
+            ])
+          },
+        },
+        withConfig: () => client,
+      }
+
+      const invalidationChannel = new Subject<InvalidationChannelEvent>()
+      const observeFields = createObserveFields({
+        invalidationChannel,
+        client: client as unknown as SanityClient,
+      })
+      const observePaths = createPathObserver({observeFields})
+
+      const {values, unsubscribe} = collectEmissions(
+        observePaths({_type: 'reference', _ref: 'mainContentList'}, ['name']),
+      )
+
+      invalidationChannel.next({type: 'connected'})
+      await vi.advanceTimersByTimeAsync(200)
+
+      expect(values.length).toBeGreaterThanOrEqual(1)
+      const valuesAfterConnect = values.length
+
+      invalidationChannel.next({
+        type: 'mutation',
+        documentId: 'mainContentList',
+        visibility: 'query',
+      })
+      await vi.advanceTimersByTimeAsync(200)
+
+      expect(values.length).toBeGreaterThan(valuesAfterConnect)
 
       unsubscribe()
     })
