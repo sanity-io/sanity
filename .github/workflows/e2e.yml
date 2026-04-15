@@ -335,3 +335,22 @@ jobs:
           echo "## E2E Test Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**[View Full Report](${{ steps.deploy.outputs.REPORT_URL }})**" >> $GITHUB_STEP_SUMMARY
+
+  update-comment-on-failure:
+    needs: [install, deploy-preview, playwright-test, deploy-report]
+    if: |
+      always()
+      && github.event_name == 'pull_request'
+      && needs.install.outputs.has_code_changes == 'true'
+      && needs.deploy-report.result != 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update PR Comment with final status
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        with:
+          comment-tag: "e2e-status"
+          message: |
+            ### 🧪 E2E Tests
+
+            **Report:** ${{ needs.playwright-test.result == 'cancelled' && 'Tests were cancelled.' || format('Download from [Actions artifacts]({0}/{1}/actions/runs/{2}).', github.server_url, github.repository, github.run_id) }}
+            **Preview:** ${{ needs.deploy-preview.outputs.preview_url || 'Not available.' }}
