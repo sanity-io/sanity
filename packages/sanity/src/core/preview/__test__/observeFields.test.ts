@@ -8,6 +8,13 @@ import {chunkCombinedSelections, type ClientLike, createObserveFields} from '../
 import {type InvalidationChannelEvent} from '../types'
 import {type CombinedSelection} from '../utils/optimizeQuery'
 
+function sendMutations(channel: Subject<InvalidationChannelEvent>, documentIds: string | string[]) {
+  const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
+  for (const documentId of ids) {
+    channel.next({type: 'mutation', documentId, visibility: 'query'})
+  }
+}
+
 describe('chunkCombinedSelections', () => {
   it('should return a single chunk when IDs fit within the size limit', () => {
     const selections: CombinedSelection[] = [
@@ -258,7 +265,9 @@ describe('observeFields', () => {
   })
 
   describe('invalidation filter with perspective', () => {
-    it('should re-fetch when the observed document itself is mutated (with perspective)', async () => {
+    const SETTLE_TIME = 200
+
+    function setupPerspectiveTest() {
       let fetchCount = 0
       const client: ClientLike = {
         observable: {
@@ -275,241 +284,129 @@ describe('observeFields', () => {
         client: client as unknown as SanityClient,
       })
 
-      const values: any[] = []
-      const sub = observe('foo', ['title'], undefined, ['drafts']).subscribe((v) => values.push(v))
+      return {
+        get fetchCount() {
+          return fetchCount
+        },
+        channel,
+        observe,
+      }
+    }
 
+    async function connectAndSettle(channel: Subject<InvalidationChannelEvent>) {
       channel.next({type: 'connected'})
-      await new Promise((r) => setTimeout(r, 200))
-      const afterConnect = fetchCount
+      await new Promise((r) => setTimeout(r, SETTLE_TIME))
+    }
 
-      channel.next({type: 'mutation', documentId: 'foo', visibility: 'query'})
-      await new Promise((r) => setTimeout(r, 200))
+    it('should re-fetch when the observed document itself is mutated (with perspective)', async () => {
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
 
-      expect(fetchCount).toBeGreaterThan(afterConnect)
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
+
+      sendMutations(harness.channel, 'foo')
+      await new Promise((r) => setTimeout(r, SETTLE_TIME))
+
+      expect(harness.fetchCount).toBeGreaterThan(afterConnect)
       sub.unsubscribe()
     })
 
     it('should re-fetch when the draft version of observed document is mutated', async () => {
-      let fetchCount = 0
-      const client: ClientLike = {
-        observable: {
-          fetch: () => {
-            fetchCount++
-            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
-          },
-        },
-        withConfig: () => client,
-      }
-      const channel = new Subject<InvalidationChannelEvent>()
-      const observe = createObserveFields({
-        invalidationChannel: channel,
-        client: client as unknown as SanityClient,
-      })
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
 
-      const sub = observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
 
-      channel.next({type: 'connected'})
-      await new Promise((r) => setTimeout(r, 200))
-      const afterConnect = fetchCount
+      sendMutations(harness.channel, 'drafts.foo')
+      await new Promise((r) => setTimeout(r, SETTLE_TIME))
 
-      channel.next({type: 'mutation', documentId: 'drafts.foo', visibility: 'query'})
-      await new Promise((r) => setTimeout(r, 200))
-
-      expect(fetchCount).toBeGreaterThan(afterConnect)
+      expect(harness.fetchCount).toBeGreaterThan(afterConnect)
       sub.unsubscribe()
     })
 
     it('should re-fetch when a versioned document matching the observed doc is mutated', async () => {
-      let fetchCount = 0
-      const client: ClientLike = {
-        observable: {
-          fetch: () => {
-            fetchCount++
-            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
-          },
-        },
-        withConfig: () => client,
-      }
-      const channel = new Subject<InvalidationChannelEvent>()
-      const observe = createObserveFields({
-        invalidationChannel: channel,
-        client: client as unknown as SanityClient,
-      })
+      const harness = setupPerspectiveTest()
+      const sub = harness
+        .observe('foo', ['title'], undefined, ['drafts', 'summer'])
+        .subscribe(() => {})
 
-      const sub = observe('foo', ['title'], undefined, ['drafts', 'summer']).subscribe(() => {})
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
 
-      channel.next({type: 'connected'})
-      await new Promise((r) => setTimeout(r, 200))
-      const afterConnect = fetchCount
+      sendMutations(harness.channel, 'versions.summer.foo')
+      await new Promise((r) => setTimeout(r, SETTLE_TIME))
 
-      channel.next({
-        type: 'mutation',
-        documentId: 'versions.summer.foo',
-        visibility: 'query',
-      })
-      await new Promise((r) => setTimeout(r, 200))
-
-      expect(fetchCount).toBeGreaterThan(afterConnect)
+      expect(harness.fetchCount).toBeGreaterThan(afterConnect)
       sub.unsubscribe()
     })
 
     it('should NOT re-fetch when an unrelated document is mutated (with perspective)', async () => {
-      let fetchCount = 0
-      const client: ClientLike = {
-        observable: {
-          fetch: () => {
-            fetchCount++
-            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
-          },
-        },
-        withConfig: () => client,
-      }
-      const channel = new Subject<InvalidationChannelEvent>()
-      const observe = createObserveFields({
-        invalidationChannel: channel,
-        client: client as unknown as SanityClient,
-      })
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
 
-      const sub = observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
 
-      channel.next({type: 'connected'})
-      await new Promise((r) => setTimeout(r, 200))
-      const afterConnect = fetchCount
+      sendMutations(harness.channel, ['trigger-doc', 'drafts.other-doc', 'versions.summer.bar'])
+      await new Promise((r) => setTimeout(r, SETTLE_TIME))
 
-      channel.next({type: 'mutation', documentId: 'trigger-doc', visibility: 'query'})
-      channel.next({type: 'mutation', documentId: 'drafts.other-doc', visibility: 'query'})
-      channel.next({type: 'mutation', documentId: 'versions.summer.bar', visibility: 'query'})
-      await new Promise((r) => setTimeout(r, 200))
-
-      expect(fetchCount).toBe(afterConnect)
+      expect(harness.fetchCount).toBe(afterConnect)
       sub.unsubscribe()
     })
 
     it('should NOT re-fetch for a version outside the active perspective stack', async () => {
-      let fetchCount = 0
-      const client: ClientLike = {
-        observable: {
-          fetch: () => {
-            fetchCount++
-            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
-          },
-        },
-        withConfig: () => client,
-      }
-      const channel = new Subject<InvalidationChannelEvent>()
-      const observe = createObserveFields({
-        invalidationChannel: channel,
-        client: client as unknown as SanityClient,
-      })
+      const harness = setupPerspectiveTest()
+      const sub = harness
+        .observe('foo', ['title'], undefined, ['drafts', 'summer'])
+        .subscribe(() => {})
 
-      const sub = observe('foo', ['title'], undefined, ['drafts', 'summer']).subscribe(() => {})
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
 
-      channel.next({type: 'connected'})
-      await new Promise((r) => setTimeout(r, 200))
-      const afterConnect = fetchCount
+      sendMutations(harness.channel, 'versions.winter.foo')
+      await new Promise((r) => setTimeout(r, SETTLE_TIME))
 
-      channel.next({
-        type: 'mutation',
-        documentId: 'versions.winter.foo',
-        visibility: 'query',
-      })
-      await new Promise((r) => setTimeout(r, 200))
-
-      expect(fetchCount).toBe(afterConnect)
+      expect(harness.fetchCount).toBe(afterConnect)
       sub.unsubscribe()
     })
 
     it('should NOT re-fetch when the same base document is mutated in an out-of-stack version while observing drafts', async () => {
-      let fetchCount = 0
-      const client: ClientLike = {
-        observable: {
-          fetch: () => {
-            fetchCount++
-            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
-          },
-        },
-        withConfig: () => client,
-      }
-      const channel = new Subject<InvalidationChannelEvent>()
-      const observe = createObserveFields({
-        invalidationChannel: channel,
-        client: client as unknown as SanityClient,
-      })
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
 
-      const sub = observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
 
-      channel.next({type: 'connected'})
-      await new Promise((r) => setTimeout(r, 200))
-      const afterConnect = fetchCount
+      sendMutations(harness.channel, 'versions.summer.foo')
+      await new Promise((r) => setTimeout(r, SETTLE_TIME))
 
-      channel.next({
-        type: 'mutation',
-        documentId: 'versions.summer.foo',
-        visibility: 'query',
-      })
-      await new Promise((r) => setTimeout(r, 200))
-
-      expect(fetchCount).toBe(afterConnect)
+      expect(harness.fetchCount).toBe(afterConnect)
       sub.unsubscribe()
     })
 
     it('should NOT re-fetch when the same base document is mutated in drafts while observing a version perspective', async () => {
-      let fetchCount = 0
-      const client: ClientLike = {
-        observable: {
-          fetch: () => {
-            fetchCount++
-            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
-          },
-        },
-        withConfig: () => client,
-      }
-      const channel = new Subject<InvalidationChannelEvent>()
-      const observe = createObserveFields({
-        invalidationChannel: channel,
-        client: client as unknown as SanityClient,
-      })
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['summer']).subscribe(() => {})
 
-      const sub = observe('foo', ['title'], undefined, ['summer']).subscribe(() => {})
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
 
-      channel.next({type: 'connected'})
-      await new Promise((r) => setTimeout(r, 200))
-      const afterConnect = fetchCount
+      sendMutations(harness.channel, 'drafts.foo')
+      await new Promise((r) => setTimeout(r, SETTLE_TIME))
 
-      channel.next({
-        type: 'mutation',
-        documentId: 'drafts.foo',
-        visibility: 'query',
-      })
-      await new Promise((r) => setTimeout(r, 200))
-
-      expect(fetchCount).toBe(afterConnect)
+      expect(harness.fetchCount).toBe(afterConnect)
       sub.unsubscribe()
     })
 
     it('should always re-fetch on connected event regardless of perspective', async () => {
-      let fetchCount = 0
-      const client: ClientLike = {
-        observable: {
-          fetch: () => {
-            fetchCount++
-            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
-          },
-        },
-        withConfig: () => client,
-      }
-      const channel = new Subject<InvalidationChannelEvent>()
-      const observe = createObserveFields({
-        invalidationChannel: channel,
-        client: client as unknown as SanityClient,
-      })
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
 
-      const sub = observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+      await connectAndSettle(harness.channel)
 
-      channel.next({type: 'connected'})
-      await new Promise((r) => setTimeout(r, 200))
-
-      expect(fetchCount).toBeGreaterThan(0)
+      expect(harness.fetchCount).toBeGreaterThan(0)
       sub.unsubscribe()
     })
   })
