@@ -466,6 +466,7 @@ import type {
   DocumentPreviewStore,
   DocumentPreviewStoreOptions,
   DocumentRebaseEvent,
+  DocumentRebaseTelemetryEvent,
   DocumentRemoteMutationEvent,
   DocumentRemoteMutationVersionEvent,
   DocumentRevision,
@@ -994,6 +995,7 @@ import type {
   MutationPatch,
   MutationPatchMsg,
   MutationPayload,
+  MutationPerformanceEvent,
   MutationResult,
   MutationSelection,
   NarrowPreview,
@@ -3123,6 +3125,9 @@ describe('sanity', () => {
   test('DocumentRebaseEvent', () => {
     expectTypeOf<DocumentRebaseEvent>().toBeObject()
   })
+  test('DocumentRebaseTelemetryEvent', () => {
+    expectTypeOf<DocumentRebaseTelemetryEvent>().toBeObject()
+  })
   test('DocumentRemoteMutationEvent', () => {
     expectTypeOf<DocumentRemoteMutationEvent>().toBeObject()
   })
@@ -4714,6 +4719,9 @@ describe('sanity', () => {
   })
   test('MutationPayload', () => {
     expectTypeOf<MutationPayload>().toBeObject()
+  })
+  test('MutationPerformanceEvent', () => {
+    expectTypeOf<MutationPerformanceEvent>().toBeObject()
   })
   test('MutationResult', () => {
     expectTypeOf<MutationResult>().not.toBeNever()
