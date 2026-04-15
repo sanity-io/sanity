@@ -278,14 +278,65 @@ jobs:
           path: playwright-report
           retention-days: 30
 
+  deploy-report:
+    needs: [install, merge-reports]
+    if: always() && needs.install.outputs.has_code_changes == 'true' && needs.merge-reports.result == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      report_url: ${{ steps.deploy.outputs.REPORT_URL }}
+    steps:
+      - name: Download HTML report
+        uses: actions/download-artifact@v8
+        with:
+          name: full-html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Prepare Vercel prebuilt output
+        run: |
+          mkdir -p .vercel/output/static
+          cp -r playwright-report/* .vercel/output/static/
+          echo '{"version": 3}' > .vercel/output/config.json
+
+      - name: Deploy report to Vercel
+        id: deploy
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+        run: |
+          echo "REPORT_URL=$(vercel deploy --prebuilt \
+            --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
+            --yes \
+            -m githubDeployment="1" \
+            -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
+            -m githubCommitSha="${{ github.sha }}" \
+            -m githubRunId="${{ github.run_id }}" \
+            | tail -n 1)" >> $GITHUB_OUTPUT
+
       - name: Add PR Comment with Report Link
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ always() && steps.upload-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
+        if: github.event_name == 'pull_request'
         with:
           comment-tag: "playwright-e2e-report"
           message: |
             ### 📊 Playwright Test Report
 
-            **[Download Full E2E Report](${{ steps.upload-playwright-report.outputs.artifact-url }})**
+            **[View Full E2E Report](${{ steps.deploy.outputs.REPORT_URL }})**
 
-            This report contains test results, including videos of failing tests.
+            This report contains test results, including videos and traces of failing tests.
+
+            <details>
+            <summary>Alternative: Download report as ZIP</summary>
+
+            Download from the [Actions artifacts](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+            </details>
+
+      - name: Write Job Summary
+        if: always() && steps.deploy.outputs.REPORT_URL != ''
+        run: |
+          echo "## 📊 Playwright Test Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**[View Full E2E Report](${{ steps.deploy.outputs.REPORT_URL }})**" >> $GITHUB_STEP_SUMMARY
