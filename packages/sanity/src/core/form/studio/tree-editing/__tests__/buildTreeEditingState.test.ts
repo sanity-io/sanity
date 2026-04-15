@@ -180,7 +180,9 @@ const schema = Schema.compile({
   ],
 })
 
-describe('tree-editing: buildTreeEditingState', () => {
+// TODO: Remove this file - tests are disabled as buildTreeEditingState is no longer used.
+// See: https://github.com/sanity-io/sanity/pull/12661
+describe.skip('tree-editing: buildTreeEditingState', () => {
   test('should build tree editing state for an array of objects', () => {
     // implement
 
