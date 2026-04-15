@@ -19,7 +19,7 @@ catalogs:
       specifier: ^2.0.0
       version: 2.0.0
     '@sanity/migrate':
-      specifier: ^6.0.0
+      specifier: ^6.1.1
       version: 6.1.1
     '@sanity/pkg-utils':
       specifier: ^10.4.15
