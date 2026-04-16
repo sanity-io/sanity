@@ -377,6 +377,11 @@ const releasesLocaleStrings = {
   'summary.not-published': 'Not published',
   /** Text for when the release has no documents */
   'summary.no-documents': 'No documents',
+  /** Title for the empty state when a cardinality-one release has no documents */
+  'summary.no-documents-cardinality-one.title': 'No document in this release',
+  /** Description for the empty state when a cardinality-one release has no documents */
+  'summary.no-documents-cardinality-one.description':
+    'This scheduled draft does not contain a document. It may have been removed.',
   /** Text for when the release is composed of one document */
   'summary.document-count_one': '{{count}} document',
   /** Text for when the release is composed of multiple documents */
