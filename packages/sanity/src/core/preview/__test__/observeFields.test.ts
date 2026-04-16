@@ -1,9 +1,11 @@
+import {type SanityClient} from '@sanity/client'
+import {type SchemaType} from '@sanity/types'
 import {firstValueFrom, of, Subject} from 'rxjs'
 import {take, tap} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type SanityClient} from '../../form/studio/assetSourceDataset/uploader'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../../util/const'
+import {createPreviewObserver} from '../createPreviewObserver'
 import {chunkCombinedSelections, type ClientLike, createObserveFields} from '../observeFields'
 import {type InvalidationChannelEvent} from '../types'
 import {type CombinedSelection} from '../utils/optimizeQuery'
@@ -417,5 +419,240 @@ describe('observeFields', () => {
       expect(harness.fetchCount).toBeGreaterThan(0)
       sub.unsubscribe()
     })
+  })
+})
+
+describe('observeFields with projection', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('batches documents with the same projection into a single query', async () => {
+    let fetchCount = 0
+    const listenSubject = new Subject<InvalidationChannelEvent>()
+
+    const mockClient = {
+      withConfig: vi.fn(),
+      observable: {
+        fetch: vi.fn(() => {
+          fetchCount++
+          return new Subject().asObservable()
+        }),
+      },
+    } as unknown as SanityClient
+    ;(mockClient.withConfig as ReturnType<typeof vi.fn>).mockReturnValue(mockClient)
+
+    const observeFields = createObserveFields({
+      client: mockClient,
+      invalidationChannel: listenSubject.asObservable(),
+    })
+
+    const projection = '_id,_rev,_type,title,"author": author->{_id,_rev,_type,name}'
+
+    const sub1 = observeFields('doc-1', [], undefined, undefined, projection).subscribe()
+    const sub2 = observeFields('doc-2', [], undefined, undefined, projection).subscribe()
+    const sub3 = observeFields('doc-3', [], undefined, undefined, projection).subscribe()
+
+    await vi.advanceTimersByTimeAsync(200)
+
+    expect(fetchCount).toBe(1)
+
+    const fetchCall = (mockClient.observable.fetch as ReturnType<typeof vi.fn>).mock.calls[0]
+    expect(fetchCall[0]).toContain('author->')
+
+    sub1.unsubscribe()
+    sub2.unsubscribe()
+    sub3.unsubscribe()
+  })
+
+  it('refetches when a referenced document is mutated', async () => {
+    let fetchCount = 0
+    const listenSubject = new Subject<InvalidationChannelEvent>()
+    const fetchSubject = new Subject<any>()
+
+    const mockClient = {
+      withConfig: vi.fn(),
+      observable: {
+        fetch: vi.fn(() => {
+          fetchCount++
+          return fetchSubject.asObservable()
+        }),
+      },
+    } as unknown as SanityClient
+    ;(mockClient.withConfig as ReturnType<typeof vi.fn>).mockReturnValue(mockClient)
+
+    const observeFields = createObserveFields({
+      client: mockClient,
+      invalidationChannel: listenSubject.asObservable(),
+    })
+
+    const projection = '_id,_rev,_type,title,"author": author->{_id,_rev,_type,name}'
+
+    const sub = observeFields('book-1', [], undefined, undefined, projection).subscribe()
+
+    await vi.advanceTimersByTimeAsync(200)
+    expect(fetchCount).toBe(1)
+
+    fetchSubject.next([
+      [
+        {
+          _id: 'book-1',
+          _rev: 'rev1',
+          _type: 'book',
+          title: 'My Book',
+          author: {_id: 'author-1', _rev: 'arev1', _type: 'author', name: 'John'},
+        },
+      ],
+    ])
+    await vi.advanceTimersByTimeAsync(0)
+
+    listenSubject.next({type: 'mutation', documentId: 'author-1', visibility: 'query'})
+    await vi.advanceTimersByTimeAsync(200)
+
+    expect(fetchCount).toBe(2)
+
+    sub.unsubscribe()
+  })
+
+  it('emits updated data when a referenced doc changes but root _rev stays the same', async () => {
+    const listenSubject = new Subject<InvalidationChannelEvent>()
+    let fetchCall = 0
+
+    const mockClient = {
+      withConfig: vi.fn(),
+      observable: {
+        fetch: vi.fn(() => {
+          fetchCall++
+          const result =
+            fetchCall === 1
+              ? [
+                  [
+                    {
+                      _id: 'book-1',
+                      _rev: 'root-rev',
+                      _type: 'book',
+                      title: 'My Book',
+                      author: {_id: 'author-1', _rev: 'arev1', _type: 'author', name: 'John'},
+                    },
+                  ],
+                ]
+              : [
+                  [
+                    {
+                      _id: 'book-1',
+                      _rev: 'root-rev',
+                      _type: 'book',
+                      title: 'My Book',
+                      author: {_id: 'author-1', _rev: 'arev2', _type: 'author', name: 'Jane'},
+                    },
+                  ],
+                ]
+          return of(result)
+        }),
+      },
+    } as unknown as SanityClient
+    ;(mockClient.withConfig as ReturnType<typeof vi.fn>).mockReturnValue(mockClient)
+
+    const observeFields = createObserveFields({
+      client: mockClient,
+      invalidationChannel: listenSubject.asObservable(),
+    })
+
+    const projection = '_id,_rev,_type,title,"author": author->{_id,_rev,_type,name}'
+    const results: any[] = []
+
+    const sub = observeFields('book-1', [], undefined, undefined, projection).subscribe((val) => {
+      results.push(val)
+    })
+
+    await vi.advanceTimersByTimeAsync(200)
+    expect(results).toHaveLength(1)
+    expect(results[0].author.name).toBe('John')
+
+    listenSubject.next({type: 'mutation', documentId: 'author-1', visibility: 'query'})
+    await vi.advanceTimersByTimeAsync(200)
+
+    expect(results).toHaveLength(2)
+    expect(results[1].author.name).toBe('Jane')
+
+    sub.unsubscribe()
+  })
+})
+
+describe('createPreviewObserver with projection path', () => {
+  it('uses observeFields with projection when schema type has flattenable reference paths', () => {
+    const fieldsCalls: any[] = []
+
+    const authorType = {
+      name: 'author',
+      jsonType: 'object',
+      fields: [{name: 'name', type: {name: 'string', jsonType: 'string'}}],
+    } as unknown as SchemaType
+
+    const bookType = {
+      name: 'book',
+      jsonType: 'object',
+      fields: [
+        {name: 'title', type: {name: 'string', jsonType: 'string'}},
+        {
+          name: 'author',
+          type: {name: 'reference', jsonType: 'object', to: [authorType]},
+        },
+      ],
+      preview: {
+        select: {title: 'title', authorName: 'author.name'},
+      },
+    } as unknown as SchemaType
+
+    const observeForPreview = createPreviewObserver({
+      observeDocumentTypeFromId: vi.fn(),
+      observePaths: vi.fn(),
+      observeFields: vi.fn((...args: any[]) => {
+        fieldsCalls.push(args)
+        return new Subject<Record<string, unknown> | null>().asObservable()
+      }),
+    })
+
+    observeForPreview({_ref: 'book-1'}, bookType).subscribe()
+
+    expect(fieldsCalls).toHaveLength(1)
+    expect(fieldsCalls[0][0]).toBe('book-1')
+    // projection is the 5th argument (index 4)
+    expect(fieldsCalls[0][4]).toContain('author->')
+  })
+
+  it('falls back to observePaths when schema type has no reference paths', () => {
+    const pathCalls: any[] = []
+    const fieldsCalls: any[] = []
+
+    const bookType = {
+      name: 'book',
+      jsonType: 'object',
+      fields: [{name: 'title', type: {name: 'string', jsonType: 'string'}}],
+      preview: {
+        select: {title: 'title'},
+      },
+    } as unknown as SchemaType
+
+    const observeForPreview = createPreviewObserver({
+      observeDocumentTypeFromId: vi.fn(),
+      observePaths: vi.fn((...args: any[]) => {
+        pathCalls.push(args)
+        return new Subject<any>().asObservable()
+      }),
+      observeFields: vi.fn((...args: any[]) => {
+        fieldsCalls.push(args)
+        return new Subject<Record<string, unknown> | null>().asObservable()
+      }),
+    })
+
+    observeForPreview({_ref: 'book-1'}, bookType).subscribe()
+
+    expect(pathCalls).toHaveLength(1)
+    expect(fieldsCalls).toHaveLength(0)
   })
 })

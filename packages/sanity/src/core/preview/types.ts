@@ -39,8 +39,16 @@ export type Previewable = (
  */
 export type PreviewPath = FieldName[]
 
-/** @internal */
-export type Selection = [id: Id, fields: FieldName[]]
+/**
+ * A selection is a tuple of `[documentId, fieldNames]`.
+ * When a prebuilt GROQ projection is available (from `buildPreviewProjection`),
+ * it can be passed as an optional third element so `toSubQuery` uses it directly
+ * instead of building a flat field list.
+ * @internal
+ */
+export type Selection =
+  | [id: Id, fields: FieldName[]]
+  | [id: Id, fields: FieldName[], projection: string]
 
 /**
  * @hidden

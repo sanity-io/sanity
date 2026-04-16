@@ -4,6 +4,7 @@ import {
   isCrossDatasetReferenceSchemaType,
   isReferenceSchemaType,
   type PrepareViewOptions,
+  type SchemaType,
 } from '@sanity/types'
 import isPlainObject from 'lodash-es/isPlainObject.js'
 import {type Observable, of} from 'rxjs'
@@ -12,14 +13,19 @@ import {map, switchMap} from 'rxjs/operators'
 import {type ObserveForPreviewFn} from './documentPreviewStore'
 import {
   type ApiConfig,
+  type Id,
   type ObserveDocumentTypeFromIdFn,
   type ObservePathsFn,
   type PreparedSnapshot,
   type Previewable,
   type PreviewableType,
 } from './types'
+import {buildPreviewProjection, type PreviewProjection} from './utils/buildPreviewProjection'
+import {getDocumentId} from './utils/getDocumentId'
 import {getPreviewPaths} from './utils/getPreviewPaths'
 import {invokePrepare, prepareForPreview} from './utils/prepareForPreview'
+
+const projectionCache = new Map<string, PreviewProjection>()
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return isPlainObject(value)
@@ -29,6 +35,28 @@ function isReference(value: unknown): value is {_ref: string} {
   return isPlainObject(value)
 }
 
+function isSchemaType(type: PreviewableType): type is SchemaType {
+  return 'name' in type && 'fields' in type
+}
+
+function getCachedProjection(paths: string[][], schemaType: SchemaType): PreviewProjection {
+  const key = `${schemaType.name}:${paths.map((p) => p.join('.')).join(',')}`
+  const cached = projectionCache.get(key)
+  if (cached) return cached
+  const result = buildPreviewProjection(paths, schemaType)
+  projectionCache.set(key, result)
+  return result
+}
+
+/** @internal */
+export type ObserveFieldsFn = (
+  id: Id,
+  fields: string[],
+  apiConfig?: ApiConfig,
+  perspective?: StackablePerspective[],
+  projection?: string,
+) => Observable<Record<string, unknown> | null>
+
 /**
  * Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
  * @internal
@@ -36,8 +64,9 @@ function isReference(value: unknown): value is {_ref: string} {
 export function createPreviewObserver(context: {
   observeDocumentTypeFromId: ObserveDocumentTypeFromIdFn
   observePaths: ObservePathsFn
+  observeFields?: ObserveFieldsFn
 }): ObserveForPreviewFn {
-  const {observeDocumentTypeFromId, observePaths} = context
+  const {observeDocumentTypeFromId, observePaths, observeFields} = context
 
   return function observeForPreview(
     value: Previewable,
@@ -101,6 +130,20 @@ export function createPreviewObserver(context: {
     }
     const paths = getPreviewPaths(type.preview)
     if (paths) {
+      if (observeFields && !apiConfig && isSchemaType(type)) {
+        const docId = getDocumentId(value)
+        if (docId) {
+          const proj = getCachedProjection(paths, type)
+          if (proj.flat) {
+            return observeFields(docId, [], undefined, perspective, proj.projection).pipe(
+              map((snapshot) => ({
+                type: type,
+                snapshot: snapshot ? prepareForPreview(snapshot, type, viewOptions) : null,
+              })),
+            )
+          }
+        }
+      }
       return observePaths(value, paths, apiConfig, perspective).pipe(
         map((snapshot) => ({
           type: type,

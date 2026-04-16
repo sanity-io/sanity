@@ -6,6 +6,7 @@ import {distinctUntilChanged, switchMap} from 'rxjs/operators'
 
 import {isRecord} from '../util'
 import {type ApiConfig, type FieldName, type Previewable, type PreviewPath} from './types'
+import {getDocumentId} from './utils/getDocumentId'
 import {props} from './utils/props'
 
 function createEmpty(fields: FieldName[]) {
@@ -17,13 +18,6 @@ function createEmpty(fields: FieldName[]) {
 
 function resolveMissingHeads(value: Record<string, unknown>, paths: string[][]) {
   return paths.filter((path) => !(path[0] in value))
-}
-
-function getDocumentId(value: Previewable) {
-  if (isReference(value)) {
-    return value._ref
-  }
-  return '_id' in value ? value._id : undefined
 }
 
 type ObserveFieldsFn = (

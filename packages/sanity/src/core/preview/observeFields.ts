@@ -3,6 +3,7 @@ import difference from 'lodash-es/difference.js'
 import flatten from 'lodash-es/flatten.js'
 import memoize from 'lodash-es/memoize.js'
 import {
+  BehaviorSubject,
   combineLatest,
   concat,
   defer,
@@ -40,7 +41,9 @@ import {
   type InvalidationChannelEvent,
   type Selection,
 } from './types'
+import {allRevKeys} from './utils/allRevKeys'
 import {debounceCollect} from './utils/debounceCollect'
+import {extractAllReferencedIds} from './utils/extractAllReferencedIds'
 import {hasEqualFields} from './utils/hasEqualFields'
 import {isUniqueBy} from './utils/isUniqueBy'
 import {type CombinedSelection, combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
@@ -65,6 +68,16 @@ export function chunkCombinedSelections(
     let chunkMap: number[] = []
     let chunkSize = 0
 
+    const makeChunkSelection = (
+      chunkIds: string[],
+      chunkMapIndices: number[],
+    ): CombinedSelection => ({
+      ids: chunkIds,
+      fields: selection.fields,
+      map: chunkMapIndices,
+      ...(selection.projection ? {projection: selection.projection} : {}),
+    })
+
     for (let i = 0; i < selection.ids.length; i++) {
       const id = selection.ids[i]
       // +3 accounts for quotes and comma in GROQ request structure: ["id1","id2"]
@@ -72,7 +85,7 @@ export function chunkCombinedSelections(
 
       // Reached the max length? Start a new chunk
       if (chunkSize + idSize >= MAX_DOCUMENT_ID_CHUNK_SIZE && chunk.length > 0) {
-        chunks.push([{ids: chunk, fields: selection.fields, map: chunkMap}])
+        chunks.push([makeChunkSelection(chunk, chunkMap)])
         chunk = []
         chunkMap = []
         chunkSize = 0
@@ -83,10 +96,8 @@ export function chunkCombinedSelections(
       chunkSize += idSize
     }
 
-    // Push overflowing IDs to the last chunk
-    // If there are any remaining IDs from the previous check
     if (chunk.length > 0) {
-      chunks.push([{ids: chunk, fields: selection.fields, map: chunkMap}])
+      chunks.push([makeChunkSelection(chunk, chunkMap)])
     }
   }
 
@@ -201,6 +212,10 @@ export function createObserveFields(options: {
     documentId: Id,
     fields: FieldName[],
     perspective?: StackablePerspective[],
+    projectionOpts?: {
+      projection: string
+      trackedRefIds: BehaviorSubject<Set<string>>
+    },
   ) {
     const {fast: fetchDocumentPathsFast, slow: fetchDocumentPathsSlow} =
       getBatchFetchersForPerspective(perspective)
@@ -215,50 +230,62 @@ export function createObserveFields(options: {
      */
     const fetchId = hasPerspective ? getPublishedId(documentId) : documentId
 
-    return invalidationChannel.pipe(
+    const selectionFields = projectionOpts ? [] : fields
+    const selectionProjection = projectionOpts?.projection
+
+    const source$ = projectionOpts
+      ? invalidationChannel.pipe(startWith({type: 'connected' as const}))
+      : invalidationChannel
+
+    return source$.pipe(
       filter((event) => {
-        // we always want to fetch when the listener just (re) connected
         if (event.type === 'connected') {
           return true
         }
         if (hasPerspective) {
-          // With perspectives, refetch only when the mutated document is a
-          // version of the observed document (same base/published id) AND that
-          // version is relevant to the current perspective stack (e.g. drafts,
-          // a specific release). This avoids refetching for unrelated documents
-          // or versions outside the active perspective.
-          return (
+          const matches =
             getPublishedId(event.documentId) === getPublishedId(documentId) &&
             idMatchesPerspective(perspective, event.documentId)
-          )
+          if (matches) return true
+        } else if (event.documentId === documentId) {
+          return true
         }
-        // if not using perspective, refetch previews for the document that was actually changed
-        return event.documentId === documentId
+        if (projectionOpts) {
+          const eventPubId = getPublishedId(event.documentId)
+          return projectionOpts.trackedRefIds.value.has(eventPubId)
+        }
+        return false
       }),
       switchMap((event) => {
+        const fetchArgs: [Id, FieldName[]] | [Id, FieldName[], string] = selectionProjection
+          ? [fetchId, selectionFields, selectionProjection]
+          : [fetchId, selectionFields]
+
         if (event.type === 'connected' || event.visibility === 'query') {
-          return fetchDocumentPathsFast(fetchId, fields).pipe(
+          return fetchDocumentPathsFast(...fetchArgs).pipe(
             mergeMap((result) => {
-              return concat(
-                of(result),
-                result === null // hack: if we get undefined as result here it can be because the document has
-                  ? // just been created and is not yet indexed. We therefore need to wait a bit
-                    // and then re-fetch.
-                    fetchDocumentPathsSlow(fetchId, fields)
-                  : [],
-              )
+              return concat(of(result), result === null ? fetchDocumentPathsSlow(...fetchArgs) : [])
             }),
           )
         }
-        return fetchDocumentPathsSlow(fetchId, fields)
+        return fetchDocumentPathsSlow(...fetchArgs)
+      }),
+      tap((result) => {
+        if (projectionOpts) {
+          projectionOpts.trackedRefIds.next(
+            extractAllReferencedIds(result as Record<string, unknown> | null),
+          )
+        }
       }),
     )
   }
 
   const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
 
+  type BatchFetchFn = (id: Id, fields: FieldName[], projection?: string) => Observable<any>
+
   const getBatchFetcherForDataset = memoize(
-    function getBatchFetcherForDataset(apiConfig: ApiConfig) {
+    function getBatchFetcherForDataset(apiConfig: ApiConfig): BatchFetchFn {
       const client = currentDatasetClient.withConfig(apiConfig)
       const fetchAll = fetchAllDocumentPathsWith(client, ['drafts'])
       return debounceCollect(fetchAll, 10)
@@ -286,23 +313,30 @@ export function createObserveFields(options: {
     )
   }
 
-  function createCachedFieldObserver<T>(
+  function createCachedFieldObserver(
     id: string,
     fields: FieldName[],
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    projectionOpts?: {projection: string; trackedRefIds: BehaviorSubject<Set<string>>},
   ): CachedFieldObserver {
-    // Note: `undefined` means the memo has not been set, while `null` means the memo is explicitly set to null (e.g. we did fetch, but got null back)
-    let latest: T | undefined | null
-    const changes$ = merge(
+    let latest: any
+    const source$ = apiConfig
+      ? crossDatasetListenFields(id, fields, apiConfig)
+      : currentDatasetListenFields(id, fields, perspective, projectionOpts)
+
+    let changes$ = merge(
       defer(() => (latest === undefined ? EMPTY : of(latest))),
-      (apiConfig
-        ? (crossDatasetListenFields(id, fields, apiConfig) as any)
-        : currentDatasetListenFields(id, fields, perspective)) as Observable<T>,
-    ).pipe(
-      tap((v: T | null) => (latest = v)),
-      shareReplay({refCount: true, bufferSize: 1}),
-    )
+      source$,
+    ).pipe(tap((v) => (latest = v)))
+
+    if (projectionOpts) {
+      changes$ = changes$.pipe(
+        distinctUntilChanged((prev, curr) => allRevKeys(prev) === allRevKeys(curr)),
+      )
+    }
+
+    changes$ = changes$.pipe(shareReplay({refCount: true, bufferSize: 1}))
 
     return {id, fields, changes$}
   }
@@ -312,7 +346,21 @@ export function createObserveFields(options: {
     fields: FieldName[],
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    projection?: string,
   ) {
+    if (projection) {
+      const cacheKey = `$proj$-${id}-${perspective?.join('-') || 'raw'}-${projection}`
+
+      if (!(cacheKey in CACHE)) {
+        const trackedRefIds = new BehaviorSubject<Set<string>>(new Set())
+        CACHE[cacheKey] = [
+          createCachedFieldObserver(id, [], undefined, perspective, {projection, trackedRefIds}),
+        ]
+      }
+
+      return CACHE[cacheKey][0].changes$
+    }
+
     const cacheKey = apiConfig
       ? `${apiConfig.projectId}:${apiConfig.dataset}:${id}`
       : `$current$-${id}-${perspective?.join('-') || 'raw'}`

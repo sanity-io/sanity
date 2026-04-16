@@ -11,6 +11,8 @@ export type CombinedSelection = {
   ids: Id[]
   fields: FieldName[]
   map: number[]
+  /** When set, used as the GROQ projection body instead of building from `fields`. */
+  projection?: string
 }
 
 type Doc = {
@@ -21,10 +23,11 @@ type Result = Doc[]
 
 export function combineSelections(selections: Selection[]): CombinedSelection[] {
   return values(
-    selections.reduce((output: {[key: string]: any}, [id, fields], index) => {
-      const key = sortBy(fields.join(','), identity).join('.')
+    selections.reduce((output: {[key: string]: any}, selection, index) => {
+      const [id, fields, projection] = selection
+      const key = projection ?? sortBy(fields.join(','), identity).join('.')
       if (!output[key]) {
-        output[key] = {fields: fields, ids: [], map: []}
+        output[key] = {fields: fields, ids: [], map: [], ...(projection ? {projection} : {})}
       }
       const idx = output[key].ids.length
       output[key].ids[idx] = id
@@ -38,10 +41,13 @@ function stringifyId(id: string) {
   return JSON.stringify(id)
 }
 
-const maybeEscape = (fieldName: string) =>
+export const maybeEscape = (fieldName: string) =>
   fieldNeedsEscape(fieldName) ? `"${fieldName}": @${escapeField(fieldName)}` : fieldName
 
-function toSubQuery({ids, fields}: {ids: string[]; fields: string[]}) {
+function toSubQuery({ids, fields, projection}: CombinedSelection) {
+  if (projection) {
+    return `*[_id in [${ids.map(stringifyId).join(',')}]][0...${ids.length}]{${projection}}`
+  }
   const allFields = [...INCLUDE_FIELDS_QUERY, ...fields]
   return `*[_id in [${ids.map(stringifyId).join(',')}]][0...${ids.length}]{${allFields
     .map(maybeEscape)
