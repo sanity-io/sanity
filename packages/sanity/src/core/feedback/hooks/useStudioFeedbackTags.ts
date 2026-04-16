@@ -1,3 +1,4 @@
+import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, version as reactVersion} from 'react'
 import {useRouterState} from 'sanity/router'
 
@@ -11,7 +12,7 @@ import {useWorkspace} from '../../studio/workspace'
 import {SANITY_VERSION} from '../../version'
 import {type BaseFeedbackTags, type DynamicFeedbackTags} from '../types'
 
-const sessionId = typeof crypto !== 'undefined' ? crypto.randomUUID() : Math.random().toString(36)
+const sessionId = uuid()
 
 interface PluginEntry {
   name: string
