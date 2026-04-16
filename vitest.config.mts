@@ -35,6 +35,8 @@ export default defineConfig({
         '**/__telemetry__/**',
         // exclude internal
         'packages/@repo/**',
+        // exclude non-source files that the v8 coverage provider can't parse
+        '**/*.md',
       ],
       reportOnFailure: true,
       clean: true,
