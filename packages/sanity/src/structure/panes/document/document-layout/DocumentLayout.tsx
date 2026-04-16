@@ -8,6 +8,7 @@ import {
   FieldActionsProvider,
   FieldActionsResolver,
   GetFormValueProvider,
+  LegacyLayerProvider,
   type Path,
   useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
@@ -217,7 +218,9 @@ export function DocumentLayout() {
             onKeyUp={handleKeyUp}
             rootRef={setRootElement}
           >
-            <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
+            <LegacyLayerProvider zOffset="paneHeader">
+              <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
+            </LegacyLayerProvider>
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
               <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
                 <StyledChangeConnectorRoot
