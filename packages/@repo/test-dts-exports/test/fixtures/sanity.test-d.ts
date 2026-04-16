@@ -299,7 +299,6 @@ import type {
   createSanityMediaLibraryImageSource,
   createSchema,
   createSearch,
-  createSharedResizeObserver,
   createSourceFromConfig,
   CreateSquashedMutation,
   createSWR,
@@ -467,6 +466,7 @@ import type {
   DocumentPreviewStore,
   DocumentPreviewStoreOptions,
   DocumentRebaseEvent,
+  DocumentRebaseTelemetryEvent,
   DocumentRemoteMutationEvent,
   DocumentRemoteMutationVersionEvent,
   DocumentRevision,
@@ -995,6 +995,7 @@ import type {
   MutationPatch,
   MutationPatchMsg,
   MutationPayload,
+  MutationPerformanceEvent,
   MutationResult,
   MutationSelection,
   NarrowPreview,
@@ -1220,7 +1221,6 @@ import type {
   ReporterHook,
   ResetEvent,
   Resizable,
-  resizeObserver,
   resolveConditionalProperty,
   resolveConfig,
   resolveDiffComponent,
@@ -1314,7 +1314,6 @@ import type {
   SetActiveGroupOperation,
   setAtPath,
   setIfMissing,
-  SharedResizeObserver,
   SingleDocReleaseProvider,
   SingleFieldSet,
   SingleMutationResult,
@@ -2621,9 +2620,6 @@ describe('sanity', () => {
   test('createSearch', () => {
     expectTypeOf<typeof createSearch>().not.toBeNever()
   })
-  test('createSharedResizeObserver', () => {
-    expectTypeOf<typeof createSharedResizeObserver>().not.toBeNever()
-  })
   test('createSourceFromConfig', () => {
     expectTypeOf<typeof createSourceFromConfig>().toBeFunction()
   })
@@ -3128,6 +3124,9 @@ describe('sanity', () => {
   })
   test('DocumentRebaseEvent', () => {
     expectTypeOf<DocumentRebaseEvent>().toBeObject()
+  })
+  test('DocumentRebaseTelemetryEvent', () => {
+    expectTypeOf<DocumentRebaseTelemetryEvent>().toBeObject()
   })
   test('DocumentRemoteMutationEvent', () => {
     expectTypeOf<DocumentRemoteMutationEvent>().toBeObject()
@@ -4721,6 +4720,9 @@ describe('sanity', () => {
   test('MutationPayload', () => {
     expectTypeOf<MutationPayload>().toBeObject()
   })
+  test('MutationPerformanceEvent', () => {
+    expectTypeOf<MutationPerformanceEvent>().toBeObject()
+  })
   test('MutationResult', () => {
     expectTypeOf<MutationResult>().not.toBeNever()
   })
@@ -5400,9 +5402,6 @@ describe('sanity', () => {
   test('Resizable', () => {
     expectTypeOf<typeof Resizable>().toBeFunction()
   })
-  test('resizeObserver', () => {
-    expectTypeOf<typeof resizeObserver>().not.toBeNever()
-  })
   test('resolveConditionalProperty', () => {
     expectTypeOf<typeof resolveConditionalProperty>().toBeFunction()
   })
@@ -5683,9 +5682,6 @@ describe('sanity', () => {
   })
   test('setIfMissing', () => {
     expectTypeOf<typeof setIfMissing>().toBeFunction()
-  })
-  test('SharedResizeObserver', () => {
-    expectTypeOf<SharedResizeObserver>().toBeObject()
   })
   test('SingleDocReleaseProvider', () => {
     expectTypeOf<typeof SingleDocReleaseProvider>().toBeFunction()

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "5.20.0",
+  "version": "5.21.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "cms",
@@ -62,7 +62,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/insert-menu": "3.0.4",
+    "@sanity/insert-menu": "3.0.5",
     "@sanity/pkg-utils": "catalog:",
     "@types/react": "catalog:",
     "@typescript/native-preview": "catalog:",

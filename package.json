@@ -1,6 +1,6 @@
 {
   "name": "sanity-root",
-  "version": "5.20.0",
+  "version": "5.21.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -31,6 +31,7 @@
     "deploy:movies": "pnpm build && cd examples/studios/movies-studio && sanity deploy",
     "deploy:test": "pnpm build && cd dev/test-studio && sanity deploy",
     "dev": "pnpm dev:test-studio",
+    "dev:auth-test-studio": "pnpm --filter auth-test-studio dev",
     "dev:cli": "pnpm watch",
     "dev:design-studio": "pnpm --filter design-studio dev",
     "dev:embedded-studio": "pnpm --filter embedded-studio dev",
@@ -99,7 +100,7 @@
     "@sanity/ui": "catalog:",
     "@types/node": "^24.6.1",
     "@typescript/native-preview": "catalog:",
-    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/coverage-v8": "^4.1.4",
     "dotenv": "^16.6.1",
     "dotenv-flow": "^4.1.0",
     "esbuild-register": "catalog:",

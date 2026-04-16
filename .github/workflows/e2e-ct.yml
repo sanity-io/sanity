@@ -103,8 +103,8 @@ jobs:
           fi
 
   merge-reports:
-    if: always() && needs.install.outputs.has_code_changes == 'true'
-    needs: [install, playwright-ct-test]
+    needs: [playwright-ct-test]
+    if: "!cancelled() && needs.playwright-ct-test.result != 'skipped'"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

@@ -48,6 +48,8 @@ export interface CommitRequest {
   success: () => void
   failure: (error: Error) => void
   cancel: (error: Error) => void
+  /** Timestamp (Date.now()) when the first local mutation in this commit batch was received */
+  firstMutationReceivedAt?: number
 }
 
 // BufferedDocument.LOCAL never updates its revision due to its internal consistency checks
@@ -80,6 +82,9 @@ const getDocument = <T extends {document: any}>(event: T): T['document'] => even
 export const createObservableBufferedDocument = (listenerEvent$: Observable<ListenerEvent>) => {
   // Incoming local actions (e.g. a request to mutate, a request to commit pending changes, etc.)
   const actions$ = new Subject<Action>()
+
+  // Track when the first mutation in a batch arrives (for performance telemetry)
+  let firstMutationReceivedAt: number | undefined
 
   // Stream of commit requests. Must be handled by a commit handler
   const consistency$ = new BehaviorSubject<boolean>(true)
@@ -131,10 +136,22 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     }
 
     bufferedDocument.onConsistencyChanged = (isConsistent) => {
+      if (!isConsistent && firstMutationReceivedAt === undefined) {
+        firstMutationReceivedAt = Date.now()
+      }
+      if (isConsistent) {
+        firstMutationReceivedAt = undefined
+      }
       consistency$.next(isConsistent)
     }
 
-    bufferedDocument.commitHandler = (commitArg: CommitRequest) => commitRequests.next(commitArg)
+    bufferedDocument.commitHandler = (commitArg: CommitRequest) => {
+      const captured = firstMutationReceivedAt
+      // Reset so the next commit batch doesn't reuse a stale timestamp
+      // from a previous batch when the document stays inconsistent
+      firstMutationReceivedAt = undefined
+      commitRequests.next({...commitArg, firstMutationReceivedAt: captured})
+    }
 
     return bufferedDocument
   }
@@ -149,6 +166,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
           void bufferedDocument.commit()
         }
         // mark as consistent when a new snapshot is received
+        firstMutationReceivedAt = undefined
         consistency$.next(true)
         return createInitialBufferedDocument(listenerEvent.document || null)
       }

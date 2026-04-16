@@ -20,7 +20,15 @@ export function FallbackErrorScreen(props: {
   const stack = typeof error?.stack === 'string' && error?.stack
 
   return (
-    <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
+    <Card
+      data-testid="studio-error-screen"
+      data-error={message || heading}
+      height="fill"
+      overflow="auto"
+      paddingY={[4, 5, 6, 7]}
+      paddingX={4}
+      sizing="border"
+    >
       <View display="flex" height="fill">
         <Container width={3}>
           <Stack space={6}>

@@ -46,6 +46,8 @@ export const DetectViteDevServerStopped = (): ReactNode =>
 
 export const DevServerStoppedErrorScreen = (): ReactNode => (
   <Card
+    data-testid="studio-error-screen"
+    data-error="Dev server stopped"
     height="fill"
     overflow="auto"
     paddingY={[4, 5, 6, 7]}

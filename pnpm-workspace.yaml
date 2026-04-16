@@ -11,13 +11,13 @@ packages:
   - packages/sanity/fixtures/examples/*
 
 catalog:
-  '@playwright/experimental-ct-react': 1.58.2
-  '@playwright/test': 1.58.2
+  '@playwright/experimental-ct-react': 1.59.1
+  '@playwright/test': 1.59.1
   '@sanity/client': ^7.21.0
-  '@sanity/migrate': ^6.0.0
+  '@sanity/migrate': ^6.1.1
   '@sanity/telemetry': ^0.9.0
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/pkg-utils': ^10.4.13
+  '@sanity/pkg-utils': ^10.4.15
   '@sanity/ui': ^3.1.14
   '@types/node': ^24.3.0
   '@types/react': ^19.2.11
@@ -29,7 +29,7 @@ catalog:
   esbuild-register: ^3.6.0
   eslint: ^9.39.2
   globals: ^16.2.0
-  playwright: 1.58.2
+  playwright: 1.59.1
   react: ^19.2.4
   react-dom: ^19.2.4
   react-is: ^19.2.4
@@ -42,7 +42,7 @@ catalog:
   #     → Cannot create property 'border-width' on string '1px solid var(--card-border-color)'
   jsdom: ^26.1.0
   vite: ^7.3.1
-  vitest: ^4.0.18
+  vitest: ^4.1.4
   styled-components: npm:@sanity/styled-components@^6.1.24
   typescript: 5.9.3
 

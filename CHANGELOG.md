@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.21.0](https://github.com/sanity-io/sanity/compare/v5.20.0...v5.21.0) (2026-04-15)
+
+### Features
+
+* **sanity:** add `onActiveChanged` and `onTargetDocumentsChanged` hooks to diff view state ([a053bb4](https://github.com/sanity-io/sanity/commit/a053bb43432e601e37bafa77fa62d7652018d215))
+* **sanity:** add mutation performance and document rebase telemetry ([#12634](https://github.com/sanity-io/sanity/issues/12634)) ([70bed9c](https://github.com/sanity-io/sanity/commit/70bed9c86204677e945d47e0a88b178b37b6e4a7))
+* **sanity:** allow form gutter to be switched on or off for individual subtrees ([d4e97c1](https://github.com/sanity-io/sanity/commit/d4e97c1afe5e76dd035e81144812b484d9dedccf))
+* **sanity:** do not override divergence enabled state in nested `DocumentPaneProvider` ([c3bdf2a](https://github.com/sanity-io/sanity/commit/c3bdf2a01055d9b189b772fb99a27024afca9e3e))
+* **vision:** groq syntax highlighting ([#12594](https://github.com/sanity-io/sanity/issues/12594)) ([95a1dce](https://github.com/sanity-io/sanity/commit/95a1dcee4f388be8c5d6212d118986e1e1742abc))
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/cli to ^6.3.2 ([#12650](https://github.com/sanity-io/sanity/issues/12650)) ([6f31852](https://github.com/sanity-io/sanity/commit/6f318527caf37a722d0c936b5a3addc7953701dd))
+* **deps:** update dependency @sanity/client to ^7.20.0 ([#12614](https://github.com/sanity-io/sanity/issues/12614)) ([578f305](https://github.com/sanity-io/sanity/commit/578f30555a589b38a555ef73310fff14590a36fb))
+* **deps:** update dependency @sanity/client to ^7.21.0 ([#12631](https://github.com/sanity-io/sanity/issues/12631)) ([28033ef](https://github.com/sanity-io/sanity/commit/28033ef1e15b8ea37061023cc49301f1fd25bd40))
+* **deps:** update dependency @sanity/preview-url-secret to ^4.0.5 ([#12648](https://github.com/sanity-io/sanity/issues/12648)) ([7e432c9](https://github.com/sanity-io/sanity/commit/7e432c9e5eab8dbc66345bfc19853275d94a4f74))
+* **deps:** Update portabletext ([#12622](https://github.com/sanity-io/sanity/issues/12622)) ([e48cf96](https://github.com/sanity-io/sanity/commit/e48cf963fe142660a13c8846569dc6de00a6c412))
+* **document:** resolving copying document id on live edit schema type ([#12604](https://github.com/sanity-io/sanity/issues/12604)) ([9b87ed1](https://github.com/sanity-io/sanity/commit/9b87ed11cdd70d88add0fcd4c5d6ec9d424ae3b4))
+* **form:** handle periods in array item keys when parsing paths ([#12110](https://github.com/sanity-io/sanity/issues/12110)) ([f295c2c](https://github.com/sanity-io/sanity/commit/f295c2c362316fced7ac60065f23ca48e1109fa0))
+* **form:** position reference autocomplete popovers in portaled dialogs ([#12633](https://github.com/sanity-io/sanity/issues/12633)) ([e835897](https://github.com/sanity-io/sanity/commit/e8358978231f9c6b53ce2ed1833f26ffc4f7a60d))
+* **i18n:** graceful fallback for invalid locale component tags in Translate ([#12630](https://github.com/sanity-io/sanity/issues/12630)) ([c6fd864](https://github.com/sanity-io/sanity/commit/c6fd86491b485c6ea856a18b55c88a69933bf0d8))
+* **releases:** preserve search input focus when filtering yields no results ([#12608](https://github.com/sanity-io/sanity/issues/12608)) ([a758cbe](https://github.com/sanity-io/sanity/commit/a758cbe6b9be0fd59ffb8780f69dd7699383466f))
+* **releases:** resolving issues with navigation between scheduled drafts and releases ([#12602](https://github.com/sanity-io/sanity/issues/12602)) ([6d3855c](https://github.com/sanity-io/sanity/commit/6d3855c13f605358427ca7655f67221cf57bc543))
+* **sanity:** scope popover modal focus trapping to owner pane ([c91a0e3](https://github.com/sanity-io/sanity/commit/c91a0e3569046c23853af328af28459e1d2efd2a))
+* **sanity:** support runtime staging flag for auto-updating deploys ([#12563](https://github.com/sanity-io/sanity/issues/12563)) ([61cc6a1](https://github.com/sanity-io/sanity/commit/61cc6a162ab0b8ca23b2c60e34f5fc1a1a709230))
+* **sanity:** switch off divergences for entire inspector subtree ([6105bbf](https://github.com/sanity-io/sanity/commit/6105bbf9e4597f14c132141e66729e7cdafe7f61))
+* **sanity:** use "added" and "removed" diffs in divergence inspector ([58c0803](https://github.com/sanity-io/sanity/commit/58c0803d1af703f43324b04672223f6319d3bde0))
+* **schema:** convert missing descriptor properties and expand test coverage ([#12607](https://github.com/sanity-io/sanity/issues/12607)) ([b89b88f](https://github.com/sanity-io/sanity/commit/b89b88f0a8e46914f967da43ae5d6ff7d8d91792))
+* **schema:** support extracting object type without fields ([#12605](https://github.com/sanity-io/sanity/issues/12605)) ([ea79806](https://github.com/sanity-io/sanity/commit/ea7980663fcdb60b8457118bcb35486b60a7307e))
+* **structure:** allow text selection in validation panel error cards ([#12611](https://github.com/sanity-io/sanity/issues/12611)) ([b572c65](https://github.com/sanity-io/sanity/commit/b572c65379f13863ca9b509af99e46fa2b190a54))
+* **structure:** always show plus icon in pane header create button ([#12600](https://github.com/sanity-io/sanity/issues/12600)) ([8283f97](https://github.com/sanity-io/sanity/commit/8283f9702de36172d58a660728fea9080b15491a))
+* **structure:** incoming references inspector show loading state ([#12596](https://github.com/sanity-io/sanity/issues/12596)) ([f4d13bb](https://github.com/sanity-io/sanity/commit/f4d13bbbb2c609911fe89ca09204019977070440))
+* **structure:** support array index access in custom sort orderings ([#12591](https://github.com/sanity-io/sanity/issues/12591)) ([2aba601](https://github.com/sanity-io/sanity/commit/2aba6014362eb95598bdc5b129def58a375d90b6))
+* **structure:** validate persisted sort order against schema before applying ([#12589](https://github.com/sanity-io/sanity/issues/12589)) ([8c0b013](https://github.com/sanity-io/sanity/commit/8c0b013d36b5cf4daad07a61db1ab667d31041d9))
 ## [5.20.0](https://github.com/sanity-io/sanity/compare/v5.19.0...v5.20.0) (2026-04-07)
 
 ### Features

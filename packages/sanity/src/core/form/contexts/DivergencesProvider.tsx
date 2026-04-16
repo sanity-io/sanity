@@ -33,7 +33,6 @@ interface PropsEnabled extends PropsWithChildren {
   upstreamEditState: EditStateFor
   editState: EditStateFor
   subjectId: string
-  displayedId: string
   schemaType: ObjectSchemaType
 }
 
@@ -60,7 +59,6 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
   editState,
   subjectId,
   schemaType,
-  displayedId,
   children,
 }) => {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -69,7 +67,7 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
   const upstreamId = upstreamHead?._id
   const hasUpstreamVersion = typeof upstreamId !== 'undefined'
 
-  const subject = isPublishedId(displayedId)
+  const subject = isPublishedId(subjectId)
     ? editState.published
     : (editState.version ?? editState.draft)
 

@@ -1,6 +1,6 @@
 name: End-to-End Tests
 permissions:
-  contents: read # for checkout
+  contents: write # for checkout and commit comments
   pull-requests: write # for comment
 
 env:
@@ -38,25 +38,15 @@ jobs:
       - uses: ./.github/actions/setup
         if: steps.changes.outputs.has_changes == 'true'
 
-      - name: Add PR Comment placeholder for e2e Preview Environment
+      - name: Add PR Comment placeholder for E2E status
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' && steps.changes.outputs.has_changes == 'true' }}
         with:
-          comment-tag: "e2e-preview-url"
+          comment-tag: "e2e-status"
           message: |
-            ### 🧪 E2E Preview environment
+            ### 🧪 E2E Tests
 
-            Waiting for preview deployment to finish…
-
-      - name: Add PR Comment placeholder for e2e report
-        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' && steps.changes.outputs.has_changes == 'true' }}
-        with:
-          comment-tag: "playwright-e2e-report"
-          message: |
-            ### 📊 Playwright Test Report
-
-            Waiting for E2E tests to finish…
+            ⏳ Setting up preview environment and running tests… • [view progress](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
       - name: Store Playwright's Version
         if: steps.changes.outputs.has_changes == 'true'
@@ -155,32 +145,15 @@ jobs:
           fi
           echo "Preview URL: ${{ steps.deploy.outputs.DEPLOY_URL }}"
 
-      - name: Add PR Comment with preview URL
+      - name: Update PR Comment with preview URL
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: github.event_name == 'pull_request'
         with:
-          comment-tag: "e2e-preview-url"
+          comment-tag: "e2e-status"
           message: |
-            ### 🧪 [E2E Preview environment](${{ steps.deploy.outputs.DEPLOY_URL }})
+            ### 🧪 E2E Tests
 
-            <details>
-            <summary> 🔑 Environment Variables for Local Testing</summary>
-
-            This is the preview URL for the E2E tests: **${{ steps.deploy.outputs.DEPLOY_URL }}**
-
-            To run the E2E tests locally, you can use the following environment variables, then run `pnpm test:e2e --ui` to open the Playwright test runner.
-
-            💬 Remember to build the project first with `pnpm build:e2e`.
-
-            ```
-              SANITY_E2E_PROJECT_ID=${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-              SANITY_E2E_BASE_URL=${{ steps.deploy.outputs.DEPLOY_URL }}
-              SANITY_E2E_DATASET="update depending the project you want to test (${{ env.CHROMIUM_DATASET }} || ${{ env.FIREFOX_DATASET }} )"
-              SANITY_E2E_DATASET_CHROMIUM=${{ env.CHROMIUM_DATASET }}
-              SANITY_E2E_DATASET_FIREFOX=${{ env.FIREFOX_DATASET }}
-            ```
-
-            </details>
+            ⏳ Running tests… • [view progress](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
   playwright-test:
     timeout-minutes: 30
@@ -241,21 +214,37 @@ jobs:
   e2e-status:
     name: "E2E Status"
     runs-on: ubuntu-latest
-    needs: [playwright-test]
+    needs: [playwright-test, deploy-report]
     if: ${{ !cancelled() }}
     steps:
       - name: Check E2E test matrix status
         run: |
           result="${{ needs.playwright-test.result }}"
+          report_url="${{ needs.deploy-report.outputs.report_url }}"
+
+          if [ -n "$report_url" ]; then
+            echo "## E2E Test Report" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**[View Full Report]($report_url)**" >> $GITHUB_STEP_SUMMARY
+          fi
+
           if [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
             echo "E2E test matrix failed with status: $result"
             exit 1
           fi
 
   merge-reports:
-    needs: [install, playwright-test]
-    if: always() && needs.install.outputs.has_code_changes == 'true'
+    needs: [playwright-test]
+    if: "!cancelled() && needs.playwright-test.result != 'skipped'"
     runs-on: ubuntu-latest
+    outputs:
+      test_summary: ${{ steps.summary.outputs.summary }}
+      passed: ${{ steps.summary.outputs.passed }}
+      failed: ${{ steps.summary.outputs.failed }}
+      flaky: ${{ steps.summary.outputs.flaky }}
+      skipped: ${{ steps.summary.outputs.skipped }}
+      failed_files: ${{ steps.summary.outputs.failed_files }}
+      failed_files_formatted: ${{ steps.summary.outputs.failed_files_formatted }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
@@ -268,7 +257,31 @@ jobs:
           path: all-blob-reports
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html all-blob-reports/blob-report
+        run: npx playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports/blob-report
+
+      - name: Extract test summary
+        id: summary
+        run: |
+          node -e "
+            const s = JSON.parse(require('fs').readFileSync('test-summary.json', 'utf8'));
+            const parts = [];
+            if (s.passed) parts.push('🟢 ' + s.passed + ' passed');
+            if (s.failed) parts.push('🔴 ' + s.failed + ' failed');
+            if (s.flaky) parts.push('🟡 ' + s.flaky + ' flaky');
+            if (s.skipped) parts.push('⚪ ' + s.skipped + ' skipped');
+            console.log('summary=' + parts.join(' • '));
+            console.log('passed=' + s.passed);
+            console.log('failed=' + s.failed);
+            console.log('flaky=' + s.flaky);
+            console.log('skipped=' + s.skipped);
+            if (s.failedFiles.length) console.log('failed_files=' + s.failedFiles.join(' '));
+            if (s.failedFilesFormatted) {
+              // Use heredoc for multiline output
+              process.stdout.write('failed_files_formatted<<ENDOFFILES\n');
+              process.stdout.write(s.failedFilesFormatted + '\n');
+              process.stdout.write('ENDOFFILES\n');
+            }
+          " >> $GITHUB_OUTPUT
 
       - name: Upload HTML report
         id: upload-playwright-report
@@ -278,14 +291,144 @@ jobs:
           path: playwright-report
           retention-days: 30
 
-      - name: Add PR Comment with Report Link
-        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ always() && steps.upload-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
+  deploy-report:
+    needs: [install, deploy-preview, playwright-test, merge-reports]
+    if: always() && needs.install.outputs.has_code_changes == 'true' && needs.merge-reports.result == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      report_url: ${{ steps.deploy.outputs.REPORT_URL }}
+    steps:
+      - name: Download HTML report
+        uses: actions/download-artifact@v8
         with:
-          comment-tag: "playwright-e2e-report"
+          name: full-html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Prepare Vercel prebuilt output
+        run: |
+          mkdir -p .vercel/output/static
+          cp -r playwright-report/* .vercel/output/static/
+          echo '{"version": 3}' > .vercel/output/config.json
+
+      - name: Deploy report to Vercel
+        id: deploy
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
+        run: |
+          echo "REPORT_URL=$(vercel deploy --prebuilt \
+            --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
+            --yes \
+            -m githubDeployment="1" \
+            -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
+            -m githubCommitSha="${{ github.sha }}" \
+            -m githubRunId="${{ github.run_id }}" \
+            | tail -n 1)" >> $GITHUB_OUTPUT
+
+      - name: Build linked summary
+        id: linked-summary
+        env:
+          REPORT_URL: ${{ steps.deploy.outputs.REPORT_URL }}
+          PASSED: ${{ needs.merge-reports.outputs.passed }}
+          FAILED: ${{ needs.merge-reports.outputs.failed }}
+          FLAKY: ${{ needs.merge-reports.outputs.flaky }}
+          SKIPPED: ${{ needs.merge-reports.outputs.skipped }}
+        run: |
+          node -e "
+            const u = process.env.REPORT_URL;
+            const s = {passed: +process.env.PASSED, failed: +process.env.FAILED, flaky: +process.env.FLAKY, skipped: +process.env.SKIPPED};
+            const parts = [];
+            if (s.passed) parts.push('[🟢 ' + s.passed + ' passed](' + u + '#?q=s%3Apassed)');
+            if (s.failed) parts.push('[🔴 ' + s.failed + ' failed](' + u + '#?q=s%3Afailed)');
+            if (s.flaky) parts.push('[🟡 ' + s.flaky + ' flaky](' + u + '#?q=s%3Aflaky)');
+            if (s.skipped) parts.push('([⚪ ' + s.skipped + ' skipped](' + u + '#?q=s%3Askipped))');
+            console.log('text=' + parts.join(' • ') + ' • [view full report](' + u + ')');
+          " >> $GITHUB_OUTPUT
+
+      - name: Update PR Comment (tests passed)
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        if: github.event_name == 'pull_request' && needs.playwright-test.result == 'success'
+        with:
+          comment-tag: "e2e-status"
           message: |
-            ### 📊 Playwright Test Report
+            ### ✅ E2E Tests
 
-            **[Download Full E2E Report](${{ steps.upload-playwright-report.outputs.artifact-url }})**
+            ${{ steps.linked-summary.outputs.text }} • [view run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
-            This report contains test results, including videos of failing tests.
+            **Studio:** ${{ needs.deploy-preview.outputs.preview_url }}
+
+      - name: Update PR Comment (tests failed)
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        if: github.event_name == 'pull_request' && needs.playwright-test.result != 'success'
+        with:
+          comment-tag: "e2e-status"
+          message: |
+            ### ❌ E2E Tests
+
+            ${{ steps.linked-summary.outputs.text }} • [view run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            <details>
+            <summary>Debug failing tests locally</summary>
+
+            ```sh
+            SANITY_E2E_PROJECT_ID=${{ vars.SANITY_E2E_PROJECT_ID_STAGING }} \
+            SANITY_E2E_BASE_URL=${{ needs.deploy-preview.outputs.preview_url }} \
+            SANITY_E2E_DATASET=${{ env.CHROMIUM_DATASET }} \
+            SANITY_E2E_DATASET_CHROMIUM=${{ env.CHROMIUM_DATASET }} \
+            SANITY_E2E_DATASET_FIREFOX=${{ env.FIREFOX_DATASET }} \
+            pnpm test:e2e --headed \
+              ${{ needs.merge-reports.outputs.failed_files_formatted }}
+            ```
+
+            **Studio:** ${{ needs.deploy-preview.outputs.preview_url }}
+
+            </details>
+
+      - name: Add commit comment with report link
+        if: github.event_name == 'push' && steps.deploy.outputs.REPORT_URL != '' && needs.playwright-test.result == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/${{ github.repository }}/commits/${{ github.sha }}/comments \
+            -f body="**[E2E Test Report](${{ steps.deploy.outputs.REPORT_URL }}#?q=s%3Afailed)**"
+
+  update-comment-on-failure:
+    needs: [install, deploy-preview, playwright-test, merge-reports, deploy-report]
+    if: |
+      always()
+      && github.event_name == 'pull_request'
+      && needs.install.outputs.has_code_changes == 'true'
+      && needs.deploy-report.result != 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update PR Comment (cancelled)
+        if: needs.playwright-test.result == 'cancelled'
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        with:
+          comment-tag: "e2e-status"
+          message: |
+            ### ⚪ E2E Tests
+
+            Cancelled • [view run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      - name: Update PR Comment (report deploy failed)
+        if: needs.playwright-test.result != 'cancelled'
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        with:
+          comment-tag: "e2e-status"
+          message: |
+            ### ${{ needs.playwright-test.result == 'success' && '✅' || '❌' }} E2E Tests
+
+            ${{ needs.merge-reports.outputs.test_summary || 'Report deploy failed' }} • [view run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            **Report:** [Download from Actions artifacts](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            <details>
+            <summary>Studio</summary>
+
+            **Studio:** ${{ needs.deploy-preview.outputs.preview_url || 'Not available.' }}
+
+            </details>
