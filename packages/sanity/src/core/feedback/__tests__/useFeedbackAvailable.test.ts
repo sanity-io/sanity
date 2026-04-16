@@ -116,4 +116,43 @@ describe('useFeedbackAvailable', () => {
     })
     expect(fetch).toHaveBeenCalledTimes(1)
   })
+
+  it('should consume or cancel the response body to avoid holding the HTTP stream open', async () => {
+    // An unconsumed fetch() body keeps the underlying HTTP stream alive,
+    // which can cause head-of-line blocking on multiplexed connections (H2/H3).
+    const bodyCancel = vi.fn(() => Promise.resolve())
+    const bodyText = vi.fn(() => Promise.resolve(''))
+    const bodyJson = vi.fn(() => Promise.resolve({}))
+    const bodyArrayBuffer = vi.fn(() => Promise.resolve(new ArrayBuffer(0)))
+
+    const mockBody = {
+      cancel: bodyCancel,
+      getReader: vi.fn(),
+      locked: false,
+      pipeTo: vi.fn(),
+      pipeThrough: vi.fn(),
+      tee: vi.fn(),
+    } as unknown as ReadableStream
+
+    const mockResponse = new Response(null, {status: 200})
+    Object.defineProperty(mockResponse, 'body', {value: mockBody})
+    Object.defineProperty(mockResponse, 'text', {value: bodyText})
+    Object.defineProperty(mockResponse, 'json', {value: bodyJson})
+    Object.defineProperty(mockResponse, 'arrayBuffer', {value: bodyArrayBuffer})
+
+    vi.mocked(fetch).mockResolvedValue(mockResponse)
+
+    renderHook(() => useFeedbackAvailable({dsn}))
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledTimes(1)
+    })
+
+    const bodyWasConsumed =
+      bodyCancel.mock.calls.length > 0 ||
+      bodyText.mock.calls.length > 0 ||
+      bodyJson.mock.calls.length > 0 ||
+      bodyArrayBuffer.mock.calls.length > 0
+
+    expect(bodyWasConsumed).toBe(true)
+  })
 })

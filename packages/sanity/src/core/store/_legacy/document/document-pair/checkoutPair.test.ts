@@ -1759,6 +1759,81 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
 
     sub.unsubscribe()
   })
+
+  test('shard info fetch should consume or cancel the response body to avoid holding the HTTP stream open', async () => {
+    // An unconsumed fetch() body keeps the underlying HTTP/2 or HTTP/3 stream alive,
+    // which can cause head-of-line blocking on multiplexed connections.
+    // The shard info fetch only reads a header — it must also drain or cancel the body.
+    const bodyCancel = vi.fn(() => Promise.resolve())
+    const bodyText = vi.fn(() => Promise.resolve(''))
+    const bodyJson = vi.fn(() => Promise.resolve({}))
+    const bodyArrayBuffer = vi.fn(() => Promise.resolve(new ArrayBuffer(0)))
+
+    const mockBody = {
+      cancel: bodyCancel,
+      getReader: vi.fn(),
+      locked: false,
+      pipeTo: vi.fn(),
+      pipeThrough: vi.fn(),
+      tee: vi.fn(),
+    } as unknown as ReadableStream
+
+    const mockResponse = new Response('pong', {
+      status: 200,
+      headers: {'X-Sanity-Shard': 'test-shard'},
+    })
+    Object.defineProperty(mockResponse, 'body', {value: mockBody})
+    Object.defineProperty(mockResponse, 'text', {value: bodyText})
+    Object.defineProperty(mockResponse, 'json', {value: bodyJson})
+    Object.defineProperty(mockResponse, 'arrayBuffer', {value: bodyArrayBuffer})
+
+    vi.spyOn(global, 'fetch').mockResolvedValue(mockResponse)
+
+    const listenerSubject = new Subject()
+    const commitSubject = new Subject()
+    const onReportLatency = vi.fn()
+
+    const testClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: (path: string) => `/data/${path}`,
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Trigger a mutation so reportLatency resolves the shard info
+    draft.mutate(draft.patch([{set: {title: 'test'}}]))
+    draft.commit()
+    commitSubject.next({transactionId: 'tx-body', results: []})
+    commitSubject.complete()
+    await vi.advanceTimersByTimeAsync(0)
+
+    listenerSubject.next(createMutationEvent('tx-body', 'draftId', 'any', 'rev2'))
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(0)
+
+    // The response body must have been consumed or cancelled.
+    const bodyWasConsumed =
+      bodyCancel.mock.calls.length > 0 ||
+      bodyText.mock.calls.length > 0 ||
+      bodyJson.mock.calls.length > 0 ||
+      bodyArrayBuffer.mock.calls.length > 0
+
+    expect(bodyWasConsumed).toBe(true)
+
+    sub.unsubscribe()
+  })
 })
 
 describe('checkoutPair -- slow commit warning', () => {
