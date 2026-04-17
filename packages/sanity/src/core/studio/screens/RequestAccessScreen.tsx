@@ -53,7 +53,7 @@ export function RequestAccessScreen() {
   const {activeWorkspace} = useActiveWorkspace()
 
   const handleLogout = useCallback(() => {
-    activeWorkspace.auth.logout?.()
+    void activeWorkspace.auth.logout?.()
   }, [activeWorkspace])
 
   // Get config info from active workspace

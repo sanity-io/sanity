@@ -41,7 +41,7 @@ export interface AuthStore {
    * out. The implementation is expected to remove all credentials both locally
    * and on the server.
    */
-  logout?: () => void
+  logout?: () => Promise<void>
   /**
    * Custom auth stores can implement a function that is designated to run when
    * the Studio loads (e.g. to trade a session ID for a token in cookie-less
