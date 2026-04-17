@@ -6,12 +6,14 @@ import {
   Flex,
   Menu,
   MenuDivider,
+  Spinner,
   Stack,
   Text,
 } from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
+import {type WorkspaceSummary} from '../../../../config'
 import {useTranslation} from '../../../../i18n'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useVisibleWorkspaces} from '../../../workspaces'
@@ -26,10 +28,20 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   tone: 'default',
 }
 
-export function WorkspaceMenuButton() {
-  const {visibleWorkspaces} = useVisibleWorkspaces()
-  const [authStates] = useWorkspaceAuthStates(visibleWorkspaces)
-  const {activeWorkspace} = useActiveWorkspace()
+/**
+ * Renders the workspace list with auth states.
+ * Extracted as a separate component so that `useWorkspaceAuthStates` is only
+ * called (and auth-check network requests only fire) when this component is
+ * mounted — i.e. after the user opens the workspace switcher for the first time.
+ */
+function WorkspaceMenuContent({
+  workspaces,
+  activeWorkspaceName,
+}: {
+  workspaces: WorkspaceSummary[]
+  activeWorkspaceName: string
+}) {
+  const [authStates] = useWorkspaceAuthStates(workspaces)
   const {t} = useTranslation()
   const [scrollbarWidth, setScrollbarWidth] = useState(0)
 
@@ -40,14 +52,80 @@ export function WorkspaceMenuButton() {
     }
   }, [])
 
-  const disabled = !authStates
+  if (!authStates) {
+    return (
+      <Flex align="center" justify="center" padding={4}>
+        <Spinner muted />
+      </Flex>
+    )
+  }
+
+  if (workspaces.length <= 1) return null
+
+  return (
+    <>
+      <MenuDivider style={{padding: 0}} />
+      <Box paddingTop={2} paddingBottom={1}>
+        <Box paddingRight={5} paddingLeft={4} paddingBottom={3}>
+          <Text size={0} weight="medium">
+            {t('workspaces.action.switch-workspace')}
+          </Text>
+        </Box>
+
+        <Stack ref={stackRef} space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
+          {workspaces.map((workspace) => {
+            const authState = authStates[workspace.name]
+
+            const state = authState.authenticated
+              ? 'logged-in'
+              : workspace.auth.LoginComponent
+                ? 'logged-out'
+                : 'no-access'
+
+            const isSelected = workspace.name === activeWorkspaceName
+
+            return (
+              <MenuItem
+                key={workspace.name}
+                as="a"
+                href={workspace.basePath}
+                badgeText={STATE_TITLES[state]}
+                iconRight={isSelected ? CheckmarkIcon : undefined}
+                pressed={isSelected}
+                preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
+                selected={isSelected}
+                __unstable_subtitle={workspace.subtitle}
+                text={workspace?.title || workspace.name}
+                style={{
+                  marginLeft: '1rem',
+                  marginRight: `calc(1.25rem - ${scrollbarWidth}px)`,
+                }}
+                __unstable_space={0}
+              />
+            )
+          })}
+        </Stack>
+      </Box>
+    </>
+  )
+}
+
+export function WorkspaceMenuButton() {
+  const {visibleWorkspaces} = useVisibleWorkspaces()
+  const {activeWorkspace} = useActiveWorkspace()
+  const {t} = useTranslation()
+  const [hasBeenOpened, setHasBeenOpened] = useState(false)
+
+  const handleOpen = useCallback(() => {
+    setHasBeenOpened(true)
+  }, [])
 
   return (
     <MenuButton
       button={
         <Flex>
-          <Tooltip content={t('workspaces.select-workspace-tooltip')} disabled={disabled} portal>
-            <UIButton disabled={disabled} mode="bleed" padding={2} width="fill">
+          <Tooltip content={t('workspaces.select-workspace-tooltip')} portal>
+            <UIButton mode="bleed" padding={2} width="fill">
               <Flex align="center" gap={2}>
                 <Box>
                   <Text size={1} textOverflow="ellipsis" weight="medium">
@@ -63,58 +141,17 @@ export function WorkspaceMenuButton() {
         </Flex>
       }
       id="workspace-menu"
+      onOpen={handleOpen}
       menu={
-        !disabled && authStates ? (
-          <Menu padding={0} style={{maxWidth: '350px', minWidth: '250px', overflowY: 'hidden'}}>
-            <ManageMenu multipleWorkspaces={visibleWorkspaces.length > 1} />
-            {visibleWorkspaces.length > 1 && (
-              <>
-                <MenuDivider style={{padding: 0}} />
-                <Box paddingTop={2} paddingBottom={1}>
-                  <Box paddingRight={5} paddingLeft={4} paddingBottom={3}>
-                    <Text size={0} weight="medium">
-                      {t('workspaces.action.switch-workspace')}
-                    </Text>
-                  </Box>
-
-                  <Stack ref={stackRef} space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
-                    {visibleWorkspaces.map((workspace) => {
-                      const authState = authStates[workspace.name]
-
-                      const state = authState.authenticated
-                        ? 'logged-in'
-                        : workspace.auth.LoginComponent
-                          ? 'logged-out'
-                          : 'no-access'
-
-                      const isSelected = workspace.name === activeWorkspace.name
-
-                      return (
-                        <MenuItem
-                          key={workspace.name}
-                          as="a"
-                          href={workspace.basePath}
-                          badgeText={STATE_TITLES[state]}
-                          iconRight={isSelected ? CheckmarkIcon : undefined}
-                          pressed={isSelected}
-                          preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
-                          selected={isSelected}
-                          __unstable_subtitle={workspace.subtitle}
-                          text={workspace?.title || workspace.name}
-                          style={{
-                            marginLeft: '1rem',
-                            marginRight: `calc(1.25rem - ${scrollbarWidth}px)`,
-                          }}
-                          __unstable_space={0}
-                        />
-                      )
-                    })}
-                  </Stack>
-                </Box>
-              </>
-            )}
-          </Menu>
-        ) : undefined
+        <Menu padding={0} style={{maxWidth: '350px', minWidth: '250px', overflowY: 'hidden'}}>
+          <ManageMenu multipleWorkspaces={visibleWorkspaces.length > 1} />
+          {hasBeenOpened && (
+            <WorkspaceMenuContent
+              workspaces={visibleWorkspaces}
+              activeWorkspaceName={activeWorkspace.name}
+            />
+          )}
+        </Menu>
       }
       popover={POPOVER_PROPS}
     />
