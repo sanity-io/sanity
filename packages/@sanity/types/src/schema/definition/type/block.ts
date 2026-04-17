@@ -1,7 +1,7 @@
 import {type ComponentType, type ReactNode} from 'react'
 
+import {type PortableTextBlock} from '../../../portableText'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
-import {type InitialValueProperty} from '../../types'
 import {type ArrayOfType} from './array'
 import {type BaseSchemaDefinition, type BaseSchemaTypeOptions} from './common'
 import {type ObjectDefinition} from './object'
@@ -29,7 +29,7 @@ export interface BlockOptions extends BaseSchemaTypeOptions {
 }
 
 /** @public */
-export interface BlockRule extends RuleDef<BlockRule, any[]> {}
+export interface BlockRule extends RuleDef<BlockRule, PortableTextBlock> {}
 
 /**
  * Schema definition for text block decorators.
@@ -259,7 +259,8 @@ export interface BlockDefinition extends BaseSchemaDefinition {
   lists?: BlockListDefinition[]
   marks?: BlockMarksDefinition
   of?: ArrayOfType<'object' | 'reference'>[]
-  initialValue?: InitialValueProperty<any, any[]>
+  /** Block types do not support initialValue - the runtime schema validation rejects it. */
+  initialValue?: never
   options?: BlockOptions
-  validation?: ValidationBuilder<BlockRule, any[]>
+  validation?: ValidationBuilder<BlockRule, PortableTextBlock>
 }
