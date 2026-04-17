@@ -51,7 +51,19 @@ test.describe('Custom Release Actions', () => {
     await archiveAndDeleteRelease({sanityClient, dataset, releaseId: asapReleaseId})
   })
 
-  const openReleaseMenu = async (page: Page, isOverview: boolean) => {
+  /**
+   * Opens the release menu and waits for it to be fully ready, including custom actions.
+   *
+   * The menu has two categories of items:
+   * 1. Built-in items (e.g. archive) rendered synchronously by ReleaseMenu
+   * 2. Custom actions resolved asynchronously via ReleaseActionsResolver + useEffect
+   *
+   * We use retryingClickUntilVisible to get the menu open (archive item visible),
+   * then wait for the custom action menu item which resolves asynchronously.
+   * If the custom action doesn't appear (e.g. the menu closed from a re-render),
+   * we close, re-open, and retry the whole sequence.
+   */
+  const openReleaseMenuAndWaitForCustomActions = async (page: Page, isOverview: boolean) => {
     const menuButton = isOverview
       ? page
           .getByRole('row')
@@ -60,11 +72,14 @@ test.describe('Custom Release Actions', () => {
           .getByTestId('release-menu-button')
       : page.getByTestId('release-menu-button')
 
+    const customMenuItem = page.getByRole('menuitem', {
+      name: `E2E Test Action: ${uniqueReleaseTitle}`,
+    })
+
     await expect(menuButton).toBeVisible()
     await expect(menuButton).toBeEnabled()
 
-    // A built-in menu item that is always present for active ASAP releases.
-    // Used to verify the menu actually opened after clicking the button.
+    // Open the menu and wait for the built-in archive item to confirm it opened.
     // On the overview page, subscription updates can re-render the table and
     // swallow the click, so retrying with portal diagnostics helps debug failures.
     await retryingClickUntilVisible(
@@ -73,52 +88,48 @@ test.describe('Custom Release Actions', () => {
       page.getByTestId('archive-release-menu-item'),
       {maxRetries: 5},
     )
-  }
 
-  const expectCustomActionInMenu = async (page: Page) => {
-    const menuItem = page.getByRole('menuitem', {name: `E2E Test Action: ${uniqueReleaseTitle}`})
-    await expect(menuItem).toBeVisible()
-    await expect(menuItem).toBeEnabled()
-    return menuItem
+    // The menu is now open. Custom actions are resolved asynchronously via
+    // ReleaseActionsResolver -> useEffect -> state update -> render, so they
+    // may not appear in the same frame as the built-in items.
+    // Wait for the custom action with a generous timeout to account for this.
+    await expect(customMenuItem).toBeVisible({timeout: 10_000})
+
+    return customMenuItem
   }
 
   // Shared test suite function
   const createCustomActionTests = (contextName: string, setupPath: string, isOverview: boolean) => {
     test.describe(contextName, () => {
       test.beforeEach(async ({page}) => {
-        // Navigate and wait for the releases API response to complete
-        // This ensures the release data is fully loaded before interacting with the page
-        await Promise.all([
-          page.waitForResponse(
-            (response) => response.url().includes('/data/query/') && response.status() === 200,
-          ),
-          page.goto(setupPath),
-        ])
+        // Navigate and wait for the page to fully load.
+        // Use waitForLoadState instead of racing page.goto against waitForResponse,
+        // which can miss the response if it fires before the listener is attached.
+        await page.goto(setupPath)
+        await page.waitForLoadState('networkidle')
 
         // Wait for page-specific elements to be ready
         if (isOverview) {
           // On overview page, wait for the releases table and the specific release row.
           // The table may render before all releases are loaded from subscriptions,
           // so waiting for the row ensures our test release data is available.
-          await expect(page.getByRole('table')).toBeVisible()
+          await expect(page.getByRole('table')).toBeVisible({timeout: 30_000})
           await expect(page.getByRole('row').filter({hasText: uniqueReleaseTitle})).toBeVisible({
             timeout: 30_000,
           })
         } else {
           // On individual release page, wait for the menu button
-          await expect(page.getByTestId('release-menu-button')).toBeVisible()
+          await expect(page.getByTestId('release-menu-button')).toBeVisible({timeout: 30_000})
         }
       })
 
       test('should display custom release actions in menu', async ({page}) => {
-        await openReleaseMenu(page, isOverview)
-        const menuItem = await expectCustomActionInMenu(page)
+        const menuItem = await openReleaseMenuAndWaitForCustomActions(page, isOverview)
         await expect(menuItem).toBeVisible()
       })
 
       test('should show action as enabled', async ({page}) => {
-        await openReleaseMenu(page, isOverview)
-        const menuItem = await expectCustomActionInMenu(page)
+        const menuItem = await openReleaseMenuAndWaitForCustomActions(page, isOverview)
         await expect(menuItem).toBeEnabled()
       })
 
@@ -128,16 +139,28 @@ test.describe('Custom Release Actions', () => {
           consoleMessages.push(msg.text())
         })
 
-        await openReleaseMenu(page, isOverview)
-        await expectCustomActionInMenu(page)
-        // Click the menu item directly to avoid stale element references
-        // The menu can re-render when release data updates, causing element detachment
-        await page
-          .getByRole('menuitem', {name: `E2E Test Action: ${uniqueReleaseTitle}`})
-          .click({force: true})
+        const menuItem = await openReleaseMenuAndWaitForCustomActions(page, isOverview)
 
-        // Wait for the action to execute
-        await page.waitForTimeout(1000)
+        // Click the custom action menu item.
+        // Re-query the locator to avoid stale element references from re-renders.
+        await menuItem.click({force: true})
+
+        // Wait for the console message from the action handler rather than using
+        // a fixed timeout which is unreliable in CI. Poll until the expected
+        // output appears.
+        await expect
+          .poll(
+            () => {
+              const output = consoleMessages.join(' ')
+              return output.includes('E2E Test Release Action executed!')
+            },
+            {
+              message: 'Expected console output from custom release action',
+              timeout: 5_000,
+              intervals: [100, 250, 500, 1_000],
+            },
+          )
+          .toBeTruthy()
 
         const allConsoleOutput = consoleMessages.join(' ')
         expect(allConsoleOutput).toContain('E2E Test Release Action executed!')
