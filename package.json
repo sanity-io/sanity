@@ -105,7 +105,6 @@
     "dotenv-flow": "^4.1.0",
     "esbuild-register": "catalog:",
     "eslint": "catalog:",
-    "eslint-formatter-gha": "^2.0.1",
     "husky": "^9.1.7",
     "knip": "^5.88.1",
     "lint-staged": "^16.2.7",

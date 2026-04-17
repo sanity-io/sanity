@@ -442,7 +442,14 @@ function reportLatency(options: {
     shardInfo = fetch(client.getUrl(client.getDataUrl('ping')), {
       signal: AbortSignal.timeout(FETCH_SHARD_TIMEOUT),
     })
-      .then((response) => response.headers.get('X-Sanity-Shard') || undefined)
+      .then((response) => {
+        const shard = response.headers.get('X-Sanity-Shard') || undefined
+        // Cancel the body stream to free the underlying HTTP connection.
+        // Without this, the unconsumed body keeps the H2/H3 stream open,
+        // which can cause head-of-line blocking on multiplexed connections.
+        void response.body?.cancel()
+        return shard
+      })
       .catch(() => undefined)
   } catch {
     shardInfo = Promise.resolve(undefined)

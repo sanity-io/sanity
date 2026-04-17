@@ -16,11 +16,12 @@ describe('block types', () => {
         title: 'Custom PTE',
         icon: () => null,
         description: 'Description',
-        initialValue: () => Promise.resolve([]),
+        // @ts-expect-error initialValue is not supported on block types
+        initialValue: {_type: 'block'},
         validation: (Rule) => [
           Rule.required()
             .required()
-            .custom((value) => (value?.filter((t) => !t).length === 1 ? 'Error' : true))
+            .custom((value) => (value?._type !== 'block' ? 'Error' : true))
             .warning(),
           // @ts-expect-error greaterThan does not exist on BlockRule
           Rule.greaterThan(5).error(),

@@ -80,6 +80,9 @@ const FIREFOX_PROJECT: PlaywrightTestProject = {
 const playwrightConfig: PlaywrightTestConfig = {
   globalSetup: './globalSetup',
   testDir: TESTS_PATH,
+  // Auth tests use a separate config (playwright.auth.config.ts) with their own
+  // dev server on port 3340. Exclude them from the default config.
+  testIgnore: ['**/tests/auth/**'],
 
   /* Maximum time one test can run for. */
   timeout: 60_000,

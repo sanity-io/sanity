@@ -2,7 +2,7 @@ import {createBrowserHistory, createMemoryHistory} from 'history'
 import {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
 
 import {type RouterHistory} from '../router'
-import {useWorkspaces} from '../workspaces'
+import {useVisibleWorkspaces, useWorkspaces} from '../workspaces'
 import {ActiveWorkspaceMatcherProvider} from './ActiveWorkspaceMatcherProvider'
 import {useSyncPathnameWithWorkspace} from './useSyncPathnameWithWorkspace'
 
@@ -24,23 +24,28 @@ export function ActiveWorkspaceMatcher({
   NotFoundComponent,
   unstable_history: historyProp,
 }: ActiveWorkspaceMatcherProps) {
-  const workspaces = useWorkspaces()
+  const allWorkspaces = useWorkspaces()
+  const {visibleWorkspaces, authStates} = useVisibleWorkspaces()
   const history = useMemo(() => historyProp || createHistory(), [historyProp])
 
   const setActiveWorkspaceName = useCallback(
     (workspaceName: string) => {
-      const foundWorkspace = workspaces.find((workspace) => workspace.name === workspaceName)
+      const foundWorkspace = visibleWorkspaces.find((workspace) => workspace.name === workspaceName)
       if (foundWorkspace) {
         history.push(foundWorkspace.basePath)
       }
     },
-    [history, workspaces],
+    [history, visibleWorkspaces],
   )
-  const handleNavigateToDefaultWorkspace = useCallback(() => {
-    setActiveWorkspaceName(workspaces[0].name)
-  }, [setActiveWorkspaceName, workspaces])
 
-  const result = useSyncPathnameWithWorkspace(history, workspaces)
+  const handleNavigateToDefaultWorkspace = useCallback(() => {
+    const firstVisibleWorkspace = visibleWorkspaces[0]
+    if (firstVisibleWorkspace) {
+      setActiveWorkspaceName(firstVisibleWorkspace.name)
+    }
+  }, [setActiveWorkspaceName, visibleWorkspaces])
+
+  const result = useSyncPathnameWithWorkspace(history, allWorkspaces)
 
   useEffect(() => {
     if (result.type === 'redirect') {
@@ -53,16 +58,31 @@ export function ActiveWorkspaceMatcher({
   }, [history, result])
 
   switch (result.type) {
-    case 'match':
+    case 'match': {
+      const matchedWorkspace = result.workspace
+
+      if (typeof matchedWorkspace.hidden === 'function' && authStates === undefined) {
+        return <LoadingComponent />
+      }
+
+      const matchedWorkspaceIsVisible = visibleWorkspaces.some(
+        (workspace) => workspace.name === matchedWorkspace.name,
+      )
+
+      if (!matchedWorkspaceIsVisible) {
+        return <NotFoundComponent onNavigateToDefaultWorkspace={handleNavigateToDefaultWorkspace} />
+      }
+
       return (
         <ActiveWorkspaceMatcherProvider
-          activeWorkspace={result.workspace}
+          activeWorkspace={matchedWorkspace}
           history={history}
           setActiveWorkspace={setActiveWorkspaceName}
         >
           {children}
         </ActiveWorkspaceMatcherProvider>
       )
+    }
     case 'redirect':
       return <LoadingComponent />
     case 'not-found':

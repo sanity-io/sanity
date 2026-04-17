@@ -587,12 +587,54 @@ export type AsyncConfigPropertyReducer<TValue, TContext> = (
 export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 
 /**
+ * Context passed to workspace `hidden` callbacks.
+ *
+ * @public
+ */
+export interface WorkspaceHiddenContext {
+  /** The authenticated user, or `null` if unavailable. */
+  currentUser: CurrentUser | null
+}
+
+/**
+ * A boolean or callback that returns `true` to hide the workspace from the UI.
+ *
+ * @public
+ */
+export type WorkspaceHiddenProperty = boolean | ((context: WorkspaceHiddenContext) => boolean)
+
+/**
  * @hidden
  * @beta
  */
 export interface WorkspaceOptions extends SourceOptions {
   basePath: string
   subtitle?: string
+
+  /**
+   * Hides this workspace from the studio UI. Client-side only -
+   * enforce access control server-side via Sanity's RBAC system.
+   *
+   * Callbacks are evaluated after auth state resolves and re-evaluated when it changes.
+   * Before auth resolves, callback-hidden workspaces are treated as visible for
+   * navigation purposes - users will see a loading screen until auth resolves.
+   *
+   * When `currentUser` is `null` (user not yet authenticated in this workspace),
+   * returning `true` will prevent them from seeing and authenticating against the
+   * workspace. Start callbacks with `if (currentUser === null) return false` unless
+   * you intentionally want to hide the workspace from unauthenticated users.
+   *
+   * @example Hide a workspace from non-admin users
+   * ```ts
+   * hidden: ({currentUser}) => {
+   *   if (currentUser === null) return false
+   *   return !currentUser.roles.some((role) => role.name === 'administrator')
+   * }
+   * ```
+   *
+   * @public
+   */
+  hidden?: WorkspaceHiddenProperty
   /**
    * The workspace logo
    *
@@ -1077,6 +1119,8 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   customIcon: boolean
   subtitle?: string
   basePath: string
+  /** @see WorkspaceHiddenProperty */
+  hidden?: WorkspaceHiddenProperty
   auth: AuthStore
   projectId: string
   dataset: string
