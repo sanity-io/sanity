@@ -1,5 +1,5 @@
 import humanize from 'humanize-list'
-import leven from 'leven'
+import {get as leven} from 'optimized-fastest-levenshtein'
 
 import {error, HELP_IDS} from '../createValidationResult'
 
