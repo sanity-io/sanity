@@ -303,6 +303,25 @@ export default defineConfig([
   defaultWorkspace,
   {
     ...defaultWorkspace,
+    name: 'admin-only',
+    title: 'Admin Only',
+    subtitle: 'Hidden unless you have an administrator role',
+    basePath: '/admin-only',
+    hidden: ({currentUser}) => {
+      if (currentUser === null) return false
+      return !currentUser.roles.some((role) => role.name === 'administrator')
+    },
+  },
+  {
+    ...defaultWorkspace,
+    name: 'always-hidden',
+    title: 'Always Hidden',
+    subtitle: 'You should never see this workspace because it is statically hidden',
+    basePath: '/always-hidden',
+    hidden: true,
+  },
+  {
+    ...defaultWorkspace,
     name: 'us',
     title: 'Test Studio (US)',
     dataset: 'test-us',
