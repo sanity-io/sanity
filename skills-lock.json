@@ -21,6 +21,11 @@
       "sourceType": "git",
       "computedHash": "b05fe3315ddf338551a759618f7f682ab6baf33184f97bbd65ef31826b0eab5a"
     },
+    "rxjs-like-a-pro": {
+      "source": "bjoerge/rxjs-skills",
+      "sourceType": "github",
+      "computedHash": "139717d9d0f9f128d83ea8b4bf1f26c6ff1f2b13df8b7c55e8877635127e1266"
+    },
     "tdd": {
       "source": "mattpocock/skills",
       "sourceType": "github",
