@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {act, screen, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {of} from 'rxjs'
-import {describe, expect, test, vi} from 'vitest'
+import {afterAll, beforeAll, describe, expect, test, vi} from 'vitest'
 
 import {renderCrossDatasetReferenceInput} from '../../../../../../test/form'
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
@@ -15,6 +15,39 @@ const AVAILABLE = {
   available: true,
   reason: 'READABLE',
 } as const
+
+// Silence `console.error` / `console.warn` for the duration of this test file.
+//
+// The `CrossDatasetReferenceInput` component and its `useReferenceInfo` hook
+// log to `console.error` from within RxJS `catchError` operators when
+// observables error out. When a React component is unmounted while such an
+// observable is still mid-emission (which happens during `@testing-library`
+// `cleanup` after each test), the `console.error` call can fire *after* the
+// test body has resolved but *before* vitest finishes tearing down the worker.
+// On Node 20 shards (which additionally run coverage + blob reporter), this
+// races the worker RPC channel and surfaces as
+// `EnvironmentTeardownError: Closing rpc while "onUserConsoleLog" was pending`,
+// failing the shard with exit code 1 even though every test passed.
+//
+// Replacing `console.error` and `console.warn` with no-op spies removes the
+// RPC traffic entirely for this file and eliminates the flake. The spies are
+// installed in `beforeAll` / torn down in `afterAll` so individual tests can
+// still assert on console output if they need to in the future.
+let consoleErrorSpy: ReturnType<typeof vi.spyOn>
+let consoleWarnSpy: ReturnType<typeof vi.spyOn>
+
+// eslint-disable-next-line no-empty-function
+const noop = () => {}
+
+beforeAll(() => {
+  consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(noop)
+  consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(noop)
+})
+
+afterAll(() => {
+  consoleErrorSpy.mockRestore()
+  consoleWarnSpy.mockRestore()
+})
 
 function createWrapperComponent(client: SanityClient) {
   const config = defineConfig({
