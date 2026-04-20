@@ -89,6 +89,14 @@ test('publish action can publish anonymous version', async ({
   })
 
   await page.goto(`${browserName}/content/species;${canonicalId}?perspective=${bundle}`)
+  // Wait for the form view to mount and be editable (no longer read-only) before
+  // interacting with fields; otherwise the fill can race with initial value
+  // resolution and document permissions loading.
+  await page.locator('[data-testid="form-view"]').waitFor({state: 'visible', timeout: 30_000})
+  await page
+    .locator('[data-testid="form-view"]:not([data-read-only="true"])')
+    .waitFor({state: 'visible', timeout: 30_000})
+
   await nameInput.fill(`${speciesDocumentNameAnonymousVersion.name} - updated ${Date.now()}`)
 
   // Wait for the document to save before publishing.

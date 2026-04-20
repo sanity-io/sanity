@@ -73,6 +73,11 @@ test(`deleted document shows the right name from last revision`, async ({
   // Navigate back to the original document URL once it's deleted since it navigates back to the initial structure
   await page.goto(documentUrl)
 
+  // Wait for the form to remount after re-navigation before asserting on fields.
+  // Without this, the `toHaveValue` assertion can race with the form view
+  // remounting after the delete navigates away and back.
+  await page.locator('[data-testid="form-view"]').waitFor({state: 'visible', timeout: 30_000})
+
   // Verify that the form still shows the correct name from the last revision
   // The form should display the last revision document content
   await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(documentName)

@@ -109,8 +109,11 @@ export const test = baseTest.extend<SanityFixtures>({
       const id = _testContext.getUniqueDocumentId()
 
       await page.goto(`${navigationPath};${id}`)
+      // Form view must mount before the document is considered ready.
       await page.locator('[data-testid="form-view"]').waitFor({state: 'visible', timeout: 30_000})
 
+      // Form view must not be read-only (i.e. initial value resolver / permissions
+      // have settled) before tests interact with fields.
       await page
         .locator('[data-testid="form-view"]:not([data-read-only="true"])')
         .waitFor({state: 'visible', timeout: 30_000})
