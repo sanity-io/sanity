@@ -5,6 +5,6 @@ import {globalStyle} from '@vanilla-extract/css'
  */
 globalStyle('#sanity', {
   vars: {
-    '--auto-updating-vision': 'true',
+    '--static-css-file-loaded-vision': 'true',
   },
 })
