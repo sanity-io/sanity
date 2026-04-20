@@ -349,9 +349,9 @@ export function _createAuthStore({
       }),
     ),
   ).pipe(
-    tap((s) => {
+    tap((authState) => {
       // sync with other tabs
-      cookieAuthState.update({authenticated: s.authenticated})
+      cookieAuthState.update({authenticated: authState.authenticated})
     }),
     share({connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(1000)}),
   )
