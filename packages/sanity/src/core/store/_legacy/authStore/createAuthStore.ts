@@ -256,7 +256,7 @@ export function _createAuthStore({
   // The tap triggers tokenStorage.update() which pushes to the BehaviorSubject
   // backing tokenStorage.value — so the actual emission comes from that stream.
   // switchMap to EMPTY so this branch produces no direct values.
-  const hashTokenChange = fromEvent(document, 'hashchange').pipe(
+  const hashTokenChange = fromEvent(window, 'hashchange').pipe(
     tap(() => {
       const hashToken = consumeHashToken()
       if (hashToken) {
