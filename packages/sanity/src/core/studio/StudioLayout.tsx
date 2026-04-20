@@ -20,6 +20,7 @@ import {
   useNavbarComponent,
 } from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
+import {ToolMountTimer} from './ToolMountTimer'
 import {useWorkspace} from './workspace'
 
 const DetectViteDevServerStopped = lazy(() =>
@@ -103,6 +104,13 @@ export function StudioLayoutComponent() {
   const activeTool = useMemo(
     () => tools.find((tool) => tool.name === activeToolName),
     [activeToolName, tools],
+  )
+  // Capture T0 synchronously at the render when `activeToolName` changes.
+  // `useMemo` reliably re-evaluates in the same render as its deps change,
+  // giving us a per-activation timestamp without touching a ref during render.
+  const toolMountT0 = useMemo(
+    () => (activeToolName ? performance.now() : null),
+    [activeToolName],
   )
   const [searchFullscreenOpen, setSearchFullscreenOpen] = useState<boolean>(false)
   const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
@@ -217,6 +225,9 @@ export function StudioLayoutComponent() {
               <Suspense fallback={<LoadingBlock showText />}>
                 {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
                 <ActiveToolLayout activeTool={activeTool} />
+                {toolMountT0 !== null && (
+                  <ToolMountTimer toolName={activeTool.name} t0={toolMountT0} />
+                )}
               </Suspense>
             </RouteScope>
           )}
