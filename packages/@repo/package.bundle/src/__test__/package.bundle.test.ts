@@ -5,6 +5,7 @@ import {stripCssImportsPlugin} from '../package.bundle'
 function runPlugin(bundle: Record<string, any>) {
   const plugin = stripCssImportsPlugin()
   // generateBundle is a Rollup hook — call it directly with a mock context
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   ;(plugin.generateBundle as Function).call({}, {} as never, bundle)
 }
 
@@ -40,10 +41,7 @@ describe('stripCssImportsPlugin()', () => {
       'index.css': {type: 'asset', source: 'body {}'},
       'index.mjs': {
         type: 'chunk',
-        code: [
-          "import './index.css'",
-          'import "./index.css";',
-        ].join('\n'),
+        code: ["import './index.css'", 'import "./index.css";'].join('\n'),
       },
     } as any
 
@@ -112,11 +110,9 @@ describe('stripCssImportsPlugin()', () => {
       'theme.css': {type: 'asset', source: ':root {}'},
       'index.mjs': {
         type: 'chunk',
-        code: [
-          "import './index.css'",
-          "import './theme.css'",
-          "import 'external/styles.css'",
-        ].join('\n'),
+        code: ["import './index.css'", "import './theme.css'", "import 'external/styles.css'"].join(
+          '\n',
+        ),
       },
     } as any
 

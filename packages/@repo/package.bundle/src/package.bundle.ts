@@ -96,14 +96,8 @@ export function stripCssImportsPlugin(): Plugin {
 
         for (const cssName of cssAssetNames) {
           const escaped = cssName.replace(/\./g, '\\.')
-          const pattern = new RegExp(
-            `import\\s+['"][^'"]*${escaped}['"];?\\n?`,
-            'g',
-          )
-          chunk.code = chunk.code.replace(
-            pattern,
-            '/* css served separately via <link> tag */\n',
-          )
+          const pattern = new RegExp(`import\\s+['"][^'"]*${escaped}['"];?\\n?`, 'g')
+          chunk.code = chunk.code.replace(pattern, '/* css served separately via <link> tag */\n')
         }
       }
     },
