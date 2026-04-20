@@ -25,7 +25,7 @@ export function ActiveWorkspaceMatcher({
   unstable_history: historyProp,
 }: ActiveWorkspaceMatcherProps) {
   const allWorkspaces = useWorkspaces()
-  const {visibleWorkspaces, authStates} = useVisibleWorkspaces()
+  const {visibleWorkspaces, isResolvingHiddenWorkspaces} = useVisibleWorkspaces()
   const history = useMemo(() => historyProp || createHistory(), [historyProp])
 
   const setActiveWorkspaceName = useCallback(
@@ -61,7 +61,7 @@ export function ActiveWorkspaceMatcher({
     case 'match': {
       const matchedWorkspace = result.workspace
 
-      if (typeof matchedWorkspace.hidden === 'function' && authStates === undefined) {
+      if (typeof matchedWorkspace.hidden === 'function' && isResolvingHiddenWorkspaces) {
         return <LoadingComponent />
       }
 
