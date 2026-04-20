@@ -1,7 +1,9 @@
 import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
+import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {CorsOriginError} from '../../cors'
 import {_createAuthStore} from '../createAuthStore'
 import {type AuthStore} from '../types'
 
@@ -459,6 +461,66 @@ describe('createAuthStore: cross-tab sync', () => {
       const state = await unauthState
       expect(state.authenticated).toBe(false)
       expect(state.currentUser).toBeNull()
+    })
+  })
+
+  // Regression tests for issues found in code review.
+  // These should fail against the current implementation and pass once fixed.
+  describe('regressions', () => {
+    it('exposes a `token` observable so bifur (real-time) can authenticate', async () => {
+      // The AuthStore interface declares `token?: Observable<string | null>`, and
+      // prepareConfig.tsx wires it into the bifur WebSocket for real-time updates.
+      // If createAuthStore stops emitting `token`, bifur silently runs unauthenticated
+      // in token-mode studios.
+      localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'persisted-token'}))
+
+      const mock = createMockClientFactory()
+      const store = _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod: 'token',
+        clientFactory: mock.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
+      })
+
+      expect(store.token).toBeDefined()
+      const token = await firstValueFrom(store.token!)
+      expect(token).toBe('persisted-token')
+    })
+
+    it('throws CorsOriginError when /users/me fails for a non-auth reason but /ping succeeds', async () => {
+      // Previously, getCurrentUser probed /ping to detect CORS misconfig and threw
+      // CorsOriginError, which StudioErrorBoundary renders as CorsOriginErrorScreen.
+      // After the refactor, the raw error is propagated and the helpful CORS screen
+      // never appears.
+      const nonAuthError = Object.assign(new Error('Network error'), {
+        statusCode: 0,
+        isNetworkError: true,
+      })
+
+      const factory = (_options: SanityClientConfig): SanityClient =>
+        ({
+          request: vi.fn(({uri, withCredentials}: {uri: string; withCredentials?: boolean}) => {
+            if (uri === '/users/me') return Promise.reject(nonAuthError)
+            // /ping succeeds without credentials → indicates CORS origin isn't allowlisted
+            if (uri === '/ping' && withCredentials === false) return Promise.resolve({})
+            return Promise.resolve({})
+          }),
+        }) as unknown as SanityClient
+
+      const store = _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod: 'cookie',
+        clientFactory: factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
+      })
+
+      // The state stream should error with a CorsOriginError so the StudioErrorBoundary
+      // can render CorsOriginErrorScreen.
+      await expect(firstValueFrom(store.state)).rejects.toBeInstanceOf(CorsOriginError)
     })
   })
 })
