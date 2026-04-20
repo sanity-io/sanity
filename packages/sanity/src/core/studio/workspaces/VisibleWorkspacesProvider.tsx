@@ -35,16 +35,14 @@ export function VisibleWorkspacesProvider({children}: {children: ReactNode}) {
 
   const [authStates] = useWorkspaceAuthStates(workspacesNeedingAuth)
 
-  const isResolvingHiddenWorkspaces = workspacesNeedingAuth.length > 0 && authStates === undefined
-
   const value = useMemo<VisibleWorkspacesContextValue>(
     () => ({
       visibleWorkspaces: allWorkspaces.filter(
         (workspace) => !evaluateWorkspaceHidden(workspace, authStates?.[workspace.name]),
       ),
-      isResolvingHiddenWorkspaces,
+      isResolvingHiddenWorkspaces: workspacesNeedingAuth.length > 0 && authStates === undefined,
     }),
-    [allWorkspaces, authStates, isResolvingHiddenWorkspaces],
+    [allWorkspaces, workspacesNeedingAuth, authStates],
   )
 
   return (
