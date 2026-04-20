@@ -15,6 +15,7 @@ import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../.
 import {useTranslation} from '../../../../i18n'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useVisibleWorkspaces} from '../../../workspaces'
+import {useWorkspaceAuthStates} from './hooks'
 import {ManageMenu} from './ManageMenu'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
@@ -26,7 +27,8 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 export function WorkspaceMenuButton() {
-  const {visibleWorkspaces, authStates} = useVisibleWorkspaces()
+  const {visibleWorkspaces} = useVisibleWorkspaces()
+  const [authStates] = useWorkspaceAuthStates(visibleWorkspaces)
   const {activeWorkspace} = useActiveWorkspace()
   const {t} = useTranslation()
   const [scrollbarWidth, setScrollbarWidth] = useState(0)
