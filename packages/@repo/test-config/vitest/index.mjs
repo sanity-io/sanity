@@ -14,6 +14,11 @@ export function defineConfig(config) {
     ...config,
     test: {
       ...config?.test,
+      // Disable console interception to prevent `EnvironmentTeardownError: Closing rpc while
+      // "onUserConsoleLog" was pending` when async emissions (e.g. RxJS catchError logs) fire
+      // after a test's body resolves but before the worker finishes teardown. Tradeoff:
+      // console output goes directly to stdout/stderr instead of through the vitest reporter.
+      disableConsoleIntercept: config?.test?.disableConsoleIntercept ?? true,
       // oxlint-disable-next-line no-misused-spread
       alias: {...config?.test?.alias, ...getViteAliases()},
       typecheck: {
