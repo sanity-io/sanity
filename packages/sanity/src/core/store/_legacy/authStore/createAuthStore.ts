@@ -499,6 +499,7 @@ export function _createAuthStore({
   return {
     handleCallbackUrl,
     state: authState$,
+    token: tokenStorage.value.pipe(map((t) => t?.token || null)),
     LoginComponent,
     logout,
   }
