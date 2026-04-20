@@ -16,7 +16,7 @@ import {Translate, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {visionLocaleNamespace} from '../i18n'
-import {perspectivePopoverContent, perspectivePopoverLink} from './PerspectivePopover.css'
+import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePopover.styled'
 
 const Dot = styled.div<{$tone: CardTone}>`
   width: 4px;
@@ -45,7 +45,7 @@ export function PerspectivePopover() {
   return (
     <Popover
       content={
-        <Box className={perspectivePopoverContent}>
+        <PerspectivePopoverContent>
           <Stack space={4}>
             <Inline space={2}>
               <Text weight="medium">{t('settings.perspectives.title')}</Text>
@@ -80,18 +80,16 @@ export function PerspectivePopover() {
 
             <Card>
               <Text>
-                <a
-                  className={perspectivePopoverLink}
+                <PerspectivePopoverLink
                   href="https://www.sanity.io/docs/perspectives"
                   target="_blank"
-                  rel="noreferrer"
                 >
                   {t('settings.perspectives.action.docs-link')} &rarr;
-                </a>
+                </PerspectivePopoverLink>
               </Text>
             </Card>
           </Stack>
-        </Box>
+        </PerspectivePopoverContent>
       }
       placement="bottom-start"
       portal

@@ -1,75 +1,88 @@
 /* eslint-disable camelcase */
 
-import { useTheme_v2 } from "@sanity/ui";
-import { rgba } from "@sanity/ui/theme";
-import { setElementVars } from "@vanilla-extract/dynamic";
-import { useInsertionEffect } from "react";
+import {getTheme_v2, rgba} from '@sanity/ui/theme'
+import {type ComponentType} from 'react'
+import {createGlobalStyle, css} from 'styled-components'
 
-import {
-  uiFontTextFamily,
-  uiColoBg,
-  formGutterSize,
-  formGutterGap,
-  webkitResizerSvg,
-  uiFontTextWeightsMedium,
-  uiColorBorder,
-  uiColorMutedFg,
-  selectionBackgroundColor,
-} from "./styles.css";
-import { useWorkspace } from "./workspace";
+import {useWorkspace} from './workspace'
+
+const SCROLLBAR_SIZE = 12 // px
+const SCROLLBAR_BORDER_SIZE = 4 // px
 
 // Construct a resize handle icon as a data URI, to be displayed in browsers that support the `::-webkit-resizer` selector.
 function buildResizeHandleDataUri(hexColor: string) {
-  const encodedStrokeColor = encodeURIComponent(hexColor);
-  const encodedSvg = `%3Csvg width='9' height='9' viewBox='0 0 9 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 8L8 1' stroke='${encodedStrokeColor}' stroke-linecap='round'/%3E%3Cpath d='M5 8L8 5' stroke='${encodedStrokeColor}' stroke-linecap='round'/%3E%3C/svg%3E%0A`;
-  return `url("data:image/svg+xml,${encodedSvg}")`;
+  const encodedStrokeColor = encodeURIComponent(hexColor)
+  const encodedSvg = `%3Csvg width='9' height='9' viewBox='0 0 9 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 8L8 1' stroke='${encodedStrokeColor}' stroke-linecap='round'/%3E%3Cpath d='M5 8L8 5' stroke='${encodedStrokeColor}' stroke-linecap='round'/%3E%3C/svg%3E%0A`
+  return `url("data:image/svg+xml,${encodedSvg}")`
 }
 
-export const GlobalStyle = (): null => {
+export const GlobalStyle: ComponentType = () => {
   const {
-    advancedVersionControl: { enabled: advancedVersionControlEnabled },
-  } = useWorkspace();
+    advancedVersionControl: {enabled: advancedVersionControlEnabled},
+  } = useWorkspace()
 
-  const { color, font, space } = useTheme_v2();
-  const webkitResizerSvgDataUri = buildResizeHandleDataUri(color.icon);
-  const selectionBackgroundColorVar = rgba(color.focusRing, 0.3);
+  return <GlobalStyleSheet $documentEditorGutterEnabled={advancedVersionControlEnabled} />
+}
 
-  useInsertionEffect(() => {
-    setElementVars(document.documentElement, {
-      [formGutterSize]: advancedVersionControlEnabled ? `${space[4]}px` : "0px",
-      [formGutterGap]: advancedVersionControlEnabled ? `${space[3]}px` : "0px",
-      [selectionBackgroundColor]: selectionBackgroundColorVar,
-      [uiFontTextFamily]: font.text.family,
-      [uiFontTextWeightsMedium]: font.text.weights.medium.toString(),
-      [uiColoBg]: color.bg,
-      [uiColorBorder]: color.border,
-      [uiColorMutedFg]: color.muted.fg,
-      [webkitResizerSvg]: webkitResizerSvgDataUri,
-    });
-    return () => {
-      setElementVars(document.documentElement, {
-        [formGutterSize]: null,
-        [formGutterGap]: null,
-        [selectionBackgroundColor]: null,
-        [uiFontTextFamily]: null,
-        [uiFontTextWeightsMedium]: null,
-        [uiColoBg]: null,
-        [uiColorBorder]: null,
-        [uiColorMutedFg]: null,
-        [webkitResizerSvg]: null,
-      });
-    };
-  }, [
-    advancedVersionControlEnabled,
-    space,
-    selectionBackgroundColorVar,
-    font.text.family,
-    font.text.weights.medium,
-    color.bg,
-    color.border,
-    color.muted.fg,
-    webkitResizerSvgDataUri,
-  ]);
+interface Props {
+  $documentEditorGutterEnabled: boolean
+}
 
-  return null;
-};
+const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $documentEditorGutterEnabled}) => {
+  const {color, font} = getTheme_v2(theme)
+
+  return css`
+    ::-webkit-resizer {
+      background-image: ${buildResizeHandleDataUri(color.icon)};
+      background-repeat: no-repeat;
+      background-position: bottom right;
+    }
+
+    ::-webkit-scrollbar {
+      width: ${SCROLLBAR_SIZE}px;
+      height: ${SCROLLBAR_SIZE}px;
+    }
+
+    ::-webkit-scrollbar-corner {
+      background-color: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-clip: content-box;
+      background-color: var(--card-border-color, ${color.border});
+      border: ${SCROLLBAR_BORDER_SIZE}px solid transparent;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--card-muted-fg-color, ${color.muted.fg});
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    *::selection {
+      background-color: ${rgba(color.focusRing, 0.3)};
+    }
+
+    html {
+      background-color: ${color.bg};
+    }
+
+    body {
+      scrollbar-gutter: stable;
+    }
+
+    #sanity {
+      font-family: ${font.text.family};
+    }
+
+    b {
+      font-weight: ${font.text.weights.medium};
+    }
+
+    strong {
+      font-weight: ${font.text.weights.medium};
+    }
+  `
+})

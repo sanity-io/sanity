@@ -31,7 +31,10 @@
     "mock-browser-env-stub-loader.mjs"
   ],
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css",
+    "*.css.ts"
+  ],
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "typesVersions": {
@@ -207,7 +210,6 @@
     "@sentry/react": "^8.55.0",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.18",
-    "@vanilla-extract/dynamic": "^2.1.5",
     "@xstate/react": "^6.0.0",
     "classnames": "^2.2.5",
     "color2k": "^2.0.3",
