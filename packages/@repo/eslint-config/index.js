@@ -11,6 +11,7 @@ import sanityTypescript from 'eslint-config-sanity/typescript.js'
 import turboConfig from 'eslint-config-turbo/flat'
 import {createTypeScriptImportResolver} from 'eslint-import-resolver-typescript'
 import * as importPlugin from 'eslint-plugin-import'
+import noUnconsumedFetch from 'eslint-plugin-no-unconsumed-fetch'
 import oxlint from 'eslint-plugin-oxlint'
 import pluginReact from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -90,6 +91,7 @@ export default [
       'tsdoc': tsdocPlugin,
       'unused-imports': unusedImports,
       'unicorn': unicorn,
+      'no-unconsumed-fetch': noUnconsumedFetch,
     },
     rules: {
       ...sanityRecommended.rules,
@@ -155,6 +157,7 @@ export default [
       'react/jsx-no-bind': 'off',
       // Since the oxlint no-floating-promises rule directs marking intentionally hanging promises with `void` we need to disable the `no-void` rule
       'no-void': 'off',
+      'no-unconsumed-fetch/no-unconsumed-fetch': 'error',
     },
     settings: {
       'import/extensions': extensions,

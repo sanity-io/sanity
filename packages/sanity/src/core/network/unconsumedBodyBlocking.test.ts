@@ -61,6 +61,7 @@ describe('unconsumed fetch body prevents connection reuse', () => {
 
     // --- unconsumed: only read headers, ignore body ---
     for (let i = 0; i < REQUEST_COUNT; i++) {
+      // eslint-disable-next-line no-unconsumed-fetch/no-unconsumed-fetch -- intentional: this test demonstrates the leak
       const res = await fetch(unconsumed.url)
       res.headers.get('content-type')
     }

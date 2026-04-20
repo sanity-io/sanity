@@ -46,6 +46,7 @@ async function deleteDataset(name: string): Promise<void> {
     method: 'DELETE',
     headers: {Authorization: `Bearer ${SANITY_E2E_SESSION_TOKEN}`},
   })
+  void res.body?.cancel()
   if (!res.ok) throw new Error(`Failed to delete "${name}": ${res.statusText}`)
 }
 

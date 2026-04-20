@@ -865,6 +865,10 @@ importers:
       typescript-eslint:
         specifier: ^8.53.1
         version: 8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+    devDependencies:
+      eslint-plugin-no-unconsumed-fetch:
+        specifier: 1.0.0-alpha.2
+        version: 1.0.0-alpha.2(eslint@9.39.2(jiti@2.6.1))
 
   packages/@repo/package.bundle:
     devDependencies:
@@ -7611,6 +7615,12 @@ packages:
     peerDependenciesMeta:
       '@typescript-eslint/parser':
         optional: true
+
+  eslint-plugin-no-unconsumed-fetch@1.0.0-alpha.2:
+    resolution: {integrity: sha512-EcqNki2v0k25r4tP0inY1/1UztLYaznsK6TRWhmiJqVmO1U0RhLPEgdeYBbi8thtjyaFEg/hNz1UP47GYQ+++g==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      eslint: '>=8.40.0'
 
   eslint-plugin-oxlint@1.43.0:
     resolution: {integrity: sha512-SUP8AFLe1D6/jcGenpDu3DrPkDfqbBzoDZqSN0SHAo7CygqAHaltIhBay6y9Lt2Iib7TW7sNPHC22MXmE2XlGw==}
@@ -17677,6 +17687,10 @@ snapshots:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
       - supports-color
+
+  eslint-plugin-no-unconsumed-fetch@1.0.0-alpha.2(eslint@9.39.2(jiti@2.6.1)):
+    dependencies:
+      eslint: 9.39.2(jiti@2.6.1)
 
   eslint-plugin-oxlint@1.43.0:
     dependencies:
