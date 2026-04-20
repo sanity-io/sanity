@@ -356,6 +356,24 @@ export interface DocumentPluginOptions {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
   }
 
+  /**
+   * Configuration for the "Ask to edit" button that appears when a user
+   * lacks edit permissions on a document.
+   *
+   * @hidden
+   * @beta
+   */
+  askToEdit?: {
+    /**
+     * Whether the "Ask to edit" button is enabled. Defaults to `true`.
+     *
+     * Can be a boolean or a function that receives a context object and returns a boolean.
+     * When set to `false`, the "Ask to edit" button will be hidden but the
+     * document will still be read-only for users without edit permissions.
+     */
+    enabled: boolean | ((context: DocumentAskToEditEnabledContext) => boolean)
+  }
+
   drafts?: {
     /**
      * Whether the workspace provides the draft model for interacting with documents.
@@ -788,6 +806,12 @@ export interface DocumentCommentsEnabledContext {
   documentType: string
 }
 
+/** @hidden @beta */
+export interface DocumentAskToEditEnabledContext {
+  documentId?: string
+  documentType: string
+}
+
 /**
  * @hidden
  * @beta
@@ -936,6 +960,11 @@ export interface Source {
     /** @internal */
     comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
+    }
+
+    /** @hidden @beta */
+    askToEdit: {
+      enabled: (props: DocumentAskToEditEnabledContext) => boolean
     }
   }
 
