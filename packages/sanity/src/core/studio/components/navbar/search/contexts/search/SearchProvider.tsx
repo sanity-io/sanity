@@ -1,13 +1,15 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import isEqual from 'lodash-es/isEqual.js'
-import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
 import {useActiveReleases} from '../../../../../../releases/store/useActiveReleases'
-import {type SearchTerms} from '../../../../../../search'
+import {type SearchHit, type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {useSource} from '../../../../../source'
+import {GlobalSearchLatencyMeasured} from '../../__telemetry__/search.telemetry'
 import {SEARCH_LIMIT} from '../../constants'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {createFieldDefinitionDictionary, createFieldDefinitions} from '../../definitions/fields'
@@ -57,6 +59,15 @@ export function SearchProvider({
   const {
     search: {operators, filters, strategy},
   } = useSource()
+  const telemetry = useTelemetry()
+
+  // Timing ref for `Global Search Latency Measured`. Set to `performance.now()`
+  // on a valid (searchable-terms) `onStart`, cleared on log. Null means the
+  // most recent `onStart` was for empty/invalid terms — skip logging.
+  const searchStartRef = useRef<number | null>(null)
+  // Snapshot of terms at `onStart` time, used to build the log payload in
+  // `onComplete`/`onError` without racing the state update.
+  const searchStartTermsRef = useRef<SearchTerms | RecentSearch | null>(null)
 
   // Create field, filter and operator dictionaries
   const {fieldDefinitions, filterDefinitions, operatorDefinitions} = useMemo(() => {
@@ -94,11 +105,73 @@ export function SearchProvider({
   const previousCursorRef = useRef<string | null>(initialState.cursor)
   const previousTermsRef = useRef<SearchTerms | RecentSearch>(initialState.terms)
 
+  // Keep a live ref to the current terms so that the `onStart` callback
+  // (fired synchronously inside the `useSearch` observable pipeline) can
+  // snapshot the *current* search's terms, not the previous one.
+  const currentTermsRef = useRef<SearchTerms | RecentSearch>(terms)
+  currentTermsRef.current = terms
+
+  const handleSearchComplete = useCallback(
+    (searchResult: {hits: SearchHit[]; nextCursor: string | undefined}) => {
+      const t0 = searchStartRef.current
+      const startTerms = searchStartTermsRef.current
+      searchStartRef.current = null
+      searchStartTermsRef.current = null
+      dispatch({...searchResult, type: 'SEARCH_REQUEST_COMPLETE'})
+      if (t0 !== null && startTerms !== null) {
+        telemetry.log(GlobalSearchLatencyMeasured, {
+          durationMs: performance.now() - t0,
+          queryLength: startTerms.query.length,
+          typeFilterCount: startTerms.types.length,
+          resultCount: searchResult.hits.length,
+          strategy: strategy ?? null,
+          errored: false,
+        })
+      }
+    },
+    [strategy, telemetry],
+  )
+
+  const handleSearchError = useCallback(
+    (error: Error) => {
+      const t0 = searchStartRef.current
+      const startTerms = searchStartTermsRef.current
+      searchStartRef.current = null
+      searchStartTermsRef.current = null
+      dispatch({error, type: 'SEARCH_REQUEST_ERROR'})
+      if (t0 !== null && startTerms !== null) {
+        telemetry.log(GlobalSearchLatencyMeasured, {
+          durationMs: performance.now() - t0,
+          queryLength: startTerms.query.length,
+          typeFilterCount: startTerms.types.length,
+          resultCount: 0,
+          strategy: strategy ?? null,
+          errored: true,
+        })
+      }
+    },
+    [strategy, telemetry],
+  )
+
+  const handleSearchStart = useCallback(() => {
+    // `useSearch` fires `onStart` for every request, including empty-term
+    // short-circuit paths. Only start the timer if we have searchable terms.
+    const currentTerms = currentTermsRef.current
+    if (hasSearchableTerms({terms: currentTerms})) {
+      searchStartRef.current = performance.now()
+      searchStartTermsRef.current = currentTerms
+    } else {
+      searchStartRef.current = null
+      searchStartTermsRef.current = null
+    }
+    dispatch({type: 'SEARCH_REQUEST_START'})
+  }, [])
+
   const {handleSearch, searchState} = useSearch({
     initialState: {...result, terms},
-    onComplete: (searchResult) => dispatch({...searchResult, type: 'SEARCH_REQUEST_COMPLETE'}),
-    onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
-    onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
+    onComplete: handleSearchComplete,
+    onError: handleSearchError,
+    onStart: handleSearchStart,
     schema,
   })
 
