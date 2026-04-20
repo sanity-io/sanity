@@ -5,7 +5,13 @@ import {test} from '../../studio-test'
 test.describe('sanity/structure: document pane', () => {
   test('on document with defaultPanes, the panes should be expanded', async ({page}) => {
     await page.goto(`/content/`)
-    await page.getByTestId('pane-item-Debug inputs').click({force: true})
+    // Ensure the root structure pane has rendered before trying to interact with
+    // its items. Under CI load, clicking a pane item before the list has hydrated
+    // can deterministically fail the subsequent interaction because the first
+    // click had no effect.
+    const debugInputsItem = page.getByTestId('pane-item-Debug inputs')
+    await expect(debugInputsItem).toBeVisible({timeout: 30_000})
+    await debugInputsItem.click({force: true})
 
     // Scroll down 500px in the virtual list to reveal the "Many views" item
     await page.locator('#input-debug-input-debug-0').evaluate((el) => {
