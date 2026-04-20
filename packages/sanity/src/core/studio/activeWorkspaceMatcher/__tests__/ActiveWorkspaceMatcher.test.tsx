@@ -75,7 +75,9 @@ function createContextValue(
     visibleWorkspaces: workspaces.filter(
       (workspace) => !evaluateWorkspaceHidden(workspace, authStates?.[workspace.name]),
     ),
-    authStates,
+    isResolvingHiddenWorkspaces:
+      authStates === undefined &&
+      workspaces.some((workspace) => typeof workspace.hidden === 'function'),
   }
 }
 

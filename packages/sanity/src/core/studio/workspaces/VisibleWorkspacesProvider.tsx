@@ -2,7 +2,6 @@ import {type ReactNode, useMemo} from 'react'
 import {VisibleWorkspacesContext} from 'sanity/_singletons'
 
 import {type WorkspaceSummary} from '../../config/types'
-import {type AuthState} from '../../store/_legacy/authStore/types'
 import {useWorkspaceAuthStates} from '../components/navbar/workspace/hooks'
 import {evaluateWorkspaceHidden} from './useVisibleWorkspaces'
 import {useWorkspaces} from './useWorkspaces'
@@ -10,7 +9,15 @@ import {useWorkspaces} from './useWorkspaces'
 /** @internal */
 export interface VisibleWorkspacesContextValue {
   visibleWorkspaces: WorkspaceSummary[]
-  authStates: Record<string, AuthState> | undefined
+  /**
+   * `true` while auth state is still resolving for one or more workspaces
+   * whose visibility depends on a function-based `hidden` property.
+   * `visibleWorkspaces` includes these workspaces optimistically in the
+   * meantime.
+   *
+   * Follows the same fail-open pattern as `evaluateWorkspaceHidden`.
+   */
+  isResolvingHiddenWorkspaces: boolean
 }
 
 /** @internal */
@@ -20,10 +27,7 @@ export function VisibleWorkspacesProvider({children}: {children: ReactNode}) {
   // Only subscribe to auth state for workspaces whose visibility depends on
   // the current user. Workspaces with boolean or undefined `hidden` are
   // evaluated synchronously, so we don't need a per-workspace `/users/me`
-  // request to decide whether to render them. This avoids a thundering herd
-  // of auth requests at studio boot (which was measurably increasing p99
-  // `load`-event times in Firefox and causing `page.goto` to time out in
-  // e2e tests).
+  // request to decide whether to render them.
   const workspacesNeedingAuth = useMemo(
     () => allWorkspaces.filter((workspace) => typeof workspace.hidden === 'function'),
     [allWorkspaces],
@@ -31,14 +35,16 @@ export function VisibleWorkspacesProvider({children}: {children: ReactNode}) {
 
   const [authStates] = useWorkspaceAuthStates(workspacesNeedingAuth)
 
+  const isResolvingHiddenWorkspaces = workspacesNeedingAuth.length > 0 && authStates === undefined
+
   const value = useMemo<VisibleWorkspacesContextValue>(
     () => ({
       visibleWorkspaces: allWorkspaces.filter(
         (workspace) => !evaluateWorkspaceHidden(workspace, authStates?.[workspace.name]),
       ),
-      authStates,
+      isResolvingHiddenWorkspaces,
     }),
-    [allWorkspaces, authStates],
+    [allWorkspaces, authStates, isResolvingHiddenWorkspaces],
   )
 
   return (
