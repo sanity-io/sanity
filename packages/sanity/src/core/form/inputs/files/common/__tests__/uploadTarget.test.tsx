@@ -116,6 +116,46 @@ describe('uploadTarget - drag and drop', () => {
     )
   }, 15000)
 
+  it('forwards dropped files when uploadMode is component and source has Uploader (Media Library)', async () => {
+    const assetSource = createMockAssetSourceWithMediaLibraryUploader({
+      uploadMode: 'component',
+    })
+
+    const {onChange} = await renderImageInput({
+      assetSources: [assetSource],
+      configOverrides: {mediaLibrary: {enabled: false}},
+      fieldDefinition: {name: 'hero', title: 'Hero', type: 'image'},
+      observeAsset: observeImageAssetStub,
+      render: (inputProps) => <BaseImageInput {...inputProps} />,
+    })
+
+    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    expect(fileTarget).toBeInTheDocument()
+
+    const file = new File(['content'], 'test.jpg', {type: 'image/jpeg'})
+    const dataTransfer = createMockDataTransfer([file])
+
+    fireEvent.drop(fileTarget!, {dataTransfer})
+
+    await waitFor(
+      () => {
+        const calls = onChange.mock.calls
+        expect(calls.length).toBeGreaterThanOrEqual(1)
+        const hasAssetPatch = calls.some((call) => {
+          const arg = call[0]
+          const patches = Array.isArray(arg) ? arg : (arg as {patches?: unknown[]})?.patches
+          if (!Array.isArray(patches)) return false
+          return patches.some((patch: unknown) => {
+            const p = patch as {path?: string[]}
+            return Array.isArray(p?.path) && p.path?.includes('asset')
+          })
+        })
+        expect(hasAssetPatch).toBe(true)
+      },
+      {timeout: 10000},
+    )
+  }, 15000)
+
   it('shows drop-to-upload message when dragging files over the target', async () => {
     const assetSource = createMockAssetSourceWithMediaLibraryUploader()
 

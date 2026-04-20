@@ -179,6 +179,18 @@ export function uploadTarget<Props>(
           isComponentModeAssetSource(firstReady.assetSource) &&
           onOpenSourceForUpload
         ) {
+          // Component-mode sources (e.g. Media Library) still use an Uploader to stream files
+          // into the iframe. Opening the dialog alone drops drag-and-pasted files on the floor.
+          if (firstReady.assetSource.Uploader && onSelectFile && ready.length > 0) {
+            ready.forEach((entry) => {
+              onSelectFile({
+                assetSource: entry.assetSource!,
+                schemaType: entry.schemaType!,
+                file: entry.file,
+              })
+            })
+            return
+          }
           onOpenSourceForUpload(firstReady.assetSource)
           return
         }
@@ -318,6 +330,13 @@ export function uploadTarget<Props>(
           return
         }
         if (isComponentModeAssetSource(assetSource) && onOpenSourceForUpload) {
+          if (assetSource.Uploader && filesToUpload.length > 0 && onSelectFile) {
+            assetSourceDestinationName.current = assetSource.name
+            handleUploadFiles(filesToUpload)
+            setFilesToUpload([])
+            assetSourceDestinationName.current = null
+            return
+          }
           onOpenSourceForUpload(assetSource)
           setFilesToUpload([])
           assetSourceDestinationName.current = null
@@ -330,7 +349,7 @@ export function uploadTarget<Props>(
         setFilesToUpload([])
         assetSourceDestinationName.current = null
       },
-      [filesToUpload, handleUploadFiles, onOpenSourceForUpload],
+      [filesToUpload, handleUploadFiles, onOpenSourceForUpload, onSelectFile],
     )
 
     const handleUploadDestinationPickerClose = useCallback(() => {
