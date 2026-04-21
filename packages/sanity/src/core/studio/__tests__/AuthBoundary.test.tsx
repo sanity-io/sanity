@@ -2,8 +2,8 @@ import {render, waitFor} from '@testing-library/react'
 import {Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import type {StudioAuthReadyMeasured as StudioAuthReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
-import type {AuthBoundary as AuthBoundaryType} from '../AuthBoundary'
+import {type StudioAuthReadyMeasured as StudioAuthReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
+import {type AuthBoundary as AuthBoundaryType} from '../AuthBoundary'
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),

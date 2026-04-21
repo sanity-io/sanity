@@ -1,8 +1,8 @@
 import {render, waitFor} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import type {StudioReadyMeasured as StudioReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
-import type {StudioLayoutComponent as StudioLayoutComponentType} from '../StudioLayout'
+import {type StudioReadyMeasured as StudioReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
+import {type StudioLayoutComponent as StudioLayoutComponentType} from '../StudioLayout'
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
