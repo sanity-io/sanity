@@ -866,7 +866,7 @@ importers:
         specifier: ^8.53.1
         version: 8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
     devDependencies:
-      eslint-plugin-no-unconsumed-fetch:
+      '@sanity/no-unconsumed-fetch':
         specifier: 1.0.0-alpha.2
         version: 1.0.0-alpha.2(eslint@9.39.2(jiti@2.6.1))
 
@@ -5357,6 +5357,12 @@ packages:
       xstate:
         optional: true
 
+  '@sanity/no-unconsumed-fetch@1.0.0-alpha.2':
+    resolution: {integrity: sha512-q63scCCB6gJ5IJ/nQE6CU2yGKqmFs8GUBKCor8vDpx58rBU8MNwGAWM9YhmAU+5RD/L1FR762gRJeOn/GUvJtw==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      eslint: '>=8.40.0'
+
   '@sanity/parse-package-json@2.1.3':
     resolution: {integrity: sha512-lFhjS9bGzMixk2hvlXs/lfCoNIIUPOFuWovGNn7FuWxYKetGajwoF4UyJqm5j0kRT7yibviCo5vC8753d6/sNw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -7615,12 +7621,6 @@ packages:
     peerDependenciesMeta:
       '@typescript-eslint/parser':
         optional: true
-
-  eslint-plugin-no-unconsumed-fetch@1.0.0-alpha.2:
-    resolution: {integrity: sha512-EcqNki2v0k25r4tP0inY1/1UztLYaznsK6TRWhmiJqVmO1U0RhLPEgdeYBbi8thtjyaFEg/hNz1UP47GYQ+++g==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      eslint: '>=8.40.0'
 
   eslint-plugin-oxlint@1.43.0:
     resolution: {integrity: sha512-SUP8AFLe1D6/jcGenpDu3DrPkDfqbBzoDZqSN0SHAo7CygqAHaltIhBay6y9Lt2Iib7TW7sNPHC22MXmE2XlGw==}
@@ -14898,6 +14898,10 @@ snapshots:
     optionalDependencies:
       xstate: 5.30.0
 
+  '@sanity/no-unconsumed-fetch@1.0.0-alpha.2(eslint@9.39.2(jiti@2.6.1))':
+    dependencies:
+      eslint: 9.39.2(jiti@2.6.1)
+
   '@sanity/parse-package-json@2.1.3':
     dependencies:
       zod: 4.3.6
@@ -17687,10 +17691,6 @@ snapshots:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
       - supports-color
-
-  eslint-plugin-no-unconsumed-fetch@1.0.0-alpha.2(eslint@9.39.2(jiti@2.6.1)):
-    dependencies:
-      eslint: 9.39.2(jiti@2.6.1)
 
   eslint-plugin-oxlint@1.43.0:
     dependencies:

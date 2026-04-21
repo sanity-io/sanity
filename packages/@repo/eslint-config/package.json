@@ -29,6 +29,6 @@
     "typescript-eslint": "^8.53.1"
   },
   "devDependencies": {
-    "eslint-plugin-no-unconsumed-fetch": "1.0.0-alpha.2"
+    "@sanity/no-unconsumed-fetch": "1.0.0-alpha.2"
   }
 }

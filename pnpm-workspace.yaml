@@ -69,7 +69,6 @@ minimumReleaseAgeExclude:
   - '@vercel/stega'
   - 'csstype'
   - 'data-uri-to-buffer@7.0.0'
-  - 'eslint-plugin-no-unconsumed-fetch'
   - 'eslint-plugin-oxlint'
   - 'get-it'
   - 'get-uri@7.0.0'
