@@ -1,4 +1,4 @@
-import {Box, type ResponsiveWidthProps} from '@sanity/ui'
+import {BoundaryElementProvider, Box, type ResponsiveWidthProps} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useRef, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
@@ -56,20 +56,22 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
         scrollElement={documentScrollElement}
         containerElement={containerElement}
       >
-        <Dialog
-          __unstable_autoFocus={props.autofocus}
-          contentRef={setDocumentScrollElement}
-          data-testid="edit-portal-dialog"
-          header={header}
-          id={props.id || ''}
-          onClickOutside={onClose}
-          onClose={onClose}
-          onDragEnter={onDragEnter}
-          onDrop={onDrop}
-          width={width}
-        >
-          {contents}
-        </Dialog>
+        <BoundaryElementProvider element={documentScrollElement}>
+          <Dialog
+            __unstable_autoFocus={props.autofocus}
+            contentRef={setDocumentScrollElement}
+            data-testid="edit-portal-dialog"
+            header={header}
+            id={props.id || ''}
+            onClickOutside={onClose}
+            onClose={onClose}
+            onDragEnter={onDragEnter}
+            onDrop={onDrop}
+            width={width}
+          >
+            {contents}
+          </Dialog>
+        </BoundaryElementProvider>
       </VirtualizerScrollInstanceProvider>
     )
   }
@@ -86,7 +88,9 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
         scrollElement={documentScrollElement}
         containerElement={containerElement}
       >
-        {contents}
+        <BoundaryElementProvider element={documentScrollElement}>
+          {contents}
+        </BoundaryElementProvider>
       </VirtualizerScrollInstanceProvider>
     </PopoverDialog>
   )
