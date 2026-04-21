@@ -2,17 +2,18 @@ import {type SanityClient} from '@sanity/client'
 import {render} from '@testing-library/react'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode, useRef} from 'react'
+import {MediaLibraryIdsContext} from 'sanity/_singletons'
+import {decodeJsonParams, encodeJsonParams} from 'sanity/router'
 import {describe, expect, test, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {MediaLibraryIdsContext} from '../../../../../_singletons/context/MediaLibraryIdsContext'
-import {decodeJsonParams, encodeJsonParams} from '../../../../../router/utils/jsonParamsEncoding'
+import type * as FormValueMod from '../../../contexts/FormValue'
 
 // SelectAssetsDialog calls useFormValue for validation; stub so we need not wrap FormValueProvider
 // (embedding FormValueProvider alongside other imports in this file breaks RouterProvider resolution).
 vi.mock('../../../contexts/FormValue', async (importOriginal) => {
-  const mod = await importOriginal<typeof import('../../../contexts/FormValue')>()
+  const mod = await importOriginal<typeof FormValueMod>()
   return {
     ...mod,
     useFormValue: () => undefined,
@@ -44,12 +45,28 @@ async function renderWithStudioTree(
 }
 
 describe('Media Library plugin iframe payloads', () => {
+  const expectedPickerKey =
+    encodeJsonParams({
+      projectId: 'p1',
+      dataset: 'd1',
+      workspaceName: 'ws1',
+    }) || undefined
+
   test('SelectAssetsDialog iframe src contains pickerPersistenceKey in createPluginView', async () => {
     const {SelectAssetsDialog} = await import('../shared/SelectAssetsDialog')
     const client = createMockSanityClient() as any as SanityClient
     function Harness() {
       const ref = useRef<HTMLDivElement>(null)
-      return <SelectAssetsDialog open onClose={noop} onSelect={noop} ref={ref} selection={[]} />
+      return (
+        <SelectAssetsDialog
+          open
+          onClose={noop}
+          onSelect={noop}
+          ref={ref}
+          selection={[]}
+          pickerPersistenceKey={expectedPickerKey}
+        />
+      )
     }
     await renderWithStudioTree(client, {projectId: 'p1', dataset: 'd1', name: 'ws1'}, <Harness />)
 
@@ -60,22 +77,17 @@ describe('Media Library plugin iframe payloads', () => {
     const raw = url.searchParams.get('createPluginView')
     expect(raw).toBeTruthy()
     const parsed = decodeJsonParams(raw!) as {pickerPersistenceKey?: string}
-    const expectedKey =
-      encodeJsonParams({
-        projectId: 'p1',
-        dataset: 'd1',
-        workspaceName: 'ws1',
-      }) || undefined
-    expect(parsed.pickerPersistenceKey).toBe(expectedKey)
+    expect(parsed.pickerPersistenceKey).toBe(expectedPickerKey)
   })
 
-  test('OpenInSourceDialog iframe payload omits pickerPersistenceKey', async () => {
+  test('OpenInSourceDialog iframe src includes pickerPersistenceKey and disableNavigation', async () => {
     const {OpenInSourceDialog} = await import('../shared/OpenInSourceDialog')
     const client = createMockSanityClient() as any as SanityClient
     await renderWithStudioTree(
       client,
       {projectId: 'p1', dataset: 'd1', name: 'ws1'},
       <OpenInSourceDialog
+        pickerPersistenceKey={expectedPickerKey}
         asset={
           {
             _id: 'asset-1',
@@ -101,7 +113,7 @@ describe('Media Library plugin iframe payloads', () => {
       pickerPersistenceKey?: string
       disableNavigation?: boolean
     }
-    expect(parsed.pickerPersistenceKey).toBeUndefined()
+    expect(parsed.pickerPersistenceKey).toBe(expectedPickerKey)
     expect(parsed.disableNavigation).toBe(true)
   })
 })

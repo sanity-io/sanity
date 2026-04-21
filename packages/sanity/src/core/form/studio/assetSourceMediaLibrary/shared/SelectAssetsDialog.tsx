@@ -12,7 +12,6 @@ import {
 } from '@sanity/types'
 import {Box, Card, Flex, useTheme, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
-import {encodeJsonParams} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components'
 import {useFormValue} from '../../../../form'
@@ -34,6 +33,8 @@ import {Iframe} from './Iframe'
 import {filterMediaValidationMarkers} from './validation'
 
 export interface SelectAssetsDialogProps {
+  /** Opaque key for Media Library iframe picker state partitioning; usually precomputed in the asset source. */
+  pickerPersistenceKey?: string
   dialogHeaderTitle?: ReactNode
   open: boolean
   onClose: () => void
@@ -58,6 +59,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const authType = useAuthType()
 
   const {
+    pickerPersistenceKey,
     dialogHeaderTitle,
     onClose,
     open,
@@ -127,23 +129,9 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       scheme: dark ? 'dark' : 'light',
       selectAssetTypes: selectAssetType ? [selectAssetType] : [],
       selectionType,
-      pickerPersistenceKey:
-        encodeJsonParams({
-          projectId: workspace.projectId,
-          dataset: workspace.dataset,
-          workspaceName: workspace.name,
-        }) || undefined,
+      pickerPersistenceKey,
     }),
-    [
-      selectionType,
-      selectAssetType,
-      dark,
-      authType,
-      pluginFilters,
-      workspace.projectId,
-      workspace.dataset,
-      workspace.name,
-    ],
+    [selectionType, selectAssetType, dark, authType, pluginFilters, pickerPersistenceKey],
   )
   const iframeUrl = usePluginFrameUrl('/assets', params)
 
