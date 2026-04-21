@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useEffect} from 'react'
+import {type RefObject, useEffect} from 'react'
 
 import {StudioToolMountTimeMeasured} from './__telemetry__/tools.telemetry'
 
@@ -11,8 +11,13 @@ const mountedTools = new Set<string>()
 
 interface ToolMountTimerProps {
   toolName: string
-  /** ms since navigation start captured when this tool was selected */
-  t0: number
+  /**
+   * Ref holding the ms-since-navigation-start timestamp captured when this
+   * tool was selected. The parent sets this in an effect when `activeToolName`
+   * changes; we read it in our own effect (after Suspense resolves and the
+   * tool's first commit lands), avoiding impure reads during render.
+   */
+  t0Ref: RefObject<number | null>
 }
 
 /**
@@ -26,10 +31,12 @@ interface ToolMountTimerProps {
  * activation produces a fresh `<ToolMountTimer>` instance and therefore
  * exactly one event.
  */
-export function ToolMountTimer({toolName, t0}: ToolMountTimerProps): null {
+export function ToolMountTimer({toolName, t0Ref}: ToolMountTimerProps): null {
   const telemetry = useTelemetry()
 
   useEffect(() => {
+    const t0 = t0Ref.current
+    if (t0 === null) return
     const isFirstMount = !mountedTools.has(toolName)
     mountedTools.add(toolName)
     telemetry.log(StudioToolMountTimeMeasured, {
@@ -37,8 +44,9 @@ export function ToolMountTimer({toolName, t0}: ToolMountTimerProps): null {
       durationMs: performance.now() - t0,
       isFirstMount,
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    // Intentionally mount-only: we want exactly one event per mount of
+    // this component, and the parent re-keys per tool activation.
+  }, [telemetry, toolName, t0Ref])
 
   return null
 }
