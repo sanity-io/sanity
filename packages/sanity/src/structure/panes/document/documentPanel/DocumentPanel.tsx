@@ -207,12 +207,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   // eslint-disable-next-line complexity
   const banners = useMemo(() => {
-    if (params?.historyVersion) {
-      return <ArchivedReleaseDocumentBanner />
-    }
-
-    if (isArchivedScheduledDraft) {
-      return <ArchivedReleaseDocumentBanner releaseId={params?.scheduledDraft} />
+    const archivedReleaseId =
+      params?.historyVersion ?? (isArchivedScheduledDraft ? params?.scheduledDraft : undefined)
+    if (archivedReleaseId) {
+      return <ArchivedReleaseDocumentBanner releaseId={archivedReleaseId} />
     }
 
     const isScheduledRelease =
