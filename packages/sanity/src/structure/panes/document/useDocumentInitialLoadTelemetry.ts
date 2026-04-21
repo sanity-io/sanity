@@ -31,26 +31,32 @@ export function useDocumentInitialLoadTelemetry({
 }: UseDocumentInitialLoadTelemetryOptions): void {
   const telemetry = useTelemetry()
 
-  // T0 captured synchronously on first render (~ pane mount / route change).
+  // T0 is captured on mount in an effect (rather than in a render-time ref
+  // init) to satisfy React Compiler, which treats `performance.now()` as
+  // impure and disallows it during render. The mount effect runs right
+  // after the first render commit, within one frame of pane mount, which
+  // is close enough to "route change" for our purposes.
   const t0Ref = useRef<number | null>(null)
-  if (t0Ref.current === null) {
+  useEffect(() => {
     t0Ref.current = performance.now()
-  }
+  }, [])
 
   const firedRef = useRef(false)
 
   useEffect(() => {
     if (firedRef.current) return
     if (!ready) return
+    // If T0 hasn't been captured yet (should not happen in practice —
+    // the mount effect runs before this one — skip this cycle and wait).
+    if (t0Ref.current === null) return
     firedRef.current = true
-    const t0 = t0Ref.current ?? performance.now()
     const isNewDoc =
       editState?.ready === true &&
       editState.draft === null &&
       editState.published === null &&
       editState.version === null
     telemetry.log(DocumentInitialLoadMeasured, {
-      durationMs: performance.now() - t0,
+      durationMs: performance.now() - t0Ref.current,
       documentTypeName: schemaTypeName ?? 'unknown',
       isNewDocument: isNewDoc,
       hasRevisionParam,

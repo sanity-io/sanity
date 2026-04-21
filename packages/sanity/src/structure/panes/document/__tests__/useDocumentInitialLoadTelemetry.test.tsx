@@ -1,6 +1,9 @@
 import {render, waitFor} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import type {useDocumentInitialLoadTelemetry as useDocumentInitialLoadTelemetryType} from '../useDocumentInitialLoadTelemetry'
+import type {DocumentInitialLoadMeasured as DocumentInitialLoadMeasuredType} from '../__telemetry__/documentInitialLoad.telemetry'
+
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
 }))
@@ -12,8 +15,8 @@ vi.mock('sanity', () => ({}))
 
 describe('useDocumentInitialLoadTelemetry', () => {
   let telemetryLog: ReturnType<typeof vi.fn>
-  let useDocumentInitialLoadTelemetry: typeof import('../useDocumentInitialLoadTelemetry').useDocumentInitialLoadTelemetry
-  let DocumentInitialLoadMeasured: typeof import('../__telemetry__/documentInitialLoad.telemetry').DocumentInitialLoadMeasured
+  let useDocumentInitialLoadTelemetry: typeof useDocumentInitialLoadTelemetryType
+  let DocumentInitialLoadMeasured: typeof DocumentInitialLoadMeasuredType
 
   beforeEach(async () => {
     vi.resetModules()
