@@ -213,17 +213,17 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
       scrollElement={documentScrollElement}
       containerElement={containerElement}
     >
-      <BoundaryElementProvider element={documentScrollElement}>
-        <PopoverDialog
-          header={header}
-          onClose={handleStackedDialogClose}
-          width={width}
-          containerRef={setDocumentScrollElement}
-          referenceElement={props.legacy_referenceElement}
-        >
+      <PopoverDialog
+        header={header}
+        onClose={handleStackedDialogClose}
+        width={width}
+        containerRef={setDocumentScrollElement}
+        referenceElement={props.legacy_referenceElement}
+      >
+        <BoundaryElementProvider element={documentScrollElement}>
           {contents}
-        </PopoverDialog>
-      </BoundaryElementProvider>
+        </BoundaryElementProvider>
+      </PopoverDialog>
     </VirtualizerScrollInstanceProvider>
   )
 }
