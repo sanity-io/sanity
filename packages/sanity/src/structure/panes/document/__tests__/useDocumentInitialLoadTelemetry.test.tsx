@@ -1,8 +1,8 @@
 import {render, waitFor} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import type {DocumentInitialLoadMeasured as DocumentInitialLoadMeasuredType} from '../__telemetry__/documentInitialLoad.telemetry'
-import type {useDocumentInitialLoadTelemetry as useDocumentInitialLoadTelemetryType} from '../useDocumentInitialLoadTelemetry'
+import {type DocumentInitialLoadMeasured as DocumentInitialLoadMeasuredType} from '../__telemetry__/documentInitialLoad.telemetry'
+import {type useDocumentInitialLoadTelemetry as useDocumentInitialLoadTelemetryType} from '../useDocumentInitialLoadTelemetry'
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
@@ -72,12 +72,7 @@ describe('useDocumentInitialLoadTelemetry', () => {
     expect(telemetryLog).not.toHaveBeenCalled()
 
     rerender(
-      <Harness
-        ready={true}
-        schemaTypeName="post"
-        editState={defaultEditState}
-        hasRevisionParam={false}
-      />,
+      <Harness ready schemaTypeName="post" editState={defaultEditState} hasRevisionParam={false} />,
     )
 
     await waitFor(() => {
@@ -98,7 +93,7 @@ describe('useDocumentInitialLoadTelemetry', () => {
   it('reports isNewDocument=true when editState has no draft, published, or version', async () => {
     render(
       <Harness
-        ready={true}
+        ready
         schemaTypeName="post"
         editState={{ready: true, draft: null, published: null, version: null}}
         hasRevisionParam={false}
@@ -111,14 +106,7 @@ describe('useDocumentInitialLoadTelemetry', () => {
   })
 
   it('reports hasRevisionParam=true when passed through', async () => {
-    render(
-      <Harness
-        ready={true}
-        schemaTypeName="post"
-        editState={defaultEditState}
-        hasRevisionParam={true}
-      />,
-    )
+    render(<Harness ready schemaTypeName="post" editState={defaultEditState} hasRevisionParam />)
     await waitFor(() => {
       expect(telemetryLog).toHaveBeenCalledTimes(1)
     })
@@ -128,7 +116,7 @@ describe('useDocumentInitialLoadTelemetry', () => {
   it('falls back to documentTypeName="unknown" when schema is not resolved', async () => {
     render(
       <Harness
-        ready={true}
+        ready
         schemaTypeName={undefined}
         editState={defaultEditState}
         hasRevisionParam={false}
@@ -142,12 +130,7 @@ describe('useDocumentInitialLoadTelemetry', () => {
 
   it('fires only once across re-renders after ready', async () => {
     const {rerender} = render(
-      <Harness
-        ready={true}
-        schemaTypeName="post"
-        editState={defaultEditState}
-        hasRevisionParam={false}
-      />,
+      <Harness ready schemaTypeName="post" editState={defaultEditState} hasRevisionParam={false} />,
     )
     await waitFor(() => {
       expect(telemetryLog).toHaveBeenCalledTimes(1)
@@ -155,12 +138,7 @@ describe('useDocumentInitialLoadTelemetry', () => {
 
     // Re-render with same props → no refire.
     rerender(
-      <Harness
-        ready={true}
-        schemaTypeName="post"
-        editState={defaultEditState}
-        hasRevisionParam={false}
-      />,
+      <Harness ready schemaTypeName="post" editState={defaultEditState} hasRevisionParam={false} />,
     )
     // Re-render flipping ready back and forth → still no refire.
     rerender(
@@ -172,12 +150,7 @@ describe('useDocumentInitialLoadTelemetry', () => {
       />,
     )
     rerender(
-      <Harness
-        ready={true}
-        schemaTypeName="post"
-        editState={defaultEditState}
-        hasRevisionParam={false}
-      />,
+      <Harness ready schemaTypeName="post" editState={defaultEditState} hasRevisionParam={false} />,
     )
 
     await new Promise((resolve) => setTimeout(resolve, 0))
