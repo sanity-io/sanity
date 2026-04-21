@@ -22,6 +22,7 @@ import {
 import {type AuthConfig} from '../../../config'
 import {isStaging} from '../../../environment/isStaging'
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
+import {CorsOriginError} from '../cors'
 import {createBroadcastState} from './createBroadcastState'
 import {createBroadcastStorage} from './createBroadcastStorage'
 import {createLoginComponent} from './createLoginComponent'
@@ -58,6 +59,7 @@ export interface AuthStoreOptions extends AuthConfig {
 const getCurrentUser = async (
   client: SanityClient,
   tag: string,
+  corsErrorContext: {projectId: string; isStaging: boolean},
 ): Promise<CurrentUser | undefined> => {
   try {
     const user = await client.request({
@@ -71,6 +73,23 @@ const getCurrentUser = async (
     if (err.statusCode === 401) {
       return undefined
     }
+
+    // Non-auth failure: probe /ping (which allows all origins) to distinguish
+    // a CORS misconfiguration from a generic network error. If /ping succeeds
+    // without credentials, the origin isn't allowlisted for this project —
+    // throw CorsOriginError so StudioErrorBoundary can render the dedicated
+    // CorsOriginErrorScreen with instructions.
+    const invalidCorsConfig = await client
+      .request({uri: '/ping', withCredentials: false, tag: 'cors-check'})
+      .then(
+        () => true,
+        () => false,
+      )
+
+    if (invalidCorsConfig) {
+      throw new CorsOriginError(corsErrorContext)
+    }
+
     throw err
   }
 }
@@ -191,6 +210,11 @@ export function _createAuthStore({
     hostOptions.apiHost = 'https://api.sanity.work'
   }
 
+  const corsErrorContext = {
+    projectId,
+    isStaging: Boolean(hostOptions.apiHost?.endsWith('.work')),
+  }
+
   const cookieClient = clientFactory({
     ...COMMON_CLIENT_OPTIONS,
     ...hostOptions,
@@ -232,7 +256,7 @@ export function _createAuthStore({
 
   const initial$ = of(initialWorkspaceClient).pipe(
     mergeMap(async (client): Promise<AuthState> => {
-      const currentUser = await getCurrentUser(client, 'initial')
+      const currentUser = await getCurrentUser(client, 'initial', corsErrorContext)
       return {
         client,
         authenticated: Boolean(currentUser?.id),
@@ -327,7 +351,7 @@ export function _createAuthStore({
         if (!client) {
           return {client: cookieClient, authenticated: false, currentUser: null}
         }
-        const currentUser = await getCurrentUser(client, 'update')
+        const currentUser = await getCurrentUser(client, 'update', corsErrorContext)
         return {
           client,
           authenticated: Boolean(currentUser?.id),
