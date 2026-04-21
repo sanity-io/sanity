@@ -1,6 +1,6 @@
 import {useBoundaryElement} from '@sanity/ui'
 
-import {AUTOCOMPLETE_POPOVER_BOUNDARY} from './referenceAutocompletePopoverBoundary'
+import {AUTOCOMPLETE_POPOVER_BOUNDARY} from '../inputs/referenceAutocompletePopoverBoundary'
 
 /**
  * Pick the right Floating UI boundary for a reference autocomplete popover.

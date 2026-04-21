@@ -12,7 +12,7 @@ import {styled} from 'styled-components'
 
 import {Popover} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
-import {useReferenceAutocompletePopoverBoundary} from '../useReferenceAutocompletePopoverBoundary'
+import {useReferenceAutocompletePopoverBoundary} from '../../hooks/useReferenceAutocompletePopoverBoundary'
 
 const StyledPopover = styled(Popover)`
   & > div {
