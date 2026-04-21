@@ -25,11 +25,14 @@ async function searchAndSelectReference(
 
     // Wait briefly for results to appear
     try {
-      await expect(page.locator(optionSelector)).toBeVisible({
+      const option = page.locator(optionSelector)
+      await expect(option).toBeVisible({
         timeout: 10_000,
       })
-      // Option found, click it
-      await page.locator(optionSelector).click()
+      // Option found — scroll into view and click. Use force:true to bypass
+      // intermittent pointer-event interception by the navbar on chromium.
+      await option.scrollIntoViewIfNeeded()
+      await option.click({force: true})
       return
     } catch {
       // Option not found yet — retry the search.
@@ -42,8 +45,10 @@ async function searchAndSelectReference(
   // Final attempt — let it throw the regular assertion error if it still fails
   await autocomplete.click()
   await autocomplete.fill(searchText)
-  await expect(page.locator(optionSelector)).toBeVisible({timeout: 10_000})
-  await page.locator(optionSelector).click()
+  const option = page.locator(optionSelector)
+  await expect(option).toBeVisible({timeout: 10_000})
+  await option.scrollIntoViewIfNeeded()
+  await option.click({force: true})
 }
 
 withDefaultClient((context) => {
