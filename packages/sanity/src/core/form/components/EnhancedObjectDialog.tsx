@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
-import {Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
+import {BoundaryElementProvider, Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -180,28 +180,30 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         scrollElement={documentScrollElement}
         containerElement={containerElement}
       >
-        <StyledDialog
-          $isHidden={!isTop}
-          __unstable_autoFocus={isTop ? props.autofocus : false}
-          contentRef={setDocumentScrollElement}
-          data-testid="nested-object-dialog"
-          header={
-            <DialogBreadcrumbs
-              currentPath={currentPath}
-              onNavigate={navigateTo}
-              onClose={handleStackedDialogClose}
-            />
-          }
-          id={dialogId}
-          onClose={handleStackedDialogClose}
-          onDragEnter={onDragEnter}
-          onDrop={onDrop}
-          width={width}
-          animate={!shouldDisableAnimation}
-          onClickOutside={handleCompleteDialogClose}
-        >
-          {contents}
-        </StyledDialog>
+        <BoundaryElementProvider element={documentScrollElement}>
+          <StyledDialog
+            $isHidden={!isTop}
+            __unstable_autoFocus={isTop ? props.autofocus : false}
+            contentRef={setDocumentScrollElement}
+            data-testid="nested-object-dialog"
+            header={
+              <DialogBreadcrumbs
+                currentPath={currentPath}
+                onNavigate={navigateTo}
+                onClose={handleStackedDialogClose}
+              />
+            }
+            id={dialogId}
+            onClose={handleStackedDialogClose}
+            onDragEnter={onDragEnter}
+            onDrop={onDrop}
+            width={width}
+            animate={!shouldDisableAnimation}
+            onClickOutside={handleCompleteDialogClose}
+          >
+            {contents}
+          </StyledDialog>
+        </BoundaryElementProvider>
       </VirtualizerScrollInstanceProvider>
     )
   }
@@ -211,15 +213,17 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
       scrollElement={documentScrollElement}
       containerElement={containerElement}
     >
-      <PopoverDialog
-        header={header}
-        onClose={handleStackedDialogClose}
-        width={width}
-        containerRef={setDocumentScrollElement}
-        referenceElement={props.legacy_referenceElement}
-      >
-        {contents}
-      </PopoverDialog>
+      <BoundaryElementProvider element={documentScrollElement}>
+        <PopoverDialog
+          header={header}
+          onClose={handleStackedDialogClose}
+          width={width}
+          containerRef={setDocumentScrollElement}
+          referenceElement={props.legacy_referenceElement}
+        >
+          {contents}
+        </PopoverDialog>
+      </BoundaryElementProvider>
     </VirtualizerScrollInstanceProvider>
   )
 }
