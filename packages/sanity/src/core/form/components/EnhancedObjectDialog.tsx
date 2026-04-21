@@ -180,30 +180,30 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         scrollElement={documentScrollElement}
         containerElement={containerElement}
       >
-        <BoundaryElementProvider element={documentScrollElement}>
-          <StyledDialog
-            $isHidden={!isTop}
-            __unstable_autoFocus={isTop ? props.autofocus : false}
-            contentRef={setDocumentScrollElement}
-            data-testid="nested-object-dialog"
-            header={
-              <DialogBreadcrumbs
-                currentPath={currentPath}
-                onNavigate={navigateTo}
-                onClose={handleStackedDialogClose}
-              />
-            }
-            id={dialogId}
-            onClose={handleStackedDialogClose}
-            onDragEnter={onDragEnter}
-            onDrop={onDrop}
-            width={width}
-            animate={!shouldDisableAnimation}
-            onClickOutside={handleCompleteDialogClose}
-          >
+        <StyledDialog
+          $isHidden={!isTop}
+          __unstable_autoFocus={isTop ? props.autofocus : false}
+          contentRef={setDocumentScrollElement}
+          data-testid="nested-object-dialog"
+          header={
+            <DialogBreadcrumbs
+              currentPath={currentPath}
+              onNavigate={navigateTo}
+              onClose={handleStackedDialogClose}
+            />
+          }
+          id={dialogId}
+          onClose={handleStackedDialogClose}
+          onDragEnter={onDragEnter}
+          onDrop={onDrop}
+          width={width}
+          animate={!shouldDisableAnimation}
+          onClickOutside={handleCompleteDialogClose}
+        >
+          <BoundaryElementProvider element={documentScrollElement}>
             {contents}
-          </StyledDialog>
-        </BoundaryElementProvider>
+          </BoundaryElementProvider>
+        </StyledDialog>
       </VirtualizerScrollInstanceProvider>
     )
   }

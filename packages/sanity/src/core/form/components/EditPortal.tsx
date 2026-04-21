@@ -56,22 +56,22 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
         scrollElement={documentScrollElement}
         containerElement={containerElement}
       >
-        <BoundaryElementProvider element={documentScrollElement}>
-          <Dialog
-            __unstable_autoFocus={props.autofocus}
-            contentRef={setDocumentScrollElement}
-            data-testid="edit-portal-dialog"
-            header={header}
-            id={props.id || ''}
-            onClickOutside={onClose}
-            onClose={onClose}
-            onDragEnter={onDragEnter}
-            onDrop={onDrop}
-            width={width}
-          >
+        <Dialog
+          __unstable_autoFocus={props.autofocus}
+          contentRef={setDocumentScrollElement}
+          data-testid="edit-portal-dialog"
+          header={header}
+          id={props.id || ''}
+          onClickOutside={onClose}
+          onClose={onClose}
+          onDragEnter={onDragEnter}
+          onDrop={onDrop}
+          width={width}
+        >
+          <BoundaryElementProvider element={documentScrollElement}>
             {contents}
-          </Dialog>
-        </BoundaryElementProvider>
+          </BoundaryElementProvider>
+        </Dialog>
       </VirtualizerScrollInstanceProvider>
     )
   }
