@@ -1,6 +1,9 @@
 import {render, waitFor} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import type {StudioReadyMeasured as StudioReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
+import type {StudioLayoutComponent as StudioLayoutComponentType} from '../StudioLayout'
+
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
 }))
@@ -16,9 +19,11 @@ vi.mock('../networkCheck/useNetworkProtocolCheck', () => ({
 vi.mock('../studio-components-hooks', () => ({
   useLayoutComponent: vi.fn(),
   useNavbarComponent: () => () => <div data-testid="navbar" />,
-  useActiveToolLayoutComponent: () => ({activeTool}: {activeTool: {name: string}}) => (
-    <div data-testid={`active-tool-${activeTool.name}`} />
-  ),
+  useActiveToolLayoutComponent:
+    () =>
+    ({activeTool}: {activeTool: {name: string}}) => (
+      <div data-testid={`active-tool-${activeTool.name}`} />
+    ),
 }))
 
 vi.mock('sanity/router', () => ({
@@ -79,8 +84,8 @@ const makeTool = (name: string): Tool => ({
 
 describe('StudioLayoutComponent telemetry', () => {
   let telemetryLog: ReturnType<typeof vi.fn>
-  let StudioLayoutComponent: typeof import('../StudioLayout').StudioLayoutComponent
-  let StudioReadyMeasured: typeof import('../__telemetry__/bootstrap.telemetry').StudioReadyMeasured
+  let StudioLayoutComponent: typeof StudioLayoutComponentType
+  let StudioReadyMeasured: typeof StudioReadyMeasuredType
 
   beforeEach(async () => {
     // Reset module graph so the module-level `studioReadyFired` guard
@@ -108,8 +113,7 @@ describe('StudioLayoutComponent telemetry', () => {
     })
     const {useRouterState} = await import('sanity/router')
     ;(useRouterState as ReturnType<typeof vi.fn>).mockImplementation(
-      (selector: (state: {tool?: string}) => unknown) =>
-        selector({tool: activeToolName}),
+      (selector: (state: {tool?: string}) => unknown) => selector({tool: activeToolName}),
     )
   }
 

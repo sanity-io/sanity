@@ -2,6 +2,9 @@ import {render, waitFor} from '@testing-library/react'
 import {Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import type {StudioAuthReadyMeasured as StudioAuthReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
+import type {AuthBoundary as AuthBoundaryType} from '../AuthBoundary'
+
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
 }))
@@ -29,8 +32,8 @@ type AuthState = {
 describe('AuthBoundary telemetry', () => {
   let authState$: Subject<AuthState>
   let telemetryLog: ReturnType<typeof vi.fn>
-  let AuthBoundary: typeof import('../AuthBoundary').AuthBoundary
-  let StudioAuthReadyMeasured: typeof import('../__telemetry__/bootstrap.telemetry').StudioAuthReadyMeasured
+  let AuthBoundary: typeof AuthBoundaryType
+  let StudioAuthReadyMeasured: typeof StudioAuthReadyMeasuredType
 
   beforeEach(async () => {
     // Reset the module graph so the module-level `authReadyFired` guard
@@ -56,9 +59,7 @@ describe('AuthBoundary telemetry', () => {
     })
 
     ;({AuthBoundary} = await import('../AuthBoundary'))
-    ;({StudioAuthReadyMeasured} = await import(
-      '../__telemetry__/bootstrap.telemetry'
-    ))
+    ;({StudioAuthReadyMeasured} = await import('../__telemetry__/bootstrap.telemetry'))
   })
 
   afterEach(() => {
