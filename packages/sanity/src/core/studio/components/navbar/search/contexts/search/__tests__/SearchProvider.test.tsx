@@ -6,7 +6,11 @@
  * `SearchProvider` depends on is mocked with minimal stubs.
  */
 import {render} from '@testing-library/react'
+import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+
+import type {SearchProvider as SearchProviderType} from '../SearchProvider'
+import type {GlobalSearchLatencyMeasured as GlobalSearchLatencyMeasuredType} from '../../__telemetry__'
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
@@ -43,7 +47,7 @@ vi.mock('../../../../../source', () => ({
 
 vi.mock('sanity/_singletons', () => ({
   SearchContext: {
-    Provider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+    Provider: ({children}: {children: ReactNode}) => children,
   },
 }))
 
@@ -107,8 +111,8 @@ interface SearchCallbacks {
 describe('SearchProvider — Global Search Latency Measured', () => {
   let telemetryLog: ReturnType<typeof vi.fn>
   let capturedCallbacks: SearchCallbacks | null
-  let SearchProvider: typeof import('../SearchProvider').SearchProvider
-  let GlobalSearchLatencyMeasured: typeof import('../../__telemetry__/search.telemetry').GlobalSearchLatencyMeasured
+  let SearchProvider: typeof SearchProviderType
+  let GlobalSearchLatencyMeasured: typeof GlobalSearchLatencyMeasuredType
 
   beforeEach(async () => {
     vi.resetModules()
@@ -124,7 +128,7 @@ describe('SearchProvider — Global Search Latency Measured', () => {
       return {handleSearch: vi.fn(), searchState: {terms: {query: '', types: []}}}
     })
     ;({SearchProvider} = await import('../SearchProvider'))
-    ;({GlobalSearchLatencyMeasured} = await import('../../__telemetry__/search.telemetry'))
+    ;({GlobalSearchLatencyMeasured} = await import('../../__telemetry__'))
   })
 
   afterEach(() => {

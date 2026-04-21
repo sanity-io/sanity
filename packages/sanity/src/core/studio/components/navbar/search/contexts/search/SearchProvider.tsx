@@ -107,9 +107,13 @@ export function SearchProvider({
 
   // Keep a live ref to the current terms so that the `onStart` callback
   // (fired synchronously inside the `useSearch` observable pipeline) can
-  // snapshot the *current* search's terms, not the previous one.
+  // snapshot the *current* search's terms, not the previous one. The ref
+  // is updated in an effect rather than during render, because React
+  // Compiler forbids writes to refs during render.
   const currentTermsRef = useRef<SearchTerms | RecentSearch>(terms)
-  currentTermsRef.current = terms
+  useEffect(() => {
+    currentTermsRef.current = terms
+  }, [terms])
 
   const handleSearchComplete = useCallback(
     (searchResult: {hits: SearchHit[]; nextCursor: string | undefined}) => {
