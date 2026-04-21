@@ -228,15 +228,17 @@ describe('sendFeedbackToSentry', () => {
     const attachment = {filename: 'screenshot.png', data: new Uint8Array([1, 2, 3])}
     await sendFeedbackToSentry(makePayload({attachments: [attachment]}))
 
-    const [, hint] = mockCaptureEvent.mock.calls[0]
+    const [event, hint] = mockCaptureEvent.mock.calls[0]
     expect(hint.attachments).toEqual([attachment])
+    expect(event.tags.hasAttachment).toBe('true')
   })
 
   it('passes empty hint when no attachments', async () => {
     await sendFeedbackToSentry(makePayload({attachments: undefined}))
 
-    const [, hint] = mockCaptureEvent.mock.calls[0]
+    const [event, hint] = mockCaptureEvent.mock.calls[0]
     expect(hint).toEqual({})
+    expect(event.tags.hasAttachment).toBe('false')
   })
 
   it('handles missing name and email gracefully with consent', async () => {

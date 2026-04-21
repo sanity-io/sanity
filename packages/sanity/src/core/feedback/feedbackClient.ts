@@ -62,6 +62,7 @@ export async function sendFeedbackToSentry(payload: FeedbackPayload): Promise<st
 
   const {userId: _userId, ...safeTags} = tags
   const eventTags = hasTelemetryConsent ? tags : safeTags
+  const hasAttachments = attachments?.length
 
   const feedbackEvent = {
     contexts: {
@@ -81,12 +82,13 @@ export async function sendFeedbackToSentry(payload: FeedbackPayload): Promise<st
       ...(shareName ? {contactName: name ?? ''} : {}),
       ...(shareEmail ? {contactEmail: email ?? ''} : {}),
       telemetryConsent,
+      hasAttachments,
       type: 'feedback',
       source,
     },
   }
 
-  const hint = attachments?.length ? {attachments} : {}
+  const hint = hasAttachments ? {attachments} : {}
 
   const eventId = scope.captureEvent(feedbackEvent, hint)
 
