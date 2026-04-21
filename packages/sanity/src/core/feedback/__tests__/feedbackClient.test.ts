@@ -230,7 +230,7 @@ describe('sendFeedbackToSentry', () => {
 
     const [event, hint] = mockCaptureEvent.mock.calls[0]
     expect(hint.attachments).toEqual([attachment])
-    expect(event.tags.hasAttachment).toBe('true')
+    expect(event.tags.hasAttachments).toBe(true)
   })
 
   it('passes empty hint when no attachments', async () => {
@@ -238,7 +238,7 @@ describe('sendFeedbackToSentry', () => {
 
     const [event, hint] = mockCaptureEvent.mock.calls[0]
     expect(hint).toEqual({})
-    expect(event.tags.hasAttachment).toBe('false')
+    expect(event.tags.hasAttachments).toBe(false)
   })
 
   it('handles missing name and email gracefully with consent', async () => {

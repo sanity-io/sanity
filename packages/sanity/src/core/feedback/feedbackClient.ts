@@ -62,7 +62,7 @@ export async function sendFeedbackToSentry(payload: FeedbackPayload): Promise<st
 
   const {userId: _userId, ...safeTags} = tags
   const eventTags = hasTelemetryConsent ? tags : safeTags
-  const hasAttachments = attachments?.length
+  const hasAttachments = !!attachments?.length
 
   const feedbackEvent = {
     contexts: {
