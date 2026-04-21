@@ -9,8 +9,9 @@ import {render} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import type {GlobalSearchLatencyMeasured as GlobalSearchLatencyMeasuredType} from '../../__telemetry__'
-import type {SearchProvider as SearchProviderType} from '../SearchProvider'
+// eslint-disable-next-line import/extensions -- `.telemetry.ts` is the @sanity/telemetry file-naming convention
+import {type GlobalSearchLatencyMeasured as GlobalSearchLatencyMeasuredType} from '../../__telemetry__/search.telemetry'
+import {type SearchProvider as SearchProviderType} from '../SearchProvider'
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
@@ -128,7 +129,7 @@ describe('SearchProvider — Global Search Latency Measured', () => {
       return {handleSearch: vi.fn(), searchState: {terms: {query: '', types: []}}}
     })
     ;({SearchProvider} = await import('../SearchProvider'))
-    ;({GlobalSearchLatencyMeasured} = await import('../../__telemetry__'))
+    ;({GlobalSearchLatencyMeasured} = await import('../../__telemetry__/search.telemetry'))
   })
 
   afterEach(() => {

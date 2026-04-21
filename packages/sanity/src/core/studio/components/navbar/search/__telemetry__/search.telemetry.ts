@@ -24,8 +24,8 @@ export const RecentSearchClicked = defineEvent({
  * event covers the global omnisearch only.
  *
  * Sampled at most every 30 seconds to bound the event volume when
- * users type quickly (matches existing `Document Pair Load Time
- * Measured` and `Document List Load Time Measured`).
+ * users type quickly (matches existing `Document Pair Load Time Measured`
+ * and `Document List Load Time Measured`).
  */
 export interface GlobalSearchLatencyMeasuredData {
   /** ms from onStart to onComplete/onError */
