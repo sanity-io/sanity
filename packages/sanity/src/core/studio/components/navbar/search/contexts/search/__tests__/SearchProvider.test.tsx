@@ -9,8 +9,8 @@ import {render} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import type {SearchProvider as SearchProviderType} from '../SearchProvider'
 import type {GlobalSearchLatencyMeasured as GlobalSearchLatencyMeasuredType} from '../../__telemetry__'
+import type {SearchProvider as SearchProviderType} from '../SearchProvider'
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
