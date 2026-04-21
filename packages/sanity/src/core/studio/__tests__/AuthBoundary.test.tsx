@@ -35,6 +35,14 @@ describe('AuthBoundary telemetry', () => {
   let AuthBoundary: typeof AuthBoundaryType
   let StudioAuthReadyMeasured: typeof StudioAuthReadyMeasuredType
 
+  // AuthBoundary.tsx logs two events per auth-state transition:
+  // - AuthBoundaryResolved (shipped in #12529) — mount-baseline timing
+  // - StudioAuthReadyMeasured (this PR) — navigation-start baseline, one-shot
+  // We filter mock calls to the event under test so the assertions are robust
+  // to any adjacent telemetry that may land alongside.
+  const studioAuthReadyCalls = () =>
+    telemetryLog.mock.calls.filter((args) => args[0] === StudioAuthReadyMeasured)
+
   beforeEach(async () => {
     // Reset the module graph so the module-level `authReadyFired` guard
     // starts fresh each test.
@@ -73,8 +81,9 @@ describe('AuthBoundary telemetry', () => {
       </AuthBoundary>,
     )
 
-    // No auth state emitted yet — we should still be loading.
-    expect(telemetryLog).not.toHaveBeenCalled()
+    // No auth state emitted yet — we should still be loading, so neither
+    // auth telemetry event should have fired.
+    expect(studioAuthReadyCalls()).toHaveLength(0)
   })
 
   it('fires Studio Auth Ready Measured once with authState=logged-in', async () => {
@@ -90,7 +99,7 @@ describe('AuthBoundary telemetry', () => {
     })
 
     await waitFor(() => {
-      expect(telemetryLog).toHaveBeenCalledTimes(1)
+      expect(studioAuthReadyCalls()).toHaveLength(1)
     })
 
     expect(telemetryLog).toHaveBeenCalledWith(
@@ -100,7 +109,7 @@ describe('AuthBoundary telemetry', () => {
         durationMs: expect.any(Number),
       }),
     )
-    expect(telemetryLog.mock.calls[0][1].durationMs).toBeGreaterThanOrEqual(0)
+    expect(studioAuthReadyCalls()[0][1].durationMs).toBeGreaterThanOrEqual(0)
   })
 
   it('fires Studio Auth Ready Measured with authState=logged-out', async () => {
@@ -113,7 +122,7 @@ describe('AuthBoundary telemetry', () => {
     authState$.next({authenticated: false, currentUser: null})
 
     await waitFor(() => {
-      expect(telemetryLog).toHaveBeenCalledTimes(1)
+      expect(studioAuthReadyCalls()).toHaveLength(1)
     })
 
     expect(telemetryLog).toHaveBeenCalledWith(
@@ -135,7 +144,7 @@ describe('AuthBoundary telemetry', () => {
     })
 
     await waitFor(() => {
-      expect(telemetryLog).toHaveBeenCalledTimes(1)
+      expect(studioAuthReadyCalls()).toHaveLength(1)
     })
 
     expect(telemetryLog).toHaveBeenCalledWith(
@@ -157,10 +166,11 @@ describe('AuthBoundary telemetry', () => {
     })
 
     await waitFor(() => {
-      expect(telemetryLog).toHaveBeenCalledTimes(1)
+      expect(studioAuthReadyCalls()).toHaveLength(1)
     })
 
-    // Subsequent auth state changes must not produce additional events.
+    // Subsequent auth state changes must not produce additional
+    // StudioAuthReadyMeasured events (module-level one-shot guard).
     authState$.next({authenticated: false, currentUser: null})
     authState$.next({
       authenticated: true,
@@ -170,6 +180,6 @@ describe('AuthBoundary telemetry', () => {
     // Give any pending effects a chance to run.
     await new Promise((resolve) => setTimeout(resolve, 0))
 
-    expect(telemetryLog).toHaveBeenCalledTimes(1)
+    expect(studioAuthReadyCalls()).toHaveLength(1)
   })
 })
