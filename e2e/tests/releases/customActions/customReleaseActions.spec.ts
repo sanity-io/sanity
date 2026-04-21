@@ -102,11 +102,12 @@ test.describe('Custom Release Actions', () => {
   const createCustomActionTests = (contextName: string, setupPath: string, isOverview: boolean) => {
     test.describe(contextName, () => {
       test.beforeEach(async ({page}) => {
-        // Navigate and wait for the page to fully load.
-        // Use waitForLoadState instead of racing page.goto against waitForResponse,
-        // which can miss the response if it fires before the listener is attached.
+        // Navigate. The `page.goto` wrapper in studio-test.ts already defaults to
+        // `waitUntil: 'domcontentloaded'`. We do NOT waitForLoadState('networkidle')
+        // because the studio maintains open subscriptions / live queries and never
+        // reaches networkidle under CI load — that would always hit the 60s test
+        // timeout. The visibility assertions below are the real readiness gate.
         await page.goto(setupPath)
-        await page.waitForLoadState('networkidle')
 
         // Wait for page-specific elements to be ready
         if (isOverview) {
