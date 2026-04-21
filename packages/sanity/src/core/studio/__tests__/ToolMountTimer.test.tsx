@@ -2,8 +2,8 @@ import {render, waitFor} from '@testing-library/react'
 import {type MutableRefObject} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import type {ToolMountTimer as ToolMountTimerType} from '../ToolMountTimer'
 import type {StudioToolMountTimeMeasured as StudioToolMountTimeMeasuredType} from '../__telemetry__/tools.telemetry'
+import type {ToolMountTimer as ToolMountTimerType} from '../ToolMountTimer'
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
@@ -94,9 +94,7 @@ describe('ToolMountTimer', () => {
     })
     unmount()
 
-    render(
-      <ToolMountTimer toolName="vision" t0Ref={makeRef<number | null>(performance.now())} />,
-    )
+    render(<ToolMountTimer toolName="vision" t0Ref={makeRef<number | null>(performance.now())} />)
     await waitFor(() => {
       expect(telemetryLog).toHaveBeenCalledTimes(2)
     })

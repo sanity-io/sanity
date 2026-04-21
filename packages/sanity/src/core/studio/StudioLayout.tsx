@@ -202,6 +202,7 @@ export function StudioLayoutComponent() {
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
+        {/* eslint-disable-next-line react-hooks/static-components -- Navbar comes from useNavbarComponent(), stable per workspace */}
         <Navbar />
       </NavbarContext.Provider>
       {isLegacyDeskRedirect && <RedirectingScreen />}
@@ -229,6 +230,7 @@ export function StudioLayoutComponent() {
               }
             >
               <Suspense fallback={<LoadingBlock showText />}>
+                {/* eslint-disable-next-line react-hooks/static-components -- ActiveToolLayout comes from useActiveToolLayoutComponent(), stable per workspace */}
                 <ActiveToolLayout activeTool={activeTool} />
                 <ToolMountTimer toolName={activeTool.name} t0Ref={toolMountT0Ref} />
               </Suspense>
