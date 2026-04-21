@@ -9,8 +9,7 @@ import {render} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-// eslint-disable-next-line import/extensions -- `.telemetry.ts` is the @sanity/telemetry file-naming convention
-import {type GlobalSearchLatencyMeasured as GlobalSearchLatencyMeasuredType} from '../../__telemetry__/search.telemetry'
+import {type GlobalSearchLatencyMeasured as GlobalSearchLatencyMeasuredType} from '../../../__telemetry__/search.telemetry'
 import {type SearchProvider as SearchProviderType} from '../SearchProvider'
 
 vi.mock('@sanity/telemetry/react', () => ({
@@ -20,23 +19,23 @@ vi.mock('@sanity/telemetry/react', () => ({
 // Capture the last props passed to `useSearch`, so tests can invoke the
 // `onStart`/`onComplete`/`onError` callbacks synchronously.
 const useSearchMock = vi.fn()
-vi.mock('../../hooks/useSearch', () => ({
+vi.mock('../../../hooks/useSearch', () => ({
   useSearch: (props: unknown) => useSearchMock(props),
 }))
 
-vi.mock('../../../../../../hooks', () => ({
+vi.mock('../../../../../../../hooks', () => ({
   useSchema: () => ({get: () => undefined}),
 }))
 
-vi.mock('../../../../../../releases/store/useActiveReleases', () => ({
+vi.mock('../../../../../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: () => ({data: []}),
 }))
 
-vi.mock('../../../../../../store', () => ({
+vi.mock('../../../../../../../store', () => ({
   useCurrentUser: () => ({id: 'user-1'}),
 }))
 
-vi.mock('../../../../../source', () => ({
+vi.mock('../../../../../../source', () => ({
   useSource: () => ({
     search: {
       operators: [],
@@ -52,35 +51,35 @@ vi.mock('sanity/_singletons', () => ({
   },
 }))
 
-vi.mock('../../definitions/fields', () => ({
+vi.mock('../../../definitions/fields', () => ({
   createFieldDefinitions: () => [],
   createFieldDefinitionDictionary: () => ({}),
 }))
 
-vi.mock('../../definitions/filters', () => ({
+vi.mock('../../../definitions/filters', () => ({
   createFilterDefinitionDictionary: () => ({}),
 }))
 
-vi.mock('../../definitions/operators', () => ({
+vi.mock('../../../definitions/operators', () => ({
   createOperatorDefinitionDictionary: () => ({}),
 }))
 
 // Default to "searchable" — tests can override if needed.
 const hasSearchableTermsMock = vi.fn().mockReturnValue(true)
-vi.mock('../../utils/hasSearchableTerms', () => ({
+vi.mock('../../../utils/hasSearchableTerms', () => ({
   hasSearchableTerms: (args: unknown) => hasSearchableTermsMock(args),
 }))
 
-vi.mock('../../utils/filterUtils', () => ({
+vi.mock('../../../utils/filterUtils', () => ({
   validateFilter: () => true,
 }))
 
-vi.mock('../../utils/isRecentSearchTerms', () => ({
+vi.mock('../../../utils/isRecentSearchTerms', () => ({
   isRecentSearchTerms: () => false,
 }))
 
 // Initial reducer state — just enough for SearchProvider to initialise.
-vi.mock('./reducer', () => ({
+vi.mock('../reducer', () => ({
   initialSearchState: () => ({
     currentUser: {id: 'user-1'},
     cursor: null,
@@ -129,7 +128,7 @@ describe('SearchProvider — Global Search Latency Measured', () => {
       return {handleSearch: vi.fn(), searchState: {terms: {query: '', types: []}}}
     })
     ;({SearchProvider} = await import('../SearchProvider'))
-    ;({GlobalSearchLatencyMeasured} = await import('../../__telemetry__/search.telemetry'))
+    ;({GlobalSearchLatencyMeasured} = await import('../../../__telemetry__/search.telemetry'))
   })
 
   afterEach(() => {
