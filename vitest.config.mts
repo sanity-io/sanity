@@ -5,12 +5,6 @@ import {defineConfig} from 'vitest/config'
 
 export default defineConfig({
   test: {
-    // Disable console interception to prevent `EnvironmentTeardownError: Closing rpc while
-    // "onUserConsoleLog" was pending` when async emissions (e.g. RxJS catchError logs) fire
-    // after a test's body resolves but before the worker finishes teardown.
-    // Tradeoff: console.log output from tests goes directly to stdout/stderr instead of
-    // through the vitest reporter, but reliability beats tidy output here.
-    disableConsoleIntercept: true,
     forceRerunTriggers: [
       '**/package.json/**',
       '**/vitest.config.*/**',
