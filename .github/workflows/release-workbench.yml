@@ -1,0 +1,79 @@
+name: Release @workbench
+
+# No automatic triggers. Manual-only via the Actions tab (workflow_dispatch),
+# which requires this file to exist on the default branch to show up there.
+# To re-arm auto-publishing, add for example:
+#   push:
+#     branches: [SDK-1017]
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read # for checkout
+
+jobs:
+  release-workbench:
+    concurrency:
+      group: release_workbench
+      cancel-in-progress: true
+
+    permissions:
+      id-token: write # to enable use of OIDC for npm provenance
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-svc.npm
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: generate-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      # Publish packages to npm under the `workbench` tag on new commits
+      # to the SDK-1017 branch.
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Bump workbench versions
+        run: pnpm --silent release-notes bump --preid=workbench
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
+        env:
+          NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+
+      - name: Check valid token
+        run: |
+          WHOAMI_RESULT=$(npm whoami)
+          echo "npm whoami result: $WHOAMI_RESULT"
+          if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
+            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            exit 1
+          fi
+          echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
+
+      - name: Publish packages to npm
+        run: pnpm -r publish --tag workbench --no-git-checks
+        env:
+          NPM_CONFIG_PROVENANCE: true
+
+      - name: Summary
+        run: |
+          echo "## Workbench Release" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**dist-tag:** \`workbench\`" >> $GITHUB_STEP_SUMMARY
+          echo "**branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Install with:" >> $GITHUB_STEP_SUMMARY
+          echo '```sh' >> $GITHUB_STEP_SUMMARY
+          echo "npm install sanity@workbench" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
