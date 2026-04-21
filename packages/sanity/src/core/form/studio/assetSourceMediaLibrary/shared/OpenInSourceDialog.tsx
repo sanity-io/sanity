@@ -2,11 +2,9 @@ import {type PluginPayload} from '@sanity/media-library-types'
 import {type Asset} from '@sanity/types'
 import {Box, Card, Flex, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo} from 'react'
-import {encodeJsonParams} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {useWorkspace} from '../../../../studio'
 import {useAuthType} from '../hooks/useAuthType'
 import {usePluginFrameUrl} from '../hooks/usePluginFrameUrl'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
@@ -31,7 +29,6 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
   const theme = useTheme()
   const {t} = useTranslation()
   const {dark} = theme.sanity.color
-  const workspace = useWorkspace()
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
   const appHost = mediaLibraryConfig.__internal.hosts.app
   const authType = useAuthType()
@@ -39,6 +36,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
   // Get the asset ID from the source property
   const sourceAssetId = asset.source?.id
 
+  /** No `pickerPersistenceKey`: avoid sharing the asset picker's Huey localStorage partition. */
   const params = useMemo<PluginPayload>(
     () => ({
       scheme: dark ? 'dark' : 'light',
@@ -46,14 +44,8 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
       disableNavigation: true,
       selectAssetTypes: [],
       selectionType: 'single',
-      pickerPersistenceKey:
-        encodeJsonParams({
-          projectId: workspace.projectId,
-          dataset: workspace.dataset,
-          workspaceName: workspace.name,
-        }) || undefined,
     }),
-    [dark, authType, workspace.projectId, workspace.dataset, workspace.name],
+    [dark, authType],
   )
 
   const iframeUrl = usePluginFrameUrl(`/assets/${sourceAssetId}`, params)
