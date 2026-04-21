@@ -154,6 +154,11 @@ export default defineType({
       name: 'publicationYearAscNullsLast',
       by: [{field: 'publicationYear', direction: 'asc', nulls: 'last'}],
     },
+    {
+      title: 'By non-existent field',
+      name: 'nonExistentField',
+      by: [{field: 'nonExistentField', direction: 'desc'}],
+    },
   ],
   preview: {
     select: {

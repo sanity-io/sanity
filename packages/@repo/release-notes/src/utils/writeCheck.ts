@@ -1,5 +1,5 @@
 import {REPO} from '../constants'
-import {octokit} from '../octokit'
+import {getOctokit} from '../octokit'
 import {type PullRequest} from '../types'
 
 export function writeCheck({
@@ -17,7 +17,7 @@ export function writeCheck({
     // Release PR should always be mergeable
     releasePr.number === currentPrNumber
 
-  return octokit.checks.create({
+  return getOctokit().checks.create({
     ...REPO,
     // eslint-disable-next-line camelcase
     external_id: 'release-pr-status-check',

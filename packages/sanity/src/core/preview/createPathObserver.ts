@@ -2,7 +2,7 @@ import {type StackablePerspective} from '@sanity/client'
 import {isCrossDatasetReference, isReference} from '@sanity/types'
 import uniq from 'lodash-es/uniq.js'
 import {type Observable, of as observableOf} from 'rxjs'
-import {switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, switchMap} from 'rxjs/operators'
 
 import {isRecord} from '../util'
 import {type ApiConfig, type FieldName, type Previewable, type PreviewPath} from './types'
@@ -71,6 +71,7 @@ function observePaths(
       : apiConfig
 
     return observeFields(id, nextHeads, refApiConfig, perspective).pipe(
+      distinctUntilChanged((prev, curr) => prev?._rev === curr?._rev),
       switchMap((snapshot) => {
         if (snapshot === null) {
           return observableOf(null)

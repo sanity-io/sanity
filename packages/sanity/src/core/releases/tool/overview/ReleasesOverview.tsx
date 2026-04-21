@@ -102,21 +102,10 @@ export function ReleasesOverview() {
   const navigateRef = useRef(router.navigate)
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
 
-  const [cardinalityView, setCardinalityView] = useState<CardinalityView>(
-    getInitialCardinalityView({router, isScheduledDraftsEnabled, isReleasesEnabled}),
+  const cardinalityView = useMemo(
+    () => getInitialCardinalityView({router, isScheduledDraftsEnabled, isReleasesEnabled})(),
+    [router, isScheduledDraftsEnabled, isReleasesEnabled],
   )
-
-  const viewFromUrl = useMemo(
-    (): CardinalityView =>
-      new URLSearchParams(router.state._searchParams).get('view') === 'drafts'
-        ? 'drafts'
-        : 'releases',
-    [router.state._searchParams],
-  )
-
-  if (viewFromUrl !== cardinalityView) {
-    setCardinalityView(viewFromUrl)
-  }
 
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
@@ -249,8 +238,12 @@ export function ReleasesOverview() {
   )
 
   const handleCardinalityViewChange = useCallback(
-    (view: CardinalityView) => () => setCardinalityView(view),
-    [],
+    (view: CardinalityView) => () => {
+      router.navigate({
+        _searchParams: buildReleasesSearchParams(releaseFilterDate, releaseGroupMode, view),
+      })
+    },
+    [router, releaseFilterDate, releaseGroupMode],
   )
 
   const handleSelectFilterDate = useCallback(
@@ -277,7 +270,7 @@ export function ReleasesOverview() {
     navigateRef.current = router.navigate
   })
 
-  // Sync local state to URL when user interacts with filters
+  // Sync filter/group state to URL, preserving the current cardinality view
   useEffect(() => {
     navigateRef.current({
       _searchParams: buildReleasesSearchParams(

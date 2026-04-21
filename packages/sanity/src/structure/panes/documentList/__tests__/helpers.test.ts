@@ -2,7 +2,12 @@ import {Schema} from '@sanity/schema'
 import {type ObjectSchemaType} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
-import {applyOrderingFunctions, fieldExtendsType, findStaticTypesInFilter} from '../helpers'
+import {
+  applyOrderingFunctions,
+  fieldExtendsType,
+  findStaticTypesInFilter,
+  validateSortOrder,
+} from '../helpers'
 
 const mockSchema = Schema.compile({
   name: 'default',
@@ -31,6 +36,24 @@ const mockSchema = Schema.compile({
     {
       name: 'aliasedDateTime',
       type: 'datetime',
+    },
+    {
+      name: 'author',
+      title: 'Author',
+      type: 'document',
+      fields: [
+        {name: 'name', type: 'string'},
+        {name: 'bestFriend', type: 'reference', to: [{type: 'author'}]},
+      ],
+    },
+    {
+      name: 'book',
+      title: 'Book',
+      type: 'document',
+      fields: [
+        {name: 'title', type: 'string'},
+        {name: 'author', type: 'reference', to: [{type: 'author'}]},
+      ],
     },
     {
       name: 'article',
@@ -165,6 +188,112 @@ describe('fieldExtendsType()', () => {
     )!
 
     expect(fieldExtendsType(field, 'number')).toBe(false)
+  })
+})
+
+describe('validateSortOrder()', () => {
+  const fallback = {by: [{field: '_updatedAt', direction: 'desc' as const}]}
+
+  test('returns sort order unchanged when custom field exists in schema', () => {
+    const sortOrder = {by: [{field: 'title', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+    expect(result).toBe(sortOrder)
+  })
+
+  test('returns fallback when custom field does not exist in schema', () => {
+    const sortOrder = {by: [{field: 'displayTitle', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+    expect(result).toBe(fallback)
+  })
+
+  test('returns fallback when any field in a multi-field sort is invalid', () => {
+    const sortOrder = {
+      by: [
+        {field: '_updatedAt', direction: 'desc' as const},
+        {field: 'nonExistentField', direction: 'asc' as const},
+      ],
+    }
+    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+    expect(result).toBe(fallback)
+  })
+
+  test('returns sort order as-is when schemaType is undefined', () => {
+    const sortOrder = {by: [{field: 'anyField', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, undefined, fallback)
+    expect(result).toBe(sortOrder)
+  })
+
+  test.each(['_id', '_type', '_rev', '_createdAt', '_updatedAt'])(
+    'accepts built-in field %s',
+    (field) => {
+      const sortOrder = {by: [{field, direction: 'asc' as const}]}
+      const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+      expect(result).toBe(sortOrder)
+    },
+  )
+
+  test('accepts valid nested field path', () => {
+    const sortOrder = {by: [{field: 'title.en', direction: 'asc' as const}]}
+    expect(validateSortOrder(sortOrder, mockSchema.get('article'), fallback)).toBe(sortOrder)
+  })
+
+  test('returns fallback for invalid nested field path', () => {
+    const sortOrder = {by: [{field: 'title.fr', direction: 'asc' as const}]}
+    expect(validateSortOrder(sortOrder, mockSchema.get('article'), fallback)).toBe(fallback)
+  })
+
+  test('cross-workspace scenario: sort order valid in one schema but not another', () => {
+    const workspaceBSchema = Schema.compile({
+      name: 'workspaceB',
+      types: [
+        {
+          name: 'page',
+          type: 'document',
+          fields: [{name: 'title', type: 'string'}],
+        },
+      ],
+    })
+
+    const sortByDisplayTitle = {
+      by: [{field: 'displayTitle', direction: 'asc' as const}],
+      extendedProjection: 'displayTitle',
+    }
+
+    const result = validateSortOrder(sortByDisplayTitle, workspaceBSchema.get('page'), fallback)
+    expect(result).toBe(fallback)
+  })
+
+  test('accepts sort order with single-target reference path', () => {
+    const sortOrder = {by: [{field: 'author.name', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, mockSchema.get('book'), fallback)
+    expect(result).toBe(sortOrder)
+  })
+
+  test('accepts sort order with deeply nested reference path', () => {
+    const sortOrder = {by: [{field: 'author.bestFriend.name', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, mockSchema.get('book'), fallback)
+    expect(result).toBe(sortOrder)
+  })
+
+  test('returns fallback when referenced field does not exist on target type', () => {
+    const sortOrder = {by: [{field: 'author.nonExistent', direction: 'asc' as const}]}
+    const result = validateSortOrder(sortOrder, mockSchema.get('book'), fallback)
+    expect(result).toBe(fallback)
+  })
+
+  test('passes through sort order with empty by array', () => {
+    const sortOrder = {by: []}
+    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+    expect(result).toBe(sortOrder)
+  })
+
+  test('preserves extendedProjection on valid sort order', () => {
+    const sortOrder = {
+      by: [{field: 'title', direction: 'asc' as const}],
+      extendedProjection: 'title',
+    }
+    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
+    expect(result).toBe(sortOrder)
   })
 })
 

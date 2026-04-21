@@ -1,7 +1,16 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, Layer, type ResponsiveWidthProps, Stack, Text, type Theme} from '@sanity/ui'
+import {
+  Box,
+  Flex,
+  Layer,
+  type ResponsiveWidthProps,
+  Stack,
+  Text,
+  type Theme,
+  usePortal,
+} from '@sanity/ui'
 import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
-import TrapFocus from 'react-focus-lock'
+import TrapFocus, {type ReactFocusLockProps} from 'react-focus-lock'
 import {css, styled} from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../ui-components'
@@ -43,6 +52,7 @@ interface PopoverDialogProps {
 /** @internal */
 export function PopoverDialog(props: PopoverDialogProps) {
   const {children, header, onClose, referenceElement, containerRef, width} = props
+  const portal = usePortal()
 
   const handleClose = useCallback(() => {
     onClose()
@@ -51,10 +61,23 @@ export function PopoverDialog(props: PopoverDialogProps) {
     referenceElement?.focus()
   }, [onClose, referenceElement])
 
+  // If the popover is opened inside a portal, trap focus only in that portal.
+  // This allows focus interactions in panes outside of the portal scope, which
+  // is especially important if the popover contains links to content that opens
+  // in a separate pane (such as a reference).
+  //
+  // Note that providing an allow list to `TrapFocus` in this way does not enable
+  // keyboard navigation outside of the `TrapFocus` component. This can be
+  // enabled using groups or shards.
+  //
+  // https://github.com/theKashey/react-focus-lock/issues/97#issuecomment-594844115
+  const trapPaneFocus: ReactFocusLockProps['whiteList'] = (interactionElement) =>
+    !portal.element || portal.element.contains(interactionElement)
+
   // @todo: these use the same styles as dialogs, can this be shared?
   const content = (
     <PopoverContainer width={width} data-testid="popover-dialog">
-      <TrapFocus autoFocus>
+      <TrapFocus autoFocus whiteList={trapPaneFocus}>
         <Stack ref={containerRef}>
           <StickyLayer>
             <Box padding={2} paddingLeft={4}>

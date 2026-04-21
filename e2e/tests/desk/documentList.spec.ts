@@ -50,7 +50,7 @@ test(`navigating document creates only one listener connection`, async ({page, b
     }
   })
 
-  await page.waitForSelector('[data-testid="structure-tool-list-pane"]')
+  await expect(page.getByTestId('structure-tool-list-pane')).toBeVisible()
 
   // Scroll the items to click into view.
   await page.evaluate(() => {

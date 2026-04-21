@@ -1,4 +1,5 @@
-import {useEffect, useMemo} from 'react'
+import isEqual from 'lodash-es/isEqual.js'
+import {useEffect, useMemo, useRef} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {
@@ -41,8 +42,15 @@ type DiffViewState =
 
 export function useDiffViewState({
   onParamsError,
+  onActiveChanged,
+  onTargetDocumentsChanged,
 }: {
   onParamsError?: (errors: DiffViewStateErrorWithInput[]) => void
+  onActiveChanged?: (previousState: DiffViewState | undefined, state: DiffViewState) => void
+  onTargetDocumentsChanged?: (
+    previousState: DiffViewState | undefined,
+    state: DiffViewState,
+  ) => void
 } = {}): DiffViewState {
   const {state: routerState} = useRouter()
   const searchParams = new URLSearchParams(routerState._searchParams)
@@ -50,6 +58,7 @@ export function useDiffViewState({
   const nextDocument = searchParams.get(DIFF_VIEW_NEXT_DOCUMENT_SEARCH_PARAMETER)
   const mode = searchParams.get(DIFF_VIEW_SEARCH_PARAMETER)
   const anyParamSet = [previousDocument, nextDocument, mode].some((param) => param !== null)
+  const previousState = useRef<DiffViewState | undefined>(undefined)
 
   const params = useMemo(
     () =>
@@ -67,17 +76,51 @@ export function useDiffViewState({
     }
   }, [anyParamSet, onParamsError, params])
 
-  if (params.result === 'error') {
-    return {
-      isActive: false,
+  const state = useMemo<DiffViewState>(() => {
+    if (params.result === 'error') {
+      return {
+        isActive: false,
+      }
     }
-  }
 
-  return {
-    state: 'ready',
-    isActive: true,
-    ...params.params,
-  }
+    return {
+      state: 'ready',
+      isActive: true,
+      ...params.params,
+    }
+  }, [params])
+
+  useEffect(() => {
+    if (
+      typeof onActiveChanged === 'function' &&
+      previousState.current?.isActive !== state.isActive
+    ) {
+      onActiveChanged(previousState.current, state)
+    }
+  }, [onActiveChanged, state])
+
+  useEffect(() => {
+    if (
+      typeof onTargetDocumentsChanged === 'function' &&
+      previousState.current?.isActive &&
+      state.isActive &&
+      !isEqual(
+        [
+          previousState?.current?.documents?.previous.id,
+          previousState?.current?.documents?.next.id,
+        ],
+        [state.documents?.previous.id, state.documents?.next.id],
+      )
+    ) {
+      onTargetDocumentsChanged(previousState.current, state)
+    }
+  }, [onTargetDocumentsChanged, state])
+
+  useEffect(() => {
+    previousState.current = state
+  }, [state])
+
+  return state
 }
 
 type DiffViewStateError =
@@ -151,4 +194,25 @@ function parseParams({
       },
     },
   } as ParamsSuccess
+}
+
+/**
+ * Given the previous and current states, determine whether the view became
+ * active (entered) or became inactive (exited).
+ *
+ * @internal
+ */
+export function selectActiveTransition(
+  previousState: Pick<DiffViewState, 'isActive'> | undefined,
+  state: Pick<DiffViewState, 'isActive'>,
+): 'entered' | 'exited' | undefined {
+  if (!previousState?.isActive && state.isActive) {
+    return 'entered'
+  }
+
+  if (previousState?.isActive && !state.isActive) {
+    return 'exited'
+  }
+
+  return undefined
 }

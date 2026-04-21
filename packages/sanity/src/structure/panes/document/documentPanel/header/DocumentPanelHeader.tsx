@@ -60,9 +60,8 @@ const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
       }
     }
 
-    ${
-      props.$showGradient &&
-      css`
+    ${props.$showGradient &&
+    css`
       &::after {
         content: '';
         display: block;
@@ -75,8 +74,7 @@ const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
         transition: 'opacity 300ms ease-out';
         pointer-events: none;
       }
-    `
-    }
+    `}
   `
 })
 

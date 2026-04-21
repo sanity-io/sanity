@@ -79,6 +79,42 @@ describe('publish', () => {
       expect(client.$log).toMatchSnapshot()
     })
 
+    it('uses the version id as draftId when publishing a version', () => {
+      const client = createMockSanityClient()
+
+      publish.execute({
+        client,
+        idPair: {
+          draftId: 'drafts.my-id',
+          publishedId: 'my-id',
+          versionId: 'versions.release-id.my-id',
+        },
+        snapshots: {
+          draft: {
+            _createdAt: '2021-09-14T22:48:02.303Z',
+            _rev: 'draftRev',
+            _id: 'drafts.my-id',
+            _type: 'example',
+            _updatedAt: '2021-09-14T22:48:02.303Z',
+          },
+          version: {
+            _createdAt: '2021-09-14T22:48:02.303Z',
+            _rev: 'versionRev',
+            _id: 'versions.release-id.my-id',
+            _type: 'example',
+            _updatedAt: '2021-09-14T22:48:02.303Z',
+          },
+        },
+      } as unknown as OperationArgs)
+
+      expect(client.$log).toMatchSnapshot()
+
+      // @ts-expect-error - $log is not typed
+      expect(client.$log.observable.action[0].actions.draftId).toBe('versions.release-id.my-id')
+      // @ts-expect-error - $log is not typed
+      expect(client.$log.observable.action[0].actions.publishedId).toBe('my-id')
+    })
+
     it('calls createOrReplace with _revision_lock_pseudo_field_ if there is an already published document', () => {
       const client = createMockSanityClient()
 

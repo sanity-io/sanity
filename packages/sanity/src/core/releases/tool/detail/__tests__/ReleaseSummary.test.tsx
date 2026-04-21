@@ -242,6 +242,16 @@ describe('ReleaseSummary', () => {
       within(searchedFirstDocument).getByText('Second document')
     })
 
+    it('retains search input focus when search yields no results', async () => {
+      await prerenderTest()
+
+      const searchInput = screen.getByPlaceholderText('Search documents')
+      await userEvent.type(searchInput, 'nonexistent query')
+
+      expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
+      expect(searchInput).toHaveFocus()
+    })
+
     it('Allows for adding a document to an active release', async () => {
       await prerenderTest()
 

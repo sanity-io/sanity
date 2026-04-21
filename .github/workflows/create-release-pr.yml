@@ -11,7 +11,6 @@ permissions:
 jobs:
   create-or-update-pr:
     # this runs in main, and we want to skip running it when release PRs are merged
-    # format of the commit message is specified in lerna.json
     if: >
       !startsWith(github.event.head_commit.message, 'chore(release): publish')
     runs-on: ubuntu-latest
@@ -52,36 +51,25 @@ jobs:
         # store the current version and use as base version when generating changelog documents
         id: get-base-version
         run: |
-          echo "base-version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
+          echo "base-version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
 
       - name: Update version
-        run: |
-          npx lerna version \
-            --force-publish \
-            --no-git-tag-version \
-            --conventional-commits \
-            --yes
-        env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: pnpm --silent release-notes bump
 
-      - name: Fix lerna.json EOF formatting
-        # lerna version formats lerna.json removing EOF line
-        # this is needed to pass linter
-        run: pnpm oxfmt lerna.json
+      - name: Get version
+        id: release-as
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: Write CHANGELOG.md files
+        run: pnpm --silent release-notes write-changelog-files --version=${{ steps.release-as.outputs.version }}
 
       - name: Sync workspace lockfile
         run: pnpm install --lockfile-only
 
       - name: Get version commit message
-        # generate the commit message that would be created (determined by lerna.json)
         id: version-commit
         run: |
-          VERSION=$(cat lerna.json | jq -r .version)
-          echo "message=chore(release): publish v$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Get version
-        id: release-as
-        run: echo "version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
+          echo "message=chore(release): publish v${{ steps.release-as.outputs.version }}" >> $GITHUB_OUTPUT
 
       - name: Prepare content release with release note document
         id: release-notes
@@ -113,7 +101,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Create or update PR
-        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         id: create-pull-request
         with:
           token: ${{ steps.app-token.outputs.token }}

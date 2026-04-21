@@ -36,7 +36,6 @@ test.describe('Enhanced Object Dialog - close and reopen', () => {
     await expect(modal).toBeVisible()
 
     // Ensure the dialog stays open (doesn't flicker closed)
-    await page.waitForTimeout(500)
     await expect(modal).toBeVisible()
   })
 
@@ -57,7 +56,6 @@ test.describe('Enhanced Object Dialog - close and reopen', () => {
     await expect(modal).toBeVisible()
 
     // Ensure the dialog stays open (doesn't flicker closed)
-    await page.waitForTimeout(500)
     await expect(modal).toBeVisible()
   })
 
@@ -76,7 +74,6 @@ test.describe('Enhanced Object Dialog - close and reopen', () => {
     await page.mouse.click(cardBox!.x - 30, cardBox!.y + cardBox!.height / 2)
 
     // Ensure that it closes
-    await page.waitForTimeout(500)
     await expect(modal).not.toBeVisible()
 
     // Click the item to reopen

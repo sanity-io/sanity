@@ -2,12 +2,25 @@
 // If deleting the exports, for example, then please use this command to regenerate the tests
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
-import type {default as _default, Rule, Schema, SchemaValidationResult} from '@sanity/schema'
+import type {
+  default as _default,
+  DEFAULT_ANNOTATIONS,
+  DEFAULT_DECORATORS,
+  Rule,
+  Schema,
+  SchemaValidationResult,
+} from '@sanity/schema'
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/schema', () => {
   test('default', () => {
     expectTypeOf<_default>().not.toBeNever()
+  })
+  test('DEFAULT_ANNOTATIONS', () => {
+    expectTypeOf<typeof DEFAULT_ANNOTATIONS>().not.toBeNever()
+  })
+  test('DEFAULT_DECORATORS', () => {
+    expectTypeOf<typeof DEFAULT_DECORATORS>().not.toBeNever()
   })
   test('Rule', () => {
     expectTypeOf<typeof Rule>().not.toBeNever()

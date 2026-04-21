@@ -49,13 +49,13 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
 
@@ -89,7 +89,7 @@ jobs:
 
       - name: Upload TypeDoc artifact
         if: steps.generate.outputs.success == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sanity-typedoc-${{ github.sha }}
           path: packages/sanity/docs/sanity-typedoc-output.json

@@ -1,7 +1,11 @@
 import {type ComponentType, type ReactNode} from 'react'
 
 import {type PreviewConfig} from '../preview'
-import {type InitialValueProperty, type SchemaValidationValue} from '../types'
+import {
+  type AutocompleteString,
+  type InitialValueProperty,
+  type SchemaValidationValue,
+} from '../types'
 import {
   type ArrayDefinition,
   type BlockDefinition,
@@ -83,7 +87,7 @@ export type IntrinsicTypeName = IntrinsicDefinitions[keyof IntrinsicDefinitions]
  */
 export type SchemaTypeDefinition<TType extends IntrinsicTypeName = IntrinsicTypeName> =
   | IntrinsicDefinitions[IntrinsicTypeName]
-  | TypeAliasDefinition<string, TType>
+  | TypeAliasDefinition<AutocompleteString, TType>
 
 /**
  * Represents a reference to another type registered top-level in your schema.
@@ -161,4 +165,5 @@ export type InlineFieldDefinition = {
 export type FieldDefinition<
   TType extends IntrinsicTypeName = IntrinsicTypeName,
   TAlias extends IntrinsicTypeName | undefined = undefined,
-> = (InlineFieldDefinition[TType] | TypeAliasDefinition<string, TAlias>) & FieldDefinitionBase
+> = (InlineFieldDefinition[TType] | TypeAliasDefinition<AutocompleteString, TAlias>) &
+  FieldDefinitionBase

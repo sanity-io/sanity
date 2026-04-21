@@ -1,6 +1,6 @@
 {
   "name": "@repo/bundle-manager",
-  "version": "5.18.0",
+  "version": "5.21.0",
   "private": true,
   "description": "Internal tool for building and uploading bundles to modules.sanity-cdn.com",
   "license": "MIT",
@@ -28,7 +28,7 @@
   "dependencies": {
     "@google-cloud/storage": "^7.17.3",
     "@repo/utils": "workspace:*",
-    "lodash-es": "^4.17.22",
+    "lodash-es": "^4.18.1",
     "read-package-up": "^11.0.0",
     "semver": "^7.7.2",
     "yargs": "^17.7.2"

@@ -1,5 +1,6 @@
 import {type DocumentActionsResolver} from 'sanity'
 
+import {useCreateAnonymousVersion} from './actions/createAnonymousVersion'
 import {createCustomDuplicateAction} from './actions/createCustomDuplicateAction'
 import {
   createCustomPublishAction,
@@ -37,6 +38,9 @@ export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaTyp
 
   if (schemaType === 'removeRestoreActionTest') {
     return prev.filter(({action}) => action !== 'restore')
+  }
+  if (schemaType === 'book') {
+    return prev.concat(useCreateAnonymousVersion)
   }
 
   return prev

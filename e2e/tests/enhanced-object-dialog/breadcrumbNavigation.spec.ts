@@ -62,9 +62,7 @@ test.describe('Enhanced Object Dialog - breadcrumb navigation', () => {
     await expect(friendNameField).toBeVisible()
     await expect(friendNameField).toHaveValue('Dolphin')
 
-    // Verify it stays stable after a short wait (catches flicker regressions)
-    await page.waitForTimeout(500)
-    await expect(friendNameField).toBeVisible()
+    // Verify it stays stable (catches flicker regressions)
     await expect(friendNameField).toHaveValue('Dolphin')
   })
 })

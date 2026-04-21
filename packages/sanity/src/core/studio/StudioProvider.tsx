@@ -19,7 +19,6 @@ import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
 import {Z_OFFSET} from './constants'
 import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
 import {LiveManifestRegisterProvider} from './manifest'
-import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
 import {
   AuthenticateScreen,
@@ -34,7 +33,7 @@ import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
-import {WorkspacesProvider} from './workspaces'
+import {VisibleWorkspacesProvider, WorkspacesProvider} from './workspaces'
 
 /**
  * @hidden
@@ -80,7 +79,6 @@ export function StudioProvider({
           >
             <LocaleProvider>
               <PackageVersionStatusProvider>
-                <MaybeEnableErrorReporting errorReporter={errorReporter} />
                 <ResourceCacheProvider>
                   <StudioTelemetryProvider>
                     <AppIdCacheProvider>
@@ -115,27 +113,29 @@ export function StudioProvider({
                 basePath={basePath}
                 LoadingComponent={LoadingBlock}
               >
-                <ActiveWorkspaceMatcher
-                  unstable_history={history}
-                  NotFoundComponent={NotFoundScreen}
-                  LoadingComponent={LoadingBlock}
-                >
-                  <StudioThemeProvider>
-                    <UserColorManagerProvider>
-                      {noAuthBoundary ? (
-                        _children
-                      ) : (
-                        <AuthBoundary
-                          LoadingComponent={LoadingBlock}
-                          AuthenticateComponent={AuthenticateScreen}
-                          NotAuthenticatedComponent={NotAuthenticatedScreen}
-                        >
-                          {_children}
-                        </AuthBoundary>
-                      )}
-                    </UserColorManagerProvider>
-                  </StudioThemeProvider>
-                </ActiveWorkspaceMatcher>
+                <VisibleWorkspacesProvider>
+                  <ActiveWorkspaceMatcher
+                    unstable_history={history}
+                    NotFoundComponent={NotFoundScreen}
+                    LoadingComponent={LoadingBlock}
+                  >
+                    <StudioThemeProvider>
+                      <UserColorManagerProvider>
+                        {noAuthBoundary ? (
+                          _children
+                        ) : (
+                          <AuthBoundary
+                            LoadingComponent={LoadingBlock}
+                            AuthenticateComponent={AuthenticateScreen}
+                            NotAuthenticatedComponent={NotAuthenticatedScreen}
+                          >
+                            {_children}
+                          </AuthBoundary>
+                        )}
+                      </UserColorManagerProvider>
+                    </StudioThemeProvider>
+                  </ActiveWorkspaceMatcher>
+                </VisibleWorkspacesProvider>
               </WorkspacesProvider>
             </StudioRootErrorHandler>
           </StudioErrorBoundary>
@@ -157,6 +157,7 @@ function ensureRefractorLanguages() {
       import('refractor/json'),
       import('refractor/jsx'),
       import('refractor/typescript'),
+      import('@sanity/prism-groq').then((m) => ({default: m.refractorGroq})),
     ])
       .then((languages) => languages.forEach((lang) => registerLanguage(lang.default)))
       .catch((error) =>

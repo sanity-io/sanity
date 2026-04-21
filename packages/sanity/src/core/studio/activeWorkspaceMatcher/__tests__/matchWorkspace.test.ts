@@ -73,6 +73,45 @@ describe('matchWorkspace', () => {
     expect(resultTwo.pathname).toBe(foo.basePath)
   })
 
+  it('redirects to the first visible workspace when static hidden workspaces are pre-filtered', () => {
+    const editor = {name: 'editor', basePath: '/common/editor'}
+
+    // Simulate pre-filtering: admin workspace has hidden: true and was removed before matching
+    const result = matchWorkspace({
+      workspaces: [editor],
+      pathname: '/',
+    })
+
+    assert(result.type === 'redirect')
+    expect(result.pathname).toBe(editor.basePath)
+  })
+
+  it('returns not-found when navigating to a path that was filtered out due to hidden', () => {
+    const editor = {name: 'editor', basePath: '/common/editor'}
+
+    // Simulate pre-filtering: admin workspace at /common/admin removed, user navigates to its path
+    const result = matchWorkspace({
+      workspaces: [editor],
+      pathname: '/common/admin',
+    })
+
+    expect(result.type).toBe('not-found')
+  })
+
+  it('matches the correct workspace when hidden workspaces are removed from the list', () => {
+    const editor = {name: 'editor', basePath: '/common/editor'}
+    const viewer = {name: 'viewer', basePath: '/common/viewer'}
+
+    // Simulate admin being hidden - only editor and viewer remain
+    const result = matchWorkspace({
+      workspaces: [editor, viewer],
+      pathname: '/common/viewer',
+    })
+
+    assert(result.type === 'match')
+    expect(result.workspace).toBe(viewer)
+  })
+
   it('results in not-found match if the incoming `pathname` is only a substring of the workspace (edge case)', () => {
     const foo = {name: 'foo', basePath: '/common/foo'}
     const bar = {name: 'bar', basePath: '/common/bar'}

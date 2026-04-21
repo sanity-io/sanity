@@ -3,6 +3,8 @@ import {type CurrentUser} from '@sanity/types'
 import {type ComponentType} from 'react'
 import {type Observable} from 'rxjs'
 
+import {type LoginMethod} from '../../../config'
+
 /**
  * The interface used by the Studio that produces a `SanityClient` and
  * `CurrentUser` that gets passed to the resulting `Workspace`s and `Source`s.
@@ -39,13 +41,13 @@ export interface AuthStore {
    * out. The implementation is expected to remove all credentials both locally
    * and on the server.
    */
-  logout?: () => void
+  logout?: () => Promise<void>
   /**
    * Custom auth stores can implement a function that is designated to run when
    * the Studio loads (e.g. to trade a session ID for a token in cookie-less
    * mode). Within the Studio, this is called within the `AuthBoundary`.
    */
-  handleCallbackUrl?: () => Promise<void>
+  handleCallbackUrl?: () => Promise<HandleCallbackResult>
 }
 
 /**
@@ -91,3 +93,29 @@ export type LoginComponentProps =
       /** @deprecated use redirectPath instead */
       basePath?: string
     }
+
+/**
+ * Result returned from `handleCallbackUrl` describing what happened during
+ * the auth callback flow. Used for telemetry and diagnostics.
+ *
+ * @internal
+ */
+export interface HandleCallbackResult {
+  /** The login method configured for this auth store (e.g. `'cookie'` or `'token'`). */
+  loginMethod: LoginMethod
+  /**
+   * Which auth flow was taken:
+   * - `'already-authenticated'`: User was already authenticated; no exchange needed.
+   * - `'cookie-auth'`: Attempted cookie-based authentication via `/users/me`.
+   * - `'token-exchange'`: Traded a session ID for a persistent token.
+   */
+  flow: 'already-authenticated' | 'cookie-auth' | 'token-exchange'
+  /** Whether the auth flow completed successfully. */
+  success: boolean
+  /** Total wall-clock time for the callback handling, in milliseconds. */
+  durationMs: number
+  /** Time spent on the session-to-token exchange specifically. Only set for `'token-exchange'` flow. */
+  tokenExchangeDurationMs?: number
+  /** Human-readable reason for failure. Only set when `success` is `false`. */
+  failureReason?: string
+}

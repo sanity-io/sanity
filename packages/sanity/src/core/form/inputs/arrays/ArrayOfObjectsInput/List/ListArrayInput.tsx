@@ -5,7 +5,12 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
 import {useTranslation} from '../../../../../i18n'
-import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {useItemComponent} from '../../../../form-components-hooks/componentHooks'
+import {
+  type ArrayOfObjectsInputProps,
+  type ObjectItem,
+  type ObjectItemProps,
+} from '../../../../types'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
@@ -34,12 +39,19 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderField,
     renderInlineBlock,
     renderInput,
-    renderItem,
     renderPreview,
     schemaType,
     value = EMPTY,
   } = props
   const {t} = useTranslation()
+
+  // Resolves locally to avoid the deep nesting preview bug (#4780) caused by
+  // props.renderItem accumulating callback wrapping through ancestor components.
+  const ItemComponent = useItemComponent()
+  const renderItem = useCallback(
+    (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => <ItemComponent {...itemProps} />,
+    [ItemComponent],
+  )
 
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)

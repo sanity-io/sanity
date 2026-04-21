@@ -1,7 +1,7 @@
 import pMap from 'p-map'
 
 import {REPO} from '../constants'
-import {octokit} from '../octokit'
+import {getOctokit} from '../octokit'
 import {getReleasePr} from '../utils/getReleasePR'
 import {writeCheck} from '../utils/writeCheck'
 
@@ -9,7 +9,7 @@ export async function writePrChecks() {
   const releasePr = await getReleasePr()
 
   // get the 100 most recently updated PRs
-  const {data: prs} = await octokit.pulls.list({
+  const {data: prs} = await getOctokit().pulls.list({
     ...REPO,
     // eslint-disable-next-line camelcase
     per_page: 100,

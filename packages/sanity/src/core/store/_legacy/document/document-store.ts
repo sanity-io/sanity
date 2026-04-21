@@ -142,7 +142,13 @@ export function createDocumentStore({
   // for things like validations
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  const {onSyncErrorRecovery, onReportLatency, onSlowCommit} = extraOptions
+  const {
+    onSyncErrorRecovery,
+    onReportLatency,
+    onSlowCommit,
+    onReportMutationPerformance,
+    onDocumentRebase,
+  } = extraOptions
   const ctx = {
     client,
     getClient,
@@ -162,6 +168,8 @@ export function createDocumentStore({
         onSyncErrorRecovery,
         onReportLatency,
         onSlowCommit,
+        onReportMutationPerformance,
+        onDocumentRebase,
       })
     },
     initialValue(opts, context) {
@@ -220,10 +228,21 @@ export function createDocumentStore({
               result.args.idPair.publishedId === publishedId && result.args.typeName === type,
           ),
           map((result): OperationSuccess | OperationError => {
-            const {operationName, idPair: documentIds} = result.args
+            const {operationName, idPair} = result.args
             return result.type === 'success'
-              ? {type: 'success', op: operationName, id: documentIds.publishedId}
-              : {type: 'error', op: operationName, id: documentIds.publishedId, error: result.error}
+              ? {
+                  type: 'success',
+                  op: operationName,
+                  id: idPair.publishedId,
+                  idPair,
+                }
+              : {
+                  type: 'error',
+                  op: operationName,
+                  id: idPair.publishedId,
+                  error: result.error,
+                  idPair,
+                }
           }),
         )
       },

@@ -24,6 +24,7 @@ import {selectUpstreamVersion} from '../../store/_legacy/document/selectUpstream
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isPublishedId} from '../../util/draftUtils'
+import {FormGutterCustomProperties} from '../components/FormGutterCustomProperties'
 import {type FormState} from '../store'
 
 interface PropsEnabled extends PropsWithChildren {
@@ -32,7 +33,6 @@ interface PropsEnabled extends PropsWithChildren {
   upstreamEditState: EditStateFor
   editState: EditStateFor
   subjectId: string
-  displayedId: string
   schemaType: ObjectSchemaType
 }
 
@@ -50,7 +50,7 @@ export const DivergencesProvider: ComponentType<Props> = (props) => {
     return <DivergencesProviderEnabled {...props} />
   }
 
-  return <DocumentDivergencesContext.Provider value={{enabled: false}} {...props} />
+  return <DivergencesProviderDisabled {...props} />
 }
 
 const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
@@ -59,7 +59,6 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
   editState,
   subjectId,
   schemaType,
-  displayedId,
   children,
 }) => {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -68,7 +67,7 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
   const upstreamId = upstreamHead?._id
   const hasUpstreamVersion = typeof upstreamId !== 'undefined'
 
-  const subject = isPublishedId(displayedId)
+  const subject = isPublishedId(subjectId)
     ? editState.published
     : (editState.version ?? editState.draft)
 
@@ -108,7 +107,15 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
 
   return (
     <DocumentDivergencesContext.Provider value={{enabled: true, ...divergenceNavigator}}>
-      {children}
+      <FormGutterCustomProperties $enabled>{children}</FormGutterCustomProperties>
+    </DocumentDivergencesContext.Provider>
+  )
+}
+
+const DivergencesProviderDisabled: ComponentType<PropsWithChildren> = ({children}) => {
+  return (
+    <DocumentDivergencesContext.Provider value={{enabled: false}}>
+      <FormGutterCustomProperties $enabled={false}>{children}</FormGutterCustomProperties>
     </DocumentDivergencesContext.Provider>
   )
 }

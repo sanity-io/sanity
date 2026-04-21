@@ -59,7 +59,15 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
   }
 
   return (
-    <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
+    <Card
+      data-testid="studio-error-screen"
+      data-error="Schema errors"
+      height="fill"
+      overflow="auto"
+      paddingY={[4, 5, 6, 7]}
+      paddingX={4}
+      sizing="border"
+    >
       <Container width={1}>
         <Stack space={5}>
           <Flex justify="space-between" align="center" gap={2}>

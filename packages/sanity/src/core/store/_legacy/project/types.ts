@@ -28,6 +28,7 @@ export interface ProjectData {
   createdAt: string
   updatedAt: string
   organizationId: string
+  organization?: ProjectOrganizationData | null
   members: {
     id: string
     createdAt: string
@@ -81,6 +82,25 @@ export type ProjectGrants = Record<
 export interface ProjectStore {
   get: () => Observable<ProjectData>
   getDatasets: () => Observable<ProjectDatasetData[]>
+  getOrganizationData: () => Observable<ProjectOrganizationData | null>
   getOrganizationId: () => Observable<string | null>
   getGrants: () => Observable<ProjectGrants>
+}
+
+export interface ProjectOrganizationData {
+  requestAccessStatus: string
+  id: string
+  name: string
+  slug: string | null
+  telemetryConsentStatus: string
+  defaultRoleName: string
+  domains: string[]
+  dashboardStatus: string
+  mediaLibraryStatus: string
+  aiFeaturesStatus: string
+  oauthAppsStatus: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+  createdByUserId: string
 }

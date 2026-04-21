@@ -69,7 +69,7 @@ jobs:
         # TODO: Fix webkit caching when downloading from cache
         # for some reason it doesn't work without installing again
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps ${{ matrix.project }}
 
       - name: Build packages
         # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
@@ -81,7 +81,7 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=8192
         run: pnpm --filter sanity test:ct --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-ct-report-${{ matrix.project }}-${{ matrix.shardIndex }}
@@ -92,7 +92,7 @@ jobs:
     name: "E2E CT Status"
     runs-on: ubuntu-latest
     needs: [playwright-ct-test]
-    if: always()
+    if: ${{ !cancelled() }}
     steps:
       - name: Check E2E CT test matrix status
         run: |
@@ -103,15 +103,15 @@ jobs:
           fi
 
   merge-reports:
-    if: always() && needs.install.outputs.has_code_changes == 'true'
-    needs: [install, playwright-ct-test]
-    runs-on: ubuntu-8core
+    needs: [playwright-ct-test]
+    if: "!cancelled() && needs.playwright-ct-test.result != 'skipped'"
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: playwright-ct-report-*
           merge-multiple: true
@@ -120,7 +120,7 @@ jobs:
       - name: Merge into HTML Report
         run: npx playwright merge-reports --reporter json ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report >> ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report/playwright-ct-test-results.json
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: full-playwright-ct-report

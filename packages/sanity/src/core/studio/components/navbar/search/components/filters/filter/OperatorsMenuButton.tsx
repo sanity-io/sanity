@@ -91,8 +91,8 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
             })}
           </Menu>
         }
-        placement="bottom-start"
         popover={{
+          placement: 'bottom-start',
           constrainSize: true,
           portal: false,
           radius: 2,
