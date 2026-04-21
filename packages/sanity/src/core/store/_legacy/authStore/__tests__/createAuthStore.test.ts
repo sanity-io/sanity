@@ -489,6 +489,89 @@ describe('createAuthStore: cross-tab sync', () => {
       expect(token).toBe('persisted-token')
     })
 
+    it('does not flash unauthenticated when a sibling workspace for the same project emits unauthenticated', async () => {
+      // Regression test for the "flash of login screen" bug observed when
+      // multiple workspaces for the same project mount concurrently.
+      //
+      // The auth-test-studio defines many workspaces per project (cookie,
+      // token, dual, sso-*). `useWorkspaceAuthStates` subscribes to every
+      // workspace's auth.state on mount. Each store's authState$ has a
+      // `tap` that calls cookieAuthState.update({authenticated}). Because
+      // cookieAuthState's BroadcastChannel is keyed only by projectId, every
+      // workspace for the same project shares it — even within the same page.
+      //
+      // When a sibling workspace (e.g., token mode with no stored token)
+      // emits `authenticated: false` during startup, it broadcasts
+      // `{authenticated: false}` to the shared channel. The cookie workspace
+      // receives it via cookieAuthChanged$, which flows into workspaceClient$
+      // and produces a spurious unauthenticated emission from authState$ —
+      // flashing the login screen.
+      //
+      // Expected: the cookie store stays authenticated throughout.
+      //
+      // Note: uses a unique projectId per test run so BroadcastChannels from
+      // prior tests (which stay alive for the duration of the test file)
+      // can't echo messages back and confuse the assertion.
+      const isolatedProjectId = `flash-test-${Math.random().toString(36).slice(2)}`
+
+      const cookieMock = createMockClientFactory()
+      // Cookie workspace is authenticated (valid session cookie)
+      cookieMock.setAuthenticated(true)
+
+      const tokenMock = createMockClientFactory()
+      // Token workspace is unauthenticated (no stored token)
+      tokenMock.setAuthenticated(false)
+
+      // Record every emission from the cookie store
+      const cookieEmissions: Array<{authenticated: boolean}> = []
+
+      const cookieStore = _createAuthStore({
+        projectId: isolatedProjectId,
+        dataset: DATASET,
+        loginMethod: 'cookie',
+        clientFactory: cookieMock.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
+      })
+
+      const sub = cookieStore.state.subscribe((state) => {
+        cookieEmissions.push({authenticated: state.authenticated})
+      })
+
+      // Mount a sibling workspace for the SAME project after the cookie
+      // store is already running. This simulates useWorkspaceAuthStates
+      // subscribing to every workspace's auth state.
+      const tokenStore = _createAuthStore({
+        projectId: isolatedProjectId,
+        dataset: DATASET,
+        loginMethod: 'token',
+        clientFactory: tokenMock.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
+      })
+      // Subscribe so its tap() runs and broadcasts to cookieAuthState
+      const tokenSub = tokenStore.state.subscribe()
+
+      // Wait for both to settle
+      await waitForState(cookieStore, (s) => s.authenticated)
+      await waitForState(tokenStore, (s) => !s.authenticated)
+
+      // Give the microtask queue a chance to flush any racing broadcasts
+      await new Promise((resolve) => setTimeout(resolve, 50))
+
+      sub.unsubscribe()
+      tokenSub.unsubscribe()
+
+      // The cookie store should NEVER have emitted authenticated: false.
+      // If it did, that's the flash regression — a sibling workspace
+      // broadcast `authenticated: false` via the shared cookieAuthState
+      // channel and the cookie store mirrored it.
+      expect(
+        cookieEmissions.every((e) => e.authenticated === true),
+        `Cookie store emitted unauthenticated state(s): ${JSON.stringify(cookieEmissions)}`,
+      ).toBe(true)
+    })
+
     it('throws CorsOriginError when /users/me fails for a non-auth reason but /ping succeeds', async () => {
       // Previously, getCurrentUser probed /ping to detect CORS misconfig and threw
       // CorsOriginError, which StudioErrorBoundary renders as CorsOriginErrorScreen.

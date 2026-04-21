@@ -7,18 +7,7 @@ import {
 import {type CurrentUser} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import memoize from 'lodash-es/memoize.js'
-import {
-  combineLatest,
-  concat,
-  EMPTY,
-  firstValueFrom,
-  fromEvent,
-  merge,
-  of,
-  ReplaySubject,
-  skip,
-  timer,
-} from 'rxjs'
+import {concat, EMPTY, firstValueFrom, fromEvent, merge, of, ReplaySubject, skip, timer} from 'rxjs'
 import {
   distinctUntilChanged,
   filter,
@@ -307,20 +296,18 @@ export function _createAuthStore({
     distinctUntilChanged(isEqual),
   )
 
-  const workspaceClient$ = combineLatest([
-    tokenClient$,
-    dualClient$,
-    cookieAuthChanged$.pipe(map(({authenticated}) => (authenticated ? cookieClient : undefined))),
-  ]).pipe(
-    map(([tokenClient, dualClient, _cookieClient]) => {
-      return loginMethod === 'dual'
-        ? dualClient
-        : loginMethod === 'cookie'
-          ? _cookieClient
-          : tokenClient
-    }),
-    distinctUntilChanged(),
+  const cookieWorkspaceClient$ = cookieAuthChanged$.pipe(
+    map(({authenticated}) => (authenticated ? cookieClient : undefined)),
   )
+
+  // Only include inputs that are relevant for the current login method.
+  const workspaceClient$ = (
+    loginMethod === 'dual'
+      ? dualClient$
+      : loginMethod === 'cookie'
+        ? cookieWorkspaceClient$
+        : tokenClient$
+  ).pipe(distinctUntilChanged())
 
   // For dual mode, workspaceClient$ always emits the same dualClient reference,
   // so cookie auth state changes alone won't pass distinctUntilChanged above.
@@ -350,8 +337,13 @@ export function _createAuthStore({
     ),
   ).pipe(
     tap((authState) => {
-      // sync with other tabs
-      cookieAuthState.update({authenticated: authState.authenticated})
+      // Sync cookie state across tabs — and across other workspaces in the
+      // same page that share this project's cookieAuthState BroadcastChannel.
+      // Only workspaces that actually interact with the cookie should emit
+      // here.
+      if (loginMethod === 'cookie' || loginMethod === 'dual') {
+        cookieAuthState.update({authenticated: authState.authenticated})
+      }
     }),
     share({connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(1000)}),
   )
