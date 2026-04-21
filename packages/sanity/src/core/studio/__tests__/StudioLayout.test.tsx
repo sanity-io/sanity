@@ -1,8 +1,16 @@
+import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, waitFor} from '@testing-library/react'
+import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type StudioReadyMeasured as StudioReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
 import {type StudioLayoutComponent as StudioLayoutComponentType} from '../StudioLayout'
+
+// StudioLayout renders `@sanity/ui` components that require a `ThemeProvider`
+// via context. Wrap every render in a minimal studio theme.
+const wrapper = ({children}: {children: ReactNode}) => (
+  <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
+)
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
@@ -120,7 +128,7 @@ describe('StudioLayoutComponent telemetry', () => {
   it('fires Studio Ready Measured once when active tool resolves', async () => {
     await setupWorkspace([makeTool('structure'), makeTool('vision')], 'structure')
 
-    render(<StudioLayoutComponent />)
+    render(<StudioLayoutComponent />, {wrapper})
 
     await waitFor(() => {
       expect(telemetryLog).toHaveBeenCalledTimes(1)
@@ -140,7 +148,7 @@ describe('StudioLayoutComponent telemetry', () => {
   it('does not fire Studio Ready Measured when no active tool is resolved', async () => {
     await setupWorkspace([makeTool('structure')], undefined)
 
-    render(<StudioLayoutComponent />)
+    render(<StudioLayoutComponent />, {wrapper})
 
     // Give effects a chance to run.
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -151,7 +159,7 @@ describe('StudioLayoutComponent telemetry', () => {
   it('fires Studio Ready Measured only once across re-renders', async () => {
     await setupWorkspace([makeTool('structure'), makeTool('vision')], 'structure')
 
-    const {rerender} = render(<StudioLayoutComponent />)
+    const {rerender} = render(<StudioLayoutComponent />, {wrapper})
 
     await waitFor(() => {
       expect(telemetryLog).toHaveBeenCalledTimes(1)
