@@ -182,7 +182,9 @@ export function _createAuthStore({
     (currentTokenValue) => {
       if (!isCookielessCompatibleLoginMethod(loginMethod)) {
         // note: this will also clear any existing state
-        return undefined
+        // note2: if there is another workspace for the same project using token auth, merely initializing this
+        // store will log you out. Need to find a better way to deal with this
+        // return undefined
       }
       const hashToken = consumeHashToken()
       // use hash token if it exists, assume authenticated
