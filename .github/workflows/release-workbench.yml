@@ -58,8 +58,8 @@ jobs:
           fi
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
-      - name: Publish packages to npm (dry run)
-        run: pnpm -r publish --tag workbench --no-git-checks --dry-run
+      - name: Publish packages to npm
+        run: pnpm -r publish --tag workbench --no-git-checks
         env:
           NPM_CONFIG_PROVENANCE: true
 
