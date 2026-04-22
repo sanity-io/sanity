@@ -1,12 +1,10 @@
 name: Release @workbench
 
-# No automatic triggers. Manual-only via the Actions tab (workflow_dispatch),
-# which requires this file to exist on the default branch to show up there.
-# To re-arm auto-publishing, add for example:
-#   push:
-#     branches: [SDK-1017]
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - SDK-1017
 
 permissions:
   contents: read # for checkout
@@ -60,8 +58,8 @@ jobs:
           fi
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
-      - name: Publish packages to npm
-        run: pnpm -r publish --tag workbench --no-git-checks
+      - name: Publish packages to npm (dry run)
+        run: pnpm -r publish --tag workbench --no-git-checks --dry-run
         env:
           NPM_CONFIG_PROVENANCE: true
 
