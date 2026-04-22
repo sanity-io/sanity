@@ -1,9 +1,11 @@
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {PortalProvider} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
+import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {encodeJsonParams} from 'sanity/router'
 
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
+import {useWorkspace} from '../../../../studio'
 import {DEFAULT_API_VERSION} from '../constants'
 import {MediaLibraryProvider} from './MediaLibraryProvider'
 import {OpenInSourceDialog} from './OpenInSourceDialog'
@@ -33,6 +35,16 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
   const {t} = useTranslation()
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const projectId = client.config().projectId
+  const workspace = useWorkspace()
+  const pickerPersistenceKey = useMemo(
+    () =>
+      encodeJsonParams({
+        projectId: workspace.projectId,
+        dataset: workspace.dataset,
+        workspaceName: workspace.name,
+      }) || undefined,
+    [workspace.projectId, workspace.dataset, workspace.name],
+  )
   const portalElement = useRootPortalElement()
   const handleSelectNewAsset = useCallback(() => {
     if (onChangeAction) {
@@ -57,6 +69,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
       />
       <PortalProvider element={portalElement}>
         <SelectAssetsDialog
+          pickerPersistenceKey={pickerPersistenceKey}
           dialogHeaderTitle={
             dialogHeaderTitle ||
             t('asset-sources.media-library.select-dialog.title', {
@@ -74,6 +87,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
         />
         {action === 'openInSource' && assetToOpen && (
           <OpenInSourceDialog
+            pickerPersistenceKey={pickerPersistenceKey}
             asset={assetToOpen}
             dialogHeaderTitle={t('asset-sources.media-library.open-in-source-dialog.title')}
             selectNewAssetButtonLabel={
