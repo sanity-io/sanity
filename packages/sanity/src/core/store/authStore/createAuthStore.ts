@@ -83,6 +83,13 @@ export interface AuthStoreOptions extends AuthConfig {
    * @internal
    */
   consumeHashToken: () => string | undefined
+  /**
+   * Temporary auth token provided by the embedding environment (e.g.
+   * the workbench). When set, it is used as the initial token for the
+   * auth store's clients, taking precedence over any token persisted in
+   * storage. It is not written back to storage.
+   */
+  token?: string
 }
 
 /**
@@ -263,6 +270,7 @@ export function _createAuthStore({
   consumeHashToken,
   getRequestErrorHandler,
   getRequestFailureDiagnostics,
+  token: providedToken,
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
   // Precedence when initializing auth:
@@ -321,15 +329,16 @@ export function _createAuthStore({
   })
 
   const currentTokenState = tokenStorage.get()
+  // A token provided by the embedding environment (e.g. the workbench) takes
+  // precedence over any token persisted in storage for the initial clients.
+  const initialToken = providedToken || currentTokenState?.token
 
   const initialTokenClient = clientFactory({
     ...AUTH_CLIENT_OPTIONS,
     ...hostOptions,
     projectId,
     dataset,
-    ...(currentTokenState?.token
-      ? {token: currentTokenState.token, ignoreBrowserTokenWarning: true}
-      : {}),
+    ...(initialToken ? {token: initialToken, ignoreBrowserTokenWarning: true} : {}),
   })
 
   const initialDualClient = clientFactory({
@@ -337,8 +346,8 @@ export function _createAuthStore({
     ...hostOptions,
     projectId,
     dataset,
-    ...(currentTokenState?.token
-      ? {token: currentTokenState.token, ignoreBrowserTokenWarning: true}
+    ...(initialToken
+      ? {token: initialToken, ignoreBrowserTokenWarning: true}
       : {withCredentials: true}),
   })
 
@@ -462,7 +471,6 @@ export function _createAuthStore({
 
   // For dual mode, re-probe when the token changes from what the initial probe
   // already used
-  const initialToken = currentTokenState?.token ?? null
   const dualTokenRecheck$ =
     loginMethod === 'dual'
       ? tokenStorage.value.pipe(

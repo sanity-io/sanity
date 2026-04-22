@@ -272,6 +272,7 @@ export function prepareConfig(
   config: Config | MissingConfigFile,
   options?: {
     basePath?: string
+    token?: string
     requestHandler?: RequestHandler
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
@@ -368,6 +369,7 @@ export function prepareConfig(
       }
 
       const auth = getAuthStore(source, {
+        token: options?.token,
         requestHandler: options?.requestHandler,
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
@@ -433,10 +435,12 @@ export function prepareConfig(
 function getAuthStore(
   source: SourceOptions,
   {
+    token,
     requestHandler,
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
+    token?: string
     requestHandler?: RequestHandler
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
@@ -461,6 +465,7 @@ function getAuthStore(
     getRequestFailureDiagnostics: () => requestFailureDiagnostics,
     dataset,
     projectId,
+    token,
   })
 }
 

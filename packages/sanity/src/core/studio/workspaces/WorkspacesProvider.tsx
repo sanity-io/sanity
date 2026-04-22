@@ -45,6 +45,7 @@ export interface WorkspacesProviderProps {
    * when the failing project matches the studio's primary project.
    */
   primaryProjectId?: string
+  token?: string
 }
 
 /**
@@ -93,6 +94,7 @@ export function WorkspacesProvider({
   basePath,
   LoadingComponent,
   primaryProjectId,
+  token,
 }: WorkspacesProviderProps) {
   const [corsError, setCorsError] = useState<CorsErrorState>()
   const [configError, setConfigError] = useState<ConfigErrorValue>()
@@ -232,6 +234,7 @@ export function WorkspacesProvider({
   const workspaces = useDeferredValue(
     prepareConfig(config, {
       basePath,
+      token,
       requestHandler,
       requestErrorChannel,
       requestFailureDiagnostics,
