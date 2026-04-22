@@ -1,7 +1,11 @@
+/* eslint-disable @sanity/i18n/no-attribute-string-literals */
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
+import {Card, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {type ComponentType, type ReactNode, useCallback, useEffect, useState} from 'react'
 
+import {Button} from '../../ui-components'
 import {LoadingBlock} from '../components/loadingBlock'
+import {type HandleCallbackResult} from '../store/_legacy/authStore/types'
 import {
   AuthBoundaryResolved,
   SessionTokenExchangeCompleted,
@@ -30,9 +34,10 @@ export function AuthBoundary({
   const [error, handleError] = useState<unknown>(null)
   if (error) throw error
 
-  const [loggedIn, setLoggedIn] = useState<'logged-in' | 'logged-out' | 'loading' | 'unauthorized'>(
-    'loading',
-  )
+  const [status, setStatus] = useState<
+    'logged-in' | 'logged-out' | 'loading' | 'unauthorized' | 'error'
+  >('loading')
+  const [authError, setAuthError] = useState<HandleCallbackResult['error']>()
   const [loginProvider, setLoginProvider] = useState<string | undefined>()
   const {activeWorkspace} = useActiveWorkspace()
   const telemetry = useTelemetry()
@@ -41,13 +46,13 @@ export function AuthBoundary({
   // AuthBoundaryResolved: mount-baseline — measures time from this component
   // mounting to auth state resolving. Fires every transition out of 'loading'.
   useEffect(() => {
-    if (loggedIn !== 'loading') {
+    if (status !== 'loading') {
       telemetry.log(AuthBoundaryResolved, {
         durationMs: Math.round(performance.now() - mountTime),
-        result: loggedIn,
+        result: status,
       })
     }
-  }, [loggedIn, telemetry, mountTime])
+  }, [status, telemetry, mountTime])
 
   // StudioAuthReadyMeasured: navigation-start baseline — measures time from
   // performance.timeOrigin (pairs with web-vitals metrics like LCP/FCP).
@@ -67,6 +72,10 @@ export function AuthBoundary({
       .handleCallbackUrl?.()
       .then((result) => {
         telemetry.log(SessionTokenExchangeCompleted, result)
+        if (!result.success && result.error) {
+          setAuthError(result.error)
+          setStatus('error')
+        }
       })
       .catch(handleError)
   }, [activeWorkspace.auth, telemetry])
@@ -74,23 +83,22 @@ export function AuthBoundary({
   useEffect(() => {
     const subscription = activeWorkspace.auth.state.subscribe({
       next: ({authenticated, currentUser}) => {
-        /**
-         * If a user has never had any roles on for the given workspace project
-         * e.g. because they've only ever been an organization member thereby
-         * giving them implicit access to the studio then they will have no roles
-         * array on their user so to account for this case or the case that they have
-         * had roles removed then we need to set the logged in state to unauthorized.
-         */
-        if (
-          authenticated &&
-          (!Array.isArray(currentUser?.roles) || currentUser.roles.length === 0)
-        ) {
-          setLoggedIn('unauthorized')
-          if (currentUser?.provider) setLoginProvider(currentUser.provider)
-          return
-        }
+        setStatus((prev) => {
+          // Don't let a state$ emission override the error state - the
+          // handleCallbackUrl result takes precedence when auth exchange fails,
+          // as state$ may emit 'logged-out' from the broadcast(null) on failure.
+          if (prev === 'error') return prev
 
-        setLoggedIn(authenticated ? 'logged-in' : 'logged-out')
+          if (
+            authenticated &&
+            (!Array.isArray(currentUser?.roles) || currentUser.roles.length === 0)
+          ) {
+            if (currentUser?.provider) setLoginProvider(currentUser.provider)
+            return 'unauthorized'
+          }
+
+          return authenticated ? 'logged-in' : 'logged-out'
+        })
       },
       error: handleError,
     })
@@ -100,20 +108,51 @@ export function AuthBoundary({
     }
   }, [activeWorkspace])
 
-  if (loggedIn === 'loading') return <LoadingComponent />
+  const handleRetry = useCallback(() => {
+    setAuthError(undefined)
+    setStatus('logged-out')
+  }, [])
 
-  if (loggedIn === 'unauthorized') {
-    // If using unverified `sanity` login provider, send them
-    // to basic NotAuthorized component.
+  if (status === 'loading') return <LoadingComponent />
+
+  if (status === 'error' && authError) {
+    return <AuthErrorScreen error={authError} onRetry={handleRetry} />
+  }
+
+  if (status === 'unauthorized') {
     if (!loginProvider || loginProvider === 'sanity') return <NotAuthenticatedComponent />
-    // Otherwise, send user to request access screen
     return <RequestAccessScreen />
   }
 
-  // NOTE: there is currently a bug where the `AuthenticateComponent` will
-  // flash after the first login with cookieless mode. See `createAuthStore`
-  // for details
-  if (loggedIn === 'logged-out') return <AuthenticateComponent />
+  if (status === 'logged-out') return <AuthenticateComponent />
 
   return <>{children}</>
+}
+
+function AuthErrorScreen({
+  error,
+  onRetry,
+}: {
+  error: NonNullable<HandleCallbackResult['error']>
+  onRetry: () => void
+}) {
+  const heading = error.type === 'cookie-blocked' ? 'Cookies blocked' : 'Authentication failed'
+
+  return (
+    <Card height="fill">
+      <Flex align="center" justify="center" height="fill" padding={4}>
+        <Stack space={4} style={{maxWidth: 400}}>
+          <Heading as="h1" size={1}>
+            {heading}
+          </Heading>
+          <Text muted size={1}>
+            {error.message}
+          </Text>
+          {error.type === 'auth-failed' && (
+            <Button text="Try again" tone="default" onClick={onRetry} size="large" />
+          )}
+        </Stack>
+      </Flex>
+    </Card>
+  )
 }
