@@ -11,7 +11,7 @@ import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {type Path} from '@sanity/types'
 import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {type MutableRefObject, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {set, unset} from '../../../patch/patch'
@@ -76,7 +76,7 @@ export function StringInputPortableText(props: StringInputProps) {
     value: definitiveValue,
     __unstable_computeDiff: computeDiff,
   } = props
-  const {onFocus, onBlur, style} = elementProps
+  const {onFocus, onBlur, style, ref: focusRef} = elementProps
 
   const {diff, rangeDecorations, onOptimisticChange} = useOptimisticDiff({
     definitiveValue,
@@ -173,6 +173,7 @@ export function StringInputPortableText(props: StringInputProps) {
       <EditorProvider initialConfig={initialConfig}>
         <OneLinePlugin />
         <EventListenerPlugin on={handleEditorEvent} />
+        <FocusBridgePlugin focusRef={focusRef} />
         <UpdateValuePlugin value={props.value} />
         <UpdateReadOnlyPlugin readOnly={props.readOnly ?? false} />
         <BehaviorPlugin behaviors={[plainTextPasteBehaviour, plainTextOneLineBehaviour]} />
@@ -217,6 +218,27 @@ function UpdateValuePlugin(props: {value: string | undefined}) {
       value: packageValue(props.value),
     })
   }, [editor, props.value])
+
+  return null
+}
+
+/**
+ * Bridges the `focusRef` from `PrimitiveField` to the PTE editor's `focus()` method.
+ *
+ * `PrimitiveField` calls `focusRef.current?.focus()` when `member.field.focused` becomes true
+ * (e.g. during programmatic focus). Without this bridge, the ref remains unset and the
+ * PTE-backed string input never receives focus.
+ */
+function FocusBridgePlugin(props: {focusRef: MutableRefObject<{focus: () => void} | undefined>}) {
+  const editor = useEditor()
+  const {focusRef} = props
+
+  useEffect(() => {
+    focusRef.current = {focus: () => editor.send({type: 'focus'})}
+    return () => {
+      focusRef.current = undefined
+    }
+  }, [editor, focusRef])
 
   return null
 }
