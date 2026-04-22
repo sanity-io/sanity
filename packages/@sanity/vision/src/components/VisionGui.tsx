@@ -640,11 +640,9 @@ export function VisionGui(props: VisionGuiProps) {
     [client, perspective, perspectiveStack, scheduledDraftsStack],
   )
 
-  const queryRecallCollapsedSize =
-    visionRootRef.current?.getBoundingClientRect().width || window.innerWidth
-  const splitContainerHeight =
-    visionRootRef.current?.getBoundingClientRect().height || window.innerHeight
-  const splitContainerWidth = queryRecallCollapsedSize
+  const splitContainerWidth = window.innerWidth
+  const splitContainerHeight = window.innerHeight
+  const queryRecallCollapsedSize = splitContainerWidth
   // Keep saved queries stacked only when the editor/result panes are also stacked.
   const shouldStackQueryRecall = !isNarrowBreakpoint
   const isCompactQueryRecall = splitContainerWidth <= 1000
@@ -778,6 +776,7 @@ export function VisionGui(props: VisionGuiProps) {
         ) : (
           <SplitPane
             key="query-recall-side-by-side"
+            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             split="vertical"
             minSize={minEditorPaneSize}
             defaultSize={window.innerWidth - 275}
