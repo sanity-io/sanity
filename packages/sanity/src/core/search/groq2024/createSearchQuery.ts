@@ -6,6 +6,7 @@ import {
 } from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
 
+import {fieldNeedsEscape} from '../../util/searchUtils'
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
 import {prefixLast} from '../common/token'
 import {toOrderClause} from '../common/toOrderClause'
@@ -101,7 +102,15 @@ export function createSearchQuery(
   ].flat()
 
   const projectionFields = sortOrder.map(({field}) => field).concat('_type', '_id', '_originalId')
-  const projection = projectionFields.join(', ')
+
+  const projection = projectionFields
+    .map((field) => {
+      if (fieldNeedsEscape(field)) {
+        return `"${field}": ${field}`
+      }
+      return field
+    })
+    .join(', ')
 
   const query = [
     `*[${filters.join(' && ')}]`,

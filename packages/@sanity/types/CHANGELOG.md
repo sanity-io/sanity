@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.22.0](https://github.com/sanity-io/sanity/compare/v5.21.0...v5.22.0) (2026-04-22)
+
+### Features
+
+* **asset-sources:** add persistence key for Media Library plugin ([#12670](https://github.com/sanity-io/sanity/issues/12670)) ([311ac2d](https://github.com/sanity-io/sanity/commit/311ac2d6152be390a424c88860c9f9cb6647b9e3))
+
+### Bug Fixes
+
+* **types:** correct BlockRule value type from any[] to PortableTextBlock ([#12509](https://github.com/sanity-io/sanity/issues/12509)) ([3ca5e31](https://github.com/sanity-io/sanity/commit/3ca5e310a3bb2b8d1a8c5f8e4680e2c7f9dd6e22))
 ## [5.20.0](https://github.com/sanity-io/sanity/compare/v5.19.0...v5.20.0) (2026-04-07)
 
 ### Bug Fixes
