@@ -177,6 +177,9 @@ export function VisionGui(props: VisionGuiProps) {
   const [queryInProgress, setQueryInProgress] = useState<boolean>(false)
   const [listenInProgress, setListenInProgress] = useState<boolean>(false)
   const [isQueryRecallCollapsed, setIsQueryRecallCollapsed] = useState(false)
+  const [editorPaneSize, setEditorPaneSize] = useState<number>(() =>
+    typeof window !== 'undefined' ? window.innerWidth - 275 : 1000,
+  )
 
   const {paneSizeOptions, isNarrowBreakpoint} = usePaneSize({visionRootRef})
 
@@ -637,6 +640,17 @@ export function VisionGui(props: VisionGuiProps) {
     [client, perspective, perspectiveStack, scheduledDraftsStack],
   )
 
+  const queryRecallCollapsedSize =
+    visionRootRef.current?.getBoundingClientRect().width || window.innerWidth
+  const splitContainerWidth = queryRecallCollapsedSize
+  const minQueryRecallWidth = 225
+  const maxEditorPaneSize = Math.max(320, splitContainerWidth - minQueryRecallWidth)
+  const minEditorPaneSize = Math.min(480, maxEditorPaneSize)
+  const clampedEditorPaneSize = Math.min(
+    Math.max(editorPaneSize, minEditorPaneSize),
+    maxEditorPaneSize,
+  )
+
   return (
     <Root
       direction="column"
@@ -664,10 +678,15 @@ export function VisionGui(props: VisionGuiProps) {
 
       <SplitpaneContainer flex="auto">
         <SplitPane
-          minSize={800}
+          minSize={minEditorPaneSize}
           defaultSize={window.innerWidth - 275}
-          size={isQueryRecallCollapsed ? window.innerWidth : window.innerWidth - 275}
-          maxSize={-225}
+          size={isQueryRecallCollapsed ? queryRecallCollapsedSize : clampedEditorPaneSize}
+          onChange={(nextSize) => {
+            if (!isQueryRecallCollapsed) {
+              setEditorPaneSize(nextSize)
+            }
+          }}
+          maxSize={maxEditorPaneSize}
           primary="first"
         >
           <Box height="stretch" flex={1}>
@@ -748,7 +767,7 @@ export function VisionGui(props: VisionGuiProps) {
                 zIndex: 100,
                 pointerEvents: 'auto',
               }}
-              onClick={() => setIsQueryRecallCollapsed(!isQueryRecallCollapsed)}
+              onClick={() => setIsQueryRecallCollapsed((prev) => !prev)}
             >
               <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
                 {isQueryRecallCollapsed ? <ChevronLeftIcon /> : <ChevronRightIcon />}
