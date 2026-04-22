@@ -51,17 +51,12 @@ test.describe('redirectOnSingle', () => {
     })
   }
 
-  // FIXME: after logout, redirectOnSingle should NOT redirect to the auth provider.
-  // Redirecting after logout effectively logs the user back in, which defeats the
-  // purpose of logging out (e.g. to switch accounts). The login screen should be
-  // shown instead. Currently the LoginComponent always redirects when
-  // redirectOnSingle is true and there's only one provider.
   for (const {name, path} of [
     {name: 'cookie', path: 'cookie-redirectOnSingle'},
     {name: 'token', path: 'token-redirectOnSingle'},
     {name: 'dual', path: 'dual-redirectOnSingle'},
   ]) {
-    test.fixme(`${name} auth: logout with redirectOnSingle shows login screen instead of redirecting`, async ({
+    test(`${name} auth: logout with redirectOnSingle shows login screen instead of redirecting`, async ({
       context,
     }) => {
       const page = await context.newPage()
