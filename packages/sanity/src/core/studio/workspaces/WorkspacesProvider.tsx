@@ -10,6 +10,7 @@ export interface WorkspacesProviderProps {
   children: ReactNode
   basePath?: string
   LoadingComponent: ComponentType
+  token?: string
 }
 
 /** @internal */
@@ -18,9 +19,10 @@ export function WorkspacesProvider({
   children,
   basePath,
   LoadingComponent,
+  token,
 }: WorkspacesProviderProps) {
   const workspaces = useDeferredValue(
-    prepareConfig(config, {basePath}).workspaces satisfies WorkspacesContextValue,
+    prepareConfig(config, {basePath, token}).workspaces satisfies WorkspacesContextValue,
     null,
   )
 

@@ -53,6 +53,7 @@ export function StudioProvider({
   scheme,
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
+  unstable_temporaryToken: token,
 }: StudioProviderProps) {
   // We initialize the error reporter as early as possible in order to catch anything that could
   // occur during configuration loading, React rendering etc. StudioProvider is often the highest
@@ -112,6 +113,7 @@ export function StudioProvider({
                 config={config}
                 basePath={basePath}
                 LoadingComponent={LoadingBlock}
+                token={token}
               >
                 <VisibleWorkspacesProvider>
                   <ActiveWorkspaceMatcher
