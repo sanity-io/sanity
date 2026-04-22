@@ -33,7 +33,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'action.save-query': 'Save query',
   /** Label for saving a shared query */
   'action.save-shared-query': 'Save as shared',
-  /** Label for updating a query */
+  /** Label for unsharing a query */
   'action.unshare': 'Unshare',
   /** Label for updating a query */
   'action.update': 'Update',
@@ -103,6 +103,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'save-query.error': 'Error saving query',
   /** Save personal copy success label */
   'save-query.personal-copy-success': 'Personal copy saved',
+  /** Warning displayed before sharing a query */
+  'save-query.share-warning':
+    'Shared queries are stored as documents in your dataset and count toward your document quota.',
   /** Save shared query success label */
   'save-query.shared-success': 'Shared query saved',
   /** Save success label */
