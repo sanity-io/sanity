@@ -647,7 +647,7 @@ export function VisionGui(props: VisionGuiProps) {
   const shouldStackQueryRecall = !isNarrowBreakpoint
   const isCompactQueryRecall = splitContainerWidth <= 1000
   const isTabletOrNarrow = splitContainerWidth <= 1200
-  const minQueryRecallWidth = 225
+  const minQueryRecallWidth = 300
   const minQueryRecallHeight = 180
   const maxEditorPaneSize = shouldStackQueryRecall
     ? Math.max(260, splitContainerHeight - minQueryRecallHeight)

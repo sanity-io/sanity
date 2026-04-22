@@ -395,7 +395,7 @@ export function QueryRecall({
         </Box>
       </FixedHeader>
       <Stack id="vision-query-recall-list" paddingY={3}>
-        {filteredQueries?.map((q) => {
+        {filteredQueries?.map((q, index) => {
           const queryObj = getStateFromUrl(q.url)
           const fullQueryPreview = queryObj?.query || ''
           const shortQueryPreview = fullQueryPreview.split('{')[0]
@@ -426,6 +426,7 @@ export function QueryRecall({
                 }
               }}
               style={{
+                borderTop: index === 0 ? '1px solid var(--card-border-color)' : undefined,
                 position: 'relative',
                 borderBottom: '1px solid var(--card-border-color)',
                 borderLeft: isSelected
@@ -436,7 +437,7 @@ export function QueryRecall({
             >
               <Stack space={compactMode ? 2 : 3}>
                 <Flex justify="space-between" align={'center'} style={{minHeight: '25px'}}>
-                  <Flex align="center" gap={2} paddingRight={1}>
+                  <Flex align="center" gap={2} paddingRight={1} style={{minWidth: 0, flex: 1}}>
                     {editingKey === q._key ? (
                       <TextInput
                         value={editingTitle}
@@ -567,49 +568,96 @@ export function QueryRecall({
                   <Code muted />
                 )}
 
-                <Flex
-                  align="center"
-                  gap={2}
-                  style={{
-                    paddingTop: compactMode ? '0px' : '2px',
-                    height: compactMode ? '18px' : '20px',
-                  }}
-                >
-                  <Box
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '17px',
-                      height: '17px',
-                    }}
-                  >
-                    {q.shared ? (
-                      <UserAvatar size={0} user={q.authorId || ''} withTooltip />
-                    ) : (
+                {compactMode ? (
+                  <Stack space={1} style={{paddingTop: 0, minHeight: '30px'}}>
+                    <Flex align="center" gap={2} style={{minHeight: '18px'}}>
                       <Box
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          lineHeight: 0,
-                          color: 'var(--card-muted-fg-color)',
+                          width: '17px',
+                          height: '17px',
                         }}
                       >
-                        <LockIcon />
+                        {q.shared ? (
+                          <UserAvatar size={0} user={q.authorId || ''} withTooltip />
+                        ) : (
+                          <Box
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              lineHeight: 0,
+                              color: 'var(--card-muted-fg-color)',
+                            }}
+                          >
+                            <LockIcon />
+                          </Box>
+                        )}
                       </Box>
-                    )}
-                  </Box>
-                  <Badge mode="outline" tone={q.shared ? 'primary' : 'default'}>
-                    {q.shared ? t('label.shared') : t('label.personal')}
-                  </Badge>
-                  <Text size={1} muted>
-                    •
-                  </Text>
-                  <Text size={1} muted>
-                    {formatDate.format(new Date(q.savedAt || ''))}
-                  </Text>
-                </Flex>
+                      <Badge
+                        mode="outline"
+                        tone={q.shared ? 'primary' : 'default'}
+                        style={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {q.shared ? t('label.shared') : t('label.personal')}
+                      </Badge>
+                    </Flex>
+                    <Text size={1} muted>
+                      {formatDate.format(new Date(q.savedAt || ''))}
+                    </Text>
+                  </Stack>
+                ) : (
+                  <Flex align="center" gap={2} style={{paddingTop: '2px', minHeight: '20px'}}>
+                    <Box
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '17px',
+                        height: '17px',
+                      }}
+                    >
+                      {q.shared ? (
+                        <UserAvatar size={0} user={q.authorId || ''} withTooltip />
+                      ) : (
+                        <Box
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            lineHeight: 0,
+                            color: 'var(--card-muted-fg-color)',
+                          }}
+                        >
+                          <LockIcon />
+                        </Box>
+                      )}
+                    </Box>
+                    <Badge
+                      mode="outline"
+                      tone={q.shared ? 'primary' : 'default'}
+                      style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {q.shared ? t('label.shared') : t('label.personal')}
+                    </Badge>
+                    <Text size={1} muted>
+                      •
+                    </Text>
+                    <Text size={1} muted>
+                      {formatDate.format(new Date(q.savedAt || ''))}
+                    </Text>
+                  </Flex>
+                )}
 
                 {isEdited && (
                   <Button
