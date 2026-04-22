@@ -31,6 +31,7 @@ interface VisionGuiResultProps {
   dataset: string
   queryTime: number | undefined
   e2eTime: number | undefined
+  compactFooter?: boolean
 }
 
 export function VisionGuiResult({
@@ -42,6 +43,7 @@ export function VisionGuiResult({
   dataset,
   queryTime,
   e2eTime,
+  compactFooter = false,
 }: VisionGuiResultProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
@@ -80,19 +82,28 @@ export function VisionGuiResult({
         </ResultContainer>
       </ResultInnerContainer>
       {/* Execution time */}
-      <ResultFooter justify="space-between" direction={['column', 'column', 'row']}>
-        <TimingsCard paddingX={4} paddingY={3} sizing="border">
+      <ResultFooter
+        justify={compactFooter ? 'flex-start' : 'space-between'}
+        align={compactFooter ? 'stretch' : undefined}
+        direction={compactFooter ? 'column' : ['column', 'column', 'row']}
+      >
+        <TimingsCard
+          paddingX={compactFooter ? 3 : 4}
+          paddingY={compactFooter ? 2 : 3}
+          sizing="border"
+          style={compactFooter ? {width: '100%'} : undefined}
+        >
           <TimingsTextContainer align="center">
             <Box>
-              <Text muted>
+              <Text muted size={compactFooter ? 1 : 2}>
                 {t('result.execution-time-label')}:{' '}
                 {typeof queryTime === 'number'
                   ? `${queryTime}ms`
                   : t('result.timing-not-applicable')}
               </Text>
             </Box>
-            <Box marginLeft={4}>
-              <Text muted>
+            <Box marginLeft={compactFooter ? 3 : 4}>
+              <Text muted size={compactFooter ? 1 : 2}>
                 {t('result.end-to-end-time-label')}:{' '}
                 {typeof e2eTime === 'number' ? `${e2eTime}ms` : t('result.timing-not-applicable')}
               </Text>
@@ -101,8 +112,13 @@ export function VisionGuiResult({
         </TimingsCard>
 
         {hasResult && (
-          <DownloadsCard paddingX={4} paddingY={3} sizing="border">
-            <SaveResultLabel muted>
+          <DownloadsCard
+            paddingX={compactFooter ? 3 : 4}
+            paddingY={compactFooter ? 2 : 3}
+            sizing="border"
+            style={compactFooter ? {width: '100%'} : undefined}
+          >
+            <SaveResultLabel muted size={compactFooter ? 1 : 2}>
               <Translate
                 components={{
                   SaveResultButtons: () => (

@@ -26,6 +26,7 @@ import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
 import {FixedHeader, ScrollContainer} from './QueryRecall.styled'
 import {type ParsedUrlState} from './VisionGui'
+import {StyledLabel} from './VisionGui.styled'
 
 export function QueryRecall({
   url,
@@ -34,6 +35,7 @@ export function QueryRecall({
   currentQuery,
   currentParams,
   generateUrl,
+  compactMode = false,
 }: {
   url?: string
   getStateFromUrl: (data: string) => ParsedUrlState | null
@@ -41,6 +43,7 @@ export function QueryRecall({
   currentQuery: string
   currentParams: Record<string, unknown>
   generateUrl: (query: string, params: Record<string, unknown>) => string
+  compactMode?: boolean
 }): ReactElement {
   type QueryFilter = 'all' | 'personal' | 'shared'
   const toast = useToast()
@@ -340,10 +343,8 @@ export function QueryRecall({
   return (
     <ScrollContainer>
       <FixedHeader space={3}>
-        <Flex padding={3} paddingTop={4} paddingBottom={0} justify="space-between" align="center">
-          <Text weight="semibold" style={{textTransform: 'capitalize'}} size={4}>
-            {t('label.saved-queries')}
-          </Text>
+        <Flex padding={3} paddingTop={2} paddingBottom={0} justify="space-between" align="center">
+          <StyledLabel muted>{t('label.saved-queries')}</StyledLabel>
           <Button
             label={t('action.save-query')}
             icon={AddIcon}
@@ -403,8 +404,8 @@ export function QueryRecall({
             <Card
               key={q._key}
               width={'fill'}
-              paddingX={4}
-              paddingY={4}
+              paddingX={compactMode ? 3 : 4}
+              paddingY={compactMode ? 3 : 4}
               tone="default"
               onClick={(event) => {
                 const target = event.target as HTMLElement | null
@@ -426,7 +427,7 @@ export function QueryRecall({
                 cursor: 'pointer',
               }}
             >
-              <Stack space={3}>
+              <Stack space={compactMode ? 2 : 3}>
                 <Flex justify="space-between" align={'center'} style={{minHeight: '25px'}}>
                   <Flex align="center" gap={2} paddingRight={1}>
                     {editingKey === q._key ? (
@@ -447,10 +448,10 @@ export function QueryRecall({
                     ) : (
                       <Text
                         weight="bold"
-                        size={3}
+                        size={compactMode ? 2 : 3}
                         textOverflow="ellipsis"
                         style={{
-                          maxWidth: '220px',
+                          maxWidth: compactMode ? '180px' : '220px',
                           cursor: canMutateQuery ? 'pointer' : 'default',
                           padding: '2px 0',
                         }}
@@ -502,7 +503,7 @@ export function QueryRecall({
                                   text={t('label.share')}
                                   onClick={(event) => {
                                     event.stopPropagation()
-                                     handleShareQuery(q)
+                                    handleShareQuery(q)
                                   }}
                                 />
                               )}
@@ -559,7 +560,14 @@ export function QueryRecall({
                   <Code muted />
                 )}
 
-                <Flex align="center" gap={2} style={{paddingTop: '2px', height: '20px'}}>
+                <Flex
+                  align="center"
+                  gap={2}
+                  style={{
+                    paddingTop: compactMode ? '0px' : '2px',
+                    height: compactMode ? '18px' : '20px',
+                  }}
+                >
                   <Box
                     style={{
                       display: 'flex',
