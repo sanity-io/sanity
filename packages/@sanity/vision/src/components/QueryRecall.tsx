@@ -142,15 +142,19 @@ export function QueryRecall({
   const handleConfirmShareQuery = useCallback(async () => {
     if (!shareDialogQuery) return
 
+    const sharedQueryKey = shareDialogQuery._key
+    const sharedQueryUrl = shareDialogQuery.url
+    const sharedQueryTitle = shareDialogQuery.title || t('label.untitled-query')
+
     try {
       await saveQuery({
         shared: true,
-        title: shareDialogQuery.title || t('label.untitled-query'),
-        url: shareDialogQuery.url,
+        title: sharedQueryTitle,
+        url: sharedQueryUrl,
         savedAt: new Date().toISOString(),
       })
 
-      await deleteQuery(shareDialogQuery._key)
+      await deleteQuery(sharedQueryKey)
       toast.push({
         closable: true,
         status: 'success',
@@ -163,43 +167,46 @@ export function QueryRecall({
         title: t('save-query.error'),
         description: err instanceof Error ? err.message : String(err),
       })
-    } finally {
-      setShareDialogQuery(null)
     }
+    setShareDialogQuery(null)
   }, [deleteQuery, saveQuery, shareDialogQuery, t, toast])
 
   const handleUnshareQuery = useCallback(
     async (query: QueryConfig) => {
       setPendingUnshareKeys((prev) => [...prev, query._key])
-      try {
-        const nextQueryObj = getStateFromUrl(query.url)
-        const duplicatePersonalQuery = queries?.find((existingQuery) => {
-          if (existingQuery._key === query._key) return false
-          if (existingQuery.shared) return false
-          const existingQueryObj = getStateFromUrl(existingQuery.url)
-          return (
-            nextQueryObj &&
-            existingQueryObj &&
-            existingQueryObj.query === nextQueryObj.query &&
-            isEqual(existingQueryObj.params, nextQueryObj.params)
-          )
+      const clearPending = () =>
+        setPendingUnshareKeys((prev) => prev.filter((key) => key !== query._key))
+      const nextQueryObj = getStateFromUrl(query.url)
+      const duplicatePersonalQuery = queries?.find((existingQuery) => {
+        if (existingQuery._key === query._key) return false
+        if (existingQuery.shared) return false
+        const existingQueryObj = getStateFromUrl(existingQuery.url)
+        return (
+          nextQueryObj &&
+          existingQueryObj &&
+          existingQueryObj.query === nextQueryObj.query &&
+          isEqual(existingQueryObj.params, nextQueryObj.params)
+        )
+      })
+      const unsharedQueryTitle = query.title || t('label.untitled-query')
+
+      if (duplicatePersonalQuery) {
+        toast.push({
+          closable: true,
+          status: 'warning',
+          title: t('save-query.already-saved'),
+          description: `${duplicatePersonalQuery.title} - ${formatDate.format(
+            new Date(duplicatePersonalQuery.savedAt || ''),
+          )}`,
         })
+        clearPending()
+        return
+      }
 
-        if (duplicatePersonalQuery) {
-          toast.push({
-            closable: true,
-            status: 'warning',
-            title: t('save-query.already-saved'),
-            description: `${duplicatePersonalQuery.title} - ${formatDate.format(
-              new Date(duplicatePersonalQuery.savedAt || ''),
-            )}`,
-          })
-          return
-        }
-
+      try {
         await saveQuery({
           shared: false,
-          title: query.title || t('label.untitled-query'),
+          title: unsharedQueryTitle,
           url: query.url,
           savedAt: new Date().toISOString(),
         })
@@ -210,6 +217,7 @@ export function QueryRecall({
           status: 'success',
           title: t('save-query.unshared-success'),
         })
+        clearPending()
       } catch (err) {
         toast.push({
           closable: true,
@@ -217,8 +225,7 @@ export function QueryRecall({
           title: t('save-query.error'),
           description: err instanceof Error ? err.message : String(err),
         })
-      } finally {
-        setPendingUnshareKeys((prev) => prev.filter((key) => key !== query._key))
+        clearPending()
       }
     },
     [deleteQuery, formatDate, getStateFromUrl, queries, saveQuery, t, toast],
