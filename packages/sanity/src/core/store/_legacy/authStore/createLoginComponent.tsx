@@ -2,12 +2,12 @@
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
 import {Badge, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 import {Button, type ButtonProps} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock'
 import {type AuthConfig} from '../../../config'
-import {createHookFromObservableFactory} from '../../../util'
 import {CustomLogo, providerLogos} from './providerLogos'
 import {type LoginComponentProps} from './types'
 
@@ -57,7 +57,14 @@ async function getProviders({
 }
 
 interface CreateLoginComponentOptions extends AuthConfig {
-  getClient: () => Observable<SanityClient>
+  client$: Observable<SanityClient>
+  /**
+   * Returns true if the user explicitly logged out in this session.
+   * Used to suppress `redirectOnSingle` after logout — redirecting immediately
+   * would log the user back in, defeating the purpose of logging out
+   * (e.g. to switch accounts).
+   */
+  wasLogout: () => boolean
 }
 
 interface CreateHrefForProviderOptions {
@@ -91,13 +98,12 @@ function createHrefForProvider({
 }
 
 export function createLoginComponent({
-  getClient,
+  client$,
   loginMethod,
   redirectOnSingle,
+  wasLogout,
   ...providerOptions
 }: CreateLoginComponentOptions) {
-  const useClient = createHookFromObservableFactory(getClient)
-
   function LoginComponent({projectId, ...props}: LoginComponentProps) {
     const redirectPath = props.redirectPath || props.basePath || '/'
 
@@ -113,7 +119,7 @@ export function createLoginComponent({
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
 
-    const [client] = useClient()
+    const client = useObservable(client$)
 
     const getProviderData = useCallback(async () => {
       let providers = [] as AuthProvider[]
@@ -151,9 +157,11 @@ export function createLoginComponent({
     const {providers, lastUsedProvider, isLoading} = providerData
 
     // only create a direct URL if `redirectOnSingle` is true and there is only
-    // one provider available
+    // one provider available. Skip the redirect after an explicit logout so the
+    // user can pick a different account instead of being logged back in immediately.
     const redirectUrlForRedirectOnSingle =
       redirectOnSingle &&
+      !wasLogout() &&
       providers?.length === 1 &&
       providers?.[0] &&
       createHrefForProvider({

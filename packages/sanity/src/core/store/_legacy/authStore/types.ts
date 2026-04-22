@@ -5,6 +5,8 @@ import {type Observable} from 'rxjs'
 
 import {type LoginMethod} from '../../../config'
 
+export type AuthProbeResult = {authenticated: false} | {authenticated: true; id: string}
+
 /**
  * The interface used by the Studio that produces a `SanityClient` and
  * `CurrentUser` that gets passed to the resulting `Workspace`s and `Source`s.
@@ -26,6 +28,7 @@ export interface AuthStore {
    * `AuthState` value on subscribe
    */
   state: Observable<AuthState>
+
   /**
    * Emits auth tokens, or `null` if not configured to use them or they do not exist
    */
@@ -96,7 +99,8 @@ export type LoginComponentProps =
 
 /**
  * Result returned from `handleCallbackUrl` describing what happened during
- * the auth callback flow. Used for telemetry and diagnostics.
+ * the auth callback flow. Used for telemetry, diagnostics, and error handling
+ * in the AuthBoundary.
  *
  * @internal
  */
@@ -105,17 +109,32 @@ export interface HandleCallbackResult {
   loginMethod: LoginMethod
   /**
    * Which auth flow was taken:
-   * - `'already-authenticated'`: User was already authenticated; no exchange needed.
-   * - `'cookie-auth'`: Attempted cookie-based authentication via `/users/me`.
-   * - `'token-exchange'`: Traded a session ID for a persistent token.
+   * - `'already-authenticated'`: No sid in hash - user was already authenticated or not.
+   * - `'exchange'`: sid was present, went through /auth/exchange + probe flow.
    */
-  flow: 'already-authenticated' | 'cookie-auth' | 'token-exchange'
+  flow: 'already-authenticated' | 'exchange'
   /** Whether the auth flow completed successfully. */
   success: boolean
   /** Total wall-clock time for the callback handling, in milliseconds. */
   durationMs: number
-  /** Time spent on the session-to-token exchange specifically. Only set for `'token-exchange'` flow. */
-  tokenExchangeDurationMs?: number
+  /** Time spent on the /auth/exchange call specifically. Only set for `'exchange'` flow. */
+  exchangeDurationMs?: number
+  /** Time spent on the /users/me probe calls. Only set for `'exchange'` flow. */
+  probeDurationMs?: number
+  /** Which auth method was selected by the probes. Only set when `success` is `true` and flow is `'exchange'`. */
+  authMethod?: 'cookie' | 'token'
   /** Human-readable reason for failure. Only set when `success` is `false`. */
   failureReason?: string
+  /**
+   * Structured error for the AuthBoundary to render appropriate UI.
+   * Only set when `success` is `false` and flow is `'exchange'`.
+   *
+   * - `'cookie-blocked'`: cookie-only mode and the cookie probe failed.
+   *   The browser likely has strict cookie policies.
+   * - `'auth-failed'`: all probe methods failed. The user should retry.
+   */
+  error?: {
+    type: 'cookie-blocked' | 'auth-failed'
+    message: string
+  }
 }
