@@ -14,7 +14,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import type * as ConnectionStatusStoreMod from '../../../../store/_legacy/connection-status/connection-status-store'
+import type * as ConnectionStatusStoreMod from '../../../../store/connection-status/connection-status-store'
 import {
   activeASAPRelease,
   activeCardinalityOneRelease,
@@ -97,22 +97,19 @@ vi.mock('../../../../preview/streams/visibilityChange', async () => {
   const {EMPTY} = await import('rxjs')
   return {visibilityChange$: EMPTY}
 })
-vi.mock('../../../../store/_legacy/debugParams/debugParams', async () => {
+vi.mock('../../../../store/debugParams/debugParams', async () => {
   const {of} = await import('rxjs')
   return {debugParams$: of([]), debugRolesParam$: of([])}
 })
 
-vi.mock(
-  '../../../../store/_legacy/connection-status/connection-status-store',
-  async (importOriginal) => {
-    const mod = await importOriginal<typeof ConnectionStatusStoreMod>()
-    const {of} = await import('rxjs')
-    return {
-      ...mod,
-      createConnectionStatusStore: () => ({connectionStatus$: of(mod.CONNECTING)}),
-    }
-  },
-)
+vi.mock('../../../../store/connection-status/connection-status-store', async (importOriginal) => {
+  const mod = await importOriginal<typeof ConnectionStatusStoreMod>()
+  const {of} = await import('rxjs')
+  return {
+    ...mod,
+    createConnectionStatusStore: () => ({connectionStatus$: of(mod.CONNECTING)}),
+  }
+})
 
 const releaseDocuments = [
   {

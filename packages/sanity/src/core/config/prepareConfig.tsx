@@ -21,7 +21,7 @@ import {
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {createSchema} from '../schema'
-import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
+import {type AuthStore, createAuthStore, isAuthStore} from '../store'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
