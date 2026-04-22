@@ -493,19 +493,12 @@ describe('createAuthStore: cross-tab sync', () => {
       // Regression test for the "flash of login screen" bug observed when
       // multiple workspaces for the same project mount concurrently.
       //
-      // The auth-test-studio defines many workspaces per project (cookie,
-      // token, dual, sso-*). `useWorkspaceAuthStates` subscribes to every
-      // workspace's auth.state on mount. Each store's authState$ has a
-      // `tap` that calls cookieAuthState.update({authenticated}). Because
-      // cookieAuthState's BroadcastChannel is keyed only by projectId, every
+      // `cookieAuthState`'s BroadcastChannel is keyed by projectId, so every
       // workspace for the same project shares it — even within the same page.
-      //
-      // When a sibling workspace (e.g., token mode with no stored token)
-      // emits `authenticated: false` during startup, it broadcasts
-      // `{authenticated: false}` to the shared channel. The cookie workspace
-      // receives it via cookieAuthChanged$, which flows into workspaceClient$
-      // and produces a spurious unauthenticated emission from authState$ —
-      // flashing the login screen.
+      // Only cookie/dual workspaces should write to it (they interact with
+      // the cookie); token-only workspaces have no signal about cookie state
+      // and shouldn't broadcast unauthenticated values that would poison
+      // sibling cookie workspaces.
       //
       // Expected: the cookie store stays authenticated throughout.
       //
@@ -570,6 +563,66 @@ describe('createAuthStore: cross-tab sync', () => {
         cookieEmissions.every((e) => e.authenticated === true),
         `Cookie store emitted unauthenticated state(s): ${JSON.stringify(cookieEmissions)}`,
       ).toBe(true)
+    })
+
+    it('does not enter a broadcast feedback loop when two cookie workspaces for the same project are mounted', async () => {
+      // Regression test: two cookie workspaces for the same project in the
+      // same page. The cookieAuthState BroadcastChannel is shared. An earlier
+      // iteration of the code broadcast the auth state on every authState$
+      // emission, which caused a feedback loop — A broadcasts `true`, B
+      // receives it and re-probes, B's authState$ emits, tap broadcasts
+      // `true` back to A, A re-probes, and so on. `distinctUntilChanged`
+      // absorbed the duplicates but each workspace still re-subscribed to
+      // its own pipeline repeatedly.
+      //
+      // Expected: each store emits exactly once (the initial probe result)
+      // and stays quiet after that.
+      const isolatedProjectId = `battle-test-${Math.random().toString(36).slice(2)}`
+
+      const mockA = createMockClientFactory()
+      const mockB = createMockClientFactory()
+
+      const storeA = _createAuthStore({
+        projectId: isolatedProjectId,
+        dataset: DATASET,
+        loginMethod: 'cookie',
+        clientFactory: mockA.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
+      })
+      const storeB = _createAuthStore({
+        projectId: isolatedProjectId,
+        dataset: DATASET,
+        loginMethod: 'cookie',
+        clientFactory: mockB.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
+      })
+
+      const emissionsA: boolean[] = []
+      const emissionsB: boolean[] = []
+      const subA = storeA.state.subscribe((s) => emissionsA.push(s.authenticated))
+      const subB = storeB.state.subscribe((s) => emissionsB.push(s.authenticated))
+
+      await waitForState(storeA, (s) => s.authenticated)
+      await waitForState(storeB, (s) => s.authenticated)
+
+      // Let any racing broadcasts settle
+      await new Promise((resolve) => setTimeout(resolve, 100))
+
+      subA.unsubscribe()
+      subB.unsubscribe()
+
+      // Each store should emit exactly once (initial authenticated state).
+      // More than one emission means the shared channel is causing a ricochet.
+      expect(
+        emissionsA,
+        `Store A had unexpected extra emissions: ${JSON.stringify(emissionsA)}`,
+      ).toEqual([true])
+      expect(
+        emissionsB,
+        `Store B had unexpected extra emissions: ${JSON.stringify(emissionsB)}`,
+      ).toEqual([true])
     })
 
     it('throws CorsOriginError when /users/me fails for a non-auth reason but /ping succeeds', async () => {

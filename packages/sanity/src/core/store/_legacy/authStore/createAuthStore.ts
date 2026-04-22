@@ -259,9 +259,19 @@ export function _createAuthStore({
   const initial$ = of(initialWorkspaceClient).pipe(
     mergeMap(async (client): Promise<AuthState> => {
       const currentUser = await getCurrentUser(client, 'initial', corsErrorContext)
+      const authenticated = Boolean(currentUser?.id)
+      // Seed cookieAuthState once from the initial probe result. This moves
+      // the channel out of 'pending' so cookieAuthChanged$ starts emitting
+      // and downstream operators (skip(1) in authState$, etc.) behave.
+      // Only cookie/dual workspaces should touch this — token-only workspaces
+      // have no signal about cookie validity and broadcasting from them
+      // would poison sibling cookie workspaces for the same project.
+      if (loginMethod === 'cookie' || loginMethod === 'dual') {
+        cookieAuthState.update({authenticated})
+      }
       return {
         client,
-        authenticated: Boolean(currentUser?.id),
+        authenticated,
         currentUser: currentUser || null,
       }
     }),
@@ -362,15 +372,13 @@ export function _createAuthStore({
       }),
     ),
   ).pipe(
-    tap((authState) => {
-      // Sync cookie state across tabs — and across other workspaces in the
-      // same page that share this project's cookieAuthState BroadcastChannel.
-      // Only workspaces that actually interact with the cookie should emit
-      // here.
-      if (loginMethod === 'cookie' || loginMethod === 'dual') {
-        cookieAuthState.update({authenticated: authState.authenticated})
-      }
-    }),
+    // Cookie state is broadcast to other tabs (and sibling workspaces for the
+    // same project in this page) only on meaningful events: post-login probe
+    // in handleCallbackUrl, and logout. Broadcasting on every authState$
+    // emission turns out to be noisy — each workspace's own probe result
+    // would propagate to siblings, causing them to re-evaluate and emit,
+    // which re-broadcasts in a feedback loop. Keep the stream quiet here and
+    // let the explicit write sites own cross-tab sync.
     share({connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(1000)}),
   )
 
