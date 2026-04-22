@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {of} from 'rxjs'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createHistoryStore, removeMissingReferences} from './createHistoryStore'
@@ -101,6 +102,107 @@ describe('createHistoryStore', () => {
       const result = await historyStore.getDocumentAtRevision('test-doc', 'lastRevision')
 
       expect(result).toBeUndefined()
+    })
+  })
+
+  describe('restore', () => {
+    const revisionDoc = {
+      _id: 'doc-id',
+      _rev: 'rev-1',
+      _type: 'testType',
+      _createdAt: '2024-01-01T00:00:00Z',
+      _updatedAt: '2024-01-02T00:00:00Z',
+      title: 'Restored',
+    }
+
+    const mockAction = vi.fn()
+    const mockCreateOrReplace = vi.fn()
+    const mockFetch = vi.fn()
+    const mockRequest = vi.fn()
+
+    const buildClient = () =>
+      ({
+        config: () => ({dataset: 'test-dataset'}),
+        request: mockRequest,
+        withConfig: vi.fn().mockReturnThis(),
+        observable: {
+          fetch: mockFetch,
+          createOrReplace: mockCreateOrReplace,
+          action: mockAction,
+        },
+      }) as unknown as SanityClient
+
+    beforeEach(() => {
+      mockAction.mockReset().mockReturnValue(of({transactionId: 'tx'}))
+      mockCreateOrReplace.mockReset().mockReturnValue(of({transactionId: 'tx'}))
+      mockFetch.mockReset().mockReturnValue(of({}))
+      mockRequest.mockReset().mockResolvedValue({documents: [revisionDoc]})
+    })
+
+    test('uses replaceDraft action for non-live-edit documents', async () => {
+      const client = buildClient()
+      const historyStore = createHistoryStore({client})
+
+      await new Promise<void>((resolve, reject) => {
+        historyStore
+          .restore('doc-id', 'drafts.doc-id', 'rev-1', {
+            fromDeleted: false,
+            useServerDocumentActions: true,
+          })
+          .subscribe({complete: resolve, error: reject})
+      })
+
+      expect(mockAction).toHaveBeenCalledTimes(1)
+      expect(mockCreateOrReplace).not.toHaveBeenCalled()
+      const [actions] = mockAction.mock.calls[0]
+      expect(actions).toMatchObject({
+        actionType: 'sanity.action.document.replaceDraft',
+        publishedId: 'doc-id',
+        attributes: expect.objectContaining({_id: 'drafts.doc-id'}),
+      })
+    })
+
+    test('falls back to createOrReplace when restoring a live-edit document', async () => {
+      // For live-edit documents, targetDocumentId equals the publishedId. The
+      // `sanity.action.document.replaceDraft` action requires attributes._id to
+      // be prefixed with either "drafts." or "versions.{bundleId}", which would
+      // cause the server to reject the request. Ensure we fall back to the
+      // mutation API instead.
+      const client = buildClient()
+      const historyStore = createHistoryStore({client})
+
+      await new Promise<void>((resolve, reject) => {
+        historyStore
+          .restore('doc-id', 'doc-id', 'rev-1', {
+            fromDeleted: false,
+            useServerDocumentActions: true,
+          })
+          .subscribe({complete: resolve, error: reject})
+      })
+
+      expect(mockAction).not.toHaveBeenCalled()
+      expect(mockCreateOrReplace).toHaveBeenCalledTimes(1)
+      expect(mockCreateOrReplace).toHaveBeenCalledWith(
+        expect.objectContaining({_id: 'doc-id', title: 'Restored'}),
+        {visibility: 'async'},
+      )
+    })
+
+    test('falls back to createOrReplace when restoring a deleted live-edit document', async () => {
+      const client = buildClient()
+      const historyStore = createHistoryStore({client})
+
+      await new Promise<void>((resolve, reject) => {
+        historyStore
+          .restore('doc-id', 'doc-id', 'rev-1', {
+            fromDeleted: true,
+            useServerDocumentActions: true,
+          })
+          .subscribe({complete: resolve, error: reject})
+      })
+
+      expect(mockAction).not.toHaveBeenCalled()
+      expect(mockCreateOrReplace).toHaveBeenCalledTimes(1)
     })
   })
 })

@@ -253,7 +253,14 @@ function restore(
       return {...document, _id: targetDocumentId}
     }),
     mergeMap((restoredDraft) => {
-      if (options?.useServerDocumentActions) {
+      // When the restore targets the published document itself (i.e. live edit
+      // is enabled for the document type), the `sanity.action.document.replaceDraft`
+      // action cannot be used because it requires `attributes._id` to be prefixed
+      // with either `drafts.` or `versions.{bundleId}`. Fall back to the mutation
+      // API for these cases, matching the behavior of the non-server-actions path.
+      const isLiveEditRestore = targetDocumentId === documentId
+
+      if (options?.useServerDocumentActions && !isLiveEditRestore) {
         const replaceDraftAction: Action = {
           actionType: 'sanity.action.document.replaceDraft',
           publishedId: documentId,
