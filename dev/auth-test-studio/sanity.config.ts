@@ -65,6 +65,14 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
     {
       ...shared,
       ...env,
+      name: `${prefix}dual`,
+      title: `Dual auth (default)${titleSuffix}`,
+      basePath: `${pathPrefix}/dual`,
+      auth: {loginMethod: 'dual'},
+    },
+    {
+      ...shared,
+      ...env,
       name: `${prefix}cookie`,
       title: `Cookie auth${titleSuffix}`,
       basePath: `${pathPrefix}/cookie`,
@@ -77,14 +85,6 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
       title: `Token auth${titleSuffix}`,
       basePath: `${pathPrefix}/token`,
       auth: {loginMethod: 'token'},
-    },
-    {
-      ...shared,
-      ...env,
-      name: `${prefix}dual`,
-      title: `Dual auth (default)${titleSuffix}`,
-      basePath: `${pathPrefix}/dual`,
-      auth: {loginMethod: 'dual'},
     },
 
     // redirectOnSingle — skips the provider chooser when only one provider is configured
