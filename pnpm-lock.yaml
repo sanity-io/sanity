@@ -1277,8 +1277,8 @@ importers:
         specifier: 'catalog:'
         version: 7.21.0
       '@sanity/media-library-types':
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^1.4.0
+        version: 1.4.0
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -1613,8 +1613,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/cli':
-        specifier: ^6.3.2
-        version: 6.3.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(ts-toolbelt@6.15.5)(typescript@5.9.3)(xstate@5.30.0)
+        specifier: ^6.4.0
+        version: 6.4.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(ts-toolbelt@6.15.5)(typescript@5.9.3)(xstate@5.30.0)
       '@sanity/client':
         specifier: 'catalog:'
         version: 7.21.0
@@ -1652,8 +1652,8 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(react@19.2.4)
       '@sanity/media-library-types':
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^1.4.0
+        version: 1.4.0
       '@sanity/message-protocol':
         specifier: ^0.23.0
         version: 0.23.0
@@ -5157,8 +5157,8 @@ packages:
     resolution: {integrity: sha512-/s91Tzg3XeK8pHFMqgZQUj4vXdJ5ZUCOpPwlc9lnOXUBKF8fh8t4YI5jctBJkzcgxuV8E4L7VVK34qtRfwYPxQ==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
 
-  '@sanity/cli@6.3.2':
-    resolution: {integrity: sha512-yPNZpgOh8C+999Sg7MOv36NMKzAHjhF/t9INrs0KQSw9mDHFTIyi/mjR3/wOlW6p/4XqJiomLs8ii+gb0z/rpA==}
+  '@sanity/cli@6.4.0':
+    resolution: {integrity: sha512-nEXm+5VItVaczBTeWW5KZBs1QHItz9OdvHdUfsIFsnXYgcIvxAH/7Iclq2+iBXxDkzEqnan/XrusJZRWLZe2QA==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     hasBin: true
 
@@ -5322,8 +5322,8 @@ packages:
     peerDependencies:
       react: ^18.3 || ^19.0.0-0
 
-  '@sanity/media-library-types@1.2.0':
-    resolution: {integrity: sha512-p+Bw96I63SwBcMNA/L5dnMdEcS88EEDUDZ65LGuwOCMXrESRGMFCSxgc+0HnL0JXDIzgYgfrPuf1I3bO9QneAw==}
+  '@sanity/media-library-types@1.4.0':
+    resolution: {integrity: sha512-DZwNT+dDSc1JPW4e7U5C+IJELq5IAeU2A1UcY1079gl+Hakx2USvu5LyY1hrjb1eifRPAhL8uwOVcMNBUmSmzg==}
 
   '@sanity/message-protocol@0.18.2':
     resolution: {integrity: sha512-sxPpM0q6ozvoWCQMFwPfL0KR8nkNl5gOhzkEH0EE8RHWfxH7jqHtxnXC/AEk5f4o/PuGChcHDWUof97JZ6LInw==}
@@ -14458,7 +14458,7 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@sanity/cli@6.3.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(ts-toolbelt@6.15.5)(typescript@5.9.3)(xstate@5.30.0)':
+  '@sanity/cli@6.4.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(ts-toolbelt@6.15.5)(typescript@5.9.3)(xstate@5.30.0)':
     dependencies:
       '@oclif/core': 4.10.5
       '@oclif/plugin-help': 6.2.44
@@ -14836,7 +14836,7 @@ snapshots:
       '@sanity/color': 3.0.6
       react: 19.2.4
 
-  '@sanity/media-library-types@1.2.0': {}
+  '@sanity/media-library-types@1.4.0': {}
 
   '@sanity/message-protocol@0.18.2':
     dependencies:
@@ -15120,7 +15120,7 @@ snapshots:
   '@sanity/types@4.22.0(@types/react@19.2.14)':
     dependencies:
       '@sanity/client': 7.21.0
-      '@sanity/media-library-types': 1.2.0
+      '@sanity/media-library-types': 1.4.0
       '@types/react': 19.2.14
 
   '@sanity/ui@2.16.22(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)':

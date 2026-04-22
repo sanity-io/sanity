@@ -44,11 +44,24 @@ test.describe('Validation test', () => {
       await page.keyboard.press('Escape')
 
       await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
-      await expect(page.getByRole('button', {name: 'Validation'})).toBeVisible()
-      await expect(page.getByRole('button', {name: 'Validation'})).toBeEnabled()
-      await page.getByRole('button', {name: 'Validation'}).click()
 
+      // Wait for the form to reflect the newly-added array row before opening the
+      // Validation panel. Without this, the click-through to `array-item-menu-button`
+      // races against the array re-render that follows the Escape/close-dialog
+      // mutation and can target a stale (about-to-unmount) node.
       const arrayItemMenuButton = page.getByTestId('array-item-menu-button')
+      await expect(arrayItemMenuButton).toHaveCount(1)
+
+      const validationButton = page.getByRole('button', {name: 'Validation'})
+      await expect(validationButton).toBeVisible()
+      await expect(validationButton).toBeEnabled()
+      await validationButton.click()
+
+      // The Validation inspector mounts async and reflows the pane; wait for at
+      // least one validation marker to land (the nested furniture list error)
+      // before interacting with the array row menu.
+      await expect(page.getByRole('button', {name: 'House / Room / List furniture'})).toBeVisible()
+
       await expect(arrayItemMenuButton).toBeVisible()
       await expect(arrayItemMenuButton).toBeEnabled()
       await retryingClickUntilVisible(
@@ -56,8 +69,9 @@ test.describe('Validation test', () => {
         arrayItemMenuButton,
         page.getByRole('menuitem', {name: 'Remove'}),
       )
-      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
-      await page.getByRole('menuitem', {name: 'Remove'}).click()
+      const removeMenuItem = page.getByRole('menuitem', {name: 'Remove'})
+      await expect(removeMenuItem).toBeEnabled()
+      await removeMenuItem.click()
 
       await expect(
         page.getByRole('button', {name: 'Room cant be unfurnished!', exact: true}),
@@ -102,6 +116,12 @@ test.describe('Validation test', () => {
 
       await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
+      // Wait for the first row to be committed to the form before adding the
+      // second. This guards against the flake where clicking `add` again while
+      // the first row is still mid-mount silently no-ops.
+      const arrayItemMenuButton = page.getByTestId('array-item-menu-button')
+      await expect(arrayItemMenuButton).toHaveCount(1)
+
       // Wait for the add button to be ready again after closing the dialog
       await expect(addButton).toBeVisible()
       await expect(addButton).toBeEnabled()
@@ -117,11 +137,18 @@ test.describe('Validation test', () => {
 
       await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
-      await expect(page.getByRole('button', {name: 'Validation'})).toBeVisible()
-      await expect(page.getByRole('button', {name: 'Validation'})).toBeEnabled()
+      // Wait for BOTH array rows to appear in the form before opening validation.
+      // Previously the test jumped straight to clicking the Validation button;
+      // if the second row hadn't finished mounting, the validation inspector
+      // would render only one marker and the `toHaveCount(2)` below would flake.
+      await expect(arrayItemMenuButton).toHaveCount(2)
+
+      const validationButton = page.getByRole('button', {name: 'Validation'})
+      await expect(validationButton).toBeVisible()
+      await expect(validationButton).toBeEnabled()
 
       // Click and wait for validation panel to open by waiting for validation items
-      await page.getByRole('button', {name: 'Validation'}).click()
+      await validationButton.click()
 
       // Wait for validation items to appear - checking count first ensures they're all rendered
       await expect(page.getByRole('button', {name: 'House / Room / List furniture'})).toHaveCount(
@@ -129,7 +156,7 @@ test.describe('Validation test', () => {
         {timeout: 10000},
       )
 
-      const firstMenuButton = page.getByTestId('array-item-menu-button').first()
+      const firstMenuButton = arrayItemMenuButton.first()
       await expect(firstMenuButton).toBeVisible()
       await expect(firstMenuButton).toBeEnabled()
       await retryingClickUntilVisible(
@@ -137,8 +164,9 @@ test.describe('Validation test', () => {
         firstMenuButton,
         page.getByRole('menuitem', {name: 'Remove'}),
       )
-      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
-      await page.getByRole('menuitem', {name: 'Remove'}).click()
+      const removeMenuItem = page.getByRole('menuitem', {name: 'Remove'})
+      await expect(removeMenuItem).toBeEnabled()
+      await removeMenuItem.click()
       await expect(page.getByRole('button', {name: 'House / Room / List furniture'})).toHaveCount(1)
 
       expect(errors).toHaveLength(0)
@@ -183,14 +211,25 @@ test.describe('Validation test', () => {
       await page.keyboard.press('Escape')
 
       await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
-      await expect(page.getByRole('button', {name: 'Validation'})).toBeVisible()
-      await expect(page.getByRole('button', {name: 'Validation'})).toBeEnabled()
-      await page.getByRole('button', {name: 'Validation'}).click()
 
+      // Ensure the newly-added array row is present in the form before opening
+      // the validation inspector; prevents a race with the post-dialog re-render.
+      const arrayItemMenuButtons = page.getByTestId('array-item-menu-button')
+      await expect(arrayItemMenuButtons).toHaveCount(1)
+
+      const validationButton = page.getByRole('button', {name: 'Validation'})
+      await expect(validationButton).toBeVisible()
+      await expect(validationButton).toBeEnabled()
+      await validationButton.click()
+
+      // Both validation markers must be present before removing the array row,
+      // otherwise the subsequent assertions fail intermittently because the
+      // marker list is populated by an async validation run that can trail the
+      // mutation.
       await expect(page.getByRole('button', {name: 'Name Required'})).toBeVisible()
       await expect(page.getByRole('button', {name: 'House / Room / List furniture'})).toBeVisible()
 
-      const arrayItemMenuButton = page.getByTestId('array-item-menu-button').first()
+      const arrayItemMenuButton = arrayItemMenuButtons.first()
       await expect(arrayItemMenuButton).toBeVisible()
       await expect(arrayItemMenuButton).toBeEnabled()
       await retryingClickUntilVisible(
@@ -198,8 +237,9 @@ test.describe('Validation test', () => {
         arrayItemMenuButton,
         page.getByRole('menuitem', {name: 'Remove'}),
       )
-      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
-      await page.getByRole('menuitem', {name: 'Remove'}).click()
+      const removeMenuItem = page.getByRole('menuitem', {name: 'Remove'})
+      await expect(removeMenuItem).toBeEnabled()
+      await removeMenuItem.click()
 
       await expect(page.getByRole('button', {name: 'Name Required'})).toBeVisible()
       await expect(
