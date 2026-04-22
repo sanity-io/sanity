@@ -1,4 +1,5 @@
 /* eslint-disable @sanity/i18n/no-attribute-template-literals */
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
@@ -10,6 +11,7 @@ import {LoadingBlock} from '../components/loadingBlock'
 import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
 import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
 import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
+import {StudioReadyMeasured} from './__telemetry__/bootstrap.telemetry'
 import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
@@ -40,6 +42,11 @@ const SearchFullscreenPortalCard = styled(Card)`
   width: 100%;
   z-index: 200;
 `
+
+// Module-level one-shot guard so the event fires once per page load, not
+// per-mount (StrictMode double-mounts in dev; re-mounting Studio shouldn't
+// refire either).
+let studioReadyFired = false
 
 /** @internal */
 export interface NavbarContextValue {
@@ -86,6 +93,7 @@ export function StudioLayout() {
  * */
 export function StudioLayoutComponent() {
   const {name, title, tools} = useWorkspace()
+  const telemetry = useTelemetry()
 
   // In the background, check if the network protocol used to communicate with the
   // Sanity API is modern (HTTP/2 or newer). Shows a toast if it's not.
@@ -127,6 +135,20 @@ export function StudioLayoutComponent() {
     }
     document.title = documentTitle
   }, [documentTitle, toolControlsDocumentTitle])
+
+  // Fire a one-shot "Studio Ready" telemetry event the first time the
+  // active tool resolves. Gives us a user-perceived "Studio is interactive"
+  // timing, from browser navigation start to first tool render.
+  useEffect(() => {
+    if (studioReadyFired) return
+    if (!activeTool) return
+    studioReadyFired = true
+    telemetry.log(StudioReadyMeasured, {
+      durationMs: performance.now(),
+      toolsCount: tools.length,
+      activeToolName: activeTool.name,
+    })
+  }, [activeTool, telemetry, tools.length])
 
   const handleSearchFullscreenOpenChange = useCallback((open: boolean) => {
     setSearchFullscreenOpen(open)
