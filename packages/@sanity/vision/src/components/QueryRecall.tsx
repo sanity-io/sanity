@@ -1,10 +1,11 @@
-import {AddIcon, SearchIcon, TrashIcon, UnpublishIcon, UsersIcon} from '@sanity/icons'
+import {AddIcon, LockIcon, SearchIcon, TrashIcon, UnpublishIcon, UsersIcon} from '@sanity/icons'
 import {
   Badge,
   Box,
   Button,
   Card,
   Code,
+  Dialog,
   Flex,
   Menu,
   MenuButton,
@@ -43,8 +44,7 @@ export function QueryRecall({
 }): ReactElement {
   type QueryFilter = 'all' | 'personal' | 'shared'
   const toast = useToast()
-  const {saveQuery, updateQuery, queries, deleteQuery, saving, deleting, saveQueryError} =
-    useSavedQueries()
+  const {saveQuery, updateQuery, queries, deleteQuery, saving, deleting} = useSavedQueries()
   const {t} = useTranslation(visionLocaleNamespace)
   const formatDate = useDateTimeFormat({
     month: 'short',
@@ -61,6 +61,7 @@ export function QueryRecall({
   const [queryFilter, setQueryFilter] = useState<QueryFilter>('all')
   const [selectedUrl, setSelectedUrl] = useState<string | undefined>(url)
   const [pendingUnshareKeys, setPendingUnshareKeys] = useState<string[]>([])
+  const [shareDialogQuery, setShareDialogQuery] = useState<QueryConfig | null>(null)
 
   const handleSave = useCallback(async () => {
     // Generate the correct URL first
@@ -96,33 +97,31 @@ export function QueryRecall({
       return
     }
 
-    if (newUrl) {
+    if (!newUrl) return
+
+    try {
       await saveQuery({
         shared: false,
         url: newUrl,
         savedAt: new Date().toISOString(),
-        title: 'Untitled',
+        title: t('label.untitled-query'),
       })
-      // Set the selected URL to the newly saved query's URL
       setSelectedUrl(newUrl)
-    }
-    if (saveQueryError) {
-      toast.push({
-        closable: true,
-        status: 'error',
-        title: t('save-query.error'),
-        description: saveQueryError.message,
-      })
-    } else {
       toast.push({
         closable: true,
         status: 'success',
         title: t('save-query.success'),
       })
+    } catch (err) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: t('save-query.error'),
+        description: err instanceof Error ? err.message : String(err),
+      })
     }
   }, [
     queries,
-    saveQueryError,
     toast,
     t,
     currentQuery,
@@ -133,91 +132,93 @@ export function QueryRecall({
     saveQuery,
   ])
 
-  const handleShareQuery = useCallback(
-    async (query: QueryConfig) => {
+  const handleShareQuery = useCallback((query: QueryConfig) => {
+    setShareDialogQuery(query)
+  }, [])
+
+  const handleConfirmShareQuery = useCallback(async () => {
+    if (!shareDialogQuery) return
+
+    try {
       await saveQuery({
         shared: true,
-        title: query.title || t('label.untitled-query'),
-        url: query.url,
+        title: shareDialogQuery.title || t('label.untitled-query'),
+        url: shareDialogQuery.url,
         savedAt: new Date().toISOString(),
       })
 
-      if (saveQueryError) {
-        toast.push({
-          closable: true,
-          status: 'error',
-          title: t('save-query.error'),
-          description: saveQueryError.message,
-        })
-        return
-      }
-
-      await deleteQuery(query._key)
+      await deleteQuery(shareDialogQuery._key)
       toast.push({
         closable: true,
         status: 'success',
         title: t('save-query.shared-success'),
       })
-    },
-    [deleteQuery, saveQuery, saveQueryError, t, toast],
-  )
+    } catch (err) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: t('save-query.error'),
+        description: err instanceof Error ? err.message : String(err),
+      })
+    } finally {
+      setShareDialogQuery(null)
+    }
+  }, [deleteQuery, saveQuery, shareDialogQuery, t, toast])
 
   const handleUnshareQuery = useCallback(
     async (query: QueryConfig) => {
       setPendingUnshareKeys((prev) => [...prev, query._key])
-      const nextQueryObj = getStateFromUrl(query.url)
-      const duplicatePersonalQuery = queries?.find((existingQuery) => {
-        if (existingQuery._key === query._key) return false
-        if (existingQuery.shared) return false
-        const existingQueryObj = getStateFromUrl(existingQuery.url)
-        return (
-          nextQueryObj &&
-          existingQueryObj &&
-          existingQueryObj.query === nextQueryObj.query &&
-          isEqual(existingQueryObj.params, nextQueryObj.params)
-        )
-      })
+      try {
+        const nextQueryObj = getStateFromUrl(query.url)
+        const duplicatePersonalQuery = queries?.find((existingQuery) => {
+          if (existingQuery._key === query._key) return false
+          if (existingQuery.shared) return false
+          const existingQueryObj = getStateFromUrl(existingQuery.url)
+          return (
+            nextQueryObj &&
+            existingQueryObj &&
+            existingQueryObj.query === nextQueryObj.query &&
+            isEqual(existingQueryObj.params, nextQueryObj.params)
+          )
+        })
 
-      if (duplicatePersonalQuery) {
+        if (duplicatePersonalQuery) {
+          toast.push({
+            closable: true,
+            status: 'warning',
+            title: t('save-query.already-saved'),
+            description: `${duplicatePersonalQuery.title} - ${formatDate.format(
+              new Date(duplicatePersonalQuery.savedAt || ''),
+            )}`,
+          })
+          return
+        }
+
+        await saveQuery({
+          shared: false,
+          title: query.title || t('label.untitled-query'),
+          url: query.url,
+          savedAt: new Date().toISOString(),
+        })
+
+        await deleteQuery(query._key)
         toast.push({
           closable: true,
-          status: 'warning',
-          title: t('save-query.already-saved'),
-          description: `${duplicatePersonalQuery.title} - ${formatDate.format(
-            new Date(duplicatePersonalQuery.savedAt || ''),
-          )}`,
+          status: 'success',
+          title: t('save-query.unshared-success'),
         })
-        setPendingUnshareKeys((prev) => prev.filter((key) => key !== query._key))
-        return
-      }
-
-      await saveQuery({
-        shared: false,
-        title: query.title || t('label.untitled-query'),
-        url: query.url,
-        savedAt: new Date().toISOString(),
-      })
-
-      if (saveQueryError) {
+      } catch (err) {
         toast.push({
           closable: true,
           status: 'error',
           title: t('save-query.error'),
-          description: saveQueryError.message,
+          description: err instanceof Error ? err.message : String(err),
         })
+      } finally {
         setPendingUnshareKeys((prev) => prev.filter((key) => key !== query._key))
-        return
       }
-
-      await deleteQuery(query._key)
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: t('save-query.unshared-success'),
-      })
-      setPendingUnshareKeys((prev) => prev.filter((key) => key !== query._key))
     },
-    [deleteQuery, formatDate, getStateFromUrl, queries, saveQuery, saveQueryError, t, toast],
+    [deleteQuery, formatDate, getStateFromUrl, queries, saveQuery, t, toast],
   )
 
   const handleTitleSave = useCallback(
@@ -328,7 +329,7 @@ export function QueryRecall({
   const visibleQueries = queries?.filter((q) => !pendingUnshareKeys.includes(q._key))
 
   const filteredQueries = visibleQueries?.filter((q) => {
-    const matchesSearch = q?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch = (q.title ?? '').toLowerCase().includes(searchQuery.toLowerCase())
     const matchesFilter =
       queryFilter === 'all' ||
       (queryFilter === 'personal' && !q.shared) ||
@@ -402,20 +403,31 @@ export function QueryRecall({
             <Card
               key={q._key}
               width={'fill'}
-              padding={4}
-              border
-              tone={isSelected ? 'positive' : 'default'}
-              onClick={() => {
+              paddingX={4}
+              paddingY={4}
+              tone="default"
+              onClick={(event) => {
+                const target = event.target as HTMLElement | null
+                if (target?.closest('[data-query-actions="true"]')) {
+                  return
+                }
                 setSelectedUrl(q.url) // Update the selected query immediately
                 const parsedUrl = getStateFromUrl(q.url)
                 if (parsedUrl) {
                   setStateFromParsedUrl(parsedUrl)
                 }
               }}
-              style={{position: 'relative'}}
+              style={{
+                position: 'relative',
+                borderBottom: '1px solid var(--card-border-color)',
+                borderLeft: isSelected
+                  ? '2px solid var(--card-muted-fg-color)'
+                  : '2px solid transparent',
+                cursor: 'pointer',
+              }}
             >
               <Stack space={3}>
-                <Flex justify="space-between" align={'center'}>
+                <Flex justify="space-between" align={'center'} style={{minHeight: '25px'}}>
                   <Flex align="center" gap={2} paddingRight={1}>
                     {editingKey === q._key ? (
                       <TextInput
@@ -438,9 +450,9 @@ export function QueryRecall({
                         size={3}
                         textOverflow="ellipsis"
                         style={{
-                          maxWidth: '170px',
+                          maxWidth: '220px',
                           cursor: canMutateQuery ? 'pointer' : 'default',
-                          padding: '4px 0',
+                          padding: '2px 0',
                         }}
                         title={
                           optimisticTitles[q._key] ||
@@ -473,52 +485,56 @@ export function QueryRecall({
                     )}
                   </Flex>
                   <Flex align="center" gap={2}>
-                    {q.shared && <UserAvatar size={0} user={q.authorId || ''} withTooltip />}
-                    {(!q.shared || canMutateQuery) && (
-                      <MenuButton
-                        button={<ContextMenuButton />}
-                        id={`${q._key}-menu`}
-                        menu={
-                          <Menu>
-                            {!q.shared && (
-                              <MenuItem
-                                icon={UsersIcon}
-                                padding={3}
-                                text={t('label.share')}
-                                onClick={(event) => {
-                                  event.stopPropagation()
-                                  void handleShareQuery(q)
-                                }}
-                              />
-                            )}
-                            {q.shared && canMutateQuery && (
-                              <MenuItem
-                                icon={UnpublishIcon}
-                                padding={3}
-                                text={t('action.unshare')}
-                                onClick={(event) => {
-                                  event.stopPropagation()
-                                  void handleUnshareQuery(q)
-                                }}
-                              />
-                            )}
-                            {canMutateQuery && (
-                              <MenuItem
-                                tone="critical"
-                                padding={3}
-                                icon={TrashIcon}
-                                text={t('action.delete')}
-                                onClick={(event) => {
-                                  event.stopPropagation()
-                                  void deleteQuery(q._key)
-                                }}
-                              />
-                            )}
-                          </Menu>
-                        }
-                        popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
-                      />
-                    )}
+                    <Box
+                      data-query-actions="true"
+                      style={{width: '25px', height: '25px', display: 'flex', alignItems: 'center'}}
+                    >
+                      {(!q.shared || canMutateQuery) && (
+                        <MenuButton
+                          button={<ContextMenuButton />}
+                          id={`${q._key}-menu`}
+                          menu={
+                            <Menu>
+                              {!q.shared && (
+                                <MenuItem
+                                  icon={UsersIcon}
+                                  padding={3}
+                                  text={t('label.share')}
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                     handleShareQuery(q)
+                                  }}
+                                />
+                              )}
+                              {q.shared && canMutateQuery && (
+                                <MenuItem
+                                  icon={UnpublishIcon}
+                                  padding={3}
+                                  text={t('action.unshare')}
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                    void handleUnshareQuery(q)
+                                  }}
+                                />
+                              )}
+                              {canMutateQuery && (
+                                <MenuItem
+                                  tone="critical"
+                                  padding={3}
+                                  icon={TrashIcon}
+                                  text={t('action.delete')}
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                    void deleteQuery(q._key)
+                                  }}
+                                />
+                              )}
+                            </Menu>
+                          }
+                          popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
+                        />
+                      )}
+                    </Box>
                   </Flex>
                 </Flex>
 
@@ -535,31 +551,50 @@ export function QueryRecall({
                     placement="top"
                     portal
                   >
-                    <Code muted>{shortQueryPreview}</Code>
+                    <Code muted size={1}>
+                      {shortQueryPreview}
+                    </Code>
                   </Tooltip>
                 ) : (
                   <Code muted />
                 )}
 
-                <Flex align="center" gap={1}>
+                <Flex align="center" gap={2} style={{paddingTop: '2px', height: '20px'}}>
+                  <Box
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '17px',
+                      height: '17px',
+                    }}
+                  >
+                    {q.shared ? (
+                      <UserAvatar size={0} user={q.authorId || ''} withTooltip />
+                    ) : (
+                      <Box
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          lineHeight: 0,
+                          color: 'var(--card-muted-fg-color)',
+                        }}
+                      >
+                        <LockIcon />
+                      </Box>
+                    )}
+                  </Box>
+                  <Badge mode="outline" tone={q.shared ? 'primary' : 'default'}>
+                    {q.shared ? t('label.shared') : t('label.personal')}
+                  </Badge>
+                  <Text size={1} muted>
+                    •
+                  </Text>
                   <Text size={1} muted>
                     {formatDate.format(new Date(q.savedAt || ''))}
                   </Text>
                 </Flex>
-
-                {q.shared && (
-                  <Box
-                    style={{
-                      position: 'absolute',
-                      right: '16px',
-                      bottom: isEdited ? '44px' : '16px',
-                    }}
-                  >
-                    <Badge mode="outline" tone="primary">
-                      {t('label.shared')}
-                    </Badge>
-                  </Box>
-                )}
 
                 {isEdited && (
                   <Button
@@ -586,6 +621,32 @@ export function QueryRecall({
           )
         })}
       </Stack>
+      {shareDialogQuery && (
+        <Dialog
+          id="vision-query-recall-share-dialog"
+          width={1}
+          header={t('label.share')}
+          onClose={() => setShareDialogQuery(null)}
+          footer={
+            <Flex justify="flex-end" gap={2}>
+              <Button
+                mode="bleed"
+                text={t('action.query-cancel')}
+                onClick={() => setShareDialogQuery(null)}
+              />
+              <Button
+                tone="primary"
+                text={t('action.save-shared-query')}
+                onClick={() => void handleConfirmShareQuery()}
+              />
+            </Flex>
+          }
+        >
+          <Box padding={4}>
+            <Text size={2}>{t('save-query.share-warning')}</Text>
+          </Box>
+        </Dialog>
+      )}
     </ScrollContainer>
   )
 }

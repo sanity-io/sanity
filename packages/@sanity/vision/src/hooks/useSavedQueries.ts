@@ -142,10 +142,16 @@ export function useSavedQueries(): {
       .subscribe({
         next: () => {
           void fetchSharedQueries().catch((err) => {
-            setError(err as Error)
+            if (!cancelled) {
+              setError(err as Error)
+            }
           })
         },
-        error: (err) => setError(err as Error),
+        error: (err) => {
+          if (!cancelled) {
+            setError(err as Error)
+          }
+        },
       })
 
     return () => {
@@ -165,14 +171,12 @@ export function useSavedQueries(): {
       setSaving(true)
       setSaveQueryError(undefined)
 
-      if (query.shared) {
-        if (!currentUser?.id) {
-          setSaveQueryError(new Error('No current user found. Unable to save shared query.'))
-          setSaving(false)
-          return
-        }
+      try {
+        if (query.shared) {
+          if (!currentUser?.id) {
+            throw new Error('No current user found. Unable to save shared query.')
+          }
 
-        try {
           const createdDoc = (await workspaceClient.create({
             _type: SHARED_QUERY_DOCUMENT_TYPE,
             authorId: currentUser.id,
@@ -181,14 +185,9 @@ export function useSavedQueries(): {
             url: query.url,
           })) as SharedQueryDocument
           setSharedQueries((prev) => [...mapSharedQueries([createdDoc]), ...prev])
-        } catch (err) {
-          setSaveQueryError(err as Error)
+          return
         }
-        setSaving(false)
-        return
-      }
 
-      try {
         const newQuery = {...query, _key: uuid()} // Add a unique _key to the query
         const newQueries = [newQuery, ...value.queries]
         setValue({queries: newQueries})
@@ -196,9 +195,12 @@ export function useSavedQueries(): {
           queries: newQueries,
         } as unknown as KeyValueStoreValue)
       } catch (err) {
-        setSaveQueryError(err as Error)
+        const saveError = err instanceof Error ? err : new Error(String(err))
+        setSaveQueryError(saveError)
+        throw saveError
+      } finally {
+        setSaving(false)
       }
-      setSaving(false)
     },
     [currentUser, workspaceClient, keyValueStore, mapSharedQueries, value.queries],
   )
@@ -208,14 +210,12 @@ export function useSavedQueries(): {
       setSaving(true)
       setSaveQueryError(undefined)
 
-      if (query.shared) {
-        if (!currentUser?.id || query.authorId !== currentUser.id) {
-          setSaveQueryError(new Error('Only the author can update a shared query.'))
-          setSaving(false)
-          return
-        }
+      try {
+        if (query.shared) {
+          if (!currentUser?.id || query.authorId !== currentUser.id) {
+            throw new Error('Only the author can update a shared query.')
+          }
 
-        try {
           const updatedDoc = (await workspaceClient
             .patch(query._key)
             .set({
@@ -231,14 +231,9 @@ export function useSavedQueries(): {
               existingQuery._key === query._key ? updatedSharedQuery : existingQuery,
             ),
           )
-        } catch (err) {
-          setSaveQueryError(err as Error)
+          return
         }
-        setSaving(false)
-        return
-      }
 
-      try {
         const updatedQueries = value.queries.map((q) =>
           q._key === query._key ? {...q, ...query} : q,
         )
@@ -247,9 +242,12 @@ export function useSavedQueries(): {
           queries: updatedQueries,
         } as unknown as KeyValueStoreValue)
       } catch (err) {
-        setSaveQueryError(err as Error)
+        const updateError = err instanceof Error ? err : new Error(String(err))
+        setSaveQueryError(updateError)
+        throw updateError
+      } finally {
+        setSaving(false)
       }
-      setSaving(false)
     },
     [workspaceClient, currentUser, keyValueStore, mapSharedQueries, value.queries],
   )
