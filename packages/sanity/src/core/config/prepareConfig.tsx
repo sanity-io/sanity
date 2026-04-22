@@ -170,10 +170,10 @@ function warnOnDivergentProjectAuth(
     const formattedGroups = groups.map((names) => `  • ${names.map((n) => `"${n}"`).join(', ')}`)
     const message =
       `Workspaces for project "${projectId}" declare different \`auth\` ` +
-      `configurations. Auth is project-scoped — workspaces for the same project ` +
-      `share cookies and tokens regardless of their individual \`auth\` config, so ` +
-      `only the first-initialized workspace's config actually takes effect. ` +
-      `Consolidate these to a single shared config:\n${formattedGroups.join('\n')}`
+      `configurations. Auth is project-scoped: workspaces for the same project ` +
+      `share cookies and tokens. Only the first-initialized workspace's \`auth\` ` +
+      `config takes effect; others are silent no-ops. Consolidate these to a ` +
+      `single shared config:\n${formattedGroups.join('\n')}`
 
     console.warn(`[sanity] ${message}`)
     recordConfigWarning({

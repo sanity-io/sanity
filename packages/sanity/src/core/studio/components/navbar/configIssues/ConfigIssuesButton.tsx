@@ -89,7 +89,7 @@ export function ConfigIssuesButton() {
                   >
                     <Stack space={2}>
                       <Text size={1} weight="medium">
-                        Divergent auth config for project "{warning.projectId}"
+                        Divergent auth config
                       </Text>
                       <Text size={1} style={{whiteSpace: 'pre-wrap'}}>
                         {warning.message}
