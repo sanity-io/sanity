@@ -44,6 +44,16 @@ const schemaTypes = [
           },
         ],
       }),
+      defineField({
+        name: 'location',
+        type: 'object',
+        fields: [
+          defineField({
+            name: 'city',
+            type: 'string',
+          }),
+        ],
+      }),
     ],
   }),
 ]
@@ -187,6 +197,64 @@ describe('createSearchQuery', () => {
       `)
 
       expect(query).toContain('| order(exampleField desc)')
+    })
+
+    it('should sort on nested fields', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
+      const {query} = createSearchQuery(
+        {
+          query: 'test',
+          types: [testType],
+        },
+        '',
+        {
+          sort: [
+            {
+              direction: 'desc',
+              field: 'location.city',
+            },
+          ],
+        },
+      )
+
+      expect(query).toMatchInlineSnapshot(`
+        "// findability-mvi:5
+        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] | order(location.city desc) [0...$__limit] {"location.city": location.city, _type, _id, _originalId}"
+      `)
+
+      expect(query).toContain('| order(location.city desc)')
+    })
+
+    it('should sort on complex GROQ expressions', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
+      const {query} = createSearchQuery(
+        {
+          query: 'test',
+          types: [testType],
+        },
+        '',
+        {
+          sort: [
+            {
+              direction: 'desc',
+              field: 'string::length(title)',
+            },
+          ],
+        },
+      )
+
+      expect(query).toMatchInlineSnapshot(`
+        "// findability-mvi:5
+        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] | order(string::length(title) desc) [0...$__limit] {"string::length(title)": string::length(title), _type, _id, _originalId}"
+      `)
+
+      expect(query).toContain('| order(string::length(title) desc)')
     })
 
     it('should use multiple sort fields and directions', () => {
