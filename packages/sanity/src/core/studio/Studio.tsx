@@ -86,6 +86,15 @@ export interface StudioProps {
    * @hidden
    * @beta */
   unstable_noAuthBoundary?: boolean
+
+  /**
+   * Used as a temporary measure to forward the token from workbench to the studio for instant
+   * authentication.
+   * @internal
+   * @hidden
+   * @experimental
+   */
+  unstable_temporaryToken?: string
 }
 
 /**
@@ -100,6 +109,7 @@ export function Studio(props: StudioProps): React.JSX.Element {
     unstable_globalStyles: globalStyles,
     unstable_history,
     unstable_noAuthBoundary,
+    unstable_temporaryToken,
   } = props
 
   return (
@@ -110,6 +120,7 @@ export function Studio(props: StudioProps): React.JSX.Element {
       scheme={scheme}
       unstable_history={unstable_history}
       unstable_noAuthBoundary={unstable_noAuthBoundary}
+      unstable_temporaryToken={unstable_temporaryToken}
     >
       {globalStyles && <GlobalStyle />}
       <StudioLayout />

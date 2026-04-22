@@ -63,6 +63,12 @@ export interface AuthConfig {
    * but can be set if using custom cname for API domain.
    */
   apiHost?: string
+
+  /**
+   * @hidden
+   * @beta
+   */
+  __internal_token?: string
 }
 
 /**

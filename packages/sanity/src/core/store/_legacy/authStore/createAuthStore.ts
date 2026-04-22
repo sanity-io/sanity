@@ -24,6 +24,7 @@ export interface AuthStoreOptions extends AuthConfig {
   clientFactory?: (options: SanityClientConfig) => SanityClient
   projectId: string
   dataset: string
+  token?: string
 }
 
 const getStorageKey = (projectId: string): string => {
@@ -173,6 +174,7 @@ export function _createAuthStore({
   dataset,
   apiHost,
   loginMethod = 'dual',
+  token: providedToken,
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
   // this broadcast channel receives either a token as a `string` or `null`.
@@ -189,7 +191,13 @@ export function _createAuthStore({
   // const firstMessage = messages.pipe(first())
 
   const token$ = messages.pipe(
-    startWith(isCookielessCompatibleLoginMethod(loginMethod) ? getToken(projectId) : null),
+    startWith(
+      providedToken
+        ? providedToken
+        : isCookielessCompatibleLoginMethod(loginMethod)
+          ? getToken(projectId)
+          : null,
+    ),
   )
 
   // Allow configuration of `apiHost` through source configuration
