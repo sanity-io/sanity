@@ -139,7 +139,7 @@ describe('createHistoryStore', () => {
       mockRequest.mockReset().mockResolvedValue({documents: [revisionDoc]})
     })
 
-    test('uses replaceDraft action for non-live-edit documents', async () => {
+    test('uses replaceDraft action when target id is drafts-prefixed', async () => {
       const client = buildClient()
       const historyStore = createHistoryStore({client})
 
@@ -162,12 +162,7 @@ describe('createHistoryStore', () => {
       })
     })
 
-    test('falls back to createOrReplace when restoring a live-edit document', async () => {
-      // For live-edit documents, targetDocumentId equals the publishedId. The
-      // `sanity.action.document.replaceDraft` action requires attributes._id to
-      // be prefixed with either "drafts." or "versions.{bundleId}", which would
-      // cause the server to reject the request. Ensure we fall back to the
-      // mutation API instead.
+    test('falls back to createOrReplace when target id is unprefixed', async () => {
       const client = buildClient()
       const historyStore = createHistoryStore({client})
 
@@ -188,7 +183,7 @@ describe('createHistoryStore', () => {
       )
     })
 
-    test('falls back to createOrReplace when restoring a deleted live-edit document', async () => {
+    test('falls back to createOrReplace for a deleted document with unprefixed target id', async () => {
       const client = buildClient()
       const historyStore = createHistoryStore({client})
 
@@ -198,6 +193,50 @@ describe('createHistoryStore', () => {
             fromDeleted: true,
             useServerDocumentActions: true,
           })
+          .subscribe({complete: resolve, error: reject})
+      })
+
+      expect(mockAction).not.toHaveBeenCalled()
+      expect(mockCreateOrReplace).toHaveBeenCalledTimes(1)
+    })
+
+    test('uses create + replaceDraft actions for a deleted document with a drafts-prefixed target', async () => {
+      const client = buildClient()
+      const historyStore = createHistoryStore({client})
+
+      await new Promise<void>((resolve, reject) => {
+        historyStore
+          .restore('doc-id', 'drafts.doc-id', 'rev-1', {
+            fromDeleted: true,
+            useServerDocumentActions: true,
+          })
+          .subscribe({complete: resolve, error: reject})
+      })
+
+      expect(mockCreateOrReplace).not.toHaveBeenCalled()
+      expect(mockAction).toHaveBeenCalledTimes(1)
+      const [actions] = mockAction.mock.calls[0]
+      expect(actions).toHaveLength(2)
+      expect(actions[0]).toMatchObject({
+        actionType: 'sanity.action.document.create',
+        publishedId: 'doc-id',
+        ifExists: 'fail',
+        attributes: expect.objectContaining({_id: 'drafts.doc-id'}),
+      })
+      expect(actions[1]).toMatchObject({
+        actionType: 'sanity.action.document.replaceDraft',
+        publishedId: 'doc-id',
+        attributes: expect.objectContaining({_id: 'drafts.doc-id'}),
+      })
+    })
+
+    test('falls back to createOrReplace when useServerDocumentActions is not set', async () => {
+      const client = buildClient()
+      const historyStore = createHistoryStore({client})
+
+      await new Promise<void>((resolve, reject) => {
+        historyStore
+          .restore('doc-id', 'drafts.doc-id', 'rev-1', {fromDeleted: false})
           .subscribe({complete: resolve, error: reject})
       })
 
