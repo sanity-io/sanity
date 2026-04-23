@@ -660,8 +660,8 @@ export function VisionGui(props: VisionGuiProps) {
     maxEditorPaneSize,
   )
   const mobileEditorResultSplitDefaultSize = Math.max(
-    140,
-    Math.min(220, Math.floor(splitContainerHeight * 0.24)),
+    220,
+    Math.min(320, Math.floor(splitContainerHeight * 0.38)),
   )
   const stackedMainSectionHeight = Math.max(420, Math.floor(splitContainerHeight * 0.72))
 
@@ -699,7 +699,9 @@ export function VisionGui(props: VisionGuiProps) {
                 // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
                 split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
                 defaultSize={isNarrowBreakpoint ? undefined : mobileEditorResultSplitDefaultSize}
-                minSize={isNarrowBreakpoint ? 300 : 160}
+                size={isNarrowBreakpoint ? undefined : mobileEditorResultSplitDefaultSize}
+                allowResize={isNarrowBreakpoint}
+                minSize={isNarrowBreakpoint ? 300 : 220}
               >
                 <Box height="stretch" flex={1}>
                   <SplitPane
@@ -774,127 +776,134 @@ export function VisionGui(props: VisionGuiProps) {
             </Box>
           </>
         ) : (
-          <SplitPane
-            key="query-recall-side-by-side"
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-            split="vertical"
-            minSize={minEditorPaneSize}
-            defaultSize={window.innerWidth - 275}
-            size={isQueryRecallCollapsed ? queryRecallCollapsedSize : clampedEditorPaneSize}
-            onChange={(nextSize) => {
-              if (!isQueryRecallCollapsed) {
-                setEditorPaneSize(nextSize)
-              }
-            }}
-            maxSize={maxEditorPaneSize}
-            primary="first"
-          >
-            <Box height="stretch" flex={1}>
-              <SplitPane
-                className="sidebarPanes"
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
-                defaultSize={isNarrowBreakpoint ? undefined : mobileEditorResultSplitDefaultSize}
-                minSize={isNarrowBreakpoint ? 300 : 160}
-              >
-                <Box height="stretch" flex={1}>
-                  <SplitPane
-                    className="sidebarPanes"
-                    split="horizontal"
-                    defaultSize={
-                      isNarrowBreakpoint ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
-                    }
-                    size={paneSizeOptions.size}
-                    allowResize={paneSizeOptions.allowResize}
-                    minSize={isNarrowBreakpoint ? paneSizeOptions.minSize : 100}
-                    maxSize={paneSizeOptions.maxSize}
-                    primary="first"
-                  >
-                    <InputContainer display="flex" data-testid="vision-query-editor">
-                      <Box flex={1}>
-                        <InputBackgroundContainerLeft>
-                          <Flex>
-                            <StyledLabel muted>{t('query.label')}</StyledLabel>
-                          </Flex>
-                        </InputBackgroundContainerLeft>
-                        <VisionCodeMirror
-                          initialValue={query}
-                          onChange={setQuery}
-                          ref={editorQueryRef}
-                          extensions={groqExtensions}
-                        />
-                      </Box>
-                    </InputContainer>
-                    <InputContainer display="flex">
-                      <ParamsEditor
-                        value={params.raw}
-                        onChange={handleParamsChange}
-                        paramsError={params.error}
-                        hasValidParams={params.valid}
-                        editorRef={editorParamsRef}
-                      />
-
-                      <VisionGuiControls
-                        hasValidParams={params.valid}
-                        queryInProgress={queryInProgress}
-                        listenInProgress={listenInProgress}
-                        onQueryExecution={handleQueryExecution}
-                        onListenExecution={handleListenExecution}
-                      />
-                    </InputContainer>
-                  </SplitPane>
-                </Box>
-                <VisionGuiResult
-                  error={error}
-                  queryInProgress={queryInProgress}
-                  queryResult={queryResult}
-                  listenInProgress={listenInProgress}
-                  listenMutations={listenMutations}
-                  dataset={dataset}
-                  queryTime={queryTime}
-                  e2eTime={e2eTime}
-                  compactFooter={isTabletOrNarrow}
-                />
-              </SplitPane>
-            </Box>
-            <Box
-              style={{
-                position: 'relative',
-                height: '100%',
-                width: '100%',
-                minWidth: 0,
-                overflowY: 'auto',
-                overflowX: 'hidden',
+          <>
+            <SplitPane
+              key="query-recall-side-by-side"
+              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+              split="vertical"
+              minSize={minEditorPaneSize}
+              defaultSize={window.innerWidth - 275}
+              size={isQueryRecallCollapsed ? queryRecallCollapsedSize : clampedEditorPaneSize}
+              onChange={(nextSize) => {
+                if (!isQueryRecallCollapsed) {
+                  setEditorPaneSize(nextSize)
+                }
               }}
+              maxSize={maxEditorPaneSize}
+              primary="first"
             >
-              <Button
-                mode="ghost"
-                padding={2}
+              <Box height="stretch" flex={1} style={{position: 'relative'}}>
+                <SplitPane
+                  className="sidebarPanes"
+                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                  split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
+                  defaultSize={isNarrowBreakpoint ? undefined : mobileEditorResultSplitDefaultSize}
+                  minSize={isNarrowBreakpoint ? 300 : 160}
+                >
+                  <Box height="stretch" flex={1}>
+                    <SplitPane
+                      className="sidebarPanes"
+                      split="horizontal"
+                      defaultSize={
+                        isNarrowBreakpoint ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
+                      }
+                      size={paneSizeOptions.size}
+                      allowResize={paneSizeOptions.allowResize}
+                      minSize={isNarrowBreakpoint ? paneSizeOptions.minSize : 100}
+                      maxSize={paneSizeOptions.maxSize}
+                      primary="first"
+                    >
+                      <InputContainer display="flex" data-testid="vision-query-editor">
+                        <Box flex={1}>
+                          <InputBackgroundContainerLeft>
+                            <Flex>
+                              <StyledLabel muted>{t('query.label')}</StyledLabel>
+                            </Flex>
+                          </InputBackgroundContainerLeft>
+                          <VisionCodeMirror
+                            initialValue={query}
+                            onChange={setQuery}
+                            ref={editorQueryRef}
+                            extensions={groqExtensions}
+                          />
+                        </Box>
+                      </InputContainer>
+                      <InputContainer display="flex">
+                        <ParamsEditor
+                          value={params.raw}
+                          onChange={handleParamsChange}
+                          paramsError={params.error}
+                          hasValidParams={params.valid}
+                          editorRef={editorParamsRef}
+                        />
+
+                        <VisionGuiControls
+                          hasValidParams={params.valid}
+                          queryInProgress={queryInProgress}
+                          listenInProgress={listenInProgress}
+                          onQueryExecution={handleQueryExecution}
+                          onListenExecution={handleListenExecution}
+                        />
+                      </InputContainer>
+                    </SplitPane>
+                  </Box>
+                  <VisionGuiResult
+                    error={error}
+                    queryInProgress={queryInProgress}
+                    queryResult={queryResult}
+                    listenInProgress={listenInProgress}
+                    listenMutations={listenMutations}
+                    dataset={dataset}
+                    queryTime={queryTime}
+                    e2eTime={e2eTime}
+                    compactFooter={isTabletOrNarrow}
+                  />
+                </SplitPane>
+              </Box>
+              <Box
                 style={{
-                  position: 'absolute',
-                  left: -32,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  zIndex: 100,
-                  pointerEvents: 'auto',
+                  position: 'relative',
+                  height: '100%',
+                  width: '100%',
+                  minWidth: 0,
+                  overflowX: 'visible',
                 }}
-                onClick={() => setIsQueryRecallCollapsed((prev) => !prev)}
               >
-                <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
-                  {isQueryRecallCollapsed ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                </div>
-              </Button>
-              <QueryRecall
-                url={url}
-                getStateFromUrl={getStateFromUrl}
-                setStateFromParsedUrl={setStateFromParsedUrl}
-                currentQuery={query}
-                currentParams={params.parsed || {}}
-                generateUrl={generateUrl}
-                compactMode={isCompactQueryRecall}
-              />
-            </Box>
-          </SplitPane>
+                <Box style={{height: '100%', overflowY: 'auto', overflowX: 'visible'}}>
+                  <QueryRecall
+                    url={url}
+                    getStateFromUrl={getStateFromUrl}
+                    setStateFromParsedUrl={setStateFromParsedUrl}
+                    currentQuery={query}
+                    currentParams={params.parsed || {}}
+                    generateUrl={generateUrl}
+                    compactMode={isCompactQueryRecall}
+                  />
+                </Box>
+              </Box>
+            </SplitPane>
+            <Button
+              mode="ghost"
+              padding={2}
+              style={{
+                position: 'absolute',
+                left: isQueryRecallCollapsed
+                  ? splitContainerWidth - 34
+                  : Math.max(12, clampedEditorPaneSize - 34),
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 100,
+                pointerEvents: 'auto',
+                border: '1px solid var(--card-border-color)',
+                background: 'var(--card-bg-color)',
+              }}
+              onClick={() => setIsQueryRecallCollapsed((prev) => !prev)}
+            >
+              <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
+                {isQueryRecallCollapsed ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+              </div>
+            </Button>
+          </>
         )}
       </SplitpaneContainer>
     </Root>

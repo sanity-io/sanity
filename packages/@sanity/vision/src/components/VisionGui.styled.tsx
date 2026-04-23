@@ -136,6 +136,7 @@ export const Result = styled(Box)`
 
 export const ResultFooter = styled(Flex)`
   border-top: 1px solid var(--card-border-color);
+  flex-wrap: wrap;
 `
 
 export const TimingsCard = styled(Card)`
@@ -165,6 +166,7 @@ export const SaveResultLabel = styled(Text)`
   }
   > span {
     display: flex !important;
+    flex-wrap: wrap;
     gap: ${({theme}) => rem(theme.sanity.space[3])};
     align-items: center;
   }
