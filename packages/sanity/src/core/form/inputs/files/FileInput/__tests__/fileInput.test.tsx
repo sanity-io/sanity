@@ -37,6 +37,28 @@ describe('FileInput with empty state', () => {
 
   it.todo('renders new file when a new file in uploaded')
 
+  it('renders browse button right-aligned when disableNew is true', async () => {
+    await renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+        options: {disableNew: true},
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <BaseFileInput {...inputProps} />,
+    })
+    // Browse button should still be present
+    expect(screen.getByTestId(fileBrowseTestId('test-source'))).toBeInTheDocument()
+    // Upload button should NOT be present
+    expect(screen.queryByTestId('file-input-upload-button-test-source')).not.toBeInTheDocument()
+    // The browse button's parent flex container should have justify-content: flex-end
+    const browseButton = screen.getByTestId(fileBrowseTestId('test-source'))
+    const flexContainer = browseButton.closest('[data-ui="Flex"]')
+    expect(flexContainer).toBeInTheDocument()
+    expect(flexContainer).toHaveStyle('justify-content: flex-end')
+  })
+
   it('shows invalid file warning when asset ref is not a valid file source', async () => {
     // Value with asset ref that doesn't match file asset id format (e.g. deleted/broken ref)
     const invalidValue = {

@@ -1,6 +1,6 @@
 import {isFileSource} from '@sanity/asset-utils'
 import {type AssetSource} from '@sanity/types'
-import {Box, Card} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
@@ -149,7 +149,9 @@ function FileUploadPlaceHolder(props: FileAssetProps & {disableNew?: boolean}) {
   return (
     <Card tone={readOnly ? 'transparent' : 'inherit'} border paddingX={3} paddingY={2} radius={2}>
       {disableNew ? (
-        browseElement
+        <Flex align="center" justify="flex-end">
+          {browseElement}
+        </Flex>
       ) : (
         <UploadPlaceholder
           assetSources={assetSources}
