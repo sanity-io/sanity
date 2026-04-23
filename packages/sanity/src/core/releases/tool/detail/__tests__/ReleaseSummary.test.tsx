@@ -17,6 +17,7 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import type * as ConnectionStatusStoreMod from '../../../../store/_legacy/connection-status/connection-status-store'
 import {
   activeASAPRelease,
+  activeCardinalityOneRelease,
   archivedScheduledRelease,
   scheduledRelease,
 } from '../../../__fixtures__/release.fixture'
@@ -280,6 +281,49 @@ describe('ReleaseSummary', () => {
     it('does not allow for adding documents', async () => {
       await prerenderTest()
       expect(screen.queryByText('Add document')).toBeNull()
+    })
+  })
+
+  describe('for a cardinality-one release with no documents', () => {
+    it('shows the empty state message', async () => {
+      await renderTest({release: activeCardinalityOneRelease, documents: []})
+
+      expect(await screen.findByTestId('cardinality-one-empty-state')).toBeInTheDocument()
+      expect(screen.getByText('No document in this release')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'This scheduled draft does not contain a document. It may have been removed.',
+        ),
+      ).toBeInTheDocument()
+    })
+
+    it('does not show the document table', async () => {
+      await renderTest({release: activeCardinalityOneRelease, documents: []})
+
+      expect(await screen.findByTestId('cardinality-one-empty-state')).toBeInTheDocument()
+      expect(screen.queryByTestId('document-table-card')).not.toBeInTheDocument()
+    })
+
+    it('does not show the add document button', async () => {
+      await renderTest({release: activeCardinalityOneRelease, documents: []})
+
+      expect(await screen.findByTestId('cardinality-one-empty-state')).toBeInTheDocument()
+      expect(screen.queryByText('Add document')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('for a cardinality-one release with documents', () => {
+    it('shows the document table normally', async () => {
+      await renderTest({release: activeCardinalityOneRelease, documents: releaseDocuments})
+
+      // eslint-disable-next-line testing-library/prefer-find-by
+      await waitFor(() => screen.getByTestId('document-table-card'), {
+        timeout: 5000,
+        interval: 500,
+      })
+
+      expect(screen.queryByTestId('cardinality-one-empty-state')).not.toBeInTheDocument()
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
     })
   })
 

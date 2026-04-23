@@ -1,6 +1,6 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Card, Menu} from '@sanity/ui'
-import {memo, useCallback, useId, useMemo, useState} from 'react'
+import {memo, type PointerEvent, useCallback, useId, useMemo, useState} from 'react'
 
 import {Button, type ButtonProps, MenuButton, type MenuButtonProps} from '../../../../ui-components'
 import {type DocumentFieldActionGroup, type DocumentFieldActionNode} from '../../../config'
@@ -131,6 +131,14 @@ function RootFieldActionMenuGroup(props: {
   const {node, onOpen, onClose, open} = props
   const {title} = useI18nText(node)
 
+  // Prevent the browser's default focus-and-scroll behaviour on pointer down.
+  // Without this, clicking the overflow menu button while another field (possibly
+  // far away) holds focus causes the browser to scroll the document as it shifts
+  // focus, resulting in an unexpected jump to the top of the form.
+  const handlePointerDown = useCallback((event: PointerEvent) => {
+    event.preventDefault()
+  }, [])
+
   return (
     <MenuButton
       button={
@@ -139,6 +147,7 @@ function RootFieldActionMenuGroup(props: {
           data-testid="field-actions-trigger"
           icon={node.icon}
           mode="bleed"
+          onPointerDown={handlePointerDown}
           tabIndex={0}
           tooltipProps={{
             ...STATUS_BUTTON_TOOLTIP_PROPS,

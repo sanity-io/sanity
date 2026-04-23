@@ -27,6 +27,30 @@ describe('ImageInput with empty state', () => {
     expect(screen.getByTestId(imageBrowseTestId('test-source'))).toBeInTheDocument()
   })
 
+  it('renders browse button right-aligned when disableNew is true', async () => {
+    await renderImageInput({
+      assetSources: [{Uploader: {}, name: 'test-source'} as any],
+      configOverrides: {mediaLibrary: {enabled: false}},
+      fieldDefinition: {
+        name: 'mainImage',
+        title: 'Main image',
+        type: 'image',
+        options: {disableNew: true},
+      },
+      observeAsset: observeImageAssetStub,
+      render: (inputProps) => <BaseImageInput {...inputProps} />,
+    })
+    // Browse button should still be present
+    expect(screen.getByTestId(imageBrowseTestId('test-source'))).toBeInTheDocument()
+    // Upload button should NOT be present
+    expect(screen.queryByTestId('file-input-upload-button-test-source')).not.toBeInTheDocument()
+    // The browse button's parent flex container should have justify-content: flex-end
+    const browseButton = screen.getByTestId(imageBrowseTestId('test-source'))
+    const flexContainer = browseButton.closest('[data-ui="Flex"]')
+    expect(flexContainer).toBeInTheDocument()
+    expect(flexContainer).toHaveStyle('justify-content: flex-end')
+  })
+
   it('shows invalid image warning when asset ref is not a valid image source', async () => {
     const invalidValue = {
       _type: 'image',
