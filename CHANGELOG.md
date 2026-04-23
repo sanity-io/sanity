@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.22.0](https://github.com/sanity-io/sanity/compare/v5.21.0...v5.22.0) (2026-04-22)
+
+### Features
+
+* **asset-sources:** add persistence key for Media Library plugin ([#12670](https://github.com/sanity-io/sanity/issues/12670)) ([311ac2d](https://github.com/sanity-io/sanity/commit/311ac2d6152be390a424c88860c9f9cb6647b9e3))
+* **config:** add hidden property to workspace configuration ([#12599](https://github.com/sanity-io/sanity/issues/12599)) ([41c0f27](https://github.com/sanity-io/sanity/commit/41c0f2713367ee22181937cc9ff89d67b6473d3e))
+* **telemetry:** add Studio Auth Ready + Studio Ready timing events ([#12707](https://github.com/sanity-io/sanity/issues/12707)) ([f3ba538](https://github.com/sanity-io/sanity/commit/f3ba53867293b091770f42487b6774721d0fc589))
+
+### Bug Fixes
+
+* **auth:** make logout method return promise in auth store types ([#12690](https://github.com/sanity-io/sanity/issues/12690)) ([a45e005](https://github.com/sanity-io/sanity/commit/a45e005a92f26631654de6d16c8ce1a3ff61ab5e))
+* **ci:** add auth store e2e tests ([#12647](https://github.com/sanity-io/sanity/issues/12647)) ([9229abc](https://github.com/sanity-io/sanity/commit/9229abc562bd314d692e92b54f82f024d9e86026))
+* **ci:** add auth store unit tests ([#12646](https://github.com/sanity-io/sanity/issues/12646)) ([0ab91e8](https://github.com/sanity-io/sanity/commit/0ab91e811ef4658da7d3c3a81b3b7030db258844))
+* **ci:** exclude markdown files from v8 coverage ([#12680](https://github.com/sanity-io/sanity/issues/12680)) ([047297d](https://github.com/sanity-io/sanity/commit/047297dd60f7ff341a3f3aef198374a58577c443))
+* **ci:** use default lint output format for reliable error visibility ([#12696](https://github.com/sanity-io/sanity/issues/12696)) ([e53903b](https://github.com/sanity-io/sanity/commit/e53903b7c8d0ab58207f3e3c72a3321a23d7319b))
+* **deps:** update dependency @sanity/cli to ^6.4.0 ([#12727](https://github.com/sanity-io/sanity/issues/12727)) ([b7bd438](https://github.com/sanity-io/sanity/commit/b7bd438ababd6ef8936705bddc42b7441375894f))
+* **e2e:** stabilize validation and vision test race conditions ([9060f82](https://github.com/sanity-io/sanity/commit/9060f828067d2d629fa6404b6190fd0d8cad286e))
+* **form:** support programmatic focus with inline changes enabled ([#12673](https://github.com/sanity-io/sanity/issues/12673)) ([cf9ce7d](https://github.com/sanity-io/sanity/commit/cf9ce7dca68b7fbaa618e2397543a4c622f69a33))
+* positioning of reference input lists in documents (and modals / dialogs / popovers) ([#12721](https://github.com/sanity-io/sanity/issues/12721)) ([14f7b82](https://github.com/sanity-io/sanity/commit/14f7b82b7c374013f6342867a52b9345b6ae856c))
+* **preview:** reduce redundant fetches in document preview observers ([#12624](https://github.com/sanity-io/sanity/issues/12624)) ([dd438bd](https://github.com/sanity-io/sanity/commit/dd438bd63c3d3b1132d2c8c82e322923cc792855))
+* **sanity:** cancel fetch response bodies to prevent connection blocking ([#12681](https://github.com/sanity-io/sanity/issues/12681)) ([af813e7](https://github.com/sanity-io/sanity/commit/af813e7d4253db21c65a573e4c4bd3bb870216bb))
+* **sanity:** handle groq2024 searches that sort on child paths and complex GROQ expressions ([755a6a5](https://github.com/sanity-io/sanity/commit/755a6a5382b0d45009ae844b0a7427bbab251f8c))
+* **sanity:** published id incorrectly supplied to `DivergencesProvider` as subject id ([8910e18](https://github.com/sanity-io/sanity/commit/8910e18661aa797a6a1c53f474c151aa6393907f))
+* **sanity:** stale form context after switching document versions ([8b50bc8](https://github.com/sanity-io/sanity/commit/8b50bc82ced44552c7c8d061c41e1f6093a2fe13))
+* **sanity:** use `@sanity/uuid` to produce feedback session id ([5c9a767](https://github.com/sanity-io/sanity/commit/5c9a767aff3efd65df2e73a069f98ad4c864ac83))
+* **studio:** stop eagerly fetching auth for all workspaces at the start ([#12704](https://github.com/sanity-io/sanity/issues/12704)) ([f131c92](https://github.com/sanity-io/sanity/commit/f131c92b40fd35c1e77667eab7dadcdba1ec2671))
+* **types:** correct BlockRule value type from any[] to PortableTextBlock ([#12509](https://github.com/sanity-io/sanity/issues/12509)) ([3ca5e31](https://github.com/sanity-io/sanity/commit/3ca5e310a3bb2b8d1a8c5f8e4680e2c7f9dd6e22))
 ## [5.21.0](https://github.com/sanity-io/sanity/compare/v5.20.0...v5.21.0) (2026-04-15)
 
 ### Features

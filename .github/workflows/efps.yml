@@ -199,7 +199,7 @@ jobs:
           ENABLE_PROFILER: ${{ github.event.inputs.enable_profiler || false }}
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
           STUDIO_URL: ${{ needs.deploy.outputs.preview_url }}
-        run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm efps:test --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v7
         if: always()

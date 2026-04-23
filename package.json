@@ -1,6 +1,6 @@
 {
   "name": "sanity-root",
-  "version": "5.21.0",
+  "version": "5.22.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -131,6 +131,6 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@10.32.1",
+  "packageManager": "pnpm@10.33.1",
   "//": "pnpm settings moved to pnpm-workspace.yaml"
 }
