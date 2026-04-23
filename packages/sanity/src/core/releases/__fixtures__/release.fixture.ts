@@ -126,6 +126,23 @@ export const activeUndecidedRelease: ReleaseDocumentWithTitle = {
   },
 }
 
+export const activeCardinalityOneRelease: ReleaseDocumentWithTitle = {
+  _rev: 'cardinalityOneRev',
+  _id: '_.releases.rCardinalityOne',
+  name: 'rCardinalityOne',
+  _type: 'system.release',
+  _createdAt: '2023-10-10T08:00:00Z',
+  _updatedAt: '2023-10-10T09:00:00Z',
+  state: 'active',
+  metadata: {
+    title: 'Scheduled Draft',
+    releaseType: 'scheduled',
+    intendedPublishAt: '2023-10-10T10:00:00.000Z',
+    description: 'A single document scheduled draft',
+    cardinality: 'one',
+  },
+}
+
 export const activeUndecidedErrorRelease: ReleaseDocumentWithTitle = {
   _rev: 'undecidedErrorRev',
   _id: '_.releases.rUndecidedError',
