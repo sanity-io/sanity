@@ -866,20 +866,19 @@ export function VisionGui(props: VisionGuiProps) {
                   height: '100%',
                   width: '100%',
                   minWidth: 0,
-                  overflowX: 'visible',
+                  overflowY: 'auto',
+                  overflowX: 'hidden',
                 }}
               >
-                <Box style={{height: '100%', overflowY: 'auto', overflowX: 'visible'}}>
-                  <QueryRecall
-                    url={url}
-                    getStateFromUrl={getStateFromUrl}
-                    setStateFromParsedUrl={setStateFromParsedUrl}
-                    currentQuery={query}
-                    currentParams={params.parsed || {}}
-                    generateUrl={generateUrl}
-                    compactMode={isCompactQueryRecall}
-                  />
-                </Box>
+                <QueryRecall
+                  url={url}
+                  getStateFromUrl={getStateFromUrl}
+                  setStateFromParsedUrl={setStateFromParsedUrl}
+                  currentQuery={query}
+                  currentParams={params.parsed || {}}
+                  generateUrl={generateUrl}
+                  compactMode={isCompactQueryRecall}
+                />
               </Box>
             </SplitPane>
             <Button
