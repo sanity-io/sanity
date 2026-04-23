@@ -29,8 +29,6 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -75,8 +73,6 @@ jobs:
     if: needs.install.outputs.has_code_changes == 'true'
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
       - uses: ./.github/actions/setup
 

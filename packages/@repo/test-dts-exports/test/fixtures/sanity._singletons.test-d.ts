@@ -126,6 +126,7 @@ import type {
   UserColorManagerContext,
   ValidationContext,
   VirtualizerScrollInstanceContext,
+  VisibleWorkspacesContext,
   WorkspaceContext,
   WorkspacesContext,
   ZIndexContext,
@@ -502,6 +503,9 @@ describe('sanity/_singletons', () => {
   })
   test('VirtualizerScrollInstanceContext', () => {
     expectTypeOf<typeof VirtualizerScrollInstanceContext>().not.toBeNever()
+  })
+  test('VisibleWorkspacesContext', () => {
+    expectTypeOf<typeof VisibleWorkspacesContext>().not.toBeNever()
   })
   test('WorkspaceContext', () => {
     expectTypeOf<typeof WorkspaceContext>().not.toBeNever()

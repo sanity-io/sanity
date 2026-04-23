@@ -64,27 +64,27 @@ const releasesLocaleStrings = {
   /** Label for unarchiving a release */
   'action.unarchive': 'Unarchive release',
   /* The text for the activity event when a document is added to a release */
-  'activity.event.add-document': 'added a document version',
+  'activity.event.add-document': 'Added a document version',
   /* The text for the activity event when the release is archived */
-  'activity.event.archive': 'archived the <strong>{{releaseTitle}}</strong> release',
+  'activity.event.archive': 'Archived the <strong>{{releaseTitle}}</strong> release',
   /* The text for the activity event when the release is created */
   'activity.event.create':
-    'created the <strong>{{releaseTitle}}</strong> release <ScheduleTarget>targeting </ScheduleTarget>',
+    'Created the <strong>{{releaseTitle}}</strong> release <ScheduleTarget>targeting </ScheduleTarget>',
   /* The text for the activity event when a document is removed from a release */
-  'activity.event.discard-document': 'discarded a document version',
-  'activity.event.edit': 'set release time to <ScheduleTarget></ScheduleTarget>',
+  'activity.event.discard-document': 'Discarded a document version',
+  'activity.event.edit': 'Set release time to <ScheduleTarget></ScheduleTarget>',
   /**The text to display in the changes when the release type changes to asap */
-  'activity.event.edit-time-asap': 'immediately',
+  'activity.event.edit-time-asap': 'As soon as possible',
   /**The text to display in the changes when the release type changes to undecided */
-  'activity.event.edit-time-undecided': 'never',
+  'activity.event.edit-time-undecided': 'Undecided',
   /* The text for the activity event when the release is published */
-  'activity.event.publish': 'published the <strong>{{releaseTitle}}</strong> release',
+  'activity.event.publish': 'Published the <strong>{{releaseTitle}}</strong> release',
   /* The text for the activity event when the release is scheduled */
-  'activity.event.schedule': 'marked as scheduled',
+  'activity.event.schedule': 'Marked as scheduled',
   /** The text for the activity event when the release is unarchived */
-  'activity.event.unarchive': 'unarchived the <strong>{{releaseTitle}}</strong> release',
+  'activity.event.unarchive': 'Unarchived the <strong>{{releaseTitle}}</strong> release',
   /** The text for the activity event when the release is unscheduled */
-  'activity.event.unschedule': 'marked as unscheduled',
+  'activity.event.unschedule': 'Marked as unscheduled',
   /** The loading text for when releases are loading */
   'activity.panel.loading': 'Loading release activity',
   /** The loading text for when releases are loading */
@@ -377,6 +377,11 @@ const releasesLocaleStrings = {
   'summary.not-published': 'Not published',
   /** Text for when the release has no documents */
   'summary.no-documents': 'No documents',
+  /** Title for the empty state when a cardinality-one release has no documents */
+  'summary.no-documents-cardinality-one.title': 'No document in this release',
+  /** Description for the empty state when a cardinality-one release has no documents */
+  'summary.no-documents-cardinality-one.description':
+    'This scheduled draft does not contain a document. It may have been removed.',
   /** Text for when the release is composed of one document */
   'summary.document-count_one': '{{count}} document',
   /** Text for when the release is composed of multiple documents */
