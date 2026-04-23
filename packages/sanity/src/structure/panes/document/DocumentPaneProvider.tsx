@@ -67,6 +67,7 @@ import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
+import {useDocumentInitialLoadTelemetry} from './useDocumentInitialLoadTelemetry'
 import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
 import {useDocumentPaneInspector} from './useDocumentPaneInspector'
 import {usePreviewUrl} from './usePreviewUrl'
@@ -391,6 +392,15 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
    * a timeline revision in this instance will display an error localized to the popover itself.
    */
   const ready = formReady && (!params.rev || timelineReady || !!timelineError)
+
+  // Fires a one-shot `Document Initial Load Measured` telemetry event the
+  // first time the pane becomes ready to edit. See the hook for details.
+  useDocumentInitialLoadTelemetry({
+    ready,
+    schemaTypeName: schemaType?.name,
+    editState,
+    hasRevisionParam: Boolean(params.rev),
+  })
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
     () => getDisplayed(value),
