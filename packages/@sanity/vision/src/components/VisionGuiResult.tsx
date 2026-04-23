@@ -91,7 +91,7 @@ export function VisionGuiResult({
           paddingX={compactFooter ? 3 : 4}
           paddingY={compactFooter ? 2 : 3}
           sizing="border"
-          style={compactFooter ? {width: '100%'} : undefined}
+          style={compactFooter ? {width: '100%'} : {minWidth: 0}}
         >
           <TimingsTextContainer align="center">
             <Box>
@@ -116,7 +116,7 @@ export function VisionGuiResult({
             paddingX={compactFooter ? 3 : 4}
             paddingY={compactFooter ? 2 : 3}
             sizing="border"
-            style={compactFooter ? {width: '100%'} : undefined}
+            style={compactFooter ? {width: '100%'} : {marginLeft: 'auto', minWidth: 0}}
           >
             <SaveResultLabel muted size={compactFooter ? 1 : 2}>
               <Translate
