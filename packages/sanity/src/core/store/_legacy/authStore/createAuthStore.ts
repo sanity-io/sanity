@@ -554,7 +554,7 @@ export type CreateAuthStoreOptions = Omit<AuthStoreOptions, 'getSessionId' | 'co
 /**
  * @internal
  */
-export const createAuthStore = memoize(
+export const createAuthStore: (options: CreateAuthStoreOptions) => AuthStore = memoize(
   (options: CreateAuthStoreOptions): AuthStore =>
     _createAuthStore({
       ...options,
