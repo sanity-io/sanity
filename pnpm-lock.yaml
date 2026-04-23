@@ -717,6 +717,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../../packages/@repo/utils
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12

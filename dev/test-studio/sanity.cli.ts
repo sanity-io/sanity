@@ -1,9 +1,13 @@
 import path from 'node:path'
 
+import {loadEnvFiles} from '@repo/utils'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
+loadEnvFiles()
+
 const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
+
 const reactCompilerAllowList = /\/(?:sanity|@sanity\/vision)\/src\/.*\.tsx?$/
 
 export default defineCliConfig({
@@ -41,7 +45,21 @@ export default defineCliConfig({
   vite(viteConfig: UserConfig, {command, mode}): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
+    // Only inject custom project overrides during local dev, not CI builds
+    const localDevDefines =
+      command === 'serve'
+        ? {
+            'import.meta.env.SANITY_STUDIO_PROJECT_ID': JSON.stringify(
+              process.env.SANITY_STUDIO_PROJECT_ID || '',
+            ),
+            'import.meta.env.SANITY_STUDIO_DATASET': JSON.stringify(
+              process.env.SANITY_STUDIO_DATASET || '',
+            ),
+          }
+        : {}
+
     const nextConfig = mergeConfig(viteConfig, {
+      define: localDevDefines,
       server: {
         warmup: {
           clientFiles: [

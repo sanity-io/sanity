@@ -57,6 +57,9 @@ import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
 
+const customProjectId = import.meta.env?.SANITY_STUDIO_PROJECT_ID || ''
+const customDataset = import.meta.env?.SANITY_STUDIO_DATASET || ''
+
 const envConfig = {
   // use this for production workspaces
   production: isStaging ? {apiHost: 'https://api.sanity.io'} : {},
@@ -241,13 +244,16 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
   })()
 }
 
+const defaultProjectId = customProjectId || 'ppsg7ml5'
+const defaultDataset = customDataset || 'test'
+
 const defaultWorkspace = defineConfig({
   name: 'default',
   title: 'Test Studio',
-  projectId: 'ppsg7ml5',
-  dataset: 'test',
+  projectId: defaultProjectId,
+  dataset: defaultDataset,
   ...envConfig.production,
-  plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
+  plugins: [sharedSettings({projectId: defaultProjectId})],
 
   onUncaughtError: (error, errorInfo) => {
     console.log(error)
@@ -299,8 +305,9 @@ const defaultWorkspace = defineConfig({
   },
 })
 
-export default defineConfig([
-  defaultWorkspace,
+// Workspaces that depend on Sanity-owned projects and datasets.
+// Omitted when a custom project is set via env vars.
+const internalWorkspaces: WorkspaceOptions[] = [
   {
     ...defaultWorkspace,
     name: 'admin-only',
@@ -653,4 +660,9 @@ export default defineConfig([
       enabled: true,
     },
   },
+]
+
+export default defineConfig([
+  defaultWorkspace,
+  ...(customProjectId ? [] : internalWorkspaces),
 ]) as WorkspaceOptions[]

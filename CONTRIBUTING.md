@@ -18,6 +18,20 @@ pnpm build
 pnpm dev
 ```
 
+## Using the dev studio (external contributors)
+
+The dev studio (`pnpm dev`) uses internal Sanity projects by default. To use your own project instead:
+
+1. Create a free Sanity project at https://www.sanity.io/get-started
+2. Copy the example env file and fill in your values:
+   ```sh
+   cp dev/test-studio/.env.example dev/test-studio/.env
+   ```
+   Edit `dev/test-studio/.env` with your project ID and dataset name.
+3. Run `pnpm dev` - the studio starts at http://localhost:3333
+
+Only the default workspace (at `/test`) reads these values. Other workspaces in the picker use internal projects and can be ignored.
+
 # Release/workflow guidelines
 
 - `current` always points to the last released version
