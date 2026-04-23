@@ -34,8 +34,6 @@ jobs:
       has_code_changes: ${{ steps.changes.outputs.has_changes }}
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
