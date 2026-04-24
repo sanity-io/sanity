@@ -7,7 +7,6 @@ import {HELP_URL, SerializeError} from './SerializeError'
 import {DEFAULT_ORDERING_OPTIONS} from './Sort'
 import {type Serializable, type SerializeOptions, type SerializePath} from './StructureNodes'
 import {type StructureContext} from './types'
-import {getExtendedProjection} from './util/getExtendedProjection'
 
 /** @internal */
 export function maybeSerializeMenuItem(
@@ -58,12 +57,6 @@ export interface KnownMenuItemParams {
    * Used with the 'setSortOrder' action.
    */
   by?: SortOrderingItem[]
-
-  /**
-   * Extended projection string for sort ordering.
-   * Used internally for sort menu items.
-   */
-  extendedProjection?: string
 }
 
 /**
@@ -355,7 +348,6 @@ export interface SortMenuItem extends MenuItem {
 export function getOrderingMenuItem(
   context: StructureContext,
   {by, title, i18n}: SortOrdering,
-  extendedProjection?: string,
 ): MenuItemBuilder {
   let builder = new MenuItemBuilder(context)
     .group('sorting')
@@ -368,7 +360,7 @@ export function getOrderingMenuItem(
     ) // fallback title
     .icon(SortIcon)
     .action('setSortOrder')
-    .params({by, extendedProjection})
+    .params({by})
 
   if (i18n) {
     builder = builder.i18n(i18n)
@@ -390,11 +382,5 @@ export function getOrderingMenuItemsForSchemaType(
 
   return (
     type.orderings ? type.orderings.concat(DEFAULT_ORDERING_OPTIONS) : DEFAULT_ORDERING_OPTIONS
-  ).map((ordering: SortOrdering) =>
-    getOrderingMenuItem(
-      context,
-      ordering,
-      getExtendedProjection(type, ordering.by, false, ordering.title),
-    ),
-  )
+  ).map((ordering: SortOrdering) => getOrderingMenuItem(context, ordering))
 }
