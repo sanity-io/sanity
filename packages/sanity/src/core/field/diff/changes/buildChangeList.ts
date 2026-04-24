@@ -21,8 +21,11 @@ import {
 } from '../../types'
 import {hasPTMemberType} from '../../types/portableText/diff/helpers'
 import {getValueError} from '../../validation'
+import {JsonFieldDiff} from '../components/JsonFieldDiff'
 import {isFieldChange} from '../helpers'
 import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
+import {UNKNOWN_DOCUMENT_FIELD_SCHEMA_TYPE} from './unknownDocumentFieldSchema'
+import {getSortedUnknownChangedObjectFieldNames} from './unknownObjectDiffFields'
 
 interface DiffContext {
   itemDiff?: ItemDiff
@@ -53,6 +56,36 @@ function buildChangeList(
   return getFieldChange(schemaType, diff, path, titlePath, context)
 }
 
+function buildUnknownFieldChangeNodes(
+  fieldDiff: Diff,
+  fieldPath: Path,
+  fieldTitlePath: ChangeTitlePath,
+  {itemDiff, parentDiff, parentSchema}: DiffContext,
+): FieldChangeNode[] {
+  const {fromValue, toValue, type} = fieldDiff
+
+  if (type === 'array' && isEmpty(fromValue) && isEmpty(toValue)) {
+    return []
+  }
+
+  return [
+    {
+      type: 'field',
+      diff: fieldDiff,
+      path: fieldPath,
+      itemDiff,
+      parentDiff,
+      titlePath: fieldTitlePath,
+      schemaType: UNKNOWN_DOCUMENT_FIELD_SCHEMA_TYPE,
+      showHeader: true,
+      showIndex: true,
+      key: pathToString(fieldPath) || 'root',
+      diffComponent: JsonFieldDiff,
+      parentSchema,
+    },
+  ]
+}
+
 export function buildObjectChangeList(
   schemaType: ObjectSchemaType,
   diff: ObjectDiff,
@@ -61,6 +94,7 @@ export function buildObjectChangeList(
   diffContext: DiffContext = {},
 ): ChangeNode[] {
   const changes: ChangeNode[] = []
+  const {fieldFilter} = diffContext
 
   const childContext: DiffContext = {...diffContext, parentSchema: schemaType}
   const fieldSets =
@@ -71,6 +105,15 @@ export function buildObjectChangeList(
     } else {
       changes.push(...buildFieldsetChangeList(fieldSet, diff, path, titlePath, childContext))
     }
+  }
+
+  for (const fieldName of getSortedUnknownChangedObjectFieldNames(schemaType, diff, fieldFilter)) {
+    const fieldDiff = diff.fields[fieldName]
+    const fieldPath = path.concat([fieldName])
+    const fieldTitlePath = titlePath.concat([fieldName])
+    changes.push(
+      ...buildUnknownFieldChangeNodes(fieldDiff, fieldPath, fieldTitlePath, childContext),
+    )
   }
 
   if (changes.length < 2) {
