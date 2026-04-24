@@ -27,5 +27,8 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "globals": "catalog:",
     "typescript-eslint": "^8.53.1"
+  },
+  "devDependencies": {
+    "@sanity/no-unconsumed-fetch": "1.0.0-alpha.2"
   }
 }

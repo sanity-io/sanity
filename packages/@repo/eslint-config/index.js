@@ -3,6 +3,7 @@ import {dirname, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import js from '@eslint/js'
+import noUnconsumedFetch from '@sanity/no-unconsumed-fetch'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
 import sanityImport from 'eslint-config-sanity/import.js'
 import sanityRecommended from 'eslint-config-sanity/index.js'
@@ -90,6 +91,7 @@ export default [
       'tsdoc': tsdocPlugin,
       'unused-imports': unusedImports,
       'unicorn': unicorn,
+      'no-unconsumed-fetch': noUnconsumedFetch,
     },
     rules: {
       ...sanityRecommended.rules,
@@ -155,6 +157,7 @@ export default [
       'react/jsx-no-bind': 'off',
       // Since the oxlint no-floating-promises rule directs marking intentionally hanging promises with `void` we need to disable the `no-void` rule
       'no-void': 'off',
+      'no-unconsumed-fetch/no-unconsumed-fetch': 'error',
     },
     settings: {
       'import/extensions': extensions,
