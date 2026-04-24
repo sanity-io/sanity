@@ -202,30 +202,39 @@ function buildUnknownFieldChanges(
     const unknownFieldType = createUnknownFieldType(fieldName)
     const fieldPath = path.concat([fieldName])
     const fieldTitlePath = titlePath.concat([fieldName])
-    const [node] = getFieldChange(unknownFieldType, fieldDiff, fieldPath, fieldTitlePath, {
+    // Build the FieldChangeNode directly instead of routing through `getFieldChange`:
+    // that path runs `getValueError` (schema vs. value type check) which, for an
+    // out-of-schema field, either produces a spurious mismatch error, or — when the
+    // value happens to be an object — recurses into `schemaType.fields` and crashes
+    // on our synthetic type. We don't want schema validation for unknown fields; we
+    // just want to surface the diff.
+    changes.push({
+      type: 'field',
+      diff: fieldDiff,
+      path: fieldPath,
+      titlePath: fieldTitlePath,
+      schemaType: unknownFieldType,
       parentSchema: schemaType,
+      diffComponent: UnknownFieldDiff,
+      showHeader: true,
+      showIndex: true,
+      key: pathToString(fieldPath) || fieldName,
     })
-    if (node) {
-      // Route rendering through our inline JSON diff (bypassing resolveDiffComponent, which
-      // wouldn't match the synthetic `__unknown` type).
-      node.diffComponent = UnknownFieldDiff
-      // There's no schema-declared `error`: getValueError runs against our synthetic
-      // `jsonType: 'object'` which may not match array/primitive values. Strip it.
-      node.error = undefined
-      changes.push(node)
-    }
   }
 
   return changes
 }
 
 function createUnknownFieldType(fieldName: string): ObjectFieldType {
-  // Synthetic field type used only to carry a title + route through getFieldChange.
-  // Not registered in the schema; downstream rendering uses UnknownFieldDiff explicitly.
+  // Synthetic field type used only to carry a title + identify unknown-field nodes.
+  // `fields: []` is important: various schema-driven code paths (e.g. getValueError)
+  // iterate `.fields` for object types. Leaving it undefined crashes with
+  // "schemaType.fields is not iterable".
   return {
     name: '__unknown',
     title: fieldName,
     jsonType: 'object',
+    fields: [],
   } as unknown as ObjectFieldType
 }
 
