@@ -114,6 +114,12 @@ export function FieldChange(
     // And it's not a PortableText array
     !change.parentSchema.of.some((ofType) => ofType.type?.name === 'block')
 
+  // Unknown fields (present in the document JSON but not declared in the schema) are
+  // rendered via a synthetic schema type; reverting them would build patches against
+  // a schema that doesn't exist. Disable revert for those for now — the change is still
+  // fully visible, just not revertible from the UI.
+  const isUnknownField = change.schemaType?.name === '__unknown'
+
   /* this condition is required in order to avoid situations where an array change has happened
    * but not necessarily an array item change. E.g. when adding one new item to an array, the changes pane
    * would be able to identify that a new item was added but not what array it belonged to (because the change path
@@ -158,7 +164,7 @@ export function FieldChange(
                 </DiffErrorBoundary>
               )}
 
-              {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
+              {isComparingCurrent && !isUnknownField && !isPermissionsLoading && permissions?.granted && (
                 <RevertChangesButton
                   changeCount={1}
                   onClick={handleRevertChangesConfirm}

@@ -2,6 +2,7 @@ import {
   type ArraySchemaType,
   type MultiFieldSet,
   type ObjectField,
+  type ObjectFieldType,
   type ObjectSchemaType,
   type Path,
   type SchemaType,
@@ -21,6 +22,7 @@ import {
 } from '../../types'
 import {hasPTMemberType} from '../../types/portableText/diff/helpers'
 import {getValueError} from '../../validation'
+import {UnknownFieldDiff} from '../components/UnknownFieldDiff'
 import {isFieldChange} from '../helpers'
 import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
 
@@ -72,6 +74,12 @@ export function buildObjectChangeList(
       changes.push(...buildFieldsetChangeList(fieldSet, diff, path, titlePath, childContext))
     }
   }
+
+  // Fields present in the diff but not declared on the schema are otherwise silently
+  // dropped. Surface them with a JSON diff so users can still see *that* something changed,
+  // even if we can't render a schema-aware diff for it. See buildUnknownFieldChanges for
+  // the synthetic schema type + rendering details.
+  changes.push(...buildUnknownFieldChanges(schemaType, diff, path, titlePath, diffContext))
 
   if (changes.length < 2) {
     return changes
@@ -162,6 +170,63 @@ function buildFieldsetChangeList(
       hidden: fieldSetHidden,
     },
   ]
+}
+
+/**
+ * Build change nodes for any keys present in `diff.fields` that are NOT declared on the
+ * schema. These are otherwise silently dropped by the schema-driven walker. We render them
+ * via a synthetic field type that carries a minimal inline JSON diff component, so users can
+ * at least see that the data changed.
+ *
+ * Deliberately non-recursive: the whole out-of-schema subtree is rendered as one JSON blob
+ * rather than decomposed field-by-field. Without a schema we have no title, no ordering,
+ * no conditional properties — one flat JSON view is the honest representation.
+ */
+function buildUnknownFieldChanges(
+  schemaType: ObjectSchemaType,
+  diff: ObjectDiff,
+  path: Path,
+  titlePath: ChangeTitlePath,
+  diffContext: DiffContext,
+): ChangeNode[] {
+  const known = new Set<string>(schemaType.fields.map((f) => f.name))
+  const {fieldFilter} = diffContext
+  const changes: ChangeNode[] = []
+
+  for (const fieldName of Object.keys(diff.fields)) {
+    if (known.has(fieldName)) continue
+    if (fieldFilter && !fieldFilter.includes(fieldName)) continue
+    const fieldDiff = diff.fields[fieldName]
+    if (!fieldDiff || !fieldDiff.isChanged) continue
+
+    const unknownFieldType = createUnknownFieldType(fieldName)
+    const fieldPath = path.concat([fieldName])
+    const fieldTitlePath = titlePath.concat([fieldName])
+    const [node] = getFieldChange(unknownFieldType, fieldDiff, fieldPath, fieldTitlePath, {
+      parentSchema: schemaType,
+    })
+    if (node) {
+      // Route rendering through our inline JSON diff (bypassing resolveDiffComponent, which
+      // wouldn't match the synthetic `__unknown` type).
+      node.diffComponent = UnknownFieldDiff
+      // There's no schema-declared `error`: getValueError runs against our synthetic
+      // `jsonType: 'object'` which may not match array/primitive values. Strip it.
+      node.error = undefined
+      changes.push(node)
+    }
+  }
+
+  return changes
+}
+
+function createUnknownFieldType(fieldName: string): ObjectFieldType {
+  // Synthetic field type used only to carry a title + route through getFieldChange.
+  // Not registered in the schema; downstream rendering uses UnknownFieldDiff explicitly.
+  return {
+    name: '__unknown',
+    title: fieldName,
+    jsonType: 'object',
+  } as unknown as ObjectFieldType
 }
 
 function buildArrayChangeList(
