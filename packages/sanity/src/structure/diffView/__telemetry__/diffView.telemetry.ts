@@ -2,17 +2,16 @@ import {defineEvent} from '@sanity/telemetry'
 import {type DocumentVariantType} from 'sanity'
 
 interface DiffViewDocumentSelectionInfo {
-  /**
-   * The document variants being viewed, in the order that they are displayed.
-   */
+  /** Variants in display order. */
   documentVariantTypes: DocumentVariantType[]
+  /** Diff view session id; `null` outside an active diff view session. */
+  sessionId: string | null
+  /** Schema type of the compared document. */
+  documentType: string
 }
 
 interface DiffViewDocumentSelectionChangedInfo extends DiffViewDocumentSelectionInfo {
-  /**
-   * The document variants that were being viewed, in the order that they were
-   * displayed, before the user changed them.
-   */
+  /** Variants in display order, before the user changed the selection. */
   previousDocumentVariantTypes: DocumentVariantType[]
 }
 

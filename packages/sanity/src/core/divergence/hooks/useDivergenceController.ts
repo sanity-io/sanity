@@ -2,7 +2,7 @@ import {SanityEncoder} from '@sanity/mutate'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type SanityDocument} from '@sanity/types'
 import {fromString, get} from '@sanity/util/paths'
-import {useEffect, useEffectEvent, useState} from 'react'
+import {useContext, useEffect, useEffectEvent, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {
   type Observable,
@@ -19,6 +19,7 @@ import {
   toArray,
   zip,
 } from 'rxjs'
+import {DiffViewSessionContext, DocumentDivergencesContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks/useClient'
 import {useDocumentOperation} from '../../hooks/useDocumentOperation'
@@ -79,9 +80,19 @@ export function useDivergenceController(
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentStore = useDocumentStore()
   const telemetry = useTelemetry()
-  const [isActionPending, setIsActionPending] = useState<boolean>(false)
+  const [isActionPending, setIsActionPending] = useState(false)
 
-  const logInspectedDivergence = useEffectEvent(() => telemetry.log(InspectedDivergence))
+  const sessionId = useContext(DiffViewSessionContext)
+  // Read the context directly; `useDocumentDivergences` throws outside a
+  // `DivergencesProvider`, and the controller can render in trees that lack one.
+  const divergencesContext = useContext(DocumentDivergencesContext)
+  const divergenceCount = divergencesContext?.enabled
+    ? divergencesContext.state.divergences.length
+    : 0
+
+  const logInspectedDivergence = useEffectEvent(() =>
+    telemetry.log(InspectedDivergence, {sessionId, divergenceCount}),
+  )
   useEffect(logInspectedDivergence, [logInspectedDivergence])
 
   const [upstreamId, upstreamRevisionId] = sinceRevisionId.split('@')
@@ -162,16 +173,31 @@ export function useDivergenceController(
 
     setIsActionPending(true)
 
-    telemetry.log(ActedOnDivergence, {
-      action: 'mark-resolved',
-    })
+    try {
+      const markers = await firstValueFrom(
+        createResolutionMarkers(upstreamHead.value.document, divergence).pipe(toArray()),
+      )
 
-    const markers = await firstValueFrom(
-      createResolutionMarkers(upstreamHead.value.document, divergence).pipe(toArray()),
-    )
+      const patches = createUpsertResolutionMarkerPatches(...markers)
+      patch.execute(patches.map(SanityEncoder.encodePatch))
 
-    const patches = createUpsertResolutionMarkerPatches(...markers)
-    patch.execute(patches.map(SanityEncoder.encodePatch))
+      telemetry.log(ActedOnDivergence, {
+        action: 'mark-resolved',
+        sessionId,
+        divergenceCount,
+        status: 'success',
+      })
+      setIsActionPending(false)
+    } catch (error) {
+      telemetry.log(ActedOnDivergence, {
+        action: 'mark-resolved',
+        sessionId,
+        divergenceCount,
+        status: 'failure',
+      })
+      setIsActionPending(false)
+      throw error
+    }
   }
 
   const takeUpstreamValue = async () => {
@@ -181,19 +207,34 @@ export function useDivergenceController(
 
     setIsActionPending(true)
 
-    telemetry.log(ActedOnDivergence, {
-      action: 'take-upstream-value',
-    })
+    try {
+      const patches = await firstValueFrom(
+        createTakeFromUpstreamPatches(
+          upstreamHead.value.document,
+          allDivergences,
+          ...divergence.divergences.map(([divergencePath]) => fromString(divergencePath)),
+        ).pipe(toArray()),
+      )
 
-    const patches = await firstValueFrom(
-      createTakeFromUpstreamPatches(
-        upstreamHead.value.document,
-        allDivergences,
-        ...divergence.divergences.map(([divergencePath]) => fromString(divergencePath)),
-      ).pipe(toArray()),
-    )
+      patch.execute(patches.map(SanityEncoder.encodePatch))
 
-    patch.execute(patches.map(SanityEncoder.encodePatch))
+      telemetry.log(ActedOnDivergence, {
+        action: 'take-upstream-value',
+        sessionId,
+        divergenceCount,
+        status: 'success',
+      })
+      setIsActionPending(false)
+    } catch (error) {
+      telemetry.log(ActedOnDivergence, {
+        action: 'take-upstream-value',
+        sessionId,
+        divergenceCount,
+        status: 'failure',
+      })
+      setIsActionPending(false)
+      throw error
+    }
   }
 
   return {

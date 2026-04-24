@@ -18,6 +18,7 @@ import {isProd} from '../../environment'
 import {useClient} from '../../hooks'
 import {useProjectOrganizationId} from '../../store/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
+import {WorkspaceFeaturesObserved} from '../__telemetry__/featureAvailability.telemetry'
 import {useWorkspace} from '../workspace'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
@@ -134,6 +135,13 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
       environment: contextRef.current.environment,
     })
   }, [store.logger])
+
+  useEffect(() => {
+    if (!isClient) return
+    store.logger.log(WorkspaceFeaturesObserved, {
+      advancedVersionControlEnabled: workspace.advancedVersionControl.enabled,
+    })
+  }, [store.logger, workspace.name, workspace.projectId, workspace.advancedVersionControl.enabled])
 
   return (
     <TelemetryProvider store={store}>

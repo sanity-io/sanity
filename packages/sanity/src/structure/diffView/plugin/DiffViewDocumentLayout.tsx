@@ -1,12 +1,15 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
-import {type ComponentType, type PropsWithChildren} from 'react'
+import {uuid} from '@sanity/uuid'
+import {type ComponentType, type PropsWithChildren, useState} from 'react'
 import {
   type DocumentVariantType,
   type DocumentLayoutProps,
   getDocumentVariantType,
   useTranslation,
+  useWorkspace,
 } from 'sanity'
+import {DiffViewSessionContext} from 'sanity/_singletons'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {
@@ -19,11 +22,13 @@ import {selectActiveTransition, useDiffViewState} from '../hooks/useDiffViewStat
 
 export const DiffViewDocumentLayout: ComponentType<
   PropsWithChildren<Pick<DocumentLayoutProps, 'documentId' | 'documentType'>>
-> = ({children, documentId}) => {
+> = ({children, documentId, documentType}) => {
   const toast = useToast()
   const {t} = useTranslation(structureLocaleNamespace)
   const {log} = useTelemetry()
-  const {isActive, documents} = useDiffViewState({
+  const {advancedVersionControl} = useWorkspace()
+  const [sessionId, setSessionId] = useState<string | null>(null)
+  const {isActive} = useDiffViewState({
     onParamsError: (errors) => {
       toast.push({
         id: 'diffViewParamsParsingError',
@@ -43,32 +48,38 @@ export const DiffViewDocumentLayout: ComponentType<
       })
     },
     onActiveChanged: (previousState, state) => {
-      if (selectActiveTransition(previousState, state) === 'entered') {
+      if (!advancedVersionControl.enabled) return
+      const transition = selectActiveTransition(previousState, state)
+
+      if (transition === 'entered') {
+        const nextSessionId = uuid()
+        setSessionId(nextSessionId)
         log(DiffViewEntered, {
           documentVariantTypes: documentIdsToVariantTypes([
             state.documents?.previous.id,
             state.documents?.next.id,
           ]),
+          sessionId: nextSessionId,
+          documentType,
         })
         return
       }
 
-      if (
-        selectActiveTransition(previousState, state) === 'exited' &&
-        typeof previousState !== 'undefined'
-      ) {
+      if (transition === 'exited' && typeof previousState !== 'undefined') {
         log(DiffViewExited, {
           documentVariantTypes: documentIdsToVariantTypes([
             previousState.documents?.previous.id,
             previousState.documents?.next.id,
           ]),
+          sessionId,
+          documentType,
         })
+        setSessionId(null)
       }
     },
     onTargetDocumentsChanged: (previousState, state) => {
-      if (typeof previousState === 'undefined') {
-        return
-      }
+      if (!advancedVersionControl.enabled) return
+      if (typeof previousState === 'undefined') return
 
       log(DiffViewDocumentSelectionChanged, {
         previousDocumentVariantTypes: documentIdsToVariantTypes([
@@ -79,15 +90,17 @@ export const DiffViewDocumentLayout: ComponentType<
           state.documents?.previous.id,
           state.documents?.next.id,
         ]),
+        sessionId,
+        documentType,
       })
     },
   })
 
   return (
-    <>
+    <DiffViewSessionContext.Provider value={sessionId}>
       {children}
       {isActive && <DiffView documentId={documentId} />}
-    </>
+    </DiffViewSessionContext.Provider>
   )
 }
 
