@@ -22,9 +22,14 @@ import {useStructureToolSetting} from '../../useStructureToolSetting'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'
-import {findStaticTypesInFilter, validateSortOrder} from './helpers'
+import {
+  findStaticTypesInFilter,
+  fromStaticSortOrder,
+  toStaticSortOrder,
+  validateSortOrder,
+} from './helpers'
 import {PaneHeader} from './PaneHeader'
-import {type SortOrder} from './types'
+import {type SortOrder, type StaticSortOrder} from './types'
 
 /**
  * Type for custom menu item state storage.
@@ -72,12 +77,16 @@ export const addSelectedStateToMenuItems = (options: {
 
     if (item?.params?.by) {
       const itemSortOrder: SortOrder = {by: item.params.by}
+
       const isInvalidSortOrder =
         validateSortOrder(itemSortOrder, schemaType, DEFAULT_ORDERING) !== itemSortOrder
 
+      const staticSortBy = toStaticSortOrder({by: sortOrderRaw?.by ?? EMPTY_ARRAY}).by
+      const itemSortBy = toStaticSortOrder({by: item?.params?.by ?? EMPTY_ARRAY}).by
+
       return {
         ...item,
-        selected: isEqual(sortOrderRaw?.by, item?.params?.by || EMPTY_ARRAY),
+        selected: isEqual(staticSortBy, itemSortBy),
         ...(isInvalidSortOrder && {
           disabled: {reason: disabledSortReason},
         }),
@@ -146,7 +155,7 @@ export const PaneContainer = memo(function PaneContainer(
     return defaultOrdering?.length > 0 ? {by: defaultOrdering} : DEFAULT_ORDERING
   }, [defaultOrdering])
 
-  const [sortOrderRaw, setSortOrder] = useStructureToolSetting<SortOrder>(
+  const [storedSortOrderRaw, setStoredSortOrder] = useStructureToolSetting<StaticSortOrder>(
     'sort-order',
     typeName ?? pane.id, //pane.id for anything that is not documentTypeList
     defaultSortOrder,
@@ -159,6 +168,14 @@ export const PaneContainer = memo(function PaneContainer(
   )
   const {t} = useTranslation(structureLocaleNamespace)
 
+  // Rehydrate the live `schemaType` onto each persisted entry. The
+  // pane already knows the type via `typeName`, so no discriminator
+  // is needed in storage.
+  const sortOrderRaw = useMemo<SortOrder | undefined>(
+    () => fromStaticSortOrder(storedSortOrderRaw, schemaType),
+    [storedSortOrderRaw, schemaType],
+  )
+
   const validatedSortOrder = useMemo(() => {
     if (!sortOrderRaw) return sortOrderRaw
     return validateSortOrder(sortOrderRaw, schemaType, defaultSortOrder)
@@ -167,9 +184,9 @@ export const PaneContainer = memo(function PaneContainer(
   const handleSetSortOrder = useCallback(
     async (newSortOrder: SortOrder) => {
       const validated = validateSortOrder(newSortOrder, schemaType, defaultSortOrder)
-      await setSortOrder(validated)
+      await setStoredSortOrder(toStaticSortOrder(validated))
     },
-    [setSortOrder, schemaType, defaultSortOrder],
+    [setStoredSortOrder, schemaType, defaultSortOrder],
   )
 
   const [customMenuItemState, setCustomMenuItemState] = useState<CustomMenuItemState>({})
