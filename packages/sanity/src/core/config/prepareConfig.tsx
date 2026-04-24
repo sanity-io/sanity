@@ -29,6 +29,7 @@ import {uploadSchema} from '../studio/manifest/uploadSchema'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
+import {canonicalHash} from '../util/canonicalHash'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
@@ -63,6 +64,7 @@ import {
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
+import {recordConfigWarning} from './configWarnings'
 import {createDefaultIcon} from './createDefaultIcon'
 import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
 import {resolveConfigProperty} from './resolveConfigProperty'
@@ -109,6 +111,109 @@ function warnDeprecatedConfigContextClientOnce() {
   console.warn(
     '`configContext.client` is deprecated and will be removed in the next release! Use `context.getClient({apiVersion: "2021-06-07"})` instead',
   )
+}
+
+const warnedProjectAuthDivergence = new Set<string>()
+
+/**
+ * Detects when multiple workspaces declare different `auth` configurations
+ * for the same projectId. Auth is project-scoped at runtime (cookies are
+ * scoped to the API domain; tokens are stored by projectId in localStorage),
+ * so per-workspace auth configs for the same project don't actually isolate
+ * auth between workspaces — whichever workspace initializes first wins at
+ * the storage level, and other configs become silent no-ops.
+ *
+ * Logs to the console and records the finding on the module-level warnings
+ * list (see `configWarnings.ts`) so the studio UI can surface it in dev
+ * mode via `ConfigIssuesButton`.
+ *
+ * @internal
+ */
+function warnOnDivergentProjectAuth(
+  workspaces: ReadonlyArray<WorkspaceOptions | SingleWorkspace>,
+): void {
+  const byProject = new Map<string, Array<{name: string; auth: unknown}>>()
+  for (const workspace of workspaces) {
+    const {projectId, auth, name} = workspace as WorkspaceOptions & {auth?: unknown}
+    if (!projectId || auth === undefined) continue
+    const list = byProject.get(projectId) ?? []
+    list.push({name: name ?? 'default', auth})
+    byProject.set(projectId, list)
+  }
+
+  for (const [projectId, entries] of byProject) {
+    if (entries.length < 2) continue
+
+    // Fingerprint each auth config so we can tell whether they diverge.
+    // AuthStore instances (already-constructed) are compared by reference
+    // identity; plain AuthConfig objects are compared by JSON shape.
+    // `providers` can be a function — different function identities will
+    // show as divergent, which may produce false positives but is acceptable
+    // for a deprecation warning.
+    const fingerprints = new Map<string, string[]>()
+    for (const {name, auth} of entries) {
+      const fingerprint = fingerprintAuth(auth)
+      const names = fingerprints.get(fingerprint) ?? []
+      names.push(name)
+      fingerprints.set(fingerprint, names)
+    }
+
+    if (fingerprints.size < 2) continue
+
+    // De-dupe across multiple prepareConfig runs in the same session
+    // (HMR, tests, multiple studio instances).
+    const warnKey = `${projectId}:${[...fingerprints.keys()].sort().join('|')}`
+    if (warnedProjectAuthDivergence.has(warnKey)) continue
+    warnedProjectAuthDivergence.add(warnKey)
+
+    const groups = [...fingerprints.values()]
+    const formattedGroups = groups.map((names) => `  • ${names.map((n) => `"${n}"`).join(', ')}`)
+    const message =
+      `Workspaces for project "${projectId}" declare different \`auth\` ` +
+      `configurations. Auth is project-scoped: workspaces for the same project ` +
+      `share cookies and tokens. Only the first-initialized workspace's \`auth\` ` +
+      `config takes effect; others are silent no-ops. Consolidate these to a ` +
+      `single shared config:\n${formattedGroups.join('\n')}`
+
+    console.warn(`[sanity] ${message}`)
+    recordConfigWarning({
+      type: 'project-auth-divergence',
+      projectId,
+      groups,
+      message,
+    })
+  }
+}
+
+function fingerprintAuth(auth: unknown): string {
+  if (auth === null || typeof auth !== 'object') return String(auth)
+
+  // Pre-built `AuthStore` instances are compared by reference identity.
+  // `createAuthStore` is memoized by a canonical hash of its options, so two
+  // `createAuthStore(equivalentOptions)` calls return the same instance —
+  // meaning reference identity is sufficient to detect "same auth" even when
+  // the calls were made separately per workspace.
+  if (isAuthStore(auth)) return `AuthStore@${getObjectId(auth)}`
+
+  // Plain `AuthConfig` objects are compared by canonical shape (keys sorted
+  // recursively) so property declaration order doesn't produce false
+  // positives.
+  try {
+    return `AuthConfig:${canonicalHash(auth)}`
+  } catch {
+    return `unserializable@${getObjectId(auth)}`
+  }
+}
+
+const objectIds = new WeakMap<object, number>()
+let nextObjectId = 1
+function getObjectId(value: object): number {
+  let id = objectIds.get(value)
+  if (id === undefined) {
+    id = nextObjectId++
+    objectIds.set(value, id)
+  }
+  return id
 }
 
 // Create media library sources with configuration
@@ -183,6 +288,8 @@ export function prepareConfig(
       causes: [e.message],
     })
   }
+
+  warnOnDivergentProjectAuth(workspaceOptions)
 
   const workspaces = workspaceOptions.map((rawWorkspace): WorkspaceSummary => {
     if (preparedWorkspaces.has(rawWorkspace)) {

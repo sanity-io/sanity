@@ -22,6 +22,7 @@ import {
 import {type AuthConfig} from '../../../config'
 import {isStaging} from '../../../environment/isStaging'
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
+import {canonicalHash} from '../../../util/canonicalHash'
 import {CorsOriginError} from '../cors'
 import {createBroadcastState} from './createBroadcastState'
 import {createBroadcastStorage} from './createBroadcastStorage'
@@ -531,19 +532,6 @@ export function _createAuthStore({
   }
 }
 
-function hash(value: unknown): string {
-  if (typeof value !== 'object' || value === null) return `${value}`
-
-  // note: this code path works for arrays as well as objects
-  return JSON.stringify(
-    Object.fromEntries(
-      Object.entries(value)
-        .sort(([a], [b]) => a.localeCompare(b, 'en'))
-        .map(([k, v]) => [k, hash(v)]),
-    ),
-  )
-}
-
 /**
  * Public options for `createAuthStore`. The `getSessionId` and `consumeHashToken`
  * dependencies are wired automatically using the default implementations.
@@ -561,5 +549,5 @@ export const createAuthStore = memoize(
       getSessionId: defaultGetSessionId,
       consumeHashToken: defaultConsumeHashToken,
     }),
-  hash,
+  canonicalHash,
 )
