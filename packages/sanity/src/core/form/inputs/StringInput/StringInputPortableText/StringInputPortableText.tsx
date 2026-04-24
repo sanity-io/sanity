@@ -101,6 +101,19 @@ export function StringInputPortableText(props: StringInputProps) {
     }
   }, [])
 
+  // Belt-and-braces for the Firefox redirect: when the user interacts with the editor,
+  // schedule an explicit focus commit through the FocusBridgePlugin. PTE's own onFocus
+  // handler bails early in Firefox when the click target is a text node (rather than the
+  // editable root) and relies on a follow-up DOM focus event that occasionally isn't
+  // delivered reliably. Invoking focusRef.current.focus() here routes through the state
+  // machine's "handle focus" action which calls ReactEditor.focus with a selection, and
+  // is a no-op if the editor is already focused.
+  const handlePointerDown = useCallback(() => {
+    requestAnimationFrame(() => {
+      focusRef.current?.focus()
+    })
+  }, [focusRef])
+
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
       if (event.type === 'focused') {
@@ -211,6 +224,7 @@ export function StringInputPortableText(props: StringInputProps) {
           style={style}
           renderPlaceholder={props.displayInlineChanges ? renderPlaceholder : undefined}
           rangeDecorations={props.displayInlineChanges ? rangeDecorations : undefined}
+          onPointerDown={handlePointerDown}
           $fontSize={fontSize}
           $space={space}
           $padding={padding}
