@@ -9,7 +9,7 @@ import {
   type DocumentActionProps,
 } from '../../../../config/document/actions'
 import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
-import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
+import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import {debugWithName} from '../../../../studio/timezones/utils/debug'
 import DialogFooter from '../../../components/dialogs/DialogFooter'

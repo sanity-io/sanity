@@ -51,7 +51,7 @@ import {
   useDocumentValuePermissions,
   usePresenceStore,
 } from '../store'
-import {isNewDocument} from '../store/_legacy/document/isNewDocument'
+import {isNewDocument} from '../store/document/isNewDocument'
 import {useWorkspace} from '../studio/workspace'
 import {
   EMPTY_ARRAY,

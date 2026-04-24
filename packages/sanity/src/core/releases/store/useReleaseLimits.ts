@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
-import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
+import {useResourceCache} from '../../store/ResourceCacheProvider'
 import {fetchReleaseLimits, type ReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
 
 interface ReleaseLimitsStore {

@@ -22,8 +22,8 @@ import {
 
 import {useClient} from '../../hooks/useClient'
 import {useDocumentOperation} from '../../hooks/useDocumentOperation'
-import {useDocumentStore} from '../../store/_legacy/datastores'
-import {selectUpstreamVersion} from '../../store/_legacy/document/selectUpstreamVersion'
+import {useDocumentStore} from '../../store/datastores'
+import {selectUpstreamVersion} from '../../store/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, getVersionFromId} from '../../util/draftUtils'

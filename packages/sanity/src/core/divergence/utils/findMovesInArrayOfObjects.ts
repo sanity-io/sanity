@@ -3,10 +3,7 @@ import {type KeyedObject} from '@sanity/types'
 import intersection from 'lodash-es/intersection.js'
 import {EMPTY, filter, from, map, type Observable, of, shareReplay, switchMap, toArray} from 'rxjs'
 
-import {
-  createMultiKeyWeakMap,
-  type MultiKeyWeakMap,
-} from '../../store/_legacy/createMultiKeyWeakMap'
+import {createMultiKeyWeakMap, type MultiKeyWeakMap} from '../../store/createMultiKeyWeakMap'
 
 let cache: MultiKeyWeakMap | undefined
 
