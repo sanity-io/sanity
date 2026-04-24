@@ -23,7 +23,7 @@ catalog:
   '@types/react': ^19.2.11
   '@types/react-dom': ^19.2.3
   '@types/react-is': ^19.2.0
-  '@typescript/native-preview': 7.0.0-dev.20260112.1
+  '@typescript/native-preview': beta
   '@vitejs/plugin-react': ^5.1.2
   babel-plugin-styled-components: ^2.1.4
   esbuild-register: ^3.6.0
@@ -44,7 +44,6 @@ catalog:
   vite: ^7.3.1
   vitest: ^4.1.4
   styled-components: npm:@sanity/styled-components@^6.1.24
-  typescript: 5.9.3
 
 overrides:
   # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.

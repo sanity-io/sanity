@@ -3,7 +3,7 @@
   "version": "5.22.0",
   "private": true,
   "scripts": {
-    "build": "tsc && vite build && sanity manifest extract",
+    "build": "tsgo && vite build && sanity manifest extract",
     "dev": "vite",
     "preview": "vite preview"
   },
@@ -17,8 +17,8 @@
   "devDependencies": {
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "typescript": "catalog:",
     "vite": "catalog:"
   }
 }
