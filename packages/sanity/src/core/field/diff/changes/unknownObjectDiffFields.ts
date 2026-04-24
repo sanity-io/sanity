@@ -3,12 +3,20 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {type ObjectDiff} from '../../types'
 
 /**
- * Keys we never surface as “unknown schema” JSON diffs — they are internal /
- * system-managed and would only add noise (or churn) to Review changes.
+ * Keys we never surface as “unknown schema” JSON diffs — Sanity document /
+ * object conventions (`_type`, `_key`) and internal blobs (`_system`) that
+ * would only add noise or churn to Review changes.
  *
  * @internal
  */
-const SKIP_UNKNOWN_JSON_DIFF_FIELD_NAMES = new Set<string>(['_system'])
+const SKIP_UNKNOWN_JSON_DIFF_FIELD_NAMES = new Set<string>([
+  '_key',
+  '_system',
+  '_type',
+  '_createdAt',
+  '_updatedAt',
+  '_rev',
+])
 
 /**
  * Field names declared on an object schema type (including multi-fieldsets).
@@ -34,8 +42,8 @@ export function collectObjectSchemaFieldNames(schemaType: ObjectSchemaType): Set
 /**
  * Keys present in `diff.fields` that are not declared on `schemaType`, have
  * `isChanged`, and pass optional `fieldFilter` (when set, the name must be
- * included). Skips internal keys such as `_system` (see
- * `SKIP_UNKNOWN_JSON_DIFF_FIELD_NAMES`).
+ * included). Skips `_type`, `_key`, `_system`, and any future entries in
+ * `SKIP_UNKNOWN_JSON_DIFF_FIELD_NAMES`.
  * Sorted lexicographically for stable UI ordering.
  *
  * @internal
