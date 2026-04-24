@@ -259,8 +259,6 @@ describe('sanity/structure', () => {
     expectTypeOf<typeof defaultInitialValueTemplateItems>().toBeFunction()
   })
   test('defaultIntentChecker', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
-    expectTypeOf<typeof defaultIntentChecker>().toBeFunction()
     expectTypeOf<typeof defaultIntentChecker>().not.toBeNever()
   })
   test('defineIncomingReferenceDecoration', () => {
