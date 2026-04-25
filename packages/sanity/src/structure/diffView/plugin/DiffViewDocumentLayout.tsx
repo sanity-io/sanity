@@ -26,7 +26,8 @@ export const DiffViewDocumentLayout: ComponentType<
   const toast = useToast()
   const {t} = useTranslation(structureLocaleNamespace)
   const {log} = useTelemetry()
-  const {advancedVersionControl} = useWorkspace()
+  const workspace = useWorkspace()
+  const advancedVersionControlEnabled = workspace.advancedVersionControl?.enabled ?? false
   const [sessionId, setSessionId] = useState<string | null>(null)
   const {isActive} = useDiffViewState({
     onParamsError: (errors) => {
@@ -48,7 +49,7 @@ export const DiffViewDocumentLayout: ComponentType<
       })
     },
     onActiveChanged: (previousState, state) => {
-      if (!advancedVersionControl.enabled) return
+      if (!advancedVersionControlEnabled) return
       const transition = selectActiveTransition(previousState, state)
 
       if (transition === 'entered') {
@@ -78,7 +79,7 @@ export const DiffViewDocumentLayout: ComponentType<
       }
     },
     onTargetDocumentsChanged: (previousState, state) => {
-      if (!advancedVersionControl.enabled) return
+      if (!advancedVersionControlEnabled) return
       if (typeof previousState === 'undefined') return
 
       log(DiffViewDocumentSelectionChanged, {

@@ -136,12 +136,11 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     })
   }, [store.logger])
 
+  const advancedVersionControlEnabled = workspace.advancedVersionControl?.enabled ?? false
   useEffect(() => {
     if (!isClient) return
-    store.logger.log(WorkspaceFeaturesObserved, {
-      advancedVersionControlEnabled: workspace.advancedVersionControl.enabled,
-    })
-  }, [store.logger, workspace.name, workspace.projectId, workspace.advancedVersionControl.enabled])
+    store.logger.log(WorkspaceFeaturesObserved, {advancedVersionControlEnabled})
+  }, [store.logger, workspace.name, workspace.projectId, advancedVersionControlEnabled])
 
   return (
     <TelemetryProvider store={store}>

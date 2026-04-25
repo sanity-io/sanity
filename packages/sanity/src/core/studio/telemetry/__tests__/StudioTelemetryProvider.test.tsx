@@ -77,6 +77,7 @@ describe('StudioTelemetryProvider', () => {
       return {
         logger: {
           updateUserProperties: vi.fn(),
+          log: vi.fn(),
         },
       } as never
     })
