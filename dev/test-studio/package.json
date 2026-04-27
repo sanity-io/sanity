@@ -22,7 +22,7 @@
     "@portabletext/plugin-character-pair-decorator": "^7.0.25",
     "@portabletext/react": "^6.0.3",
     "@portabletext/toolkit": "^5.0.2",
-    "@sanity/assist": "^5.0.3",
+    "@sanity/assist": "^6.0.4",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.6",
     "@sanity/color-input": "^6.0.3",
