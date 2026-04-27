@@ -1,5 +1,5 @@
 import {type Action, type SanityClient} from '@sanity/client'
-import {type DocumentId, isVersionId} from '@sanity/id-utils'
+import {type DocumentId, isDraftId, isVersionId} from '@sanity/id-utils'
 import {
   isReference,
   type Reference,
@@ -253,7 +253,14 @@ function restore(
       return {...document, _id: targetDocumentId}
     }),
     mergeMap((restoredDraft) => {
-      if (options?.useServerDocumentActions) {
+      // `sanity.action.document.replaceDraft` requires `attributes._id` to be
+      // prefixed with either `drafts.` or `versions.<bundleId>`. When it isn't
+      // (e.g. restoring a live-edit document directly onto the published id),
+      // fall back to the mutation API, matching the non-server-actions path.
+      const canUseServerAction =
+        isDraftId(targetDocumentId as DocumentId) || isVersionId(targetDocumentId as DocumentId)
+
+      if (options?.useServerDocumentActions && canUseServerAction) {
         const replaceDraftAction: Action = {
           actionType: 'sanity.action.document.replaceDraft',
           publishedId: documentId,
