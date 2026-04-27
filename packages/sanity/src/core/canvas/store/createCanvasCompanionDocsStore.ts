@@ -13,7 +13,7 @@ import {
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
-import {memoize} from '../../store/_legacy/document/utils/createMemoizer'
+import {memoize} from '../../store/document/utils/createMemoizer'
 import {getPublishedId} from '../../util/draftUtils'
 import {type CompanionDoc} from '../types'
 

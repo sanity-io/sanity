@@ -27,7 +27,7 @@ import {
 import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'
 import {type DocumentPreviewStore} from '../../../preview'
-import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
+import {useDocumentPreviewStore} from '../../../store/datastores'
 import {useSource} from '../../../studio'
 import {schedulerYield} from '../../../util/schedulerYield'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'

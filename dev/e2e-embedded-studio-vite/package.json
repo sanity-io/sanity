@@ -1,9 +1,9 @@
 {
   "name": "e2e-embedded-studio-vite",
-  "version": "5.21.0",
+  "version": "5.22.0",
   "private": true,
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "tsgo && vite build",
     "dev": "vite",
     "preview": "vite preview --port 5173",
     "start": "pnpm --filter e2e-embedded-studio-vite preview",
@@ -19,8 +19,8 @@
     "@playwright/test": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "typescript": "catalog:",
     "vite": "catalog:"
   }
 }

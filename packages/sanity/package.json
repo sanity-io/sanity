@@ -1,6 +1,6 @@
 {
   "name": "sanity",
-  "version": "5.21.0",
+  "version": "5.22.0",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "keywords": [
     "cms",
@@ -31,7 +31,10 @@
     "mock-browser-env-stub-loader.mjs"
   ],
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css",
+    "*.css.ts"
+  ],
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "typesVersions": {
@@ -176,7 +179,7 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^1.0.0",
-    "@sanity/cli": "^6.3.2",
+    "@sanity/cli": "^6.4.0",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.6",
     "@sanity/comlink": "^4.0.1",
@@ -189,7 +192,7 @@
     "@sanity/image-url": "^2.0.3",
     "@sanity/insert-menu": "^3.0.5",
     "@sanity/logos": "^2.2.2",
-    "@sanity/media-library-types": "^1.2.0",
+    "@sanity/media-library-types": "^1.4.0",
     "@sanity/message-protocol": "^0.23.0",
     "@sanity/migrate": "catalog:",
     "@sanity/mutate": "^0.16.1",
@@ -284,6 +287,8 @@
     "@types/use-sync-external-store": "^1.5.0",
     "@types/wicg-task-scheduling": "^2024.1.0",
     "@typescript/native-preview": "catalog:",
+    "@vanilla-extract/css": "catalog:",
+    "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/expect": "^4.1.4",
     "babel-plugin-react-compiler": "1.0.0",

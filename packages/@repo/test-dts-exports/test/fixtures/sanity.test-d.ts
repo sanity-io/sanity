@@ -87,6 +87,7 @@ import type {
   AsyncComposableOption,
   AsyncConfigPropertyReducer,
   AuthConfig,
+  AuthProbeResult,
   AuthProvider,
   AuthState,
   AuthStore,
@@ -270,6 +271,7 @@ import type {
   CorsOriginError,
   CorsOriginErrorOptions,
   createAuthStore,
+  CreateAuthStoreOptions,
   createBufferedDocument,
   createConfig,
   createConnectionStatusStore,
@@ -523,6 +525,7 @@ import type {
   ErrorStatus,
   ErrorWithId,
   escapeField,
+  evaluateWorkspaceHidden,
   EvaluationParams,
   Event,
   EventsProvider,
@@ -1667,6 +1670,7 @@ import type {
   useValuePreview,
   useVersionOperations,
   useVirtualizerScrollInstance,
+  useVisibleWorkspaces,
   useWorkspace,
   useWorkspaceLoader,
   useWorkspaces,
@@ -1697,6 +1701,8 @@ import type {
   VersionInlineBadge,
   VirtualizerScrollInstance,
   VirtualizerScrollInstanceProvider,
+  VisibleWorkspacesContextValue,
+  VisibleWorkspacesProvider,
   visitDiff,
   WeakCrossDatasetReferenceValue,
   WeakGlobalDocumentReferenceValue,
@@ -1708,6 +1714,8 @@ import type {
   WithReferringDocuments,
   WithVersion,
   Workspace,
+  WorkspaceHiddenContext,
+  WorkspaceHiddenProperty,
   WorkspaceLike,
   WorkspaceLoader,
   WorkspaceOptions,
@@ -1976,6 +1984,9 @@ describe('sanity', () => {
   })
   test('AuthConfig', () => {
     expectTypeOf<AuthConfig>().toBeObject()
+  })
+  test('AuthProbeResult', () => {
+    expectTypeOf<AuthProbeResult>().not.toBeNever()
   })
   test('AuthProvider', () => {
     expectTypeOf<AuthProvider>().toBeObject()
@@ -2531,6 +2542,9 @@ describe('sanity', () => {
   })
   test('createAuthStore', () => {
     expectTypeOf<typeof createAuthStore>().not.toBeNever()
+  })
+  test('CreateAuthStoreOptions', () => {
+    expectTypeOf<CreateAuthStoreOptions>().not.toBeNever()
   })
   test('createBufferedDocument', () => {
     expectTypeOf<typeof createBufferedDocument>().not.toBeNever()
@@ -3296,6 +3310,9 @@ describe('sanity', () => {
   })
   test('escapeField', () => {
     expectTypeOf<typeof escapeField>().not.toBeNever()
+  })
+  test('evaluateWorkspaceHidden', () => {
+    expectTypeOf<typeof evaluateWorkspaceHidden>().toBeFunction()
   })
   test('EvaluationParams', () => {
     expectTypeOf<EvaluationParams>().toBeObject()
@@ -5508,8 +5525,6 @@ describe('sanity', () => {
     expectTypeOf<SanityFormConfig>().toBeObject()
   })
   test('ScheduleAction', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
-    expectTypeOf<typeof ScheduleAction>().toBeFunction()
     expectTypeOf<typeof ScheduleAction>().not.toBeNever()
   })
   test('ScheduledBadge', () => {
@@ -6748,6 +6763,9 @@ describe('sanity', () => {
   test('useVirtualizerScrollInstance', () => {
     expectTypeOf<typeof useVirtualizerScrollInstance>().toBeFunction()
   })
+  test('useVisibleWorkspaces', () => {
+    expectTypeOf<typeof useVisibleWorkspaces>().toBeFunction()
+  })
   test('useWorkspace', () => {
     expectTypeOf<typeof useWorkspace>().toBeFunction()
   })
@@ -6839,6 +6857,12 @@ describe('sanity', () => {
   test('VirtualizerScrollInstanceProvider', () => {
     expectTypeOf<typeof VirtualizerScrollInstanceProvider>().toBeFunction()
   })
+  test('VisibleWorkspacesContextValue', () => {
+    expectTypeOf<VisibleWorkspacesContextValue>().toBeObject()
+  })
+  test('VisibleWorkspacesProvider', () => {
+    expectTypeOf<typeof VisibleWorkspacesProvider>().toBeFunction()
+  })
   test('visitDiff', () => {
     expectTypeOf<typeof visitDiff>().toBeFunction()
   })
@@ -6871,6 +6895,12 @@ describe('sanity', () => {
   })
   test('Workspace', () => {
     expectTypeOf<Workspace>().toBeObject()
+  })
+  test('WorkspaceHiddenContext', () => {
+    expectTypeOf<WorkspaceHiddenContext>().toBeObject()
+  })
+  test('WorkspaceHiddenProperty', () => {
+    expectTypeOf<WorkspaceHiddenProperty>().not.toBeNever()
   })
   test('WorkspaceLike', () => {
     expectTypeOf<WorkspaceLike>().toBeObject()

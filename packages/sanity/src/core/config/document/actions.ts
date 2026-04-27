@@ -4,7 +4,7 @@ import {
 } from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type EditStateFor, type MapDocument} from '../../store/_legacy'
+import {type EditStateFor, type MapDocument} from '../../store'
 import {type ActionComponent, type GroupableActionDescription} from '../types'
 
 /**

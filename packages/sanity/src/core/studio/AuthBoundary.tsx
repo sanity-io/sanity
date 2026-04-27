@@ -6,8 +6,13 @@ import {
   AuthBoundaryResolved,
   SessionTokenExchangeCompleted,
 } from './__telemetry__/authBoundary.telemetry'
+import {StudioAuthReadyMeasured} from './__telemetry__/bootstrap.telemetry'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
 import {AuthenticateScreen, NotAuthenticatedScreen, RequestAccessScreen} from './screens'
+
+// Module-level one-shot guard. Survives StrictMode double-mount in dev so the
+// event only fires once per page load (HMR resets this naturally).
+let authReadyFired = false
 
 interface AuthBoundaryProps {
   children: ReactNode
@@ -32,6 +37,9 @@ export function AuthBoundary({
   const {activeWorkspace} = useActiveWorkspace()
   const telemetry = useTelemetry()
   const [mountTime] = useState(() => performance.now())
+
+  // AuthBoundaryResolved: mount-baseline — measures time from this component
+  // mounting to auth state resolving. Fires every transition out of 'loading'.
   useEffect(() => {
     if (loggedIn !== 'loading') {
       telemetry.log(AuthBoundaryResolved, {
@@ -40,6 +48,19 @@ export function AuthBoundary({
       })
     }
   }, [loggedIn, telemetry, mountTime])
+
+  // StudioAuthReadyMeasured: navigation-start baseline — measures time from
+  // performance.timeOrigin (pairs with web-vitals metrics like LCP/FCP).
+  // One-shot via module-level guard.
+  useEffect(() => {
+    if (authReadyFired) return
+    if (loggedIn === 'loading') return
+    authReadyFired = true
+    telemetry.log(StudioAuthReadyMeasured, {
+      durationMs: performance.now(),
+      authState: loggedIn,
+    })
+  }, [loggedIn, telemetry])
 
   useEffect(() => {
     activeWorkspace.auth

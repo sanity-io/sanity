@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {memo, useEffect, useRef, useState} from 'react'
 
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
-import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
+import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'

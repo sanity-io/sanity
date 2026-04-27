@@ -1,7 +1,7 @@
 import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 
-import {useProjectStore} from '../../../../store/_legacy/datastores'
+import {useProjectStore} from '../../../../store/datastores'
 
 const DEPLOY_STUDIO_PERMISSION = 'sanity.project'
 const DEPLOY_STUDIO_GRANT = 'deployStudio'

@@ -9,7 +9,7 @@ import {
   type DocumentActionProps,
 } from '../../../config/document/actions'
 import {useTranslation} from '../../../i18n'
-import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
+import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {UnpublishVersionDialog} from '../../components/dialog/UnpublishVersionDialog'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
