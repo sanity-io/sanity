@@ -80,7 +80,7 @@ export function useDivergenceController(
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentStore = useDocumentStore()
   const telemetry = useTelemetry()
-  const [isActionPending, setIsActionPending] = useState(false)
+  const [isActionPending, setIsActionPending] = useState<boolean>(false)
 
   const sessionId = useContext(DiffViewSessionContext)
   // Read the context directly: `useDocumentDivergences` throws outside a
@@ -173,12 +173,18 @@ export function useDivergenceController(
       return
     }
 
-    telemetry.log(ActedOnDivergence, {action: 'mark-resolved', sessionId, divergenceCount})
+    telemetry.log(ActedOnDivergence, {
+      action: 'mark-resolved',
+      sessionId,
+      divergenceCount,
+    })
+
     setIsActionPending(true)
 
     const markers = await firstValueFrom(
       createResolutionMarkers(upstreamHead.value.document, divergence).pipe(toArray()),
     )
+
     const patches = createUpsertResolutionMarkerPatches(...markers)
     patch.execute(patches.map(SanityEncoder.encodePatch))
     setIsActionPending(false)
@@ -189,7 +195,12 @@ export function useDivergenceController(
       return
     }
 
-    telemetry.log(ActedOnDivergence, {action: 'take-upstream-value', sessionId, divergenceCount})
+    telemetry.log(ActedOnDivergence, {
+      action: 'take-upstream-value',
+      sessionId,
+      divergenceCount,
+    })
+
     setIsActionPending(true)
 
     const patches = await firstValueFrom(
@@ -199,6 +210,7 @@ export function useDivergenceController(
         ...divergence.divergences.map(([divergencePath]) => fromString(divergencePath)),
       ).pipe(toArray()),
     )
+
     patch.execute(patches.map(SanityEncoder.encodePatch))
     setIsActionPending(false)
   }

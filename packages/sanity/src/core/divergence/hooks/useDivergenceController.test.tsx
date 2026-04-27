@@ -22,8 +22,6 @@ type UpstreamSnapshot =
 const mockTelemetryLog = vi.fn()
 const mockPatchExecute = vi.fn()
 const upstreamSnapshotRef: {current: UpstreamSnapshot} = {current: {isLoading: true}}
-const mockCreateUpsertResolutionMarkerPatches = vi.fn(() => [])
-const mockCreateTakeFromUpstreamPatches = vi.fn(() => of([]))
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: () => ({log: mockTelemetryLog}),
@@ -45,23 +43,6 @@ vi.mock('../../store/events/getDocumentAtRevision', () => ({
 
 vi.mock('react-rx', () => ({
   useObservable: (_observable: unknown, initial: unknown) => upstreamSnapshotRef.current ?? initial,
-}))
-
-vi.mock('../patches', () => ({
-  createUpsertResolutionMarkerPatches: () => mockCreateUpsertResolutionMarkerPatches(),
-  createTakeFromUpstreamPatches: () => mockCreateTakeFromUpstreamPatches(),
-}))
-
-vi.mock('../readDocumentDivergences', () => ({
-  createDocumentRevisionMarker: () => ({}),
-}))
-
-vi.mock('../utils/hashData', () => ({
-  hashData: async () => 'mock-hash',
-}))
-
-vi.mock('@sanity/mutate', () => ({
-  SanityEncoder: {encodePatch: (patch: unknown) => patch},
 }))
 
 const SET_DIVERGENCE = {
@@ -104,10 +85,6 @@ describe('useDivergenceController', () => {
   beforeEach(() => {
     mockTelemetryLog.mockReset()
     mockPatchExecute.mockReset()
-    mockCreateUpsertResolutionMarkerPatches.mockReset()
-    mockCreateUpsertResolutionMarkerPatches.mockReturnValue([])
-    mockCreateTakeFromUpstreamPatches.mockReset()
-    mockCreateTakeFromUpstreamPatches.mockReturnValue(of([]))
     upstreamSnapshotRef.current = {isLoading: true}
   })
 
