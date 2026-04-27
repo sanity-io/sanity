@@ -21,6 +21,7 @@ export default defineConfig({
       'packages/@sanity/util',
       'packages/@sanity/vision',
       'packages/sanity',
+      {config: 'packages/sanity/vitest.browser.config.mts'},
       'perf/tests',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',

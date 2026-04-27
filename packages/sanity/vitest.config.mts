@@ -6,7 +6,7 @@ export default defineConfig({
     environment: 'jsdom',
     globalSetup: ['./test/setup/global.ts'],
     setupFiles: ['./test/setup/environment.ts'],
-    exclude: ['./playwright-ct', './src/_internal/cli'],
+    exclude: ['./src/_internal/cli', '**/*.browser.test.*'],
     server: {
       deps: {inline: ['vitest-package-exports']},
     },
