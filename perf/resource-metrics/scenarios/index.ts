@@ -1,2 +1,1 @@
-export {documentOpen} from './documentOpen'
-export {studioBoot} from './studioBoot'
+export {workspaceBoot} from './workspace'

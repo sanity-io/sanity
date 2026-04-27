@@ -1,2 +1,4 @@
 results/
 node_modules/
+studio/dist/
+studio/.sanity/

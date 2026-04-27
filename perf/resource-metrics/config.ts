@@ -3,7 +3,11 @@
 export const METRICS_PROJECT_ID = 'c1zuxvqn'
 export const METRICS_DATASET = 'resource-metrics'
 
-// The Studio project used to run the scenarios against.
-// This is the same project as perf/studio.
-export const STUDIO_PROJECT_ID = 'qk0wb6qx'
-export const STUDIO_DATASET = 'test'
+// The workspaces defined in studio/sanity.config.ts.
+// Each entry maps a workspace name to its basePath and the HAR fixture file used for replay.
+export const WORKSPACES = [
+  {name: 'minimal', basePath: '/minimal', harFixture: 'minimal.har'},
+  {name: 'blog', basePath: '/blog', harFixture: 'blog.har'},
+  {name: 'large-schema', basePath: '/large-schema', harFixture: 'large-schema.har'},
+  {name: 'plugin-heavy', basePath: '/plugin-heavy', harFixture: 'plugin-heavy.har'},
+] as const

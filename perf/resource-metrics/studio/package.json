@@ -1,0 +1,22 @@
+{
+  "name": "resource-metrics-studio",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Dedicated studio for resource metrics collection",
+  "type": "module",
+  "scripts": {
+    "build": "sanity build",
+    "dev": "sanity dev --port 3400",
+    "start": "sanity preview --port 3400"
+  },
+  "dependencies": {
+    "@sanity/vision": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sanity": "workspace:*",
+    "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*"
+  }
+}

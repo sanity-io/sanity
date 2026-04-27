@@ -14,22 +14,17 @@ import {chromium} from 'playwright'
 
 import {collectMetrics} from './collect'
 import {compareResults, hasSignificantRegression} from './compare'
-import {METRICS_DATASET, METRICS_PROJECT_ID, STUDIO_PROJECT_ID} from './config'
+import {METRICS_DATASET, METRICS_PROJECT_ID, WORKSPACES} from './config'
 import {formatMarkdownReport} from './formatReport'
-import {studioBoot} from './scenarios/index'
-import {
-  type ComparisonResult,
-  type ResourceMetrics,
-  type Scenario,
-  type ScenarioResult,
-} from './types'
+import {workspaceBoot} from './scenarios/index'
+import {type ComparisonResult, type ResourceMetrics, type ScenarioResult} from './types'
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
+const fixturesDir = path.join(workspaceDir, 'fixtures')
 
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const HEADLESS = process.env.HEADLESS !== 'false'
-const STUDIO_URL = process.env.STUDIO_URL || 'http://localhost:3333'
-const STUDIO_TOKEN = process.env.RESOURCE_METRICS_STUDIO_TOKEN || ''
+const STUDIO_URL = process.env.STUDIO_URL || 'http://localhost:3400'
 const METRICS_TOKEN = process.env.RESOURCE_METRICS_WRITE_TOKEN || ''
 
 // eslint-disable-next-line turbo/no-undeclared-env-vars
@@ -61,52 +56,38 @@ function validateReferencePath(refPath: string): void {
   }
 }
 
-async function runScenario(
-  studioUrl: string,
-  token: string,
-  scenario: Scenario,
-  ...urlArgs: string[]
-): Promise<ScenarioResult> {
+async function runWorkspace(workspace: (typeof WORKSPACES)[number]): Promise<ScenarioResult> {
+  const harPath = path.join(fixturesDir, workspace.harFixture)
+  const hasHar = fs.existsSync(harPath)
+
+  if (!hasHar) {
+    console.log(
+      chalk.yellow(`  ⚠ No HAR fixture at ${workspace.harFixture} — running without replay`),
+    )
+  }
+
   const browser = await chromium.launch({
     headless: HEADLESS,
     args: ['--disable-gpu', '--disable-software-rasterizer'],
   })
 
   try {
-    const context = await browser.newContext({
-      reducedMotion: 'reduce',
-      storageState: {
-        cookies: [],
-        origins: [
-          {
-            origin: studioUrl,
-            localStorage: [
-              {
-                name: `__studio_auth_token_${STUDIO_PROJECT_ID}`,
-                value: JSON.stringify({
-                  token,
-                  time: new Date().toISOString(),
-                }),
-              },
-            ],
-          },
-        ],
-      },
-    })
-
+    const context = await browser.newContext({reducedMotion: 'reduce'})
     const page = await context.newPage()
-    const url = scenario.getUrl(studioUrl, ...urlArgs)
+
+    const url = workspaceBoot.getUrl(STUDIO_URL, workspace.basePath)
 
     const result = await collectMetrics({
       page,
       url,
-      waitForReady: scenario.waitForReady,
+      waitForReady: workspaceBoot.waitForReady,
+      harFilePath: hasHar ? harPath : undefined,
     })
 
     await context.close()
 
     return {
-      scenario: scenario.name,
+      scenario: workspace.name,
       metrics: result.metrics,
       requests: result.requests,
       timestamp: new Date().toISOString(),
@@ -185,16 +166,17 @@ async function main() {
   console.log(chalk.bold('📊 Resource Metrics'))
   console.log(`Studio URL: ${STUDIO_URL}`)
   console.log(`Commit: ${getCommitSha()}`)
+  console.log(`Workspaces: ${WORKSPACES.map((w) => w.name).join(', ')}`)
   console.log()
 
-  // Run the studio-boot scenario
-  console.log('Running studio-boot scenario…')
-  const bootResult = await runScenario(STUDIO_URL, STUDIO_TOKEN, studioBoot)
-  printResult('Experiment', bootResult)
+  const experimentResults: ScenarioResult[] = []
 
-  const experimentResults = [bootResult]
-
-  // TODO: Add document-open scenario when we have a way to create/reference a test document
+  for (const workspace of WORKSPACES) {
+    console.log(`Running workspace: ${workspace.name}…`)
+    const result = await runWorkspace(workspace)
+    printResult('Experiment', result)
+    experimentResults.push(result)
+  }
 
   // Save experiment results
   const resultsDir = path.join(workspaceDir, 'results')

@@ -1,6 +1,7 @@
 packages:
   - dev/*
   - perf/*
+  - perf/resource-metrics/studio
   - examples/*
   - scripts
   - e2e

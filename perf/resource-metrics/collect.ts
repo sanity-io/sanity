@@ -8,6 +8,13 @@ interface CollectOptions {
   url: string
   /** Called when the page should be considered "ready" for measurement */
   waitForReady: (page: Page) => Promise<void>
+  /**
+   * Path to a HAR (HTTP Archive) file. When provided, Playwright intercepts all
+   * network requests and serves responses from this file instead of hitting the network.
+   * This makes API responses fully deterministic and removes the need for auth tokens.
+   * See: https://playwright.dev/docs/mock#mocking-with-har-files
+   */
+  harFilePath?: string
 }
 
 interface CollectResult {
@@ -19,7 +26,15 @@ export async function collectMetrics({
   page,
   url,
   waitForReady,
+  harFilePath,
 }: CollectOptions): Promise<CollectResult> {
+  // If a HAR file is provided, intercept all API requests and serve recorded responses.
+  // `notFound: 'abort'` ensures the test fails loudly if the Studio makes an
+  // unexpected request that wasn't captured during HAR recording.
+  if (harFilePath) {
+    await page.routeFromHAR(harFilePath, {notFound: 'abort'})
+  }
+
   // Use a Map keyed by Request object reference to reliably match requests to responses,
   // even when the same URL appears multiple times (parallel requests, retries).
   const requestMap = new Map<Request, RequestEntry>()

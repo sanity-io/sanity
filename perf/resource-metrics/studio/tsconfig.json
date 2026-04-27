@@ -6,9 +6,9 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "jsx": "react-jsx",
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["./**/*.ts"],
-  "exclude": ["dist", "node_modules", "studio"]
+  "include": ["./**/*.ts", "./**/*.tsx"]
 }

@@ -7,6 +7,7 @@
   "scripts": {
     "start": "tsx ./index.ts",
     "test": "pnpm start",
+    "record": "tsx ./record.ts",
     "write:report": "tsx ./formatReport.ts"
   },
   "devDependencies": {
