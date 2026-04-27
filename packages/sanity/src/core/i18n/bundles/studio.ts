@@ -438,6 +438,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.same-revision-selected-title': 'Same revision selected',
   /** Title for the Review Changes pane */
   'changes.title': 'History',
+  /** Shown above raw JSON diff for document fields that are not defined in the schema */
+  'changes.unknown-schema-field.description':
+    'This field is not defined in the schema. Values are shown as JSON.',
   /**The title that will be shown in the badge inside the events when the item is a draft */
   'changes.versions.draft': 'Draft',
 

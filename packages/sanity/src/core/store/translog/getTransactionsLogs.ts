@@ -4,7 +4,7 @@ import {
   type TransactionLogEventWithEffects,
 } from '@sanity/types'
 
-import {getJsonStream} from '../_legacy/history/history/getJsonStream'
+import {getJsonStream} from '../history/history/getJsonStream'
 
 /**
  * Fetches transaction logs for the specified document IDs from the translog

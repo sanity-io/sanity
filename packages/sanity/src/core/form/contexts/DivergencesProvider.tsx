@@ -20,7 +20,7 @@ import {readMostRecentSharedTransaction} from '../../divergence/readMostRecentSh
 import {type ResolutionMarker} from '../../divergence/types/ResolutionMarker'
 import {useClient} from '../../hooks/useClient'
 import {type EditStateFor} from '../../store'
-import {selectUpstreamVersion} from '../../store/_legacy/document/selectUpstreamVersion'
+import {selectUpstreamVersion} from '../../store/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isPublishedId} from '../../util/draftUtils'

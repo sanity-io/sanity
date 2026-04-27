@@ -36,7 +36,7 @@ import {
   timeout,
 } from 'rxjs'
 
-import {useComlinkStore} from '../store/_legacy/datastores'
+import {useComlinkStore} from '../store/datastores'
 
 interface FavoriteStatusResponse {
   isFavorited: boolean
