@@ -3,9 +3,11 @@ import {type CurrentUser} from '@sanity/types'
 import {type ComponentType} from 'react'
 import {type Observable} from 'rxjs'
 
-import {type LoginMethod} from '../../config'
+import {type LoginMethod} from '../../../config'
 
-export type AuthProbeResult = {authenticated: false} | {authenticated: true; id: string}
+export type AuthProbeResult =
+  | {authenticated: false}
+  | {authenticated: true; id: string; expiry: string}
 
 /**
  * The interface used by the Studio that produces a `SanityClient` and
@@ -44,7 +46,7 @@ export interface AuthStore {
    * out. The implementation is expected to remove all credentials both locally
    * and on the server.
    */
-  logout?: () => Promise<void>
+  logout?: () => void
   /**
    * Custom auth stores can implement a function that is designated to run when
    * the Studio loads (e.g. to trade a session ID for a token in cookie-less
