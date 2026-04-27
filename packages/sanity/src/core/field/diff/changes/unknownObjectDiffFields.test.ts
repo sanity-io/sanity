@@ -71,13 +71,16 @@ describe('getSortedUnknownChangedObjectFieldNames', () => {
     expect(getSortedUnknownChangedObjectFieldNames(schema, diff, ['b'])).toEqual(['b'])
   })
 
-  it('omits `_system`, `_type`, and `_key` when not on schema (internal / noisy)', () => {
+  it('omits document metadata and internal keys when not on schema', () => {
     const diff = {
       type: 'object',
       fields: {
+        _createdAt: {isChanged: true},
+        _key: {isChanged: true},
+        _rev: {isChanged: true},
         _system: {isChanged: true},
         _type: {isChanged: true},
-        _key: {isChanged: true},
+        _updatedAt: {isChanged: true},
         orphan: {isChanged: true},
       },
     } as unknown as ObjectDiff

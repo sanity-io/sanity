@@ -1,4 +1,4 @@
-import {Code, Stack, Text} from '@sanity/ui'
+import {Card, Code, Stack, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 import {styled} from 'styled-components'
 
@@ -79,10 +79,10 @@ export const JsonFieldDiff: DiffComponent = ({diff}) => {
     ) : null
 
   return (
-    <Stack space={3} paddingY={1}>
-      <Text muted size={1}>
-        {t('changes.unknown-schema-field.description')}
-      </Text>
+    <Stack space={4} paddingY={1}>
+      <Card border padding={3} radius={2} tone="caution">
+        <Text size={1}>{t('changes.unknown-schema-field.description')}</Text>
+      </Card>
       {content}
     </Stack>
   )

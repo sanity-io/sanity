@@ -107,7 +107,8 @@ export function buildObjectChangeList(
     }
   }
 
-  for (const fieldName of getSortedUnknownChangedObjectFieldNames(schemaType, diff, fieldFilter)) {
+  const unknownFieldNames = getSortedUnknownChangedObjectFieldNames(schemaType, diff, fieldFilter)
+  for (const fieldName of unknownFieldNames) {
     const fieldDiff = diff.fields[fieldName]
     const fieldPath = path.concat([fieldName])
     const fieldTitlePath = titlePath.concat([fieldName])
