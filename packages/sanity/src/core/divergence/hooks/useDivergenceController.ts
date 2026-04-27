@@ -1,5 +1,4 @@
 import {SanityEncoder} from '@sanity/mutate'
-import {useTelemetry} from '@sanity/telemetry/react'
 import {type SanityDocument} from '@sanity/types'
 import {fromString, get} from '@sanity/util/paths'
 import {useContext, useEffect, useEffectEvent, useState} from 'react'
@@ -28,12 +27,12 @@ import {selectUpstreamVersion} from '../../store/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
-import {ActedOnDivergence, InspectedDivergence} from '../__telemetry__/divergence.telemetry'
 import {type ReachableDivergence} from '../divergenceNavigator'
 import {createTakeFromUpstreamPatches, createUpsertResolutionMarkerPatches} from '../patches'
 import {createDocumentRevisionMarker, type DivergenceAtPath} from '../readDocumentDivergences'
 import {type ResolutionMarkerAtPath} from '../types/ResolutionMarker'
 import {hashData} from '../utils/hashData'
+import {useDivergenceTelemetry} from './useDivergenceTelemetry'
 
 type HydratedSnapshot =
   | {
@@ -79,19 +78,21 @@ export function useDivergenceController(
   const {subjectId, documentId, documentType, sinceRevisionId, path} = divergence
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentStore = useDocumentStore()
-  const telemetry = useTelemetry()
+  const {divergenceInspected, divergenceActed} = useDivergenceTelemetry()
   const [isActionPending, setIsActionPending] = useState(false)
 
   const sessionId = useContext(DiffViewSessionContext)
-  // Read the context directly; `useDocumentDivergences` throws outside a
+  // Read the context directly: `useDocumentDivergences` throws outside a
   // `DivergencesProvider`, and the controller can render in trees that lack one.
   const divergencesContext = useContext(DocumentDivergencesContext)
+  // Total reachable divergences, resolved or not. Acts as the denominator for
+  // "% resolved per session".
   const divergenceCount = divergencesContext?.enabled
     ? divergencesContext.state.divergences.length
     : 0
 
   const logInspectedDivergence = useEffectEvent(() =>
-    telemetry.log(InspectedDivergence, {sessionId, divergenceCount}),
+    divergenceInspected({sessionId, divergenceCount}),
   )
   useEffect(logInspectedDivergence, [logInspectedDivergence])
 
@@ -181,7 +182,7 @@ export function useDivergenceController(
       const patches = createUpsertResolutionMarkerPatches(...markers)
       patch.execute(patches.map(SanityEncoder.encodePatch))
 
-      telemetry.log(ActedOnDivergence, {
+      divergenceActed({
         action: 'mark-resolved',
         sessionId,
         divergenceCount,
@@ -189,7 +190,7 @@ export function useDivergenceController(
       })
       setIsActionPending(false)
     } catch (error) {
-      telemetry.log(ActedOnDivergence, {
+      divergenceActed({
         action: 'mark-resolved',
         sessionId,
         divergenceCount,
@@ -218,7 +219,7 @@ export function useDivergenceController(
 
       patch.execute(patches.map(SanityEncoder.encodePatch))
 
-      telemetry.log(ActedOnDivergence, {
+      divergenceActed({
         action: 'take-upstream-value',
         sessionId,
         divergenceCount,
@@ -226,7 +227,7 @@ export function useDivergenceController(
       })
       setIsActionPending(false)
     } catch (error) {
-      telemetry.log(ActedOnDivergence, {
+      divergenceActed({
         action: 'take-upstream-value',
         sessionId,
         divergenceCount,

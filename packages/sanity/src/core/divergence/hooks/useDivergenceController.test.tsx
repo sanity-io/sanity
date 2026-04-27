@@ -35,7 +35,7 @@ vi.mock('../../hooks/useDocumentOperation', () => ({
   useDocumentOperation: () => ({patch: {execute: mockPatchExecute}}),
 }))
 
-vi.mock('../../store/_legacy/datastores', () => ({
+vi.mock('../../store/datastores', () => ({
   useDocumentStore: () => ({pair: {editState: () => of({ready: false})}}),
 }))
 

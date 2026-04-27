@@ -119,6 +119,8 @@ export function useCommentsTelemetry() {
 }
 ```
 
+See `useDivergenceTelemetry` (`packages/sanity/src/core/divergence/hooks/useDivergenceTelemetry.ts`) and `useDiffViewTelemetry` (`packages/sanity/src/structure/diffView/hooks/useDiffViewTelemetry.ts`) for further examples.
+
 ### Batching and Transport
 
 Events are **not sent immediately**. They are collected in a batched store and flushed periodically:
@@ -274,13 +276,23 @@ Tracked automatically via `web-vitals/attribution` library:
 | `Portable Text Invalid Value Ignore/Resolve` | PTE error handling |
 | `Created Draft`                              | New draft creation |
 
+### Divergences
+
+| Event                                | When                                                                                                                                |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `DiffViewEntered` / `DiffViewExited` | User opens or closes the diff view (compare-versions UI)                                                                            |
+| `DiffViewDocumentSelectionChanged`   | User swaps a compared document mid-session                                                                                          |
+| `Inspected Divergence`               | User views a divergence in a single node                                                                                            |
+| `Acted On Divergence`                | User resolves a divergence. Payload carries `action: 'take-upstream-value' \| 'mark-resolved'` and `status: 'success' \| 'failure'` |
+| `Workspace Features Observed`        | Fires once per workspace mount. Carries the `advancedVersionControl.enabled` flag for adoption metrics                              |
+
 ### Other
 
 - **Copy/Paste** - Document ID and URL copied
 - **Upsell dialogs** - Free trial and feature upsell interactions
 - **Studio announcements** - Announcement views and interactions
 - **Request permission dialogs** - Permission request flows
-- **Document out-of-sync** - Divergence and conflict events
+- **Document out-of-sync** - Real-time sync conflict events from `documentOutOfSyncEvents.telemetry.ts` (distinct from the Divergences feature above)
 - **Document pair loading** - Loading performance metrics
 - **Listener latency** - Real-time listener performance
 - **Nested object editing** - Tree-editing interactions

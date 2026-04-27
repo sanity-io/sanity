@@ -137,6 +137,8 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   }, [store.logger])
 
   const advancedVersionControlEnabled = workspace.advancedVersionControl?.enabled ?? false
+  // Log through `store.logger` because this component creates the
+  // TelemetryProvider, so `useTelemetry()` is not yet available here.
   useEffect(() => {
     if (!isClient) return
     store.logger.log(WorkspaceFeaturesObserved, {advancedVersionControlEnabled})

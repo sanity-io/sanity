@@ -1,4 +1,3 @@
-import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {type ComponentType, type PropsWithChildren, useState} from 'react'
@@ -12,23 +11,20 @@ import {
 import {DiffViewSessionContext} from 'sanity/_singletons'
 
 import {structureLocaleNamespace} from '../../i18n'
-import {
-  DiffViewEntered,
-  DiffViewExited,
-  DiffViewDocumentSelectionChanged,
-} from '../__telemetry__/diffView.telemetry'
 import {DiffView} from '../components/DiffView'
-import {selectActiveTransition, useDiffViewState} from '../hooks/useDiffViewState'
+import {useDiffViewState, selectActiveTransition} from '../hooks/useDiffViewState'
+import {useDiffViewTelemetry} from '../hooks/useDiffViewTelemetry'
 
 export const DiffViewDocumentLayout: ComponentType<
   PropsWithChildren<Pick<DocumentLayoutProps, 'documentId' | 'documentType'>>
 > = ({children, documentId, documentType}) => {
   const toast = useToast()
   const {t} = useTranslation(structureLocaleNamespace)
-  const {log} = useTelemetry()
+  const {diffViewEntered, diffViewExited, diffViewDocumentSelectionChanged} = useDiffViewTelemetry()
   const workspace = useWorkspace()
   const advancedVersionControlEnabled = workspace.advancedVersionControl?.enabled ?? false
   const [sessionId, setSessionId] = useState<string | null>(null)
+
   const {isActive} = useDiffViewState({
     onParamsError: (errors) => {
       toast.push({
@@ -48,53 +44,54 @@ export const DiffViewDocumentLayout: ComponentType<
         ),
       })
     },
-    onActiveChanged: (previousState, state) => {
-      if (!advancedVersionControlEnabled) return
-      const transition = selectActiveTransition(previousState, state)
+    // Attach telemetry callbacks only when the feature is enabled.
+    ...(advancedVersionControlEnabled && {
+      onActiveChanged: (previousState, state) => {
+        const transition = selectActiveTransition(previousState, state)
 
-      if (transition === 'entered') {
-        const nextSessionId = uuid()
-        setSessionId(nextSessionId)
-        log(DiffViewEntered, {
+        if (transition === 'entered') {
+          const nextSessionId = uuid()
+          setSessionId(nextSessionId)
+          diffViewEntered({
+            documentVariantTypes: documentIdsToVariantTypes([
+              state.documents?.previous.id,
+              state.documents?.next.id,
+            ]),
+            sessionId: nextSessionId,
+            documentType,
+          })
+          return
+        }
+
+        if (transition === 'exited' && typeof previousState !== 'undefined') {
+          diffViewExited({
+            documentVariantTypes: documentIdsToVariantTypes([
+              previousState.documents?.previous.id,
+              previousState.documents?.next.id,
+            ]),
+            sessionId,
+            documentType,
+          })
+          setSessionId(null)
+        }
+      },
+      onTargetDocumentsChanged: (previousState, state) => {
+        if (typeof previousState === 'undefined') return
+
+        diffViewDocumentSelectionChanged({
+          previousDocumentVariantTypes: documentIdsToVariantTypes([
+            previousState.documents?.previous.id,
+            previousState.documents?.next.id,
+          ]),
           documentVariantTypes: documentIdsToVariantTypes([
             state.documents?.previous.id,
             state.documents?.next.id,
           ]),
-          sessionId: nextSessionId,
-          documentType,
-        })
-        return
-      }
-
-      if (transition === 'exited' && typeof previousState !== 'undefined') {
-        log(DiffViewExited, {
-          documentVariantTypes: documentIdsToVariantTypes([
-            previousState.documents?.previous.id,
-            previousState.documents?.next.id,
-          ]),
           sessionId,
           documentType,
         })
-        setSessionId(null)
-      }
-    },
-    onTargetDocumentsChanged: (previousState, state) => {
-      if (!advancedVersionControlEnabled) return
-      if (typeof previousState === 'undefined') return
-
-      log(DiffViewDocumentSelectionChanged, {
-        previousDocumentVariantTypes: documentIdsToVariantTypes([
-          previousState.documents?.previous.id,
-          previousState.documents?.next.id,
-        ]),
-        documentVariantTypes: documentIdsToVariantTypes([
-          state.documents?.previous.id,
-          state.documents?.next.id,
-        ]),
-        sessionId,
-        documentType,
-      })
-    },
+      },
+    }),
   })
 
   return (

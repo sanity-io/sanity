@@ -1,6 +1,6 @@
 import {defineEvent} from '@sanity/telemetry'
 
-interface InspectedDivergenceInfo {
+export interface InspectedDivergenceInfo {
   sessionId: string | null
   divergenceCount: number
 }
@@ -11,7 +11,7 @@ export const InspectedDivergence = defineEvent<InspectedDivergenceInfo>({
   description: 'User inspected divergence in a single node',
 })
 
-interface ActedOnDivergenceInfo {
+export interface ActedOnDivergenceInfo {
   action: 'take-upstream-value' | 'mark-resolved'
   sessionId: string | null
   divergenceCount: number
