@@ -24,6 +24,7 @@ export default defineConfig({
       'perf/tests',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
+      'packages/@repo/package.bundle',
       'packages/@repo/utils',
     ],
     coverage: {

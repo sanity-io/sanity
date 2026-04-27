@@ -31,7 +31,10 @@
     "mock-browser-env-stub-loader.mjs"
   ],
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css",
+    "*.css.ts"
+  ],
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "typesVersions": {
@@ -284,6 +287,8 @@
     "@types/use-sync-external-store": "^1.5.0",
     "@types/wicg-task-scheduling": "^2024.1.0",
     "@typescript/native-preview": "catalog:",
+    "@vanilla-extract/css": "catalog:",
+    "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/expect": "^4.1.4",
     "babel-plugin-react-compiler": "1.0.0",
