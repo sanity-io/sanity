@@ -217,24 +217,28 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
 
                   {setScheme && <AppearanceMenu setScheme={setScheme} />}
                   <LocaleMenu />
-                  <ManageMenu />
+                  <CapabilityGate capability="globalUserMenu">
+                    <ManageMenu />
+                  </CapabilityGate>
                 </Flex>
               </Flex>
 
-              {auth.logout && (
-                <Card flex="none" padding={2} borderTop>
-                  <Stack>
-                    <Button
-                      iconRight={LeaveIcon}
-                      justify="flex-start"
-                      mode="bleed"
-                      onClick={auth.logout}
-                      size="large"
-                      text={t('user-menu.action.sign-out')}
-                    />
-                  </Stack>
-                </Card>
-              )}
+              <CapabilityGate capability="globalUserMenu">
+                {auth.logout && (
+                  <Card flex="none" padding={2} borderTop>
+                    <Stack>
+                      <Button
+                        iconRight={LeaveIcon}
+                        justify="flex-start"
+                        mode="bleed"
+                        onClick={auth.logout}
+                        size="large"
+                        text={t('user-menu.action.sign-out')}
+                      />
+                    </Stack>
+                  </Card>
+                )}
+              </CapabilityGate>
             </InnerCardMotion>
           </Root>
         </TrapFocus>
