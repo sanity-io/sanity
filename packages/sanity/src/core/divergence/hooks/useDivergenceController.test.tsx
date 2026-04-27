@@ -1,6 +1,6 @@
 import {act, renderHook, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
-import {of, throwError} from 'rxjs'
+import {of} from 'rxjs'
 import {
   DiffViewSessionContext,
   DocumentDivergencesContext,
@@ -123,7 +123,7 @@ describe('useDivergenceController', () => {
     await waitForInspectedDivergence()
     expect(findLoggedCall(InspectedDivergence)?.[1]).toEqual({
       sessionId: null,
-      divergenceCount: 0,
+      divergenceCount: null,
     })
   })
 
@@ -134,7 +134,7 @@ describe('useDivergenceController', () => {
     await waitForInspectedDivergence()
     expect(findLoggedCall(InspectedDivergence)?.[1]).toEqual({
       sessionId: 'test-session-id',
-      divergenceCount: 0,
+      divergenceCount: null,
     })
   })
 
@@ -170,7 +170,7 @@ describe('useDivergenceController', () => {
     })
   })
 
-  it('logs ActedOnDivergence with status: success when markResolved completes without throwing', async () => {
+  it('logs ActedOnDivergence when markResolved is invoked', async () => {
     upstreamSnapshotRef.current = {
       isLoading: false,
       value: {
@@ -187,16 +187,15 @@ describe('useDivergenceController', () => {
       await result.current.markResolved()
     })
 
-    expect(findLoggedCall(ActedOnDivergence)?.[1]).toMatchObject({
+    expect(findLoggedCall(ActedOnDivergence)?.[1]).toEqual({
       action: 'mark-resolved',
       sessionId: 'session-happy',
-      divergenceCount: 0,
-      status: 'success',
+      divergenceCount: null,
     })
     expect(mockPatchExecute).toHaveBeenCalled()
   })
 
-  it('logs ActedOnDivergence with status: failure and rethrows when takeUpstreamValue observable throws', async () => {
+  it('logs ActedOnDivergence when takeUpstreamValue is invoked', async () => {
     upstreamSnapshotRef.current = {
       isLoading: false,
       value: {
@@ -204,22 +203,20 @@ describe('useDivergenceController', () => {
         document: {_id: 'upstream-doc', _rev: 'rev-1', alpha: 'alpha-value'},
       },
     }
-    const patchError = new Error('patch creation failed')
-    mockCreateTakeFromUpstreamPatches.mockReturnValue(throwError(() => patchError))
 
-    const wrapper = buildWrapper({enabled: false}, 'session-sad')
+    const wrapper = buildWrapper({enabled: false}, 'session-take')
     const {result} = renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {wrapper})
 
     mockTelemetryLog.mockClear()
     await act(async () => {
-      await expect(result.current.takeUpstreamValue()).rejects.toBe(patchError)
+      await result.current.takeUpstreamValue()
     })
 
-    expect(findLoggedCall(ActedOnDivergence)?.[1]).toMatchObject({
+    expect(findLoggedCall(ActedOnDivergence)?.[1]).toEqual({
       action: 'take-upstream-value',
-      sessionId: 'session-sad',
-      divergenceCount: 0,
-      status: 'failure',
+      sessionId: 'session-take',
+      divergenceCount: null,
     })
+    expect(mockPatchExecute).toHaveBeenCalled()
   })
 })

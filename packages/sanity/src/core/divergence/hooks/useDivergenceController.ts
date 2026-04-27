@@ -1,4 +1,5 @@
 import {SanityEncoder} from '@sanity/mutate'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type SanityDocument} from '@sanity/types'
 import {fromString, get} from '@sanity/util/paths'
 import {useContext, useEffect, useEffectEvent, useState} from 'react'
@@ -27,12 +28,12 @@ import {selectUpstreamVersion} from '../../store/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
+import {ActedOnDivergence, InspectedDivergence} from '../__telemetry__/divergence.telemetry'
 import {type ReachableDivergence} from '../divergenceNavigator'
 import {createTakeFromUpstreamPatches, createUpsertResolutionMarkerPatches} from '../patches'
 import {createDocumentRevisionMarker, type DivergenceAtPath} from '../readDocumentDivergences'
 import {type ResolutionMarkerAtPath} from '../types/ResolutionMarker'
 import {hashData} from '../utils/hashData'
-import {useDivergenceTelemetry} from './useDivergenceTelemetry'
 
 type HydratedSnapshot =
   | {
@@ -78,21 +79,21 @@ export function useDivergenceController(
   const {subjectId, documentId, documentType, sinceRevisionId, path} = divergence
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentStore = useDocumentStore()
-  const {divergenceInspected, divergenceActed} = useDivergenceTelemetry()
+  const telemetry = useTelemetry()
   const [isActionPending, setIsActionPending] = useState(false)
 
   const sessionId = useContext(DiffViewSessionContext)
   // Read the context directly: `useDocumentDivergences` throws outside a
   // `DivergencesProvider`, and the controller can render in trees that lack one.
   const divergencesContext = useContext(DocumentDivergencesContext)
-  // Total reachable divergences, resolved or not. Acts as the denominator for
-  // "% resolved per session".
+  // Reachable divergences in the session, resolved or not. `null` when no
+  // `DivergencesProvider` is mounted; distinguishes "unknown" from "known zero".
   const divergenceCount = divergencesContext?.enabled
     ? divergencesContext.state.divergences.length
-    : 0
+    : null
 
   const logInspectedDivergence = useEffectEvent(() =>
-    divergenceInspected({sessionId, divergenceCount}),
+    telemetry.log(InspectedDivergence, {sessionId, divergenceCount}),
   )
   useEffect(logInspectedDivergence, [logInspectedDivergence])
 
@@ -172,33 +173,15 @@ export function useDivergenceController(
       return
     }
 
+    telemetry.log(ActedOnDivergence, {action: 'mark-resolved', sessionId, divergenceCount})
     setIsActionPending(true)
 
-    try {
-      const markers = await firstValueFrom(
-        createResolutionMarkers(upstreamHead.value.document, divergence).pipe(toArray()),
-      )
-
-      const patches = createUpsertResolutionMarkerPatches(...markers)
-      patch.execute(patches.map(SanityEncoder.encodePatch))
-
-      divergenceActed({
-        action: 'mark-resolved',
-        sessionId,
-        divergenceCount,
-        status: 'success',
-      })
-      setIsActionPending(false)
-    } catch (error) {
-      divergenceActed({
-        action: 'mark-resolved',
-        sessionId,
-        divergenceCount,
-        status: 'failure',
-      })
-      setIsActionPending(false)
-      throw error
-    }
+    const markers = await firstValueFrom(
+      createResolutionMarkers(upstreamHead.value.document, divergence).pipe(toArray()),
+    )
+    const patches = createUpsertResolutionMarkerPatches(...markers)
+    patch.execute(patches.map(SanityEncoder.encodePatch))
+    setIsActionPending(false)
   }
 
   const takeUpstreamValue = async () => {
@@ -206,36 +189,18 @@ export function useDivergenceController(
       return
     }
 
+    telemetry.log(ActedOnDivergence, {action: 'take-upstream-value', sessionId, divergenceCount})
     setIsActionPending(true)
 
-    try {
-      const patches = await firstValueFrom(
-        createTakeFromUpstreamPatches(
-          upstreamHead.value.document,
-          allDivergences,
-          ...divergence.divergences.map(([divergencePath]) => fromString(divergencePath)),
-        ).pipe(toArray()),
-      )
-
-      patch.execute(patches.map(SanityEncoder.encodePatch))
-
-      divergenceActed({
-        action: 'take-upstream-value',
-        sessionId,
-        divergenceCount,
-        status: 'success',
-      })
-      setIsActionPending(false)
-    } catch (error) {
-      divergenceActed({
-        action: 'take-upstream-value',
-        sessionId,
-        divergenceCount,
-        status: 'failure',
-      })
-      setIsActionPending(false)
-      throw error
-    }
+    const patches = await firstValueFrom(
+      createTakeFromUpstreamPatches(
+        upstreamHead.value.document,
+        allDivergences,
+        ...divergence.divergences.map(([divergencePath]) => fromString(divergencePath)),
+      ).pipe(toArray()),
+    )
+    patch.execute(patches.map(SanityEncoder.encodePatch))
+    setIsActionPending(false)
   }
 
   return {

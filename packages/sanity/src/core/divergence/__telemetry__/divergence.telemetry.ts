@@ -2,7 +2,7 @@ import {defineEvent} from '@sanity/telemetry'
 
 export interface InspectedDivergenceInfo {
   sessionId: string | null
-  divergenceCount: number
+  divergenceCount: number | null
 }
 
 export const InspectedDivergence = defineEvent<InspectedDivergenceInfo>({
@@ -14,8 +14,7 @@ export const InspectedDivergence = defineEvent<InspectedDivergenceInfo>({
 export interface ActedOnDivergenceInfo {
   action: 'take-upstream-value' | 'mark-resolved'
   sessionId: string | null
-  divergenceCount: number
-  status: 'success' | 'failure'
+  divergenceCount: number | null
 }
 
 export const ActedOnDivergence = defineEvent<ActedOnDivergenceInfo>({

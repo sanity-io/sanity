@@ -104,22 +104,25 @@ function MyComponent() {
 
 ### Feature-Specific Telemetry Hooks
 
-For features with multiple events, a dedicated hook encapsulates the telemetry logic:
+Inline `telemetry.log(Event, payload)` at the call site by default. Wrap calls in a feature hook only when the hook encapsulates payload shaping, derived state, or a measurement state machine. A hook that just forwards `(info) => telemetry.log(Event, info)` adds files without value.
+
+`useCanvasTelemetry` (`packages/sanity/src/core/canvas/useCanvasTelemetry.ts`) hoists `getDiffTypesCount` payload shaping out of every call site:
 
 ```typescript
-// useCommentsTelemetry.ts
-export function useCommentsTelemetry() {
-  const telemetry = useTelemetry()
-
-  return {
-    linkCopied: () => telemetry.log(CommentLinkCopied),
-    viewedFromLink: () => telemetry.log(CommentViewedFromLink),
-    listViewChanged: () => telemetry.log(CommentListViewChanged),
-  }
-}
+return useMemo(
+  () => ({
+    linkRedirected: (origin, diffs) =>
+      telemetry.log(CanvasLinkRedirected, {
+        origin,
+        diffs: diffs ? getDiffTypesCount(diffs) : undefined,
+      }),
+    // ...
+  }),
+  [telemetry],
+)
 ```
 
-See `useDivergenceTelemetry` (`packages/sanity/src/core/divergence/hooks/useDivergenceTelemetry.ts`) and `useDiffViewTelemetry` (`packages/sanity/src/structure/diffView/hooks/useDiffViewTelemetry.ts`) for further examples.
+For one-shot measurement, see `useDocumentInitialLoadTelemetry` — it encapsulates timing refs and a fire-once guard.
 
 ### Batching and Transport
 
@@ -278,13 +281,13 @@ Tracked automatically via `web-vitals/attribution` library:
 
 ### Divergences
 
-| Event                                | When                                                                                                                                |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `DiffViewEntered` / `DiffViewExited` | User opens or closes the diff view (compare-versions UI)                                                                            |
-| `DiffViewDocumentSelectionChanged`   | User swaps a compared document mid-session                                                                                          |
-| `Inspected Divergence`               | User views a divergence in a single node                                                                                            |
-| `Acted On Divergence`                | User resolves a divergence. Payload carries `action: 'take-upstream-value' \| 'mark-resolved'` and `status: 'success' \| 'failure'` |
-| `Workspace Features Observed`        | Fires once per workspace mount. Carries the `advancedVersionControl.enabled` flag for adoption metrics                              |
+| Event                                | When                                                                                                   |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `DiffViewEntered` / `DiffViewExited` | User opens or closes the diff view (compare-versions UI)                                               |
+| `DiffViewDocumentSelectionChanged`   | User swaps a compared document mid-session                                                             |
+| `Inspected Divergence`               | User views a divergence in a single node                                                               |
+| `Acted On Divergence`                | User resolves a divergence. Payload carries `action: 'take-upstream-value' \| 'mark-resolved'`         |
+| `Workspace Features Observed`        | Fires once per workspace mount. Carries the `advancedVersionControl.enabled` flag for adoption metrics |
 
 ### Other
 
@@ -333,7 +336,7 @@ Tracked automatically via `web-vitals/attribution` library:
    }
    ```
 
-3. For features with multiple events, consider creating a **dedicated telemetry hook** (e.g., `useMyFeatureTelemetry()`) to encapsulate all event logging for that feature.
+3. If the events share payload shaping or measurement state, encapsulate them in a feature hook (e.g. `useMyFeatureTelemetry()`). Otherwise inline `telemetry.log(...)` at each call site.
 
 ## Testing
 

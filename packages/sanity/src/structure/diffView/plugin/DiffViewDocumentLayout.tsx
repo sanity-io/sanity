@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {type ComponentType, type PropsWithChildren, useState} from 'react'
@@ -11,16 +12,20 @@ import {
 import {DiffViewSessionContext} from 'sanity/_singletons'
 
 import {structureLocaleNamespace} from '../../i18n'
+import {
+  DiffViewDocumentSelectionChanged,
+  DiffViewEntered,
+  DiffViewExited,
+} from '../__telemetry__/diffView.telemetry'
 import {DiffView} from '../components/DiffView'
 import {useDiffViewState, selectActiveTransition} from '../hooks/useDiffViewState'
-import {useDiffViewTelemetry} from '../hooks/useDiffViewTelemetry'
 
 export const DiffViewDocumentLayout: ComponentType<
   PropsWithChildren<Pick<DocumentLayoutProps, 'documentId' | 'documentType'>>
 > = ({children, documentId, documentType}) => {
   const toast = useToast()
   const {t} = useTranslation(structureLocaleNamespace)
-  const {diffViewEntered, diffViewExited, diffViewDocumentSelectionChanged} = useDiffViewTelemetry()
+  const telemetry = useTelemetry()
   const workspace = useWorkspace()
   const advancedVersionControlEnabled = workspace.advancedVersionControl?.enabled ?? false
   const [sessionId, setSessionId] = useState<string | null>(null)
@@ -52,7 +57,7 @@ export const DiffViewDocumentLayout: ComponentType<
         if (transition === 'entered') {
           const nextSessionId = uuid()
           setSessionId(nextSessionId)
-          diffViewEntered({
+          telemetry.log(DiffViewEntered, {
             documentVariantTypes: documentIdsToVariantTypes([
               state.documents?.previous.id,
               state.documents?.next.id,
@@ -64,7 +69,7 @@ export const DiffViewDocumentLayout: ComponentType<
         }
 
         if (transition === 'exited' && typeof previousState !== 'undefined') {
-          diffViewExited({
+          telemetry.log(DiffViewExited, {
             documentVariantTypes: documentIdsToVariantTypes([
               previousState.documents?.previous.id,
               previousState.documents?.next.id,
@@ -78,7 +83,7 @@ export const DiffViewDocumentLayout: ComponentType<
       onTargetDocumentsChanged: (previousState, state) => {
         if (typeof previousState === 'undefined') return
 
-        diffViewDocumentSelectionChanged({
+        telemetry.log(DiffViewDocumentSelectionChanged, {
           previousDocumentVariantTypes: documentIdsToVariantTypes([
             previousState.documents?.previous.id,
             previousState.documents?.next.id,
