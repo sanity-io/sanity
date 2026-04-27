@@ -713,6 +713,7 @@ exports[`exports snapshot 1`] = `
     "CopyPasteContext": "object",
     "DialogStackContext": "object",
     "DiffContext": "object",
+    "DiffViewSessionContext": "object",
     "DocumentActionPropsContext": "object",
     "DocumentActionsStateContext": "object",
     "DocumentChangeContext": "object",
