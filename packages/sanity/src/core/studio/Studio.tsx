@@ -1,6 +1,14 @@
 // oxlint-disable-next-line no-unassigned-import -- style import is effectful
 import './styles.css'
 
+import {ensureCdnCssLink} from './ensureCdnCssLink'
+
+// Inject a CSS <link> tag when sanity is loaded from sanity-cdn and the auto-updates
+// runtime script in the host HTML did not already inject one. This is the safety net for
+// studios `sanity deploy`'d with an older CLI (before CSS-over-the-wire was supported)
+// that auto-update to a sanity version with CSS extracted. See ./ensureCdnCssLink.
+ensureCdnCssLink(import.meta.url, 'sanity')
+
 /* disabling for now because the imports trigger side effects causing test snapshots to update */
 import {type Config} from '../config'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
