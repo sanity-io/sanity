@@ -1618,6 +1618,17 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for a scheduled draft release */
   'scheduled-drafts.release.title': 'Scheduled publish',
 
+  /** Label for the dataset name in the schema errors source info section */
+  'schema-errors.source-info.dataset': 'Dataset:',
+  /** Label for the project ID in the schema errors source info section */
+  'schema-errors.source-info.project': 'Project:',
+  /** Label for the source/workspace name in the schema errors source info section */
+  'schema-errors.source-info.source': 'Source:',
+  /** Title for the source information section in the schema errors screen */
+  'schema-errors.source-info.title': 'Error location',
+  /** Title for the schema errors screen */
+  'schema-errors.title': 'Schema errors',
+
   /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
   'search.action-open-aria-label': 'Open search',
   /** Action label for adding a search filter */
