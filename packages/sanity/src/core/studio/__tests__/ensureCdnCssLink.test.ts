@@ -92,6 +92,27 @@ describe('ensureCdnCssLink', () => {
     expect(document.head.querySelectorAll('link[rel="stylesheet"]')).toHaveLength(1)
   })
 
+  test('by-app appId matching packagePathSegment does not suppress injection for a different package', () => {
+    // appId is 'sanity', but the existing CSS link is for @sanity__vision — not for sanity itself.
+    // The old `.includes('sanity')` check would have false-positived here and skipped injection.
+    const existingVisionLink = document.createElement('link')
+    existingVisionLink.rel = 'stylesheet'
+    existingVisionLink.href =
+      'https://sanity-cdn.com/v1/modules/by-app/sanity/t1234567890/%5E5.23.0/@sanity__vision/index.css'
+    document.head.appendChild(existingVisionLink)
+
+    ensureCdnCssLink(
+      'https://sanity-cdn.com/v1/modules/by-app/sanity/t1700000000/%5E5.23.0/sanity/index.mjs',
+      'sanity',
+    )
+
+    const links = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+    expect(links).toHaveLength(2)
+    expect(links[1].href).toBe(
+      'https://sanity-cdn.com/v1/modules/by-app/sanity/t1700000000/%5E5.23.0/sanity/index.css',
+    )
+  })
+
   test('package detection is scoped — injects sanity link even when a vision link exists', () => {
     const visionLink = document.createElement('link')
     visionLink.rel = 'stylesheet'

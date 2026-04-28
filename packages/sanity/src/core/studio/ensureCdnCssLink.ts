@@ -26,11 +26,12 @@
  *
  * Idempotency:
  *
- *   The detection looks for any existing `<link rel="stylesheet">` whose URL is hosted on
- *   sanity-cdn, ends in `/index.css`, and has the package name as a path segment. This
- *   matches both the legacy URL pattern (`/v1/modules/<pkg>/default/<range>/t<ts>/index.css`)
- *   and the by-app pattern (`/v1/modules/by-app/<appId>/t<ts>/<range>/<pkg>/index.css`). If
- *   the CLI runtime script already injected a link, this fallback skips.
+ *   The detection looks for any existing `<link rel="stylesheet">` hosted on sanity-cdn
+ *   that ends in `/index.css` and whose package segment matches. The package segment is
+ *   extracted by parsing the known URL shapes (legacy: right after `/v1/modules/`; by-app:
+ *   right before `/index.css`), so a by-app `appId` that happens to equal the package name
+ *   does not cause a false-positive. If the CLI runtime script already injected a link, this
+ *   fallback skips.
  *
  * @internal
  */
@@ -41,8 +42,32 @@ function isSanityCdnUrl(url: URL): boolean {
   return SANITY_CDN_HOSTNAME.test(url.hostname)
 }
 
+/**
+ * Extracts the package path segment from a CDN CSS URL pathname.
+ *
+ * Handles both known URL shapes:
+ *   Legacy:  /v1/modules/<pkg>/default/<range>/t<ts>/index.css  → segments[3]
+ *   By-app:  /v1/modules/by-app/<appId>/t<ts>/<range>/<pkg>/index.css  → segment before index.css
+ */
+function extractPackageSegment(pathname: string): string | null {
+  const segments = pathname.split('/')
+  // Expect at least /v1/modules/<segment>/... (indices 0–3)
+  if (segments.length < 4 || segments[1] !== 'v1' || segments[2] !== 'modules') return null
+
+  if (segments[3] === 'by-app') {
+    // By-app: package is the segment directly before index.css
+    return segments[segments.length - 2] || null
+  }
+
+  // Legacy: package is immediately after /v1/modules/
+  return segments[3] || null
+}
+
 function findExistingCssLink(packagePathSegment: string): HTMLLinkElement | null {
-  const links = document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')
+  const head = document.head
+  if (!head) return null
+
+  const links = head.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')
   for (const link of links) {
     let url: URL
     try {
@@ -52,10 +77,7 @@ function findExistingCssLink(packagePathSegment: string): HTMLLinkElement | null
     }
     if (!isSanityCdnUrl(url)) continue
     if (!url.pathname.endsWith('/index.css')) continue
-    // The package name appears as a path segment in both URL variants:
-    //   Legacy:  /v1/modules/<pkg>/default/<range>/t<ts>/index.css
-    //   By-app:  /v1/modules/by-app/<appId>/t<ts>/<range>/<pkg>/index.css
-    if (url.pathname.split('/').includes(packagePathSegment)) return link
+    if (extractPackageSegment(url.pathname) === packagePathSegment) return link
   }
   return null
 }
