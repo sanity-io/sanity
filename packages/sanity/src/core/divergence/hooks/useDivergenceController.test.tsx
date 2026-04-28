@@ -10,6 +10,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {ActedOnDivergence, InspectedDivergence} from '../__telemetry__/divergence.telemetry'
 import {type ReachableDivergence} from '../divergenceNavigator'
+import {type Divergence, type DivergenceAtPath} from '../readDocumentDivergences'
 import {useDivergenceController} from './useDivergenceController'
 
 type UpstreamSnapshot =
@@ -45,29 +46,46 @@ vi.mock('react-rx', () => ({
   useObservable: (_observable: unknown, initial: unknown) => upstreamSnapshotRef.current ?? initial,
 }))
 
-const SET_DIVERGENCE = {
-  subjectId: 'drafts.doc-1',
-  documentId: 'drafts.doc-1',
-  documentType: 'article',
-  sinceRevisionId: 'upstream-doc@rev-1',
+const emptySnapshots = {
+  subjectHead: undefined,
+  upstreamHead: undefined,
+  upstreamAtFork: undefined,
+}
+
+const setDivergence: Divergence = {
   path: 'alpha',
   effect: 'set',
-  divergences: [['alpha', {path: 'alpha', effect: 'set'}]],
-  schemaType: {name: 'string'},
-} as unknown as ReachableDivergence
+  documentId: 'upstream-doc',
+  documentType: 'article',
+  subjectId: 'drafts.doc-1',
+  sinceRevisionId: 'upstream-doc@rev-1',
+  isAddressable: true,
+  status: 'unresolved',
+  snapshots: emptySnapshots,
+}
+
+const setDivergenceAtPath: DivergenceAtPath = ['alpha', setDivergence]
+
+const SET_DIVERGENCE: ReachableDivergence = {
+  ...setDivergence,
+  isComposite: false,
+  divergences: [setDivergenceAtPath],
+  schemaType: {name: 'string', jsonType: 'string'},
+}
 
 function buildWrapper(
   divergencesValue: DocumentDivergencesContextValue | null,
   sessionId: string | null,
 ): (props: {children: ReactNode}) => ReactNode {
-  const Wrapper = ({children}: {children: ReactNode}) => (
-    <DocumentDivergencesContext.Provider value={divergencesValue}>
-      <DiffViewSessionContext.Provider value={sessionId}>
-        {children}
-      </DiffViewSessionContext.Provider>
-    </DocumentDivergencesContext.Provider>
-  )
-  Wrapper.displayName = 'Wrapper'
+  function Wrapper({children}: {children: ReactNode}) {
+    return (
+      <DocumentDivergencesContext.Provider value={divergencesValue}>
+        <DiffViewSessionContext.Provider value={sessionId}>
+          {children}
+        </DiffViewSessionContext.Provider>
+      </DocumentDivergencesContext.Provider>
+    )
+  }
   return Wrapper
 }
 
@@ -88,14 +106,10 @@ describe('useDivergenceController', () => {
     upstreamSnapshotRef.current = {isLoading: true}
   })
 
-  it('logs InspectedDivergence with sessionId: null when rendered outside DiffViewSessionContext.Provider', async () => {
-    const wrapper = ({children}: {children: ReactNode}) => (
-      <DocumentDivergencesContext.Provider value={{enabled: false}}>
-        {children}
-      </DocumentDivergencesContext.Provider>
-    )
-
-    renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {wrapper})
+  it('logs InspectedDivergence with sessionId and divergenceCount from context (null when providers absent)', async () => {
+    renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
+      wrapper: buildWrapper({enabled: false}, null),
+    })
 
     await waitForInspectedDivergence()
     expect(findLoggedCall(InspectedDivergence)?.[1]).toEqual({
@@ -104,18 +118,7 @@ describe('useDivergenceController', () => {
     })
   })
 
-  it('logs InspectedDivergence with the provided sessionId when rendered inside DiffViewSessionContext.Provider', async () => {
-    const wrapper = buildWrapper({enabled: false}, 'test-session-id')
-    renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {wrapper})
-
-    await waitForInspectedDivergence()
-    expect(findLoggedCall(InspectedDivergence)?.[1]).toEqual({
-      sessionId: 'test-session-id',
-      divergenceCount: null,
-    })
-  })
-
-  it('reads divergenceCount from the enabled DocumentDivergencesContext state', async () => {
+  it('reads sessionId and divergenceCount from the enabled DocumentDivergencesContext state', async () => {
     const divergencesValue: DocumentDivergencesContextValue = {
       enabled: true,
       focusDivergence: vi.fn(),
@@ -129,16 +132,17 @@ describe('useDivergenceController', () => {
         upstreamId: 'upstream',
         allDivergences: [],
         divergences: [
-          ['alpha', {} as never],
-          ['beta', {} as never],
-          ['gamma', {} as never],
+          ['alpha', SET_DIVERGENCE],
+          ['beta', SET_DIVERGENCE],
+          ['gamma', SET_DIVERGENCE],
         ],
         divergencesByNode: {},
       },
     }
 
-    const wrapper = buildWrapper(divergencesValue, 'session-abc')
-    renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {wrapper})
+    renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
+      wrapper: buildWrapper(divergencesValue, 'session-abc'),
+    })
 
     await waitForInspectedDivergence()
     expect(findLoggedCall(InspectedDivergence)?.[1]).toEqual({
@@ -147,7 +151,10 @@ describe('useDivergenceController', () => {
     })
   })
 
-  it('logs ActedOnDivergence when markResolved is invoked', async () => {
+  it.each([
+    ['markResolved', 'mark-resolved'],
+    ['takeUpstreamValue', 'take-upstream-value'],
+  ] as const)('logs ActedOnDivergence when %s is invoked', async (method, action) => {
     upstreamSnapshotRef.current = {
       isLoading: false,
       value: {
@@ -156,42 +163,18 @@ describe('useDivergenceController', () => {
       },
     }
 
-    const wrapper = buildWrapper({enabled: false}, 'session-happy')
-    const {result} = renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {wrapper})
+    const {result} = renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
+      wrapper: buildWrapper({enabled: false}, 'session-happy'),
+    })
 
     mockTelemetryLog.mockClear()
     await act(async () => {
-      await result.current.markResolved()
+      await result.current[method]()
     })
 
     expect(findLoggedCall(ActedOnDivergence)?.[1]).toEqual({
-      action: 'mark-resolved',
+      action,
       sessionId: 'session-happy',
-      divergenceCount: null,
-    })
-    expect(mockPatchExecute).toHaveBeenCalled()
-  })
-
-  it('logs ActedOnDivergence when takeUpstreamValue is invoked', async () => {
-    upstreamSnapshotRef.current = {
-      isLoading: false,
-      value: {
-        value: 'alpha-value',
-        document: {_id: 'upstream-doc', _rev: 'rev-1', alpha: 'alpha-value'},
-      },
-    }
-
-    const wrapper = buildWrapper({enabled: false}, 'session-take')
-    const {result} = renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {wrapper})
-
-    mockTelemetryLog.mockClear()
-    await act(async () => {
-      await result.current.takeUpstreamValue()
-    })
-
-    expect(findLoggedCall(ActedOnDivergence)?.[1]).toEqual({
-      action: 'take-upstream-value',
-      sessionId: 'session-take',
       divergenceCount: null,
     })
     expect(mockPatchExecute).toHaveBeenCalled()

@@ -34,6 +34,7 @@ import {createBatchedStore, createSessionId, SessionId} from '@sanity/telemetry'
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {useRouterState} from 'sanity/router'
 
+import {type Workspace} from '../../../config/types'
 import {useClient} from '../../../hooks'
 import {useProjectOrganizationId} from '../../../store/project/useProjectOrganizationId'
 import {WorkspaceFeaturesObserved} from '../../__telemetry__/featureAvailability.telemetry'
@@ -57,7 +58,10 @@ describe('StudioTelemetryProvider', () => {
     getUrl: vi.fn((path: string) => `https://api.sanity.io${path}`),
   }
 
-  const mockWorkspace = {
+  const mockWorkspace: Pick<
+    Workspace,
+    'name' | 'projectId' | 'dataset' | 'advancedVersionControl'
+  > = {
     name: 'test-workspace',
     projectId: 'test-project',
     dataset: 'test-dataset',
@@ -365,11 +369,15 @@ describe('StudioTelemetryProvider', () => {
   })
 
   it('emits WorkspaceFeaturesObserved as disabled when advancedVersionControl is undefined', () => {
-    vi.mocked(useWorkspace).mockReturnValue({
+    const workspaceWithoutAdvancedVersionControl: Pick<
+      Workspace,
+      'name' | 'projectId' | 'dataset'
+    > = {
       name: 'test-workspace',
       projectId: 'test-project',
       dataset: 'test-dataset',
-    } as never)
+    }
+    vi.mocked(useWorkspace).mockReturnValue(workspaceWithoutAdvancedVersionControl as never)
 
     render(
       <DeferredTelemetryProvider>
