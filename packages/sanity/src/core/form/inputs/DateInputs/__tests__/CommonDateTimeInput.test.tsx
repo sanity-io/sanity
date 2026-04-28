@@ -128,3 +128,40 @@ test('emits onChange on correct format if a valid value has been typed', async (
   // NOTE: the date is entered and displayed in local time zone but stored in utc
   expect(onChange.mock.calls).toEqual([['2021-03-28T17:23:00.000Z']])
 })
+
+test('passes validationError as native validity message when there is no parse error', async () => {
+  const validationErrorMessage = 'Date must be in the past'
+  const onChange = vi.fn()
+
+  const ret = await renderStringInput({
+    fieldDefinition: defineField({
+      type: 'datetime',
+      name: 'test',
+    }),
+    // Use a valid stored value so there is no parse error
+    props: {documentValue: {test: '2021-03-28T17:23:00.000Z'}},
+    render: (props) => {
+      const {id, readOnly = false, value} = props
+
+      return (
+        <CommonDateTimeInput
+          deserialize={deserialize}
+          calendarLabels={CALENDAR_LABELS}
+          id={id}
+          formatInputValue={formatInputValue}
+          onChange={onChange}
+          parseInputValue={parseInputValue}
+          readOnly={readOnly}
+          serialize={serialize}
+          value={value}
+          timeZoneScope={{type: 'input' as TimeZoneScopeType, id}}
+          validationError={validationErrorMessage}
+        />
+      )
+    },
+  })
+
+  const input = ret.result.container.querySelector('input')!
+  // When customValidity is set, the native input's validationMessage should reflect it
+  expect(input.validationMessage).toBe(validationErrorMessage)
+})

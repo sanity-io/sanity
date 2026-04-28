@@ -1,4 +1,4 @@
-import {defineField} from '@sanity/types'
+import {defineField, type FormNodeValidation} from '@sanity/types'
 import {screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
@@ -223,5 +223,31 @@ describe('readOnly property', () => {
     // Keyboard event
     await userEvent.tab()
     expect(input).not.toHaveFocus()
+  })
+})
+
+describe('Validation', () => {
+  it('applies critical tone when there are validation errors', async () => {
+    const errorValidation: FormNodeValidation[] = [
+      {level: 'error', message: 'This field is required', path: []},
+    ]
+
+    const {result} = await renderBooleanInput({
+      fieldDefinition: defs.booleanTest,
+      render: (inputProps) => <BooleanInput {...inputProps} validation={errorValidation} />,
+    })
+
+    const card = result.container.querySelector('[data-testid="boolean-input"]')
+    expect(card).toHaveAttribute('data-tone', 'critical')
+  })
+
+  it('does not apply critical tone when there are no validation errors', async () => {
+    const {result} = await renderBooleanInput({
+      fieldDefinition: defs.booleanTest,
+      render: (inputProps) => <BooleanInput {...inputProps} />,
+    })
+
+    const card = result.container.querySelector('[data-testid="boolean-input"]')
+    expect(card).not.toHaveAttribute('data-tone', 'critical')
   })
 })
