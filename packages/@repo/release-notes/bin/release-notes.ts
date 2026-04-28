@@ -319,16 +319,25 @@ function formatEntry({
   releaseId,
 }: {
   conventionalCommit: Commit
-  pr: PullRequest
+  pr: PullRequest | undefined
   changelogDocumentId: GenerateChangeLogResult['changelogDocumentId']
   releaseId: GenerateChangeLogResult['releaseId']
 }) {
   const entryKey = conventionalCommit.hash!.slice(0, 8)
-  const originalCommitMessage = stripPr(conventionalCommit.header || '', pr.number)
+  const originalCommitMessage = stripPr(conventionalCommit.header || '', pr?.number)
   const entryPath = encodeURIComponent(`changelog[_key=="${entryKey}"]`)
   const changelogEntryUrl = `${getAdminStudioUrl()}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
 
-  const byline = pr.user?.login ? `[${pr.user?.login}](${pr.user.html_url})` : ''
+  if (!pr) {
+    // oxlint-disable-next-line no-console
+    console.warn(
+      `⚠️  WARNING: GitHub returned no PR association for commit ${conventionalCommit.hash}. ` +
+        `Rendering changelog row without a PR link.`,
+    )
+  }
+
+  const byline = pr?.user?.login ? `[${pr.user.login}](${pr.user.html_url})` : ''
+  const prCell = pr ? `[#${pr.number}](${pr.html_url})` : '—'
   const releaseNoteLink = `[:pencil:&nbsp;Edit](${changelogEntryUrl})`
-  return `${byline} | ${originalCommitMessage} | [#${pr.number}](${pr.html_url}) | ${conventionalCommit.hash} | ${releaseNoteLink}`
+  return `${byline} | ${originalCommitMessage} | ${prCell} | ${conventionalCommit.hash} | ${releaseNoteLink}`
 }
