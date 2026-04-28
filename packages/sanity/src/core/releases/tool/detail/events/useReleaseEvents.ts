@@ -2,7 +2,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {useClient} from '../../../../hooks/useClient'
-import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
+import {useDocumentPreviewStore} from '../../../../store/datastores'
 import {useSource} from '../../../../studio/source'
 import {useReleasesStore} from '../../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../../util/getReleaseDocumentIdFromReleaseId'

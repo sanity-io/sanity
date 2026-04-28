@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
 
-import {useDocumentPreviewStore} from '../store/_legacy/datastores'
+import {useDocumentPreviewStore} from '../store/datastores'
 import {type ObserveDocumentAPIConfig} from './createObserveDocument'
 
 const INITIAL_STATE = {loading: true, document: null}

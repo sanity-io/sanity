@@ -69,6 +69,8 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     onError,
   } = props
   const dialogId = useId()
+  const messageId = useId()
+  const contactConsentId = useId()
   const {t} = useFeedbackTranslation()
 
   const {
@@ -226,10 +228,11 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
           </Stack>
 
           <Stack space={3}>
-            <Text size={1} weight="medium">
+            <Text as="label" htmlFor={messageId} size={1} weight="medium">
               {t('feedback.message.label')}
             </Text>
             <TextArea
+              id={messageId}
               fontSize={1}
               rows={4}
               value={message}
@@ -256,7 +259,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
           {(message.trim() || imageFile) && (resolvedName || resolvedEmail) && (
             <Stack space={4}>
               <Stack space={3} paddingRight={3}>
-                <Text size={1} weight="medium">
+                <Text as="label" htmlFor={contactConsentId} size={1} weight="medium">
                   {t('feedback.consent.label')}
                 </Text>
                 <Text size={1} muted>
@@ -265,6 +268,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
               </Stack>
               <Flex align="center" gap={2}>
                 <Switch
+                  id={contactConsentId}
                   checked={contactConsent}
                   onChange={() => setContactConsent((prev) => !prev)}
                 />

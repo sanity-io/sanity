@@ -1,3 +1,4 @@
+import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
@@ -24,6 +25,7 @@ export default defineCliConfig({
   },
   vite(viteConfig: UserConfig, {command, mode}): UserConfig {
     const nextConfig = mergeConfig(viteConfig, {
+      plugins: [vanillaExtractPlugin()],
       server: {
         warmup: {
           clientFiles: [

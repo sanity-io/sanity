@@ -4,8 +4,8 @@ import {BehaviorSubject, filter, map, type Observable} from 'rxjs'
 
 import {getDraftId, getPublishedId, isVersionId} from '../../util/draftUtils'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
-import {type DocumentRemoteMutationEvent} from '../_legacy/document/buffered-doc/types'
-import {remoteSnapshots, type WithVersion} from '../_legacy/document/document-pair'
+import {type DocumentRemoteMutationEvent} from '../document/buffered-doc/types'
+import {remoteSnapshots, type WithVersion} from '../document/document-pair'
 import {getEditEvents, getEffectState} from './getEditEvents'
 import {remoteMutationToTransaction} from './utils'
 

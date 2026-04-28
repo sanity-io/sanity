@@ -7,7 +7,7 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "check:types": "(cd ../../.. && tsc --project packages/@repo/utils/tsconfig.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsgo --project packages/@repo/utils/tsconfig.json --erasableSyntaxOnly)",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -19,6 +19,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@types/lodash-es": "^4.17.12",
+    "@typescript/native-preview": "catalog:",
     "eslint": "catalog:"
   }
 }

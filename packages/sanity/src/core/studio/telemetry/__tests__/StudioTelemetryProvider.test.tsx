@@ -15,7 +15,7 @@ vi.mock('@sanity/telemetry/react', () => ({
 }))
 vi.mock('../../../hooks')
 vi.mock('../../workspace')
-vi.mock('../../../store/_legacy/project/useProjectOrganizationId')
+vi.mock('../../../store/project/useProjectOrganizationId')
 vi.mock('sanity/router')
 vi.mock('../../../environment', () => ({
   isProd: false,
@@ -35,7 +35,7 @@ import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {useRouterState} from 'sanity/router'
 
 import {useClient} from '../../../hooks'
-import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
+import {useProjectOrganizationId} from '../../../store/project/useProjectOrganizationId'
 import {useWorkspace} from '../../workspace'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'
 /* eslint-enable import/first */
