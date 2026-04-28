@@ -866,10 +866,10 @@ export function VisionGui(props: VisionGuiProps) {
                   height: '100%',
                   width: '100%',
                   minWidth: 0,
-                  overflowX: 'visible',
+                  overflowX: 'hidden',
                 }}
               >
-                <Box style={{height: '100%', overflowY: 'auto', overflowX: 'visible'}}>
+                <Box style={{height: '100%', overflowY: 'auto', overflowX: 'hidden'}}>
                   <QueryRecall
                     url={url}
                     getStateFromUrl={getStateFromUrl}
