@@ -20,7 +20,7 @@ describe('ensureCdnCssLink', () => {
 
     const links = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
     expect(links).toHaveLength(1)
-    expect(links[0].href).toBe(
+    expect((links[0] as HTMLLinkElement).href).toBe(
       'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/index.css',
     )
   })
@@ -33,7 +33,7 @@ describe('ensureCdnCssLink', () => {
 
     const links = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
     expect(links).toHaveLength(1)
-    expect(links[0].href).toBe(
+    expect((links[0] as HTMLLinkElement).href).toBe(
       'https://sanity-cdn.com/v1/modules/by-app/abc123/t1700000000/%5E5.23.0/sanity/index.css',
     )
   })
@@ -46,8 +46,9 @@ describe('ensureCdnCssLink', () => {
 
     const links = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
     expect(links).toHaveLength(1)
-    expect(links[0].href).toContain('sanity-cdn.work')
-    expect(links[0].href).toContain('/index.css')
+    expect((links[0] as HTMLLinkElement).href).toBe(
+      'https://sanity-cdn.work/v1/modules/sanity/default/%5E5.23.0/t1700000000/index.css',
+    )
   })
 
   test('does nothing when module is not loaded from sanity-cdn', () => {
@@ -61,7 +62,7 @@ describe('ensureCdnCssLink', () => {
     expect(document.head.querySelectorAll('link[rel="stylesheet"]')).toHaveLength(0)
   })
 
-  test('does not inject when an existing matching link is already present (legacy URL)', () => {
+  test('does not inject when an existing matching link is already present', () => {
     // Simulate the CLI runtime script having already created the link
     const existing = document.createElement('link')
     existing.rel = 'stylesheet'
@@ -94,11 +95,10 @@ describe('ensureCdnCssLink', () => {
 
   test('by-app appId matching packagePathSegment does not suppress injection for a different package', () => {
     // appId is 'sanity', but the existing CSS link is for @sanity__vision — not for sanity itself.
-    // The old `.includes('sanity')` check would have false-positived here and skipped injection.
     const existingVisionLink = document.createElement('link')
     existingVisionLink.rel = 'stylesheet'
     existingVisionLink.href =
-      'https://sanity-cdn.com/v1/modules/by-app/sanity/t1234567890/%5E5.23.0/@sanity__vision/index.css'
+      'https://sanity-cdn.com/v1/modules/by-app/sanity/t1700000000/%5E5.23.0/@sanity__vision/index.css'
     document.head.appendChild(existingVisionLink)
 
     ensureCdnCssLink(
@@ -108,7 +108,10 @@ describe('ensureCdnCssLink', () => {
 
     const links = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
     expect(links).toHaveLength(2)
-    expect(links[1].href).toBe(
+    expect((links[0] as HTMLLinkElement).href).toBe(
+      'https://sanity-cdn.com/v1/modules/by-app/sanity/t1700000000/%5E5.23.0/@sanity__vision/index.css',
+    )
+    expect((links[1] as HTMLLinkElement).href).toBe(
       'https://sanity-cdn.com/v1/modules/by-app/sanity/t1700000000/%5E5.23.0/sanity/index.css',
     )
   })
@@ -117,7 +120,7 @@ describe('ensureCdnCssLink', () => {
     const visionLink = document.createElement('link')
     visionLink.rel = 'stylesheet'
     visionLink.href =
-      'https://sanity-cdn.com/v1/modules/@sanity__vision/default/%5E5.23.0/t1234567890/index.css'
+      'https://sanity-cdn.com/v1/modules/@sanity__vision/default/%5E5.23.0/t1700000000/index.css'
     document.head.appendChild(visionLink)
 
     ensureCdnCssLink(
@@ -127,6 +130,12 @@ describe('ensureCdnCssLink', () => {
 
     const links = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
     expect(links).toHaveLength(2)
+    expect((links[0] as HTMLLinkElement).href).toBe(
+      'https://sanity-cdn.com/v1/modules/@sanity__vision/default/%5E5.23.0/t1700000000/index.css',
+    )
+    expect((links[1] as HTMLLinkElement).href).toBe(
+      'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/index.css',
+    )
   })
 
   test('ignores non-sanity-cdn stylesheet links when checking for duplicates', () => {
@@ -142,7 +151,7 @@ describe('ensureCdnCssLink', () => {
 
     const links = [...document.head.querySelectorAll('link[rel="stylesheet"]')]
     expect(links).toHaveLength(2)
-    expect(links[1].href).toBe(
+    expect((links[1] as HTMLLinkElement).href).toBe(
       'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/index.css',
     )
   })
