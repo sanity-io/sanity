@@ -4,6 +4,7 @@ import {bufferTime} from 'rxjs/operators'
 import {describe, expect, it} from 'vitest'
 
 import {createMockAuthStore} from '../../store'
+import {VARIANTS_NAME} from '../../variants/plugin'
 import {definePlugin} from '../definePlugin'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
 import {type PluginOptions} from '../types'
@@ -169,6 +170,53 @@ describe('resolveConfig', () => {
       {name: 'sanity/schedules'},
       {name: 'sanity/singleDocRelease'},
     ])
+  })
+  it('wont include variants default plugin by default', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+    const [workspace] = await firstValueFrom(
+      resolveConfig({
+        name: 'default',
+        dataset,
+        projectId,
+        auth: createMockAuthStore({client, currentUser: null}),
+        plugins: [], // No plugins
+      }),
+    )
+    const pluginNames = workspace.__internal.options.plugins?.map((p) => p.name) ?? []
+    expect(pluginNames).not.toContain(VARIANTS_NAME)
+  })
+  it('includes variants default plugin when the feature is enabled', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+    const [workspace] = await firstValueFrom(
+      resolveConfig({
+        name: 'default',
+        dataset,
+        projectId,
+        auth: createMockAuthStore({client, currentUser: null}),
+        plugins: [], // No plugins
+        beta: {
+          variants: {
+            enabled: true,
+          },
+        },
+      }),
+    )
+    const pluginNames = workspace.__internal.options.plugins?.map((p) => p.name) ?? []
+    expect(pluginNames).toContain(VARIANTS_NAME)
   })
   it('wont include releases plugin if the feature is disabled', async () => {
     const projectId = 'ppsg7ml5'
