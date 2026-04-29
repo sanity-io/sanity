@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Mark and close stale issues
         id: stale
-        uses: actions/stale@v10
+        uses: actions/stale@b5d41d4e1d5dceea10e7104786b73624c18a190f # ratchet:actions/stale@v10
         with:
           enable-statistics: true
           only-issue-labels: "needs-more-info"

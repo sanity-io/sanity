@@ -10,9 +10,9 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v5
+    - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # ratchet:pnpm/action-setup@v5
 
-    - uses: actions/setup-node@v6
+    - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
       with:
         cache: pnpm
         node-version: ${{ inputs.node-version }}

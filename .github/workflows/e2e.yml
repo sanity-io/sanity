@@ -28,7 +28,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -57,7 +57,7 @@ jobs:
       - name: Cache Playwright Browsers for Playwright's Version
         if: steps.changes.outputs.has_changes == 'true'
         id: cache-playwright-browsers
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -72,7 +72,7 @@ jobs:
     needs: [install]
     if: needs.install.outputs.has_code_changes == 'true'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - uses: ./.github/actions/setup
 
@@ -97,7 +97,7 @@ jobs:
     outputs:
       preview_url: ${{ steps.deploy.outputs.DEPLOY_URL }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Pull Vercel Environment Information
@@ -168,7 +168,7 @@ jobs:
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - name: Echo the base URL
         run: echo "$SANITY_E2E_BASE_URL"
       - uses: ./.github/actions/setup
@@ -182,7 +182,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache/restore@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -198,7 +198,7 @@ jobs:
           SANITY_E2E_DATASET: ${{ (matrix.project == 'chromium') && env.CHROMIUM_DATASET || env.FIREFOX_DATASET }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # ratchet:actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
@@ -242,11 +242,11 @@ jobs:
       failed_files: ${{ steps.summary.outputs.failed_files }}
       failed_files_formatted: ${{ steps.summary.outputs.failed_files_formatted }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # ratchet:actions/download-artifact@v8
         with:
           pattern: playwright-report-*
           merge-multiple: true
@@ -281,7 +281,7 @@ jobs:
 
       - name: Upload HTML report
         id: upload-playwright-report
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # ratchet:actions/upload-artifact@v7
         with:
           name: full-html-report--attempt-${{ github.run_attempt }}
           path: playwright-report
@@ -295,7 +295,7 @@ jobs:
       report_url: ${{ steps.deploy.outputs.REPORT_URL }}
     steps:
       - name: Download HTML report
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # ratchet:actions/download-artifact@v8
         with:
           name: full-html-report--attempt-${{ github.run_attempt }}
           path: playwright-report

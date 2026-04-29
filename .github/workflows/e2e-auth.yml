@@ -17,7 +17,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -35,7 +35,7 @@ jobs:
       - name: Cache Playwright Browsers
         if: steps.changes.outputs.has_changes == 'true'
         id: cache-playwright-browsers
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers

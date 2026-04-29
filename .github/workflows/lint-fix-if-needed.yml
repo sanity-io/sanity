@@ -19,17 +19,17 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Cache Prettier
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache@v5
         with:
           path: node_modules/.cache/prettier/.prettier-cache
           key: prettier-${{ hashFiles('pnpm-lock.yaml') }}
       - run: pnpm lint:fix
       - run: pnpm chore:format:fix
-      - uses: actions/create-github-app-token@v3
+      - uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # ratchet:actions/create-github-app-token@v3
         # Run even if `pnpm lint:fix` fails
         if: always()
         id: app-token

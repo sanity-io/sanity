@@ -20,7 +20,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -48,7 +48,7 @@ jobs:
         shardIndex: [1, 2]
         shardTotal: [2]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Store Playwright's Version
@@ -59,7 +59,7 @@ jobs:
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -79,7 +79,7 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=8192
         run: pnpm --filter sanity test:ct --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # ratchet:actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-ct-report-${{ matrix.project }}-${{ matrix.shardIndex }}
@@ -105,11 +105,11 @@ jobs:
     if: "!cancelled() && needs.playwright-ct-test.result != 'skipped'"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # ratchet:actions/download-artifact@v8
         with:
           pattern: playwright-ct-report-*
           merge-multiple: true
@@ -118,7 +118,7 @@ jobs:
       - name: Merge into HTML Report
         run: npx playwright merge-reports --reporter json ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report >> ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report/playwright-ct-test-results.json
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # ratchet:actions/upload-artifact@v7
         if: always()
         with:
           name: full-playwright-ct-report

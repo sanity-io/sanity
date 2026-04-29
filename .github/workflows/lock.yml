@@ -22,6 +22,6 @@ jobs:
           exclude-issue-created-before: "2022-11-01T00:00:00Z"
           issue-inactive-days: 90
           process-only: "issues"
-          issue-comment: >
-            This thread has been automatically locked because it has not had recent activity. 
-            Please open a new issue for related bugs and link to relevant comments in this thread.
+          issue-comment: "This thread has been automatically locked because it has not had recent activity. \nPlease open a new issue for related bugs and link to relevant comments in this thread.\n"
+
+
