@@ -3,65 +3,7 @@ import {type StringRule} from '@sanity/types'
 import {defineField, defineType} from 'sanity'
 import {defineIncomingReferenceDecoration, isIncomingReferenceCreation} from 'sanity/structure'
 
-import {AudienceSelectInput} from '../components/AudienceSelectInput'
 import {RemoveReferenceAction} from '../components/IncomingReferencesActions'
-
-// Generic decide field implementation that works for all types
-const defineLocalDecideField = (config: any) => {
-  const {name, title, description, type, ...otherConfig} = config
-
-  const valueFieldConfig = {
-    type,
-    // ...(to && {to}),
-    // ...(validation && {validation}),
-    // ...(description && {description}),
-    // ...(readOnly && {readOnly}),
-    // ...(hidden && {hidden}),
-    ...otherConfig,
-  }
-
-  return defineField({
-    name,
-    title,
-    description,
-    type: 'object',
-    fields: [
-      defineField({
-        name: 'default',
-        title: 'Default Value',
-        ...valueFieldConfig,
-      }),
-      defineField({
-        name: 'conditions',
-        title: 'Conditions',
-        type: 'array',
-        of: [
-          defineField({
-            type: 'object',
-            name: 'condition',
-            title: 'Condition',
-            fields: [
-              defineField({
-                name: 'audience',
-                title: 'Audience Equality',
-                validation: (Rule) => Rule.required(),
-                type: 'string',
-                components: {
-                  input: AudienceSelectInput,
-                },
-              }),
-              defineField({
-                name: 'value',
-                title: 'Value',
-                ...valueFieldConfig,
-              }),
-            ],
-          }),
-        ],
-      }),
-    ],
-  })
-}
 
 const AUTHOR_ROLES = [
   {value: 'developer', title: 'Developer'},
@@ -155,23 +97,6 @@ export default defineType({
       type: 'reference',
       to: [{type: 'author'}],
     },
-    defineLocalDecideField(
-      defineField({
-        name: 'decideName',
-        title: '[Decide] Name',
-        type: 'string',
-        options: {
-          search: {weight: 100},
-        },
-        validation: (rule: StringRule) => rule.required(),
-      }),
-    ),
-    defineLocalDecideField({
-      name: 'decideBestFriend',
-      title: '[Decide] Best Friend',
-      type: 'reference',
-      to: [{type: 'author'}],
-    }),
     {
       name: 'role',
       title: 'Role',

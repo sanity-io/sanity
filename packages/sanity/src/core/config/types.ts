@@ -69,22 +69,6 @@ export interface GroupableActionDescription<GroupType = unknown> extends BaseAct
 }
 
 /**
- * Symbol for configuring decision parameters schema
- * @hidden
- * @beta
- */
-export const DECISION_PARAMETERS_SCHEMA = Symbol('__decisionParametersSchema')
-
-/**
- * Configuration for decision parameters
- * @hidden
- * @beta
- */
-export interface DecisionParametersConfig {
-  [key: string]: string[]
-}
-
-/**
  * @hidden
  * @beta
  */
@@ -269,11 +253,6 @@ export interface ConfigContext {
    * Localization resources
    */
   i18n: LocaleSource
-  /**
-   * @hidden
-   * @beta
-   */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 }
 
 /** @public */
@@ -541,12 +520,6 @@ export interface PluginOptions {
   /** Configuration for Scheduled drafts */
   scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
 
-  /**
-   * @hidden
-   * @beta
-   */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
-
   /** Configuration for Content Releases */
   releases?: DefaultPluginsWorkspaceOptions['releases']
 
@@ -711,12 +684,6 @@ export interface WorkspaceOptions extends SourceOptions {
   }
 
   scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
-
-  /**
-   * @hidden
-   * @beta
-   */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
