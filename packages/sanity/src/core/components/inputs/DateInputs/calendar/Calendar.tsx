@@ -101,6 +101,11 @@ export const Calendar = forwardRef(function Calendar(
   const {timeZone, zoneDateToUtc, utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
   const currentTzDate = useMemo(() => utcToCurrentZoneDate(value), [utcToCurrentZoneDate, value])
   const [focusedDate, setFocusedDate] = useState<Date>(value)
+  const [prevValue, setPrevValue] = useState<Date>(value)
+  if (prevValue !== value) {
+    setPrevValue(value)
+    setFocusedDate(value)
+  }
 
   const [displayMonth, displayYear] = useMemo(() => {
     return [

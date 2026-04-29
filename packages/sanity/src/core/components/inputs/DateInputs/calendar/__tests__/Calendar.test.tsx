@@ -194,3 +194,39 @@ describe('Calendar with stored timezone tokyo', () => {
     expect(mockOnSelect).toHaveBeenCalledWith(new Date('2024-01-19T18:30:00Z'))
   })
 })
+
+describe('Calendar resets displayed month when value changes', () => {
+  beforeEach(() => {
+    const getKeyMock = vi.fn().mockReturnValue(of(null))
+    const setKeyMock = vi.fn().mockResolvedValue(null)
+    useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('updates displayed month when value prop changes', async () => {
+    const TestProvider = await createTestProvider()
+
+    const {rerender} = render(
+      <TestProvider>
+        <Calendar {...defaultProps} value={new Date('2029-04-20T10:00:00Z')} />
+      </TestProvider>,
+    )
+
+    // Calendar should show April 2029
+    const monthSelect = screen.getByRole('combobox') as HTMLSelectElement
+    expect(monthSelect).toHaveValue('3') // 0-indexed: April = 3
+
+    // Re-render with a new value (current-ish date)
+    rerender(
+      <TestProvider>
+        <Calendar {...defaultProps} value={new Date('2024-01-15T10:00:00Z')} />
+      </TestProvider>,
+    )
+
+    // Calendar should now show January 2024
+    expect(monthSelect).toHaveValue('0') // 0-indexed: January = 0
+  })
+})
