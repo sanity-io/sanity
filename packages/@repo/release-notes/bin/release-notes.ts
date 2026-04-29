@@ -332,11 +332,11 @@ function formatEntry({
     // oxlint-disable-next-line no-console
     console.warn(
       `⚠️  WARNING: GitHub returned no PR association for commit ${conventionalCommit.hash}. ` +
-        `Rendering changelog row without a PR link.`,
+        `Rendering changelog row without author info.`,
     )
   }
 
-  const byline = pr?.user?.login ? `[${pr.user.login}](${pr.user.html_url})` : ''
+  const byline = pr?.user?.login ? `[${pr.user.login}](${pr.user.html_url})` : '—'
   const prCell = pr ? `[#${pr.number}](${pr.html_url})` : '—'
   const releaseNoteLink = `[:pencil:&nbsp;Edit](${changelogEntryUrl})`
   return `${byline} | ${originalCommitMessage} | ${prCell} | ${conventionalCommit.hash} | ${releaseNoteLink}`
