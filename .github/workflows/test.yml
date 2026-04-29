@@ -40,7 +40,7 @@ jobs:
       # we want to know if a test fails on a specific node version
       fail-fast: false
       matrix:
-        node: [20, 22, 24]
+        node: [22, 24]
         experimental: [false]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
@@ -64,7 +64,7 @@ jobs:
         run: |
           # Base arguments for all test runs
           ARGS="--test-timeout=60000 --retry 4 --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --passWithNoTests"
-          if [ "${{ matrix.node }}" == "20" ]; then
+          if [ "${{ matrix.node }}" == "24" ]; then
             # We only gather coverage from a single Node version.
             # We pass in `--reporter=blob` so that we can combine the results from all shards.
             ARGS="$ARGS --coverage --reporter=default --reporter=blob"
@@ -74,7 +74,7 @@ jobs:
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
-        if: ${{ !cancelled() && matrix.node == '20' }}
+        if: ${{ !cancelled() && matrix.node == '24' }}
         uses: actions/upload-artifact@v7
         with:
           name: blob-report-${{ github.run_id }}-${{ matrix.shardIndex }}
