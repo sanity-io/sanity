@@ -643,10 +643,10 @@ export function VisionGui(props: VisionGuiProps) {
   const splitContainerWidth = window.innerWidth
   const splitContainerHeight = window.innerHeight
   const queryRecallCollapsedSize = splitContainerWidth
-  // Keep saved queries stacked only when the editor/result panes are also stacked.
-  const shouldStackQueryRecall = !isNarrowBreakpoint
-  const isCompactQueryRecall = splitContainerWidth <= 1000
   const isTabletOrNarrow = splitContainerWidth <= 1200
+  // Keep saved queries stacked only when the editor/result panes are also stacked.
+  const shouldStackQueryRecall = isTabletOrNarrow
+  const isCompactQueryRecall = splitContainerWidth <= 1000
   const minQueryRecallWidth = 300
   const minQueryRecallHeight = 180
   const maxEditorPaneSize = shouldStackQueryRecall
