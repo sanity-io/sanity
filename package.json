@@ -78,7 +78,6 @@
     "postinstall": "husky",
     "predev:embedded-studio": "turbo run build --filter=embedded-studio^...",
     "preembedded-studio-vite:dev": "turbo run build --filter=e2e-embedded-studio-vite^...",
-    "preinstall": "npx --loglevel=silent -y only-allow pnpm",
     "prepublishOnly": "pnpm build",
     "publish:tarball": "node -r esbuild-register scripts/publish/tarball",
     "start": "pnpm dev",
@@ -130,6 +129,6 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@10.33.1",
+  "packageManager": "pnpm@11.0.0",
   "//": "pnpm settings moved to pnpm-workspace.yaml"
 }
