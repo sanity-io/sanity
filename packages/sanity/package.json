@@ -209,7 +209,7 @@
     "@sanity/uuid": "^3.0.2",
     "@sentry/react": "^8.55.0",
     "@tanstack/react-table": "^8.21.3",
-    "@tanstack/react-virtual": "^3.13.18",
+    "@tanstack/react-virtual": "^3.13.24",
     "@xstate/react": "^6.0.0",
     "classnames": "^2.2.5",
     "color2k": "^2.0.3",
