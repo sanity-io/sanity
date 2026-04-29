@@ -33,7 +33,6 @@ import {canonicalHash} from '../util/canonicalHash'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
-  decisionParametersSchemaReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
@@ -74,7 +73,6 @@ import {SchemaError} from './SchemaError'
 import {
   type Config,
   type ConfigContext,
-  DECISION_PARAMETERS_SCHEMA,
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
@@ -478,10 +476,6 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
-    [DECISION_PARAMETERS_SCHEMA]: decisionParametersSchemaReducer({
-      config,
-      initialValue: undefined,
-    }),
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
