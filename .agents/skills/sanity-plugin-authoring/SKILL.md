@@ -48,6 +48,7 @@ Common plugin properties:
 - `tools`: Studio tools contributed by the plugin.
 - `schema`: Schema types and initial value templates.
 - `studio`: Studio component overrides and middleware.
+- `i18n`: Locale resource bundles used by plugin UI.
 - `title`: Human-readable plugin name.
 - `onUncaughtError`: Custom error handling, logging, or telemetry.
 
@@ -70,6 +71,60 @@ When adding a tool through a plugin:
 `studio.components` can customize parts of the Studio UI. Components that receive `renderDefault` are middleware: call `props.renderDefault(props)` unless intentionally replacing the default UI.
 
 Use this for UI wrappers, navigation changes, or tool menu ordering. Be careful not to change scroll containers or layout ownership accidentally.
+
+## Locale Resources
+
+If a plugin renders UI text, add an `i18n` bundle instead of hard-coding user-facing strings. The usual file shape is:
+
+```txt
+feature/
+├── i18n/
+│   ├── index.ts
+│   └── resources.ts
+└── plugin/
+    └── index.ts
+```
+
+In `i18n/index.ts`, define a namespace and default US English bundle:
+
+```ts
+import {type LocaleResourceBundle} from '../../i18n'
+
+export const featureNamespace: 'feature' = 'feature'
+
+export const featureUsEnglishLocaleBundle: LocaleResourceBundle = {
+  locale: 'en-US',
+  namespace: featureNamespace,
+  resources: () => import('./resources'),
+}
+
+export type {FeatureLocaleResourceKeys} from './resources'
+```
+
+In `i18n/resources.ts`, export the default strings and key type:
+
+```ts
+const featureLocaleStrings = {
+  'action.example': 'Example',
+}
+
+export type FeatureLocaleResourceKeys = keyof typeof featureLocaleStrings
+
+export default featureLocaleStrings
+```
+
+Then register the bundle from the plugin:
+
+```ts
+import {featureUsEnglishLocaleBundle} from '../i18n'
+
+export const feature = definePlugin({
+  name: 'sanity/feature',
+  i18n: {
+    bundles: [featureUsEnglishLocaleBundle],
+  },
+})
+```
 
 ## Before Coding
 

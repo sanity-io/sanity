@@ -34,10 +34,62 @@ export const feature = definePlugin({
       layout: FeatureStudioLayout,
     },
   },
+  i18n: {
+    bundles: [featureUsEnglishLocaleBundle],
+  },
 })
 ```
 
 Use `../../config/definePlugin` when matching existing internal plugin files. `../../config` is also available in some folders.
+
+## Locale Resources
+
+Default core plugins that render UI text should add a locale resource bundle. Follow the pattern from `packages/sanity/src/core/singleDocRelease`:
+
+- `packages/sanity/src/core/<feature>/i18n/index.ts`: exports the locale namespace, US English bundle, and resource key type.
+- `packages/sanity/src/core/<feature>/i18n/resources.ts`: exports default locale strings and `keyof` resource type.
+- `packages/sanity/src/core/<feature>/plugin/index.ts`: imports the bundle and registers it under `i18n.bundles`.
+
+Example `i18n/index.ts`:
+
+```ts
+import {type LocaleResourceBundle} from '../../i18n'
+
+export const featureNamespace: 'feature' = 'feature'
+
+export const featureUsEnglishLocaleBundle: LocaleResourceBundle = {
+  locale: 'en-US',
+  namespace: featureNamespace,
+  resources: () => import('./resources'),
+}
+
+export type {FeatureLocaleResourceKeys} from './resources'
+```
+
+Example `i18n/resources.ts`:
+
+```ts
+const featureLocaleStrings = {
+  'action.example': 'Example',
+}
+
+export type FeatureLocaleResourceKeys = keyof typeof featureLocaleStrings
+
+export default featureLocaleStrings
+```
+
+Example plugin registration:
+
+```ts
+import {featureUsEnglishLocaleBundle} from '../i18n'
+
+export const feature = definePlugin({
+  name: FEATURE_NAME,
+  i18n: {
+    bundles: [featureUsEnglishLocaleBundle],
+  },
+})
+```
 
 ## Default Plugin Wiring
 
