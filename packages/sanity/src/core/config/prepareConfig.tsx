@@ -36,6 +36,7 @@ import {
   decisionParametersSchemaReducer,
   directUploadsReducer,
   documentActionsReducer,
+  documentAskToEditEnabledReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
   documentInspectorsReducer,
@@ -402,7 +403,6 @@ export function prepareConfig(
       theme: rootSource.theme || studioTheme,
       title,
       subtitle: rootSource.subtitle,
-      hidden: rootSource.hidden,
       __internal: {
         sources: resolvedSources,
       },
@@ -764,6 +764,15 @@ function resolveSource({
       comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
+            context: partialContext,
+            config,
+            initialValue: true,
+          })
+        },
+      },
+      askToEdit: {
+        enabled: (partialContext) => {
+          return documentAskToEditEnabledReducer({
             context: partialContext,
             config,
             initialValue: true,

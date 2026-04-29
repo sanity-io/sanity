@@ -24,6 +24,7 @@ import {
   DECISION_PARAMETERS_SCHEMA,
   type DecisionParametersConfig,
   type DocumentActionsContext,
+  type DocumentAskToEditEnabledContext,
   type DocumentBadgesContext,
   type DocumentCommentsEnabledContext,
   type DocumentInspectorContext,
@@ -350,6 +351,31 @@ export const documentCommentsEnabledReducer = (opts: {
 
     throw new Error(
       `Expected \`document.comments.enabled\` to be a boolean or a function, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
+export const documentAskToEditEnabledReducer = (opts: {
+  config: PluginOptions
+  context: DocumentAskToEditEnabledContext
+  initialValue: boolean
+}): boolean => {
+  const {config, context, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.document?.askToEdit?.enabled
+
+    if (!resolver && typeof resolver !== 'boolean') return acc
+    if (typeof resolver === 'function') return resolver(context)
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`document.askToEdit.enabled\` to be a boolean or a function, but received ${getPrintableType(
         resolver,
       )}`,
     )
