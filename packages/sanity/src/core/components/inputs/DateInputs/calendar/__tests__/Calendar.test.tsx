@@ -195,7 +195,7 @@ describe('Calendar with stored timezone tokyo', () => {
   })
 })
 
-describe('Calendar resets displayed month when value changes', () => {
+describe('Calendar updates displayed month when user sets current time', () => {
   beforeEach(() => {
     const getKeyMock = vi.fn().mockReturnValue(of(null))
     const setKeyMock = vi.fn().mockResolvedValue(null)
@@ -203,30 +203,53 @@ describe('Calendar resets displayed month when value changes', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     vi.restoreAllMocks()
   })
 
-  it('updates displayed month when value prop changes', async () => {
+  it('updates displayed month when set to current time is clicked', async () => {
     const TestProvider = await createTestProvider()
+    const mockOnSelect = vi.fn()
 
     const {rerender} = render(
       <TestProvider>
-        <Calendar {...defaultProps} value={new Date('2029-04-20T10:00:00Z')} />
+        <Calendar
+          {...defaultProps}
+          selectTime
+          onSelect={mockOnSelect}
+          value={new Date('2029-04-20T10:00:00Z')}
+          timeZoneScope={{type: 'input', id: 'test'}}
+        />
       </TestProvider>,
     )
 
     // Calendar should show April 2029
     const monthSelect = screen.getByRole('combobox') as HTMLSelectElement
     expect(monthSelect).toHaveValue('3') // 0-indexed: April = 3
+    expect(screen.getByTestId('date-input')).toHaveValue('2029')
 
-    // Re-render with a new value (current-ish date)
+    // Re-rendering with a new value should not change the displayed month/year.
     rerender(
       <TestProvider>
-        <Calendar {...defaultProps} value={new Date('2024-01-15T10:00:00Z')} />
+        <Calendar
+          {...defaultProps}
+          selectTime
+          onSelect={mockOnSelect}
+          value={new Date('2024-01-15T12:34:00Z')}
+          timeZoneScope={{type: 'input', id: 'test'}}
+        />
       </TestProvider>,
     )
+    expect(monthSelect).toHaveValue('3') // 0-indexed: April = 3
+    expect(screen.getByTestId('date-input')).toHaveValue('2029')
 
-    // Calendar should now show January 2024
+    vi.useFakeTimers({toFake: ['Date']})
+    vi.setSystemTime(new Date('2024-01-15T12:34:00Z'))
+
+    await userEvent.click(screen.getByRole('button', {name: 'Set to current time'}))
+
+    expect(mockOnSelect).toHaveBeenCalledWith(new Date('2024-01-15T12:34:00Z'))
     expect(monthSelect).toHaveValue('0') // 0-indexed: January = 0
+    expect(screen.getByTestId('date-input')).toHaveValue('2024')
   })
 })
