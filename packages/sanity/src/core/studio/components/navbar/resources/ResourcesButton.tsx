@@ -9,6 +9,7 @@ import {StatusButton} from '../../../../components'
 import {STUDIO_DSN} from '../../../../error/sentry/sentryErrorReporter'
 import {StudioFeedbackDialog} from '../../../../feedback/components/StudioFeedbackDialog'
 import {useFeedbackAvailable} from '../../../../feedback/hooks/useFeedbackAvailable'
+import {useFeedbackTelemetry} from '../../../../feedback/hooks/useFeedbackTelemetry'
 import {useTranslation} from '../../../../i18n'
 import {useRenderingContext} from '../../../../store/renderingContext/useRenderingContext'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
@@ -61,7 +62,11 @@ export function ResourcesButton() {
   }, [])
 
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false)
-  const handleOpenFeedback = useCallback(() => setFeedbackDialogOpen(true), [])
+  const {feedbackDialogOpened} = useFeedbackTelemetry()
+  const handleOpenFeedback = useCallback(() => {
+    feedbackDialogOpened()
+    setFeedbackDialogOpen(true)
+  }, [feedbackDialogOpened])
   const handleCloseFeedback = useCallback(() => setFeedbackDialogOpen(false), [])
 
   return (
