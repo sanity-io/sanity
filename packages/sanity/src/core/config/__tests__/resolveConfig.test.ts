@@ -378,6 +378,86 @@ describe('createSourceFromConfig', () => {
   })
 })
 
+describe('beta variants config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('defaults variants to false', async () => {
+    const source = await createSourceFromConfig({projectId, dataset})
+
+    expect(source.beta?.variants?.enabled).toBe(false)
+  })
+
+  it('resolves variants from root config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {variants: {enabled: true}},
+    })
+
+    expect(source.beta?.variants?.enabled).toBe(true)
+  })
+
+  it('resolves variants from plugin config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-variants',
+          beta: {variants: {enabled: true}},
+        })(),
+      ],
+    })
+
+    expect(source.beta?.variants?.enabled).toBe(true)
+  })
+
+  it('lets root config override plugin variants config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-variants',
+          beta: {variants: {enabled: false}},
+        })(),
+      ],
+      beta: {variants: {enabled: true}},
+    })
+
+    expect(source.beta?.variants?.enabled).toBe(true)
+  })
+
+  it('throws when variants is not an object', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          // @ts-expect-error should be an object
+          variants: 'enabled',
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.variants` to be an object, but received string')
+  })
+
+  it('throws when variants enabled is not a boolean', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          variants: {
+            // @ts-expect-error should be a boolean
+            enabled: 'enabled',
+          },
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.variants.enabled` to be a boolean, but received string')
+  })
+})
+
 describe('search strategy selection', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'

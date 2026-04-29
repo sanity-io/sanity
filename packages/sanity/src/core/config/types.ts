@@ -1358,4 +1358,10 @@ export interface BetaFeatures {
     documents?: boolean
     releases?: boolean
   }
+  /**
+   * Config for variants beta features in Studio.
+   */
+  variants?: {
+    enabled?: boolean
+  }
 }
