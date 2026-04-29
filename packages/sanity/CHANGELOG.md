@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.23.0](https://github.com/sanity-io/sanity/compare/v5.22.0...v5.23.0) (2026-04-29)
+
+### Features
+
+* enable vanilla-extract CSS ([#12590](https://github.com/sanity-io/sanity/issues/12590)) ([c0fb87f](https://github.com/sanity-io/sanity/commit/c0fb87ff5ea41290df895fd45e3b0e90ce300bc1))
+* **sanity:** warn on divergent auth configs for same project id ([#12732](https://github.com/sanity-io/sanity/issues/12732)) ([36b911d](https://github.com/sanity-io/sanity/commit/36b911d9f78cdcfc6358ed7768a846c802d0e96f))
+* **studio:** add config option to disable ask-to-edit button ([#12692](https://github.com/sanity-io/sanity/issues/12692)) ([391d403](https://github.com/sanity-io/sanity/commit/391d40357b514a46559927003462176463ba5665))
+* **telemetry:** add Document Initial Load Measured event ([#12710](https://github.com/sanity-io/sanity/issues/12710)) ([7110142](https://github.com/sanity-io/sanity/commit/7110142050a13ede0f7beecc929a63076cdffdd5))
+* **telemetry:** add Global Search Latency Measured event ([#12709](https://github.com/sanity-io/sanity/issues/12709)) ([317ae6b](https://github.com/sanity-io/sanity/commit/317ae6b492c0261fc02cda398455e9cecdb94488))
+
+### Bug Fixes
+
+* **core:** show json diffs for missing fields, skip _system field ([#12744](https://github.com/sanity-io/sanity/issues/12744)) ([57ebcca](https://github.com/sanity-io/sanity/commit/57ebcca7be5578348a876dfa176a96b17e683f92))
+* **core:** throw on missing projectId/dataset in getOperationStoreKey ([#12609](https://github.com/sanity-io/sanity/issues/12609)) ([583bcce](https://github.com/sanity-io/sanity/commit/583bccea9cb3c7e0d5a85feee9220e7030076705))
+* **diff:** deduplicate repeated inline diff segments in Portable Text ([#12675](https://github.com/sanity-io/sanity/issues/12675)) ([26c140f](https://github.com/sanity-io/sanity/commit/26c140f22db79c3e0f23f8b56627123427658e38))
+* **feedback:** associate labels with HTML form fields ([#12746](https://github.com/sanity-io/sanity/issues/12746)) ([d08b8ee](https://github.com/sanity-io/sanity/commit/d08b8eea7ac0c2f068742bb95fa1037e23a45058))
+* **form:** maintain select button position with disableNew on image fields ([#12683](https://github.com/sanity-io/sanity/issues/12683)) ([91ebac8](https://github.com/sanity-io/sanity/commit/91ebac8244cc0f92a36c32d3c7c046833da4d236))
+* **form:** prevent scroll jump when opening field overflow menu ([#12629](https://github.com/sanity-io/sanity/issues/12629)) ([1ce6320](https://github.com/sanity-io/sanity/commit/1ce6320cbd124ca51d245e7739802f52db6db4fd))
+* issue when reverting to revisions in live edits ([#12729](https://github.com/sanity-io/sanity/issues/12729)) ([e0c829f](https://github.com/sanity-io/sanity/commit/e0c829f35013ca75724234f01c2c5896b609b8c3))
+* **releases:** add empty state for cardinality-one releases with no documents ([#12687](https://github.com/sanity-io/sanity/issues/12687)) ([379906f](https://github.com/sanity-io/sanity/commit/379906f8c4c82de161514af20006ef2413027900))
+* **releases:** improve activity panel UX consistency ([#12686](https://github.com/sanity-io/sanity/issues/12686)) ([5b9cd5d](https://github.com/sanity-io/sanity/commit/5b9cd5d70726fb8e557609e8a67bea082f52374e))
+* remove underline from openInNewTabIcon menu item for refs ([#12724](https://github.com/sanity-io/sanity/issues/12724)) ([eb3ca24](https://github.com/sanity-io/sanity/commit/eb3ca24f04062ffc09415ff1dc8ce307956c6077))
+* **studio:** hide user menu on mobile in dashboard mode ([#12684](https://github.com/sanity-io/sanity/issues/12684)) ([e51fee8](https://github.com/sanity-io/sanity/commit/e51fee8a1ab7156ae8acdae168538d8d5462c441))
 ## [5.22.0](https://github.com/sanity-io/sanity/compare/v5.21.0...v5.22.0) (2026-04-22)
 
 ### Features
