@@ -316,6 +316,7 @@ exports[`exports snapshot 1`] = `
     "emitOperation": "function",
     "emptyValuesByType": "object",
     "encodePath": "function",
+    "ensureCdnCssLink": "function",
     "escapeField": "function",
     "evaluateWorkspaceHidden": "function",
     "fieldNeedsEscape": "function",
