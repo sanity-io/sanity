@@ -145,7 +145,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
       }
       // if there's no published version of this document, set the reference to weak
 
-      const isSameReleaseRef = selectedReleaseId == getVersionFromId(hit.originalId)
+      const isSameReleaseRef =
+        selectedReleaseId && selectedReleaseId == getVersionFromId(hit.originalId)
 
       const patches = [
         setIfMissing({}),
