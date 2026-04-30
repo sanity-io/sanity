@@ -136,30 +136,36 @@ function findExistingCssLink(packagePathSegment: string): HTMLLinkElement | null
  *                    Used to verify that the module was loaded from modules.sanity-cdn.
  * @param packagePathSegment - The path segment that identifies the package in the CSS URL —
  *                             `sanity` for `sanity`, `@sanity__vision` for `@sanity/vision`.
+ * @returns The injected `<link>` element, or `null` if no injection was needed (e.g. not on CDN,
+ *          link already exists, or import map doesn't contain the package).
  *
  * @internal
  */
-export function ensureCdnCssLink(moduleUrl: string, packagePathSegment: string): void {
-  if (typeof document === 'undefined') return
+export function ensureCdnCssLink(
+  moduleUrl: string,
+  packagePathSegment: string,
+): HTMLLinkElement | null {
+  if (typeof document === 'undefined') return null
 
   let url: URL
   try {
     url = new URL(moduleUrl)
   } catch {
-    return
+    return null
   }
 
   // Only act when the JS itself was loaded from the modules CDN.
-  if (!isModulesSanityCdnUrl(url)) return
+  if (!isModulesSanityCdnUrl(url)) return null
 
   // The CLI runtime script (in newer studios) may have already injected this link.
-  if (findExistingCssLink(packagePathSegment)) return
+  if (findExistingCssLink(packagePathSegment)) return null
 
   const cssUrl = deriveCssUrlFromImportMap(packagePathSegment)
-  if (!cssUrl) return
+  if (!cssUrl) return null
 
   const link = document.createElement('link')
   link.rel = 'stylesheet'
   link.href = cssUrl
   document.head.appendChild(link)
+  return link
 }

@@ -40,31 +40,42 @@ export function renderStudio(
     throw new Error('Missing root element to mount application into')
   }
 
-  // Check if the static CSS file has been loaded (set by styles.css via vanilla-extract).
-  // If not, attempt to inject the CSS link from the CDN import map as a fallback for
-  // studios deployed with older CLIs that don't have the CSS-aware runtime script.
-  const staticCssLoaded = getComputedStyle(rootElement)
-    .getPropertyValue('--static-css-file-loaded-studio')
-    .trim()
-
-  if (!staticCssLoaded) {
-    ensureCdnCssLink(import.meta.url, 'sanity')
-  }
-
   const opts = typeof options === 'boolean' ? {reactStrictMode: options} : options
   const {reactStrictMode = false, basePath} = opts
 
   const root = createRoot(rootElement)
 
-  root.render(
-    reactStrictMode ? (
-      <StrictMode>
+  const render = () => {
+    root.render(
+      reactStrictMode ? (
+        <StrictMode>
+          <Studio config={config} basePath={basePath} unstable_globalStyles />
+        </StrictMode>
+      ) : (
         <Studio config={config} basePath={basePath} unstable_globalStyles />
-      </StrictMode>
-    ) : (
-      <Studio config={config} basePath={basePath} unstable_globalStyles />
-    ),
-  )
+      ),
+    )
+  }
+
+  // Check if the static CSS file has been loaded (set by styles.css via vanilla-extract).
+  // If not, attempt to inject the CSS link from the CDN import map as a fallback for
+  // studios deployed with older CLIs that don't have the CSS-aware runtime script.
+  // Defer the initial render until the CSS link has loaded to prevent FOUC.
+  const staticCssLoaded = getComputedStyle(rootElement)
+    .getPropertyValue('--static-css-file-loaded-studio')
+    .trim()
+
+  if (!staticCssLoaded) {
+    const link = ensureCdnCssLink(import.meta.url, 'sanity')
+    if (link) {
+      link.onload = render
+      link.onerror = render // render anyway if CSS fails to load
+    } else {
+      render()
+    }
+  } else {
+    render()
+  }
 
   return () => root.unmount()
 }
