@@ -105,10 +105,11 @@ export const Preview = memo(
     )
     const previewUrl = useMemo(() => {
       const url = new URL(initialUrl)
-      // Always set the perspective that's being used, even if preview mode isn't configured
-      if (!url.searchParams.get(urlSearchParamPreviewPerspective)) {
-        url.searchParams.set(urlSearchParamPreviewPerspective, urlPerspective)
-      }
+      // Always set the current perspective, overwriting any stale value that may
+      // have been baked into the resolved preview-mode URL at mount time (e.g.
+      // when a Content Agent document lives in a release but the initial
+      // perspective was "drafts").
+      url.searchParams.set(urlSearchParamPreviewPerspective, urlPerspective)
 
       if (vercelProtectionBypass || url.searchParams.get(urlSearchParamVercelProtectionBypass)) {
         // samesitenone is required since the request is from an iframe
