@@ -10,6 +10,7 @@ import {type ErrorInfo, type ReactNode} from 'react'
 import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
 import {type Template, type TemplateItem} from '../templates'
 import {getPrintableType} from '../util/getPrintableType'
+import {isRecord} from '../util/isRecord'
 import {
   type DocumentActionComponent,
   type DocumentBadgeComponent,
@@ -453,6 +454,38 @@ export const eventsAPIReducer = (opts: {
 
     throw new Error(
       `Expected \`beta.eventsAPI.${opts.key}\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
+export const variantsEnabledReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
+    const variants: unknown = innerConfig.beta?.variants
+
+    if (typeof variants === 'undefined') return acc
+    if (!isRecord(variants)) {
+      throw new Error(
+        `Expected \`beta.variants\` to be an object, but received ${getPrintableType(variants)}`,
+      )
+    }
+
+    const enabled = variants.enabled
+
+    if (typeof enabled === 'undefined') return acc
+    if (typeof enabled === 'boolean') return enabled
+
+    throw new Error(
+      `Expected \`beta.variants.enabled\` to be a boolean, but received ${getPrintableType(
         enabled,
       )}`,
     )
