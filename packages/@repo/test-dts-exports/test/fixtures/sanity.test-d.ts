@@ -415,6 +415,7 @@ import type {
   DocumentActionsContext,
   DocumentActionsResolver,
   DocumentActionsVersionType,
+  DocumentAskToEditEnabledContext,
   DocumentAvailability,
   DocumentBadgeComponent,
   DocumentBadgeDescription,
@@ -2976,6 +2977,9 @@ describe('sanity', () => {
   })
   test('DocumentActionsVersionType', () => {
     expectTypeOf<DocumentActionsVersionType>().not.toBeNever()
+  })
+  test('DocumentAskToEditEnabledContext', () => {
+    expectTypeOf<DocumentAskToEditEnabledContext>().toBeObject()
   })
   test('DocumentAvailability', () => {
     expectTypeOf<DocumentAvailability>().not.toBeNever()
