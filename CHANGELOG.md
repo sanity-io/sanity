@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.23.1](https://github.com/sanity-io/sanity/compare/v5.23.0...v5.23.1) (2026-04-30)
+
+### Bug Fixes
+
+* **core:** reset calendar focused date when setting to current time ([#12753](https://github.com/sanity-io/sanity/issues/12753)) ([ff8a7d4](https://github.com/sanity-io/sanity/commit/ff8a7d492affa4aebd531e1ce0363940115461a9))
 ## [5.23.0](https://github.com/sanity-io/sanity/compare/v5.22.0...v5.23.0) (2026-04-29)
 
 ### Features
