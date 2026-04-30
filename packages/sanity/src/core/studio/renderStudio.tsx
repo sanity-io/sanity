@@ -64,15 +64,11 @@ export function renderStudio(
     }
   }
 
+  const studio = <Studio config={config} basePath={basePath} unstable_globalStyles />
   // No Suspense fallback, as suspending at this level means there is no stylesheet, which means
   // we may not show the right fallback UI. Any `fallback` prop here must be built to render
   // correctly even if all external css files are missing.
-  const children = (
-    <Suspense>
-      {fallbackStylesheet}
-      <Studio config={config} basePath={basePath} unstable_globalStyles />
-    </Suspense>
-  )
+  const children = fallbackStylesheet ? <Suspense>{fallbackStylesheet}{studio}</Suspense> : <>{studio}</>
 
   const root = createRoot(rootElement)
 
