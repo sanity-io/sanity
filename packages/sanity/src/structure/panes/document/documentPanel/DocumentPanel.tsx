@@ -197,10 +197,20 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const {isPaused: isPausedDraft} = usePausedScheduledDraft()
 
+  // When viewing an archived scheduled draft, the selectedPerspective will be
+  // a plain string (the release ID) because the release is not in active releases.
+  // In this case, show the archived release banner instead of the "add to release" banner.
+  const isArchivedScheduledDraft =
+    params?.scheduledDraft &&
+    typeof selectedPerspective === 'string' &&
+    !isSystemBundle(selectedPerspective)
+
   // eslint-disable-next-line complexity
   const banners = useMemo(() => {
-    if (params?.historyVersion) {
-      return <ArchivedReleaseDocumentBanner />
+    const archivedReleaseId =
+      params?.historyVersion ?? (isArchivedScheduledDraft ? params?.scheduledDraft : undefined)
+    if (archivedReleaseId) {
+      return <ArchivedReleaseDocumentBanner releaseId={archivedReleaseId} />
     }
 
     const isScheduledRelease =
@@ -337,6 +347,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     )
   }, [
     params?.historyVersion,
+    params?.scheduledDraft,
+    isArchivedScheduledDraft,
     selectedPerspective,
     displayed,
     selectedReleaseId,
