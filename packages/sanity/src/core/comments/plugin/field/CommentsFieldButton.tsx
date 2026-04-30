@@ -121,7 +121,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     [startDiscard],
   )
 
-  useClickOutsideEvent(!open && startDiscard, () => [popoverRef.current])
+  useClickOutsideEvent(open && startDiscard, () => [popoverRef.current])
 
   if (!hasComments) {
     const placeholder = (
