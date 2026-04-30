@@ -12,8 +12,7 @@ packages:
 
 allowBuilds:
   esbuild: false
-  # we run lefthook install as a postinstall in our own workspace package.json
-  lefthook: false
+  lefthook: true
   unrs-resolver: false
 
 catalog:

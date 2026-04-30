@@ -75,7 +75,6 @@
     "perf:studio": "cd perf/studio && pnpm preview",
     "perf:studio:build": "pnpm build --filter=perf-studio",
     "perf:studio:dev": "cd perf/studio && pnpm dev",
-    "postinstall": "lefthook install --reset-hooks-path",
     "predev:embedded-studio": "turbo run build --filter=embedded-studio^...",
     "preembedded-studio-vite:dev": "turbo run build --filter=e2e-embedded-studio-vite^...",
     "prepublishOnly": "pnpm build",
@@ -118,15 +117,6 @@
     "typedoc": "^0.28.16",
     "vercel": "^48.12.1",
     "vitest": "catalog:"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,mjs,cjs}": [
-      "oxfmt --no-error-on-unmatched-pattern",
-      "oxlint --disable-nested-config --type-aware --fix --quiet"
-    ],
-    "*.{md,yml,yaml,css,json}": [
-      "oxfmt --no-error-on-unmatched-pattern"
-    ]
   },
   "packageManager": "pnpm@11.0.0",
   "//": "pnpm settings moved to pnpm-workspace.yaml"
