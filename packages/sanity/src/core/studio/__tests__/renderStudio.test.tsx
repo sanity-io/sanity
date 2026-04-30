@@ -8,8 +8,6 @@ vi.mock('react-dom/client', () => ({
   createRoot: () => ({render: mockRender, unmount: mockUnmount}),
 }))
 
-import {renderStudio, _resetImportmapCache} from '../renderStudio'
-
 const SANITY_IMPORT_MAP_URL =
   'https://sanity-cdn.com/v1/modules/by-app/kp75luobnkn8sgzxcjran97e/t1777546669/%5E5.23.0/sanity/'
 const VISION_IMPORT_MAP_URL =
@@ -81,13 +79,21 @@ function findLinksInTree(element: ReactElement): ReactElement[] {
   return links
 }
 
+/**
+ * Re-imports renderStudio with a fresh module to reset the importmap cache.
+ */
+async function importRenderStudio() {
+  vi.resetModules()
+  const mod = await import('../renderStudio')
+  return mod.renderStudio
+}
+
 describe('renderStudio', () => {
   beforeEach(() => {
     document.head.innerHTML = ''
     document.body.innerHTML = ''
     mockRender.mockClear()
     mockUnmount.mockClear()
-    _resetImportmapCache()
   })
 
   afterEach(() => {
@@ -95,13 +101,15 @@ describe('renderStudio', () => {
     document.body.innerHTML = ''
   })
 
-  test('throws when rootElement is null', () => {
+  test('throws when rootElement is null', async () => {
+    const renderStudio = await importRenderStudio()
     expect(() => renderStudio(null, {} as any)).toThrow(
       'Missing root element to mount application into',
     )
   })
 
-  test('returns an unmount function that calls root.unmount()', () => {
+  test('returns an unmount function that calls root.unmount()', async () => {
+    const renderStudio = await importRenderStudio()
     const root = createRootElement({studio: true, vision: true})
     const unmount = renderStudio(root, {} as any)
     unmount()
@@ -109,7 +117,8 @@ describe('renderStudio', () => {
   })
 
   describe('studio CSS fallback', () => {
-    test('injects a stylesheet link derived from the import map when --static-css-file-loaded-studio is missing', () => {
+    test('injects a stylesheet link derived from the import map when --static-css-file-loaded-studio is missing', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement()
       addImportMap(REALISTIC_IMPORT_MAP)
 
@@ -123,7 +132,8 @@ describe('renderStudio', () => {
       expect(links[0].props.precedence).toBe('sanity')
     })
 
-    test('does not inject when --static-css-file-loaded-studio is set', () => {
+    test('does not inject when --static-css-file-loaded-studio is set', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement({studio: true, vision: true})
       addImportMap(REALISTIC_IMPORT_MAP)
 
@@ -134,7 +144,8 @@ describe('renderStudio', () => {
       expect(links).toHaveLength(0)
     })
 
-    test('does not inject when the import map has no matching sanity/ entry', () => {
+    test('does not inject when the import map has no matching sanity/ entry', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement()
       addImportMap({'other-package/': 'https://example.com/pkg/'})
 
@@ -145,7 +156,8 @@ describe('renderStudio', () => {
       expect(links).toHaveLength(0)
     })
 
-    test('does not inject when no import map exists in the document', () => {
+    test('does not inject when no import map exists in the document', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement()
 
       renderStudio(root, {} as any)
@@ -157,7 +169,8 @@ describe('renderStudio', () => {
   })
 
   describe('vision CSS fallback', () => {
-    test('injects a stylesheet link derived from the import map when --static-css-file-loaded-vision is missing', () => {
+    test('injects a stylesheet link derived from the import map when --static-css-file-loaded-vision is missing', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement({studio: true})
       addImportMap(REALISTIC_IMPORT_MAP)
 
@@ -171,7 +184,8 @@ describe('renderStudio', () => {
       expect(links[0].props.precedence).toBe('sanity')
     })
 
-    test('does not inject when --static-css-file-loaded-vision is set', () => {
+    test('does not inject when --static-css-file-loaded-vision is set', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement({studio: true, vision: true})
       addImportMap(REALISTIC_IMPORT_MAP)
 
@@ -182,7 +196,8 @@ describe('renderStudio', () => {
       expect(links).toHaveLength(0)
     })
 
-    test('does not inject when the import map has no @sanity/vision/ entry', () => {
+    test('does not inject when the import map has no @sanity/vision/ entry', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement({studio: true})
       addImportMap({'sanity/': SANITY_IMPORT_MAP_URL})
 
@@ -195,7 +210,8 @@ describe('renderStudio', () => {
   })
 
   describe('combined studio and vision CSS fallback', () => {
-    test('injects both links when both CSS properties are missing', () => {
+    test('injects both links when both CSS properties are missing', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement()
       addImportMap(REALISTIC_IMPORT_MAP)
 
@@ -208,7 +224,8 @@ describe('renderStudio', () => {
       expect(links[1].props.href).toBe(`${VISION_IMPORT_MAP_URL}bundle.css`)
     })
 
-    test('studio link renders before vision link', () => {
+    test('studio link renders before vision link', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement()
       addImportMap(REALISTIC_IMPORT_MAP)
 
@@ -220,7 +237,8 @@ describe('renderStudio', () => {
       expect(links[1].props.href).toContain('/@sanity__vision/')
     })
 
-    test('wraps in Suspense only when at least one fallback is needed', () => {
+    test('wraps in Suspense only when at least one fallback is needed', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement({studio: true})
       addImportMap(REALISTIC_IMPORT_MAP)
 
@@ -231,7 +249,8 @@ describe('renderStudio', () => {
       expect(rendered.type).toBe(Symbol.for('react.suspense'))
     })
 
-    test('does not wrap in Suspense when no fallback is needed', () => {
+    test('does not wrap in Suspense when no fallback is needed', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement({studio: true, vision: true})
       addImportMap(REALISTIC_IMPORT_MAP)
 
@@ -241,7 +260,8 @@ describe('renderStudio', () => {
       expect(rendered.type).not.toBe(Symbol.for('react.suspense'))
     })
 
-    test('only injects studio link when vision CSS is already loaded', () => {
+    test('only injects studio link when vision CSS is already loaded', async () => {
+      const renderStudio = await importRenderStudio()
       const root = createRootElement({vision: true})
       addImportMap(REALISTIC_IMPORT_MAP)
 

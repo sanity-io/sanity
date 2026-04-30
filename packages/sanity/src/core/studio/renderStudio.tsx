@@ -14,11 +14,6 @@ function getImportmap() {
   return importmapCache
 }
 
-/** @internal Reset cached importmap — exposed only for tests. */
-export function _resetImportmapCache() {
-  importmapCache = null
-}
-
 interface RenderStudioOptions {
   basePath?: string
   reactStrictMode?: boolean
