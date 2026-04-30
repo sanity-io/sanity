@@ -1,8 +1,7 @@
-import {StrictMode} from 'react'
+import {StrictMode, Suspense} from 'react'
 import {createRoot} from 'react-dom/client'
 
 import {type Config} from '../config'
-import {ensureCdnCssLink} from './ensureCdnCssLink'
 import {Studio} from './Studio'
 
 interface RenderStudioOptions {
@@ -43,39 +42,41 @@ export function renderStudio(
   const opts = typeof options === 'boolean' ? {reactStrictMode: options} : options
   const {reactStrictMode = false, basePath} = opts
 
-  const root = createRoot(rootElement)
-
-  const render = () => {
-    root.render(
-      reactStrictMode ? (
-        <StrictMode>
-          <Studio config={config} basePath={basePath} unstable_globalStyles />
-        </StrictMode>
-      ) : (
-        <Studio config={config} basePath={basePath} unstable_globalStyles />
-      ),
-    )
-  }
+  let fallbackStylesheet: React.JSX.Element | undefined
 
   // Check if the static CSS file has been loaded (set by styles.css via vanilla-extract).
   // If not, attempt to inject the CSS link from the CDN import map as a fallback for
   // studios deployed with older CLIs that don't have the CSS-aware runtime script.
-  // Defer the initial render until the CSS link has loaded to prevent FOUC.
-  const staticCssLoaded = getComputedStyle(rootElement)
-    .getPropertyValue('--static-css-file-loaded-studio')
-    .trim()
-
-  if (!staticCssLoaded) {
-    const link = ensureCdnCssLink(import.meta.url, 'sanity')
-    if (link) {
-      link.onload = render
-      link.onerror = render // render anyway if CSS fails to load
+  // React 19 suspends rendering until <link precedence="..."> stylesheets load.
+  if (
+    !getComputedStyle(rootElement).getPropertyValue('--static-css-file-loaded-studio').trim()
+  ) {
+    const importmap = JSON.parse(
+      document.querySelector('script[type=importmap]')?.textContent || '{}',
+    )
+    if (importmap.imports && 'sanity/' in importmap.imports) {
+      fallbackStylesheet = (
+        <link rel="stylesheet" href={`${importmap.imports['sanity/']}index.css`} precedence="sanity" />
+      )
+      // @TODO console.warn that this auto updating studio must be redeployed with the latest version of `sanity` to improve the performance of how CSS is loaded
     } else {
-      render()
+      // @TODO console.error that Studio CSS is missing and that there's something wrong with the custom deployment
     }
-  } else {
-    render()
   }
+
+  // No Suspense fallback, as suspending at this level means there is no stylesheet, which means
+  // we may not show the right fallback UI. Any `fallback` prop here must be built to render
+  // correctly even if all external css files are missing.
+  const children = (
+    <Suspense>
+      {fallbackStylesheet}
+      <Studio config={config} basePath={basePath} unstable_globalStyles />
+    </Suspense>
+  )
+
+  const root = createRoot(rootElement)
+
+  root.render(reactStrictMode ? <StrictMode>{children}</StrictMode> : children)
 
   return () => root.unmount()
 }
