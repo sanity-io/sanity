@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
+import {uuid} from '@sanity/uuid'
 import get from 'lodash-es/get.js'
 import {type ComponentType, type PropsWithChildren, useContext, useEffect, useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -26,7 +27,6 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isPublishedId} from '../../util/draftUtils'
 import {FormGutterCustomProperties} from '../components/FormGutterCustomProperties'
 import {type FormState} from '../store'
-import {useDivergenceSession} from './useDivergenceSession'
 
 interface PropsEnabled extends PropsWithChildren {
   enabled: true
@@ -106,11 +106,11 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
     formState,
   })
 
-  const {beginSession} = useDivergenceSession(divergenceNavigator.state)
+  const sessionId = useMemo(() => uuid(), [subjectId])
 
   const value = useMemo<DocumentDivergencesContextValue>(
-    () => ({enabled: true, beginSession, ...divergenceNavigator}),
-    [beginSession, divergenceNavigator],
+    () => ({enabled: true, sessionId, ...divergenceNavigator}),
+    [sessionId, divergenceNavigator],
   )
 
   return (
@@ -120,11 +120,9 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
   )
 }
 
-const beginNullSession = (): null => null
-
 const disabledContextValue: DocumentDivergencesContextValue = {
   enabled: false,
-  beginSession: beginNullSession,
+  sessionId: null,
 }
 
 const DivergencesProviderDisabled: ComponentType<PropsWithChildren> = ({children}) => {

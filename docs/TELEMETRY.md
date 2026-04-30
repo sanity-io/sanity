@@ -104,25 +104,20 @@ function MyComponent() {
 
 ### Feature-Specific Telemetry Hooks
 
-Inline `telemetry.log(Event, payload)` at the call site by default. Wrap calls in a feature hook only when the hook handles payload shaping, derived state, or a measurement state machine. A hook that just forwards `(info) => telemetry.log(Event, info)` adds files without value.
-
-`useCanvasTelemetry` (`packages/sanity/src/core/canvas/useCanvasTelemetry.ts`) hoists `getDiffTypesCount` payload shaping out of every call site:
+For features with multiple events, a dedicated hook encapsulates the telemetry logic:
 
 ```typescript
-return useMemo(
-  () => ({
-    linkRedirected: (origin, diffs) =>
-      telemetry.log(CanvasLinkRedirected, {
-        origin,
-        diffs: diffs ? getDiffTypesCount(diffs) : undefined,
-      }),
-    // ...
-  }),
-  [telemetry],
-)
-```
+// useCommentsTelemetry.ts
+export function useCommentsTelemetry() {
+  const telemetry = useTelemetry()
 
-For one-shot measurement, see `useDocumentInitialLoadTelemetry`. It encapsulates timing refs and a fire-once guard.
+  return {
+    linkCopied: () => telemetry.log(CommentLinkCopied),
+    viewedFromLink: () => telemetry.log(CommentViewedFromLink),
+    listViewChanged: () => telemetry.log(CommentListViewChanged),
+  }
+}
+```
 
 ### Batching and Transport
 
@@ -295,7 +290,7 @@ A divergence session starts on the first `Inspected Divergence` event for a docu
 - **Upsell dialogs** - Free trial and feature upsell interactions
 - **Studio announcements** - Announcement views and interactions
 - **Request permission dialogs** - Permission request flows
-- **Document out-of-sync** - Real-time sync conflict events from `documentOutOfSyncEvents.telemetry.ts` (distinct from the Divergences feature above)
+- **Document out-of-sync** - Divergence and conflict events
 - **Document pair loading** - Loading performance metrics
 - **Listener latency** - Real-time listener performance
 - **Nested object editing** - Tree-editing interactions
@@ -336,7 +331,7 @@ A divergence session starts on the first `Inspected Divergence` event for a docu
    }
    ```
 
-3. If the events share payload shaping or measurement state, encapsulate them in a feature hook (e.g. `useMyFeatureTelemetry()`). Otherwise inline `telemetry.log(...)` at each call site.
+3. For features with multiple events, consider creating a **dedicated telemetry hook** (e.g., `useMyFeatureTelemetry()`) to encapsulate all event logging for that feature.
 
 ## Testing
 

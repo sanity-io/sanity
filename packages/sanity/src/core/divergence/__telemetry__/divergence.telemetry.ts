@@ -8,7 +8,7 @@ export interface InspectedDivergenceInfo {
 export const InspectedDivergence = defineEvent<InspectedDivergenceInfo>({
   name: 'Inspected Divergence',
   version: 1,
-  description: 'User viewed a divergence in a single node',
+  description: 'User inspected divergence in a single node',
 })
 
 export interface ActedOnDivergenceInfo {
@@ -20,5 +20,5 @@ export interface ActedOnDivergenceInfo {
 export const ActedOnDivergence = defineEvent<ActedOnDivergenceInfo>({
   name: 'Acted On Divergence',
   version: 1,
-  description: 'User resolved a divergence in a single node',
+  description: 'User acted on divergence in a single node',
 })

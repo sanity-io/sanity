@@ -70,15 +70,15 @@ const SET_DIVERGENCE: ReachableDivergence = {
 }
 
 function buildEnabledContextValue({
+  sessionId,
   divergenceCount,
-  beginSession,
 }: {
+  sessionId: string
   divergenceCount: number
-  beginSession: () => string
 }): DocumentDivergencesContextValue {
   return {
     enabled: true,
-    beginSession,
+    sessionId,
     focusDivergence: vi.fn(),
     blurDivergence: vi.fn(),
     blurFocusedDivergence: vi.fn(),
@@ -142,7 +142,7 @@ describe('useDivergenceController', () => {
 
   it('logs null sessionId and null divergenceCount when the provider is disabled', async () => {
     renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
-      wrapper: buildWrapper({enabled: false, beginSession: () => null}),
+      wrapper: buildWrapper({enabled: false, sessionId: null}),
     })
 
     await waitForInspectedDivergence()
@@ -152,49 +152,15 @@ describe('useDivergenceController', () => {
     })
   })
 
-  it('logs the minted session id and divergenceCount from context state', async () => {
-    const beginSession = vi.fn((): string => 'session-A')
-
+  it('reads sessionId and divergenceCount from the enabled provider context', async () => {
     renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
-      wrapper: buildWrapper(buildEnabledContextValue({divergenceCount: 3, beginSession})),
+      wrapper: buildWrapper(buildEnabledContextValue({sessionId: 'session-A', divergenceCount: 3})),
     })
 
     await waitForInspectedDivergence()
-    expect(beginSession).toHaveBeenCalled()
     expect(findLoggedCall(InspectedDivergence)?.[1]).toEqual({
       sessionId: 'session-A',
       divergenceCount: 3,
-    })
-    expect(beginSession.mock.invocationCallOrder[0]).toBeLessThan(
-      mockTelemetryLog.mock.invocationCallOrder[0],
-    )
-  })
-
-  it('mints a fresh session id when divergences resurface after a zero-count window', async () => {
-    const firstSession = vi.fn((): string => 'session-1')
-    const {unmount} = renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
-      wrapper: buildWrapper(
-        buildEnabledContextValue({divergenceCount: 1, beginSession: firstSession}),
-      ),
-    })
-    await waitForInspectedDivergence()
-    expect(findLoggedCall(InspectedDivergence)?.[1]).toMatchObject({sessionId: 'session-1'})
-
-    // Why: divergences resurfacing after a zero-count window remounts the
-    // panel. Controller mount is what Vash calls "first inspection."
-    unmount()
-    mockTelemetryLog.mockReset()
-    const secondSession = vi.fn((): string => 'session-2')
-
-    renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
-      wrapper: buildWrapper(
-        buildEnabledContextValue({divergenceCount: 2, beginSession: secondSession}),
-      ),
-    })
-    await waitForInspectedDivergence()
-    expect(findLoggedCall(InspectedDivergence)?.[1]).toMatchObject({
-      sessionId: 'session-2',
-      divergenceCount: 2,
     })
   })
 
@@ -210,9 +176,10 @@ describe('useDivergenceController', () => {
       },
     }
 
-    const beginSession = vi.fn((): string => 'session-action')
     const {result} = renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
-      wrapper: buildWrapper(buildEnabledContextValue({divergenceCount: 1, beginSession})),
+      wrapper: buildWrapper(
+        buildEnabledContextValue({sessionId: 'session-action', divergenceCount: 1}),
+      ),
     })
 
     mockTelemetryLog.mockClear()
@@ -225,9 +192,6 @@ describe('useDivergenceController', () => {
       sessionId: 'session-action',
       divergenceCount: 1,
     })
-    expect(beginSession.mock.invocationCallOrder[0]).toBeLessThan(
-      mockTelemetryLog.mock.invocationCallOrder[0],
-    )
     expect(mockPatchExecute).toHaveBeenCalled()
   })
 })

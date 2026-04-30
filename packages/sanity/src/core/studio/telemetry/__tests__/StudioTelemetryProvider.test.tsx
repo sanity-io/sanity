@@ -34,7 +34,6 @@ import {createBatchedStore, createSessionId, SessionId} from '@sanity/telemetry'
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {useRouterState} from 'sanity/router'
 
-import {type Workspace} from '../../../config/types'
 import {useClient} from '../../../hooks'
 import {useProjectOrganizationId} from '../../../store/project/useProjectOrganizationId'
 import {WorkspaceFeaturesObserved} from '../../__telemetry__/featureAvailability.telemetry'
@@ -47,10 +46,8 @@ describe('StudioTelemetryProvider', () => {
     sendEvents?: (batch: unknown[]) => Promise<void>
     sendBeacon?: (batch: unknown[]) => boolean
   }
-  let capturedLogger: {
-    log: ReturnType<typeof vi.fn>
-    updateUserProperties: ReturnType<typeof vi.fn>
-  }
+
+  const mockLog = vi.fn()
 
   const mockClient = {
     config: () => ({projectId: 'test-project', token: 'test-token'}),
@@ -58,10 +55,7 @@ describe('StudioTelemetryProvider', () => {
     getUrl: vi.fn((path: string) => `https://api.sanity.io${path}`),
   }
 
-  const mockWorkspace: Pick<
-    Workspace,
-    'name' | 'projectId' | 'dataset' | 'advancedVersionControl'
-  > = {
+  const mockWorkspace = {
     name: 'test-workspace',
     projectId: 'test-project',
     dataset: 'test-dataset',
@@ -81,14 +75,15 @@ describe('StudioTelemetryProvider', () => {
     vi.mocked(useRouterState).mockImplementation(((selector: (state: {tool?: string}) => unknown) =>
       selector({tool: 'desk'})) as any)
 
-    // Capture store options + logger when createBatchedStore is called
+    // Capture store options when createBatchedStore is called
     vi.mocked(createBatchedStore).mockImplementation((_sessionId, options) => {
       capturedStoreOptions = options as typeof capturedStoreOptions
-      capturedLogger = {
-        log: vi.fn(),
-        updateUserProperties: vi.fn(),
-      }
-      return {logger: capturedLogger} as never
+      return {
+        logger: {
+          log: mockLog,
+          updateUserProperties: vi.fn(),
+        },
+      } as never
     })
   })
 
@@ -363,21 +358,17 @@ describe('StudioTelemetryProvider', () => {
       </DeferredTelemetryProvider>,
     )
 
-    expect(capturedLogger.log).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
+    expect(mockLog).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
       advancedVersionControlEnabled: true,
     })
   })
 
   it('emits WorkspaceFeaturesObserved with the flag disabled when advancedVersionControl is undefined', () => {
-    const workspaceWithoutAdvancedVersionControl: Pick<
-      Workspace,
-      'name' | 'projectId' | 'dataset'
-    > = {
+    vi.mocked(useWorkspace).mockReturnValue({
       name: 'test-workspace',
       projectId: 'test-project',
       dataset: 'test-dataset',
-    }
-    vi.mocked(useWorkspace).mockReturnValue(workspaceWithoutAdvancedVersionControl as never)
+    } as never)
 
     render(
       <DeferredTelemetryProvider>
@@ -387,7 +378,7 @@ describe('StudioTelemetryProvider', () => {
       </DeferredTelemetryProvider>,
     )
 
-    expect(capturedLogger.log).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
+    expect(mockLog).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
       advancedVersionControlEnabled: false,
     })
   })
