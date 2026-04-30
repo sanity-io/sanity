@@ -70,7 +70,7 @@ export function renderStudio(
     const importmap = getImportmap()
     if (importmap.imports && 'sanity/' in importmap.imports) {
       fallbackStylesheet = (
-        <link rel="stylesheet" href={`${importmap.imports['sanity/']}index.css`} precedence="sanity" />
+        <link rel="stylesheet" href={`${importmap.imports['sanity/']}bundle.css`} precedence="sanity" />
       )
       // @TODO console.warn that this auto updating studio must be redeployed with the latest version of `sanity` to improve the performance of how CSS is loaded
     } else {
@@ -82,7 +82,7 @@ export function renderStudio(
     const importmap = getImportmap()
     if (importmap.imports && '@sanity/vision/' in importmap.imports) {
       fallbackStylesheetVision = (
-        <link rel="stylesheet" href={`${importmap.imports['@sanity/vision/']}index.css`} precedence="sanity" />
+        <link rel="stylesheet" href={`${importmap.imports['@sanity/vision/']}bundle.css`} precedence="sanity" />
       )
     }
   }

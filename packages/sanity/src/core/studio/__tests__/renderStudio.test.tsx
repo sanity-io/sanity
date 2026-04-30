@@ -11,11 +11,34 @@ vi.mock('react-dom/client', () => ({
 import {renderStudio, _resetImportmapCache} from '../renderStudio'
 
 const SANITY_IMPORT_MAP_URL =
-  'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/'
+  'https://sanity-cdn.com/v1/modules/by-app/kp75luobnkn8sgzxcjran97e/t1777546669/%5E5.23.0/sanity/'
 const VISION_IMPORT_MAP_URL =
-  'https://sanity-cdn.com/v1/modules/@sanity__vision/default/%5E5.23.0/t1700000000/'
-const SANITY_BY_APP_IMPORT_MAP_URL =
-  'https://sanity-cdn.com/v1/modules/by-app/abc123/t1700000000/%5E5.23.0/sanity/'
+  'https://sanity-cdn.com/v1/modules/by-app/kp75luobnkn8sgzxcjran97e/t1777546669/%5E5.23.0/@sanity__vision/'
+
+/**
+ * A realistic import map based on actual production studios, containing vendor
+ * entries alongside the CDN module entries for sanity and @sanity/vision.
+ */
+const REALISTIC_IMPORT_MAP: Record<string, string> = {
+  'react': '/vendor/react/index-CijJRqun.mjs',
+  'react/compiler-runtime': '/vendor/react/compiler-runtime-DFvlMPQC.mjs',
+  'react/jsx-dev-runtime': '/vendor/react/jsx-dev-runtime-DYLplPiq.mjs',
+  'react/jsx-runtime': '/vendor/react/jsx-runtime-CInpRuN4.mjs',
+  'react/package.json': '/vendor/react/package.json-C9u_SLlD.mjs',
+  'react-dom': '/vendor/react-dom/index-Dc2VsVq7.mjs',
+  'react-dom/client': '/vendor/react-dom/client-BTifGfEX.mjs',
+  'react-dom/package.json': '/vendor/react-dom/package.json-DJr-B_rE.mjs',
+  'react-dom/server': '/vendor/react-dom/server-BsxsyesJ.mjs',
+  'react-dom/static': '/vendor/react-dom/static-B4c9UOBd.mjs',
+  'styled-components': '/vendor/styled-components/index-BMkpm8Xj.mjs',
+  'styled-components/package.json': '/vendor/styled-components/package.json-DqoIBjAO.mjs',
+  'react-dom/server.browser': '/vendor/react-dom/server.browser-aA8Xdow4.mjs',
+  'react-dom/static.browser': '/vendor/react-dom/static.browser-B1q7wT8N.mjs',
+  'sanity': 'https://sanity-cdn.com/v1/modules/by-app/kp75luobnkn8sgzxcjran97e/t1777546669/%5E5.23.0/sanity',
+  'sanity/': SANITY_IMPORT_MAP_URL,
+  '@sanity/vision': 'https://sanity-cdn.com/v1/modules/by-app/kp75luobnkn8sgzxcjran97e/t1777546669/%5E5.23.0/@sanity__vision',
+  '@sanity/vision/': VISION_IMPORT_MAP_URL,
+}
 
 function createRootElement(options: {studio?: boolean; vision?: boolean} = {}): HTMLElement {
   const el = document.createElement('div')
@@ -88,7 +111,7 @@ describe('renderStudio', () => {
   describe('studio CSS fallback', () => {
     test('injects a stylesheet link derived from the import map when --static-css-file-loaded-studio is missing', () => {
       const root = createRootElement()
-      addImportMap({'sanity/': SANITY_IMPORT_MAP_URL})
+      addImportMap(REALISTIC_IMPORT_MAP)
 
       renderStudio(root, {} as any)
 
@@ -96,25 +119,13 @@ describe('renderStudio', () => {
       const links = findLinksInTree(rendered)
       expect(links).toHaveLength(1)
       expect(links[0].props.rel).toBe('stylesheet')
-      expect(links[0].props.href).toBe(`${SANITY_IMPORT_MAP_URL}index.css`)
+      expect(links[0].props.href).toBe(`${SANITY_IMPORT_MAP_URL}bundle.css`)
       expect(links[0].props.precedence).toBe('sanity')
-    })
-
-    test('injects for the by-app URL pattern as well', () => {
-      const root = createRootElement()
-      addImportMap({'sanity/': SANITY_BY_APP_IMPORT_MAP_URL})
-
-      renderStudio(root, {} as any)
-
-      const rendered = mockRender.mock.calls[0][0] as ReactElement
-      const links = findLinksInTree(rendered)
-      expect(links).toHaveLength(1)
-      expect(links[0].props.href).toBe(`${SANITY_BY_APP_IMPORT_MAP_URL}index.css`)
     })
 
     test('does not inject when --static-css-file-loaded-studio is set', () => {
       const root = createRootElement({studio: true, vision: true})
-      addImportMap({'sanity/': SANITY_IMPORT_MAP_URL})
+      addImportMap(REALISTIC_IMPORT_MAP)
 
       renderStudio(root, {} as any)
 
@@ -148,10 +159,7 @@ describe('renderStudio', () => {
   describe('vision CSS fallback', () => {
     test('injects a stylesheet link derived from the import map when --static-css-file-loaded-vision is missing', () => {
       const root = createRootElement({studio: true})
-      addImportMap({
-        'sanity/': SANITY_IMPORT_MAP_URL,
-        '@sanity/vision/': VISION_IMPORT_MAP_URL,
-      })
+      addImportMap(REALISTIC_IMPORT_MAP)
 
       renderStudio(root, {} as any)
 
@@ -159,16 +167,13 @@ describe('renderStudio', () => {
       const links = findLinksInTree(rendered)
       expect(links).toHaveLength(1)
       expect(links[0].props.rel).toBe('stylesheet')
-      expect(links[0].props.href).toBe(`${VISION_IMPORT_MAP_URL}index.css`)
+      expect(links[0].props.href).toBe(`${VISION_IMPORT_MAP_URL}bundle.css`)
       expect(links[0].props.precedence).toBe('sanity')
     })
 
     test('does not inject when --static-css-file-loaded-vision is set', () => {
       const root = createRootElement({studio: true, vision: true})
-      addImportMap({
-        'sanity/': SANITY_IMPORT_MAP_URL,
-        '@sanity/vision/': VISION_IMPORT_MAP_URL,
-      })
+      addImportMap(REALISTIC_IMPORT_MAP)
 
       renderStudio(root, {} as any)
 
@@ -192,26 +197,20 @@ describe('renderStudio', () => {
   describe('combined studio and vision CSS fallback', () => {
     test('injects both links when both CSS properties are missing', () => {
       const root = createRootElement()
-      addImportMap({
-        'sanity/': SANITY_IMPORT_MAP_URL,
-        '@sanity/vision/': VISION_IMPORT_MAP_URL,
-      })
+      addImportMap(REALISTIC_IMPORT_MAP)
 
       renderStudio(root, {} as any)
 
       const rendered = mockRender.mock.calls[0][0] as ReactElement
       const links = findLinksInTree(rendered)
       expect(links).toHaveLength(2)
-      expect(links[0].props.href).toBe(`${SANITY_IMPORT_MAP_URL}index.css`)
-      expect(links[1].props.href).toBe(`${VISION_IMPORT_MAP_URL}index.css`)
+      expect(links[0].props.href).toBe(`${SANITY_IMPORT_MAP_URL}bundle.css`)
+      expect(links[1].props.href).toBe(`${VISION_IMPORT_MAP_URL}bundle.css`)
     })
 
     test('studio link renders before vision link', () => {
       const root = createRootElement()
-      addImportMap({
-        'sanity/': SANITY_IMPORT_MAP_URL,
-        '@sanity/vision/': VISION_IMPORT_MAP_URL,
-      })
+      addImportMap(REALISTIC_IMPORT_MAP)
 
       renderStudio(root, {} as any)
 
@@ -223,10 +222,7 @@ describe('renderStudio', () => {
 
     test('wraps in Suspense only when at least one fallback is needed', () => {
       const root = createRootElement({studio: true})
-      addImportMap({
-        'sanity/': SANITY_IMPORT_MAP_URL,
-        '@sanity/vision/': VISION_IMPORT_MAP_URL,
-      })
+      addImportMap(REALISTIC_IMPORT_MAP)
 
       renderStudio(root, {} as any)
 
@@ -237,10 +233,7 @@ describe('renderStudio', () => {
 
     test('does not wrap in Suspense when no fallback is needed', () => {
       const root = createRootElement({studio: true, vision: true})
-      addImportMap({
-        'sanity/': SANITY_IMPORT_MAP_URL,
-        '@sanity/vision/': VISION_IMPORT_MAP_URL,
-      })
+      addImportMap(REALISTIC_IMPORT_MAP)
 
       renderStudio(root, {} as any)
 
@@ -250,17 +243,14 @@ describe('renderStudio', () => {
 
     test('only injects studio link when vision CSS is already loaded', () => {
       const root = createRootElement({vision: true})
-      addImportMap({
-        'sanity/': SANITY_IMPORT_MAP_URL,
-        '@sanity/vision/': VISION_IMPORT_MAP_URL,
-      })
+      addImportMap(REALISTIC_IMPORT_MAP)
 
       renderStudio(root, {} as any)
 
       const rendered = mockRender.mock.calls[0][0] as ReactElement
       const links = findLinksInTree(rendered)
       expect(links).toHaveLength(1)
-      expect(links[0].props.href).toBe(`${SANITY_IMPORT_MAP_URL}index.css`)
+      expect(links[0].props.href).toBe(`${SANITY_IMPORT_MAP_URL}bundle.css`)
     })
   })
 })

@@ -48,7 +48,7 @@ export const defaultConfig: UserConfig = {
         chunkFileNames: '[name]-[hash].mjs',
         // CSS assets get a predictable name so the module server can serve them at a known URL
         assetFileNames: (assetInfo) =>
-          assetInfo.names?.some((n) => n.endsWith('.css')) ? 'index.css' : '[name]-[hash][extname]',
+          assetInfo.names?.some((n) => n.endsWith('.css')) ? 'bundle.css' : '[name]-[hash][extname]',
       },
       treeshake: {
         preset: 'recommended',
