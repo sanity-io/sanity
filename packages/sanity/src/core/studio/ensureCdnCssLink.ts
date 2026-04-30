@@ -63,6 +63,10 @@ function extractPackageSegment(pathname: string): string | null {
   return segments[3] || null
 }
 
+/**
+ * Converts a package path segment to a package specifier.
+ * E.g. `@sanity__vision` → `@sanity/vision` (double underscores become slashes).
+ */
 function packagePathSegmentToSpecifier(packagePathSegment: string): string {
   return packagePathSegment.replace(/__/g, '/')
 }
