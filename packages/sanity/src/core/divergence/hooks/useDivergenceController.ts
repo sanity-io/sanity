@@ -2,7 +2,7 @@ import {SanityEncoder} from '@sanity/mutate'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type SanityDocument} from '@sanity/types'
 import {fromString, get} from '@sanity/util/paths'
-import {useEffect, useEffectEvent, useState} from 'react'
+import {useContext, useEffect, useEffectEvent, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {
   type Observable,
@@ -19,6 +19,7 @@ import {
   toArray,
   zip,
 } from 'rxjs'
+import {DocumentDivergencesContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks/useClient'
 import {useDocumentOperation} from '../../hooks/useDocumentOperation'
@@ -81,7 +82,19 @@ export function useDivergenceController(
   const telemetry = useTelemetry()
   const [isActionPending, setIsActionPending] = useState<boolean>(false)
 
-  const logInspectedDivergence = useEffectEvent(() => telemetry.log(InspectedDivergence))
+  // Why: `useDocumentDivergences` throws outside a `DivergencesProvider`, and
+  // the controller can render in trees that lack one. Read the context directly.
+  const divergencesContext = useContext(DocumentDivergencesContext)
+  const sessionId = divergencesContext?.sessionId ?? null
+  // Why: `null` distinguishes "no provider mounted" from "known zero
+  // divergences" in telemetry.
+  const divergenceCount = divergencesContext?.enabled
+    ? divergencesContext.state.divergences.length
+    : null
+
+  const logInspectedDivergence = useEffectEvent(() =>
+    telemetry.log(InspectedDivergence, {sessionId, divergenceCount}),
+  )
   useEffect(logInspectedDivergence, [logInspectedDivergence])
 
   const [upstreamId, upstreamRevisionId] = sinceRevisionId.split('@')
@@ -164,6 +177,8 @@ export function useDivergenceController(
 
     telemetry.log(ActedOnDivergence, {
       action: 'mark-resolved',
+      sessionId,
+      divergenceCount,
     })
 
     const markers = await firstValueFrom(
@@ -183,6 +198,8 @@ export function useDivergenceController(
 
     telemetry.log(ActedOnDivergence, {
       action: 'take-upstream-value',
+      sessionId,
+      divergenceCount,
     })
 
     const patches = await firstValueFrom(
