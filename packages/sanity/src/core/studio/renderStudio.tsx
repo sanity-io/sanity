@@ -2,6 +2,7 @@ import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 
 import {type Config} from '../config'
+import {ensureCdnCssLink} from './ensureCdnCssLink'
 import {Studio} from './Studio'
 
 interface RenderStudioOptions {
@@ -39,16 +40,15 @@ export function renderStudio(
     throw new Error('Missing root element to mount application into')
   }
 
+  // Check if the static CSS file has been loaded (set by styles.css via vanilla-extract).
+  // If not, attempt to inject the CSS link from the CDN import map as a fallback for
+  // studios deployed with older CLIs that don't have the CSS-aware runtime script.
   const staticCssLoaded = getComputedStyle(rootElement)
     .getPropertyValue('--static-css-file-loaded-studio')
     .trim()
 
   if (!staticCssLoaded) {
-    console.warn(
-      'Sanity Studio: Static CSS file has not been loaded. ' +
-        'The studio may not render correctly. ' +
-        'Ensure that the static CSS file is imported or linked in your application.',
-    )
+    ensureCdnCssLink(import.meta.url, 'sanity')
   }
 
   const opts = typeof options === 'boolean' ? {reactStrictMode: options} : options

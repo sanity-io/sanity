@@ -3,11 +3,16 @@ import './styles.css'
 
 import {EyeOpenIcon} from '@sanity/icons'
 import {lazy} from 'react'
-import {definePlugin} from 'sanity'
+import {definePlugin, ensureCdnCssLink} from 'sanity'
 import {route} from 'sanity/router'
 
 import {visionUsEnglishLocaleBundle} from './i18n'
 import {type VisionToolConfig} from './types'
+
+// Inject a CSS <link> tag when @sanity/vision is loaded from sanity-cdn and the
+// auto-updates runtime script in the host HTML did not already inject one.
+// See sanity's ensureCdnCssLink helper for details.
+ensureCdnCssLink(import.meta.url, '@sanity__vision')
 
 export const visionTool = definePlugin<VisionToolConfig | void>((options) => {
   const {name, title, icon, ...config} = options || {}
