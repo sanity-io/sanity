@@ -43,17 +43,18 @@ export function renderStudio(
   const {reactStrictMode = false, basePath} = opts
 
   let fallbackStylesheet: React.JSX.Element | undefined
+  let fallbackStylesheetVision: React.JSX.Element | undefined
 
   // Check if the static CSS file has been loaded (set by styles.css via vanilla-extract).
   // If not, attempt to inject the CSS link from the CDN import map as a fallback for
   // studios deployed with older CLIs that don't have the CSS-aware runtime script.
   // React 19 suspends rendering until <link precedence="..."> stylesheets load.
-  if (
-    !getComputedStyle(rootElement).getPropertyValue('--static-css-file-loaded-studio').trim()
-  ) {
-    const importmap = JSON.parse(
-      document.querySelector('script[type=importmap]')?.textContent || '{}',
-    )
+  const computedStyle = getComputedStyle(rootElement)
+  const importmap = JSON.parse(
+    document.querySelector('script[type=importmap]')?.textContent || '{}',
+  )
+
+  if (!computedStyle.getPropertyValue('--static-css-file-loaded-studio').trim()) {
     if (importmap.imports && 'sanity/' in importmap.imports) {
       fallbackStylesheet = (
         <link rel="stylesheet" href={`${importmap.imports['sanity/']}index.css`} precedence="sanity" />
@@ -64,11 +65,19 @@ export function renderStudio(
     }
   }
 
+  if (!computedStyle.getPropertyValue('--static-css-file-loaded-vision').trim()) {
+    if (importmap.imports && '@sanity/vision/' in importmap.imports) {
+      fallbackStylesheetVision = (
+        <link rel="stylesheet" href={`${importmap.imports['@sanity/vision/']}index.css`} precedence="sanity" />
+      )
+    }
+  }
+
   const studio = <Studio config={config} basePath={basePath} unstable_globalStyles />
   // No Suspense fallback, as suspending at this level means there is no stylesheet, which means
   // we may not show the right fallback UI. Any `fallback` prop here must be built to render
   // correctly even if all external css files are missing.
-  const children = fallbackStylesheet ? <Suspense>{fallbackStylesheet}{studio}</Suspense> : <>{studio}</>
+  const children = fallbackStylesheet || fallbackStylesheetVision ? <Suspense>{fallbackStylesheet}{fallbackStylesheetVision}{studio}</Suspense> : <>{studio}</>
 
   const root = createRoot(rootElement)
 

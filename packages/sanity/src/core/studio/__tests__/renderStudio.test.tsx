@@ -10,11 +10,15 @@ vi.mock('react-dom/client', () => ({
 
 import {renderStudio} from '../renderStudio'
 
-function createRootElement(cssPropertySet = false): HTMLElement {
+function createRootElement(options: {studio?: boolean; vision?: boolean} | boolean = false): HTMLElement {
   const el = document.createElement('div')
   el.id = 'sanity'
-  if (cssPropertySet) {
+  const opts = typeof options === 'boolean' ? {studio: options, vision: false} : options
+  if (opts.studio) {
     el.style.setProperty('--static-css-file-loaded-studio', '1')
+  }
+  if (opts.vision) {
+    el.style.setProperty('--static-css-file-loaded-vision', '1')
   }
   document.body.appendChild(el)
   return el
@@ -28,21 +32,32 @@ function addImportMap(imports: Record<string, string>) {
 }
 
 /**
- * Walks the rendered tree to find a `<link>` element with the given props.
+ * Walks the rendered tree to find all `<link>` elements.
  */
-function findLinkInTree(element: ReactElement): ReactElement | null {
-  if (!element || typeof element !== 'object') return null
-  if (element.type === 'link') return element
+function findLinksInTree(element: ReactElement): ReactElement[] {
+  const links: ReactElement[] = []
+  if (!element || typeof element !== 'object') return links
+  if (element.type === 'link') {
+    links.push(element)
+    return links
+  }
   const children = element.props?.children
   if (Array.isArray(children)) {
     for (const child of children) {
-      const found = findLinkInTree(child)
-      if (found) return found
+      links.push(...findLinksInTree(child))
     }
   } else if (children && typeof children === 'object') {
-    return findLinkInTree(children)
+    links.push(...findLinksInTree(children))
   }
-  return null
+  return links
+}
+
+/**
+ * Walks the rendered tree to find a `<link>` element.
+ */
+function findLinkInTree(element: ReactElement): ReactElement | null {
+  const links = findLinksInTree(element)
+  return links.length > 0 ? links[0] : null
 }
 
 describe('renderStudio', () => {
@@ -65,7 +80,7 @@ describe('renderStudio', () => {
   })
 
   test('does not inject fallback link when --static-css-file-loaded-studio is set', () => {
-    const root = createRootElement(true)
+    const root = createRootElement({studio: true, vision: true})
     addImportMap({
       'sanity/': 'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/',
     })
@@ -118,7 +133,7 @@ describe('renderStudio', () => {
   })
 
   test('returns an unmount function', () => {
-    const root = createRootElement(true)
+    const root = createRootElement({studio: true, vision: true})
 
     const unmount = renderStudio(root, {} as any)
     unmount()
@@ -141,5 +156,87 @@ describe('renderStudio', () => {
     expect(link!.props.href).toBe(
       'https://sanity-cdn.com/v1/modules/by-app/abc123/t1700000000/%5E5.23.0/sanity/index.css',
     )
+  })
+
+  test('injects vision fallback link when --static-css-file-loaded-vision is missing', () => {
+    const root = createRootElement({studio: true, vision: false})
+    addImportMap({
+      'sanity/': 'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/',
+      '@sanity/vision/': 'https://sanity-cdn.com/v1/modules/@sanity__vision/default/%5E5.23.0/t1700000000/',
+    })
+
+    renderStudio(root, {} as any)
+
+    const rendered = mockRender.mock.calls[0][0] as ReactElement
+    const links = findLinksInTree(rendered)
+    expect(links).toHaveLength(1)
+    expect(links[0].props.href).toBe(
+      'https://sanity-cdn.com/v1/modules/@sanity__vision/default/%5E5.23.0/t1700000000/index.css',
+    )
+  })
+
+  test('injects both studio and vision fallback links when both CSS properties are missing', () => {
+    const root = createRootElement({studio: false, vision: false})
+    addImportMap({
+      'sanity/': 'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/',
+      '@sanity/vision/': 'https://sanity-cdn.com/v1/modules/@sanity__vision/default/%5E5.23.0/t1700000000/',
+    })
+
+    renderStudio(root, {} as any)
+
+    const rendered = mockRender.mock.calls[0][0] as ReactElement
+    const links = findLinksInTree(rendered)
+    expect(links).toHaveLength(2)
+    expect(links[0].props.href).toBe(
+      'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/index.css',
+    )
+    expect(links[1].props.href).toBe(
+      'https://sanity-cdn.com/v1/modules/@sanity__vision/default/%5E5.23.0/t1700000000/index.css',
+    )
+  })
+
+  test('does not inject vision fallback when --static-css-file-loaded-vision is set', () => {
+    const root = createRootElement({studio: false, vision: true})
+    addImportMap({
+      'sanity/': 'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/',
+      '@sanity/vision/': 'https://sanity-cdn.com/v1/modules/@sanity__vision/default/%5E5.23.0/t1700000000/',
+    })
+
+    renderStudio(root, {} as any)
+
+    const rendered = mockRender.mock.calls[0][0] as ReactElement
+    const links = findLinksInTree(rendered)
+    // Only studio link, no vision link
+    expect(links).toHaveLength(1)
+    expect(links[0].props.href).toBe(
+      'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/index.css',
+    )
+  })
+
+  test('does not inject vision fallback when import map lacks @sanity/vision/', () => {
+    const root = createRootElement({studio: true, vision: false})
+    addImportMap({
+      'sanity/': 'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/',
+    })
+
+    renderStudio(root, {} as any)
+
+    const rendered = mockRender.mock.calls[0][0] as ReactElement
+    const links = findLinksInTree(rendered)
+    expect(links).toHaveLength(0)
+  })
+
+  test('uses Suspense when only vision fallback is needed', () => {
+    const root = createRootElement({studio: true, vision: false})
+    addImportMap({
+      'sanity/': 'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/',
+      '@sanity/vision/': 'https://sanity-cdn.com/v1/modules/@sanity__vision/default/%5E5.23.0/t1700000000/',
+    })
+
+    renderStudio(root, {} as any)
+
+    const rendered = mockRender.mock.calls[0][0] as ReactElement
+    // Should be wrapped in Suspense since vision fallback exists
+    expect(rendered.type).toBe(Symbol.for('react.suspense'))
   })
 })
