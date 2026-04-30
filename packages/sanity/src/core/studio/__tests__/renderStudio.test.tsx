@@ -8,7 +8,7 @@ vi.mock('react-dom/client', () => ({
   createRoot: () => ({render: mockRender, unmount: mockUnmount}),
 }))
 
-import {renderStudio} from '../renderStudio'
+import {renderStudio, _resetImportmapCache} from '../renderStudio'
 
 const SANITY_IMPORT_MAP_URL =
   'https://sanity-cdn.com/v1/modules/sanity/default/%5E5.23.0/t1700000000/'
@@ -64,6 +64,7 @@ describe('renderStudio', () => {
     document.body.innerHTML = ''
     mockRender.mockClear()
     mockUnmount.mockClear()
+    _resetImportmapCache()
   })
 
   afterEach(() => {

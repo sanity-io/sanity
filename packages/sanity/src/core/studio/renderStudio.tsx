@@ -4,6 +4,21 @@ import {createRoot} from 'react-dom/client'
 import {type Config} from '../config'
 import {Studio} from './Studio'
 
+let importmapCache: {imports?: Record<string, string>} | null = null
+function getImportmap() {
+  if (!importmapCache) {
+    importmapCache = JSON.parse(
+      document.querySelector('script[type=importmap]')?.textContent || '{}',
+    )
+  }
+  return importmapCache
+}
+
+/** @internal Reset cached importmap — exposed only for tests. */
+export function _resetImportmapCache() {
+  importmapCache = null
+}
+
 interface RenderStudioOptions {
   basePath?: string
   reactStrictMode?: boolean
@@ -50,11 +65,9 @@ export function renderStudio(
   // studios deployed with older CLIs that don't have the CSS-aware runtime script.
   // React 19 suspends rendering until <link precedence="..."> stylesheets load.
   const computedStyle = getComputedStyle(rootElement)
-  const importmap = JSON.parse(
-    document.querySelector('script[type=importmap]')?.textContent || '{}',
-  )
 
   if (!computedStyle.getPropertyValue('--static-css-file-loaded-studio').trim()) {
+    const importmap = getImportmap()
     if (importmap.imports && 'sanity/' in importmap.imports) {
       fallbackStylesheet = (
         <link rel="stylesheet" href={`${importmap.imports['sanity/']}index.css`} precedence="sanity" />
@@ -66,6 +79,7 @@ export function renderStudio(
   }
 
   if (!computedStyle.getPropertyValue('--static-css-file-loaded-vision').trim()) {
+    const importmap = getImportmap()
     if (importmap.imports && '@sanity/vision/' in importmap.imports) {
       fallbackStylesheetVision = (
         <link rel="stylesheet" href={`${importmap.imports['@sanity/vision/']}index.css`} precedence="sanity" />
