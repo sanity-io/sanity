@@ -46,6 +46,11 @@ export function getReferenceInfo(
 
   return documentStackAvailability$.pipe(
     switchMap((stackAvailability) => {
+      // Check if any version in the stack was explicitly deleted (unpublished in a release)
+      const hasVersionDeleted = stackAvailability.some(
+        (doc) => doc.availability.reason === 'VERSION_DELETED',
+      )
+
       // we only care about the first document in the stack that exists
       const firstMatch = stackAvailability.find((doc) => {
         return doc.availability.available || doc.availability.reason === 'PERMISSION_DENIED'
@@ -77,6 +82,25 @@ export function getReferenceInfo(
       return typeName$.pipe(
         switchMap((typeName) => {
           if (!typeName) {
+            // If a version in the stack was explicitly deleted (e.g. unpublished in a release),
+            // and we can't resolve the type through the current perspective, the document should
+            // be treated as not found from this perspective rather than being in an "inconsistent
+            // state". This prevents UI crashes when a referenced document is unpublished as part
+            // of a scheduled release while the published version may still exist outside of the
+            // release context.
+            if (hasVersionDeleted) {
+              return of({
+                id,
+                type: undefined,
+                availability: NOT_FOUND,
+                isPublished: null,
+                preview: {
+                  snapshot: null,
+                  original: null,
+                },
+              } as const)
+            }
+
             // We have already asserted that there exists a readable version of the document.
             // So if we get here, it means we can't read the _type, which again indicates we're in an inconsistent state and
             // waiting for an update to reach the client. Since we're in the context of a reactive stream based on
