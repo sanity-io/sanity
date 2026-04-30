@@ -26,6 +26,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isPublishedId} from '../../util/draftUtils'
 import {FormGutterCustomProperties} from '../components/FormGutterCustomProperties'
 import {type FormState} from '../store'
+import {useDivergenceSession} from './useDivergenceSession'
 
 interface PropsEnabled extends PropsWithChildren {
   enabled: true
@@ -105,16 +106,30 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
     formState,
   })
 
+  const {beginSession} = useDivergenceSession(divergenceNavigator.state)
+
+  const value = useMemo<DocumentDivergencesContextValue>(
+    () => ({enabled: true, beginSession, ...divergenceNavigator}),
+    [beginSession, divergenceNavigator],
+  )
+
   return (
-    <DocumentDivergencesContext.Provider value={{enabled: true, ...divergenceNavigator}}>
+    <DocumentDivergencesContext.Provider value={value}>
       <FormGutterCustomProperties $enabled>{children}</FormGutterCustomProperties>
     </DocumentDivergencesContext.Provider>
   )
 }
 
+const beginNullSession = (): null => null
+
+const disabledContextValue: DocumentDivergencesContextValue = {
+  enabled: false,
+  beginSession: beginNullSession,
+}
+
 const DivergencesProviderDisabled: ComponentType<PropsWithChildren> = ({children}) => {
   return (
-    <DocumentDivergencesContext.Provider value={{enabled: false}}>
+    <DocumentDivergencesContext.Provider value={disabledContextValue}>
       <FormGutterCustomProperties $enabled={false}>{children}</FormGutterCustomProperties>
     </DocumentDivergencesContext.Provider>
   )

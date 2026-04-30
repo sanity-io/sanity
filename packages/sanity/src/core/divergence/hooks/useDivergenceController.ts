@@ -19,7 +19,7 @@ import {
   toArray,
   zip,
 } from 'rxjs'
-import {DiffViewSessionContext, DocumentDivergencesContext} from 'sanity/_singletons'
+import {DocumentDivergencesContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks/useClient'
 import {useDocumentOperation} from '../../hooks/useDocumentOperation'
@@ -34,6 +34,8 @@ import {createTakeFromUpstreamPatches, createUpsertResolutionMarkerPatches} from
 import {createDocumentRevisionMarker, type DivergenceAtPath} from '../readDocumentDivergences'
 import {type ResolutionMarkerAtPath} from '../types/ResolutionMarker'
 import {hashData} from '../utils/hashData'
+
+const beginNullSession = (): null => null
 
 type HydratedSnapshot =
   | {
@@ -82,19 +84,19 @@ export function useDivergenceController(
   const telemetry = useTelemetry()
   const [isActionPending, setIsActionPending] = useState<boolean>(false)
 
-  const sessionId = useContext(DiffViewSessionContext)
-  // Read the context directly: `useDocumentDivergences` throws outside a
-  // `DivergencesProvider`, and the controller can render in trees that lack one.
+  // Why: `useDocumentDivergences` throws outside a `DivergencesProvider`, and
+  // the controller can render in trees that lack one. Read the context directly.
   const divergencesContext = useContext(DocumentDivergencesContext)
-  // Reachable divergences in the session, resolved or not. `null` when no
-  // `DivergencesProvider` is mounted; distinguishes "unknown" from "known zero".
+  // Why: `null` distinguishes "no provider mounted" from "known zero
+  // divergences" in telemetry.
   const divergenceCount = divergencesContext?.enabled
     ? divergencesContext.state.divergences.length
     : null
+  const beginSession = divergencesContext?.beginSession ?? beginNullSession
 
-  const logInspectedDivergence = useEffectEvent(() =>
-    telemetry.log(InspectedDivergence, {sessionId, divergenceCount}),
-  )
+  const logInspectedDivergence = useEffectEvent(() => {
+    telemetry.log(InspectedDivergence, {sessionId: beginSession(), divergenceCount})
+  })
   useEffect(logInspectedDivergence, [logInspectedDivergence])
 
   const [upstreamId, upstreamRevisionId] = sinceRevisionId.split('@')
@@ -175,19 +177,21 @@ export function useDivergenceController(
 
     telemetry.log(ActedOnDivergence, {
       action: 'mark-resolved',
-      sessionId,
+      sessionId: beginSession(),
       divergenceCount,
     })
 
     setIsActionPending(true)
+    try {
+      const markers = await firstValueFrom(
+        createResolutionMarkers(upstreamHead.value.document, divergence).pipe(toArray()),
+      )
 
-    const markers = await firstValueFrom(
-      createResolutionMarkers(upstreamHead.value.document, divergence).pipe(toArray()),
-    )
-
-    const patches = createUpsertResolutionMarkerPatches(...markers)
-    patch.execute(patches.map(SanityEncoder.encodePatch))
-    setIsActionPending(false)
+      const patches = createUpsertResolutionMarkerPatches(...markers)
+      patch.execute(patches.map(SanityEncoder.encodePatch))
+    } finally {
+      setIsActionPending(false)
+    }
   }
 
   const takeUpstreamValue = async () => {
@@ -197,22 +201,24 @@ export function useDivergenceController(
 
     telemetry.log(ActedOnDivergence, {
       action: 'take-upstream-value',
-      sessionId,
+      sessionId: beginSession(),
       divergenceCount,
     })
 
     setIsActionPending(true)
+    try {
+      const patches = await firstValueFrom(
+        createTakeFromUpstreamPatches(
+          upstreamHead.value.document,
+          allDivergences,
+          ...divergence.divergences.map(([divergencePath]) => fromString(divergencePath)),
+        ).pipe(toArray()),
+      )
 
-    const patches = await firstValueFrom(
-      createTakeFromUpstreamPatches(
-        upstreamHead.value.document,
-        allDivergences,
-        ...divergence.divergences.map(([divergencePath]) => fromString(divergencePath)),
-      ).pipe(toArray()),
-    )
-
-    patch.execute(patches.map(SanityEncoder.encodePatch))
-    setIsActionPending(false)
+      patch.execute(patches.map(SanityEncoder.encodePatch))
+    } finally {
+      setIsActionPending(false)
+    }
   }
 
   return {

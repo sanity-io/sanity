@@ -104,7 +104,7 @@ function MyComponent() {
 
 ### Feature-Specific Telemetry Hooks
 
-Inline `telemetry.log(Event, payload)` at the call site by default. Wrap calls in a feature hook only when the hook encapsulates payload shaping, derived state, or a measurement state machine. A hook that just forwards `(info) => telemetry.log(Event, info)` adds files without value.
+Inline `telemetry.log(Event, payload)` at the call site by default. Wrap calls in a feature hook only when the hook handles payload shaping, derived state, or a measurement state machine. A hook that just forwards `(info) => telemetry.log(Event, info)` adds files without value.
 
 `useCanvasTelemetry` (`packages/sanity/src/core/canvas/useCanvasTelemetry.ts`) hoists `getDiffTypesCount` payload shaping out of every call site:
 
@@ -122,7 +122,7 @@ return useMemo(
 )
 ```
 
-For one-shot measurement, see `useDocumentInitialLoadTelemetry` — it encapsulates timing refs and a fire-once guard.
+For one-shot measurement, see `useDocumentInitialLoadTelemetry`. It encapsulates timing refs and a fire-once guard.
 
 ### Batching and Transport
 
@@ -281,13 +281,13 @@ Tracked automatically via `web-vitals/attribution` library:
 
 ### Divergences
 
-| Event                                | When                                                                                                   |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `DiffViewEntered` / `DiffViewExited` | User opens or closes the diff view (compare-versions UI)                                               |
-| `DiffViewDocumentSelectionChanged`   | User swaps a compared document mid-session                                                             |
-| `Inspected Divergence`               | User views a divergence in a single node                                                               |
-| `Acted On Divergence`                | User resolves a divergence. Payload carries `action: 'take-upstream-value' \| 'mark-resolved'`         |
-| `Workspace Features Observed`        | Fires once per workspace mount. Carries the `advancedVersionControl.enabled` flag for adoption metrics |
+A divergence session starts on the first `Inspected Divergence` event for a document and lasts while the document stays open with unresolved divergences. Each studio pane, browser tab, and device tracks its own session, so one user can hold parallel sessions for the same document. Both `Inspected Divergence` and `Acted On Divergence` carry the session id, so BigQuery can join the resolution funnel per session.
+
+| Event                         | When                                                                                           |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- |
+| `Inspected Divergence`        | User views a divergence in a single node                                                       |
+| `Acted On Divergence`         | User resolves a divergence. Payload carries `action: 'take-upstream-value' \| 'mark-resolved'` |
+| `Workspace Features Observed` | Fires once per workspace mount with the `advancedVersionControl.enabled` flag                  |
 
 ### Other
 

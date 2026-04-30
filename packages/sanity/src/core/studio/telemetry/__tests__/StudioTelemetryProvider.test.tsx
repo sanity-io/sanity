@@ -354,7 +354,7 @@ describe('StudioTelemetryProvider', () => {
     vi.unstubAllGlobals()
   })
 
-  it('emits WorkspaceFeaturesObserved with the workspace flag', () => {
+  it('emits WorkspaceFeaturesObserved with the advancedVersionControl flag enabled', () => {
     render(
       <DeferredTelemetryProvider>
         <StudioTelemetryProvider>
@@ -368,7 +368,7 @@ describe('StudioTelemetryProvider', () => {
     })
   })
 
-  it('emits WorkspaceFeaturesObserved as disabled when advancedVersionControl is undefined', () => {
+  it('emits WorkspaceFeaturesObserved with the flag disabled when advancedVersionControl is undefined', () => {
     const workspaceWithoutAdvancedVersionControl: Pick<
       Workspace,
       'name' | 'projectId' | 'dataset'

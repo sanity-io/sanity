@@ -6,8 +6,11 @@ import type {DivergenceNavigator} from '../../core/divergence/divergenceNavigato
  * @internal
  */
 export type DocumentDivergencesContextValue =
-  | (DivergenceNavigator & {enabled: true})
-  | {enabled: false}
+  | (DivergenceNavigator & {
+      enabled: true
+      beginSession: () => string
+    })
+  | {enabled: false; beginSession: () => null}
 
 /**
  * @internal

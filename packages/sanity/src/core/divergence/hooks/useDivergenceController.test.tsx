@@ -1,11 +1,7 @@
 import {act, renderHook, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {of} from 'rxjs'
-import {
-  DiffViewSessionContext,
-  DocumentDivergencesContext,
-  type DocumentDivergencesContextValue,
-} from 'sanity/_singletons'
+import {DocumentDivergencesContext, type DocumentDivergencesContextValue} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {ActedOnDivergence, InspectedDivergence} from '../__telemetry__/divergence.telemetry'
@@ -73,16 +69,42 @@ const SET_DIVERGENCE: ReachableDivergence = {
   schemaType: {name: 'string', jsonType: 'string'},
 }
 
+function buildEnabledContextValue({
+  divergenceCount,
+  beginSession,
+}: {
+  divergenceCount: number
+  beginSession: () => string
+}): DocumentDivergencesContextValue {
+  return {
+    enabled: true,
+    beginSession,
+    focusDivergence: vi.fn(),
+    blurDivergence: vi.fn(),
+    blurFocusedDivergence: vi.fn(),
+    state: {
+      focusedDivergence: undefined,
+      previousDivergence: undefined,
+      nextDivergence: undefined,
+      state: 'ready',
+      upstreamId: 'upstream',
+      allDivergences: [],
+      divergences: Array.from({length: divergenceCount}, (_, index) => [
+        `alpha-${index}`,
+        SET_DIVERGENCE,
+      ]),
+      divergencesByNode: {},
+    },
+  }
+}
+
 function buildWrapper(
   divergencesValue: DocumentDivergencesContextValue | null,
-  sessionId: string | null,
 ): (props: {children: ReactNode}) => ReactNode {
   function Wrapper({children}: {children: ReactNode}) {
     return (
       <DocumentDivergencesContext.Provider value={divergencesValue}>
-        <DiffViewSessionContext.Provider value={sessionId}>
-          {children}
-        </DiffViewSessionContext.Provider>
+        {children}
       </DocumentDivergencesContext.Provider>
     )
   }
@@ -106,9 +128,9 @@ describe('useDivergenceController', () => {
     upstreamSnapshotRef.current = {isLoading: true}
   })
 
-  it('logs InspectedDivergence with sessionId and divergenceCount from context (null when providers absent)', async () => {
+  it('logs null sessionId and null divergenceCount when no provider is mounted', async () => {
     renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
-      wrapper: buildWrapper({enabled: false}, null),
+      wrapper: buildWrapper(null),
     })
 
     await waitForInspectedDivergence()
@@ -118,43 +140,68 @@ describe('useDivergenceController', () => {
     })
   })
 
-  it('reads sessionId and divergenceCount from the enabled DocumentDivergencesContext state', async () => {
-    const divergencesValue: DocumentDivergencesContextValue = {
-      enabled: true,
-      focusDivergence: vi.fn(),
-      blurDivergence: vi.fn(),
-      blurFocusedDivergence: vi.fn(),
-      state: {
-        focusedDivergence: undefined,
-        previousDivergence: undefined,
-        nextDivergence: undefined,
-        state: 'ready',
-        upstreamId: 'upstream',
-        allDivergences: [],
-        divergences: [
-          ['alpha', SET_DIVERGENCE],
-          ['beta', SET_DIVERGENCE],
-          ['gamma', SET_DIVERGENCE],
-        ],
-        divergencesByNode: {},
-      },
-    }
-
+  it('logs null sessionId and null divergenceCount when the provider is disabled', async () => {
     renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
-      wrapper: buildWrapper(divergencesValue, 'session-abc'),
+      wrapper: buildWrapper({enabled: false, beginSession: () => null}),
     })
 
     await waitForInspectedDivergence()
     expect(findLoggedCall(InspectedDivergence)?.[1]).toEqual({
-      sessionId: 'session-abc',
+      sessionId: null,
+      divergenceCount: null,
+    })
+  })
+
+  it('logs the minted session id and divergenceCount from context state', async () => {
+    const beginSession = vi.fn((): string => 'session-A')
+
+    renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
+      wrapper: buildWrapper(buildEnabledContextValue({divergenceCount: 3, beginSession})),
+    })
+
+    await waitForInspectedDivergence()
+    expect(beginSession).toHaveBeenCalled()
+    expect(findLoggedCall(InspectedDivergence)?.[1]).toEqual({
+      sessionId: 'session-A',
       divergenceCount: 3,
+    })
+    expect(beginSession.mock.invocationCallOrder[0]).toBeLessThan(
+      mockTelemetryLog.mock.invocationCallOrder[0],
+    )
+  })
+
+  it('mints a fresh session id when divergences resurface after a zero-count window', async () => {
+    const firstSession = vi.fn((): string => 'session-1')
+    const {unmount} = renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
+      wrapper: buildWrapper(
+        buildEnabledContextValue({divergenceCount: 1, beginSession: firstSession}),
+      ),
+    })
+    await waitForInspectedDivergence()
+    expect(findLoggedCall(InspectedDivergence)?.[1]).toMatchObject({sessionId: 'session-1'})
+
+    // Why: divergences resurfacing after a zero-count window remounts the
+    // panel. Controller mount is what Vash calls "first inspection."
+    unmount()
+    mockTelemetryLog.mockReset()
+    const secondSession = vi.fn((): string => 'session-2')
+
+    renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
+      wrapper: buildWrapper(
+        buildEnabledContextValue({divergenceCount: 2, beginSession: secondSession}),
+      ),
+    })
+    await waitForInspectedDivergence()
+    expect(findLoggedCall(InspectedDivergence)?.[1]).toMatchObject({
+      sessionId: 'session-2',
+      divergenceCount: 2,
     })
   })
 
   it.each([
     ['markResolved', 'mark-resolved'],
     ['takeUpstreamValue', 'take-upstream-value'],
-  ] as const)('logs ActedOnDivergence when %s is invoked', async (method, action) => {
+  ] as const)('logs ActedOnDivergence with the active session for %s', async (method, action) => {
     upstreamSnapshotRef.current = {
       isLoading: false,
       value: {
@@ -163,8 +210,9 @@ describe('useDivergenceController', () => {
       },
     }
 
+    const beginSession = vi.fn((): string => 'session-action')
     const {result} = renderHook(() => useDivergenceController(SET_DIVERGENCE, [], false), {
-      wrapper: buildWrapper({enabled: false}, 'session-happy'),
+      wrapper: buildWrapper(buildEnabledContextValue({divergenceCount: 1, beginSession})),
     })
 
     mockTelemetryLog.mockClear()
@@ -174,9 +222,12 @@ describe('useDivergenceController', () => {
 
     expect(findLoggedCall(ActedOnDivergence)?.[1]).toEqual({
       action,
-      sessionId: 'session-happy',
-      divergenceCount: null,
+      sessionId: 'session-action',
+      divergenceCount: 1,
     })
+    expect(beginSession.mock.invocationCallOrder[0]).toBeLessThan(
+      mockTelemetryLog.mock.invocationCallOrder[0],
+    )
     expect(mockPatchExecute).toHaveBeenCalled()
   })
 })

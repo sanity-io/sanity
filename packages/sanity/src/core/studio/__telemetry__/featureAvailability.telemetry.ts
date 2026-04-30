@@ -1,4 +1,4 @@
-// Emitted once per workspace mount. Group by envelope `activeWorkspace` and
+// Fires once per workspace mount. Group by envelope `activeWorkspace` and
 // `activeProjectId` for per-workspace adoption; raw counts skew to heavy users.
 import {defineEvent} from '@sanity/telemetry'
 
