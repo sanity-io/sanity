@@ -171,7 +171,7 @@ importers:
         version: 0.28.16(typescript@6.0.0-beta)
       vercel:
         specifier: ^48.12.1
-        version: 48.12.1(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(encoding@0.1.13)(rollup@4.60.1)(typescript@6.0.0-beta)
+        version: 48.12.1(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(rollup@4.60.1)(typescript@6.0.0-beta)
       vitest:
         specifier: ^4.1.4
         version: 4.1.4(@edge-runtime/vm@3.2.0)(@types/node@24.10.13)(@vitest/coverage-v8@4.1.4)(jsdom@26.1.0)(vite@7.3.2(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.3))
@@ -296,8 +296,8 @@ importers:
   dev/efps:
     dependencies:
       sanity-plugin-internationalized-array:
-        specifier: ^4.0.4
-        version: 4.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
+        specifier: ^5.1.1
+        version: 5.1.1(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/mutator@packages+@sanity+mutator)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/language-filter@4.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
       styled-components:
         specifier: 'catalog:'
         version: '@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4)'
@@ -526,8 +526,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
-        specifier: ^4.0.4
-        version: 4.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
+        specifier: ^5.1.1
+        version: 5.1.1(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/mutator@packages+@sanity+mutator)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/language-filter@4.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
       sanity-plugin-markdown:
         specifier: 8.0.4
         version: 8.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(easymde@2.20.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
@@ -613,7 +613,7 @@ importers:
         version: 2.0.6(@sanity/client@7.21.0)(react@19.2.4)(sanity@packages+sanity)
       '@sanity/document-internationalization':
         specifier: ^6.1.0
-        version: 6.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity-plugin-internationalized-array@4.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(sanity@packages+sanity)
+        version: 6.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity-plugin-internationalized-array@5.1.1(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/mutator@packages+@sanity+mutator)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/language-filter@4.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(sanity@packages+sanity)
       '@sanity/google-maps-input':
         specifier: ^4.2.1
         version: 4.2.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
@@ -699,8 +699,8 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
       sanity-plugin-internationalized-array:
-        specifier: ^4.0.4
-        version: 4.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
+        specifier: ^5.1.1
+        version: 5.1.1(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/mutator@packages+@sanity+mutator)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/language-filter@4.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
       sanity-plugin-markdown:
         specifier: 8.0.4
         version: 8.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(easymde@2.20.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
@@ -779,7 +779,7 @@ importers:
     dependencies:
       '@google-cloud/storage':
         specifier: ^7.17.3
-        version: 7.19.0(encoding@0.1.13)
+        version: 7.19.0
       '@repo/utils':
         specifier: workspace:*
         version: link:../utils
@@ -7318,9 +7318,6 @@ packages:
     resolution: {integrity: sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA==}
     engines: {node: '>=14'}
 
-  encoding@0.1.13:
-    resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
-
   end-of-stream@1.1.0:
     resolution: {integrity: sha512-EoulkdKF/1xa92q25PbjuDcgJ9RDHYU2Rs3SCIvs2/dSQ3BpmxneNHmA/M7fe60M3PrV7nNGTTNbkK62l6vXiQ==}
 
@@ -10254,13 +10251,18 @@ packages:
       react: ^18.3 || ^19
       sanity: ^4 || ^5
 
-  sanity-plugin-internationalized-array@4.0.4:
-    resolution: {integrity: sha512-6wUN+cWKuMX8yVnQ+5s2FHp4zEBLs7vUq7so1F6OfSwvNMXbKvSmMIdCbMXvJWP1QQ6C0SH2HlO0oj2xmbFkYQ==}
+  sanity-plugin-internationalized-array@5.1.1:
+    resolution: {integrity: sha512-6SfnEpjAnLq+eY1cgCfBauf4RXyTk8sIplXg0POxes2BgaffdsHimAKSHyWpytlJ7UgshE+deB24PmPuPSOmTA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
+      '@sanity/assist': ^6.0.2
+      '@sanity/language-filter': ^5.0.0
       react: ^19.2
       react-dom: ^19.2
       sanity: ^5
+    peerDependenciesMeta:
+      '@sanity/assist':
+        optional: true
 
   sanity-plugin-markdown@8.0.4:
     resolution: {integrity: sha512-E+D8FQ/hZEPf9WDoybSw0+QAfpAvcIvBCDYdVjSbL94y8cZxjHuqrftFdO+adY0ZV43zz0o4U4ryu07+wSqgYA==}
@@ -11136,6 +11138,7 @@ packages:
 
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   uuid@11.1.0:
@@ -11148,10 +11151,12 @@ packages:
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   uuidv7@0.4.4:
@@ -13141,7 +13146,7 @@ snapshots:
 
   '@google-cloud/promisify@4.0.0': {}
 
-  '@google-cloud/storage@7.19.0(encoding@0.1.13)':
+  '@google-cloud/storage@7.19.0':
     dependencies:
       '@google-cloud/paginator': 5.0.2
       '@google-cloud/projectify': 4.0.0
@@ -13150,13 +13155,13 @@ snapshots:
       async-retry: 1.3.3
       duplexify: 4.1.3
       fast-xml-parser: 5.3.5
-      gaxios: 6.7.1(encoding@0.1.13)
-      google-auth-library: 9.15.1(encoding@0.1.13)
+      gaxios: 6.7.1
+      google-auth-library: 9.15.1
       html-entities: 2.6.0
       mime: 3.0.0
       p-limit: 3.1.0
-      retry-request: 7.0.2(encoding@0.1.13)
-      teeny-request: 9.0.0(encoding@0.1.13)
+      retry-request: 7.0.2
+      teeny-request: 9.0.0
       uuid: 8.3.2
     transitivePeerDependencies:
       - encoding
@@ -13525,12 +13530,12 @@ snapshots:
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.8
 
-  '@mapbox/node-pre-gyp@2.0.3(encoding@0.1.13)':
+  '@mapbox/node-pre-gyp@2.0.3':
     dependencies:
       consola: 3.4.2
       detect-libc: 2.1.2
       https-proxy-agent: 7.0.6
-      node-fetch: 2.7.0(encoding@0.1.13)
+      node-fetch: 2.7.0
       nopt: 8.1.0
       semver: 7.7.4
       tar: 7.5.13
@@ -14710,7 +14715,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@sanity/document-internationalization@6.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity-plugin-internationalized-array@4.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(sanity@packages+sanity)':
+  '@sanity/document-internationalization@6.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity-plugin-internationalized-array@5.1.1(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/mutator@packages+@sanity+mutator)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/language-filter@4.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(sanity@packages+sanity)':
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.4)
       '@sanity/mutator': link:packages/@sanity/mutator
@@ -14721,7 +14726,7 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
       rxjs: 7.8.2
       sanity: link:packages/sanity
-      sanity-plugin-internationalized-array: 4.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
+      sanity-plugin-internationalized-array: 5.1.1(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/mutator@packages+@sanity+mutator)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/language-filter@4.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
       sanity-plugin-utils: 1.8.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(rxjs@7.8.2)(sanity@packages+sanity)
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
@@ -15992,11 +15997,11 @@ snapshots:
       - tsx
       - yaml
 
-  '@vercel/backends@0.0.14(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(encoding@0.1.13)(rollup@4.60.1)(typescript@6.0.0-beta)':
+  '@vercel/backends@0.0.14(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(rollup@4.60.1)(typescript@6.0.0-beta)':
     dependencies:
       '@vercel/cervel': 0.0.6(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(typescript@6.0.0-beta)
       '@vercel/introspection': 0.0.5
-      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/nft': 1.1.1(rollup@4.60.1)
       '@vercel/static-config': 3.1.2
       fs-extra: 11.1.0
       rolldown: 1.0.0-beta.35(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
@@ -16033,9 +16038,9 @@ snapshots:
 
   '@vercel/edge@1.2.2': {}
 
-  '@vercel/elysia@0.1.12(encoding@0.1.13)(rollup@4.60.1)':
+  '@vercel/elysia@0.1.12(rollup@4.60.1)':
     dependencies:
-      '@vercel/node': 5.5.14(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/node': 5.5.14(rollup@4.60.1)
       '@vercel/static-config': 3.1.2
     transitivePeerDependencies:
       - '@swc/core'
@@ -16046,11 +16051,11 @@ snapshots:
 
   '@vercel/error-utils@2.0.3': {}
 
-  '@vercel/express@0.1.17(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(encoding@0.1.13)(rollup@4.60.1)(typescript@6.0.0-beta)':
+  '@vercel/express@0.1.17(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(rollup@4.60.1)(typescript@6.0.0-beta)':
     dependencies:
       '@vercel/cervel': 0.0.6(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(typescript@6.0.0-beta)
-      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.60.1)
-      '@vercel/node': 5.5.14(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/nft': 1.1.1(rollup@4.60.1)
+      '@vercel/node': 5.5.14(rollup@4.60.1)
       '@vercel/static-config': 3.1.2
       fs-extra: 11.1.0
       path-to-regexp: 8.3.0
@@ -16067,9 +16072,9 @@ snapshots:
       - supports-color
       - typescript
 
-  '@vercel/fastify@0.1.15(encoding@0.1.13)(rollup@4.60.1)':
+  '@vercel/fastify@0.1.15(rollup@4.60.1)':
     dependencies:
-      '@vercel/node': 5.5.14(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/node': 5.5.14(rollup@4.60.1)
       '@vercel/static-config': 3.1.2
     transitivePeerDependencies:
       - '@swc/core'
@@ -16084,7 +16089,7 @@ snapshots:
       '@vercel/error-utils': 2.0.3
       js-yaml: 3.13.1
 
-  '@vercel/fun@1.2.0(encoding@0.1.13)':
+  '@vercel/fun@1.2.0':
     dependencies:
       '@tootallnate/once': 2.0.0
       async-listen: 1.2.0
@@ -16092,7 +16097,7 @@ snapshots:
       generic-pool: 3.4.2
       micro: 9.3.5-canary.3
       ms: 2.1.1
-      node-fetch: 2.6.7(encoding@0.1.13)
+      node-fetch: 2.6.7
       path-match: 1.2.4
       promisepipe: 3.0.0
       semver: 7.5.4
@@ -16122,9 +16127,9 @@ snapshots:
 
   '@vercel/go@3.2.3': {}
 
-  '@vercel/h3@0.1.21(encoding@0.1.13)(rollup@4.60.1)':
+  '@vercel/h3@0.1.21(rollup@4.60.1)':
     dependencies:
-      '@vercel/node': 5.5.14(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/node': 5.5.14(rollup@4.60.1)
       '@vercel/static-config': 3.1.2
     transitivePeerDependencies:
       - '@swc/core'
@@ -16133,10 +16138,10 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/hono@0.2.15(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(encoding@0.1.13)(rollup@4.60.1)':
+  '@vercel/hono@0.2.15(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(rollup@4.60.1)':
     dependencies:
-      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.60.1)
-      '@vercel/node': 5.5.14(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/nft': 1.1.1(rollup@4.60.1)
+      '@vercel/node': 5.5.14(rollup@4.60.1)
       '@vercel/static-config': 3.1.2
       fs-extra: 11.1.0
       path-to-regexp: 8.3.0
@@ -16162,9 +16167,9 @@ snapshots:
       path-to-regexp: 8.3.0
       zod: 3.22.4
 
-  '@vercel/nestjs@0.2.16(encoding@0.1.13)(rollup@4.60.1)':
+  '@vercel/nestjs@0.2.16(rollup@4.60.1)':
     dependencies:
-      '@vercel/node': 5.5.14(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/node': 5.5.14(rollup@4.60.1)
       '@vercel/static-config': 3.1.2
     transitivePeerDependencies:
       - '@swc/core'
@@ -16173,17 +16178,17 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/next@4.15.7(encoding@0.1.13)(rollup@4.60.1)':
+  '@vercel/next@4.15.7(rollup@4.60.1)':
     dependencies:
-      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/nft': 1.1.1(rollup@4.60.1)
     transitivePeerDependencies:
       - encoding
       - rollup
       - supports-color
 
-  '@vercel/nft@1.1.1(encoding@0.1.13)(rollup@4.60.1)':
+  '@vercel/nft@1.1.1(rollup@4.60.1)':
     dependencies:
-      '@mapbox/node-pre-gyp': 2.0.3(encoding@0.1.13)
+      '@mapbox/node-pre-gyp': 2.0.3
       '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
       acorn: 8.15.0
       acorn-import-attributes: 1.9.5(acorn@8.15.0)
@@ -16200,7 +16205,7 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/node@5.5.14(encoding@0.1.13)(rollup@4.60.1)':
+  '@vercel/node@5.5.14(rollup@4.60.1)':
     dependencies:
       '@edge-runtime/node-utils': 2.3.0
       '@edge-runtime/primitives': 4.1.0
@@ -16208,7 +16213,7 @@ snapshots:
       '@types/node': 16.18.11
       '@vercel/build-utils': 13.2.2
       '@vercel/error-utils': 2.0.3
-      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/nft': 1.1.1(rollup@4.60.1)
       '@vercel/static-config': 3.1.2
       async-listen: 3.0.0
       cjs-module-lexer: 1.2.3
@@ -16217,7 +16222,7 @@ snapshots:
       esbuild: 0.14.47
       etag: 1.8.1
       mime-types: 2.1.35
-      node-fetch: 2.6.9(encoding@0.1.13)
+      node-fetch: 2.6.9
       path-to-regexp: 6.1.0
       path-to-regexp-updated: path-to-regexp@6.3.0
       ts-morph: 12.0.0
@@ -16234,9 +16239,9 @@ snapshots:
 
   '@vercel/python@6.1.0': {}
 
-  '@vercel/redwood@2.4.5(encoding@0.1.13)(rollup@4.60.1)':
+  '@vercel/redwood@2.4.5(rollup@4.60.1)':
     dependencies:
-      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/nft': 1.1.1(rollup@4.60.1)
       '@vercel/static-config': 3.1.2
       semver: 6.3.1
       ts-morph: 12.0.0
@@ -16245,10 +16250,10 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/remix-builder@5.5.5(encoding@0.1.13)(rollup@4.60.1)':
+  '@vercel/remix-builder@5.5.5(rollup@4.60.1)':
     dependencies:
       '@vercel/error-utils': 2.0.3
-      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/nft': 1.1.1(rollup@4.60.1)
       '@vercel/static-config': 3.1.2
       path-to-regexp: 6.1.0
       path-to-regexp-updated: path-to-regexp@6.3.0
@@ -17295,11 +17300,6 @@ snapshots:
 
   empathic@2.0.0: {}
 
-  encoding@0.1.13:
-    dependencies:
-      iconv-lite: 0.6.3
-    optional: true
-
   end-of-stream@1.1.0:
     dependencies:
       once: 1.3.3
@@ -18193,20 +18193,20 @@ snapshots:
 
   functions-have-names@1.2.3: {}
 
-  gaxios@6.7.1(encoding@0.1.13):
+  gaxios@6.7.1:
     dependencies:
       extend: 3.0.2
       https-proxy-agent: 7.0.6
       is-stream: 2.0.1
-      node-fetch: 2.7.0(encoding@0.1.13)
+      node-fetch: 2.7.0
       uuid: 9.0.1
     transitivePeerDependencies:
       - encoding
       - supports-color
 
-  gcp-metadata@6.1.1(encoding@0.1.13):
+  gcp-metadata@6.1.1:
     dependencies:
-      gaxios: 6.7.1(encoding@0.1.13)
+      gaxios: 6.7.1
       google-logging-utils: 0.0.2
       json-bigint: 1.0.0
     transitivePeerDependencies:
@@ -18339,13 +18339,13 @@ snapshots:
 
   globrex@0.1.2: {}
 
-  google-auth-library@9.15.1(encoding@0.1.13):
+  google-auth-library@9.15.1:
     dependencies:
       base64-js: 1.5.1
       ecdsa-sig-formatter: 1.0.11
-      gaxios: 6.7.1(encoding@0.1.13)
-      gcp-metadata: 6.1.1(encoding@0.1.13)
-      gtoken: 7.1.0(encoding@0.1.13)
+      gaxios: 6.7.1
+      gcp-metadata: 6.1.1
+      gtoken: 7.1.0
       jws: 4.0.1
     transitivePeerDependencies:
       - encoding
@@ -18369,9 +18369,9 @@ snapshots:
 
   groq@3.99.0: {}
 
-  gtoken@7.1.0(encoding@0.1.13):
+  gtoken@7.1.0:
     dependencies:
-      gaxios: 6.7.1(encoding@0.1.13)
+      gaxios: 6.7.1
       jws: 4.0.1
     transitivePeerDependencies:
       - encoding
@@ -19402,23 +19402,17 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  node-fetch@2.6.7(encoding@0.1.13):
+  node-fetch@2.6.7:
     dependencies:
       whatwg-url: 5.0.0
-    optionalDependencies:
-      encoding: 0.1.13
 
-  node-fetch@2.6.9(encoding@0.1.13):
+  node-fetch@2.6.9:
     dependencies:
       whatwg-url: 5.0.0
-    optionalDependencies:
-      encoding: 0.1.13
 
-  node-fetch@2.7.0(encoding@0.1.13):
+  node-fetch@2.7.0:
     dependencies:
       whatwg-url: 5.0.0
-    optionalDependencies:
-      encoding: 0.1.13
 
   node-gyp-build@4.8.4: {}
 
@@ -20355,11 +20349,11 @@ snapshots:
       onetime: 7.0.0
       signal-exit: 4.1.0
 
-  retry-request@7.0.2(encoding@0.1.13):
+  retry-request@7.0.2:
     dependencies:
       '@types/request': 2.48.13
       extend: 3.0.2
-      teeny-request: 9.0.0(encoding@0.1.13)
+      teeny-request: 9.0.0
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -20563,16 +20557,18 @@ snapshots:
       - react-is
       - styled-components
 
-  sanity-plugin-internationalized-array@4.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity):
+  sanity-plugin-internationalized-array@5.1.1(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/mutator@packages+@sanity+mutator)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/language-filter@4.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity))(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity):
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.4)
       '@sanity/language-filter': 4.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
       '@sanity/ui': 3.1.14(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
-      fast-deep-equal: 3.1.3
+      '@sanity/util': link:packages/@sanity/util
       lodash-es: 4.18.1
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
       sanity: link:packages/sanity
+    optionalDependencies:
+      '@sanity/assist': 6.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/mutator@packages+@sanity+mutator)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
       - react-is
@@ -21061,11 +21057,11 @@ snapshots:
       minizlib: 3.1.0
       yallist: 5.0.0
 
-  teeny-request@9.0.0(encoding@0.1.13):
+  teeny-request@9.0.0:
     dependencies:
       http-proxy-agent: 5.0.0
       https-proxy-agent: 5.0.1
-      node-fetch: 2.7.0(encoding@0.1.13)
+      node-fetch: 2.7.0
       stream-events: 1.0.5
       uuid: 9.0.1
     transitivePeerDependencies:
@@ -21551,26 +21547,26 @@ snapshots:
       spdx-correct: 3.2.0
       spdx-expression-parse: 3.0.1
 
-  vercel@48.12.1(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(encoding@0.1.13)(rollup@4.60.1)(typescript@6.0.0-beta):
+  vercel@48.12.1(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(rollup@4.60.1)(typescript@6.0.0-beta):
     dependencies:
-      '@vercel/backends': 0.0.14(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(encoding@0.1.13)(rollup@4.60.1)(typescript@6.0.0-beta)
+      '@vercel/backends': 0.0.14(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(rollup@4.60.1)(typescript@6.0.0-beta)
       '@vercel/blob': 1.0.2
       '@vercel/build-utils': 13.2.2
       '@vercel/detect-agent': 1.0.0
-      '@vercel/elysia': 0.1.12(encoding@0.1.13)(rollup@4.60.1)
-      '@vercel/express': 0.1.17(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(encoding@0.1.13)(rollup@4.60.1)(typescript@6.0.0-beta)
-      '@vercel/fastify': 0.1.15(encoding@0.1.13)(rollup@4.60.1)
-      '@vercel/fun': 1.2.0(encoding@0.1.13)
+      '@vercel/elysia': 0.1.12(rollup@4.60.1)
+      '@vercel/express': 0.1.17(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(rollup@4.60.1)(typescript@6.0.0-beta)
+      '@vercel/fastify': 0.1.15(rollup@4.60.1)
+      '@vercel/fun': 1.2.0
       '@vercel/go': 3.2.3
-      '@vercel/h3': 0.1.21(encoding@0.1.13)(rollup@4.60.1)
-      '@vercel/hono': 0.2.15(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/h3': 0.1.21(rollup@4.60.1)
+      '@vercel/hono': 0.2.15(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(rollup@4.60.1)
       '@vercel/hydrogen': 1.3.2
-      '@vercel/nestjs': 0.2.16(encoding@0.1.13)(rollup@4.60.1)
-      '@vercel/next': 4.15.7(encoding@0.1.13)(rollup@4.60.1)
-      '@vercel/node': 5.5.14(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/nestjs': 0.2.16(rollup@4.60.1)
+      '@vercel/next': 4.15.7(rollup@4.60.1)
+      '@vercel/node': 5.5.14(rollup@4.60.1)
       '@vercel/python': 6.1.0
-      '@vercel/redwood': 2.4.5(encoding@0.1.13)(rollup@4.60.1)
-      '@vercel/remix-builder': 5.5.5(encoding@0.1.13)(rollup@4.60.1)
+      '@vercel/redwood': 2.4.5(rollup@4.60.1)
+      '@vercel/remix-builder': 5.5.5(rollup@4.60.1)
       '@vercel/ruby': 2.2.2
       '@vercel/rust': 1.0.3
       '@vercel/static-build': 2.8.13
