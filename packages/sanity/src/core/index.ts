@@ -72,7 +72,7 @@ export {
 } from './scheduled-publishing'
 export {createSchema, getSchemaTypeTitle} from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'
-export {createSearch, getSearchableTypes, isPerspectiveRaw} from './search'
+export {compileFieldPath, createSearch, getSearchableTypes, isPerspectiveRaw} from './search'
 export * from './singleDocRelease'
 export * from './store'
 export * from './studio'
