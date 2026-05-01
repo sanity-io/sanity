@@ -30,6 +30,7 @@ import {
 } from './document-pair/operationEvents'
 import {type OperationsAPI} from './document-pair/operations'
 import {validation} from './document-pair/validation'
+import {createDocumentStoreDocument, type DocumentStoreDocument} from './document/document'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
@@ -107,6 +108,7 @@ export interface DocumentStore {
       validatePublishedReferences: boolean,
     ) => Observable<ValidationStatus>
   }
+  document: DocumentStoreDocument
 }
 
 /** @internal */
@@ -160,6 +162,7 @@ export function createDocumentStore({
     extraOptions,
     currentUser,
   }
+  const document = createDocumentStoreDocument(ctx)
 
   return {
     // Public API
@@ -253,5 +256,6 @@ export function createDocumentStore({
         return validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
       },
     },
+    document,
   }
 }

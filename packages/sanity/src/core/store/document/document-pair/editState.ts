@@ -28,6 +28,7 @@ export interface EditStateFor {
   id: string
   type: string
   transactionSyncLock: TransactionSyncLockState | null
+  snapshot: SanityDocument | null
   draft: SanityDocument | null
   published: SanityDocument | null
   version: SanityDocument | null
@@ -103,6 +104,7 @@ export const editState = memoize(
         }) => ({
           id: idPair.publishedId,
           type: typeName,
+          snapshot: null,
           draft: draftSnapshot,
           published: publishedSnapshot,
           version: typeof idPair.versionId === 'undefined' ? null : versionSnapshot,
@@ -116,6 +118,7 @@ export const editState = memoize(
       startWith({
         id: idPair.publishedId,
         type: typeName,
+        snapshot: null,
         draft: null,
         published: null,
         version: null,

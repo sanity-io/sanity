@@ -75,7 +75,7 @@ export interface DocumentStoreExtraOptions {
    * Meant for error tracking / telemetry purposes
    * @param error - the {@link OutOfSyncError} recovered from
    */
-  onSyncErrorRecovery?(error: OutOfSyncError): void
+  onSyncErrorRecovery?(this: void, error: OutOfSyncError): void
   onReportLatency?: (event: LatencyReportEvent) => void
   onSlowCommit?: () => void
   onDocumentPairLoaded?: (event: DocumentPairLoadedEvent) => void
@@ -93,17 +93,17 @@ export type ListenerEvent =
   | WelcomeBackEvent
   | ResetEvent
 
-const PENDING_START: PendingMutationsEvent = {type: 'pending', phase: 'begin'}
-const PENDING_END: PendingMutationsEvent = {type: 'pending', phase: 'end'}
+export const PENDING_START: PendingMutationsEvent = {type: 'pending', phase: 'begin'}
+export const PENDING_END: PendingMutationsEvent = {type: 'pending', phase: 'end'}
 
-function isMutationEvent(msg: ListenerEvent): msg is MutationEvent {
+export function isMutationEvent(msg: ListenerEvent): msg is MutationEvent {
   return msg.type === 'mutation'
 }
-function isMultiTransactionEvent(msg: MutationEvent) {
+export function isMultiTransactionEvent(msg: MutationEvent) {
   return msg.transactionTotalEvents > 1
 }
 
-function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
+export function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
   const groupedMutations = groupBy(
     listenerEvents.filter((ev): ev is MutationEvent => ev.type === 'mutation'),
     (e) => e.transactionId,
@@ -143,6 +143,7 @@ export function getPairListener(
           effectFormat: 'mendoza',
           tag: options.tag || 'document.pair.listen',
         },
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent>
     ).pipe(
       dedupeListenerEvents(),

@@ -22,12 +22,12 @@ import {memoizeKeyGen} from './memoizeKeyGen'
 function isSnapshotEvent(
   event: BufferedDocumentEvent | ReconnectEvent | WelcomeEvent | WelcomeBackEvent | ResetEvent,
 ): event is SnapshotEvent & {
-  version: 'published' | 'draft'
+  version: 'published' | 'draft' | 'version'
 } {
   return event.type === 'snapshot'
 }
 
-function withSnapshots(pair: DocumentVersion): DocumentVersionSnapshots {
+export function withSnapshots(pair: DocumentVersion): DocumentVersionSnapshots {
   return {
     snapshots$: pair.events.pipe(
       filter(isSnapshotEvent),

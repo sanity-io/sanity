@@ -29,6 +29,7 @@ import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
+import {useDocumentTarget} from '../hooks/useDocumentTarget'
 import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
 import {useValidationStatus} from '../hooks/useValidationStatus'
@@ -242,8 +243,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onlyHasVersions,
   ])
 
+  const documentTarget = useDocumentTarget(value._id)
   const {validation: validationRaw} = useValidationStatus(
-    value._id,
+    documentTarget,
     documentType,
     // require referenced documents to be published unless the document is in a release
     !releaseId,

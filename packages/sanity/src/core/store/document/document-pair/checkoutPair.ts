@@ -58,7 +58,7 @@ const FETCH_SHARD_TIMEOUT = 20_000
 const PENDING_ENTRY_TTL = 60_000
 
 /** Duration after which a commit is considered slow and a warning is surfaced to the user */
-const SLOW_COMMIT_TIMEOUT_MS = 50_000
+export const SLOW_COMMIT_TIMEOUT_MS = 50_000
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -146,7 +146,7 @@ function isLiveEditMutation(mutationParams: Mutation['params'], publishedId: str
   return patchTargets.every((target) => target === publishedId)
 }
 
-function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[] {
+export function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[] {
   const actions = mutationParams.mutations.flatMap<Action>((mutations) => {
     // This action is not always interoperable with the equivalent mutation. It will fail if the
     // published version of the document already exists.
@@ -428,7 +428,7 @@ export function checkoutPair(
   }
 }
 
-function reportLatency(options: {
+export function reportLatency(options: {
   commits$: Observable<(MultipleActionResult | MutationResult) & {_perfTimings?: PerfTimings}>
   listenerEvents$: Observable<ListenerEvent>
   client: SanityClient
