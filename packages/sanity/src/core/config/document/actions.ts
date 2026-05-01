@@ -22,21 +22,7 @@ export interface DocumentActionProps extends EditStateFor {
   initialValueResolved: boolean
 }
 
-type SanityDefinedAction =
-  | 'delete'
-  | 'discardChanges'
-  | 'discardVersion'
-  | 'duplicate'
-  | 'restore'
-  | 'publish'
-  | 'unpublish'
-  | 'unpublishVersion'
-  | 'linkToCanvas'
-  | 'editInCanvas'
-  | 'unlinkFromCanvas'
-  | 'schedule'
-
-const SANITY_DEFINED_ACTIONS: Record<SanityDefinedAction, SanityDefinedAction> = {
+const SANITY_DEFINED_ACTIONS = {
   delete: 'delete',
   discardChanges: 'discardChanges',
   discardVersion: 'discardVersion',
@@ -52,17 +38,53 @@ const SANITY_DEFINED_ACTIONS: Record<SanityDefinedAction, SanityDefinedAction> =
 }
 
 /**
- * @beta
- * Indicates whether the action is a Sanity defined action or a custom action.
+ * Union of action identifiers built into Sanity. Use for exhaustive matching
+ * over built-in actions.
+ *
+ * @public
+ */
+export type SanityDefinedAction = keyof typeof SANITY_DEFINED_ACTIONS
+
+/**
+ * Registry of document action keys. Extend via declaration merging to
+ * register a custom action key. Use `never` as the value type; the values
+ * are unused, and indexed access (`DocumentActionKeys[K]`) is not part of
+ * the public contract.
+ *
+ * ```ts
+ * declare module 'sanity' {
+ *   interface DocumentActionKeys {
+ *     myPlugin: never
+ *   }
+ * }
+ * ```
+ *
+ * Once registered, `MyAction.action = 'myPlugin'` type-checks, and other
+ * plugins can target the action for replacement.
+ *
+ * To match only Sanity-defined actions exhaustively, narrow with
+ * `isSanityDefinedAction`.
+ *
+ * @public
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- empty by design; extended via declaration merging
+export interface DocumentActionKeys extends Record<SanityDefinedAction, never> {}
+
+/**
+ * Narrow an action's identifier to {@link SanityDefinedAction}. Use to
+ * exhaustively match built-in actions in projects where plugins have
+ * registered additional keys.
  *
  * @param action - The action to check.
- * @returns `true` if the action is a Sanity defined action, `false` otherwise.
+ * @returns `true` if the action identifier is Sanity-defined.
+ *
+ * @public
  */
 export const isSanityDefinedAction = (
-  action: DocumentActionDescription & {action?: DocumentActionComponent['action']},
-): boolean => {
+  action: DocumentActionDescription & {action?: keyof DocumentActionKeys},
+): action is DocumentActionDescription & {action: SanityDefinedAction} => {
   if (!action.action) return false
-  return SANITY_DEFINED_ACTIONS[action.action] !== undefined
+  return action.action in SANITY_DEFINED_ACTIONS
 }
 
 /**
@@ -73,10 +95,12 @@ export interface DocumentActionComponent extends ActionComponent<
   DocumentActionDescription
 > {
   /**
-   * An optional meta property that can used to replace this document action
-   * with another. E.g.:
+   * Stable identifier for this action. Set to a {@link SanityDefinedAction}
+   * to replace a built-in, or to a key registered on
+   * {@link DocumentActionKeys} via declaration merging so other plugins can
+   * target the action for replacement.
    *
-   * ```js
+   * ```ts
    * import {defineConfig} from 'sanity'
    * import {MyPublishAction} from '...'
    *
@@ -84,13 +108,13 @@ export interface DocumentActionComponent extends ActionComponent<
    *   document: {
    *     actions: (prev) =>
    *       prev.map((previousAction) =>
-   *         previousAction.action === 'publish' ? MyPublishAction : previousAction
+   *         previousAction.action === 'publish' ? MyPublishAction : previousAction,
    *       ),
    *   },
    * })
    * ```
    */
-  action?: SanityDefinedAction
+  action?: keyof DocumentActionKeys
   /**
    * For debugging purposes
    */
