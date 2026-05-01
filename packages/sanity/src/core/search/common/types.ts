@@ -47,7 +47,7 @@ export interface SearchStory {
  * @internal
  */
 export interface SearchHit {
-  hit: SanityDocumentLike
+  hit: SanityDocumentLike & {_originalId: string}
 }
 
 /**
