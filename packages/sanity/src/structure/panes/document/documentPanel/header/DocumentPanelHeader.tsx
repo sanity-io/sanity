@@ -1,6 +1,6 @@
 import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Box, Card, Flex, useLayer} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {
@@ -105,6 +105,7 @@ export const DocumentPanelHeader = memo(
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     const showGradient = useChipScrollPosition(scrollContainerRef)
     const telemetry = useTelemetry()
+    const {zIndex} = useLayer()
 
     const menuNodes = useMemo(
       () =>
@@ -192,7 +193,7 @@ export const DocumentPanelHeader = memo(
             backButton={backButton}
           />
         ) : (
-          <Card hidden={collapsed} style={{lineHeight: 0}} borderBottom>
+          <Card hidden={collapsed} style={{lineHeight: 0, zIndex}} borderBottom>
             <Flex gap={3} paddingY={3}>
               <HorizontalScroller $showGradient={showGradient}>
                 <Flex
