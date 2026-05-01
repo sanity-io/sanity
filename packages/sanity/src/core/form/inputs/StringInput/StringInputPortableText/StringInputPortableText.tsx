@@ -11,7 +11,7 @@ import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {type Path} from '@sanity/types'
 import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
-import {type MutableRefObject, useCallback, useEffect, useState} from 'react'
+import {type MutableRefObject, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {set, unset} from '../../../patch/patch'
@@ -83,15 +83,57 @@ export function StringInputPortableText(props: StringInputProps) {
     computeDiff,
   })
 
+  // In Firefox, when the user clicks inside the contenteditable, the browser may redirect
+  // focus from a child element to the root element. This causes a rapid blur-then-focus
+  // sequence that the PTE relay actor delivers asynchronously. Without debouncing, the
+  // spurious blur clears the form's focus state (via onPathBlur), which prevents the field
+  // from properly activating on the first click. By deferring the blur callback and
+  // cancelling it when a focus event arrives immediately after, we avoid the spurious
+  // unfocus cycle.
+  const pendingBlurRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Clean up any pending blur timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (pendingBlurRef.current !== null) {
+        clearTimeout(pendingBlurRef.current)
+      }
+    }
+  }, [])
+
+  // Belt-and-braces for the Firefox redirect: when the user interacts with the editor,
+  // schedule an explicit focus commit through the FocusBridgePlugin. PTE's own onFocus
+  // handler bails early in Firefox when the click target is a text node (rather than the
+  // editable root) and relies on a follow-up DOM focus event that occasionally isn't
+  // delivered reliably. Invoking focusRef.current.focus() here routes through the state
+  // machine's "handle focus" action which calls ReactEditor.focus with a selection, and
+  // is a no-op if the editor is already focused.
+  const handlePointerDown = useCallback(() => {
+    requestAnimationFrame(() => {
+      focusRef.current?.focus()
+    })
+  }, [focusRef])
+
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
       if (event.type === 'focused') {
+        // Cancel any pending blur -- this focus supersedes it
+        if (pendingBlurRef.current !== null) {
+          clearTimeout(pendingBlurRef.current)
+          pendingBlurRef.current = null
+        }
         onFocus(event.event)
         return
       }
 
       if (event.type === 'blurred') {
-        onBlur(event.event)
+        // Defer blur to allow a subsequent focus event to cancel it. This
+        // prevents Firefox's internal focus-redirect from causing a spurious
+        // blur that clears the form's focus state.
+        pendingBlurRef.current = setTimeout(() => {
+          pendingBlurRef.current = null
+          onBlur(event.event)
+        }, 0)
         return
       }
 
@@ -182,6 +224,7 @@ export function StringInputPortableText(props: StringInputProps) {
           style={style}
           renderPlaceholder={props.displayInlineChanges ? renderPlaceholder : undefined}
           rangeDecorations={props.displayInlineChanges ? rangeDecorations : undefined}
+          onPointerDown={handlePointerDown}
           $fontSize={fontSize}
           $space={space}
           $padding={padding}
