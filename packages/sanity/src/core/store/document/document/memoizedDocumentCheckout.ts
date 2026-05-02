@@ -14,22 +14,15 @@ const LISTENER_RESET_DELAY = 5_000
 export const memoizedDocumentCheckout: (
   client: SanityClient,
   documentId: string,
-  serverActionsEnabled: Observable<boolean>,
   extraOptions?: DocumentStoreExtraOptions,
 ) => Observable<DocumentCheckout> = memoize(
   (
     client: SanityClient,
     documentId: string,
-    serverActionsEnabled: Observable<boolean>,
     documentListenerOptions?: DocumentStoreExtraOptions,
   ): Observable<DocumentCheckout> => {
     return new Observable<DocumentCheckout>((subscriber) => {
-      const checkout = documentCheckout(
-        documentId,
-        client,
-        serverActionsEnabled,
-        documentListenerOptions,
-      )
+      const checkout = documentCheckout(documentId, client, documentListenerOptions)
 
       return merge(
         of(checkout),

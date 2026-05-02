@@ -1,8 +1,9 @@
-import {type SanityClient} from '@sanity/client'
+import {type SanityDocument, type SanityClient} from '@sanity/client'
 import {firstValueFrom, of} from 'rxjs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
+import {type DocumentVersion} from '../document-pair/checkoutPair'
 import {documentSnapshot} from './documentSnapshot'
 import {memoizedDocumentCheckout} from './memoizedDocumentCheckout'
 
@@ -16,11 +17,19 @@ function getMockClient() {
   return createMockSanityClient() as unknown as SanityClient
 }
 
-function createDocument() {
-  const snapshot = {_id: 'example-id', _type: 'movie'}
+function createDocument(): DocumentVersion {
+  const snapshot: SanityDocument = {
+    _id: 'example-id',
+    _type: 'movie',
+    _rev: '123',
+    _createdAt: '2021-01-01',
+    _updatedAt: '2021-01-01',
+  }
 
   return {
-    events: of({type: 'snapshot' as const, document: snapshot}),
+    consistency$: of(true),
+    remoteSnapshot$: of({type: 'snapshot' as const, document: snapshot, version: 'draft'}),
+    events: of({type: 'snapshot' as const, document: snapshot, version: 'draft'}),
     patch: vi.fn((patches) => patches),
     create: vi.fn((document) => ({create: document})),
     createIfNotExists: vi.fn((document) => ({createIfNotExists: document})),
@@ -40,7 +49,7 @@ describe('documentSnapshot', () => {
     const client = getMockClient()
     mockMemoizedDocumentCheckout.mockReturnValue(
       of({
-        transactionsPendingEvents$: of({type: 'pending', phase: 'begin'}),
+        transactionsPendingEvents$: of({type: 'pending' as const, phase: 'begin' as const}),
         document: createDocument(),
       }),
     )
@@ -62,7 +71,6 @@ describe('documentSnapshot', () => {
     const snapshot = await firstValueFrom(
       documentSnapshot('example-id-2', {
         client,
-        serverActionsEnabled: of(true),
         extraOptions: {tag: 'test'},
       } as any),
     )
@@ -74,19 +82,14 @@ describe('documentSnapshot', () => {
     await expect(firstValueFrom(snapshot.transactionsPendingEvents$)).resolves.toEqual(pending)
     expect(snapshot.document.patch([{set: {title: 'Alien'}}])).toEqual([{set: {title: 'Alien'}}])
 
-    expect(mockMemoizedDocumentCheckout).toHaveBeenCalledWith(
-      client,
-      'example-id-2',
-      expect.anything(),
-      {tag: 'test'},
-    )
+    expect(mockMemoizedDocumentCheckout).toHaveBeenCalledWith(client, 'example-id-2', {tag: 'test'})
   })
 
   it('memoizes snapshots for clients without project or dataset config', async () => {
     const client = {config: () => ({})} as SanityClient
     mockMemoizedDocumentCheckout.mockReturnValue(
       of({
-        transactionsPendingEvents$: of({type: 'pending', phase: 'begin'}),
+        transactionsPendingEvents$: of({type: 'pending' as const, phase: 'begin' as const}),
         document: createDocument(),
       }),
     )

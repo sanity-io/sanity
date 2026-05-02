@@ -29,7 +29,6 @@ export interface DocumentContext {
   observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
   schema: Schema
   i18n: LocaleSource
-  // serverActionsEnabled: Observable<boolean>
   // extraOptions?: DocumentStoreExtraOptions
   currentUser?: Omit<CurrentUser, 'role'> | null
 }

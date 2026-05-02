@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {of, Subject} from 'rxjs'
+import {of, Subject, throwError} from 'rxjs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createBufferedDocument} from '../buffered-doc/createBufferedDocument'
@@ -77,7 +77,7 @@ describe('documentCheckout', () => {
     mockGetDocumentListener.mockReturnValue(listenerEvents$ as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(false), {tag: 'test'})
+    const checkout = documentCheckout('drafts.example-id', client, {tag: 'test'})
 
     checkout.document.events.subscribe((event) => events.push(event))
     checkout.document.remoteSnapshot$.subscribe((event) => remoteSnapshots.push(event))
@@ -100,30 +100,7 @@ describe('documentCheckout', () => {
     })
   })
 
-  it('commits raw mutations when server actions are disabled', async () => {
-    const client = createClient()
-    const bufferedDocument = createBufferedDocumentFixture()
-    const request = createCommitRequest([{patch: {id: 'drafts.example-id', set: {title: 'Alien'}}}])
-
-    mockGetDocumentListener.mockReturnValue(new Subject() as any)
-    mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
-
-    const checkout = documentCheckout('drafts.example-id', client, of(false))
-    const subscription = checkout.document.events.subscribe()
-
-    bufferedDocument.commitRequest$.next(request)
-    await Promise.resolve()
-
-    expect(client.dataRequest).toHaveBeenCalledWith(
-      'mutate',
-      expect.objectContaining({mutations: request.mutation.params.mutations}),
-      expect.objectContaining({tag: 'document.commit'}),
-    )
-    expect(request.success).toHaveBeenCalled()
-    subscription.unsubscribe()
-  })
-
-  it('commits non-live-edit writes through document actions when enabled', async () => {
+  it('commits non-live-edit writes through document actions', async () => {
     const client = createClient()
     const bufferedDocument = createBufferedDocumentFixture()
     const request = createCommitRequest([
@@ -134,7 +111,7 @@ describe('documentCheckout', () => {
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(true))
+    const checkout = documentCheckout('drafts.example-id', client)
     const subscription = checkout.document.events.subscribe()
 
     bufferedDocument.commitRequest$.next(request)
@@ -161,7 +138,7 @@ describe('documentCheckout', () => {
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(true))
+    const checkout = documentCheckout('drafts.example-id', client)
     const subscription = checkout.document.events.subscribe()
 
     bufferedDocument.commitRequest$.next(request)
@@ -187,7 +164,7 @@ describe('documentCheckout', () => {
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(true))
+    const checkout = documentCheckout('drafts.example-id', client)
     const errors: unknown[] = []
     const subscription = checkout.document.events.subscribe({error: (error) => errors.push(error)})
 
@@ -206,7 +183,7 @@ describe('documentCheckout', () => {
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(true))
+    const checkout = documentCheckout('drafts.example-id', client)
     const errors: unknown[] = []
     const subscription = checkout.document.events.subscribe({error: (error) => errors.push(error)})
 
@@ -227,7 +204,7 @@ describe('documentCheckout', () => {
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(true))
+    const checkout = documentCheckout('drafts.example-id', client)
     const errors: unknown[] = []
     const subscription = checkout.document.events.subscribe({error: (error) => errors.push(error)})
 
@@ -246,7 +223,7 @@ describe('documentCheckout', () => {
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('example-id', client, of(true))
+    const checkout = documentCheckout('example-id', client)
     const subscription = checkout.document.events.subscribe()
 
     bufferedDocument.commitRequest$.next(request)
@@ -262,11 +239,11 @@ describe('documentCheckout', () => {
     const bufferedDocument = createBufferedDocumentFixture()
     const request = createCommitRequest([{patch: {id: 'drafts.example-id', set: {title: 'Alien'}}}])
 
-    vi.mocked(client.dataRequest).mockReturnValue(Promise.reject({statusCode: 400}))
+    vi.mocked(client.observable.action).mockReturnValue(throwError(() => ({statusCode: 400})))
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(false))
+    const checkout = documentCheckout('drafts.example-id', client)
     const subscription = checkout.document.events.subscribe({error: () => undefined})
 
     bufferedDocument.commitRequest$.next(request)
@@ -282,11 +259,11 @@ describe('documentCheckout', () => {
     const request = createCommitRequest([{patch: {id: 'drafts.example-id', set: {title: 'Alien'}}}])
     const error = {statusCode: 503}
 
-    vi.mocked(client.dataRequest).mockReturnValue(Promise.reject(error))
+    vi.mocked(client.observable.action).mockReturnValue(throwError(() => error))
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(false))
+    const checkout = documentCheckout('drafts.example-id', client)
     const subscription = checkout.document.events.subscribe({error: () => undefined})
 
     bufferedDocument.commitRequest$.next(request)
@@ -307,7 +284,7 @@ describe('documentCheckout', () => {
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(false), {
+    const checkout = documentCheckout('drafts.example-id', client, {
       onSlowCommit,
       onDocumentRebase,
     })
@@ -341,7 +318,7 @@ describe('documentCheckout', () => {
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(false), {onDocumentRebase})
+    const checkout = documentCheckout('drafts.example-id', client, {onDocumentRebase})
     const events: unknown[] = []
     const subscription = checkout.document.events.subscribe((event) => events.push(event))
 
@@ -367,7 +344,7 @@ describe('documentCheckout', () => {
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(false), {
+    const checkout = documentCheckout('drafts.example-id', client, {
       onReportLatency: vi.fn(),
     })
     const subscription = checkout.document.events.subscribe()
@@ -384,7 +361,7 @@ describe('documentCheckout', () => {
     mockGetDocumentListener.mockReturnValue(new Subject() as any)
     mockCreateBufferedDocument.mockReturnValue(bufferedDocument as any)
 
-    const checkout = documentCheckout('drafts.example-id', client, of(false), {
+    const checkout = documentCheckout('drafts.example-id', client, {
       onReportMutationPerformance,
     })
     const subscription = checkout.document.events.subscribe()

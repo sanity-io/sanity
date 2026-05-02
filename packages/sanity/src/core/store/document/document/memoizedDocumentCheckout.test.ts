@@ -31,20 +31,17 @@ describe('memoizedDocumentCheckout', () => {
   it('shares one checkout for the same client and document id', async () => {
     const client = getMockClient()
     const checkout = createCheckout()
-    const serverActionsEnabled = of(false)
 
     mockDocumentCheckout.mockReturnValue(checkout)
 
-    const first = memoizedDocumentCheckout(client, 'example-id', serverActionsEnabled, {
+    const first = memoizedDocumentCheckout(client, 'example-id', {
       tag: 'first',
     })
-    const second = memoizedDocumentCheckout(client, 'example-id', of(true), {tag: 'second'})
+    const second = memoizedDocumentCheckout(client, 'example-id', {tag: 'second'})
 
     expect(first).toBe(second)
     await expect(firstValueFrom(first)).resolves.toBe(checkout)
-    expect(mockDocumentCheckout).toHaveBeenCalledWith('example-id', client, serverActionsEnabled, {
-      tag: 'first',
-    })
+    expect(mockDocumentCheckout).toHaveBeenCalledWith('example-id', client, {tag: 'first'})
   })
 
   it('keeps the checkout subscribed to document events', async () => {
@@ -53,7 +50,7 @@ describe('memoizedDocumentCheckout', () => {
 
     mockDocumentCheckout.mockReturnValue(checkout)
 
-    const subscription = memoizedDocumentCheckout(client, 'other-id', of(false)).subscribe()
+    const subscription = memoizedDocumentCheckout(client, 'other-id').subscribe()
     checkout.document.events.next({type: 'committed'})
     subscription.unsubscribe()
 
@@ -66,8 +63,8 @@ describe('memoizedDocumentCheckout', () => {
 
     mockDocumentCheckout.mockReturnValue(checkout)
 
-    await expect(
-      firstValueFrom(memoizedDocumentCheckout(client, 'configless-id', of(false))),
-    ).resolves.toBe(checkout)
+    await expect(firstValueFrom(memoizedDocumentCheckout(client, 'configless-id'))).resolves.toBe(
+      checkout,
+    )
   })
 })

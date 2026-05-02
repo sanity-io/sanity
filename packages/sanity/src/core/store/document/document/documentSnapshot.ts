@@ -1,4 +1,4 @@
-import {of, type Observable} from 'rxjs'
+import {type Observable} from 'rxjs'
 import {map, publishReplay, refCount} from 'rxjs/operators'
 
 import {type DocumentVersionSnapshots, withSnapshots} from '../document-pair/snapshotPair'
@@ -9,7 +9,6 @@ import {type DocumentContext} from './document'
 import {memoizedDocumentCheckout} from './memoizedDocumentCheckout'
 
 type DocumentSnapshotContext = DocumentContext & {
-  serverActionsEnabled?: Observable<boolean>
   extraOptions?: DocumentStoreExtraOptions
 }
 
@@ -23,12 +22,7 @@ interface DocumentSnapshot {
 // and mutation helpers instead of returning draft/published/version snapshot streams.
 export const documentSnapshot = memoize(
   (documentId: string, ctx: DocumentSnapshotContext): Observable<DocumentSnapshot> => {
-    return memoizedDocumentCheckout(
-      ctx.client,
-      documentId,
-      ctx.serverActionsEnabled ?? of(false),
-      ctx.extraOptions,
-    ).pipe(
+    return memoizedDocumentCheckout(ctx.client, documentId, ctx.extraOptions).pipe(
       map(({document, transactionsPendingEvents$}): DocumentSnapshot => {
         return {
           transactionsPendingEvents$,

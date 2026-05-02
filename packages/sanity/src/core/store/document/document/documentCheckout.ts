@@ -17,7 +17,6 @@ import {
   mergeMap,
   share,
   switchMap,
-  take,
   takeUntil,
   tap,
   timer,
@@ -149,13 +148,8 @@ function submitCommitRequest(
   client: SanityClient,
   documentId: string,
   request: CommitRequest,
-  serverActionsEnabled: boolean,
 ): Observable<SingleMutationResult | MultipleActionResult> {
-  return from(
-    serverActionsEnabled
-      ? commitActions(client, documentId, request.mutation.params)
-      : commitMutations(client, request.mutation.params),
-  ).pipe(
+  return from(commitActions(client, documentId, request.mutation.params)).pipe(
     tap({
       error: (error) => {
         const isBadRequest =
@@ -190,7 +184,6 @@ export interface DocumentCheckout {
 export function documentCheckout(
   documentId: string,
   client: SanityClient,
-  serverActionsEnabled: Observable<boolean>,
   options: DocumentStoreExtraOptions = {},
 ): DocumentCheckout {
   const {
@@ -213,24 +206,19 @@ export function documentCheckout(
   )
 
   const commits$ = document.commitRequest$.pipe(
-    mergeMap((commitRequest) =>
-      serverActionsEnabled.pipe(
-        take(1),
-        mergeMap((canUseServerActions) => {
-          const apiRequestSentAt = Date.now()
-          return submitCommitRequest(client, documentId, commitRequest, canUseServerActions).pipe(
-            map((result) => ({
-              ...result,
-              _perfTimings: {
-                firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
-                apiRequestSentAt,
-                apiResponseReceivedAt: Date.now(),
-              },
-            })),
-          )
-        }),
-      ),
-    ),
+    mergeMap((commitRequest) => {
+      const apiRequestSentAt = Date.now()
+      return submitCommitRequest(client, documentId, commitRequest).pipe(
+        map((result) => ({
+          ...result,
+          _perfTimings: {
+            firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
+            apiRequestSentAt,
+            apiResponseReceivedAt: Date.now(),
+          },
+        })),
+      )
+    }),
     share(),
   )
   const pendingEnd$ = transactionsPendingEvents$.pipe(filter((ev) => ev.phase === 'end'))
