@@ -32,7 +32,11 @@ export const validation = memoize(
       observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
       schema: Schema
       i18n: LocaleSource
-      serverActionsEnabled: Observable<boolean>
+      /**
+       * @deprecated Does nothing. Preserved to avoid breaking changes.
+       * Will be removed in the next major version.
+       */
+      serverActionsEnabled?: Observable<boolean>
       pairListenerOptions?: DocumentStoreExtraOptions
       currentUser?: Omit<CurrentUser, 'role'> | null
     },

@@ -57,7 +57,11 @@ export const editState = memoize(
     ctx: {
       client: SanityClient
       schema: Schema
-      serverActionsEnabled: Observable<boolean>
+      /**
+       * @deprecated Does nothing. Preserved to avoid breaking changes.
+       * Will be removed in the next major version.
+       */
+      serverActionsEnabled?: Observable<boolean>
       extraOptions?: DocumentStoreExtraOptions
     },
     idPair: IdPair,
@@ -66,13 +70,7 @@ export const editState = memoize(
     const liveEditSchemaType = isLiveEditEnabled(ctx.schema, typeName)
     const liveEdit = typeof idPair.versionId !== 'undefined' || liveEditSchemaType
 
-    return snapshotPair(
-      ctx.client,
-      idPair,
-      typeName,
-      ctx.serverActionsEnabled,
-      ctx.extraOptions,
-    ).pipe(
+    return snapshotPair(ctx.client, idPair, typeName, undefined, ctx.extraOptions).pipe(
       switchMap((versions) =>
         combineLatest([
           versions.draft.snapshots$,
