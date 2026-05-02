@@ -60,7 +60,6 @@ import {
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
-  serverDocumentActionsReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -866,10 +865,6 @@ function resolveSource({
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
-    },
-    // eslint-disable-next-line camelcase
-    __internal_serverDocumentActions: {
-      enabled: serverDocumentActionsReducer({config, initialValue: undefined}),
     },
 
     announcements: {

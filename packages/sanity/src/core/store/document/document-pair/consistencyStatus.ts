@@ -14,17 +14,15 @@ export const consistencyStatus: (
   client: SanityClient,
   idPair: IdPair,
   typeName: string,
-  serverActionsEnabled: Observable<boolean>,
   extraOptions?: DocumentStoreExtraOptions,
 ) => Observable<boolean> = memoize(
   (
     client: SanityClient,
     idPair: IdPair,
     typeName: string,
-    serverActionsEnabled: Observable<boolean>,
     extraOptions?: DocumentStoreExtraOptions,
   ) => {
-    return memoizedPair(client, idPair, typeName, serverActionsEnabled, extraOptions).pipe(
+    return memoizedPair(client, idPair, typeName, extraOptions).pipe(
       switchMap(({draft, published}) =>
         combineLatest([draft.consistency$, published.consistency$]),
       ),
