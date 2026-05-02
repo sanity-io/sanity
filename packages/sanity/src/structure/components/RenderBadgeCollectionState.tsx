@@ -2,7 +2,6 @@ import {memo, type ReactNode} from 'react'
 import {
   type DocumentBadgeDescription,
   type DocumentBadgeProps,
-  type EditStateFor,
   GetHookCollectionState,
 } from 'sanity'
 
@@ -14,7 +13,7 @@ export interface Badge<Args, Description> {
 /** @internal */
 export interface RenderBadgeCollectionProps {
   badges: Badge<DocumentBadgeProps, DocumentBadgeDescription>[]
-  badgeProps: EditStateFor
+  badgeProps: DocumentBadgeProps
   children: (props: {states: DocumentBadgeDescription[]}) => ReactNode
 }
 
@@ -23,7 +22,7 @@ export const RenderBadgeCollectionState = memo((props: RenderBadgeCollectionProp
   const {badges, children, badgeProps} = props
 
   return (
-    <GetHookCollectionState<EditStateFor, DocumentBadgeDescription>
+    <GetHookCollectionState<DocumentBadgeProps, DocumentBadgeDescription>
       hooks={badges}
       args={badgeProps}
     >

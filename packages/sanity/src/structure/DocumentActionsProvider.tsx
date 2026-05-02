@@ -1,3 +1,4 @@
+import {type SchemaType} from '@sanity/types'
 import {useMemo, useRef} from 'react'
 import {
   type DocumentActionComponent,
@@ -10,6 +11,7 @@ import {
   useActiveReleases,
   useCanvasCompanionDoc,
   useTranslation,
+  usePerspective,
 } from 'sanity'
 import {DocumentActionsStateContext} from 'sanity/_singletons'
 
@@ -20,32 +22,51 @@ interface ResolvedAction extends DocumentActionDescription {
   action?: DocumentActionComponent['action']
 }
 
+interface DocumentActionsProviderProps {
+  children: React.ReactNode
+  schemaType: SchemaType
+  documentType: string
+}
 /** @internal */
-export function DocumentActionsProvider(props: {children: React.ReactNode}) {
-  const {children} = props
+export function DocumentActionsProvider(props: DocumentActionsProviderProps) {
+  const {children, schemaType, documentType} = props
 
   const {data: activeReleases} = useActiveReleases()
+  const perspective = usePerspective()
 
   const {actions, editState, isInitialValueLoading, revisionId} = useDocumentPane()
 
   const onCompleteRef = useRef<() => void>(null)
 
+  const liveEditSchemaType = Boolean(schemaType.liveEdit)
+  // Editing a release version of the document or the schema type has live edit enabled
+  const liveEdit = Boolean(perspective.selectedReleaseId) || liveEditSchemaType
+
   const actionProps: Omit<DocumentActionProps, 'onComplete'> | null = useMemo(() => {
     // note: this is actually the bundle id of the current document
-
     const matchingReleaseName = activeReleases
       .map((r) => getReleaseIdFromReleaseDocumentId(r._id))
       .find((candidate) => candidate === editState?.release)
-
     return editState
       ? {
           ...editState,
+          type: documentType,
+          liveEdit,
+          liveEditSchemaType,
           release: matchingReleaseName,
           revision: revisionId || undefined,
           initialValueResolved: !isInitialValueLoading,
         }
       : null
-  }, [editState, isInitialValueLoading, revisionId, activeReleases])
+  }, [
+    editState,
+    isInitialValueLoading,
+    revisionId,
+    activeReleases,
+    liveEdit,
+    liveEditSchemaType,
+    documentType,
+  ])
 
   if (!actionProps) {
     return null

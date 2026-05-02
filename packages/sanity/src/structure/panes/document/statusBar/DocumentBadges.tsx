@@ -1,6 +1,6 @@
 import {Badge, type BadgeTone, Inline} from '@sanity/ui'
-import {memo, useCallback, useDeferredValue} from 'react'
-import {type DocumentBadgeDescription} from 'sanity'
+import {memo, useCallback, useDeferredValue, useMemo} from 'react'
+import {type DocumentBadgeDescription, type DocumentBadgeProps, usePerspective} from 'sanity'
 
 import {Tooltip} from '../../../../ui-components'
 import {RenderBadgeCollectionState} from '../../../components'
@@ -60,16 +60,34 @@ const DocumentBadgesDeferred = memo(function DocumentBadgesDeferred(
 })
 
 export function DocumentBadges() {
-  const {badges, editState} = useDocumentPane()
+  const {badges, editState, schemaType, documentType} = useDocumentPane()
+  const perspective = usePerspective()
+
+  const liveEditSchemaType = Boolean(schemaType.liveEdit)
+  // Editing a release version of the document or the schema type has live edit enabled
+  const liveEdit = Boolean(perspective.selectedReleaseId) || liveEditSchemaType
+
+  const badgeProps: DocumentBadgeProps | null = useMemo(
+    () =>
+      editState
+        ? {
+            ...editState,
+            type: documentType,
+            liveEdit,
+            liveEditSchemaType,
+          }
+        : null,
+    [editState, liveEdit, liveEditSchemaType, documentType],
+  )
 
   const renderDocumentBadges = useCallback<
     (props: {states: DocumentBadgeDescription[]}) => React.ReactNode
   >(({states}) => <DocumentBadgesDeferred states={states} />, [])
 
-  if (!editState || !badges) return null
+  if (!editState || !badges || !badgeProps) return null
 
   return (
-    <RenderBadgeCollectionState badges={badges} badgeProps={editState}>
+    <RenderBadgeCollectionState badges={badges} badgeProps={badgeProps}>
       {renderDocumentBadges}
     </RenderBadgeCollectionState>
   )

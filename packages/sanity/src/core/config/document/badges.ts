@@ -16,8 +16,20 @@ export interface DocumentBadgeDescription {
 /**
  * @hidden
  * @beta */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface DocumentBadgeProps extends EditStateFor {}
+export interface DocumentBadgeProps extends EditStateFor {
+  type: string
+  /**
+   * Whether live edit is enabled. This may be true for various reasons:
+   *
+   * - The schema type has live edit enabled.
+   * - A version of the document is checked out.
+   */
+  liveEdit: boolean
+  /**
+   * Whether the schema type has live edit enabled.
+   */
+  liveEditSchemaType: boolean
+}
 
 /**
  * @hidden

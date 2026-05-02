@@ -12,7 +12,13 @@ import {useActiveWorkspace} from '../studio/activeWorkspaceMatcher/useActiveWork
  *
  * @internal
  */
-export function useComlinkViewHistory({editState}: {editState: EditStateFor}): void {
+export function useComlinkViewHistory({
+  editState,
+  documentType,
+}: {
+  editState: EditStateFor
+  documentType: string
+}): void {
   const renderingContextStore = useRenderingContextStore()
   const capabilities = useObservable(renderingContextStore.capabilities)
   const {activeWorkspace} = useActiveWorkspace()
@@ -21,7 +27,7 @@ export function useComlinkViewHistory({editState}: {editState: EditStateFor}): v
   const {recordEvent} = useRecordDocumentHistoryEvent({
     resourceType: 'studio',
     documentId: displayed?._id ?? editState.id,
-    documentType: editState.type,
+    documentType,
     resourceId: [activeWorkspace.projectId, activeWorkspace.dataset].join('.'),
     schemaName: activeWorkspace.name,
   })

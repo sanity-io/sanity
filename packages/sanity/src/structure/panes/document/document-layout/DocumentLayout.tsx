@@ -204,7 +204,7 @@ export function DocumentLayout() {
         />
       )}
 
-      <DocumentActionsProvider>
+      <DocumentActionsProvider documentType={documentType} schemaType={schemaType}>
         <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
           <DocumentActionShortcuts
             actionsBoxElement={actionsBoxElement}

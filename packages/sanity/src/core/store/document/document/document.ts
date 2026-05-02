@@ -18,7 +18,6 @@ export interface DocumentStoreDocument {
   resolve: (target: DocumentTarget) => Observable<string>
   validation: (
     target: DocumentTarget,
-    typeName: string,
     validatePublishedReferences: boolean,
   ) => Observable<ValidationStatus>
 }
@@ -55,9 +54,9 @@ export function createDocumentStoreDocument(ctx: DocumentContext): DocumentStore
     resolve(target) {
       return resolveDocumentTarget(target)
     },
-    validation(target, typeName, validatePublishedReferences) {
+    validation(target, validatePublishedReferences) {
       return withResolvedTarget((resolved) =>
-        documentValidation(resolved, typeName, validatePublishedReferences, ctx),
+        documentValidation(resolved, validatePublishedReferences, ctx),
       )(target)
     },
   }

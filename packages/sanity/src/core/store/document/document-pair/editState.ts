@@ -11,7 +11,6 @@ import {type IdPair, type PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
 import {snapshotPair} from './snapshotPair'
-import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
 
 interface TransactionSyncLockState {
   enabled: boolean
@@ -26,23 +25,11 @@ const swr = createSWR<
  * @beta */
 export interface EditStateFor {
   id: string
-  type: string
   transactionSyncLock: TransactionSyncLockState | null
   snapshot: SanityDocument | null
   draft: SanityDocument | null
   published: SanityDocument | null
   version: SanityDocument | null
-  /**
-   * Whether live edit is enabled. This may be true for various reasons:
-   *
-   * - The schema type has live edit enabled.
-   * - A version of the document is checked out.
-   */
-  liveEdit: boolean
-  /**
-   * Whether the schema type has live edit enabled.
-   */
-  liveEditSchemaType: boolean
   ready: boolean
   /**
    * When editing a version, the name of the release the document belongs to.
@@ -64,9 +51,6 @@ export const editState = memoize(
     idPair: IdPair,
     typeName: string,
   ): Observable<EditStateFor> => {
-    const liveEditSchemaType = isLiveEditEnabled(ctx.schema, typeName)
-    const liveEdit = typeof idPair.versionId !== 'undefined' || liveEditSchemaType
-
     return snapshotPair(
       ctx.client,
       idPair,
@@ -108,8 +92,6 @@ export const editState = memoize(
           draft: draftSnapshot,
           published: publishedSnapshot,
           version: typeof idPair.versionId === 'undefined' ? null : versionSnapshot,
-          liveEdit,
-          liveEditSchemaType,
           ready: !fromCache,
           transactionSyncLock: fromCache ? null : transactionSyncLock,
           release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
@@ -122,8 +104,6 @@ export const editState = memoize(
         draft: null,
         published: null,
         version: null,
-        liveEdit,
-        liveEditSchemaType,
         ready: false,
         transactionSyncLock: null,
         release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,

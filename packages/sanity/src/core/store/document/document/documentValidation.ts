@@ -12,14 +12,10 @@ import {documentEditState} from './documentEditState'
 export const documentValidation = memoize(
   (
     documentId: string,
-    typeName: string,
     validatePublishedReferences: boolean,
     ctx: DocumentContext,
   ): Observable<ValidationStatus> => {
-    // document listener, start with a normal listener then switch to something like editState
-    const document$ = documentEditState(documentId, typeName, ctx).pipe(
-      map((state) => state.snapshot),
-    )
+    const document$ = documentEditState(documentId, ctx).pipe(map((state) => state.snapshot))
 
     const documentToValidate$ = document$.pipe(
       distinctUntilChanged((prev, next) => {
@@ -59,9 +55,8 @@ export const documentValidation = memoize(
         return {...validationStatus, revision}
       }),
     )
-    // shareReplay({bufferSize: 1, refCount: true}),
   },
-  (documentId, typeName, validatePublishedReferences) => {
-    return `${documentId}-${typeName}-${validatePublishedReferences ? 'true' : 'false'}`
+  (documentId, validatePublishedReferences) => {
+    return `${documentId}-${validatePublishedReferences ? 'true' : 'false'}`
   },
 )

@@ -19,11 +19,7 @@ export function useValidationStatus(
       typeof validationTarget === 'string'
         ? // Preserve original behavior if the validation target is a string
           documentStore.pair.validation(validationTarget, docTypeName, requirePublishedReferences)
-        : documentStore.document.validation(
-            validationTarget,
-            docTypeName,
-            requirePublishedReferences,
-          ),
+        : documentStore.document.validation(validationTarget, requirePublishedReferences),
     [validationTarget, docTypeName, documentStore, requirePublishedReferences],
   )
 

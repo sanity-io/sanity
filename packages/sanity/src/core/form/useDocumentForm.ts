@@ -489,7 +489,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     formStateRef.current = formState
   }, [formState])
 
-  useComlinkViewHistory({editState})
+  useComlinkViewHistory({editState, documentType})
 
   const handleSetOpenPath = (path: Path) => {
     const ops = getExpandOperations(formStateRef.current, path)

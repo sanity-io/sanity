@@ -27,7 +27,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, states} = props
   const {__internal_tasks} = useSource()
-  const {editState} = useDocumentPane()
+  const {editState, schemaType} = useDocumentPane()
   const {params} = usePaneRouter()
   const showingRevision = Boolean(params?.rev)
 
@@ -66,7 +66,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
         // Otherwise, only show custom (non-Sanity-defined) actions as primary
         firstActionState &&
         (shouldShowScheduleAsFirstActionButton || !isSanityDefinedAction(firstActionState))
-      : firstActionState && (!editState?.liveEdit || editState?.version)
+      : firstActionState && (!schemaType?.liveEdit || editState?.version)
 
   const sideMenuItems = useMemo(() => {
     return showFirstActionButton

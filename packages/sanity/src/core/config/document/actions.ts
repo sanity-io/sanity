@@ -11,6 +11,18 @@ import {type ActionComponent, type GroupableActionDescription} from '../types'
  * @hidden
  * @beta */
 export interface DocumentActionProps extends EditStateFor {
+  type: string
+  /**
+   * Whether live edit is enabled. This may be true for various reasons:
+   *
+   * - The schema type has live edit enabled.
+   * - A version of the document is checked out.
+   */
+  liveEdit: boolean
+  /**
+   * Whether the schema type has live edit enabled.
+   */
+  liveEditSchemaType: boolean
   revision?: string
   /**
    * @deprecated - do not use, will be removed in a future major version, use local state instead, for example call `setDialogOpen(false)` in dialog's `onCancel` callback.

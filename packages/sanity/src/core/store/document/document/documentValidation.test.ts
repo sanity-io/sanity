@@ -43,9 +43,7 @@ describe('documentValidation', () => {
       ),
     )
 
-    const validation = firstValueFrom(
-      documentValidation('example-id', 'movie', true, getContext() as any),
-    )
+    const validation = firstValueFrom(documentValidation('example-id', true, getContext() as any))
 
     editState$.next({snapshot: {_id: 'example-id', _type: 'movie', _rev: 'rev1', title: 'Alien'}})
     editState$.next({snapshot: {_id: 'example-id', _type: 'movie', _rev: 'rev2', title: 'Aliens'}})
@@ -55,7 +53,7 @@ describe('documentValidation', () => {
       validation: [],
       revision: 'rev2',
     })
-    expect(mockDocumentEditState).toHaveBeenCalledWith('example-id', 'movie', expect.any(Object))
+    expect(mockDocumentEditState).toHaveBeenCalledWith('example-id', expect.any(Object))
     expect(mockValidateDocumentWithReferences).toHaveBeenCalledWith(
       expect.any(Object),
       expect.any(Object),
@@ -68,11 +66,11 @@ describe('documentValidation', () => {
     mockDocumentEditState.mockReturnValue(of({snapshot: null}))
     mockValidateDocumentWithReferences.mockReturnValue(of({isValidating: false, validation: []}))
 
-    expect(documentValidation('example-id', 'movie', true, ctx)).toBe(
-      documentValidation('example-id', 'movie', true, ctx),
+    expect(documentValidation('example-id', true, ctx)).toBe(
+      documentValidation('example-id', true, ctx),
     )
-    expect(documentValidation('example-id', 'movie', true, ctx)).not.toBe(
-      documentValidation('example-id', 'movie', false, ctx),
+    expect(documentValidation('example-id', true, ctx)).not.toBe(
+      documentValidation('example-id', false, ctx),
     )
   })
 
@@ -86,9 +84,7 @@ describe('documentValidation', () => {
       return of({isValidating: false, validation: []})
     })
 
-    const validation = firstValueFrom(
-      documentValidation('same-rev-id', 'movie', true, getContext() as any),
-    )
+    const validation = firstValueFrom(documentValidation('same-rev-id', true, getContext() as any))
 
     editState$.next({snapshot: {_id: 'same-rev-id', _type: 'movie', _rev: 'rev1', title: 'Alien'}})
     editState$.next({snapshot: {_id: 'same-rev-id', _type: 'movie', _rev: 'rev1', title: 'Aliens'}})

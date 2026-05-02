@@ -87,6 +87,14 @@ describe('document store document', () => {
     ).resolves.toBe('versions.release-id.example-id')
   })
 
+  it('throws for release document targets without a release id', () => {
+    const document = createDocumentStoreDocumentFixture()
+
+    expect(() => document.resolve({baseId: 'example-id', version: '_.releases.'})).toThrow(
+      'Invalid version: _.releases.',
+    )
+  })
+
   it('uses the variant when memoizing resolved targets', () => {
     const document = createDocumentStoreDocumentFixture()
 
@@ -102,13 +110,12 @@ describe('document store document', () => {
 
     mockDocumentValidation.mockReturnValue(of(validationStatus))
 
-    await expect(firstValueFrom(document.validation(target, 'movie', true))).resolves.toEqual(
+    await expect(firstValueFrom(document.validation(target, true))).resolves.toEqual(
       validationStatus,
     )
 
     expect(mockDocumentValidation).toHaveBeenCalledWith(
       'drafts.example-id',
-      'movie',
       true,
       expect.any(Object),
     )
