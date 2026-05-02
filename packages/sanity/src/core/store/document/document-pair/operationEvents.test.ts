@@ -19,7 +19,7 @@ const schema = createSchema({
 })
 
 function createDocumentClient(dataset: string) {
-  const dataRequest = vi.fn(() => Promise.resolve({transactionId: `tx-${dataset}`}))
+  const actionRequest = vi.fn(() => of({transactionId: `action-${dataset}`}))
 
   const client = {
     config: () => ({
@@ -28,17 +28,17 @@ function createDocumentClient(dataset: string) {
       dataset,
     }),
     observable: {
-      action: vi.fn(() => of({transactionId: `action-${dataset}`})),
+      action: actionRequest,
       getDocuments: vi.fn(() => of([null, null])),
       listen: vi.fn(() => of({type: 'welcome'})),
     },
-    dataRequest,
+    dataRequest: vi.fn(() => Promise.resolve({transactionId: `tx-${dataset}`})),
     withConfig: vi.fn(),
   }
 
   client.withConfig.mockReturnValue(client)
 
-  return {client: client as unknown as SanityClient, dataRequest}
+  return {client: client as unknown as SanityClient, actionRequest}
 }
 
 describe('operationEvents', () => {
@@ -88,8 +88,9 @@ describe('operationEvents', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 0))
 
-    expect(clientA.dataRequest).toHaveBeenCalledTimes(1)
-    expect(clientB.dataRequest).not.toHaveBeenCalled()
+    // Called with sanity.action.document.create and then with sanity.action.document.edit
+    expect(clientA.actionRequest).toHaveBeenCalledTimes(2)
+    expect(clientB.actionRequest).not.toHaveBeenCalled()
 
     subscriptionA.unsubscribe()
     subscriptionB.unsubscribe()
