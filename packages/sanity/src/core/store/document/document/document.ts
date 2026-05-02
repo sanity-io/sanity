@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema} from '@sanity/types'
-import {of, type Observable} from 'rxjs'
+import {of, type Observable, type ObservableInput} from 'rxjs'
 import {shareReplay, switchMap} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config'
@@ -42,8 +42,10 @@ const resolveDocumentTarget = memoize((target: DocumentTarget): Observable<strin
 }, getTargetKey)
 
 // Keeps document-scoped methods from repeating the same resolve-then-switchMap wrapper.
-const withResolvedTarget = (target: DocumentTarget, fn: (resolved: string) => Observable<any>) =>
-  resolveDocumentTarget(target).pipe(switchMap(fn))
+const withResolvedTarget =
+  <Result>(fn: (resolved: string) => ObservableInput<Result>) =>
+  (target: DocumentTarget): Observable<Result> =>
+    resolveDocumentTarget(target).pipe(switchMap(fn))
 
 /** @internal */
 // Single-document facade that mirrors `documentStore.pair`, but starts from an explicit target
@@ -54,9 +56,9 @@ export function createDocumentStoreDocument(ctx: DocumentContext): DocumentStore
       return resolveDocumentTarget(target)
     },
     validation(target, typeName, validatePublishedReferences) {
-      return withResolvedTarget(target, (resolved) =>
+      return withResolvedTarget((resolved) =>
         documentValidation(resolved, typeName, validatePublishedReferences, ctx),
-      )
+      )(target)
     },
   }
 }

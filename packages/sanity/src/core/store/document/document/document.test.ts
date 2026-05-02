@@ -5,12 +5,13 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {getFallbackLocaleSource} from '../../../i18n/fallback'
 import {createSchema} from '../../../schema'
-import {validation as pairValidation} from '../document-pair/validation'
 import {createDocumentStoreDocument} from './document'
+import {documentValidation} from './documentValidation'
+import {type DocumentTarget} from './types'
 
-vi.mock('./document-pair/validation', () => ({validation: vi.fn()}))
+vi.mock('./documentValidation', () => ({documentValidation: vi.fn()}))
 
-const mockPairValidation = pairValidation as Mock<typeof pairValidation>
+const mockDocumentValidation = documentValidation as Mock<typeof documentValidation>
 
 const schema = createSchema({
   name: 'default',
@@ -25,7 +26,7 @@ const schema = createSchema({
 
 // Test helper for the document store context; mirrors the existing pair validation tests.
 function getMockClient() {
-  return createMockSanityClient() as any as SanityClient
+  return createMockSanityClient() as unknown as SanityClient
 }
 
 // Builds the single-document facade with enough context to exercise resolver and validation wiring.
@@ -35,98 +36,81 @@ function createDocumentStoreDocumentFixture() {
   return createDocumentStoreDocument({
     client,
     getClient: () => client,
-    observeDocumentPairAvailability: () => of({available: true, reason: 'READABLE'}),
+    observeDocumentPairAvailability: () =>
+      of({
+        draft: {available: true, reason: 'READABLE'},
+        published: {available: true, reason: 'READABLE'},
+      }),
     schema,
     i18n: getFallbackLocaleSource(),
-    serverActionsEnabled: of(false),
   })
 }
 
 describe('document store document', () => {
   beforeEach(() => {
-    mockPairValidation.mockReset()
+    mockDocumentValidation.mockReset()
   })
 
   it('memoizes resolved document targets for the same arguments', () => {
     const document = createDocumentStoreDocumentFixture()
-    const target = {documentId: 'drafts.example-id', typeName: 'movie'}
+    const target = {baseId: 'example-id', version: 'drafts'} satisfies DocumentTarget
 
     expect(document.resolve(target)).toBe(document.resolve(target))
   })
 
-  it('memoizes validation streams for the same arguments', () => {
-    const document = createDocumentStoreDocumentFixture()
-
-    expect(document.validation('drafts.example-id', 'movie', true)).toBe(
-      document.validation('drafts.example-id', 'movie', true),
-    )
-  })
-
-  it('resolves concrete document IDs to the current pair shape', async () => {
+  it('resolves draft targets to the concrete draft id', async () => {
     const document = createDocumentStoreDocumentFixture()
 
     await expect(
-      firstValueFrom(
-        document.resolve({documentId: 'versions.release-id.example-id', typeName: 'movie'}),
-      ),
-    ).resolves.toMatchObject({
-      documentId: 'versions.release-id.example-id',
-      idPair: {
-        draftId: 'drafts.example-id',
-        publishedId: 'example-id',
-        versionId: 'versions.release-id.example-id',
-      },
-      target: {
-        baseId: 'example-id',
-        typeName: 'movie',
-        version: '_.releases.release-id',
-      },
-      typeName: 'movie',
-      validationTarget: 'version',
-    })
+      firstValueFrom(document.resolve({baseId: 'example-id', version: 'drafts'})),
+    ).resolves.toBe('drafts.example-id')
   })
 
-  it('resolves release document IDs in target descriptors to current version IDs', async () => {
+  it('resolves published targets to the concrete published id', async () => {
+    const document = createDocumentStoreDocumentFixture()
+
+    await expect(
+      firstValueFrom(document.resolve({baseId: 'drafts.example-id', version: 'published'})),
+    ).resolves.toBe('example-id')
+  })
+
+  it('resolves release document targets to the concrete version id', async () => {
     const document = createDocumentStoreDocumentFixture()
 
     await expect(
       firstValueFrom(
         document.resolve({
           baseId: 'example-id',
-          typeName: 'movie',
           version: '_.releases.release-id',
         }),
       ),
-    ).resolves.toMatchObject({
-      documentId: 'versions.release-id.example-id',
-      idPair: {
-        draftId: 'drafts.example-id',
-        publishedId: 'example-id',
-        versionId: 'versions.release-id.example-id',
-      },
-      validationTarget: 'version',
-    })
+    ).resolves.toBe('versions.release-id.example-id')
   })
 
-  it('validates through the existing pair validation implementation', async () => {
+  it('uses the variant when memoizing resolved targets', () => {
+    const document = createDocumentStoreDocumentFixture()
+
+    expect(document.resolve({baseId: 'example-id', version: 'drafts', variant: 'a'})).not.toBe(
+      document.resolve({baseId: 'example-id', version: 'drafts', variant: 'b'}),
+    )
+  })
+
+  it('validates through the document validation implementation', async () => {
     const document = createDocumentStoreDocumentFixture()
     const validationStatus = {isValidating: false, validation: []}
+    const target = {baseId: 'example-id', version: 'drafts'} satisfies DocumentTarget
 
-    mockPairValidation.mockReturnValue(of(validationStatus))
+    mockDocumentValidation.mockReturnValue(of(validationStatus))
 
-    await expect(
-      firstValueFrom(document.validation('drafts.example-id', 'movie', true)),
-    ).resolves.toEqual(validationStatus)
+    await expect(firstValueFrom(document.validation(target, 'movie', true))).resolves.toEqual(
+      validationStatus,
+    )
 
-    expect(mockPairValidation).toHaveBeenCalledWith(
-      expect.any(Object),
-      {
-        draftId: 'drafts.example-id',
-        publishedId: 'example-id',
-      },
+    expect(mockDocumentValidation).toHaveBeenCalledWith(
+      'drafts.example-id',
       'movie',
-      'draft',
       true,
+      expect.any(Object),
     )
   })
 })

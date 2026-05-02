@@ -61,7 +61,7 @@ export const documentValidation = memoize(
     )
     // shareReplay({bufferSize: 1, refCount: true}),
   },
-  (documentId, validatePublishedReferences) => {
-    return `${documentId}-${validatePublishedReferences ? 'true' : 'false'}`
+  (documentId, typeName, validatePublishedReferences) => {
+    return `${documentId}-${typeName}-${validatePublishedReferences ? 'true' : 'false'}`
   },
 )
