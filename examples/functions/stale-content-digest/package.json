@@ -1,0 +1,32 @@
+{
+  "name": "stale-content-digest",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.22.0",
+    "@sanity/functions": "^1.3.1",
+    "@slack/web-api": "^7.15.1"
+  },
+  "blueprintResourceItem": {
+    "type": "sanity.function.scheduled",
+    "name": "stale-content-digest",
+    "src": "./functions/stale-content-digest",
+    "memory": 1,
+    "timeout": 30,
+    "event": {
+      "expression": "0 8 * * 1"
+    },
+    "timezone": "UTC",
+    "env": {
+      "COMMENT": "PROJECT_ID, DATASET, SLACK_OAUTH_TOKEN, and SLACK_CHANNEL are required. Optional: DAYS_SINCE (default 180), STUDIO_URL (enables deep-links to the document in Slack), NOTIFY_WHEN_EMPTY ('true' to post a message even when nothing is stale).",
+      "PROJECT_ID": "PROJECT_ID",
+      "DATASET": "DATASET",
+      "SLACK_OAUTH_TOKEN": "SLACK_OAUTH_TOKEN",
+      "SLACK_CHANNEL": "SLACK_CHANNEL",
+      "DAYS_SINCE": "DAYS_SINCE",
+      "STUDIO_URL": "STUDIO_URL",
+      "NOTIFY_WHEN_EMPTY": "NOTIFY_WHEN_EMPTY"
+    }
+  },
+  "exampleInstructions": "Add this resource to your Blueprint config's resources array. The function runs every Monday at 08:00 UTC and needs a robot token with read access. See README.md for full setup."
+}
