@@ -3,8 +3,8 @@ import {
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
-import {defer, EMPTY, fromEvent, type Observable} from 'rxjs'
-import {distinctUntilChanged, filter, shareReplay, startWith, switchMap} from 'rxjs/operators'
+import {defer, EMPTY, fromEvent, merge, type Observable, using} from 'rxjs'
+import {distinctUntilChanged, filter, shareReplay, skip, startWith, switchMap} from 'rxjs/operators'
 
 import {isStaging} from '../../environment/isStaging'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
@@ -12,8 +12,10 @@ import {
   AUTH_CLIENT_OPTIONS,
   AUTHENTICATED,
   getAuthTokenStorageKey,
+  getCookieAuthStateKey,
   UNAUTHENTICATED,
 } from './constants'
+import {createBroadcastState} from './createBroadcastState'
 
 /** @internal */
 export interface WorkspaceAuthProbeInput {
@@ -68,9 +70,13 @@ async function callAuthId(client: SanityClient): Promise<WorkspaceAuthProbeResul
   }
 }
 
-// Module-level cache. Lives for the lifetime of the page; bounded by the
-// number of distinct (apiHost, projectId, token) tuples in the studio
-// config, which is small in practice.
+// Module-level cache for observable identity. Keeps two simultaneous probes
+// for the same tuple sharing one underlying request via `shareReplay`.
+// The cache holds observable references only; the inner BroadcastChannel
+// and DOM listeners are created on first subscribe and disposed on last
+// unsubscribe (see `using` below). Bounded by the number of distinct
+// (apiHost, projectId, token) tuples in the studio config — typically a
+// handful, so a plain `Map` (no LRU eviction) is sufficient.
 const cache = new Map<string, Observable<WorkspaceAuthProbeResult>>()
 
 function cacheKey(input: {
@@ -111,22 +117,53 @@ function buildProbe(
 
   const client = factory(clientConfig)
 
-  // Re-probe when this project's token key changes in another tab.
-  // We don't write to storage from here — only listen.
   const tokenKey = getAuthTokenStorageKey(input.projectId)
-  const storageEvents$: Observable<unknown> =
-    typeof window === 'undefined'
-      ? EMPTY
-      : fromEvent<StorageEvent>(window, 'storage').pipe(filter((e) => e.key === tokenKey))
+  const cookieKey = getCookieAuthStateKey(input.projectId)
 
-  const observable$ = storageEvents$.pipe(
-    startWith(undefined),
-    switchMap(() => defer(() => callAuthId(client))),
-    // `callAuthId` always returns one of two stable references
-    // (`AUTHENTICATED` / `UNAUTHENTICATED`), so default `===` is enough.
-    distinctUntilChanged(),
-    shareReplay({bufferSize: 1, refCount: true}),
-  )
+  // Re-probe when an external signal indicates auth state may have changed.
+  //
+  // Token workspaces: `localStorage` writes from another tab fire a `storage`
+  // event natively. Always subscribe.
+  //
+  // Cookie/dual workspaces: cookies don't generate browser events, so the
+  // active workspace's `AuthStore` broadcasts on a per-project channel after
+  // login/logout. We listen but never write — token-only probes ignore this
+  // signal because their credential (the token) is independent of cookie
+  // state. We treat any emit as a tick: re-run `callAuthId` rather than
+  // trusting the broadcast value.
+  type ProbeResource = {
+    cookieState: ReturnType<typeof createBroadcastState> | null
+    unsubscribe: () => void
+  }
+  const observable$ = using(
+    (): ProbeResource => {
+      // Resource factory: opens the BroadcastChannel on first subscribe and
+      // closes it on last unsubscribe. Token-only probes have no use for
+      // the cookie broadcast, so they skip the channel entirely. The
+      // resource is owned by `using` per subscription, so simultaneous
+      // teardown/resubscribe cycles can't cross-dispose each other.
+      const cookieState = token ? null : createBroadcastState(cookieKey)
+      return {cookieState, unsubscribe: () => cookieState?.dispose()}
+    },
+    (resource) => {
+      const {cookieState} = resource as ProbeResource
+      // `createBroadcastState` is a `BehaviorSubject`-backed value
+      // observable; skip its initial replay so we only fire on subsequent
+      // (i.e., genuinely new) emits.
+      const cookieTicks$ = cookieState?.value.pipe(skip(1)) ?? EMPTY
+      const storageEvents$: Observable<unknown> =
+        typeof window === 'undefined'
+          ? EMPTY
+          : fromEvent<StorageEvent>(window, 'storage').pipe(filter((e) => e.key === tokenKey))
+      return merge(storageEvents$, cookieTicks$).pipe(
+        startWith(undefined),
+        switchMap(() => defer(() => callAuthId(client))),
+        // `callAuthId` always returns one of two stable references
+        // (`AUTHENTICATED` / `UNAUTHENTICATED`), so default `===` is enough.
+        distinctUntilChanged(),
+      )
+    },
+  ).pipe(shareReplay({bufferSize: 1, refCount: true}))
 
   cache.set(key, observable$)
   return observable$
@@ -140,11 +177,15 @@ function buildProbe(
  *
  * Independent of the full `AuthStore`: does not write to localStorage or
  * BroadcastChannels, so probing many workspaces never poisons the active
- * workspace's auth state.
+ * workspace's auth state. The probe does *listen* to the cookie auth
+ * broadcast (cookie/dual probes only) and to `storage` events (all probes)
+ * to re-probe when another tab logs in or out.
  *
  * Probes are deduped by `(apiHost, projectId, token)`. Workspaces in the same
  * project that share a token (or both rely on the cookie) share a single
- * underlying request via `shareReplay`.
+ * underlying request via `shareReplay`. The BroadcastChannel and DOM
+ * listeners are created on first subscribe and disposed when the last
+ * subscriber unsubscribes.
  *
  * @internal
  */
