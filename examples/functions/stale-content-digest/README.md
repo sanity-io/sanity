@@ -22,17 +22,24 @@ It bundles three Sanity capabilities into one workflow:
 
 - **Catches drift early.** Stale content gets flagged before readers notice.
 - **One Slack post per week.** Low-noise format editors will actually read.
-- **AI does the reading.** The agent looks at every overview so editors only see what needs attention.
+- **AI does the reading.** The agent scans every flagged document so editors only see what needs attention.
 - **Zero infrastructure.** Sanity runs the schedule and the function for you.
+
+## Prerequisites
+
+- Node.js v22.x.
+- A Sanity account with [Functions](https://www.sanity.io/docs/functions) and [Agent Actions](https://www.sanity.io/docs/agent-actions) enabled. Agent Actions are an experimental feature on the `vX` API channel.
+- The Sanity CLI (`npx sanity` works, no global install needed).
+- A Slack workspace where you can install a bot (admin or app-install permissions).
 
 ## Setup
 
 This recipe needs three things connected: a Sanity project with content to review, a Slack bot to receive the digest, and a Sanity Blueprint with a scheduled function. Setup depends on whether you already have a Sanity project.
 
 - **A. [Demo with the moviedb sample](#a-demo-with-the-moviedb-sample).** Spin up a fresh Sanity project from the moviedb template and run the recipe as-is. About 10 minutes from zero to a Slack post.
-- **B. [Wire it into your existing Sanity project](#b-wire-it-into-your-existing-sanity-project).** Use a Studio you already have, then adapt the function to your schema.
+- **B. [Wire it into your existing Sanity project](#b-wire-it-into-your-existing-sanity-project).** Use a Studio you already have, then let a coding agent (Claude Code, Cursor, Codex) or chat LLM adapt the function to your schema.
 
-Both paths use the shared [Set up the Slack app](#set-up-the-slack-app) section, and Path B uses [Adapt the function to your schema](#adapt-the-function-to-your-schema). Deployment to production happens after either path completes locally; see [Deploy](#deploy).
+Both paths use the shared [Set up the Slack app](#set-up-the-slack-app) section. Path B uses [Adapt the function to your schema](#adapt-the-function-to-your-schema), which leans on a coding agent or chat LLM to point the function at your schema. Deployment to production happens after either path completes locally; see [Deploy](#deploy).
 
 ### A. Demo with the moviedb sample
 
@@ -121,13 +128,13 @@ Use this when you already have a Sanity Studio with content you want reviewed. Y
 
 5. **Configure the blueprint.** Open `sanity.blueprint.ts` and update it to match the [Blueprint reference](#blueprint-reference) below. If you already have other resources, add the `defineRobotToken` and `defineScheduledFunction` definitions to the existing `resources` array.
 
-6. **Adapt the function to your schema.** The function ships pointed at the `movie` document type, which your project almost certainly doesn't have. The easiest way to retarget it: open a coding agent (Claude Code, Cursor, Codex) in your project root and prompt it with:
+6. **Adapt the function to your schema.** The function ships pointed at the `movie` document type. To point it at your content, open a coding agent (Claude Code, Cursor, Codex) in your project root and prompt it with:
 
    ```
    adapt functions/stale-content-digest/ to my schema
    ```
 
-   The function folder ships with an `AGENTS.md` that the agent auto-discovers — it'll read your schema, pick a candidate document type, and rewrite the GROQ query, TypeScript interface, and agent instruction. If the agent asks which type to target, tell it (e.g., "use the `post` type, body field is `body`"). See [Adapt the function to your schema](#adapt-the-function-to-your-schema) for alternatives (chat LLMs, hand edits).
+   The function folder ships with an `AGENTS.md` that the agent auto-discovers. It reads your schema, picks a candidate document type, and rewrites the GROQ query, TypeScript interface, and agent instruction. If the agent asks which type to target, tell it (e.g., "use the `post` type, body field is `body`"). See [Adapt the function to your schema](#adapt-the-function-to-your-schema) for alternatives (chat LLMs, hand edits).
 
 7. **Configure `.env`.** Create or append to `.env` in your project root:
 
@@ -175,7 +182,7 @@ You need a Slack bot token to post the digest.
 
 The function ships pointed at the `movie` document type and the `overview` Portable Text field. Two ways to adapt it to your content:
 
-- **Coding agent (recommended).** Open Claude Code, Cursor, or Codex in your project root and prompt it with: `adapt functions/stale-content-digest/ to my schema`. The function folder ships with an [AGENTS.md](./AGENTS.md) the agent auto-discovers — it reads your schema, picks a candidate document type, rewrites the GROQ query and TypeScript interface, and tailors the agent instruction. If multiple types qualify, the agent will ask which one to target.
+- **Coding agent (recommended).** Open Claude Code, Cursor, or Codex in your project root and prompt it with: `adapt functions/stale-content-digest/ to my schema`. The function folder ships with an [AGENTS.md](./AGENTS.md) the agent auto-discovers. It reads your schema, picks a candidate document type, rewrites the GROQ query and TypeScript interface, and tailors the agent instruction. If multiple types qualify, the agent will ask which one to target.
 
 - **Chat LLM.** For ChatGPT or Claude.ai (without file access in your project), paste [PROMPT.md](./PROMPT.md) into the chat. Works best when the LLM is configured with the [Sanity MCP](https://www.sanity.io/docs/model-context-protocol) so it can read your schema directly.
 
@@ -340,13 +347,6 @@ event: {
 
 - Cause: too many stale documents. The agent call is the bottleneck.
 - Solution: increase `timeout` in the blueprint, batch the documents, or narrow the query.
-
-## Requirements
-
-- A Sanity project with [Functions](https://www.sanity.io/docs/functions) and [Agent Actions](https://www.sanity.io/docs/agent-actions) enabled. Agent Actions are an experimental feature on the `vX` API channel.
-- The `moviedb` template, or any document type with a text-like field (string, text, Portable Text, or array of strings). See [Adapt the function to your schema](#adapt-the-function-to-your-schema).
-- A Slack workspace and bot token with `chat:write`.
-- Node.js v22.x for local development.
 
 ## Related examples
 
