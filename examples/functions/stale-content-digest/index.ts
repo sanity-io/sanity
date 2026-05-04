@@ -1,7 +1,8 @@
+import {env} from 'node:process'
+
 import {createClient} from '@sanity/client'
 import {scheduledEventHandler} from '@sanity/functions'
 import {WebClient} from '@slack/web-api'
-import {env} from 'node:process'
 
 interface Movie {
   _id: string
