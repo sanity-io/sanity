@@ -1,4 +1,4 @@
-# Stale Content Digest Function
+# Stale Content Digest Scheduled Function
 
 [Explore all examples](https://github.com/sanity-labs/function-recipes)
 
