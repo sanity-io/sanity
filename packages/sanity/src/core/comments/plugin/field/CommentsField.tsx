@@ -76,6 +76,13 @@ const HighlightDiv = styled(motion.div)(({theme}) => {
 
 const FieldStack = styled(Stack)`
   position: relative;
+
+  // Hide when the field component renders nothing (e.g. a custom
+  // field component that returns null) to avoid an empty wrapper
+  // taking up space in the form.
+  &:empty:not([hidden]) {
+    display: none;
+  }
 `
 
 function CommentFieldInner(
