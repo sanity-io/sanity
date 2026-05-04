@@ -11,6 +11,116 @@ import {
   resolveConditionalProperty,
 } from './resolveConditionalProperty'
 
+/**
+ * Per-`(schemaType, property)` summary used to decide whether the recursive
+ * walk in `resolveCallbackState` can be skipped. The walk is skipped only
+ * when `!hasCallback && nestingDepth < MAX_FIELD_DEPTH`; any other case falls
+ * through to the original walk so observable behaviour is preserved.
+ */
+interface SchemaSummary {
+  hasCallback: boolean
+  /** Capped at `MAX_FIELD_DEPTH`. Cyclic types always reach the cap. */
+  nestingDepth: number
+}
+
+const SCHEMA_SUMMARY_CACHE: WeakMap<
+  SchemaType,
+  {hidden?: SchemaSummary; readOnly?: SchemaSummary}
+> = new WeakMap()
+
+const CYCLIC_SUMMARY: SchemaSummary = {hasCallback: false, nestingDepth: MAX_FIELD_DEPTH}
+
+function isPossiblyTruthy(value: unknown): boolean {
+  return typeof value === 'function' || value === true
+}
+
+function summarizeSchema(
+  schemaType: SchemaType,
+  property: 'hidden' | 'readOnly',
+  seen: WeakSet<SchemaType> = new WeakSet(),
+): SchemaSummary {
+  // Cycle break: re-entering a type up the call stack means any direct
+  // callback on it has already been checked in the original visit. We report
+  // `nestingDepth: MAX_FIELD_DEPTH` so cyclic schemas always run the original
+  // walk (which is itself bounded by `MAX_FIELD_DEPTH`).
+  if (seen.has(schemaType)) return CYCLIC_SUMMARY
+
+  let entry = SCHEMA_SUMMARY_CACHE.get(schemaType)
+  const cached = entry?.[property]
+  if (cached) return cached
+
+  if (isPossiblyTruthy(schemaType[property])) {
+    const summary: SchemaSummary = {hasCallback: true, nestingDepth: 0}
+    if (!entry) {
+      entry = {}
+      SCHEMA_SUMMARY_CACHE.set(schemaType, entry)
+    }
+    entry[property] = summary
+    return summary
+  }
+
+  seen.add(schemaType)
+  const summary = computeSummary(schemaType, property, seen)
+
+  if (!entry) {
+    entry = {}
+    SCHEMA_SUMMARY_CACHE.set(schemaType, entry)
+  }
+  entry[property] = summary
+  return summary
+}
+
+function computeSummary(
+  schemaType: SchemaType,
+  property: 'hidden' | 'readOnly',
+  seen: WeakSet<SchemaType>,
+): SchemaSummary {
+  let hasCallback = false
+  let maxChildNestingDepth = -1
+
+  const visit = (child: SchemaSummary) => {
+    if (child.hasCallback) hasCallback = true
+    if (child.nestingDepth > maxChildNestingDepth) maxChildNestingDepth = child.nestingDepth
+  }
+
+  if (schemaType.jsonType === 'object') {
+    const fieldsets = schemaType.fieldsets
+      ? schemaType.fieldsets
+      : schemaType.fields.map((field) => ({single: true as const, field}))
+
+    for (const fieldset of fieldsets) {
+      if (fieldset.single) {
+        visit(summarizeSchema(fieldset.field.type, property, seen))
+        continue
+      }
+      if (isPossiblyTruthy(fieldset.hidden)) hasCallback = true
+      for (const field of fieldset.fields) {
+        visit(summarizeSchema(field.type, property, seen))
+      }
+    }
+
+    for (const group of schemaType.groups ?? EMPTY_ARRAY) {
+      // Mirrors the original `resolveCallbackState`: groups today only declare
+      // `hidden`, never `readOnly`, but we defer to the runtime shape so that
+      // a future schema-API extension is picked up automatically.
+      if (property in group && isPossiblyTruthy(group[property as 'hidden'])) {
+        hasCallback = true
+      }
+    }
+  } else if (schemaType.jsonType === 'array') {
+    for (const item of schemaType.of ?? EMPTY_ARRAY) {
+      visit(summarizeSchema(item, property, seen))
+    }
+  }
+  // Leaf types contribute no recursion: `maxChildNestingDepth` stays at -1
+  // and the resulting summary has `nestingDepth: 0`.
+
+  return {
+    hasCallback,
+    nestingDepth: Math.min(maxChildNestingDepth + 1, MAX_FIELD_DEPTH),
+  }
+}
+
 interface ResolveCallbackStateOptions {
   property: 'readOnly' | 'hidden'
   value: unknown
@@ -177,6 +287,17 @@ export function createCallbackResolver<TProperty extends 'hidden' | 'readOnly'>(
     }
 
     if (last?.serializedHash === serializedHash) return last.result
+
+    // Module-scoped short-circuit: when the schema has no `hidden`/`readOnly`
+    // callbacks anywhere AND doesn't reach `MAX_FIELD_DEPTH`, the recursive
+    // walk below would always produce `undefined`, so skip it. Schemas that
+    // do reach the depth limit fall through to the original walk so the
+    // depth-boundary marker tree is preserved verbatim.
+    const summary = summarizeSchema(schemaType, property)
+    if (!summary.hasCallback && summary.nestingDepth < MAX_FIELD_DEPTH) {
+      last = {serializedHash, result: undefined}
+      return undefined
+    }
 
     const result = immutableReconcile(
       last?.result ?? null,
