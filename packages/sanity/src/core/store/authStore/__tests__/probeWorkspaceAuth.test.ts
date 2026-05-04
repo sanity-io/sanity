@@ -2,6 +2,7 @@ import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanit
 import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {getAuthTokenStorageKey} from '../constants'
 import {_probeWorkspaceAuthForTest, _resetProbeWorkspaceAuthCache} from '../probeWorkspaceAuth'
 
 // Match the convention from createAuthStore.test.ts: ensure localStorage is
@@ -163,7 +164,7 @@ describe('probeWorkspaceAuth', () => {
   })
 
   it('uses token auth when a token is present in localStorage', async () => {
-    localStorage.setItem('__studio_auth_token_p1', JSON.stringify({token: 'mock-token-abc'}))
+    localStorage.setItem(getAuthTokenStorageKey('p1'), JSON.stringify({token: 'mock-token-abc'}))
 
     const mock = createMockFactory({authenticated: true})
     const probe$ = _probeWorkspaceAuthForTest(

@@ -7,8 +7,13 @@ import {defer, EMPTY, fromEvent, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
 import {isStaging} from '../../environment/isStaging'
-import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../studioClient'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
+import {
+  AUTH_CLIENT_OPTIONS,
+  AUTHENTICATED,
+  getAuthTokenStorageKey,
+  UNAUTHENTICATED,
+} from './constants'
 
 /** @internal */
 export interface WorkspaceAuthProbeInput {
@@ -22,25 +27,10 @@ export interface WorkspaceAuthProbeResult {
   authenticated: boolean
 }
 
-const API_VERSION = 'v2026-05-04'
-const TOKEN_STORAGE_PREFIX = '__studio_auth_token_'
-
-const PROBE_CLIENT_OPTIONS = {
-  apiVersion: API_VERSION,
-  useCdn: false,
-  perspective: 'raw',
-  requestTagPrefix: 'sanity.studio',
-  allowReconfigure: false,
-  headers: DEFAULT_STUDIO_CLIENT_HEADERS,
-} as const
-
-const UNAUTHENTICATED: WorkspaceAuthProbeResult = {authenticated: false}
-const AUTHENTICATED: WorkspaceAuthProbeResult = {authenticated: true}
-
 function getStoredToken(projectId: string): string | undefined {
   if (!supportsLocalStorage) return undefined
   try {
-    const raw = localStorage.getItem(`${TOKEN_STORAGE_PREFIX}${projectId}`)
+    const raw = localStorage.getItem(getAuthTokenStorageKey(projectId))
     if (!raw) return undefined
     const parsed = JSON.parse(raw) as {token?: string} | null
     return parsed?.token
@@ -112,7 +102,7 @@ function buildProbe(
   if (existing) return existing
 
   const clientConfig: SanityClientConfig = {
-    ...PROBE_CLIENT_OPTIONS,
+    ...AUTH_CLIENT_OPTIONS,
     projectId: input.projectId,
     dataset: input.dataset,
     ...(apiHost ? {apiHost} : {}),
@@ -123,7 +113,7 @@ function buildProbe(
 
   // Re-probe when this project's token key changes in another tab.
   // We don't write to storage from here — only listen.
-  const tokenKey = `${TOKEN_STORAGE_PREFIX}${input.projectId}`
+  const tokenKey = getAuthTokenStorageKey(input.projectId)
   const storageEvents$: Observable<unknown> =
     typeof window === 'undefined'
       ? EMPTY
