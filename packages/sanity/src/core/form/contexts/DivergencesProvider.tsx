@@ -2,7 +2,14 @@ import {type SanityClient} from '@sanity/client'
 import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import get from 'lodash-es/get.js'
-import {type ComponentType, type PropsWithChildren, useContext, useEffect, useMemo} from 'react'
+import {
+  type ComponentType,
+  type PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import {useObservable} from 'react-rx'
 import {BehaviorSubject, combineLatest, EMPTY, filter, map, of, Subject, tap} from 'rxjs'
 import {type DocumentDivergencesContextValue, DocumentDivergencesContext} from 'sanity/_singletons'
@@ -106,7 +113,7 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
     formState,
   })
 
-  const sessionId = useMemo(() => uuid(), [subjectId])
+  const [sessionId] = useState(() => uuid())
 
   const value = useMemo<DocumentDivergencesContextValue>(
     () => ({enabled: true, sessionId, ...divergenceNavigator}),
