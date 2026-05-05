@@ -335,6 +335,14 @@ export default defineConfig([
   },
   {
     ...defaultWorkspace,
+    name: 'secondary',
+    title: 'Secondary test project',
+    projectId: 'q5caobza',
+    dataset: 'production',
+    basePath: '/secondary',
+  },
+  {
+    ...defaultWorkspace,
     name: 'unsplash',
     title: 'Only Unsplash Asset Source',
     basePath: '/unsplash',
