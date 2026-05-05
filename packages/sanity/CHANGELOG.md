@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.24.0](https://github.com/sanity-io/sanity/compare/v5.23.0...v5.24.0) (2026-05-05)
+
+### Features
+
+* **core:** make document action keys extensible via declaration merging ([#12768](https://github.com/sanity-io/sanity/issues/12768)) ([eebdb17](https://github.com/sanity-io/sanity/commit/eebdb17d97bba5a3ea793d20e7a1aa57f67f59c6))
+
+### Bug Fixes
+
+* **core:** add version into documentEvents observable ([#12772](https://github.com/sanity-io/sanity/issues/12772)) ([b511ef9](https://github.com/sanity-io/sanity/commit/b511ef939d0ae031505208d45f0f8f6e8ae5fb54))
+* **core:** reset calendar focused date when setting to current time ([#12753](https://github.com/sanity-io/sanity/issues/12753)) ([ff8a7d4](https://github.com/sanity-io/sanity/commit/ff8a7d492affa4aebd531e1ce0363940115461a9))
+* **deps:** update dependency @sanity/cli to ^6.5.0 ([#12778](https://github.com/sanity-io/sanity/issues/12778)) ([f3d306c](https://github.com/sanity-io/sanity/commit/f3d306c7bacfc0c2d95d5ff3cf8fd4efc2daf020))
+* restore workspace hidden property ([#12775](https://github.com/sanity-io/sanity/issues/12775)) ([8f4e6b0](https://github.com/sanity-io/sanity/commit/8f4e6b0f4f1b761b240ec15d0314e3d54d388659))
 ## [5.23.0](https://github.com/sanity-io/sanity/compare/v5.22.0...v5.23.0) (2026-04-29)
 
 ### Features
