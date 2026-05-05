@@ -1,6 +1,6 @@
 {
   "name": "sanity-root",
-  "version": "5.23.0",
+  "version": "5.24.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -103,13 +103,14 @@
     "dotenv-flow": "^4.1.0",
     "esbuild-register": "catalog:",
     "eslint": "catalog:",
-    "knip": "^5.88.1",
+    "knip": "^6.11.0",
     "lefthook": "^2.1.6",
     "npm-run-all2": "^6.2.6",
     "only-allow": "^1.2.2",
     "oxfmt": "^0.44.0",
     "oxlint": "1.43.0",
     "oxlint-tsgolint": "0.11.4",
+    "pkg-pr-new": "^0.0.70",
     "playwright": "catalog:",
     "sanity": "workspace:*",
     "tsx": "^4.21.0",
