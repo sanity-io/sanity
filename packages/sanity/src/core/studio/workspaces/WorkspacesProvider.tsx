@@ -5,7 +5,6 @@ import {
   type SanityClient,
   ServerError,
 } from '@sanity/client'
-import {Stack, Text} from '@sanity/ui'
 import isNativeNetworkError from 'is-network-error'
 import QuickLRU from 'quick-lru'
 import {
@@ -20,9 +19,9 @@ import {defer, from, type Observable, of, Subject, throwError} from 'rxjs'
 import {catchError, map, mergeMap, take, tap} from 'rxjs/operators'
 import {WorkspacesContext} from 'sanity/_singletons'
 
-import {Dialog} from '../../../ui-components'
 import {type Config, prepareConfig} from '../../config'
 import {CorsOriginErrorScreen} from './CorsOriginErrorScreen'
+import {type HandledError, RequestErrorDialog} from './RequestErrorDialog'
 import {type WorkspacesContextValue} from './WorkspacesContext'
 
 /** @internal */
@@ -33,16 +32,25 @@ export interface WorkspacesProviderProps {
   LoadingComponent: ComponentType
 }
 
-function isNetworkError(error: unknown): error is Error {
+function isTimeoutError(error: unknown): error is Error & {code: 'ESOCKETTIMEDOUT' | 'ETIMEDOUT'} {
   return (
-    (typeof error === 'object' &&
-      error !== null &&
-      // get-it sets isNetworkError=true
-      // https://github.com/sanity-io/get-it/blob/9ffc7e0c2d41ffcfd3a33e7525d9d1f6b188f812/src/request/browser-request.ts#L194
-      'isNetworkError' in error &&
-      error.isNetworkError === true) ||
-    isNativeNetworkError(error)
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    (error.code === 'ESOCKETTIMEDOUT' || error.code === 'ETIMEDOUT')
   )
+}
+
+function isNetworkError(error: unknown): error is Error {
+  if (typeof error !== 'object' || error === null) return false
+  // get-it sets isNetworkError=true on connection errors
+  // https://github.com/sanity-io/get-it/blob/9ffc7e0c2d41ffcfd3a33e7525d9d1f6b188f812/src/request/browser-request.ts#L194
+  if ('isNetworkError' in error && error.isNetworkError === true) return true
+  // get-it's connect/socket timeout path publishes a plain Error with a code
+  // but does not set isNetworkError. Treat these timeouts as network errors
+  // so they go through the same retry flow as other connection failures.
+  if (isTimeoutError(error)) return true
+  return isNativeNetworkError(error)
 }
 
 const corsCheck = new QuickLRU<string, Promise<boolean>>({maxAge: 1000 * 60 * 2, maxSize: 200})
@@ -76,12 +84,6 @@ function checkCors(_client: SanityClient) {
   return check
 }
 
-type HandledError =
-  | {type: 'cors'; isStaging: boolean; projectId?: string}
-  | {type: 'networkError'; error: Error}
-  | {type: 'serverError'; error: Error}
-  | {type: 'clientError'; error: Error}
-
 /**
  * Classify a request error into one of the displayable error types, or `null`
  * if it should bubble up to the nearest ErrorBoundary. Returns an Observable
@@ -98,6 +100,13 @@ function classifyRequestError(err: unknown, client: SanityClient): Observable<Ha
   if (err instanceof ClientError) return of({type: 'clientError', error: err})
   if (err instanceof ServerError) return of({type: 'serverError', error: err})
   if (!isNetworkError(err)) return of(null)
+
+  // Skip the CORS probe for timeouts: a timeout means the request never got
+  // a response, and the probe would have to wait for its own timeout before
+  // resolving. CORS misconfig surfaces as an immediate network error, not a
+  // timeout, so this short-circuit doesn't lose detection — and it gets the
+  // user to the retry dialog quickly.
+  if (isTimeoutError(err)) return of({type: 'networkError', error: err})
 
   return from(checkCors(client)).pipe(
     map((invalidCorsConfig) =>
@@ -193,58 +202,6 @@ export function WorkspacesProvider({
       {error && <RequestErrorDialog error={error} onRetry={onRetry} />}
       {children}
     </WorkspacesContext.Provider>
-  )
-}
-
-export function RequestErrorDialog(props: {error: HandledError; onRetry: () => void}) {
-  const {error, onRetry} = props
-  const heading =
-    error.type === 'serverError'
-      ? 'Server error'
-      : error.type === 'networkError'
-        ? 'Network error'
-        : error.type === 'clientError'
-          ? 'Request error'
-          : 'Unknown error'
-
-  const message =
-    error.type === 'serverError'
-      ? "The server ran into an issue and couldn't complete the request. Try again, or reload the page."
-      : error.type === 'networkError'
-        ? "Couldn't connect to the Sanity Servers. Please check your network connection and try again."
-        : error.type === 'clientError'
-          ? "The studio made a request the server couldn't process. Reload the page to try again. If the problem persists, contact your administrator."
-          : 'An unknown request error occurred.'
-
-  return (
-    <Dialog
-      id="not-authorized-dialog"
-      header={heading}
-      width={1}
-      // onClose is required for the cancel button slot to render in the
-      // shared Dialog footer; we use the same handler as the button so that
-      // ESC / external close also reloads the studio.
-      onClose={() => window.location.reload()}
-      footer={{
-        cancelButton: {
-          text: 'Reload Studio',
-          onClick: () => window.location.reload(),
-          tone: 'default',
-        },
-        confirmButton: {
-          text: 'Try again',
-          onClick: onRetry,
-          tone: 'default',
-        },
-      }}
-    >
-      <Stack space={4}>
-        <Text>{message}</Text>
-        {error.type === 'serverError' ? (
-          <a href="https://status.sanity.io">{'Sanity Status'}</a>
-        ) : null}
-      </Stack>
-    </Dialog>
   )
 }
 
