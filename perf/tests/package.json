@@ -1,6 +1,6 @@
 {
   "name": "sanity-perf-tests",
-  "version": "5.23.0",
+  "version": "5.24.0",
   "private": true,
   "description": "Sanity Studio perf tests",
   "license": "MIT",

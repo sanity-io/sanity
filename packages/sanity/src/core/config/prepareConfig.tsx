@@ -400,6 +400,7 @@ export function prepareConfig(
       theme: rootSource.theme || studioTheme,
       title,
       subtitle: rootSource.subtitle,
+      hidden: rootSource.hidden,
       __internal: {
         sources: resolvedSources,
       },
