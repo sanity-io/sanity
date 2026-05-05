@@ -1,8 +1,8 @@
 import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanity/client'
-import {firstValueFrom} from 'rxjs'
+import {firstValueFrom, lastValueFrom, take, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getAuthTokenStorageKey} from '../constants'
+import {getAuthTokenStorageKey, getCookieAuthStateKey} from '../constants'
 import {_probeWorkspaceAuthForTest, _resetProbeWorkspaceAuthCache} from '../probeWorkspaceAuth'
 
 // Match the convention from createAuthStore.test.ts: ensure localStorage is
@@ -204,7 +204,7 @@ describe('probeWorkspaceAuth', () => {
     )
     await firstValueFrom(cookieProbe$)
 
-    localStorage.setItem('__studio_auth_token_p1', JSON.stringify({token: 'tok'}))
+    localStorage.setItem(getAuthTokenStorageKey('p1'), JSON.stringify({token: 'tok'}))
 
     const tokenProbe$ = _probeWorkspaceAuthForTest(
       {projectId: 'p1', dataset: 'd1'},
@@ -212,5 +212,67 @@ describe('probeWorkspaceAuth', () => {
     )
 
     expect(cookieProbe$).not.toBe(tokenProbe$)
+  })
+
+  it('re-probes a cookie probe when the cookie auth broadcast emits', async () => {
+    // Simulates another tab logging in (or out): the active workspace's
+    // AuthStore broadcasts on the cookie auth state channel after its
+    // /users/me probe. The probe should react with a fresh /auth/id call.
+    let authed = true
+    const mock = createMockFactory({
+      authIdImpl: () =>
+        authed ? Promise.resolve({id: 'mock-id', expiry: 0}) : Promise.reject(create401Error()),
+    })
+
+    const probe$ = _probeWorkspaceAuthForTest(
+      {projectId: 'p-cookie', dataset: 'd1'},
+      {clientFactory: mock.factory},
+    )
+    // Collect the first emission and one more after the broadcast.
+    const collected = lastValueFrom(probe$.pipe(take(2), toArray()))
+
+    // Wait for the initial probe to land before broadcasting.
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(mock.callCount()).toBe(1)
+
+    // Flip the mock so the next probe yields a different result that passes
+    // distinctUntilChanged downstream.
+    authed = false
+
+    // A sibling tab broadcasts on the per-project channel.
+    const channel = new BroadcastChannel(getCookieAuthStateKey('p-cookie'))
+    channel.postMessage(JSON.stringify({authenticated: false}))
+    channel.close()
+
+    const emissions = await collected
+    // One initial probe + one re-probe triggered by the broadcast.
+    expect(mock.callCount()).toBe(2)
+    expect(emissions).toEqual([{authenticated: true}, {authenticated: false}])
+  })
+
+  it('does not re-probe a token probe when the cookie auth broadcast emits', async () => {
+    // Token-only probes are independent of cookie state. A cookie-state
+    // broadcast for the same project must not trigger a re-probe.
+    localStorage.setItem(getAuthTokenStorageKey('p-token'), JSON.stringify({token: 'tok'}))
+
+    const mock = createMockFactory({authenticated: true})
+    const probe$ = _probeWorkspaceAuthForTest(
+      {projectId: 'p-token', dataset: 'd1'},
+      {clientFactory: mock.factory},
+    )
+
+    // Subscribe so the probe is active and listening.
+    const sub = probe$.subscribe()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(mock.callCount()).toBe(1)
+
+    const channel = new BroadcastChannel(getCookieAuthStateKey('p-token'))
+    channel.postMessage(JSON.stringify({authenticated: true}))
+    channel.close()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    // Still 1: the broadcast was ignored.
+    expect(mock.callCount()).toBe(1)
+    sub.unsubscribe()
   })
 })
