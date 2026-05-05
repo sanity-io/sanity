@@ -71,7 +71,7 @@ jobs:
       - name: Update npm dist-tags to latest
         run: |
           # Get all published (non-private) packages in the workspace
-          packages=$(pnpx tsx scripts/listPublishedPackages.ts)
+          packages=$(pnpm tsx scripts/listPublishedPackages.ts)
           version="${{ needs.get-version.outputs.version }}"
 
           echo "Using version: $version"
