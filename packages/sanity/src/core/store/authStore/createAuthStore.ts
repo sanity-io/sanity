@@ -22,7 +22,6 @@ import {
 import {type AuthConfig} from '../../config/auth/types'
 import {isStaging} from '../../environment/isStaging'
 import {canonicalHash} from '../../util/canonicalHash'
-import {CorsOriginError} from '../cors'
 import {
   AUTH_CLIENT_OPTIONS,
   getAuthTokenStorageKey,
@@ -65,7 +64,6 @@ export interface AuthStoreOptions extends AuthConfig {
 const getCurrentUser = async (
   client: SanityClient,
   tag: string,
-  corsErrorContext: {projectId: string; isStaging: boolean},
 ): Promise<CurrentUser | undefined> => {
   try {
     const user = await client.request({
@@ -76,26 +74,20 @@ const getCurrentUser = async (
     // if the user came back with an id, assume it's a full CurrentUser
     return typeof user?.id === 'string' ? user : undefined
   } catch (err) {
+    // 401 means the user had some kind of credentials, but failed to authenticate,
+    // we should clear any local token in this case and treat it as if the used was
+    // logged out
     if (err.statusCode === 401) {
       return undefined
     }
 
-    // Non-auth failure: probe /ping (which allows all origins) to distinguish
-    // a CORS misconfiguration from a generic network error. If /ping succeeds
-    // without credentials, the origin isn't allowlisted for this project —
-    // throw CorsOriginError so StudioErrorBoundary can render the dedicated
-    // CorsOriginErrorScreen with instructions.
-    const invalidCorsConfig = await client
-      .request({uri: '/ping', withCredentials: false, tag: 'cors-check'})
-      .then(
-        () => true,
-        () => false,
-      )
-
-    if (invalidCorsConfig) {
-      throw new CorsOriginError(corsErrorContext)
+    // Some non-CORS error - is it one of those undefinable network errors?
+    if (err.isNetworkError && !err.message && err.request && err.request.url) {
+      const host = new URL(err.request.url).host
+      throw new Error(`Unknown network error attempting to reach ${host}`, {cause: err})
     }
 
+    // Some other error, just throw it
     throw err
   }
 }
@@ -205,11 +197,6 @@ export function _createAuthStore({
     hostOptions.apiHost = 'https://api.sanity.work'
   }
 
-  const corsErrorContext = {
-    projectId,
-    isStaging: Boolean(hostOptions.apiHost?.endsWith('.work')),
-  }
-
   const cookieClient = clientFactory({
     ...AUTH_CLIENT_OPTIONS,
     ...hostOptions,
@@ -251,7 +238,7 @@ export function _createAuthStore({
 
   const initial$ = of(initialWorkspaceClient).pipe(
     mergeMap(async (client): Promise<AuthState> => {
-      const currentUser = await getCurrentUser(client, 'initial', corsErrorContext)
+      const currentUser = await getCurrentUser(client, 'initial')
       const authenticated = Boolean(currentUser?.id)
       // Seed cookieAuthState once from the initial probe result. This moves
       // the channel out of 'pending' so cookieAuthChanged$ starts emitting
@@ -356,7 +343,7 @@ export function _createAuthStore({
         if (!client) {
           return {client: cookieClient, authenticated: false, currentUser: null}
         }
-        const currentUser = await getCurrentUser(client, 'update', corsErrorContext)
+        const currentUser = await getCurrentUser(client, 'update')
         return {
           client,
           authenticated: Boolean(currentUser?.id),
