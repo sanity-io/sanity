@@ -6,7 +6,6 @@ import {ErrorBoundary} from '../../../ui-components/errorBoundary'
 import {SchemaError} from '../../config'
 import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n'
-import {CorsOriginError} from '../../store'
 import {isRecord} from '../../util'
 import {Alert} from '../components/Alert'
 
@@ -46,8 +45,8 @@ export function FormBuilderInputErrorBoundary(
 function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () => void}) {
   const {error, info, onRetry} = props
 
-  // If a CORS error, or a schema error, rethrow and let the StudioErrorBoundary handle it
-  if (error instanceof CorsOriginError || error instanceof SchemaError) {
+  // If a schema error, rethrow and let the StudioErrorBoundary handle it
+  if (error instanceof SchemaError) {
     throw error
   }
 

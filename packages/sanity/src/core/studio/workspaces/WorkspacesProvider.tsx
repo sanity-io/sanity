@@ -1,5 +1,10 @@
-/* eslint-disable max-nested-callbacks */
-import {ClientError, type RequestHandler, type SanityClient, ServerError} from '@sanity/client'
+import {
+  ClientError,
+  type HttpRequestEvent,
+  type RequestHandler,
+  type SanityClient,
+  ServerError,
+} from '@sanity/client'
 import {Stack, Text} from '@sanity/ui'
 import isNativeNetworkError from 'is-network-error'
 import QuickLRU from 'quick-lru'
@@ -11,12 +16,13 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {defer, from, type Observable, Subject} from 'rxjs'
-import {catchError, mergeMap, take, tap} from 'rxjs/operators'
+import {defer, from, type Observable, Subject, throwError} from 'rxjs'
+import {catchError, mergeMap, take} from 'rxjs/operators'
 import {WorkspacesContext} from 'sanity/_singletons'
 
 import {Dialog} from '../../../ui-components'
 import {type Config, prepareConfig} from '../../config'
+import {CorsOriginErrorScreen} from './CorsOriginErrorScreen'
 import {type WorkspacesContextValue} from './WorkspacesContext'
 
 /** @internal */
@@ -42,11 +48,13 @@ function isNetworkError(error: unknown): error is Error {
 const corsCheck = new QuickLRU<string, Promise<boolean>>({maxAge: 1000 * 60 * 2, maxSize: 200})
 
 function checkCors(_client: SanityClient) {
-  const projectId = _client.config().projectId
+  const {projectId, apiHost} = _client.config()
   if (!projectId) {
     return Promise.resolve(true)
   }
-  const cached = corsCheck.get(projectId)
+  // Cache by projectId+apiHost so staging/prod (or any apiHost variants) don't collide
+  const cacheKey = `${projectId}@${apiHost ?? ''}`
+  const cached = corsCheck.get(cacheKey)
   if (cached) {
     return cached
   }
@@ -56,16 +64,15 @@ function checkCors(_client: SanityClient) {
   const check = Promise.allSettled([
     client.request({
       url: '/ping',
-      withCredentials: false,
       tag: 'cors-check',
     }),
-    client.request({url: '/users/me', tag: 'cors-check', withCredentials: false}),
+    client.request({url: '/users/me', tag: 'cors-check'}),
   ]).then(
     ([ping, user]) =>
       // ping request succeeded, but user request was network error so likely the CORS origin is disallowed
-      ping.status === 'fulfilled' && user.status === 'rejected' && isNetworkError(user),
+      ping.status === 'fulfilled' && user.status === 'rejected' && isNetworkError(user.reason),
   )
-  corsCheck.set(projectId, check)
+  corsCheck.set(cacheKey, check)
   return check
 }
 
@@ -88,85 +95,64 @@ export function WorkspacesProvider({
 
   const requestHandler: RequestHandler = useCallback(
     (requestOptions, originalRequest, client) => {
+      // Wait for the user to click "Try again", clear the error state, then
+      // re-subscribe to `caught` so the retry flows back through this same
+      // catchError — meaning a second failure gets classified again.
+      const waitForRetry = (caught: Observable<HttpRequestEvent>) =>
+        retry.pipe(
+          take(1),
+          mergeMap(() =>
+            defer(() => {
+              setError(undefined)
+              return caught
+            }),
+          ),
+        )
+
+      // Don't let a later, less-specific error overwrite a CORS error already
+      // displayed. Multiple concurrent requests can fail at once; CORS is the
+      // dominant problem when present, so it should win regardless of arrival
+      // order.
+      const setErrorIfMoreSpecific = (next: HandledError) =>
+        setError((prev) => (prev?.type === 'cors' && next.type !== 'cors' ? prev : next))
+
       return defer(() => originalRequest(requestOptions)).pipe(
         catchError((requestError: unknown, caught) => {
-          // oxlint-disable-next-line no-console
+          // Classify by error class first — CORS-blocked responses can't reach
+          // here as ClientError/ServerError because the browser never delivers
+          // the response body to JS. So if we *have* a typed error, the
+          // response made it through and CORS is fine. Only probe for the
+          // bare-network-error bucket where CORS-blocked and offline are
+          // genuinely indistinguishable in the error object.
+          if (requestError instanceof ClientError) {
+            setErrorIfMoreSpecific({type: 'clientError', error: requestError})
+            return waitForRetry(caught)
+          }
 
-          // Request failed for a non-auth reason, see if this was a CORS-error by
-          // checking the `/ping` endpoint, which allows all origins
-          return from(checkCors(client)).pipe(
-            mergeMap((invalidCorsConfig) => {
-              if (invalidCorsConfig) {
-                // Throw a specific error on CORS-errors, to allow us to show a customized dialog
-                setError({
-                  type: 'cors',
-                  isStaging: client.config().apiHost.endsWith('.work'),
-                  projectId: client.config()?.projectId,
-                })
-                return retry.pipe(
-                  take(1),
-                  mergeMap(() =>
-                    caught.pipe(
-                      tap(() => {
-                        setError(undefined)
-                      }),
-                    ),
-                  ),
-                )
-              }
+          if (requestError instanceof ServerError) {
+            setErrorIfMoreSpecific({type: 'serverError', error: requestError})
+            return waitForRetry(caught)
+          }
 
-              if (requestError instanceof ClientError) {
-                setError({type: 'clientError', error: requestError})
-                return retry.pipe(
-                  take(1),
-                  mergeMap(() =>
-                    caught.pipe(
-                      tap(() => {
-                        setError(undefined)
-                      }),
-                    ),
-                  ),
-                )
-              }
+          if (isNetworkError(requestError)) {
+            return from(checkCors(client)).pipe(
+              mergeMap((invalidCorsConfig) => {
+                if (invalidCorsConfig) {
+                  setErrorIfMoreSpecific({
+                    type: 'cors',
+                    isStaging: Boolean(client.config().apiHost?.endsWith('.work')),
+                    projectId: client.config()?.projectId,
+                  })
+                } else {
+                  setErrorIfMoreSpecific({type: 'networkError', error: requestError})
+                }
+                return waitForRetry(caught)
+              }),
+            )
+          }
 
-              if (requestError instanceof ServerError) {
-                setError({type: 'serverError', error: requestError})
-                return retry.pipe(
-                  take(1),
-                  mergeMap(() =>
-                    caught.pipe(
-                      tap(() => {
-                        setError(undefined)
-                      }),
-                    ),
-                  ),
-                )
-              }
-
-              // Some non-CORS error - is it one of those undefinable network errors?
-              if (isNetworkError(requestError)) {
-                setError({type: 'networkError', error: requestError})
-                return retry.pipe(
-                  take(1),
-                  mergeMap(() =>
-                    caught.pipe(
-                      tap(() => {
-                        setError(undefined)
-                      }),
-                    ),
-                  ),
-                )
-              }
-              // Some other error, just throw it, but make sure it gets caught by react
-              setError(() => {
-                throw requestError
-              })
-              return retry.pipe(
-                take(1),
-                mergeMap(() => caught),
-              )
-            }),
-          )
+          // Genuinely unknown — propagate so the nearest ErrorBoundary handles it.
+          return throwError(() => requestError)
         }),
       )
     },
@@ -178,8 +164,29 @@ export function WorkspacesProvider({
     null,
   )
 
+  // The first workspace's projectId, used by CorsOriginErrorScreen to decide
+  // whether to surface the "Register studio" option (only valid when the
+  // failing project matches the studio's primary project).
+  const primaryProjectId = useMemo(() => {
+    const first = Array.isArray(config) ? config[0] : config
+    return first?.projectId
+  }, [config])
+
   if (workspaces === null) {
     return <LoadingComponent />
+  }
+
+  // CORS is a config problem, not a transient network blip — show the full
+  // registration/dev-host screen instead of an overlay dialog so the user has
+  // a clear path to fix it.
+  if (error?.type === 'cors') {
+    return (
+      <CorsOriginErrorScreen
+        projectId={error.projectId}
+        isStaging={error.isStaging}
+        primaryProjectId={primaryProjectId}
+      />
+    )
   }
 
   return (
@@ -215,17 +222,22 @@ export function RequestErrorDialog(props: {error: HandledError; onRetry: () => v
       id="not-authorized-dialog"
       header={heading}
       width={1}
-      footer={
-        onRetry
-          ? {
-              confirmButton: {
-                text: 'Try again',
-                onClick: onRetry,
-                tone: 'default',
-              },
-            }
-          : undefined
-      }
+      // onClose is required for the cancel button slot to render in the
+      // shared Dialog footer; we use the same handler as the button so that
+      // ESC / external close also reloads the studio.
+      onClose={() => window.location.reload()}
+      footer={{
+        cancelButton: {
+          text: 'Reload Studio',
+          onClick: () => window.location.reload(),
+          tone: 'default',
+        },
+        confirmButton: {
+          text: 'Try again',
+          onClick: onRetry,
+          tone: 'default',
+        },
+      }}
     >
       <Stack space={4}>
         <Text>{message}</Text>

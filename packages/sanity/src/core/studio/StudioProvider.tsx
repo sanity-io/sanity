@@ -62,12 +62,6 @@ export function StudioProvider({
   // Register refractor languages on first render (deferred from module scope for faster import)
   ensureRefractorLanguages()
 
-  // Extract the first workspace's projectId for use in error screens
-  const primaryProjectId = useMemo(() => {
-    const workspace = Array.isArray(config) ? config[0] : config
-    return workspace?.projectId
-  }, [config])
-
   const _children = useMemo(
     () => (
       <UserApplicationCacheProvider>
@@ -106,8 +100,8 @@ export function StudioProvider({
     <DeferredTelemetryProvider>
       <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
         <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-          <StudioErrorBoundary primaryProjectId={primaryProjectId}>
-            <StudioRootErrorHandler primaryProjectId={primaryProjectId}>
+          <StudioErrorBoundary>
+            <StudioRootErrorHandler>
               <WorkspacesProvider
                 config={config}
                 basePath={basePath}
