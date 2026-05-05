@@ -60,10 +60,10 @@ jobs:
 
       - name: Check valid token
         run: |
-          WHOAMI_RESULT=$(npm whoami)
-          echo "npm whoami result: $WHOAMI_RESULT"
+          WHOAMI_RESULT=$(pnpm whoami)
+          echo "pnpm whoami result: $WHOAMI_RESULT"
           if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
-            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            echo "Error: pnpm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
             exit 1
           fi
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
@@ -81,7 +81,7 @@ jobs:
           for pkg_dir in $packages; do
             pkg_name=$(jq -r '.name' "$pkg_dir/package.json")
             echo "Tagging $pkg_name@$version as stable"
-            npm dist-tag add "$pkg_name@$version" stable
+            pnpm dist-tag add "$pkg_name@$version" stable
           done
 
           echo "✅ All packages tagged as stable"
