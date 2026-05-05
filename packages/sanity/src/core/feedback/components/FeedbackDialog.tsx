@@ -12,6 +12,7 @@ import {FeedbackContext} from 'sanity/_singletons'
 
 import {Button, Dialog} from '../../../ui-components'
 import {sendFeedbackToSentry} from '../feedbackClient'
+import {useFeedbackTelemetry} from '../hooks/useFeedbackTelemetry'
 import {useFeedbackTranslation} from '../i18n/useFeedbackTranslation'
 import {type Sentiment} from '../types'
 import {ImageAttachment} from './ImageAttachment'
@@ -90,6 +91,13 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
   const [showAttachment, setShowAttachment] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+
+  const {feedbackDialogDismissed} = useFeedbackTelemetry()
+
+  const handleDismiss = useCallback(() => {
+    feedbackDialogDismissed()
+    onClose()
+  }, [feedbackDialogDismissed, onClose])
 
   const handleMessageChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.currentTarget.value)
@@ -197,8 +205,8 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     <Dialog
       id={dialogId}
       header={dialogTitle ?? t('feedback.dialog.title')}
-      onClose={onClose}
-      onClickOutside={onClose}
+      onClose={handleDismiss}
+      onClickOutside={handleDismiss}
       width={1}
       padding={false}
     >
@@ -283,7 +291,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
 
       <Card padding={3} borderTop>
         <Flex gap={2} justify="flex-end">
-          <Button mode="ghost" text={t('feedback.cancel')} onClick={onClose} />
+          <Button mode="ghost" text={t('feedback.cancel')} onClick={handleDismiss} />
           <Button
             tone="primary"
             text={t('feedback.submit')}

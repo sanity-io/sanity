@@ -194,3 +194,62 @@ describe('Calendar with stored timezone tokyo', () => {
     expect(mockOnSelect).toHaveBeenCalledWith(new Date('2024-01-19T18:30:00Z'))
   })
 })
+
+describe('Calendar updates displayed month when user sets current time', () => {
+  beforeEach(() => {
+    const getKeyMock = vi.fn().mockReturnValue(of(null))
+    const setKeyMock = vi.fn().mockResolvedValue(null)
+    useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+  })
+
+  it('updates displayed month when set to current time is clicked', async () => {
+    const TestProvider = await createTestProvider()
+    const mockOnSelect = vi.fn()
+
+    const {rerender} = render(
+      <TestProvider>
+        <Calendar
+          {...defaultProps}
+          selectTime
+          onSelect={mockOnSelect}
+          value={new Date('2029-04-20T10:00:00Z')}
+          timeZoneScope={{type: 'input', id: 'test'}}
+        />
+      </TestProvider>,
+    )
+
+    // Calendar should show April 2029
+    const monthSelect = screen.getByRole('combobox') as HTMLSelectElement
+    expect(monthSelect).toHaveValue('3') // 0-indexed: April = 3
+    expect(screen.getByTestId('date-input')).toHaveValue('2029')
+
+    // Re-rendering with a new value should not change the displayed month/year.
+    rerender(
+      <TestProvider>
+        <Calendar
+          {...defaultProps}
+          selectTime
+          onSelect={mockOnSelect}
+          value={new Date('2024-01-15T12:34:00Z')}
+          timeZoneScope={{type: 'input', id: 'test'}}
+        />
+      </TestProvider>,
+    )
+    expect(monthSelect).toHaveValue('3') // 0-indexed: April = 3
+    expect(screen.getByTestId('date-input')).toHaveValue('2029')
+
+    vi.useFakeTimers({toFake: ['Date']})
+    vi.setSystemTime(new Date('2024-01-15T12:34:00Z'))
+
+    await userEvent.click(screen.getByRole('button', {name: 'Set to current time'}))
+
+    expect(mockOnSelect).toHaveBeenCalledWith(new Date('2024-01-15T12:34:00Z'))
+    expect(monthSelect).toHaveValue('0') // 0-indexed: January = 0
+    expect(screen.getByTestId('date-input')).toHaveValue('2024')
+  })
+})

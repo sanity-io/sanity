@@ -33,9 +33,9 @@ import {canonicalHash} from '../util/canonicalHash'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
-  decisionParametersSchemaReducer,
   directUploadsReducer,
   documentActionsReducer,
+  documentAskToEditEnabledReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
   documentInspectorsReducer,
@@ -74,7 +74,6 @@ import {SchemaError} from './SchemaError'
 import {
   type Config,
   type ConfigContext,
-  DECISION_PARAMETERS_SCHEMA,
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
@@ -478,10 +477,6 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
-    [DECISION_PARAMETERS_SCHEMA]: decisionParametersSchemaReducer({
-      config,
-      initialValue: undefined,
-    }),
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
@@ -764,6 +759,15 @@ function resolveSource({
       comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
+            context: partialContext,
+            config,
+            initialValue: true,
+          })
+        },
+      },
+      askToEdit: {
+        enabled: (partialContext) => {
+          return documentAskToEditEnabledReducer({
             context: partialContext,
             config,
             initialValue: true,

@@ -21,9 +21,8 @@ import {
   type AsyncConfigPropertyReducer,
   type ConfigContext,
   type ConfigPropertyReducer,
-  DECISION_PARAMETERS_SCHEMA,
-  type DecisionParametersConfig,
   type DocumentActionsContext,
+  type DocumentAskToEditEnabledContext,
   type DocumentBadgesContext,
   type DocumentCommentsEnabledContext,
   type DocumentInspectorContext,
@@ -358,6 +357,31 @@ export const documentCommentsEnabledReducer = (opts: {
   return result
 }
 
+export const documentAskToEditEnabledReducer = (opts: {
+  config: PluginOptions
+  context: DocumentAskToEditEnabledContext
+  initialValue: boolean
+}): boolean => {
+  const {config, context, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.document?.askToEdit?.enabled
+
+    if (!resolver && typeof resolver !== 'boolean') return acc
+    if (typeof resolver === 'function') return resolver(context)
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`document.askToEdit.enabled\` to be a boolean or a function, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
 export const onUncaughtErrorResolver = (opts: {
   config: PluginOptions
   context: {error: Error; errorInfo: ErrorInfo}
@@ -544,28 +568,6 @@ export const scheduledDraftsEnabledReducer = (opts: {
 
     throw new Error(`Expected a boolean, but received ${getPrintableType(enabled)}`)
   }, initialValue)
-
-  return result
-}
-
-export const decisionParametersSchemaReducer = (opts: {
-  config: PluginOptions
-  initialValue: DecisionParametersConfig | undefined
-}): DecisionParametersConfig | undefined => {
-  const {config, initialValue} = opts
-  const flattenedConfig = flattenConfig(config, [])
-
-  const result = flattenedConfig.reduce(
-    (acc: DecisionParametersConfig | undefined, {config: innerConfig}) => {
-      const schema = innerConfig[DECISION_PARAMETERS_SCHEMA]
-
-      if (typeof schema === 'undefined') return acc
-      if (typeof schema === 'object' && schema !== null) return schema
-
-      throw new Error(`Expected an object, but received ${getPrintableType(schema)}`)
-    },
-    initialValue,
-  )
 
   return result
 }

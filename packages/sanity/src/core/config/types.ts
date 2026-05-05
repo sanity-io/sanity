@@ -69,22 +69,6 @@ export interface GroupableActionDescription<GroupType = unknown> extends BaseAct
 }
 
 /**
- * Symbol for configuring decision parameters schema
- * @hidden
- * @beta
- */
-export const DECISION_PARAMETERS_SCHEMA = Symbol('__decisionParametersSchema')
-
-/**
- * Configuration for decision parameters
- * @hidden
- * @beta
- */
-export interface DecisionParametersConfig {
-  [key: string]: string[]
-}
-
-/**
  * @hidden
  * @beta
  */
@@ -269,11 +253,6 @@ export interface ConfigContext {
    * Localization resources
    */
   i18n: LocaleSource
-  /**
-   * @hidden
-   * @beta
-   */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 }
 
 /** @public */
@@ -359,6 +338,24 @@ export interface DocumentPluginOptions {
   /** @internal */
   comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
+  }
+
+  /**
+   * Configuration for the "Ask to edit" button that appears when a user
+   * lacks edit permissions on a document.
+   *
+   * @hidden
+   * @beta
+   */
+  askToEdit?: {
+    /**
+     * Whether the "Ask to edit" button is enabled. Defaults to `true`.
+     *
+     * Can be a boolean or a function that receives a context object and returns a boolean.
+     * When set to `false`, the "Ask to edit" button will be hidden but the
+     * document will still be read-only for users without edit permissions.
+     */
+    enabled: boolean | ((context: DocumentAskToEditEnabledContext) => boolean)
   }
 
   drafts?: {
@@ -522,12 +519,6 @@ export interface PluginOptions {
 
   /** Configuration for Scheduled drafts */
   scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
-
-  /**
-   * @hidden
-   * @beta
-   */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 
   /** Configuration for Content Releases */
   releases?: DefaultPluginsWorkspaceOptions['releases']
@@ -694,12 +685,6 @@ export interface WorkspaceOptions extends SourceOptions {
 
   scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
 
-  /**
-   * @hidden
-   * @beta
-   */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
-
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
 
@@ -793,6 +778,12 @@ export interface DocumentInspectorContext extends ConfigContext {
 
 /** @hidden @beta */
 export interface DocumentCommentsEnabledContext {
+  documentId?: string
+  documentType: string
+}
+
+/** @hidden @beta */
+export interface DocumentAskToEditEnabledContext {
   documentId?: string
   documentType: string
 }
@@ -945,6 +936,11 @@ export interface Source {
     /** @internal */
     comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
+    }
+
+    /** @hidden @beta */
+    askToEdit: {
+      enabled: (props: DocumentAskToEditEnabledContext) => boolean
     }
   }
 

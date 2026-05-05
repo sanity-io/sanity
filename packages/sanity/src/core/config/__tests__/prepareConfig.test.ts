@@ -169,3 +169,25 @@ describe('prepareConfig — divergent auth warning', () => {
     expect(authWarning).toBeUndefined()
   })
 })
+
+describe('prepareConfig — workspace hidden property', () => {
+  it('preserves a boolean `hidden` value on the workspace summary', () => {
+    const {workspaces} = prepareConfig([
+      createWorkspace({name: 'visible', basePath: '/visible', hidden: false}),
+      createWorkspace({name: 'hidden-bool', basePath: '/hidden-bool', hidden: true}),
+    ])
+
+    expect(workspaces.find((w) => w.name === 'visible')?.hidden).toBe(false)
+    expect(workspaces.find((w) => w.name === 'hidden-bool')?.hidden).toBe(true)
+  })
+
+  it('preserves a function-based `hidden` callback on the workspace summary', () => {
+    const hidden = vi.fn(() => true)
+
+    const {workspaces} = prepareConfig([
+      createWorkspace({name: 'callback', basePath: '/callback', hidden}),
+    ])
+
+    expect(workspaces.find((w) => w.name === 'callback')?.hidden).toBe(hidden)
+  })
+})

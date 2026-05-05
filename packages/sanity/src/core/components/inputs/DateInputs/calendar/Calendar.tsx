@@ -343,7 +343,12 @@ export const Calendar = forwardRef(function Calendar(
     setFocusedDateYear,
   ])
 
-  const handleNowClick = useCallback(() => onSelect(new Date()), [onSelect])
+  const handleNowClick = useCallback(() => {
+    const now = new Date()
+    onSelect(now)
+    setFocusedDate(now)
+  }, [onSelect])
+
   return (
     <Box data-testid="calendar" data-ui="Calendar" {...restProps} ref={ref}>
       {/* Select date */}

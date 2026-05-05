@@ -335,8 +335,6 @@ import type {
   DatetimeOptions,
   DatetimeRule,
   dec,
-  DECISION_PARAMETERS_SCHEMA,
-  DecisionParametersConfig,
   decodePath,
   DecorationMember,
   DEFAULT_ANNOTATIONS,
@@ -411,12 +409,14 @@ import type {
   DocumentActionDescription,
   DocumentActionDialogProps,
   DocumentActionGroup,
+  DocumentActionKeys,
   DocumentActionModalDialogProps,
   DocumentActionPopoverDialogProps,
   DocumentActionProps,
   DocumentActionsContext,
   DocumentActionsResolver,
   DocumentActionsVersionType,
+  DocumentAskToEditEnabledContext,
   DocumentAvailability,
   DocumentBadgeComponent,
   DocumentBadgeDescription,
@@ -1256,6 +1256,7 @@ import type {
   SanityCreateOptions,
   SanityDefaultPreview,
   SanityDefaultPreviewProps,
+  SanityDefinedAction,
   SanityDocument,
   SanityDocumentLike,
   SanityFormConfig,
@@ -2739,12 +2740,6 @@ describe('sanity', () => {
   test('dec', () => {
     expectTypeOf<typeof dec>().toBeFunction()
   })
-  test('DECISION_PARAMETERS_SCHEMA', () => {
-    expectTypeOf<typeof DECISION_PARAMETERS_SCHEMA>().not.toBeNever()
-  })
-  test('DecisionParametersConfig', () => {
-    expectTypeOf<DecisionParametersConfig>().toBeObject()
-  })
   test('decodePath', () => {
     expectTypeOf<typeof decodePath>().toBeFunction()
   })
@@ -2967,6 +2962,9 @@ describe('sanity', () => {
   test('DocumentActionGroup', () => {
     expectTypeOf<DocumentActionGroup>().not.toBeNever()
   })
+  test('DocumentActionKeys', () => {
+    expectTypeOf<DocumentActionKeys>().toBeObject()
+  })
   test('DocumentActionModalDialogProps', () => {
     expectTypeOf<DocumentActionModalDialogProps>().toBeObject()
   })
@@ -2984,6 +2982,9 @@ describe('sanity', () => {
   })
   test('DocumentActionsVersionType', () => {
     expectTypeOf<DocumentActionsVersionType>().not.toBeNever()
+  })
+  test('DocumentAskToEditEnabledContext', () => {
+    expectTypeOf<DocumentAskToEditEnabledContext>().toBeObject()
   })
   test('DocumentAvailability', () => {
     expectTypeOf<DocumentAvailability>().not.toBeNever()
@@ -5514,6 +5515,9 @@ describe('sanity', () => {
   })
   test('SanityDefaultPreviewProps', () => {
     expectTypeOf<SanityDefaultPreviewProps>().toBeObject()
+  })
+  test('SanityDefinedAction', () => {
+    expectTypeOf<SanityDefinedAction>().not.toBeNever()
   })
   test('SanityDocument', () => {
     expectTypeOf<SanityDocument>().toBeObject()

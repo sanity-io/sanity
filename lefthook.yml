@@ -1,0 +1,14 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: format-and-lint-scripts
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs}"
+      stage_fixed: true
+      run: |
+        oxfmt --no-error-on-unmatched-pattern {staged_files}
+        oxlint --disable-nested-config --type-aware --fix --quiet {staged_files}
+
+    - name: format-other
+      glob: "*.{md,yml,yaml,css,json}"
+      stage_fixed: true
+      run: oxfmt --no-error-on-unmatched-pattern {staged_files}
