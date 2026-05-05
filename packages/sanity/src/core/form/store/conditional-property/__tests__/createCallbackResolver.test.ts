@@ -25,7 +25,7 @@ describe('createCallbackResolver', () => {
     resolveReadOnly = createCallbackResolver({property: 'readOnly'})
   })
 
-  describe('no-callback short-circuit', () => {
+  describe('schemas without callbacks', () => {
     test('returns undefined for a flat object with no callbacks', () => {
       const schema = compile([
         {
@@ -252,7 +252,7 @@ describe('createCallbackResolver', () => {
     })
   })
 
-  describe('caching', () => {
+  describe('per-instance cache', () => {
     test('returns the same reference for the same inputs called twice', () => {
       const callback = vi.fn(() => false)
       const schema = compile([
@@ -273,15 +273,14 @@ describe('createCallbackResolver', () => {
       // reference-equality cache.
       expect(callback).toHaveBeenCalledTimes(1)
     })
+  })
 
-    test('schemas that reach MAX_FIELD_DEPTH still emit the original marker tree', () => {
-      // Behaviour preservation: the original `resolveCallbackState` walk
-      // emits `{value: false}` markers at depth 20 and propagates `{children:
-      // …}` upward. The structural cache is depth-aware so it does NOT
-      // short-circuit deep schemas — they fall through to the original walk
-      // and produce the same shape they did before this optimization.
-      // Regression alarm: if this test starts returning `undefined`, the
-      // depth check has been bypassed and behaviour has silently changed.
+  describe('depth limit', () => {
+    test('emits a marker tree at MAX_FIELD_DEPTH (does not recurse beyond the limit)', () => {
+      // Characterizes the existing depth-bounded walk: at `level === MAX_FIELD_DEPTH`
+      // the resolver returns `{value: false}` instead of recursing further, and the
+      // markers propagate up as a `{children: …}` tree. This protects against a
+      // future change that silently bypasses the depth gate.
       let typeDef: Record<string, unknown> = {name: 'leaf', type: 'string'}
       for (let i = 0; i < 22; i++) {
         typeDef = {
@@ -297,54 +296,6 @@ describe('createCallbackResolver', () => {
       const result = resolveHidden({currentUser: MOCK_USER, documentValue, schemaType})
       expect(result).toBeDefined()
       expect(result).toHaveProperty('children')
-    })
-
-    test('shallow no-callback schemas still short-circuit to `undefined`', () => {
-      // Companion to the depth-aware preservation test above: schemas that
-      // do NOT reach MAX_FIELD_DEPTH should hit the structural-cache short
-      // circuit and skip the recursive walk entirely.
-      const schema = compile([
-        {
-          name: 'shallow',
-          type: 'document',
-          fields: [
-            {name: 'a', type: 'string'},
-            {
-              name: 'nested',
-              type: 'object',
-              fields: [{name: 'inner', type: 'string'}],
-            },
-          ],
-        },
-      ])
-      const schemaType = getType(schema, 'shallow')
-      const documentValue = {_id: 'a', _type: 'shallow'}
-
-      expect(resolveHidden({currentUser: MOCK_USER, documentValue, schemaType})).toBeUndefined()
-    })
-
-    test('the structural cache is shared across resolver instances', () => {
-      // Schema with no callbacks anywhere — the structural cache classifies it
-      // once and any subsequent resolver for the same `schemaType` short-circuits.
-      const schema = compile([
-        {
-          name: 'flat',
-          type: 'document',
-          fields: [
-            {name: 'a', type: 'string'},
-            {name: 'b', type: 'string'},
-            {name: 'c', type: 'string'},
-          ],
-        },
-      ])
-      const schemaType = getType(schema, 'flat')
-      const documentValue = {_id: 'd', _type: 'flat'}
-
-      const resolverA = createCallbackResolver({property: 'hidden'})
-      const resolverB = createCallbackResolver({property: 'hidden'})
-
-      expect(resolverA({currentUser: MOCK_USER, documentValue, schemaType})).toBeUndefined()
-      expect(resolverB({currentUser: MOCK_USER, documentValue, schemaType})).toBeUndefined()
     })
   })
 })
