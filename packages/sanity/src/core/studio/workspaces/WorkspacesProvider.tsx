@@ -16,8 +16,8 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {defer, from, type Observable, Subject, throwError} from 'rxjs'
-import {catchError, mergeMap, take} from 'rxjs/operators'
+import {defer, from, type Observable, of, Subject, throwError} from 'rxjs'
+import {catchError, map, mergeMap, take, tap} from 'rxjs/operators'
 import {WorkspacesContext} from 'sanity/_singletons'
 
 import {Dialog} from '../../../ui-components'
@@ -63,15 +63,15 @@ function checkCors(_client: SanityClient) {
   // todo: should be replaced with a cors-check endpoint
   const check = Promise.allSettled([
     client.request({
+      withCredentials: false,
       url: '/ping',
       tag: 'cors-check',
     }),
-    client.request({url: '/users/me', tag: 'cors-check'}),
-  ]).then(
-    ([ping, user]) =>
-      // ping request succeeded, but user request was network error so likely the CORS origin is disallowed
-      ping.status === 'fulfilled' && user.status === 'rejected' && isNetworkError(user.reason),
-  )
+    client.request({url: '/auth/id', tag: 'cors-check'}),
+  ]).then(([ping, user]) => {
+    // ping request succeeded, but user request was network error so likely the CORS origin is disallowed
+    return ping.status === 'fulfilled' && user.status === 'rejected' && isNetworkError(user.reason)
+  })
   corsCheck.set(cacheKey, check)
   return check
 }
@@ -81,6 +81,36 @@ type HandledError =
   | {type: 'networkError'; error: Error}
   | {type: 'serverError'; error: Error}
   | {type: 'clientError'; error: Error}
+
+/**
+ * Classify a request error into one of the displayable error types, or `null`
+ * if it should bubble up to the nearest ErrorBoundary. Returns an Observable
+ * because the network-error path needs to probe CORS asynchronously.
+ *
+ * Classification by error class first — CORS-blocked responses can't reach
+ * here as ClientError/ServerError because the browser never delivers the
+ * response body to JS. So if we *have* a typed error, the response made it
+ * through and CORS is fine. Only probe for the bare-network-error bucket
+ * where CORS-blocked and offline are genuinely indistinguishable in the
+ * error object.
+ */
+function classifyRequestError(err: unknown, client: SanityClient): Observable<HandledError | null> {
+  if (err instanceof ClientError) return of({type: 'clientError', error: err})
+  if (err instanceof ServerError) return of({type: 'serverError', error: err})
+  if (!isNetworkError(err)) return of(null)
+
+  return from(checkCors(client)).pipe(
+    map((invalidCorsConfig) =>
+      invalidCorsConfig
+        ? {
+            type: 'cors',
+            isStaging: Boolean(client.config().apiHost?.endsWith('.work')),
+            projectId: client.config()?.projectId,
+          }
+        : {type: 'networkError', error: err},
+    ),
+  )
+}
 
 /** @internal */
 export function WorkspacesProvider({
@@ -101,59 +131,28 @@ export function WorkspacesProvider({
       const waitForRetry = (caught: Observable<HttpRequestEvent>) =>
         retry.pipe(
           take(1),
-          mergeMap(() =>
-            defer(() => {
-              setError(undefined)
-              return caught
-            }),
-          ),
+          tap(() => setError(undefined)),
+          mergeMap(() => caught),
         )
 
-      // Don't let a later, less-specific error overwrite a CORS error already
-      // displayed. Multiple concurrent requests can fail at once; CORS is the
-      // dominant problem when present, so it should win regardless of arrival
-      // order.
-      const setErrorIfMoreSpecific = (next: HandledError) =>
-        setError((prev) => (prev?.type === 'cors' && next.type !== 'cors' ? prev : next))
-
       return defer(() => originalRequest(requestOptions)).pipe(
-        catchError((requestError: unknown, caught) => {
-          // Classify by error class first — CORS-blocked responses can't reach
-          // here as ClientError/ServerError because the browser never delivers
-          // the response body to JS. So if we *have* a typed error, the
-          // response made it through and CORS is fine. Only probe for the
-          // bare-network-error bucket where CORS-blocked and offline are
-          // genuinely indistinguishable in the error object.
-          if (requestError instanceof ClientError) {
-            setErrorIfMoreSpecific({type: 'clientError', error: requestError})
-            return waitForRetry(caught)
-          }
-
-          if (requestError instanceof ServerError) {
-            setErrorIfMoreSpecific({type: 'serverError', error: requestError})
-            return waitForRetry(caught)
-          }
-
-          if (isNetworkError(requestError)) {
-            return from(checkCors(client)).pipe(
-              mergeMap((invalidCorsConfig) => {
-                if (invalidCorsConfig) {
-                  setErrorIfMoreSpecific({
-                    type: 'cors',
-                    isStaging: Boolean(client.config().apiHost?.endsWith('.work')),
-                    projectId: client.config()?.projectId,
-                  })
-                } else {
-                  setErrorIfMoreSpecific({type: 'networkError', error: requestError})
-                }
-                return waitForRetry(caught)
-              }),
-            )
-          }
-
-          // Genuinely unknown — propagate so the nearest ErrorBoundary handles it.
-          return throwError(() => requestError)
-        }),
+        catchError((requestError: unknown, caught) =>
+          classifyRequestError(requestError, client).pipe(
+            // Unclassified → propagate so the nearest ErrorBoundary handles it.
+            mergeMap((handled) =>
+              handled === null ? throwError(() => requestError) : of(handled),
+            ),
+            // Side effect: set state. CORS is the dominant problem when
+            // present, so don't let a later, less-specific error overwrite
+            // a CORS error already displayed.
+            tap((handled) =>
+              setError((prev) =>
+                prev?.type === 'cors' && handled.type !== 'cors' ? prev : handled,
+              ),
+            ),
+            mergeMap(() => waitForRetry(caught)),
+          ),
+        ),
       )
     },
     [retry],
