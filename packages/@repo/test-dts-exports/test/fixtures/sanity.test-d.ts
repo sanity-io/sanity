@@ -409,12 +409,14 @@ import type {
   DocumentActionDescription,
   DocumentActionDialogProps,
   DocumentActionGroup,
+  DocumentActionKeys,
   DocumentActionModalDialogProps,
   DocumentActionPopoverDialogProps,
   DocumentActionProps,
   DocumentActionsContext,
   DocumentActionsResolver,
   DocumentActionsVersionType,
+  DocumentAskToEditEnabledContext,
   DocumentAvailability,
   DocumentBadgeComponent,
   DocumentBadgeDescription,
@@ -1254,6 +1256,7 @@ import type {
   SanityCreateOptions,
   SanityDefaultPreview,
   SanityDefaultPreviewProps,
+  SanityDefinedAction,
   SanityDocument,
   SanityDocumentLike,
   SanityFormConfig,
@@ -2959,6 +2962,9 @@ describe('sanity', () => {
   test('DocumentActionGroup', () => {
     expectTypeOf<DocumentActionGroup>().not.toBeNever()
   })
+  test('DocumentActionKeys', () => {
+    expectTypeOf<DocumentActionKeys>().toBeObject()
+  })
   test('DocumentActionModalDialogProps', () => {
     expectTypeOf<DocumentActionModalDialogProps>().toBeObject()
   })
@@ -2976,6 +2982,9 @@ describe('sanity', () => {
   })
   test('DocumentActionsVersionType', () => {
     expectTypeOf<DocumentActionsVersionType>().not.toBeNever()
+  })
+  test('DocumentAskToEditEnabledContext', () => {
+    expectTypeOf<DocumentAskToEditEnabledContext>().toBeObject()
   })
   test('DocumentAvailability', () => {
     expectTypeOf<DocumentAvailability>().not.toBeNever()
@@ -5506,6 +5515,9 @@ describe('sanity', () => {
   })
   test('SanityDefaultPreviewProps', () => {
     expectTypeOf<SanityDefaultPreviewProps>().toBeObject()
+  })
+  test('SanityDefinedAction', () => {
+    expectTypeOf<SanityDefinedAction>().not.toBeNever()
   })
   test('SanityDocument', () => {
     expectTypeOf<SanityDocument>().toBeObject()
