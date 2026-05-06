@@ -28,7 +28,11 @@ export function WorkspaceAuth() {
 
   const handleCardSelect = useCallback(
     (workspaceName: string, state: 'loading' | 'logged-in' | 'logged-out' | 'no-access') => {
-      if (state === 'logged-in' && workspaceName !== activeWorkspace.name) {
+      // While loading, navigate; the destination's auth boundary will handle login if needed.
+      if (
+        (state === 'logged-in' || state === 'loading') &&
+        workspaceName !== activeWorkspace.name
+      ) {
         setActiveWorkspace(workspaceName)
         return
       }
