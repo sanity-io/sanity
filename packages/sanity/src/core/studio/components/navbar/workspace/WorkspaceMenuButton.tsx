@@ -12,10 +12,11 @@ import {
 import {useCallback, useState} from 'react'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
+import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useVisibleWorkspaces} from '../../../workspaces'
-import {useWorkspaceAuthStates} from './hooks'
+import {useWorkspaceAuthProbes} from './hooks'
 import {ManageMenu} from './ManageMenu'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
@@ -28,10 +29,22 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 
 export function WorkspaceMenuButton() {
   const {visibleWorkspaces} = useVisibleWorkspaces()
-  const [authStates] = useWorkspaceAuthStates(visibleWorkspaces)
   const {activeWorkspace} = useActiveWorkspace()
   const {t} = useTranslation()
   const [scrollbarWidth, setScrollbarWidth] = useState(0)
+
+  // Defer the per-workspace auth probe until the menu is first opened.
+  // The menu is hidden behind a popover; probing on mount fans out
+  // /auth/id requests for every visible workspace before the user has
+  // even asked to switch. Latch to `true` on first open so the data
+  // stays warm if the user reopens the menu.
+  const [hasOpened, setHasOpened] = useState(false)
+  const handleOpen = useCallback(() => setHasOpened(true), [])
+
+  const [authStates, isLoadingAuth] = useWorkspaceAuthProbes({
+    workspaces: visibleWorkspaces,
+    enabled: hasOpened,
+  })
 
   const stackRef = useCallback((node: HTMLDivElement | null) => {
     if (node) {
@@ -40,14 +53,14 @@ export function WorkspaceMenuButton() {
     }
   }, [])
 
-  const disabled = !authStates
+  const isProbing = hasOpened && (isLoadingAuth || !authStates)
 
   return (
     <MenuButton
       button={
         <Flex>
-          <Tooltip content={t('workspaces.select-workspace-tooltip')} disabled={disabled} portal>
-            <UIButton disabled={disabled} mode="bleed" padding={2} width="fill">
+          <Tooltip content={t('workspaces.select-workspace-tooltip')} portal>
+            <UIButton mode="bleed" padding={2} width="fill">
               <Flex align="center" gap={2}>
                 <Box>
                   <Text size={1} textOverflow="ellipsis" weight="medium">
@@ -63,8 +76,13 @@ export function WorkspaceMenuButton() {
         </Flex>
       }
       id="workspace-menu"
+      onOpen={handleOpen}
       menu={
-        !disabled && authStates ? (
+        isProbing ? (
+          <Menu padding={0} style={{maxWidth: '350px', minWidth: '250px', overflowY: 'hidden'}}>
+            <LoadingBlock showText />
+          </Menu>
+        ) : authStates ? (
           <Menu padding={0} style={{maxWidth: '350px', minWidth: '250px', overflowY: 'hidden'}}>
             <ManageMenu multipleWorkspaces={visibleWorkspaces.length > 1} />
             {visibleWorkspaces.length > 1 && (

@@ -59,7 +59,14 @@ const isStaging = globalThis.__SANITY_STAGING__ === true
 
 const envConfig = {
   // use this for production workspaces
-  production: isStaging ? {apiHost: 'https://api.sanity.io'} : {},
+  production: isStaging
+    ? {apiHost: 'https://api.sanity.io'}
+    : // To route all production-workspace requests through a local proxy on
+      // :3050 (e.g. for testing error handling), replace `{}` with
+      // `{apiHost: 'http://localhost:3050'}`. The proxy must accept
+      // `*.localhost` subdomains since the client builds project URLs as
+      // `${projectId}.${apiHost}`.
+      {},
   // use this for staging workspaces
   staging: isStaging ? {} : {apiHost: 'https://api.sanity.work'},
 }
@@ -332,6 +339,14 @@ export default defineConfig([
       drafts: {enabled: true},
     },
     releases: {enabled: false},
+  },
+  {
+    ...defaultWorkspace,
+    name: 'secondary',
+    title: 'Secondary test project',
+    projectId: 'q5caobza',
+    dataset: 'production',
+    basePath: '/secondary',
   },
   {
     ...defaultWorkspace,

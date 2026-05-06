@@ -2,7 +2,6 @@ import {describe, expect, test} from 'vitest'
 
 import {ConfigResolutionError} from '../../config/ConfigResolutionError'
 import {SchemaError} from '../../config/SchemaError'
-import {CorsOriginError} from '../../store/cors/CorsOriginError'
 import {ViteDevServerStoppedError} from '../../studio/ViteDevServerStopped'
 import {isKnownError} from '../isKnownError'
 
@@ -16,17 +15,6 @@ describe('#isKnownError', () => {
           get: () => undefined,
           has: () => false,
           getTypeNames: () => [],
-        }),
-      ),
-    ).toBe(true)
-  })
-
-  test('should return true for CorsOriginError errors', () => {
-    expect(
-      isKnownError(
-        new CorsOriginError({
-          isStaging: false,
-          projectId: 'test',
         }),
       ),
     ).toBe(true)
