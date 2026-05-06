@@ -62,6 +62,7 @@ import {
   searchStrategyReducer,
   serverDocumentActionsReducer,
   toolsReducer,
+  variantsEnabledReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {recordConfigWarning} from './configWarnings'
@@ -866,6 +867,9 @@ function resolveSource({
       eventsAPI: {
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
+      },
+      variants: {
+        enabled: variantsEnabledReducer({config, initialValue: false}),
       },
     },
     // eslint-disable-next-line camelcase

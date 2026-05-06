@@ -1255,6 +1255,7 @@ export type {
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
   scheduledDrafts: {enabled: boolean}
+  variants: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
   releases: {
     enabled?: boolean
@@ -1357,5 +1358,11 @@ export interface BetaFeatures {
   eventsAPI?: {
     documents?: boolean
     releases?: boolean
+  }
+  /**
+   * Config for variants beta features in Studio.
+   */
+  variants?: {
+    enabled?: boolean
   }
 }

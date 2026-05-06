@@ -4,6 +4,7 @@ import {bufferTime} from 'rxjs/operators'
 import {describe, expect, it} from 'vitest'
 
 import {createMockAuthStore} from '../../store'
+import {VARIANTS_NAME} from '../../variants/plugin'
 import {definePlugin} from '../definePlugin'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
 import {type PluginOptions} from '../types'
@@ -169,6 +170,53 @@ describe('resolveConfig', () => {
       {name: 'sanity/schedules'},
       {name: 'sanity/singleDocRelease'},
     ])
+  })
+  it('wont include variants default plugin by default', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+    const [workspace] = await firstValueFrom(
+      resolveConfig({
+        name: 'default',
+        dataset,
+        projectId,
+        auth: createMockAuthStore({client, currentUser: null}),
+        plugins: [], // No plugins
+      }),
+    )
+    const pluginNames = workspace.__internal.options.plugins?.map((p) => p.name) ?? []
+    expect(pluginNames).not.toContain(VARIANTS_NAME)
+  })
+  it('includes variants default plugin when the feature is enabled', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+    const [workspace] = await firstValueFrom(
+      resolveConfig({
+        name: 'default',
+        dataset,
+        projectId,
+        auth: createMockAuthStore({client, currentUser: null}),
+        plugins: [], // No plugins
+        beta: {
+          variants: {
+            enabled: true,
+          },
+        },
+      }),
+    )
+    const pluginNames = workspace.__internal.options.plugins?.map((p) => p.name) ?? []
+    expect(pluginNames).toContain(VARIANTS_NAME)
   })
   it('wont include releases plugin if the feature is disabled', async () => {
     const projectId = 'ppsg7ml5'
@@ -375,6 +423,86 @@ describe('createSourceFromConfig', () => {
       dataset: 'production',
       currentUser: null,
     })
+  })
+})
+
+describe('beta variants config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('defaults variants to false', async () => {
+    const source = await createSourceFromConfig({projectId, dataset})
+
+    expect(source.beta?.variants?.enabled).toBe(false)
+  })
+
+  it('resolves variants from root config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {variants: {enabled: true}},
+    })
+
+    expect(source.beta?.variants?.enabled).toBe(true)
+  })
+
+  it('resolves variants from plugin config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-variants',
+          beta: {variants: {enabled: true}},
+        })(),
+      ],
+    })
+
+    expect(source.beta?.variants?.enabled).toBe(true)
+  })
+
+  it('lets root config override plugin variants config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-variants',
+          beta: {variants: {enabled: false}},
+        })(),
+      ],
+      beta: {variants: {enabled: true}},
+    })
+
+    expect(source.beta?.variants?.enabled).toBe(true)
+  })
+
+  it('throws when variants is not an object', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          // @ts-expect-error should be an object
+          variants: 'enabled',
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.variants` to be an object, but received string')
+  })
+
+  it('throws when variants enabled is not a boolean', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          variants: {
+            // @ts-expect-error should be a boolean
+            enabled: 'enabled',
+          },
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.variants.enabled` to be a boolean, but received string')
   })
 })
 
