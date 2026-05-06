@@ -41,7 +41,6 @@ test('clicking default sort order and direction sets value in storage', async ({
     key: SORT_KEY,
     value: {
       by: [{field: 'name', direction: 'asc'}],
-      extendedProjection: 'name',
     },
   })
 
@@ -56,7 +55,6 @@ test('clicking default sort order and direction sets value in storage', async ({
     key: SORT_KEY,
     value: {
       by: [{field: '_updatedAt', direction: 'desc'}],
-      extendedProjection: '',
     },
   })
 })
@@ -108,7 +106,6 @@ test('clicking custom sort order and direction sets value in storage', async ({
         {field: 'title', direction: 'asc'},
         {field: 'publicationYear', direction: 'asc'},
       ],
-      extendedProjection: 'title, publicationYear',
     },
   })
 })

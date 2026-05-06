@@ -3,7 +3,6 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../hooks'
 import {useTranslation} from '../i18n/hooks/useTranslation'
@@ -160,12 +159,6 @@ export function useDocumentStore(): DocumentStore {
   const historyStore = useHistoryStore()
   const documentPreviewStore = useDocumentPreviewStore()
   const workspace = useWorkspace()
-
-  const serverActionsEnabled = useMemo(() => {
-    const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
-  }, [workspace.__internal_serverDocumentActions?.enabled])
-
   const telemetry = useTelemetry()
   const toast = useToast()
   const {t} = useTranslation()
@@ -249,7 +242,6 @@ export function useDocumentStore(): DocumentStore {
         initialValueTemplates: templates,
         schema,
         i18n,
-        serverActionsEnabled,
         currentUser,
         extraOptions: {
           onReportLatency: handleReportLatency,
@@ -286,7 +278,6 @@ export function useDocumentStore(): DocumentStore {
     workspace,
     currentUser,
     templates,
-    serverActionsEnabled,
     handleReportLatency,
     handleSyncErrorRecovery,
     handleSlowCommit,

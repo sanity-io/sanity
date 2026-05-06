@@ -18,7 +18,6 @@ import {
   type SelectionState,
   type TimelineController,
   useHistoryStore,
-  useWorkspace,
 } from '../../index'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {remoteSnapshots, type RemoteSnapshotVersionEvent} from '../document'
@@ -102,7 +101,6 @@ export function useTimelineStore({
   const snapshotsSubscriptionRef = useRef<Subscription | null>(null)
   const timelineStateRef = useRef<TimelineState>(INITIAL_TIMELINE_STATE)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const workspace = useWorkspace()
 
   /**
    * The mutable TimelineController, used internally
@@ -158,12 +156,6 @@ export function useTimelineStore({
     controller.resume()
     return () => controller.suspend()
   }, [rev, since, controller, timelineController$])
-
-  const serverActionsEnabled = useMemo(() => {
-    const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
-  }, [workspace.__internal_serverDocumentActions?.enabled])
-
   /**
    * Fetch document snapshots and update the mutable controller.
    * Unsubscribes on clean up, preventing double fetches in strict mode.
@@ -174,7 +166,6 @@ export function useTimelineStore({
         client,
         {draftId: `drafts.${documentId}`, publishedId: documentId},
         documentType,
-        serverActionsEnabled,
       ).subscribe((ev: RemoteSnapshotVersionEvent) => {
         controller.handleRemoteMutation(ev)
       })
@@ -185,7 +176,7 @@ export function useTimelineStore({
         snapshotsSubscriptionRef.current = null
       }
     }
-  }, [client, controller, documentId, documentType, serverActionsEnabled])
+  }, [client, controller, documentId, documentType])
 
   const timelineStore = useMemo(() => {
     return {

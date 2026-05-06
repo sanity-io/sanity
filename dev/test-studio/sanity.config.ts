@@ -255,10 +255,6 @@ const defaultWorkspace = defineConfig({
   },
   basePath: '/test',
   icon: SanityMonogram,
-  // eslint-disable-next-line camelcase
-  __internal_serverDocumentActions: {
-    enabled: true,
-  },
   scheduledPublishing: {
     enabled: true,
     inputDateTimeFormat: 'MM/dd/yy h:mm a',
@@ -290,6 +286,11 @@ const defaultWorkspace = defineConfig({
         return [...prev, useArchiveAndDeleteCustomAction]
       }
       return prev
+    },
+  },
+  beta: {
+    variants: {
+      enabled: true,
     },
   },
 })
@@ -332,6 +333,14 @@ export default defineConfig([
       drafts: {enabled: true},
     },
     releases: {enabled: false},
+  },
+  {
+    ...defaultWorkspace,
+    name: 'secondary',
+    title: 'Secondary test project',
+    projectId: 'q5caobza',
+    dataset: 'production',
+    basePath: '/secondary',
   },
   {
     ...defaultWorkspace,

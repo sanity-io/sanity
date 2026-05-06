@@ -67,5 +67,9 @@ export interface OperationArgs {
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots
   version?: DocumentVersionSnapshots
+  /**
+   * @deprecated it's always true. Preserved to avoid breaking changes
+   * Will be removed in the next major version.
+   */
   serverActionsEnabled: boolean
 }

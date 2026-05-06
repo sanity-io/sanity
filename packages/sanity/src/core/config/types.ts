@@ -514,9 +514,6 @@ export interface PluginOptions {
     enableLegacySearch?: boolean
   }
 
-  /** @internal */
-  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
-
   /** Configuration for Scheduled drafts */
   scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
 
@@ -671,17 +668,6 @@ export interface WorkspaceOptions extends SourceOptions {
    */
   mediaLibrary?: DefaultPluginsWorkspaceOptions['mediaLibrary']
   apps?: AppsOptions
-
-  /**
-   * @hidden
-   * @internal
-   */
-  __internal_serverDocumentActions?: {
-    /**
-     * @deprecated The Mutations API integration will be removed in a future release.
-     */
-    enabled?: boolean
-  }
 
   scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
 
@@ -1068,8 +1054,6 @@ export interface Source {
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
   }
 
-  /** @internal */
-  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
   /** Configuration for studio features.
    * @internal
    */
@@ -1255,6 +1239,7 @@ export type {
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
   scheduledDrafts: {enabled: boolean}
+  variants: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
   releases: {
     enabled?: boolean
@@ -1357,5 +1342,11 @@ export interface BetaFeatures {
   eventsAPI?: {
     documents?: boolean
     releases?: boolean
+  }
+  /**
+   * Config for variants beta features in Studio.
+   */
+  variants?: {
+    enabled?: boolean
   }
 }

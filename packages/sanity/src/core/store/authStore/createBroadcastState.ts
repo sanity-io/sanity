@@ -57,6 +57,17 @@ export function createMemoryStorage<T>(): BroadcastedStateStorage<T> {
   return {load, store}
 }
 
+// `BroadcastChannel` is browser-only. In SSR (Next.js App Router, etc.) the
+// auth store is constructed during workspace evaluation on the server, where
+// the global is undefined. Fall back to a no-op channel so construction is
+// safe; cross-tab sync is meaningless on the server anyway.
+function createChannel(key: string): Pick<BroadcastChannel, 'postMessage' | 'close' | 'onmessage'> {
+  if (typeof BroadcastChannel === 'undefined') {
+    return {postMessage: () => {}, close: () => {}, onmessage: null}
+  }
+  return new BroadcastChannel(key)
+}
+
 export function createBroadcastState(key: string): BroadcastedState<void>
 export function createBroadcastState<T>(
   key: string,
@@ -72,7 +83,7 @@ export function createBroadcastState<T>(
   initial?: (current: T | undefined) => T | undefined,
   storage: BroadcastedStateStorage<T> = createMemoryStorage(),
 ): BroadcastedState<T> {
-  const channel = new BroadcastChannel(key)
+  const channel = createChannel(key)
   const subject = new BehaviorSubject<T | undefined>(initial?.(storage.load()))
 
   storage.store(subject.getValue())
