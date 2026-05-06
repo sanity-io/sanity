@@ -60,7 +60,6 @@ import {
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
-  serverDocumentActionsReducer,
   toolsReducer,
   variantsEnabledReducer,
 } from './configPropertyReducers'
@@ -871,10 +870,6 @@ function resolveSource({
       variants: {
         enabled: variantsEnabledReducer({config, initialValue: false}),
       },
-    },
-    // eslint-disable-next-line camelcase
-    __internal_serverDocumentActions: {
-      enabled: serverDocumentActionsReducer({config, initialValue: undefined}),
     },
 
     announcements: {

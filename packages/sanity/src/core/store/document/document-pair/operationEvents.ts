@@ -82,11 +82,8 @@ const execute = (
   operationName: keyof typeof operationImpls,
   operationArguments: OperationArgs,
   extraArgs: any[],
-  serverActionsEnabled: boolean,
 ): Observable<any> => {
-  const operation = serverActionsEnabled
-    ? serverOperationImpls[operationName]
-    : operationImpls[operationName]
+  const operation = serverOperationImpls[operationName]
   return defer(() =>
     merge(of(null), maybeObservable(operation.execute(operationArguments, ...extraArgs))),
   ).pipe(last())
@@ -148,7 +145,11 @@ export const operationEvents = memoize(
     client: SanityClient
     historyStore: HistoryStore
     schema: Schema
-    serverActionsEnabled: Observable<boolean>
+    /**
+     * @deprecated Does nothing. Preserved to avoid breaking changes.
+     * Will be removed in the next major version.
+     */
+    serverActionsEnabled?: Observable<boolean>
     extraOptions?: DocumentStoreExtraOptions
   }) => {
     const storeKey = getOperationStoreKey(ctx.client)
@@ -174,19 +175,11 @@ export const operationEvents = memoize(
                   ctx.client,
                   args.idPair,
                   args.typeName,
-                  ctx.serverActionsEnabled,
                   ctx.extraOptions,
                 ).pipe(filter(Boolean))
                 const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
                 return ready$.pipe(
-                  switchMap(() =>
-                    execute(
-                      args.operationName,
-                      operationArguments,
-                      args.extraArgs,
-                      operationArguments.serverActionsEnabled,
-                    ),
-                  ),
+                  switchMap(() => execute(args.operationName, operationArguments, args.extraArgs)),
                 )
               }),
               map((): IntermediarySuccess => ({type: 'success', args})),
@@ -218,6 +211,6 @@ export const operationEvents = memoize(
   (ctx) => {
     const config = ctx.client.config()
     // we only want one of these per dataset+projectid
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}${ctx.serverActionsEnabled ? '-serverActionsEnabled' : ''}`
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}`
   },
 )

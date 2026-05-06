@@ -5,7 +5,6 @@ import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
 import {useClient, useSchema} from '../../hooks'
-import {useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {
   createHookFromObservableFactory,
@@ -180,7 +179,11 @@ export interface DocumentPairPermissionsOptions {
   type: string
   version?: string
   permission: DocumentPermission
-  serverActionsEnabled: Observable<boolean>
+  /**
+   * @deprecated Does nothing. Preserved to avoid breaking changes.
+   * Will be removed in the next major version.
+   */
+  serverActionsEnabled?: Observable<boolean>
   pairListenerOptions?: DocumentStoreExtraOptions
 }
 
@@ -198,7 +201,6 @@ export function getDocumentPairPermissions({
   id,
   permission,
   type,
-  serverActionsEnabled,
   version: v,
   pairListenerOptions,
 }: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> {
@@ -217,7 +219,7 @@ export function getDocumentPairPermissions({
     client,
     getIdPair(id, {version: v}),
     type,
-    serverActionsEnabled,
+    undefined,
     pairListenerOptions,
   ).pipe(
     switchMap((pair) =>
@@ -309,7 +311,6 @@ export function useDocumentPairPermissions({
   const defaultClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const defaultSchema = useSchema()
   const defaultGrantsStore = useGrantsStore()
-  const workspace = useWorkspace()
 
   const client = useMemo(() => overrideClient || defaultClient, [defaultClient, overrideClient])
   const schema = useMemo(() => overrideSchema || defaultSchema, [defaultSchema, overrideSchema])
@@ -317,11 +318,6 @@ export function useDocumentPairPermissions({
     () => overrideGrantsStore || defaultGrantsStore,
     [defaultGrantsStore, overrideGrantsStore],
   )
-
-  const serverActionsEnabled = useMemo(() => {
-    const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
-  }, [workspace.__internal_serverDocumentActions?.enabled])
 
   return useDocumentPairPermissionsFromHookFactory(
     useMemo(
@@ -332,21 +328,10 @@ export function useDocumentPairPermissions({
         id,
         permission,
         type,
-        serverActionsEnabled,
         pairListenerOptions,
         version,
       }),
-      [
-        client,
-        schema,
-        grantsStore,
-        id,
-        permission,
-        type,
-        serverActionsEnabled,
-        pairListenerOptions,
-        version,
-      ],
+      [client, schema, grantsStore, id, permission, type, pairListenerOptions, version],
     ),
   )
 }
