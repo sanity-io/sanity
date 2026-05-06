@@ -21,9 +21,14 @@ import {
 
 import {type AuthConfig} from '../../config/auth/types'
 import {isStaging} from '../../environment/isStaging'
-import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../studioClient'
 import {canonicalHash} from '../../util/canonicalHash'
 import {CorsOriginError} from '../cors'
+import {
+  AUTH_CLIENT_OPTIONS,
+  getAuthTokenStorageKey,
+  getCookieAuthStateKey,
+  UNAUTHENTICATED,
+} from './constants'
 import {createBroadcastState} from './createBroadcastState'
 import {createBroadcastStorage} from './createBroadcastStorage'
 import {createLoginComponent} from './createLoginComponent'
@@ -95,17 +100,13 @@ const getCurrentUser = async (
   }
 }
 
-const UNAUTHENTICATED = {authenticated: false} as const
-
-const API_VERSION = 'v2026-04-09'
-
 /**
  * Probe whether a given auth method works by calling /auth/id.
  */
 const probeCurrentUser = (client: SanityClient): Promise<AuthProbeResult> => {
   return client
     .request<{id: string; expiry: number}>({
-      uri: '/users/me',
+      uri: '/auth/id',
       tag: 'auth.check-id',
     })
     .then(
@@ -144,15 +145,6 @@ async function exchangeSessionForToken(client: SanityClient, sessionId: string):
   return token
 }
 
-const COMMON_CLIENT_OPTIONS = {
-  apiVersion: API_VERSION,
-  useCdn: false,
-  perspective: 'raw',
-  requestTagPrefix: 'sanity.studio',
-  allowReconfigure: false,
-  headers: DEFAULT_STUDIO_CLIENT_HEADERS,
-} as const
-
 /**
  * @internal
  */
@@ -178,7 +170,7 @@ export function _createAuthStore({
   //    1. HTTP cookie
 
   const tokenStorage = createBroadcastStorage<{token?: string}>(
-    `__studio_auth_token_${projectId}`,
+    getAuthTokenStorageKey(projectId),
     // sets the initial value
     (currentTokenValue) => {
       if (!isCookielessCompatibleLoginMethod(loginMethod)) {
@@ -199,7 +191,7 @@ export function _createAuthStore({
   // has a different status that what it received from another tab, it fetches. This ensures all
   // tabs converge on the same auth state
   const cookieAuthState = createBroadcastState<{authenticated: boolean | 'pending'}>(
-    `__studio_auth_cookie_state_${projectId}`,
+    getCookieAuthStateKey(projectId),
     () => ({authenticated: 'pending'}),
   )
 
@@ -219,7 +211,7 @@ export function _createAuthStore({
   }
 
   const cookieClient = clientFactory({
-    ...COMMON_CLIENT_OPTIONS,
+    ...AUTH_CLIENT_OPTIONS,
     ...hostOptions,
     projectId,
     dataset,
@@ -229,7 +221,7 @@ export function _createAuthStore({
   const currentTokenState = tokenStorage.get()
 
   const initialTokenClient = clientFactory({
-    ...COMMON_CLIENT_OPTIONS,
+    ...AUTH_CLIENT_OPTIONS,
     ...hostOptions,
     projectId,
     dataset,
@@ -239,7 +231,7 @@ export function _createAuthStore({
   })
 
   const initialDualClient = clientFactory({
-    ...COMMON_CLIENT_OPTIONS,
+    ...AUTH_CLIENT_OPTIONS,
     ...hostOptions,
     projectId,
     dataset,
@@ -303,7 +295,7 @@ export function _createAuthStore({
       .pipe(
         map((nextTokenState) => {
           return clientFactory({
-            ...COMMON_CLIENT_OPTIONS,
+            ...AUTH_CLIENT_OPTIONS,
             ...hostOptions,
             projectId,
             dataset,
@@ -321,7 +313,7 @@ export function _createAuthStore({
     merge(hashTokenChange, tokenStorage.value.pipe(skip(1))).pipe(
       map((nextTokenState) => {
         return clientFactory({
-          ...COMMON_CLIENT_OPTIONS,
+          ...AUTH_CLIENT_OPTIONS,
           ...hostOptions,
           projectId,
           dataset,
@@ -407,7 +399,7 @@ export function _createAuthStore({
 
     // Client used to exchange SID (Session ID) for a token (and a cookie as a side effect)
     const exchangeClient = clientFactory({
-      ...COMMON_CLIENT_OPTIONS,
+      ...AUTH_CLIENT_OPTIONS,
       ...hostOptions,
       projectId,
       dataset,
