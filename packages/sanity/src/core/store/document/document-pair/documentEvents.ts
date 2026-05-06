@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {merge, type Observable} from 'rxjs'
+import {EMPTY, merge, type Observable} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
 
 import {type DocumentStoreExtraOptions} from '../getPairListener'
@@ -20,7 +20,9 @@ export const documentEvents = memoize(
     pairListenerOptions?: DocumentStoreExtraOptions,
   ): Observable<DocumentVersionEvent> => {
     return memoizedPair(client, idPair, typeName, serverActionsEnabled, pairListenerOptions).pipe(
-      switchMap(({draft, published}) => merge(draft.events, published.events)),
+      switchMap(({draft, published, version}) =>
+        merge(draft.events, published.events, version?.events ?? EMPTY),
+      ),
     )
   },
   memoizeKeyGen,

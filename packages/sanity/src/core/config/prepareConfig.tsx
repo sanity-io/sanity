@@ -33,9 +33,9 @@ import {canonicalHash} from '../util/canonicalHash'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
-  decisionParametersSchemaReducer,
   directUploadsReducer,
   documentActionsReducer,
+  documentAskToEditEnabledReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
   documentInspectorsReducer,
@@ -62,6 +62,7 @@ import {
   searchStrategyReducer,
   serverDocumentActionsReducer,
   toolsReducer,
+  variantsEnabledReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {recordConfigWarning} from './configWarnings'
@@ -74,7 +75,6 @@ import {SchemaError} from './SchemaError'
 import {
   type Config,
   type ConfigContext,
-  DECISION_PARAMETERS_SCHEMA,
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
@@ -478,10 +478,6 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
-    [DECISION_PARAMETERS_SCHEMA]: decisionParametersSchemaReducer({
-      config,
-      initialValue: undefined,
-    }),
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
@@ -770,6 +766,15 @@ function resolveSource({
           })
         },
       },
+      askToEdit: {
+        enabled: (partialContext) => {
+          return documentAskToEditEnabledReducer({
+            context: partialContext,
+            config,
+            initialValue: true,
+          })
+        },
+      },
     },
 
     form: {
@@ -862,6 +867,9 @@ function resolveSource({
       eventsAPI: {
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
+      },
+      variants: {
+        enabled: variantsEnabledReducer({config, initialValue: false}),
       },
     },
     // eslint-disable-next-line camelcase

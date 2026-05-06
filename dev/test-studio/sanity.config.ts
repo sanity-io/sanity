@@ -6,7 +6,7 @@ import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon, EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
-import {DECISION_PARAMETERS_SCHEMA, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
+import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
@@ -269,11 +269,6 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
-  [DECISION_PARAMETERS_SCHEMA]: {
-    audiences: ['aud-a', 'aud-b', 'aud-c'],
-    locales: ['en-GB', 'en-US'],
-    ages: ['20-29', '30-39'],
-  },
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
@@ -295,6 +290,11 @@ const defaultWorkspace = defineConfig({
         return [...prev, useArchiveAndDeleteCustomAction]
       }
       return prev
+    },
+  },
+  beta: {
+    variants: {
+      enabled: true,
     },
   },
 })
