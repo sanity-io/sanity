@@ -1,19 +1,11 @@
 import {actionsApiClient} from '../../document-pair/utils/actionsApiClient'
-import {isLiveEditEnabled} from '../../document-pair/utils/isLiveEditEnabled'
 import {type DocumentOperationImpl} from '../operations/types'
 import {isDraftDocument} from './utils'
 
-type DisabledReason =
-  | 'LIVE_EDIT_ENABLED'
-  | 'ALREADY_PUBLISHED'
-  | 'NO_CHANGES'
-  | 'VERSION_CANT_BE_PUBLISHED'
+type DisabledReason = 'ALREADY_PUBLISHED' | 'NO_CHANGES' | 'VERSION_CANT_BE_PUBLISHED'
 
 export const publish: DocumentOperationImpl<[], DisabledReason> = {
-  disabled: ({schema, typeName, snapshot, publishedId}) => {
-    if (isLiveEditEnabled(schema, typeName)) {
-      return 'LIVE_EDIT_ENABLED'
-    }
+  disabled: ({snapshot, publishedId}) => {
     if (!snapshot) {
       return publishedId ? 'ALREADY_PUBLISHED' : 'NO_CHANGES'
     }

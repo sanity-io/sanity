@@ -4,7 +4,6 @@ import {of} from 'rxjs'
 import {vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
-import {createSchema} from '../../../../schema'
 import {type DocumentVersionSnapshots} from '../../document-pair/snapshotPair'
 import {type DocumentOperationArgs} from '../operations/types'
 import {type DocumentTarget} from '../types'
@@ -24,20 +23,6 @@ export const releaseTarget = {
 export function createOperationClient(): MockSanityClient {
   // oxlint-disable-next-line no-unsafe-type-assertion -- test client implements the SanityClient surface these operations use
   return createMockSanityClient() as MockSanityClient
-}
-
-export function createMockSchema({liveEdit = false}: {liveEdit?: boolean} = {}) {
-  return createSchema({
-    name: 'default',
-    types: [
-      {
-        name: 'movie',
-        type: 'document',
-        liveEdit,
-        fields: [{name: 'title', type: 'string'}],
-      },
-    ],
-  })
 }
 
 export function createSnapshot(overrides: Partial<SanityDocument> = {}): SanityDocument {
@@ -83,7 +68,6 @@ export function createMockDocumentOperationArgs(
     client: createOperationClient(),
     publishedId: 'example-id',
     draftId: 'drafts.example-id',
-    schema: createMockSchema(),
     typeName: 'movie',
     documentId,
     snapshot,

@@ -1,17 +1,13 @@
 import {createDraftId} from '@sanity/id-utils'
 
 import {actionsApiClient} from '../../document-pair/utils/actionsApiClient'
-import {isLiveEditEnabled} from '../../document-pair/utils/isLiveEditEnabled'
 import {type DocumentOperationImpl} from '../operations/types'
 import {isPublishedDocument} from './utils'
 
-type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'
+type DisabledReason = 'NOT_PUBLISHED'
 
 export const unpublish: DocumentOperationImpl<[], DisabledReason> = {
-  disabled: ({schema, snapshot, typeName}) => {
-    if (isLiveEditEnabled(schema, typeName)) {
-      return 'LIVE_EDIT_ENABLED'
-    }
+  disabled: ({snapshot}) => {
     if (!snapshot || !isPublishedDocument(snapshot)) {
       return 'NOT_PUBLISHED'
     }

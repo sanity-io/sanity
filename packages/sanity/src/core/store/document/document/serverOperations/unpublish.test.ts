@@ -3,7 +3,6 @@ import {describe, expect, it} from 'vitest'
 
 import {
   createMockDocumentOperationArgs,
-  createMockSchema,
   createOperationClient,
   createSnapshot,
 } from '../__tests__/operationTestUtils'
@@ -11,14 +10,6 @@ import {unpublish} from './unpublish'
 
 describe('unpublish', () => {
   describe('disabled', () => {
-    it('returns LIVE_EDIT_ENABLED when live edit is enabled', () => {
-      expect(
-        unpublish.disabled(
-          createMockDocumentOperationArgs({schema: createMockSchema({liveEdit: true})}),
-        ),
-      ).toBe('LIVE_EDIT_ENABLED')
-    })
-
     it('returns NOT_PUBLISHED when there is no snapshot', () => {
       expect(unpublish.disabled(createMockDocumentOperationArgs({snapshot: null}))).toBe(
         'NOT_PUBLISHED',

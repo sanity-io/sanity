@@ -55,6 +55,10 @@ export interface DocumentContext {
   getClient: (options: SourceClientOptions) => SanityClient
   // TODO: Do we need to refactor this to use the new document ids model?
   observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
+  /**
+   * Used only for validation purposes.
+   * Maybe we should move validation into it's own store
+   */
   schema: Schema
   i18n: LocaleSource
   extraOptions?: DocumentStoreExtraOptions

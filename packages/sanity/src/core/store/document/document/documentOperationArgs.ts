@@ -22,7 +22,6 @@ export const documentOperationArgs = memoize(
           map(([snapshot, versions]) => {
             return {
               client: ctx.client,
-              schema: ctx.schema,
               typeName: typeName,
               documentId: documentId,
               snapshot: snapshot,

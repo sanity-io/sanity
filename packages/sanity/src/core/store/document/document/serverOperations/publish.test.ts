@@ -2,7 +2,6 @@ import {describe, expect, it} from 'vitest'
 
 import {
   createMockDocumentOperationArgs,
-  createMockSchema,
   createOperationClient,
   createSnapshot,
 } from '../__tests__/operationTestUtils'
@@ -10,14 +9,6 @@ import {publish} from './publish'
 
 describe('publish', () => {
   describe('disabled', () => {
-    it('returns LIVE_EDIT_ENABLED when live edit is enabled', () => {
-      expect(
-        publish.disabled(
-          createMockDocumentOperationArgs({schema: createMockSchema({liveEdit: true})}),
-        ),
-      ).toBe('LIVE_EDIT_ENABLED')
-    })
-
     it('returns ALREADY_PUBLISHED when there is no snapshot but a published document exists', () => {
       expect(publish.disabled(createMockDocumentOperationArgs({snapshot: null}))).toBe(
         'ALREADY_PUBLISHED',

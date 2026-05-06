@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {type SanityDocument, type Schema} from '@sanity/types'
+import {type SanityDocument} from '@sanity/types'
 
 import {type DocumentRevision, type HistoryStore} from '../../../history'
 import {type Operation, type MapDocument} from '../../document-pair/operations/types'
@@ -8,15 +8,15 @@ import {type DocumentTarget} from '../types'
 
 /** @internal */
 export interface DocumentOperationImpl<
-  ExtraArgs extends any[] = [],
+  ExtraArgs extends unknown[] = [],
   DisabledReason extends string = string,
 > {
   disabled: (args: DocumentOperationArgs) => DisabledReason | 'NOT_READY' | false
   execute(args: DocumentOperationArgs, ...extra: ExtraArgs): void
 }
 
-type GuardedOperation = Operation<any[], 'NOT_READY'>
-type Patch = any
+type GuardedOperation = Operation<unknown[], 'NOT_READY'>
+type Patch = unknown
 
 /** @internal */
 // Note: Changing this interface in a backwards incompatible manner will be a breaking change
@@ -25,14 +25,11 @@ export interface DocumentOperationsAPI {
   delete: Operation<[versions?: string[]], 'NOTHING_TO_DELETE' | 'NOT_READY'>
   del: Operation<[versions?: string[]], 'NOTHING_TO_DELETE'> | GuardedOperation
   publish:
-    | Operation<
-        [],
-        'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES' | 'VERSION_CANT_BE_PUBLISHED'
-      >
+    | Operation<[], 'ALREADY_PUBLISHED' | 'NO_CHANGES' | 'VERSION_CANT_BE_PUBLISHED'>
     | GuardedOperation
-  patch: Operation<[patches: Patch[], initialDocument?: Record<string, any>]> | GuardedOperation
+  patch: Operation<[patches: Patch[], initialDocument?: Record<string, unknown>]> | GuardedOperation
   discardChanges: Operation<[], 'NO_CHANGES' | 'NOT_PUBLISHED'> | GuardedOperation
-  unpublish: Operation<[], 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'> | GuardedOperation
+  unpublish: Operation<[], 'NOT_PUBLISHED'> | GuardedOperation
   duplicate:
     | Operation<
         [
@@ -57,7 +54,6 @@ export interface DocumentOperationArgs {
    * The draft id of the document in the given variant.
    */
   draftId: string | undefined
-  schema: Schema
   typeName: string
   documentId: string
   snapshot: null | SanityDocument
