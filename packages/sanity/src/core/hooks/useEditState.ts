@@ -4,6 +4,7 @@ import {debounce, map, merge, share, skip, take, timer} from 'rxjs'
 
 import {useSchema} from '../hooks/useSchema'
 import {type EditStateFor, useDocumentStore} from '../store'
+import {useDocumentTarget} from './useDocumentTarget'
 
 /** @internal */
 export function useEditState(
@@ -31,7 +32,7 @@ export function useEditState(
   const documentStore = useDocumentStore()
   const schema = useSchema()
   const schemaType = schema.get(docTypeName)
-
+  const documentTarget = useDocumentTarget(publishedDocId)
   if (!schemaType) {
     throw new Error(`Schema type for '${docTypeName}' not found`)
   }
@@ -42,9 +43,7 @@ export function useEditState(
   const observable = useMemo(() => {
     const getBaseObservable = () => {
       if (priority === 'low') {
-        const base = documentStore.pair
-          .editState(publishedDocId, docTypeName, version)
-          .pipe(share())
+        const base = documentStore.document.editState(documentTarget).pipe(share())
 
         return merge(
           base.pipe(take(1)),
@@ -55,7 +54,7 @@ export function useEditState(
         )
       }
 
-      return documentStore.pair.editState(publishedDocId, docTypeName, version)
+      return documentStore.document.editState(documentTarget)
     }
     return getBaseObservable().pipe(
       map((state) => ({
@@ -65,15 +64,7 @@ export function useEditState(
         liveEditSchemaType,
       })),
     )
-  }, [
-    docTypeName,
-    documentStore.pair,
-    priority,
-    publishedDocId,
-    version,
-    liveEdit,
-    liveEditSchemaType,
-  ])
+  }, [docTypeName, documentStore.document, documentTarget, priority, liveEdit, liveEditSchemaType])
   /**
    * We know that since the observable has a startWith operator, it will always emit a value
    * and that's why the non-null assertion is used here

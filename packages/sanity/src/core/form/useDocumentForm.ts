@@ -29,7 +29,6 @@ import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
-import {useDocumentTarget} from '../hooks/useDocumentTarget'
 import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
 import {useValidationStatus} from '../hooks/useValidationStatus'
@@ -203,6 +202,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
+    return editState?.snapshot || baseValue
     // Only treat releaseId as an actual release/anonymous bundle if it's not a system bundle ('published' or 'drafts')
     // System bundles are handled by subsequent conditions below
     if (releaseId && !isSystemBundle(releaseId)) {
@@ -234,7 +234,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     documentId,
     documentType,
     editState.draft,
-    editState.published,
+    editState.snapshot,
     editState.version,
     initialValue,
     releaseId,
@@ -242,10 +242,10 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     selectedPerspectiveName,
     onlyHasVersions,
   ])
+  console.log('value', value)
 
-  const documentTarget = useDocumentTarget(value._id)
   const {validation: validationRaw} = useValidationStatus(
-    documentTarget,
+    value._id,
     documentType,
     // require referenced documents to be published unless the document is in a release
     !releaseId,

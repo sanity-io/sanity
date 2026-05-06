@@ -2,25 +2,22 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {useDocumentStore} from '../store'
-import {type DocumentTarget} from '../store/document/document/types'
 import {type ValidationStatus} from '../validation'
+import {useDocumentTarget} from './useDocumentTarget'
 
 const INITIAL: ValidationStatus = {validation: [], isValidating: false}
 
 /** @internal */
 export function useValidationStatus(
-  validationTarget: string | DocumentTarget,
-  docTypeName: string,
+  documentId: string,
+  _docTypeName: string,
   requirePublishedReferences: boolean,
 ): ValidationStatus {
   const documentStore = useDocumentStore()
+  const documentTarget = useDocumentTarget(documentId)
   const observable = useMemo(
-    () =>
-      typeof validationTarget === 'string'
-        ? // Preserve original behavior if the validation target is a string
-          documentStore.pair.validation(validationTarget, docTypeName, requirePublishedReferences)
-        : documentStore.document.validation(validationTarget, requirePublishedReferences),
-    [validationTarget, docTypeName, documentStore, requirePublishedReferences],
+    () => documentStore.document.validation(documentTarget, requirePublishedReferences),
+    [documentTarget, documentStore.document, requirePublishedReferences],
   )
 
   return useObservable(observable, INITIAL)

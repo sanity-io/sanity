@@ -4,6 +4,7 @@ import {of, timer} from 'rxjs'
 import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
 
 import {useDocumentStore} from '../store'
+import {useDocumentTarget} from './useDocumentTarget'
 
 /** @internal */
 export type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
@@ -13,14 +14,15 @@ const INITIAL: ConnectionState = 'connecting'
 /** @internal */
 export function useConnectionState(
   publishedDocId: string,
-  docTypeName: string,
-  version?: string,
+  _docTypeName: string,
+  _version?: string,
 ): ConnectionState {
   const documentStore = useDocumentStore()
+  const documentTarget = useDocumentTarget(publishedDocId)
 
   const observable = useMemo(
     () =>
-      documentStore.pair.documentEvents(publishedDocId, docTypeName, version).pipe(
+      documentStore.document.documentEvents(documentTarget).pipe(
         map((ev: {type: string}) => ev.type),
         map((eventType) => eventType !== 'reconnect'),
         switchMap((isConnected) =>
@@ -29,7 +31,7 @@ export function useConnectionState(
         startWith(INITIAL as any),
         distinctUntilChanged(),
       ),
-    [docTypeName, documentStore.pair, publishedDocId, version],
+    [documentTarget, documentStore.document],
   )
   return useObservable(observable, INITIAL)
 }

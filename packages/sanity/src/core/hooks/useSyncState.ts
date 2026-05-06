@@ -4,6 +4,7 @@ import {type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 
 import {useDocumentStore} from '../store'
+import {useDocumentTarget} from './useDocumentTarget'
 
 /** @internal */
 export interface SyncState {
@@ -16,17 +17,17 @@ const NOT_SYNCING = {isSyncing: false}
 /** @internal */
 export function useSyncState(
   publishedDocId: string,
-  documentType: string,
-  version?: string,
+  _documentType: string,
+  _version?: string,
 ): SyncState {
   const documentStore = useDocumentStore()
-
+  const documentTarget = useDocumentTarget(publishedDocId)
   const observable = useMemo(
     () =>
-      documentStore.pair
-        .consistencyStatus(publishedDocId, documentType, version)
+      documentStore.document
+        .consistencyStatus(documentTarget)
         .pipe(map((isConsistent) => (isConsistent ? NOT_SYNCING : SYNCING))),
-    [documentStore.pair, documentType, publishedDocId, version],
+    [documentStore.document, documentTarget],
   )
   return useObservable<Observable<SyncState>>(observable, NOT_SYNCING)
 }

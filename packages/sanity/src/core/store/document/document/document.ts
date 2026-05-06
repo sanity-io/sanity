@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {isObservable, map, of, type Observable} from 'rxjs'
-import {switchMap} from 'rxjs/operators'
+import {switchTap} from 'rxjs-etc/source/operators'
+import {startWith, switchMap} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../../preview'
 import {type ValidationStatus} from '../../../validation'
@@ -18,6 +19,7 @@ import {
   type DocumentOperationError,
   type DocumentOperationSuccess,
 } from './documentOperationEvents'
+import {GUARDED} from './operations/helpers'
 import {type DocumentOperationsAPI} from './operations/types'
 import {resolveDocumentTarget} from './resolveDocumentTarget'
 import {type DocumentTarget} from './types'
@@ -90,10 +92,21 @@ export function createDocumentStoreDocument(ctx: DocumentContext): DocumentStore
     editOperations(target, typeName) {
       return withResolvedTarget((resolved) =>
         documentEditOperations(resolved, ctx, target, typeName),
-      )(target)
+      )(target).pipe(startWith(GUARDED))
     },
     editState(target) {
-      return withResolvedTarget((resolved) => documentEditState(resolved, ctx))(target)
+      return withResolvedTarget((resolved) => documentEditState(resolved, ctx))(target).pipe(
+        startWith({
+          id: '',
+          snapshot: null,
+          draft: null,
+          published: null,
+          version: null,
+          ready: false,
+          transactionSyncLock: null,
+          release: undefined,
+        } satisfies EditStateFor),
+      )
     },
     operationEvents(target, typeName) {
       return withResolvedTarget((resolved) =>

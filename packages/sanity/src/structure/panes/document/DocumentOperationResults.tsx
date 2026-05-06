@@ -1,3 +1,4 @@
+import {isVersionId} from '@sanity/client/csm'
 import {useToast} from '@sanity/ui'
 import {memo, useEffect, useMemo, useRef} from 'react'
 import {
@@ -81,7 +82,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
               // When we publish a version and a draft exists, the document title will be the draft
               // title. So in this case we will just say "Version was published" and not the document title
               // So we use this special operation key which doesn't use the documentTitle
-              event.op === 'publish' && event.idPair.versionId ? 'publishVersion' : event.op
+              event.op === 'publish' && isVersionId(event.id) ? 'publishVersion' : event.op
             }
             i18nKey="panes.document-operation-results.operation-success"
             t={t}

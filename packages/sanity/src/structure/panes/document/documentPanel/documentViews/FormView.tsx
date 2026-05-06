@@ -23,6 +23,7 @@ import {
   useConditionalToast,
   useDocumentPresence,
   useDocumentStore,
+  useDocumentTarget,
   usePerspective,
   useTranslation,
 } from 'sanity'
@@ -93,10 +94,10 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   )
 
   useConditionalToast(conditionalToastParams)
-
+  const documentTarget = useDocumentTarget(documentId)
   useEffect(() => {
-    const sub = documentStore.pair
-      .documentEvents(documentId, documentType, selectedReleaseId)
+    const sub = documentStore.document
+      .documentEvents(documentTarget)
       .pipe(
         tap((event) => {
           if (event.type === 'mutation') {
@@ -113,7 +114,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     return () => {
       sub.unsubscribe()
     }
-  }, [documentId, documentStore, documentType, patchChannel, selectedReleaseId])
+  }, [documentStore, documentTarget, patchChannel])
 
   const hasRev = Boolean(value?._rev)
   const handleInitialValue = useEffectEvent(() => {

@@ -22,6 +22,7 @@ import {
 
 import {useClient} from '../../hooks/useClient'
 import {useDocumentOperation} from '../../hooks/useDocumentOperation'
+import {useDocumentTarget} from '../../hooks/useDocumentTarget'
 import {useDocumentStore} from '../../store/datastores'
 import {selectUpstreamVersion} from '../../store/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
@@ -114,9 +115,9 @@ export function useDivergenceController(
       )
     }),
   )
-
-  const readUpstreamHead: Observable<HydratedSnapshot> = documentStore.pair
-    .editState(getPublishedId(documentId), documentType, getVersionFromId(documentId))
+  const documentTarget = useDocumentTarget(documentId)
+  const readUpstreamHead: Observable<HydratedSnapshot> = documentStore.document
+    .editState(documentTarget)
     .pipe(
       switchMap((state) => {
         if (!state.ready) {

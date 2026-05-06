@@ -14,6 +14,7 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {useDocumentTarget} from '../../core/hooks/useDocumentTarget'
 import {structureLocaleNamespace} from '../i18n'
 
 const DISABLED_REASON_KEY = {
@@ -32,7 +33,7 @@ export const useDuplicateAction: DuplicateDocumentActionComponent = ({
 }) => {
   const documentStore = useDocumentStore()
   const bundleId = version?._id && getVersionFromId(version._id)
-
+  const documentTarget = useDocumentTarget(id)
   const {duplicate} = useDocumentOperation(id, type, bundleId)
   const {navigateIntent} = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
@@ -55,8 +56,8 @@ export const useDuplicateAction: DuplicateDocumentActionComponent = ({
 
     // set up the listener before executing
     const duplicateSuccess = firstValueFrom(
-      documentStore.pair
-        .operationEvents(id, type)
+      documentStore.document
+        .operationEvents(documentTarget, type)
         .pipe(filter((e) => e.op === 'duplicate' && e.type === 'success')),
     )
     duplicate.execute(dupeId, {mapDocument})
@@ -66,7 +67,7 @@ export const useDuplicateAction: DuplicateDocumentActionComponent = ({
     navigateIntent('edit', {id: dupeId, type})
 
     setDuplicating(false)
-  }, [documentStore.pair, duplicate, id, mapDocument, navigateIntent, type])
+  }, [documentStore.document, documentTarget, duplicate, mapDocument, navigateIntent, type])
 
   return useMemo(() => {
     if (!isPermissionsLoading && !permissions?.granted) {

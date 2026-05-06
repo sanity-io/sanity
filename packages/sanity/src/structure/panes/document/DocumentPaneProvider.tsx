@@ -196,9 +196,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const getIsDeleted = useCallback(
     (editState: EditStateFor) => {
       if (!timelineReady) return false
-      return (
-        Boolean(!editState?.draft && !editState?.published && !editState?.version) && !isPristine
-      )
+      return Boolean(!editState?.snapshot) && !isPristine
     },
     [timelineReady, isPristine],
   )

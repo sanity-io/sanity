@@ -3,12 +3,13 @@ import {useObservable} from 'react-rx'
 
 import {useRenderingContextStore} from '../store/datastores'
 import {type OperationsAPI} from '../store/document/document-pair/operations/types'
+import {type DocumentOperationsAPI} from '../store/document/document/operations/types'
 import {useActiveWorkspace} from '../studio/activeWorkspaceMatcher/useActiveWorkspace'
 import {getVersionId} from '../util/draftUtils'
 import {useRecordDocumentHistoryEvent} from './useRecordDocumentHistoryEvent'
 
 interface Options {
-  api: OperationsAPI
+  api: DocumentOperationsAPI
   publishedDocId: string
   docTypeName: string
   version?: string
@@ -26,7 +27,7 @@ export function useDocumentOperationWithComlinkHistory({
   publishedDocId,
   docTypeName,
   version,
-}: Options): OperationsAPI {
+}: Options): DocumentOperationsAPI {
   const {activeWorkspace} = useActiveWorkspace()
 
   const {recordEvent} = useRecordDocumentHistoryEvent({
@@ -120,13 +121,13 @@ interface WithComlinkEventOptions<OperationName extends keyof OperationsAPI> {
 /**
  * Decorate the provided API method with Comlink history capture.
  */
-function withComlinkEvent<OperationName extends keyof OperationsAPI>({
+function withComlinkEvent<OperationName extends keyof DocumentOperationsAPI>({
   operationName,
   comlinkEventType,
   hasComlink,
   recordEvent,
   preRecordEvent = (next) => next(),
-}: WithComlinkEventOptions<OperationName>): (api: OperationsAPI) => OperationsAPI {
+}: WithComlinkEventOptions<OperationName>): (api: DocumentOperationsAPI) => DocumentOperationsAPI {
   return function (api) {
     if (!hasComlink) {
       return api
