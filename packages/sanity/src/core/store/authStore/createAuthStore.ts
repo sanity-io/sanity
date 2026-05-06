@@ -282,15 +282,20 @@ export function _createAuthStore({
   // The tap triggers tokenStorage.update() which pushes to the BehaviorSubject
   // backing tokenStorage.value — so the actual emission comes from that stream.
   // switchMap to EMPTY so this branch produces no direct values.
-  const hashTokenChange = fromEvent(window, 'hashchange').pipe(
-    tap(() => {
-      const hashToken = consumeHashToken()
-      if (hashToken) {
-        tokenStorage.update({token: hashToken})
-      }
-    }),
-    switchMap(() => EMPTY),
-  )
+  // Guarded for SSR: `window` is undefined on the server, where we can't
+  // listen for hash changes anyway.
+  const hashTokenChange =
+    typeof window === 'undefined'
+      ? EMPTY
+      : fromEvent(window, 'hashchange').pipe(
+          tap(() => {
+            const hashToken = consumeHashToken()
+            if (hashToken) {
+              tokenStorage.update({token: hashToken})
+            }
+          }),
+          switchMap(() => EMPTY),
+        )
 
   const tokenClient$ = concat(
     of(initialTokenClient),
