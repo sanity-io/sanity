@@ -1,6 +1,7 @@
+import isEqual from 'lodash-es/isEqual.js'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {debounce, merge, share, skip, take, timer} from 'rxjs'
+import {debounce, distinctUntilChanged, merge, share, skip, take, timer} from 'rxjs'
 
 import {type EditStateFor, useDocumentStore} from '../store'
 
@@ -17,8 +18,10 @@ export function useEditState(
   const documentStore = useDocumentStore()
 
   const observable = useMemo(() => {
+    const source = documentStore.pair.editState(publishedDocId, docTypeName, version)
+
     if (priority === 'low') {
-      const base = documentStore.pair.editState(publishedDocId, docTypeName, version).pipe(share())
+      const base = source.pipe(share())
 
       return merge(
         base.pipe(take(1)),
@@ -26,10 +29,13 @@ export function useEditState(
           skip(1),
           debounce(() => timer(1000)),
         ),
-      )
+      ).pipe(distinctUntilChanged(isEqual))
     }
 
-    return documentStore.pair.editState(publishedDocId, docTypeName, version)
+    // Dedupe re-emissions of structurally-equal EditStateFor values. The upstream pipeline
+    // (combineLatest + map in editState.ts) creates a fresh object on every emission even
+    // when contents are unchanged, which causes spurious React re-renders and form recomputes.
+    return source.pipe(distinctUntilChanged(isEqual))
   }, [docTypeName, documentStore.pair, priority, publishedDocId, version])
   /**
    * We know that since the observable has a startWith operator, it will always emit a value
