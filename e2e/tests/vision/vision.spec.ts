@@ -17,9 +17,8 @@ test.describe('Vision', () => {
 
     const {queryEditor, paramsEditor, paramsRegion, resultRegion} = await getVisionRegions(page)
 
-    // Focus instead of clicking: in some responsive layouts the sticky Vision
-    // header can overlap the editor hit area in Firefox and intercept pointer events.
-    await queryEditor.focus()
+    // Click to focus the editor
+    await queryEditor.click()
 
     // Type text into the CodeMirror editor
     const inputText = '*[_type == "book" && _id == $id]{_id, title}'
@@ -112,10 +111,10 @@ test.describe('Vision', () => {
 
     const {queryEditor, resultRegion} = await getVisionRegions(page)
 
-    // Focus instead of clicking to avoid pointer interception from sticky header UI.
+    // Click to focus the editor
     await expect(queryEditor).toBeVisible()
     await expect(queryEditor).toBeEnabled()
-    await queryEditor.focus()
+    await queryEditor.click()
 
     // Type text into the CodeMirror editor
     const inputText = `*[_type == "book" && _id == "${bookDocumentId}"]`
