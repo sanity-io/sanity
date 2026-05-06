@@ -28,8 +28,6 @@ function createContext() {
   return {
     client,
     historyStore: {} as never,
-    schema: {} as never,
-    serverActionsEnabled: of(true),
   }
 }
 

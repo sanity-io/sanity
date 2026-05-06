@@ -2,8 +2,8 @@
 
 This folder contains the document-scoped store implementation. Unlike the older
 document-pair APIs, these modules start from an explicit `DocumentTarget` and
-resolve it to one concrete document id before checkout, edit state, validation,
-events, and operations are wired up.
+resolve it to one concrete document id before checkout, edit state, events, and
+operations are wired up.
 
 ## Why operation args do not include schema
 
@@ -28,8 +28,26 @@ otherwise valid, the document-scoped operation should be allowed to run.
 
 Keeping schema out of `DocumentOperationArgs` makes this boundary explicit:
 
-- schema remains part of the higher-level document context where the Studio and
-  validation need it
+- schema remains part of the validation-specific context where validation needs it
 - operations receive only the document state and ids required to execute
 - publish and unpublish are not blocked solely because a schema type has
   `liveEdit` enabled
+
+## Validation is composed separately
+
+Validation still needs schema and i18n so validation rules can run with the same
+context they receive elsewhere in the Studio. That does not mean the core
+document facade needs those dependencies.
+
+`createDocumentStoreDocument()` only owns the document-scoped
+checkout/edit/operation streams. `createDocumentValidation()` adapts the shared
+target resolver and memoized edit state into the public `document.validation(...)`
+method by combining:
+
+- validation-only context (`getClient`, reference availability, schema, i18n,
+  current user)
+- the shared memoized target resolver
+- the memoized document edit state lookup
+
+This keeps the main document facade easy to test while preserving the public
+`documentStore.document.validation(...)` API.

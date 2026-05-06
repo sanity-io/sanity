@@ -31,6 +31,7 @@ import {
 import {type OperationsAPI} from './document-pair/operations'
 import {validation} from './document-pair/validation'
 import {createDocumentStoreDocument, type DocumentStoreDocument} from './document/document'
+import {createDocumentValidation} from './document/documentValidation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
@@ -162,16 +163,22 @@ export function createDocumentStore({
     extraOptions,
     currentUser,
   }
+
   const document = createDocumentStoreDocument({
+    client,
+    historyStore,
+    extraOptions,
+    documentPreviewStore,
+  })
+  const documentValidation = createDocumentValidation({
     client,
     getClient,
     observeDocumentPairAvailability,
-    historyStore,
     schema,
     i18n,
     currentUser,
-    extraOptions,
     documentPreviewStore,
+    historyStore,
   })
 
   return {
@@ -266,6 +273,9 @@ export function createDocumentStore({
         return validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
       },
     },
-    document,
+    document: {
+      ...document,
+      validation: documentValidation,
+    },
   }
 }

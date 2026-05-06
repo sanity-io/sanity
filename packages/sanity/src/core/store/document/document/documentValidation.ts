@@ -1,12 +1,31 @@
+import {type SanityClient} from '@sanity/client'
+import {type CurrentUser, type Schema} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
 import {combineLatest, distinctUntilChanged, map, type Observable, shareReplay} from 'rxjs'
+import {switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
+import {type SourceClientOptions} from '../../../config'
+import {type LocaleSource} from '../../../i18n'
+import {type DocumentPreviewStore} from '../../../preview'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
+import {type HistoryStore} from '../../history/createHistoryStore'
 import {memoize} from '../utils/createMemoizer'
-import {type DocumentContext} from './document'
 import {documentEditState} from './documentEditState'
+import {resolveDocumentTarget} from './resolveDocumentTarget'
+import {type DocumentTarget} from './types'
 import {getDocumentMemoizeKey} from './utils'
+
+export interface DocumentValidationContext {
+  client: SanityClient
+  getClient: (options: SourceClientOptions) => SanityClient
+  observeDocumentPairAvailability: DocumentPreviewStore['unstable_observeDocumentPairAvailability']
+  schema: Schema
+  i18n: LocaleSource
+  currentUser?: Omit<CurrentUser, 'role'> | null
+  documentPreviewStore: DocumentPreviewStore
+  historyStore: HistoryStore
+}
 
 // Document-scoped validation mirrors pair validation, but validates the single resolved snapshot
 // instead of selecting one of draft/published/version from an edit state tuple.
@@ -14,7 +33,7 @@ export const documentValidation = memoize(
   (
     documentId: string,
     validatePublishedReferences: boolean,
-    ctx: DocumentContext,
+    ctx: DocumentValidationContext,
   ): Observable<ValidationStatus> => {
     const document$ = documentEditState(documentId, ctx).pipe(map((state) => state.snapshot))
 
@@ -60,3 +79,12 @@ export const documentValidation = memoize(
   (documentId, validatePublishedReferences, ctx) =>
     getDocumentMemoizeKey(ctx.client, documentId, validatePublishedReferences),
 )
+
+export function createDocumentValidation(
+  ctx: DocumentValidationContext,
+): (target: DocumentTarget, validatePublishedReferences: boolean) => Observable<ValidationStatus> {
+  return (target, validatePublishedReferences) =>
+    resolveDocumentTarget(target).pipe(
+      switchMap((documentId) => documentValidation(documentId, validatePublishedReferences, ctx)),
+    )
+}

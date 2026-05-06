@@ -1,17 +1,13 @@
 import {type SanityClient} from '@sanity/client'
-import {type CurrentUser, type Schema} from '@sanity/types'
-import {from, isObservable, map, of, type Observable} from 'rxjs'
-import {shareReplay, switchMap} from 'rxjs/operators'
+import {isObservable, map, of, type Observable} from 'rxjs'
+import {switchMap} from 'rxjs/operators'
 
-import {type SourceClientOptions} from '../../../config'
-import {type LocaleSource} from '../../../i18n'
-import {type DraftsModelDocumentAvailability, type DocumentPreviewStore} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview'
 import {type ValidationStatus} from '../../../validation'
 import {type HistoryStore} from '../../history'
 import {type DocumentVersionEvent} from '../document-pair/checkoutPair'
 import {type EditStateFor} from '../document-pair/editState'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
-import {memoize} from '../utils/createMemoizer'
 import {documentCheckout, type DocumentCheckout} from './documentCheckout'
 import {documentConsistencyStatus} from './documentConsistencyStatus'
 import {documentEditOperations} from './documentEditOperations'
@@ -22,14 +18,12 @@ import {
   type DocumentOperationError,
   type DocumentOperationSuccess,
 } from './documentOperationEvents'
-import {documentValidation} from './documentValidation'
 import {type DocumentOperationsAPI} from './operations/types'
-import {resolveTarget} from './resolveDocumentTarget'
+import {resolveDocumentTarget} from './resolveDocumentTarget'
 import {type DocumentTarget} from './types'
-import {getTargetKey} from './utils'
 
 /** @internal */
-export interface DocumentStoreDocument {
+export interface DocumentStoreDocumentCore {
   resolveDocumentTarget: (target: DocumentTarget) => Observable<string>
   /**
    * @param documentId - The final id of the document to checkout.
@@ -44,6 +38,10 @@ export interface DocumentStoreDocument {
     target: DocumentTarget,
     typeName: string,
   ) => Observable<DocumentOperationSuccess | DocumentOperationError>
+}
+
+/** @internal */
+export interface DocumentStoreDocument extends DocumentStoreDocumentCore {
   validation: (
     target: DocumentTarget,
     validatePublishedReferences: boolean,
@@ -52,28 +50,12 @@ export interface DocumentStoreDocument {
 
 export interface DocumentContext {
   client: SanityClient
-  getClient: (options: SourceClientOptions) => SanityClient
-  // TODO: Do we need to refactor this to use the new document ids model?
-  observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
-  /**
-   * Used only for validation purposes.
-   * Maybe we should move validation into it's own store
-   */
-  schema: Schema
-  i18n: LocaleSource
   extraOptions?: DocumentStoreExtraOptions
-  currentUser?: Omit<CurrentUser, 'role'> | null
   documentPreviewStore: DocumentPreviewStore
   historyStore: HistoryStore
 }
 
-// Memoized counterpart to `getIdPairFromPublished`: resolves one selected target to the
-// concrete document id every document-scoped store method should share.
-const resolveDocumentTarget = memoize((target: DocumentTarget): Observable<string> => {
-  return from(resolveTarget(target)).pipe(shareReplay({bufferSize: 1, refCount: true}))
-}, getTargetKey)
-
-// Keeps document-scoped methods from repeating the same resolve-then-switchMap wrapper.
+// Wraps a function that takes a resolved document id and returns the result to the observable.
 const withResolvedTarget =
   <Result>(fn: (resolved: string) => Observable<Result> | Result) =>
   (target: DocumentTarget): Observable<Result> =>
@@ -87,7 +69,7 @@ const withResolvedTarget =
 /** @internal */
 // Single-document facade that mirrors `documentStore.pair`, but starts from an explicit target
 // and resolves it to one concrete document before calling the underlying document pipelines.
-export function createDocumentStoreDocument(ctx: DocumentContext): DocumentStoreDocument {
+export function createDocumentStoreDocument(ctx: DocumentContext): DocumentStoreDocumentCore {
   return {
     checkoutDocument(documentId) {
       return documentCheckout(documentId, ctx.client, ctx.extraOptions)
@@ -136,11 +118,6 @@ export function createDocumentStoreDocument(ctx: DocumentContext): DocumentStore
               }
         }),
       )
-    },
-    validation(target, validatePublishedReferences) {
-      return withResolvedTarget((resolved) =>
-        documentValidation(resolved, validatePublishedReferences, ctx),
-      )(target)
     },
   }
 }
