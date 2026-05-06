@@ -5,7 +5,6 @@ import {
   Button,
   Card,
   Code,
-  Dialog,
   Flex,
   Menu,
   MenuButton,
@@ -64,7 +63,6 @@ export function QueryRecall({
   const [queryFilter, setQueryFilter] = useState<QueryFilter>('all')
   const [selectedUrl, setSelectedUrl] = useState<string | undefined>(url)
   const [pendingUnshareKeys, setPendingUnshareKeys] = useState<string[]>([])
-  const [shareDialogQuery, setShareDialogQuery] = useState<QueryConfig | null>(null)
 
   const handleSave = useCallback(async () => {
     // Generate the correct URL first
@@ -135,41 +133,37 @@ export function QueryRecall({
     saveQuery,
   ])
 
-  const handleShareQuery = useCallback((query: QueryConfig) => {
-    setShareDialogQuery(query)
-  }, [])
+  const handleShareQuery = useCallback(
+    async (query: QueryConfig) => {
+      const sharedQueryKey = query._key
+      const sharedQueryUrl = query.url
+      const sharedQueryTitle = query.title || t('label.untitled-query')
 
-  const handleConfirmShareQuery = useCallback(async () => {
-    if (!shareDialogQuery) return
+      try {
+        await saveQuery({
+          shared: true,
+          title: sharedQueryTitle,
+          url: sharedQueryUrl,
+          savedAt: new Date().toISOString(),
+        })
 
-    const sharedQueryKey = shareDialogQuery._key
-    const sharedQueryUrl = shareDialogQuery.url
-    const sharedQueryTitle = shareDialogQuery.title || t('label.untitled-query')
-
-    try {
-      await saveQuery({
-        shared: true,
-        title: sharedQueryTitle,
-        url: sharedQueryUrl,
-        savedAt: new Date().toISOString(),
-      })
-
-      await deleteQuery(sharedQueryKey)
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: t('save-query.shared-success'),
-      })
-    } catch (err) {
-      toast.push({
-        closable: true,
-        status: 'error',
-        title: t('save-query.error'),
-        description: err instanceof Error ? err.message : String(err),
-      })
-    }
-    setShareDialogQuery(null)
-  }, [deleteQuery, saveQuery, shareDialogQuery, t, toast])
+        await deleteQuery(sharedQueryKey)
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: t('save-query.shared-success'),
+        })
+      } catch (err) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('save-query.error'),
+          description: err instanceof Error ? err.message : String(err),
+        })
+      }
+    },
+    [deleteQuery, saveQuery, t, toast],
+  )
 
   const handleUnshareQuery = useCallback(
     async (query: QueryConfig) => {
@@ -511,7 +505,7 @@ export function QueryRecall({
                                   text={t('label.share')}
                                   onClick={(event) => {
                                     event.stopPropagation()
-                                    handleShareQuery(q)
+                                    void handleShareQuery(q)
                                   }}
                                 />
                               )}
@@ -684,32 +678,6 @@ export function QueryRecall({
           )
         })}
       </Stack>
-      {shareDialogQuery && (
-        <Dialog
-          id="vision-query-recall-share-dialog"
-          width={1}
-          header={t('label.share')}
-          onClose={() => setShareDialogQuery(null)}
-          footer={
-            <Flex justify="flex-end" gap={2}>
-              <Button
-                mode="bleed"
-                text={t('action.query-cancel')}
-                onClick={() => setShareDialogQuery(null)}
-              />
-              <Button
-                tone="primary"
-                text={t('action.save-shared-query')}
-                onClick={() => void handleConfirmShareQuery()}
-              />
-            </Flex>
-          }
-        >
-          <Box padding={4}>
-            <Text size={2}>{t('save-query.share-warning')}</Text>
-          </Box>
-        </Dialog>
-      )}
     </ScrollContainer>
   )
 }
