@@ -5,11 +5,11 @@ import {type DocumentOperationImpl} from '../operations/types'
 
 export const del: DocumentOperationImpl<[versions?: string[]], 'NOTHING_TO_DELETE'> = {
   disabled: ({snapshot}) => (snapshot ? false : 'NOTHING_TO_DELETE'),
-  execute: ({client, publishedId, draftId}, versions = []) => {
+  execute: ({client, publishedId, draftId}, versions) => {
     //the delete action requires a published doc -- discard versions if not present
     if (!publishedId) {
       return actionsApiClient(client).observable.action(
-        versions.map((versionId) => ({
+        (versions ?? []).map((versionId) => ({
           actionType: 'sanity.action.document.version.discard',
           versionId,
         })),

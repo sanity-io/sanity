@@ -28,7 +28,7 @@ export const publish: DocumentOperationImpl<[], DisabledReason> = {
     if (!snapshot) {
       throw new Error('cannot execute "publish" when snapshot is missing')
     }
-    if (isDraftDocument(snapshot)) {
+    if (!isDraftDocument(snapshot)) {
       throw new Error('cannot execute "publish" when snapshot is not a draft')
     }
 

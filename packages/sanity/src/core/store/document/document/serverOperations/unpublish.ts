@@ -22,7 +22,7 @@ export const unpublish: DocumentOperationImpl<[], DisabledReason> = {
       throw new Error('cannot execute "unpublish" when publishedId is not provided')
     }
 
-    actionsApiClient(client).observable.action(
+    return actionsApiClient(client).observable.action(
       {
         actionType: 'sanity.action.document.unpublish',
         draftId: draftId || createDraftId(target.baseId),

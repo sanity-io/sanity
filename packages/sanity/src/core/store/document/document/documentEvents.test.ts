@@ -32,7 +32,7 @@ describe('documentEvents', () => {
     mockMemoizedDocumentCheckout.mockReturnValue(of(createCheckout(event)))
 
     await expect(
-      firstValueFrom(documentEvents(client, 'drafts.example-id', {tag: 'test'})),
+      firstValueFrom(documentEvents('drafts.example-id', client, {tag: 'test'})),
     ).resolves.toEqual(event)
     expect(mockMemoizedDocumentCheckout).toHaveBeenCalledWith(client, 'drafts.example-id', {
       tag: 'test',
@@ -46,8 +46,8 @@ describe('documentEvents', () => {
       of(createCheckout({type: 'committed', version: 'draft'})),
     )
 
-    expect(documentEvents(client, 'drafts.example-id')).toBe(
-      documentEvents(client, 'drafts.example-id'),
+    expect(documentEvents('drafts.example-id', client)).toBe(
+      documentEvents('drafts.example-id', client),
     )
   })
 })
