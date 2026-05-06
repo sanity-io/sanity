@@ -11,10 +11,10 @@ export function useDocumentTarget(documentId: string): DocumentTarget {
   return useMemo(
     () => ({
       baseId: getPublishedId(documentId),
-      version: isReleaseDocument(selectedPerspective)
+      bundleId: isReleaseDocument(selectedPerspective)
         ? selectedPerspective._id
         : selectedPerspective,
-      variant: undefined,
+      variantId: undefined,
     }),
     [documentId, selectedPerspective],
   )

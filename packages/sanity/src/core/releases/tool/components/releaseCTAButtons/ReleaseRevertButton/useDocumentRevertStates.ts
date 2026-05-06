@@ -10,11 +10,7 @@ import {promiseWithResolvers} from '../../../../../util/promiseWithResolvers'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 
-export type RevertDocument = SanityDocument & {
-  _system?: {
-    delete: true
-  }
-}
+export type RevertDocument = SanityDocument
 
 type RevertDocuments = RevertDocument[]
 
@@ -76,13 +72,18 @@ export const useDocumentRevertStates = (releaseDocuments: DocumentInRelease[]) =
         return forkJoin(
           docRevisionPairs.map(({docId, revisionId}) => {
             if (!revisionId) {
-              const {publishedDocumentExists, ...unpublishDocument} =
-                publishedDocuments.find((document) => document._id === docId) || {}
+              const unpublishDocument = publishedDocuments.find(
+                (document) => document._id === docId,
+              )
+              if (!unpublishDocument) return of(undefined)
+
+              const {publishedDocumentExists: _publishedDocumentExists, ...document} =
+                unpublishDocument
 
               return of({
-                ...unpublishDocument,
-                _system: {delete: true},
-              } as RevertDocument)
+                ...document,
+                _system: {...document._system, delete: true},
+              } satisfies RevertDocument)
             }
 
             return observableClient

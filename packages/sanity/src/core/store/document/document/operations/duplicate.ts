@@ -41,7 +41,6 @@ export const duplicate: DocumentOperationImpl<
       omit(
         // Performing `Omit` on a type that has an index signature causes the known properties to
         // be lost.
-        // @ts-expect-error - TODO: fix this type error
         mapDocument({
           ...snapshot,
           _id,

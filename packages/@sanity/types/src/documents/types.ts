@@ -5,8 +5,9 @@ export interface SanityDocument {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  _system: {
-    bundleId: 'drafts' | 'published' | (string & {})
+  _system?: {
+    delete?: boolean
+    bundleId?: 'drafts' | 'published' | (string & {})
     variantId?: string // corresponds to variant definition
   }
   [key: string]: unknown
@@ -27,6 +28,8 @@ export interface SanityDocumentLike {
   _rev?: string
   _system?: {
     delete?: boolean
+    bundleId?: 'drafts' | 'published' | (string & {})
+    variantId?: string // corresponds to variant definition
   }
   [key: string]: unknown
 }
