@@ -162,7 +162,17 @@ export function createDocumentStore({
     extraOptions,
     currentUser,
   }
-  const document = createDocumentStoreDocument(ctx)
+  const document = createDocumentStoreDocument({
+    client,
+    getClient,
+    observeDocumentPairAvailability,
+    historyStore,
+    schema,
+    i18n,
+    currentUser,
+    extraOptions,
+    documentPreviewStore,
+  })
 
   return {
     // Public API

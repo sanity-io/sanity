@@ -17,7 +17,7 @@ import {restore} from './restore'
 import {type Operation, type OperationArgs, type OperationImpl, type OperationsAPI} from './types'
 import {unpublish} from './unpublish'
 
-function createOperationGuard(opName: string): Operation<any[], 'NOT_READY'> {
+export function createOperationGuard(opName: string): Operation<any[], 'NOT_READY'> {
   return {
     disabled: 'NOT_READY',
     execute: () => {

@@ -6,6 +6,7 @@ import {validateDocumentWithReferences, type ValidationStatus} from '../../../va
 import {memoize} from '../utils/createMemoizer'
 import {type DocumentContext} from './document'
 import {documentEditState} from './documentEditState'
+import {getDocumentMemoizeKey} from './utils'
 
 // Document-scoped validation mirrors pair validation, but validates the single resolved snapshot
 // instead of selecting one of draft/published/version from an edit state tuple.
@@ -56,7 +57,6 @@ export const documentValidation = memoize(
       }),
     )
   },
-  (documentId, validatePublishedReferences) => {
-    return `${documentId}-${validatePublishedReferences ? 'true' : 'false'}`
-  },
+  (documentId, validatePublishedReferences, ctx) =>
+    getDocumentMemoizeKey(ctx.client, documentId, validatePublishedReferences),
 )

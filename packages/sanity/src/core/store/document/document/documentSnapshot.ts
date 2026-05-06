@@ -1,5 +1,5 @@
-import {type Observable} from 'rxjs'
-import {map, publishReplay, refCount} from 'rxjs/operators'
+import {shareReplay, type Observable} from 'rxjs'
+import {map} from 'rxjs/operators'
 
 import {type DocumentVersionSnapshots, withSnapshots} from '../document-pair/snapshotPair'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
@@ -7,6 +7,7 @@ import {type PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {type DocumentContext} from './document'
 import {memoizedDocumentCheckout} from './memoizedDocumentCheckout'
+import {getDocumentMemoizeKey} from './utils'
 
 type DocumentSnapshotContext = DocumentContext & {
   extraOptions?: DocumentStoreExtraOptions
@@ -29,12 +30,8 @@ export const documentSnapshot = memoize(
           document: withSnapshots(document),
         }
       }),
-      publishReplay(1),
-      refCount(),
+      shareReplay({refCount: true, bufferSize: 1}),
     )
   },
-  (documentId, ctx) => {
-    const config = ctx.client.config()
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${documentId}`
-  },
+  (documentId, ctx) => getDocumentMemoizeKey(ctx.client, documentId),
 )

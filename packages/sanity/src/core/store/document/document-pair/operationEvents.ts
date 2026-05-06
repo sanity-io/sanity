@@ -106,7 +106,7 @@ export function emitOperation(
 }
 
 // These are the operations that cannot be performed while the document is in an inconsistent state
-const REQUIRES_CONSISTENCY = ['publish', 'unpublish', 'discardChanges', 'delete']
+export const REQUIRES_CONSISTENCY = ['publish', 'unpublish', 'discardChanges', 'delete']
 
 /**
  * @hidden

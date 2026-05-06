@@ -1,3 +1,4 @@
+import {parseImageAssetId} from '@sanity/asset-utils'
 import {
   type Action,
   type MultipleActionResult,
@@ -23,6 +24,9 @@ import {
   type Observable,
 } from 'rxjs'
 
+import {type DocumentPreviewStore} from '../../../preview'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {isNonNullable} from '../../../util'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {createBufferedDocument} from '../buffered-doc/createBufferedDocument'
 import {type CommitRequest} from '../buffered-doc/createObservableBufferedDocument'

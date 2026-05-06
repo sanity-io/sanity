@@ -5,6 +5,10 @@ export interface SanityDocument {
   _createdAt: string
   _updatedAt: string
   _rev: string
+  _system: {
+    bundleId: 'drafts' | 'published' | (string & {})
+    variantId?: string // corresponds to variant definition
+  }
   [key: string]: unknown
 }
 

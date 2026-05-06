@@ -9,6 +9,7 @@ import {type PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {type DocumentContext} from './document'
 import {documentSnapshot} from './documentSnapshot'
+import {getDocumentMemoizeKey} from './utils'
 
 interface TransactionSyncLockState {
   enabled: boolean
@@ -61,8 +62,5 @@ export const documentEditState = memoize(
       refCount(),
     )
   },
-  (documentId, ctx) => {
-    const config = ctx.client.config()
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${documentId}`
-  },
+  (documentId, ctx) => getDocumentMemoizeKey(ctx.client, documentId),
 )

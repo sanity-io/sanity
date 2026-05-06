@@ -5,6 +5,7 @@ import {mergeMap} from 'rxjs/operators'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {memoize} from '../utils/createMemoizer'
 import {documentCheckout, type DocumentCheckout} from './documentCheckout'
+import {getDocumentMemoizeKey} from './utils'
 
 // How long to keep listener connected for after last unsubscribe.
 const LISTENER_RESET_DELAY = 5_000
@@ -37,8 +38,5 @@ export const memoizedDocumentCheckout: (
       }),
     )
   },
-  (client, documentId) => {
-    const config = client.config()
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${documentId}`
-  },
+  (client, documentId) => getDocumentMemoizeKey(client, documentId),
 )

@@ -75,7 +75,7 @@ describe('documentSnapshot', () => {
       } as any),
     )
 
-    await expect(firstValueFrom(snapshot.document.snapshots$)).resolves.toEqual({
+    await expect(firstValueFrom(snapshot.document.snapshots$)).resolves.toMatchObject({
       _id: 'example-id',
       _type: 'movie',
     })
