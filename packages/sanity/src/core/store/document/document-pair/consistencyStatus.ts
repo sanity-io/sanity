@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {combineLatest, type Observable} from 'rxjs'
+import {combineLatest, of, type Observable} from 'rxjs'
 import {distinctUntilChanged, map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 
 import {type DocumentStoreExtraOptions} from '../getPairListener'
@@ -23,11 +23,16 @@ export const consistencyStatus: (
     extraOptions?: DocumentStoreExtraOptions,
   ) => {
     return memoizedPair(client, idPair, typeName, extraOptions).pipe(
-      switchMap(({draft, published}) =>
-        combineLatest([draft.consistency$, published.consistency$]),
+      switchMap(({draft, published, version}) =>
+        combineLatest([
+          draft.consistency$,
+          published.consistency$,
+          version?.consistency$ ?? of(true),
+        ]),
       ),
       map(
-        ([draftIsConsistent, publishedIsConsistent]) => draftIsConsistent && publishedIsConsistent,
+        ([draftIsConsistent, publishedIsConsistent, versionIsConsistent]) =>
+          draftIsConsistent && publishedIsConsistent && versionIsConsistent,
       ),
       distinctUntilChanged(),
       publishReplay(1),

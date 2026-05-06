@@ -169,6 +169,7 @@ export const operationEvents = memoize(
                 if (requiresConsistency) {
                   operationArguments.published.commit()
                   operationArguments.draft.commit()
+                  operationArguments.version?.commit()
                 }
                 const isConsistent$ = consistencyStatus(
                   ctx.client,
