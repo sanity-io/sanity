@@ -3,8 +3,18 @@ import {
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
-import {defer, EMPTY, fromEvent, merge, type Observable, using} from 'rxjs'
-import {distinctUntilChanged, filter, shareReplay, skip, startWith, switchMap} from 'rxjs/operators'
+import {
+  defer,
+  EMPTY,
+  fromEvent,
+  merge,
+  type Observable,
+  ReplaySubject,
+  share,
+  timer,
+  using,
+} from 'rxjs'
+import {distinctUntilChanged, filter, skip, startWith, switchMap} from 'rxjs/operators'
 
 import {isStaging} from '../../environment/isStaging'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
@@ -70,8 +80,13 @@ async function callAuthId(client: SanityClient): Promise<WorkspaceAuthProbeResul
   }
 }
 
+// Grace window in ms during which the cached `/auth/id` result and the
+// `BroadcastChannel` resource stay alive after the last subscriber
+// unsubscribes. Sized so a hover-then-click sequence hits a warm cache.
+const PREFETCH_GRACE_MS = 1500
+
 // Module-level cache for observable identity. Keeps two simultaneous probes
-// for the same tuple sharing one underlying request via `shareReplay`.
+// for the same tuple sharing one underlying request via `share`.
 // The cache holds observable references only; the inner BroadcastChannel
 // and DOM listeners are created on first subscribe and disposed on last
 // unsubscribe (see `using` below). Bounded by the number of distinct
@@ -163,7 +178,18 @@ function buildProbe(
         distinctUntilChanged(),
       )
     },
-  ).pipe(shareReplay({bufferSize: 1, refCount: true}))
+  ).pipe(
+    // Grace window after the last subscriber unsubscribes: keeps the
+    // buffered `/auth/id` result warm for a short time so a preload (e.g.,
+    // hover on the menu trigger) followed by a real subscribe (open) hits
+    // the cached value instead of re-firing the request. The
+    // `BroadcastChannel` lifecycle owned by `using` above also stays alive
+    // during this window.
+    share({
+      connector: () => new ReplaySubject<WorkspaceAuthProbeResult>(1),
+      resetOnRefCountZero: () => timer(PREFETCH_GRACE_MS),
+    }),
+  )
 
   cache.set(key, observable$)
   return observable$
@@ -183,9 +209,9 @@ function buildProbe(
  *
  * Probes are deduped by `(apiHost, projectId, token)`. Workspaces in the same
  * project that share a token (or both rely on the cookie) share a single
- * underlying request via `shareReplay`. The BroadcastChannel and DOM
- * listeners are created on first subscribe and disposed when the last
- * subscriber unsubscribes.
+ * underlying request via `share`. The BroadcastChannel and DOM listeners
+ * are created on first subscribe and disposed when the last subscriber
+ * unsubscribes (with a short grace window so hover-preload hits the cache).
  *
  * @internal
  */
