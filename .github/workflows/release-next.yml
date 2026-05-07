@@ -38,7 +38,8 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Bump next versions
-        run: pnpm --silent release-notes bump --preid=next --suffixType=commits-ahead
+        # `--no-build-metadata` works around https://github.com/pnpm/pnpm/issues/11518
+        run: pnpm --silent release-notes bump --preid=next --suffixType=commits-ahead --no-build-metadata
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -59,9 +60,7 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
-        run: pnpm -r publish --tag next --no-git-checks
-        env:
-          NPM_CONFIG_PROVENANCE: true
+        run: pnpm -r publish --tag next --no-git-checks --provenance
 
       - name: Build bundles for staging
         env:
