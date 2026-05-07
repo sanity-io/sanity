@@ -16,6 +16,7 @@ import {type SemVer} from 'semver'
 
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
+import {isDev} from '../../../../environment'
 import {useTranslation} from '../../../../i18n'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
@@ -178,7 +179,7 @@ function StudioRegistration() {
     window.open(url, '_blank', 'noopener,noreferrer')
   }, [projectId, sanityWebsiteUrl, canDeployStudio])
 
-  if (userApplication) {
+  if (userApplication || isDev) {
     return null
   }
 
