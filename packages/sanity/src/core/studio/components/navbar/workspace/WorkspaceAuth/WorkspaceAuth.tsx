@@ -1,20 +1,18 @@
-import {AddIcon, ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {AddIcon, ArrowLeftIcon} from '@sanity/icons'
+import {Box, Flex, Stack} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {Button} from '../../../../../../ui-components'
-import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {useTranslation} from '../../../../../i18n'
 import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher'
 import {useVisibleWorkspaces} from '../../../../workspaces'
 import {WORKSPACES_DOCS_URL} from '../constants'
-import {useWorkspaceAuthProbes} from '../hooks'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
+import {WorkspaceAuthCard} from './WorkspaceAuthCard'
 
 export function WorkspaceAuth() {
   const {visibleWorkspaces} = useVisibleWorkspaces()
-  const [authStates] = useWorkspaceAuthProbes({workspaces: visibleWorkspaces})
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
   const [selectedWorkspaceName, setSelectedWorkspaceName] = useState<string | null>(
     activeWorkspace?.name || null,
@@ -28,7 +26,23 @@ export function WorkspaceAuth() {
   const handleBack = useCallback(() => setSelectedWorkspaceName(null), [])
   const {t} = useTranslation()
 
-  if (!authStates) return <LoadingBlock showText />
+  const handleCardSelect = useCallback(
+    (workspaceName: string, state: 'loading' | 'logged-in' | 'logged-out' | 'no-access') => {
+      // While loading, navigate; the destination's auth boundary will handle login if needed.
+      if (
+        (state === 'logged-in' || state === 'loading') &&
+        workspaceName !== activeWorkspace.name
+      ) {
+        setActiveWorkspace(workspaceName)
+        return
+      }
+
+      if (state === 'logged-out') {
+        setSelectedWorkspaceName(workspaceName)
+      }
+    },
+    [activeWorkspace.name, setActiveWorkspace],
+  )
 
   if (LoginComponent && selectedWorkspace) {
     return (
@@ -92,42 +106,13 @@ export function WorkspaceAuth() {
       }
     >
       <Stack space={1} paddingX={1} paddingY={2}>
-        {visibleWorkspaces.map((workspace) => {
-          const authState = authStates[workspace.name]
-          const state = authState.authenticated
-            ? 'logged-in'
-            : workspace.auth.LoginComponent
-              ? 'logged-out'
-              : 'no-access'
-
-          const handleSelectWorkspace = () => {
-            if (state === 'logged-in' && workspace.name !== activeWorkspace.name) {
-              setActiveWorkspace(workspace.name)
-            }
-
-            if (state === 'logged-out') {
-              setSelectedWorkspaceName(workspace.name)
-            }
-          }
-
-          return (
-            <Card
-              key={workspace.name}
-              as="button"
-              radius={2}
-              padding={2}
-              onClick={handleSelectWorkspace}
-            >
-              <WorkspacePreview
-                icon={workspace?.icon}
-                iconRight={ChevronRightIcon}
-                state={state}
-                subtitle={workspace?.subtitle}
-                title={workspace?.title || workspace.name}
-              />
-            </Card>
-          )
-        })}
+        {visibleWorkspaces.map((workspace) => (
+          <WorkspaceAuthCard
+            key={workspace.name}
+            workspace={workspace}
+            onSelect={(state) => handleCardSelect(workspace.name, state)}
+          />
+        ))}
       </Stack>
     </Layout>
   )
