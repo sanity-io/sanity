@@ -59,7 +59,7 @@ export function fromStaticSortOrder(
   schemaType: ObjectSchemaType | undefined,
 ): SortOrder | undefined {
   if (!staticSortOrder) {
-    return staticSortOrder as undefined
+    return staticSortOrder
   }
   const by = Array.isArray(staticSortOrder.by) ? staticSortOrder.by : []
   return {
