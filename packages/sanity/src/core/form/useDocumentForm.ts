@@ -435,7 +435,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     )
   })
   const handleChange = (event: PatchEvent) => patchRef.current(event)
-
+  const isCreatingDraft = Boolean(!editState.version && !editState.draft && !editState.published)
   useInsertionEffect(() => {
     // which would otherwise be read-only.
     if (readOnly) {
@@ -448,14 +448,14 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       // Note: although we discourage patch-on-mount, we still support it.
       patchRef.current = (event: PatchEvent) => {
         // when creating a new draft
-        if (!editState.draft && !editState.published) {
+        if (isCreatingDraft) {
           telemetry.log(CreatedDraft)
         }
 
         patch.execute(toMutationPatches(event.patches), initialValue?.value)
       }
     }
-  }, [editState.draft, editState.published, initialValue, patch, telemetry, readOnly])
+  }, [isCreatingDraft, initialValue, patch, telemetry, readOnly])
 
   const formDocumentValue = useMemo(() => {
     if (getFormDocumentValue) return getFormDocumentValue(value)

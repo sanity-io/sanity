@@ -39,6 +39,38 @@ const createEmitter =
   (...executeArgs: any[]) =>
     emitOperation(operationName, idPair, typeName, executeArgs, storeKey)
 
+const operationCache = new Map<string, Operation<any[]>>()
+
+function getCachedOperation<ExtraArgs extends any[], DisabledReason extends string>(
+  operationName: keyof OperationsAPI,
+  idPair: IdPair,
+  typeName: string,
+  storeKey: string,
+  disabled: Operation<ExtraArgs, DisabledReason>['disabled'],
+): Operation<ExtraArgs, DisabledReason> {
+  const cacheKey = JSON.stringify([
+    storeKey,
+    idPair.publishedId,
+    idPair.draftId,
+    idPair.versionId ?? '',
+    typeName,
+    operationName,
+    disabled,
+  ])
+  const cached = operationCache.get(cacheKey)
+
+  if (cached) {
+    return cached as Operation<ExtraArgs, DisabledReason>
+  }
+
+  const operation = {
+    disabled,
+    execute: createEmitter(operationName, idPair, typeName, storeKey),
+  }
+  operationCache.set(cacheKey, operation)
+  return operation
+}
+
 function wrap<ExtraArgs extends any[], DisabledReason extends string>(
   opName: keyof OperationsAPI,
   op: OperationImpl<ExtraArgs, DisabledReason>,
@@ -46,10 +78,13 @@ function wrap<ExtraArgs extends any[], DisabledReason extends string>(
 ): Operation<ExtraArgs, DisabledReason> {
   const disabled = op.disabled(operationArgs)
   const storeKey = getOperationStoreKey(operationArgs.client)
-  return {
+  return getCachedOperation(
+    opName,
+    operationArgs.idPair,
+    operationArgs.typeName,
+    storeKey,
     disabled,
-    execute: createEmitter(opName, operationArgs.idPair, operationArgs.typeName, storeKey),
-  }
+  )
 }
 
 export function createOperationsAPI(args: OperationArgs): OperationsAPI {
