@@ -1,6 +1,7 @@
 import {StackCompactIcon, StackIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import startCase from 'lodash-es/startCase.js'
+import {isDev} from 'sanity'
 
 import {structureLocaleNamespace} from '../i18n'
 import {type DocumentListBuilder} from './DocumentList'
@@ -28,14 +29,25 @@ function isList(collection: Collection): collection is List {
 }
 
 function getDocumentTypes({schema}: StructureContext): string[] {
-  return schema
-    .getTypeNames()
-    .filter((n) => {
-      const schemaType = schema.get(n)
-      return schemaType && isDocumentType(schemaType)
-    })
-    .filter((n) => !isBundledDocType(n))
+  return (
+    schema
+      .getTypeNames()
+      .filter((n) => {
+        const schemaType = schema.get(n)
+        return schemaType && isDocumentType(schemaType)
+      })
+      .filter((n) => !isBundledDocType(n))
+      // Singleton schema types are excluded from the implicit default content
+      // list. Developers must surface them explicitly via the
+      // `S.document().singleton()`, `S.listItem().singleton()`, or
+      // `S.list().singletons()` helpers.
+      .filter((n) => !schema.get(n)?.singleton)
+  )
 }
+
+// Track schema types we've already warned about, so a structure that's
+// resolved repeatedly (e.g. on every navigation) doesn't spam the console.
+const warnedSingletonDocumentTypeListNames = new Set<string>()
 
 export function getDocumentTypeListItems(context: StructureContext): ListItemBuilder[] {
   const types = getDocumentTypes(context)
@@ -88,6 +100,20 @@ export function getDocumentTypeList(
   const type = schema.get(typeName)
   if (!type) {
     throw new Error(`Schema type with name "${typeName}" not found`)
+  }
+
+  // Calling `S.documentTypeList()` for a singleton type still works (it'll
+  // render a list containing the single document) but is almost never what
+  // the developer intended. Surface a warning in dev mode so they know about
+  // `S.listItem().singleton(typeName)` instead.
+  if (isDev && type.singleton && !warnedSingletonDocumentTypeListNames.has(typeName)) {
+    warnedSingletonDocumentTypeListNames.add(typeName)
+    // eslint-disable-next-line no-console
+    console.warn(
+      `S.documentTypeList("${typeName}") was called for a singleton schema type. ` +
+        `Singletons render only one document, so a document type list is rarely useful here. ` +
+        `Consider using \`S.listItem().singleton("${typeName}")\` instead.`,
+    )
   }
 
   const title = type.title || startCase(typeName)
