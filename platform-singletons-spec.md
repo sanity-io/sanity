@@ -124,7 +124,7 @@ After a singleton has been configured, it will be filtered out of Structure Tool
 ### Using `S.document`
 
 The new `S.document().singleton(schemaTypeName)` Structure Tool function is sugar for
-`S.schemaType(schemaTypeName).documentId(singletonDocumentId)`. It retrieves the singleton document id by finding the schema type corresponding with `schemaTypeName`, and looking at its `singleton.documentId` property. It uses this information, along with the provided `schemaTypeName`, to automatically set the document's schema type and document id properties.
+`S.document().schemaType(schemaTypeName).documentId(singletonDocumentId)`. It retrieves the singleton document id by finding the schema type corresponding with `schemaTypeName`, and looking at its `singleton.documentId` property. It uses this information, along with the provided `schemaTypeName`, to automatically set the document's schema type and document id properties.
 
 Its parameters and return type extends those of `S.document`, allowing developers to compose
 singleton structure in a familiar way and to override defaults.
