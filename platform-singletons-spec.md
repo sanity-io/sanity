@@ -46,102 +46,55 @@ By default, all documents can be duplicated using the "duplicate" document actio
 
 ## Proposal
 
-Let's make singletons a first-class Studio primitive. All techniques used today to instrument singletons in userland will continue to work, but Studio will pave the established cow paths, making it even simpler to create singletons.
+We'll make singletons a first-class Studio primitive. All techniques used today to instrument singletons in userland will continue to work, but Studio will pave the established cow paths, making it even simpler to create singletons.
 
-Developers will establish a singleton definition by adding it to the `document.singletons` configuration. Studio will then automatically:
+Developers will establish a singleton definition by setting their desired document id in a schema type's `singleton.documentId` configuration. Implementing the `singleton` configuration as an object gives us a place to extend the configuration in the future if needed.
 
-1. Prevent the document being created by removing it from the templates array in `resolveSource` (`packages/sanity/src/core/config/prepareConfig.tsx`), and filtering the document's actions to remove any actions that allow document creation (such as "duplicate").
-2. Prevent the document type being listed implicity in Structure Tool.
+To enable this, we'll add an optional `singleton.documentId` configuration option (via `DocumentDefinition` in `packages/@sanity/types/src/schema/definition/type/document.ts`) that indicates that the schema type should be treated as a singleton[^1]:
 
-Developers will then explicitly add the singleton to the structure. We'll add new Structure Tool functions to make it easier to work with singletons, but these are ultimately sugar built on top of the existing functions (like `S.document` and `S.list`).
-
-### Configuration contexts
-
-In order to allow document actions to be filtered based on whether a given document is being viewed as a singleton, the `DocumentActionsContext` type must be extended to include an optional `singleton` property:
-
-`packages/sanity/src/core/config/types.ts`
+`packages/@sanity/types/src/schema/definition/type/document.ts`
 
 ```ts
-export interface DocumentActionsContext extends ConfigContext {
+/** @public */
+interface DocumentSingletonDefinition {
   /**
-   * The singleton definition id, if the document is being viewed as a
-   * singleton.
-   *
-   * `DocumentActionsContext` already includes `documentId` and `schemaType`
-   * properties, so it's redundant to provide the full `SingletonDefinition`.
+   * The document id this singleton schema type represents.
    */
-  singleton?: string;
+  documentId: string;
+}
+
+/** @public */
+export interface DocumentDefinition extends Omit<ObjectDefinition, "type"> {
+  /**
+   * Control whether this schema type is a singleton.
+   *
+   * - Singleton schema types can only represent one document.
+   * - Singleton schema types are excluded from document lists.
+   *
+   * See <guide URL> to learn how to add singletons to Structure Tool using the
+   * `S.document().singleton()`, `S.listItem().singleton()`, or
+   * `S.list().singletons()` APIs.
+   */
+  singleton?: DocumentSingletonDefinition;
 
   // existing properties…
 }
 ```
 
-This will enable both the system's automatic filtering of the "duplicate" action, and third-party developers own customisations.
+The provided singleton definition will be reflected in `BaseSchemaType` (`packages/@sanity/types/src/schema/types.ts`), taking the same shape as `DocumentDefinition`. This will allow schema consumers to access its singleton definition.
 
-For consistency, the singleton property will also be added to the other document-related configuration contexts (e.g. `DocumentBadgesContext`).
+Studio will then automatically:
+
+1. Prevent the document being created by removing it from the templates array in `resolveSource` (`packages/sanity/src/core/config/prepareConfig.tsx`), and filtering the document's actions to remove any actions that allow document creation (such as "duplicate").
+2. Prevent the document type being listed implicity in Structure Tool.
+
+Developers must explicitly add the singleton to their structure. We'll provide new Structure Tool functions to make it easier to work with singletons, but these are ultimately sugar built on top of the existing functions (like `S.document` and `S.list`).
 
 ### Developer-facing configuration
 
 #### Establishing a singleton
 
-We'll add a `document.singletons` configuration option (to `DocumentPluginOptions`) that resolves an array of singleton definitions. A singleton definition consists of a singleton definition id, a document id, and a schema type. This architecture allows schema types and singletons to be isolated, meaning a single schema type can be used for multiple singletons and non-singletons if desired.
-
-If a duplicate singleton definition id or document id is encountered at resolution time, configuration resolution will fail with a `ConfigResolutionError`.
-
-`packages/sanity/src/core/config/types.ts`
-
-```ts
-interface SingletonDefinition {
-  /**
-   * The singleton _definition_ id. Establishing an id for the definition allows
-   * multiple singletons to share a schema type if necessary.
-   *
-   * Must be unique across singleton definitions.
-   */
-  id: string;
-
-  /**
-   * The singleton _document_ id.
-   *
-   * Must be unique across singleton definitions.
-   */
-  documentId: string;
-
-  /**
-   * The name of the schema type used by the singleton.
-   */
-  schemaType: string;
-}
-
-type UnresolvedSingletonDefinition = SingletonDefinition | string;
-
-/**
- * Function for composing singletons.
- *
- * This function receives and returns resolved singleton definitions
- * (`SingletonDefinition`).
- */
-type SingletonsResolver = ComposableOption<
-  SingletonDefinition[],
-  ConfigContext
->;
-
-export interface DocumentPluginOptions {
-  /**
-   * The singleton configuration, surfaced at the `document.singletons`
-   * configuration path.
-   *
-   * If a singleton's `id`, `documentId`, and `schemaType` properties are
-   * identical, they can simply be provided as a single string. Studio will
-   * expand it to a full `SingletonDefinition` at runtime.
-   *
-   * Alternatively, a resolver function may be provided.
-   */
-  singletons: UnresolvedSingletonDefinition[] | SingletonsResolver;
-
-  // existing properties…
-}
-```
+Note: If the developer wishes to use the same schema type for a non-singleton document, they will need to create a copy of the schema type with a different name and no `singleton.documentId` configuration.
 
 Here's how a Studio configuration (typically found in `sanity.config.ts`) may look with a "settings" singleton:
 
@@ -152,41 +105,14 @@ export default defineConfig({
   schema: {
     types: [
       defineType({
-        name: "settingsSchema",
-        type: "document",
-        fields: [], // omitted for brevity…
-      }),
-    ],
-  },
-  document: {
-    singletons: [
-      {
-        id: "settingsSingleton",
-        documentId: "settingsDocument",
-        schemaType: "settingsSchema",
-      },
-    ],
-  },
-});
-```
-
-Alternatively, the developer may give the singleton an identical `id`, `documentId`, and `schemaType` property ("settings") to take advantage of the simplified configuration API:
-
-```ts
-import { defineConfig } from "sanity";
-
-export default defineConfig({
-  schema: {
-    types: [
-      defineType({
         name: "settings",
         type: "document",
+        singleton: {
+          documentId: "settings",
+        },
         fields: [], // omitted for brevity…
       }),
     ],
-  },
-  document: {
-    singletons: ["settings"],
   },
 });
 ```
@@ -197,10 +123,8 @@ After a singleton has been configured, it will be filtered out of Structure Tool
 
 ### Using `S.document`
 
-The new `S.document().singleton(singletonDefinitionId)` Structure Tool function is sugar for
-`S.schemaType(singletonSchemaType).documentId(singletonDocumentId)`. It retrieves a singleton
-definition using the provided singleton definition id, and uses this definition to automatically
-set the document's schema type and document id properties.
+The new `S.document().singleton(schemaTypeName)` Structure Tool function is sugar for
+`S.schemaType(schemaTypeName).documentId(singletonDocumentId)`. It retrieves the singleton document id by finding the schema type corresponding with `schemaTypeName`, and looking at its `singleton.documentId` property. It uses this information, along with the provided `schemaTypeName`, to automatically set the document's schema type and document id properties.
 
 Its parameters and return type extends those of `S.document`, allowing developers to compose
 singleton structure in a familiar way and to override defaults.
@@ -209,30 +133,34 @@ singleton structure in a familiar way and to override defaults.
 S.listItem()
   .title("Settings")
   .id("settings")
-  .child(S.document().singleton(singletonDefinitionId));
+  .child(S.document().singleton(schemaTypeName));
 ```
 
 ### Using `S.listItem`
 
-The new `S.listItem().singleton(singletonDefinitionId)` Structure Tool function is a higher-level utility, producing both a list item and a child document for the provided singleton definition id.
+The new `S.listItem().singleton(schemaTypeName)` Structure Tool function is a higher-level utility, producing both a list item and a child document for the provided singleton schema type.
 
 Just like `S.document`, its parameters and return type extends those of `S.listItem`, allowing developers to compose
 singleton structure in a familiar way and to override defaults.
 
 ```ts
-S.listItem().singleton(singletonDefinitionId);
+S.listItem().singleton(schemaTypeName);
 ```
 
 ### Using `S.list`
 
-The new `S.list().singletons(arrayOfSingletonDefinitionIds)` Structure Tool function is the highest-level utility for working with singletons in Structure Tool. It provides fewer opporunities for customisation than `S.listItem.singleton()`, `S.document().singleton`, or `S.document` directly, but in return provides a very simple way to render a list of singletons.
+The new `S.list().singletons(arrayOfSchemaTypeNames)` Structure Tool function is the highest-level utility for working with singletons in Structure Tool. It provides fewer opporunities for customisation than `S.listItem.singleton()`, `S.document().singleton`, or `S.document`, but in return provides a very simple way to render a list of singletons.
 
 Just like the other new utilities, its parameters and return type extends those of `S.list`, allowing developers to compose
 singleton structure in a familiar way and to override defaults.
 
 ```ts
-S.list().singletons(arrayOfSingletonDefinitionIds);
+S.list().singletons(arrayOfSchemaTypeNames);
 ```
+
+#### Attempting to use a non-singleton schema type as a singleton
+
+If a developer calls any of the Structure Tool singleton functions (`S.document().singleton()`, `S.listItem().singleton()`, or `S.list().singletons()`) for a non-singleton schema type, a runtime error will be thrown.
 
 #### "Unhandled" singletons
 
@@ -247,3 +175,7 @@ However, this will be covered clearly in documentation, and LLM skills will be s
 It's not necessary to migrate from existing singleton implementations, because Studio will remain fully compatible with them. However, developers may wish to adopt the new singleton primitive to take advantage of the simpler configuration it permits.
 
 Migration will be simple, given the singleton primitive builds on established userland implementation patterns. We'll additionally investigate the feasibility and value of providing LLM skills to assist with migration.
+
+---
+
+[^1]: An earlier version of this RFC proposed an architecture that isolated schema types from singleton defintions, meaning a single schema type could be used for multiple singletons and non-singletons if desired. This proved to be impractical, because Studio generates initial value templates—which control whether a new document can be created—based on schema types. At template resolution time, it is difficult to know whether a template should be included in the given context.
