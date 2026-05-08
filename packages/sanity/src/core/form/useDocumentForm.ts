@@ -106,7 +106,7 @@ interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersio
 
   ready: boolean
   value: SanityDocumentLike
-  formState: FormState
+  formState: FormState | null
   focusPath: Path
   validation: ValidationMarker[]
   permissions: PermissionCheckResult | undefined
@@ -119,7 +119,7 @@ interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersio
   onChange: (event: PatchEvent) => void
   onPathOpen: (path: Path) => void
   onProgrammaticFocus: (nextPath: Path) => void
-  formStateRef: RefObject<FormState>
+  formStateRef: RefObject<FormState | null>
   schemaType: ObjectSchemaType
 }
 
