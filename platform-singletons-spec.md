@@ -60,11 +60,11 @@ interface DocumentSingletonDefinition {
   /**
    * The document id this singleton schema type represents.
    */
-  documentId: string;
+  documentId: string
 }
 
 /** @public */
-export interface DocumentDefinition extends Omit<ObjectDefinition, "type"> {
+export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   /**
    * Control whether this schema type is a singleton.
    *
@@ -75,7 +75,7 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, "type"> {
    * `S.document().singleton()`, `S.listItem().singleton()`, or
    * `S.list().singletons()` APIs.
    */
-  singleton?: DocumentSingletonDefinition;
+  singleton?: DocumentSingletonDefinition
 
   // existing properties…
 }
@@ -99,22 +99,22 @@ Note: If the developer wishes to use the same schema type for a non-singleton do
 Here's how a Studio configuration (typically found in `sanity.config.ts`) may look with a "settings" singleton:
 
 ```ts
-import { defineConfig } from "sanity";
+import {defineConfig} from 'sanity'
 
 export default defineConfig({
   schema: {
     types: [
       defineType({
-        name: "settings",
-        type: "document",
+        name: 'settings',
+        type: 'document',
         singleton: {
-          documentId: "settings",
+          documentId: 'settings',
         },
         fields: [], // omitted for brevity…
       }),
     ],
   },
-});
+})
 ```
 
 ### Displaying a singleton in Structure Tool
@@ -130,10 +130,7 @@ Its parameters and return type extends those of `S.document`, allowing developer
 singleton structure in a familiar way and to override defaults.
 
 ```ts
-S.listItem()
-  .title("Settings")
-  .id("settings")
-  .child(S.document().singleton(schemaTypeName));
+S.listItem().title('Settings').id('settings').child(S.document().singleton(schemaTypeName))
 ```
 
 ### Using `S.listItem`
@@ -144,7 +141,7 @@ Just like `S.document`, its parameters and return type extends those of `S.listI
 singleton structure in a familiar way and to override defaults.
 
 ```ts
-S.listItem().singleton(schemaTypeName);
+S.listItem().singleton(schemaTypeName)
 ```
 
 ### Using `S.list`
@@ -155,7 +152,7 @@ Just like the other new utilities, its parameters and return type extends those 
 singleton structure in a familiar way and to override defaults.
 
 ```ts
-S.list().singletons(arrayOfSchemaTypeNames);
+S.list().singletons(arrayOfSchemaTypeNames)
 ```
 
 #### Attempting to use a non-singleton schema type as a singleton

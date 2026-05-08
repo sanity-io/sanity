@@ -315,5 +315,24 @@ describe('document types', () => {
       assignableToDocument = defineType(documentDef)
       const fieldsType = documentDef.fields
     })
+
+    it('should accept a singleton block on document types', () => {
+      const documentDef = defineType({
+        type: 'document',
+        name: 'settings',
+        singleton: {documentId: 'settings'},
+        fields: [defineField({type: 'string', name: 'title'})],
+      })
+      const assignableToDocument: DocumentDefinition = documentDef
+    })
+
+    it('should reject a singleton block on non-document types', () => {
+      defineType({
+        type: 'string',
+        name: 'myString',
+        // @ts-expect-error singleton is only valid on document types
+        singleton: {documentId: 'whatever'},
+      })
+    })
   })
 })

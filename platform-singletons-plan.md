@@ -49,13 +49,13 @@ export interface DocumentSingletonDefinition {
   /**
    * The document id this singleton schema type represents.
    */
-  documentId: string;
+  documentId: string
 }
 
 /** @public */
-export interface DocumentDefinition extends Omit<ObjectDefinition, "type"> {
-  type: "document";
-  liveEdit?: boolean;
+export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
+  type: 'document'
+  liveEdit?: boolean
 
   /**
    * Control whether this schema type is a singleton.
@@ -67,7 +67,7 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, "type"> {
    * `S.document().singleton()`, `S.listItem().singleton()`, or
    * `S.list().singletons()`.
    */
-  singleton?: DocumentSingletonDefinition;
+  singleton?: DocumentSingletonDefinition
 
   // existing properties…
 }
@@ -85,8 +85,8 @@ The spec explicitly calls for the singleton definition to be reflected on `BaseS
 // packages/@sanity/types/src/schema/types.ts
 export interface BaseSchemaType extends Partial<DeprecationConfiguration> {
   // existing properties…
-  liveEdit?: boolean;
-  singleton?: DocumentSingletonDefinition;
+  liveEdit?: boolean
+  singleton?: DocumentSingletonDefinition
 }
 ```
 
@@ -137,20 +137,20 @@ Sketch:
 
 ```ts
 // in resolveSource, before building the templates initialValue:
-const singletonDocumentIds = new Map<string, string[]>(); // documentId → schemaTypeNames
+const singletonDocumentIds = new Map<string, string[]>() // documentId → schemaTypeNames
 for (const typeName of schema.getTypeNames()) {
-  const type = schema.get(typeName);
-  if (!type || type.type?.name !== "document" || !type.singleton) continue;
+  const type = schema.get(typeName)
+  if (!type || type.type?.name !== 'document' || !type.singleton) continue
 
-  const { documentId } = type.singleton;
+  const {documentId} = type.singleton
 
-  if (typeof documentId !== "string" || documentId.length === 0) {
+  if (typeof documentId !== 'string' || documentId.length === 0) {
     errors.push(
       new Error(
         `Schema type "${typeName}" has \`singleton.documentId\` that is not a non-empty string.`,
       ),
-    );
-    continue;
+    )
+    continue
   }
   if (!isPublishedId(documentId) || !/^[a-zA-Z0-9._-]+$/.test(documentId)) {
     errors.push(
@@ -158,23 +158,23 @@ for (const typeName of schema.getTypeNames()) {
         `Schema type "${typeName}" has invalid \`singleton.documentId\` "${documentId}". ` +
           `It must be a published document id (no "drafts." or "versions." prefix) using only [a-zA-Z0-9._-].`,
       ),
-    );
-    continue;
+    )
+    continue
   }
 
-  const claimants = singletonDocumentIds.get(documentId) ?? [];
-  claimants.push(typeName);
-  singletonDocumentIds.set(documentId, claimants);
+  const claimants = singletonDocumentIds.get(documentId) ?? []
+  claimants.push(typeName)
+  singletonDocumentIds.set(documentId, claimants)
 }
 
 for (const [documentId, claimants] of singletonDocumentIds) {
   if (claimants.length > 1) {
     errors.push(
       new Error(
-        `Multiple schema types claim singleton document id "${documentId}": ${claimants.join(", ")}. ` +
+        `Multiple schema types claim singleton document id "${documentId}": ${claimants.join(', ')}. ` +
           `Each \`singleton.documentId\` must be unique.`,
       ),
-    );
+    )
   }
 }
 ```
@@ -190,14 +190,14 @@ templates = resolveConfigProperty({
   // …
   initialValue: schema
     .getTypeNames()
-    .filter((typeName) => !typeName.startsWith("sanity."))
+    .filter((typeName) => !typeName.startsWith('sanity.'))
     .map((typeName) => schema.get(typeName))
     .filter(isNonNullable)
-    .filter((schemaType) => schemaType.type?.name === "document")
+    .filter((schemaType) => schemaType.type?.name === 'document')
     .map((schemaType) => {
       /* build Template */
     }),
-});
+})
 ```
 
 Add a filter step: `.filter((schemaType) => !schemaType.singleton)`. This removes the auto‑generated template for any singleton schema type from the initial value, which means:
@@ -217,20 +217,20 @@ The cleanest place to install this is as a built‑in document actions resolver 
 actions: (partialContext) => {
   const userResolved = resolveConfigProperty({
     config,
-    context: { ...context, ...partialContext },
+    context: {...context, ...partialContext},
     initialValue: initialDocumentActions,
-    propertyName: "document.actions",
+    propertyName: 'document.actions',
     reducer: documentActionsReducer,
-  });
+  })
 
   // Built-in singleton filter — runs after user resolvers so it can't be
   // bypassed by reintroducing the duplicate action via document.actions.
-  const schemaType = schema.get(partialContext.schemaType);
+  const schemaType = schema.get(partialContext.schemaType)
   if (schemaType?.singleton) {
-    return userResolved.filter((action) => action.action !== "duplicate");
+    return userResolved.filter((action) => action.action !== 'duplicate')
   }
-  return userResolved;
-};
+  return userResolved
+}
 ```
 
 Why here, not in `structureTool.ts`? Two reasons:
@@ -264,24 +264,24 @@ export function getSingletonDefinition(
   schemaTypeName: string,
   pathHint: SerializePath = [],
 ): DocumentSingletonDefinition {
-  const type = context.schema.get(schemaTypeName);
+  const type = context.schema.get(schemaTypeName)
   if (!type) {
     throw new SerializeError(
       `Could not find type "${schemaTypeName}" in schema`,
       pathHint,
       undefined,
-    ).withHelpUrl(HELP_URL.SCHEMA_TYPE_NOT_FOUND);
+    ).withHelpUrl(HELP_URL.SCHEMA_TYPE_NOT_FOUND)
   }
-  const singleton = type.singleton;
+  const singleton = type.singleton
   if (!singleton?.documentId) {
     throw new SerializeError(
       `Schema type "${schemaTypeName}" is not a singleton. ` +
         `Add \`singleton: { documentId: '<id>' }\` to its schema definition.`,
       pathHint,
       undefined,
-    );
+    )
   }
-  return singleton;
+  return singleton
 }
 ```
 
@@ -344,14 +344,14 @@ Pure sugar: the developer still needs `.id(...)` and `.title(...)` for the list 
 Update `getDocumentTypes` (or the filter inside `getDocumentTypeListItems`) in `documentTypeListItems.ts`:
 
 ```ts
-function getDocumentTypes({ schema }: StructureContext): string[] {
+function getDocumentTypes({schema}: StructureContext): string[] {
   return schema
     .getTypeNames()
     .filter((n) => {
-      const t = schema.get(n);
-      return t && isDocumentType(t) && !t.singleton;
+      const t = schema.get(n)
+      return t && isDocumentType(t) && !t.singleton
     })
-    .filter((n) => !isBundledDocType(n));
+    .filter((n) => !isBundledDocType(n))
 }
 ```
 
