@@ -98,7 +98,7 @@ export const editState = memoize(
         ({
           value: [draftSnapshot, publishedSnapshot, transactionSyncLock, versionSnapshot],
           fromCache,
-        }) => ({
+        }): EditStateFor => ({
           id: idPair.publishedId,
           type: typeName,
           draft: draftSnapshot,
@@ -111,21 +111,45 @@ export const editState = memoize(
           release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
         }),
       ),
-      startWith({
-        id: idPair.publishedId,
-        type: typeName,
-        draft: null,
-        published: null,
-        version: null,
-        liveEdit,
-        liveEditSchemaType,
-        ready: false,
-        transactionSyncLock: null,
-        release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
-      }),
+      startWith(
+        getInitialEditState({
+          schema: ctx.schema,
+          publishedId: idPair.publishedId,
+          typeName,
+          version: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
+        }),
+      ),
       publishReplay(1),
       refCount(),
     )
   },
   (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName),
 )
+
+export function getInitialEditState({
+  schema,
+  publishedId,
+  typeName,
+  version,
+}: {
+  schema: Schema
+  publishedId: string
+  typeName: string
+  version?: string
+}): EditStateFor {
+  const liveEditSchemaType = isLiveEditEnabled(schema, typeName)
+  const liveEdit = typeof version !== 'undefined' || liveEditSchemaType
+
+  return {
+    id: publishedId,
+    type: typeName,
+    draft: null,
+    published: null,
+    version: null,
+    liveEdit,
+    liveEditSchemaType,
+    ready: false,
+    transactionSyncLock: null,
+    release: version,
+  }
+}

@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
-import {type Observable} from 'rxjs'
-import {filter, map} from 'rxjs/operators'
+import {of, type Observable} from 'rxjs'
+import {filter, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../config'
 import {type LocaleSource} from '../../i18n'
@@ -22,19 +22,21 @@ import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pai
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
 import {editOperations} from './document-pair/editOperations'
-import {editState, type EditStateFor} from './document-pair/editState'
+import {editState, type EditStateFor, getInitialEditState} from './document-pair/editState'
 import {
   type OperationError,
   operationEvents,
   type OperationSuccess,
 } from './document-pair/operationEvents'
 import {type OperationsAPI} from './document-pair/operations'
-import {validation} from './document-pair/validation'
+import {GUARDED} from './document-pair/operations/helpers'
+import {INITIAL_VALIDATION_STATUS, validation} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
 import {type IdPair} from './types'
+import {memoize} from './utils/createMemoizer'
 
 /**
  * @hidden
@@ -54,6 +56,22 @@ function getIdPairFromPublished(publishedId: string, version?: string): IdPair {
 
   return getIdPair(publishedId, {version})
 }
+
+/**
+ * This is currently prepared as an observable to support resolving
+ * the id pair asynchronously which will be necessary once we support variants.
+ */
+const resolveIdPair = memoize(
+  (_client: SanityClient, publishedId: string, version?: string): Observable<IdPair> => {
+    return of(getIdPairFromPublished(publishedId, version)).pipe(
+      shareReplay({refCount: true, bufferSize: 1}),
+    )
+  },
+  (client: SanityClient, publishedId: string, version?: string) => {
+    const config = client.config()
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${publishedId}-${version ?? ''}`
+  },
+)
 
 /**
  * @hidden
@@ -163,6 +181,17 @@ export function createDocumentStore({
     currentUser,
   }
 
+  function withResolvedIdPair<T>(
+    publishedId: string,
+    version: string | undefined,
+    initialValue: T | undefined,
+    project: (idPair: IdPair) => Observable<T>,
+  ): Observable<T> {
+    const resolved$ = resolveIdPair(client, publishedId, version).pipe(switchMap(project))
+
+    return typeof initialValue === 'undefined' ? resolved$ : resolved$.pipe(startWith(initialValue))
+  }
+
   return {
     // Public API
     checkoutPair(idPair) {
@@ -191,65 +220,74 @@ export function createDocumentStore({
     },
     pair: {
       consistencyStatus(publishedId, type, version) {
-        return consistencyStatus(
-          ctx.client,
-          getIdPairFromPublished(publishedId, version),
-          type,
-          extraOptions,
+        return withResolvedIdPair(publishedId, version, true, (idPair) =>
+          consistencyStatus(ctx.client, idPair, type, extraOptions),
         )
       },
       documentEvents(publishedId, type, version) {
-        return documentEvents(
-          ctx.client,
-          getIdPairFromPublished(publishedId, version),
-          type,
-          extraOptions,
+        return withResolvedIdPair(publishedId, version, undefined, (idPair) =>
+          documentEvents(ctx.client, idPair, type, extraOptions),
         )
       },
       editOperations(publishedId, type, version) {
-        return editOperations(ctx, getIdPairFromPublished(publishedId, version), type)
+        return withResolvedIdPair(publishedId, version, GUARDED, (idPair) =>
+          editOperations(ctx, idPair, type),
+        )
       },
       editState(publishedId, type, version) {
-        const idPair = getIdPairFromPublished(publishedId, version)
-
-        const edit = editState(ctx, idPair, type)
-        return edit
+        return withResolvedIdPair(
+          publishedId,
+          version,
+          getInitialEditState({
+            schema,
+            publishedId,
+            typeName: type,
+            version,
+          }),
+          (idPair) => editState(ctx, idPair, type),
+        )
       },
       operationEvents(publishedId, type) {
-        return operationEvents({
-          client,
-          historyStore,
-          schema,
-          extraOptions,
-        }).pipe(
-          filter(
-            (result) =>
-              result.args.idPair.publishedId === publishedId && result.args.typeName === type,
+        return withResolvedIdPair(publishedId, undefined, undefined, (resolvedPair) =>
+          operationEvents({
+            client,
+            historyStore,
+            schema,
+            extraOptions,
+          }).pipe(
+            filter(
+              (result) =>
+                result.args.idPair.publishedId === resolvedPair.publishedId &&
+                result.args.typeName === type,
+            ),
+            map((result): OperationSuccess | OperationError => {
+              const {operationName, idPair} = result.args
+              return result.type === 'success'
+                ? {
+                    type: 'success',
+                    op: operationName,
+                    id: idPair.publishedId,
+                    idPair,
+                  }
+                : {
+                    type: 'error',
+                    op: operationName,
+                    id: idPair.publishedId,
+                    error: result.error,
+                    idPair,
+                  }
+            }),
           ),
-          map((result): OperationSuccess | OperationError => {
-            const {operationName, idPair} = result.args
-            return result.type === 'success'
-              ? {
-                  type: 'success',
-                  op: operationName,
-                  id: idPair.publishedId,
-                  idPair,
-                }
-              : {
-                  type: 'error',
-                  op: operationName,
-                  id: idPair.publishedId,
-                  error: result.error,
-                  idPair,
-                }
-          }),
         )
       },
       validation(validationTargetId, type, requirePublishedReferences) {
         const publishedId = getPublishedId(validationTargetId)
-        const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        return validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
+        const version = getVersionFromId(validationTargetId)
+
+        return withResolvedIdPair(publishedId, version, INITIAL_VALIDATION_STATUS, (idPair) =>
+          validation(ctx, idPair, type, validationTarget, requirePublishedReferences),
+        )
       },
     },
   }
