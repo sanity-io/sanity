@@ -30,6 +30,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {canonicalHash} from '../util/canonicalHash'
+import {isPublishedId} from '../util/draftUtils'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
@@ -504,6 +505,12 @@ function resolveSource({
   const defaultAssetSources = createDatasetAssetSources(config, client)
   const mediaLibraryAssetSources = createMediaLibraryAssetSources(config)
 
+  // Validate singleton schema definitions and collect them for downstream use.
+  // Errors push onto the shared `errors` array so they surface together via
+  // ConfigResolutionError (see end of resolveSource).
+  const singletonSchemaTypeNames = new Set<string>()
+  validateSingletons(schema, errors, singletonSchemaTypeNames)
+
   let templates!: Source['templates']
   try {
     templates = resolveConfigProperty({
@@ -517,6 +524,10 @@ function resolveSource({
         .map((typeName) => schema.get(typeName))
         .filter(isNonNullable)
         .filter((schemaType) => schemaType.type?.name === 'document')
+        // Singleton schema types must not generate a default "new document"
+        // template. Users can still re-add an explicit Template via
+        // `schema.templates` if they really want to.
+        .filter((schemaType) => !singletonSchemaTypeNames.has(schemaType.name))
         .map((schemaType) => {
           const template: Template = {
             id: schemaType.name,
@@ -689,14 +700,25 @@ function resolveSource({
       config,
     }),
     document: {
-      actions: (partialContext) =>
-        resolveConfigProperty({
+      actions: (partialContext) => {
+        const userResolved = resolveConfigProperty({
           config,
           context: {...context, ...partialContext},
           initialValue: initialDocumentActions,
           propertyName: 'document.actions',
           reducer: documentActionsReducer,
-        }),
+        })
+
+        // Built-in singleton filter—runs after every user resolver so it
+        // can't be bypassed by reintroducing the duplicate action via
+        // `document.actions`.
+        const schemaTypeName = partialContext.schemaType
+        const schemaType = schemaTypeName ? schema.get(schemaTypeName) : undefined
+        if (schemaType?.singleton) {
+          return userResolved.filter((action) => action.action !== 'duplicate')
+        }
+        return userResolved
+      },
       badges: (partialContext) =>
         resolveConfigProperty({
           config,
@@ -972,4 +994,67 @@ function joinBasePath(rootPath: string, basePath?: string) {
 function catchTap<T>(promise: Promise<T>, cb: (reason: unknown) => void): Promise<T> {
   promise.catch(cb)
   return promise
+}
+
+// Sanity document ids are limited to this character set. Validated alongside
+// `isPublishedId` to reject `drafts.` and `versions.` prefixes.
+// TODO: extract to @sanity/util alongside other id helpers.
+const SINGLETON_DOCUMENT_ID_PATTERN = /^[a-zA-Z0-9._-]+$/
+
+/**
+ * Walks every schema type, validates its `singleton` block (if any), and
+ * pushes errors onto the shared `errors` array so they surface together via
+ * `ConfigResolutionError`.
+ *
+ * Populates `singletonSchemaTypeNames` with every type that declared a
+ * (well-formed) `singleton` block, for use by downstream filters.
+ */
+function validateSingletons(
+  schema: Schema,
+  errors: unknown[],
+  singletonSchemaTypeNames: Set<string>,
+): void {
+  // documentId -> schema type names that claim it
+  const claimants = new Map<string, string[]>()
+
+  for (const typeName of schema.getTypeNames()) {
+    const type = schema.get(typeName)
+    if (!type || type.type?.name !== 'document' || !type.singleton) continue
+
+    const {documentId} = type.singleton
+
+    if (typeof documentId !== 'string' || documentId.length === 0) {
+      errors.push(
+        new Error(
+          `Schema type "${typeName}" has \`singleton.documentId\` that is not a non-empty string.`,
+        ),
+      )
+      continue
+    }
+    if (!isPublishedId(documentId) || !SINGLETON_DOCUMENT_ID_PATTERN.test(documentId)) {
+      errors.push(
+        new Error(
+          `Schema type "${typeName}" has invalid \`singleton.documentId\` "${documentId}". ` +
+            `It must be a published document id (no "drafts." or "versions." prefix) using only [a-zA-Z0-9._-].`,
+        ),
+      )
+      continue
+    }
+
+    singletonSchemaTypeNames.add(typeName)
+    const existing = claimants.get(documentId) ?? []
+    existing.push(typeName)
+    claimants.set(documentId, existing)
+  }
+
+  for (const [documentId, schemaTypeNames] of claimants) {
+    if (schemaTypeNames.length > 1) {
+      errors.push(
+        new Error(
+          `Multiple schema types claim singleton document id "${documentId}": ${schemaTypeNames.join(', ')}. ` +
+            `Each \`singleton.documentId\` must be unique.`,
+        ),
+      )
+    }
+  }
 }
