@@ -12,6 +12,7 @@ import {
   type SerializeOptions,
 } from './StructureNodes'
 import {type StructureContext, type View} from './types'
+import {getSingletonDefinition} from './util/getSingletonDefinition'
 import {getStructureNodeId} from './util/getStructureNodeId'
 import {resolveTypeForDocument} from './util/resolveTypeForDocument'
 import {validateId} from './util/validateId'
@@ -200,6 +201,27 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
         type: typeof documentType === 'string' ? documentType : documentType.name,
       },
     })
+  }
+
+  /**
+   * Configure the document builder to render a singleton.
+   *
+   * Sugar for `.schemaType(schemaTypeName).documentId(<documentId>)`, where
+   * `<documentId>` is read from the schema type's `singleton.documentId`
+   * configuration. The schema type must be a singleton (i.e. its definition
+   * must include a `singleton` block) or a `SerializeError` is thrown
+   * immediately.
+   *
+   * Subsequent `.documentId(...)` or `.schemaType(...)` calls override these
+   * defaults, preserving the immutable-builder ergonomics of the rest of
+   * `DocumentBuilder`.
+   *
+   * @param schemaTypeName - the name of the singleton schema type
+   * @returns document builder configured for the named singleton
+   */
+  singleton(schemaTypeName: string): DocumentBuilder {
+    const {documentId} = getSingletonDefinition(this._context, schemaTypeName)
+    return this.schemaType(schemaTypeName).documentId(documentId)
   }
 
   /** Get Document Type
