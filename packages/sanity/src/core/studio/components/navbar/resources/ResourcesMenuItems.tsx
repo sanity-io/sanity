@@ -169,7 +169,7 @@ function StudioRegistration() {
   const sanityWebsiteUrl = useEnvAwareSanityWebsiteUrl()
   const workspaces = useWorkspaces()
   const projectId = workspaces[0]?.projectId
-  const canDeployStudio = useCanDeployStudio(!userApplication)
+  const canDeployStudio = useCanDeployStudio(!userApplication && !isDev)
 
   const handleRegisterStudio = useCallback(() => {
     if (!projectId || !canDeployStudio) return
