@@ -6,13 +6,9 @@ import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../studio/constants'
 import {formatRelativeLocalePublishDate} from '../util/util'
 
 /**
- * Returns a formatter that renders a release's publish date as a locale-aware
- * relative string ("today at 10:20 AM", "tomorrow at 09:00 AM", etc.) interpreted
- * in the user's selected content-releases timezone.
- *
- * Factory shape: the hook itself is called unconditionally at the top of a
- * component (Rules of Hooks compliant); the returned function may be invoked
- * conditionally inside JSX.
+ * Returns a function that formats a release's publish date in the studio's
+ * selected content-releases timezone (e.g. "today at 10:20 AM"). The returned
+ * function is safe to call inside conditional JSX.
  *
  * @internal
  */

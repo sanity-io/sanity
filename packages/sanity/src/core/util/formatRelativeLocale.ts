@@ -8,16 +8,13 @@ type DateInput = Date | number | string
 const RUNTIME_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 /**
- * date-fns `formatRelative` defaults to formatting as `MM/dd/yyyy` (en-US) when the date is more
- * than ~6 days from `baseDate`. `formatRelativeLocale` substitutes that fallback with the
- * browser's locale date format so non-en-US users don't see American-style dates.
+ * Renders `date` relative to `baseDate` in `timeZone`. Replaces date-fns's en-US
+ * `MM/dd/yyyy` fallback (used for dates more than ~6 days out) with the browser's
+ * locale date format, so non-en-US users don't see American-style dates.
  *
- * Relative-day boundaries, time portions, and the locale fallback are all interpreted in
- * `timeZone`. When omitted, the host runtime's timezone is used (matching native JS date
- * formatting defaults). In browsers this is the user's system TZ; in Node/SSR it is the host
- * machine's TZ — pass an explicit IANA zone in non-browser environments. To render in the
- * user's selected studio timezone, callers should pass the appropriate zone — typically
- * from a hook that binds the current studio timezone (e.g., one that wraps `useTimeZone`).
+ * `timeZone` defaults to the host runtime's TZ. Pass an explicit IANA zone for
+ * non-browser contexts or to render in the user's selected studio timezone (e.g.
+ * via a hook that wraps `useTimeZone`).
  *
  * @internal
  */
@@ -27,10 +24,7 @@ export const formatRelativeLocale = (
   timeZone: string = RUNTIME_TIME_ZONE,
 ): string => {
   const relative = formatRelative(date, baseDate, {in: tzHelper(timeZone)})
-  // Heuristic: date-fns's en-US "Other" bucket renders as MM/dd/yyyy. Detecting it lets us
-  // swap in a browser-locale calendar string so non-en-US users don't see American dates.
-  // If date-fns ever changes that fallback shape (or a locale option is threaded through),
-  // this branch silently stops triggering.
+  // Detect date-fns's en-US `MM/dd/yyyy` fallback and swap in a browser-locale string.
   if (isValid(parse(relative, 'MM/dd/yyyy', new Date()))) {
     return new Date(date).toLocaleDateString(undefined, {timeZone})
   }

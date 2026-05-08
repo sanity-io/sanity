@@ -31,34 +31,29 @@ describe('formatRelativeLocale', () => {
   })
 
   it('renders the time portion in the provided timeZone', () => {
-    // Same UTC instants, different wall-clock time per zone:
-    //   target = 2023-10-02T01:00:00Z  -> 10:00 in Asia/Tokyo, 21:00 in America/New_York
-    //   base   = 2023-10-01T22:00:00Z  -> 07:00 (Oct 2) in Tokyo, 18:00 (Oct 1) in New_York
-    // In each zone, target and base fall on the same calendar day, so both render as "today at <time>".
+    // Both zones never observe DST, so the offsets stay constant year-round.
     const baseDate = new Date('2023-10-01T22:00:00Z')
     const target = new Date('2023-10-02T01:00:00Z')
 
     const tokyo = formatRelativeLocale(target, baseDate, 'Asia/Tokyo')
-    const newYork = formatRelativeLocale(target, baseDate, 'America/New_York')
+    const honolulu = formatRelativeLocale(target, baseDate, 'Pacific/Honolulu')
 
     expect(tokyo).toMatch(/today at/i)
-    expect(newYork).toMatch(/today at/i)
-    expect(tokyo).not.toEqual(newYork)
-    expect(tokyo).toContain('10:00')
-    expect(newYork).toContain('9:00 PM')
+    expect(honolulu).toMatch(/today at/i)
+    expect(tokyo).not.toEqual(honolulu)
+    expect(tokyo).toContain('10:00') // 01:00 UTC = 10:00 in Tokyo (+09)
+    expect(honolulu).toContain('3:00 PM') // 01:00 UTC = 15:00 in Honolulu (-10)
   })
 
   it('crosses the relative-day boundary based on the provided timeZone', () => {
-    // 2023-10-01T15:00:00Z is:
-    //   - Oct 1 23:00 in Asia/Singapore (+08:00)  -> "today" relative to Oct 1 16:00 SGT (08:00:00Z)
-    //   - Oct 2 04:00 in Pacific/Auckland (+13:00) -> "tomorrow" relative to Oct 1 21:00 NZDT (08:00:00Z)
-    const baseDate = new Date('2023-10-01T08:00:00Z') // Oct 1 in both zones
+    // Both zones never observe DST, so the offsets stay constant year-round.
+    const baseDate = new Date('2023-10-01T08:00:00Z')
     const target = new Date('2023-10-01T15:00:00Z')
 
     const singapore = formatRelativeLocale(target, baseDate, 'Asia/Singapore')
-    const auckland = formatRelativeLocale(target, baseDate, 'Pacific/Auckland')
+    const brisbane = formatRelativeLocale(target, baseDate, 'Australia/Brisbane')
 
-    expect(singapore).toMatch(/today at/i)
-    expect(auckland).toMatch(/tomorrow at/i)
+    expect(singapore).toMatch(/today at/i) // Oct 1 23:00 in Singapore (+08), same day as base
+    expect(brisbane).toMatch(/tomorrow at/i) // Oct 2 01:00 in Brisbane (+10), next day from base
   })
 })
