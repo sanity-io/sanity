@@ -119,6 +119,7 @@ import code from './plugins/code'
 import color from './plugins/color'
 import geopoint from './plugins/geopoint'
 import {hotspot, hotspotArrayTest} from './plugins/hotspotArray'
+import singletonSettings from './singletonSettings'
 import species from './species'
 import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
 import booleans from './standard/booleans'
@@ -351,6 +352,7 @@ export function createSchemaTypes(projectId: string) {
     house,
     playlist,
     playlistTrack,
+    singletonSettings,
 
     // CI documents
     allNativeInputComponents,
