@@ -598,6 +598,7 @@ exports[`exports snapshot 1`] = `
     "useFormCallbacks": "function",
     "useFormState": "function",
     "useFormValue": "function",
+    "useFormatRelativeLocalePublishDate": "function",
     "useFormattedDuration": "function",
     "useGetDefaultPerspective": "function",
     "useGetFormValue": "function",

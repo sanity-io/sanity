@@ -47,12 +47,25 @@ export function getPublishDateFromRelease(release: ReleaseDocument): Date | null
   return new Date(dateString)
 }
 
-/** @internal */
-export function formatRelativeLocalePublishDate(release: ReleaseDocument): string {
+/**
+ * Formats a release's publish date as a locale-aware relative string.
+ *
+ * When `timeZone` is omitted, the host runtime's timezone is used (the user's
+ * system TZ in browsers; the host machine's TZ in Node/SSR — pass an explicit
+ * IANA zone in non-browser environments). Inside React components, prefer
+ * `useFormatRelativeLocalePublishDate` — it binds the user's selected studio
+ * timezone automatically.
+ *
+ * @internal
+ */
+export function formatRelativeLocalePublishDate(
+  release: ReleaseDocument,
+  timeZone?: string,
+): string {
   const publishDate = getPublishDateFromRelease(release)
 
   if (!publishDate) return ''
-  return formatRelativeLocale(publishDate, new Date())
+  return formatRelativeLocale(publishDate, new Date(), timeZone)
 }
 
 /** @internal */
