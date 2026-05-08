@@ -1,7 +1,15 @@
 import {type SanityClient} from '@sanity/client'
 import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
+import {uuid} from '@sanity/uuid'
 import get from 'lodash-es/get.js'
-import {type ComponentType, type PropsWithChildren, useContext, useEffect, useMemo} from 'react'
+import {
+  type ComponentType,
+  type PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import {useObservable} from 'react-rx'
 import {BehaviorSubject, combineLatest, EMPTY, filter, map, of, Subject, tap} from 'rxjs'
 import {type DocumentDivergencesContextValue, DocumentDivergencesContext} from 'sanity/_singletons'
@@ -105,16 +113,28 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
     formState,
   })
 
+  const [sessionId] = useState(() => uuid())
+
+  const value = useMemo<DocumentDivergencesContextValue>(
+    () => ({enabled: true, sessionId, ...divergenceNavigator}),
+    [sessionId, divergenceNavigator],
+  )
+
   return (
-    <DocumentDivergencesContext.Provider value={{enabled: true, ...divergenceNavigator}}>
+    <DocumentDivergencesContext.Provider value={value}>
       <FormGutterCustomProperties $enabled>{children}</FormGutterCustomProperties>
     </DocumentDivergencesContext.Provider>
   )
 }
 
+const disabledContextValue: DocumentDivergencesContextValue = {
+  enabled: false,
+  sessionId: null,
+}
+
 const DivergencesProviderDisabled: ComponentType<PropsWithChildren> = ({children}) => {
   return (
-    <DocumentDivergencesContext.Provider value={{enabled: false}}>
+    <DocumentDivergencesContext.Provider value={disabledContextValue}>
       <FormGutterCustomProperties $enabled={false}>{children}</FormGutterCustomProperties>
     </DocumentDivergencesContext.Provider>
   )
