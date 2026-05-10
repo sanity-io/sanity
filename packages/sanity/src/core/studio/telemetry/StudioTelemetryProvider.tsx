@@ -20,6 +20,7 @@ import {useProjectOrganizationId} from '../../store/project/useProjectOrganizati
 import {SANITY_VERSION} from '../../version'
 import {WorkspaceFeaturesObserved} from '../__telemetry__/featureAvailability.telemetry'
 import {useWorkspace} from '../workspace'
+import {useWorkspaces} from '../workspaces'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
 import {debugLoggingStore} from './utils/debugLoggingStore'
@@ -29,12 +30,54 @@ const sessionId = createSessionId()
 /** Telemetry only runs on client */
 const isClient = typeof window !== 'undefined'
 
+interface PluginWithNestedPlugins {
+  plugins?: PluginWithNestedPlugins[]
+}
+
+interface BrowserConnection {
+  effectiveType?: string
+  downlink?: number
+  rtt?: number
+  saveData?: boolean
+}
+
+type NavigatorWithConnection = Navigator & {
+  connection?: BrowserConnection
+  mozConnection?: BrowserConnection
+  webkitConnection?: BrowserConnection
+}
+
+function countPlugins(plugins: PluginWithNestedPlugins[] | undefined): number {
+  if (!plugins) return 0
+  return plugins.reduce((count, plugin) => count + 1 + countPlugins(plugin.plugins), 0)
+}
+
+function getConnection(): TelemetryContext['connection'] {
+  if (!isClient) return null
+
+  const nav = navigator as NavigatorWithConnection
+  const connection = nav.connection || nav.mozConnection || nav.webkitConnection
+
+  if (!connection) return null
+
+  return {
+    effectiveType: connection.effectiveType ?? null,
+    downlink: typeof connection.downlink === 'number' ? connection.downlink : null,
+    rtt: typeof connection.rtt === 'number' ? connection.rtt : null,
+    saveData: typeof connection.saveData === 'boolean' ? connection.saveData : null,
+  }
+}
+
 export function StudioTelemetryProvider(props: {children: ReactNode}) {
   const client = useClient({apiVersion: 'v2023-12-18'})
   const projectId = client.config().projectId
 
   // Get workspace context
   const workspace = useWorkspace()
+  const workspaces = useWorkspaces()
+  const workspaceCount = workspaces.length
+  const workspacePlugins = workspace.__internal.options.plugins
+  const workspaceSchema = workspace.schema
 
   // Get organization ID (async, may be null initially)
   const {value: orgId} = useProjectOrganizationId()
@@ -55,6 +98,9 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   // Telemetry only runs on client - no SSR fallbacks needed
   useEffect(() => {
     if (!isClient) return
+    const pluginCount = countPlugins(workspacePlugins)
+    const schemaTypeCount = workspaceSchema.getTypeNames().length
+
     contextRef.current = {
       // Static values
       userAgent: navigator.userAgent,
@@ -68,15 +114,28 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
       studioVersion: SANITY_VERSION,
       reactVersion,
       environment: isProd ? 'production' : 'development',
+      connection: getConnection(),
 
       // Dynamic values
       orgId: orgId || null,
       activeTool,
+      workspaceCount,
       activeWorkspace: workspace.name,
       activeProjectId: workspace.projectId,
       activeDataset: workspace.dataset,
+      pluginCount,
+      schemaTypeCount,
     }
-  }, [orgId, activeTool, workspace.name, workspace.projectId, workspace.dataset])
+  }, [
+    orgId,
+    activeTool,
+    workspaceCount,
+    workspace.name,
+    workspace.projectId,
+    workspace.dataset,
+    workspacePlugins,
+    workspaceSchema,
+  ])
 
   const storeOptions = useMemo((): CreateBatchedStoreOptions => {
     const debugTelemetry = import.meta && import.meta.env?.SANITY_STUDIO_DEBUG_TELEMETRY === 'true'
