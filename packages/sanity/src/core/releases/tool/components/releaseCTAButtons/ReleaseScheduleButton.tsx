@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
+import {ClockIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {format} from 'date-fns/format'
@@ -11,7 +11,6 @@ import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
-import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {MONTH_PICKER_VARIANT} from '../../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../components/inputs/DateInputs/DateTimeInput'
@@ -26,6 +25,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {getReleaseActionTooltipContent} from '../../../util/getReleaseActionTooltipContent'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleaseScheduleButtonProps {
@@ -353,17 +353,10 @@ export const ReleaseScheduleButton = ({
     t,
   ])
 
-  // TODO: this is a duplicate of logic in ReleasePublishAllButton
-  const scheduleTooltipContent = useMemo(() => {
-    return (
-      <Text muted size={1}>
-        <Flex align="center" gap={3} padding={1}>
-          <ToneIcon icon={ErrorOutlineIcon} tone={isValidatingDocuments ? 'default' : 'critical'} />
-          {tooltipText}
-        </Flex>
-      </Text>
-    )
-  }, [isValidatingDocuments, tooltipText])
+  const scheduleTooltipContent = useMemo(
+    () => getReleaseActionTooltipContent(tooltipText, isValidatingDocuments),
+    [isValidatingDocuments, tooltipText],
+  )
 
   const sharedProps = useMemo(
     () => ({
