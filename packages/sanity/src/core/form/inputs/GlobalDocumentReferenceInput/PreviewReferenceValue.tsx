@@ -19,7 +19,7 @@ export function PreviewReferenceValue(props: {
   const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo} = props
   const {t} = useTranslation()
 
-  if (referenceInfo.isLoading || referenceInfo.error) {
+  if (referenceInfo.isLoading || referenceInfo.error || !referenceInfo.result) {
     return (
       <Stack space={2} padding={1}>
         <TextSkeleton style={{maxWidth: 320}} radius={1} animated={!referenceInfo.error} />
