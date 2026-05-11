@@ -33,9 +33,10 @@ function createCtx() {
  * `draft`/`published`/`version` references on the emitted `EditStateFor` must be
  * the same object identities as the previous emission.
  *
- * If a future refactor adds a `.pipe(map(d => ({...d})))` or similar fresh-wrapper
- * step anywhere in this file, this test will fail — and the dedupe in
- * `useEditState` would silently become a no-op without it.
+ * This specifically guards against a refactor that clones or recreates those
+ * snapshot refs during transaction-sync re-emissions (for example by rebuilding
+ * the emitted `EditStateFor` with fresh `draft`/`published`/`version` objects),
+ * which would make `useEditState`'s shallow dedupe silently become a no-op.
  */
 describe('editState — snapshot identity preservation', () => {
   beforeEach(() => {
