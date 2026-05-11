@@ -40,7 +40,7 @@ describe('useEditState', () => {
     expect(result.current).toBe(initialState)
   })
 
-  it('returns the same reference when a structurally-equal value is emitted', () => {
+  it('dedupes re-emissions where the snapshot fields keep their references', () => {
     const {result} = renderHook(() => useEditState('doc-1', 'book'))
     const before = result.current
 
@@ -51,7 +51,7 @@ describe('useEditState', () => {
     expect(result.current).toBe(before)
   })
 
-  it('returns a new reference when content changes', async () => {
+  it('passes through when a snapshot reference changes', async () => {
     const {result} = renderHook(() => useEditState('doc-1', 'book'))
 
     const next: EditStateFor = {
@@ -75,14 +75,27 @@ describe('useEditState', () => {
     })
   })
 
-  it('dedupes deep clones but lets deep changes through', async () => {
+  it('passes through when only the `ready` flag flips', async () => {
+    const {result} = renderHook(() => useEditState('doc-1', 'book'))
+
+    const next: EditStateFor = {...initialState, ready: true}
+    act(() => {
+      mockEditState$.next(next)
+    })
+
+    await waitFor(() => {
+      expect(result.current).toBe(next)
+    })
+  })
+
+  it('treats a new draft reference as a change even if content is equivalent', async () => {
     const draft = {
       _id: 'drafts.doc-1',
       _type: 'book',
       _rev: 'r1',
       _createdAt: '2024-01-01T00:00:00Z',
       _updatedAt: '2024-01-01T00:00:00Z',
-      title: 'before',
+      title: 'hello',
     }
     const seeded: EditStateFor = {...initialState, ready: true, draft}
 
@@ -91,20 +104,19 @@ describe('useEditState', () => {
     })
 
     const {result} = renderHook(() => useEditState('doc-1', 'book'))
-    const before = result.current
 
     act(() => {
-      mockEditState$.next({...seeded, draft: {...draft}})
+      mockEditState$.next({...seeded})
     })
-    expect(result.current).toBe(before)
+    expect(result.current).toBe(seeded)
 
-    const changed: EditStateFor = {...seeded, draft: {...draft, title: 'after'}}
+    const cloned: EditStateFor = {...seeded, draft: {...draft}}
     act(() => {
-      mockEditState$.next(changed)
+      mockEditState$.next(cloned)
     })
 
     await waitFor(() => {
-      expect(result.current).toBe(changed)
+      expect(result.current).toBe(cloned)
     })
   })
 })
