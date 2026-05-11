@@ -164,15 +164,9 @@ export const ReleasePublishAllButton = ({
             <Button
               mode="bleed"
               onClick={closeConfirmDialog}
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-              text="Cancel"
+              text={tCore('common.dialog.cancel-button.text')}
             />
-            <Button
-              mode="bleed"
-              onClick={handleReviewClick}
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-              text="Review changes"
-            />
+            <Button mode="bleed" onClick={handleReviewClick} text={t('action.review')} />
             <Button
               tone="positive"
               loading={publishBundleStatus === 'publishing'}

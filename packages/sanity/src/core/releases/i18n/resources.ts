@@ -542,6 +542,43 @@ const releasesLocaleStrings = {
 
   /** Toast error message when bulk scheduling of active drafts fails */
   'toast.confirm-active-scheduled-drafts.error': 'Failed to schedule drafts: {{error}}',
+
+  /** Action text for generating an AI-assisted release title */
+  'action.generate-title': 'Generate title',
+  /** Action text for generating an AI-assisted release summary */
+  'action.generate-summary': 'Generate summary',
+
+  /** Label for the AI actions menu button (tooltip and aria-label) */
+  'agent-actions.button.label': 'AI actions',
+
+  /** Toast error title when AI title generation fails */
+  'toast.generate-title.error': 'Failed to generate release title',
+  /** Toast error title when AI summary generation fails */
+  'toast.generate-summary.error': 'Failed to generate release description',
+  /** Toast error title when AI review generation fails */
+  'toast.review.error': 'Failed to generate release review',
+
+  /** Stage label shown while the AI review is reading release documents */
+  'review-dialog.stage.reading': 'Reading release documents',
+  /** Stage label shown while the AI review is understanding changes */
+  'review-dialog.stage.understanding': 'Understanding changes',
+  /** Stage label shown while the AI review is being structured */
+  'review-dialog.stage.structuring': 'Structuring review',
+
+  /** Error message shown in the review dialog when generation fails */
+  'review-dialog.error': 'Failed to generate review: {{error}}',
+
+  /** Action text to open the document being reviewed */
+  'review-dialog.action.open-document': 'Open document',
+  /** Action text to compare changes for the document being reviewed */
+  'review-dialog.action.compare-changes': 'Compare changes',
+
+  /** Verdict banner label for a low-risk release */
+  'review-dialog.verdict.risk.low': 'Low risk',
+  /** Verdict banner label for a medium-risk release */
+  'review-dialog.verdict.risk.medium': 'Medium risk',
+  /** Verdict banner label for a high-risk release */
+  'review-dialog.verdict.risk.high': 'High risk',
 }
 
 /**

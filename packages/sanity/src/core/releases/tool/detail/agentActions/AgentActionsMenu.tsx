@@ -4,6 +4,8 @@ import {Menu, useToast, type ToastContextValue} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 
 import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
+import {releasesLocaleNamespace} from '../../../i18n'
 import {ReleaseReviewDialog} from './ReleaseReviewDialog'
 import {useGenerateReleaseReview} from './useGenerateReleaseReview'
 import {useGenerateReleaseSummary} from './useGenerateReleaseSummary'
@@ -25,6 +27,7 @@ function useErrorToast(error: Error | null, title: string, toast: ToastContextVa
 }
 
 export function AgentActionsMenu({release}: AgentActionsMenuProps): React.JSX.Element {
+  const {t} = useTranslation(releasesLocaleNamespace)
   const summaryAction = useGenerateReleaseSummary(release)
   const titleAction = useGenerateReleaseTitle(release)
   const reviewAction = useGenerateReleaseReview(release)
@@ -39,9 +42,11 @@ export function AgentActionsMenu({release}: AgentActionsMenuProps): React.JSX.El
     setIsReviewOpen(true)
   }, [reviewAction])
 
-  useErrorToast(summaryAction.error, 'Failed to generate release description', toast)
-  useErrorToast(titleAction.error, 'Failed to generate release title', toast)
-  useErrorToast(reviewAction.error, 'Failed to generate release review', toast)
+  const buttonLabel = t('agent-actions.button.label')
+
+  useErrorToast(summaryAction.error, t('toast.generate-summary.error'), toast)
+  useErrorToast(titleAction.error, t('toast.generate-title.error'), toast)
+  useErrorToast(reviewAction.error, t('toast.review.error'), toast)
 
   return (
     <>
@@ -54,8 +59,8 @@ export function AgentActionsMenu({release}: AgentActionsMenuProps): React.JSX.El
             mode="bleed"
             loading={isAnyActionRunning}
             disabled={isAnyActionRunning}
-            tooltipProps={{content: 'AI actions'}}
-            aria-label="AI actions"
+            tooltipProps={{content: buttonLabel}}
+            aria-label={buttonLabel}
           />
         }
         menu={
@@ -63,19 +68,19 @@ export function AgentActionsMenu({release}: AgentActionsMenuProps): React.JSX.El
             <MenuItem
               icon={EditIcon}
               onClick={titleAction.generate}
-              text="Generate title"
+              text={t('action.generate-title')}
               data-testid="agent-action-generate-title"
             />
             <MenuItem
               icon={TextIcon}
               onClick={summaryAction.generate}
-              text="Generate summary"
+              text={t('action.generate-summary')}
               data-testid="agent-action-generate-summary"
             />
             <MenuItem
               icon={EyeOpenIcon}
               onClick={handleReviewClick}
-              text="Review changes"
+              text={t('action.review')}
               data-testid="agent-action-review-changes"
             />
           </Menu>

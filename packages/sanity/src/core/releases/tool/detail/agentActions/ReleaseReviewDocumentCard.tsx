@@ -105,8 +105,7 @@ export function ReleaseReviewDocumentCard({
                 href={openDocumentHref}
                 icon={LaunchIcon}
                 mode="bleed"
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                text="Open document"
+                text={t('review-dialog.action.open-document')}
               />
             )}
             {compareChangesHref && (
@@ -115,8 +114,7 @@ export function ReleaseReviewDocumentCard({
                 href={compareChangesHref}
                 icon={TransferIcon}
                 mode="bleed"
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                text="Compare changes"
+                text={t('review-dialog.action.compare-changes')}
               />
             )}
           </Flex>

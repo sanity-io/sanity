@@ -1,13 +1,70 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
-import {useMemo} from 'react'
+import {Card, Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {useEffect, useMemo, useState} from 'react'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../../../i18n'
+import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {useBundleDocuments} from '../useBundleDocuments'
 import {ReleaseReviewDocumentCard} from './ReleaseReviewDocumentCard'
 import {ReleaseReviewVerdict} from './ReleaseReviewVerdict'
 import {type UseGenerateReleaseReviewResult} from './useGenerateReleaseReview'
+
+const STAGE_LABEL_KEYS = [
+  'review-dialog.stage.reading',
+  'review-dialog.stage.understanding',
+  'review-dialog.stage.structuring',
+] as const
+
+const STAGE_INTERVAL_MS = 1800
+
+function GeneratingStageLabel(): React.JSX.Element {
+  const {t} = useTranslation(releasesLocaleNamespace)
+  const [stageIndex, setStageIndex] = useState(0)
+  useEffect(() => {
+    const lastIndex = STAGE_LABEL_KEYS.length - 1
+    const timer = setInterval(() => {
+      setStageIndex((current) => (current < lastIndex ? current + 1 : current))
+    }, STAGE_INTERVAL_MS)
+    return () => {
+      clearInterval(timer)
+    }
+  }, [])
+  return (
+    <Text align="center" size={2} weight="semibold">
+      {t(STAGE_LABEL_KEYS[stageIndex])}…
+    </Text>
+  )
+}
+
+function VerdictSkeleton(): React.JSX.Element {
+  return (
+    <Card padding={4} radius={3}>
+      <Stack space={3}>
+        <TextSkeleton animated radius={1} style={{width: 96}} />
+        <TextSkeleton animated radius={1} style={{width: '80%'}} />
+      </Stack>
+    </Card>
+  )
+}
+
+function DocumentCardSkeleton(): React.JSX.Element {
+  return (
+    <Card padding={3} radius={3} border>
+      <Stack space={3}>
+        <Flex align="center" gap={3}>
+          <Skeleton animated radius={2} style={{width: 33, height: 33, flex: 'none'}} />
+          <Stack flex={1} space={2}>
+            <TextSkeleton animated radius={1} style={{width: '60%'}} />
+            <TextSkeleton animated radius={1} style={{width: '40%'}} />
+          </Stack>
+        </Flex>
+        <TextSkeleton animated radius={1} style={{width: '90%'}} />
+      </Stack>
+    </Card>
+  )
+}
 
 interface ReleaseReviewDialogProps {
   release: ReleaseDocument
@@ -26,6 +83,7 @@ export function ReleaseReviewDialog({
   onPublish,
   isPublishing = false,
 }: ReleaseReviewDialogProps): React.JSX.Element {
+  const {t} = useTranslation(releasesLocaleNamespace)
   const releaseName = getReleaseIdFromReleaseDocumentId(release._id)
   const {result, isGenerating, error} = reviewAction
   const {results: documentsInRelease} = useBundleDocuments(releaseName)
@@ -38,8 +96,7 @@ export function ReleaseReviewDialog({
   return (
     <Dialog
       id="release-ai-review"
-      // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-      header="Review changes"
+      header={t('action.review')}
       onClose={onClose}
       width={2}
       data-testid="release-ai-review-dialog"
@@ -47,8 +104,7 @@ export function ReleaseReviewDialog({
         onPublish
           ? {
               confirmButton: {
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                text: 'Run release',
+                text: t('action.publish-all-documents'),
                 tone: 'positive',
                 onClick: onPublish,
                 loading: isPublishing,
@@ -59,19 +115,19 @@ export function ReleaseReviewDialog({
       }
     >
       {isGenerating && !result && (
-        <Flex align="center" gap={3} justify="center" padding={4}>
-          <Spinner muted />
-          {/* eslint-disable-next-line i18next/no-literal-string */}
-          <Text muted size={1}>
-            Generating review…
-          </Text>
-        </Flex>
+        <Stack space={4}>
+          <GeneratingStageLabel />
+          <VerdictSkeleton />
+          <Stack space={2}>
+            <DocumentCardSkeleton />
+            <DocumentCardSkeleton />
+          </Stack>
+        </Stack>
       )}
 
       {error && !isGenerating && (
         <Card tone="critical" padding={3} radius={2}>
-          {/* eslint-disable-next-line i18next/no-literal-string */}
-          <Text size={1}>Failed to generate review: {error.message}</Text>
+          <Text size={1}>{t('review-dialog.error', {error: error.message})}</Text>
         </Card>
       )}
 
