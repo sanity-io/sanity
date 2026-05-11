@@ -119,4 +119,132 @@ describe('useEditState', () => {
       expect(result.current).toBe(cloned)
     })
   })
+
+  it('passes through when the `published` reference changes', async () => {
+    const {result} = renderHook(() => useEditState('doc-1', 'book'))
+
+    const next: EditStateFor = {
+      ...initialState,
+      ready: true,
+      published: {
+        _id: 'doc-1',
+        _type: 'book',
+        _rev: 'r1',
+        _createdAt: '2024-01-01T00:00:00Z',
+        _updatedAt: '2024-01-01T00:00:00Z',
+      },
+    }
+
+    act(() => {
+      mockEditState$.next(next)
+    })
+
+    await waitFor(() => {
+      expect(result.current).toBe(next)
+    })
+  })
+
+  it('passes through when the `version` reference changes', async () => {
+    const {result} = renderHook(() => useEditState('doc-1', 'book'))
+
+    const next: EditStateFor = {
+      ...initialState,
+      ready: true,
+      version: {
+        _id: 'versions.rel.doc-1',
+        _type: 'book',
+        _rev: 'r1',
+        _createdAt: '2024-01-01T00:00:00Z',
+        _updatedAt: '2024-01-01T00:00:00Z',
+      },
+    }
+
+    act(() => {
+      mockEditState$.next(next)
+    })
+
+    await waitFor(() => {
+      expect(result.current).toBe(next)
+    })
+  })
+
+  it('passes through when `transactionSyncLock` flips', async () => {
+    const {result} = renderHook(() => useEditState('doc-1', 'book'))
+
+    const locked: EditStateFor = {...initialState, transactionSyncLock: {enabled: true}}
+
+    act(() => {
+      mockEditState$.next(locked)
+    })
+
+    await waitFor(() => {
+      expect(result.current).toBe(locked)
+    })
+  })
+
+  it('keeps the result frozen across multiple structurally-equal emissions', () => {
+    const {result} = renderHook(() => useEditState('doc-1', 'book'))
+    const before = result.current
+
+    act(() => {
+      mockEditState$.next({...initialState})
+      mockEditState$.next({...initialState})
+      mockEditState$.next({...initialState})
+    })
+
+    expect(result.current).toBe(before)
+  })
+
+  // Extracted to keep callback nesting within lint limits and avoid duplication
+  // across the two parameter cases below.
+  function expectInvalidVersionThrows(version: 'published' | 'draft') {
+    // renderHook surfaces the throw but React also logs it; silence the noise.
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(vi.fn())
+    try {
+      expect(() => renderHook(() => useEditState('doc-1', 'book', 'default', version))).toThrow(
+        'Version cannot be published or draft',
+      )
+    } finally {
+      consoleError.mockRestore()
+    }
+  }
+
+  it('throws when version is "published"', () => expectInvalidVersionThrows('published'))
+  it('throws when version is "draft"', () => expectInvalidVersionThrows('draft'))
+
+  it('priority="low" debounces bursts of emissions', () => {
+    vi.useFakeTimers()
+    try {
+      const {result} = renderHook(() => useEditState('doc-1', 'book', 'low'))
+      // take(1) lets the first value through immediately
+      expect(result.current).toBe(initialState)
+
+      const newer: EditStateFor = {
+        ...initialState,
+        ready: true,
+        draft: {
+          _id: 'drafts.doc-1',
+          _type: 'book',
+          _rev: 'r1',
+          _createdAt: '2024-01-01T00:00:00Z',
+          _updatedAt: '2024-01-01T00:00:00Z',
+        },
+      }
+
+      act(() => {
+        mockEditState$.next(newer)
+      })
+
+      // debounce window not yet elapsed
+      expect(result.current).toBe(initialState)
+
+      act(() => {
+        vi.advanceTimersByTime(1100)
+      })
+
+      expect(result.current).toBe(newer)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
 })
