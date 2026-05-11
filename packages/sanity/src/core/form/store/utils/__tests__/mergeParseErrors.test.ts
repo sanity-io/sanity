@@ -56,6 +56,34 @@ describe('mergeParseErrors', () => {
     expect(merged.filter((m) => m.level === 'error')).toHaveLength(1)
   })
 
+  it('preserves the original position of a replaced error marker', () => {
+    const validation: ValidationMarker[] = [
+      {level: 'error', message: 'Required', path: ['title']},
+      {level: 'error', message: 'Required', path: ['publishedAt']},
+      {level: 'error', message: 'Required', path: ['summary']},
+    ]
+
+    const merged = mergeParseErrors(validation, {
+      publishedAt: {message: 'Invalid date'},
+    })
+
+    expect(merged).toEqual([
+      {level: 'error', message: 'Required', path: ['title']},
+      {level: 'error', message: 'Invalid date', path: ['publishedAt']},
+      {level: 'error', message: 'Required', path: ['summary']},
+    ])
+  })
+
+  it('appends new parse errors in sorted key order for stable ordering', () => {
+    const merged = mergeParseErrors([], {
+      zeta: {message: 'Z'},
+      alpha: {message: 'A'},
+      mango: {message: 'M'},
+    })
+
+    expect(merged.map((m) => m.message)).toEqual(['A', 'M', 'Z'])
+  })
+
   it('handles nested paths keyed by toString', () => {
     const validation: ValidationMarker[] = [
       {level: 'error', message: 'Required', path: ['nested', 'publishedAt']},
