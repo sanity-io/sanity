@@ -1,3 +1,4 @@
+import type * as SanityTelemetry from '@sanity/telemetry'
 /* eslint-disable import/first */
 // Regular imports first
 import {render} from '@testing-library/react'
@@ -8,7 +9,14 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import.meta.env.SANITY_STUDIO_DEBUG_TELEMETRY = ''
 
 // Mocks (these get hoisted automatically by vitest)
-vi.mock('@sanity/telemetry')
+vi.mock('@sanity/telemetry', async () => {
+  const actual = await vi.importActual<typeof SanityTelemetry>('@sanity/telemetry')
+  return {
+    ...actual,
+    createBatchedStore: vi.fn(),
+    createSessionId: vi.fn(),
+  }
+})
 vi.mock('@sanity/telemetry/react', () => ({
   TelemetryProvider: ({children}: {children: ReactNode}) => children,
   DeferredTelemetryProvider: ({children}: {children: ReactNode}) => children,
@@ -38,6 +46,7 @@ import {useRouterState} from 'sanity/router'
 import {useClient} from '../../../hooks'
 import {useProjectOrganizationId} from '../../../store/project/useProjectOrganizationId'
 import {WorkspaceFeaturesObserved} from '../../__telemetry__/featureAvailability.telemetry'
+import {StudioLoaded} from '../../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../../workspace'
 import {useWorkspaces} from '../../workspaces'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'
@@ -112,7 +121,6 @@ describe('StudioTelemetryProvider', () => {
       return {
         logger: {
           log: mockLog,
-          updateUserProperties: vi.fn(),
         },
       } as never
     })
@@ -465,5 +473,33 @@ describe('StudioTelemetryProvider', () => {
     expect(mockLog).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
       advancedVersionControlEnabled: false,
     })
+  })
+
+  it('emits StudioLoaded once on mount with studio version and environment metadata', () => {
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    const studioLoadedCalls = mockLog.mock.calls.filter(([event]) => event === StudioLoaded)
+    expect(studioLoadedCalls).toHaveLength(1)
+
+    expect(mockLog).toHaveBeenCalledWith(
+      StudioLoaded,
+      expect.objectContaining({
+        studioVersion: '3.0.0-test',
+        environment: 'development',
+        reactVersion: expect.any(String),
+        userAgent: expect.any(String),
+        screenDensity: expect.any(Number),
+        screenHeight: expect.any(Number),
+        screenWidth: expect.any(Number),
+        screenInnerHeight: expect.any(Number),
+        screenInnerWidth: expect.any(Number),
+      }),
+    )
   })
 })

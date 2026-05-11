@@ -19,6 +19,7 @@ import {useClient} from '../../hooks'
 import {useProjectOrganizationId} from '../../store/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
 import {WorkspaceFeaturesObserved} from '../__telemetry__/featureAvailability.telemetry'
+import {StudioLoaded} from '../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../workspace'
 import {useWorkspaces} from '../workspaces'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
@@ -183,15 +184,19 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   // eslint-disable-next-line react-hooks/refs
   const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
 
-  // Also update user properties on the store (for backwards compatibility)
   useEffect(() => {
     if (!isClient || !contextRef.current) return
-    store.logger.updateUserProperties({
-      userAgent: contextRef.current.userAgent,
-      screen: contextRef.current.screen,
-      reactVersion,
+    const ctx = contextRef.current
+    store.logger.log(StudioLoaded, {
       studioVersion: SANITY_VERSION,
-      environment: contextRef.current.environment,
+      reactVersion,
+      environment: ctx.environment,
+      userAgent: ctx.userAgent,
+      screenDensity: ctx.screen.density,
+      screenHeight: ctx.screen.height,
+      screenWidth: ctx.screen.width,
+      screenInnerHeight: ctx.screen.innerHeight,
+      screenInnerWidth: ctx.screen.innerWidth,
     })
   }, [store.logger])
 
