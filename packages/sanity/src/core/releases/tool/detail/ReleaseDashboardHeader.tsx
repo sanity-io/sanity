@@ -13,6 +13,7 @@ import {useRouter} from 'sanity/router'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
+import {AgentActionsMenu} from './agentActions/AgentActionsMenu'
 import {CopyReleaseActions} from './CopyReleaseActions'
 import {type ReleaseInspector} from './ReleaseDetail'
 
@@ -70,6 +71,7 @@ export function ReleaseDashboardHeader(props: {
       </Flex>
 
       <Flex flex="none" gap={2}>
+        <AgentActionsMenu release={release} />
         <CopyReleaseActions release={release} />
         <Button
           icon={RestoreIcon}

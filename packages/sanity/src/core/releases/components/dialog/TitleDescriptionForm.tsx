@@ -2,11 +2,12 @@ import {type EditableReleaseDocument} from '@sanity/client'
 import {Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
+import {type ChangeEvent, useCallback, useRef} from 'react'
 import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
+import {useAutoResizeTextArea} from './useAutoResizeTextArea'
 
 const MAX_DESCRIPTION_HEIGHT = 200
 
@@ -97,7 +98,6 @@ export function TitleDescriptionForm({
   const isReleaseOpen = getIsReleaseOpen(release)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
-  const [scrollHeight, setScrollHeight] = useState(46)
   const {t} = useTranslation()
 
   const {localData, updateLocalData, createFocusHandler, handleBlur} =
@@ -113,25 +113,8 @@ export function TitleDescriptionForm({
       ),
     })
 
-  useEffect(() => {
-    // make sure that the text area for the description has the right height initially
-    if (descriptionRef.current) {
-      setScrollHeight(descriptionRef.current.scrollHeight)
-    }
-    // Auto-resize title textarea
-    if (titleRef.current) {
-      titleRef.current.style.height = 'auto'
-      titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
-    }
-  }, [])
-
-  useEffect(() => {
-    // Auto-resize title textarea when value changes
-    if (titleRef.current) {
-      titleRef.current.style.height = 'auto'
-      titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
-    }
-  }, [release.metadata.title])
+  useAutoResizeTextArea(titleRef, localData.title)
+  useAutoResizeTextArea(descriptionRef, localData.description, MAX_DESCRIPTION_HEIGHT)
 
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -140,12 +123,6 @@ export function TitleDescriptionForm({
       // save the values to make input snappier while requests happen in the background
       updateLocalData({title})
       onChange({...release, metadata: {...release.metadata, title}})
-
-      // Auto-resize the textarea
-      if (titleRef.current) {
-        titleRef.current.style.height = 'auto'
-        titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
-      }
     },
     [onChange, release, updateLocalData],
   )
@@ -159,20 +136,6 @@ export function TitleDescriptionForm({
       // save the values to make input snappier while requests happen in the background
       updateLocalData({description})
       onChange({...release, metadata: {...release.metadata, description}})
-
-      /** we must reset the height in order to make sure that if the text area shrinks,
-       * that the actual input will change height as well */
-      if (descriptionRef.current) {
-        descriptionRef.current.style.overflow = 'hidden'
-        descriptionRef.current.style.height = 'auto'
-        descriptionRef.current.style.height = `${descriptionRef.current.scrollHeight}px`
-
-        if (parseInt(descriptionRef.current.style.height, 10) > MAX_DESCRIPTION_HEIGHT) {
-          descriptionRef.current.style.overflow = 'auto'
-        }
-      }
-
-      setScrollHeight(event.currentTarget.scrollHeight)
     },
     [isReleaseOpen, onChange, release, updateLocalData],
   )
@@ -201,10 +164,6 @@ export function TitleDescriptionForm({
           onChange={handleDescriptionChange}
           onFocus={createFocusHandler('description')}
           onBlur={handleBlur}
-          style={{
-            height: `${scrollHeight}px`,
-            maxHeight: MAX_DESCRIPTION_HEIGHT,
-          }}
           data-testid="release-form-description"
           disabled={disabled}
           readOnly={!isReleaseOpen}

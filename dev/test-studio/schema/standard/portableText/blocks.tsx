@@ -49,7 +49,7 @@ const CustomObjectBlock = defineField({
       ],
     }),
     defineArrayMember({
-      name: 'object',
+      name: 'customObject',
       type: 'object',
       title: 'Object',
       fields: [{type: 'string', name: 'title', title: 'Title'}],
