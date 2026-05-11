@@ -18,7 +18,7 @@ describe('mergeParseErrors', () => {
     ]
 
     const merged = mergeParseErrors(validation, {
-      publishedAt: {path: ['publishedAt'], message: 'Invalid date'},
+      publishedAt: {message: 'Invalid date'},
     })
 
     expect(merged).toEqual([{level: 'error', message: 'Invalid date', path: ['publishedAt']}])
@@ -31,7 +31,7 @@ describe('mergeParseErrors', () => {
     ]
 
     const merged = mergeParseErrors(validation, {
-      publishedAt: {path: ['publishedAt'], message: 'Invalid date'},
+      publishedAt: {message: 'Invalid date'},
     })
 
     expect(merged).toContainEqual({level: 'error', message: 'Required', path: ['title']})
@@ -47,7 +47,7 @@ describe('mergeParseErrors', () => {
     ]
 
     const merged = mergeParseErrors(validation, {
-      publishedAt: {path: ['publishedAt'], message: 'Invalid date'},
+      publishedAt: {message: 'Invalid date'},
     })
 
     expect(merged).toContainEqual({level: 'warning', message: 'Heads up', path: ['publishedAt']})
@@ -62,7 +62,7 @@ describe('mergeParseErrors', () => {
     ]
 
     const merged = mergeParseErrors(validation, {
-      'nested.publishedAt': {path: ['nested', 'publishedAt'], message: 'Invalid date'},
+      'nested.publishedAt': {message: 'Invalid date'},
     })
 
     expect(merged).toEqual([

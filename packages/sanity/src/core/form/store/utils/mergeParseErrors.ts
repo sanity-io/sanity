@@ -1,5 +1,5 @@
-import {type Path, type ValidationMarker} from '@sanity/types'
-import {toString as pathToString} from '@sanity/util/paths'
+import {type ValidationMarker} from '@sanity/types'
+import {fromString as pathFromString, toString as pathToString} from '@sanity/util/paths'
 
 /**
  * A parse error reported by a primitive input that holds malformed text it
@@ -8,7 +8,6 @@ import {toString as pathToString} from '@sanity/util/paths'
  * @internal
  */
 export interface ParseError {
-  path: Path
   message: string
 }
 
@@ -41,7 +40,7 @@ export function mergeParseErrors(
   const parseErrorMarkers: ValidationMarker[] = keys.map((key) => ({
     level: 'error',
     message: parseErrors[key].message,
-    path: parseErrors[key].path,
+    path: pathFromString(key),
   }))
 
   return [...filtered, ...parseErrorMarkers]

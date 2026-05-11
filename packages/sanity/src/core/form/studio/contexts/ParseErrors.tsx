@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {toString as pathToString} from '@sanity/util/paths'
-import {type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {type ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {ParseErrorsContext, type SetParseError} from 'sanity/_singletons'
 
 import {type ParseError} from '../../store/utils/mergeParseErrors'
@@ -22,8 +22,9 @@ export function ParseErrorsProvider(props: {children: ReactNode}) {
     setErrors((prev) => {
       if (value === null) {
         if (!(pathKey in prev)) return prev
-        const {[pathKey]: _removed, ...rest} = prev
-        return rest
+        const next = {...prev}
+        delete next[pathKey]
+        return next
       }
       const existing = prev[pathKey]
       if (existing && existing.message === value.message) return prev
@@ -74,18 +75,12 @@ export function useReportParseError(path: Path, error: string | null): void {
   const {set} = useContext(ParseErrorsContext)
   const pathKey = pathToString(path)
 
-  // `path` object identity is unstable between renders. We rely on `pathKey`
-  // as the effect identity and read the latest `path` via a ref so the effect
-  // does not re-run (and thrash state) when only the array reference changes.
-  const pathRef = useRef(path)
-  pathRef.current = path
-
   useEffect(() => {
     if (error === null) {
       set(pathKey, null)
       return undefined
     }
-    set(pathKey, {path: pathRef.current, message: error})
+    set(pathKey, {message: error})
     return () => set(pathKey, null)
   }, [set, pathKey, error])
 }

@@ -1,6 +1,5 @@
 import {type Path} from '@sanity/types'
 import {render} from '@testing-library/react'
-import {act} from 'react'
 import {describe, expect, it} from 'vitest'
 
 import {ParseErrorsProvider, useParseErrors, useReportParseError} from '../ParseErrors'
@@ -10,76 +9,60 @@ function Reporter({path, error}: {path: Path; error: string | null}) {
   return null
 }
 
-function Observer({onSnapshot}: {onSnapshot: (snapshot: Record<string, unknown>) => void}) {
-  onSnapshot(useParseErrors())
-  return null
+function ErrorDump() {
+  const errors = useParseErrors()
+  return <div data-testid="dump">{JSON.stringify(errors)}</div>
+}
+
+function readDump(container: HTMLElement): Record<string, {message: string}> {
+  return JSON.parse(container.querySelector('[data-testid="dump"]')!.textContent || '{}')
 }
 
 describe('useReportParseError', () => {
   it('registers a parse error in the provider state', () => {
-    let latest: Record<string, unknown> = {}
-    render(
+    const {container} = render(
       <ParseErrorsProvider>
         <Reporter path={['publishedAt']} error="Invalid date" />
-        <Observer
-          onSnapshot={(s) => {
-            latest = s
-          }}
-        />
+        <ErrorDump />
       </ParseErrorsProvider>,
     )
 
-    expect(latest).toEqual({
-      publishedAt: {path: ['publishedAt'], message: 'Invalid date'},
-    })
+    expect(readDump(container)).toEqual({publishedAt: {message: 'Invalid date'}})
   })
 
   it('clears the entry when error transitions to null', () => {
-    let latest: Record<string, unknown> = {}
-    const onSnapshot = (s: Record<string, unknown>) => {
-      latest = s
-    }
-
-    const {rerender} = render(
+    const {container, rerender} = render(
       <ParseErrorsProvider>
         <Reporter path={['publishedAt']} error="Invalid date" />
-        <Observer onSnapshot={onSnapshot} />
+        <ErrorDump />
       </ParseErrorsProvider>,
     )
-    expect(latest).toHaveProperty('publishedAt')
+    expect(readDump(container)).toHaveProperty('publishedAt')
 
     rerender(
       <ParseErrorsProvider>
         <Reporter path={['publishedAt']} error={null} />
-        <Observer onSnapshot={onSnapshot} />
+        <ErrorDump />
       </ParseErrorsProvider>,
     )
-    expect(latest).not.toHaveProperty('publishedAt')
+    expect(readDump(container)).not.toHaveProperty('publishedAt')
   })
 
   it('clears the entry on unmount', () => {
-    let latest: Record<string, unknown> = {}
-    const Reader = () => {
-      latest = useParseErrors()
-      return null
-    }
-
-    const {rerender} = render(
+    const {container, rerender} = render(
       <ParseErrorsProvider>
         <Reporter path={['publishedAt']} error="Invalid date" />
-        <Reader />
+        <ErrorDump />
       </ParseErrorsProvider>,
     )
-    expect(latest).toHaveProperty('publishedAt')
+    expect(readDump(container)).toHaveProperty('publishedAt')
 
-    act(() => {
-      rerender(
-        <ParseErrorsProvider>
-          <Reader />
-        </ParseErrorsProvider>,
-      )
-    })
-    expect(latest).not.toHaveProperty('publishedAt')
+    rerender(
+      <ParseErrorsProvider>
+        <ErrorDump />
+      </ParseErrorsProvider>,
+    )
+    expect(readDump(container)).not.toHaveProperty('publishedAt')
   })
 
   it('is a no-op outside a ParseErrorsProvider', () => {
