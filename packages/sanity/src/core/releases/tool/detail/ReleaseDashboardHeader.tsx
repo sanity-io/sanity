@@ -12,6 +12,7 @@ import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
+import {isActiveRelease} from '../../util/util'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {AgentActionsMenu} from './agentActions/AgentActionsMenu'
 import {CopyReleaseActions} from './CopyReleaseActions'
@@ -27,14 +28,13 @@ export function ReleaseDashboardHeader(props: {
   const {t: tCore} = useTranslation()
   const title = release.metadata.title || tCore('release.placeholder-untitled-release')
   const router = useRouter()
+  const isActive = isActiveRelease(release)
 
   const handleNavigateToReleasesList = useCallback(() => {
-    const isReleaseOpen = release.state !== 'archived' && release.state !== 'published'
-
     router.navigate({
-      _searchParams: isReleaseOpen ? undefined : [[GROUP_SEARCH_PARAM_KEY, 'archived']],
+      _searchParams: isActive ? undefined : [[GROUP_SEARCH_PARAM_KEY, 'archived']],
     })
-  }, [release.state, router])
+  }, [isActive, router])
 
   const handleActivityClick = useCallback(() => {
     setInspector((prev) => (prev === 'activity' ? undefined : 'activity'))
@@ -71,7 +71,7 @@ export function ReleaseDashboardHeader(props: {
       </Flex>
 
       <Flex flex="none" gap={2}>
-        <AgentActionsMenu release={release} />
+        {isActive && <AgentActionsMenu release={release} />}
         <CopyReleaseActions release={release} />
         <Button
           icon={RestoreIcon}

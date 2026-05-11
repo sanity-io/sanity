@@ -37,8 +37,8 @@ export function useReleaseAgentTextAction(
     setIsGenerating(true)
     setError(null)
 
-    const generated = await client.agent.action
-      .prompt({
+    const run = async () => {
+      const response = await client.agent.action.prompt({
         instruction,
         instructionParams: {
           changes: {
@@ -49,19 +49,18 @@ export function useReleaseAgentTextAction(
           },
         },
       })
-      .then((response) => (typeof response === 'string' ? response : ''))
-      .catch((caughtError: unknown) => {
-        setError(toError(caughtError))
-        return ''
-      })
-
-    if (generated.length > 0) {
+      const generated = typeof response === 'string' ? response : ''
+      if (generated.length === 0) return
       await updateRelease({
         ...release,
         metadata: mergeIntoMetadata(release.metadata, generated),
-      }).catch((caughtError: unknown) => {
-        setError(toError(caughtError))
       })
+    }
+
+    try {
+      await run()
+    } catch (caughtError) {
+      setError(toError(caughtError))
     }
 
     setIsGenerating(false)

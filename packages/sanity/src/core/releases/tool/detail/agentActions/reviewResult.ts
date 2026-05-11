@@ -11,10 +11,8 @@ export interface ReviewResult {
   }>
 }
 
-const VALID_RISKS: readonly string[] = ['low', 'medium', 'high']
-
 function isReviewRisk(value: unknown): value is ReviewRisk {
-  return typeof value === 'string' && VALID_RISKS.includes(value)
+  return value === 'low' || value === 'medium' || value === 'high'
 }
 
 function isNonEmptyString(value: unknown): value is string {

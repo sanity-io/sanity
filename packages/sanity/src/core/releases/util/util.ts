@@ -4,7 +4,7 @@ import {type TargetPerspective} from '../../perspective/types'
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
 import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {type CardinalityView, type Mode} from '../tool/overview/queryParamUtils'
-import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
+import {ARCHIVED_RELEASE_STATES, DEFAULT_RELEASE_TYPE, LATEST} from './const'
 import {createReleaseId} from './createReleaseId'
 
 /** @internal */
@@ -94,6 +94,16 @@ export const getReleaseDefaults: () => EditableReleaseDocument = () => ({
  * @internal */
 export function isNotArchivedRelease(release: ReleaseDocument): release is NotArchivedRelease {
   return release.state !== 'archived'
+}
+
+/**
+ * Check if the release is active — i.e. its state is not one of the archived states. These are
+ * the releases shown under the Active tab on the releases overview page (matching the
+ * filter used by `useActiveReleases`).
+ *
+ * @internal */
+export function isActiveRelease(release: ReleaseDocument): boolean {
+  return !ARCHIVED_RELEASE_STATES.includes(release.state)
 }
 
 /**
