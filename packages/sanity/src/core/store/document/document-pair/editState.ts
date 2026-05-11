@@ -57,7 +57,11 @@ export const editState = memoize(
     ctx: {
       client: SanityClient
       schema: Schema
-      serverActionsEnabled: Observable<boolean>
+      /**
+       * @deprecated Does nothing. Preserved to avoid breaking changes.
+       * Will be removed in the next major version.
+       */
+      serverActionsEnabled?: Observable<boolean>
       extraOptions?: DocumentStoreExtraOptions
     },
     idPair: IdPair,
@@ -66,13 +70,7 @@ export const editState = memoize(
     const liveEditSchemaType = isLiveEditEnabled(ctx.schema, typeName)
     const liveEdit = typeof idPair.versionId !== 'undefined' || liveEditSchemaType
 
-    return snapshotPair(
-      ctx.client,
-      idPair,
-      typeName,
-      ctx.serverActionsEnabled,
-      ctx.extraOptions,
-    ).pipe(
+    return snapshotPair(ctx.client, idPair, typeName, undefined, ctx.extraOptions).pipe(
       switchMap((versions) =>
         combineLatest([
           versions.draft.snapshots$,
@@ -96,6 +94,13 @@ export const editState = memoize(
           })
         },
       ),
+      // NOTE: `useEditState` deduplicates emissions downstream using shallow equality on
+      // `draft`/`published`/`version` as well as `ready` and `transactionSyncLock`.
+      // The map below preserves the snapshot identities and only allocates a new outer
+      // wrapper while deriving those additional fields.
+      //
+      // A regression that clones any of these references — example. `draft: {...draftSnapshot}` — would silently
+      // turn that dedupe into a no-op. We have regression tests for this.
       map(
         ({
           value: [draftSnapshot, publishedSnapshot, transactionSyncLock, versionSnapshot],

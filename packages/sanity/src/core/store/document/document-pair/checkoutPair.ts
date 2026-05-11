@@ -16,7 +16,6 @@ import {
   share,
   startWith,
   switchMap,
-  take,
   takeUntil,
   tap,
   withLatestFrom,
@@ -225,13 +224,8 @@ function submitCommitRequest(
   client: SanityClient,
   idPair: IdPair,
   request: CommitRequest,
-  serverActionsEnabled: boolean,
 ): Observable<MultipleActionResult | MutationResult> {
-  return from(
-    serverActionsEnabled
-      ? commitActions(client, idPair, request.mutation.params)
-      : commitMutations(client, idPair, request.mutation.params),
-  ).pipe(
+  return from(commitActions(client, idPair, request.mutation.params)).pipe(
     tap({
       error: (error) => {
         const isBadRequest =
@@ -279,7 +273,11 @@ type LatencyTrackingState = {
 export function checkoutPair(
   client: SanityClient,
   idPair: IdPair,
-  serverActionsEnabled: Observable<boolean>,
+  /**
+   * @deprecated does nothing Preserved to avoid breaking changes
+   * Will be removed in the next major version.
+   */
+  _serverActionsEnabled: Observable<boolean> | undefined,
   options: DocumentStoreExtraOptions = {},
 ): Pair {
   const {publishedId, draftId, versionId} = idPair
@@ -329,24 +327,19 @@ export function checkoutPair(
   ).pipe(share())
 
   const commits$ = commitRequests$.pipe(
-    mergeMap((commitRequest) =>
-      serverActionsEnabled.pipe(
-        take(1),
-        mergeMap((canUseServerActions) => {
-          const apiRequestSentAt = Date.now()
-          return submitCommitRequest(client, idPair, commitRequest, canUseServerActions).pipe(
-            map((result) => ({
-              ...result,
-              _perfTimings: {
-                firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
-                apiRequestSentAt,
-                apiResponseReceivedAt: Date.now(),
-              },
-            })),
-          )
-        }),
-      ),
-    ),
+    mergeMap((commitRequest) => {
+      const apiRequestSentAt = Date.now()
+      return submitCommitRequest(client, idPair, commitRequest).pipe(
+        map((result) => ({
+          ...result,
+          _perfTimings: {
+            firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
+            apiRequestSentAt,
+            apiResponseReceivedAt: Date.now(),
+          },
+        })),
+      )
+    }),
     share(),
   )
 

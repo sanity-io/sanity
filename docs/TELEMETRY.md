@@ -154,13 +154,17 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
         studioVersion: "5.18.0",
         reactVersion: "19.2.3",
         environment: "production",
+        connection: { effectiveType: "4g", downlink: 10, rtt: 50, saveData: false },
 
         // Dynamic (updated on navigation)
         orgId: "org_xyz",
         activeTool: "desk",
+        workspaceCount: 2,
         activeWorkspace: "default",
         activeProjectId: "abc123",
         activeDataset: "production",
+        pluginCount: 12,
+        schemaTypeCount: 84,
       }
     }
   ]
@@ -168,6 +172,7 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
 ```
 
 The context is stored in a `useRef` so that dynamic values (workspace, tool, org) can update without re-creating the batched store.
+Workspace, plugin, and schema type counts are derived from the already-resolved Studio configuration. Connection quality uses the browser Network Information API when available. None of these fields add Sanity API requests.
 
 ## Consent
 
@@ -273,6 +278,16 @@ Tracked automatically via `web-vitals/attribution` library:
 | `Portable Text Input Expanded/Collapsed`     | PTE editor state   |
 | `Portable Text Invalid Value Ignore/Resolve` | PTE error handling |
 | `Created Draft`                              | New draft creation |
+
+### Divergences
+
+A divergence session starts on the first `Inspected Divergence` event for a document and lasts while the document stays open with unresolved divergences. Each studio pane, browser tab, and device tracks its own session, so one user can hold parallel sessions for the same document. Both `Inspected Divergence` and `Acted On Divergence` carry the session id, so BigQuery can join the resolution funnel per session.
+
+| Event                         | When                                                                                           |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- |
+| `Inspected Divergence`        | User views a divergence in a single node                                                       |
+| `Acted On Divergence`         | User resolves a divergence. Payload carries `action: 'take-upstream-value' \| 'mark-resolved'` |
+| `Workspace Features Observed` | Fires once per workspace mount with the `advancedVersionControl.enabled` flag                  |
 
 ### Other
 

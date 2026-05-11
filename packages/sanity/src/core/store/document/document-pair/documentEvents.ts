@@ -16,10 +16,9 @@ export const documentEvents = memoize(
     client: SanityClient,
     idPair: IdPair,
     typeName: string,
-    serverActionsEnabled: Observable<boolean>,
     pairListenerOptions?: DocumentStoreExtraOptions,
   ): Observable<DocumentVersionEvent> => {
-    return memoizedPair(client, idPair, typeName, serverActionsEnabled, pairListenerOptions).pipe(
+    return memoizedPair(client, idPair, typeName, pairListenerOptions).pipe(
       switchMap(({draft, published, version}) =>
         merge(draft.events, published.events, version?.events ?? EMPTY),
       ),

@@ -75,4 +75,45 @@ describe('toOrderClause', () => {
       )
     })
   })
+
+  describe('projectionIndex addressing (orderings)', () => {
+    it('addresses an entry via orderings[projectionIndex]', () => {
+      expect(
+        toOrderClause([{field: 'translations.se', direction: 'asc', projectionIndex: 0}]),
+      ).toBe('orderings[0] asc')
+    })
+
+    it('respects projectionIndex=0 (does not fall back to bare field)', () => {
+      // `projectionIndex` is a numeric index; 0 must be treated as a
+      // real value, not falsy.
+      expect(toOrderClause([{field: 'author.name', direction: 'desc', projectionIndex: 0}])).toBe(
+        'orderings[0] desc',
+      )
+    })
+
+    it('wraps mapWith around the projected target', () => {
+      expect(
+        toOrderClause([
+          {field: 'translations.se', direction: 'asc', projectionIndex: 1, mapWith: 'lower'},
+        ]),
+      ).toBe('lower(orderings[1]) asc')
+    })
+
+    it('uses the projected target for defined() in null-sort overrides', () => {
+      expect(
+        toOrderClause([
+          {field: 'translations.se', direction: 'desc', projectionIndex: 2, nulls: 'last'},
+        ]),
+      ).toBe('select(defined(orderings[2]) => 0, 1),orderings[2] desc')
+    })
+
+    it('handles a mix of projected and bare entries in one clause', () => {
+      expect(
+        toOrderClause([
+          {field: 'translations.se', direction: 'asc', projectionIndex: 0, mapWith: 'lower'},
+          {field: '_updatedAt', direction: 'desc'},
+        ]),
+      ).toBe('lower(orderings[0]) asc,_updatedAt desc')
+    })
+  })
 })
