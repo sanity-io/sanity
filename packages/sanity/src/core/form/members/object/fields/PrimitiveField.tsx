@@ -128,7 +128,7 @@ export function PrimitiveField(props: {
   const validation = useMemo(() => {
     if (!parseError) return member.field.validation
     const nonErrors = member.field.validation.filter((item) => item.level !== 'error')
-    return [...nonErrors, {level: 'error' as const, message: parseError, path: member.field.path}]
+    return [{level: 'error' as const, message: parseError, path: member.field.path}, ...nonErrors]
   }, [member.field.validation, member.field.path, parseError])
 
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
