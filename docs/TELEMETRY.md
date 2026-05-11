@@ -274,6 +274,16 @@ Tracked automatically via `web-vitals/attribution` library:
 | `Portable Text Invalid Value Ignore/Resolve` | PTE error handling |
 | `Created Draft`                              | New draft creation |
 
+### Divergences
+
+A divergence session starts on the first `Inspected Divergence` event for a document and lasts while the document stays open with unresolved divergences. Each studio pane, browser tab, and device tracks its own session, so one user can hold parallel sessions for the same document. Both `Inspected Divergence` and `Acted On Divergence` carry the session id, so BigQuery can join the resolution funnel per session.
+
+| Event                         | When                                                                                           |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- |
+| `Inspected Divergence`        | User views a divergence in a single node                                                       |
+| `Acted On Divergence`         | User resolves a divergence. Payload carries `action: 'take-upstream-value' \| 'mark-resolved'` |
+| `Workspace Features Observed` | Fires once per workspace mount with the `advancedVersionControl.enabled` flag                  |
+
 ### Other
 
 - **Copy/Paste** - Document ID and URL copied
