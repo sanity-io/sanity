@@ -1,9 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {EditIcon, SearchIcon, SparklesIcon, TextIcon} from '@sanity/icons'
-import {Menu, useToast} from '@sanity/ui'
-import {useEffect} from 'react'
+import {EditIcon, EyeOpenIcon, SparklesIcon, TextIcon} from '@sanity/icons'
+import {Menu, useToast, type ToastContextValue} from '@sanity/ui'
+import {useCallback, useEffect, useState} from 'react'
 
 import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
+import {ReleaseReviewDialog} from './ReleaseReviewDialog'
+import {useGenerateReleaseReview} from './useGenerateReleaseReview'
 import {useGenerateReleaseSummary} from './useGenerateReleaseSummary'
 import {useGenerateReleaseTitle} from './useGenerateReleaseTitle'
 
@@ -11,65 +13,82 @@ interface AgentActionsMenuProps {
   release: ReleaseDocument
 }
 
-const NOOP = () => {}
+function useErrorToast(error: Error | null, title: string, toast: ToastContextValue): void {
+  useEffect(() => {
+    if (error === null) return
+    toast.push({
+      status: 'error',
+      title,
+      description: error.message,
+    })
+  }, [error, title, toast])
+}
 
 export function AgentActionsMenu({release}: AgentActionsMenuProps): React.JSX.Element {
   const summaryAction = useGenerateReleaseSummary(release)
   const titleAction = useGenerateReleaseTitle(release)
+  const reviewAction = useGenerateReleaseReview(release)
   const toast = useToast()
+  const [isReviewOpen, setIsReviewOpen] = useState(false)
 
-  const isAnyActionRunning = summaryAction.isGenerating || titleAction.isGenerating
+  const isAnyActionRunning =
+    summaryAction.isGenerating || titleAction.isGenerating || reviewAction.isGenerating
 
-  useEffect(() => {
-    if (summaryAction.error === null) return
-    toast.push({
-      status: 'error',
-      title: 'Failed to generate release description',
-      description: summaryAction.error.message,
-    })
-  }, [summaryAction.error, toast])
+  const handleReviewClick = useCallback(() => {
+    void reviewAction.generate()
+    setIsReviewOpen(true)
+  }, [reviewAction])
 
-  useEffect(() => {
-    if (titleAction.error === null) return
-    toast.push({
-      status: 'error',
-      title: 'Failed to generate release title',
-      description: titleAction.error.message,
-    })
-  }, [titleAction.error, toast])
+  useErrorToast(summaryAction.error, 'Failed to generate release description', toast)
+  useErrorToast(titleAction.error, 'Failed to generate release title', toast)
+  useErrorToast(reviewAction.error, 'Failed to generate release review', toast)
 
   return (
-    <MenuButton
-      id="release-agent-actions"
-      button={
-        <Button
-          data-testid="release-agent-actions-button"
-          icon={SparklesIcon}
-          mode="bleed"
-          loading={isAnyActionRunning}
-          disabled={isAnyActionRunning}
-          tooltipProps={{content: 'AI actions'}}
-          aria-label="AI actions"
+    <>
+      <MenuButton
+        id="release-agent-actions"
+        button={
+          <Button
+            data-testid="release-agent-actions-button"
+            icon={SparklesIcon}
+            mode="bleed"
+            loading={isAnyActionRunning}
+            disabled={isAnyActionRunning}
+            tooltipProps={{content: 'AI actions'}}
+            aria-label="AI actions"
+          />
+        }
+        menu={
+          <Menu>
+            <MenuItem
+              icon={EditIcon}
+              onClick={titleAction.generate}
+              text="Generate title"
+              data-testid="agent-action-generate-title"
+            />
+            <MenuItem
+              icon={TextIcon}
+              onClick={summaryAction.generate}
+              text="Generate summary"
+              data-testid="agent-action-generate-summary"
+            />
+            <MenuItem
+              icon={EyeOpenIcon}
+              onClick={handleReviewClick}
+              text="Review changes"
+              data-testid="agent-action-review-changes"
+            />
+          </Menu>
+        }
+        popover={{placement: 'bottom-end'}}
+      />
+      {isReviewOpen && (
+        <ReleaseReviewDialog
+          release={release}
+          reviewAction={reviewAction}
+          onClose={() => setIsReviewOpen(false)}
         />
-      }
-      menu={
-        <Menu>
-          <MenuItem
-            icon={TextIcon}
-            onClick={summaryAction.generate}
-            text="Generate summary"
-            data-testid="agent-action-generate-summary"
-          />
-          <MenuItem icon={SearchIcon} onClick={NOOP} text="Review changes" disabled />
-          <MenuItem
-            icon={EditIcon}
-            onClick={titleAction.generate}
-            text="Generate title"
-            data-testid="agent-action-generate-title"
-          />
-        </Menu>
-      }
-      popover={{placement: 'bottom-end'}}
-    />
+      )}
+    </>
   )
 }

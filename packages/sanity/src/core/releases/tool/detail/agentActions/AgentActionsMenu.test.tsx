@@ -26,6 +26,14 @@ vi.mock('../../../store/useReleaseOperations', () => ({
   }),
 }))
 
+vi.mock('../useBundleDocuments', () => ({
+  useBundleDocuments: () => ({
+    loading: false,
+    results: [],
+    error: null,
+  }),
+}))
+
 const baseRelease: ReleaseDocument = {
   _id: '_.releases.release1',
   _type: 'system.release',
@@ -112,5 +120,28 @@ describe('AgentActionsMenu', () => {
     )
 
     expect(promptMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('clicking "Review changes" opens the dialog and renders the verdict', async () => {
+    promptMock.mockResolvedValue({
+      verdict: {risk: 'low', summary: 'Mostly additive content changes.'},
+      documents: [],
+    })
+
+    await renderMenu()
+
+    await userEvent.click(screen.getByTestId('release-agent-actions-button'))
+    const reviewItem = await screen.findByTestId('agent-action-review-changes')
+    await userEvent.click(reviewItem)
+
+    // Dialog opens and the verdict's summary text renders (the dialog calls generate on mount)
+    await waitFor(() => {
+      expect(screen.getByText('Mostly additive content changes.')).toBeInTheDocument()
+    })
+
+    // Prompt was called with format: 'json' and the instruction mentions JSON (required by SDK)
+    const promptArgs = promptMock.mock.calls[0][0]
+    expect(promptArgs.format).toBe('json')
+    expect(promptArgs.instruction).toMatch(/JSON/)
   })
 })

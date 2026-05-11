@@ -1,10 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Text, useToast} from '@sanity/ui'
+// eslint-disable-next-line no-restricted-imports
+import {Box, Dialog as UIDialog, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
+import {Button, MenuItem, type TooltipProps} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
@@ -15,6 +16,8 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {ReleaseReviewDialog} from '../../detail/agentActions/ReleaseReviewDialog'
+import {useGenerateReleaseReview} from '../../detail/agentActions/useGenerateReleaseReview'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleasePublishAllButtonProps {
@@ -50,6 +53,8 @@ export const ReleasePublishAllButton = ({
   const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
     'idle',
   )
+  const [isReviewOpen, setIsReviewOpen] = useState(false)
+  const reviewAction = useGenerateReleaseReview(release)
 
   const [publishPermission, setPublishPermission] = useState<boolean>(false)
 
@@ -122,30 +127,64 @@ export const ReleasePublishAllButton = ({
     onConfirmDialogClose,
   ])
 
+  const closeConfirmDialog = useCallback(() => {
+    onConfirmDialogClose?.()
+    setPublishBundleStatus('idle')
+  }, [onConfirmDialogClose])
+
+  const handleReviewClick = useCallback(() => {
+    void reviewAction.generate()
+    setIsReviewOpen(true)
+  }, [reviewAction])
+
+  const handlePublishFromReview = useCallback(() => {
+    setIsReviewOpen(false)
+    void handleConfirmPublishAll()
+  }, [handleConfirmPublishAll])
+
+  const closeReview = useCallback(() => {
+    setIsReviewOpen(false)
+    closeConfirmDialog()
+  }, [closeConfirmDialog])
+
+  // Bypasses the ui-components Dialog wrapper (max 2 footer buttons) so we can
+  // render Cancel + Review changes + Run release side by side.
   const confirmPublishDialog = useMemo(() => {
     if (publishBundleStatus === 'idle') return null
 
     return (
-      <Dialog
+      <UIDialog
         id="confirm-publish-dialog"
         data-testid="confirm-publish-dialog"
         header={t('publish-dialog.confirm-publish.title')}
-        onClose={() => {
-          onConfirmDialogClose?.()
-          setPublishBundleStatus('idle')
-        }}
-        footer={{
-          confirmButton: {
-            text: t('action.publish-all-documents'),
-            tone: 'positive',
-            onClick: handleConfirmPublishAll,
-            loading: publishBundleStatus === 'publishing',
-            disabled: publishBundleStatus === 'publishing',
-          },
-        }}
+        onClose={closeConfirmDialog}
+        width={1}
+        footer={
+          <Flex gap={2} justify="flex-end" padding={3}>
+            <Button
+              mode="bleed"
+              onClick={closeConfirmDialog}
+              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+              text="Cancel"
+            />
+            <Button
+              mode="bleed"
+              onClick={handleReviewClick}
+              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+              text="Review changes"
+            />
+            <Button
+              tone="positive"
+              loading={publishBundleStatus === 'publishing'}
+              disabled={publishBundleStatus === 'publishing'}
+              onClick={handleConfirmPublishAll}
+              text={t('action.publish-all-documents')}
+            />
+          </Flex>
+        }
       >
-        <Text muted size={1}>
-          {
+        <Box padding={4}>
+          <Text muted size={1}>
             <Translate
               t={t}
               i18nKey="publish-dialog.confirm-publish-description"
@@ -155,18 +194,19 @@ export const ReleasePublishAllButton = ({
                 count: documents.length,
               }}
             />
-          }
-        </Text>
-      </Dialog>
+          </Text>
+        </Box>
+      </UIDialog>
     )
   }, [
     publishBundleStatus,
     t,
     handleConfirmPublishAll,
+    handleReviewClick,
+    closeConfirmDialog,
     release.metadata.title,
     tCore,
     documents.length,
-    onConfirmDialogClose,
   ])
 
   const publishTooltipContent = useMemo(() => {
@@ -255,6 +295,15 @@ export const ReleasePublishAllButton = ({
         />
       )}
       {confirmPublishDialog}
+      {isReviewOpen && (
+        <ReleaseReviewDialog
+          release={release}
+          reviewAction={reviewAction}
+          onClose={closeReview}
+          onPublish={handlePublishFromReview}
+          isPublishing={publishBundleStatus === 'publishing'}
+        />
+      )}
     </>
   )
 }

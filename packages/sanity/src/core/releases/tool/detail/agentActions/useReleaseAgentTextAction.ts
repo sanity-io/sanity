@@ -4,6 +4,7 @@ import {useCallback, useState} from 'react'
 import {useClient} from '../../../../hooks/useClient'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
+import {buildChangesQuery, toError} from './agentActionUtils'
 
 interface UseReleaseAgentTextActionOptions {
   release: ReleaseDocument
@@ -20,16 +21,7 @@ interface UseReleaseAgentTextActionResult {
   error: Error | null
 }
 
-const CHANGES_QUERY = `*[sanity::partOfRelease($releaseName)]{
-  _id,
-  _type,
-  "after": @,
-  "before": *[_id == string::split(^._id, ".")[2]][0]
-}`
-
-function toError(caughtError: unknown): Error {
-  return caughtError instanceof Error ? caughtError : new Error(String(caughtError))
-}
+const CHANGES_QUERY = buildChangesQuery()
 
 export function useReleaseAgentTextAction(
   options: UseReleaseAgentTextActionOptions,
