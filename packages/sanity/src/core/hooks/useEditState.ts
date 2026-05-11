@@ -4,10 +4,9 @@ import {debounce, distinctUntilChanged, merge, share, shareReplay, skip, take, t
 
 import {type EditStateFor, useDocumentStore} from '../store'
 
-// `editState.ts` allocates a fresh outer object per emission, but draft/published/
-// version snapshot references are preserved upstream when contents are unchanged.
-// Reference comparison on those + ready + transactionSyncLock is therefore enough
-// and avoids a deep walk on large documents.
+// Snapshot refs (draft/published/version) are preserved upstream when content
+// hasn't changed, so ref equality on those + ready + transactionSyncLock catches
+// real changes without a deep walk. Upstream contract: `document-pair/editState.test.ts`.
 const isSameEditState = (prev: EditStateFor, next: EditStateFor): boolean =>
   prev.draft === next.draft &&
   prev.published === next.published &&
