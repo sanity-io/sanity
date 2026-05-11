@@ -10,15 +10,7 @@ import {
 } from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
 import throttle from 'lodash-es/throttle.js'
-import {
-  type RefObject,
-  useCallback,
-  useEffect,
-  useInsertionEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type RefObject, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 
 import {
