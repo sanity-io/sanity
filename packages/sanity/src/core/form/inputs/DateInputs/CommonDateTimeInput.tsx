@@ -24,7 +24,8 @@ export interface CommonDateTimeInputProps {
    * Called when the parser's error state changes. Receives the error message
    * while the typed input cannot be parsed (e.g. doesn't match the configured
    * `dateFormat`), and `null` once it becomes parseable or empty. Used by the
-   * wrapping date/datetime input to report into the document validation graph.
+   * wrapping date/datetime input to surface parse errors separately from the
+   * document validation graph.
    */
   onParseError?: (error: string | null) => void
   parseInputValue: (inputValue: string) => ParseResult
