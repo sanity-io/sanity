@@ -1,10 +1,11 @@
-import {type FormNodeValidation, isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
+import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
 import {type FieldMember, type PrimitiveFormNode} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {useParseErrorForPath} from '../../../studio/contexts/ParseErrors'
 import {
   type PrimitiveFieldProps,
   type PrimitiveInputProps,
@@ -35,6 +36,12 @@ export function PrimitiveField(props: {
   const [localValue, setLocalValue] = useState<string | undefined>()
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
+
+  // Parse error reported by the input for the current path (e.g. a date input
+  // holding malformed text it cannot commit). When present we replace the
+  // schema-driven error markers for this path so the tooltip shows the parse
+  // message instead of misleading "required" noise.
+  const parseError = useParseErrorForPath(member.field.path)
 
   useEffect(() => {
     if (member.field.focused) {
@@ -118,18 +125,11 @@ export function PrimitiveField(props: {
     ],
   )
 
-  // Primitive inputs (e.g. date) can report transient parse errors that
-  // replace the validator output in the tooltip while active — otherwise the
-  // validator runs against `undefined` and just emits "required" noise.
-  const [parseError, setParseError] = useState<string | null>(null)
-
-  const validation = useMemo<FormNodeValidation[]>(
-    () =>
-      parseError
-        ? [{level: 'error', message: parseError, path: member.field.path}]
-        : member.field.validation,
-    [parseError, member.field.validation, member.field.path],
-  )
+  const validation = useMemo(() => {
+    if (!parseError) return member.field.validation
+    const nonErrors = member.field.validation.filter((item) => item.level !== 'error')
+    return [...nonErrors, {level: 'error' as const, message: parseError, path: member.field.path}]
+  }, [member.field.validation, member.field.path, parseError])
 
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
     const validationError =
@@ -150,7 +150,6 @@ export function PrimitiveField(props: {
       focused: member.field.focused,
       level: member.field.level,
       onChange: handleChange,
-      onParseError: setParseError,
       validation,
       presence: member.field.presence,
       validationError,

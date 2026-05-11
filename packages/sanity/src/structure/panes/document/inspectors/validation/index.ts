@@ -8,6 +8,8 @@ import {
   isGoingToUnpublish,
   isValidationError,
   isValidationWarning,
+  mergeParseErrors,
+  useParseErrors,
   usePerspective,
   useTranslation,
   useValidationStatus,
@@ -28,16 +30,16 @@ function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspecto
     documentType,
     !selectedReleaseId,
   )
+  const parseErrors = useParseErrors()
 
-  const validation: FormNodeValidation[] = useMemo(
-    () =>
-      validationMarkers.map((item) => ({
-        level: item.level,
-        message: item.message,
-        path: item.path,
-      })),
-    [validationMarkers],
-  )
+  const validation: FormNodeValidation[] = useMemo(() => {
+    const merged = mergeParseErrors(validationMarkers, parseErrors)
+    return merged.map((item) => ({
+      level: item.level,
+      message: item.message,
+      path: item.path,
+    }))
+  }, [validationMarkers, parseErrors])
 
   const hasErrors = validation.some(isValidationError)
   const hasWarnings = validation.some(isValidationWarning)

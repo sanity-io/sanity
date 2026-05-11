@@ -1,5 +1,4 @@
-import {type FormNodeValidation} from '@sanity/types'
-import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {describe, expect, it, vi} from 'vitest'
@@ -16,11 +15,6 @@ import {
   type FormCallbacksValue,
 } from '../../../studio'
 import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
-import {
-  type PrimitiveFieldProps,
-  type PrimitiveInputProps,
-  type StringInputProps,
-} from '../../../types'
 import {PrimitiveField} from './PrimitiveField'
 
 const EMPTY_ARRAY: never[] = []
@@ -212,60 +206,6 @@ describe('PrimitiveField', () => {
 
       // Then
       expect(formCallbacks.onChange).toBeCalledTimes(0)
-    })
-  })
-
-  describe('parse-error reporting', () => {
-    // When a string input (e.g. date) holds malformed text it cannot commit,
-    // the validator runs against the still-empty document value and produces
-    // misleading output (e.g. "Required" plus any other empty-value rules).
-    // Inputs can report the parse error via `onParseError`, and PrimitiveField
-    // replaces all of that validator output with the parse error until the
-    // input becomes parseable again.
-    it('replaces all validator errors with the parse error reported via onParseError', async () => {
-      const requiredError: FormNodeValidation = {
-        level: 'error',
-        message: 'Required',
-        path: ['id'],
-      }
-      const formatError: FormNodeValidation = {
-        level: 'error',
-        message: 'Please use yyyy-mm-dd',
-        path: ['id'],
-      }
-      const {member, TestWrapper} = await setupTest('string', undefined)
-      member.field.validation = [requiredError, formatError]
-
-      let lastInputProps: StringInputProps | undefined
-      let lastFieldProps: PrimitiveFieldProps | undefined
-      const renderInput = (props: PrimitiveInputProps) => {
-        lastInputProps = props as StringInputProps
-        return defaultRenderInput(props)
-      }
-      const renderField = (props: PrimitiveFieldProps) => {
-        lastFieldProps = props
-        return defaultRenderField(props)
-      }
-
-      render(
-        <PrimitiveField member={member} renderInput={renderInput} renderField={renderField} />,
-        {wrapper: TestWrapper},
-      )
-
-      expect(lastFieldProps?.validation).toEqual([requiredError, formatError])
-      expect(lastInputProps?.validationError).toBe('Required\nPlease use yyyy-mm-dd')
-
-      act(() => lastInputProps!.onParseError!('Invalid date format'))
-
-      expect(lastFieldProps?.validation).toEqual([
-        {level: 'error', message: 'Invalid date format', path: ['id']},
-      ])
-      expect(lastInputProps?.validationError).toBe('Invalid date format')
-
-      act(() => lastInputProps!.onParseError!(null))
-
-      expect(lastFieldProps?.validation).toEqual([requiredError, formatError])
-      expect(lastInputProps?.validationError).toBe('Required\nPlease use yyyy-mm-dd')
     })
   })
 })

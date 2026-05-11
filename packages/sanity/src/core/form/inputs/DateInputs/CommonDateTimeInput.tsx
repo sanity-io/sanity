@@ -21,9 +21,10 @@ export interface CommonDateTimeInputProps {
   formatInputValue: (date: Date) => string
   onChange: (nextDate: string | null) => void
   /**
-   * Called when the input's parse-error state changes. Receives the parser's
-   * error message while the typed input cannot be parsed (e.g. doesn't match
-   * the configured `dateFormat`), and `null` once it becomes parseable or empty.
+   * Called when the parser's error state changes. Receives the error message
+   * while the typed input cannot be parsed (e.g. doesn't match the configured
+   * `dateFormat`), and `null` once it becomes parseable or empty. Used by the
+   * wrapping date/datetime input to report into the document validation graph.
    */
   onParseError?: (error: string | null) => void
   parseInputValue: (inputValue: string) => ParseResult
@@ -113,9 +114,9 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       ? formatInputValue(parseResult.date)
       : value
 
-  // Forward parse errors so the wrapping field can surface them in the
-  // validation tooltip. Without this they're swallowed: invalid input never
-  // reaches `onChange`, so validators never see it.
+  // Forward parse errors to the wrapping field. Invalid input never reaches
+  // `onChange`, so without this they'd be swallowed and validators would
+  // continue to run against an undefined value.
   const parseError = parseResult?.error ?? null
   useEffect(() => {
     onParseError?.(parseError)
