@@ -480,7 +480,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     changesOpen,
     hasUpstreamVersion,
     displayInlineChanges,
-  })!
+  })
 
   const formStateRef = useRef(formState)
   useEffect(() => {
@@ -490,6 +490,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   useComlinkViewHistory({editState})
 
   const handleSetOpenPath = (path: Path) => {
+    if (!formStateRef.current) return
     const ops = getExpandOperations(formStateRef.current, path)
     ops.forEach((op) => {
       if (op.type === 'expandPath') {

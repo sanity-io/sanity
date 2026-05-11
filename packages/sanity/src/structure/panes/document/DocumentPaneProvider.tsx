@@ -732,10 +732,12 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   // Disable when `formState` or `schemaType` is transiently absent
   // (e.g. a `hidden` callback returns true, or the schema is still loading).
-  const divergencesEnabled = divergencesContextEnabled && formState && schemaType
-  const divergencesProps: ComponentProps<typeof DivergencesProvider> = divergencesEnabled
-    ? {enabled: true, upstreamEditState, editState, subjectId: value._id, schemaType, formState}
-    : {enabled: false}
+  const isDivergencesEnabled = Boolean(divergencesContextEnabled && formState && schemaType)
+
+  const divergencesProps: ComponentProps<typeof DivergencesProvider> =
+    isDivergencesEnabled && formState && schemaType
+      ? {enabled: true, upstreamEditState, editState, subjectId: value._id, schemaType, formState}
+      : {enabled: false}
 
   return (
     <DocumentPaneInfoContext.Provider value={documentPaneInfo}>
