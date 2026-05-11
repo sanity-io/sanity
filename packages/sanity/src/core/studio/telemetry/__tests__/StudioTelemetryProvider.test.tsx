@@ -1,10 +1,9 @@
+import type * as SanityTelemetry from '@sanity/telemetry'
 /* eslint-disable import/first */
 // Regular imports first
 import {render} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-
-import type * as SanityTelemetry from '@sanity/telemetry'
 
 // Disable console.logging of telemetry events in tests
 import.meta.env.SANITY_STUDIO_DEBUG_TELEMETRY = ''
