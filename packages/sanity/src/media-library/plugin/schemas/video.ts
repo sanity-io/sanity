@@ -11,6 +11,11 @@ export const video = defineType({
     input: StudioVideoInput,
     field: VideoField,
   },
+  preview: {
+    select: {
+      media: 'asset',
+    },
+  },
   fields: [
     {
       name: 'asset',
