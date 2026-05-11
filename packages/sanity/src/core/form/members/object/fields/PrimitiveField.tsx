@@ -1,4 +1,4 @@
-import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
+import {type FormNodeValidation, isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
@@ -118,9 +118,22 @@ export function PrimitiveField(props: {
     ],
   )
 
+  // Primitive inputs (e.g. date) can report transient parse errors that
+  // replace the validator output in the tooltip while active — otherwise the
+  // validator runs against `undefined` and just emits "required" noise.
+  const [parseError, setParseError] = useState<string | null>(null)
+
+  const validation = useMemo<FormNodeValidation[]>(
+    () =>
+      parseError
+        ? [{level: 'error', message: parseError, path: member.field.path}]
+        : member.field.validation,
+    [parseError, member.field.validation, member.field.path],
+  )
+
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
     const validationError =
-      member.field.validation
+      validation
         .filter((item) => item.level === 'error')
         .map((item) => item.message)
         .join('\n') || undefined
@@ -137,7 +150,8 @@ export function PrimitiveField(props: {
       focused: member.field.focused,
       level: member.field.level,
       onChange: handleChange,
-      validation: member.field.validation,
+      onParseError: setParseError,
+      validation,
       presence: member.field.presence,
       validationError,
       elementProps,
@@ -156,7 +170,7 @@ export function PrimitiveField(props: {
     member.field.path,
     member.field.focused,
     member.field.level,
-    member.field.validation,
+    validation,
     member.field.presence,
     handleChange,
     elementProps,
@@ -176,7 +190,7 @@ export function PrimitiveField(props: {
       presence={member.field.presence}
       schemaType={member.field.schemaType as any}
       title={member.field.schemaType.title}
-      validation={member.field.validation}
+      validation={validation}
       value={member.field.value as any}
       render={renderField}
     >

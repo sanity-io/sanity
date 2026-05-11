@@ -65,7 +65,7 @@ const CALENDAR_LABELS: CalendarLabels = {
   tooltipText: '',
 }
 
-async function renderInput() {
+async function renderInput({onParseError}: {onParseError?: (error: string | null) => void} = {}) {
   const onChange = vi.fn()
 
   const ret = await renderStringInput({
@@ -83,6 +83,7 @@ async function renderInput() {
           id={id}
           formatInputValue={formatInputValue}
           onChange={onChange}
+          onParseError={onParseError}
           parseInputValue={parseInputValue}
           readOnly={readOnly}
           serialize={serialize}
@@ -113,6 +114,24 @@ test('does not emit onChange after invalid value has been typed', async () => {
   fireEvent.blur(input)
 
   expect(onChange.mock.calls.length).toBe(0)
+})
+
+test('calls onParseError with the parser error when typed input cannot be parsed', async () => {
+  const onParseError = vi.fn()
+  const {result} = await renderInput({onParseError})
+  const input = result.container.querySelector('input')!
+
+  expect(onParseError).toHaveBeenLastCalledWith(null)
+
+  // The underlying input only commits on blur/enter, so type then blur.
+  await userEvent.type(input, 'not-a-date')
+  fireEvent.blur(input)
+
+  const lastError = onParseError.mock.lastCall?.[0]
+  expect(typeof lastError).toBe('string')
+  expect(lastError).toMatch(/format/i)
+  // The same message backs the input's native customValidity.
+  expect(input.validationMessage).toBe(lastError)
 })
 
 test('emits onChange on correct format if a valid value has been typed', async () => {

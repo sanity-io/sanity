@@ -142,6 +142,7 @@ function enforceTimeStep(dateString: string, timeStep: number) {
 export function DateTimeInput(props: DateTimeInputProps) {
   const {
     onChange,
+    onParseError,
     schemaType,
     value,
     elementProps,
@@ -276,6 +277,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                 deserialize={deserialize}
                 formatInputValue={formatInputValue}
                 onChange={handleChange}
+                onParseError={onParseError}
                 parseInputValue={parseInputValue}
                 placeholder={schemaType.placeholder}
                 serialize={serialize}

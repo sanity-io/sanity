@@ -469,6 +469,13 @@ export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
   /**
+   * Reports a transient parse/format error to surface in the field-level
+   * validation tooltip (e.g. a date string not matching `dateFormat`). Replaces
+   * the validator output in the tooltip while active; pass `null` to clear.
+   * @hidden
+   * @beta */
+  onParseError?: (error: string | null) => void
+  /**
    * @hidden
    * @beta */
   elementProps: PrimitiveInputElementProps
@@ -484,6 +491,8 @@ export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
    * @beta */
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
+  /** See {@link StringInputProps.onParseError}. @hidden @beta */
+  onParseError?: (error: string | null) => void
   /**
    * @hidden
    * @beta */
@@ -507,6 +516,8 @@ export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaTy
    * For advanced use cases use the ´validation´ prop which contains more levels and details
    */
   validationError?: string
+  /** See {@link StringInputProps.onParseError}. @hidden @beta */
+  onParseError?: (error: string | null) => void
   /**
    * @hidden
    * @beta */
