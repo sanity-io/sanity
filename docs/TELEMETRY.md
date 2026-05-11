@@ -154,13 +154,17 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
         studioVersion: "5.18.0",
         reactVersion: "19.2.3",
         environment: "production",
+        connection: { effectiveType: "4g", downlink: 10, rtt: 50, saveData: false },
 
         // Dynamic (updated on navigation)
         orgId: "org_xyz",
         activeTool: "desk",
+        workspaceCount: 2,
         activeWorkspace: "default",
         activeProjectId: "abc123",
         activeDataset: "production",
+        pluginCount: 12,
+        schemaTypeCount: 84,
       }
     }
   ]
@@ -168,6 +172,7 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
 ```
 
 The context is stored in a `useRef` so that dynamic values (workspace, tool, org) can update without re-creating the batched store.
+Workspace, plugin, and schema type counts are derived from the already-resolved Studio configuration. Connection quality uses the browser Network Information API when available. None of these fields add Sanity API requests.
 
 ## Consent
 
