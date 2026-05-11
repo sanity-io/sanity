@@ -1,3 +1,4 @@
+import type * as SanityTelemetry from '@sanity/telemetry'
 /* eslint-disable import/first */
 // Regular imports first
 import {render} from '@testing-library/react'
@@ -8,13 +9,21 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import.meta.env.SANITY_STUDIO_DEBUG_TELEMETRY = ''
 
 // Mocks (these get hoisted automatically by vitest)
-vi.mock('@sanity/telemetry')
+vi.mock('@sanity/telemetry', async () => {
+  const actual = await vi.importActual<typeof SanityTelemetry>('@sanity/telemetry')
+  return {
+    ...actual,
+    createBatchedStore: vi.fn(),
+    createSessionId: vi.fn(),
+  }
+})
 vi.mock('@sanity/telemetry/react', () => ({
   TelemetryProvider: ({children}: {children: ReactNode}) => children,
   DeferredTelemetryProvider: ({children}: {children: ReactNode}) => children,
 }))
 vi.mock('../../../hooks')
 vi.mock('../../workspace')
+vi.mock('../../workspaces')
 vi.mock('../../../store/project/useProjectOrganizationId')
 vi.mock('sanity/router')
 vi.mock('../../../environment', () => ({
@@ -37,9 +46,16 @@ import {useRouterState} from 'sanity/router'
 import {useClient} from '../../../hooks'
 import {useProjectOrganizationId} from '../../../store/project/useProjectOrganizationId'
 import {WorkspaceFeaturesObserved} from '../../__telemetry__/featureAvailability.telemetry'
+import {StudioLoaded} from '../../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../../workspace'
+import {useWorkspaces} from '../../workspaces'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'
 /* eslint-enable import/first */
+
+function mockRouterTool(tool: string) {
+  vi.mocked(useRouterState).mockImplementation(((selector: (state: {tool?: string}) => unknown) =>
+    selector({tool})) as never)
+}
 
 describe('StudioTelemetryProvider', () => {
   let capturedStoreOptions: {
@@ -59,8 +75,32 @@ describe('StudioTelemetryProvider', () => {
     name: 'test-workspace',
     projectId: 'test-project',
     dataset: 'test-dataset',
+    schema: {
+      getTypeNames: () => ['author', 'post', 'sanity.imageAsset'],
+    },
+    __internal: {
+      options: {
+        plugins: [
+          {name: 'root-plugin'},
+          {name: 'plugin-with-child', plugins: [{name: 'child-plugin'}]},
+        ],
+      },
+    },
     advancedVersionControl: {enabled: true},
   }
+
+  const mockWorkspaces = [
+    {
+      name: 'test-workspace',
+      projectId: 'test-project',
+      dataset: 'test-dataset',
+    },
+    {
+      name: 'secondary-workspace',
+      projectId: 'secondary-project',
+      dataset: 'production',
+    },
+  ]
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -69,11 +109,11 @@ describe('StudioTelemetryProvider', () => {
     vi.mocked(createSessionId).mockReturnValue('test-session-id' as SessionId)
     vi.mocked(useClient).mockReturnValue(mockClient as never)
     vi.mocked(useWorkspace).mockReturnValue(mockWorkspace as never)
+    vi.mocked(useWorkspaces).mockReturnValue(mockWorkspaces as never)
     vi.mocked(useProjectOrganizationId).mockReturnValue({
       value: 'org-123',
     } as never)
-    vi.mocked(useRouterState).mockImplementation(((selector: (state: {tool?: string}) => unknown) =>
-      selector({tool: 'desk'})) as any)
+    mockRouterTool('desk')
 
     // Capture store options when createBatchedStore is called
     vi.mocked(createBatchedStore).mockImplementation((_sessionId, options) => {
@@ -81,7 +121,6 @@ describe('StudioTelemetryProvider', () => {
       return {
         logger: {
           log: mockLog,
-          updateUserProperties: vi.fn(),
         },
       } as never
     })
@@ -134,6 +173,9 @@ describe('StudioTelemetryProvider', () => {
                 activeProjectId: 'test-project',
                 activeDataset: 'test-dataset',
                 activeTool: 'desk',
+                workspaceCount: 2,
+                pluginCount: 3,
+                schemaTypeCount: 3,
               }),
             }),
           ]),
@@ -181,6 +223,9 @@ describe('StudioTelemetryProvider', () => {
       orgId: 'org-123',
       activeWorkspace: 'test-workspace',
       activeTool: 'desk',
+      workspaceCount: 2,
+      pluginCount: 3,
+      schemaTypeCount: 3,
     })
 
     vi.unstubAllGlobals()
@@ -197,6 +242,7 @@ describe('StudioTelemetryProvider', () => {
 
     // Change workspace
     vi.mocked(useWorkspace).mockReturnValue({
+      ...mockWorkspace,
       name: 'new-workspace',
       projectId: 'new-project',
       dataset: 'new-dataset',
@@ -242,8 +288,7 @@ describe('StudioTelemetryProvider', () => {
     )
 
     // Change active tool
-    vi.mocked(useRouterState).mockImplementation(((selector: (state: {tool?: string}) => unknown) =>
-      selector({tool: 'vision'})) as any)
+    mockRouterTool('vision')
 
     rerender(
       <DeferredTelemetryProvider>
@@ -349,6 +394,51 @@ describe('StudioTelemetryProvider', () => {
     vi.unstubAllGlobals()
   })
 
+  it('includes browser connection quality when the Network Information API is available', async () => {
+    vi.stubGlobal('navigator', {
+      ...navigator,
+      connection: {
+        effectiveType: '4g',
+        downlink: 8.4,
+        rtt: 50,
+        saveData: false,
+      },
+      userAgent: 'test-user-agent',
+    })
+
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    const testBatch = [{name: 'Test Event'}]
+    await capturedStoreOptions.sendEvents!(testBatch)
+
+    expect(mockClient.request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          batch: expect.arrayContaining([
+            expect.objectContaining({
+              context: expect.objectContaining({
+                connection: {
+                  effectiveType: '4g',
+                  downlink: 8.4,
+                  rtt: 50,
+                  saveData: false,
+                },
+              }),
+            }),
+          ]),
+        }),
+      }),
+    )
+
+    vi.unstubAllGlobals()
+  })
+
   it('emits WorkspaceFeaturesObserved with the advancedVersionControl flag enabled', () => {
     render(
       <DeferredTelemetryProvider>
@@ -365,9 +455,11 @@ describe('StudioTelemetryProvider', () => {
 
   it('emits WorkspaceFeaturesObserved with the flag disabled when advancedVersionControl is undefined', () => {
     vi.mocked(useWorkspace).mockReturnValue({
+      ...mockWorkspace,
       name: 'test-workspace',
       projectId: 'test-project',
       dataset: 'test-dataset',
+      advancedVersionControl: undefined,
     } as never)
 
     render(
@@ -381,5 +473,33 @@ describe('StudioTelemetryProvider', () => {
     expect(mockLog).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
       advancedVersionControlEnabled: false,
     })
+  })
+
+  it('emits StudioLoaded once on mount with studio version and environment metadata', () => {
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    const studioLoadedCalls = mockLog.mock.calls.filter(([event]) => event === StudioLoaded)
+    expect(studioLoadedCalls).toHaveLength(1)
+
+    expect(mockLog).toHaveBeenCalledWith(
+      StudioLoaded,
+      expect.objectContaining({
+        studioVersion: '3.0.0-test',
+        environment: 'development',
+        reactVersion: expect.any(String),
+        userAgent: expect.any(String),
+        screenDensity: expect.any(Number),
+        screenHeight: expect.any(Number),
+        screenWidth: expect.any(Number),
+        screenInnerHeight: expect.any(Number),
+        screenInnerWidth: expect.any(Number),
+      }),
+    )
   })
 })
