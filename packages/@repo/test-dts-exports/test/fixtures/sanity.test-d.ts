@@ -1565,6 +1565,7 @@ import type {
   useFilteredReleases,
   useFormattedDuration,
   UseFormattedDurationOptions,
+  useFormatRelativeLocalePublishDate,
   useFormBuilder,
   useFormCallbacks,
   useFormState,
@@ -6447,6 +6448,9 @@ describe('sanity', () => {
   })
   test('UseFormattedDurationOptions', () => {
     expectTypeOf<UseFormattedDurationOptions>().toBeObject()
+  })
+  test('useFormatRelativeLocalePublishDate', () => {
+    expectTypeOf<typeof useFormatRelativeLocalePublishDate>().toBeFunction()
   })
   test('useFormBuilder', () => {
     expectTypeOf<typeof useFormBuilder>().toBeFunction()

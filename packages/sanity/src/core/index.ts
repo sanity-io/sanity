@@ -56,6 +56,7 @@ export {
   useDocumentVersionInfo,
   useDocumentVersions,
   useDocumentVersionTypeSortedList,
+  useFormatRelativeLocalePublishDate,
   useIsReleaseActive,
   useOnlyHasVersions,
   useReleasesIds,
