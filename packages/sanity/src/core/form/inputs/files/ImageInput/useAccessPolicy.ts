@@ -9,9 +9,8 @@ import {useProjectDatasets} from '../../../../store/project/useProjectDatasets'
 import {type AssetAccessPolicy} from '../types'
 
 /**
- * Resolve the effective access policy for a given image source, including
- * Media Library specific checks when possible, and dataset-level visibility
- * for plain image assets.
+ * Resolves the access policy for an image source: per-asset for Media Library,
+ * dataset aclMode for plain assets.
  *
  * @internal
  */
@@ -49,8 +48,7 @@ export function useAccessPolicy(params: {
     return cdnAccessPolicy ?? 'unknown'
   }
 
-  // Plain asset: derive policy from the workspace dataset's aclMode so private
-  // datasets route through the authed blob-fetch path in `useImageUrl`.
+  // Plain asset: dataset aclMode drives the authed blob-fetch in `useImageUrl`.
   const datasetName = client.config().dataset
   if (!datasetName) return 'public'
   if (datasets === null) return 'checking'

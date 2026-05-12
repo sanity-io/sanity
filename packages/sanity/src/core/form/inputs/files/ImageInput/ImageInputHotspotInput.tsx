@@ -22,13 +22,14 @@ export function ImageInputHotspotInput(props: {
   const {t} = useTranslation()
   const {changed, id, imageUrlBuilder, value} = imageInputProps
 
+  const withImageTool = isImageToolEnabled && value && value.asset
+
+  // Use the asset ref so the URL builder doesn't re-apply existing crop/hotspot.
   const {isLoading, url: imageUrl} = useImageUrl({
     accessPolicy,
-    imageSource: value?.asset ? value : undefined,
+    imageSource: withImageTool ? value.asset : undefined,
     imageUrlBuilder,
   })
-
-  const withImageTool = isImageToolEnabled && value && value.asset
 
   return (
     <Dialog
