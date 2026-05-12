@@ -343,6 +343,17 @@ export default defineConfig([
     basePath: '/secondary',
   },
   {
+    name: 'private-test',
+    title: 'Private dataset (image crop repro)',
+    projectId: 'p8aotnu6',
+    dataset: 'test',
+    plugins: [sharedSettings({projectId: 'p8aotnu6'})],
+    basePath: '/private-test',
+    mediaLibrary: {
+      enabled: true,
+    },
+  },
+  {
     ...defaultWorkspace,
     name: 'unsplash',
     title: 'Only Unsplash Asset Source',
