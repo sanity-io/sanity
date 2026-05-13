@@ -17,7 +17,8 @@ interface GetProvidersOptions extends AuthConfig {
   client: SanityClient
 }
 
-async function getProviders({
+/** @internal */
+export async function getProviders({
   client,
   mode,
   providers: customProviders = [],
