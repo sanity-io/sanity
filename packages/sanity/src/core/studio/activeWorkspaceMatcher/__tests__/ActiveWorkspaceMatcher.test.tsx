@@ -1,4 +1,5 @@
-import {render, screen} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {createMemoryHistory} from 'history'
 import {type ReactNode} from 'react'
 import {VisibleWorkspacesContext, WorkspacesContext} from 'sanity/_singletons'
@@ -71,13 +72,12 @@ function createContextValue(
   workspaces: WorkspaceSummary[],
   authStates: Record<string, AuthState> | undefined,
 ): VisibleWorkspacesContextValue {
+  const workspaceAuthStates: Record<string, AuthState | undefined> = authStates ?? {}
   return {
     visibleWorkspaces: workspaces.filter(
-      (workspace) => !evaluateWorkspaceHidden(workspace, authStates?.[workspace.name]),
+      (workspace) => !evaluateWorkspaceHidden(workspace, workspaceAuthStates[workspace.name]),
     ),
-    isResolvingHiddenWorkspaces:
-      authStates === undefined &&
-      workspaces.some((workspace) => typeof workspace.hidden === 'function'),
+    workspaceAuthStates,
   }
 }
 
@@ -255,6 +255,105 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     expect(screen.queryByTestId('not-found')).toBeNull()
   })
 
+  it('redirects from root to first visible workspace when first workspace is statically hidden', async () => {
+    const hiddenWorkspace = createWorkspace({
+      name: 'hidden',
+      basePath: '/hidden',
+      hidden: true,
+    })
+    const visibleWorkspace = createWorkspace({name: 'visible', basePath: '/visible'})
+
+    const workspaces = [hiddenWorkspace, visibleWorkspace]
+    const contextValue = createContextValue(workspaces, {
+      hidden: createAuthState(),
+      visible: createAuthState(),
+    })
+
+    const history = createMemoryHistory({initialEntries: ['/']})
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Visible workspace content</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/visible')
+    })
+
+    expect(screen.getByTestId('children')).toBeDefined()
+    expect(screen.queryByTestId('not-found')).toBeNull()
+  })
+
+  it('redirects from root to first workspace when all workspaces are visible', async () => {
+    const workspaceA = createWorkspace({name: 'a', basePath: '/a'})
+    const workspaceB = createWorkspace({name: 'b', basePath: '/b'})
+
+    const workspaces = [workspaceA, workspaceB]
+    const contextValue = createContextValue(workspaces, {
+      a: createAuthState(),
+      b: createAuthState(),
+    })
+
+    const history = createMemoryHistory({initialEntries: ['/']})
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">First workspace content</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/a')
+    })
+
+    expect(screen.getByTestId('children')).toBeDefined()
+    expect(screen.queryByTestId('not-found')).toBeNull()
+  })
+
+  it('renders LoadingComponent at root while hidden workspaces are still resolving', () => {
+    const functionHiddenWorkspace = createWorkspace({
+      name: 'function-hidden',
+      basePath: '/function-hidden',
+      hidden: () => true,
+    })
+    const visibleWorkspace = createWorkspace({name: 'visible', basePath: '/visible'})
+
+    const workspaces = [functionHiddenWorkspace, visibleWorkspace]
+    const contextValue = createContextValue(workspaces, undefined)
+
+    const history = createMemoryHistory({initialEntries: ['/']})
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Should not render</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    expect(screen.getByTestId('loading')).toBeDefined()
+    expect(screen.queryByTestId('children')).toBeNull()
+    expect(screen.queryByTestId('not-found')).toBeNull()
+    expect(history.location.pathname).toBe('/')
+  })
+
   it('renders NotFoundComponent without crashing when all workspaces are statically hidden', () => {
     const hiddenOne = createWorkspace({name: 'hidden-one', basePath: '/hidden-one', hidden: true})
     const hiddenTwo = createWorkspace({name: 'hidden-two', basePath: '/hidden-two', hidden: true})
@@ -283,5 +382,172 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
 
     expect(screen.getByTestId('not-found')).toBeDefined()
     expect(screen.queryByTestId('children')).toBeNull()
+  })
+
+  it('renders LoadingComponent on match while matched workspace auth is still resolving', () => {
+    const fnHidden = createWorkspace({
+      name: 'fn-hidden',
+      basePath: '/fn-hidden',
+      hidden: () => false,
+    })
+
+    const workspaces = [fnHidden]
+    const contextValue = createContextValue(workspaces, {})
+
+    const history = createMemoryHistory({initialEntries: ['/fn-hidden']})
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Should not render yet</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    expect(screen.getByTestId('loading')).toBeDefined()
+    expect(screen.queryByTestId('children')).toBeNull()
+    expect(screen.queryByTestId('not-found')).toBeNull()
+  })
+
+  it('renders matched workspace once its auth resolves and hidden() returns false', () => {
+    const fnHidden = createWorkspace({
+      name: 'fn-hidden',
+      basePath: '/fn-hidden',
+      hidden: () => false,
+    })
+
+    const workspaces = [fnHidden]
+    const contextValue = createContextValue(workspaces, {'fn-hidden': createAuthState()})
+
+    const history = createMemoryHistory({initialEntries: ['/fn-hidden']})
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Workspace content</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    expect(screen.getByTestId('children')).toBeDefined()
+    expect(screen.queryByTestId('loading')).toBeNull()
+    expect(screen.queryByTestId('not-found')).toBeNull()
+  })
+
+  it('does not wait on other workspaces auth when matching a statically-visible workspace', () => {
+    const fnHiddenOther = createWorkspace({
+      name: 'fn-hidden-other',
+      basePath: '/fn-hidden-other',
+      hidden: () => true,
+    })
+    const staticVisible = createWorkspace({name: 'static-visible', basePath: '/static-visible'})
+
+    const workspaces = [fnHiddenOther, staticVisible]
+    const contextValue = createContextValue(workspaces, {})
+
+    const history = createMemoryHistory({initialEntries: ['/static-visible']})
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Visible workspace content</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    expect(screen.getByTestId('children')).toBeDefined()
+    expect(screen.queryByTestId('loading')).toBeNull()
+    expect(screen.queryByTestId('not-found')).toBeNull()
+  })
+
+  it('redirects from root past statically-hidden workspace to next visible without waiting on later function-hidden workspaces', async () => {
+    const staticHidden = createWorkspace({
+      name: 'static-hidden',
+      basePath: '/static-hidden',
+      hidden: true,
+    })
+    const staticVisible = createWorkspace({name: 'static-visible', basePath: '/static-visible'})
+    const fnHidden = createWorkspace({
+      name: 'fn-hidden',
+      basePath: '/fn-hidden',
+      hidden: () => true,
+    })
+
+    const workspaces = [staticHidden, staticVisible, fnHidden]
+    const contextValue = createContextValue(workspaces, {})
+
+    const history = createMemoryHistory({initialEntries: ['/']})
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Visible workspace content</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/static-visible')
+    })
+
+    expect(screen.getByTestId('children')).toBeDefined()
+    expect(screen.queryByTestId('loading')).toBeNull()
+    expect(screen.queryByTestId('not-found')).toBeNull()
+  })
+
+  it('navigates to first visible workspace when go-to-default is clicked from NotFoundComponent', async () => {
+    const staticHidden = createWorkspace({
+      name: 'static-hidden',
+      basePath: '/static-hidden',
+      hidden: true,
+    })
+    const staticVisible = createWorkspace({name: 'static-visible', basePath: '/static-visible'})
+
+    const workspaces = [staticHidden, staticVisible]
+    const contextValue = createContextValue(workspaces, {
+      'static-hidden': createAuthState(),
+      'static-visible': createAuthState(),
+    })
+
+    const history = createMemoryHistory({initialEntries: ['/static-hidden']})
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Visible workspace content</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    expect(screen.getByTestId('not-found')).toBeDefined()
+
+    await userEvent.click(screen.getByTestId('not-found'))
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/static-visible')
+    })
+
+    expect(screen.getByTestId('children')).toBeDefined()
+    expect(screen.queryByTestId('not-found')).toBeNull()
   })
 })

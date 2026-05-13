@@ -16,6 +16,9 @@ import {type NormalizedWorkspace} from './types'
  * @internal
  */
 export function createCommonBasePathRegex(workspaces: NormalizedWorkspace[]): RegExp {
+  // No workspaces means no common base path; return a regex that never matches.
+  if (workspaces.length === 0) return /^$/
+
   const workspaceSegments = workspaces.map((workspace) =>
     // gets the segments from the basePath
     workspace.basePath

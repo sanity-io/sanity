@@ -296,6 +296,14 @@ const defaultWorkspace = defineConfig({
 })
 
 export default defineConfig([
+  {
+    ...defaultWorkspace,
+    name: 'default-hidden',
+    title: 'Default Hidden',
+    subtitle: 'Statically hidden and configured as the first (default) workspace',
+    basePath: '/default-hidden',
+    hidden: true,
+  },
   defaultWorkspace,
   {
     ...defaultWorkspace,
