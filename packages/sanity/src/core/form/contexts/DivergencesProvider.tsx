@@ -144,13 +144,7 @@ const DivergencesProviderDisabled: ComponentType<PropsWithChildren> = ({children
  * @internal
  */
 export function useDocumentDivergences(): DocumentDivergencesContextValue {
-  const context = useContext(DocumentDivergencesContext)
-
-  if (!context) {
-    throw new Error('useDocumentDivergences must be used within a DocumentDivergencesContext')
-  }
-
-  return context
+  return useContext(DocumentDivergencesContext)
 }
 
 /**
