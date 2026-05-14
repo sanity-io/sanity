@@ -14,10 +14,37 @@ export interface DocumentOptions extends BaseSchemaTypeOptions {}
 /** @public */
 export interface DocumentRule extends RuleDef<DocumentRule, SanityDocument> {}
 
+/**
+ * Configuration that marks a document schema type as a singleton.
+ *
+ * Singleton schema types can only represent one document. Studio
+ * automatically excludes them from "new document" UI surfaces and from the
+ * default Structure Tool content list.
+ *
+ * @public
+ */
+export interface DocumentSingletonDefinition {
+  /**
+   * The document id this singleton schema type represents.
+   */
+  documentId: string
+}
+
 /** @public */
 export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   type: 'document'
   liveEdit?: boolean
+  /**
+   * Control whether this schema type is a singleton.
+   *
+   * - Singleton schema types can only represent one document.
+   * - Singleton schema types are excluded from document lists.
+   *
+   * Use the `S.document().singleton()`, `S.listItem().singleton()`, or
+   * `S.list().singletons()` Structure Tool helpers to surface a singleton
+   * within Structure Tool.
+   */
+  singleton?: DocumentSingletonDefinition
   /** @beta */
   orderings?: SortOrdering[]
   options?: DocumentOptions

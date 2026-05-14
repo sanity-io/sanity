@@ -154,6 +154,29 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
     return this.clone({items})
   }
 
+  /**
+   * Append a list item per singleton schema type to the list's `items` array.
+   *
+   * Sugar for `.items(schemaTypeNames.map((name) => S.listItem().singleton(name)))`,
+   * but additive: any items previously declared via `.items(...)` are
+   * preserved and the singletons are appended.
+   *
+   * Like every other `S.list()` chain, the caller must still set `.id(...)`
+   * and `.title(...)` themselves; this helper does not produce a complete
+   * list on its own.
+   *
+   * Every name in `schemaTypeNames` must refer to a singleton schema type or
+   * a `SerializeError` is thrown immediately.
+   *
+   * @param schemaTypeNames - the singleton schema type names to render as list items
+   * @returns list builder with the singleton list items appended
+   */
+  singletons(schemaTypeNames: string[]): ListBuilder {
+    const builder = this._context.getStructureBuilder()
+    const singletonItems = schemaTypeNames.map((name) => builder.listItem().singleton(name))
+    return this.items([...(this.spec.items ?? []), ...singletonItems])
+  }
+
   /** Get list builder items
    * @returns list items. See {@link BuildableList}
    */

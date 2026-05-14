@@ -138,6 +138,51 @@ Documents with `liveEdit: true` in their schema skip the draft stage—edits are
 
 **Source**: `packages/@sanity/types/src/documents/types.ts`, `packages/sanity/src/core/util/draftUtils.ts`
 
+### Singletons
+
+Documents for which only one instance should exist. Mark a document schema type as a singleton via `singleton.documentId`:
+
+```typescript
+import {defineType} from 'sanity'
+
+export default defineType({
+  name: 'siteSettings',
+  type: 'document',
+  singleton: {documentId: 'siteSettings'},
+  fields: [
+    /* ... */
+  ],
+})
+```
+
+When a schema type opts into singleton behaviour, Studio:
+
+- Removes the auto-generated initial value template, so the type doesn't appear in the "new document" UI.
+- Filters the `duplicate` document action out for documents of that type.
+- Hides the type from the implicit default content list (`S.defaults()`).
+
+Surface a singleton in Structure Tool with one of the new helpers:
+
+```typescript
+// As a list item with a child document pane:
+S.listItem().singleton('siteSettings')
+
+// As a list of singletons:
+S.list().id('singletons').title('Singletons').singletons(['siteSettings', 'navigation'])
+
+// Inside a custom list item:
+S.listItem().title('Settings').child(S.document().singleton('siteSettings'))
+```
+
+Validation rules enforced at config-resolution time:
+
+- `singleton.documentId` must be a non-empty published id (no `drafts.` / `versions.` prefix, only `[a-zA-Z0-9._-]`).
+- Each `singleton.documentId` must be unique across schema types.
+
+A schema type is either a singleton or an ordinary document type, never both. To get both shapes, copy the schema definition with a new `name` and the `singleton` property omitted.
+
+**Source**: `packages/@sanity/types/src/schema/definition/type/document.ts`, `packages/sanity/src/core/config/prepareConfig.tsx`, `packages/sanity/src/structure/structureBuilder/`.
+
 ---
 
 ## Schema

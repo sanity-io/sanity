@@ -51,6 +51,12 @@ export const structure: StructureResolver = (
   return S.list()
     .title(t('testStudio:structure.root.title' as const) || 'Content')
     .items([
+      // Demonstrates the new `S.listItem().singleton(schemaTypeName)` helper.
+      // The `singletonSettings` schema type opts into singleton behaviour via
+      // `singleton: { documentId: 'singletonSettings' }`, so Studio also
+      // hides it from the implicit content list and removes the duplicate
+      // action from its document pane.
+      S.listItem().singleton('singletonSettings'),
       S.documentListItem().id('validation').schemaType('allTypes'),
       S.listItem()
         .title('Sections by perspective')

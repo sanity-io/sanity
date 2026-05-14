@@ -473,6 +473,7 @@ import type {
   DocumentRemoteMutationVersionEvent,
   DocumentRevision,
   DocumentRule,
+  DocumentSingletonDefinition,
   DocumentStackAvailability,
   DocumentStatus,
   DocumentStatusIndicator,
@@ -3155,6 +3156,9 @@ describe('sanity', () => {
   })
   test('DocumentRule', () => {
     expectTypeOf<DocumentRule>().toBeObject()
+  })
+  test('DocumentSingletonDefinition', () => {
+    expectTypeOf<DocumentSingletonDefinition>().toBeObject()
   })
   test('DocumentStackAvailability', () => {
     expectTypeOf<DocumentStackAvailability>().toBeObject()
