@@ -68,7 +68,7 @@
     "knip": "knip",
     "lint": "turbo run check:oxlint lint --ui tui",
     "lint:fix": "turbo run --concurrency=1 chore:format:fix chore:oxlint:fix && pnpm chore:lint:fix",
-    "lint:workflows": "if command -v zizmor >/dev/null 2>&1; then zizmor .github/workflows --min-severity high; else echo 'zizmor not found. Install it: https://docs.zizmor.sh/installation/'; exit 1; fi",
+    "lint:workflows": "if command -v zizmor >/dev/null 2>&1; then zizmor .github --min-severity high; else echo 'zizmor not found. Install it: https://docs.zizmor.sh/installation/'; exit 1; fi",
     "list:deps-updates": "npm-check-updates --workspaces --root -m",
     "normalize-pkgfields": "node -r esbuild-register scripts/normalizePackageFields",
     "normalize:versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
