@@ -1,7 +1,6 @@
 name: End-to-End Embedded Tests
 permissions:
   contents: read # for checkout
-  pull-requests: write # for comment
 
 on:
   pull_request:

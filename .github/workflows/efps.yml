@@ -1,6 +1,5 @@
 name: eFPS Test
-permissions:
-  pull-requests: write # for comment
+permissions: {}
 
 on:
   # Build on pushes branches that have a PR (including drafts)
@@ -83,19 +82,23 @@ jobs:
         if: ${{github.ref_name != 'main' && steps.changes.outputs.has_changes == 'true'}}
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+          GITHUB_EVENT_REPOSITORY_NAME: ${{ github.event.repository.name }}
+          COMMIT_AUTHOR_NAME: ${{ github.event.sender.name || 'GitHub Actions' }}
+          COMMIT_REF: ${{ github.head_ref || github.ref_name }}
+          COMMIT_AUTHOR_LOGIN: ${{ github.event.sender.login || github.actor }}
         run: |
           echo "DEPLOY_URL=$(
             pnpm vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
               -m githubDeployment="1" \
-              -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+              -m githubCommitAuthorName="$COMMIT_AUTHOR_NAME" \
               -m githubCommitMessage="$COMMIT_MESSAGE" \
               -m githubCommitOrg="${{ github.repository_owner }}" \
-              -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
-              -m githubCommitRepo="${{ github.event.repository.name }}" \
+              -m githubCommitRef="$COMMIT_REF" \
+              -m githubCommitRepo="${GITHUB_EVENT_REPOSITORY_NAME}" \
               -m githubCommitSha="${{ github.sha }}" \
               -m githubOrg="${{ github.repository_owner }}" \
-              -m githubRepo="${{ github.event.repository.name }}" \
-              -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1
+              -m githubRepo="${GITHUB_EVENT_REPOSITORY_NAME}" \
+              -m githubCommitAuthorLogin="$COMMIT_AUTHOR_LOGIN" | tail -n 1
             )" >> $GITHUB_OUTPUT
 
       - name: Deploy new reference Studio from main
@@ -103,18 +106,22 @@ jobs:
         if: ${{github.ref_name == 'main' && steps.changes.outputs.has_changes == 'true'}}
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+          GITHUB_EVENT_REPOSITORY_NAME: ${{ github.event.repository.name }}
+          COMMIT_AUTHOR_NAME: ${{ github.event.sender.name || 'GitHub Actions' }}
+          COMMIT_REF: ${{ github.head_ref || github.ref_name }}
+          COMMIT_AUTHOR_LOGIN: ${{ github.event.sender.login || github.actor }}
         run: |
           pnpm vercel deploy --prod --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
             -m githubDeployment="1" \
-            -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+            -m githubCommitAuthorName="$COMMIT_AUTHOR_NAME" \
             -m githubCommitMessage="$COMMIT_MESSAGE" \
             -m githubCommitOrg="${{ github.repository_owner }}" \
-            -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
-            -m githubCommitRepo="${{ github.event.repository.name }}" \
+            -m githubCommitRef="$COMMIT_REF" \
+            -m githubCommitRepo="${GITHUB_EVENT_REPOSITORY_NAME}" \
             -m githubCommitSha="${{ github.sha }}" \
             -m githubOrg="${{ github.repository_owner }}" \
-            -m githubRepo="${{ github.event.repository.name }}" \
-            -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}"
+            -m githubRepo="${GITHUB_EVENT_REPOSITORY_NAME}" \
+            -m githubCommitAuthorLogin="$COMMIT_AUTHOR_LOGIN"
 
   efps-test:
     # We do not currently run in main, but we could do that if we want to compare main
@@ -123,6 +130,9 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-8core
     needs: [deploy]
+    permissions:
+      contents: read
+      pull-requests: write # for PR comment
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -210,6 +220,9 @@ jobs:
     if: ${{ github.ref_name != 'main' && needs.deploy.outputs.has_code_changes == 'true' && needs.efps-test.result == 'success' }}
     needs: [deploy, efps-test]
     runs-on: ubuntu-8core
+    permissions:
+      contents: read
+      pull-requests: write # for PR comment
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
