@@ -29,10 +29,15 @@ runs:
       env:
         VERCEL_ORG_ID: ${{ inputs.org-id }}
         VERCEL_PROJECT_ID: ${{ inputs.project-id }}
-      run: pnpm vercel env pull .env.tmp --yes --environment=${{ inputs.environment }} --token=${{ inputs.token }}
+        VERCEL_ENVIRONMENT: ${{ inputs.environment }}
+        VERCEL_TOKEN: ${{ inputs.token }}
+      run: pnpm vercel env pull .env.tmp --yes --environment="$VERCEL_ENVIRONMENT" --token="$VERCEL_TOKEN"
 
     - name: Load Vercel environment variables into GITHUB_ENV
       uses: actions/github-script@v8
+      env:
+        INPUT_VARIABLES: ${{ inputs.variables }}
+        INPUT_SECRETS: ${{ inputs.secrets }}
       with:
         script: |
           const dotenv = require('dotenv')
@@ -47,8 +52,8 @@ runs:
               .filter((l) => l)
           }
 
-          const variables = `${{ inputs.variables }}` || ''
-          const secrets = `${{ inputs.secrets }}` || ''
+          const variables = process.env.INPUT_VARIABLES || ''
+          const secrets = process.env.INPUT_SECRETS || ''
 
           if (!variables && !secrets) {
             core.setFailed(`Provide either environment variables or secrets`)

@@ -21,10 +21,11 @@ jobs:
     steps:
       - name: Get version input
         id: get-version
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
         run: |
-          version="${{ github.event.inputs.version }}"
-          echo "Using version: $version"
-          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Using version: $INPUT_VERSION"
+          echo "version=$INPUT_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Validate semver version
         run: |
