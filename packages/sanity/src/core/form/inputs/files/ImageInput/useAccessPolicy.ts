@@ -5,11 +5,12 @@ import useSWR from 'swr'
 
 import {enqueueAssetAccessPolicyFetch} from '../../../../store/accessPolicy/fetch'
 import {getMediaLibraryRef, type MediaLibraryRef} from '../../../../store/accessPolicy/refs'
+import {useProjectDatasets} from '../../../../store/project/useProjectDatasets'
 import {type AssetAccessPolicy} from '../types'
 
 /**
- * Resolve the effective access policy for a given image source, including
- * Media Library specific checks when possible.
+ * Resolves the access policy for an image source: per-asset for Media Library,
+ * dataset aclMode for plain assets.
  *
  * @internal
  */
@@ -38,12 +39,20 @@ export function useAccessPolicy(params: {
   }
   const {data: cdnAccessPolicy, isLoading} = useSWR(requestKey, fetcher, options)
 
-  // Non-Media Library assets are always 'public'
-  if (!ref) return 'public'
-  // If we can't check for an access policy (no token)
-  if (!canCheck) return 'unknown'
-  // If we can check AND a check is in progress
-  if (isLoading) return 'checking'
-  // The actual fetched policy, default to 'unknown' if undefined
-  return cdnAccessPolicy ?? 'unknown'
+  const {value: datasets} = useProjectDatasets()
+
+  // Media Library asset: defer to the per-asset cdnAccessPolicy lookup
+  if (ref) {
+    if (!canCheck) return 'unknown'
+    if (isLoading) return 'checking'
+    return cdnAccessPolicy ?? 'unknown'
+  }
+
+  // Plain asset: dataset aclMode drives the authed blob-fetch in `useImageUrl`.
+  const datasetName = client.config().dataset
+  if (!datasetName) return 'public'
+  if (datasets === null) return 'checking'
+  const datasetEntry = datasets.find((entry) => entry.name === datasetName)
+  if (!datasetEntry) return 'public'
+  return datasetEntry.aclMode
 }
