@@ -194,6 +194,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
     vi.useFakeTimers()
     vi.spyOn(global, 'fetch').mockResolvedValue({
       headers: new Headers({'X-Sanity-Shard': 'test-shard'}),
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
     } as Response)
   })
 
@@ -2144,6 +2145,7 @@ describe('checkoutPair -- version documents', () => {
     vi.useFakeTimers()
     vi.spyOn(global, 'fetch').mockResolvedValue({
       headers: new Headers({'X-Sanity-Shard': 'test-shard'}),
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
     } as Response)
 
     const onReportLatency = vi.fn()
@@ -2209,6 +2211,7 @@ describe('checkoutPair -- version documents', () => {
     vi.useFakeTimers()
     vi.spyOn(global, 'fetch').mockResolvedValue({
       headers: new Headers({'X-Sanity-Shard': 'test-shard'}),
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
     } as Response)
 
     const onReportMutationPerformance = vi.fn()

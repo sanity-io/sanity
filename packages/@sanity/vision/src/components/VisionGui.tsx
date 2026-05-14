@@ -270,7 +270,9 @@ export function VisionGui(props: VisionGuiProps) {
 
       cancelListenerSubscription()
 
-      setQueryInProgress(!context.params.error && Boolean(context.query))
+      const hasQuery = context.query.trim().length > 0
+
+      setQueryInProgress(!context.params.error && hasQuery)
       setListenInProgress(false)
       setListenMutations([])
       setError(context.params.error ? new Error(context.params.error) : undefined)
@@ -278,7 +280,7 @@ export function VisionGui(props: VisionGuiProps) {
       setQueryTime(undefined)
       setE2eTime(undefined)
 
-      if (context.params.error) {
+      if (context.params.error || !hasQuery) {
         return
       }
 

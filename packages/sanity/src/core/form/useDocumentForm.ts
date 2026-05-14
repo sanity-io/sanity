@@ -106,7 +106,7 @@ interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersio
 
   ready: boolean
   value: SanityDocumentLike
-  formState: FormState
+  formState: FormState | null
   focusPath: Path
   validation: ValidationMarker[]
   permissions: PermissionCheckResult | undefined
@@ -119,7 +119,7 @@ interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersio
   onChange: (event: PatchEvent) => void
   onPathOpen: (path: Path) => void
   onProgrammaticFocus: (nextPath: Path) => void
-  formStateRef: RefObject<FormState>
+  formStateRef: RefObject<FormState | null>
   schemaType: ObjectSchemaType
 }
 
@@ -480,7 +480,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     changesOpen,
     hasUpstreamVersion,
     displayInlineChanges,
-  })!
+  })
 
   const formStateRef = useRef(formState)
   useEffect(() => {
@@ -490,6 +490,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   useComlinkViewHistory({editState})
 
   const handleSetOpenPath = (path: Path) => {
+    if (!formStateRef.current) return
     const ops = getExpandOperations(formStateRef.current, path)
     ops.forEach((op) => {
       if (op.type === 'expandPath') {
