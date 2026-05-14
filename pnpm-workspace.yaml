@@ -90,7 +90,7 @@ trustPolicyExclude:
   - '@sanity/sdk@2.1.2'
   - '@swc/core@1.13.5'
   - chokidar@4.0.3
-  - groq@3.88.1-typegen-experimental.0
+  - groq@5.24.0
   - react-redux@9.2.0
   - reselect@5.1.1
   - rxjs@7.8.2
