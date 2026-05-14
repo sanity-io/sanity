@@ -12,6 +12,7 @@ import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
+import {vercelDeployTool} from 'sanity-plugin-vercel-deploy'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
@@ -42,6 +43,7 @@ import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test'
+import {formBuilderReproTool} from './plugins/form-builder-repro'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
@@ -215,8 +217,10 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       muxInput({mp4_support: 'standard'}),
       imageHotspotArrayPlugin(),
       routerDebugTool(),
+      formBuilderReproTool(),
       errorReportingTestPlugin(),
       media(),
+      vercelDeployTool(),
       markdownSchema(),
       wave(),
       autoCloseBrackets(),
