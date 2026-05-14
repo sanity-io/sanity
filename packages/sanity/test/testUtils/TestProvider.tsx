@@ -77,7 +77,7 @@ export async function createTestProvider({
 
   const router = route.create('/')
 
-  await i18next.init({showSupportNotice: false})
+  await i18next.init()
 
   const routerState = {}
   const activeWorkspace = {name: 'default'} as WorkspaceSummary
