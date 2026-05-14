@@ -34,10 +34,13 @@ export function Hotkeys({makePlatformAware = true, keys: hotKeys = [], ...props}
 /**
  * @internal
  */
+// navigator.platform is deprecated but remains the most reliable way to detect Apple devices
+// oxlint-disable typescript/no-deprecated
 const IS_APPLE_DEVICE =
   typeof navigator === 'undefined' || typeof navigator.platform !== 'string'
     ? false
     : /Mac|iPod|iPhone|iPad/.test(navigator.platform || '')
+// oxlint-enable typescript/no-deprecated
 
 /**
  * Given key 'Alt', or 'Option' (case-insensitive), return the platform-appropriate key name

@@ -72,10 +72,10 @@ export const customPlugins = defineType({
               plugins: {
                 ...props.plugins,
                 markdown: {
-                  boldDecorator: ({schema}) =>
-                    schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
-                  unorderedList: ({schema}) =>
-                    schema.lists.find((list) => list.name === 'dot')?.name,
+                  boldDecorator: ({context}) =>
+                    context.schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
+                  unorderedList: ({context}) =>
+                    context.schema.lists.find((list) => list.name === 'dot')?.name,
                 },
               },
             })
@@ -124,10 +124,11 @@ export const customPlugins = defineType({
                 ...props.plugins,
                 markdown: {
                   config: {
-                    boldDecorator: ({schema}) =>
-                      schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
-                    unorderedListStyle: ({schema}) =>
-                      schema.lists.find((list) => list.name === 'dot')?.name,
+                    boldDecorator: ({context}) =>
+                      context.schema.decorators.find((decorator) => decorator.name === 'bold')
+                        ?.name,
+                    unorderedListStyle: ({context}) =>
+                      context.schema.lists.find((list) => list.name === 'dot')?.name,
                   },
                 },
               },
@@ -202,8 +203,8 @@ export const customPlugins = defineType({
                   },
                 })}
                 <CharacterPairDecoratorPlugin
-                  decorator={({schema}) =>
-                    schema.decorators.find((decorator) => decorator.name === 'strong')?.name
+                  decorator={({context}) =>
+                    context.schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
                   pair={{
                     char: '👻',
@@ -211,8 +212,8 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
-                  decorator={({schema}) =>
-                    schema.decorators.find((decorator) => decorator.name === 'strong')?.name
+                  decorator={({context}) =>
+                    context.schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
                   pair={{
                     char: '🕹️',
@@ -220,8 +221,8 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
-                  decorator={({schema}) =>
-                    schema.decorators.find((decorator) => decorator.name === 'em')?.name
+                  decorator={({context}) =>
+                    context.schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }
                   pair={{
                     char: '👻',
@@ -229,8 +230,8 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
-                  decorator={({schema}) =>
-                    schema.decorators.find((decorator) => decorator.name === 'em')?.name
+                  decorator={({context}) =>
+                    context.schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }
                   pair={{
                     char: '🕹️',
