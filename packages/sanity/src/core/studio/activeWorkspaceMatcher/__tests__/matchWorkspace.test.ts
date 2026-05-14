@@ -3,22 +3,46 @@ import assert from 'node:assert'
 
 import {describe, expect, it} from 'vitest'
 
+import {type AuthState} from '../../../store/authStore/types'
 import {type WorkspaceLike} from '../../workspaces'
 import {createCommonBasePathRegex} from '../createCommonBasePathRegex'
 import {matchWorkspace as actualMatchWorkspace} from '../matchWorkspace'
 import {normalizedWorkspaces} from '../useNormalizedWorkspaces'
 
+function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
+  return {
+    authenticated: true,
+    currentUser: {
+      id: 'user1',
+      name: 'Test User',
+      email: 'test@test.com',
+      role: 'administrator',
+      roles: [{name: 'administrator', title: 'Administrator'}],
+      profileImage: '',
+    },
+    client: {} as AuthState['client'],
+    ...overrides,
+  }
+}
+
 describe('matchWorkspace', () => {
   const matchWorkspace = ({
     pathname,
     workspaces,
+    workspaceAuthStates = {},
   }: {
     pathname: string
     workspaces: WorkspaceLike[]
+    workspaceAuthStates?: Record<string, AuthState>
   }) => {
     const normalized = normalizedWorkspaces(workspaces as any)
     const basePathRegex = createCommonBasePathRegex(normalized)
-    return actualMatchWorkspace({basePathRegex, pathname, workspaces: normalized})
+    return actualMatchWorkspace({
+      basePathRegex,
+      pathname,
+      workspaces: normalized,
+      workspaceAuthStates,
+    })
   }
   it('returns a match if the incoming `pathname` matches a workspace `basePath`', () => {
     const foo = {name: 'foo', basePath: '/common/foo'}
@@ -46,6 +70,111 @@ describe('matchWorkspace', () => {
 
     assert(resultOne.type === 'redirect')
     expect(resultOne.pathname).toBe(foo.basePath) // the first workspace in the array
+  })
+
+  it('skips a statically hidden workspace and redirects to the next visible one', () => {
+    const commonBasePath = `/x/common`
+    const hidden = {name: 'hidden', basePath: `${commonBasePath}/hidden`, hidden: true}
+    const visible = {name: 'visible', basePath: `${commonBasePath}/visible`}
+
+    const result = matchWorkspace({
+      workspaces: [hidden, visible],
+      pathname: '/',
+      workspaceAuthStates: {},
+    })
+
+    assert(result.type === 'redirect')
+    expect(result.pathname).toBe(visible.basePath)
+  })
+
+  it('returns loading when the first function-hidden workspace has no auth state yet', () => {
+    const commonBasePath = `/x/common`
+    const fnHidden = {
+      name: 'fnHidden',
+      basePath: `${commonBasePath}/fn-hidden`,
+      hidden: () => false,
+    }
+    const fallback = {name: 'fallback', basePath: `${commonBasePath}/fallback`}
+
+    const result = matchWorkspace({
+      workspaces: [fnHidden, fallback],
+      pathname: '/',
+      workspaceAuthStates: {},
+    })
+
+    expect(result.type).toBe('loading')
+  })
+
+  it('redirects to a function-hidden workspace once its callback resolves to visible', () => {
+    const commonBasePath = `/x/common`
+    const fnHidden = {
+      name: 'fnHidden',
+      basePath: `${commonBasePath}/fn-hidden`,
+      hidden: () => false,
+    }
+    const other = {name: 'other', basePath: `${commonBasePath}/other`}
+
+    const result = matchWorkspace({
+      workspaces: [fnHidden, other],
+      pathname: '/',
+      workspaceAuthStates: {fnHidden: createAuthState()},
+    })
+
+    assert(result.type === 'redirect')
+    expect(result.pathname).toBe(fnHidden.basePath)
+  })
+
+  it('skips a function-hidden workspace whose callback resolves to hidden', () => {
+    const commonBasePath = `/x/common`
+    const fnHidden = {
+      name: 'fnHidden',
+      basePath: `${commonBasePath}/fn-hidden`,
+      hidden: () => true,
+    }
+    const other = {name: 'other', basePath: `${commonBasePath}/other`}
+
+    const result = matchWorkspace({
+      workspaces: [fnHidden, other],
+      pathname: '/',
+      workspaceAuthStates: {fnHidden: createAuthState()},
+    })
+
+    assert(result.type === 'redirect')
+    expect(result.pathname).toBe(other.basePath)
+  })
+
+  it('falls back to the first configured workspace when all workspaces are hidden', () => {
+    const commonBasePath = `/x/common`
+    const hiddenA = {name: 'hiddenA', basePath: `${commonBasePath}/hidden-a`, hidden: true}
+    const hiddenB = {name: 'hiddenB', basePath: `${commonBasePath}/hidden-b`, hidden: true}
+
+    const result = matchWorkspace({
+      workspaces: [hiddenA, hiddenB],
+      pathname: '/',
+      workspaceAuthStates: {},
+    })
+
+    assert(result.type === 'redirect')
+    expect(result.pathname).toBe(hiddenA.basePath)
+  })
+
+  it('does not wait for a later function-hidden workspace when an earlier one is statically visible', () => {
+    const commonBasePath = `/x/common`
+    const visible = {name: 'visible', basePath: `${commonBasePath}/visible`}
+    const fnHidden = {
+      name: 'fnHidden',
+      basePath: `${commonBasePath}/fn-hidden`,
+      hidden: () => false,
+    }
+
+    const result = matchWorkspace({
+      workspaces: [visible, fnHidden],
+      pathname: '/',
+      workspaceAuthStates: {},
+    })
+
+    assert(result.type === 'redirect')
+    expect(result.pathname).toBe(visible.basePath)
   })
 
   it('results in a redirect to the first workspace if the incoming `pathname` partially matches the common base path', () => {
@@ -121,6 +250,15 @@ describe('matchWorkspace', () => {
       workspaces: [foo, bar, baz],
       // this should not match anything
       pathname: '/common/ba',
+    })
+
+    expect(result.type).toBe('not-found')
+  })
+
+  it('returns not-found when workspaces is empty', () => {
+    const result = matchWorkspace({
+      workspaces: [],
+      pathname: '/',
     })
 
     expect(result.type).toBe('not-found')
