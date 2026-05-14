@@ -50,6 +50,11 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
   await historyMenuButton.click()
   await expect(historyPane).toBeVisible()
 
+  // Wait until the timeline has loaded at least the two revisions we just
+  // published so that `timelineItemButton.nth(1)` resolves to the earlier
+  // revision. Without this wait the click can target a stale timeline state
+  // and the subsequent `toHaveValue(titleA)` check fails with "Title B".
+  await expect(timelineItemButton.nth(1)).toBeVisible({timeout: 30_000})
   await previousRevisionButton.click({force: true})
 
   await expect(titleInput).toHaveValue(titleA)
@@ -112,6 +117,10 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   await expect(contextMenuButton).toBeVisible()
   await historyMenuButton.click()
   await expect(historyPane).toBeVisible()
+  // Wait until the timeline has loaded at least the two revisions we just
+  // published so that `timelineItemButton.nth(1)` resolves to the earlier
+  // revision. Without this wait the click can target a stale timeline state.
+  await expect(timelineItemButton.nth(1)).toBeVisible({timeout: 30_000})
   await previousRevisionButton.click({force: true})
 
   await expect(titleInput).toHaveValue(titleA)
@@ -176,6 +185,11 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   await expect(contextMenuButton).toBeVisible()
   await historyMenuButton.click()
   await expect(historyPane).toBeVisible()
+  // Wait until the timeline has loaded at least the two revisions we just
+  // published so that `timelineItemButton.nth(1)` resolves to the earlier
+  // revision. Without this wait the click can target a stale timeline state
+  // and the subsequent `toHaveValue(titleA)` check fails with "Title B".
+  await expect(timelineItemButton.nth(1)).toBeVisible({timeout: 30_000})
   await previousRevisionButton.click({force: true})
 
   await expect(titleInput).toHaveValue(titleA)
