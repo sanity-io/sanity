@@ -4,13 +4,15 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useContext, useMemo, useRef} from 'react'
+import {DocumentDivergencesContext} from 'sanity/_singletons'
 
 import {type DocumentFieldAction} from '../../config'
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
 import {PreviewLoader} from '../../preview'
 import {EMPTY_ARRAY} from '../../util'
+import {DivergencesProvider} from '../contexts/DivergencesProvider'
 import {FormValueProvider} from '../contexts/FormValue'
 import {GetFormValueProvider} from '../contexts/GetFormValue'
 import {
@@ -296,7 +298,13 @@ export function FormBuilder(props: FormBuilderProps) {
     value,
   ])
 
-  return (
+  // If no `DivergencesProvider` is mounted above (e.g. when `FormBuilder` is used
+  // by a plugin outside `DocumentPaneProvider`), wrap in a disabled one so the
+  // field tree can render. When one is present, inherit it so `DocumentPaneProvider`
+  // and `TasksFormBuilder` continue to control the enabled state.
+  const existingDivergencesContext = useContext(DocumentDivergencesContext)
+
+  const tree = (
     <FormProvider
       __internal_fieldActions={fieldActions}
       __internal_patchChannel={patchChannel}
@@ -341,6 +349,12 @@ export function FormBuilder(props: FormBuilderProps) {
       </GetFormValueProvider>
     </FormProvider>
   )
+
+  if (existingDivergencesContext !== null) {
+    return tree
+  }
+
+  return <DivergencesProvider enabled={false}>{tree}</DivergencesProvider>
 }
 
 interface RootInputProps {
