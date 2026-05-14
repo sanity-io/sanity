@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.25.2](https://github.com/sanity-io/sanity/compare/v5.25.1...v5.25.2) (2026-05-14)
+
+### Bug Fixes
+
+* **form:** load crop image via authed blob URL for private assets ([#12820](https://github.com/sanity-io/sanity/issues/12820)) ([c6abef0](https://github.com/sanity-io/sanity/commit/c6abef062ed0a79305197fcfb83898b07dfd565c))
 ## [5.25.1](https://github.com/sanity-io/sanity/compare/v5.25.0...v5.25.1) (2026-05-13)
 
 ### Bug Fixes
