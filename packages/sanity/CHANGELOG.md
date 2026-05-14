@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.25.1](https://github.com/sanity-io/sanity/compare/v5.25.0...v5.25.1) (2026-05-13)
+
+### Bug Fixes
+
+* **core:** remove static css import from `sanity` and `vision` ([#12825](https://github.com/sanity-io/sanity/issues/12825)) ([c147d00](https://github.com/sanity-io/sanity/commit/c147d00461c03b07a17bacfd2b029b297248176b))
+* show login screen instead of error when session expires ([#12827](https://github.com/sanity-io/sanity/issues/12827)) ([69cce1a](https://github.com/sanity-io/sanity/commit/69cce1a4282de2cc84ceafd437fee3d63b456d6b))
+* **structure:** truncate long document titles in pane header ([#12823](https://github.com/sanity-io/sanity/issues/12823)) ([e916a32](https://github.com/sanity-io/sanity/commit/e916a32924c6520c49e4afc0d741b622841977f8))
 ## [5.25.0](https://github.com/sanity-io/sanity/compare/v5.24.0...v5.25.0) (2026-05-12)
 
 ### Features
