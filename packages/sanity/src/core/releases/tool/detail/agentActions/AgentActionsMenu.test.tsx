@@ -34,6 +34,15 @@ vi.mock('../useBundleDocuments', () => ({
   }),
 }))
 
+vi.mock('../../../store/useReleaseSettings', () => ({
+  useReleaseSettings: () => ({
+    descriptionSections: [],
+    loading: false,
+    error: null,
+    setDescriptionSections: vi.fn(),
+  }),
+}))
+
 const baseRelease: ReleaseDocument = {
   _id: '_.releases.release1',
   _type: 'system.release',

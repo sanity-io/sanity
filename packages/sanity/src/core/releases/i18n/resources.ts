@@ -579,6 +579,33 @@ const releasesLocaleStrings = {
   'review-dialog.verdict.risk.medium': 'Medium risk',
   /** Verdict banner label for a high-risk release */
   'review-dialog.verdict.risk.high': 'High risk',
+
+  /** Aria-label/tooltip for the project-level release settings cog button */
+  'settings.button.label': 'Release settings',
+  /** Menu item label that opens the release template dialog */
+  'settings.menu.release-template': 'Release template',
+  /** Header text for the release template dialog */
+  'release-template-dialog.header': 'Release template',
+  /** Description text inside the release template dialog */
+  'release-template-dialog.description':
+    'Each title becomes a heading in the AI-generated release description.',
+  /** Placeholder text for each section-title input row */
+  'release-template-dialog.section-title-placeholder': 'Section title',
+  /** Label for the button that appends a new section row */
+  'release-template-dialog.add-section': 'Add section',
+  /** Aria-label for the per-row delete button */
+  'release-template-dialog.delete-section': 'Delete section',
+  /** Tooltip/aria-label for the per-row hint toggle button when the row has no hint yet */
+  'release-template-dialog.section-hint-toggle': 'Add guidance for this section',
+  /** Tooltip/aria-label for the per-row hint toggle button when the row already has a hint */
+  'release-template-dialog.section-hint-toggle-active': 'Edit guidance for this section',
+  /** Placeholder for the per-section hint textarea */
+  'release-template-dialog.section-hint-placeholder':
+    'Tell the AI what to emphasize, what to omit, or how to phrase this section.',
+  /** Tooltip shown on the Add button when the maximum number of sections is reached */
+  'release-template-dialog.section-limit-reached': 'Maximum of 8 sections',
+  /** Toast title when saving the release template fails */
+  'release-template-dialog.save-error': 'Could not save the release template',
 }
 
 /**

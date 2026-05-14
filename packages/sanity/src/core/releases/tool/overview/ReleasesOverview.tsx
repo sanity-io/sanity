@@ -62,6 +62,7 @@ import {createReleaseCalendarFilterDay, DateFilterButton} from './ReleaseCalenda
 import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {ReleaseNotFoundBanner} from './ReleaseNotFoundBanner'
 import {ReleasesEmptyState} from './ReleasesEmptyState'
+import {ReleaseSettingsMenuButton} from './ReleaseSettingsMenuButton'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
 import {ScheduledDraftsEmptyState} from './ScheduledDraftsEmptyState'
@@ -570,6 +571,7 @@ export function ReleasesOverview() {
                   {...timeZoneButtonProps}
                 />
                 {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
+                <ReleaseSettingsMenuButton />
                 {loadingOrHasReleases && createReleaseButton}
               </Flex>
             </Flex>
