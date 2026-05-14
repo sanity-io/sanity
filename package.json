@@ -1,6 +1,6 @@
 {
   "name": "sanity-root",
-  "version": "5.25.1",
+  "version": "5.25.2",
   "private": true,
   "type": "module",
   "scripts": {
