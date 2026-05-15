@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.25.1](https://github.com/sanity-io/sanity/compare/v5.25.0...v5.25.1) (2026-05-13)
+
+### Bug Fixes
+
+* **core:** remove static css import from `sanity` and `vision` ([#12825](https://github.com/sanity-io/sanity/issues/12825)) ([c147d00](https://github.com/sanity-io/sanity/commit/c147d00461c03b07a17bacfd2b029b297248176b))
+* show login screen instead of error when session expires ([#12827](https://github.com/sanity-io/sanity/issues/12827)) ([69cce1a](https://github.com/sanity-io/sanity/commit/69cce1a4282de2cc84ceafd437fee3d63b456d6b))
+* **structure:** truncate long document titles in pane header ([#12823](https://github.com/sanity-io/sanity/issues/12823)) ([e916a32](https://github.com/sanity-io/sanity/commit/e916a32924c6520c49e4afc0d741b622841977f8))
+## [5.25.0](https://github.com/sanity-io/sanity/compare/v5.24.0...v5.25.0) (2026-05-12)
+
+### Features
+
+* **core:** variants plugin setup - default disabled ([#12762](https://github.com/sanity-io/sanity/issues/12762)) ([71c40e1](https://github.com/sanity-io/sanity/commit/71c40e11d452b94421ed472c39ab6ad443755215))
+* **sanity:** ensure all ordering expression are addressable ([0ba3fb8](https://github.com/sanity-io/sanity/commit/0ba3fb8b8beaa79329919c65149b638ab64f14e4))
+* **telemetry:** enrich studio event context ([#12813](https://github.com/sanity-io/sanity/issues/12813)) ([9f3591c](https://github.com/sanity-io/sanity/commit/9f3591c77d0f0fd4b8caff7aab170d8609265363))
+
+### Bug Fixes
+
+* adding names to currently nameless telemetry events ([#12816](https://github.com/sanity-io/sanity/issues/12816)) ([d694f57](https://github.com/sanity-io/sanity/commit/d694f57a75f58a364a65d9542e3e4b033ab83ca3))
+* **auth:** guard access to browser-only globals in SSR environments ([#12790](https://github.com/sanity-io/sanity/issues/12790)) ([902b99b](https://github.com/sanity-io/sanity/commit/902b99b29c5a090cc6c2a9a499e20025add3262c))
+* **ci:** restore provenance after pnpm 11 upgrade ([#12797](https://github.com/sanity-io/sanity/issues/12797)) ([212d696](https://github.com/sanity-io/sanity/commit/212d6963528743744281f9b5d7b81973d80fdf33))
+* **core:** await empty response handling ([#12819](https://github.com/sanity-io/sanity/issues/12819)) ([2455e6c](https://github.com/sanity-io/sanity/commit/2455e6c95ef4fbc2e7be5e56702cf76e1c569c15))
+* **core:** include versions in consistency status validation ([#12771](https://github.com/sanity-io/sanity/issues/12771)) ([ce57ece](https://github.com/sanity-io/sanity/commit/ce57ece7bf14030da5ae3b68175b3fde889beb40))
+* **deps:** Update portabletext ([#12770](https://github.com/sanity-io/sanity/issues/12770)) ([bc47f51](https://github.com/sanity-io/sanity/commit/bc47f51e7a57d8b67c425ecba5e2588fa7fb3d48))
+* **form:** keep dialog open when focusing reference link in grid item ([#12821](https://github.com/sanity-io/sanity/issues/12821)) ([b3f4604](https://github.com/sanity-io/sanity/commit/b3f460433e311de70edc5af8fb6788c4fbcf4d81))
+* hide register studio option from local dev mode studios ([#12803](https://github.com/sanity-io/sanity/issues/12803)) ([3591ab7](https://github.com/sanity-io/sanity/commit/3591ab7e0d8705bce42d2200f18a2b83d66caed9))
+* **presentation:** sync perspective cookie for content agent documents ([#12671](https://github.com/sanity-io/sanity/issues/12671)) ([08c0d79](https://github.com/sanity-io/sanity/commit/08c0d798f957df32b725d94e02a0a747014745b6))
+* **releases:** use selected timezone in perspective menu dates ([#12808](https://github.com/sanity-io/sanity/issues/12808)) ([2fc09fd](https://github.com/sanity-io/sanity/commit/2fc09fd338954893a51d87f3e8e2e17d52dc286b))
+* resolving z indexes issue with popovers inside document form ([#12798](https://github.com/sanity-io/sanity/issues/12798)) ([2e11e50](https://github.com/sanity-io/sanity/commit/2e11e50f75772b036ce4b2ad10d615794b236095))
+* **structure:** guard against null formState in DivergencesProvider ([#12807](https://github.com/sanity-io/sanity/issues/12807)) ([9ee4495](https://github.com/sanity-io/sanity/commit/9ee4495ca0c1b744051f497e1b91d1ee957830a6))
+* **vision:** do not fetch if query is empty ([#12814](https://github.com/sanity-io/sanity/issues/12814)) ([a10c347](https://github.com/sanity-io/sanity/commit/a10c347588c4ae128c5e2b2ad0c77b87d82b213f))
+
+### Performance Improvements
+
+* **core:** dedupe equal editStateFor values + add tests for hook ([#12789](https://github.com/sanity-io/sanity/issues/12789)) ([03217c9](https://github.com/sanity-io/sanity/commit/03217c90079df8b18f2a1af0fa2c4b97de39d6e5))
+* **core:** render workspace menu immediately and preload on hover ([#12793](https://github.com/sanity-io/sanity/issues/12793)) ([93dd049](https://github.com/sanity-io/sanity/commit/93dd0491f01bf8f511d896d6efc9ea91ecf003fd))
+* defer per-workspace auth checks via /auth/id probe ([#12777](https://github.com/sanity-io/sanity/issues/12777)) ([4b3b564](https://github.com/sanity-io/sanity/commit/4b3b5642cece43325ed9eb3a66d4bc46b9cd13b3))
 ## [5.24.0](https://github.com/sanity-io/sanity/compare/v5.23.0...v5.24.0) (2026-05-05)
 
 ### Features

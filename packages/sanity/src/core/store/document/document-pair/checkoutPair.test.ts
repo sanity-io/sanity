@@ -19,199 +19,15 @@ const client = {
     action: mockedActionRequest,
   },
   dataRequest: mockedDataRequest,
-  withConfig: vi.fn(() => client),
+  withConfig: vi.fn(function (this: SanityClient) {
+    return this
+  }),
 }
 
 const idPair = {publishedId: 'publishedId', draftId: 'draftId'}
 
 beforeEach(() => {
   vi.clearAllMocks()
-})
-
-describe('checkoutPair -- local actions', () => {
-  test('patch', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
-    const combined = merge(draft.events, published.events)
-    const sub = combined.subscribe()
-    await new Promise((resolve) => setTimeout(resolve, 0))
-
-    draft.mutate(draft.patch([{set: {title: 'new title'}}]))
-    draft.commit()
-
-    expect(mockedDataRequest).toHaveBeenCalledWith(
-      'mutate',
-      {
-        mutations: [{patch: {id: 'draftId', set: {title: 'new title'}}}],
-        transactionId: expect.any(String),
-      },
-      {
-        returnDocuments: false,
-        skipCrossDatasetReferenceValidation: true,
-        tag: 'document.commit',
-        visibility: 'async',
-      },
-    )
-    sub.unsubscribe()
-  })
-
-  test('createIfNotExists', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
-    const combined = merge(draft.events, published.events)
-    const sub = combined.subscribe()
-    await new Promise((resolve) => setTimeout(resolve, 0))
-
-    draft.mutate([
-      draft.createIfNotExists({
-        _id: 'draftId',
-        _type: 'any',
-        _createdAt: 'now',
-        _updatedAt: 'now',
-        _rev: 'any',
-      }),
-    ])
-    draft.commit()
-
-    expect(mockedDataRequest).toHaveBeenCalledWith(
-      'mutate',
-      {
-        mutations: [
-          {
-            createIfNotExists: {
-              _id: 'draftId',
-              _type: 'any',
-              _createdAt: 'now',
-            },
-          },
-        ],
-        transactionId: expect.any(String),
-      },
-      {
-        returnDocuments: false,
-        skipCrossDatasetReferenceValidation: true,
-        tag: 'document.commit',
-        visibility: 'async',
-      },
-    )
-
-    sub.unsubscribe()
-  })
-
-  test('create', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
-    const combined = merge(draft.events, published.events)
-    const sub = combined.subscribe()
-    await new Promise((resolve) => setTimeout(resolve, 0))
-
-    draft.mutate([
-      draft.create({
-        _id: 'draftId',
-        _type: 'any',
-        _createdAt: 'now',
-        _updatedAt: 'now',
-        _rev: 'any',
-      }),
-    ])
-    draft.commit()
-
-    expect(mockedDataRequest).toHaveBeenCalledWith(
-      'mutate',
-      {
-        mutations: [
-          {
-            create: {
-              _id: 'draftId',
-              _type: 'any',
-              _createdAt: 'now',
-            },
-          },
-        ],
-        transactionId: expect.any(String),
-      },
-      {
-        returnDocuments: false,
-        skipCrossDatasetReferenceValidation: true,
-        tag: 'document.commit',
-        visibility: 'async',
-      },
-    )
-
-    sub.unsubscribe()
-  })
-
-  test('createOrReplace', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
-    const combined = merge(draft.events, published.events)
-    const sub = combined.subscribe()
-    await new Promise((resolve) => setTimeout(resolve, 0))
-
-    draft.mutate([
-      draft.createOrReplace({
-        _id: 'draftId',
-        _type: 'any',
-        _createdAt: 'now',
-        _updatedAt: 'now',
-        _rev: 'any',
-      }),
-    ])
-    draft.commit()
-
-    expect(mockedDataRequest).toHaveBeenCalledWith(
-      'mutate',
-      {
-        mutations: [
-          {
-            createOrReplace: {
-              _id: 'draftId',
-              _type: 'any',
-              _rev: expect.any(String),
-              _createdAt: 'now',
-            },
-          },
-        ],
-        transactionId: expect.any(String),
-      },
-      {
-        returnDocuments: false,
-        skipCrossDatasetReferenceValidation: true,
-        tag: 'document.commit',
-        visibility: 'async',
-      },
-    )
-
-    sub.unsubscribe()
-  })
-
-  test('delete', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
-    const combined = merge(draft.events, published.events)
-    const sub = combined.subscribe()
-    await new Promise((resolve) => setTimeout(resolve, 0))
-
-    draft.mutate([draft.delete()])
-    draft.commit()
-
-    expect(mockedDataRequest).toHaveBeenCalledWith(
-      'mutate',
-      {
-        mutations: [
-          {
-            delete: {
-              id: 'draftId',
-            },
-          },
-        ],
-        transactionId: expect.any(String),
-      },
-      {
-        returnDocuments: false,
-        skipCrossDatasetReferenceValidation: true,
-        tag: 'document.commit',
-        visibility: 'async',
-      },
-    )
-
-    sub.unsubscribe()
-  })
 })
 
 describe('checkoutPair -- server actions', () => {
@@ -378,6 +194,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
     vi.useFakeTimers()
     vi.spyOn(global, 'fetch').mockResolvedValue({
       headers: new Headers({'X-Sanity-Shard': 'test-shard'}),
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
     } as Response)
   })
 
@@ -397,6 +214,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -445,6 +263,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -493,6 +312,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -540,6 +360,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -598,6 +419,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -651,6 +473,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -684,7 +507,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
 
     // --- Second batch (document stays inconsistent between batches) ---
     commitSubject = new Subject()
-    testClient.dataRequest.mockReturnValue(commitSubject)
+    testClient.observable.action.mockReturnValue(commitSubject)
 
     draft.mutate(draft.patch([{set: {title: 'second'}}]))
     await vi.advanceTimersByTimeAsync(50)
@@ -722,6 +545,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => of({transactionId: 'tx1', results: []})),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -765,6 +589,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -832,6 +657,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -876,6 +702,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: () => {
         throw new Error('client not configured')
@@ -925,6 +752,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -954,7 +782,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
 
     // Second mutation — callback should succeed, proving the pipeline survived
     commitSubject = new Subject()
-    testClient.dataRequest.mockReturnValue(commitSubject)
+    testClient.observable.action.mockReturnValue(commitSubject)
 
     draft.mutate(draft.patch([{set: {title: 'second'}}]))
     draft.commit()
@@ -989,6 +817,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1020,7 +849,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
 
     // Second mutation — should still work
     commitSubject = new Subject()
-    testClient.dataRequest.mockReturnValue(commitSubject)
+    testClient.observable.action.mockReturnValue(commitSubject)
 
     draft.mutate(draft.patch([{set: {title: 'second'}}]))
     await vi.advanceTimersByTimeAsync(100)
@@ -1054,6 +883,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1099,6 +929,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1125,7 +956,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
 
     // Now do a fresh commit cycle — the stale entry should be evicted during the scan
     const commitSubject2 = new Subject()
-    testClient.dataRequest.mockReturnValue(commitSubject2)
+    testClient.observable.action.mockReturnValue(commitSubject2)
 
     draft.mutate(draft.patch([{set: {title: 'test2'}}]))
     draft.commit()
@@ -1167,6 +998,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1268,6 +1100,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1319,6 +1152,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1365,6 +1199,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1411,6 +1246,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1457,6 +1293,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1495,7 +1332,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
 
     // Second mutation cycle — proves the pipeline is clean and orphans don't interfere
     commitSubject = new Subject()
-    testClient.dataRequest.mockReturnValue(commitSubject)
+    testClient.observable.action.mockReturnValue(commitSubject)
 
     draft.mutate(draft.patch([{set: {title: 'second cycle'}}]))
     draft.commit()
@@ -1529,6 +1366,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1588,6 +1426,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1617,7 +1456,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
 
     // Step 4: Fresh commit subject for the new mutation
     commitSubject = new Subject()
-    testClient.dataRequest.mockReturnValue(commitSubject)
+    testClient.observable.action.mockReturnValue(commitSubject)
 
     // Step 5: Mutate again AFTER the snapshot and commit
     draft.mutate(draft.patch([{set: {title: 'after snapshot'}}]))
@@ -1649,17 +1488,14 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
     const listenerSubject = new Subject()
     const draftCommitSubject = new Subject()
     const publishedCommitSubject = new Subject()
-    let callCount = 0
 
     const testClient = {
       ...client,
-      dataRequest: vi.fn(() => {
-        callCount++
-        return callCount === 1 ? draftCommitSubject : publishedCommitSubject
-      }),
+      dataRequest: vi.fn(() => publishedCommitSubject),
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => draftCommitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1714,6 +1550,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1799,6 +1636,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -1847,11 +1685,13 @@ describe('checkoutPair -- slow commit warning', () => {
 
   test('calls onSlowCommit after 50 seconds when commit does not resolve', async () => {
     const onSlowCommit = vi.fn()
-    const slowDataRequest = vi.fn(() => NEVER)
 
     const slowClient = {
       ...client,
-      dataRequest: slowDataRequest,
+      observable: {
+        ...client.observable,
+        action: vi.fn(() => NEVER),
+      },
     }
 
     const {draft, published} = checkoutPair(slowClient as any as SanityClient, idPair, of(false), {
@@ -1883,6 +1723,10 @@ describe('checkoutPair -- slow commit warning', () => {
     const fastClient = {
       ...client,
       dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        action: vi.fn(() => commitSubject),
+      },
     }
 
     const {draft, published} = checkoutPair(fastClient as any as SanityClient, idPair, of(false), {
@@ -1915,6 +1759,10 @@ describe('checkoutPair -- slow commit warning', () => {
     const slowClient = {
       ...client,
       dataRequest: vi.fn(() => commitSubject),
+      observable: {
+        ...client.observable,
+        action: vi.fn(() => commitSubject),
+      },
     }
 
     const {draft, published} = checkoutPair(slowClient as any as SanityClient, idPair, of(false), {
@@ -1939,7 +1787,7 @@ describe('checkoutPair -- slow commit warning', () => {
 
     // Second edit restarts the timer via switchMap
     const secondCommitSubject = new Subject()
-    slowClient.dataRequest.mockReturnValue(secondCommitSubject)
+    slowClient.observable.action.mockReturnValue(secondCommitSubject)
 
     draft.mutate(draft.patch([{set: {title: 'second edit'}}]))
     draft.commit()
@@ -1967,6 +1815,7 @@ describe('checkoutPair -- slow commit warning', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
     }
 
@@ -1994,7 +1843,7 @@ describe('checkoutPair -- slow commit warning', () => {
 
     // Second slow commit (new Subject so it never resolves)
     const secondCommitSubject = new Subject()
-    slowClient.dataRequest.mockReturnValue(secondCommitSubject)
+    slowClient.observable.action.mockReturnValue(secondCommitSubject)
 
     draft.mutate(draft.patch([{set: {title: 'second edit'}}]))
     draft.commit()
@@ -2015,6 +1864,7 @@ describe('checkoutPair -- slow commit warning', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => NEVER),
       },
     }
 
@@ -2068,6 +1918,7 @@ describe('checkoutPair -- document rebase telemetry', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
     }
 
@@ -2147,6 +1998,7 @@ describe('checkoutPair -- document rebase telemetry', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
       },
     }
 
@@ -2200,6 +2052,7 @@ describe('checkoutPair -- document rebase telemetry', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
         getDocuments: (ids: string[]) =>
           of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
       },
@@ -2292,6 +2145,7 @@ describe('checkoutPair -- version documents', () => {
     vi.useFakeTimers()
     vi.spyOn(global, 'fetch').mockResolvedValue({
       headers: new Headers({'X-Sanity-Shard': 'test-shard'}),
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
     } as Response)
 
     const onReportLatency = vi.fn()
@@ -2309,6 +2163,7 @@ describe('checkoutPair -- version documents', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
         getDocuments: (ids: string[]) =>
           of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
       },
@@ -2356,6 +2211,7 @@ describe('checkoutPair -- version documents', () => {
     vi.useFakeTimers()
     vi.spyOn(global, 'fetch').mockResolvedValue({
       headers: new Headers({'X-Sanity-Shard': 'test-shard'}),
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
     } as Response)
 
     const onReportMutationPerformance = vi.fn()
@@ -2373,6 +2229,7 @@ describe('checkoutPair -- version documents', () => {
       observable: {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+        action: vi.fn(() => commitSubject),
         getDocuments: (ids: string[]) =>
           of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
       },

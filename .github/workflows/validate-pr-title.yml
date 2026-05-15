@@ -1,7 +1,7 @@
 name: "Validate PR title"
 
 on:
-  pull_request_target:
+  pull_request_target: # zizmor: ignore[dangerous-triggers] reads only PR metadata; no checkout, no PR code execution
     types:
       - opened
       - edited

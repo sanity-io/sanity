@@ -39,6 +39,11 @@ await yargs(process.argv.slice(2))
           choices: ['timestamp', 'commits-ahead'] as const,
           default: 'timestamp' as const,
         },
+        buildMetadata: {
+          description: 'Append +<commitHash> build metadata to the version (default: true)',
+          type: 'boolean',
+          default: true,
+        },
         dryRun: {
           description: 'Print the new version without writing files',
           type: 'boolean',
@@ -49,6 +54,7 @@ await yargs(process.argv.slice(2))
         await bump({
           preid: args.preid,
           suffixType: args.suffixType,
+          buildMetadata: args.buildMetadata,
           dryRun: args.dryRun,
         })
       } catch (error) {

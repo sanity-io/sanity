@@ -10,10 +10,13 @@ import uniq from 'lodash-es/uniq.js'
 import words from 'lodash-es/words.js'
 
 import {
+  compileSortExpression,
   deriveSearchWeightsFromType,
+  ORDERINGS_PROJECTION_KEY,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchPath,
+  type SearchSort,
   type SearchSpec,
   type SearchTerms,
 } from '../common'
@@ -105,18 +108,8 @@ export function createSearchQuery(
   searchTerms: SearchTerms<SchemaType | CrossDatasetType>,
   searchOpts: SearchOptions & SearchFactoryOptions = {},
 ): SearchQuery {
-  const {
-    filter,
-    params,
-    tag,
-    maxDepth,
-    isCrossDataset,
-    __unstable_extendedProjection,
-    perspective,
-    sort,
-    limit,
-    comments,
-  } = searchOpts
+  const {filter, params, tag, maxDepth, isCrossDataset, perspective, sort, limit, comments} =
+    searchOpts
 
   const specs = searchTerms.types
     .map((schemaType) =>
@@ -150,31 +143,33 @@ export function createSearchQuery(
         return `${constraint}${selection}`
       })
 
-  // Default to `_id asc` (GROQ default) if no search sort is provided
-  const sortOrder = toOrderClause(sort || [{field: '_id', direction: 'asc'}])
+  // Default to `_id asc` (GROQ default) if no search sort is provided.
+  const inputSortOrder: SearchSort[] = sort || [{field: '_id', direction: 'asc'}]
 
-  const projectionFields = ['_type', '_id', '_originalId']
+  const compiledSortEntries = inputSortOrder.map((entry, index) =>
+    compileSortExpression(entry, index),
+  )
+
+  const resolvedSortOrder: SearchSort[] = inputSortOrder.map((entry, index) => ({
+    ...entry,
+    projectionIndex: compiledSortEntries[index].projectionIndex,
+  }))
+
+  const orderingsExpressions = compiledSortEntries.map((entry) => entry.expression)
+  const orderingsProjection = `"${ORDERINGS_PROJECTION_KEY}": [${orderingsExpressions.join(', ')}]`
+  const baseProjectionFields = ['_type', '_id', '_originalId']
   const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
-  const finalProjection = projectionFields.join(', ') + (selection ? `, ${selection}` : '')
 
-  let query =
-    `*[${filters.join(' && ')}]` +
-    `| order(${sortOrder})` +
-    `[0...$__limit]` +
-    `{${finalProjection}}`
+  const projection = [...baseProjectionFields, orderingsProjection, selection]
+    .filter(Boolean)
+    .join(', ')
 
-  // Optionally prepend our query with an 'extended' projection.
-  // Required if we want to sort on nested object or reference fields.
-  // In future, creating the extended projection should be handled internally by `createSearchQuery`.
-  if (__unstable_extendedProjection) {
-    const extendedProjection = __unstable_extendedProjection
-    const firstProjection = projectionFields.concat(extendedProjection).join(', ')
-
-    query = [
-      `*[${filters.join(' && ')}]{${firstProjection}}`,
-      `order(${sortOrder})[0...$__limit]{${finalProjection}}`,
-    ].join('|')
-  }
+  const query = [
+    `*[${filters.join(' && ')}]`,
+    `{${projection}}`,
+    `| order(${toOrderClause(resolvedSortOrder)})`,
+    `[0...$__limit]`,
+  ].join(' ')
 
   // Prepend GROQ comments
   const groqComments = [`findability-mvi:${FINDABILITY_MVI}`]

@@ -1,0 +1,10 @@
+rules:
+  unpinned-uses:
+    config:
+      # Subset of sanity-io/renovate-config security.json — only owners
+      # currently referenced in this repo's workflows. Add more as needed.
+      policies:
+        actions/*: ref-pin
+        pnpm/*: ref-pin
+        sanity-io/*: ref-pin
+        "*": hash-pin

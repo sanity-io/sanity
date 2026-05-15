@@ -12,9 +12,7 @@ on:
         default: false
         type: boolean
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   build-and-validate:
@@ -123,9 +121,7 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
-        run: pnpm -r publish
-        env:
-          NPM_CONFIG_PROVENANCE: true
+        run: pnpm -r publish --provenance
 
   publish-releases:
     # Publish sanity.io Changelog & github release

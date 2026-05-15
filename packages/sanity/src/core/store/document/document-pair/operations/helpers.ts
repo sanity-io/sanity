@@ -8,14 +8,8 @@ import {publish as serverPublish} from '../serverOperations/publish'
 import {restore as serverRestore} from '../serverOperations/restore'
 import {unpublish as serverUnpublish} from '../serverOperations/unpublish'
 import {commit} from './commit'
-import {del} from './delete'
-import {discardChanges} from './discardChanges'
 import {duplicate} from './duplicate'
-import {patch} from './patch'
-import {publish} from './publish'
-import {restore} from './restore'
 import {type Operation, type OperationArgs, type OperationImpl, type OperationsAPI} from './types'
-import {unpublish} from './unpublish'
 
 function createOperationGuard(opName: string): Operation<any[], 'NOT_READY'> {
   return {
@@ -59,31 +53,15 @@ function wrap<ExtraArgs extends any[], DisabledReason extends string>(
 }
 
 export function createOperationsAPI(args: OperationArgs): OperationsAPI {
-  const operationsAPI = {
+  return {
     commit: wrap('commit', commit, args),
-    delete: wrap('delete', del, args),
-    del: wrap('delete', del, args),
-    publish: wrap('publish', publish, args),
-    patch: wrap('patch', patch, args),
-    discardChanges: wrap('discardChanges', discardChanges, args),
-    unpublish: wrap('unpublish', unpublish, args),
     duplicate: wrap('duplicate', duplicate, args),
-    restore: wrap('restore', restore, args),
+    delete: wrap('delete', serverDel, args),
+    del: wrap('delete', serverDel, args),
+    discardChanges: wrap('discardChanges', serverDiscardChanges, args),
+    patch: wrap('patch', serverPatch, args),
+    publish: wrap('publish', serverPublish, args),
+    unpublish: wrap('unpublish', serverUnpublish, args),
+    restore: wrap('restore', serverRestore, args),
   }
-
-  //as we add server operations one by one, we can add them here
-  // Note: Any changes must also be made to `serverOperationImpls`, which is defined in `packages/sanity/src/core/store/document/document-pair/operationEvents.ts`.
-  if (args.serverActionsEnabled) {
-    return {
-      ...operationsAPI,
-      delete: wrap('delete', serverDel, args),
-      del: wrap('delete', serverDel, args),
-      discardChanges: wrap('discardChanges', serverDiscardChanges, args),
-      patch: wrap('patch', serverPatch, args),
-      publish: wrap('publish', serverPublish, args),
-      unpublish: wrap('unpublish', serverUnpublish, args),
-      restore: wrap('restore', serverRestore, args),
-    }
-  }
-  return operationsAPI
 }

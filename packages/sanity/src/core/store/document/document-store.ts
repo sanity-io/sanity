@@ -117,7 +117,11 @@ export interface DocumentStoreOptions {
   schema: Schema
   initialValueTemplates: Template[]
   i18n: LocaleSource
-  serverActionsEnabled: Observable<boolean>
+  /**
+   * @deprecated Does nothing. Preserved to avoid breaking changes.
+   * Will be removed in the next major version.
+   */
+  serverActionsEnabled?: Observable<boolean>
   extraOptions?: DocumentStoreExtraOptions
   currentUser?: Omit<CurrentUser, 'role'> | null
 }
@@ -130,7 +134,6 @@ export function createDocumentStore({
   initialValueTemplates,
   schema,
   i18n,
-  serverActionsEnabled,
   extraOptions = {},
   currentUser,
 }: DocumentStoreOptions): DocumentStore {
@@ -156,7 +159,6 @@ export function createDocumentStore({
     historyStore,
     schema,
     i18n,
-    serverActionsEnabled,
     extraOptions,
     currentUser,
   }
@@ -164,7 +166,7 @@ export function createDocumentStore({
   return {
     // Public API
     checkoutPair(idPair) {
-      return checkoutPair(client, idPair, serverActionsEnabled, {
+      return checkoutPair(client, idPair, undefined, {
         onSyncErrorRecovery,
         onReportLatency,
         onSlowCommit,
@@ -193,7 +195,6 @@ export function createDocumentStore({
           ctx.client,
           getIdPairFromPublished(publishedId, version),
           type,
-          serverActionsEnabled,
           extraOptions,
         )
       },
@@ -202,7 +203,6 @@ export function createDocumentStore({
           ctx.client,
           getIdPairFromPublished(publishedId, version),
           type,
-          serverActionsEnabled,
           extraOptions,
         )
       },
@@ -220,7 +220,6 @@ export function createDocumentStore({
           client,
           historyStore,
           schema,
-          serverActionsEnabled,
           extraOptions,
         }).pipe(
           filter(

@@ -13,14 +13,11 @@ import {usePerspective} from '../../perspective/usePerspective'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
+import {useFormatRelativeLocalePublishDate} from '../../releases/hooks/useFormatRelativeLocalePublishDate'
 import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {
-  formatRelativeLocalePublishDate,
-  isDraftPerspective,
-  isReleaseScheduledOrScheduling,
-} from '../../releases/util/util'
+import {isDraftPerspective, isReleaseScheduledOrScheduling} from '../../releases/util/util'
 import {useWorkspace} from '../../studio/workspace'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
@@ -101,6 +98,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   const setPerspective = useSetPerspective()
   const {toggleExcludedPerspective, isPerspectiveExcluded} = useExcludedPerspective()
+  const formatPublishDate = useFormatRelativeLocalePublishDate()
   const releaseId = isReleaseDocument(release)
     ? getReleaseIdFromReleaseDocumentId(release._id)
     : release
@@ -200,7 +198,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
               release.metadata.releaseType === 'scheduled' &&
               (release.publishAt || release.metadata.intendedPublishAt) && (
                 <Text muted size={1}>
-                  {formatRelativeLocalePublishDate(release)}
+                  {formatPublishDate(release)}
                 </Text>
               )}
           </Stack>
