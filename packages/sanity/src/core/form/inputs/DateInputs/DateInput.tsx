@@ -1,10 +1,11 @@
 import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
-import {useCallback, useMemo} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 import {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {set, unset} from '../../patch'
+import {useReportParseError} from '../../studio/contexts/ParseErrors'
 import {type StringInputProps} from '../../types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels} from './utils'
@@ -21,10 +22,13 @@ const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
  * @hidden
  * @beta */
 export function DateInput(props: DateInputProps) {
-  const {readOnly, onChange, schemaType, elementProps, value, id, validationError} = props
+  const {readOnly, onChange, schemaType, elementProps, value, id, path, validationError} = props
   const dateFormat = schemaType.options?.dateFormat || DEFAULT_DATE_FORMAT
   const {t} = useTranslation()
   const timeZoneScope: TimeZoneScope = {type: 'input', id}
+
+  const [parseError, setParseError] = useState<string | null>(null)
+  useReportParseError(path, parseError)
 
   const handleChange = useCallback(
     (nextDate: string | null) => {
@@ -47,6 +51,7 @@ export function DateInput(props: DateInputProps) {
       deserialize={deserialize}
       formatInputValue={formatInputValue}
       onChange={handleChange}
+      onParseError={setParseError}
       parseInputValue={parseInputValue}
       placeholder={schemaType.placeholder}
       calendarLabels={calendarLabels}
