@@ -10,7 +10,7 @@ import {
 } from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
 import throttle from 'lodash-es/throttle.js'
-import {type RefObject, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
+import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 
 import {
@@ -429,33 +429,23 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const {patch} = useDocumentOperation(documentId, documentType, activeDocumentReleaseId)
 
-  const patchRef = useRef<(event: PatchEvent) => void>(() => {
-    throw new Error(
-      'Attempted to patch the Sanity document during initial render or in an `useInsertionEffect`. Input components should only call `onChange()` in a useEffect or an event handler.',
-    )
-  })
-  const handleChange = (event: PatchEvent) => patchRef.current(event)
+  const isCreatingDraft = Boolean(!editState.version && !editState.draft && !editState.published)
 
-  useInsertionEffect(() => {
-    // which would otherwise be read-only.
-    if (readOnly) {
-      patchRef.current = () => {
+  const handleChange = useCallback(
+    (event: PatchEvent) => {
+      if (readOnly) {
         throw new Error('Attempted to patch a read-only document')
-      }
-    } else {
-      // note: this needs to happen in an insertion effect to make sure we're ready to receive patches from child components when they run their effects initially
-      // in case they do e.g. `useEffect(() => props.onChange(set("foo")), [])`
-      // Note: although we discourage patch-on-mount, we still support it.
-      patchRef.current = (event: PatchEvent) => {
+      } else {
         // when creating a new draft
-        if (!editState.draft && !editState.published) {
+        if (isCreatingDraft) {
           telemetry.log(CreatedDraft)
         }
 
         patch.execute(toMutationPatches(event.patches), initialValue?.value)
       }
-    }
-  }, [editState.draft, editState.published, initialValue, patch, telemetry, readOnly])
+    },
+    [patch, initialValue, telemetry, readOnly, isCreatingDraft],
+  )
 
   const formDocumentValue = useMemo(() => {
     if (getFormDocumentValue) return getFormDocumentValue(value)
