@@ -29,7 +29,7 @@ describe('useRelativeTime', () => {
     </ThemeProvider>
   )
 
-  beforeAll(() => i18next.init({showSupportNotice: false}))
+  beforeAll(() => i18next.init())
 
   describe('minimal', () => {
     const minimal = true

@@ -156,11 +156,6 @@ const defaultOptions: InitOptions = {
   // as any missing translations will be loaded async (through react suspense).
   initAsync: true,
 
-  // Suppress ads in console
-  // for context see https://github.com/i18next/i18next/issues/2390
-  // Open source funding is tricky, but this is NOT the way
-  showSupportNotice: false,
-
   // Because we use i18next-react, we do not need to escale values
   interpolation: {
     escapeValue: false,
