@@ -1,11 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
+import {PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Text, useToast} from '@sanity/ui'
+import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
-import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
@@ -15,6 +14,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {getReleaseActionTooltipContent} from '../../../util/getReleaseActionTooltipContent'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleasePublishAllButtonProps {
@@ -192,15 +192,7 @@ export const ReleasePublishAllButton = ({
       return null
     }
 
-    // TODO: this is a duplicate of logic in ReleaseScheduleButton
-    return (
-      <Text muted size={1}>
-        <Flex align="center" gap={3} padding={1}>
-          <ToneIcon icon={ErrorOutlineIcon} tone={isValidatingDocuments ? 'default' : 'critical'} />
-          {tooltipText()}
-        </Flex>
-      </Text>
-    )
+    return getReleaseActionTooltipContent(tooltipText(), isValidatingDocuments)
   }, [documents.length, hasDocumentValidationErrors, isValidatingDocuments, publishPermission, t])
 
   const handleInitialPublish = useCallback(() => {
