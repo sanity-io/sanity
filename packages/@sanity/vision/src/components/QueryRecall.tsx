@@ -1,5 +1,6 @@
-import {AddIcon, SearchIcon, TrashIcon} from '@sanity/icons'
+import {AddIcon, LockIcon, SearchIcon, TrashIcon, UnpublishIcon, UsersIcon} from '@sanity/icons'
 import {
+  Badge,
   Box,
   Button,
   Card,
@@ -9,18 +10,22 @@ import {
   MenuButton,
   MenuItem,
   Stack,
+  Tab,
+  TabList,
   Text,
   TextInput,
+  Tooltip,
   useToast,
 } from '@sanity/ui'
 import isEqual from 'lodash-es/isEqual.js'
 import {type ReactElement, useCallback, useState} from 'react'
-import {ContextMenuButton, useDateTimeFormat, useTranslation} from 'sanity'
+import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
 import {FixedHeader, ScrollContainer} from './QueryRecall.styled'
 import {type ParsedUrlState} from './VisionGui'
+import {StyledLabel} from './VisionGui.styled'
 
 export function QueryRecall({
   url,
@@ -29,6 +34,7 @@ export function QueryRecall({
   currentQuery,
   currentParams,
   generateUrl,
+  compactMode = false,
 }: {
   url?: string
   getStateFromUrl: (data: string) => ParsedUrlState | null
@@ -36,10 +42,11 @@ export function QueryRecall({
   currentQuery: string
   currentParams: Record<string, unknown>
   generateUrl: (query: string, params: Record<string, unknown>) => string
+  compactMode?: boolean
 }): ReactElement {
+  type QueryFilter = 'all' | 'personal' | 'shared'
   const toast = useToast()
-  const {saveQuery, updateQuery, queries, deleteQuery, saving, deleting, saveQueryError} =
-    useSavedQueries()
+  const {saveQuery, updateQuery, queries, deleteQuery, saving, deleting} = useSavedQueries()
   const {t} = useTranslation(visionLocaleNamespace)
   const formatDate = useDateTimeFormat({
     month: 'short',
@@ -53,7 +60,9 @@ export function QueryRecall({
   const [editingTitle, setEditingTitle] = useState('')
   const [optimisticTitles, setOptimisticTitles] = useState<Record<string, string>>({})
   const [searchQuery, setSearchQuery] = useState('')
+  const [queryFilter, setQueryFilter] = useState<QueryFilter>('all')
   const [selectedUrl, setSelectedUrl] = useState<string | undefined>(url)
+  const [pendingUnshareKeys, setPendingUnshareKeys] = useState<string[]>([])
 
   const handleSave = useCallback(async () => {
     // Generate the correct URL first
@@ -61,6 +70,7 @@ export function QueryRecall({
 
     // Check for duplicates by comparing query content and params
     const isDuplicate = queries?.some((q) => {
+      if (q.shared) return false
       const savedQueryObj = getStateFromUrl(q.url)
       return (
         savedQueryObj &&
@@ -71,6 +81,7 @@ export function QueryRecall({
 
     if (isDuplicate) {
       const duplicateQuery = queries?.find((q) => {
+        if (q.shared) return false
         const savedQueryObj = getStateFromUrl(q.url)
         return (
           savedQueryObj &&
@@ -87,32 +98,31 @@ export function QueryRecall({
       return
     }
 
-    if (newUrl) {
+    if (!newUrl) return
+
+    try {
       await saveQuery({
+        shared: false,
         url: newUrl,
         savedAt: new Date().toISOString(),
-        title: 'Untitled',
+        title: t('label.untitled-query'),
       })
-      // Set the selected URL to the newly saved query's URL
       setSelectedUrl(newUrl)
-    }
-    if (saveQueryError) {
-      toast.push({
-        closable: true,
-        status: 'error',
-        title: t('save-query.error'),
-        description: saveQueryError.message,
-      })
-    } else {
       toast.push({
         closable: true,
         status: 'success',
         title: t('save-query.success'),
       })
+    } catch (err) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: t('save-query.error'),
+        description: err instanceof Error ? err.message : String(err),
+      })
     }
   }, [
     queries,
-    saveQueryError,
     toast,
     t,
     currentQuery,
@@ -122,6 +132,98 @@ export function QueryRecall({
     formatDate,
     saveQuery,
   ])
+
+  const handleShareQuery = useCallback(
+    async (query: QueryConfig) => {
+      const sharedQueryKey = query._key
+      const sharedQueryUrl = query.url
+      const sharedQueryTitle = query.title || t('label.untitled-query')
+
+      try {
+        await saveQuery({
+          shared: true,
+          title: sharedQueryTitle,
+          url: sharedQueryUrl,
+          savedAt: new Date().toISOString(),
+        })
+
+        await deleteQuery(sharedQueryKey)
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: t('save-query.shared-success'),
+        })
+      } catch (err) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('save-query.error'),
+          description: err instanceof Error ? err.message : String(err),
+        })
+      }
+    },
+    [deleteQuery, saveQuery, t, toast],
+  )
+
+  const handleUnshareQuery = useCallback(
+    async (query: QueryConfig) => {
+      setPendingUnshareKeys((prev) => [...prev, query._key])
+      const clearPending = () =>
+        setPendingUnshareKeys((prev) => prev.filter((key) => key !== query._key))
+      const nextQueryObj = getStateFromUrl(query.url)
+      const duplicatePersonalQuery = queries?.find((existingQuery) => {
+        if (existingQuery._key === query._key) return false
+        if (existingQuery.shared) return false
+        const existingQueryObj = getStateFromUrl(existingQuery.url)
+        return (
+          nextQueryObj &&
+          existingQueryObj &&
+          existingQueryObj.query === nextQueryObj.query &&
+          isEqual(existingQueryObj.params, nextQueryObj.params)
+        )
+      })
+      const unsharedQueryTitle = query.title || t('label.untitled-query')
+
+      if (duplicatePersonalQuery) {
+        toast.push({
+          closable: true,
+          status: 'warning',
+          title: t('save-query.already-saved'),
+          description: `${duplicatePersonalQuery.title} - ${formatDate.format(
+            new Date(duplicatePersonalQuery.savedAt || ''),
+          )}`,
+        })
+        clearPending()
+        return
+      }
+
+      try {
+        await saveQuery({
+          shared: false,
+          title: unsharedQueryTitle,
+          url: query.url,
+          savedAt: new Date().toISOString(),
+        })
+
+        await deleteQuery(query._key)
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: t('save-query.unshared-success'),
+        })
+        clearPending()
+      } catch (err) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('save-query.error'),
+          description: err instanceof Error ? err.message : String(err),
+        })
+        clearPending()
+      }
+    },
+    [deleteQuery, formatDate, getStateFromUrl, queries, saveQuery, t, toast],
+  )
 
   const handleTitleSave = useCallback(
     async (query: QueryConfig, newTitle: string) => {
@@ -228,22 +330,27 @@ export function QueryRecall({
     ],
   )
 
-  const filteredQueries = queries?.filter((q) => {
-    return q?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+  const visibleQueries = queries?.filter((q) => !pendingUnshareKeys.includes(q._key))
+
+  const filteredQueries = visibleQueries?.filter((q) => {
+    const matchesSearch = (q.title ?? '').toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesFilter =
+      queryFilter === 'all' ||
+      (queryFilter === 'personal' && !q.shared) ||
+      (queryFilter === 'shared' && q.shared)
+    return matchesSearch && matchesFilter
   })
 
   return (
     <ScrollContainer>
       <FixedHeader space={3}>
-        <Flex padding={3} paddingTop={4} paddingBottom={0} justify="space-between" align="center">
-          <Text weight="semibold" style={{textTransform: 'capitalize'}} size={4}>
-            {t('label.saved-queries')}
-          </Text>
+        <Flex padding={3} paddingTop={2} paddingBottom={0} justify="space-between" align="center">
+          <StyledLabel muted>{t('label.saved-queries')}</StyledLabel>
           <Button
             label={t('action.save-query')}
             icon={AddIcon}
             disabled={saving}
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             mode="bleed"
           />
         </Flex>
@@ -255,36 +362,76 @@ export function QueryRecall({
             onChange={(event) => setSearchQuery(event.currentTarget.value)}
           />
         </Box>
+        <Box paddingX={3} paddingBottom={2}>
+          <TabList space={1}>
+            <Tab
+              id="query-filter-all"
+              aria-controls="vision-query-recall-list"
+              label={t('label.all')}
+              selected={queryFilter === 'all'}
+              onClick={() => setQueryFilter('all')}
+            />
+            <Tab
+              id="query-filter-personal"
+              aria-controls="vision-query-recall-list"
+              label={t('label.personal')}
+              selected={queryFilter === 'personal'}
+              onClick={() => setQueryFilter('personal')}
+            />
+            <Tab
+              id="query-filter-shared"
+              aria-controls="vision-query-recall-list"
+              label={t('label.shared')}
+              selected={queryFilter === 'shared'}
+              onClick={() => setQueryFilter('shared')}
+            />
+          </TabList>
+        </Box>
       </FixedHeader>
-      <Stack paddingY={3}>
-        {filteredQueries?.map((q) => {
+      <Stack id="vision-query-recall-list" paddingY={3}>
+        {filteredQueries?.map((q, index) => {
           const queryObj = getStateFromUrl(q.url)
+          const fullQueryPreview = queryObj?.query || ''
+          const shortQueryPreview = fullQueryPreview.split('{')[0]
           const isSelected = selectedUrl === q.url
+          const canMutateQuery = !q.shared || q.isOwnedByCurrentUser
 
           // Compare against current live state
           const areQueriesEqual =
             queryObj && currentQuery === queryObj.query && isEqual(currentParams, queryObj.params)
 
-          const isEdited = isSelected && !areQueriesEqual
+          const isEdited = isSelected && !areQueriesEqual && canMutateQuery
           return (
             <Card
               key={q._key}
               width={'fill'}
-              padding={4}
-              border
-              tone={isSelected ? 'positive' : 'default'}
-              onClick={() => {
+              paddingX={compactMode ? 3 : 4}
+              paddingY={compactMode ? 3 : 4}
+              tone="default"
+              onClick={(event) => {
+                const target = event.target as HTMLElement | null
+                if (target?.closest('[data-query-actions="true"]')) {
+                  return
+                }
                 setSelectedUrl(q.url) // Update the selected query immediately
                 const parsedUrl = getStateFromUrl(q.url)
                 if (parsedUrl) {
                   setStateFromParsedUrl(parsedUrl)
                 }
               }}
-              style={{position: 'relative'}}
+              style={{
+                borderTop: index === 0 ? '1px solid var(--card-border-color)' : undefined,
+                position: 'relative',
+                borderBottom: '1px solid var(--card-border-color)',
+                borderLeft: isSelected
+                  ? '2px solid var(--card-muted-fg-color)'
+                  : '2px solid transparent',
+                cursor: 'pointer',
+              }}
             >
-              <Stack space={3}>
-                <Flex justify="space-between" align={'center'}>
-                  <Flex align="center" gap={2} paddingRight={1}>
+              <Stack space={compactMode ? 2 : 3}>
+                <Flex justify="space-between" align={'center'} style={{minHeight: '25px'}}>
+                  <Flex align="center" gap={2} paddingRight={1} style={{minWidth: 0, flex: 1}}>
                     {editingKey === q._key ? (
                       <TextInput
                         value={editingTitle}
@@ -303,18 +450,26 @@ export function QueryRecall({
                     ) : (
                       <Text
                         weight="bold"
-                        size={3}
+                        size={compactMode ? 2 : 3}
                         textOverflow="ellipsis"
-                        style={{maxWidth: '170px', cursor: 'pointer', padding: '4px 0'}}
+                        style={{
+                          maxWidth: compactMode ? '180px' : '220px',
+                          cursor: canMutateQuery ? 'pointer' : 'default',
+                          padding: '2px 0',
+                        }}
                         title={
                           optimisticTitles[q._key] ||
                           q.title ||
                           q._key.slice(q._key.length - 5, q._key.length)
                         }
-                        onClick={() => {
-                          setEditingKey(q._key)
-                          setEditingTitle(q.title || q._key.slice(0, 5))
-                        }}
+                        onClick={
+                          canMutateQuery
+                            ? () => {
+                                setEditingKey(q._key)
+                                setEditingTitle(q.title || q._key.slice(0, 5))
+                              }
+                            : undefined
+                        }
                       >
                         {optimisticTitles[q._key] ||
                           q.title ||
@@ -332,36 +487,171 @@ export function QueryRecall({
                       />
                     )}
                   </Flex>
-                  <MenuButton
-                    button={<ContextMenuButton />}
-                    id={`${q._key}-menu`}
-                    menu={
-                      <Menu
-                      // style={{background: 'white', backgroundColor: 'white', borderRadius: '11%'}}
-                      >
-                        <MenuItem
-                          tone="critical"
-                          padding={3}
-                          icon={TrashIcon}
-                          text={t('action.delete')}
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            void deleteQuery(q._key)
-                          }}
+                  <Flex align="center" gap={2}>
+                    <Box
+                      data-query-actions="true"
+                      style={{width: '25px', height: '25px', display: 'flex', alignItems: 'center'}}
+                    >
+                      {(!q.shared || canMutateQuery) && (
+                        <MenuButton
+                          button={<ContextMenuButton />}
+                          id={`${q._key}-menu`}
+                          menu={
+                            <Menu>
+                              {!q.shared && (
+                                <MenuItem
+                                  icon={UsersIcon}
+                                  padding={3}
+                                  text={t('label.share')}
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                    void handleShareQuery(q)
+                                  }}
+                                />
+                              )}
+                              {q.shared && canMutateQuery && (
+                                <MenuItem
+                                  icon={UnpublishIcon}
+                                  padding={3}
+                                  text={t('action.unshare')}
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                    void handleUnshareQuery(q)
+                                  }}
+                                />
+                              )}
+                              {canMutateQuery && (
+                                <MenuItem
+                                  tone="critical"
+                                  padding={3}
+                                  icon={TrashIcon}
+                                  text={t('action.delete')}
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                    void deleteQuery(q._key)
+                                  }}
+                                />
+                              )}
+                            </Menu>
+                          }
+                          popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
                         />
-                      </Menu>
+                      )}
+                    </Box>
+                  </Flex>
+                </Flex>
+
+                {fullQueryPreview ? (
+                  <Tooltip
+                    content={
+                      <Box
+                        padding={2}
+                        style={{maxWidth: '420px', maxHeight: '220px', overflow: 'auto'}}
+                      >
+                        <Code size={1}>{fullQueryPreview}</Code>
+                      </Box>
                     }
-                    popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
-                  />
-                </Flex>
+                    placement="top"
+                    portal
+                  >
+                    <Code muted size={1}>
+                      {shortQueryPreview}
+                    </Code>
+                  </Tooltip>
+                ) : (
+                  <Code muted />
+                )}
 
-                <Code muted>{queryObj?.query.split('{')[0]}</Code>
-
-                <Flex align="center" gap={1}>
-                  <Text size={1} muted>
-                    {formatDate.format(new Date(q.savedAt || ''))}
-                  </Text>
-                </Flex>
+                {compactMode ? (
+                  <Stack space={1} style={{paddingTop: 0, minHeight: '30px'}}>
+                    <Flex align="center" gap={2} style={{minHeight: '18px'}}>
+                      <Box
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '17px',
+                          height: '17px',
+                        }}
+                      >
+                        {q.shared ? (
+                          <UserAvatar size={0} user={q.authorId || ''} withTooltip />
+                        ) : (
+                          <Box
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              lineHeight: 0,
+                              color: 'var(--card-muted-fg-color)',
+                            }}
+                          >
+                            <LockIcon />
+                          </Box>
+                        )}
+                      </Box>
+                      <Badge
+                        mode="outline"
+                        tone={q.shared ? 'primary' : 'default'}
+                        style={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {q.shared ? t('label.shared') : t('label.personal')}
+                      </Badge>
+                    </Flex>
+                    <Text size={1} muted>
+                      {formatDate.format(new Date(q.savedAt || ''))}
+                    </Text>
+                  </Stack>
+                ) : (
+                  <Flex align="center" gap={2} style={{paddingTop: '2px', minHeight: '20px'}}>
+                    <Box
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '17px',
+                        height: '17px',
+                      }}
+                    >
+                      {q.shared ? (
+                        <UserAvatar size={0} user={q.authorId || ''} withTooltip />
+                      ) : (
+                        <Box
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            lineHeight: 0,
+                            color: 'var(--card-muted-fg-color)',
+                          }}
+                        >
+                          <LockIcon />
+                        </Box>
+                      )}
+                    </Box>
+                    <Badge
+                      mode="outline"
+                      tone={q.shared ? 'primary' : 'default'}
+                      style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {q.shared ? t('label.shared') : t('label.personal')}
+                    </Badge>
+                    <Text size={1} muted>
+                      •
+                    </Text>
+                    <Text size={1} muted>
+                      {formatDate.format(new Date(q.savedAt || ''))}
+                    </Text>
+                  </Flex>
+                )}
 
                 {isEdited && (
                   <Button
