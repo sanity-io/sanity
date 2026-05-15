@@ -23,6 +23,8 @@ function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
 }
 
+export const INITIAL_VALIDATION_STATUS: ValidationStatus = {validation: [], isValidating: false}
+
 /** @internal */
 export const validation = memoize(
   (
