@@ -2,7 +2,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -22,6 +22,7 @@ import {
   useNavbarComponent,
 } from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
+import {ToolMountTimer} from './ToolMountTimer'
 import {useWorkspace} from './workspace'
 
 const DetectViteDevServerStopped = lazy(() =>
@@ -112,6 +113,20 @@ export function StudioLayoutComponent() {
     () => tools.find((tool) => tool.name === activeToolName),
     [activeToolName, tools],
   )
+  // Track T0 for tool-mount timing. Because React Compiler forbids impure
+  // calls like `performance.now()` during render, we capture the timestamp
+  // in an effect that runs when `activeToolName` changes. The effect runs
+  // before the tool's `<Suspense>` resolves (since the Suspense fallback
+  // renders first), so the delta captured in `ToolMountTimer` still
+  // includes lazy-chunk fetch time.
+  const toolMountT0Ref = useRef<number | null>(null)
+  const lastToolNameRef = useRef<string | undefined>(undefined)
+  useEffect(() => {
+    if (activeToolName !== lastToolNameRef.current) {
+      lastToolNameRef.current = activeToolName
+      toolMountT0Ref.current = activeToolName ? performance.now() : null
+    }
+  }, [activeToolName])
   const [searchFullscreenOpen, setSearchFullscreenOpen] = useState<boolean>(false)
   const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
     null,
@@ -209,7 +224,7 @@ export function StudioLayoutComponent() {
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
-        {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
+        {/* eslint-disable-next-line react-hooks/static-components -- Navbar comes from useNavbarComponent(), stable per workspace */}
         <Navbar />
       </NavbarContext.Provider>
       {isLegacyDeskRedirect && <RedirectingScreen />}
@@ -237,8 +252,9 @@ export function StudioLayoutComponent() {
               }
             >
               <Suspense fallback={<LoadingBlock showText />}>
-                {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
+                {/* eslint-disable-next-line react-hooks/static-components -- ActiveToolLayout comes from useActiveToolLayoutComponent(), stable per workspace */}
                 <ActiveToolLayout activeTool={activeTool} />
+                <ToolMountTimer toolName={activeTool.name} t0Ref={toolMountT0Ref} />
               </Suspense>
             </RouteScope>
           )}
