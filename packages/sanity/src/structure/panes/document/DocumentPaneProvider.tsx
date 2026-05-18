@@ -31,6 +31,7 @@ import {
   isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
   isVersionId,
+  ParseErrorsProvider,
   type PartialContext,
   pathToString,
   type ReleaseDocument,
@@ -750,7 +751,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
             ready={ready}
             schemaType={schemaType}
           />
-          {children}
+          <ParseErrorsProvider>{children}</ParseErrorsProvider>
         </DivergencesProvider>
       </DocumentPaneContext.Provider>
     </DocumentPaneInfoContext.Provider>
