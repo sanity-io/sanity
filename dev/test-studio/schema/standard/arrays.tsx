@@ -763,12 +763,14 @@ export default defineType({
       title: 'title',
       strings: 'arrayOfStrings',
       firstItem: 'arrayOfStrings.0',
+      length: 'arrayOfStrings.length',
     },
-    prepare({title, strings, firstItem}) {
+    prepare({title, strings, firstItem, length}) {
       // oxlint-disable-next-line no-console
       console.log('arraysTest preview.prepare', {
         strings,
         firstItem,
+        length,
       })
       return {title}
     },
