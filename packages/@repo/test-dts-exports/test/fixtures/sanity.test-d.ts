@@ -240,6 +240,7 @@ import type {
   CommonProps,
   CompactPreview,
   CompactPreviewProps,
+  compileFieldPath,
   ComplexElementProps,
   ComposableOption,
   ComputeDiff,
@@ -1563,9 +1564,9 @@ import type {
   UseFeedbackReturn,
   useFieldActions,
   useFilteredReleases,
+  useFormatRelativeLocalePublishDate,
   useFormattedDuration,
   UseFormattedDurationOptions,
-  useFormatRelativeLocalePublishDate,
   useFormBuilder,
   useFormCallbacks,
   useFormState,
@@ -2451,6 +2452,9 @@ describe('sanity', () => {
   })
   test('CompactPreviewProps', () => {
     expectTypeOf<CompactPreviewProps>().not.toBeNever()
+  })
+  test('compileFieldPath', () => {
+    expectTypeOf<typeof compileFieldPath>().toBeFunction()
   })
   test('ComplexElementProps', () => {
     expectTypeOf<ComplexElementProps>().toBeObject()
@@ -6443,14 +6447,14 @@ describe('sanity', () => {
   test('useFilteredReleases', () => {
     expectTypeOf<typeof useFilteredReleases>().toBeFunction()
   })
+  test('useFormatRelativeLocalePublishDate', () => {
+    expectTypeOf<typeof useFormatRelativeLocalePublishDate>().toBeFunction()
+  })
   test('useFormattedDuration', () => {
     expectTypeOf<typeof useFormattedDuration>().toBeFunction()
   })
   test('UseFormattedDurationOptions', () => {
     expectTypeOf<UseFormattedDurationOptions>().toBeObject()
-  })
-  test('useFormatRelativeLocalePublishDate', () => {
-    expectTypeOf<typeof useFormatRelativeLocalePublishDate>().toBeFunction()
   })
   test('useFormBuilder', () => {
     expectTypeOf<typeof useFormBuilder>().toBeFunction()
