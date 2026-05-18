@@ -32,7 +32,7 @@ describe('createVariantsStore', () => {
     fetch.mockReturnValue(of([variant]))
 
     const store = createVariantsStore({client})
-    const valuesPromise = firstValueFrom(store.state$.pipe(take(4), toArray()))
+    const valuesPromise = firstValueFrom(store.state$.pipe(take(3), toArray()))
 
     listener$.next({type: 'welcome'})
 
@@ -61,8 +61,8 @@ describe('createVariantsStore', () => {
     )
     expect(values[0]).toMatchObject({state: 'initialising'})
     expect(values[1]).toMatchObject({state: 'loading'})
-    expect(values[3]).toMatchObject({state: 'loaded', error: undefined})
-    expect(Array.from(values[3].variants.values())).toEqual([variant])
+    expect(values[2]).toMatchObject({state: 'loaded', error: undefined})
+    expect(Array.from(values[2].variants.values())).toEqual([variant])
   })
 
   it('keeps variants updated when the listener refetches', async () => {
@@ -72,7 +72,7 @@ describe('createVariantsStore', () => {
     fetch.mockReturnValueOnce(of([firstVariant])).mockReturnValueOnce(of([updatedVariant]))
 
     const store = createVariantsStore({client})
-    const valuesPromise = firstValueFrom(store.state$.pipe(take(6), toArray()))
+    const valuesPromise = firstValueFrom(store.state$.pipe(take(4), toArray()))
 
     listener$.next({type: 'welcome'})
     listener$.next({type: 'mutation', transition: 'update', visibility: 'query'})

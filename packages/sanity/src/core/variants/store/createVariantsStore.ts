@@ -1,29 +1,11 @@
 import {type SanityClient} from '@sanity/client'
 import {type Dispatch} from 'react'
-import {
-  BehaviorSubject,
-  catchError,
-  concat,
-  concatWith,
-  filter,
-  merge,
-  type Observable,
-  of,
-  scan,
-  shareReplay,
-  Subject,
-  switchMap,
-  tap,
-} from 'rxjs'
+import {catchError, concatWith, merge, type Observable, of, scan, shareReplay, Subject} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
 import {listenQuery} from '../../store'
-import {type SystemVariant} from '../types'
 import {VARIANT_DOCUMENTS_PATH, VARIANT_DOCUMENT_TYPE} from './constants'
 import {variantStoreReducer, type VariantStoreAction, type VariantStoreState} from './reducer'
-
-type ActionWrapper = {action: VariantStoreAction}
-type ResponseWrapper = {response: SystemVariant[]}
 
 const SORT_FIELD = '_createdAt'
 const SORT_ORDER = 'desc'
@@ -63,64 +45,36 @@ export function createVariantsStore(context: {client: SanityClient}): VariantSto
   const {client} = context
 
   const dispatch$ = new Subject<VariantStoreAction>()
-  const fetchPending$ = new BehaviorSubject<boolean>(false)
 
   function dispatch(action: VariantStoreAction): void {
     dispatch$.next(action)
   }
 
-  const listFetch$ = of<ActionWrapper>({
-    action: {
-      type: 'LOADING_STATE_CHANGED',
-      payload: {
-        loading: true,
-        error: undefined,
-      },
+  const listFetch$ = of<VariantStoreAction>({
+    type: 'LOADING_STATE_CHANGED',
+    payload: {
+      loading: true,
+      error: undefined,
     },
   }).pipe(
-    // Ignore invocations while the list fetch is pending.
-    filter(() => !fetchPending$.value),
-    tap(() => fetchPending$.next(true)),
     concatWith(
       listenQuery(client, QUERY, {}, {tag: 'variants.listen'}).pipe(
-        tap(() => fetchPending$.next(false)),
-        map((variants) => ({response: variants})),
+        map((variants): VariantStoreAction => ({type: 'FETCH_SUCCEEDED', payload: variants})),
       ),
     ),
 
     catchError((error) =>
-      of<ActionWrapper>({
-        action: {
-          type: 'LOADING_STATE_CHANGED',
-          payload: {
-            loading: false,
-            error,
-          },
+      of<VariantStoreAction>({
+        type: 'LOADING_STATE_CHANGED',
+        payload: {
+          loading: false,
+          error,
         },
       }),
     ),
-    switchMap<ActionWrapper | ResponseWrapper, Observable<VariantStoreAction | undefined>>(
-      (entry) => {
-        if ('action' in entry) {
-          return of<VariantStoreAction>(entry.action)
-        }
-
-        return of<VariantStoreAction[]>(
-          {type: 'VARIANTS_SET', payload: entry.response},
-          {
-            type: 'LOADING_STATE_CHANGED',
-            payload: {
-              loading: false,
-              error: undefined,
-            },
-          },
-        )
-      },
-    ),
   )
 
-  const state$ = concat(merge(listFetch$, dispatch$)).pipe(
-    filter((action): action is VariantStoreAction => typeof action !== 'undefined'),
+  const state$ = merge(listFetch$, dispatch$).pipe(
     scan((state, action) => variantStoreReducer(state, action), INITIAL_STATE),
     startWith(INITIAL_STATE),
     shareReplay(1),

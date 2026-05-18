@@ -11,8 +11,12 @@ describe('variantStoreReducer', () => {
 
   it('sets variants by id', () => {
     const variants = [createVariant('a'), createVariant('b', 1)]
+    const state: VariantStoreState = {
+      variants: new Map(),
+      state: 'loading',
+    }
 
-    const result = variantStoreReducer(initialState, {
+    const result = variantStoreReducer(state, {
       type: 'VARIANTS_SET',
       payload: variants,
     })
@@ -23,6 +27,31 @@ describe('variantStoreReducer', () => {
         [variants[1]._id, variants[1]],
       ]),
     )
+    expect(result.state).toBe('loading')
+    expect(result.error).toBeUndefined()
+  })
+
+  it('sets variants and marks the fetch as loaded when fetch succeeds', () => {
+    const variants = [createVariant('a'), createVariant('b', 1)]
+    const error = new Error('Previous failure')
+    const state: VariantStoreState = {
+      variants: new Map(),
+      state: 'error',
+      error,
+    }
+
+    const result = variantStoreReducer(state, {
+      type: 'FETCH_SUCCEEDED',
+      payload: variants,
+    })
+
+    expect(result.variants).toEqual(
+      new Map([
+        [variants[0]._id, variants[0]],
+        [variants[1]._id, variants[1]],
+      ]),
+    )
+    expect(result).toMatchObject({state: 'loaded', error: undefined})
   })
 
   it('clears variants when the payload is null', () => {
@@ -38,6 +67,7 @@ describe('variantStoreReducer', () => {
     })
 
     expect(result.variants.size).toBe(0)
+    expect(result).toMatchObject({state: 'loaded'})
   })
 
   it('removes a deleted variant without mutating the previous state', () => {

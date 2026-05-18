@@ -7,6 +7,10 @@ interface VariantDeletedAction {
   }
 }
 
+interface FetchSucceededAction {
+  type: 'FETCH_SUCCEEDED'
+  payload: SystemVariant[] | null
+}
 interface VariantsSetAction {
   type: 'VARIANTS_SET'
   payload: SystemVariant[] | null
@@ -24,6 +28,7 @@ export type VariantStoreAction =
   | VariantsSetAction
   | LoadingStateChangedAction
   | VariantDeletedAction
+  | FetchSucceededAction
 
 export interface VariantStoreState {
   variants: Map<string, SystemVariant>
@@ -59,6 +64,16 @@ export function variantStoreReducer(
         variants: variantsById,
       }
     }
+    case 'FETCH_SUCCEEDED': {
+      const variantsById = createVariantsSet(action.payload)
+      return {
+        ...state,
+        variants: variantsById,
+        state: 'loaded',
+        error: undefined,
+      }
+    }
+
     case 'VARIANT_DELETED': {
       const {id} = action.payload
       const restVariants = new Map(
