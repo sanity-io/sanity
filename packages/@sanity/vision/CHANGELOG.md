@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.25.1](https://github.com/sanity-io/sanity/compare/v5.25.0...v5.25.1) (2026-05-13)
+
+### Bug Fixes
+
+* **core:** remove static css import from `sanity` and `vision` ([#12825](https://github.com/sanity-io/sanity/issues/12825)) ([c147d00](https://github.com/sanity-io/sanity/commit/c147d00461c03b07a17bacfd2b029b297248176b))
+## [5.25.0](https://github.com/sanity-io/sanity/compare/v5.24.0...v5.25.0) (2026-05-12)
+
+### Bug Fixes
+
+* **vision:** do not fetch if query is empty ([#12814](https://github.com/sanity-io/sanity/issues/12814)) ([a10c347](https://github.com/sanity-io/sanity/commit/a10c347588c4ae128c5e2b2ad0c77b87d82b213f))
 ## [5.23.0](https://github.com/sanity-io/sanity/compare/v5.22.0...v5.23.0) (2026-04-29)
 
 ### Features

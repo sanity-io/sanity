@@ -17,7 +17,8 @@ interface GetProvidersOptions extends AuthConfig {
   client: SanityClient
 }
 
-async function getProviders({
+/** @internal */
+export async function getProviders({
   client,
   mode,
   providers: customProviders = [],
@@ -27,7 +28,13 @@ async function getProviders({
     return customProviders
   }
 
-  const {providers} = await client.request<AuthProviderResponse>({
+  // Fetch providers without credentials. `/auth/providers` doesn't require
+  // auth, and including a now-expired credential here causes the server to
+  // 401 the request, which would surface as a generic error boundary to a
+  // user who simply needs to log in again. Stripping the token + cookie
+  // sidesteps that — anonymous callers get the public provider list.
+  const credentiallessClient = client.withConfig({token: undefined, withCredentials: false})
+  const {providers} = await credentiallessClient.request<AuthProviderResponse>({
     uri: '/auth/providers',
   })
 

@@ -17,7 +17,6 @@ import {IntentLink} from 'sanity/router'
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {useTranslation} from '../../../i18n'
-import {EMPTY_ARRAY} from '../../../util/empty'
 import {withFocusRing} from '../../components/withFocusRing/withFocusRing'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch'
@@ -218,10 +217,10 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
   const handleFocus = useCallback(
     (event: FocusEvent) => {
       if (event.target === elementRef.current) {
-        onPathFocus(EMPTY_ARRAY)
+        onPathFocus(path)
       }
     },
-    [onPathFocus],
+    [onPathFocus, path],
   )
 
   const [cardRef, setCardRef] = useState<HTMLDivElement | null>(null)

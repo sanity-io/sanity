@@ -37,6 +37,8 @@
         "preview",
         // `pnpm dist-tag` invocations in tag-latest.yml / tag-stable.yml
         "dist-tag",
+        // Installed system-wide via brew/uv/pipx, not npm
+        "zizmor",
       ],
     },
     "packages/sanity": {

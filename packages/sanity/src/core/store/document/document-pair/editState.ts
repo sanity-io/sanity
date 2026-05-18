@@ -94,6 +94,13 @@ export const editState = memoize(
           })
         },
       ),
+      // NOTE: `useEditState` deduplicates emissions downstream using shallow equality on
+      // `draft`/`published`/`version` as well as `ready` and `transactionSyncLock`.
+      // The map below preserves the snapshot identities and only allocates a new outer
+      // wrapper while deriving those additional fields.
+      //
+      // A regression that clones any of these references — example. `draft: {...draftSnapshot}` — would silently
+      // turn that dedupe into a no-op. We have regression tests for this.
       map(
         ({
           value: [draftSnapshot, publishedSnapshot, transactionSyncLock, versionSnapshot],

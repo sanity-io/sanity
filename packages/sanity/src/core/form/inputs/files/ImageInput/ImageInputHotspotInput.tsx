@@ -1,25 +1,35 @@
 import {Stack} from '@sanity/ui'
 
 import {Dialog} from '../../../../../ui-components'
+import {LoadingBlock} from '../../../../components/loadingBlock'
 import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n'
 import {PresenceOverlay} from '../../../../presence'
 import {type InputProps} from '../../../types'
 import {ImageToolInput} from '../ImageToolInput'
+import {type AssetAccessPolicy} from '../types'
 import {type BaseImageInputProps} from './types'
+import {useImageUrl} from './useImageUrl'
 
 export function ImageInputHotspotInput(props: {
+  accessPolicy: AssetAccessPolicy
   handleCloseDialog: () => void
   inputProps: Omit<InputProps, 'renderDefault'>
   imageInputProps: BaseImageInputProps
   isImageToolEnabled: boolean
 }) {
-  const {handleCloseDialog, inputProps, imageInputProps, isImageToolEnabled} = props
+  const {accessPolicy, handleCloseDialog, inputProps, imageInputProps, isImageToolEnabled} = props
   const {t} = useTranslation()
   const {changed, id, imageUrlBuilder, value} = imageInputProps
 
   const withImageTool = isImageToolEnabled && value && value.asset
-  const imageUrl = value?.asset ? imageUrlBuilder.image(value.asset).url() : ''
+
+  // Use the asset ref so the URL builder doesn't re-apply existing crop/hotspot.
+  const {isLoading, url: imageUrl} = useImageUrl({
+    accessPolicy,
+    imageSource: withImageTool ? value.asset : undefined,
+    imageUrlBuilder,
+  })
 
   return (
     <Dialog
@@ -33,13 +43,19 @@ export function ImageInputHotspotInput(props: {
       <PresenceOverlay>
         <Stack space={5}>
           {withImageTool && value?.asset && (
-            <ImageToolInput
-              {...imageInputProps}
-              imageUrl={imageUrl}
-              value={value as FIXME}
-              presence={inputProps.presence}
-              changed={changed}
-            />
+            <>
+              {isLoading || !imageUrl ? (
+                <LoadingBlock showText />
+              ) : (
+                <ImageToolInput
+                  {...imageInputProps}
+                  imageUrl={imageUrl}
+                  value={value as FIXME}
+                  presence={inputProps.presence}
+                  changed={changed}
+                />
+              )}
+            </>
           )}
         </Stack>
       </PresenceOverlay>

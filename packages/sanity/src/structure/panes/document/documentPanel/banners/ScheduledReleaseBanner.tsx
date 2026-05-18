@@ -1,11 +1,11 @@
 import {LockIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {
-  formatRelativeLocalePublishDate,
   getReleaseTone,
   LATEST,
   type ReleaseDocument,
   Translate,
+  useFormatRelativeLocalePublishDate,
   useTranslation,
 } from 'sanity'
 
@@ -19,6 +19,7 @@ export function ScheduledReleaseBanner({
   const tone = getReleaseTone(currentRelease ?? LATEST)
 
   const {t: tCore} = useTranslation()
+  const formatPublishDate = useFormatRelativeLocalePublishDate()
 
   return (
     <Banner
@@ -30,7 +31,7 @@ export function ScheduledReleaseBanner({
             t={tCore}
             i18nKey="release.banner.scheduled-for-publishing-on"
             values={{
-              date: formatRelativeLocalePublishDate(currentRelease),
+              date: formatPublishDate(currentRelease),
             }}
           />
         </Text>

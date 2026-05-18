@@ -240,6 +240,7 @@ import type {
   CommonProps,
   CompactPreview,
   CompactPreviewProps,
+  compileFieldPath,
   ComplexElementProps,
   ComposableOption,
   ComputeDiff,
@@ -984,6 +985,7 @@ import type {
   MemberItemProps,
   MendozaEffectPair,
   MendozaPatch,
+  mergeParseErrors,
   MetaInfo,
   MetaInfoProps,
   MissingConfigFile,
@@ -1070,6 +1072,8 @@ import type {
   OperatorInputComponentProps,
   Pair,
   ParsedTimeRef,
+  ParseError,
+  ParseErrorsProvider,
   PartialContext,
   PartialExcept,
   PartialIndexSettings,
@@ -1563,6 +1567,7 @@ import type {
   UseFeedbackReturn,
   useFieldActions,
   useFilteredReleases,
+  useFormatRelativeLocalePublishDate,
   useFormattedDuration,
   UseFormattedDurationOptions,
   useFormBuilder,
@@ -1598,6 +1603,8 @@ import type {
   UseNumberFormatOptions,
   useOnlyHasVersions,
   useOnScroll,
+  useParseErrorForPath,
+  useParseErrors,
   usePausedScheduledDraft,
   usePerspective,
   usePresenceStore,
@@ -1621,6 +1628,7 @@ import type {
   useRelativeTime,
   useReleasesIds,
   useRenderingContextStore,
+  useReportParseError,
   useResolveInitialValueForType,
   useResourceCache,
   useReviewChanges,
@@ -2450,6 +2458,9 @@ describe('sanity', () => {
   })
   test('CompactPreviewProps', () => {
     expectTypeOf<CompactPreviewProps>().not.toBeNever()
+  })
+  test('compileFieldPath', () => {
+    expectTypeOf<typeof compileFieldPath>().toBeFunction()
   })
   test('ComplexElementProps', () => {
     expectTypeOf<ComplexElementProps>().toBeObject()
@@ -4695,6 +4706,9 @@ describe('sanity', () => {
   test('MendozaPatch', () => {
     expectTypeOf<MendozaPatch>().not.toBeNever()
   })
+  test('mergeParseErrors', () => {
+    expectTypeOf<typeof mergeParseErrors>().toBeFunction()
+  })
   test('MetaInfo', () => {
     expectTypeOf<typeof MetaInfo>().toBeFunction()
   })
@@ -4955,6 +4969,12 @@ describe('sanity', () => {
   })
   test('ParsedTimeRef', () => {
     expectTypeOf<ParsedTimeRef>().not.toBeNever()
+  })
+  test('ParseError', () => {
+    expectTypeOf<ParseError>().toBeObject()
+  })
+  test('ParseErrorsProvider', () => {
+    expectTypeOf<typeof ParseErrorsProvider>().toBeFunction()
   })
   test('PartialContext', () => {
     expectTypeOf<PartialContext<any>>().not.toBeNever()
@@ -6442,6 +6462,9 @@ describe('sanity', () => {
   test('useFilteredReleases', () => {
     expectTypeOf<typeof useFilteredReleases>().toBeFunction()
   })
+  test('useFormatRelativeLocalePublishDate', () => {
+    expectTypeOf<typeof useFormatRelativeLocalePublishDate>().toBeFunction()
+  })
   test('useFormattedDuration', () => {
     expectTypeOf<typeof useFormattedDuration>().toBeFunction()
   })
@@ -6548,6 +6571,12 @@ describe('sanity', () => {
   test('useOnScroll', () => {
     expectTypeOf<typeof useOnScroll>().toBeFunction()
   })
+  test('useParseErrorForPath', () => {
+    expectTypeOf<typeof useParseErrorForPath>().toBeFunction()
+  })
+  test('useParseErrors', () => {
+    expectTypeOf<typeof useParseErrors>().toBeFunction()
+  })
   test('usePausedScheduledDraft', () => {
     expectTypeOf<typeof usePausedScheduledDraft>().toBeFunction()
   })
@@ -6616,6 +6645,9 @@ describe('sanity', () => {
   })
   test('useRenderingContextStore', () => {
     expectTypeOf<typeof useRenderingContextStore>().toBeFunction()
+  })
+  test('useReportParseError', () => {
+    expectTypeOf<typeof useReportParseError>().toBeFunction()
   })
   test('useResolveInitialValueForType', () => {
     expectTypeOf<typeof useResolveInitialValueForType>().toBeFunction()
