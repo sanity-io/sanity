@@ -76,9 +76,9 @@ export function variantStoreReducer(
 
     case 'VARIANT_DELETED': {
       const {id} = action.payload
-      const restVariants = new Map(
-        Array.from(state.variants.entries()).filter(([key]) => key !== id),
-      )
+      const restVariants = new Map(state.variants)
+      restVariants.delete(id)
+
       return {
         ...state,
         variants: restVariants,

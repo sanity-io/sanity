@@ -3,7 +3,8 @@ import {type SourceClientOptions} from '../../config/types'
 // api extractor take issues with 'as const' for literals
 // oxlint-disable-next-line prefer-as-const
 export const VARIANT_DOCUMENT_TYPE: 'system.variant' = 'system.variant'
-export const VARIANT_DOCUMENTS_PATH = '_.variants'
+// oxlint-disable-next-line typescript/prefer-as-const
+export const VARIANT_DOCUMENTS_PATH: '_.variants' = '_.variants'
 
 /**
  * @internal This is the client options used for the variants studio client, using the `X` API version for now

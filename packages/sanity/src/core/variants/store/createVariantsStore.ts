@@ -15,7 +15,9 @@ const QUERY_FILTER = `_type=="${VARIANT_DOCUMENT_TYPE}" && _id in path("${VARIAN
 const QUERY_PROJECTION = `{
   _id,
   _type,
+  _rev,
   _createdAt,
+  _updatedAt,
   conditions,
   "priority": coalesce(priority, 0),
   metadata,

@@ -41,7 +41,9 @@ describe('createVariantsStore', () => {
 
     expect(fetchQuery).toContain('_type=="system.variant"')
     expect(fetchQuery).toContain('_id in path("_.variants.*")')
+    expect(fetchQuery).toContain('_rev')
     expect(fetchQuery).toContain('_createdAt')
+    expect(fetchQuery).toContain('_updatedAt')
     expect(fetchQuery).toContain('"priority": coalesce(priority, 0)')
     expect(fetchQuery).toContain('| order(_createdAt desc)')
     expect(fetch).toHaveBeenCalledWith(
