@@ -6,6 +6,7 @@ import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flu
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
+import {VARIANT_DOCUMENTS_PATH} from '../../store/constants'
 import {type SystemVariant} from '../../types'
 import {VariantDetail} from '../detail/VariantDetail'
 import {getVariantId} from '../util'
@@ -92,7 +93,7 @@ describe('VariantDetail', () => {
   })
 
   it('shows not found when variant id does not match any document', async () => {
-    routerState.variantId = getVariantId('_.variants.missing')
+    routerState.variantId = getVariantId(`${VARIANT_DOCUMENTS_PATH}.missing`)
     setVariants([variantAlphaAudience])
 
     await renderDetail()
@@ -105,7 +106,7 @@ describe('VariantDetail', () => {
   })
 
   it('navigates back to overview when Back is pressed', async () => {
-    routerState.variantId = getVariantId('_.variants.missing')
+    routerState.variantId = getVariantId(`${VARIANT_DOCUMENTS_PATH}.missing`)
     setVariants([])
     const user = userEvent.setup()
 

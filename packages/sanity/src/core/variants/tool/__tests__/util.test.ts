@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
 import {createMockVariant} from '../../__fixtures__/createMockVariant'
+import {VARIANT_DOCUMENTS_PATH} from '../../store/constants'
 import {
   decodeVariantIdFromRoute,
   filterVariantsForSearch,
@@ -12,7 +13,7 @@ import {
 
 describe('variants tool utilities', () => {
   it('derives a display id from a variant document id', () => {
-    expect(getVariantId('_.variants.audience-a')).toBe('audience-a')
+    expect(getVariantId(`${VARIANT_DOCUMENTS_PATH}.audience-a`)).toBe('audience-a')
     expect(getVariantId('audience-a')).toBe('audience-a')
   })
 
@@ -33,12 +34,16 @@ describe('variants tool utilities', () => {
   })
 
   it('decodes route slugs back to variant document ids', () => {
-    expect(decodeVariantIdFromRoute('alpha-audience')).toBe('_.variants.alpha-audience')
-    expect(decodeVariantIdFromRoute(encodeURIComponent('loyal-customers'))).toBe(
-      '_.variants.loyal-customers',
+    expect(decodeVariantIdFromRoute('alpha-audience')).toBe(
+      `${VARIANT_DOCUMENTS_PATH}.alpha-audience`,
     )
-    expect(decodeVariantIdFromRoute(encodeURIComponent('_.variants.a'))).toBe('_.variants.a')
-    expect(decodeVariantIdFromRoute('%E0%A4%A')).toBe('_.variants.%E0%A4%A')
+    expect(decodeVariantIdFromRoute(encodeURIComponent('loyal-customers'))).toBe(
+      `${VARIANT_DOCUMENTS_PATH}.loyal-customers`,
+    )
+    expect(decodeVariantIdFromRoute(encodeURIComponent(`${VARIANT_DOCUMENTS_PATH}.a`))).toBe(
+      `${VARIANT_DOCUMENTS_PATH}.a`,
+    )
+    expect(decodeVariantIdFromRoute('%E0%A4%A')).toBe(`${VARIANT_DOCUMENTS_PATH}.%E0%A4%A`)
     expect(decodeVariantIdFromRoute(undefined)).toBeUndefined()
   })
 

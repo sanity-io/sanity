@@ -8,7 +8,7 @@ import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualLis
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
-import {type SystemVariant} from '../../types'
+import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {VariantsOverview} from '../overview/VariantsOverview'
 import {getVariantId} from '../util'
 
@@ -23,6 +23,12 @@ const variantsMock = vi.hoisted(() => ({
   byId: new Map<string, SystemVariant>(),
   loading: false,
   error: undefined as Error | undefined,
+}))
+
+const variantOperationsMock = vi.hoisted(() => ({
+  createVariant: vi.fn(),
+  updateVariant: vi.fn(),
+  deleteVariant: vi.fn(),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -63,6 +69,10 @@ vi.mock('../../store/useAllVariants', () => ({
   })),
 }))
 
+vi.mock('../../store/useVariantOperations', () => ({
+  useVariantOperations: vi.fn(() => variantOperationsMock),
+}))
+
 setupVirtualListEnv()
 
 describe('VariantsOverview', () => {
@@ -73,6 +83,17 @@ describe('VariantsOverview', () => {
     variantsMock.error = undefined
     routerState.variantId = undefined
     mockNavigate.mockClear()
+    variantOperationsMock.createVariant.mockReset()
+    variantOperationsMock.deleteVariant.mockReset()
+    variantOperationsMock.createVariant.mockImplementation(
+      async (variant: EditableSystemVariant) => ({
+        ...variant,
+        _createdAt: '2025-01-01T00:00:00Z',
+        _updatedAt: '2025-01-01T00:00:00Z',
+        _rev: 'rev-1',
+      }),
+    )
+    variantOperationsMock.deleteVariant.mockResolvedValue(undefined)
   })
 
   afterEach(() => {
@@ -165,6 +186,22 @@ describe('VariantsOverview', () => {
     })
   })
 
+  it('deletes a variant from the row actions menu', async () => {
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
+
+    await user.click(screen.getByRole('button', {name: 'Show more'}))
+    await user.click(await screen.findByText('Delete variant'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
+    })
+  })
+
   it('shows empty state when there are no variants', async () => {
     variantsMock.data = []
 
@@ -192,6 +229,34 @@ describe('VariantsOverview', () => {
 
     await waitFor(() => {
       expect(screen.getAllByTestId('table-row-skeleton')).toHaveLength(3)
+    })
+  })
+
+  it('opens the create variant dialog and navigates after submit', async () => {
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await user.click(screen.getAllByRole('button', {name: 'Create variant'})[0]!)
+
+    expect(screen.getByRole('dialog', {name: 'Create variant'})).toBeInTheDocument()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal-customers')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const createdVariant = variantOperationsMock.createVariant.mock
+      .calls[0]![0] as EditableSystemVariant
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith({
+        variantId: getVariantId(createdVariant._id),
+      })
     })
   })
 

@@ -3,6 +3,7 @@ import {filter, firstValueFrom, of, Subject, take, throwError, toArray} from 'rx
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockVariant} from '../../__fixtures__/createMockVariant'
+import {VARIANT_DOCUMENTS_PATH} from '../constants'
 import {createVariantsStore} from '../createVariantsStore'
 
 function createMockClient() {
@@ -40,7 +41,7 @@ describe('createVariantsStore', () => {
     const fetchQuery = fetch.mock.calls[0][0] as string
 
     expect(fetchQuery).toContain('_type=="system.variant"')
-    expect(fetchQuery).toContain('_id in path("_.variants.*")')
+    expect(fetchQuery).toContain(`_id in path("${VARIANT_DOCUMENTS_PATH}.*")`)
     expect(fetchQuery).toContain('_rev')
     expect(fetchQuery).toContain('_createdAt')
     expect(fetchQuery).toContain('_updatedAt')
