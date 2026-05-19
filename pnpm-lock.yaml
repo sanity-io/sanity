@@ -1774,8 +1774,8 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       i18next:
-        specifier: ^25.8.17
-        version: 25.8.17(typescript@6.0.0-beta)
+        specifier: ^26.2.0
+        version: 26.2.0(typescript@6.0.0-beta)
       is-hotkey-esm:
         specifier: ^1.0.0
         version: 1.0.0
@@ -1829,7 +1829,7 @@ importers:
         version: 2.13.7(@types/react@19.2.14)(react@19.2.4)
       react-i18next:
         specifier: 15.6.1
-        version: 15.6.1(i18next@25.8.17(typescript@6.0.0-beta))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@6.0.0-beta)
+        version: 15.6.1(i18next@26.2.0(typescript@6.0.0-beta))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@6.0.0-beta)
       react-is:
         specifier: 'catalog:'
         version: 19.2.4
@@ -8543,10 +8543,10 @@ packages:
   humanize-list@1.0.1:
     resolution: {integrity: sha512-4+p3fCRF21oUqxhK0yZ6yaSP/H5/wZumc7q1fH99RkW7Q13aAxDeP78BKjoR+6y+kaHqKF/JWuQhsNuuI2NKtA==}
 
-  i18next@25.8.17:
-    resolution: {integrity: sha512-vWtCttyn5bpOK4hWbRAe1ZXkA+Yzcn2OcACT+WJavtfGMcxzkfvXTLMeOU8MUhRmAySKjU4VVuKlo0sSGeBokA==}
+  i18next@26.2.0:
+    resolution: {integrity: sha512-zwBHldHdTmwN7r6UNc7lC6GWNN+YYg3DrRSeHR5PRRBf5QnJZcYHrQc0uaU26qZeYxR7iFZD+Y315dPnKP47wA==}
     peerDependencies:
-      typescript: ^5
+      typescript: ^5 || ^6
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -19108,9 +19108,7 @@ snapshots:
 
   humanize-list@1.0.1: {}
 
-  i18next@25.8.17(typescript@6.0.0-beta):
-    dependencies:
-      '@babel/runtime': 7.28.6
+  i18next@26.2.0(typescript@6.0.0-beta):
     optionalDependencies:
       typescript: 6.0.0-beta
 
@@ -20759,11 +20757,11 @@ snapshots:
     dependencies:
       react: 19.2.4
 
-  react-i18next@15.6.1(i18next@25.8.17(typescript@6.0.0-beta))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@6.0.0-beta):
+  react-i18next@15.6.1(i18next@26.2.0(typescript@6.0.0-beta))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@6.0.0-beta):
     dependencies:
       '@babel/runtime': 7.28.6
       html-parse-stringify: 3.0.1
-      i18next: 25.8.17(typescript@6.0.0-beta)
+      i18next: 26.2.0(typescript@6.0.0-beta)
       react: 19.2.4
     optionalDependencies:
       react-dom: 19.2.4(react@19.2.4)
