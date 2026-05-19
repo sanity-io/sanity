@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.26.0](https://github.com/sanity-io/sanity/compare/v5.25.1...v5.26.0) (2026-05-19)
+
+### Features
+
+* **core:** initial setup for variants store ([#12809](https://github.com/sanity-io/sanity/issues/12809)) ([c99e3ca](https://github.com/sanity-io/sanity/commit/c99e3cafeb82a0a20e291f9614a3615675603283))
+* **core:** route studio root to first visible workspace ([#12826](https://github.com/sanity-io/sanity/issues/12826)) ([30be234](https://github.com/sanity-io/sanity/commit/30be2341a18314aa0dc7755273221c9bdf316a6e))
+* **telemetry:** add Studio Tool Mount Time Measured event ([#12708](https://github.com/sanity-io/sanity/issues/12708)) ([cd5c734](https://github.com/sanity-io/sanity/commit/cd5c734c3404974a7e1afad8ce264f923b2a8e03))
+
+### Bug Fixes
+
+* **core:** arrays previews to include the first item  ([#12837](https://github.com/sanity-io/sanity/issues/12837)) ([3f22835](https://github.com/sanity-io/sanity/commit/3f22835c60b83a64b49567e4de25c7edd78d09ff))
+* **deps:** update dependency @sanity/cli to ^6.6.0 ([#12804](https://github.com/sanity-io/sanity/issues/12804)) ([d2a3286](https://github.com/sanity-io/sanity/commit/d2a3286608aa5e940dcfd1dc6960f393074ac070))
+* **form:** load crop image via authed blob URL for private assets ([#12820](https://github.com/sanity-io/sanity/issues/12820)) ([c6abef0](https://github.com/sanity-io/sanity/commit/c6abef062ed0a79305197fcfb83898b07dfd565c))
+* **form:** surface errors across the form to validation especially focused on date inputs ([#12815](https://github.com/sanity-io/sanity/issues/12815)) ([a271265](https://github.com/sanity-io/sanity/commit/a27126590f6bd46f9bab4e4d1089d917b127c5b5))
+* respect options.disableNew for asset menus ([#12842](https://github.com/sanity-io/sanity/issues/12842)) ([2de7a16](https://github.com/sanity-io/sanity/commit/2de7a16ec7962f1d3bd922a8ef25c56425e0d547))
+* **sanity:** allow `FormBuilder` to render without parent `DocumentDivergencesContext` ([ff9d414](https://github.com/sanity-io/sanity/commit/ff9d414de142fd95def6555167cd8fde18fc49cf))
+
+### Reverts
+
+* "chore(release): publish v5.26.0" ([#12849](https://github.com/sanity-io/sanity/issues/12849)) ([70545b8](https://github.com/sanity-io/sanity/commit/70545b8d5421f875a171145fe5312742c0c4f959))
 ## [5.25.1](https://github.com/sanity-io/sanity/compare/v5.25.0...v5.25.1) (2026-05-13)
 
 ### Bug Fixes
