@@ -14,6 +14,7 @@ const LINES_SHORT = ['M72 90 L94 90', 'M72 100 L92 100']
 
 export const VariantIllustration = () => (
   <svg
+    aria-hidden="true"
     data-testid="variant-illustration"
     width="248"
     height="201"
@@ -48,9 +49,9 @@ export const VariantIllustration = () => (
           stroke="var(--card-muted-fg-color)"
           strokeWidth={1.2}
         />
-        {LINES_MEDIUM.map((d, i) => (
+        {LINES_MEDIUM.map((d) => (
           <path
-            key={`sat-a-${i}`}
+            key={d}
             d={d}
             stroke="var(--card-muted-fg-color)"
             strokeWidth={1.2}
@@ -69,9 +70,9 @@ export const VariantIllustration = () => (
           stroke="var(--card-muted-fg-color)"
           strokeWidth={1.2}
         />
-        {LINES_FULL.slice(0, 3).map((d, i) => (
+        {LINES_FULL.slice(0, 3).map((d) => (
           <path
-            key={`sat-b-${i}`}
+            key={d}
             d={d}
             stroke="var(--card-muted-fg-color)"
             strokeWidth={1.2}
@@ -90,9 +91,9 @@ export const VariantIllustration = () => (
           stroke="var(--card-muted-fg-color)"
           strokeWidth={1.2}
         />
-        {LINES_SHORT.map((d, i) => (
+        {LINES_SHORT.map((d) => (
           <path
-            key={`sat-c-${i}`}
+            key={d}
             d={d}
             stroke="var(--card-muted-fg-color)"
             strokeWidth={1.2}
@@ -119,14 +120,14 @@ export const VariantIllustration = () => (
         strokeWidth={1.2}
         opacity={0.92}
       />
-      {LINES_FULL.map((d, i) => (
+      {LINES_FULL.map((d, index) => (
         <path
-          key={`hub-${i}`}
+          key={d}
           d={d}
           stroke="var(--card-muted-fg-color)"
           strokeWidth={1.2}
           strokeLinecap="round"
-          opacity={0.42 + i * 0.06}
+          opacity={0.42 + index * 0.06}
         />
       ))}
     </g>

@@ -8,6 +8,7 @@ import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {type SystemVariant} from '../../types'
 import {VariantDetail} from '../detail/VariantDetail'
+import {getVariantId} from '../util'
 
 const mockNavigate = vi.fn()
 
@@ -17,6 +18,7 @@ const routerState = vi.hoisted(() => ({
 
 const variantsMock = vi.hoisted(() => ({
   data: [] as SystemVariant[],
+  byId: new Map<string, SystemVariant>(),
   loading: false,
   error: undefined as Error | undefined,
 }))
@@ -33,6 +35,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
 vi.mock('../../store/useAllVariants', () => ({
   useAllVariants: vi.fn(() => ({
     data: variantsMock.data,
+    byId: variantsMock.byId,
     loading: variantsMock.loading,
     error: variantsMock.error,
   })),
@@ -41,11 +44,17 @@ vi.mock('../../store/useAllVariants', () => ({
 describe('VariantDetail', () => {
   beforeEach(() => {
     variantsMock.data = []
+    variantsMock.byId = new Map()
     variantsMock.loading = false
     variantsMock.error = undefined
     routerState.variantId = undefined
     mockNavigate.mockClear()
   })
+
+  const setVariants = (variants: SystemVariant[]) => {
+    variantsMock.data = variants
+    variantsMock.byId = new Map(variants.map((variant) => [variant._id, variant]))
+  }
 
   const renderDetail = async () => {
     const wrapper = await createTestProvider({
@@ -57,7 +66,7 @@ describe('VariantDetail', () => {
   }
 
   it('shows loading state while variants are loading', async () => {
-    routerState.variantId = encodeURIComponent(variantAlphaAudience._id)
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
     variantsMock.loading = true
 
     await renderDetail()
@@ -66,8 +75,8 @@ describe('VariantDetail', () => {
   })
 
   it('renders title, description fallback, and placeholder when variant exists', async () => {
-    routerState.variantId = encodeURIComponent(variantAlphaAudience._id)
-    variantsMock.data = [variantAlphaAudience]
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
 
     await renderDetail()
 
@@ -83,8 +92,8 @@ describe('VariantDetail', () => {
   })
 
   it('shows not found when variant id does not match any document', async () => {
-    routerState.variantId = encodeURIComponent('_.variants.missing')
-    variantsMock.data = [variantAlphaAudience]
+    routerState.variantId = getVariantId('_.variants.missing')
+    setVariants([variantAlphaAudience])
 
     await renderDetail()
 
@@ -96,8 +105,8 @@ describe('VariantDetail', () => {
   })
 
   it('navigates back to overview when Back is pressed', async () => {
-    routerState.variantId = encodeURIComponent('_.variants.missing')
-    variantsMock.data = []
+    routerState.variantId = getVariantId('_.variants.missing')
+    setVariants([])
     const user = userEvent.setup()
 
     await renderDetail()

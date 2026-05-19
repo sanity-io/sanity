@@ -1,13 +1,13 @@
 import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
-import {useRouter} from 'sanity/router'
+import {type ForwardedRef, forwardRef, type HTMLProps, useMemo} from 'react'
+import {StateLink} from 'sanity/router'
 
 import {type UseTranslationResponse, useTranslation} from '../../../i18n'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
-import {getVariantConditionsText, getVariantTitle} from '../util'
+import {getVariantId, getVariantConditionsText, getVariantTitle} from '../util'
 
 const VariantDocumentsCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, datum}) => {
   if (datum.isLoading) {
@@ -30,12 +30,20 @@ const VariantDocumentsCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, 
 }
 
 const VariantTitleCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, datum: variant}) => {
-  const router = useRouter()
   const {t} = useTranslation(variantsLocaleNamespace)
 
-  const handleNavigate = useCallback(() => {
-    router.navigate({variantId: encodeURIComponent(variant._id)})
-  }, [router, variant._id])
+  const encodedVariantId = getVariantId(variant._id)
+
+  const VariantLink = useMemo(
+    () =>
+      forwardRef(function VariantLinkComponent(
+        linkProps: HTMLProps<HTMLAnchorElement>,
+        ref: ForwardedRef<HTMLAnchorElement>,
+      ) {
+        return <StateLink {...linkProps} ref={ref} state={{variantId: encodedVariantId}} />
+      }),
+    [encodedVariantId],
+  )
 
   if (variant.isLoading) {
     return (
@@ -56,7 +64,7 @@ const VariantTitleCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, datu
 
   return (
     <Box {...cellProps} flex={1} paddingLeft={3} paddingRight={2} paddingY={1} sizing="border">
-      <Card as="a" flex={1} onClick={handleNavigate} padding={2} radius={2} tone="inherit">
+      <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
         <Flex align="center" gap={3}>
           <Stack flex={1} space={2}>
             <Text size={1} weight="medium">

@@ -32,8 +32,33 @@ export function getVariantTitle(variant: SystemVariant): string {
  */
 export function getVariantConditionsText(conditions: SystemVariant['conditions']): string {
   return Object.entries(conditions)
-    .map(([key, value]) => `${key}: ${value}`)
+    .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
     .join(', ')
+}
+
+/**
+ * Decodes router state / URL path segments back to a variant document id.
+ *
+ * @internal
+ */
+export function decodeVariantIdFromRoute(variantIdRaw: string | undefined): string | undefined {
+  if (!variantIdRaw) {
+    return undefined
+  }
+
+  let decoded: string
+
+  try {
+    decoded = decodeURIComponent(variantIdRaw)
+  } catch {
+    decoded = variantIdRaw
+  }
+
+  if (decoded.startsWith(`${VARIANT_ID_PREFIX}`)) {
+    return decoded
+  }
+
+  return `${VARIANT_ID_PREFIX}${decoded}`
 }
 
 /**

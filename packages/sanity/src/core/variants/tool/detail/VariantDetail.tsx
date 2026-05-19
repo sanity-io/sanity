@@ -1,5 +1,4 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -7,20 +6,17 @@ import {LoadingBlock} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
-import {getVariantDescription, getVariantTitle} from '../util'
+import {decodeVariantIdFromRoute, getVariantDescription, getVariantTitle} from '../util'
 
 export function VariantDetail() {
   const router = useRouter()
   const {t} = useTranslation(variantsLocaleNamespace)
   const variantIdRaw =
     typeof router.state.variantId === 'string' ? router.state.variantId : undefined
-  const variantId = decodeURIComponent(variantIdRaw || '')
-  const {data: variants, loading} = useAllVariants()
+  const variantId = decodeVariantIdFromRoute(variantIdRaw)
+  const {byId, loading} = useAllVariants()
 
-  const variant = useMemo(
-    () => variants.find((candidate) => candidate._id === variantId),
-    [variantId, variants],
-  )
+  const variant = variantId ? byId.get(variantId) : undefined
 
   if (loading) {
     return <LoadingBlock fill title={t('detail.loading')} />

@@ -10,6 +10,7 @@ import {useVariantsStore} from './useVariantsStore'
  */
 export function useAllVariants(): {
   data: SystemVariant[]
+  byId: Map<string, SystemVariant>
   error?: Error
   loading: boolean
 } {
@@ -19,6 +20,7 @@ export function useAllVariants(): {
   return useMemo(
     () => ({
       data: Array.from(variants.values()),
+      byId: variants,
       error: error,
       loading: ['loading', 'initialising'].includes(state),
     }),

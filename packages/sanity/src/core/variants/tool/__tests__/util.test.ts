@@ -2,6 +2,7 @@ import {describe, expect, it} from 'vitest'
 
 import {createVariant} from '../../store/__tests__/testUtils'
 import {
+  decodeVariantIdFromRoute,
   filterVariantsForSearch,
   getVariantConditionsText,
   getVariantDescription,
@@ -24,10 +25,21 @@ describe('variants tool utilities', () => {
     )
   })
 
-  it('formats conditions as key value pairs', () => {
+  it('formats conditions as quoted key value pairs', () => {
     expect(getVariantConditionsText({audience: 'developer', locale: 'en'})).toBe(
-      'audience: developer, locale: en',
+      'audience: "developer", locale: "en"',
     )
+    expect(getVariantConditionsText({locale: 'en,nb'})).toBe('locale: "en,nb"')
+  })
+
+  it('decodes route slugs back to variant document ids', () => {
+    expect(decodeVariantIdFromRoute('alpha-audience')).toBe('_.variants.alpha-audience')
+    expect(decodeVariantIdFromRoute(encodeURIComponent('loyal-customers'))).toBe(
+      '_.variants.loyal-customers',
+    )
+    expect(decodeVariantIdFromRoute(encodeURIComponent('_.variants.a'))).toBe('_.variants.a')
+    expect(decodeVariantIdFromRoute('%E0%A4%A')).toBe('_.variants.%E0%A4%A')
+    expect(decodeVariantIdFromRoute(undefined)).toBeUndefined()
   })
 
   it('extracts plain text descriptions from portable text', () => {

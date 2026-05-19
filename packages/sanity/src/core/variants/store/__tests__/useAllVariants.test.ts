@@ -33,6 +33,7 @@ describe('useAllVariants', () => {
     expect(result.current).toEqual({
       loading: true,
       data: [],
+      byId: new Map(),
       error: undefined,
     })
   })
@@ -57,6 +58,10 @@ describe('useAllVariants', () => {
       expect(result.current).toEqual({
         loading: false,
         data: [variantA, variantB],
+        byId: new Map([
+          [variantA._id, variantA],
+          [variantB._id, variantB],
+        ]),
         error: undefined,
       })
     })
@@ -79,6 +84,7 @@ describe('useAllVariants', () => {
       expect(result.current).toEqual({
         loading: false,
         data: [],
+        byId: new Map(),
         error,
       })
     })

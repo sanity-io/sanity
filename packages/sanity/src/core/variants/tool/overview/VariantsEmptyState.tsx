@@ -1,4 +1,4 @@
-import {Flex, Inline, rem, Text} from '@sanity/ui'
+import {Flex, rem, Text} from '@sanity/ui'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'

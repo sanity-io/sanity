@@ -1,5 +1,6 @@
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {type Ref, forwardRef, type HTMLProps} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flushMicrotasks'
@@ -9,6 +10,7 @@ import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/v
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {type SystemVariant} from '../../types'
 import {VariantsOverview} from '../overview/VariantsOverview'
+import {getVariantId} from '../util'
 
 const mockNavigate = vi.fn()
 
@@ -18,6 +20,7 @@ const routerState = vi.hoisted(() => ({
 
 const variantsMock = vi.hoisted(() => ({
   data: [] as SystemVariant[],
+  byId: new Map<string, SystemVariant>(),
   loading: false,
   error: undefined as Error | undefined,
 }))
@@ -28,12 +31,33 @@ vi.mock('sanity/router', async (importOriginal) => ({
     state: routerState,
     navigate: mockNavigate,
     resolveIntentLink: vi.fn(),
+    resolvePathFromState: vi.fn(({variantId}: {variantId?: string}) =>
+      variantId ? `/variants/${variantId}` : '/variants',
+    ),
   })),
+  StateLink: forwardRef(function MockStateLink(
+    {state, ...rest}: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>,
+    ref,
+  ) {
+    return (
+      // oxlint-disable-next-line jsx_a11y/anchor-has-content
+      <a
+        {...rest}
+        ref={ref as Ref<HTMLAnchorElement>}
+        href={state?.variantId ? `/variants/${state.variantId}` : '/variants'}
+        onClick={(event) => {
+          event.preventDefault()
+          mockNavigate(state)
+        }}
+      />
+    )
+  }),
 }))
 
 vi.mock('../../store/useAllVariants', () => ({
   useAllVariants: vi.fn(() => ({
     data: variantsMock.data,
+    byId: variantsMock.byId,
     loading: variantsMock.loading,
     error: variantsMock.error,
   })),
@@ -44,6 +68,7 @@ setupVirtualListEnv()
 describe('VariantsOverview', () => {
   beforeEach(() => {
     variantsMock.data = []
+    variantsMock.byId = new Map()
     variantsMock.loading = false
     variantsMock.error = undefined
     routerState.variantId = undefined
@@ -63,8 +88,13 @@ describe('VariantsOverview', () => {
     return result
   }
 
+  const setVariants = (variants: SystemVariant[]) => {
+    variantsMock.data = variants
+    variantsMock.byId = new Map(variants.map((variant) => [variant._id, variant]))
+  }
+
   it('renders title, description, create action, and search', async () => {
-    variantsMock.data = [variantAlphaAudience]
+    setVariants([variantAlphaAudience])
 
     await renderOverview()
 
@@ -79,7 +109,7 @@ describe('VariantsOverview', () => {
   })
 
   it('lists variants in the virtualized table', async () => {
-    variantsMock.data = [variantAlphaAudience, variantNorwegianMarket]
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
 
     await renderOverview()
 
@@ -93,7 +123,7 @@ describe('VariantsOverview', () => {
   })
 
   it('filters variants when searching by title or condition', async () => {
-    variantsMock.data = [variantAlphaAudience, variantNorwegianMarket]
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
     const user = userEvent.setup()
 
     await renderOverview()
@@ -121,7 +151,7 @@ describe('VariantsOverview', () => {
   })
 
   it('navigates to variant detail when a row title is activated', async () => {
-    variantsMock.data = [variantAlphaAudience]
+    setVariants([variantAlphaAudience])
     const user = userEvent.setup()
 
     await renderOverview()
@@ -131,7 +161,7 @@ describe('VariantsOverview', () => {
     await user.click(screen.getByText('Alpha audience'))
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      variantId: encodeURIComponent(variantAlphaAudience._id),
+      variantId: getVariantId(variantAlphaAudience._id),
     })
   })
 
