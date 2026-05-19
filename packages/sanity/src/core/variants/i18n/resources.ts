@@ -12,6 +12,8 @@ const variantsLocaleStrings = {
   'overview.action.create-variant': 'Create variant',
   /** Label for the Variants overview delete action. */
   'overview.action.delete-variant': 'Delete variant',
+  /** Error toast title when variant deletion fails. */
+  'overview.action.delete-variant.error.title': 'Unable to delete variant',
   /** Link label for Variants overview documentation (empty state). */
   'overview.action.documentation': 'Documentation',
   /** Description for the Variants overview empty state. */
