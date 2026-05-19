@@ -30,19 +30,11 @@ test('clicking default sort order and direction sets value in storage', async ({
     })
   }
 
-  // Ensure the pane and its context menu button have rendered before attempting
-  // to click. The click otherwise races with structure-tool hydration under CI
-  // load, resulting in an intermittent "element(s) not found" failure.
-  const contextMenuButton = page.getByTestId('pane').getByTestId('pane-context-menu-button')
-  await expect(contextMenuButton).toBeVisible({timeout: 30_000})
-
   const keyValueRequest = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
-  await contextMenuButton.click()
-  const sortByNameMenuItem = page.getByRole('menuitem', {name: 'Sort by Name'})
-  await expect(sortByNameMenuItem).toBeVisible()
-  await sortByNameMenuItem.click()
+  await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
+  await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
   const responseBody = await (await keyValueRequest).json()
 
   expect(responseBody[0]).toMatchObject({
@@ -55,11 +47,8 @@ test('clicking default sort order and direction sets value in storage', async ({
   const keyValueRequest2 = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
-  await expect(contextMenuButton).toBeVisible()
-  await contextMenuButton.click()
-  const sortByLastEditedMenuItem = page.getByRole('menuitem', {name: 'Sort by Last Edited'})
-  await expect(sortByLastEditedMenuItem).toBeVisible()
-  await sortByLastEditedMenuItem.click()
+  await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
+  await page.getByRole('menuitem', {name: 'Sort by Last Edited'}).click()
   const responseBody2 = await (await keyValueRequest2).json()
 
   expect(responseBody2[0]).toMatchObject({
