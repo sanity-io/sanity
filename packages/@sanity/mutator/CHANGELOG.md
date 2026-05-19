@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.26.0](https://github.com/sanity-io/sanity/compare/v5.25.1...v5.26.0) (2026-05-19)
+
+### Reverts
+
+* "chore(release): publish v5.26.0" ([#12849](https://github.com/sanity-io/sanity/issues/12849)) ([70545b8](https://github.com/sanity-io/sanity/commit/70545b8d5421f875a171145fe5312742c0c4f959))
 
 ## [5.18.0](https://github.com/sanity-io/sanity/compare/v5.17.1...v5.18.0) (2026-03-24)
 
