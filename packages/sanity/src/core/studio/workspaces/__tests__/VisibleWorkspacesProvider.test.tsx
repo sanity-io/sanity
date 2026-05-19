@@ -94,7 +94,7 @@ describe('VisibleWorkspacesProvider', () => {
     expect(staticallyHidden.authSubscriptionCount()).toBe(0)
     expect(staticallyVisible.authSubscriptionCount()).toBe(0)
 
-    expect(view.result.current.isResolvingHiddenWorkspaces).toBe(false)
+    expect(view.result.current.workspaceAuthStates).toEqual({})
     expect(view.result.current.visibleWorkspaces.map((w) => w.name)).toEqual(['default', 'guest'])
   })
 
@@ -109,7 +109,7 @@ describe('VisibleWorkspacesProvider', () => {
     expect(view.result.current.visibleWorkspaces.map((w) => w.name)).toEqual(['default', 'admin'])
   })
 
-  it('flips isResolvingHiddenWorkspaces from true to false once callback auth resolves', () => {
+  it('resolves workspaceAuthStates for a callback-hidden workspace once auth emits', () => {
     const state$ = new Subject<AuthState>()
     const plain = createWorkspace({name: 'default'})
     const callback = createWorkspace({
@@ -121,7 +121,7 @@ describe('VisibleWorkspacesProvider', () => {
 
     const view = renderProvider([plain, callback])
 
-    expect(view.result.current.isResolvingHiddenWorkspaces).toBe(true)
+    expect(view.result.current.workspaceAuthStates.admin).toBeUndefined()
     // Fail-open: callback-hidden workspaces are included optimistically
     // while auth is still resolving.
     expect(view.result.current.visibleWorkspaces.map((w) => w.name)).toEqual(['default', 'admin'])
@@ -141,7 +141,42 @@ describe('VisibleWorkspacesProvider', () => {
       )
     })
 
-    expect(view.result.current.isResolvingHiddenWorkspaces).toBe(false)
+    expect(view.result.current.workspaceAuthStates.admin).toBeDefined()
     expect(view.result.current.visibleWorkspaces.map((w) => w.name)).toEqual(['default'])
+  })
+
+  it('progressively resolves workspaceAuthStates as each workspace auth emits', () => {
+    const firstState$ = new Subject<AuthState>()
+    const secondState$ = new Subject<AuthState>()
+    const firstWorkspace = createWorkspace({
+      name: 'first',
+      hidden: () => false,
+      state$: firstState$,
+    })
+    const secondWorkspace = createWorkspace({
+      name: 'second',
+      hidden: () => false,
+      state$: secondState$,
+    })
+
+    const view = renderProvider([firstWorkspace, secondWorkspace])
+
+    expect(view.result.current.workspaceAuthStates).toEqual({})
+
+    const firstAuthState = createAuthState()
+    act(() => {
+      firstState$.next(firstAuthState)
+    })
+
+    expect(view.result.current.workspaceAuthStates.first).toBe(firstAuthState)
+    expect(view.result.current.workspaceAuthStates.second).toBeUndefined()
+
+    const secondAuthState = createAuthState()
+    act(() => {
+      secondState$.next(secondAuthState)
+    })
+
+    expect(view.result.current.workspaceAuthStates.first).toBe(firstAuthState)
+    expect(view.result.current.workspaceAuthStates.second).toBe(secondAuthState)
   })
 })
