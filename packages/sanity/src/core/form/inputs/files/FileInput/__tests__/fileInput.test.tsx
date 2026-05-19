@@ -169,6 +169,25 @@ describe('FileInput with asset', () => {
     expect(screen.getByText('31 Bytes')).toBeInTheDocument()
   })
 
+  it('does not show upload in context menu when disableNew is true', async () => {
+    await renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+        options: {disableNew: true},
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <BaseFileInput {...inputProps} value={value} />,
+    })
+
+    await userEvent.click(screen.getByTestId('options-menu-button'))
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('file-input-upload-button-test-source')).not.toBeInTheDocument()
+    })
+  })
+
   it.todo('renders new file when a new file in uploaded')
 
   /* readOnly - the files input is read only or not */

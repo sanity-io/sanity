@@ -136,10 +136,13 @@ export function FilePreview(props: FileAssetProps) {
     t,
   ])
 
+  const disableNew = schemaType.options?.disableNew === true
+
   const uploadMenuItem = useUploadMenuItem({
     accept,
     assetSourcesWithUpload,
     directUploads,
+    disableNew,
     readOnly,
     onSelectFiles: handleSelectFilesFromAssetSource,
     onOpenSourceForUpload: handleOpenSourceForUpload,

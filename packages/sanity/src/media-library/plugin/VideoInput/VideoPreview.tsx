@@ -255,10 +255,13 @@ export function VideoPreview(props: VideoAssetInputProps) {
     t,
   ])
 
+  const disableNew = schemaType.options?.disableNew === true
+
   const uploadMenuItem = useUploadMenuItem({
     accept,
     assetSourcesWithUpload,
     directUploads,
+    disableNew,
     readOnly,
     onSelectFiles: handleSelectVideosFromAssetSource,
     onOpenSourceForUpload: handleOpenSourceForUpload,
