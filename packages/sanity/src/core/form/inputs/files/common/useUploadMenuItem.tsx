@@ -12,6 +12,8 @@ export interface UseUploadMenuItemOptions {
   accept: string
   assetSourcesWithUpload: AssetSource[]
   directUploads?: boolean
+  /** When true, upload menu items are hidden (schema option disableNew). */
+  disableNew?: boolean
   readOnly?: boolean
   onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   onOpenSourceForUpload?: (assetSource: AssetSource) => void
@@ -43,6 +45,7 @@ export function useUploadMenuItem(options: UseUploadMenuItemOptions): ReactNode 
     accept,
     assetSourcesWithUpload,
     directUploads,
+    disableNew,
     readOnly,
     onSelectFiles,
     onOpenSourceForUpload,
@@ -57,6 +60,10 @@ export function useUploadMenuItem(options: UseUploadMenuItemOptions): ReactNode 
   const {t} = useTranslation()
 
   return useMemo(() => {
+    if (disableNew) {
+      return null
+    }
+
     switch (assetSourcesWithUpload.length) {
       case 0:
         return null
@@ -110,6 +117,7 @@ export function useUploadMenuItem(options: UseUploadMenuItemOptions): ReactNode 
     accept,
     assetSourcesWithUpload,
     directUploads,
+    disableNew,
     dropdownMenuTestId,
     getSingleButtonTestId,
     onCloseParentMenu,
