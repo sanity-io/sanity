@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {createVariant} from '../../store/__tests__/testUtils'
+import {createMockVariant} from '../../__fixtures__/createMockVariant'
 import {
   decodeVariantIdFromRoute,
   filterVariantsForSearch,
@@ -17,7 +17,7 @@ describe('variants tool utilities', () => {
   })
 
   it('uses metadata title before falling back to the id suffix', () => {
-    const variant = createVariant('audience-a')
+    const variant = createMockVariant('audience-a')
 
     expect(getVariantTitle(variant)).toBe('audience-a')
     expect(getVariantTitle({...variant, metadata: {title: 'Audience A', description: []}})).toBe(
@@ -43,7 +43,7 @@ describe('variants tool utilities', () => {
   })
 
   it('extracts plain text descriptions from portable text', () => {
-    const variant = createVariant('audience-a')
+    const variant = createMockVariant('audience-a')
 
     expect(
       getVariantDescription({
@@ -65,11 +65,11 @@ describe('variants tool utilities', () => {
 
   it('filters variants by title and condition keys or values', () => {
     const developerVariant = {
-      ...createVariant('developer'),
+      ...createMockVariant('developer'),
       metadata: {title: 'Developer audience', description: []},
     }
     const localeVariant = {
-      ...createVariant('norwegian', 1),
+      ...createMockVariant('norwegian', 1),
       conditions: {locale: 'nb-NO'},
     }
 

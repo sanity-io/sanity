@@ -2,8 +2,8 @@ import {type SanityClient} from '@sanity/client'
 import {filter, firstValueFrom, of, Subject, take, throwError, toArray} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockVariant} from '../../__fixtures__/createMockVariant'
 import {createVariantsStore} from '../createVariantsStore'
-import {createVariant} from './testUtils'
 
 function createMockClient() {
   const listener$ = new Subject<{
@@ -27,7 +27,7 @@ describe('createVariantsStore', () => {
   })
 
   it('loads variants from the variants system document path', async () => {
-    const variant = createVariant('a')
+    const variant = createMockVariant('a')
     const {client, fetch, listen, listener$} = createMockClient()
     fetch.mockReturnValue(of([variant]))
 
@@ -68,8 +68,8 @@ describe('createVariantsStore', () => {
   })
 
   it('keeps variants updated when the listener refetches', async () => {
-    const firstVariant = createVariant('a')
-    const updatedVariant = createVariant('b', 1)
+    const firstVariant = createMockVariant('a')
+    const updatedVariant = createMockVariant('b', 1)
     const {client, fetch, listener$} = createMockClient()
     fetch.mockReturnValueOnce(of([firstVariant])).mockReturnValueOnce(of([updatedVariant]))
 
@@ -88,8 +88,8 @@ describe('createVariantsStore', () => {
   })
 
   it('supports removing a variant through dispatch', async () => {
-    const variantA = createVariant('a')
-    const variantB = createVariant('b', 1)
+    const variantA = createMockVariant('a')
+    const variantB = createMockVariant('b', 1)
     const {client, fetch, listener$} = createMockClient()
     fetch.mockReturnValue(of([variantA, variantB]))
 

@@ -2,9 +2,9 @@ import {act, renderHook, waitFor} from '@testing-library/react'
 import {BehaviorSubject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockVariant} from '../../__fixtures__/createMockVariant'
 import {type VariantStoreState} from '../reducer'
 import {useAllVariants} from '../useAllVariants'
-import {createVariant} from './testUtils'
 
 const initialState: VariantStoreState = {
   variants: new Map(),
@@ -39,8 +39,8 @@ describe('useAllVariants', () => {
   })
 
   it('returns variants from the store state', async () => {
-    const variantA = createVariant('a')
-    const variantB = createVariant('b', 1)
+    const variantA = createMockVariant('a')
+    const variantB = createMockVariant('b', 1)
 
     const {result} = renderHook(() => useAllVariants())
 

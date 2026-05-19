@@ -1,19 +1,5 @@
-import {type PortableTextBlock} from '@sanity/types'
-
 import {type SystemVariant} from '../types'
 import {createMockVariant} from './createMockVariant'
-
-function createDescription(text: string): PortableTextBlock[] {
-  return [
-    {
-      _key: 'description',
-      _type: 'block',
-      children: [{_key: 'span', _type: 'span', marks: [], text}],
-      markDefs: [],
-      style: 'normal',
-    },
-  ]
-}
 
 export const variantAlphaAudience: SystemVariant = {
   ...createMockVariant('alpha-audience', 2),
