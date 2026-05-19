@@ -38,9 +38,10 @@ export function CreateVariantDialog(props: CreateVariantDialogProps): React.JSX.
 
       try {
         await createVariant(variant)
-        onCancel()
+        setIsSubmitting(false)
         onSubmit(variant._id)
       } catch (error) {
+        setIsSubmitting(false)
         console.error(error)
         toast.push({
           closable: true,
@@ -48,10 +49,8 @@ export function CreateVariantDialog(props: CreateVariantDialogProps): React.JSX.
           title: t('dialog.create.error.title'),
         })
       }
-
-      setIsSubmitting(false)
     },
-    [conditionsInvalid, createVariant, onCancel, onSubmit, t, toast, variant],
+    [conditionsInvalid, createVariant, onSubmit, t, toast, variant],
   )
 
   return (
@@ -59,8 +58,8 @@ export function CreateVariantDialog(props: CreateVariantDialogProps): React.JSX.
       __unstable_autoFocus={false}
       header={t('dialog.create.title')}
       id="create-variant-dialog"
-      onClickOutside={onCancel}
-      onClose={onCancel}
+      onClickOutside={isSubmitting ? undefined : onCancel}
+      onClose={isSubmitting ? undefined : onCancel}
       padding={false}
       width={1}
     >

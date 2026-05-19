@@ -1,6 +1,6 @@
-import {cleanup, render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -24,10 +24,6 @@ describe('CreateVariantDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     variantOperationsMock.createVariant.mockResolvedValue(undefined)
-  })
-
-  afterEach(() => {
-    cleanup()
   })
 
   const renderDialog = async () => {
@@ -144,7 +140,7 @@ describe('CreateVariantDialog', () => {
 
     const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
 
-    expect(onCancel).toHaveBeenCalledTimes(1)
+    expect(onCancel).not.toHaveBeenCalled()
     expect(onSubmit).toHaveBeenCalledWith(createdVariant._id)
   })
 

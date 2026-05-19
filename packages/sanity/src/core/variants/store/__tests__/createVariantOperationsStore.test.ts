@@ -48,9 +48,10 @@ describe('createVariantOperationsStore', () => {
     expect(client.patch).toHaveBeenCalledWith(variant._id)
     expect(patch.set).toHaveBeenCalledWith({
       conditions: variant.conditions,
+      metadata: variant.metadata,
       priority: variant.priority,
     })
-    expect(patch.set).toHaveBeenCalledWith({metadata: variant.metadata})
+    expect(patch.set).toHaveBeenCalledTimes(1)
     expect(patch.commit).toHaveBeenCalledTimes(1)
   })
 

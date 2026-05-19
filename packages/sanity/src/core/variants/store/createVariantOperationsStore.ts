@@ -21,14 +21,19 @@ export function createVariantOperationsStore(options: {
     client.create(variant) as Promise<SystemVariant>
 
   const handleUpdateVariant = (variant: EditableSystemVariant) => {
-    const patch = client.patch(variant._id).set({
+    const setPayload: Pick<EditableSystemVariant, 'conditions' | 'priority'> &
+      Partial<Pick<EditableSystemVariant, 'metadata'>> = {
       conditions: variant.conditions,
       priority: variant.priority,
-    })
+    }
 
     if (variant.metadata) {
-      patch.set({metadata: variant.metadata})
-    } else {
+      setPayload.metadata = variant.metadata
+    }
+
+    const patch = client.patch(variant._id).set(setPayload)
+
+    if (!variant.metadata) {
       patch.unset(['metadata'])
     }
 

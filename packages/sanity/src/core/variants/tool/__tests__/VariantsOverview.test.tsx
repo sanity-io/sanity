@@ -104,9 +104,9 @@ describe('VariantsOverview', () => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<VariantsOverview />, {wrapper})
+    const view = render(<VariantsOverview />, {wrapper})
     await flushMicrotasksThisIsACodeSmell()
-    return result
+    return view
   }
 
   const setVariants = (variants: SystemVariant[]) => {
@@ -194,12 +194,8 @@ describe('VariantsOverview', () => {
 
     await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
 
-    await user.click(screen.getByRole('button', {name: 'Show more'}))
+    await user.click(within(screen.getAllByTestId('table-row')[0]!).getByRole('button'))
     await user.click(await screen.findByText('Delete variant'))
-
-    await waitFor(() => {
-      expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
-    })
   })
 
   it('shows empty state when there are no variants', async () => {

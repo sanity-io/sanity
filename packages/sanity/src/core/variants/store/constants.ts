@@ -3,7 +3,9 @@ import {type SourceClientOptions} from '../../config/types'
 // api extractor take issues with 'as const' for literals
 // oxlint-disable-next-line prefer-as-const
 export const VARIANT_DOCUMENT_TYPE: 'system.variant' = 'system.variant'
-// Temporary using "variants" it will change to "_.variants." when
+// Temporary path for variant document IDs.
+// IDs are built as `${VARIANT_DOCUMENTS_PATH}.<suffix>` (for example, `variants.alpha-audience`).
+// This path will change when variants move under the system namespace.
 // oxlint-disable-next-line typescript/prefer-as-const
 export const VARIANT_DOCUMENTS_PATH: 'variants' = 'variants'
 
