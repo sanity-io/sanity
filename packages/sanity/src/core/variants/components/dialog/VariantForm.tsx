@@ -1,4 +1,5 @@
 import {AddIcon, TrashIcon} from '@sanity/icons'
+import {type Path} from '@sanity/types'
 import {Box, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
@@ -76,8 +77,10 @@ function getConditionRowsInvalid(rows: ConditionRow[]): boolean {
   )
 }
 
+export type VariantFormChangeHandler = (path: Path, value: unknown) => void
+
 export function VariantForm(props: {
-  onChange: (variant: EditableSystemVariant) => void
+  onChange: VariantFormChangeHandler
   onConditionValidityChange?: (invalid: boolean) => void
   showValidation?: boolean
   value: EditableSystemVariant
@@ -115,39 +118,27 @@ export function VariantForm(props: {
       onConditionValidityChange?.(nextRowsInvalid)
 
       if (nextRows.length === 0 || !nextRowsInvalid) {
-        onChange({
-          ...value,
-          conditions: getConditionsFromRows(nextRows),
-        })
+        onChange(['conditions'], getConditionsFromRows(nextRows))
       }
     },
-    [onChange, onConditionValidityChange, value],
+    [onChange, onConditionValidityChange],
   )
 
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      onChange({
-        ...value,
-        metadata: {
-          ...value.metadata,
-          title: event.currentTarget.value,
-        },
-      })
+      onChange(['metadata', 'title'], event.currentTarget.value)
     },
-    [onChange, value],
+    [onChange],
   )
 
   const handleDescriptionChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
-      onChange({
-        ...value,
-        metadata: {
-          ...value.metadata,
-          description: createPortableTextDescription(event.currentTarget.value),
-        },
-      })
+      onChange(
+        ['metadata', 'description'],
+        createPortableTextDescription(event.currentTarget.value),
+      )
     },
-    [onChange, value],
+    [onChange],
   )
 
   const handleConditionChange = useCallback(

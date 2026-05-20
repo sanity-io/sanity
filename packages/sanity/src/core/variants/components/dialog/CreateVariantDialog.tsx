@@ -1,13 +1,17 @@
+import {at, set} from '@sanity/mutate'
+import {applyPatches} from '@sanity/mutate/_unstable_apply'
 import {Box, Card, Flex, useToast} from '@sanity/ui'
+import {toString} from '@sanity/util/paths'
 import {type FormEvent, useCallback, useState} from 'react'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useVariantOperations} from '../../store/useVariantOperations'
+import {type EditableSystemVariant} from '../../types'
 import {getIsVariantInvalid} from '../../util/getIsVariantInvalid'
 import {getVariantDefaults} from '../../util/variantDefaults'
-import {VariantForm} from './VariantForm'
+import {VariantForm, type VariantFormChangeHandler} from './VariantForm'
 
 interface CreateVariantDialogProps {
   onCancel: () => void
@@ -24,6 +28,13 @@ export function CreateVariantDialog(props: CreateVariantDialogProps): React.JSX.
   const [showValidation, setShowValidation] = useState(false)
   const [conditionsInvalid, setConditionsInvalid] = useState(false)
   const invalid = getIsVariantInvalid(variant) || conditionsInvalid
+
+  const handleVariantChange = useCallback<VariantFormChangeHandler>((path, nextValue) => {
+    setVariant(
+      (currentVariant) =>
+        applyPatches([at(toString(path), set(nextValue))], currentVariant) as EditableSystemVariant,
+    )
+  }, [])
 
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -67,7 +78,7 @@ export function CreateVariantDialog(props: CreateVariantDialogProps): React.JSX.
         <form onSubmit={handleSubmit}>
           <Box paddingBottom={4}>
             <VariantForm
-              onChange={setVariant}
+              onChange={handleVariantChange}
               onConditionValidityChange={setConditionsInvalid}
               showValidation={showValidation}
               value={variant}
