@@ -1,14 +1,16 @@
 import {AddIcon, SearchIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
+import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n'
 import {Table, type TableProps} from '../../../releases/tool/components/Table/Table'
+import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant} from '../../types'
-import {filterVariantsForSearch} from '../util'
+import {filterVariantsForSearch, getVariantId} from '../util'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
 import {variantsOverviewColumnDefs} from './VariantsOverviewColumnDefs'
@@ -17,11 +19,24 @@ const VARIANT_TABLE_ROW_ID = '_id'
 
 export function VariantsOverview() {
   const {t} = useTranslation(variantsLocaleNamespace)
+  const router = useRouter()
   const {data: variants, error, loading} = useAllVariants()
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [isCreateVariantDialogOpen, setIsCreateVariantDialogOpen] = useState(false)
 
-  const handleCreateVariant = useCallback(() => undefined, [])
+  const handleCreateVariant = useCallback(() => {
+    setIsCreateVariantDialogOpen(true)
+  }, [])
+
+  const handleOnCreateVariant = useCallback(
+    (createdVariantId: string) => {
+      setIsCreateVariantDialogOpen(false)
+      router.navigate({variantId: getVariantId(createdVariantId)})
+    },
+    [router],
+  )
+
   const columnDefs = useMemo(() => variantsOverviewColumnDefs(t), [t])
   const renderRowActions = useCallback<
     NonNullable<TableProps<SystemVariant, undefined>['rowActions']>
@@ -39,12 +54,13 @@ export function VariantsOverview() {
   const createVariantButton = useMemo(
     () => (
       <Button
+        disabled={isCreateVariantDialogOpen}
         icon={AddIcon}
         onClick={handleCreateVariant}
         text={t('overview.action.create-variant')}
       />
     ),
-    [handleCreateVariant, t],
+    [handleCreateVariant, isCreateVariantDialogOpen, t],
   )
 
   const tableEmptyState = useCallback(() => {
@@ -113,6 +129,13 @@ export function VariantsOverview() {
           scrollContainerRef={scrollContainerRef}
         />
       </Box>
+
+      {isCreateVariantDialogOpen && (
+        <CreateVariantDialog
+          onCancel={() => setIsCreateVariantDialogOpen(false)}
+          onSubmit={handleOnCreateVariant}
+        />
+      )}
     </Flex>
   )
 }
