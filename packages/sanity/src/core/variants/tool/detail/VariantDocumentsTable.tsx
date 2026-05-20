@@ -16,7 +16,7 @@ interface VariantDocumentRow {
 }
 
 const TABLE_CARD_STYLE: CSSProperties = {
-  height: 320,
+  height: '100%',
   overflow: 'auto',
 }
 
@@ -149,7 +149,7 @@ export function VariantDocumentsTable({
   const rows = useMemo(() => documents.map((document) => ({document})), [documents])
 
   return (
-    <Card ref={setScrollContainerRef} style={TABLE_CARD_STYLE}>
+    <Card flex={1} ref={setScrollContainerRef} style={TABLE_CARD_STYLE}>
       <Table<VariantDocumentRow>
         columnDefs={columnDefs}
         data={rows}

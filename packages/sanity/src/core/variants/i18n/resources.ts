@@ -38,6 +38,8 @@ const variantsLocaleStrings = {
   'detail.action.edit-variant': 'Edit variant',
   /** Back action on the Variant detail page. */
   'detail.back': 'Back to variants',
+  /** Created status label in the Variant detail footer. */
+  'detail.footer.created': 'Created',
   /** Loading message on the Variant detail page. */
   'detail.loading': 'Loading variant',
   /** Fallback text when a variant has no description. */

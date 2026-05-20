@@ -129,6 +129,8 @@ describe('VariantDetail', () => {
     expect(screen.getByPlaceholderText('Search documents')).toBeInTheDocument()
     expect(screen.getByText('Edited')).toBeInTheDocument()
     expect(screen.getByText('No documents in this variant')).toBeInTheDocument()
+    expect(screen.getByText(/^Created/)).toBeInTheDocument()
+    expect(screen.getByTestId('variant-detail-footer-actions')).toBeInTheDocument()
   })
 
   it('opens the edit dialog with existing variant values', async () => {
@@ -254,6 +256,28 @@ describe('VariantDetail', () => {
     expect(screen.getByRole('dialog', {name: 'Edit variant'})).toBeInTheDocument()
 
     consoleError.mockRestore()
+  })
+
+  it('deletes the variant from the footer menu and navigates back to overview', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    const menuButton = screen
+      .getAllByRole('button')
+      .find((button) => button.id === 'variant-detail-actions-alpha-audience')
+
+    if (!menuButton) throw new Error('Variant detail actions menu button not found')
+
+    await user.click(menuButton)
+    await user.click(await screen.findByText('Delete variant'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
+      expect(mockNavigate).toHaveBeenCalledWith({})
+    })
   })
 
   it('shows not found when variant id does not match any document', async () => {

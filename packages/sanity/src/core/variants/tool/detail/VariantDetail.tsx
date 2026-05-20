@@ -15,6 +15,7 @@ import {
   getVariantDescription,
   getVariantTitle,
 } from '../util'
+import {VariantDetailFooter} from './VariantDetailFooter'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
 
 const EMPTY_VARIANT_DOCUMENTS: SanityDocument[] = []
@@ -60,44 +61,47 @@ export function VariantDetail() {
   const conditionsText = getVariantConditionsText(variant.conditions)
 
   return (
-    <Flex direction="column" flex={1} height="fill">
+    <Flex direction="column" flex={1} height="fill" overflow="hidden">
       <Card borderBottom flex="none" padding={3}>
         <Button mode="bleed" onClick={() => router.navigate({})} text={t('detail.back')} />
       </Card>
-      <Container flex="none" width={3}>
-        <Flex direction="column" paddingX={3}>
-          <Card paddingY={5}>
-            <Flex align="flex-start" gap={4} justify="space-between">
-              <Stack space={3}>
-                <Text as="h1" size={4} weight="bold">
-                  {getVariantTitle(variant)}
-                </Text>
-                <Text muted size={1}>
-                  {description || t('detail.no-description')}
-                </Text>
-              </Stack>
-              <Button
-                onClick={() => setEditDialogOpen(true)}
-                text={t('detail.action.edit-variant')}
-              />
-            </Flex>
+      <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
+        <Container flex="none" width={3}>
+          <Flex direction="column" paddingX={3}>
+            <Card paddingY={5}>
+              <Flex align="flex-start" gap={4} justify="space-between">
+                <Stack space={3}>
+                  <Text as="h1" size={4} weight="bold">
+                    {getVariantTitle(variant)}
+                  </Text>
+                  <Text muted size={1}>
+                    {description || t('detail.no-description')}
+                  </Text>
+                </Stack>
+                <Button
+                  onClick={() => setEditDialogOpen(true)}
+                  text={t('detail.action.edit-variant')}
+                />
+              </Flex>
 
-            <Box paddingTop={4}>
-              <Stack space={2}>
-                <Text size={1} weight="medium">
-                  {t('dialog.create.conditions.title')}
-                </Text>
-                <Text muted size={1}>
-                  {conditionsText || t('overview.table.no-conditions')}
-                </Text>
-              </Stack>
-            </Box>
-          </Card>
+              <Box paddingTop={4}>
+                <Stack space={2}>
+                  <Text size={1} weight="medium">
+                    {t('dialog.create.conditions.title')}
+                  </Text>
+                  <Text muted size={1}>
+                    {conditionsText || t('overview.table.no-conditions')}
+                  </Text>
+                </Stack>
+              </Box>
+            </Card>
+          </Flex>
+        </Container>
+        <Flex direction="column" flex={1} overflow="hidden" style={{minHeight: 0}}>
+          <VariantDocumentsTable documents={EMPTY_VARIANT_DOCUMENTS} />
         </Flex>
-      </Container>
-      <Box paddingBottom={4}>
-        <VariantDocumentsTable documents={EMPTY_VARIANT_DOCUMENTS} />
-      </Box>
+      </Flex>
+      <VariantDetailFooter variant={variant} />
       {editDialogOpen && (
         <EditVariantDialog
           onCancel={() => setEditDialogOpen(false)}
