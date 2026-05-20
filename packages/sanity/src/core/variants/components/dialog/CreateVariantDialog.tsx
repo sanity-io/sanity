@@ -22,7 +22,7 @@ export function CreateVariantDialog(props: CreateVariantDialogProps): React.JSX.
   const [variant, setVariant] = useState(getVariantDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showValidation, setShowValidation] = useState(false)
-  const [conditionsInvalid, setConditionsInvalid] = useState(true)
+  const [conditionsInvalid, setConditionsInvalid] = useState(false)
   const invalid = getIsVariantInvalid(variant) || conditionsInvalid
 
   const handleSubmit = useCallback(

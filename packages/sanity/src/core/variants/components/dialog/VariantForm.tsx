@@ -1,7 +1,7 @@
 import {AddIcon, TrashIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
-import {type ChangeEvent, useCallback, useEffect, useId, useMemo, useState} from 'react'
+import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
@@ -105,22 +105,23 @@ export function VariantForm(props: {
     duplicateConditionKeyIndexes.size === 0,
   )
 
-  useEffect(() => {
-    onConditionValidityChange?.(getConditionRowsInvalid(conditionRows))
-  }, [conditionRows, onConditionValidityChange])
-
   const updateConditionRows = useCallback(
     (nextRows: ConditionRow[]) => {
-      setConditionRows(nextRows)
+      const rows = nextRows.length ? nextRows : getConditionRows({})
 
-      if (!getConditionRowsInvalid(nextRows)) {
+      setConditionRows(rows)
+
+      const nextRowsInvalid = getConditionRowsInvalid(rows)
+      onConditionValidityChange?.(nextRowsInvalid)
+
+      if (nextRows.length === 0 || !nextRowsInvalid) {
         onChange({
           ...value,
           conditions: getConditionsFromRows(nextRows),
         })
       }
     },
-    [onChange, value],
+    [onChange, onConditionValidityChange, value],
   )
 
   const handleTitleChange = useCallback(
@@ -171,18 +172,10 @@ export function VariantForm(props: {
   const handleRemoveCondition = useCallback(
     (index: number) => {
       const nextRows = conditionRows.filter((_, rowIndex) => rowIndex !== index)
-      const rows = nextRows.length ? nextRows : getConditionRows({})
 
-      setConditionRows(rows)
-
-      if (nextRows.length === 0 || !getConditionRowsInvalid(rows)) {
-        onChange({
-          ...value,
-          conditions: getConditionsFromRows(rows),
-        })
-      }
+      updateConditionRows(nextRows)
     },
-    [conditionRows, onChange, value],
+    [conditionRows, updateConditionRows],
   )
 
   return (
