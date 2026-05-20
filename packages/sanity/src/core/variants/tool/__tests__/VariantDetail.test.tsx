@@ -24,6 +24,21 @@ const variantsMock = vi.hoisted(() => ({
   error: undefined as Error | undefined,
 }))
 
+const variantOperationsMock = vi.hoisted(() => ({
+  createVariant: vi.fn(),
+  updateVariant: vi.fn(),
+  deleteVariant: vi.fn(),
+}))
+
+const toastMock = vi.hoisted(() => ({
+  push: vi.fn(),
+}))
+
+vi.mock('@sanity/ui', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useToast: vi.fn(() => toastMock),
+}))
+
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: vi.fn(() => ({
@@ -42,14 +57,19 @@ vi.mock('../../store/useAllVariants', () => ({
   })),
 }))
 
+vi.mock('../../store/useVariantOperations', () => ({
+  useVariantOperations: vi.fn(() => variantOperationsMock),
+}))
+
 describe('VariantDetail', () => {
   beforeEach(() => {
+    vi.clearAllMocks()
     variantsMock.data = []
     variantsMock.byId = new Map()
     variantsMock.loading = false
     variantsMock.error = undefined
     routerState.variantId = undefined
-    mockNavigate.mockClear()
+    variantOperationsMock.updateVariant.mockResolvedValue(undefined)
   })
 
   const setVariants = (variants: SystemVariant[]) => {
@@ -75,9 +95,24 @@ describe('VariantDetail', () => {
     expect(screen.getByTestId('loading-block')).toBeInTheDocument()
   })
 
-  it('renders title, description fallback, and placeholder when variant exists', async () => {
+  it('renders title, description, conditions, and edit action when variant exists', async () => {
+    const variantWithDescription: SystemVariant = {
+      ...variantAlphaAudience,
+      metadata: {
+        ...variantAlphaAudience.metadata,
+        description: [
+          {
+            _key: 'description',
+            _type: 'block',
+            children: [{_key: 'span', _type: 'span', marks: [], text: 'Developer audience'}],
+            markDefs: [],
+            style: 'normal',
+          },
+        ],
+      },
+    }
     routerState.variantId = getVariantId(variantAlphaAudience._id)
-    setVariants([variantAlphaAudience])
+    setVariants([variantWithDescription])
 
     await renderDetail()
 
@@ -85,11 +120,140 @@ describe('VariantDetail', () => {
       expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
     })
 
-    expect(screen.getByText('No description yet.')).toBeInTheDocument()
-    expect(
-      screen.getByText('Variant detail editing will be added in a future iteration.'),
-    ).toBeInTheDocument()
+    expect(screen.getByText('Developer audience')).toBeInTheDocument()
+    expect(screen.getByText('audience: "alpha", locale: "en-US"')).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Edit variant'})).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Back to variants'})).toBeInTheDocument()
+    expect(screen.getByText('Version')).toBeInTheDocument()
+    expect(screen.getByText('Type')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Search documents')).toBeInTheDocument()
+    expect(screen.getByText('Edited')).toBeInTheDocument()
+    expect(screen.getByText('No documents in this variant')).toBeInTheDocument()
+  })
+
+  it('opens the edit dialog with existing variant values', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog', {name: 'Edit variant'})).toBeInTheDocument()
+    })
+
+    expect(screen.getByTestId('variant-form-title')).toHaveValue('Alpha audience')
+    expect(screen.getAllByTestId('variant-form-condition-key')).toHaveLength(2)
+    expect(screen.getByTestId('save-variant-button')).toBeEnabled()
+  })
+
+  it('saves edited variant values from the dialog', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+    await user.clear(await screen.findByTestId('variant-form-title'))
+    await user.type(screen.getByTestId('variant-form-title'), 'Beta audience')
+    await user.type(screen.getByTestId('variant-form-description'), 'Audience for beta users')
+
+    const conditionValues = screen.getAllByTestId('variant-form-condition-value')
+    await user.clear(conditionValues[0]!)
+    await user.type(conditionValues[0]!, 'beta')
+    await user.click(screen.getByTestId('save-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.updateVariant).toHaveBeenCalledWith(
+        expect.objectContaining({
+          conditions: {audience: 'beta', locale: 'en-US'},
+          metadata: expect.objectContaining({
+            title: 'Beta audience',
+            description: [
+              expect.objectContaining({
+                children: [
+                  expect.objectContaining({
+                    text: 'Audience for beta users',
+                  }),
+                ],
+              }),
+            ],
+          }),
+        }),
+      )
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: 'Edit variant'})).not.toBeInTheDocument()
+    })
+  })
+
+  it('does not save while condition rows are invalid', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+    const conditionKeys = screen.getAllByTestId('variant-form-condition-key')
+    await user.clear(conditionKeys[1]!)
+    await user.type(conditionKeys[1]!, 'audience')
+
+    expect(screen.getByTestId('variant-form-condition-key-error')).toHaveTextContent(
+      'Condition keys must be unique',
+    )
+
+    expect(screen.getByTestId('save-variant-button')).toBeDisabled()
+    expect(variantOperationsMock.updateVariant).not.toHaveBeenCalled()
+  })
+
+  it('closes the edit dialog without saving when cancel is pressed', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+    await user.type(await screen.findByTestId('variant-form-title'), ' updated')
+    await user.click(screen.getByRole('button', {name: 'Cancel'}))
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: 'Edit variant'})).not.toBeInTheDocument()
+    })
+    expect(variantOperationsMock.updateVariant).not.toHaveBeenCalled()
+  })
+
+  it('shows a toast and keeps the dialog open when updating fails', async () => {
+    const error = new Error('update failed')
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    variantOperationsMock.updateVariant.mockRejectedValue(error)
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+    await user.type(await screen.findByTestId('variant-form-title'), ' updated')
+    await user.click(screen.getByTestId('save-variant-button'))
+
+    await waitFor(() => {
+      expect(toastMock.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'error',
+          title: 'Unable to update variant',
+        }),
+      )
+    })
+    expect(consoleError).toHaveBeenCalledWith(error)
+    expect(screen.getByRole('dialog', {name: 'Edit variant'})).toBeInTheDocument()
+
+    consoleError.mockRestore()
   })
 
   it('shows not found when variant id does not match any document', async () => {

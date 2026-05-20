@@ -1,5 +1,6 @@
+import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
 import {AddIcon, TrashIcon} from '@sanity/icons'
-import {type Path} from '@sanity/types'
+import {type PortableTextBlock, type Path} from '@sanity/types'
 import {Box, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
@@ -75,6 +76,14 @@ function getConditionRowsInvalid(rows: ConditionRow[]): boolean {
     rows.some((row) => !isConditionRowComplete(row)) ||
     getDuplicateConditionKeyIndexes(rows).size > 0
   )
+}
+
+function getPortableTextDescriptionValue(description?: PortableTextBlock[]): string {
+  if (!Array.isArray(description) || !description.every(isPortableTextBlock)) {
+    return ''
+  }
+
+  return toPlainText(description)
 }
 
 export type VariantFormChangeHandler = (path: Path, value: unknown) => void
@@ -205,6 +214,7 @@ export function VariantForm(props: {
           onChange={handleDescriptionChange}
           placeholder={t('dialog.create.description.placeholder')}
           rows={3}
+          value={getPortableTextDescriptionValue(value.metadata?.description)}
         />
       </Stack>
 

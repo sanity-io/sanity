@@ -194,7 +194,13 @@ describe('VariantsOverview', () => {
 
     await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
 
-    await user.click(within(screen.getAllByTestId('table-row')[0]!).getByRole('button'))
+    const menuButton = screen
+      .getAllByRole('button')
+      .find((button) => button.id === 'variant-actions-alpha-audience')
+
+    if (!menuButton) throw new Error('Variant actions menu button not found')
+
+    await user.click(menuButton)
     await user.click(await screen.findByText('Delete variant'))
   })
 
