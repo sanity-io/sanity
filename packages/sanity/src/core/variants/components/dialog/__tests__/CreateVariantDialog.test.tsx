@@ -3,7 +3,9 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
+import {type SystemVariant} from '../../../types'
 import {CreateVariantDialog} from '../CreateVariantDialog'
 
 const variantOperationsMock = vi.hoisted(() => ({
@@ -16,6 +18,13 @@ const toastMock = vi.hoisted(() => ({
   push: vi.fn(),
 }))
 
+const variantsMock = vi.hoisted(() => ({
+  data: [] as SystemVariant[],
+  byId: new Map<string, SystemVariant>(),
+  loading: false,
+  error: undefined as Error | undefined,
+}))
+
 vi.mock('@sanity/ui', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
@@ -25,12 +34,20 @@ vi.mock('../../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../../../store/useAllVariants', () => ({
+  useAllVariants: vi.fn(() => variantsMock),
+}))
+
 describe('CreateVariantDialog', () => {
   const onCancel = vi.fn()
   const onSubmit = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
+    variantsMock.data = [variantAlphaAudience, variantNorwegianMarket]
+    variantsMock.byId = new Map(variantsMock.data.map((variant) => [variant._id, variant]))
+    variantsMock.loading = false
+    variantsMock.error = undefined
     variantOperationsMock.createVariant.mockResolvedValue(undefined)
   })
 
@@ -52,13 +69,13 @@ describe('CreateVariantDialog', () => {
 
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
 
-    await user.type(screen.getByRole('textbox', {name: 'Key'}), 'audience')
+    await user.type(screen.getByRole('combobox', {name: 'Key'}), 'audience')
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
 
-    await user.type(screen.getByRole('textbox', {name: 'Value'}), 'loyal-customers')
+    await user.type(screen.getByRole('combobox', {name: 'Value'}), 'loyal-customers')
 
     await waitFor(() => {
-      expect(screen.getByRole('textbox', {name: 'Value'})).toHaveValue('loyal-customers')
+      expect(screen.getByRole('combobox', {name: 'Value'})).toHaveValue('loyal-customers')
       expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
     })
 
@@ -101,8 +118,8 @@ describe('CreateVariantDialog', () => {
     await renderDialog()
 
     await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
-    await user.type(screen.getByRole('textbox', {name: 'Key'}), 'audience')
-    await user.type(screen.getByRole('textbox', {name: 'Value'}), 'us')
+    await user.type(screen.getByRole('combobox', {name: 'Key'}), 'audience')
+    await user.type(screen.getByRole('combobox', {name: 'Value'}), 'us')
 
     await waitFor(() => {
       expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
@@ -135,6 +152,35 @@ describe('CreateVariantDialog', () => {
     await waitFor(() => {
       expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
     })
+  })
+
+  it('suggests existing condition keys while typing', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'aud')
+
+    expect(await screen.findByText('audience')).toBeInTheDocument()
+    expect(screen.queryByText('locale')).not.toBeInTheDocument()
+  })
+
+  it('suggests condition values scoped to the selected key', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'loc')
+    await user.click(await screen.findByText('locale'))
+    await waitFor(() => {
+      expect(screen.getByTestId('variant-form-condition-key')).toHaveValue('locale')
+    })
+
+    const openButtons = screen.getAllByRole('button', {name: 'Open'})
+    await user.click(openButtons[1]!)
+
+    expect(await screen.findByText('nb-NO')).toBeInTheDocument()
+    expect(screen.queryByText('alpha')).not.toBeInTheDocument()
   })
 
   it('shows an error for reserved and invalid condition keys', async () => {

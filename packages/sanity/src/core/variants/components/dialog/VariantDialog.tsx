@@ -1,7 +1,6 @@
 import {at, set} from '@sanity/mutate'
 import {applyPatches} from '@sanity/mutate/_unstable_apply'
 import {Box, Card, Flex, useToast} from '@sanity/ui'
-import {toString} from '@sanity/util/paths'
 import {type FormEvent, useCallback, useState} from 'react'
 
 import {Button, Dialog} from '../../../../ui-components'
@@ -46,7 +45,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
   const handleVariantChange = useCallback<VariantFormChangeHandler>((path, nextValue) => {
     setVariant(
       (currentVariant) =>
-        applyPatches([at(toString(path), set(nextValue))], currentVariant) as EditableSystemVariant,
+        applyPatches([at(path, set(nextValue))], currentVariant) as EditableSystemVariant,
     )
   }, [])
 
