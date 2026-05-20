@@ -3,8 +3,16 @@ import '@vitest/coverage-v8'
 
 import {defineConfig} from 'vitest/config'
 
+// Node 25+ enables the Web Storage API by default, shadowing the `localStorage`
+// global provided by jsdom (vitest's `populateGlobal` skips keys that already
+// exist on the worker's global). Disable Node's native Web Storage so jsdom's
+// implementation is used. The flag is a no-op on Node versions where Web
+// Storage isn't enabled. See https://github.com/vitest-dev/vitest/issues/8757.
+const workerExecArgv = ['--no-webstorage']
+
 export default defineConfig({
   test: {
+    execArgv: workerExecArgv,
     forceRerunTriggers: [
       '**/package.json/**',
       '**/vitest.config.*/**',
