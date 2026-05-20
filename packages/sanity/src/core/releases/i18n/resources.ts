@@ -1,9 +1,11 @@
+import {defineLocalesResources} from '../../i18n'
+
 /**
  * Defined locale strings for the releases tool, in US English.
  *
  * @internal
  */
-const releasesLocaleStrings = {
+const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Action text for adding a document to release */
   'action.add-document': 'Add document',
   /** Action text for archiving a release */
@@ -542,7 +544,7 @@ const releasesLocaleStrings = {
 
   /** Toast error message when bulk scheduling of active drafts fails */
   'toast.confirm-active-scheduled-drafts.error': 'Failed to schedule drafts: {{error}}',
-}
+})
 
 /**
  * @alpha

@@ -1,4 +1,6 @@
-export default {
+import {defineLocalesResources} from 'sanity'
+
+export default defineLocalesResources('presentation', {
   /** The title shown above the document list */
   'document-list-pane.document-list.title': 'Documents on this page',
   /** The text shown if the document list is unable to render */
@@ -125,4 +127,4 @@ export default {
   'share-preview-menu.copy-url.text': 'Copy preview link',
   /** Fallback message shown when the current user is not permitted to share previews */
   'share-preview-menu.error_missing-grants': "You don't have permission to share previews. ",
-}
+})
