@@ -9,9 +9,12 @@ import {Button} from '../../../../ui-components'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n'
 import {variantsLocaleNamespace} from '../../i18n'
+import {useAllVariants} from '../../store/useAllVariants'
 import {type EditableSystemVariant} from '../../types'
 import {getVariantTitleValue} from '../../util/getIsVariantInvalid'
 import {createPortableTextDescription} from '../../util/variantDefaults'
+import {ConditionAutocompleteInput} from './ConditionAutocompleteInput'
+import {getConditionKeyOptions, getConditionValueOptions} from './conditionSuggestions'
 
 interface ConditionRow {
   id: string
@@ -96,6 +99,7 @@ export function VariantForm(props: {
 }) {
   const {onChange, onConditionValidityChange, showValidation = false, value} = props
   const {t} = useTranslation(variantsLocaleNamespace)
+  const {data: variants} = useAllVariants()
   const titleId = useId()
   const descriptionId = useId()
   const [titleTouched, setTitleTouched] = useState(false)
@@ -233,33 +237,29 @@ export function VariantForm(props: {
             <Stack key={row.id} space={2}>
               <Flex align="center" gap={2}>
                 <Box flex={1}>
-                  <TextInput
+                  <ConditionAutocompleteInput
                     autoFocus={index > 0}
-                    aria-invalid={duplicateConditionKeyIndexes.has(index) ? 'true' : undefined}
-                    aria-label={t('dialog.create.condition-key.label')}
+                    ariaLabel={t('dialog.create.condition-key.label')}
                     customValidity={
                       duplicateConditionKeyIndexes.has(index)
                         ? t('dialog.create.condition-key.duplicate')
                         : undefined
                     }
-                    data-testid="variant-form-condition-key"
-                    fontSize={1}
-                    onChange={(event) =>
-                      handleConditionChange(index, 'key', event.currentTarget.value)
-                    }
+                    invalid={duplicateConditionKeyIndexes.has(index)}
+                    onChange={(nextValue) => handleConditionChange(index, 'key', nextValue)}
+                    options={getConditionKeyOptions(variants, conditionRows, index)}
                     placeholder={t('dialog.create.condition-key.placeholder')}
+                    testId="variant-form-condition-key"
                     value={row.key}
                   />
                 </Box>
                 <Box flex={1}>
-                  <TextInput
-                    aria-label={t('dialog.create.condition-value.label')}
-                    data-testid="variant-form-condition-value"
-                    fontSize={1}
-                    onChange={(event) =>
-                      handleConditionChange(index, 'value', event.currentTarget.value)
-                    }
+                  <ConditionAutocompleteInput
+                    ariaLabel={t('dialog.create.condition-value.label')}
+                    onChange={(nextValue) => handleConditionChange(index, 'value', nextValue)}
+                    options={getConditionValueOptions(variants, row.key)}
                     placeholder={t('dialog.create.condition-value.placeholder')}
+                    testId="variant-form-condition-value"
                     value={row.value}
                   />
                 </Box>
