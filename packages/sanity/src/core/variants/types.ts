@@ -8,7 +8,8 @@ export interface SystemVariant extends SanityDocument {
   conditions: Record<string, string>
   priority: number // defaults to 0.
   metadata?: {
-    description: PortableTextBlock[]
+    title?: string
+    description?: PortableTextBlock[]
     [key: string]: unknown // <-- Here we can store anything useful for the UI
   }
 }

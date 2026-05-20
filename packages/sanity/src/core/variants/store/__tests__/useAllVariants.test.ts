@@ -2,9 +2,9 @@ import {act, renderHook, waitFor} from '@testing-library/react'
 import {BehaviorSubject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockVariant} from '../../__fixtures__/createMockVariant'
 import {type VariantStoreState} from '../reducer'
 import {useAllVariants} from '../useAllVariants'
-import {createVariant} from './testUtils'
 
 const initialState: VariantStoreState = {
   variants: new Map(),
@@ -33,13 +33,14 @@ describe('useAllVariants', () => {
     expect(result.current).toEqual({
       loading: true,
       data: [],
+      byId: new Map(),
       error: undefined,
     })
   })
 
   it('returns variants from the store state', async () => {
-    const variantA = createVariant('a')
-    const variantB = createVariant('b', 1)
+    const variantA = createMockVariant('a')
+    const variantB = createMockVariant('b', 1)
 
     const {result} = renderHook(() => useAllVariants())
 
@@ -57,6 +58,10 @@ describe('useAllVariants', () => {
       expect(result.current).toEqual({
         loading: false,
         data: [variantA, variantB],
+        byId: new Map([
+          [variantA._id, variantA],
+          [variantB._id, variantB],
+        ]),
         error: undefined,
       })
     })
@@ -79,6 +84,7 @@ describe('useAllVariants', () => {
       expect(result.current).toEqual({
         loading: false,
         data: [],
+        byId: new Map(),
         error,
       })
     })

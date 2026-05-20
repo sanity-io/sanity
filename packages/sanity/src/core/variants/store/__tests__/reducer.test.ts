@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
+import {createMockVariant} from '../../__fixtures__/createMockVariant'
 import {variantStoreReducer, type VariantStoreState} from '../reducer'
-import {createVariant} from './testUtils'
 
 describe('variantStoreReducer', () => {
   const initialState: VariantStoreState = {
@@ -10,7 +10,7 @@ describe('variantStoreReducer', () => {
   }
 
   it('sets variants by id', () => {
-    const variants = [createVariant('a'), createVariant('b', 1)]
+    const variants = [createMockVariant('a'), createMockVariant('b', 1)]
     const state: VariantStoreState = {
       variants: new Map(),
       state: 'loading',
@@ -32,7 +32,7 @@ describe('variantStoreReducer', () => {
   })
 
   it('sets variants and marks the fetch as loaded when fetch succeeds', () => {
-    const variants = [createVariant('a'), createVariant('b', 1)]
+    const variants = [createMockVariant('a'), createMockVariant('b', 1)]
     const error = new Error('Previous failure')
     const state: VariantStoreState = {
       variants: new Map(),
@@ -55,7 +55,7 @@ describe('variantStoreReducer', () => {
   })
 
   it('clears variants when the payload is null', () => {
-    const variant = createVariant('a')
+    const variant = createMockVariant('a')
     const state: VariantStoreState = {
       variants: new Map([[variant._id, variant]]),
       state: 'loaded',
@@ -71,8 +71,8 @@ describe('variantStoreReducer', () => {
   })
 
   it('removes a deleted variant without mutating the previous state', () => {
-    const variantA = createVariant('a')
-    const variantB = createVariant('b', 1)
+    const variantA = createMockVariant('a')
+    const variantB = createMockVariant('b', 1)
     const state: VariantStoreState = {
       variants: new Map([
         [variantA._id, variantA],
