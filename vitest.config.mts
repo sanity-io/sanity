@@ -8,7 +8,9 @@ import {defineConfig} from 'vitest/config'
 // exist on the worker's global). Disable Node's native Web Storage so jsdom's
 // implementation is used. The flag is a no-op on Node versions where Web
 // Storage isn't enabled. See https://github.com/vitest-dev/vitest/issues/8757.
-const workerExecArgv = ['--no-webstorage']
+// Use the canonical `--no-experimental-webstorage` alias since the shorter
+// `--no-webstorage` only exists on Node 26+.
+const workerExecArgv = ['--no-experimental-webstorage']
 
 export default defineConfig({
   test: {
