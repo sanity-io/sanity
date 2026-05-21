@@ -441,6 +441,29 @@ export const structure: StructureResolver = (
             .filter('_type == $type'),
         ),
 
+      // Reproduction for https://github.com/sanity-io/sanity/issues/12835
+      //
+      // This entry configures BOTH `defaultOrdering` and `defaultLayout` on a
+      // document list. On first load the configured defaults apply (sort by
+      // `title` ascending, detail layout). Open the pane menu, pick a
+      // different sort (e.g. "Last edited") and a different layout (e.g.
+      // "Compact view"), then reload the studio in any browser. The manual
+      // selection is restored (persisted via `useStructureToolSetting` ->
+      // `useKeyValueStore`, i.e. server-backed user preferences in the
+      // content lake, not localStorage), and there is no menu entry or
+      // interaction to revert to the configured defaults.
+      S.listItem()
+        .title('Issue #12835: defaults locked out by manual selection')
+        .id('issue-12835-defaults-locked-out')
+        .child(() =>
+          S.documentTypeList('book')
+            .defaultOrdering([{field: 'title', direction: 'asc'}])
+            .defaultLayout('detail')
+            .title('Books (defaultOrdering=title asc, defaultLayout=detail)')
+            .id('issue-12835-list')
+            .filter('_type == $type'),
+        ),
+
       // Example: Custom menu items with selected state indicator
       // Just use .id() - clicking toggles the checkmark on/off automatically!
       S.listItem()
