@@ -8,6 +8,18 @@ const variantsLocaleStrings = {
   'navbar.view-as': 'View as',
   /** Label for the version selector in the variants navigation row. */
   'navbar.version': 'Version',
+  /** Label for the variant selector in the variants navigation row. */
+  'navbar.variant': 'Variant',
+  /** Default option label when no variant is selected. */
+  'navbar.variant.default': 'All users (Default)',
+  /** Placeholder for the variant filter input in the dropdown. */
+  'navbar.variant.filter-placeholder': 'Filter variants…',
+  /** Section header for non-default variants in the dropdown. */
+  'navbar.variant.other': 'Other variants',
+  /** Label for clearing version and variant selections. */
+  'navbar.clear': 'Clear',
+  /** Tooltip for clearing the selected variant. */
+  'navbar.variant.clear': 'Clear variant selection',
   /** Label for the Variants overview create action. */
   'overview.action.create-variant': 'Create variant',
   /** Label for the Variants overview delete action. */
