@@ -87,6 +87,15 @@ describe('VariantsStudioNavbar', () => {
     expect(screen.getByTestId('view-as-clear-button')).toBeInTheDocument()
   })
 
+  it('shows clear when sticky variant is set but not resolved in the store', async () => {
+    routerMock.stickyParams = {variant: 'missing-variant'}
+    variantsMock.byId = new Map()
+
+    await renderNavbar()
+
+    expect(screen.getByTestId('view-as-clear-button')).toBeInTheDocument()
+  })
+
   it('clears version and variant when clear is clicked', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
     routerMock.stickyParams = {variant: getVariantId(variantAlphaAudience._id)}

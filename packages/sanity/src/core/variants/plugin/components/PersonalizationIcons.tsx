@@ -1,8 +1,5 @@
 import {forwardRef, type ForwardRefExoticComponent, type RefAttributes, type SVGProps} from 'react'
 
-/**
- * @public
- */
 export const RhombusIcon: ForwardRefExoticComponent<
   Omit<SVGProps<SVGSVGElement>, 'ref'> & RefAttributes<SVGSVGElement>
 > = forwardRef(function RhombusIcon(props, ref) {

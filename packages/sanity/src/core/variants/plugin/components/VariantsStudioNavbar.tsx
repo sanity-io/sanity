@@ -12,8 +12,6 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {isDraftPerspective, isPublishedPerspective} from '../../../releases/util/util'
 import {variantsLocaleNamespace} from '../../i18n'
-import {useAllVariants} from '../../store/useAllVariants'
-import {decodeVariantIdFromRoute} from '../../tool/util'
 import {VariantsNav} from './VariantsNav'
 
 const NavRowContainer = styled(Card)`
@@ -27,14 +25,8 @@ export function VariantsStudioNavbar(props: NavbarProps) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const {selectedPerspective} = usePerspective()
   const router = useRouter()
-  const {byId} = useAllVariants()
 
-  const selectedVariantDocumentId = decodeVariantIdFromRoute(
-    router.stickyParams.variant ?? undefined,
-  )
-  const hasVariantSelection = Boolean(
-    selectedVariantDocumentId && byId.get(selectedVariantDocumentId),
-  )
+  const hasVariantSelection = Boolean(router.stickyParams.variant)
   const hasNonDefaultPerspective =
     !isDraftPerspective(selectedPerspective) && !isPublishedPerspective(selectedPerspective)
   const canClear = hasVariantSelection || hasNonDefaultPerspective
