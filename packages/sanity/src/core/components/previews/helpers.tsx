@@ -1,10 +1,10 @@
-import {type ElementType, type ReactNode} from 'react'
+import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 
-import {type PreviewLayoutKey, type PreviewMediaDimensions} from './types'
+import {type PreviewProps, type PreviewLayoutKey, type PreviewMediaDimensions} from './types'
 
 export function renderPreviewMedia<Layout = PreviewLayoutKey>(
-  value: ReactNode | ElementType<{layout: Layout; dimensions: PreviewMediaDimensions}>,
+  value: PreviewProps<Layout>['media'],
   layout: Layout,
   dimensions: PreviewMediaDimensions,
 ): ReactNode {
@@ -17,8 +17,17 @@ export function renderPreviewMedia<Layout = PreviewLayoutKey>(
     return <div>{value}</div>
   }
 
-  // @todo: find out why `value` isn't infered as `ReactNode` here
-  return value as any
+  const isReactNode =
+    isValidElement(value) ||
+    value === null ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+
+  if (isReactNode) {
+    return value
+  }
+
+  return null
 }
 
 export function renderPreviewNode<Layout = PreviewLayoutKey>(
