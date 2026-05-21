@@ -58,8 +58,6 @@ const variantsLocaleStrings = {
   'detail.not-found.description': 'The requested variant could not be found.',
   /** Title for the missing Variant detail page. */
   'detail.not-found.title': 'Variant not found',
-  /** Placeholder text on the Variant detail page. */
-  'detail.placeholder': 'Variant detail editing will be added in a future iteration.',
   /** Title for the create variant dialog. */
   'dialog.create.title': 'Create variant',
   /** Confirm action for the create variant dialog. */

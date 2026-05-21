@@ -1,5 +1,5 @@
 import {DiamondIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 
 import {RelativeTime} from '../../../components'
 import {useTranslation} from '../../../i18n'

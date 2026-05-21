@@ -3,7 +3,6 @@ import {userEvent} from '@testing-library/user-event'
 import {type Ref, forwardRef, type HTMLProps} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flushMicrotasks'
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
@@ -105,7 +104,7 @@ describe('VariantsOverview', () => {
       resources: [variantsUsEnglishLocaleBundle],
     })
     const view = render(<VariantsOverview />, {wrapper})
-    await flushMicrotasksThisIsACodeSmell()
+    await screen.findByPlaceholderText('Search variant definitions…', {}, {timeout: 5000})
     return view
   }
 

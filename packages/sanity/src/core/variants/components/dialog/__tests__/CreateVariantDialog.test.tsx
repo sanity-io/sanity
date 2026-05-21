@@ -2,7 +2,6 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {CreateVariantDialog} from '../CreateVariantDialog'
@@ -11,6 +10,15 @@ const variantOperationsMock = vi.hoisted(() => ({
   createVariant: vi.fn(),
   updateVariant: vi.fn(),
   deleteVariant: vi.fn(),
+}))
+
+const toastMock = vi.hoisted(() => ({
+  push: vi.fn(),
+}))
+
+vi.mock('@sanity/ui', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useToast: vi.fn(() => toastMock),
 }))
 
 vi.mock('../../../store/useVariantOperations', () => ({
@@ -33,7 +41,7 @@ describe('CreateVariantDialog', () => {
     const result = render(<CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} />, {
       wrapper,
     })
-    await flushMicrotasksThisIsACodeSmell()
+    await screen.findByRole('dialog', {name: 'Create variant'})
     return result
   }
 
@@ -161,6 +169,12 @@ describe('CreateVariantDialog', () => {
       expect(consoleError).toHaveBeenCalledWith(error)
     })
 
+    expect(toastMock.push).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'error',
+        title: 'Unable to create variant',
+      }),
+    )
     expect(onCancel).not.toHaveBeenCalled()
     expect(onSubmit).not.toHaveBeenCalled()
     expect(screen.getByRole('dialog', {name: 'Create variant'})).toBeInTheDocument()

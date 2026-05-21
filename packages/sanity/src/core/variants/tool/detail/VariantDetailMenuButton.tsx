@@ -29,7 +29,7 @@ export function VariantDetailMenuButton({variant}: {variant: SystemVariant}): Re
       toast.push({
         closable: true,
         status: 'error',
-        title: t('overview.action.delete-variant.error'),
+        title: t('overview.action.delete-variant.error.title'),
       })
       setIsDeleting(false)
     }
@@ -42,6 +42,9 @@ export function VariantDetailMenuButton({variant}: {variant: SystemVariant}): Re
       menu={
         <Menu>
           <MenuItem
+            // TODO: This action now doesn't validate the documents count in a variant, once we can
+            // start adding documents to a variant we should revisit this to validate the documents count.
+            // If it has documents we should probably disable the delete action or at least handle it differently.
             disabled={isDeleting}
             onClick={handleDelete}
             text={t('overview.action.delete-variant')}

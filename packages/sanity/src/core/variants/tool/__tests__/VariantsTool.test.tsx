@@ -2,7 +2,6 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {forwardRef, type HTMLProps} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
-import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flushMicrotasks'
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
@@ -63,7 +62,6 @@ describe('VariantsTool', () => {
       resources: [variantsUsEnglishLocaleBundle],
     })
     const result = render(<VariantsTool />, {wrapper})
-    await flushMicrotasksThisIsACodeSmell()
     return result
   }
 

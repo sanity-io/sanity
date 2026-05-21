@@ -2,7 +2,6 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
@@ -69,7 +68,24 @@ describe('VariantDetail', () => {
     variantsMock.loading = false
     variantsMock.error = undefined
     routerState.variantId = undefined
-    variantOperationsMock.updateVariant.mockResolvedValue(undefined)
+    variantOperationsMock.updateVariant.mockImplementation(async (variant) => {
+      const existingVariant = variantsMock.byId.get(variant._id)
+
+      if (!existingVariant) {
+        return variant
+      }
+
+      const updatedVariant: SystemVariant = {
+        ...existingVariant,
+        ...variant,
+        metadata: variant.metadata ?? existingVariant.metadata,
+      }
+
+      variantsMock.byId.set(variant._id, updatedVariant)
+      variantsMock.data = Array.from(variantsMock.byId.values())
+
+      return updatedVariant
+    })
   })
 
   const setVariants = (variants: SystemVariant[]) => {
@@ -82,7 +98,6 @@ describe('VariantDetail', () => {
       resources: [variantsUsEnglishLocaleBundle],
     })
     const result = render(<VariantDetail />, {wrapper})
-    await flushMicrotasksThisIsACodeSmell()
     return result
   }
 
@@ -191,6 +206,10 @@ describe('VariantDetail', () => {
     await waitFor(() => {
       expect(screen.queryByRole('dialog', {name: 'Edit variant'})).not.toBeInTheDocument()
     })
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', {level: 1, name: 'Beta audience'})).toBeInTheDocument()
+    })
   })
 
   it('does not save while condition rows are invalid', async () => {
@@ -228,6 +247,24 @@ describe('VariantDetail', () => {
       expect(screen.queryByRole('dialog', {name: 'Edit variant'})).not.toBeInTheDocument()
     })
     expect(variantOperationsMock.updateVariant).not.toHaveBeenCalled()
+  })
+
+  it('closes the edit dialog without saving when the dialog close button is pressed', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+    await user.type(await screen.findByTestId('variant-form-title'), ' updated')
+    await user.click(screen.getByLabelText('Close dialog'))
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: 'Edit variant'})).not.toBeInTheDocument()
+    })
+    expect(variantOperationsMock.updateVariant).not.toHaveBeenCalled()
+    expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
   })
 
   it('shows a toast and keeps the dialog open when updating fails', async () => {
@@ -278,6 +315,40 @@ describe('VariantDetail', () => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
       expect(mockNavigate).toHaveBeenCalledWith({})
     })
+  })
+
+  it('shows a toast and stays on the detail page when deletion fails', async () => {
+    const error = new Error('delete failed')
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    variantOperationsMock.deleteVariant.mockRejectedValue(error)
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    const menuButton = screen
+      .getAllByRole('button')
+      .find((button) => button.id === 'variant-detail-actions-alpha-audience')
+
+    if (!menuButton) throw new Error('Variant detail actions menu button not found')
+
+    await user.click(menuButton)
+    await user.click(await screen.findByText('Delete variant'))
+
+    await waitFor(() => {
+      expect(toastMock.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'error',
+          title: 'Unable to delete variant',
+        }),
+      )
+    })
+    expect(consoleError).toHaveBeenCalledWith(error)
+    expect(mockNavigate).not.toHaveBeenCalled()
+    expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
+
+    consoleError.mockRestore()
   })
 
   it('shows not found when variant id does not match any document', async () => {
