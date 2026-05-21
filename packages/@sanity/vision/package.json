@@ -117,7 +117,6 @@
     "styled-components": "^6.1.15"
   },
   "browserslist": [
-    "node >=20.19",
     "node >=22.12",
     "baseline 2024"
   ]
