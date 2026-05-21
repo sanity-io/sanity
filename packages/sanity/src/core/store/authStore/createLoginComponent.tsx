@@ -20,11 +20,11 @@ interface GetProvidersOptions extends AuthConfig {
 /** @internal */
 export async function getProviders({
   client,
-  mode,
-  providers: customProviders = [],
+  providers: customProviders,
 }: GetProvidersOptions): Promise<AuthProvider[]> {
-  // Short-circuit if we're in replace mode without needing the default providers
-  if (mode === 'replace' && Array.isArray(customProviders)) {
+  // If a static array is provided, use it as-is (replaces defaults) and skip
+  // the /auth/providers request entirely.
+  if (Array.isArray(customProviders)) {
     return customProviders
   }
 
@@ -38,29 +38,11 @@ export async function getProviders({
     uri: '/auth/providers',
   })
 
-  // If a custom reducer function is passed, allow it to modify the default list of providers
-  // any way it wants - eg replace, append, remove etc.
-  if (typeof customProviders === 'function') {
-    return customProviders(providers)
-  }
-
-  // If no providers are specified, use the default list
-  if (customProviders.length === 0) {
-    return providers
-  }
-
-  // -- Note: Deprecated flow below: we now prefer the reducer pattern above --
-  // Replace mode: use the provided list as-is
-  if (mode === 'replace') {
-    return customProviders
-  }
-
-  // Append mode (default):
-  // Append to the list of official providers, but replace any provider that has
-  // the same URL with the custom one (allows customizing the title, name)
-  return providers
-    .filter((official) => customProviders.some((provider) => provider.url !== official.url))
-    .concat(customProviders)
+  return customProviders
+    ? // If a custom reducer function is passed, allow it to modify the default list of providers
+      // any way it wants - eg replace, append, remove etc.
+      customProviders(providers)
+    : providers
 }
 
 interface CreateLoginComponentOptions extends AuthConfig {
