@@ -9,6 +9,7 @@ import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures_
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {getVariantId} from '../../../tool/util'
 import {type SystemVariant} from '../../../types'
+import {VARIANTS_INTENT} from '../../index'
 import {VariantsNav} from '../VariantsNav'
 
 const mockNavigate = vi.fn()
@@ -36,12 +37,15 @@ vi.mock('sanity/router', async (importOriginal) => ({
       return '/'
     }),
   })),
-  StateLink: forwardRef(function MockStateLink(
-    {state, ...rest}: {state?: {tool?: string; variantId?: string}} & HTMLProps<HTMLAnchorElement>,
+  IntentLink: forwardRef(function MockIntentLink(
+    {
+      intent,
+      params,
+      ...rest
+    }: {intent?: string; params?: {id?: string}} & HTMLProps<HTMLAnchorElement>,
     ref,
   ) {
-    const href =
-      state?.tool === 'variants' && state.variantId ? `/variants/${state.variantId}` : '/'
+    const href = intent === VARIANTS_INTENT && params?.id ? `/variants/${params.id}` : '/'
     return <a {...rest} ref={ref} href={href} />
   }),
 }))

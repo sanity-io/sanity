@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
 import {Box, Flex, Button, Text} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, useMemo} from 'react'
-import {StateLink} from 'sanity/router'
+import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
@@ -10,9 +10,10 @@ import {oversizedButtonStyle} from '../../../perspective/styles'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
+import {VARIANTS_INTENT} from '../index'
 import {RhombusIcon} from './PersonalizationIcons'
 
-const OversizedButton = styled(StateLink)`
+const OversizedButton = styled(IntentLink)`
   ${oversizedButtonStyle}
 `
 
@@ -29,7 +30,8 @@ function VariantDetailLink({variant}: {variant: SystemVariant}) {
           <OversizedButton
             {...linkProps}
             ref={ref}
-            state={{tool: 'variants', variantId: encodedVariantId}}
+            intent={VARIANTS_INTENT}
+            params={{id: encodedVariantId}}
           />
         )
       }),
