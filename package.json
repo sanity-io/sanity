@@ -65,6 +65,8 @@
     "generate:docs": "tsx -r dotenv-flow/config ./scripts/generate-documents/cli.ts",
     "generate:dts-exports": "turbo run generate:dts-exports",
     "install:deps": "pnpm install",
+    "issue-triage": "tsx scripts/trigger-triage/src/index.ts",
+    "issue-triage:archive": "tsx scripts/trigger-triage/src/archive.ts",
     "knip": "knip",
     "lint": "turbo run check:oxlint lint --ui tui",
     "lint:fix": "turbo run --concurrency=1 chore:format:fix chore:oxlint:fix && pnpm chore:lint:fix",
