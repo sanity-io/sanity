@@ -30,6 +30,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ github.token }}
       ISSUE_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.issue_url || github.event.issue.html_url }}
+      HAS_MIRIAD_SECRETS: ${{ secrets.MIRIAD_URL != '' && secrets.MIRIAD_TOKEN != '' && secrets.MIRIAD_SPACE_ID != '' }}
       MIRIAD_SPACE_ID: ${{ secrets.MIRIAD_SPACE_ID }}
       MIRIAD_TOKEN: ${{ secrets.MIRIAD_TOKEN }}
       MIRIAD_URL: ${{ secrets.MIRIAD_URL }}
@@ -47,13 +48,13 @@ jobs:
         run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Skip when Miriad secrets are unavailable
-        if: env.MIRIAD_URL == '' || env.MIRIAD_TOKEN == '' || env.MIRIAD_SPACE_ID == ''
+        if: env.HAS_MIRIAD_SECRETS != 'true'
         run: echo "::warning::Skipping Miriad triage because one or more MIRIAD_* secrets are unavailable."
 
       - name: Trigger issue triage
-        if: github.event.action != 'closed' && env.MIRIAD_URL != '' && env.MIRIAD_TOKEN != '' && env.MIRIAD_SPACE_ID != ''
+        if: github.event.action != 'closed' && env.HAS_MIRIAD_SECRETS == 'true'
         run: pnpm issue-triage --verbose "$ISSUE_URL"
 
       - name: Archive issue triage channel
-        if: github.event.action == 'closed' && env.MIRIAD_URL != '' && env.MIRIAD_TOKEN != '' && env.MIRIAD_SPACE_ID != ''
+        if: github.event.action == 'closed' && env.HAS_MIRIAD_SECRETS == 'true'
         run: pnpm issue-triage:archive --verbose "$ISSUE_URL"
