@@ -46,10 +46,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: Skip when Miriad secrets are unavailable
+        if: env.MIRIAD_URL == '' || env.MIRIAD_TOKEN == '' || env.MIRIAD_SPACE_ID == ''
+        run: echo "::warning::Skipping Miriad triage because one or more MIRIAD_* secrets are unavailable."
+
       - name: Trigger issue triage
-        if: github.event.action != 'closed'
+        if: github.event.action != 'closed' && env.MIRIAD_URL != '' && env.MIRIAD_TOKEN != '' && env.MIRIAD_SPACE_ID != ''
         run: pnpm issue-triage --verbose "$ISSUE_URL"
 
       - name: Archive issue triage channel
-        if: github.event.action == 'closed'
+        if: github.event.action == 'closed' && env.MIRIAD_URL != '' && env.MIRIAD_TOKEN != '' && env.MIRIAD_SPACE_ID != ''
         run: pnpm issue-triage:archive --verbose "$ISSUE_URL"
