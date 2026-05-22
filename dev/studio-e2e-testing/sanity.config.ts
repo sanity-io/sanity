@@ -143,6 +143,11 @@ const defaultConfig = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
+  beta: {
+    variants: {
+      enabled: true,
+    },
+  },
 })
 
 export default defineConfig([
