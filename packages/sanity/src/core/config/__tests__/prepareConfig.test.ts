@@ -140,10 +140,10 @@ describe('prepareConfig — divergent auth warning', () => {
 
   it('does not warn when two workspaces declare the same auth config with different property order', () => {
     // AuthConfig is fingerprinted via a canonical (key-sorted) hash so that
-    // `{loginMethod: 'cookie', mode: 'replace'}` and
-    // `{mode: 'replace', loginMethod: 'cookie'}` compare equal — property
-    // declaration order and autoformatter reordering must not produce false
-    // positives.
+    // `{loginMethod: 'cookie', redirectOnSingle: true}` and
+    // `{redirectOnSingle: true, loginMethod: 'cookie'}` compare equal —
+    // property declaration order and autoformatter reordering must not
+    // produce false positives.
     const projectId = `order-${Math.random().toString(36).slice(2)}`
     const warningsBefore = getCollectedConfigWarnings().length
 
@@ -152,13 +152,13 @@ describe('prepareConfig — divergent auth warning', () => {
         name: 'w1',
         projectId,
         basePath: '/w1',
-        auth: {loginMethod: 'cookie', mode: 'replace', redirectOnSingle: true},
+        auth: {loginMethod: 'cookie', redirectOnSingle: true},
       }),
       createWorkspace({
         name: 'w2',
         projectId,
         basePath: '/w2',
-        auth: {redirectOnSingle: true, mode: 'replace', loginMethod: 'cookie'},
+        auth: {redirectOnSingle: true, loginMethod: 'cookie'},
       }),
     ])
 
