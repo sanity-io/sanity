@@ -85,10 +85,17 @@ describe('VariantDialog', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
-  it('disables submit while the form is invalid', async () => {
+  it('allows submit while the form is invalid and shows validation on click', async () => {
+    const user = userEvent.setup()
+
     await renderDialog()
 
-    expect(screen.getByTestId('save-variant-button')).toBeDisabled()
+    expect(screen.getByTestId('save-variant-button')).toBeEnabled()
+
+    await user.click(screen.getByTestId('save-variant-button'))
+
+    expect(screen.getByTestId('variant-form-title-error')).toHaveTextContent('Title is required')
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 
   it('shows an error toast and keeps the dialog open when submit fails', async () => {

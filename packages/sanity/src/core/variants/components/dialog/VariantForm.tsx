@@ -8,7 +8,7 @@ import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
 import {Button} from '../../../../ui-components'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n'
-import {variantsLocaleNamespace} from '../../i18n'
+import {type VariantsLocaleResourceKeys, variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type EditableSystemVariant} from '../../types'
 import {
@@ -24,6 +24,11 @@ interface ConditionRow {
   id: string
   key: string
   value: string
+}
+
+interface ConditionRowValidation {
+  key: VariantsLocaleResourceKeys | null
+  value: VariantsLocaleResourceKeys | null
 }
 
 function getConditionRows(conditions: EditableSystemVariant['conditions']): ConditionRow[] {
@@ -53,70 +58,51 @@ function isConditionRowEmpty(row: ConditionRow): boolean {
   return !row.key.trim() && !row.value.trim()
 }
 
-function isConditionRowComplete(row: ConditionRow): boolean {
-  return Boolean(row.key.trim() && row.value.trim())
+function getEmptyConditionRowValidation(): ConditionRowValidation {
+  return {key: null, value: null}
 }
 
-function getInvalidConditionKeyIndexes(rows: ConditionRow[]): Map<number, 'invalid' | 'reserved'> {
-  const invalidIndexes = new Map<number, 'invalid' | 'reserved'>()
-
-  rows.forEach((row, index) => {
-    const error = getConditionKeyValidationError(row.key)
-
-    if (error) {
-      invalidIndexes.set(index, error)
-    }
-  })
-
-  return invalidIndexes
-}
-
-function getInvalidConditionValueIndexes(rows: ConditionRow[]): Set<number> {
-  const invalidIndexes = new Set<number>()
-
-  rows.forEach((row, index) => {
-    const key = row.key.trim()
-
-    if (!key) {
-      return
-    }
-
-    if (getConditionValueValidationError(row.value)) {
-      invalidIndexes.add(index)
-    }
-  })
-
-  return invalidIndexes
-}
-
-function getDuplicateConditionKeyIndexes(rows: ConditionRow[]): Set<number> {
+function getConditionRowsValidation(rows: ConditionRow[]): Map<number, ConditionRowValidation> {
+  const conditionRowsValidation = new Map<number, ConditionRowValidation>()
   const seenKeys = new Set<string>()
-  const duplicateIndexes = new Set<number>()
 
   rows.forEach((row, index) => {
+    const validation: ConditionRowValidation = {key: null, value: null}
     const key = row.key.trim()
+    const value = row.value.trim()
 
-    if (!key) {
-      return
+    if (key) {
+      if (seenKeys.has(key)) {
+        validation.key = 'dialog.create.condition-key.duplicate'
+      } else {
+        seenKeys.add(key)
+      }
+
+      const keyError = getConditionKeyValidationError(row.key)
+
+      if (!validation.key && keyError === 'reserved') {
+        validation.key = 'dialog.create.condition-key.reserved'
+      } else if (!validation.key && keyError === 'invalid') {
+        validation.key = 'dialog.create.condition-key.invalid'
+      }
+    } else if (value) {
+      validation.key = 'dialog.create.condition-key.required'
     }
 
-    if (seenKeys.has(key)) {
-      duplicateIndexes.add(index)
-    } else {
-      seenKeys.add(key)
+    if ((key || isConditionRowEmpty(row)) && getConditionValueValidationError(row.value)) {
+      validation.value = 'dialog.create.condition-value.required'
     }
+
+    conditionRowsValidation.set(index, validation)
   })
 
-  return duplicateIndexes
+  return conditionRowsValidation
 }
 
-function getConditionRowsInvalid(rows: ConditionRow[]): boolean {
-  return (
-    rows.some((row) => !isConditionRowComplete(row)) ||
-    getDuplicateConditionKeyIndexes(rows).size > 0 ||
-    getInvalidConditionKeyIndexes(rows).size > 0 ||
-    getInvalidConditionValueIndexes(rows).size > 0
-  )
+function hasConditionRowsValidationErrors(
+  validation: Map<number, ConditionRowValidation>,
+): boolean {
+  return Array.from(validation.values()).some(({key, value}) => key || value)
 }
 
 function getPortableTextDescriptionValue(description?: PortableTextBlock[]): string {
@@ -140,33 +126,20 @@ export function VariantForm(props: {
   const {data: variants} = useAllVariants()
   const titleId = useId()
   const descriptionId = useId()
-  const [titleTouched, setTitleTouched] = useState(false)
   // `conditions` is stored as an object, but object keys are awkward to edit live:
   // duplicates collapse and partial key edits like "far" -> "favorite" can lose data.
   // Keep rows locally while editing, then commit back once they serialize cleanly.
   const [conditionRows, setConditionRows] = useState(() => getConditionRows(value.conditions))
-  const duplicateConditionKeyIndexes = useMemo(
-    () => getDuplicateConditionKeyIndexes(conditionRows),
-    [conditionRows],
-  )
-  const invalidConditionKeyIndexes = useMemo(
-    () => getInvalidConditionKeyIndexes(conditionRows),
-    [conditionRows],
-  )
-  const invalidConditionValueIndexes = useMemo(
-    () => getInvalidConditionValueIndexes(conditionRows),
+  const conditionsValidation = useMemo(
+    () => getConditionRowsValidation(conditionRows),
     [conditionRows],
   )
 
   const hasTitle = Boolean(getVariantTitleValue(value))
-  const showTitleError = (showValidation || titleTouched) && !hasTitle
+  const showTitleError = showValidation && !hasTitle
   const lastConditionRow = conditionRows[conditionRows.length - 1]
   const canAddCondition = Boolean(
-    lastConditionRow &&
-    isConditionRowComplete(lastConditionRow) &&
-    duplicateConditionKeyIndexes.size === 0 &&
-    invalidConditionKeyIndexes.size === 0 &&
-    invalidConditionValueIndexes.size === 0,
+    lastConditionRow && !hasConditionRowsValidationErrors(conditionsValidation),
   )
 
   const updateConditionRows = useCallback(
@@ -175,7 +148,8 @@ export function VariantForm(props: {
 
       setConditionRows(rows)
 
-      const nextRowsInvalid = getConditionRowsInvalid(rows)
+      const nextRowsValidation = getConditionRowsValidation(rows)
+      const nextRowsInvalid = hasConditionRowsValidationErrors(nextRowsValidation)
       onConditionValidityChange?.(nextRowsInvalid)
 
       if (nextRows.length === 0 || !nextRowsInvalid) {
@@ -243,7 +217,6 @@ export function VariantForm(props: {
           data-testid="variant-form-title"
           fontSize={2}
           id={titleId}
-          onBlur={() => setTitleTouched(true)}
           onChange={handleTitleChange}
           placeholder={t('dialog.create.variant-title.placeholder')}
           value={typeof value.metadata?.title === 'string' ? value.metadata.title : ''}
@@ -281,99 +254,69 @@ export function VariantForm(props: {
         </Stack>
 
         <Stack space={2}>
-          {conditionRows.map((row, index) => (
-            <Stack key={row.id} space={2}>
-              <Flex align="center" gap={2}>
-                <Box flex={1}>
-                  <ConditionAutocompleteInput
-                    autoFocus={index > 0}
-                    ariaLabel={t('dialog.create.condition-key.label')}
-                    customValidity={
-                      duplicateConditionKeyIndexes.has(index)
-                        ? t('dialog.create.condition-key.duplicate')
-                        : invalidConditionKeyIndexes.get(index) === 'reserved'
-                          ? t('dialog.create.condition-key.reserved')
-                          : invalidConditionKeyIndexes.get(index) === 'invalid'
-                            ? t('dialog.create.condition-key.invalid')
-                            : undefined
-                    }
-                    invalid={
-                      duplicateConditionKeyIndexes.has(index) ||
-                      invalidConditionKeyIndexes.has(index)
-                    }
-                    onChange={(nextValue) => handleConditionChange(index, 'key', nextValue)}
-                    options={getConditionKeyOptions(variants, conditionRows, index)}
-                    placeholder={t('dialog.create.condition-key.placeholder')}
-                    testId="variant-form-condition-key"
-                    value={row.key}
+          {conditionRows.map((row, index) => {
+            const validation = conditionsValidation.get(index) ?? getEmptyConditionRowValidation()
+            // const validation.key = validation.key
+            // validation.key === 'dialog.create.condition-key.required' && !showValidation
+            //   ? null
+            //   : validation.key
+            const valueValidation = showValidation ? validation.value : null
+            const conditionValidationError = validation.key || valueValidation
+
+            return (
+              <Stack key={row.id} space={2}>
+                <Flex align="center" gap={2}>
+                  <Box flex={1}>
+                    <ConditionAutocompleteInput
+                      autoFocus={index > 0}
+                      ariaLabel={t('dialog.create.condition-key.label')}
+                      customValidity={validation.key ? t(validation.key) : undefined}
+                      invalid={Boolean(validation.key)}
+                      onChange={(nextValue) => handleConditionChange(index, 'key', nextValue)}
+                      options={getConditionKeyOptions(variants, conditionRows, index)}
+                      placeholder={t('dialog.create.condition-key.placeholder')}
+                      testId="variant-form-condition-key"
+                      value={row.key}
+                    />
+                  </Box>
+                  <Box flex={1}>
+                    <ConditionAutocompleteInput
+                      ariaLabel={t('dialog.create.condition-value.label')}
+                      customValidity={valueValidation ? t(valueValidation) : undefined}
+                      invalid={Boolean(valueValidation)}
+                      onChange={(nextValue) => handleConditionChange(index, 'value', nextValue)}
+                      options={getConditionValueOptions(variants, row.key)}
+                      placeholder={t('dialog.create.condition-value.placeholder')}
+                      testId="variant-form-condition-value"
+                      value={row.value}
+                    />
+                  </Box>
+                  <Button
+                    disabled={isConditionRowEmpty(row) && conditionRows.length === 1}
+                    icon={TrashIcon}
+                    mode="bleed"
+                    onClick={() => handleRemoveCondition(index)}
+                    tone="critical"
+                    tooltipProps={{content: t('dialog.create.remove-condition')}}
+                    type="button"
                   />
-                </Box>
-                <Box flex={1}>
-                  <ConditionAutocompleteInput
-                    ariaLabel={t('dialog.create.condition-value.label')}
-                    customValidity={
-                      invalidConditionValueIndexes.has(index)
-                        ? t('dialog.create.condition-value.required')
-                        : undefined
-                    }
-                    invalid={invalidConditionValueIndexes.has(index)}
-                    onChange={(nextValue) => handleConditionChange(index, 'value', nextValue)}
-                    options={getConditionValueOptions(variants, row.key)}
-                    placeholder={t('dialog.create.condition-value.placeholder')}
-                    testId="variant-form-condition-value"
-                    value={row.value}
-                  />
-                </Box>
-                <Button
-                  disabled={isConditionRowEmpty(row) && conditionRows.length === 1}
-                  icon={TrashIcon}
-                  mode="bleed"
-                  onClick={() => handleRemoveCondition(index)}
-                  tone="critical"
-                  tooltipProps={{content: t('dialog.create.remove-condition')}}
-                  type="button"
-                />
-              </Flex>
-              {duplicateConditionKeyIndexes.has(index) && (
-                <TextWithTone
-                  data-testid="variant-form-condition-key-error"
-                  size={1}
-                  tone="critical"
-                >
-                  {t('dialog.create.condition-key.duplicate')}
-                </TextWithTone>
-              )}
-              {!duplicateConditionKeyIndexes.has(index) &&
-                invalidConditionKeyIndexes.get(index) === 'reserved' && (
+                </Flex>
+                {conditionValidationError && (
                   <TextWithTone
-                    data-testid="variant-form-condition-key-error"
+                    data-testid={
+                      validation.key
+                        ? 'variant-form-condition-key-error'
+                        : 'variant-form-condition-value-error'
+                    }
                     size={1}
                     tone="critical"
                   >
-                    {t('dialog.create.condition-key.reserved')}
+                    {t(conditionValidationError)}
                   </TextWithTone>
                 )}
-              {!duplicateConditionKeyIndexes.has(index) &&
-                invalidConditionKeyIndexes.get(index) === 'invalid' && (
-                  <TextWithTone
-                    data-testid="variant-form-condition-key-error"
-                    size={1}
-                    tone="critical"
-                  >
-                    {t('dialog.create.condition-key.invalid')}
-                  </TextWithTone>
-                )}
-              {invalidConditionValueIndexes.has(index) && (
-                <TextWithTone
-                  data-testid="variant-form-condition-value-error"
-                  size={1}
-                  tone="critical"
-                >
-                  {t('dialog.create.condition-value.required')}
-                </TextWithTone>
-              )}
-            </Stack>
-          ))}
+              </Stack>
+            )
+          })}
         </Stack>
 
         <Flex>

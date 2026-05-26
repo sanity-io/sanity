@@ -93,6 +93,8 @@ const variantsLocaleStrings = {
   /** Validation message when a condition key has an invalid format. */
   'dialog.create.condition-key.invalid':
     'Condition keys must be lowercase, start with a letter, and use letters, numbers, underscores, or hyphens',
+  /** Validation message when a condition key is missing. */
+  'dialog.create.condition-key.required': 'Condition key is required',
   /** Validation message when a condition value is missing. */
   'dialog.create.condition-value.required': 'Condition value is required',
   /** Placeholder for the condition key field in the create variant dialog. */

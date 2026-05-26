@@ -233,28 +233,35 @@ test.describe('Variants create flow', () => {
     const addConditionButton = dialog.getByRole('button', {name: 'Add condition'})
     const titleInput = dialog.getByTestId('variant-form-title')
 
-    await expect(submitButton).toBeDisabled()
+    await expect(submitButton).toBeEnabled()
     await expect(addConditionButton).toBeDisabled()
 
-    await titleInput.focus()
-    await titleInput.blur()
+    await submitButton.click()
     await expect(dialog.getByTestId('variant-form-title-error')).toHaveText('Title is required')
+    await expect(dialog.getByTestId('variant-form-condition-value-error')).toHaveText(
+      'Condition value is required',
+    )
 
     await titleInput.fill(`${createVariantTitlePrefix()} Validation ${createRunId('validation')}`)
     await expect(dialog.getByTestId('variant-form-title-error')).toBeHidden()
 
     await getConditionKeyInputs(dialog).first().fill('audience')
-    await expect(submitButton).toBeDisabled()
+    await expect(submitButton).toBeEnabled()
     await expect(addConditionButton).toBeDisabled()
+    await expect(dialog.getByTestId('variant-form-condition-value-error')).toBeHidden()
+
+    await submitButton.click()
+    await expect(dialog.getByTestId('variant-form-condition-value-error')).toHaveText(
+      'Condition value is required',
+    )
 
     await getConditionValueInputs(dialog).first().fill('loyal')
-    await expect(submitButton).toBeEnabled()
     await expect(addConditionButton).toBeEnabled()
 
     await addConditionButton.click()
     await expect(getConditionKeyInputs(dialog)).toHaveCount(2)
     await expect(addConditionButton).toBeDisabled()
-    await expect(submitButton).toBeDisabled()
+    await expect(submitButton).toBeEnabled()
   })
 
   test('keeps duplicate condition keys invalid until the edited key is unique', async ({
@@ -278,7 +285,9 @@ test.describe('Variants create flow', () => {
     await expect(dialog.getByTestId('variant-form-condition-key-error')).toHaveText(
       'Condition keys must be unique',
     )
-    await expect(dialog.getByTestId('submit-variant-button')).toBeDisabled()
+    await expect(dialog.getByTestId('submit-variant-button')).toBeEnabled()
+
+    await dialog.getByTestId('submit-variant-button').click()
 
     await secondKeyInput.fill('audience2')
     await expect(secondKeyInput).toHaveValue('audience2')
