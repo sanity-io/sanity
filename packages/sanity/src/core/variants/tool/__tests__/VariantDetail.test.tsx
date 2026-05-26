@@ -228,7 +228,8 @@ describe('VariantDetail', () => {
       'Condition keys must be unique',
     )
 
-    expect(screen.getByTestId('save-variant-button')).toBeDisabled()
+    expect(screen.getByTestId('save-variant-button')).toBeEnabled()
+    await user.click(screen.getByTestId('save-variant-button'))
     expect(variantOperationsMock.updateVariant).not.toHaveBeenCalled()
   })
 

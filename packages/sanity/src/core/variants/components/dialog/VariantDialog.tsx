@@ -109,7 +109,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
             )}
             <Button
               data-testid={confirmDataTestId}
-              disabled={isSubmitting || invalid}
+              disabled={isSubmitting}
               loading={isSubmitting}
               size="large"
               text={confirmText}
