@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.27.0](https://github.com/sanity-io/sanity/compare/v5.26.0...v5.27.0) (2026-05-26)
+
+### Features
+
+* **actions:** adds sieve ([#12864](https://github.com/sanity-io/sanity/issues/12864)) ([5742d89](https://github.com/sanity-io/sanity/commit/5742d890ef9704a553a3fea5348549051ae131be))
+* **core:** add variant definition delete action ([#12848](https://github.com/sanity-io/sanity/issues/12848)) ([e296b6c](https://github.com/sanity-io/sanity/commit/e296b6ce594771fb6407967404e092a8cf6b558f))
+* **core:** initial implementation for variants creation form ([#12847](https://github.com/sanity-io/sanity/issues/12847)) ([9178fe2](https://github.com/sanity-io/sanity/commit/9178fe2449c1bdd156794ae15390c7bbf30d8bd2))
+* **core:** Setting up variants tool ([#12840](https://github.com/sanity-io/sanity/issues/12840)) ([ee6c149](https://github.com/sanity-io/sanity/commit/ee6c1493080eaac267bf2e96c0650bddcd514792))
+
+### Bug Fixes
+
+* **comments:** hide empty field wrapper when field component is hidden ([#12773](https://github.com/sanity-io/sanity/issues/12773)) ([320f744](https://github.com/sanity-io/sanity/commit/320f744b8019a82ffb9a052549cc42ac52cc9785))
+* **e2e:** stabilize flaky delete and restore document-action tests ([#12714](https://github.com/sanity-io/sanity/issues/12714)) ([e356ae3](https://github.com/sanity-io/sanity/commit/e356ae3e676ee451469569f420aa0034082756a9))
+* **i18n:** mark stable resources for translation ([#12861](https://github.com/sanity-io/sanity/issues/12861)) ([36a8b11](https://github.com/sanity-io/sanity/commit/36a8b11edb638c54b76e634bbc75d7f763b8b126))
+* **sanity:** add `SanityImageSource` to permitted media preview types ([ecf8f39](https://github.com/sanity-io/sanity/commit/ecf8f39527fb4af7b6360c33bce4665e3423f4ef))
+* **sanity:** full-screen PTE popover boundaries ([c78ec37](https://github.com/sanity-io/sanity/commit/c78ec3778667013bd69e778ba61a4a0c7ea66a12))
+* **sanity:** set correct dimensions for PTE block image preview ([44bc72c](https://github.com/sanity-io/sanity/commit/44bc72ce59fc9905ed376c658f50021129ecc8e9))
 ## [5.26.0](https://github.com/sanity-io/sanity/compare/v5.25.1...v5.26.0) (2026-05-19)
 
 ### Features
