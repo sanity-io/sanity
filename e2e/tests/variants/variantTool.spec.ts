@@ -3,7 +3,7 @@ import {type SanityClient} from '@sanity/client'
 
 import {test} from '../../studio-test'
 
-const VARIANT_DOCUMENTS_PATH = 'variants'
+const VARIANT_DOCUMENTS_PATH = '_.variants'
 const VARIANT_DOCUMENT_TYPE = 'system.variant'
 
 const E2E_VARIANT_TITLE_RUN_ID = `${Date.now().toString(36)}${Math.random()
@@ -13,6 +13,7 @@ const E2E_VARIANT_TITLE_RUN_ID = `${Date.now().toString(36)}${Math.random()
 interface VariantDocument {
   _id: `${typeof VARIANT_DOCUMENTS_PATH}.${string}`
   _type: typeof VARIANT_DOCUMENT_TYPE
+  name?: string
   conditions: Record<string, string>
   priority: number
   metadata?: {
@@ -35,21 +36,51 @@ function createVariantTitlePrefix(testInfo: TestInfo = test.info()): string {
   return `E2E Variants ${E2E_VARIANT_TITLE_RUN_ID} ${projectName} worker ${testInfo.parallelIndex} retry ${testInfo.retry} ${testName}`
 }
 
+async function createVariantDefinition(
+  sanityClient: SanityClient,
+  options: {
+    variantId: string
+    conditions?: Record<string, string>
+    priority?: number
+    metadata?: VariantDocument['metadata']
+  },
+): Promise<void> {
+  // Variant definition actions are available at runtime, but their payloads are
+  // not yet typed on SanityClient.action(). The shape below matches the API
+  // contract in packages/sanity/src/core/variants/ACTIONS.md; remove `as never`
+  // once @sanity/client exports these action types.
+  await sanityClient.action({
+    actionType: 'sanity.action.variant.definition.create',
+    variantId: options.variantId,
+    conditions: options.conditions ?? {},
+    priority: options.priority ?? 0,
+    metadata: options.metadata,
+  } as never)
+}
+
 async function deleteVariantDocuments(
   sanityClient: SanityClient,
   titlePrefix: string,
 ): Promise<void> {
-  await sanityClient.delete({
-    query: `*[
+  const documents = await sanityClient.fetch<Array<{_id: string}>>(
+    `*[
       _type == $variantDocumentType &&
       _id in path("${VARIANT_DOCUMENTS_PATH}.*") &&
       metadata.title match $titleGlob
-    ]`,
-    params: {
+    ]{_id}`,
+    {
       titleGlob: `${titlePrefix}*`,
       variantDocumentType: VARIANT_DOCUMENT_TYPE,
     },
-  })
+  )
+
+  for (const document of documents) {
+    // Same untyped-action workaround as createVariantDefinition above.
+    await sanityClient.action({
+      actionType: 'sanity.action.variant.definition.delete',
+      variantId: getVariantShortId(document._id),
+    } as never)
+  }
 }
 
 function createRunId(label: string): string {
@@ -113,6 +144,7 @@ async function findVariantDocumentByTitle(
     ][0]{
       _id,
       _type,
+      name,
       conditions,
       priority,
       metadata,
@@ -154,7 +186,7 @@ async function submitCreateVariantDialog(
   await page.getByTestId('submit-variant-button').click()
 
   await expect(page).toHaveURL(/\/variants\/[^/?#]+$/)
-  expect(new URL(page.url()).pathname).not.toContain('_.variants')
+  expect(new URL(page.url()).pathname).not.toContain(`${VARIANT_DOCUMENTS_PATH}.`)
 
   const document = await waitForVariantDocument(sanityClient, title)
 
@@ -308,23 +340,16 @@ test.describe('Variants create flow', () => {
     const audienceValue = `returning-${runId}`
     const languageValue = `en-${runId}`
 
-    const seededAudienceVariant: VariantDocument = {
-      _id: `${VARIANT_DOCUMENTS_PATH}.${runId}-audience` as const,
-      _type: VARIANT_DOCUMENT_TYPE,
+    await createVariantDefinition(sanityClient, {
+      variantId: `${runId}-audience`,
       conditions: {audience: audienceValue},
       metadata: {title: seededAudienceTitle},
-      priority: 0,
-    }
-    const seededLanguageVariant: VariantDocument = {
-      _id: `${VARIANT_DOCUMENTS_PATH}.${runId}-language` as const,
-      _type: VARIANT_DOCUMENT_TYPE,
+    })
+    await createVariantDefinition(sanityClient, {
+      variantId: `${runId}-language`,
       conditions: {language: languageValue},
       metadata: {title: seededLanguageTitle},
-      priority: 0,
-    }
-
-    await sanityClient.createOrReplace(seededAudienceVariant)
-    await sanityClient.createOrReplace(seededLanguageVariant)
+    })
 
     await openVariantsTool(page)
     await expect(getVariantRow(page, seededAudienceTitle)).toBeVisible()
@@ -350,19 +375,16 @@ test.describe('Variants create flow', () => {
 
   test('deletes a seeded variant from the overview', async ({page, sanityClient}) => {
     const runId = createRunId('delete')
-    const variantId = `${VARIANT_DOCUMENTS_PATH}.${runId}` as const
+    const variantId = `${runId}` as const
+    const documentId = `${VARIANT_DOCUMENTS_PATH}.${variantId}` as const
     const title = `${createVariantTitlePrefix()} Delete Variant ${runId}`
     const value = `delete-${runId}`
 
-    const seededVariant: VariantDocument = {
-      _id: variantId,
-      _type: VARIANT_DOCUMENT_TYPE,
+    await createVariantDefinition(sanityClient, {
+      variantId,
       conditions: {audience: value},
       metadata: {title},
-      priority: 0,
-    }
-
-    await sanityClient.createOrReplace(seededVariant)
+    })
 
     await openVariantsTool(page)
 
@@ -374,25 +396,22 @@ test.describe('Variants create flow', () => {
     await expect(page.getByRole('menuitem', {name: 'Delete variant'})).toBeHidden()
 
     await expect(row).toBeHidden()
-    await expect.poll(async () => sanityClient.getDocument(variantId)).toBeUndefined()
+    await expect.poll(async () => sanityClient.getDocument(documentId)).toBeUndefined()
   })
 
   test('deletes a seeded variant from the detail page', async ({page, sanityClient}) => {
     const runId = createRunId('delete-detail')
-    const variantId = `${VARIANT_DOCUMENTS_PATH}.${runId}` as const
-    const shortVariantId = getVariantShortId(variantId)
+    const variantId = `${runId}` as const
+    const documentId = `${VARIANT_DOCUMENTS_PATH}.${variantId}` as const
+    const shortVariantId = getVariantShortId(documentId)
     const title = `${createVariantTitlePrefix()} Delete Detail Variant ${runId}`
     const value = `delete-detail-${runId}`
 
-    const seededVariant: VariantDocument = {
-      _id: variantId,
-      _type: VARIANT_DOCUMENT_TYPE,
+    await createVariantDefinition(sanityClient, {
+      variantId,
       conditions: {audience: value},
       metadata: {title},
-      priority: 0,
-    }
-
-    await sanityClient.createOrReplace(seededVariant)
+    })
 
     await page.goto(`/variants/${shortVariantId}`)
     await expect(page.getByRole('heading', {name: title})).toBeVisible()
@@ -403,6 +422,6 @@ test.describe('Variants create flow', () => {
 
     await expect(page.getByRole('heading', {name: 'Variants'})).toBeVisible()
     await expect(getVariantRow(page, title)).toBeHidden()
-    await expect.poll(async () => sanityClient.getDocument(variantId)).toBeUndefined()
+    await expect.poll(async () => sanityClient.getDocument(documentId)).toBeUndefined()
   })
 })

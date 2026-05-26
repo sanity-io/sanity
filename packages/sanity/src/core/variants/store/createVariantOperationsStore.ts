@@ -1,26 +1,40 @@
 import {type SanityClient} from '@sanity/client'
 
-import {type EditableSystemVariant, type SystemVariant} from '../types'
+import {getVariantId} from '../tool/util'
+import {type EditableSystemVariant, type VariantDefinitionDocument} from '../types'
+import {variantsClient} from './variantsClient'
 
 export interface VariantOperationsStore {
-  createVariant: (variant: EditableSystemVariant) => Promise<SystemVariant>
-  updateVariant: (variant: EditableSystemVariant) => Promise<SystemVariant>
-  deleteVariant: (variantId: string) => Promise<unknown>
+  createVariant: (variant: EditableSystemVariant) => Promise<VariantDefinitionDocument>
+  updateVariant: (variant: EditableSystemVariant) => Promise<VariantDefinitionDocument>
+  deleteVariant: (variantId: string) => Promise<VariantDefinitionDocument>
 }
 
 /**
- * Temporary using the client with direct groq mutations, like create, set, delete...
- * Needs to be updated once we have the variant client actions.
+ * Variant definition writes use the actions API. See ../ACTIONS.md.
  */
 export function createVariantOperationsStore(options: {
   client: SanityClient
 }): VariantOperationsStore {
-  const {client} = options
+  const client = variantsClient(options.client)
 
-  const handleCreateVariant = (variant: EditableSystemVariant) =>
-    client.create(variant) as Promise<SystemVariant>
+  const handleCreateVariant = async (variant: EditableSystemVariant) => {
+    const variantId = getVariantId(variant._id)
+    const action = {
+      actionType: 'sanity.action.variant.definition.create' as const,
+      variantId,
+      conditions: variant.conditions,
+      priority: variant.priority,
+      ...(variant.metadata ? {metadata: variant.metadata} : {}),
+    }
 
-  const handleUpdateVariant = (variant: EditableSystemVariant) => {
+    const document = await client.action(action, {tag: 'variants.create'})
+
+    return document
+  }
+
+  const handleUpdateVariant = async (variant: EditableSystemVariant) => {
+    const variantId = getVariantId(variant._id)
     const setPayload: Pick<EditableSystemVariant, 'conditions' | 'priority'> &
       Partial<Pick<EditableSystemVariant, 'metadata'>> = {
       conditions: variant.conditions,
@@ -31,16 +45,38 @@ export function createVariantOperationsStore(options: {
       setPayload.metadata = variant.metadata
     }
 
-    const patch = client.patch(variant._id).set(setPayload)
-
-    if (!variant.metadata) {
-      patch.unset(['metadata'])
+    const patch: {
+      set: typeof setPayload
+      unset?: ['metadata']
+    } = {
+      set: setPayload,
     }
 
-    return patch.commit() as Promise<SystemVariant>
+    if (!variant.metadata) {
+      patch.unset = ['metadata']
+    }
+
+    const action = {
+      actionType: 'sanity.action.variant.definition.edit' as const,
+      variantId,
+      patch,
+    }
+
+    const document = await client.action(action, {tag: 'variants.edit'})
+
+    return document
   }
 
-  const handleDeleteVariant = (variantId: string) => client.delete(variantId)
+  const handleDeleteVariant = async (variantIdOrDocumentId: string) => {
+    const action = {
+      actionType: 'sanity.action.variant.definition.delete' as const,
+      variantId: getVariantId(variantIdOrDocumentId),
+    }
+
+    const document = await client.action(action, {tag: 'variants.delete'})
+
+    return document
+  }
 
   return {
     createVariant: handleCreateVariant,

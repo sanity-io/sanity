@@ -11,6 +11,10 @@ import {useTranslation} from '../../../i18n'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type EditableSystemVariant} from '../../types'
+import {
+  getConditionKeyValidationError,
+  getConditionValueValidationError,
+} from '../../util/conditionValidation'
 import {getVariantTitleValue} from '../../util/getIsVariantInvalid'
 import {createPortableTextDescription} from '../../util/variantDefaults'
 import {ConditionAutocompleteInput} from './ConditionAutocompleteInput'
@@ -53,6 +57,38 @@ function isConditionRowComplete(row: ConditionRow): boolean {
   return Boolean(row.key.trim() && row.value.trim())
 }
 
+function getInvalidConditionKeyIndexes(rows: ConditionRow[]): Map<number, 'invalid' | 'reserved'> {
+  const invalidIndexes = new Map<number, 'invalid' | 'reserved'>()
+
+  rows.forEach((row, index) => {
+    const error = getConditionKeyValidationError(row.key)
+
+    if (error) {
+      invalidIndexes.set(index, error)
+    }
+  })
+
+  return invalidIndexes
+}
+
+function getInvalidConditionValueIndexes(rows: ConditionRow[]): Set<number> {
+  const invalidIndexes = new Set<number>()
+
+  rows.forEach((row, index) => {
+    const key = row.key.trim()
+
+    if (!key) {
+      return
+    }
+
+    if (getConditionValueValidationError(row.value)) {
+      invalidIndexes.add(index)
+    }
+  })
+
+  return invalidIndexes
+}
+
 function getDuplicateConditionKeyIndexes(rows: ConditionRow[]): Set<number> {
   const seenKeys = new Set<string>()
   const duplicateIndexes = new Set<number>()
@@ -77,7 +113,9 @@ function getDuplicateConditionKeyIndexes(rows: ConditionRow[]): Set<number> {
 function getConditionRowsInvalid(rows: ConditionRow[]): boolean {
   return (
     rows.some((row) => !isConditionRowComplete(row)) ||
-    getDuplicateConditionKeyIndexes(rows).size > 0
+    getDuplicateConditionKeyIndexes(rows).size > 0 ||
+    getInvalidConditionKeyIndexes(rows).size > 0 ||
+    getInvalidConditionValueIndexes(rows).size > 0
   )
 }
 
@@ -111,6 +149,14 @@ export function VariantForm(props: {
     () => getDuplicateConditionKeyIndexes(conditionRows),
     [conditionRows],
   )
+  const invalidConditionKeyIndexes = useMemo(
+    () => getInvalidConditionKeyIndexes(conditionRows),
+    [conditionRows],
+  )
+  const invalidConditionValueIndexes = useMemo(
+    () => getInvalidConditionValueIndexes(conditionRows),
+    [conditionRows],
+  )
 
   const hasTitle = Boolean(getVariantTitleValue(value))
   const showTitleError = (showValidation || titleTouched) && !hasTitle
@@ -118,7 +164,9 @@ export function VariantForm(props: {
   const canAddCondition = Boolean(
     lastConditionRow &&
     isConditionRowComplete(lastConditionRow) &&
-    duplicateConditionKeyIndexes.size === 0,
+    duplicateConditionKeyIndexes.size === 0 &&
+    invalidConditionKeyIndexes.size === 0 &&
+    invalidConditionValueIndexes.size === 0,
   )
 
   const updateConditionRows = useCallback(
@@ -243,9 +291,16 @@ export function VariantForm(props: {
                     customValidity={
                       duplicateConditionKeyIndexes.has(index)
                         ? t('dialog.create.condition-key.duplicate')
-                        : undefined
+                        : invalidConditionKeyIndexes.get(index) === 'reserved'
+                          ? t('dialog.create.condition-key.reserved')
+                          : invalidConditionKeyIndexes.get(index) === 'invalid'
+                            ? t('dialog.create.condition-key.invalid')
+                            : undefined
                     }
-                    invalid={duplicateConditionKeyIndexes.has(index)}
+                    invalid={
+                      duplicateConditionKeyIndexes.has(index) ||
+                      invalidConditionKeyIndexes.has(index)
+                    }
                     onChange={(nextValue) => handleConditionChange(index, 'key', nextValue)}
                     options={getConditionKeyOptions(variants, conditionRows, index)}
                     placeholder={t('dialog.create.condition-key.placeholder')}
@@ -256,6 +311,12 @@ export function VariantForm(props: {
                 <Box flex={1}>
                   <ConditionAutocompleteInput
                     ariaLabel={t('dialog.create.condition-value.label')}
+                    customValidity={
+                      invalidConditionValueIndexes.has(index)
+                        ? t('dialog.create.condition-value.required')
+                        : undefined
+                    }
+                    invalid={invalidConditionValueIndexes.has(index)}
                     onChange={(nextValue) => handleConditionChange(index, 'value', nextValue)}
                     options={getConditionValueOptions(variants, row.key)}
                     placeholder={t('dialog.create.condition-value.placeholder')}
@@ -280,6 +341,35 @@ export function VariantForm(props: {
                   tone="critical"
                 >
                   {t('dialog.create.condition-key.duplicate')}
+                </TextWithTone>
+              )}
+              {!duplicateConditionKeyIndexes.has(index) &&
+                invalidConditionKeyIndexes.get(index) === 'reserved' && (
+                  <TextWithTone
+                    data-testid="variant-form-condition-key-error"
+                    size={1}
+                    tone="critical"
+                  >
+                    {t('dialog.create.condition-key.reserved')}
+                  </TextWithTone>
+                )}
+              {!duplicateConditionKeyIndexes.has(index) &&
+                invalidConditionKeyIndexes.get(index) === 'invalid' && (
+                  <TextWithTone
+                    data-testid="variant-form-condition-key-error"
+                    size={1}
+                    tone="critical"
+                  >
+                    {t('dialog.create.condition-key.invalid')}
+                  </TextWithTone>
+                )}
+              {invalidConditionValueIndexes.has(index) && (
+                <TextWithTone
+                  data-testid="variant-form-condition-value-error"
+                  size={1}
+                  tone="critical"
+                >
+                  {t('dialog.create.condition-value.required')}
                 </TextWithTone>
               )}
             </Stack>

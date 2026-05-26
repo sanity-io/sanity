@@ -88,6 +88,13 @@ const variantsLocaleStrings = {
   'dialog.create.condition-key.label': 'Key',
   /** Validation message when a condition key is repeated. */
   'dialog.create.condition-key.duplicate': 'Condition keys must be unique',
+  /** Validation message when a condition key uses a reserved prefix. */
+  'dialog.create.condition-key.reserved': 'Condition keys cannot start with _ or $',
+  /** Validation message when a condition key has an invalid format. */
+  'dialog.create.condition-key.invalid':
+    'Condition keys must be lowercase, start with a letter, and use letters, numbers, underscores, or hyphens',
+  /** Validation message when a condition value is missing. */
+  'dialog.create.condition-value.required': 'Condition value is required',
   /** Placeholder for the condition key field in the create variant dialog. */
   'dialog.create.condition-key.placeholder': 'e.g. audience',
   /** Label for the condition value field in the create variant dialog. */

@@ -6,13 +6,13 @@ This document describes the current architecture of the Variants Studio tool, wh
 
 The Variants tool is registered by `plugin/index.tsx` under the `sanity/variants` plugin name and is gated by `beta.variants.enabled`. The tool route is `/variants`, with detail pages mounted at `/variants/:variantId`.
 
-Variant definitions are currently stored as regular documents:
+Variant definitions are stored as system documents:
 
 - Document type: `system.variant`
-- Temporary ID path: `variants.*`
+- System document path: `_.variants.*`
 - Type shape: `SystemVariant` in `types.ts`
 
-The `variants.*` path is intentional for now. The final system-document path is expected to change later, so code should keep using `VARIANT_DOCUMENTS_PATH` instead of hardcoding either `variants` or `_.variants`.
+Code should keep using `VARIANT_DOCUMENTS_PATH` instead of hardcoding `_.variants`.
 
 ## Data Model
 
@@ -36,11 +36,11 @@ Read state lives in `store/createVariantsStore.ts`.
 
 Write operations live in `store/createVariantOperationsStore.ts`.
 
-- `createVariant` uses `client.create`.
-- `updateVariant` patches `conditions`, `priority`, and optional `metadata`.
-- `deleteVariant` uses `client.delete`.
+- `createVariant` uses `sanity.action.variant.definition.create`.
+- `updateVariant` uses `sanity.action.variant.definition.edit`.
+- `deleteVariant` uses `sanity.action.variant.definition.delete`.
 
-These operations are intentionally temporary. They use direct client document mutations until dedicated variant client actions exist.
+The dedicated variant definition action contracts are documented in [ACTIONS.md](./ACTIONS.md).
 
 ## Routing
 
@@ -51,7 +51,7 @@ Route helpers live in `tool/util.ts`:
 - `getVariantId` strips the document path for readable URLs.
 - `decodeVariantIdFromRoute` turns a short URL segment back into the full document ID.
 
-The overview links to short URLs such as `/variants/loyal-customers`, not full IDs such as `/variants/variants.loyal-customers`.
+The overview links to short URLs such as `/variants/Ab12cd34`, not full IDs such as `/variants/_.variants.Ab12cd34`.
 
 ## Overview Page
 
@@ -222,8 +222,6 @@ Local browser execution has previously hit `EMFILE: too many open files, watch` 
 
 ## Pending Work
 
-- Replace direct document mutations with dedicated variant client actions when available.
-- Move from the temporary `variants.*` path to the final system-document path when supported.
 - Wire the detail documents table to the real list of documents that belong to a variant.
 - Decide how document counts affect deleting variants.
 - Add a delete confirmation or disabled state once variants can have documents.

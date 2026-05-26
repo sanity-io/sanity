@@ -1,12 +1,16 @@
+import {type SanityClient} from '@sanity/client'
 import {describe, expect, it, vi} from 'vitest'
 
-import {type EditableSystemVariant} from '../../types'
+import {type EditableSystemVariant, type VariantDefinitionDocument} from '../../types'
 import {VARIANT_DOCUMENTS_PATH} from '../constants'
 import {createVariantOperationsStore} from '../createVariantOperationsStore'
 
+const VARIANT_ID = 'Ab12cd34'
+const DOCUMENT_ID = `${VARIANT_DOCUMENTS_PATH}.${VARIANT_ID}`
+
 function createEditableVariant(): EditableSystemVariant {
   return {
-    _id: `${VARIANT_DOCUMENTS_PATH}.Ab12cd34`,
+    _id: DOCUMENT_ID as `_.variants.${string}`,
     _type: 'system.variant',
     conditions: {audience: 'loyal-customers'},
     priority: 0,
@@ -17,42 +21,66 @@ function createEditableVariant(): EditableSystemVariant {
   }
 }
 
+function createVariantDefinitionDocument(
+  variant: EditableSystemVariant,
+): VariantDefinitionDocument {
+  return {
+    ...variant,
+    name: VARIANT_ID,
+    _rev: 'rev-1',
+    _createdAt: '2026-01-01T00:00:00Z',
+    _updatedAt: '2026-01-01T00:00:00Z',
+  }
+}
+
 describe('createVariantOperationsStore', () => {
-  it('creates a variant document', async () => {
+  it('creates a variant definition with the create action', async () => {
     const variant = createEditableVariant()
+    const persistedVariant = createVariantDefinitionDocument(variant)
     const client = {
-      create: vi.fn().mockResolvedValue(variant),
+      action: vi.fn().mockResolvedValue(persistedVariant),
     }
 
-    const store = createVariantOperationsStore({client: client as never})
+    const store = createVariantOperationsStore({client: client as SanityClient})
 
-    await expect(store.createVariant(variant)).resolves.toEqual(variant)
-    expect(client.create).toHaveBeenCalledWith(variant)
+    await expect(store.createVariant(variant)).resolves.toEqual(persistedVariant)
+    expect(client.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.variant.definition.create',
+        variantId: VARIANT_ID,
+        conditions: variant.conditions,
+        priority: variant.priority,
+        metadata: variant.metadata,
+      },
+      {tag: 'variants.create'},
+    )
   })
 
-  it('updates a variant document', async () => {
+  it('updates a variant definition with the edit action', async () => {
     const variant = createEditableVariant()
-    const patch = {
-      set: vi.fn().mockReturnThis(),
-      unset: vi.fn().mockReturnThis(),
-      commit: vi.fn().mockResolvedValue(variant),
-    }
+    const persistedVariant = createVariantDefinitionDocument(variant)
     const client = {
-      patch: vi.fn().mockReturnValue(patch),
+      action: vi.fn().mockResolvedValue(persistedVariant),
     }
 
-    const store = createVariantOperationsStore({client: client as never})
+    const store = createVariantOperationsStore({client: client as SanityClient})
 
-    await expect(store.updateVariant(variant)).resolves.toEqual(variant)
+    await expect(store.updateVariant(variant)).resolves.toEqual(persistedVariant)
 
-    expect(client.patch).toHaveBeenCalledWith(variant._id)
-    expect(patch.set).toHaveBeenCalledWith({
-      conditions: variant.conditions,
-      metadata: variant.metadata,
-      priority: variant.priority,
-    })
-    expect(patch.set).toHaveBeenCalledTimes(1)
-    expect(patch.commit).toHaveBeenCalledTimes(1)
+    expect(client.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.variant.definition.edit',
+        variantId: VARIANT_ID,
+        patch: {
+          set: {
+            conditions: variant.conditions,
+            metadata: variant.metadata,
+            priority: variant.priority,
+          },
+        },
+      },
+      {tag: 'variants.edit'},
+    )
   })
 
   it('unsets metadata when updating a variant without metadata', async () => {
@@ -63,33 +91,48 @@ describe('createVariantOperationsStore', () => {
       conditions: variant.conditions,
       priority: variant.priority,
     }
-    const patch = {
-      set: vi.fn().mockReturnThis(),
-      unset: vi.fn().mockReturnThis(),
-      commit: vi.fn().mockResolvedValue(variantWithoutMetadata),
-    }
+    const persistedVariant = createVariantDefinitionDocument(variantWithoutMetadata)
     const client = {
-      patch: vi.fn().mockReturnValue(patch),
+      action: vi.fn().mockResolvedValue(persistedVariant),
     }
 
-    const store = createVariantOperationsStore({client: client as never})
+    const store = createVariantOperationsStore({client: client as SanityClient})
 
-    await expect(store.updateVariant(variantWithoutMetadata)).resolves.toEqual(
-      variantWithoutMetadata,
+    await expect(store.updateVariant(variantWithoutMetadata)).resolves.toEqual(persistedVariant)
+
+    expect(client.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.variant.definition.edit',
+        variantId: VARIANT_ID,
+        patch: {
+          set: {
+            conditions: variantWithoutMetadata.conditions,
+            priority: variantWithoutMetadata.priority,
+          },
+          unset: ['metadata'],
+        },
+      },
+      {tag: 'variants.edit'},
     )
-
-    expect(patch.unset).toHaveBeenCalledWith(['metadata'])
   })
 
-  it('deletes a variant document', async () => {
+  it('deletes a variant definition with the delete action', async () => {
+    const variant = createEditableVariant()
+    const persistedVariant = createVariantDefinitionDocument(variant)
     const client = {
-      delete: vi.fn().mockResolvedValue(undefined),
+      action: vi.fn().mockResolvedValue(persistedVariant),
     }
 
-    const store = createVariantOperationsStore({client: client as never})
+    const store = createVariantOperationsStore({client: client as SanityClient})
 
-    await store.deleteVariant(`${VARIANT_DOCUMENTS_PATH}.Ab12cd34`)
+    await expect(store.deleteVariant(DOCUMENT_ID)).resolves.toEqual(persistedVariant)
 
-    expect(client.delete).toHaveBeenCalledWith(`${VARIANT_DOCUMENTS_PATH}.Ab12cd34`)
+    expect(client.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.variant.definition.delete',
+        variantId: VARIANT_ID,
+      },
+      {tag: 'variants.delete'},
+    )
   })
 })

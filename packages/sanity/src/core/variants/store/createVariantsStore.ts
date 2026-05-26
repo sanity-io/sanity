@@ -18,6 +18,7 @@ const QUERY_PROJECTION = `{
   _rev,
   _createdAt,
   _updatedAt,
+  name,
   conditions,
   "priority": coalesce(priority, 0),
   metadata,

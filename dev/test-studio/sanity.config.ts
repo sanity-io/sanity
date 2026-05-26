@@ -457,6 +457,11 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+    beta: {
+      variants: {
+        enabled: true,
+      },
+    },
   },
   {
     name: 'growth',

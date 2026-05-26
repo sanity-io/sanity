@@ -136,6 +136,29 @@ describe('CreateVariantDialog', () => {
     })
   })
 
+  it('shows an error for reserved and invalid condition keys', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), '_system')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal')
+
+    expect(screen.getByTestId('variant-form-condition-key-error')).toHaveTextContent(
+      'Condition keys cannot start with _ or $',
+    )
+    expect(screen.getByTestId('submit-variant-button')).toBeDisabled()
+
+    await user.clear(screen.getByTestId('variant-form-condition-key'))
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'Audience')
+
+    expect(screen.getByTestId('variant-form-condition-key-error')).toHaveTextContent(
+      'Condition keys must be lowercase, start with a letter, and use letters, numbers, underscores, or hyphens',
+    )
+    expect(screen.getByTestId('submit-variant-button')).toBeDisabled()
+  })
+
   it('suggests existing condition keys while typing', async () => {
     const user = userEvent.setup()
 
