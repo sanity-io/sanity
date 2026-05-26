@@ -10,6 +10,11 @@ import {VariantsStudioNavbar} from './components/VariantsStudioNavbar'
  */
 export const VARIANTS_NAME = 'sanity/variants'
 
+/**
+ * @internal
+ */
+export const VARIANTS_INTENT = 'variant'
+
 const VARIANTS_TOOL_NAME = 'variants'
 
 /**
@@ -29,6 +34,13 @@ export const variants = definePlugin({
       component: VariantsTool,
       router: route.create('/', [route.create('/:variantId')]),
       __internalApplicationType: VARIANTS_NAME,
+      canHandleIntent: (intent) => intent === VARIANTS_INTENT,
+      getIntentState(intent, params) {
+        if (intent === VARIANTS_INTENT) {
+          return {variantId: params.id}
+        }
+        return null
+      },
     },
   ],
   i18n: {
