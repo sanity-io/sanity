@@ -70,7 +70,11 @@ import {customBlock, hoistedPt, hoistedPtDocument} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
-import {issue4164PtKeyCollision, issue4164SupportingTypes} from './debug/issue4164PtKeyCollision'
+import {
+  issue4164PtKeyCollision,
+  issue4164SupportingTypes,
+  issue4164TitleOnlyPublishRace,
+} from './debug/issue4164PtKeyCollision'
 import {issue4516AddFilterIntentLink} from './debug/issue4516AddFilterIntentLink'
 import {languageFilterDebugType, localeBlockContentType} from './debug/languageFilter'
 import lazyComponents from './debug/lazyComponents'
@@ -275,6 +279,7 @@ export function createSchemaTypes(projectId: string) {
     invalidPreviews,
     issue4516AddFilterIntentLink,
     issue4164PtKeyCollision,
+    issue4164TitleOnlyPublishRace,
     ...issue4164SupportingTypes,
     languageFilterDebugType,
     localeBlockContentType,
