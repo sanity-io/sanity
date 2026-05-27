@@ -18,7 +18,7 @@ allowBuilds:
 catalog:
   '@playwright/experimental-ct-react': 1.59.1
   '@playwright/test': 1.59.1
-  '@sanity/client': ^7.21.0
+  '@sanity/client': ^7.22.0
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/migrate': ^6.1.1
   '@sanity/pkg-utils': ^10.4.15
