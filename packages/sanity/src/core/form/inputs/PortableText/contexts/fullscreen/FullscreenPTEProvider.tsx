@@ -34,27 +34,36 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
 
   const setFullscreenPath = useCallback(
     (path: Path, isFullscreen: boolean): void => {
-      if (isFullscreen) {
-        telemetry.log(EditorOpened, {
-          path: pathToString(path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-          editor_type: 'pte',
-          fullscreen: true,
-          location: 'nested_object_dialog',
-        })
-        setFullscreenPaths([...fullscreenPaths, pathToString(path)])
-      } else {
+      const pathString = pathToString(path)
+      setFullscreenPaths((currentPaths) => {
+        const alreadyOpen = currentPaths.includes(pathString)
+        // Idempotency guards: avoid logging telemetry and re-allocating state for
+        // no-op transitions (e.g. closing a path that was never opened, or opening
+        // a path that's already open). Phantom closes were the dominant source of
+        // the runaway "Editor Closed" volume for PTE fullscreen.
+        if (isFullscreen) {
+          if (alreadyOpen) return currentPaths
+          telemetry.log(EditorOpened, {
+            path: pathString,
+            origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+            editor_type: 'pte',
+            fullscreen: true,
+            location: 'nested_object_dialog',
+          })
+          return [...currentPaths, pathString]
+        }
+        if (!alreadyOpen) return currentPaths
         telemetry.log(EditorClosed, {
-          path: pathToString(path),
+          path: pathString,
           origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
           editor_type: 'pte',
           fullscreen: true,
           location: 'nested_object_dialog',
         })
-        setFullscreenPaths(fullscreenPaths.filter((savedPath) => savedPath !== pathToString(path)))
-      }
+        return currentPaths.filter((savedPath) => savedPath !== pathString)
+      })
     },
-    [fullscreenPaths, telemetry, enhancedObjectDialogEnabled],
+    [telemetry, enhancedObjectDialogEnabled],
   )
 
   const hasAnyFullscreen = useCallback((): boolean => {
