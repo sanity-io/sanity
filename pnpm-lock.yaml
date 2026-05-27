@@ -1705,8 +1705,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/mutator
       '@sanity/presentation-comlink':
-        specifier: ^2.0.1
-        version: 2.0.1(@sanity/client@7.22.0)(@sanity/types@packages+@sanity+types)
+        specifier: ^2.1.0
+        version: 2.1.0(@sanity/client@7.22.0)(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
         specifier: ^4.0.5
         version: 4.0.5(@sanity/client@7.22.0)
@@ -5658,6 +5658,10 @@ packages:
 
   '@sanity/presentation-comlink@2.0.1':
     resolution: {integrity: sha512-D0S2CfVyda99cd/8SnXxQ2tsVlVuRq4CAOjxRuF53evYmBhpWezSEpWKqAa0e1lunGBKK1EroxmOzb5ofNRwMg==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+
+  '@sanity/presentation-comlink@2.1.0':
+    resolution: {integrity: sha512-XwbGSK/cNW/awPfT8GssDTZoTlmg/7bcz1feCdfSDjOvNmlNfSqu/uPJZgKPnM0n54bFTUy8cs2zTKm1kc8nVA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@sanity/preview-url-secret@4.0.5':
@@ -15662,6 +15666,14 @@ snapshots:
       - vue-tsc
 
   '@sanity/presentation-comlink@2.0.1(@sanity/client@7.22.0)(@sanity/types@packages+@sanity+types)':
+    dependencies:
+      '@sanity/comlink': 4.0.1
+      '@sanity/visual-editing-types': 1.1.8(@sanity/client@7.22.0)(@sanity/types@packages+@sanity+types)
+    transitivePeerDependencies:
+      - '@sanity/client'
+      - '@sanity/types'
+
+  '@sanity/presentation-comlink@2.1.0(@sanity/client@7.22.0)(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/comlink': 4.0.1
       '@sanity/visual-editing-types': 1.1.8(@sanity/client@7.22.0)(@sanity/types@packages+@sanity+types)

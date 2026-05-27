@@ -197,7 +197,7 @@
     "@sanity/migrate": "catalog:",
     "@sanity/mutate": "^0.16.1",
     "@sanity/mutator": "workspace:*",
-    "@sanity/presentation-comlink": "^2.0.1",
+    "@sanity/presentation-comlink": "^2.1.0",
     "@sanity/preview-url-secret": "^4.0.5",
     "@sanity/prism-groq": "^1.1.2",
     "@sanity/schema": "workspace:*",
