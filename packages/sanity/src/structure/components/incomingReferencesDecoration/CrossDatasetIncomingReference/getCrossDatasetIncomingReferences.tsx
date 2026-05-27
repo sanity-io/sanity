@@ -12,7 +12,7 @@ import {
   type SanityClient,
 } from 'sanity'
 
-import {fetchCrossDatasetReferences} from '../../confirmDeleteDialog/useReferringDocuments'
+import {fetchCrossDatasetReferences} from '../../confirmDeleteDialog/legacy/useReferringDocuments'
 import {type CrossDatasetIncomingReference} from '../types'
 
 const INITIAL_STATE = {

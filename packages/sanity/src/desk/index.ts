@@ -26,7 +26,7 @@ import {
   type ComponentInput as _ComponentInput,
   type ComponentView as _ComponentView,
   ComponentViewBuilder as _ComponentViewBuilder,
-  ConfirmDeleteDialog as _ConfirmDeleteDialog,
+  ConfirmDeleteDialogLegacy as _ConfirmDeleteDialog,
   type ConfirmDeleteDialogProps as _ConfirmDeleteDialogProps,
   createStructureBuilder as _createStructureBuilder,
   type CustomComponentPaneNode as _CustomComponentPaneNode,

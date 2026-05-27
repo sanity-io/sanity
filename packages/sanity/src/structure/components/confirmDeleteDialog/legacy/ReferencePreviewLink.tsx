@@ -9,8 +9,8 @@ import {
   useDocumentPreviewStore,
 } from 'sanity'
 
-import {PaneItemPreview} from '../paneItem/PaneItemPreview'
-import {usePaneRouter} from '../paneRouter'
+import {PaneItemPreview} from '../../paneItem/PaneItemPreview'
+import {usePaneRouter} from '../../paneRouter'
 
 const EMPTY_ARRAY: [] = []
 

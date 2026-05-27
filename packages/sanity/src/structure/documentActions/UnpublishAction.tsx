@@ -11,7 +11,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ConfirmDeleteDialog} from '../components'
+import {ConfirmDeleteDialogLegacy} from '../components'
 import {structureLocaleNamespace} from '../i18n'
 
 const DISABLED_REASON_KEY = {
@@ -57,7 +57,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
         type: 'dialog',
         onClose: handleCancel,
         content: (
-          <ConfirmDeleteDialog
+          <ConfirmDeleteDialogLegacy
             id={draft?._id || id}
             type={type}
             action="unpublish"

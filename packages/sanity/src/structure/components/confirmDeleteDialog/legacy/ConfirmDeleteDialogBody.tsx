@@ -9,8 +9,8 @@ import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
 
-import {Button} from '../../../ui-components'
-import {structureLocaleNamespace} from '../../i18n'
+import {Button} from '../../../../ui-components'
+import {structureLocaleNamespace} from '../../../i18n'
 import {
   ChevronWrapper,
   CrossDatasetReferencesDetails,

@@ -7,7 +7,14 @@ export type {
   ParameterizedLinkProps,
   ReferenceChildLinkProps,
 } from './components'
-export {ConfirmDeleteDialog, Pane, PaneContent, PaneLayout, usePaneRouter} from './components'
+export {
+  ConfirmDeleteDialog,
+  ConfirmDeleteDialogLegacy,
+  Pane,
+  PaneContent,
+  PaneLayout,
+  usePaneRouter,
+} from './components'
 export {defineIncomingReferenceDecoration} from './components/incomingReferencesDecoration/defineIncomingReferenceDecoration'
 export {isIncomingReferenceCreation} from './components/incomingReferencesDecoration/isIncomingReferenceCreation'
 export {

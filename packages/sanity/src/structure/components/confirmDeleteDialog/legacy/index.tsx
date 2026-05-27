@@ -2,11 +2,9 @@ import {Box, Text} from '@sanity/ui'
 import {type ComponentProps, useCallback, useId, useState} from 'react'
 import {useTranslation} from 'sanity'
 
-import {Dialog, ErrorBoundary} from '../../../ui-components'
-import {structureLocaleNamespace} from '../../i18n'
-import {ConfirmDeleteDialog, type ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
-
-export type {ConfirmDeleteDialogProps}
+import {Dialog, ErrorBoundary} from '../../../../ui-components'
+import {structureLocaleNamespace} from '../../../i18n'
+import {ConfirmDeleteDialogLegacy, type ConfirmDeleteDialogProps} from './ConfirmDeleteDialogLegacy'
 
 type ArgType<T> = T extends (arg: infer U) => unknown ? U : never
 type ErrorInfo = ArgType<ComponentProps<typeof ErrorBoundary>['onCatch']>
@@ -38,9 +36,11 @@ function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
     </Dialog>
   ) : (
     <ErrorBoundary onCatch={setError}>
-      <ConfirmDeleteDialog {...props} />
+      <ConfirmDeleteDialogLegacy {...props} />
     </ErrorBoundary>
   )
 }
 
+export {type ConfirmDeleteDialogProps} from './ConfirmDeleteDialogLegacy'
+export {ConfirmDeleteDialogContainer as ConfirmDeleteDialogLegacy}
 export {ConfirmDeleteDialogContainer as ConfirmDeleteDialog}

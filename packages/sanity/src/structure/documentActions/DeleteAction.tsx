@@ -13,7 +13,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ConfirmDeleteDialog} from '../components'
+import {ConfirmDeleteDialogLegacy} from '../components'
 import {structureLocaleNamespace} from '../i18n'
 
 const DISABLED_REASON_TITLE_KEY = {
@@ -99,7 +99,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
       dialog: isConfirmDialogOpen && {
         type: 'custom',
         component: (
-          <ConfirmDeleteDialog
+          <ConfirmDeleteDialogLegacy
             action="delete"
             id={draft?._id || id}
             type={type}

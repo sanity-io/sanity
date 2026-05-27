@@ -1,4 +1,4 @@
-export * from './confirmDeleteDialog'
+export * from './confirmDeleteDialog/legacy'
 export * from './Delay'
 export * from './DocTitle'
 export * from './pane'

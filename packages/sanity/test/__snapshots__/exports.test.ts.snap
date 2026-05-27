@@ -944,6 +944,7 @@ exports[`exports snapshot 1`] = `
     "ComponentBuilder": "function",
     "ComponentViewBuilder": "function",
     "ConfirmDeleteDialog": "function",
+    "ConfirmDeleteDialogLegacy": "function",
     "DEFAULT_INTENT_HANDLER": "symbol",
     "DocumentBuilder": "function",
     "DocumentInspectorHeader": "function",
