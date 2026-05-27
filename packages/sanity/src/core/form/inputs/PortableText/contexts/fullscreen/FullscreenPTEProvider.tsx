@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {useCallback, useMemo, useState} from 'react'
@@ -5,8 +6,8 @@ import {FullscreenPTEContext} from 'sanity/_singletons'
 
 import {pathToString} from '../../../../../validation/util/pathToString'
 import {
-  ClosedPortableTextEditorFullScreen,
-  OpenedPortableTextEditorFullScreen,
+  EditorClosed,
+  EditorOpened,
 } from '../../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useEnhancedObjectDialog} from '../../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {type FullscreenPTEContextValue} from './FullscreenPTEContext'
@@ -34,15 +35,21 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
   const setFullscreenPath = useCallback(
     (path: Path, isFullscreen: boolean): void => {
       if (isFullscreen) {
-        telemetry.log(OpenedPortableTextEditorFullScreen, {
+        telemetry.log(EditorOpened, {
           path: pathToString(path),
           origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+          editor_type: 'pte',
+          fullscreen: true,
+          location: 'nested_object_dialog',
         })
         setFullscreenPaths([...fullscreenPaths, pathToString(path)])
       } else {
-        telemetry.log(ClosedPortableTextEditorFullScreen, {
+        telemetry.log(EditorClosed, {
           path: pathToString(path),
           origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+          editor_type: 'pte',
+          fullscreen: true,
+          location: 'nested_object_dialog',
         })
         setFullscreenPaths(fullscreenPaths.filter((savedPath) => savedPath !== pathToString(path)))
       }
