@@ -71,7 +71,7 @@ describe('usePresentationPerspective', () => {
     expect(result.current).toEqual([scheduledDraft, ...perspectiveStack])
   })
 
-  it('should return `[selectedPerspectiveName]` when `selectedPerspectiveName` is an agent bundle and no `scheduledDraft` is set', () => {
+  it('should return `perspectiveStack` when `selectedPerspectiveName` is an agent bundle and no `scheduledDraft` is set', () => {
     mockUsePerspective.mockReturnValue({
       selectedPerspectiveName: 'agent-wGEzfa',
       selectedReleaseId: undefined,
