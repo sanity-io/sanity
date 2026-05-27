@@ -81,6 +81,8 @@ exports[`exports snapshot 1`] = `
     "DiffStringSegment": "function",
     "DiffTooltip": "function",
     "DivergencesProvider": "function",
+    "DocumentGroupInventory": "function",
+    "DocumentGroupInventoryAction": "function",
     "DocumentPreviewPresence": "function",
     "DocumentStatus": "function",
     "DocumentStatusIndicator": "function",
