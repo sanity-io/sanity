@@ -12,7 +12,10 @@ export type DocumentDivergencesContextValue =
 /**
  * @internal
  */
-export const DocumentDivergencesContext = createContext<DocumentDivergencesContextValue | null>(
+export const DocumentDivergencesContext = createContext<DocumentDivergencesContextValue>(
   'sanity/_singletons/context/document-divergences',
-  null,
+  {
+    enabled: false,
+    sessionId: null,
+  },
 )

@@ -12,9 +12,7 @@ on:
         default: false
         type: boolean
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   build-and-validate:
@@ -83,6 +81,9 @@ jobs:
 
   typedoc:
     needs: [build-and-validate, git-operations]
+    permissions:
+      contents: read
+      pull-requests: write
     uses: ./.github/workflows/typedoc.yml
     with:
       upload: true

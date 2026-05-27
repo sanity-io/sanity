@@ -35,8 +35,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Bump canary versions
-        # `--no-build-metadata` works around https://github.com/pnpm/pnpm/issues/11518
-        run: pnpm --silent release-notes bump --preid=canary --no-build-metadata
+        run: pnpm --silent release-notes bump --preid=canary
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped

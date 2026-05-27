@@ -1,10 +1,13 @@
-import {type ElementType, type ReactNode} from 'react'
+import {tryGetImageDimensions} from '@sanity/asset-utils'
+import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
+import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
-import {type PreviewLayoutKey, type PreviewMediaDimensions} from './types'
+import {PREVIEW_SIZES} from './constants'
+import {type PreviewProps, type PreviewLayoutKey, type PreviewMediaDimensions} from './types'
 
 export function renderPreviewMedia<Layout = PreviewLayoutKey>(
-  value: ReactNode | ElementType<{layout: Layout; dimensions: PreviewMediaDimensions}>,
+  value: PreviewProps<Layout>['media'],
   layout: Layout,
   dimensions: PreviewMediaDimensions,
 ): ReactNode {
@@ -17,8 +20,17 @@ export function renderPreviewMedia<Layout = PreviewLayoutKey>(
     return <div>{value}</div>
   }
 
-  // @todo: find out why `value` isn't infered as `ReactNode` here
-  return value as any
+  const isReactNode =
+    isValidElement(value) ||
+    value === null ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+
+  if (isReactNode) {
+    return value
+  }
+
+  return null
 }
 
 export function renderPreviewNode<Layout = PreviewLayoutKey>(
@@ -37,4 +49,24 @@ export function renderPreviewNode<Layout = PreviewLayoutKey>(
 
   // @todo: find out why `value` isn't infered as `ReactNode` here
   return (value as any) || fallbackNode
+}
+
+export function resolveBlockImageDimensions(
+  source: Parameters<typeof tryGetImageDimensions>[0],
+): PreviewMediaDimensions | undefined {
+  const sourceDimensions = tryGetImageDimensions(source)
+
+  if (typeof sourceDimensions === 'undefined') {
+    return undefined
+  }
+
+  const max = PREVIEW_SIZES.blockImage.media
+  const scale = Math.min(max.width / sourceDimensions.width, 1)
+
+  return {
+    width: Math.round(sourceDimensions.width * scale),
+    height: Math.round(sourceDimensions.height * scale),
+    fit: 'max',
+    dpr: getDevicePixelRatio(),
+  }
 }

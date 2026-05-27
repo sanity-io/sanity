@@ -42,6 +42,7 @@ import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test'
+import {formBuilderReproTool} from './plugins/form-builder-repro'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
@@ -215,6 +216,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       muxInput({mp4_support: 'standard'}),
       imageHotspotArrayPlugin(),
       routerDebugTool(),
+      formBuilderReproTool(),
       errorReportingTestPlugin(),
       media(),
       markdownSchema(),
@@ -296,6 +298,14 @@ const defaultWorkspace = defineConfig({
 })
 
 export default defineConfig([
+  {
+    ...defaultWorkspace,
+    name: 'default-hidden',
+    title: 'Default Hidden',
+    subtitle: 'Statically hidden and configured as the first (default) workspace',
+    basePath: '/default-hidden',
+    hidden: true,
+  },
   defaultWorkspace,
   {
     ...defaultWorkspace,

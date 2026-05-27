@@ -20,6 +20,14 @@ export interface CommonDateTimeInputProps {
   deserialize: (value: string) => ParseResult
   formatInputValue: (date: Date) => string
   onChange: (nextDate: string | null) => void
+  /**
+   * Called when the parser's error state changes. Receives the error message
+   * while the typed input cannot be parsed (e.g. doesn't match the configured
+   * `dateFormat`), and `null` once it becomes parseable or empty. Used by the
+   * wrapping date/datetime input to surface parse errors separately from the
+   * document validation graph.
+   */
+  onParseError?: (error: string | null) => void
   parseInputValue: (inputValue: string) => ParseResult
   placeholder?: string
   readOnly: boolean | undefined
@@ -43,6 +51,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
     deserialize,
     formatInputValue,
     onChange,
+    onParseError,
     parseInputValue,
     placeholder,
     readOnly,
@@ -106,6 +115,14 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       ? formatInputValue(parseResult.date)
       : value
 
+  // Forward parse errors to the wrapping field. Invalid input never reaches
+  // `onChange`, so without this they'd be swallowed and validators would
+  // continue to run against an undefined value.
+  const parseError = parseResult?.error ?? null
+  useEffect(() => {
+    onParseError?.(parseError)
+  }, [onParseError, parseError])
+
   return (
     <DateTimeInput
       {...restProps}
@@ -126,7 +143,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       readOnly={Boolean(readOnly)}
       onInputChange={handleDatePickerInputChange}
       onChange={handleDatePickerChange}
-      customValidity={parseResult?.error || validationError}
+      customValidity={parseError || validationError}
     />
   )
 })

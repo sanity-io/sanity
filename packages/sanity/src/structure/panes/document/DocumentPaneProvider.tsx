@@ -7,9 +7,9 @@ import {
 } from '@sanity/types'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import {
+  type ComponentProps,
   type ComponentType,
   useCallback,
-  useContext,
   useEffect,
   useEffectEvent,
   useMemo,
@@ -30,6 +30,7 @@ import {
   isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
   isVersionId,
+  ParseErrorsProvider,
   type PartialContext,
   pathToString,
   type ReleaseDocument,
@@ -45,11 +46,7 @@ import {
   useUnique,
   useWorkspace,
 } from 'sanity'
-import {
-  DocumentDivergencesContext,
-  DocumentPaneContext,
-  DocumentPaneInfoContext,
-} from 'sanity/_singletons'
+import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
@@ -717,27 +714,19 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     return undefined
   }, [paramPath, ready])
 
-  const divergencesContext = useContext(DocumentDivergencesContext)
+  // Disable when `formState` or `schemaType` is transiently absent
+  // (e.g. a `hidden` callback returns true, or the schema is still loading).
+  const isDivergencesEnabled = advancedVersionControlEnabled && Boolean(formState && schemaType)
+
+  const divergencesProps: ComponentProps<typeof DivergencesProvider> =
+    isDivergencesEnabled && formState && schemaType
+      ? {enabled: true, upstreamEditState, editState, subjectId: value._id, schemaType, formState}
+      : {enabled: false}
 
   return (
     <DocumentPaneInfoContext.Provider value={documentPaneInfo}>
       <DocumentPaneContext.Provider value={documentPane}>
-        <DivergencesProvider
-          // If `DocumentPaneProvider` is rendered as a descendant of another
-          // instance of `DivergencesProvider`, inherit its enabled state,
-          // rather than overriding it.
-          //
-          // This allows `DocumentPaneProvider` to appear as a descendant of
-          // `DivergencesProvider` with `enabled` explicitly set to `false`,
-          // without that explicit opt-out being overriden by the workspace's
-          // `advancedVersionControl.enabled` configuration.
-          enabled={divergencesContext?.enabled ?? advancedVersionControlEnabled}
-          upstreamEditState={upstreamEditState}
-          editState={editState}
-          subjectId={value._id}
-          schemaType={formState.schemaType}
-          formState={formState}
-        >
+        <DivergencesProvider {...divergencesProps}>
           <DivergenceAutofocus onProgrammaticFocus={onProgrammaticFocus} />
           <DocumentTitle
             isDeleted={isDeleted}
@@ -745,7 +734,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
             ready={ready}
             schemaType={schemaType}
           />
-          {children}
+          <ParseErrorsProvider>{children}</ParseErrorsProvider>
         </DivergencesProvider>
       </DocumentPaneContext.Provider>
     </DocumentPaneInfoContext.Provider>

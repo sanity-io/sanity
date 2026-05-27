@@ -56,6 +56,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
   const {t} = useTranslation()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const source = useSource()
+  const disableNew = schemaType.options?.disableNew === true
 
   const assetSourcesWithUpload = useMemo(() => {
     const result = getAssetSourcesWithUpload(assetSources)
@@ -89,6 +90,10 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
   )
 
   const uploadButton = useMemo(() => {
+    if (disableNew) {
+      return null
+    }
+
     switch (assetSourcesWithUpload.length) {
       case 0:
         return null
@@ -144,12 +149,21 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
     accept,
     assetSourcesWithUpload,
     directUploads,
+    disableNew,
     handleSelectFiles,
     onOpenSourceForUpload,
     onUpload,
     readOnly,
     t,
   ])
+
+  if (disableNew) {
+    return browse ? (
+      <Flex align="center" justify="flex-end" ref={setRootElement}>
+        {browse}
+      </Flex>
+    ) : null
+  }
 
   return assetSourcesWithUpload.length === 0 ? null : (
     <Flex

@@ -8,4 +8,5 @@ export const STICKY_PARAMS: string[] = [
   'sidebar',
   'selectedTask',
   'viewMode',
+  'variant',
 ]
