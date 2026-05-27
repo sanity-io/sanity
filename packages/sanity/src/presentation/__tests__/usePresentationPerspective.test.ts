@@ -70,4 +70,29 @@ describe('usePresentationPerspective', () => {
 
     expect(result.current).toEqual([scheduledDraft, ...perspectiveStack])
   })
+
+  it('should return `[selectedPerspectiveName]` when `selectedPerspectiveName` is an agent bundle and no `scheduledDraft` is set', () => {
+    mockUsePerspective.mockReturnValue({
+      selectedPerspectiveName: 'agent-wGEzfa',
+      selectedReleaseId: undefined,
+      perspectiveStack: ['agent-wGEzfa', 'drafts'],
+    } satisfies Partial<PerspectiveContextValue>)
+
+    const {result} = renderHook(() => usePresentationPerspective({scheduledDraft: undefined}))
+
+    expect(result.current).toEqual(['agent-wGEzfa', 'drafts'])
+  })
+
+  it('should include `scheduledDraft` before an agent bundle perspective when both are set', () => {
+    const scheduledDraft = 'drafts.scheduled-doc-id'
+    mockUsePerspective.mockReturnValue({
+      selectedPerspectiveName: 'agent-wGEzfa',
+      selectedReleaseId: undefined,
+      perspectiveStack: ['agent-wGEzfa', 'drafts'],
+    } satisfies Partial<PerspectiveContextValue>)
+
+    const {result} = renderHook(() => usePresentationPerspective({scheduledDraft}))
+
+    expect(result.current).toEqual([scheduledDraft, 'agent-wGEzfa', 'drafts'])
+  })
 })
