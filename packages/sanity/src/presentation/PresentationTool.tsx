@@ -170,6 +170,9 @@ export default function PresentationTool(props: {
   const [overlaysConnection, setOverlaysConnection] = useStatus()
   const [loadersConnection, setLoadersConnection] = useStatus()
   const [previewKitConnection, setPreviewKitConnection] = useStatus()
+  const [_handlesPerspectiveChange, setHandlesPerspectiveChange] = useState(false)
+  // Loaders also handle perspective changes, and for legacy reasons we also consider them as a valid handler
+  const handlesPerspectiveChange = _handlesPerspectiveChange || loadersConnection === 'connected'
 
   const {open: handleOpenPopup} = usePopups(controller)
 
@@ -568,6 +571,7 @@ export default function PresentationTool(props: {
                           vercelProtectionBypass={vercelProtectionBypass}
                           presentationRef={presentationRef}
                           previewUrlRef={previewUrlRef}
+                          handlesPerspectiveChange={handlesPerspectiveChange}
                         />
                       </BoundaryElementProvider>
                     </Flex>
@@ -625,7 +629,11 @@ export default function PresentationTool(props: {
         )}
         {visualEditingComlink && <PostMessageFeatures comlink={visualEditingComlink} />}
         {visualEditingComlink && (
-          <PostMessagePerspective comlink={visualEditingComlink} perspective={perspective} />
+          <PostMessagePerspective
+            comlink={visualEditingComlink}
+            perspective={perspective}
+            setHandlesPerspectiveChange={setHandlesPerspectiveChange}
+          />
         )}
         {visualEditingComlink && <PostMessageTelemetry comlink={visualEditingComlink} />}
       </Suspense>
