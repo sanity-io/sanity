@@ -83,6 +83,7 @@ export interface PreviewProps {
   viewport: PresentationViewport
   vercelProtectionBypass: string | null
   previewUrlRef: PreviewUrlRef
+  handlesPerspectiveChange: boolean
 }
 
 export const Preview = memo(
@@ -97,6 +98,7 @@ export const Preview = memo(
       vercelProtectionBypass,
       presentationRef,
       previewUrlRef,
+      handlesPerspectiveChange,
     } = props
 
     const [stablePerspective, setStablePerspective] = useState<typeof perspective | null>(null)
@@ -105,10 +107,11 @@ export const Preview = memo(
     )
     const previewUrl = useMemo(() => {
       const url = new URL(initialUrl)
-      // Always set the current perspective, overwriting any stale value that may
-      // have been baked into the resolved preview-mode URL at mount time (e.g.
-      // when a Content Agent document lives in a release but the initial
-      // perspective was "drafts").
+
+      // Always set the perspective, even if it's provided in the initial URL.
+      // The perspective can change over time, even in the brief time between the iframe starting to load,
+      // and a comlink node connecting to the iframe and reporting whether perspective switching is handled by the preview,
+      // or if perspective switching should reload the iframe.
       url.searchParams.set(urlSearchParamPreviewPerspective, urlPerspective)
 
       if (vercelProtectionBypass || url.searchParams.get(urlSearchParamVercelProtectionBypass)) {
@@ -128,15 +131,18 @@ export const Preview = memo(
 
     useEffect(() => {
       /**
-       * If the preview iframe is connected to the loader, we know that switching the perspective can be done without reloading the iframe.
+       * Once we know the preview can handle perspective changes in-place — either because the iframe reported it
+       * over comlink, or because a loader is connected (legacy fallback) — we capture the perspective that was used
+       * to load the preview, so `src` on `iframe` no longer changes when the perspective changes. Otherwise the
+       * iframe would do a full page reload, which is what we're trying to avoid unless absolutely necessary.
        */
-      if (loadersConnection === 'connected') {
+      if (handlesPerspectiveChange) {
         /**
          * Only set the stable perspective if it hasn't been set yet.
          */
         setStablePerspective((prev) => (prev === null ? perspective : prev))
       }
-    }, [loadersConnection, perspective])
+    }, [handlesPerspectiveChange, perspective])
 
     const {t} = useTranslation(presentationLocaleNamespace)
     const {devMode} = usePresentationTool()
