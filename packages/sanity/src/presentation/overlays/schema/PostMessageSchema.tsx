@@ -82,12 +82,13 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
               perspective,
             },
           )
-          /**
-           * PostMessageSchema.tsx:85 Uncaught (in promise) TypeError: Cannot read properties of null (reading '0')
-    at PostMessageSchema.tsx:85:67
-           */
+          // `client.fetch` returns `null` when no document matches the active perspective,
+          // and individual projection entries are `null` when the document exists but the
+          // path doesn't resolve. Drop those entries so we only emit fully resolved types.
           const mapped = arr
-            .map((path, i) => (result?.[i] ? {path: path, type: result[i]} : null))
+            .map((path, i) =>
+              typeof result?.[i] === 'string' ? {path: path, type: result[i]} : null,
+            )
             .filter((item) => item !== null)
           return {id, paths: mapped}
         }),
