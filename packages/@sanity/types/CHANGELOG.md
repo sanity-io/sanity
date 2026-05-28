@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.28.0](https://github.com/sanity-io/sanity/compare/v5.27.0...v5.28.0) (2026-05-28)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/insert-menu to v3.0.7 ([#12897](https://github.com/sanity-io/sanity/issues/12897)) ([9dea35a](https://github.com/sanity-io/sanity/commit/9dea35af2b16a7f5142b537ade7b4535d6f65212))
 ## [5.26.0](https://github.com/sanity-io/sanity/compare/v5.25.1...v5.26.0) (2026-05-19)
 
 ### Reverts
