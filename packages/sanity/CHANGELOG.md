@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.28.0](https://github.com/sanity-io/sanity/compare/v5.27.0...v5.28.0) (2026-05-28)
+
+### Features
+
+* **core:** add view-as navbar for  variant selection ([#12862](https://github.com/sanity-io/sanity/issues/12862)) ([4b5e4bb](https://github.com/sanity-io/sanity/commit/4b5e4bb96a2e45861a9c83675cefea477dfad9ef))
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/insert-menu to v3.0.7 ([#12897](https://github.com/sanity-io/sanity/issues/12897)) ([9dea35a](https://github.com/sanity-io/sanity/commit/9dea35af2b16a7f5142b537ade7b4535d6f65212))
+* **deps:** update dependency @sanity/presentation-comlink to ^2.1.0 ([#12881](https://github.com/sanity-io/sanity/issues/12881)) ([e604c3e](https://github.com/sanity-io/sanity/commit/e604c3e6df85361968ff9179e0e3e073f5111575))
+* **deps:** update dependency @sanity/preview-url-secret to ^4.0.6 ([#12898](https://github.com/sanity-io/sanity/issues/12898)) ([931641a](https://github.com/sanity-io/sanity/commit/931641aebdd6975f4f23fdcf8b86e23b92f4fb5e))
+* **presentation:** avoid iframe reload on perspective switch ([#12885](https://github.com/sanity-io/sanity/issues/12885)) ([1b76d8b](https://github.com/sanity-io/sanity/commit/1b76d8b65599baf226c0074eabe9c0495025734b))
+* **presentation:** handle agent bundle perspectives correctly ([#12903](https://github.com/sanity-io/sanity/issues/12903)) ([a91bdc2](https://github.com/sanity-io/sanity/commit/a91bdc29202dd0e310554e4fb394fc2c81340e4f))
+* **presentation:** handle null client.fetch results in PostMessageSchema ([#12904](https://github.com/sanity-io/sanity/issues/12904)) ([4397d7b](https://github.com/sanity-io/sanity/commit/4397d7b95e9fe160103642dfd9d6104c605abb58))
 ## [5.27.0](https://github.com/sanity-io/sanity/compare/v5.26.0...v5.27.0) (2026-05-26)
 
 ### Features
