@@ -289,21 +289,13 @@ jobs:
           path: all-blob-reports
 
       - name: Merge into HTML Report
-        # Blob reports are downloaded flat into all-blob-reports/ (merge-multiple: true),
-        # so point merge-reports at that directory directly.
-        #
-        # merge-reports exits 0 even when it finds no blobs, which silently
-        # produces neither an HTML report nor test-summary.json. Assert the
-        # report-*.zip files are present first, so a layout regression fails
-        # loudly here instead of surfacing as a cryptic error downstream.
+        # DIAGNOSTIC: merge-reports keeps producing no output despite blobs being
+        # present. Dump the downloaded tree so we can see exactly what
+        # download-artifact@v8 placed in all-blob-reports/ (decompressed blob
+        # reports vs still-zipped artifact archives) before deciding the fix.
         run: |
-          shopt -s nullglob
-          blobs=(all-blob-reports/*.zip)
-          if [ ${#blobs[@]} -eq 0 ]; then
-            echo "::error::No blob reports found in all-blob-reports/. The merge would silently produce nothing — check the upload artifact layout in the playwright-test job."
-            ls -laR all-blob-reports || true
-            exit 1
-          fi
+          echo "Downloaded tree:"
+          ls -laR all-blob-reports || true
           npx playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports
 
       - name: Extract test summary
