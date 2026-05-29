@@ -2,6 +2,7 @@ import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sa
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
+  getPublishedId,
   getVersionFromId,
   isCardinalityOneRelease,
   isDraftId,
@@ -16,11 +17,13 @@ import {
   type ReleaseDocument,
   ScrollContainer,
   useArchivedReleases,
+  useDocumentVersions,
   useFilteredReleases,
   usePausedScheduledDraft,
   usePerspective,
   useWorkspace,
   VirtualizerScrollInstanceProvider,
+  getTargetDocument,
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
@@ -42,6 +45,7 @@ import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBa
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
+import {DocumentNotInVariantBanner} from './banners/DocumentNotInVariantBanner'
 import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {PausedScheduledDraftBanner} from './banners/PausedScheduledDraftBanner'
@@ -189,7 +193,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = usePerspective()
+  const {bundle, selectedReleaseId, selectedPerspectiveName, selectedVariant, selectedPerspective} =
+    usePerspective()
+
+  const documentVersions = useDocumentVersions({documentId: getPublishedId(documentId)})
+
+  const targetDocument = getTargetDocument({
+    bundle,
+    variant: selectedVariant?._id,
+    documentVersions: documentVersions.versions,
+  })
 
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
@@ -214,6 +227,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
           isCardinalityOneRelease(release),
       ),
     [archivedReleases, selectedPerspectiveName],
+  )
+
+  const isDocumentNotInSelectedVariant = Boolean(
+    selectedVariant && !documentVersions.loading && !targetDocument,
   )
 
   // eslint-disable-next-line complexity
@@ -281,6 +298,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     )
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
+
+    if (isDocumentNotInSelectedVariant) {
+      return <DocumentNotInVariantBanner />
+    }
+
     const isCurrentVersionGoingToUnpublish =
       editState?.version && isGoingToUnpublish(editState?.version)
 
@@ -378,6 +400,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     filteredReleases,
     workspace,
     isPausedDraft,
+    isDocumentNotInSelectedVariant,
   ])
   const portalElements = useMemo(
     () => ({documentScrollElement: documentScrollElement}),
@@ -421,7 +444,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               </PortalProvider>
             </DocumentBox>
 
-            {footer}
+            {!isDocumentNotInSelectedVariant && footer}
           </Flex>
         )}
         {showInspector && (
