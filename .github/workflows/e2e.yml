@@ -275,12 +275,22 @@ jobs:
           path: all-blob-reports
 
       - name: Merge into HTML Report
-        # Use `pnpm exec`, not `npx`: from the repo root npx failed to launch the
-        # playwright CLI in CI (node never started — no output, no error), so
-        # merge-reports silently produced neither the HTML report nor
-        # test-summary.json. pnpm exec resolves the workspace-installed binary
-        # deterministically. Paths stay root-relative (cwd is the repo root).
-        run: pnpm exec playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports
+        # DIAGNOSTIC v2: merge still writes nothing. Capture the binary, version,
+        # full stdout+stderr, exit code, and the resulting tree to find out what
+        # the merge actually does in CI.
+        run: |
+          set -x
+          pwd
+          ls -la all-blob-reports
+          command -v playwright || true
+          pnpm exec playwright --version 2>&1 || echo "version cmd failed: $?"
+          echo "=== merge: html only ==="
+          pnpm exec playwright merge-reports --reporter html all-blob-reports 2>&1
+          echo "=== exit=$? ==="
+          echo "=== tree after merge ==="
+          ls -la . | head -40
+          ls -la playwright-report 2>&1 | head -5 || true
+          find . -maxdepth 2 -name 'index.html' -o -maxdepth 2 -name 'test-summary.json' 2>/dev/null | head
 
       - name: Extract test summary
         id: summary
