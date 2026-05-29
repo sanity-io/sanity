@@ -397,7 +397,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     (inputProps: Omit<InputProps, 'renderDefault'>) => {
       return (
         <ImageInputHotspotInput
-          accessPolicy={accessPolicy}
           isImageToolEnabled={isImageToolEnabled()}
           handleCloseDialog={handleCloseDialog}
           imageInputProps={props}
@@ -405,7 +404,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         />
       )
     },
-    [accessPolicy, handleCloseDialog, isImageToolEnabled, props],
+    [handleCloseDialog, isImageToolEnabled, props],
   )
   const renderAssetSource = useCallback(() => {
     if (!selectedAssetSource) return null
