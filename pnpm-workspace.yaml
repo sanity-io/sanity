@@ -21,7 +21,7 @@ catalog:
   '@sanity/client': ^7.22.0
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/migrate': ^6.1.1
-  '@sanity/pkg-utils': ^10.4.15
+  '@sanity/pkg-utils': ^10.5.1
   '@sanity/telemetry': ^1.1.0
   '@sanity/ui': ^3.1.14
   '@types/node': ^24.3.0
