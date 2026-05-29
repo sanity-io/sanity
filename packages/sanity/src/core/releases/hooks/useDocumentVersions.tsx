@@ -1,6 +1,17 @@
 import {type QueryParams} from '@sanity/client'
+import {getVersionFromId, isVersionId, isPublishedId} from '@sanity/client/csm'
+import {type DocumentSystem} from '@sanity/types'
 import {useEffect, useMemo, useState} from 'react'
-import {catchError, finalize, map, type Observable, of, shareReplay} from 'rxjs'
+import {
+  catchError,
+  combineLatest,
+  finalize,
+  map,
+  type Observable,
+  of,
+  shareReplay,
+  switchMap,
+} from 'rxjs'
 
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
@@ -14,14 +25,22 @@ export interface DocumentPerspectiveProps {
   documentId: string
 }
 
+export interface DocumentVersion {
+  _id: string
+  // TODO: Update to `_system` when the API action ships.
+  system: DocumentSystem
+}
+
 export interface DocumentPerspectiveState {
   data: string[]
+  versions: DocumentVersion[]
   error?: unknown
   loading: boolean
 }
 
-const INITIAL_VALUE = {
+const INITIAL_VALUE: DocumentPerspectiveState = {
   data: [],
+  versions: [],
   error: null,
   loading: true,
 }
@@ -66,6 +85,39 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
 }
 
 /**
+ * Temporally builds the document system for a given document id.
+ * This is used until the documents are migrated to the new system.
+ * And only if the documents are not variant documents.
+ *
+ * Variants will include the system field.
+ */
+const temporallyBuildDocumentSystem = (id: string): DocumentSystem => {
+  const versionId = getVersionFromId(id)
+  if (versionId) {
+    return {
+      bundleId: versionId,
+      // TODO: Only attach the release if a release actually exists, e.g. agent documents don't have a release.
+      release: {_type: 'reference', _ref: versionId, _weak: true},
+      variant: null,
+      group: {
+        _type: 'reference',
+        _ref: getPublishedId(id),
+        _weak: true,
+      },
+      scopeId: versionId,
+    }
+  }
+
+  return {
+    bundleId: isPublishedId(id) ? '$published' : 'drafts',
+    release: null,
+    variant: null,
+    group: {_type: 'reference', _ref: getPublishedId(id), _weak: true},
+    scopeId: versionId,
+  }
+}
+
+/**
  * Retrieves an observable that emits document IDs matching the document versions that exist for a specific id
  *
  * @param options - The options for creating or retrieving the observable.
@@ -100,13 +152,32 @@ export function getOrCreateDocumentVersionsObservable(options: {
     })
     .pipe(
       swr(cacheKey),
-      map(({value}) => ({
-        data: value.documentIds,
-        error: null,
-        loading: false,
-      })),
+      map(({value}) => value.documentIds),
+      switchMap((documentIds): Observable<DocumentPerspectiveState> => {
+        if (documentIds.length === 0) {
+          return of({data: [], versions: [], error: null, loading: false})
+        }
+
+        return combineLatest(
+          documentIds.map((id) =>
+            documentPreviewStore.observeDocumentSystemFromId(id, {projectId, dataset}).pipe(
+              map((system) => ({
+                _id: id,
+                system: system ?? temporallyBuildDocumentSystem(id),
+              })),
+            ),
+          ),
+        ).pipe(
+          map((versions) => ({
+            data: documentIds,
+            versions,
+            error: null,
+            loading: false,
+          })),
+        )
+      }),
       catchError((error) => {
-        return of({error, data: [] as string[], loading: false})
+        return of({error, data: [] as string[], versions: [] as DocumentVersion[], loading: false})
       }),
       finalize(() => {
         observableCache.delete(cacheKey)

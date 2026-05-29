@@ -5,7 +5,7 @@ import {
   type StackablePerspective,
   type WelcomeEvent,
 } from '@sanity/client'
-import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
+import {type DocumentSystem, type PrepareViewOptions, type SanityDocument} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
@@ -62,6 +62,11 @@ export interface DocumentPreviewStore {
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
   ) => Observable<string | undefined>
+  observeDocumentSystemFromId: (
+    id: string,
+    apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
+  ) => Observable<DocumentSystem | undefined>
 
   /**
    *
@@ -170,6 +175,18 @@ export function createDocumentPreviewStore({
       distinctUntilChanged(),
     )
   }
+  function observeDocumentSystemFromId(
+    id: string,
+    apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
+    // TODO: This shouldn't be undefined once the documents are migrated.
+  ): Observable<DocumentSystem | undefined> {
+    // TODO: Update to `_system` when the API action ships.
+    return observePaths({_type: 'reference', _ref: id}, ['system'], apiConfig, perspective).pipe(
+      map((res) => (isRecord(res) ? (res as unknown as DocumentSystem) : undefined)),
+      distinctUntilChanged(),
+    )
+  }
 
   const observeDocumentIdSet = createDocumentIdSetObserver(versionedClient)
 
@@ -195,7 +212,7 @@ export function createDocumentPreviewStore({
     observePaths,
     observeForPreview,
     observeDocumentTypeFromId,
-
+    observeDocumentSystemFromId,
     unstable_observeDocumentIdSet: observeDocumentIdSet,
     unstable_observeDocument: observeDocument,
     unstable_observeDocuments: (ids: string[]) =>

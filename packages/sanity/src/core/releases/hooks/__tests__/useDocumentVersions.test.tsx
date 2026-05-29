@@ -1,4 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {getPublishedId} from '@sanity/client/csm'
+import {type DocumentSystem} from '@sanity/types'
 import {renderHook, waitFor} from '@testing-library/react'
 import {delay, of} from 'rxjs'
 import {describe, expect, it, type Mock, vi} from 'vitest'
@@ -33,7 +35,18 @@ vi.mock('../../../store', () => ({
   useDocumentPreviewStore: vi.fn(),
 }))
 
-async function setupMocks({versionIds}: {releases: ReleaseDocument[]; versionIds: string[]}) {
+async function setupMocks({
+  versionIds,
+  observeSystem = true,
+}: {
+  releases: ReleaseDocument[]
+  versionIds: string[]
+  /**
+   * When `false`, `observeDocumentSystemFromId` emits `undefined`, so the observable
+   * falls back to `temporallyBuildDocumentSystem`.
+   */
+  observeSystem?: boolean
+}) {
   const mockDocumentPreviewStore = useDocumentPreviewStore as Mock<typeof useDocumentPreviewStore>
   const mockGetOrCreateDocumentVersionsObservable = getOrCreateDocumentVersionsObservable as Mock<
     typeof getOrCreateDocumentVersionsObservable
@@ -46,6 +59,21 @@ async function setupMocks({versionIds}: {releases: ReleaseDocument[]; versionIds
         of({status: 'connected', documentIds: versionIds} as DocumentIdSetObserverState).pipe(
           // simulate async initial emission
           delay(0),
+        ),
+      ),
+    observeDocumentSystemFromId: vi
+      .fn<DocumentPreviewStore['observeDocumentSystemFromId']>()
+      .mockImplementation((id) =>
+        of(
+          observeSystem
+            ? ({
+                bundleId: 'drafts',
+                release: null,
+                variant: null,
+                group: null,
+                scopeId: getPublishedId(id),
+              } satisfies DocumentSystem)
+            : undefined,
         ),
       ),
   } as unknown as DocumentPreviewStore)
@@ -84,5 +112,65 @@ describe('useDocumentVersions', () => {
     await waitFor(() => {
       expect(result.current.data).toEqual(['versions.rASAP.document-1'])
     })
+    expect(result.current.versions).toEqual([
+      {
+        _id: 'versions.rASAP.document-1',
+        system: {
+          bundleId: 'drafts',
+          release: null,
+          variant: null,
+          group: null,
+          scopeId: 'document-1',
+        },
+      },
+    ])
+  })
+
+  it('should fall back to a temporally built system when the document has no system', async () => {
+    await setupMocks({
+      releases: [activeASAPRelease],
+      versionIds: ['versions.rASAP.document-1'],
+      observeSystem: false,
+    })
+    const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+    await waitFor(() => {
+      expect(result.current.data).toEqual(['versions.rASAP.document-1'])
+    })
+    expect(result.current.versions).toEqual([
+      {
+        _id: 'versions.rASAP.document-1',
+        system: {
+          bundleId: 'rASAP',
+          release: {_type: 'reference', _ref: 'rASAP', _weak: true},
+          variant: null,
+          group: {_type: 'reference', _ref: 'document-1', _weak: true},
+          scopeId: 'rASAP',
+        },
+      },
+    ])
+  })
+
+  it('should build a drafts system when a draft document has no system', async () => {
+    await setupMocks({
+      releases: [activeASAPRelease],
+      versionIds: ['drafts.document-1'],
+      observeSystem: false,
+    })
+    const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+    await waitFor(() => {
+      expect(result.current.data).toEqual(['drafts.document-1'])
+    })
+    expect(result.current.versions).toEqual([
+      {
+        _id: 'drafts.document-1',
+        system: {
+          bundleId: 'drafts',
+          release: null,
+          variant: null,
+          group: {_type: 'reference', _ref: 'document-1', _weak: true},
+          scopeId: undefined,
+        },
+      },
+    ])
   })
 })

@@ -42,6 +42,26 @@ export interface KeyedObject {
 /**
  * @internal
  */
+export interface DocumentSystemRef {
+  _type: 'reference'
+  _ref: string
+  _weak: true
+}
+
+/**
+ * @internal
+ */
+export interface DocumentSystem {
+  bundleId: 'drafts' | '$published' | (string & {})
+  release: DocumentSystemRef | null
+  variant: DocumentSystemRef | null
+  group: DocumentSystemRef | null
+  scopeId: string | undefined
+}
+
+/**
+ * @internal
+ */
 export interface StrictVersionLayeringOptions {
   /**
    * By default, version layering includes all document versions, regardless of their expected
