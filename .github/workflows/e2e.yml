@@ -206,6 +206,20 @@ jobs:
           SANITY_E2E_DATASET: ${{ (matrix.project == 'chromium') && env.CHROMIUM_DATASET || env.FIREFOX_DATASET }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
+      # The blob reporter names files report-<shard>.zip — the project is NOT in
+      # the filename, so chromium-1 and firefox-1 both produce report-1.zip. When
+      # the merge job flattens every shard's report into one directory
+      # (merge-multiple: true), those collide and overwrite each other, leaving an
+      # incoherent set that merge-reports silently refuses to merge. Rename each
+      # blob to embed the project so every shard's report is uniquely named.
+      - name: Make blob report filename unique
+        if: always()
+        run: |
+          shopt -s nullglob
+          for f in e2e/blob-report/report-*.zip; do
+            mv "$f" "e2e/blob-report/report-${{ matrix.project }}-$(basename "$f" | sed 's/^report-//')"
+          done
+
       # Upload the blob report on its own. With a single path, upload-artifact
       # roots the artifact at e2e/blob-report, so report-*.zip lands at the
       # artifact root and download-artifact (merge-multiple) flattens it into
