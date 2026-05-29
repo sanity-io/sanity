@@ -206,20 +206,6 @@ jobs:
           SANITY_E2E_DATASET: ${{ (matrix.project == 'chromium') && env.CHROMIUM_DATASET || env.FIREFOX_DATASET }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      # The blob reporter names files report-<shard>.zip — the project is NOT in
-      # the filename, so chromium-1 and firefox-1 both produce report-1.zip. When
-      # the merge job flattens every shard's report into one directory
-      # (merge-multiple: true), those collide and overwrite each other, leaving an
-      # incoherent set that merge-reports silently refuses to merge. Rename each
-      # blob to embed the project so every shard's report is uniquely named.
-      - name: Make blob report filename unique
-        if: always()
-        run: |
-          shopt -s nullglob
-          for f in e2e/blob-report/report-*.zip; do
-            mv "$f" "e2e/blob-report/report-${{ matrix.project }}-$(basename "$f" | sed 's/^report-//')"
-          done
-
       # Upload the blob report on its own. With a single path, upload-artifact
       # roots the artifact at e2e/blob-report, so report-*.zip lands at the
       # artifact root and download-artifact (merge-multiple) flattens it into
@@ -289,23 +275,21 @@ jobs:
           path: all-blob-reports
 
       - name: Merge into HTML Report
-        # DIAGNOSTIC: merge-reports keeps producing no output despite blobs being
-        # present. Dump the downloaded tree so we can see exactly what
-        # download-artifact@v8 placed in all-blob-reports/ (decompressed blob
-        # reports vs still-zipped artifact archives) before deciding the fix.
-        run: |
-          echo "Downloaded tree:"
-          ls -laR all-blob-reports || true
-          npx playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports
+        # Use `pnpm exec`, not `npx`: from the repo root npx failed to launch the
+        # playwright CLI in CI (node never started — no output, no error), so
+        # merge-reports silently produced neither the HTML report nor
+        # test-summary.json. pnpm exec resolves the workspace-installed binary
+        # deterministically. Paths stay root-relative (cwd is the repo root).
+        run: pnpm exec playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports
 
       - name: Extract test summary
         id: summary
         run: |
           node -e "
             const fs = require('fs');
-            // The merge step guarantees blobs were present, so a missing summary
-            // here is anomalous (e.g. the reporter failed to write). Surface it as
-            // a visible warning but don't fail the job over a reporting glitch.
+            // Degrade gracefully if the merge didn't write a summary (e.g. no
+            // tests ran): surface a visible warning rather than failing the job
+            // over missing PR-comment data.
             if (!fs.existsSync('test-summary.json')) {
               console.warn('::warning::test-summary.json not found after merge; skipping summary extraction');
               process.exit(0);
