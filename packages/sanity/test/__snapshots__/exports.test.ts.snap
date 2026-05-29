@@ -811,7 +811,7 @@ exports[`exports snapshot 1`] = `
     "defineCliConfig": "function",
     "getCliClient": "function",
     "getStudioEnvironmentVariables": "function",
-    "unstable_defineApp": "undefined",
+    "unstable_defineApp": "function",
   },
   "./desk": {
     "ComponentBuilder": "function",
