@@ -16,8 +16,8 @@ allowBuilds:
   unrs-resolver: false
 
 catalog:
-  '@playwright/experimental-ct-react': 1.59.1
-  '@playwright/test': 1.59.1
+  '@playwright/experimental-ct-react': 1.60.0
+  '@playwright/test': 1.60.0
   '@sanity/client': ^7.22.0
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/migrate': ^6.1.1
@@ -37,7 +37,7 @@ catalog:
   eslint: ^9.39.2
   globals: ^16.2.0
   jsdom: ^29.1.1
-  playwright: 1.59.1
+  playwright: 1.60.0
   react: ^19.2.4
   react-dom: ^19.2.4
   react-is: ^19.2.4
