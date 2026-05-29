@@ -206,13 +206,27 @@ jobs:
           SANITY_E2E_DATASET: ${{ (matrix.project == 'chromium') && env.CHROMIUM_DATASET || env.FIREFOX_DATASET }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
+      # Upload the blob report on its own. With a single path, upload-artifact
+      # roots the artifact at e2e/blob-report, so report-*.zip lands at the
+      # artifact root and download-artifact (merge-multiple) flattens it into
+      # all-blob-reports/ consistently every run. Bundling e2e/results here
+      # shifted the artifact root to e2e/ only when results existed, so the
+      # merge job's all-blob-reports/blob-report path broke intermittently.
       - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
-          path: |
-            e2e/blob-report
-            e2e/results
+          path: e2e/blob-report
+          retention-days: 30
+
+      # Raw traces/videos as a separate artifact for local debugging. Named so
+      # it does NOT match the playwright-report-* glob the merge job downloads.
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: e2e-results-${{ matrix.project }}-${{ matrix.shardIndex }}
+          path: e2e/results
+          if-no-files-found: ignore
           retention-days: 30
 
   e2e-status:
@@ -261,13 +275,36 @@ jobs:
           path: all-blob-reports
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports/blob-report
+        # Blob reports are downloaded flat into all-blob-reports/ (merge-multiple: true),
+        # so point merge-reports at that directory directly.
+        #
+        # merge-reports exits 0 even when it finds no blobs, which silently
+        # produces neither an HTML report nor test-summary.json. Assert the
+        # report-*.zip files are present first, so a layout regression fails
+        # loudly here instead of surfacing as a cryptic error downstream.
+        run: |
+          shopt -s nullglob
+          blobs=(all-blob-reports/*.zip)
+          if [ ${#blobs[@]} -eq 0 ]; then
+            echo "::error::No blob reports found in all-blob-reports/. The merge would silently produce nothing — check the upload artifact layout in the playwright-test job."
+            ls -laR all-blob-reports || true
+            exit 1
+          fi
+          npx playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports
 
       - name: Extract test summary
         id: summary
         run: |
           node -e "
-            const s = JSON.parse(require('fs').readFileSync('test-summary.json', 'utf8'));
+            const fs = require('fs');
+            // The merge step guarantees blobs were present, so a missing summary
+            // here is anomalous (e.g. the reporter failed to write). Surface it as
+            // a visible warning but don't fail the job over a reporting glitch.
+            if (!fs.existsSync('test-summary.json')) {
+              console.warn('::warning::test-summary.json not found after merge; skipping summary extraction');
+              process.exit(0);
+            }
+            const s = JSON.parse(fs.readFileSync('test-summary.json', 'utf8'));
             const parts = [];
             if (s.passed) parts.push('🟢 ' + s.passed + ' passed');
             if (s.failed) parts.push('🔴 ' + s.failed + ' failed');
