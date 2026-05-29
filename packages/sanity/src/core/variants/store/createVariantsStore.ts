@@ -44,8 +44,20 @@ export interface VariantStore {
  * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
  * given the latest state upon subscription.
  */
-export function createVariantsStore(context: {client: SanityClient}): VariantStore {
-  const {client} = context
+export function createVariantsStore(context: {
+  client: SanityClient
+  enabled: boolean
+}): VariantStore {
+  const {client, enabled} = context
+
+  if (!enabled) {
+    return {
+      state$: of(INITIAL_STATE),
+      dispatch: () => {
+        // noop
+      },
+    }
+  }
 
   const dispatch$ = new Subject<VariantStoreAction>()
 
