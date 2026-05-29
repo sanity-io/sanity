@@ -4,6 +4,7 @@ import {type MenuItem} from '@sanity/ui'
 import {type ComponentProps} from 'react'
 
 import {type SystemBundle} from '../util/draftUtils'
+import {type SystemVariant} from '../variants/types'
 
 /**
  * @beta
@@ -30,6 +31,7 @@ export type SelectedPerspective = TargetPerspective
  */
 export type PerspectiveStack = ExtractArray<ClientPerspective>
 
+export type PerspectiveBundle = '$published' | 'drafts' | (string & {})
 /**
  * @beta
  */
@@ -51,6 +53,16 @@ export interface PerspectiveContextValue {
   perspectiveStack: PerspectiveStack
   /* The excluded perspectives */
   excludedPerspectives: string[]
+  /**
+   * Resolved variant definition; undefined = default (all users) or still loading
+   * @beta
+   * @internal
+   */
+  selectedVariant: SystemVariant | undefined
+  /**
+   * The selected bundle, either `$published`, `drafts` or a release id or the bundle id for anonymous bundles like agent documents.
+   */
+  bundle: PerspectiveBundle
 }
 
 /**

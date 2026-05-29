@@ -11,6 +11,7 @@ export * from './FIXME'
 export * from './form'
 export * from './hooks'
 export * from './i18n'
+export {getSelectedVariant} from './perspective/getSelectedVariant'
 export {
   isPerspectiveWriteable,
   type PerspectiveNotWriteableReason,
@@ -96,6 +97,9 @@ export {
   validateDocument,
   type ValidateDocumentOptions,
 } from './validation'
+export {useVariantDocumentOperations} from './variants/hooks/useVariantDocumentOperations'
+export {getVariantTitle} from './variants/tool/util'
+export {type SystemVariant} from './variants/types'
 export * from './version'
 export {type ReleaseDocument} from '@sanity/client'
 

@@ -37,9 +37,13 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
     [router.stickyParams.excludedPerspectives],
   )
 
+  const selectedVariantName =
+    typeof router.stickyParams.variant === 'string' ? router.stickyParams.variant : undefined
+
   return (
     <PerspectiveProvider
       selectedPerspectiveName={selectedPerspectiveName}
+      selectedVariantName={selectedVariantName}
       excludedPerspectives={excludedPerspectives}
     >
       {children}
