@@ -14,6 +14,7 @@ import {
   createDocumentStackAvailabilityObserver,
   createPreviewAvailabilityObserver,
 } from './availability'
+import {DOCUMENT_SYSTEM_FIELD} from './constants'
 import {createGlobalListener} from './createGlobalListener'
 import {createObserveDocument, type ObserveDocumentAPIConfig} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
@@ -181,8 +182,12 @@ export function createDocumentPreviewStore({
     perspective?: StackablePerspective[],
     // TODO: This shouldn't be undefined once the documents are migrated.
   ): Observable<DocumentSystem | undefined> {
-    // TODO: Update to `_system` when the API action ships.
-    return observePaths({_type: 'reference', _ref: id}, ['system'], apiConfig, perspective).pipe(
+    return observePaths(
+      {_type: 'reference', _ref: id},
+      [DOCUMENT_SYSTEM_FIELD],
+      apiConfig,
+      perspective,
+    ).pipe(
       map((res) => (isRecord(res) ? (res as unknown as DocumentSystem) : undefined)),
       distinctUntilChanged(),
     )

@@ -1,5 +1,5 @@
 import {type QueryParams} from '@sanity/client'
-import {getVersionFromId, isVersionId, isPublishedId} from '@sanity/client/csm'
+import {getVersionFromId, isPublishedId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {useEffect, useMemo, useState} from 'react'
 import {
@@ -15,6 +15,7 @@ import {
 
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
+import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId} from '../../util/draftUtils'
@@ -28,7 +29,7 @@ export interface DocumentPerspectiveProps {
 export interface DocumentVersion {
   _id: string
   // TODO: Update to `_system` when the API action ships.
-  system: DocumentSystem
+  [DOCUMENT_SYSTEM_FIELD]: DocumentSystem
 }
 
 export interface DocumentPerspectiveState {
@@ -113,7 +114,7 @@ const temporallyBuildDocumentSystem = (id: string): DocumentSystem => {
     release: null,
     variant: null,
     group: {_type: 'reference', _ref: getPublishedId(id), _weak: true},
-    scopeId: versionId,
+    scopeId: versionId || null,
   }
 }
 
@@ -163,7 +164,7 @@ export function getOrCreateDocumentVersionsObservable(options: {
             documentPreviewStore.observeDocumentSystemFromId(id, {projectId, dataset}).pipe(
               map((system) => ({
                 _id: id,
-                system: system ?? temporallyBuildDocumentSystem(id),
+                [DOCUMENT_SYSTEM_FIELD]: system ?? temporallyBuildDocumentSystem(id),
               })),
             ),
           ),
