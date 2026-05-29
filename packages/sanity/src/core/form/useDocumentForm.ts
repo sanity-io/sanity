@@ -298,7 +298,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
   }, [presenceStore, value._id])
 
-  const [openPath, onSetOpenPath] = useState<Path>(EMPTY_ARRAY)
+  const [openPath, onSetOpenPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
   const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
   const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
