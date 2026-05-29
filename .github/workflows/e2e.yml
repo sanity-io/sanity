@@ -267,11 +267,7 @@ jobs:
         id: summary
         run: |
           node -e "
-            const fs = require('fs');
-            const summaryPath = 'test-summary.json';
-            const s = fs.existsSync(summaryPath)
-              ? JSON.parse(fs.readFileSync(summaryPath, 'utf8'))
-              : {passed: 0, failed: 0, flaky: 0, skipped: 0, failedFiles: [], failedFilesFormatted: ''};
+            const s = JSON.parse(require('fs').readFileSync('test-summary.json', 'utf8'));
             const parts = [];
             if (s.passed) parts.push('🟢 ' + s.passed + ' passed');
             if (s.failed) parts.push('🔴 ' + s.failed + ' failed');
