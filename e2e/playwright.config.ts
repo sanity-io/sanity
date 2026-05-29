@@ -75,6 +75,34 @@ const FIREFOX_PROJECT: PlaywrightTestProject = {
   },
 }
 /**
+ * Build options for the `blob` reporter with a collision-proof file name.
+ *
+ * In CI all shards' blob reports are downloaded with `merge-multiple` and flattened into a
+ * single directory before merging. The default blob name is `report-<shard>.zip`, which is
+ * NOT unique across projects — chromium shard 1 and firefox shard 1 both write `report-1.zip`
+ * and silently overwrite each other, so the merge drops half the reports. Prefixing with the
+ * project name (passed as `PWTEST_BLOB_REPORT_NAME` by the workflow) makes each blob unique.
+ *
+ * Outside CI the env var is unset and we fall back to Playwright's default name.
+ */
+function getBlobReporterOptions(): {fileName?: string} {
+  const project = process.env.PWTEST_BLOB_REPORT_NAME
+  if (!project) return {}
+  // Mirror Playwright's default `--shard X/Y` -> `report-<current>.zip` suffix.
+  const shardIndex = process.argv.findIndex((arg) => arg.startsWith('--shard'))
+  const shardArg =
+    shardIndex === -1
+      ? undefined
+      : process.argv[shardIndex].includes('=')
+        ? process.argv[shardIndex].split('=')[1]
+        : process.argv[shardIndex + 1]
+  const current = shardArg?.split('/')[0]
+  return {fileName: current ? `report-${project}-${current}.zip` : `report-${project}.zip`}
+}
+
+const BLOB_REPORTER_OPTIONS = getBlobReporterOptions()
+
+/**
  * See https://playwright.dev/docs/test-configuration.
  */
 const playwrightConfig: PlaywrightTestConfig = {
@@ -100,7 +128,7 @@ const playwrightConfig: PlaywrightTestConfig = {
   outputDir: ARTIFACT_OUTPUT_PATH,
 
   retries: 2,
-  reporter: excludeGithub([['list'], ['blob']]),
+  reporter: excludeGithub([['list'], ['blob', BLOB_REPORTER_OPTIONS]]),
   use: {
     actionTimeout: 10000,
     trace: 'on-first-retry',
