@@ -40,7 +40,7 @@ export function renderStudio(
   }
 
   const opts = typeof options === 'boolean' ? {reactStrictMode: options} : options
-  const {reactStrictMode = false, basePath} = opts
+  const {reactStrictMode = true, basePath} = opts
 
   const root = createRoot(rootElement)
 
