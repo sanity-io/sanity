@@ -26,7 +26,7 @@ export function LiveManifestRegisterProvider() {
     // leaves only the latest upload running rather than racing duplicate requests.
     const controller = new AbortController()
     registerStudioManifest(userApplication, workspaces, theme, controller.signal).catch((error) => {
-      if (error.name === 'AbortError') return
+      if (error?.name === 'AbortError') return
       debug('Failed to upload studio manifest', error)
     })
 
