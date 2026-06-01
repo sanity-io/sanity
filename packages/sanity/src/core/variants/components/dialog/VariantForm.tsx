@@ -1,6 +1,7 @@
 import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
 import {AddIcon, TrashIcon} from '@sanity/icons'
-import {type PortableTextBlock, type Path} from '@sanity/types'
+import {type Path} from '@sanity/mutate'
+import {type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
@@ -9,6 +10,7 @@ import {Button} from '../../../../ui-components'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n'
 import {type VariantsLocaleResourceKeys, variantsLocaleNamespace} from '../../i18n'
+import {useAllVariants} from '../../store/useAllVariants'
 import {type EditableSystemVariant} from '../../types'
 import {
   getConditionKeyValidationError,
@@ -16,6 +18,12 @@ import {
 } from '../../util/conditionValidation'
 import {getVariantTitleValue} from '../../util/getIsVariantInvalid'
 import {createPortableTextDescription} from '../../util/variantDefaults'
+import {ConditionAutocompleteInput} from './ConditionAutocompleteInput'
+import {
+  buildConditionSuggestionIndex,
+  getConditionKeyOptions,
+  getConditionValueOptions,
+} from './conditionSuggestions'
 
 interface ConditionRow {
   id: string
@@ -124,6 +132,8 @@ export function VariantForm(props: {
 }) {
   const {onChange, onConditionValidityChange, showValidation = false, value} = props
   const {t} = useTranslation(variantsLocaleNamespace)
+  const {data: variants} = useAllVariants()
+  const suggestionIndex = useMemo(() => buildConditionSuggestionIndex(variants), [variants])
   const titleId = useId()
   const descriptionId = useId()
   // `conditions` is stored as an object, but object keys are awkward to edit live:
@@ -263,29 +273,27 @@ export function VariantForm(props: {
               <Stack key={row.id} space={2}>
                 <Flex align="center" gap={2}>
                   <Box flex={1}>
-                    <TextInput
+                    <ConditionAutocompleteInput
                       autoFocus={index > 0}
-                      aria-label={t('dialog.create.condition-key.label')}
+                      ariaLabel={t('dialog.create.condition-key.label')}
                       customValidity={validation.key ? t(validation.key) : undefined}
-                      aria-invalid={Boolean(validation.key)}
-                      onChange={(event) =>
-                        handleConditionChange(index, 'key', event.currentTarget.value)
-                      }
+                      invalid={Boolean(validation.key)}
+                      onChange={(nextValue) => handleConditionChange(index, 'key', nextValue)}
+                      options={getConditionKeyOptions(suggestionIndex, conditionRows, index)}
                       placeholder={t('dialog.create.condition-key.placeholder')}
-                      data-testid="variant-form-condition-key"
+                      testId="variant-form-condition-key"
                       value={row.key}
                     />
                   </Box>
                   <Box flex={1}>
-                    <TextInput
-                      aria-label={t('dialog.create.condition-value.label')}
+                    <ConditionAutocompleteInput
+                      ariaLabel={t('dialog.create.condition-value.label')}
                       customValidity={valueValidation ? t(valueValidation) : undefined}
-                      aria-invalid={Boolean(valueValidation)}
-                      onChange={(event) =>
-                        handleConditionChange(index, 'value', event.currentTarget.value)
-                      }
+                      invalid={Boolean(valueValidation)}
+                      onChange={(nextValue) => handleConditionChange(index, 'value', nextValue)}
+                      options={getConditionValueOptions(suggestionIndex, row.key)}
                       placeholder={t('dialog.create.condition-value.placeholder')}
-                      data-testid="variant-form-condition-value"
+                      testId="variant-form-condition-value"
                       value={row.value}
                     />
                   </Box>
