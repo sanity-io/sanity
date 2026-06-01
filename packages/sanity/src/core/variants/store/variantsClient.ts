@@ -17,7 +17,7 @@ export interface VariantDefinitionActionResult {
 export interface VariantDefinitionCreateAction {
   actionType: 'sanity.action.variant.definition.create'
   variantId: string
-  conditions: EditableSystemVariant['conditions']
+  conditions?: EditableSystemVariant['conditions']
   priority?: number
   metadata?: EditableSystemVariant['metadata']
 }
