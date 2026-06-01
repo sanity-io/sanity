@@ -10,7 +10,15 @@ import {
 } from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
 import throttle from 'lodash-es/throttle.js'
-import {type RefObject, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
+import {
+  type RefObject,
+  useCallback,
+  useEffect,
+  useInsertionEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import deepEquals from 'react-fast-compare'
 
 import {
@@ -506,17 +514,25 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetOpenPath(path)
   }
 
-  const updatePresence = (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-    presenceStore.setLocation([
-      {
-        type: 'document',
-        documentId: value._id,
-        path: nextFocusPath,
-        lastActiveAt: new Date().toISOString(),
-        selection: payload?.selection,
-      },
-    ])
-  }
+  const updatePresence = useCallback(
+    (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+      presenceStore.setLocation([
+        {
+          type: 'document',
+          documentId: value._id,
+          path: nextFocusPath,
+          lastActiveAt: new Date().toISOString(),
+          selection: payload?.selection,
+        },
+      ])
+    },
+    [presenceStore, value._id],
+  )
+
+  // Announce presence on the document root when the form mounts
+  useEffect(() => {
+    updatePresence(EMPTY_ARRAY)
+  }, [updatePresence])
 
   const updatePresenceThrottled = throttle(updatePresence, 1000, {leading: true, trailing: true})
   const focusPathRef = useRef<Path>([])
@@ -544,8 +560,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       onFocusPath?.(EMPTY_ARRAY)
     }
 
-    // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
-    // user clicks outside a field without focusing another one
+    // Move presence to the document root (no specific field).
+    // DocumentPanelHeader renders these — see document-level-presence cluster.
+    updatePresenceThrottled(EMPTY_ARRAY)
   }
 
   const handleProgrammaticFocus = (nextPath: Path) => {
