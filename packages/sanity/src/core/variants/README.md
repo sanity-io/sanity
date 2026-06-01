@@ -6,13 +6,13 @@ This document describes the current architecture of the Variants Studio tool, wh
 
 The Variants tool is registered by `plugin/index.tsx` under the `sanity/variants` plugin name and is gated by `beta.variants.enabled`. The tool route is `/variants`, with detail pages mounted at `/variants/:variantId`.
 
-Variant definitions are currently stored as regular documents:
+Variant definitions are stored as system documents:
 
 - Document type: `system.variant`
-- Temporary ID path: `variants.*`
+- ID path: `_.variants.*`
 - Type shape: `SystemVariant` in `types.ts`
 
-The `variants.*` path is intentional for now. The final system-document path is expected to change later, so code should keep using `VARIANT_DOCUMENTS_PATH` instead of hardcoding either `variants` or `_.variants`.
+`_.variants.*` is the definitive system path for variant definition document IDs. Code should reference `VARIANT_DOCUMENTS_PATH` rather than hardcoding the literal so the path stays defined in a single place.
 
 ## Data Model
 
@@ -34,13 +34,13 @@ Read state lives in `store/createVariantsStore.ts`.
 - The state is shared through `useVariantsStore` and consumed by `useAllVariants`.
 - The query filters by `VARIANT_DOCUMENT_TYPE` and `VARIANT_DOCUMENTS_PATH`.
 
-Write operations live in `store/createVariantOperationsStore.ts`.
+Write operations live in `store/createVariantOperationsStore.ts` and go through the actions API (see `ACTIONS.md`).
 
-- `createVariant` uses `client.create`.
-- `updateVariant` patches `conditions`, `priority`, and optional `metadata`.
-- `deleteVariant` uses `client.delete`.
+- `createVariant` issues a `sanity.action.variant.definition.create` action.
+- `updateVariant` issues a `sanity.action.variant.definition.edit` action that sets `conditions`, `priority`, and optional `metadata` (unsetting `metadata` when absent).
+- `deleteVariant` issues a `sanity.action.variant.definition.delete` action.
 
-These operations are intentionally temporary. They use direct client document mutations until dedicated variant client actions exist.
+The action payloads are typed locally through the temporary `SanityClientWithVariantsActions` wrapper in `store/variantsClient.ts`. That wrapper exists only until `@sanity/client` exports these variant definition action types.
 
 ## Routing
 
@@ -51,7 +51,7 @@ Route helpers live in `tool/util.ts`:
 - `getVariantId` strips the document path for readable URLs.
 - `decodeVariantIdFromRoute` turns a short URL segment back into the full document ID.
 
-The overview links to short URLs such as `/variants/loyal-customers`, not full IDs such as `/variants/variants.loyal-customers`.
+The overview links to short URLs such as `/variants/loyal-customers`, not full IDs such as `/variants/_.variants.loyal-customers`.
 
 ## Overview Page
 
@@ -194,7 +194,7 @@ Focused command:
 pnpm vitest run --project=sanity packages/sanity/src/core/variants/
 ```
 
-E2E coverage lives in `e2e/tests/variants/createVariant.spec.ts`.
+E2E coverage lives in `e2e/tests/variants/variantTool.spec.ts`.
 
 Covered areas include:
 
@@ -215,15 +215,14 @@ pnpm exec tsgo --project e2e/tsconfig.json --noEmit
 The focused browser e2e command is:
 
 ```sh
-pnpm test:e2e -- --project=chromium e2e/tests/variants/createVariant.spec.ts
+pnpm test:e2e -- --project=chromium e2e/tests/variants/variantTool.spec.ts
 ```
 
 Local browser execution has previously hit `EMFILE: too many open files, watch` before launching the browser. The spec has been authored and typechecked, but should be run in an environment without that watcher limit.
 
 ## Pending Work
 
-- Replace direct document mutations with dedicated variant client actions when available.
-- Move from the temporary `variants.*` path to the final system-document path when supported.
+- Drop the local `SanityClientWithVariantsActions` typing wrapper once `@sanity/client` exports the variant definition action types.
 - Wire the detail documents table to the real list of documents that belong to a variant.
 - Decide how document counts affect deleting variants.
 - Add a delete confirmation or disabled state once variants can have documents.

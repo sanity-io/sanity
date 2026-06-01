@@ -410,7 +410,9 @@ test.describe('Variants create flow', () => {
     const row = getVariantRow(page, title)
     await expect(row).toBeVisible()
 
-    await row.getByRole('button').last().click()
+    // Target the stable actions-menu id rather than the last button in the row,
+    // which would break if the row gains more buttons. `variantId` is the short id.
+    await page.locator(`#variant-actions-${variantId}`).click()
     await page.getByRole('menuitem', {name: 'Delete variant'}).click()
     await expect(page.getByRole('menuitem', {name: 'Delete variant'})).toBeHidden()
 
