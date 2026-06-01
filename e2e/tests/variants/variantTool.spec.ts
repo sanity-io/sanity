@@ -347,8 +347,7 @@ test.describe('Variants create flow', () => {
     })
   })
 
-  // Skipped because autocomplete is not implemented yet, waiting for PR https://github.com/sanity-io/sanity/pull/12858
-  test.skip('suggests condition keys and values from existing variants', async ({
+  test('suggests condition keys and values from existing variants', async ({
     page,
     sanityClient,
   }) => {
