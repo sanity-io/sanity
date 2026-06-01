@@ -4,47 +4,90 @@ export interface ConditionSuggestionOption {
   value: string
 }
 
-function toSortedOptions(values: Iterable<string>): ConditionSuggestionOption[] {
+/**
+ * Precomputed lookup of the condition keys and per-key values used across all
+ * existing variants. Building this once (e.g. in a `useMemo` keyed on the
+ * variants) keeps per-row option derivation cheap, since it avoids re-scanning
+ * every variant on each render/keystroke.
+ *
+ * @internal
+ */
+export interface ConditionSuggestionIndex {
+  /** Unique condition keys, sorted. */
+  keys: string[]
+  /** Unique values per condition key, sorted. */
+  valuesByKey: Map<string, string[]>
+}
+
+function sortValues(values: Iterable<string>): string[] {
   return Array.from(values)
     .filter(Boolean)
     .toSorted((a, b) => a.localeCompare(b))
-    .map((value) => ({value}))
+}
+
+/**
+ * @internal
+ */
+export function buildConditionSuggestionIndex(variants: SystemVariant[]): ConditionSuggestionIndex {
+  const keys = new Set<string>()
+  const valuesByKey = new Map<string, Set<string>>()
+
+  variants.forEach((variant) => {
+    Object.entries(variant.conditions).forEach(([rawKey, rawValue]) => {
+      const key = rawKey.trim()
+
+      if (!key) {
+        return
+      }
+
+      keys.add(key)
+
+      const value = rawValue?.trim()
+
+      if (!value) {
+        return
+      }
+
+      let values = valuesByKey.get(key)
+
+      if (!values) {
+        values = new Set<string>()
+        valuesByKey.set(key, values)
+      }
+
+      values.add(value)
+    })
+  })
+
+  return {
+    keys: sortValues(keys),
+    valuesByKey: new Map(Array.from(valuesByKey, ([key, values]) => [key, sortValues(values)])),
+  }
 }
 
 /**
  * @internal
  */
 export function getConditionKeyOptions(
-  variants: SystemVariant[],
+  index: ConditionSuggestionIndex,
   rows: ReadonlyArray<{key: string}>,
   currentRowIndex: number,
 ): ConditionSuggestionOption[] {
   const usedKeys = new Set(
     rows
-      .filter((_, index) => index !== currentRowIndex)
+      .filter((_, rowIndex) => rowIndex !== currentRowIndex)
       .map((row) => row.key.trim())
       .filter(Boolean),
   )
-  const keys = new Set<string>()
 
-  variants.forEach((variant) => {
-    Object.keys(variant.conditions).forEach((key) => {
-      const trimmedKey = key.trim()
-
-      if (trimmedKey && !usedKeys.has(trimmedKey)) {
-        keys.add(trimmedKey)
-      }
-    })
-  })
-
-  return toSortedOptions(keys)
+  return index.keys.filter((key) => !usedKeys.has(key)).map((value) => ({value}))
 }
 
 /**
  * @internal
  */
 export function getConditionValueOptions(
-  variants: SystemVariant[],
+  index: ConditionSuggestionIndex,
   conditionKey: string,
 ): ConditionSuggestionOption[] {
   const key = conditionKey.trim()
@@ -53,17 +96,7 @@ export function getConditionValueOptions(
     return []
   }
 
-  const values = new Set<string>()
-
-  variants.forEach((variant) => {
-    const value = variant.conditions[key]?.trim()
-
-    if (value) {
-      values.add(value)
-    }
-  })
-
-  return toSortedOptions(values)
+  return index.valuesByKey.get(key)?.map((value) => ({value})) ?? []
 }
 
 /**

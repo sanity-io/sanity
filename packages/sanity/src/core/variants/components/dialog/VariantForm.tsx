@@ -19,7 +19,11 @@ import {
 import {getVariantTitleValue} from '../../util/getIsVariantInvalid'
 import {createPortableTextDescription} from '../../util/variantDefaults'
 import {ConditionAutocompleteInput} from './ConditionAutocompleteInput'
-import {getConditionKeyOptions, getConditionValueOptions} from './conditionSuggestions'
+import {
+  buildConditionSuggestionIndex,
+  getConditionKeyOptions,
+  getConditionValueOptions,
+} from './conditionSuggestions'
 
 interface ConditionRow {
   id: string
@@ -129,6 +133,7 @@ export function VariantForm(props: {
   const {onChange, onConditionValidityChange, showValidation = false, value} = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const {data: variants} = useAllVariants()
+  const suggestionIndex = useMemo(() => buildConditionSuggestionIndex(variants), [variants])
   const titleId = useId()
   const descriptionId = useId()
   // `conditions` is stored as an object, but object keys are awkward to edit live:
@@ -274,7 +279,7 @@ export function VariantForm(props: {
                       customValidity={validation.key ? t(validation.key) : undefined}
                       invalid={Boolean(validation.key)}
                       onChange={(nextValue) => handleConditionChange(index, 'key', nextValue)}
-                      options={getConditionKeyOptions(variants, conditionRows, index)}
+                      options={getConditionKeyOptions(suggestionIndex, conditionRows, index)}
                       placeholder={t('dialog.create.condition-key.placeholder')}
                       testId="variant-form-condition-key"
                       value={row.key}
@@ -286,7 +291,7 @@ export function VariantForm(props: {
                       customValidity={valueValidation ? t(valueValidation) : undefined}
                       invalid={Boolean(valueValidation)}
                       onChange={(nextValue) => handleConditionChange(index, 'value', nextValue)}
-                      options={getConditionValueOptions(variants, row.key)}
+                      options={getConditionValueOptions(suggestionIndex, row.key)}
                       placeholder={t('dialog.create.condition-value.placeholder')}
                       testId="variant-form-condition-value"
                       value={row.value}
