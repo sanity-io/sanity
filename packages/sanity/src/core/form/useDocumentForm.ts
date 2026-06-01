@@ -534,7 +534,17 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     updatePresence(EMPTY_ARRAY)
   }, [updatePresence])
 
-  const updatePresenceThrottled = throttle(updatePresence, 1000, {leading: true, trailing: true})
+  const updatePresenceThrottled = useMemo(
+    () => throttle(updatePresence, 1000, {leading: true, trailing: true}),
+    [updatePresence],
+  )
+
+  useEffect(() => {
+    return () => {
+      updatePresenceThrottled.cancel()
+    }
+  }, [updatePresenceThrottled])
+
   const focusPathRef = useRef<Path>([])
 
   const handleFocus = (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
