@@ -97,6 +97,10 @@ export {
   validateDocument,
   type ValidateDocumentOptions,
 } from './validation'
+export {
+  isDocumentNotInSelectedVariant,
+  type IsDocumentNotInSelectedVariantOptions,
+} from './variants/documents/isDocumentNotInSelectedVariant'
 export {useVariantDocumentOperations} from './variants/hooks/useVariantDocumentOperations'
 export {getVariantTitle} from './variants/tool/util'
 export {type SystemVariant} from './variants/types'

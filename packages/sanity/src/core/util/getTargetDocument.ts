@@ -7,8 +7,9 @@ import {
 /**
  * Finds the document version whose system metadata matches the selected bundle and variant.
  *
- * For example, `bundle: 'published'` and `variant: undefined` matches `bundleId: '$published'`
- * with `variant: null`.
+ * `bundle` must be the canonical bundle id (`$published`, `drafts` or a release id), matching
+ * `system.bundleId` exactly. For example, `bundle: '$published'` and `variant: undefined` matches
+ * a version with `bundleId: '$published'` and `variant: null`.
  *
  * @internal
  */

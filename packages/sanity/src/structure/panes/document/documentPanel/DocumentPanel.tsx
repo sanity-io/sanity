@@ -5,6 +5,7 @@ import {
   getPublishedId,
   getVersionFromId,
   isCardinalityOneRelease,
+  isDocumentNotInSelectedVariant,
   isDraftId,
   isGoingToUnpublish,
   isNewDocument,
@@ -23,7 +24,6 @@ import {
   usePerspective,
   useWorkspace,
   VirtualizerScrollInstanceProvider,
-  getTargetDocument,
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
@@ -198,12 +198,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const documentVersions = useDocumentVersions({documentId: getPublishedId(documentId)})
 
-  const targetDocument = getTargetDocument({
-    bundle,
-    variant: selectedVariant?._id,
-    documentVersions: documentVersions.versions,
-  })
-
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
     displayed,
@@ -229,9 +223,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     [archivedReleases, selectedPerspectiveName],
   )
 
-  const isDocumentNotInSelectedVariant = Boolean(
-    selectedVariant && !documentVersions.loading && !targetDocument,
-  )
+  const notInSelectedVariant = isDocumentNotInSelectedVariant({
+    variantsEnabled: Boolean(workspace.beta?.variants?.enabled),
+    selectedVariant,
+    bundle,
+    documentVersions,
+  })
 
   // eslint-disable-next-line complexity
   const banners = useMemo(() => {
@@ -299,7 +296,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
 
-    if (isDocumentNotInSelectedVariant) {
+    if (notInSelectedVariant) {
       return <DocumentNotInVariantBanner />
     }
 
@@ -400,7 +397,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     filteredReleases,
     workspace,
     isPausedDraft,
-    isDocumentNotInSelectedVariant,
+    notInSelectedVariant,
   ])
   const portalElements = useMemo(
     () => ({documentScrollElement: documentScrollElement}),
@@ -444,7 +441,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               </PortalProvider>
             </DocumentBox>
 
-            {!isDocumentNotInSelectedVariant && footer}
+            {footer}
           </Flex>
         )}
         {showInspector && (

@@ -7,6 +7,7 @@ import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {useWorkspace} from '../studio/workspace'
 import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
+import {getBundleIdFromPerspective} from '../variants/documents/getBundleIdFromPerspective'
 import {useAllVariants} from '../variants/store/useAllVariants'
 import {getSelectedPerspective} from './getSelectedPerspective'
 import {getSelectedVariant} from './getSelectedVariant'
@@ -69,7 +70,7 @@ export function PerspectiveProvider({
       perspectiveStack,
       excludedPerspectives,
       selectedVariant,
-      bundle: selectedPerspectiveName || 'drafts',
+      bundle: getBundleIdFromPerspective(selectedPerspective).bundleId,
     }
   }, [
     selectedPerspectiveName,

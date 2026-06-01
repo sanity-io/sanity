@@ -26,6 +26,7 @@ import {
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
+  isDocumentNotInSelectedVariant,
   isGoingToUnpublish,
   isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
@@ -40,6 +41,7 @@ import {
   useDocumentDivergences,
   useDocumentForm,
   useDocumentIdStack,
+  useDocumentVersions,
   usePerspective,
   useSchema,
   useSource,
@@ -129,12 +131,14 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
   const perspective = usePerspective()
 
+  const workspace = useWorkspace()
   const {
     advancedVersionControl: {enabled: advancedVersionControlEnabled},
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
-  } = useWorkspace()
+  } = workspace
+  const variantsEnabled = Boolean(workspace.beta?.variants?.enabled)
 
   const enhancedObjectDialogEnabled = true
 
@@ -213,6 +217,18 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
+  const documentVersions = useDocumentVersions({documentId})
+
+  // When a variant is selected but no variant-scoped version exists for the current bundle, the
+  // form must be read-only (the not-in-variant banner offers to create it). This is a
+  // document-level check, kept separate from perspective-level `isPerspectiveWriteable`.
+  const notInSelectedVariant = isDocumentNotInSelectedVariant({
+    variantsEnabled,
+    selectedVariant: perspective.selectedVariant,
+    bundle: perspective.bundle,
+    documentVersions,
+  })
+
   const getIsReadOnly = useCallback(
     (editState: EditStateFor): boolean => {
       const isDeleted = getIsDeleted(editState)
@@ -228,6 +244,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         seeingHistoryDocument ||
         isDeleting ||
         isDeleted ||
+        notInSelectedVariant ||
         (!isPaused &&
           !isPerspectiveWriteable({
             selectedPerspective: perspective.selectedPerspective,
@@ -242,6 +259,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isDraftModelEnabled,
       params.rev,
       perspective.selectedPerspective,
+      notInSelectedVariant,
       schemaType,
       releases,
       selectedReleaseId,

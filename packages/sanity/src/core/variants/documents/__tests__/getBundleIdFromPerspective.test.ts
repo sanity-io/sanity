@@ -36,7 +36,7 @@ describe('getBundleIdFromPerspective', () => {
   it('maps release document to release id and ref', () => {
     expect(getBundleIdFromPerspective(releaseDocument)).toEqual({
       bundleId: 'rSummer123',
-      release: {_ref: '_.releases.rSummer123', _weak: true},
+      release: {_type: 'reference', _ref: '_.releases.rSummer123', _weak: true},
     })
   })
 
