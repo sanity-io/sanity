@@ -5,6 +5,7 @@ import {type VARIANT_DOCUMENT_TYPE, type VARIANT_DOCUMENTS_PATH} from './store/c
 export interface SystemVariant extends SanityDocument {
   _type: typeof VARIANT_DOCUMENT_TYPE
   _id: `${typeof VARIANT_DOCUMENTS_PATH}.${string}`
+  name?: string
   conditions: Record<string, string>
   priority: number // defaults to 0.
   metadata?: {

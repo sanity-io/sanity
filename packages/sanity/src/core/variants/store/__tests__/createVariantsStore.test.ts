@@ -45,6 +45,7 @@ describe('createVariantsStore', () => {
     expect(fetchQuery).toContain('_rev')
     expect(fetchQuery).toContain('_createdAt')
     expect(fetchQuery).toContain('_updatedAt')
+    expect(fetchQuery).toContain('name')
     expect(fetchQuery).toContain('"priority": coalesce(priority, 0)')
     expect(fetchQuery).toContain('| order(_createdAt desc)')
     expect(fetch).toHaveBeenCalledWith(
