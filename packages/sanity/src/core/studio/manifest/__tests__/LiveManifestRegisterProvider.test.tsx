@@ -7,8 +7,10 @@ import {useWorkspaces} from '../../workspaces'
 import {LiveManifestRegisterProvider} from '../LiveManifestRegisterProvider'
 import {registerStudioManifest} from '../registerLiveStudioManifest'
 
+const theme = {}
+
 vi.mock('@sanity/ui', () => ({
-  useRootTheme: vi.fn(() => ({theme: {}})),
+  useRootTheme: vi.fn(() => ({theme})),
 }))
 vi.mock('../../liveUserApplication/useLiveUserApplication', () => ({
   useLiveUserApplication: vi.fn(),
@@ -30,27 +32,37 @@ describe('LiveManifestRegisterProvider', () => {
     vi.mocked(useLiveUserApplication).mockReturnValue({userApplication} as never)
   })
 
-  it('uploads the manifest once when mounted normally', () => {
+  it('registers the manifest with the resolved user application, workspaces and theme', () => {
     render(<LiveManifestRegisterProvider />)
-    expect(registerStudioManifest).toHaveBeenCalledTimes(1)
+    expect(registerStudioManifest).toHaveBeenCalledWith(
+      userApplication,
+      workspaces,
+      theme,
+      expect.any(AbortSignal),
+    )
   })
 
-  it('uploads the manifest only once when mounted in StrictMode', () => {
+  it('aborts the superseded upload when remounted under StrictMode', () => {
     render(
       <StrictMode>
         <LiveManifestRegisterProvider />
       </StrictMode>,
     )
-    expect(registerStudioManifest).toHaveBeenCalledTimes(1)
+
+    // StrictMode mounts, unmounts, then remounts: the first upload's signal is aborted by
+    // cleanup, so only the second upload runs to completion.
+    const [firstCall, secondCall] = vi.mocked(registerStudioManifest).mock.calls
+    expect(firstCall[3]?.aborted).toBe(true)
+    expect(secondCall[3]?.aborted).toBe(false)
   })
 
-  it('does not upload when there is no user application', () => {
+  it('does not register when there is no user application', () => {
     vi.mocked(useLiveUserApplication).mockReturnValue({userApplication: undefined} as never)
     render(<LiveManifestRegisterProvider />)
     expect(registerStudioManifest).not.toHaveBeenCalled()
   })
 
-  it('does not upload when there are no workspaces', () => {
+  it('does not register when there are no workspaces', () => {
     vi.mocked(useWorkspaces).mockReturnValue([] as never)
     render(<LiveManifestRegisterProvider />)
     expect(registerStudioManifest).not.toHaveBeenCalled()

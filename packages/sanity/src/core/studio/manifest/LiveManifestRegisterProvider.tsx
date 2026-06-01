@@ -1,6 +1,6 @@
 import {useRootTheme} from '@sanity/ui'
 import debugit from 'debug'
-import {useEffect, useRef} from 'react'
+import {useEffect} from 'react'
 
 import {useLiveUserApplication} from '../liveUserApplication/useLiveUserApplication'
 import {useWorkspaces} from '../workspaces'
@@ -19,26 +19,18 @@ export function LiveManifestRegisterProvider() {
   const {userApplication} = useLiveUserApplication()
   const {theme} = useRootTheme()
 
-  const lastUploadedRef =
-    useRef<[typeof userApplication, typeof workspaces, typeof theme]>(undefined)
-
   useEffect(() => {
-    if (!userApplication || workspaces.length === 0) return
+    if (!userApplication || workspaces.length === 0) return undefined
 
-    // Skip StrictMode's double-invoked mount effect, where every dep is referentially
-    // identical, while still re-uploading whenever any dep genuinely changes.
-    const previous = lastUploadedRef.current
-    const unchanged =
-      previous &&
-      previous[0] === userApplication &&
-      previous[1] === workspaces &&
-      previous[2] === theme
-    if (unchanged) return
-
-    lastUploadedRef.current = [userApplication, workspaces, theme]
-    registerStudioManifest(userApplication, workspaces, theme).catch((err) => {
-      debug('Failed to upload studio manifest', err)
+    // Abort the in-flight upload on cleanup so StrictMode's double mount, or a dep change,
+    // leaves only the latest upload running rather than racing duplicate requests.
+    const controller = new AbortController()
+    registerStudioManifest(userApplication, workspaces, theme, controller.signal).catch((error) => {
+      if (error.name === 'AbortError') return
+      debug('Failed to upload studio manifest', error)
     })
+
+    return () => controller.abort()
   }, [userApplication, workspaces, theme])
 
   return null
