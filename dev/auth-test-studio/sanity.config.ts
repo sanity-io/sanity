@@ -31,7 +31,7 @@ const production = {
   q5caobza: {projectId: 'q5caobza', dataset: 'production'},
 } as const
 
-const envs = USE_STAGING ? [staging] : [production.ppsg7ml5, production.q5caobza]
+const envs = USE_STAGING ? [staging] : [production.ppsg7ml5]
 
 // ── SSO provider ────────────────────────────────────────────────────────────
 // Uses the Sanity.io SAML SSO endpoint. Replace the URL suffix with your own
