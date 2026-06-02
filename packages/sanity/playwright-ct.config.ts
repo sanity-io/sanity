@@ -3,8 +3,8 @@ import {fileURLToPath} from 'node:url'
 
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
 import {defaultClientConditions} from 'vite'
+import react from 'vite7-plugin-react'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

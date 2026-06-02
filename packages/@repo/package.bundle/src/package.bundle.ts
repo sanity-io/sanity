@@ -1,5 +1,6 @@
+import babel from '@rolldown/plugin-babel'
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
 import {type Plugin, type UserConfig} from 'vite'
 
@@ -14,9 +15,8 @@ export const defaultConfig: UserConfig = {
     'process.env': {},
   },
   plugins: [
-    react({
-      babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]},
-    }),
+    ...viteReact(),
+    babel({presets: [reactCompilerPreset({target: '19'})]}),
     vanillaExtractPlugin(),
     stripCssImportsPlugin(),
   ],
@@ -27,7 +27,7 @@ export const defaultConfig: UserConfig = {
       entry: {},
       formats: ['es'],
     },
-    rollupOptions: {
+    rolldownOptions: {
       // self-externals are required here in order to ensure that the presentation
       // tool and future transitive dependencies that require sanity do not
       // re-include sanity in their bundle
@@ -50,9 +50,7 @@ export const defaultConfig: UserConfig = {
         assetFileNames: (assetInfo) =>
           assetInfo.names?.some((n) => n.endsWith('.css')) ? 'index.css' : '[name]-[hash][extname]',
       },
-      treeshake: {
-        preset: 'recommended',
-      },
+      treeshake: true,
     },
   },
 }
