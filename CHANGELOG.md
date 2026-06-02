@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.29.0](https://github.com/sanity-io/sanity/compare/v5.28.0...v5.29.0) (2026-06-02)
+
+### Features
+
+* **core:** add variant definition edit form ([#12855](https://github.com/sanity-io/sanity/issues/12855)) ([21c6530](https://github.com/sanity-io/sanity/commit/21c65307522826982488aff04139dbac6ef359b5))
+
+### Bug Fixes
+
+* **core:** respect parent array field initialValue over member fields ([#12914](https://github.com/sanity-io/sanity/issues/12914)) ([46f9caa](https://github.com/sanity-io/sanity/commit/46f9caa2b9b3699fca7b8e228eab50c7fdecc346))
+* **deps:** update dependency @sanity/cli to ^6.7.0 ([#12924](https://github.com/sanity-io/sanity/issues/12924)) ([3fa8dc5](https://github.com/sanity-io/sanity/commit/3fa8dc5bf17f17fc8779d16567817712be7dccf1))
+* **form:** revert dataset aclMode check for plain asset previews ([#12913](https://github.com/sanity-io/sanity/issues/12913)) ([34982cf](https://github.com/sanity-io/sanity/commit/34982cf0e18c959ecaa7d1de3631baf571b58437))
+* **sanity:** incorrect form auto-focus ([8df5ed3](https://github.com/sanity-io/sanity/commit/8df5ed31a220bdb5ad4987132b17a283e323be8a))
+* **sanity:** restore document form open path from URL ([07cda46](https://github.com/sanity-io/sanity/commit/07cda46ce9d790f17a348192b27d45eb6da3ebe5))
+* **sanity:** surface error when no uploader matches the file ([#12870](https://github.com/sanity-io/sanity/issues/12870)) ([#12905](https://github.com/sanity-io/sanity/issues/12905)) ([054950f](https://github.com/sanity-io/sanity/commit/054950f5ec4acde34fb6c0886b72a7c1eb8fb76d))
+* **structure:** memoize incoming refs filter ([#12919](https://github.com/sanity-io/sanity/issues/12919)) ([30f89d5](https://github.com/sanity-io/sanity/commit/30f89d5b82a25fdb820d7f64668bbba06bf38c15))
 ## [5.28.0](https://github.com/sanity-io/sanity/compare/v5.27.0...v5.28.0) (2026-05-28)
 
 ### Features
