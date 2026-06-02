@@ -25,9 +25,10 @@ export default defineType({
         // title: 'Incoming references with the same role',
         description: 'This are other authors with the same role as this one',
         filter: (context) => {
+          const role = typeof context.document?.role === 'string' ? context.document.role : ''
           return {
             filter: `role == $role`,
-            filterParams: {role: context.document?.role || ''},
+            filterParams: {role},
           }
         },
         actions: [RemoveReferenceAction],
