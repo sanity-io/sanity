@@ -84,6 +84,49 @@ function createMockClientFactory(): MockClientFactoryResult {
 }
 
 /**
+ * Mock factory that decides auth by *how the client was built*, mirroring
+ * createAuthStore: a client configured with `{token}` authenticates via the
+ * Authorization header; one with `{withCredentials: true}` authenticates via
+ * the cookie.
+ *
+ * Models the bug.har scenario (dual mode, post-SRE-4321): the SSO session
+ * cookie is NOT valid for /users/me (cookie requests 401), but the token from
+ * /auth/fetch IS valid (token requests succeed). Crucially /auth/id still
+ * reports the session as authenticated (200) — the cookie probe and /users/me
+ * disagree — which previously caused handleCallbackUrl to declare cookie
+ * success and discard the token, trapping the user in a login loop.
+ */
+function createCredentialAwareClientFactory(opts: {
+  token: string
+  cookieValid: boolean
+}): (options: SanityClientConfig) => SanityClient {
+  return (options: SanityClientConfig): SanityClient => {
+    const usesToken = options.token === opts.token
+    const usesCookie = options.withCredentials === true
+
+    return {
+      request: vi.fn(({uri}: {uri: string}) => {
+        if (uri === '/auth/fetch') return Promise.resolve({token: opts.token})
+        if (uri === '/auth/logout') return Promise.resolve({ok: true})
+
+        // /auth/id reports the cookie session as authenticated (the divergence).
+        if (uri === '/auth/id') {
+          return Promise.resolve({id: 'mock-auth-id', expiry: Math.floor(Date.now() / 1000) + 3600})
+        }
+
+        if (uri === '/users/me') {
+          // A valid token authenticates; the (invalid) cookie does not.
+          const authed = usesToken || (usesCookie && opts.cookieValid)
+          return authed ? Promise.resolve(MOCK_USER) : Promise.reject(create401Error())
+        }
+
+        return Promise.resolve({})
+      }),
+    } as unknown as SanityClient
+  }
+}
+
+/**
  * Wait for the auth store to emit a state matching the predicate.
  */
 function waitForState(
@@ -623,6 +666,54 @@ describe('createAuthStore: cross-tab sync', () => {
         emissionsB,
         `Store B had unexpected extra emissions: ${JSON.stringify(emissionsB)}`,
       ).toEqual([true])
+    })
+
+    it('applies the exchanged token in dual mode even when the cookie probe succeeds (no login loop)', async () => {
+      // Dual/SSO studio: handleCallbackUrl exchanges the sid at /auth/fetch for a
+      // VALID token, then probes the cookie via /auth/id. /auth/id returns 200
+      // (reports the session authenticated) but /users/me returns 401 — the two
+      // endpoints disagree. The old code trusted /auth/id, declared cookie-auth
+      // success, and returned BEFORE storing the token (createAuthStore.ts ~441).
+      // The valid token was discarded, /users/me kept 401-ing on the bad cookie,
+      // and the studio looped on the login screen forever.
+      //
+      // Expected: dual mode must retain the exchanged token so the client
+      // re-inits with the Authorization header and authenticates via the token.
+      const TOKEN = 'valid-exchanged-token'
+      const factory = createCredentialAwareClientFactory({
+        token: TOKEN,
+        cookieValid: false, // the SSO cookie is NOT valid for /users/me
+      })
+
+      let sessionIdConsumed = false
+      const getSessionId = () => {
+        if (sessionIdConsumed) return undefined
+        sessionIdConsumed = true
+        return 'mock-session-id-12345678'
+      }
+
+      const store = _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod: 'dual',
+        clientFactory: factory,
+        getSessionId,
+        consumeHashToken: () => undefined,
+      })
+
+      const result = await store.handleCallbackUrl!()
+      expect(result.success).toBe(true)
+
+      // The store must converge on authenticated via the token. Against the buggy
+      // implementation the token is discarded and /users/me keeps 401-ing, so
+      // waitForState rejects with its own timeout.
+      const state = await waitForState(store, (s) => s.authenticated, 2000)
+      expect(state.authenticated).toBe(true)
+      expect(state.currentUser).toEqual(MOCK_USER)
+
+      // The token must be persisted so the client keeps using it.
+      const stored = JSON.parse(localStorage.getItem(TOKEN_STORAGE_KEY)!)
+      expect(stored).toEqual({token: TOKEN})
     })
 
     it('throws CorsOriginError when /users/me fails for a non-auth reason but /ping succeeds', async () => {

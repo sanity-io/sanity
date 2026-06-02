@@ -308,22 +308,27 @@ export function _createAuthStore({
       .pipe(shareReplay({bufferSize: 1, refCount: true})),
   )
 
-  const dualClient$ = concat(
-    of(initialDualClient),
-    merge(hashTokenChange, tokenStorage.value.pipe(skip(1))).pipe(
-      map((nextTokenState) => {
-        return clientFactory({
-          ...AUTH_CLIENT_OPTIONS,
-          ...hostOptions,
-          projectId,
-          dataset,
-          ...(nextTokenState?.token
-            ? {token: nextTokenState.token, ignoreBrowserTokenWarning: true}
-            : {withCredentials: true}),
-        })
-      }),
-    ),
-  ).pipe(shareReplay({bufferSize: 1, refCount: true}))
+  // Derive the dual client from the CURRENT token state (tokenStorage.value is a
+  // BehaviorSubject that replays the latest value on subscribe), rebuilding on
+  // every change. Using the live value rather than a construction-time snapshot
+  // + skip(1) ensures a token stored before this stream is subscribed (e.g. by
+  // handleCallbackUrl, which can run before authState$ subscribes) still produces
+  // a token-configured client instead of being dropped — the SAPP-1642 loop where
+  // a valid exchanged token was discarded and the studio stayed on cookie auth.
+  const dualClient$ = merge(hashTokenChange, tokenStorage.value).pipe(
+    map((nextTokenState) => {
+      return clientFactory({
+        ...AUTH_CLIENT_OPTIONS,
+        ...hostOptions,
+        projectId,
+        dataset,
+        ...(nextTokenState?.token
+          ? {token: nextTokenState.token, ignoreBrowserTokenWarning: true}
+          : {withCredentials: true}),
+      })
+    }),
+    shareReplay({bufferSize: 1, refCount: true}),
+  )
 
   const cookieAuthChanged$ = cookieAuthState.value.pipe(
     filter((v) => v?.authenticated !== 'pending'),
@@ -354,9 +359,31 @@ export function _createAuthStore({
         )
       : EMPTY
 
+  // For dual mode, re-probe whenever a token is stored. handleCallbackUrl stores
+  // the exchanged token, but it can land before authState$ has subscribed to
+  // workspaceClient$ — and the skip(1) there would drop the resulting token
+  // client, stranding the studio on cookie-only auth (the SAPP-1642 loop where a
+  // valid token is discarded because /auth/id wrongly vouches for the cookie).
+  // Triggering an explicit re-check on token changes makes the token always take
+  // effect, regardless of subscription timing.
+  const dualTokenRecheck$ =
+    loginMethod === 'dual'
+      ? tokenStorage.value.pipe(
+          map((state) => state?.token ?? null),
+          distinctUntilChanged(),
+          // Only react to a present token. The no-token case is already covered
+          // by the initial probe / workspaceClient$, so we don't double-probe it;
+          // and we must NOT skip(1) here, because the token may already be stored
+          // by the time this stream is subscribed (handleCallbackUrl can run
+          // before authState$ subscribes), in which case skipping would drop it.
+          filter((token): token is string => typeof token === 'string'),
+          switchMap(() => dualClient$),
+        )
+      : EMPTY
+
   const authState$ = concat(
     initial$,
-    merge(workspaceClient$.pipe(skip(1)), dualCookieRecheck$).pipe(
+    merge(workspaceClient$.pipe(skip(1)), dualCookieRecheck$, dualTokenRecheck$).pipe(
       mergeMap(async (client): Promise<AuthState> => {
         if (!client) {
           return {client: cookieClient, authenticated: false, currentUser: null}
@@ -427,7 +454,40 @@ export function _createAuthStore({
 
     const exchangeDurationMs = Math.round(performance.now() - exchangeStart)
 
-    if (loginMethod === 'dual' || loginMethod === 'cookie') {
+    if (loginMethod === 'dual') {
+      // Dual mode: always retain the exchanged token so the dual client can
+      // authenticate via the Authorization header. The cookie probe (/auth/id)
+      // and the auth-state check (/users/me) can disagree — e.g. /auth/id reports
+      // the session as valid (200) while /users/me returns 401 — and trusting the
+      // probe alone would discard the token and trap the user in a login loop
+      // (a working credential thrown away because a different endpoint vouched
+      // for a cookie that /users/me then rejects). Storing the token regardless
+      // lets getCurrentUser fall back to it when the cookie turns out unusable.
+      tokenStorage.update({token})
+
+      const probeStart = performance.now()
+      const authProbe = await probeCurrentUser(exchangeClient)
+      const probeDurationMs = Math.round(performance.now() - probeStart)
+      const durationMs = Math.round(performance.now() - startTime)
+
+      // sync with other tabs
+      cookieAuthState.update({authenticated: authProbe.authenticated})
+
+      return {
+        flow: 'exchange',
+        loginMethod,
+        success: !!token,
+        durationMs,
+        exchangeDurationMs,
+        probeDurationMs,
+        // Report cookie as the transport when the probe passed, otherwise token —
+        // either way the token is stored and available as a fallback.
+        authMethod: authProbe.authenticated ? 'cookie' : 'token',
+        failureReason: token ? undefined : 'token exchange returned empty token',
+      }
+    }
+
+    if (loginMethod === 'cookie') {
       // Try to check if the user is authenticated by using the cookie credentials.
       // We can re-use the exchangeClient here because it's configured with withCredentials.
       const probeStart = performance.now()
@@ -448,30 +508,29 @@ export function _createAuthStore({
           probeDurationMs,
           authMethod: 'cookie',
         }
-      } else if (loginMethod === 'cookie') {
-        // We failed to set cookie and can't fallback to token
-        return {
-          loginMethod,
-          flow: 'exchange',
-          success: false,
-          durationMs,
-          exchangeDurationMs,
-          probeDurationMs,
-          failureReason: 'cookie probe failed in cookie-only mode',
-          error: {
-            type: 'cookie-blocked',
-            message:
-              'Authentication could not be completed because this browser appears to block ' +
-              'third-party cookies. This studio is configured to use cookie-based authentication ' +
-              'only. Try using a different browser, disabling strict cookie blocking, or ask the ' +
-              'studio administrator to enable token-based authentication.',
-          },
-        }
+      }
+      // We failed to set cookie and can't fallback to token
+      return {
+        loginMethod,
+        flow: 'exchange',
+        success: false,
+        durationMs,
+        exchangeDurationMs,
+        probeDurationMs,
+        failureReason: 'cookie probe failed in cookie-only mode',
+        error: {
+          type: 'cookie-blocked',
+          message:
+            'Authentication could not be completed because this browser appears to block ' +
+            'third-party cookies. This studio is configured to use cookie-based authentication ' +
+            'only. Try using a different browser, disabling strict cookie blocking, or ask the ' +
+            'studio administrator to enable token-based authentication.',
+        },
       }
     }
 
-    // Fallback to token auth (dual mode with failed cookie probe), or explicit loginMethod: 'token'.
-    // Store the token so subscribers re-init clients with it.
+    // loginMethod === 'token': store the token so subscribers re-init clients with it.
+    // (dual already stored it above; cookie returned above.)
     tokenStorage.update({token})
 
     return {
