@@ -72,6 +72,14 @@ interface CreateLoginComponentOptions extends AuthConfig {
    * (e.g. to switch accounts).
    */
   wasLogout: () => boolean
+  /**
+   * Returns true while a post-login callback exchange is in flight (a sid is
+   * being exchanged for credentials). Used to suppress `redirectOnSingle` during
+   * the exchange: the initial auth-state probe can resolve logged-out before the
+   * freshly exchanged credential is applied, and redirecting then would bounce
+   * back to the provider and waste a full round-trip before the login sticks.
+   */
+  isHandlingCallback: () => boolean
 }
 
 interface CreateHrefForProviderOptions {
@@ -109,6 +117,7 @@ export function createLoginComponent({
   loginMethod,
   redirectOnSingle,
   wasLogout,
+  isHandlingCallback,
   ...providerOptions
 }: CreateLoginComponentOptions) {
   function LoginComponent({projectId, ...props}: LoginComponentProps) {
@@ -169,6 +178,7 @@ export function createLoginComponent({
     const redirectUrlForRedirectOnSingle =
       redirectOnSingle &&
       !wasLogout() &&
+      !isHandlingCallback() &&
       providers?.length === 1 &&
       providers?.[0] &&
       createHrefForProvider({
