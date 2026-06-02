@@ -3,7 +3,7 @@ import {structureTool} from 'sanity/structure'
 
 // ── Environment toggle ──────────────────────────────────────────────────────
 // Set to true to use the staging API (api.sanity.work) instead of production.
-const USE_STAGING = true
+const USE_STAGING = false
 
 // ── Shared config ───────────────────────────────────────────────────────────
 const shared = {
