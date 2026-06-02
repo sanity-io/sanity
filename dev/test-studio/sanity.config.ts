@@ -1,4 +1,3 @@
-import {assist} from '@sanity/assist'
 import {colorInput} from '@sanity/color-input'
 import {debugSecrets} from '@sanity/debug-preview-url-secret-plugin'
 import {documentInternationalization} from '@sanity/document-internationalization'
@@ -7,7 +6,7 @@ import {BookIcon, EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanit
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
-import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
+import {unsplashAssetSource} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
@@ -18,23 +17,10 @@ import {structureTool} from 'sanity/structure'
 
 import {imageAssetSource} from './assetSources'
 import {
-  Annotation,
-  Block,
   CustomBadge,
-  Field,
-  formComponentsPlugin,
-  InlineBlock,
-  Input,
-  Item,
-  Preview,
 } from './components/formComponents'
-import {
-  CustomLayout,
-  CustomLogo,
-  CustomNavbar,
-  CustomToolMenu,
-  studioComponentsPlugin,
-} from './components/studioComponents'
+
+
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {useTestVersionAction} from './documentActions/actions/TestVersionAction'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
@@ -49,10 +35,6 @@ import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
-import {StegaDebugger} from './schema/debug/components/DebugStega'
-import {CustomNavigator} from './schema/presentation/CustomNavigator'
-import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
-import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 
 // @ts-expect-error - defined by vite
@@ -299,147 +281,6 @@ const defaultWorkspace = defineConfig({
 
 export default defineConfig([
   {
-    ...defaultWorkspace,
-    name: 'default-hidden',
-    title: 'Default Hidden',
-    subtitle: 'Statically hidden and configured as the first (default) workspace',
-    basePath: '/default-hidden',
-    hidden: true,
-  },
-  defaultWorkspace,
-  {
-    ...defaultWorkspace,
-    name: 'admin-only',
-    title: 'Admin Only',
-    subtitle: 'Hidden unless you have an administrator role',
-    basePath: '/admin-only',
-    hidden: ({currentUser}) => {
-      if (currentUser === null) return false
-      return !currentUser.roles.some((role) => role.name === 'administrator')
-    },
-  },
-  {
-    ...defaultWorkspace,
-    name: 'always-hidden',
-    title: 'Always Hidden',
-    subtitle: 'You should never see this workspace because it is statically hidden',
-    basePath: '/always-hidden',
-    hidden: true,
-  },
-  {
-    ...defaultWorkspace,
-    name: 'us',
-    title: 'Test Studio (US)',
-    dataset: 'test-us',
-    basePath: '/us',
-  },
-  {
-    ...defaultWorkspace,
-    name: 'no-releases',
-    title: 'No releases',
-    dataset: 'no-releases',
-    basePath: '/no-releases',
-    document: {
-      drafts: {enabled: true},
-    },
-    releases: {enabled: false},
-  },
-  {
-    ...defaultWorkspace,
-    name: 'secondary',
-    title: 'Secondary test project',
-    projectId: 'q5caobza',
-    dataset: 'production',
-    basePath: '/secondary',
-  },
-  {
-    ...defaultWorkspace,
-    name: 'unsplash',
-    title: 'Only Unsplash Asset Source',
-    basePath: '/unsplash',
-    icon: UnsplashIcon,
-    // Testing the docs case that only allow Unsplash image uploads
-    form: {
-      image: {
-        assetSources: () => [unsplashAssetSource],
-        directUploads: false,
-      },
-    },
-  },
-  {
-    name: 'partialIndexing',
-    title: 'Partial Indexing',
-    projectId: 'ppsg7ml5',
-    dataset: 'partial-indexing-2',
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/partial-indexing',
-    ...envConfig.production,
-    search: {
-      unstable_partialIndexing: {
-        enabled: true,
-      },
-    },
-    scheduledPublishing: {
-      enabled: false,
-    },
-    unstable_tasks: {
-      enabled: false,
-    },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'playground',
-    title: 'Test Studio (playground)',
-    subtitle: 'Playground dataset',
-    projectId: 'ppsg7ml5',
-    dataset: 'playground',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/playground',
-    beta: {
-      eventsAPI: {
-        releases: true,
-      },
-    },
-    search: {
-      strategy: 'groq2024',
-    },
-    mediaLibrary: {
-      enabled: true,
-    },
-    advancedVersionControl: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'listener-events',
-    title: 'Listener events debug',
-    subtitle: 'Listener events debugging',
-    projectId: 'ppsg7ml5',
-    dataset: 'data-loss',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/listener-events',
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'playground-partial-indexing',
-    title: 'Test Studio (playground-partial-indexing)',
-    subtitle: 'Playground dataset',
-    projectId: 'ppsg7ml5',
-    ...envConfig.production,
-    dataset: 'playground-partial-indexing',
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/playground-partial-indexing',
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
     name: 'staging',
     title: 'Staging',
     subtitle: 'Staging dataset',
@@ -461,216 +302,6 @@ export default defineConfig([
       variants: {
         enabled: true,
       },
-    },
-  },
-  {
-    name: 'growth',
-    title: 'Growth (staging)',
-
-    projectId: 'qroupali',
-    dataset: 'production',
-    ...envConfig.staging,
-    plugins: [sharedSettings({projectId: 'qroupali'})],
-    basePath: '/growth',
-    auth: {
-      loginMethod: 'token',
-    },
-    unstable_tasks: {
-      enabled: true,
-    },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'media-library-playground',
-    title: 'Media Library Playground (staging)',
-    projectId: '5iedwjzw',
-    dataset: 'production',
-    ...envConfig.staging,
-    plugins: [sharedSettings({projectId: '5iedwjzw'})],
-    basePath: '/media-library-playground-staging',
-    auth: {
-      loginMethod: 'token',
-    },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'media-library-playground-localdev',
-    title: 'Media Library Playground (localdev-staging)',
-    projectId: '5iedwjzw',
-    dataset: 'production',
-    ...envConfig.staging,
-    plugins: [sharedSettings({projectId: '5iedwjzw'})],
-    basePath: '/media-library-playground-localdev',
-    auth: {
-      loginMethod: 'token',
-    },
-    mediaLibrary: {
-      enabled: true,
-      __internal: {
-        frontendHost: 'http://localhost:3002',
-      },
-    },
-  },
-  {
-    name: 'playground-staging',
-    title: 'playground (Staging)',
-    projectId: 'exx11uqh',
-    dataset: 'playground',
-    ...envConfig.staging,
-    plugins: [sharedSettings({projectId: 'exx11uqh'})],
-    basePath: '/playground-staging',
-    auth: {
-      loginMethod: 'token',
-    },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'custom-components',
-    title: 'Test Studio',
-    subtitle: 'Components API playground',
-    projectId: 'ppsg7ml5',
-    ...envConfig.production,
-    dataset: 'test',
-    plugins: [
-      sharedSettings({projectId: 'ppsg7ml5'}),
-      studioComponentsPlugin(),
-      formComponentsPlugin(),
-    ],
-    basePath: '/custom-components',
-    onUncaughtError: (error, errorInfo) => {
-      console.log(error)
-      console.log(errorInfo)
-    },
-    form: {
-      components: {
-        input: Input,
-        field: Field,
-        item: Item,
-        preview: Preview,
-        block: Block,
-        inlineBlock: InlineBlock,
-        annotation: Annotation,
-      },
-    },
-    studio: {
-      components: {
-        layout: CustomLayout,
-        logo: CustomLogo,
-        navbar: CustomNavbar,
-        toolMenu: CustomToolMenu,
-      },
-    },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'ai-assist',
-    title: 'Sanity AI Assist',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'}), assist()],
-    basePath: '/ai-assist',
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'stega',
-    title: 'Debug Stega Studio',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/stega',
-    form: {
-      components: {
-        input: StegaDebugger,
-      },
-    },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    // Based on https://github.com/sanity-io/preview-kit/blob/195a476e5791421c5c8aa16275bad79a67b6ac58/apps/studio/sanity.config.ts#L42-L120
-    name: 'presentation-preview-kit',
-    title: 'Presentation with preview-kit',
-    basePath: '/presentation-preview-kit',
-    announcements: {enabled: false},
-    scheduledPublishing: {enabled: false},
-    tasks: {enabled: false},
-    releases: {enabled: true},
-    projectId: 'pv8y60vp',
-    dataset: 'production',
-    ...envConfig.production,
-    schema: {types: presentationPreviewKitSchemaTypes},
-    plugins: [
-      structureTool(),
-      presentationTool({
-        allowOrigins: ({origin}) => ['https://preview-kit-*.sanity.dev', origin],
-        previewUrl: {
-          initial: 'https://preview-kit-next-app-router.sanity.dev',
-          previewMode: ({origin, targetOrigin}) =>
-            origin === targetOrigin
-              ? false
-              : {
-                  enable: '/api/draft',
-                },
-        },
-        resolve: {
-          locations: {
-            page: defineLocations({
-              locations: [
-                {title: 'App Router', href: 'https://preview-kit-next-app-router.sanity.dev/'},
-                {title: 'Pages Router', href: 'https://preview-kit-next-pages-router.sanity.dev/'},
-                {title: 'Remix', href: 'https://preview-kit-remix.sanity.dev/'},
-              ],
-            }),
-          },
-        },
-        components: {
-          unstable_navigator: {minWidth: 120, maxWidth: 240, component: CustomNavigator},
-        },
-      }),
-      visionTool(),
-    ],
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    // Based on https://github.com/sanity-io/next-sanity/blob/1d451c5aa606eb471e8dc4ddcd7ebf6253ae8eec/apps/mvp/sanity.config.ts#L5-L29
-    name: 'presentation-next-sanity',
-    title: 'Presentation with next-sanity',
-    basePath: '/presentation-next-sanity',
-    projectId: 'pv8y60vp',
-    dataset: 'production',
-    ...envConfig.production,
-    schema: {types: presentationNextSanitySchemaTypes},
-    plugins: [
-      assist(),
-      structureTool(),
-      presentationTool({
-        allowOrigins: ['https://*.sanity.dev'],
-        previewUrl: {
-          // Intentionally using sanity.build instead of sanity.dev, to test that it's able to recover from the server side domain redirect to sanity.dev
-          // @TODO it is currently not able to recover, it fails eventually, investigate why
-          initial: 'https://next.sanity.build',
-          previewMode: {enable: '/api/draft-mode/enable'},
-        },
-      }),
-      visionTool(),
-    ],
-    mediaLibrary: {
-      enabled: true,
     },
   },
 ]) as WorkspaceOptions[]
