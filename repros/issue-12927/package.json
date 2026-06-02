@@ -1,0 +1,16 @@
+{
+  "name": "issue-12927-repro",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reproduction for sanity-io/sanity#12927 — @sanity/cli-core@1.3.2 is missing the getWorkspace export that @sanity/cli@6.7.0 and @sanity/cli-build@0.2.0 workers depend on.",
+  "type": "module",
+  "scripts": {
+    "repro:extract": "sanity schema extract --path ./schema.json",
+    "repro:validate-schema": "sanity schema validate",
+    "repro:validate-docs": "sanity documents validate --dataset production -y"
+  },
+  "dependencies": {
+    "sanity": "5.28.0",
+    "@sanity/cli": "6.7.0"
+  }
+}
