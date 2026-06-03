@@ -38,7 +38,6 @@ export function matchWorkspace({
   workspaceAuthStates,
 }: MatchWorkspaceOptions): MatchWorkspaceResult {
   if (workspaces.length === 0) return {type: 'not-found'}
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   for (const {workspace, basePath, basePathRegex} of workspaces) {
     // this regex ends with a `(\\/|$)` (forward slash or end) to prevent false
     // matches where the pathname is a false subset of the current pathname.

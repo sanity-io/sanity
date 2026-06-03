@@ -136,6 +136,8 @@
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
+    // TODO(oxlint): Re-enable once remaining underscore-prefixed APIs have been migrated or exempted.
+    "eslint/no-underscore-dangle": "off",
     // We no longer allow commonjs as we ship ESM only
     "import/no-commonjs": "error",
     "no-restricted-globals": [
@@ -203,6 +205,19 @@
     "no-unsafe-type-assertion": "warn",
     "restrict-template-expressions": "warn",
     "unbound-method": "warn",
+    // TODO(oxlint): Fix violations and set these back to error.
+    "react/no-unstable-nested-components": "warn",
+    "typescript/no-unnecessary-type-conversion": "warn",
+    "typescript/no-useless-default-assignment": "warn",
+    "typescript/no-unnecessary-type-parameters": "warn",
+    "react/jsx-no-constructed-context-values": "warn",
+    "react/no-object-type-as-default-prop": "warn",
+    "typescript/await-thenable": "warn",
+    "typescript/consistent-return": "warn",
+    "eslint/no-shadow": "warn",
+    "jsx_a11y/control-has-associated-label": "warn",
+    "jsx_a11y/interactive-supports-focus": "warn",
+    "jsx_a11y/no-noninteractive-tabindex": "warn",
     // Temporarily disabled, will be re-enabled in the near term
     "unicorn/prefer-set-has": "off",
     // Requires polyfills for older browsers

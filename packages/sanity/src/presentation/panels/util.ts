@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-shadow,no-eq-null */
+/* eslint-disable no-eq-null */
 import {
   type ElementMap,
   type InitialDragState,

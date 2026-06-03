@@ -46,7 +46,6 @@ const PostMessagePreviews: FC<PostMessagePreviewsProps> = (props) => {
     return refsSubject.asObservable().pipe(
       switchMap(
         (
-          // eslint-disable-next-line @typescript-eslint/no-shadow
           refs,
         ) => {
           return combineLatest(

@@ -68,7 +68,6 @@ export function ReleaseDocumentPreview({
 
   const LinkComponent = useMemo(
     () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
         return (
           <IntentLink

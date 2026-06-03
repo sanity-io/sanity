@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 import {useEffect, useState} from 'react'
 
 interface ImageLoaderProps {

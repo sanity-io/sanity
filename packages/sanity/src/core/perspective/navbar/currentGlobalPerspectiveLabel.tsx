@@ -26,7 +26,6 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
 
   const ReleasesIntentLink = useMemo(
     () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function ReleasesIntentLink(
         {children, ...intentProps}: {children: ReactNode},
         linkRef: ForwardedRef<HTMLAnchorElement>,
