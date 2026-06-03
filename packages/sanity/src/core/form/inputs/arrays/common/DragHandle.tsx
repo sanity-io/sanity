@@ -14,10 +14,10 @@ const DragHandleButton = styled(Button)<{$grid?: boolean; disabled?: boolean}>((
   // touch action (scrolling) wins on mobile and array items can't be
   // reordered. See https://github.com/sanity-io/sanity/issues/12931 and
   // https://docs.dndkit.com/api-documentation/sensors/pointer#recommendations.
-  // Applied in both branches so the rule survives the disabled state too.
+  // Keep default touch behavior when disabled/readOnly so scrolling still works.
   if (disabled)
     return css`
-      touch-action: none;
+      touch-action: auto;
     `
   return css`
     cursor: ${$grid ? 'move' : 'ns-resize'};

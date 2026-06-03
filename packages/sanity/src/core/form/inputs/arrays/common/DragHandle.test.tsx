@@ -43,11 +43,10 @@ describe('DragHandle', () => {
     expect(screen.getByRole('button')).toHaveStyle('touch-action: none')
   })
 
-  it('still applies touch-action: none when readOnly', () => {
-    // The handle is non-interactive when readOnly, but touch-action: none
-    // is harmless either way and keeping it unconditional avoids a
-    // disabled-branch regression.
+  it('keeps touch-action: auto when readOnly', () => {
+    // The handle is non-interactive when readOnly, so native scrolling should
+    // remain enabled when a touch gesture starts on the handle area.
     renderDragHandle({readOnly: true})
-    expect(screen.getByRole('button')).toHaveStyle('touch-action: none')
+    expect(screen.getByRole('button')).toHaveStyle('touch-action: auto')
   })
 })
