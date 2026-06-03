@@ -67,6 +67,27 @@ async function createVariantDefinition(
   } as never)
 }
 
+function isVariantNotFoundError(error: unknown): boolean {
+  if (typeof error !== 'object' || !error) return false
+
+  const err = error as {
+    statusCode?: unknown
+    response?: {statusCode?: unknown}
+    message?: unknown
+  }
+
+  const statusCode =
+    typeof err.statusCode === 'number'
+      ? err.statusCode
+      : typeof err.response?.statusCode === 'number'
+        ? err.response.statusCode
+        : undefined
+
+  return (
+    statusCode === 404 || (typeof err.message === 'string' && err.message.includes('was not found'))
+  )
+}
+
 async function deleteVariantDocuments(
   sanityClient: SanityClient,
   titlePrefix: string,
@@ -85,12 +106,26 @@ async function deleteVariantDocuments(
     },
   )
 
-  for (const document of documents) {
-    // Same untyped-action workaround as createVariantDefinition above.
-    await client.action({
-      actionType: 'sanity.action.variant.definition.delete',
-      variantId: getVariantShortId(document._id),
-    } as never)
+  // Delete each document independently so one failure does not skip the rest,
+  // and ignore "not found" — a variant may have already been removed via the UI
+  // in the test body, or the query may return a stale read of a deleted doc.
+  const results = await Promise.allSettled(
+    documents.map((document) =>
+      // Same untyped-action workaround as createVariantDefinition above.
+      client.action({
+        actionType: 'sanity.action.variant.definition.delete',
+        variantId: getVariantShortId(document._id),
+      } as never),
+    ),
+  )
+
+  const unexpectedError = results.find(
+    (result): result is PromiseRejectedResult =>
+      result.status === 'rejected' && !isVariantNotFoundError(result.reason),
+  )
+
+  if (unexpectedError) {
+    throw unexpectedError.reason
   }
 }
 
@@ -114,13 +149,33 @@ function escapeRegExp(value: string): string {
 async function openVariantsTool(page: Page): Promise<void> {
   await page.goto('/variants')
   await expect(page.getByRole('heading', {name: 'Variants'})).toBeVisible()
+  // The heading renders before the overview has settled its data subscriptions.
+  // Wait for the create button to be interactive so the first dialog-open click
+  // is not dispatched while the page is still mounting and silently dropped.
+  await expect(page.getByRole('button', {name: 'Create variant'}).first()).toBeEnabled()
 }
 
 async function openCreateVariantDialog(page: Page) {
-  await page.getByRole('button', {name: 'Create variant'}).first().click()
-
+  const createVariantButton = page.getByRole('button', {name: 'Create variant'}).first()
   const dialog = page.getByRole('dialog', {name: 'Create variant'})
-  await expect(dialog).toBeVisible()
+
+  // Under parallel CI load the studio occasionally drops the first click while it
+  // is still reconciling the shared variants subscription, leaving the dialog
+  // closed. Nothing reopens it, so a single click would wait out the full
+  // visibility timeout. Retry the open action until the dialog actually appears.
+  await expect(async () => {
+    if (await dialog.isVisible()) {
+      return
+    }
+
+    await createVariantButton.click()
+    await expect(dialog).toBeVisible({timeout: 5_000})
+  }).toPass({intervals: [1_000, 2_000, 3_000], timeout: 30_000})
+
+  // The dialog chrome can be visible a beat before the form inside it is
+  // interactive. Wait for the first condition key input so callers can fill
+  // fields without racing the dialog's initial render.
+  await expect(getConditionKeyInputs(dialog).first()).toBeVisible()
 
   return dialog
 }
@@ -139,8 +194,17 @@ async function fillConditionRow(
   key: string,
   value: string,
 ): Promise<void> {
-  await getConditionKeyInputs(dialog).nth(index).fill(key)
-  await getConditionValueInputs(dialog).nth(index).fill(value)
+  const keyInput = getConditionKeyInputs(dialog).nth(index)
+  const valueInput = getConditionValueInputs(dialog).nth(index)
+
+  // Wait for each input with the longer expect timeout before filling. The
+  // condition inputs re-render as the shared variants subscription streams
+  // suggestions, so the default action timeout can be too tight to find them
+  // under parallel CI load.
+  await expect(keyInput).toBeVisible()
+  await keyInput.fill(key)
+  await expect(valueInput).toBeVisible()
+  await valueInput.fill(value)
 }
 
 async function findVariantDocumentByTitle(
@@ -219,7 +283,6 @@ test.describe('Variants create flow', () => {
     try {
       await deleteVariantDocuments(sanityClient, createVariantTitlePrefix(testInfo))
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.warn('Failed to clean up variant documents:', error)
     }
   })
