@@ -44,54 +44,50 @@ const PostMessagePreviews: FC<PostMessagePreviewsProps> = (props) => {
 
   const previews$ = useMemo(() => {
     return refsSubject.asObservable().pipe(
-      switchMap(
-        (
-          refs,
-        ) => {
-          return combineLatest(
-            refs.map((ref) => {
-              const draftRef = {...ref, _id: getDraftId(ref._id)}
-              const draft$ =
-                perspective === 'published'
-                  ? // Don't emit if not displaying drafts
-                    NEVER
-                  : documentPreviewStore
-                      .observeForPreview(draftRef, schema.get(draftRef._type)!)
-                      .pipe(
-                        // Share to prevent double subscribe in the merge
-                        share(),
-                        // Don't emit if no snapshot is returned
-                        // eslint-disable-next-line max-nested-callbacks
-                        skipWhile((p) => p.snapshot === null),
-                      )
+      switchMap((refs) => {
+        return combineLatest(
+          refs.map((ref) => {
+            const draftRef = {...ref, _id: getDraftId(ref._id)}
+            const draft$ =
+              perspective === 'published'
+                ? // Don't emit if not displaying drafts
+                  NEVER
+                : documentPreviewStore
+                    .observeForPreview(draftRef, schema.get(draftRef._type)!)
+                    .pipe(
+                      // Share to prevent double subscribe in the merge
+                      share(),
+                      // Don't emit if no snapshot is returned
+                      // eslint-disable-next-line max-nested-callbacks
+                      skipWhile((p) => p.snapshot === null),
+                    )
 
-              const publishedRef = {...ref, _id: getPublishedId(ref._id)}
-              const published$ = documentPreviewStore.observeForPreview(
-                publishedRef,
-                schema.get(publishedRef._type)!,
-              )
+            const publishedRef = {...ref, _id: getPublishedId(ref._id)}
+            const published$ = documentPreviewStore.observeForPreview(
+              publishedRef,
+              schema.get(publishedRef._type)!,
+            )
 
-              return merge(published$.pipe(takeUntil(draft$)), draft$).pipe(
-                // eslint-disable-next-line max-nested-callbacks
-                filter((p) => !!p.snapshot),
-                // eslint-disable-next-line max-nested-callbacks
-                map((p) => {
-                  const snapshot = p.snapshot as PreviewValue & {
-                    _id: string
-                  }
-                  return {
-                    _id: getPublishedId(snapshot._id),
-                    title: snapshot.title,
-                    subtitle: snapshot.subtitle,
-                    description: snapshot.description,
-                    imageUrl: snapshot.imageUrl,
-                  } as PreviewSnapshot
-                }),
-              )
-            }),
-          )
-        },
-      ),
+            return merge(published$.pipe(takeUntil(draft$)), draft$).pipe(
+              // eslint-disable-next-line max-nested-callbacks
+              filter((p) => !!p.snapshot),
+              // eslint-disable-next-line max-nested-callbacks
+              map((p) => {
+                const snapshot = p.snapshot as PreviewValue & {
+                  _id: string
+                }
+                return {
+                  _id: getPublishedId(snapshot._id),
+                  title: snapshot.title,
+                  subtitle: snapshot.subtitle,
+                  description: snapshot.description,
+                  imageUrl: snapshot.imageUrl,
+                } as PreviewSnapshot
+              }),
+            )
+          }),
+        )
+      }),
       debounceTime(0),
     )
   }, [documentPreviewStore, refsSubject, schema, perspective])
