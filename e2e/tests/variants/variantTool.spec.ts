@@ -68,12 +68,23 @@ async function createVariantDefinition(
 }
 
 function isVariantNotFoundError(error: unknown): boolean {
+  if (typeof error !== 'object' || !error) return false
+
+  const err = error as {
+    statusCode?: unknown
+    response?: {statusCode?: unknown}
+    message?: unknown
+  }
+
+  const statusCode =
+    typeof err.statusCode === 'number'
+      ? err.statusCode
+      : typeof err.response?.statusCode === 'number'
+        ? err.response.statusCode
+        : undefined
+
   return (
-    typeof error === 'object' &&
-    error !== null &&
-    'message' in error &&
-    typeof (error as {message: unknown}).message === 'string' &&
-    (error as {message: string}).message.includes('was not found')
+    statusCode === 404 || (typeof err.message === 'string' && err.message.includes('was not found'))
   )
 }
 
