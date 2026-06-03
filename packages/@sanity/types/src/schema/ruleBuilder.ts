@@ -8,6 +8,7 @@ import {
 /** @public */
 export interface RuleDef<T, FieldValue = unknown> {
   required: () => T
+  optional: () => T
   skip: () => T
 
   // this generic allows callees to provide a type override

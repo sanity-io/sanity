@@ -8,9 +8,10 @@ import {
   type SchemaValidationValue,
 } from '../../types'
 import {
+  type InlineFieldIntrinsicTypeName,
   type IntrinsicDefinitions,
   type IntrinsicTypeName,
-  type TypeAliasDefinition,
+  type TypeReferenceDefinition,
 } from '../schemaDefinition'
 import {
   type BaseSchemaDefinition,
@@ -93,7 +94,7 @@ export type ArrayOfEntry<T> = Omit<T, 'name' | 'hidden'> & {name?: string}
 
 /** @public */
 export type IntrinsicArrayOfDefinition = {
-  [K in keyof IntrinsicDefinitions]: Omit<
+  [K in InlineFieldIntrinsicTypeName]: Omit<
     ArrayOfEntry<IntrinsicDefinitions[K]>,
     'validation' | 'initialValue'
     /* concession: without this "widening" these are considered unknown in array.of when not using defineArrayMember */
@@ -102,11 +103,11 @@ export type IntrinsicArrayOfDefinition = {
 
 /** @public */
 export type ArrayOfType<
-  TType extends IntrinsicTypeName = IntrinsicTypeName,
+  TType extends IntrinsicTypeName = InlineFieldIntrinsicTypeName,
   TAlias extends IntrinsicTypeName | undefined = undefined,
 > =
-  | IntrinsicArrayOfDefinition[TType]
-  | ArrayOfEntry<TypeAliasDefinition<AutocompleteString, TAlias>>
+  | IntrinsicArrayOfDefinition[Extract<TType, InlineFieldIntrinsicTypeName>]
+  | ArrayOfEntry<TypeReferenceDefinition<AutocompleteString, TAlias>>
 
 /** @public */
 export interface ArrayDefinition extends BaseSchemaDefinition {

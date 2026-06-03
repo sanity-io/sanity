@@ -19,6 +19,7 @@ import {
   type SlugOptions,
   type StringOptions,
   type TextOptions,
+  type UnionOptions,
 } from './definition/type'
 import {type ArrayOptions} from './definition/type/array'
 import {type PreviewConfig} from './preview'
@@ -52,6 +53,7 @@ export type SchemaType =
   | NumberSchemaType
   | ObjectSchemaType
   | StringSchemaType
+  | UnionSchemaType
   | ReferenceSchemaType
 
 /** @public */
@@ -396,6 +398,18 @@ export interface BlockSchemaType extends ObjectSchemaType {
 export interface SlugSchemaType extends ObjectSchemaType {
   jsonType: 'object'
   options?: SlugOptions
+}
+
+/** @public */
+export interface UnionSchemaType<
+  TMember extends ObjectSchemaType = ObjectSchemaType,
+> extends BaseSchemaType {
+  jsonType: 'object'
+  unionKind: 'object'
+  of: TMember[]
+  options?: UnionOptions
+  /** @internal */
+  __experimental_union: true
 }
 
 /** @public */

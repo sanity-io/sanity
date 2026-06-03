@@ -18,6 +18,7 @@ import {
   type SchemaType,
   type SpanSchemaType,
   type StringSchemaType,
+  type UnionSchemaType,
 } from './types'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -50,9 +51,27 @@ export function isDocumentSchemaType(type: unknown): type is ObjectSchemaType {
 }
 
 /** @internal */
-export function isObjectSchemaType(type: unknown): type is ObjectSchemaType {
+export function hasObjectJsonType(
+  type: unknown,
+): type is Extract<SchemaType, {jsonType: 'object'}> {
   if (!isRecord(type)) return false
   return type.jsonType === 'object'
+}
+
+/** @internal */
+export function isUnionSchemaType(type: unknown): type is UnionSchemaType {
+  if (!isRecord(type)) return false
+  return (
+    type.__experimental_union === true &&
+    type.jsonType === 'object' &&
+    type.unionKind === 'object' &&
+    Array.isArray(type.of)
+  )
+}
+
+/** @internal */
+export function isObjectSchemaType(type: unknown): type is ObjectSchemaType {
+  return hasObjectJsonType(type) && !isUnionSchemaType(type)
 }
 
 /** @internal */
