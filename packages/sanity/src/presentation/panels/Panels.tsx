@@ -188,7 +188,6 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
 
   // For setting default sizing when panels are updated
   useLayoutEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
     const {widths} = panelsRef.current
 
     if (widths.length === panels.length) {
@@ -215,7 +214,6 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
 
   useLayoutEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       const {panels, widths: prevWidths} = panelsRef.current
 
       const nextWidths = validateWidths(panels, prevWidths, window.innerWidth)

@@ -152,7 +152,6 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
 
   const OpenLink = useMemo(
     () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function OpenLink(
         restProps: ComponentProps<typeof IntentLink>,
         _ref: ForwardedRef<HTMLAnchorElement>,
