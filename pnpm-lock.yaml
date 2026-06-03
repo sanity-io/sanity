@@ -1624,8 +1624,8 @@ importers:
         specifier: ^6.0.27
         version: 6.0.27(@portabletext/editor@6.6.4(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
       '@portabletext/plugin-paste-link':
-        specifier: ^3.0.27
-        version: 3.0.27(@portabletext/editor@6.6.4(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
+        specifier: ^4.0.8
+        version: 4.0.8(@portabletext/editor@6.6.4(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
       '@portabletext/plugin-typography':
         specifier: ^7.0.27
         version: 7.0.27(@portabletext/editor@6.6.4(@types/react@19.2.14)(react@19.2.4))(@types/react@19.2.14)(react@19.2.4)
@@ -4894,11 +4894,11 @@ packages:
       '@portabletext/editor': ^6.6.4
       react: ^19.2
 
-  '@portabletext/plugin-paste-link@3.0.27':
-    resolution: {integrity: sha512-g148C0jcJe3m4y6PoiyGPq863wXEDIguS5vv6RikJDFNh9eAyui0iK+ivJPyaD9sRd6UfEQAlz234+ra+zIueg==}
+  '@portabletext/plugin-paste-link@4.0.8':
+    resolution: {integrity: sha512-S03HEuxzkKkJ9KbynTt4orPOgZtXfmxwKyvY7ce2klKemY42tfu4/uDMn9LGMB2zc1OmU6Es3TZhkuPt4EeVhw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^6.6.4
+      '@portabletext/editor': ^7.1.1
       react: ^19.2
 
   '@portabletext/plugin-typography@7.0.27':
@@ -14540,7 +14540,7 @@ snapshots:
       '@portabletext/editor': 6.6.4(@types/react@19.2.14)(react@19.2.4)
       react: 19.2.4
 
-  '@portabletext/plugin-paste-link@3.0.27(@portabletext/editor@6.6.4(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)':
+  '@portabletext/plugin-paste-link@4.0.8(@portabletext/editor@6.6.4(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@portabletext/editor': 6.6.4(@types/react@19.2.14)(react@19.2.4)
       react: 19.2.4
