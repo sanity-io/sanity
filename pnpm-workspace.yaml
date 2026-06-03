@@ -34,7 +34,7 @@ catalog:
   '@vitejs/plugin-react': ^5.1.2
   babel-plugin-styled-components: ^2.1.4
   esbuild-register: ^3.6.0
-  eslint: ^9.39.2
+  eslint: ^9.39.4
   globals: ^16.2.0
   jsdom: ^29.1.1
   playwright: 1.60.0
