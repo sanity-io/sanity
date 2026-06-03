@@ -1,4 +1,4 @@
-import {Card, Container, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
 
 import {WorkspaceAuth} from '../components/navbar/workspace'
 

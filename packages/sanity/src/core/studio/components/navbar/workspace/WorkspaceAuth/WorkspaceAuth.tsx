@@ -1,6 +1,9 @@
 import {AddIcon, ArrowLeftIcon} from '@sanity/icons'
-import {Box, Container, Flex, Stack} from '@sanity/ui'
+import {Box, Container, Flex, rem, Stack} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useState} from 'react'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../../../ui-components'
 import {useTranslation} from '../../../../../i18n'
@@ -10,6 +13,15 @@ import {WORKSPACES_DOCS_URL} from '../constants'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
 import {WorkspaceAuthCard} from './WorkspaceAuthCard'
+
+const StyledContainer = styled(Container)((props) => {
+  const theme = getTheme_v2(props.theme)
+  const {container} = theme
+  return {
+    width: 'auto',
+    minWidth: rem(container[0]),
+  }
+})
 
 export function WorkspaceAuth() {
   const {visibleWorkspaces} = useVisibleWorkspaces()
@@ -90,7 +102,7 @@ export function WorkspaceAuth() {
   }
 
   return (
-    <Container width={1}>
+    <StyledContainer width={1}>
       <Layout
         header={t('workspaces.choose-your-workspace-label')}
         footer={
@@ -118,6 +130,6 @@ export function WorkspaceAuth() {
           ))}
         </Stack>
       </Layout>
-    </Container>
+    </StyledContainer>
   )
 }
