@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.30.0](https://github.com/sanity-io/sanity/compare/v5.29.0...v5.30.0) (2026-06-03)
+
+### Features
+
+* add vercel routing configuration for auth-test-studio ([#12929](https://github.com/sanity-io/sanity/issues/12929)) ([cf5baeb](https://github.com/sanity-io/sanity/commit/cf5baeb268a835fd22b452ce2e6b76ef5218800e))
+
+### Bug Fixes
+
+* **authStore:** resolve dual-mode SSO login loop ([#12933](https://github.com/sanity-io/sanity/issues/12933)) ([2ae1370](https://github.com/sanity-io/sanity/commit/2ae1370ae1c13e1d001ef01f38860bf3ee243571))
+* **deps:** update dependency @sanity/cli to ^6.7.1 ([#12928](https://github.com/sanity-io/sanity/issues/12928)) ([df8fc74](https://github.com/sanity-io/sanity/commit/df8fc74d2d3843dbee3d76beaa3c0c544acd82ef))
 ## [5.29.0](https://github.com/sanity-io/sanity/compare/v5.28.0...v5.29.0) (2026-06-02)
 
 ### Features
