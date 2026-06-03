@@ -955,8 +955,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/mutate':
-        specifier: ^0.16.1
-        version: 0.16.1(xstate@5.30.0)
+        specifier: ^0.18.0
+        version: 0.18.0(xstate@5.30.0)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../@sanity/types
@@ -1699,8 +1699,8 @@ importers:
         specifier: 'catalog:'
         version: 6.1.2(@oclif/core@4.11.0)(@sanity/cli-core@1.3.3(@noble/hashes@2.0.1)(@types/node@24.10.13)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.9.0))(xstate@5.30.0)
       '@sanity/mutate':
-        specifier: ^0.16.1
-        version: 0.16.1(xstate@5.30.0)
+        specifier: ^0.18.0
+        version: 0.18.0(xstate@5.30.0)
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../@sanity/mutator
