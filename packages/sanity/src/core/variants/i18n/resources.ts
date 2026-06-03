@@ -46,18 +46,30 @@ const variantsLocaleStrings = {
   'overview.table.no-conditions': 'No conditions',
   /** Title for the Variants overview. */
   'overview.title': 'Variants',
+  /** Edit action on the Variant detail page. */
+  'detail.action.edit-variant': 'Edit variant',
   /** Back action on the Variant detail page. */
   'detail.back': 'Back to variants',
+  /** Created status label in the Variant detail footer. */
+  'detail.footer.created': 'Created',
   /** Loading message on the Variant detail page. */
   'detail.loading': 'Loading variant',
   /** Fallback text when a variant has no description. */
   'detail.no-description': 'No description yet.',
+  /** Empty state for variant document table. */
+  'detail.documents.no-documents': 'No documents in this variant',
+  /** Edited column header for variant document table. */
+  'detail.documents.table.edited': 'Edited',
+  /** Search placeholder for variant document table. */
+  'detail.documents.table.search-placeholder': 'Search documents',
+  /** Type column header for variant document table. */
+  'detail.documents.table.type': 'Type',
+  /** Version column header for variant document table. */
+  'detail.documents.table.version': 'Version',
   /** Description for the missing Variant detail page. */
   'detail.not-found.description': 'The requested variant could not be found.',
   /** Title for the missing Variant detail page. */
   'detail.not-found.title': 'Variant not found',
-  /** Placeholder text on the Variant detail page. */
-  'detail.placeholder': 'Variant detail editing will be added in a future iteration.',
   /** Title for the create variant dialog. */
   'dialog.create.title': 'Create variant',
   /** Confirm action for the create variant dialog. */
@@ -88,6 +100,17 @@ const variantsLocaleStrings = {
   'dialog.create.condition-key.label': 'Key',
   /** Validation message when a condition key is repeated. */
   'dialog.create.condition-key.duplicate': 'Condition keys must be unique',
+  /** Validation message when a condition key uses a reserved prefix. */
+  'dialog.create.condition-key.reserved': 'Condition keys cannot start with _ or $',
+  /** Validation message when a condition key has an invalid format. */
+  'dialog.create.condition-key.invalid':
+    'Condition keys must be lowercase, start with a letter, and use letters, numbers, underscores, or hyphens',
+  /** Validation message when a condition key is missing. */
+  'dialog.create.condition-key.required': 'Condition key is required',
+  /** Validation message when a condition value is missing. */
+  'dialog.create.condition-value.required': 'Condition value is required',
+  /** Validation message when a condition value has an invalid format. */
+  'dialog.create.condition-value.invalid': 'Condition values cannot contain colons',
   /** Placeholder for the condition key field in the create variant dialog. */
   'dialog.create.condition-key.placeholder': 'e.g. audience',
   /** Label for the condition value field in the create variant dialog. */
@@ -96,6 +119,14 @@ const variantsLocaleStrings = {
   'dialog.create.condition-value.placeholder': 'e.g. loyal-customers',
   /** Error toast title when variant creation fails. */
   'dialog.create.error.title': 'Unable to create variant',
+  /** Title for the edit variant dialog. */
+  'dialog.edit.title': 'Edit variant',
+  /** Confirm action for the edit variant dialog. */
+  'dialog.edit.action.confirm': 'Save',
+  /** Cancel action for the edit variant dialog. */
+  'dialog.edit.action.cancel': 'Cancel',
+  /** Error toast title when variant editing fails. */
+  'dialog.edit.error.title': 'Unable to update variant',
 }
 
 /**

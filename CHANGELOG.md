@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.30.0](https://github.com/sanity-io/sanity/compare/v5.29.0...v5.30.0) (2026-06-03)
+
+### Features
+
+* add vercel routing configuration for auth-test-studio ([#12929](https://github.com/sanity-io/sanity/issues/12929)) ([cf5baeb](https://github.com/sanity-io/sanity/commit/cf5baeb268a835fd22b452ce2e6b76ef5218800e))
+
+### Bug Fixes
+
+* **authStore:** resolve dual-mode SSO login loop ([#12933](https://github.com/sanity-io/sanity/issues/12933)) ([2ae1370](https://github.com/sanity-io/sanity/commit/2ae1370ae1c13e1d001ef01f38860bf3ee243571))
+* **deps:** update dependency @sanity/cli to ^6.7.1 ([#12928](https://github.com/sanity-io/sanity/issues/12928)) ([df8fc74](https://github.com/sanity-io/sanity/commit/df8fc74d2d3843dbee3d76beaa3c0c544acd82ef))
+## [5.29.0](https://github.com/sanity-io/sanity/compare/v5.28.0...v5.29.0) (2026-06-02)
+
+### Features
+
+* **core:** add variant definition edit form ([#12855](https://github.com/sanity-io/sanity/issues/12855)) ([21c6530](https://github.com/sanity-io/sanity/commit/21c65307522826982488aff04139dbac6ef359b5))
+
+### Bug Fixes
+
+* **core:** respect parent array field initialValue over member fields ([#12914](https://github.com/sanity-io/sanity/issues/12914)) ([46f9caa](https://github.com/sanity-io/sanity/commit/46f9caa2b9b3699fca7b8e228eab50c7fdecc346))
+* **deps:** update dependency @sanity/cli to ^6.7.0 ([#12924](https://github.com/sanity-io/sanity/issues/12924)) ([3fa8dc5](https://github.com/sanity-io/sanity/commit/3fa8dc5bf17f17fc8779d16567817712be7dccf1))
+* **form:** revert dataset aclMode check for plain asset previews ([#12913](https://github.com/sanity-io/sanity/issues/12913)) ([34982cf](https://github.com/sanity-io/sanity/commit/34982cf0e18c959ecaa7d1de3631baf571b58437))
+* **sanity:** incorrect form auto-focus ([8df5ed3](https://github.com/sanity-io/sanity/commit/8df5ed31a220bdb5ad4987132b17a283e323be8a))
+* **sanity:** restore document form open path from URL ([07cda46](https://github.com/sanity-io/sanity/commit/07cda46ce9d790f17a348192b27d45eb6da3ebe5))
+* **sanity:** surface error when no uploader matches the file ([#12870](https://github.com/sanity-io/sanity/issues/12870)) ([#12905](https://github.com/sanity-io/sanity/issues/12905)) ([054950f](https://github.com/sanity-io/sanity/commit/054950f5ec4acde34fb6c0886b72a7c1eb8fb76d))
+* **structure:** memoize incoming refs filter ([#12919](https://github.com/sanity-io/sanity/issues/12919)) ([30f89d5](https://github.com/sanity-io/sanity/commit/30f89d5b82a25fdb820d7f64668bbba06bf38c15))
+## [5.28.0](https://github.com/sanity-io/sanity/compare/v5.27.0...v5.28.0) (2026-05-28)
+
+### Features
+
+* **core:** add view-as navbar for  variant selection ([#12862](https://github.com/sanity-io/sanity/issues/12862)) ([4b5e4bb](https://github.com/sanity-io/sanity/commit/4b5e4bb96a2e45861a9c83675cefea477dfad9ef))
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/client to ^7.22.0 ([#12880](https://github.com/sanity-io/sanity/issues/12880)) ([8a5b3ae](https://github.com/sanity-io/sanity/commit/8a5b3ae4ca7a6435b39a070486816983b79cf9a5))
+* **deps:** update dependency @sanity/insert-menu to v3.0.7 ([#12897](https://github.com/sanity-io/sanity/issues/12897)) ([9dea35a](https://github.com/sanity-io/sanity/commit/9dea35af2b16a7f5142b537ade7b4535d6f65212))
+* **deps:** update dependency @sanity/presentation-comlink to ^2.1.0 ([#12881](https://github.com/sanity-io/sanity/issues/12881)) ([e604c3e](https://github.com/sanity-io/sanity/commit/e604c3e6df85361968ff9179e0e3e073f5111575))
+* **deps:** update dependency @sanity/preview-url-secret to ^4.0.6 ([#12898](https://github.com/sanity-io/sanity/issues/12898)) ([931641a](https://github.com/sanity-io/sanity/commit/931641aebdd6975f4f23fdcf8b86e23b92f4fb5e))
+* **deps:** Update dev-non-major ([#12888](https://github.com/sanity-io/sanity/issues/12888)) ([632282c](https://github.com/sanity-io/sanity/commit/632282c9557a8d1ae11b781bc630e3351cfde2d6))
+* **presentation:** avoid iframe reload on perspective switch ([#12885](https://github.com/sanity-io/sanity/issues/12885)) ([1b76d8b](https://github.com/sanity-io/sanity/commit/1b76d8b65599baf226c0074eabe9c0495025734b))
+* **presentation:** handle agent bundle perspectives correctly ([#12903](https://github.com/sanity-io/sanity/issues/12903)) ([a91bdc2](https://github.com/sanity-io/sanity/commit/a91bdc29202dd0e310554e4fb394fc2c81340e4f))
+* **presentation:** handle null client.fetch results in PostMessageSchema ([#12904](https://github.com/sanity-io/sanity/issues/12904)) ([4397d7b](https://github.com/sanity-io/sanity/commit/4397d7b95e9fe160103642dfd9d6104c605abb58))
 ## [5.27.0](https://github.com/sanity-io/sanity/compare/v5.26.0...v5.27.0) (2026-05-26)
 
 ### Features

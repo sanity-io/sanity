@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import {type ClientPerspective} from '@sanity/client'
-import {type UnresolvedPath} from '@sanity/presentation-comlink'
+import {type ResolvedSchemaTypeMap, type UnresolvedPath} from '@sanity/presentation-comlink'
 import {memo, useEffect} from 'react'
 import {
   getPublishedId,
@@ -74,7 +74,7 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
           const projection = arr.map((path, i) => `"${i}": ${path}[0]._type`).join(',')
           const query = `*[_id == $id][0]{${projection}}`
           // Should implement max 25 concurrent queries here
-          const result = await client.fetch(
+          const result = await client.fetch<Record<number, string | null> | null>(
             query,
             {id: getPublishedId(id)},
             {
@@ -82,12 +82,19 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
               perspective,
             },
           )
-          const mapped = arr.map((path, i) => ({path: path, type: result[i]}))
+          // `client.fetch` returns `null` when no document matches the active perspective,
+          // and individual projection entries are `null` when the document exists but the
+          // path doesn't resolve. Drop those entries so we only emit fully resolved types.
+          const mapped = arr
+            .map((path, i) =>
+              typeof result?.[i] === 'string' ? {path: path, type: result[i]} : null,
+            )
+            .filter((item) => item !== null)
           return {id, paths: mapped}
         }),
       )
 
-      const newState = new Map()
+      const newState: ResolvedSchemaTypeMap = new Map()
       unionTypes.forEach((action) => {
         newState.set(action.id, new Map(action.paths.map(({path, type}) => [path, type])))
       })

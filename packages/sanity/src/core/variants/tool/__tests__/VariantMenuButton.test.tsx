@@ -2,7 +2,6 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
@@ -40,7 +39,7 @@ describe('VariantMenuButton', () => {
       resources: [variantsUsEnglishLocaleBundle],
     })
     const result = render(<VariantMenuButton variant={variantAlphaAudience} />, {wrapper})
-    await flushMicrotasksThisIsACodeSmell()
+    await screen.findByRole('button')
     return result
   }
 

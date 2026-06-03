@@ -457,6 +457,11 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+    beta: {
+      variants: {
+        enabled: true,
+      },
+    },
   },
   {
     name: 'growth',
@@ -657,6 +662,7 @@ export default defineConfig([
         allowOrigins: ['https://*.sanity.dev'],
         previewUrl: {
           // Intentionally using sanity.build instead of sanity.dev, to test that it's able to recover from the server side domain redirect to sanity.dev
+          // @TODO it is currently not able to recover, it fails eventually, investigate why
           initial: 'https://next.sanity.build',
           previewMode: {enable: '/api/draft-mode/enable'},
         },

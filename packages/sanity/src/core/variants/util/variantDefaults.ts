@@ -39,7 +39,7 @@ export function createPortableTextDescription(text: string): PortableTextBlock[]
           _key: randomKey(12),
           _type: 'span',
           marks: [],
-          text: trimmedText,
+          text,
         },
       ],
       markDefs: [],

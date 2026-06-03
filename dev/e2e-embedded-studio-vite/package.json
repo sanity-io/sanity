@@ -1,6 +1,6 @@
 {
   "name": "e2e-embedded-studio-vite",
-  "version": "5.27.0",
+  "version": "5.30.0",
   "private": true,
   "scripts": {
     "build": "tsgo && vite build",
