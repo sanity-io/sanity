@@ -1,4 +1,8 @@
-import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanity/client'
+import {
+  type ClientConfig as SanityClientConfig,
+  ClientError,
+  type SanityClient,
+} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -28,13 +32,17 @@ const DATASET = 'test-dataset'
 const TOKEN_STORAGE_KEY = `__studio_auth_token_${PROJECT_ID}`
 
 /**
- * Create a 401 error that matches what the sanity client throws.
- * The `getCurrentUser` function in createAuthStore.ts checks `err.statusCode === 401`.
+ * Create a 401 error that matches what the sanity client throws — a real
+ * `ClientError`. `getCurrentUser` checks `err.statusCode === 401`, while
+ * `probeCurrentUser` checks `err instanceof ClientError`, so the mock must
+ * produce the genuine type to exercise both paths faithfully.
  */
-function create401Error(): Error & {statusCode: number} {
-  const err = new Error('Unauthorized') as Error & {statusCode: number}
-  err.statusCode = 401
-  return err
+function create401Error(): ClientError {
+  return new ClientError({
+    statusCode: 401,
+    headers: {},
+    body: {error: 'Unauthorized', statusCode: 401},
+  })
 }
 
 interface MockClientFactoryResult {
@@ -80,6 +88,45 @@ function createMockClientFactory(): MockClientFactoryResult {
     setAuthenticated: (v: boolean) => {
       authenticated = v
     },
+  }
+}
+
+/**
+ * Mock factory that decides auth by *how the client was built*, mirroring
+ * createAuthStore: a client configured with `{token}` authenticates via the
+ * Authorization header; one with `{withCredentials: true}` authenticates via
+ * the cookie.
+ *
+ */
+function createCredentialAwareClientFactory(opts: {
+  token: string
+  cookieValid: boolean
+}): (options: SanityClientConfig) => SanityClient {
+  return (options: SanityClientConfig): SanityClient => {
+    const usesToken = options.token === opts.token
+    const usesCookie = options.withCredentials === true
+    // A request is authenticated if it carries the valid token, or rides a valid
+    // cookie. /auth/id and /users/me both follow this — they never disagree.
+    const authed = usesToken || (usesCookie && opts.cookieValid)
+
+    return {
+      request: vi.fn(({uri}: {uri: string}) => {
+        if (uri === '/auth/fetch') return Promise.resolve({token: opts.token})
+        if (uri === '/auth/logout') return Promise.resolve({ok: true})
+
+        if (uri === '/auth/id') {
+          return authed
+            ? Promise.resolve({id: 'mock-auth-id', expiry: Math.floor(Date.now() / 1000) + 3600})
+            : Promise.reject(create401Error())
+        }
+
+        if (uri === '/users/me') {
+          return authed ? Promise.resolve(MOCK_USER) : Promise.reject(create401Error())
+        }
+
+        return Promise.resolve({})
+      }),
+    } as unknown as SanityClient
   }
 }
 
@@ -623,6 +670,87 @@ describe('createAuthStore: cross-tab sync', () => {
         emissionsB,
         `Store B had unexpected extra emissions: ${JSON.stringify(emissionsB)}`,
       ).toEqual([true])
+    })
+
+    it('applies the exchanged token in dual mode when the cookie is not established', async () => {
+      // Dual/SSO studio: handleCallbackUrl exchanges the sid at /auth/fetch for a
+      // VALID token, but the session cookie is not established, so the cookie
+      // probe reports unauthenticated.
+      // Expected: dual mode must retain the exchanged token so the client
+      // re-inits with the Authorization header and authenticates via the token.
+      const TOKEN = 'valid-exchanged-token'
+      const factory = createCredentialAwareClientFactory({
+        token: TOKEN,
+        cookieValid: false, // the SSO cookie is not established
+      })
+
+      let sessionIdConsumed = false
+      const getSessionId = () => {
+        if (sessionIdConsumed) return undefined
+        sessionIdConsumed = true
+        return 'mock-session-id-12345678'
+      }
+
+      const store = _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod: 'dual',
+        clientFactory: factory,
+        getSessionId,
+        consumeHashToken: () => undefined,
+      })
+
+      const result = await store.handleCallbackUrl!()
+      expect(result.success).toBe(true)
+
+      // The store must converge on authenticated via the token. Against the buggy
+      // implementation the token is discarded and /users/me keeps 401-ing, so
+      // waitForState rejects with its own timeout.
+      const state = await waitForState(store, (s) => s.authenticated, 2000)
+      expect(state.authenticated).toBe(true)
+      expect(state.currentUser).toEqual(MOCK_USER)
+
+      // The token must be persisted so the client keeps using it.
+      const stored = JSON.parse(localStorage.getItem(TOKEN_STORAGE_KEY)!)
+      expect(stored).toEqual({token: TOKEN})
+    })
+
+    it('probes /users/me only once on cold load in dual mode with a pre-stored token', async () => {
+      // Guards against a perf regression: the token-recheck stream that applies a
+      // freshly exchanged token must NOT also re-fire for a token already present
+      // at construction time (which the initial probe already used), or every cold
+      // load with a stored token would hit /users/me twice.
+      localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'pre-stored-token'}))
+
+      let usersMeProbes = 0
+      const factory = (_options: SanityClientConfig): SanityClient =>
+        ({
+          request: vi.fn(({uri}: {uri: string}) => {
+            if (uri === '/users/me') {
+              usersMeProbes += 1
+              return Promise.resolve(MOCK_USER)
+            }
+            if (uri === '/auth/id') {
+              return Promise.resolve({id: 'x', expiry: Math.floor(Date.now() / 1000) + 3600})
+            }
+            return Promise.resolve({})
+          }),
+        }) as unknown as SanityClient
+
+      const store = _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod: 'dual',
+        clientFactory: factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
+      })
+
+      await waitForState(store, (s) => s.authenticated)
+      // Let any redundant re-probe settle before asserting.
+      await new Promise((resolve) => setTimeout(resolve, 100))
+
+      expect(usersMeProbes).toBe(1)
     })
 
     it('throws CorsOriginError when /users/me fails for a non-auth reason but /ping succeeds', async () => {
