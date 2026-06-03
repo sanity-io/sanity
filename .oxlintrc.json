@@ -136,7 +136,7 @@
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
-    // TODO(oxlint): Re-enable once remaining underscore-prefixed APIs have been migrated or exempted.
+    // Keep disabled: `_id` and other underscore-prefixed API fields are intentional.
     "eslint/no-underscore-dangle": "off",
     // We no longer allow commonjs as we ship ESM only
     "import/no-commonjs": "error",
