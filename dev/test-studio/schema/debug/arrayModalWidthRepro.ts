@@ -240,7 +240,6 @@ export const arrayModalWidthRepro = defineType({
             annotations: [
               createModalAnnotation('responsiveWidth', 'Responsive width [2, 5]', {
                 type: 'dialog',
-                // @ts-expect-error arrays of widths are valid at runtime for objects
                 width: [2, 5],
               }),
             ],
