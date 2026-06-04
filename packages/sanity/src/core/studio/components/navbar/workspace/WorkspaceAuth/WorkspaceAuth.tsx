@@ -93,6 +93,10 @@ export function WorkspaceAuth() {
                       `${window.location.pathname}${window.location.search}`
                     : selectedWorkspace.basePath
                 }
+                // Only offer switching when there's somewhere else to switch to.
+                // Lets the login UI (e.g. the no-providers warning) route back to
+                // the workspace chooser without a full reload.
+                onChooseAnotherWorkspace={visibleWorkspaces.length > 1 ? handleBack : undefined}
               />
             </Stack>
           </Layout>

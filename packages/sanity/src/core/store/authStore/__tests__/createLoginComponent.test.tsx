@@ -4,6 +4,7 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {of} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
+import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {createLoginComponent, getProviders} from '../createLoginComponent'
 
 interface MockClient {
@@ -151,5 +152,78 @@ describe('LoginComponent redirectOnSingle', () => {
 
     await waitFor(() => expect(setHref).toHaveBeenCalledTimes(1))
     expect(setHref).toHaveBeenCalledWith(expect.stringContaining('/auth/saml/login'))
+  })
+})
+
+function createEmptyProviderLogin() {
+  const client = {
+    withConfig: () => client,
+    request: vi.fn(() => Promise.resolve({providers: [], thirdPartyLogin: true})),
+  } as unknown as SanityClient
+
+  return createLoginComponent({
+    client$: of(client),
+    loginMethod: 'dual',
+    providers: [],
+    wasLogout: () => false,
+    isHandlingCallback: () => false,
+  })
+}
+
+describe('LoginComponent with no providers', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('shows a warning instead of an empty chooser when providers resolve empty', async () => {
+    // `providers: []` replaces the default providers with none (rather than
+    // falling back to defaults), so the chooser would otherwise render an empty,
+    // dead-end dialog. We surface a caution card explaining the misconfiguration.
+    const LoginComponent = createEmptyProviderLogin()
+
+    render(
+      <ThemeProvider theme={studioTheme}>
+        <LoginComponent projectId="p" basePath="/" />
+      </ThemeProvider>,
+    )
+
+    await screen.findByText('No login providers available')
+    expect(screen.queryByText('Choose login provider')).toBeNull()
+  })
+
+  it('offers to switch workspaces when onChooseAnotherWorkspace is provided', async () => {
+    const onChooseAnotherWorkspace = vi.fn()
+    const LoginComponent = createEmptyProviderLogin()
+    // The button label is translated, so render inside the i18n provider to
+    // resolve the key rather than asserting on the raw key.
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <LoginComponent
+          projectId="p"
+          basePath="/"
+          onChooseAnotherWorkspace={onChooseAnotherWorkspace}
+        />
+      </TestProvider>,
+    )
+
+    const button = await screen.findByText('Choose another workspace')
+    button.click()
+    expect(onChooseAnotherWorkspace).toHaveBeenCalledTimes(1)
+  })
+
+  it('hides the switch action when onChooseAnotherWorkspace is not provided', async () => {
+    // There's only one workspace to use, so there's nothing to switch to.
+    const LoginComponent = createEmptyProviderLogin()
+
+    render(
+      <ThemeProvider theme={studioTheme}>
+        <LoginComponent projectId="p" basePath="/" />
+      </ThemeProvider>,
+    )
+
+    await screen.findByText('No login providers available')
+    expect(screen.queryByText('Choose another workspace')).toBeNull()
   })
 })

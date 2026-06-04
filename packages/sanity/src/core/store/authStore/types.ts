@@ -89,12 +89,24 @@ export type LoginComponentProps =
       /** @deprecated use redirectPath instead */
       basePath: string
       redirectPath?: string
+      /**
+       * Invoked when the user chooses to switch workspaces from the login screen
+       * (e.g. when the active workspace has no usable login providers). Only
+       * provided when more than one workspace is available to switch to.
+       */
+      onChooseAnotherWorkspace?: () => void
     }
   | {
       projectId: string
       redirectPath: string
       /** @deprecated use redirectPath instead */
       basePath?: string
+      /**
+       * Invoked when the user chooses to switch workspaces from the login screen
+       * (e.g. when the active workspace has no usable login providers). Only
+       * provided when more than one workspace is available to switch to.
+       */
+      onChooseAnotherWorkspace?: () => void
     }
 
 /**
