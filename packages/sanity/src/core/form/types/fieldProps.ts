@@ -13,6 +13,7 @@ import {
   type SchemaType,
   type SlugValue,
   type StringSchemaType,
+  type UnionSchemaType,
 } from '@sanity/types'
 import {type ReactNode} from 'react'
 
@@ -25,6 +26,7 @@ import {
   type NumberInputProps,
   type ObjectInputProps,
   type StringInputProps,
+  type UnionInputProps,
 } from './inputProps'
 
 /** @internal @deprecated DO NOT USE */
@@ -133,6 +135,15 @@ export interface StringFieldProps extends BaseFieldProps {
   inputProps: StringInputProps
 }
 
+/**
+ * @hidden
+ * @public */
+export interface UnionFieldProps extends BaseFieldProps {
+  schemaType: UnionSchemaType
+  value: {_type?: string} | undefined
+  inputProps: UnionInputProps
+}
+
 /** @internal */
 export type PrimitiveFieldProps = NumberFieldProps | BooleanFieldProps | StringFieldProps
 
@@ -151,3 +162,4 @@ export type FieldProps =
   | NumberFieldProps
   | BooleanFieldProps
   | StringFieldProps
+  | UnionFieldProps

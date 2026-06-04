@@ -26,6 +26,7 @@ import {
   type SchemaType,
   type SlugValue,
   type StringSchemaType,
+  type UnionSchemaType,
 } from '@sanity/types'
 import {
   type ComponentType,
@@ -45,6 +46,7 @@ import {
   type NumberFormNode,
   type ObjectFormNode,
   type StringFormNode,
+  type UnionFormNode,
 } from '../store/types/nodes'
 import {type UploaderResolver} from '../studio'
 import {type RenderBlockActionsCallback} from '../types'
@@ -519,6 +521,89 @@ export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaTy
 export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberInputProps
 
 /**
+ * @hidden
+ * @beta */
+export interface UnionInputProps<
+  T extends {_type?: string} = {_type?: string},
+  S extends UnionSchemaType = UnionSchemaType,
+>
+  extends BaseInputProps, Omit<UnionFormNode<T, S>, 'displayInlineChanges'> {
+  /**
+   * @hidden
+   * @beta */
+  onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
+  validationError?: string
+  /**
+   * @hidden
+   * @beta */
+  elementProps: ComplexElementProps
+  /**
+   * @hidden
+   * @beta */
+  selectedMember?: ObjectFormNode
+  /**
+   * @hidden
+   * @beta */
+  onFieldCollapse: (fieldName: string) => void
+  /**
+   * @hidden
+   * @beta */
+  onFieldExpand: (fieldName: string) => void
+  /**
+   * @hidden
+   * @beta */
+  onFieldSetCollapse: (fieldSetName: string) => void
+  /**
+   * @hidden
+   * @beta */
+  onFieldSetExpand: (fieldSetName: string) => void
+  /**
+   * @hidden
+   * @beta */
+  onFieldGroupSelect: (groupName: string) => void
+  /**
+   * @hidden
+   * @beta */
+  onPathFocus: (path: Path) => void
+  /**
+   * @hidden
+   * @beta */
+  onFieldOpen: (fieldName: string) => void
+  /**
+   * @hidden
+   * @beta */
+  onFieldClose: (fieldName: string) => void
+  /**
+   * @hidden
+   * @beta */
+  renderAnnotation?: RenderAnnotationCallback
+  /**
+   * @hidden
+   * @beta */
+  renderBlock?: RenderBlockCallback
+  /**
+   * @hidden
+   * @beta */
+  renderInput: RenderInputCallback
+  /**
+   * @hidden
+   * @beta */
+  renderField: RenderFieldCallback
+  /**
+   * @hidden
+   * @beta */
+  renderInlineBlock?: RenderBlockCallback
+  /**
+   * @hidden
+   * @beta */
+  renderItem: RenderArrayOfObjectsItemCallback
+  /**
+   * @hidden
+   * @beta */
+  renderPreview: RenderPreviewCallback
+}
+
+/**
  * Component props for the {@link PortableTextInput} React component.
  *
  * Extends {@link ArrayOfObjectsInputProps}.
@@ -609,6 +694,7 @@ export type InputProps =
   | ObjectInputProps<SlugValue>
   | PortableTextInputProps
   | StringInputProps
+  | UnionInputProps
 
 /**
  * Data passed to the `onPaste` handler when content is pasted into a

@@ -17,9 +17,11 @@ import {
   isMemberArrayOfPrimitives,
   isMemberObject,
   isMemberPrimitive,
+  isMemberUnion,
 } from './fields/asserters'
 import {ObjectField} from './fields/ObjectField'
 import {PrimitiveField} from './fields/PrimitiveField'
+import {UnionField} from './fields/UnionField'
 
 /** @internal */
 export interface MemberFieldProps {
@@ -95,6 +97,21 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
 
   if (isMemberPrimitive(member)) {
     return <PrimitiveField member={member} renderField={renderField} renderInput={renderInput} />
+  }
+
+  if (isMemberUnion(member)) {
+    return (
+      <UnionField
+        member={member}
+        renderAnnotation={renderAnnotation}
+        renderBlock={renderBlock}
+        renderField={renderField}
+        renderInlineBlock={renderInlineBlock}
+        renderInput={renderInput}
+        renderItem={renderItem}
+        renderPreview={renderPreview}
+      />
+    )
   }
 
   return null

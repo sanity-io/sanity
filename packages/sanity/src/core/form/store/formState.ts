@@ -12,12 +12,14 @@ import {
   isArraySchemaType,
   isKeyedObject,
   isObjectSchemaType,
+  isUnionSchemaType,
   type KeyedObject,
   type NumberSchemaType,
   type ObjectField,
   type ObjectSchemaType,
   type Path,
   type StringSchemaType,
+  type UnionSchemaType,
   type ValidationMarker,
 } from '@sanity/types'
 import {resolveTypeName} from '@sanity/util/content'
@@ -56,6 +58,7 @@ import {
   type NodeChronologyProps,
   type NodeDiffProps,
   type ObjectFormNode,
+  type UnionFormNode,
 } from './types/nodes'
 import {createMemoizer, type FunctionDecorator} from './utils/createMemoizer'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
@@ -109,6 +112,10 @@ type PrepareArrayOfPrimitivesInputState = <T extends (boolean | string | number)
 type PrepareArrayOfObjectsInputState = <T extends {_key: string}[]>(
   props: FormStateOptions<ArraySchemaType, T>,
 ) => ArrayOfObjectsFormNode | null
+
+type PrepareUnionInputState = <T extends {_type?: string}>(
+  props: FormStateOptions<UnionSchemaType, T>,
+) => UnionFormNode | null
 
 type PrepareArrayOfObjectsMember = (props: {
   arrayItem: {_key: string}
@@ -214,6 +221,7 @@ export interface CreatePrepareFormStateOptions {
     prepareObjectInputState?: FunctionDecorator<PrepareObjectInputState>
     prepareArrayOfPrimitivesInputState?: FunctionDecorator<PrepareArrayOfPrimitivesInputState>
     prepareArrayOfObjectsInputState?: FunctionDecorator<PrepareArrayOfObjectsInputState>
+    prepareUnionInputState?: FunctionDecorator<PrepareUnionInputState>
     prepareArrayOfObjectsMember?: FunctionDecorator<PrepareArrayOfObjectsMember>
     prepareArrayOfPrimitivesMember?: FunctionDecorator<PrepareArrayOfPrimitivesMember>
     preparePrimitiveInputState?: FunctionDecorator<PreparePrimitiveInputState>
@@ -250,6 +258,8 @@ export interface PrepareFormState {
   _prepareArrayOfPrimitivesInputState: PrepareArrayOfPrimitivesInputState
   /** @internal */
   _prepareArrayOfObjectsInputState: PrepareArrayOfObjectsInputState
+  /** @internal */
+  _prepareUnionInputState: PrepareUnionInputState
   /** @internal */
   _prepareArrayOfObjectsMember: PrepareArrayOfObjectsMember
   /** @internal */
@@ -344,6 +354,30 @@ export function createPrepareFormState({
 
   const memoizePrepareArrayOfObjectsInputState = createMemoizer<PrepareArrayOfObjectsInputState>({
     decorator: decorators.prepareArrayOfObjectsInputState,
+    getPath: ({path}) => path,
+    hashInput: (state) => ({
+      changesOpen: state.changesOpen,
+      presence: state.presence.filter((p) => startsWith(state.path, p.path)),
+      validation: state.validation.filter((v) => startsWith(state.path, v.path)),
+      focusPath: startsWith(state.path, state.focusPath) ? state.focusPath : [],
+      openPath: startsWith(state.path, state.openPath) ? state.openPath : [],
+      value: getId(state.value),
+      comparisonValue: getId(state.comparisonValue),
+      collapsedFieldSets: getId(state.collapsedFieldSets),
+      collapsedPaths: state.collapsedPaths,
+      currentUser: getId(state.currentUser),
+      fieldGroupState: getId(state.fieldGroupState),
+      hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
+      readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
+      schemaType: getId(state.schemaType),
+      perspective: getId(state.perspective),
+      hasUpstreamVersion: state.hasUpstreamVersion,
+      displayInlineChanges: state.displayInlineChanges,
+    }),
+  })
+
+  const memoizePrepareUnionInputState = createMemoizer<PrepareUnionInputState>({
+    decorator: decorators.prepareUnionInputState,
     getPath: ({path}) => path,
     hashInput: (state) => ({
       changesOpen: state.changesOpen,
@@ -486,7 +520,95 @@ export function createPrepareFormState({
       parent.selectedGroup,
     )
 
-    if (isObjectSchemaType(field.type)) {
+    if (isUnionSchemaType(field.type)) {
+      const fieldValue = parentValue?.[field.name]
+      const fieldComparisonValue = isRecord(parentComparisonValue)
+        ? parentComparisonValue?.[field.name]
+        : undefined
+
+      if (!isAcceptedObjectValue(fieldValue)) {
+        return {
+          kind: 'error',
+          key: field.name,
+          fieldName: field.name,
+          path: fieldPath,
+          error: {
+            type: 'INCOMPATIBLE_TYPE',
+            expectedSchemaType: field.type,
+            resolvedValueType: resolveTypeName(fieldValue),
+            value: fieldValue,
+          },
+        }
+      }
+
+      const hidden =
+        parent.hidden === true ||
+        parent?.hidden?.value ||
+        parent.hidden?.children?.[field.name]?.value
+
+      if (hidden) {
+        return {
+          kind: 'hidden',
+          key: `field-${field.name}`,
+          name: field.name,
+          index: index,
+          path: fieldPath,
+        }
+      }
+
+      const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
+      const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
+      const scopedCollapsedFieldsets = parent.collapsedFieldSets?.children?.[field.name]
+      const scopedHidden =
+        parent.hidden === true || parent.hidden?.value || parent.hidden?.children?.[field.name]
+      const scopedReadOnly =
+        parent.readOnly === true ||
+        parent.readOnly?.value ||
+        parent.readOnly?.children?.[field.name]
+
+      const fieldState = prepareUnionInputState({
+        schemaType: field.type,
+        currentUser: parent.currentUser,
+        value: fieldValue as {_type?: string} | undefined,
+        changed: isChangedValue(fieldValue, fieldComparisonValue),
+        comparisonValue: fieldComparisonValue as {_type?: string} | undefined,
+        perspective: parent.perspective,
+        hasUpstreamVersion: parent.hasUpstreamVersion,
+        presence: parent.presence,
+        validation: parent.validation,
+        fieldGroupState,
+        path: fieldPath,
+        level: fieldLevel,
+        focusPath: parent.focusPath,
+        openPath: parent.openPath,
+        collapsedPaths: scopedCollapsedPaths,
+        collapsedFieldSets: scopedCollapsedFieldsets,
+        hidden: scopedHidden,
+        readOnly: scopedReadOnly,
+        changesOpen: parent.changesOpen,
+        displayInlineChanges: parent.displayInlineChanges,
+      })
+
+      if (fieldState === null) {
+        return null
+      }
+
+      return {
+        kind: 'field',
+        key: `field-${field.name}`,
+        path: fieldPath,
+        name: field.name,
+        index: index,
+
+        inSelectedGroup,
+        groups: normalizedFieldGroupNames,
+
+        open: startsWith(fieldPath, parent.openPath),
+        collapsible: false,
+        collapsed: false,
+        field: fieldState,
+      }
+    } else if (isObjectSchemaType(field.type)) {
       const fieldValue = parentValue?.[field.name]
       const fieldComparisonValue = isRecord(parentComparisonValue)
         ? parentComparisonValue?.[field.name]
@@ -1344,6 +1466,68 @@ export function createPrepareFormState({
     },
   )
 
+  const prepareUnionInputState = memoizePrepareUnionInputState(
+    function _prepareUnionInputState(props) {
+      const filteredPresence = props.presence.filter((item) => isEqual(item.path, props.path))
+      const presence = filteredPresence.length ? filteredPresence : EMPTY_ARRAY
+
+      const validation = props.validation
+        .filter((item) => isEqual(item.path, props.path))
+        .map((v) => ({level: v.level, message: v.message, path: v.path}))
+
+      const diffProps = prepareDiffProps(props)
+      const selectedMemberType = props.value
+        ? props.schemaType.of.find((memberType) => memberType.name === resolveTypeName(props.value))
+        : undefined
+      const selectedMember = selectedMemberType
+        ? prepareObjectInputState(
+            {
+              schemaType: selectedMemberType,
+              currentUser: props.currentUser,
+              value: props.value,
+              changed: isChangedValue(props.value, props.comparisonValue),
+              comparisonValue: isRecord(props.comparisonValue) ? props.comparisonValue : undefined,
+              perspective: props.perspective,
+              hasUpstreamVersion: props.hasUpstreamVersion,
+              presence: props.presence,
+              validation: props.validation,
+              fieldGroupState: props.fieldGroupState,
+              path: props.path,
+              level: props.level,
+              focusPath: props.focusPath,
+              openPath: props.openPath,
+              collapsedPaths: props.collapsedPaths,
+              collapsedFieldSets: props.collapsedFieldSets,
+              hidden: props.hidden,
+              readOnly: props.readOnly,
+              changesOpen: props.changesOpen,
+              displayInlineChanges: props.displayInlineChanges,
+            },
+            false,
+          )
+        : undefined
+
+      return {
+        schemaType: props.schemaType,
+        value: props.value,
+        selectedMember: selectedMember || undefined,
+        level: props.level,
+        id: getSafeDomId(toString(props.path)),
+        readOnly: props.readOnly === true || props.readOnly?.value,
+        focused: isEqual(props.path, props.focusPath),
+        path: props.path,
+        perspective: props.perspective,
+        presence,
+        validation,
+        __unstable_computeDiff: diffProps.__unstable_computeDiff,
+        changed: isChangedValue(props.value, props.comparisonValue),
+        compareValue: diffProps.compareValue,
+        hasUpstreamVersion: diffProps.hasUpstreamVersion,
+        displayInlineChanges: props.displayInlineChanges,
+      } as UnionFormNode
+    },
+  )
+
   const preparePrimitiveInputState = memoizePreparePrimitiveInputState(
     function _preparePrimitiveInputState(props) {
       const filteredPresence = props.presence.filter((item) => isEqual(item.path, props.path))
@@ -1421,6 +1605,7 @@ export function createPrepareFormState({
   prepareFormState._prepareObjectInputState = prepareObjectInputState
   prepareFormState._prepareArrayOfPrimitivesInputState = prepareArrayOfPrimitivesInputState
   prepareFormState._prepareArrayOfObjectsInputState = prepareArrayOfObjectsInputState
+  prepareFormState._prepareUnionInputState = prepareUnionInputState
   prepareFormState._prepareArrayOfObjectsMember = prepareArrayOfObjectsMember
   prepareFormState._prepareArrayOfPrimitivesMember = prepareArrayOfPrimitivesMember
   prepareFormState._preparePrimitiveInputState = preparePrimitiveInputState

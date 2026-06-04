@@ -1,4 +1,9 @@
-import {isArraySchemaType, isObjectSchemaType, isPrimitiveSchemaType} from '@sanity/types'
+import {
+  isArraySchemaType,
+  isObjectSchemaType,
+  isPrimitiveSchemaType,
+  isUnionSchemaType,
+} from '@sanity/types'
 
 import {
   type ArrayOfObjectsFormNode,
@@ -6,6 +11,7 @@ import {
   type FieldMember,
   type ObjectFormNode,
   type PrimitiveFormNode,
+  type UnionFormNode,
 } from '../../../store'
 
 export function isMemberObject(member: FieldMember): member is FieldMember<ObjectFormNode> {
@@ -32,4 +38,8 @@ export function isMemberArrayOfObjects(
 
 export function isMemberPrimitive(member: FieldMember): member is FieldMember<PrimitiveFormNode> {
   return isPrimitiveSchemaType(member.field.schemaType)
+}
+
+export function isMemberUnion(member: FieldMember): member is FieldMember<UnionFormNode> {
+  return isUnionSchemaType(member.field.schemaType)
 }
