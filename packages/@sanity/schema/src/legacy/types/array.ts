@@ -1,7 +1,7 @@
 import pick from 'lodash-es/pick.js'
 
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
-import {flattenArrayMemberTypes} from './unionUtils'
+import {flattenArrayMemberTypesWithSources, isCompiledUnionType} from './unionUtils'
 import {hiddenGetter, lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
@@ -18,14 +18,35 @@ export const ArrayType = {
     return ARRAY_CORE
   },
   extend(subTypeDef: any, createMemberType: any) {
+    let memberTypes: any[] | undefined
+    let effectiveMemberTypes: ReturnType<typeof flattenArrayMemberTypesWithSources> | undefined
+
+    function getMemberTypes() {
+      memberTypes ||= subTypeDef.of.map((ofTypeDef: any) => createMemberType.cached(ofTypeDef))
+      return memberTypes
+    }
+
+    function getEffectiveMemberTypes() {
+      effectiveMemberTypes ||= flattenArrayMemberTypesWithSources(getMemberTypes())
+      return effectiveMemberTypes
+    }
+
     const parsed = Object.assign(pick(ARRAY_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: ARRAY_CORE,
     })
     lazyGetter(parsed, 'of', () => {
-      return flattenArrayMemberTypes(
-        subTypeDef.of.map((ofTypeDef: any) => createMemberType.cached(ofTypeDef)),
-      )
+      return getEffectiveMemberTypes().map((entry) => entry.member)
     })
+    lazyGetter(
+      parsed,
+      '__experimental_arrayOfUnion',
+      () => {
+        return getMemberTypes().some(isCompiledUnionType)
+      },
+      {
+        enumerable: false,
+      },
+    )
     lazyGetter(parsed, OWN_PROPS_NAME, () => ({...subTypeDef, of: parsed.of}), {
       enumerable: false,
       writable: false,

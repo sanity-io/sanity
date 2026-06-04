@@ -22,7 +22,7 @@ function isCompatibleMember(left: SchemaType, right: SchemaType): boolean {
   return Boolean(left.type?.name && left.type.name === right.type?.name)
 }
 
-export function flattenArrayMemberTypes(members: SchemaType[]): SchemaType[] {
+export function flattenArrayMemberTypesWithSources(members: SchemaType[]): EffectiveArrayMember[] {
   const effective: Array<EffectiveArrayMember & {key: string}> = []
 
   function add(entry: EffectiveArrayMember) {
@@ -55,5 +55,9 @@ export function flattenArrayMemberTypes(members: SchemaType[]): SchemaType[] {
     add({member, source: 'direct'})
   }
 
-  return effective.map((entry) => entry.member)
+  return effective
+}
+
+export function flattenArrayMemberTypes(members: SchemaType[]): SchemaType[] {
+  return flattenArrayMemberTypesWithSources(members).map((entry) => entry.member)
 }

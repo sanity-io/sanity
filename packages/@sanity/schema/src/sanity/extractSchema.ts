@@ -10,6 +10,8 @@ import {
   type SchemaType as SanitySchemaType,
   type SchemaValidationValue,
   type StringSchemaType,
+  type UnionSchemaType,
+  isUnionSchemaType,
 } from '@sanity/types'
 import {
   type ArrayTypeNode,
@@ -216,6 +218,10 @@ export function extractSchema(
   }
 
   function convertSchemaType(schemaType: SanitySchemaType): TypeNode {
+    if (isUnionSchemaType(schemaType)) {
+      return createUnion(schemaType)
+    }
+
     // if we have already seen the base type, we can just reference it
     if (inlineFields.has(schemaType.type!)) {
       return {type: 'inline', name: schemaType.type!.name} satisfies InlineTypeNode
@@ -280,6 +286,17 @@ export function extractSchema(
 
     throw new Error(`Type "${schemaType.name}" not found`)
   }
+
+  function createUnion(unionSchemaType: UnionSchemaType): TypeNode {
+    const of = unionSchemaType.of
+      .map((member) => (isObjectType(member) ? createObject(member) : convertSchemaType(member)))
+      .filter((member): member is TypeNode => member.type !== 'unknown')
+
+    if (of.length === 0) return {type: 'unknown'} satisfies UnknownTypeNode
+    if (of.length === 1) return of[0]
+    return {type: 'union', of} satisfies UnionTypeNode
+  }
+
   function createObject(schemaType: ObjectSchemaType | SanitySchemaType): ObjectTypeNode {
     const attributes: Record<string, ObjectAttribute> = {}
 
@@ -352,8 +369,12 @@ export function extractSchema(
 
   function createArray(arraySchemaType: ArraySchemaType): ArrayTypeNode | NullTypeNode {
     const of: TypeNode[] = []
+    const isFlattenedUnion = isFlattenedUnionArray(arraySchemaType)
     for (const item of arraySchemaType.of) {
-      const field = convertSchemaType(item)
+      const field =
+        isFlattenedUnion && isObjectType(item) && sortedSchemaTypeNames.includes(item.name)
+          ? createArrayObjectMember(item)
+          : convertSchemaType(item)
       if (field.type === 'inline') {
         of.push({
           type: 'object',
@@ -362,7 +383,7 @@ export function extractSchema(
           },
           rest: field,
         } satisfies ObjectTypeNode)
-      } else if (field.type === 'object') {
+      } else if (field.type === 'object' && !field.attributes._key) {
         field.rest = {
           type: 'object',
           attributes: {
@@ -389,6 +410,24 @@ export function extractSchema(
             }
           : of[0],
     }
+  }
+
+  function createArrayObjectMember(
+    schemaType: ObjectSchemaType | SanitySchemaType,
+  ): ObjectTypeNode {
+    const object = createObject(schemaType)
+    object.attributes = {
+      _key: createKeyField(),
+      ...object.attributes,
+    }
+    return object
+  }
+
+  function isFlattenedUnionArray(arraySchemaType: ArraySchemaType): boolean {
+    return Boolean(
+      (arraySchemaType as ArraySchemaType & {__experimental_arrayOfUnion?: boolean})
+        .__experimental_arrayOfUnion,
+    )
   }
 
   function createReferenceTypeNodeDefintion(
@@ -531,7 +570,10 @@ function hasAssetRequired(validation?: SchemaValidationValue): boolean {
 }
 
 function isObjectType(typeDef: SanitySchemaType): typeDef is ObjectSchemaType {
-  return isType(typeDef, 'object') || typeDef.jsonType === 'object' || 'fields' in typeDef
+  return (
+    !isUnionSchemaType(typeDef) &&
+    (isType(typeDef, 'object') || typeDef.jsonType === 'object' || 'fields' in typeDef)
+  )
 }
 function isArrayType(typeDef: SanitySchemaType): typeDef is ArraySchemaType {
   return isType(typeDef, 'array')
@@ -748,7 +790,8 @@ function sortByDependencies(compiledSchema: SchemaDef): {
         }
         walkDependencies(field.type, dependencies, path.concat([field.name]))
       }
-    } else if ('of' in schemaType) {
+    } else if (isArrayType(schemaType) || isUnionSchemaType(schemaType)) {
+      // Arrays and standalone unions both model alternatives through `of`; walk each member.
       for (const item of schemaType.of) {
         walkDependencies(item, dependencies, path.concat(item.name), !isReferenceType(schemaType))
       }
