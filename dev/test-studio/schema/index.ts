@@ -151,6 +151,7 @@ import references, {referenceAlias} from './standard/references'
 import slugs, {slugAlias} from './standard/slugs'
 import strings from './standard/strings'
 import texts from './standard/texts'
+import unions, {unionTestTypes} from './standard/unions'
 import urls from './standard/urls'
 import videos from './standard/videos'
 import withObjectFieldsOrder from './standard/withObjectFieldsOrder'
@@ -225,6 +226,8 @@ export function createSchemaTypes(projectId: string) {
     slugAlias,
     strings,
     texts,
+    unions,
+    ...unionTestTypes,
     urls,
     withObjectFieldsOrder,
 
