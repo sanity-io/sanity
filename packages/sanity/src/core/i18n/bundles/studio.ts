@@ -1245,6 +1245,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.tags.placeholder': 'Enter tag and press ENTER…',
   /** Placeholder for an empty tag input on touch devices */
   'inputs.tags.placeholder_touch': 'Enter tag…',
+  /** Label for clearing the selected object value from a union field */
+  'inputs.union.action.clear-value': 'Clear value',
   /** Label for selecting which object type to create for a union field */
   'inputs.union.action.select-type': 'Select type',
   /** Convert to `{{targetType}}` */

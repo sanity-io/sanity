@@ -1,6 +1,9 @@
+import {ResetIcon} from '@sanity/icons'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
 
-import {type FormPatch, PatchEvent} from '../../../patch'
+import {type DocumentFieldAction} from '../../../../config'
+import {studioLocaleNamespace} from '../../../../i18n/localeNamespaces'
+import {type FormPatch, PatchEvent, unset} from '../../../patch'
 import {type FieldMember, type UnionFormNode} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
@@ -79,6 +82,35 @@ export function UnionField(props: {
     },
     [onChange, member.name],
   )
+
+  const handleClearValue = useCallback(() => {
+    onChange(PatchEvent.from(unset([member.name])))
+  }, [member.name, onChange])
+
+  const clearValueFieldAction = useMemo<DocumentFieldAction>(
+    () => ({
+      name: 'clearUnionValue',
+      useAction() {
+        return {
+          type: 'action',
+          icon: ResetIcon,
+          title: 'Clear value',
+          i18n: {title: {key: 'inputs.union.action.clear-value', ns: studioLocaleNamespace}},
+          tone: 'critical',
+          onAction: handleClearValue,
+        }
+      },
+    }),
+    [handleClearValue],
+  )
+
+  const actions = useMemo(() => {
+    if (!member.field.value || member.field.readOnly) {
+      return fieldActions
+    }
+
+    return [...fieldActions, clearValueFieldAction]
+  }, [clearValueFieldAction, fieldActions, member.field.readOnly, member.field.value])
 
   const handleFocusChildPath = useCallback(
     (path: UnionInputProps['path']) => {
@@ -238,7 +270,7 @@ export function UnionField(props: {
 
   return (
     <RenderField
-      actions={fieldActions}
+      actions={actions}
       changed={member.field.changed}
       description={member.field.schemaType.description}
       index={member.index}

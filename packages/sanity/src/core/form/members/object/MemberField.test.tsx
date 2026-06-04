@@ -4,6 +4,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {DocumentIdProvider} from '../../contexts/DocumentIdProvider'
+import {PatchEvent, unset} from '../../patch'
 import {type FieldMember} from '../../store'
 import {
   FormCallbacksProvider,
@@ -46,9 +47,59 @@ describe('MemberField', () => {
     expect(renderField).toHaveBeenCalledTimes(1)
     expect(renderInput).toHaveBeenCalledTimes(1)
   })
+
+  it('adds a field action that clears populated standalone union fields', async () => {
+    const {member, formCallbacks, TestWrapper} = await setupTest({
+      value: {_type: 'hero', heading: 'Hello'},
+    })
+
+    const renderField = vi.fn<RenderFieldCallback>((props) => (
+      <div data-testid={`field-${props.inputId}`}>{props.children}</div>
+    ))
+    const renderInput = vi.fn<RenderInputCallback>((props) => (
+      <div data-testid={`input-${props.id}`} />
+    ))
+
+    render(
+      <MemberField
+        member={member}
+        renderField={renderField}
+        renderInput={renderInput}
+        renderItem={vi.fn<RenderArrayOfObjectsItemCallback>()}
+        renderPreview={vi.fn<RenderPreviewCallback>()}
+      />,
+      {wrapper: TestWrapper},
+    )
+
+    const actions = renderField.mock.calls[0][0].actions || []
+    const clearValueAction = actions.find((action) => action.name === 'clearUnionValue')
+    const actionItem = clearValueAction?.useAction({
+      documentId: 'test',
+      documentType: 'test',
+      path: ['oneOfMany'],
+      schemaType: member.field.schemaType,
+    })
+
+    expect(actionItem).toEqual(
+      expect.objectContaining({
+        type: 'action',
+        title: 'Clear value',
+        tone: 'critical',
+        i18n: {title: {key: 'inputs.union.action.clear-value', ns: 'studio'}},
+      }),
+    )
+
+    if (actionItem?.type !== 'action') {
+      throw new Error('Expected clear value action item')
+    }
+
+    actionItem.onAction()
+
+    expect(formCallbacks.onChange).toHaveBeenCalledWith(PatchEvent.from(unset(['oneOfMany'])))
+  })
 })
 
-async function setupTest() {
+async function setupTest(options: {value?: {_type: string; [key: string]: unknown}} = {}) {
   const schemaType = Object.assign(
     {
       name: 'oneOfMany',
@@ -81,7 +132,7 @@ async function setupTest() {
       path: ['oneOfMany'],
       presence: [],
       validation: [],
-      value: undefined,
+      value: options.value,
       readOnly: false,
       focused: false,
       changed: false,
