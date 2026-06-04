@@ -305,6 +305,10 @@ export default defineConfig([
     subtitle: 'Statically hidden and configured as the first (default) workspace',
     basePath: '/default-hidden',
     hidden: true,
+    auth: {
+      providers: [],
+      mode: 'replace',
+    },
   },
   defaultWorkspace,
   {

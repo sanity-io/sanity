@@ -106,6 +106,7 @@ export const DEBUG_INPUT_TYPES = [
   'virtualizationDebug',
   'virtualizationInObject',
   'annotationCustomTypeTest',
+  'issue4352FullscreenPopoverRepro',
   'arrayOfStringsGridCustomInputTest',
   'withObjectFieldsOrder',
 ]

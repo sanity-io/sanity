@@ -70,6 +70,7 @@ import {customBlock, hoistedPt, hoistedPtDocument} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
+import {issue4352FullscreenPopoverRepro} from './debug/issue4352FullscreenPopoverRepro'
 import {issue4516AddFilterIntentLink} from './debug/issue4516AddFilterIntentLink'
 import {languageFilterDebugType, localeBlockContentType} from './debug/languageFilter'
 import lazyComponents from './debug/lazyComponents'
@@ -272,6 +273,7 @@ export function createSchemaTypes(projectId: string) {
     superlatives,
     inspectorsTestType,
     invalidPreviews,
+    issue4352FullscreenPopoverRepro,
     issue4516AddFilterIntentLink,
     languageFilterDebugType,
     localeBlockContentType,
