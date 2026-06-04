@@ -525,7 +525,8 @@ export interface ImageSchemaType extends Omit<ObjectSchemaType, 'options'> {
 }
 
 /** @public */
+/** @public */
 export interface ModalOptions {
   type?: 'dialog' | 'popover'
-  width?: 1 | 2 | 3 | 4 | 5 | 'auto'
+  width?: 1 | 2 | 3 | 4 | 5 | 'auto' | (1 | 2 | 3 | 4 | 5 | 'auto')[]
 }
