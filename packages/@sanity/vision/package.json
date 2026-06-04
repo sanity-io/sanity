@@ -89,6 +89,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@rolldown/plugin-babel": "catalog:",
     "@sanity/client": "catalog:",
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/pkg-utils": "catalog:",
