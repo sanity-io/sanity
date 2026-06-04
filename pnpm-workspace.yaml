@@ -32,6 +32,7 @@ catalog:
   '@vanilla-extract/css': ^1.19.0
   '@vanilla-extract/vite-plugin': ^5.2.0
   '@vitejs/plugin-react': ^5.1.2
+  babel-plugin-react-compiler: ^1.0.0
   babel-plugin-styled-components: ^2.1.4
   esbuild-register: ^3.6.0
   eslint: ^9.39.4

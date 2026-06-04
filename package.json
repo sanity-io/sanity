@@ -120,6 +120,7 @@
     "turbo": "^2.7.5",
     "typedoc": "^0.28.16",
     "vercel": "^48.12.1",
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "packageManager": "pnpm@11.1.2",

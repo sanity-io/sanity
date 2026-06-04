@@ -1,5 +1,5 @@
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import viteReact from '@vitejs/plugin-react'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
 import {type Plugin, type UserConfig} from 'vite'
 
@@ -14,7 +14,7 @@ export const defaultConfig: UserConfig = {
     'process.env': {},
   },
   plugins: [
-    react({
+    viteReact({
       babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]},
     }),
     vanillaExtractPlugin(),

@@ -3,7 +3,7 @@ import {fileURLToPath} from 'node:url'
 
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import viteReact from '@vitejs/plugin-react'
 import {defaultClientConditions} from 'vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -60,7 +60,7 @@ export default defineConfig({
         // @ts-expect-error - Playwright CT and the workspace use different Vite versions
         vanillaExtractPlugin(),
         // @ts-expect-error - Playwright CT and the workspace use different Vite versions
-        react({
+        viteReact({
           babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]},
         }),
       ],

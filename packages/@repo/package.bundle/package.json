@@ -17,6 +17,7 @@
     "@types/lodash-es": "^4.17.12",
     "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "babel-plugin-react-compiler": "catalog:",
     "eslint": "catalog:",
     "lodash-es": "^4.18.1",
     "vite": "catalog:",

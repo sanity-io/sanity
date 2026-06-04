@@ -8,6 +8,7 @@
     "./vitest": "./vitest/index.mjs"
   },
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   }
 }
