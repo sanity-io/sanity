@@ -1,6 +1,6 @@
 import {type ForwardedRef, forwardRef} from 'react'
 import {getPublishedId} from 'sanity'
-import {IntentLink} from 'sanity/router'
+import {type IntentJsonParams, type IntentParameters, IntentLink} from 'sanity/router'
 import {type ChildLinkProps} from 'sanity/structure'
 
 /**
@@ -11,28 +11,28 @@ export const StructureIntentChildLink = forwardRef(function StructureIntentChild
   props: ChildLinkProps,
   ref: ForwardedRef<HTMLAnchorElement>,
 ) {
-  const {childId, childParameters, children, ...rest} = props
+  const {childId, childParameters, childPayload, children, ...rest} = props
   const childType = childParameters?.type
-  const path = childParameters?.path
 
   if (!childType) {
     return null
   }
+
+  const intentParams = {
+    ...childParameters,
+    id: getPublishedId(childId),
+    mode: 'structure',
+  }
+
+  const params: IntentParameters =
+    childPayload !== undefined ? [intentParams, childPayload as IntentJsonParams] : intentParams
 
   return (
     <IntentLink
       {...rest}
       ref={ref}
       intent="edit"
-      params={{
-        id: getPublishedId(childId),
-        type: childType,
-        mode: 'structure',
-        ...(path ? {path} : {}),
-        ...childParameters,
-        ...(childParameters?.template ? {template: childParameters.template} : {}),
-        ...(childParameters?.parentRefPath ? {parentRefPath: childParameters.parentRefPath} : {}),
-      }}
+      params={params}
       rel="noopener noreferrer"
       target="_blank"
     >
