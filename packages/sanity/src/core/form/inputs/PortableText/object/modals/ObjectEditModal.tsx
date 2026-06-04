@@ -69,7 +69,7 @@ export function ObjectEditModal(props: {
       type="dialog"
       onClose={onClose}
       header={modalTitle}
-      width={1}
+      width={modalWidth ?? 1}
       autofocus={autoFocus}
     >
       {props.children}
