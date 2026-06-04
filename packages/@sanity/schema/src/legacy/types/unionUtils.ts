@@ -58,6 +58,6 @@ export function flattenArrayMemberTypesWithSources(members: SchemaType[]): Effec
   return effective
 }
 
-export function flattenArrayMemberTypes(members: SchemaType[]): SchemaType[] {
+export function flattenUnionMembers(members: SchemaType[]): SchemaType[] {
   return flattenArrayMemberTypesWithSources(members).map((entry) => entry.member)
 }

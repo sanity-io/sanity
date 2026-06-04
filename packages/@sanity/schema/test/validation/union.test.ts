@@ -118,17 +118,34 @@ describe('union schema validation', () => {
     expect(invalidUnionProblems.every((problem) => problem.message.includes('"of"'))).toBe(true)
   })
 
-  it('rejects arrays and nested unions in union.of', () => {
+  it('allows named union members to merge into another union', () => {
     const problems = flatProblems([
+      productPromotion,
+      articlePromotion,
       {
-        name: 'nestedPromotion',
+        name: 'secondaryPromotion',
         type: 'union',
-        of: [{type: 'object', name: 'productPromotion', fields: []}],
+        of: [{type: 'articlePromotion'}],
       },
       {
         name: 'promotion',
         type: 'union',
-        of: [{type: 'array', of: [{type: 'string'}]}, {type: 'nestedPromotion'}],
+        of: [{type: 'productPromotion'}, {type: 'secondaryPromotion'}],
+      },
+    ])
+
+    expect(problems.filter((problem) => problem.severity === 'error')).toEqual([])
+  })
+
+  it('rejects arrays and inline unions in union.of', () => {
+    const problems = flatProblems([
+      {
+        name: 'promotion',
+        type: 'union',
+        of: [
+          {type: 'array', of: [{type: 'string'}]},
+          {type: 'union', of: [{type: 'object', name: 'productPromotion', fields: []}]},
+        ],
       },
     ])
 
@@ -143,7 +160,7 @@ describe('union schema validation', () => {
       expect.objectContaining({
         severity: 'error',
         helpId: 'schema-union-of-invalid',
-        message: expect.stringContaining('nested union'),
+        message: expect.stringContaining('inline union'),
       }),
     )
   })

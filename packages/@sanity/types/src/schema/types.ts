@@ -407,6 +407,8 @@ export interface UnionSchemaType<
   jsonType: 'object'
   unionKind: 'object'
   of: TMember[]
+  /** Empty compatibility getter for schema walkers that branch on `jsonType: 'object'`. */
+  fields: []
   options?: UnionOptions
   /** @internal */
   __experimental_union: true

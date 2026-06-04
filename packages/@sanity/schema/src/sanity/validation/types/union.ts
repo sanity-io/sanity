@@ -6,6 +6,7 @@ import {
   formatMemberList,
   getStoredMemberName,
   hasBuiltinNameConflict,
+  isIntrinsicUnionDefinition,
   isObjectBackedMember,
   isUnionTypeReference,
   resolveJsonType,
@@ -40,10 +41,10 @@ function validateUnionMember(member: any, index: number, visitorContext: any) {
     )
   }
 
-  if (isUnionTypeReference(member, visitorContext)) {
+  if (isIntrinsicUnionDefinition(member)) {
     problems.push(
       error(
-        'Union members cannot be nested union declarations or references to another union.',
+        'Union members cannot be inline union declarations. Define a named root union type and reference it instead.',
         HELP_IDS.UNION_OF_INVALID,
       ),
     )

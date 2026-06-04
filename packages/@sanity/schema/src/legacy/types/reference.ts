@@ -3,6 +3,7 @@ import pick from 'lodash-es/pick.js'
 
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {createFieldsets} from './object'
+import {flattenUnionMembers} from './unionUtils'
 import {hiddenGetter, lazyGetter} from './utils'
 
 const REF_FIELD = {
@@ -71,7 +72,9 @@ export const ReferenceType = {
     })
 
     lazyGetter(parsed, 'to', () => {
-      return arrify(subTypeDef.to).map((toType: any) => createMemberType(toType))
+      return flattenUnionMembers(
+        arrify(subTypeDef.to).map((toType: any) => createMemberType(toType)),
+      )
     })
 
     lazyGetter(parsed, 'title', () => subTypeDef.title || buildTitle(parsed))
