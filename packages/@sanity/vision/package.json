@@ -99,7 +99,7 @@
     "@vanilla-extract/css": "catalog:",
     "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "babel-plugin-react-compiler": "1.0.0",
+    "babel-plugin-react-compiler": "catalog:",
     "babel-plugin-styled-components": "catalog:",
     "eslint": "catalog:",
     "jsdom": "catalog:",

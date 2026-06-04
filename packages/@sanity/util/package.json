@@ -140,6 +140,7 @@
     "@typescript/native-preview": "catalog:",
     "eslint": "catalog:",
     "rimraf": "catalog:",
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "browserslist": [

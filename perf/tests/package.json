@@ -32,6 +32,7 @@
     "esbuild": "0.28.0",
     "eslint": "catalog:",
     "tsx": "^4.21.0",
+    "vite": "catalog:",
     "vitest": "catalog:"
   }
 }
