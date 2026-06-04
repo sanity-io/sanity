@@ -1,31 +1,35 @@
 import pick from 'lodash-es/pick.js'
 
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
-import {flattenArrayMemberTypes} from './unionUtils'
 import {hiddenGetter, lazyGetter} from './utils'
 
-const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
+const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS, 'of']
 
-const ARRAY_CORE = {
-  name: 'array',
+const UNION_CORE = {
+  name: 'union',
   type: null,
-  jsonType: 'array',
+  jsonType: 'object',
+  unionKind: 'object',
   of: [],
+  __experimental_union: true,
 }
 
-export const ArrayType = {
+export const UnionType = {
   get() {
-    return ARRAY_CORE
+    return UNION_CORE
   },
   extend(subTypeDef: any, createMemberType: any) {
-    const parsed = Object.assign(pick(ARRAY_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: ARRAY_CORE,
+    const parsed = Object.assign(pick(UNION_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
+      type: UNION_CORE,
+      jsonType: 'object',
+      unionKind: 'object',
+      __experimental_union: true,
     })
+
     lazyGetter(parsed, 'of', () => {
-      return flattenArrayMemberTypes(
-        subTypeDef.of.map((ofTypeDef: any) => createMemberType.cached(ofTypeDef)),
-      )
+      return subTypeDef.of.map((ofTypeDef: any) => createMemberType.cached(ofTypeDef))
     })
+
     lazyGetter(parsed, OWN_PROPS_NAME, () => ({...subTypeDef, of: parsed.of}), {
       enumerable: false,
       writable: false,
@@ -40,8 +44,9 @@ export const ArrayType = {
         },
         extend: (extensionDef: any) => {
           if (extensionDef.of) {
-            throw new Error('Cannot override `of` property of subtypes of "array"')
+            throw new Error('Cannot override `of` property of subtypes of "union"')
           }
+
           const ownProps = pick(extensionDef, OVERRIDABLE_FIELDS)
           const current = Object.assign({}, parent, ownProps, {
             type: parent,

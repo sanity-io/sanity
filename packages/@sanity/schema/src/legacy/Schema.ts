@@ -1,6 +1,8 @@
 import startCase from 'lodash-es/startCase.js'
 
 import * as types from './types'
+import {UnionType} from './types/union'
+import {isIntrinsicUnionDefinition} from './types/unionUtils'
 import {lazyGetter} from './types/utils'
 
 interface ExtendHelper {
@@ -99,18 +101,27 @@ function compileRegistry(schemaDef: any) {
     }
   }
 
+  function getTypeBuilder(typeDef: any) {
+    if (isIntrinsicUnionDefinition(typeDef)) {
+      return UnionType
+    }
+
+    ensure(typeDef.type)
+    return registry[typeDef.type]
+  }
+
   function extendMember(memberDef: any) {
-    ensure(memberDef.type)
-    return registry[memberDef.type].extend(memberDef, extendHelper).get()
+    return getTypeBuilder(memberDef).extend(memberDef, extendHelper).get()
   }
 
   function add(typeDef: any) {
-    ensure(typeDef.type)
+    const typeBuilder = getTypeBuilder(typeDef)
+
     if (registry[typeDef.name]) {
       return
     }
     localTypeNames.push(typeDef.name)
-    registry[typeDef.name] = registry[typeDef.type].extend(typeDef, extendMember)
+    registry[typeDef.name] = typeBuilder.extend(typeDef, extendMember)
   }
 }
 
