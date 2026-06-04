@@ -13,6 +13,7 @@ type VisitContext = {
   index: number
   isDuplicate: (typeName: string) => boolean
   getType: (typeName: string) => null | SchemaType
+  getTypeDefinition: (typeName: string) => null | SchemaTypeDef
   getTypeNames: () => Array<string>
 }
 
@@ -38,7 +39,9 @@ export function traverseSchema(
   visitor: Visitor = NOOP_VISITOR,
 ) {
   const coreTypesRegistry = Object.create(null)
+  const coreTypeDefsByName = Object.create(null)
   const registry = Object.create(null)
+  const typeDefsByName = Object.create(null)
 
   const coreTypeNames = coreTypes.map((typeDef) => typeDef.name)
 
@@ -48,17 +51,27 @@ export function traverseSchema(
 
   coreTypes.forEach((coreType) => {
     coreTypesRegistry[coreType.name] = coreType
+    coreTypeDefsByName[coreType.name] = coreType
   })
 
   types.forEach((type, i) => {
     // Allocate a placeholder for each type
     registry[(type && type.name) || `__unnamed_${i}`] = {}
+    if (type?.name) {
+      typeDefsByName[type.name] = type
+    }
   })
 
   function getType(typeName: any) {
     return typeName === 'type'
       ? TYPE_TYPE
       : coreTypesRegistry[typeName] || registry[typeName] || null
+  }
+
+  function getTypeDefinition(typeName: any) {
+    return typeName === 'type'
+      ? TYPE_TYPE
+      : coreTypeDefsByName[typeName] || typeDefsByName[typeName] || null
   }
 
   const duplicateNames = uniq(flatten(getDupes(typeNames)))
@@ -78,6 +91,7 @@ export function traverseSchema(
       visit: visitType(false),
       isRoot,
       getType,
+      getTypeDefinition,
       getTypeNames,
       isReserved,
       isDuplicate,

@@ -65,6 +65,7 @@ const getObjectProblems = createTypeWithMembersProblemsAccessor('fields')
 const getImageProblems = createTypeWithMembersProblemsAccessor('fields')
 const getFileProblems = createTypeWithMembersProblemsAccessor('fields')
 const getArrayProblems = createTypeWithMembersProblemsAccessor('of')
+const getUnionProblems = createTypeWithMembersProblemsAccessor('of')
 const getReferenceProblems = createTypeWithMembersProblemsAccessor('to', (type) =>
   'to' in type ? arrify(type.to) : [],
 )
@@ -94,6 +95,9 @@ function getTypeProblems(type: SchemaTypeDefinition, path = []): TypeWithProblem
     }
     case 'array': {
       return getArrayProblems(type, path)
+    }
+    case 'union': {
+      return getUnionProblems(type, path)
     }
     case 'reference': {
       return getReferenceProblems(type, path)
