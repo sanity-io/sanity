@@ -221,3 +221,83 @@ describe('Rule.skip()', () => {
     expect(rule._required).toBe('optional')
   })
 })
+
+describe('union validation rules', () => {
+  const unionType = {
+    name: 'promotion',
+    jsonType: 'object',
+    unionKind: 'object',
+    __experimental_union: true,
+    of: [],
+  } as unknown as SchemaType
+
+  it('does not infer an Object type rule for unions', () => {
+    const rules = normalizeValidationRules(unionType)
+
+    expect(rules).toHaveLength(1)
+    expect(rules[0]._rules).toEqual([])
+  })
+
+  it('allows required, optional, skip, and custom on unions', () => {
+    const rules = normalizeValidationRules({
+      ...unionType,
+      validation: (rule: any) => [
+        rule.required(),
+        rule.optional(),
+        rule.skip(),
+        rule.custom(() => true),
+      ],
+    })
+
+    expect(rules.map((rule) => rule._rules)).toEqual([
+      [{flag: 'presence', constraint: 'required'}],
+      [{flag: 'presence', constraint: 'optional'}],
+      [],
+      [{flag: 'custom', constraint: expect.any(Function)}],
+    ])
+  })
+
+  it('throws when union validation uses object field rules', () => {
+    expect(() =>
+      normalizeValidationRules({
+        ...unionType,
+        validation: (rule: any) => rule.fields({title: (fieldRule: any) => fieldRule.required()}),
+      }),
+    ).toThrow('fields() can only be called on an object type')
+  })
+
+  it('throws when union validation uses unsupported rule flags', () => {
+    expect(() =>
+      normalizeValidationRules({
+        ...unionType,
+        validation: (rule: any) => rule.min(1),
+      }),
+    ).toThrow(
+      'Union schema type "promotion" only supports required(), optional(), skip(), and custom() validation rules',
+    )
+  })
+
+  it('throws when union validation is a direct rule with unsupported flags', () => {
+    expect(() =>
+      normalizeValidationRules({
+        ...unionType,
+        validation: RuleClass.number().min(1),
+      }),
+    ).toThrow(
+      'Union schema type "promotion" only supports required(), optional(), skip(), and custom() validation rules',
+    )
+  })
+
+  it('throws when union validation is a direct object rule with fields', () => {
+    expect(() =>
+      normalizeValidationRules({
+        ...unionType,
+        validation: RuleClass.object().fields({
+          title: (fieldRule: any) => fieldRule.required(),
+        }),
+      }),
+    ).toThrow(
+      'Union schema type "promotion" only supports required(), optional(), skip(), and custom() validation rules',
+    )
+  })
+})

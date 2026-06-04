@@ -1,5 +1,7 @@
 import {
+  isUnionSchemaType,
   type Rule,
+  type RuleSpec,
   type RuleTypeConstraint,
   type SchemaType,
   type ValidationContext,
@@ -19,6 +21,21 @@ const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
 
 const isRuleConstraint = (typeString: string): typeString is Lowercase<RuleTypeConstraint> =>
   typeString in ruleConstraintTypes
+
+const allowedUnionRuleFlags = new Set<RuleSpec['flag']>(['presence', 'custom'])
+
+function assertAllowedUnionValidationRules(typeDef: SchemaType, rules: Rule[]) {
+  if (!isUnionSchemaType(typeDef)) return
+
+  for (const rule of rules) {
+    const unsupported = rule._rules.find((spec) => !allowedUnionRuleFlags.has(spec.flag))
+    if (unsupported) {
+      throw new Error(
+        `Union schema type "${typeDef.name}" only supports required(), optional(), skip(), and custom() validation rules. Unsupported rule flag: "${unsupported.flag}".`,
+      )
+    }
+  }
+}
 
 export function getTypeChain(
   type: SchemaType | undefined,
@@ -106,21 +123,26 @@ export function normalizeValidationRules(
     )
   }
 
-  const baseRule =
-    // using an object + Object.values to de-dupe the type chain by type name
-    Object.values(
-      getTypeChain(typeDef).reduce<Record<string, SchemaType>>((acc, type) => {
-        acc[type.name] = type
-        return acc
-      }, {}),
-    ).reduce(baseRuleReducer, new RuleClass(typeDef))
+  const baseRule = isUnionSchemaType(typeDef)
+    ? new RuleClass(typeDef)
+    : // using an object + Object.values to de-dupe the type chain by type name
+      Object.values(
+        getTypeChain(typeDef).reduce<Record<string, SchemaType>>((acc, type) => {
+          acc[type.name] = type
+          return acc
+        }, {}),
+      ).reduce(baseRuleReducer, new RuleClass(typeDef))
 
   if (validation && typeof validation === 'object') {
-    return [validation]
+    const rules = [validation]
+    assertAllowedUnionValidationRules(typeDef, rules)
+    return rules
   }
 
   if (!validation) {
-    return [baseRule]
+    const rules = [baseRule]
+    assertAllowedUnionValidationRules(typeDef, rules)
+    return rules
   }
 
   if (typeof validation === 'function') {
