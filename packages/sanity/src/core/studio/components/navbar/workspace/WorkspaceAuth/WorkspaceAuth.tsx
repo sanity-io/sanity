@@ -26,41 +26,41 @@ const StyledContainer = styled(Container)((props) => {
 export function WorkspaceAuth() {
   const {visibleWorkspaces} = useVisibleWorkspaces()
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
-  const [selectedWorkspaceName, setSelectedWorkspaceName] = useState<string | null>(
-    activeWorkspace?.name || null,
-  )
-  const selectedWorkspace =
-    visibleWorkspaces.length === 1
-      ? visibleWorkspaces[0]
-      : visibleWorkspaces.find((workspace) => workspace.name === selectedWorkspaceName)
+  // The workspace we show the login for is always the active one, so its URL
+  // (basePath) and the rendered login stay in sync. `showChooser` is the only
+  // local UI state: whether the user is looking at the workspace picker instead
+  // of the active workspace's login form.
+  const [showChooser, setShowChooser] = useState(false)
+  const {t} = useTranslation()
+
+  const canChooseAnotherWorkspace = visibleWorkspaces.length > 1
+  const selectedWorkspace = activeWorkspace
   const LoginComponent = selectedWorkspace?.auth?.LoginComponent
 
-  const handleBack = useCallback(() => setSelectedWorkspaceName(null), [])
-  const {t} = useTranslation()
+  const handleBack = useCallback(() => setShowChooser(true), [])
 
   const handleCardSelect = useCallback(
     (workspaceName: string, state: 'loading' | 'logged-in' | 'logged-out' | 'no-access') => {
       // While loading, navigate; the destination's auth boundary will handle login if needed.
-      if (
-        (state === 'logged-in' || state === 'loading') &&
-        workspaceName !== activeWorkspace.name
-      ) {
-        setActiveWorkspace(workspaceName)
-        return
-      }
-
-      if (state === 'logged-out') {
-        setSelectedWorkspaceName(workspaceName)
+      if (state === 'logged-in' || state === 'loading' || state === 'logged-out') {
+        // Switch the active workspace so the URL reflects the chosen workspace.
+        // For a logged-out workspace the AuthBoundary keeps us on this screen,
+        // now scoped to (and showing the login for) the new workspace at its own
+        // basePath, instead of leaving the URL pointing at the previous one.
+        if (workspaceName !== activeWorkspace.name) {
+          setActiveWorkspace(workspaceName)
+        }
+        setShowChooser(false)
       }
     },
     [activeWorkspace.name, setActiveWorkspace],
   )
 
-  if (LoginComponent && selectedWorkspace) {
+  if (LoginComponent && selectedWorkspace && !showChooser) {
     return (
       <Container width={0}>
         <Stack space={2}>
-          {visibleWorkspaces.length > 1 && (
+          {canChooseAnotherWorkspace && (
             <Flex>
               <Button
                 icon={ArrowLeftIcon}
@@ -84,7 +84,7 @@ export function WorkspaceAuth() {
           >
             <Stack padding={2} paddingBottom={3} paddingTop={4}>
               <LoginComponent
-                key={selectedWorkspaceName}
+                key={selectedWorkspace.name}
                 projectId={selectedWorkspace.projectId}
                 redirectPath={
                   window.location.pathname.startsWith(selectedWorkspace.basePath)
@@ -93,6 +93,10 @@ export function WorkspaceAuth() {
                       `${window.location.pathname}${window.location.search}`
                     : selectedWorkspace.basePath
                 }
+                // Only offer switching when there's somewhere else to switch to.
+                // Lets the login UI (e.g. the no-providers warning) route back to
+                // the workspace chooser without a full reload.
+                onChooseAnotherWorkspace={canChooseAnotherWorkspace ? handleBack : undefined}
               />
             </Stack>
           </Layout>

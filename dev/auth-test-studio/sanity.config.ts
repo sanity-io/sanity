@@ -200,4 +200,17 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
   ] satisfies WorkspaceOptions[]
 }
 
-export default defineConfig(envs.flatMap(createWorkspaces))
+export default defineConfig([
+  ...envs.flatMap(createWorkspaces),
+  {
+    ...shared,
+    ...production.ppsg7ml5,
+    name: `noProviders`,
+    title: `Test workspace without auth providers`,
+    basePath: `/ppsg7ml5/noProviders`,
+    auth: {
+      providers: [],
+      mode: 'replace',
+    },
+  } satisfies WorkspaceOptions,
+])

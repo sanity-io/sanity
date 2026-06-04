@@ -1,6 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
-import {Badge, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {ArrowLeftIcon, WarningOutlineIcon} from '@sanity/icons'
+import {Badge, Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
@@ -8,6 +9,7 @@ import {type Observable} from 'rxjs'
 import {Button, type ButtonProps} from '../../../ui-components'
 import {LoadingBlock} from '../../components/loadingBlock'
 import {type AuthConfig} from '../../config'
+import {useTranslation} from '../../i18n'
 import {CustomLogo, providerLogos} from './providerLogos'
 import {type LoginComponentProps} from './types'
 
@@ -121,6 +123,7 @@ export function createLoginComponent({
   ...providerOptions
 }: CreateLoginComponentOptions) {
   function LoginComponent({projectId, ...props}: LoginComponentProps) {
+    const {t} = useTranslation()
     const redirectPath = props.redirectPath || props.basePath || '/'
 
     const [providerData, setProviderData] = useState<{
@@ -200,6 +203,57 @@ export function createLoginComponent({
 
     if (loading) {
       return <LoadingBlock showText />
+    }
+
+    // No providers resolved — typically a misconfiguration where `auth.providers`
+    // is an empty array together with `mode: 'replace'`, which swaps the default
+    // providers out for nothing. Surface a warning instead of an empty, dead-end
+    // chooser.
+    if (providers.length === 0) {
+      return (
+        <Card padding={4} radius={2} shadow={1} tone="caution">
+          <Flex>
+            <Box>
+              <Text size={1}>
+                <WarningOutlineIcon />
+              </Text>
+            </Box>
+            <Stack flex={1} marginLeft={3} space={4}>
+              <Text as="h1" size={1} weight="medium">
+                No login providers available
+              </Text>
+              <Text as="p" muted size={1}>
+                The <code>auth.providers</code> setting in your Studio configuration resolved to an
+                empty list. This usually means an empty array is combined with{' '}
+                <code>mode: 'replace'</code>, which replaces the default providers with none.
+              </Text>
+              <Text as="p" muted size={1}>
+                Add at least one provider, or remove <code>mode: 'replace'</code> to keep the
+                defaults.
+              </Text>
+              {props.onChooseAnotherWorkspace && (
+                <Flex>
+                  <Button
+                    icon={ArrowLeftIcon}
+                    mode="ghost"
+                    onClick={props.onChooseAnotherWorkspace}
+                    text={t('workspaces.action.choose-another-workspace')}
+                  />
+                </Flex>
+              )}
+              <Text as="p" muted size={1}>
+                <a
+                  href="https://www.sanity.io/docs/configuration#dc516e8cb39e"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Learn about auth configuration &rarr;
+                </a>
+              </Text>
+            </Stack>
+          </Flex>
+        </Card>
+      )
     }
 
     return (
