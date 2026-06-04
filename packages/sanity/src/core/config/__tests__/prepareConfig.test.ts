@@ -1,3 +1,4 @@
+import {of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getCollectedConfigWarnings} from '../configWarnings'
@@ -161,6 +162,111 @@ describe('prepareConfig — divergent auth warning', () => {
         auth: {redirectOnSingle: true, mode: 'replace', loginMethod: 'cookie'},
       }),
     ])
+
+    const newWarnings = getCollectedConfigWarnings().slice(warningsBefore)
+    const authWarning = newWarnings.find(
+      (w) => w.type === 'project-auth-divergence' && w.projectId === projectId,
+    )
+    expect(authWarning).toBeUndefined()
+  })
+})
+
+/** Issue #12952 helpers. Minimal AuthStore-shaped object — `isAuthStore` only
+ * checks for `state.subscribe`, so an rxjs Observable of an empty-auth value
+ * is enough to stand in for `createAuthStore(…)` without instantiating a real
+ * client. */
+function makeFakeAuthStore(): WorkspaceOptions['auth'] {
+  return {
+    state: of({authenticated: false, currentUser: null, client: null}),
+  } as unknown as WorkspaceOptions['auth']
+}
+
+/** Mirrors @sanity/cli-core's `getStudioWorkspaces`:
+ * `rawWorkspaces.map((w) => ({...w, auth: {state: of(getEmptyAuth())}}))`.
+ * Each `.map` iteration creates a fresh stub, so any sharing the user did
+ * upstream is lost. */
+function substituteCliAuth(workspaces: WorkspaceOptions[]): WorkspaceOptions[] {
+  return workspaces.map((workspace) => ({
+    ...workspace,
+    auth: {state: of({authenticated: false, currentUser: null, client: null})},
+  }))
+}
+
+describe('prepareConfig — issue #12952 (CLI auth substitution)', () => {
+  // Issue #12952: when the CLI loads a multi-workspace config for
+  // `sanity documents validate` (and other non-runtime commands),
+  // `getStudioWorkspaces` in @sanity/cli-core replaces each workspace's `auth`
+  // with a freshly-allocated `{state: of(getEmptyAuth())}` stub before
+  // `prepareConfig` runs. The stub satisfies `isAuthStore` (it has
+  // `state.subscribe`), so `fingerprintAuth` assigns each workspace a distinct
+  // `AuthStore@<id>`, and `warnOnDivergentProjectAuth` fires regardless of how
+  // the user set up auth in their original config — even when all workspaces
+  // shared a single `createAuthStore` reference, which the warning message
+  // itself recommends as the canonical workaround.
+  //
+  // These tests document the contract from the sanity-package side. They do
+  // not import any CLI code; they recreate the substitution inline so the
+  // regression is observable in this repo even though the fix may land in
+  // @sanity/cli-core.
+
+  let consoleWarnSpy: ReturnType<typeof vi.spyOn>
+
+  beforeEach(() => {
+    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore()
+  })
+
+  it('does not warn when workspaces share a single AuthStore reference (the canonical workaround)', () => {
+    // Contract check: the warning message itself recommends "consolidate to a
+    // single shared config", and the comment on `fingerprintAuth` says
+    // identity-equal AuthStore references should be treated as the same auth.
+    // At the prepareConfig boundary this contract holds — the bug is only
+    // observable once an upstream loader clones the workspaces (see below).
+    const projectId = `shared-store-${Math.random().toString(36).slice(2)}`
+    const warningsBefore = getCollectedConfigWarnings().length
+
+    const sharedStore = makeFakeAuthStore()
+
+    prepareConfig([
+      createWorkspace({name: 'a', projectId, basePath: '/a', auth: sharedStore}),
+      createWorkspace({name: 'b', projectId, basePath: '/b', auth: sharedStore}),
+      createWorkspace({name: 'c', projectId, basePath: '/c', auth: sharedStore}),
+    ])
+
+    const newWarnings = getCollectedConfigWarnings().slice(warningsBefore)
+    const authWarning = newWarnings.find(
+      (w) => w.type === 'project-auth-divergence' && w.projectId === projectId,
+    )
+    expect(authWarning).toBeUndefined()
+  })
+
+  // Regression for issue #12952. Fails on main. Will pass once a fix lands
+  // that makes the divergence check respect what the user originally declared
+  // (e.g. suppressing the warning when the CLI stub shape is detected, or
+  // moving the check past the CLI's auth substitution).
+  it('does not warn when the CLI substitutes auth on workspaces that originally shared a reference (#12952)', () => {
+    const projectId = `issue12952-${Math.random().toString(36).slice(2)}`
+    const warningsBefore = getCollectedConfigWarnings().length
+
+    // 1. User's config: three workspaces sharing one AuthStore reference.
+    const sharedStore = makeFakeAuthStore()
+    const userWorkspaces: WorkspaceOptions[] = [
+      createWorkspace({name: 'a', projectId, basePath: '/a', auth: sharedStore}),
+      createWorkspace({name: 'b', projectId, basePath: '/b', auth: sharedStore}),
+      createWorkspace({name: 'c', projectId, basePath: '/c', auth: sharedStore}),
+    ]
+
+    // 2. CLI substitution runs upstream, replacing each `auth` with a fresh
+    //    stub. The user no longer has a way to express "share auth".
+    const cliWorkspaces = substituteCliAuth(userWorkspaces)
+
+    // 3. prepareConfig should still NOT fire the warning: the user did the
+    //    right thing, the divergence is entirely an artifact of the CLI's
+    //    substitution.
+    prepareConfig(cliWorkspaces)
 
     const newWarnings = getCollectedConfigWarnings().slice(warningsBefore)
     const authWarning = newWarnings.find(
