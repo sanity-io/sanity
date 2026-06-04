@@ -17,6 +17,8 @@ import {
   type SchemaValidationValue,
   type SpanSchemaType,
   type StringSchemaType,
+  isUnionSchemaType,
+  type UnionSchemaType,
 } from '@sanity/types'
 import startCase from 'lodash-es/startCase.js'
 import {type ComponentType, type ReactNode} from 'react'
@@ -88,6 +90,7 @@ type SchemaTypeKey =
   | keyof ObjectSchemaType
   | keyof StringSchemaType
   | keyof ReferenceSchemaType
+  | keyof UnionSchemaType
   | keyof BlockDefinition
   | 'group' // we strip this from fields
 
@@ -153,6 +156,8 @@ function transformCommonTypeFields(
 ): Omit<ManifestSchemaType, 'name' | 'title' | 'type'> {
   const arrayProps =
     typeName === 'array' && type.jsonType === 'array' ? transformArrayMember(type, context) : {}
+  const unionProps =
+    typeName === 'union' && isUnionSchemaType(type) ? transformUnion(type, context) : {}
 
   const referenceProps = isReference(type) ? transformReference(type) : {}
   const crossDatasetRefProps = isCrossDatasetReference(type)
@@ -163,7 +168,7 @@ function transformCommonTypeFields(
     : {}
 
   const objectFields: ObjectFields =
-    type.jsonType === 'object' && type.type && isCustomized(type)
+    type.jsonType === 'object' && type.type && !isUnionSchemaType(type) && isCustomized(type)
       ? {
           fields: getCustomFields(type).map((objectField) => transformField(objectField, context)),
         }
@@ -175,6 +180,7 @@ function transformCommonTypeFields(
     ...ensureString('description', type.description),
     ...objectFields,
     ...arrayProps,
+    ...unionProps,
     ...referenceProps,
     ...crossDatasetRefProps,
     ...globalRefProps,
@@ -234,9 +240,11 @@ function retainCustomTypeProps(type: SchemaType): Record<string, SerializablePro
     'fields',
     'to',
     'of',
+    'unionKind',
     // not serialized
     'type',
     'jsonType',
+    '__experimental_union',
     '__experimental_actions',
     '__experimental_formPreviewTitle',
     '__experimental_omnisearch_visibility',
@@ -326,6 +334,20 @@ function transformArrayMember(
 ): Pick<ManifestField, 'of'> {
   return {
     of: arrayMember.of.map((type) => {
+      const typeName = getDefinedTypeName(type) ?? type.name
+      return {
+        ...transformCommonTypeFields(type, typeName, context),
+        type: typeName,
+        ...(typeName === type.name ? {} : {name: type.name}),
+        ...ensureCustomTitle(type.name, type.title),
+      }
+    }),
+  }
+}
+
+function transformUnion(unionType: UnionSchemaType, context: Context): Pick<ManifestField, 'of'> {
+  return {
+    of: unionType.of.map((type) => {
       const typeName = getDefinedTypeName(type) ?? type.name
       return {
         ...transformCommonTypeFields(type, typeName, context),

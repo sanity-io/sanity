@@ -1103,4 +1103,34 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
 
     await validate(schema)
   })
+
+  test('can convert a schema with a standalone union', async () => {
+    const schema = createSchema({
+      name: 'test',
+      types: [
+        defineType({
+          name: 'productPromotion',
+          type: 'object',
+          fields: [{name: 'title', type: 'string'}],
+        }),
+        defineType({
+          name: 'articlePromotion',
+          type: 'object',
+          fields: [{name: 'headline', type: 'string'}],
+        }),
+        defineType({
+          name: 'promotion',
+          type: 'union',
+          of: [{type: 'productPromotion'}, {type: 'articlePromotion'}],
+        }),
+        defineType({
+          name: 'campaign',
+          type: 'document',
+          fields: [{name: 'promotion', type: 'promotion'}],
+        }),
+      ],
+    })
+
+    await validate(schema)
+  })
 })

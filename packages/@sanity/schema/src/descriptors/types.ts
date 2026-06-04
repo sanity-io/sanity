@@ -97,6 +97,11 @@ export interface ArrayTypeDef extends SubtypeDef {
   of: Array<ArrayElement | HoistedMarker>
 }
 
+export interface UnionTypeDef extends SubtypeDef {
+  extends: 'union'
+  of: Array<ArrayElement | HoistedMarker>
+}
+
 export type ArrayElement = {
   name: string | null
   typeDef: TypeDef
@@ -150,7 +155,7 @@ export type ReferenceTarget = {
   name: string
 }
 
-export type TypeDef = CoreTypeDef | ArrayTypeDef | ReferenceTypeDef | SubtypeDef
+export type TypeDef = CoreTypeDef | ArrayTypeDef | UnionTypeDef | ReferenceTypeDef | SubtypeDef
 
 /**
  * A validation contains a list of rules.

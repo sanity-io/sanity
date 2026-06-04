@@ -3081,3 +3081,43 @@ describe('hoisting', () => {
     expect(encoded.typeDef.of[0]).toMatchObject({__type: 'hoisted'})
   })
 })
+
+describe('Union schema type descriptors', () => {
+  test('converts union schema types', async () => {
+    const schema = createSchema({
+      name: 'custom',
+      types: [
+        {
+          name: 'productPromotion',
+          type: 'object',
+          fields: [{name: 'title', type: 'string'}],
+        },
+        {
+          name: 'articlePromotion',
+          type: 'object',
+          fields: [{name: 'headline', type: 'string'}],
+        },
+        {
+          name: 'promotion',
+          type: 'union',
+          of: [{type: 'productPromotion'}, {type: 'articlePromotion'}],
+        },
+      ],
+    })
+
+    if (schema._validation?.length) {
+      throw new Error(
+        `Test contains invalid schema definition: ${JSON.stringify(schema._validation, null, 2)}`,
+      )
+    }
+
+    const desc = await DESCRIPTOR_CONVERTER.get(schema)
+    await expectManifestSchemaConversion(schema, desc)
+    const type = findTypeInDesc('promotion', desc)!
+
+    expect(type.typeDef).toMatchObject({
+      extends: 'union',
+      of: [{name: 'productPromotion'}, {name: 'articlePromotion'}],
+    })
+  })
+})

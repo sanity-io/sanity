@@ -13,6 +13,8 @@ import {
   type Rule as IRule,
   type Schema,
   type SchemaType,
+  isUnionSchemaType,
+  type UnionSchemaType,
 } from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import isObject from 'lodash-es/isObject.js'
@@ -45,6 +47,7 @@ import {
   type TypeDef,
   type UndefinedMarker,
   type UnknownMarker,
+  type UnionTypeDef,
   type Validation,
   type ValidationMessage,
 } from './types'
@@ -317,6 +320,17 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
         }),
         ...common,
       } satisfies ArrayTypeDef
+    }
+    case 'union': {
+      const unionType = isUnionSchemaType(schemaType) ? schemaType : (schemaType as UnionSchemaType)
+      return {
+        extends: 'union',
+        of: unionType.of.map((ofType) => ({
+          name: ofType.name,
+          typeDef: convertTypeDef(ofType, `${path}.${ofType.name}`, opts),
+        })),
+        ...common,
+      } satisfies UnionTypeDef
     }
     case 'reference':
     case 'globalDocumentReference':
