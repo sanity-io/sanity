@@ -322,7 +322,9 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
       } satisfies ArrayTypeDef
     }
     case 'union': {
-      const unionType = isUnionSchemaType(schemaType) ? schemaType : (schemaType as UnionSchemaType)
+      const unionType = isUnionSchemaType(schemaType)
+        ? schemaType
+        : (schemaType as unknown as UnionSchemaType)
       return {
         extends: 'union',
         of: unionType.of.map((ofType) => ({

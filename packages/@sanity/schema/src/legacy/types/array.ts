@@ -21,13 +21,17 @@ export const ArrayType = {
     let memberTypes: any[] | undefined
     let effectiveMemberTypes: ReturnType<typeof flattenArrayMemberTypesWithSources> | undefined
 
-    function getMemberTypes() {
-      memberTypes ||= subTypeDef.of.map((ofTypeDef: any) => createMemberType.cached(ofTypeDef))
-      return memberTypes
+    function getMemberTypes(): any[] {
+      if (!memberTypes) {
+        memberTypes = subTypeDef.of.map((ofTypeDef: any) => createMemberType.cached(ofTypeDef))
+      }
+      return memberTypes!
     }
 
-    function getEffectiveMemberTypes() {
-      effectiveMemberTypes ||= flattenArrayMemberTypesWithSources(getMemberTypes())
+    function getEffectiveMemberTypes(): ReturnType<typeof flattenArrayMemberTypesWithSources> {
+      if (!effectiveMemberTypes) {
+        effectiveMemberTypes = flattenArrayMemberTypesWithSources(getMemberTypes())
+      }
       return effectiveMemberTypes
     }
 

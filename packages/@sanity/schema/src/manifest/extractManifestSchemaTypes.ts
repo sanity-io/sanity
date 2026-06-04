@@ -196,7 +196,7 @@ function transformCommonTypeFields(
 function transformFieldsets(
   type: SchemaType,
 ): {fieldsets: ManifestFieldset[]} | Record<string, never> {
-  if (type.jsonType !== 'object') {
+  if (type.jsonType !== 'object' || isUnionSchemaType(type) || !('fieldsets' in type)) {
     return {}
   }
   const fieldsets = type.fieldsets
@@ -520,7 +520,11 @@ function transformBlockType(
   blockType: SchemaType,
   context: Context,
 ): Pick<ManifestSchemaType, 'marks' | 'lists' | 'styles' | 'of'> | Record<string, never> {
-  if (blockType.jsonType !== 'object' || !isType(blockType, 'block')) {
+  if (
+    blockType.jsonType !== 'object' ||
+    isUnionSchemaType(blockType) ||
+    !isType(blockType, 'block')
+  ) {
     return {}
   }
 

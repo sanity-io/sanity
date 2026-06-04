@@ -38,6 +38,7 @@ describe('legacy schema union compiler', () => {
       name: 'promotion',
       jsonType: 'object',
       unionKind: 'object',
+      // eslint-disable-next-line camelcase
       __experimental_union: true,
     })
     expect(promotion.of.map((member: any) => member.name)).toEqual([

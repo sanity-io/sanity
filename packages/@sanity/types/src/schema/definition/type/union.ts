@@ -14,8 +14,6 @@ import {
 } from '../schemaDefinition'
 import {type BaseSchemaDefinition, type BaseSchemaTypeOptions} from './common'
 
-export type {InsertMenuOptions}
-
 /** @public */
 export interface UnionOptions extends BaseSchemaTypeOptions {
   /** @alpha */

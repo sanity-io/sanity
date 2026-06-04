@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {
   isKeyedObject,
+  isObjectSchemaType,
   isTypedObject,
   type CurrentUser,
   type Rule,
@@ -368,7 +369,7 @@ function validateItemObservable({
   const addUnknownFieldsValidator = (rule: Rule) => {
     if (
       // if the schema type is an object type
-      type?.jsonType === 'object' &&
+      isObjectSchemaType(type) &&
       // and if somewhere in it's type chain, it inherits from object or document
       getTypeChain(type).find((t) => ['object', 'document', 'file', 'image'].includes(t.name)) &&
       // and the environment is not the studio
@@ -411,7 +412,7 @@ function validateItemObservable({
   const selfIsRequired = rules.some((rule) => rule.isRequired())
   const shouldRunNestedObjectValidation =
     // run nested validation for objects
-    type?.jsonType === 'object' &&
+    isObjectSchemaType(type) &&
     // if the value is truthy
     (!!value || // or
       // (the value is null or undefined) and the top-level value is required

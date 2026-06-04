@@ -11,6 +11,7 @@ const UNION_CORE = {
   jsonType: 'object',
   unionKind: 'object',
   of: [],
+  // eslint-disable-next-line camelcase
   __experimental_union: true,
 }
 
@@ -23,6 +24,7 @@ export const UnionType = {
       type: UNION_CORE,
       jsonType: 'object',
       unionKind: 'object',
+      // eslint-disable-next-line camelcase
       __experimental_union: true,
     })
 

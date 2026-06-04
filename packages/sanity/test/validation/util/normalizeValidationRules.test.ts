@@ -227,6 +227,7 @@ describe('union validation rules', () => {
     name: 'promotion',
     jsonType: 'object',
     unionKind: 'object',
+    // eslint-disable-next-line camelcase
     __experimental_union: true,
     of: [],
   } as unknown as SchemaType

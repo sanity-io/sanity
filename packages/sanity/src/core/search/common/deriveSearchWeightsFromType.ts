@@ -1,5 +1,6 @@
 import {
   type CrossDatasetType,
+  isObjectSchemaType,
   type SchemaType,
   type SearchConfiguration,
   type SlugSchemaType,
@@ -97,7 +98,7 @@ function getLeafWeights(
     let recursiveResult = accumulator
     for (const t of typeChain) {
       if (
-        t.jsonType === 'object' &&
+        isObjectSchemaType(t) &&
         !!t.fields?.length &&
         !ignoredBuiltInObjectTypes.includes(t.name)
       ) {
