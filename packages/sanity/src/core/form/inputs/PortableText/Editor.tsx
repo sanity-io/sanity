@@ -1,7 +1,5 @@
 import {
   type BlockDecoratorRenderProps,
-  type BlockListItemRenderProps,
-  type BlockStyleRenderProps,
   type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
@@ -10,8 +8,6 @@ import {
   type PortableTextEditableProps,
   type RangeDecoration,
   type RenderAnnotationFunction,
-  type RenderBlockFunction,
-  type RenderChildFunction,
 } from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
@@ -27,8 +23,6 @@ import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Edit
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
 import {Decorator} from './text'
-import {ListItem} from './text/ListItem'
-import {Style} from './text/Style'
 import {Toolbar} from './toolbar'
 
 const noOutlineStyle = {outline: 'none'} as const
@@ -60,8 +54,6 @@ interface EditorProps {
   readOnly?: boolean
   rangeDecorations?: RangeDecoration[]
   renderAnnotation: RenderAnnotationFunction
-  renderBlock: RenderBlockFunction
-  renderChild: RenderChildFunction
   scrollElement: HTMLElement | null
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
   setScrollElement: (scrollElement: HTMLElement | null) => void
@@ -88,8 +80,6 @@ export function Editor(props: EditorProps): ReactNode {
     readOnly,
     rangeDecorations,
     renderAnnotation,
-    renderBlock,
-    renderChild,
     scrollElement,
     setPortalElement,
     setScrollElement,
@@ -130,14 +120,6 @@ export function Editor(props: EditorProps): ReactNode {
     return <Decorator {...decoratorProps} />
   }, [])
 
-  const renderStyle = useCallback((styleProps: BlockStyleRenderProps) => {
-    return <Style {...styleProps} />
-  }, [])
-
-  const renderListItem = useCallback((listItemProps: BlockListItemRenderProps) => {
-    return <ListItem {...listItemProps} />
-  }, [])
-
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
   const editable = useMemo(() => {
@@ -149,12 +131,8 @@ export function Editor(props: EditorProps): ReactNode {
       rangeDecorations,
       'ref': elementRef,
       renderAnnotation,
-      renderBlock,
-      renderChild,
       renderDecorator,
-      renderListItem,
       renderPlaceholder,
-      renderStyle,
       scrollSelectionIntoView,
       'selection': initialSelection,
       spellCheck,
@@ -171,12 +149,8 @@ export function Editor(props: EditorProps): ReactNode {
     onPaste,
     rangeDecorations,
     renderAnnotation,
-    renderBlock,
-    renderChild,
     renderDecorator,
-    renderListItem,
     renderPlaceholder,
-    renderStyle,
     scrollSelectionIntoView,
     spellCheck,
   ])

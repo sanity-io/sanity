@@ -1,15 +1,23 @@
 import {
   type BlockAnnotationRenderProps,
-  type BlockChildRenderProps as EditorChildRenderProps,
-  type BlockRenderProps as EditorBlockRenderProps,
+  defineBlockObject,
+  defineInlineObject,
+  defineTextBlock,
   type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
   type OnPasteFn as EditorOnPasteFn,
   type PasteData as EditorPasteData,
   type RangeDecoration,
+  type RegistrableNode,
 } from '@portabletext/editor'
-import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
+import {NodePlugin} from '@portabletext/editor/plugins'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type PortableTextTextBlock,
+} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Box,
@@ -18,7 +26,7 @@ import {
   useBoundaryElement,
   usePortal,
 } from '@sanity/ui'
-import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {type ComponentProps, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
@@ -41,6 +49,21 @@ import {CombinedAnnotationPopover} from './object/CombinedAnnotationPopover'
 import {InlineObject} from './object/InlineObject'
 import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditModal'
 import {TextBlock} from './text'
+import {ListItem} from './text/ListItem'
+import {Style} from './text/Style'
+
+// PTE 7.2.0 exports the `defineX` factories but does not re-export the
+// render-props types from its public surface. Derive them by inference
+// from the factory parameter shape.
+type BlockObjectRenderProps = Parameters<
+  NonNullable<Parameters<typeof defineBlockObject>[0]['render']>
+>[0]
+type InlineObjectRenderProps = Parameters<
+  NonNullable<Parameters<typeof defineInlineObject>[0]['render']>
+>[0]
+type TextBlockRenderProps = Parameters<
+  NonNullable<Parameters<typeof defineTextBlock>[0]['render']>
+>[0]
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement | null>
@@ -143,40 +166,94 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
+  // Catch-all text block render: handles any `_type` not registered
+  // by a more-specific `defineTextBlock` upstream. Plays the role of
+  // the legacy `renderBlock` callback's text-block branch + folds in
+  // the legacy `renderStyle` and `renderListItem` wrapping that PTE
+  // used to apply before invoking `renderBlock` for text blocks.
   const renderTextBlock = useCallback(
-    (blockProps: EditorBlockRenderProps) => {
-      const {children, focused: blockFocused, path: blockPath, selected, value: block} = blockProps
+    (textBlockProps: TextBlockRenderProps) => {
+      const {attributes, focused: blockFocused, node, path: blockPath, selected} = textBlockProps
+      const block = node as PortableTextTextBlock
       const fullyQualifiedPath = path.concat(blockPath)
 
+      // Reproduce engine-default Style + ListItem wrapping around the
+      // editable children. PTE used to do this in its default text-block
+      // render before invoking `renderBlock`; under `defineTextBlock`
+      // override the engine no longer applies it, so the consumer
+      // override owns the wrapping. Studio's `<Style>` and `<ListItem>`
+      // look up the Sanity-flavoured schema type via context and only
+      // read `schemaType.value` from the engine prop, so the synthesized
+      // shape works.
+      // Render style and list-item wrappers using Studio's existing
+      // components. They read only `schemaType.value` from the engine
+      // prop (looking up the Sanity schema via context), so the
+      // synthesized `BlockStyleRenderProps` / `BlockListItemRenderProps`
+      // shape is safe.
+      let inner = textBlockProps.children
+      if (block.style !== undefined) {
+        inner = (
+          <Style
+            {...({
+              block,
+              children: inner,
+              focused: blockFocused,
+              path: fullyQualifiedPath,
+              schemaType: {value: block.style, name: block.style, title: block.style},
+              selected,
+              value: block.style,
+            } as ComponentProps<typeof Style>)}
+          />
+        )
+      }
+      if (block.listItem !== undefined) {
+        inner = (
+          <ListItem
+            {...({
+              block,
+              children: inner,
+              focused: blockFocused,
+              level: block.level ?? 1,
+              path: fullyQualifiedPath,
+              schemaType: {value: block.listItem, name: block.listItem, title: block.listItem},
+              selected,
+              value: block.listItem,
+            } as ComponentProps<typeof ListItem>)}
+          />
+        )
+      }
+
       return (
-        <TextBlock
-          floatingBoundary={floatingBoundary}
-          focused={blockFocused}
-          isFullscreen={isFullscreen}
-          onItemClose={onItemClose}
-          onItemOpen={onItemOpen}
-          onItemRemove={onItemRemove}
-          onPathFocus={onPathFocus}
-          path={path.concat(blockPath)}
-          readOnly={readOnly}
-          referenceBoundary={scrollElement}
-          renderAnnotation={renderAnnotation}
-          renderField={renderField}
-          renderInlineBlock={renderInlineBlock}
-          renderInput={renderInput}
-          renderItem={renderItem}
-          renderBlockActions={_renderBlockActions}
-          renderCustomMarkers={_renderCustomMarkers}
-          renderPreview={renderPreview}
-          renderBlock={renderBlock}
-          schemaType={schemaTypes.block}
-          selected={selected}
-          setElementRef={setElementRef}
-          value={block as PortableTextTextBlock}
-          anchorIdent={pathToAnchorIdent('input', fullyQualifiedPath)}
-        >
-          {children}
-        </TextBlock>
+        <div {...attributes}>
+          <TextBlock
+            floatingBoundary={floatingBoundary}
+            focused={blockFocused}
+            isFullscreen={isFullscreen}
+            onItemClose={onItemClose}
+            onItemOpen={onItemOpen}
+            onItemRemove={onItemRemove}
+            onPathFocus={onPathFocus}
+            path={fullyQualifiedPath}
+            readOnly={readOnly}
+            referenceBoundary={scrollElement}
+            renderAnnotation={renderAnnotation}
+            renderField={renderField}
+            renderInlineBlock={renderInlineBlock}
+            renderInput={renderInput}
+            renderItem={renderItem}
+            renderBlockActions={_renderBlockActions}
+            renderCustomMarkers={_renderCustomMarkers}
+            renderPreview={renderPreview}
+            renderBlock={renderBlock}
+            schemaType={schemaTypes.block}
+            selected={selected}
+            setElementRef={setElementRef}
+            value={block}
+            anchorIdent={pathToAnchorIdent('input', fullyQualifiedPath)}
+          >
+            {inner}
+          </TextBlock>
+        </div>
       )
     },
     [
@@ -198,62 +275,65 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderItem,
       renderPreview,
       schemaTypes.block,
+      schemaTypes.lists,
+      schemaTypes.styles,
       scrollElement,
       setElementRef,
     ],
   )
 
-  const renderObjectBlock = useCallback(
-    (blockProps: EditorBlockRenderProps) => {
-      const {
-        focused: blockFocused,
-        path: blockPath,
-        selected: blockSelected,
-        schemaType: blockSchemaType,
-        value: blockValue,
-      } = blockProps
-      const sanitySchemaType = schemaTypes.blockObjects.find(
-        (type) => type.name === blockSchemaType.name,
+  // Catch-all block-object render: handles any non-text block whose
+  // `_type` isn't registered upstream. Plays the role of the legacy
+  // `renderBlock` callback's object-block branch.
+  const renderBlockObject = useCallback(
+    (blockProps: BlockObjectRenderProps) => {
+      const {attributes, focused: blockFocused, node, path: blockPath, selected} = blockProps
+      const sanitySchemaType: ObjectSchemaType | undefined = schemaTypes.blockObjects.find(
+        (type) => type.name === node._type,
       )
       if (!sanitySchemaType) {
-        // This should never happen
-        throw new Error(
-          `Could not find Sanity schema type for block object: ${blockSchemaType.name}`,
-        )
+        // No matching Sanity schema type: fall back to the engine
+        // default. Happens when a container plugin registers a block
+        // object whose `_type` is not present at the PT array's top
+        // level (the only depth this enumeration covers).
+        return blockProps.renderDefault(blockProps)
       }
       return (
-        <BlockObject
-          floatingBoundary={floatingBoundary}
-          focused={blockFocused}
-          isFullscreen={isFullscreen}
-          onItemClose={onItemClose}
-          onItemOpen={onItemOpen}
-          onItemRemove={onItemRemove}
-          onPathFocus={onPathFocus}
-          path={path.concat(blockPath)}
-          readOnly={readOnly}
-          referenceBoundary={scrollElement}
-          relativePath={blockPath}
-          renderAnnotation={renderAnnotation}
-          renderBlock={renderBlock}
-          renderBlockActions={_renderBlockActions}
-          renderCustomMarkers={_renderCustomMarkers}
-          renderField={renderField}
-          renderInlineBlock={renderInlineBlock}
-          renderInput={renderInput}
-          renderItem={renderItem}
-          renderPreview={renderPreview}
-          schemaType={sanitySchemaType}
-          selected={blockSelected}
-          setElementRef={setElementRef}
-          value={blockValue}
-        />
+        <div {...attributes}>
+          {blockProps.children}
+          <BlockObject
+            floatingBoundary={floatingBoundary}
+            focused={blockFocused}
+            isFullscreen={isFullscreen}
+            onItemClose={onItemClose}
+            onItemOpen={onItemOpen}
+            onItemRemove={onItemRemove}
+            onPathFocus={onPathFocus}
+            path={path.concat(blockPath)}
+            readOnly={readOnly}
+            referenceBoundary={scrollElement}
+            relativePath={blockPath}
+            renderAnnotation={renderAnnotation}
+            renderBlock={renderBlock}
+            renderBlockActions={_renderBlockActions}
+            renderCustomMarkers={_renderCustomMarkers}
+            renderField={renderField}
+            renderInlineBlock={renderInlineBlock}
+            renderInput={renderInput}
+            renderItem={renderItem}
+            renderPreview={renderPreview}
+            schemaType={sanitySchemaType}
+            selected={selected}
+            setElementRef={setElementRef}
+            value={node}
+          />
+        </div>
       )
     },
     [
+      _renderBlockActions,
+      _renderCustomMarkers,
       floatingBoundary,
-      scrollElement,
-      schemaTypes.blockObjects,
       isFullscreen,
       onItemClose,
       onItemOpen,
@@ -263,90 +343,68 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       readOnly,
       renderAnnotation,
       renderBlock,
-      _renderBlockActions,
-      _renderCustomMarkers,
       renderField,
       renderInlineBlock,
       renderInput,
       renderItem,
       renderPreview,
+      schemaTypes.blockObjects,
+      scrollElement,
       setElementRef,
     ],
   )
 
-  // This is the function that is sent to PortableTextEditor's renderBlock callback
-  const editorRenderBlock = useCallback(
-    (blockProps: EditorBlockRenderProps) => {
-      const {value: block} = blockProps
-      const isTextBlock = block._type === schemaTypes.block.name
-      if (isTextBlock) {
-        return renderTextBlock(blockProps)
-      }
-      return renderObjectBlock(blockProps)
-    },
-    [schemaTypes.block.name, renderObjectBlock, renderTextBlock],
-  )
-
-  // This is the function that is sent to PortableTextEditor's renderChild callback
-  const editorRenderChild = useCallback(
-    (childProps: EditorChildRenderProps) => {
-      const {
-        children,
-        focused: childFocused,
-        path: childPath,
-        selected,
-        schemaType: childSchemaType,
-        value: child,
-      } = childProps
-      const isSpan = child._type === schemaTypes.span.name
-      if (isSpan) {
-        return children
-      }
-      const sanitySchemaType = schemaTypes.inlineObjects.find(
-        (type) => type.name === childSchemaType.name,
+  // Catch-all inline-object render: handles any inline object whose
+  // `_type` isn't registered upstream. Plays the role of the legacy
+  // `renderChild` callback's inline-object branch.
+  const renderInlineObject = useCallback(
+    (childProps: InlineObjectRenderProps) => {
+      const {attributes, focused: childFocused, node, path: childPath, selected} = childProps
+      const sanitySchemaType: ObjectSchemaType | undefined = schemaTypes.inlineObjects.find(
+        (type) => type.name === node._type,
       )
       if (!sanitySchemaType) {
-        // This should never happen
-        throw new Error(
-          `Could not find Sanity schema type for inline object: ${childSchemaType.name}`,
-        )
+        // Same fallback as block objects: container-nested inline
+        // objects fall through to the engine default until the form-
+        // store walker catches up.
+        return childProps.renderDefault(childProps)
       }
       return (
-        <InlineObject
-          floatingBoundary={floatingBoundary}
-          focused={childFocused}
-          onItemClose={onItemClose}
-          onItemOpen={onItemOpen}
-          onPathFocus={onPathFocus}
-          path={path.concat(childPath)}
-          readOnly={readOnly}
-          referenceBoundary={scrollElement}
-          relativePath={childPath}
-          renderAnnotation={renderAnnotation}
-          renderBlock={renderBlock}
-          renderCustomMarkers={renderCustomMarkers}
-          renderField={renderField}
-          renderInlineBlock={renderInlineBlock}
-          renderInput={renderInput}
-          renderItem={renderItem}
-          renderPreview={renderPreview}
-          schemaType={sanitySchemaType}
-          selected={selected}
-          setElementRef={setElementRef}
-          value={child}
-        />
+        <span {...attributes}>
+          {childProps.children}
+          <InlineObject
+            floatingBoundary={floatingBoundary}
+            focused={childFocused}
+            onItemClose={onItemClose}
+            onItemOpen={onItemOpen}
+            onPathFocus={onPathFocus}
+            path={path.concat(childPath)}
+            readOnly={readOnly}
+            referenceBoundary={scrollElement}
+            relativePath={childPath}
+            renderAnnotation={renderAnnotation}
+            renderBlock={renderBlock}
+            renderCustomMarkers={renderCustomMarkers}
+            renderField={renderField}
+            renderInlineBlock={renderInlineBlock}
+            renderInput={renderInput}
+            renderItem={renderItem}
+            renderPreview={renderPreview}
+            schemaType={sanitySchemaType}
+            selected={selected}
+            setElementRef={setElementRef}
+            value={node}
+          />
+        </span>
       )
     },
     [
-      schemaTypes.span.name,
-      schemaTypes.inlineObjects,
       floatingBoundary,
       onItemClose,
       onItemOpen,
       onPathFocus,
       path,
       readOnly,
-      scrollElement,
       renderAnnotation,
       renderBlock,
       renderCustomMarkers,
@@ -355,8 +413,22 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
+      schemaTypes.inlineObjects,
+      scrollElement,
       setElementRef,
     ],
+  )
+
+  // Three catch-all node registrations mounted via <NodePlugin> below.
+  // Stable array reference: NodePlugin re-runs its registration effect
+  // whenever `nodes` changes by reference.
+  const catchAllNodes = useMemo<RegistrableNode[]>(
+    () => [
+      defineTextBlock({type: '*', render: renderTextBlock}),
+      defineBlockObject({type: '*', render: renderBlockObject}),
+      defineInlineObject({type: '*', render: renderInlineObject}),
+    ],
+    [renderTextBlock, renderBlockObject, renderInlineObject],
   )
 
   const editorRenderAnnotation = useCallback(
@@ -482,8 +554,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             rangeDecorations={rangeDecorations}
             readOnly={readOnly}
             renderAnnotation={editorRenderAnnotation}
-            renderBlock={editorRenderBlock}
-            renderChild={editorRenderChild}
             setPortalElement={setPortalElement}
             scrollElement={scrollElement}
             setScrollElement={setScrollElement}
@@ -514,8 +584,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       path,
       rangeDecorations,
       editorRenderAnnotation,
-      editorRenderBlock,
-      editorRenderChild,
       scrollElement,
     ],
   )
@@ -546,6 +614,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   return (
     <SelectedAnnotationsProvider>
+      <NodePlugin nodes={catchAllNodes} />
       <PortalProvider __unstable_elements={portalElements} element={portal.element}>
         <BoundaryElementProvider element={floatingBoundary}>
           <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
