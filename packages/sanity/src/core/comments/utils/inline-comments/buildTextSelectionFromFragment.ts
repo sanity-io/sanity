@@ -1,14 +1,10 @@
 import {type EditorSelection} from '@portabletext/editor'
 import {toPlainText} from '@portabletext/react'
-import {
-  isKeySegment,
-  isPortableTextSpan,
-  isPortableTextTextBlock,
-  type PortableTextBlock,
-} from '@sanity/types'
+import {isPortableTextSpan, isPortableTextTextBlock, type PortableTextBlock} from '@sanity/types'
 
 import {type CommentTextSelection} from '../../types'
 import {COMMENT_INDICATORS} from './buildRangeDecorationSelectionsFromComments'
+import {findTextBlockByKey, getEnclosingTextBlockKey} from './findTextBlockByKey'
 
 interface BuildSelectionFromFragmentProps {
   fragment: PortableTextBlock[]
@@ -32,17 +28,15 @@ export function buildTextSelectionFromFragment(
   const textSelection: CommentTextSelection = {
     type: 'text',
     value: fragment.map((fragmentBlock) => {
-      const originalBlock = value.find((b) => b._key === fragmentBlock._key)
+      const originalBlock = findTextBlockByKey(value, fragmentBlock._key)?.block
       if (!isPortableTextTextBlock(originalBlock)) {
         return {
           _key: fragmentBlock._key,
           text: '',
         }
       }
-      const anchorBlockKey =
-        isKeySegment(normalizedSelection.anchor.path[0]) && normalizedSelection.anchor.path[0]._key
-      const focusBlockKey =
-        isKeySegment(normalizedSelection.focus.path[0]) && normalizedSelection.focus.path[0]._key
+      const anchorBlockKey = getEnclosingTextBlockKey(normalizedSelection.anchor.path)
+      const focusBlockKey = getEnclosingTextBlockKey(normalizedSelection.focus.path)
       const fragmentBlockText = toPlainText([fragmentBlock])
       const fragmentStartSpan = isPortableTextTextBlock(fragmentBlock)
         ? fragmentBlock.children[0]
