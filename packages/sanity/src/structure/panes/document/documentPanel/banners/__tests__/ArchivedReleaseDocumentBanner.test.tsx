@@ -15,14 +15,19 @@ vi.mock('sanity', async () => {
   }
 })
 
-vi.mock('../../../../../components', () => ({
+// NOTE: the banner imports `usePaneRouter` directly from
+// `../../../../components/paneRouter/usePaneRouter`, so the mock must target that
+// exact module specifier — mocking the `../components` barrel does not intercept it.
+vi.mock('../../../../../components/paneRouter/usePaneRouter', () => ({
   usePaneRouter: vi.fn(() => ({
     params: {},
     setParams: vi.fn(),
   })),
 }))
 
-const {usePaneRouter} = vi.mocked(await import('../../../../../components'))
+const {usePaneRouter} = vi.mocked(
+  await import('../../../../../components/paneRouter/usePaneRouter'),
+)
 
 const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>
 
@@ -75,8 +80,11 @@ describe('ArchivedReleaseDocumentBanner', () => {
     const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
     render(<ArchivedReleaseDocumentBanner />, {wrapper})
 
+    // Assert on the specific release title so the test proves the release was
+    // actually resolved via the historyVersion param — the generic archived-release
+    // fallback text also contains "archived" and would pass even without a match.
     await waitFor(() => {
-      expect(screen.getByText(/archived/i)).toBeInTheDocument()
+      expect(screen.getByText(/My Archived Release/)).toBeInTheDocument()
     })
   })
 
