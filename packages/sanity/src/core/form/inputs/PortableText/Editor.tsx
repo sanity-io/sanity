@@ -60,8 +60,12 @@ interface EditorProps {
   readOnly?: boolean
   rangeDecorations?: RangeDecoration[]
   renderAnnotation: RenderAnnotationFunction
-  renderBlock: RenderBlockFunction
-  renderChild: RenderChildFunction
+  // `renderBlock`/`renderChild` are provided only on the legacy render
+  // pipeline. Their presence is what puts the editor in legacy mode; on the
+  // `pt-native` pipeline the block/child/style/list-item rendering is owned
+  // by the `defineX` catch-alls mounted in `Compositor`.
+  renderBlock?: RenderBlockFunction
+  renderChild?: RenderChildFunction
   scrollElement: HTMLElement | null
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
   setScrollElement: (scrollElement: HTMLElement | null) => void
@@ -140,6 +144,11 @@ export function Editor(props: EditorProps): ReactNode {
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
+  // Legacy pipeline when `renderBlock` is provided; `pt-native` otherwise. On
+  // `pt-native` the block/child/style/list-item callbacks are omitted so the
+  // engine routes those positions through the `defineX` catch-alls instead.
+  const isLegacyPipeline = Boolean(renderBlock)
+
   const editable = useMemo(() => {
     const editableProps = {
       'aria-describedby': ariaDescribedBy,
@@ -149,16 +158,13 @@ export function Editor(props: EditorProps): ReactNode {
       rangeDecorations,
       'ref': elementRef,
       renderAnnotation,
-      renderBlock,
-      renderChild,
       renderDecorator,
-      renderListItem,
       renderPlaceholder,
-      renderStyle,
       scrollSelectionIntoView,
       'selection': initialSelection,
       spellCheck,
       'style': noOutlineStyle,
+      ...(isLegacyPipeline ? {renderBlock, renderChild, renderListItem, renderStyle} : {}),
     } satisfies PortableTextEditableProps
 
     return <PortableTextEditable {...editableProps} />
@@ -167,6 +173,7 @@ export function Editor(props: EditorProps): ReactNode {
     elementRef,
     hotkeys,
     initialSelection,
+    isLegacyPipeline,
     onCopy,
     onPaste,
     rangeDecorations,

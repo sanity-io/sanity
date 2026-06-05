@@ -256,6 +256,7 @@ export interface BaseSchemaType extends Partial<DeprecationConfiguration> {
     preview?: ComponentType<any>
     portableText?: {
       plugins?: ComponentType<any>
+      enableContainers?: boolean
     }
   }
 

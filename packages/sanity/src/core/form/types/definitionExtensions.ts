@@ -54,7 +54,21 @@ declare module '@sanity/types' {
     input?: ComponentType<ArrayOfObjectsInputProps>
     item?: ComponentType<ObjectItemProps>
     preview?: ComponentType<PreviewProps>
-    portableText?: {plugins: ComponentType<PortableTextPluginsProps>}
+    portableText?: {
+      plugins?: ComponentType<PortableTextPluginsProps>
+      /**
+       * Enable first-class support for container plugins (tables and other
+       * nested structures registered via `plugins`) in this field. Without
+       * it, content inside a container renders without Studio's editing UI:
+       * no previews, edit dialogs, or annotation popovers.
+       *
+       * Changes this field's editor DOM attributes from `data-slate-*` to
+       * `data-pt-*`; update any custom CSS or tests that target the old ones.
+       *
+       * @beta
+       */
+      enableContainers?: boolean
+    }
   }
 
   /**

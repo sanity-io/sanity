@@ -420,6 +420,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                   readOnly={readOnly || !ready}
                   renderBlockActions={renderBlockActions}
                   renderCustomMarkers={renderCustomMarkers}
+                  enableContainers={schemaType.components?.portableText?.enableContainers}
                 />
               </EditorProvider>
             </PortableTextMemberItemsProvider>
