@@ -10,7 +10,9 @@ const cases: [any, string][] = [
   [[1, 'foo', 'bar', 4], '[1].foo.bar[4]'],
   [[1, '-foo', 'bar', 4], "[1]['-foo'].bar[4]"],
   [[1, {foo: 'bar'}, 4], '[1][foo=="bar"][4]'],
-  [[1, {foo: 'bar', bar: 'baz'}, 4], '[1][foo=="bar"][bar=="baz"][4]'], // future maybe:
+  [[1, {foo: 'bar', bar: 'baz'}, 4], '[1][foo=="bar"][bar=="baz"][4]'],
+  [['array', {asset: {_ref: 'image-1'}}], 'array[asset._ref=="image-1"]'],
+  [['array', {a: {b: {c: 'deep'}}}], 'array[a.b.c=="deep"]'], // future maybe:
   // [[1, [{foo: 'bar'}, {bar: 'baz'}], 4], "[1][foo=='bar'||bar=='baz'][4]"]
   // [[1, {foo: 'bar', bar: 'baz'}, 4], "[1][foo=='bar'&&bar=='baz'][4]"]
 ]

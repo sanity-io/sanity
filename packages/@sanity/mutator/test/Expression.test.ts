@@ -63,6 +63,16 @@ test('Expression constraints', () => {
   expect(false).toEqual(strNumCompare.testConstraint(new PlainProbe({number: 123})))
   expect(true).toEqual(strNumCompare.testConstraint(new PlainProbe({number: '123'})))
   expect(false).toEqual(strNumCompare.testConstraint(new PlainProbe(7)))
+
+  const nestedAttrCompare = new Expression(parseAsPath('[asset._ref == "image-1"]').nodes[0])
+  expect(false).toEqual(nestedAttrCompare.constraintTargetIsSelf())
+  expect(true).toEqual(nestedAttrCompare.constraintTargetIsAttribute())
+  expect(false).toEqual(
+    nestedAttrCompare.testConstraint(new PlainProbe({asset: {_ref: 'image-2'}})),
+  )
+  expect(true).toEqual(
+    nestedAttrCompare.testConstraint(new PlainProbe({asset: {_ref: 'image-1'}})),
+  )
 })
 
 test('Expression toIndicies', () => {

@@ -107,7 +107,15 @@ export class Expression {
   }
 
   constraintTargetIsAttribute(): boolean {
-    return this.expr.type === 'constraint' && this.expr.lhs.type === 'attribute'
+    if (this.expr.type !== 'constraint') {
+      return false
+    }
+
+    const {lhs} = this.expr
+    return (
+      lhs.type === 'attribute' ||
+      (lhs.type === 'path' && lhs.nodes.every((node) => node.type === 'attribute'))
+    )
   }
 
   testConstraint(probe: Probe): boolean {
@@ -136,16 +144,16 @@ export class Expression {
       throw new Error('No LHS of expression')
     }
 
-    if (lhs.type !== 'attribute') {
-      throw new Error(`Constraint target ${lhs.type} not supported`)
-    }
-
     if (probe.containerType() !== 'object') {
       return false
     }
 
-    const lhsValue = probe.getAttribute(lhs.name)
-    if (lhsValue === undefined || lhsValue === null || lhsValue.containerType() !== 'primitive') {
+    const lhsProbe = getConstraintLhsProbe(probe, lhs)
+    if (
+      lhsProbe === undefined ||
+      lhsProbe === null ||
+      lhsProbe.containerType() !== 'primitive'
+    ) {
       // LHS is void and empty, or it is a collection
       return false
     }
@@ -156,7 +164,7 @@ export class Expression {
     }
 
     const rhs = expr.rhs && 'value' in expr.rhs ? expr.rhs.value : undefined
-    return testBinaryOperator(lhsValue.get(), expr.operator, rhs)
+    return testBinaryOperator(lhsProbe.get(), expr.operator, rhs)
   }
 
   pathNodes(): Expr[] {
@@ -255,6 +263,25 @@ export class Expression {
       value: i,
     })
   }
+}
+
+function getConstraintLhsProbe(probe: Probe, lhs: Expr): Probe | null {
+  if (lhs.type === 'attribute') {
+    return probe.getAttribute(lhs.name)
+  }
+
+  if (lhs.type === 'path') {
+    let current: Probe | null = probe
+    for (const node of lhs.nodes) {
+      if (!current || current.containerType() !== 'object' || node.type !== 'attribute') {
+        return null
+      }
+      current = current.getAttribute(node.name)
+    }
+    return current
+  }
+
+  throw new Error(`Constraint target ${lhs.type} not supported`)
 }
 
 // Tests an operator on two given primitive values

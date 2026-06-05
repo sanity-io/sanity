@@ -44,12 +44,22 @@ function toFormBuilderPatches(origin: FormPatchOrigin, patch: MutationPatch): Fo
           })
         }
         if (type === 'insert') {
-          const position = 'before' in patch.insert ? 'before' : 'after'
+          const insertSpec = patch.insert
+          if ('replace' in insertSpec) {
+            return {
+              type: 'insert',
+              position: 'replace',
+              path: decodePath(insertSpec.replace),
+              items: insertSpec.items,
+              origin,
+            }
+          }
+          const position = 'before' in insertSpec ? 'before' : 'after'
           return {
             type: 'insert',
             position: position,
-            path: decodePath(patch.insert[position]),
-            items: patch.insert.items,
+            path: decodePath(insertSpec[position]),
+            items: insertSpec.items,
             origin,
           }
         }

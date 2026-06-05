@@ -113,6 +113,70 @@ const examples: PatchExample[] = [
       scores: [{a: 1}, {a: 'hello'}, {a: 3}],
     },
   },
+  {
+    name: 'Replace array item by nested attribute constraint',
+    before: {
+      array: [
+        {asset: {_ref: 'image-1'}, label: 'old'},
+        {asset: {_ref: 'image-2'}, label: 'keep'},
+      ],
+    },
+    patch: {
+      id: 'a',
+      insert: {
+        replace: 'array[asset._ref == "image-1"]',
+        items: [{asset: {_ref: 'image-1'}, label: 'new'}],
+      },
+    },
+    after: {
+      array: [{asset: {_ref: 'image-1'}, label: 'new'}, {asset: {_ref: 'image-2'}, label: 'keep'}],
+    },
+  },
+  {
+    name: 'Insert after array item matched by nested attribute constraint',
+    before: {
+      array: [
+        {asset: {_ref: 'image-1'}, label: 'first'},
+        {asset: {_ref: 'image-2'}, label: 'second'},
+      ],
+    },
+    patch: {
+      id: 'a',
+      insert: {
+        after: 'array[asset._ref == "image-1"]',
+        items: [{asset: {_ref: 'image-3'}, label: 'inserted'}],
+      },
+    },
+    after: {
+      array: [
+        {asset: {_ref: 'image-1'}, label: 'first'},
+        {asset: {_ref: 'image-3'}, label: 'inserted'},
+        {asset: {_ref: 'image-2'}, label: 'second'},
+      ],
+    },
+  },
+  {
+    name: 'Replace with nested attribute constraint that matches nothing is a no-op',
+    before: {
+      array: [
+        {asset: {_ref: 'image-1'}, label: 'first'},
+        {asset: {_ref: 'image-2'}, label: 'second'},
+      ],
+    },
+    patch: {
+      id: 'a',
+      insert: {
+        replace: 'array[asset._ref == "missing"]',
+        items: [{asset: {_ref: 'image-9'}, label: 'should not appear'}],
+      },
+    },
+    after: {
+      array: [
+        {asset: {_ref: 'image-1'}, label: 'first'},
+        {asset: {_ref: 'image-2'}, label: 'second'},
+      ],
+    },
+  },
 ]
 
 export default examples

@@ -107,6 +107,7 @@ export const DEBUG_INPUT_TYPES = [
   'virtualizationInObject',
   'annotationCustomTypeTest',
   'issue4352FullscreenPopoverRepro',
+  'issue5313JsonPathInsertRepro',
   'arrayOfStringsGridCustomInputTest',
   'withObjectFieldsOrder',
 ]

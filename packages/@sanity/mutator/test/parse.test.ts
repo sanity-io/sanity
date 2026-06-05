@@ -153,6 +153,72 @@ const cases = {
     ],
     type: 'union',
   },
+  'array[asset._ref == "some_id"]': {
+    type: 'path',
+    nodes: [
+      {
+        type: 'attribute',
+        name: 'array',
+      },
+      {
+        type: 'union',
+        nodes: [
+          {
+            type: 'constraint',
+            operator: '==',
+            lhs: {
+              type: 'path',
+              nodes: [
+                {
+                  type: 'attribute',
+                  name: 'asset',
+                },
+                {
+                  type: 'attribute',
+                  name: '_ref',
+                },
+              ],
+            },
+            rhs: {
+              type: 'string',
+              value: 'some_id',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  'array[asset._ref?]': {
+    type: 'path',
+    nodes: [
+      {
+        type: 'attribute',
+        name: 'array',
+      },
+      {
+        type: 'union',
+        nodes: [
+          {
+            type: 'constraint',
+            operator: '?',
+            lhs: {
+              type: 'path',
+              nodes: [
+                {
+                  type: 'attribute',
+                  name: 'asset',
+                },
+                {
+                  type: 'attribute',
+                  name: '_ref',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    ],
+  },
   'variants[stock >= 20].stock': {
     type: 'path',
     nodes: [

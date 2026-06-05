@@ -29,6 +29,13 @@ describe('decodePath', () => {
     expect(decodePath('array[_key=="foo"]')).toEqual(['array', {_key: 'foo'}])
   })
 
+  test('decodes paths with dotted attribute constraints', () => {
+    expect(decodePath('array[asset._ref == "image-1"]')).toEqual([
+      'array',
+      {asset: {_ref: 'image-1'}},
+    ])
+  })
+
   test('decodes paths with key segments containing periods', () => {
     expect(decodePath('array[_key=="object.key"]')).toEqual(['array', {_key: 'object.key'}])
   })

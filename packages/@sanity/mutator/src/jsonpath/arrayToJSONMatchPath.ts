@@ -29,10 +29,7 @@ function stringifySegment(
   }
 
   if (isRecord(segment)) {
-    const seg = segment as Record<string, unknown>
-    return Object.keys(segment)
-      .map((key) => (isPrimitiveValue(seg[key]) ? `[${key}=="${seg[key]}"]` : ''))
-      .join('')
+    return constraintsFromObject(segment).join('')
   }
 
   if (typeof segment === 'string' && IS_DOTTABLE.test(segment)) {
@@ -40,6 +37,23 @@ function stringifySegment(
   }
 
   return `['${segment}']`
+}
+
+// Builds JSONMatch constraint expressions from a (possibly nested) keyed path
+// segment. A flat segment like `{_key: 'a'}` becomes `[_key=="a"]`, while a
+// nested segment like `{asset: {_ref: 'a'}}` becomes `[asset._ref=="a"]`.
+function constraintsFromObject(obj: Record<string, unknown>, prefix = ''): string[] {
+  const result: string[] = []
+  for (const key of Object.keys(obj)) {
+    const value = obj[key]
+    const lhs = prefix ? `${prefix}.${key}` : key
+    if (isPrimitiveValue(value)) {
+      result.push(`[${lhs}=="${value}"]`)
+    } else if (isRecord(value)) {
+      result.push(...constraintsFromObject(value, lhs))
+    }
+  }
+  return result
 }
 
 function isPrimitiveValue(val: unknown): val is string | number | boolean {

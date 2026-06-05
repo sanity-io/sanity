@@ -39,6 +39,20 @@ test('Match self constraint on array', () => {
   expectDescendants(iterated, ['<[2]|[b,c].d>', '<[4]|[b,c].d>'])
 })
 
+test('Match nested attribute constraint on array', () => {
+  const d = new Descender(
+    new Expression(inner('[asset._ref == "image-1"]')),
+    Expression.fromPath('label'),
+  )
+  const iterated = d.iterate(
+    new PlainProbe([
+      {asset: {_ref: 'image-2'}, label: 'skip'},
+      {asset: {_ref: 'image-1'}, label: 'match'},
+    ]),
+  )
+  expectDescendants(iterated, ['<[1]|label>'])
+})
+
 test('Match constraint on object', () => {
   const d = new Descender(new Expression(inner('[a == 7]')), Expression.fromPath('[b,c].d'))
   const mismatch = d.iterate(new PlainProbe({a: 9}))

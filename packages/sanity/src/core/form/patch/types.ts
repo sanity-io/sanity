@@ -98,7 +98,7 @@ export interface FormUnsetPatch extends FormPatchBase {
  * @hidden
  * @beta
  */
-export type FormInsertPatchPosition = 'before' | 'after'
+export type FormInsertPatchPosition = 'before' | 'after' | 'replace'
 
 /**
  *

@@ -9,7 +9,25 @@ function unquote(str: string) {
 
 function splitAttr(segment: string) {
   const [attr, key] = segment.split('==')
-  return {[attr]: unquote(key)}
+  return {[attr.trim()]: unquote(key.trim())}
+}
+
+function parseConstraintSegment(segment: string): PathSegment {
+  const match = segment.match(/^(.+?)\s*==\s*(.+)$/)
+  if (!match) {
+    return coerce(segment)
+  }
+
+  const [, lhs, rhs] = match
+  const parts = lhs.trim().split('.')
+  const value = unquote(rhs.trim())
+
+  let result: Record<string, unknown> = {[parts[parts.length - 1]]: value}
+  for (let i = parts.length - 2; i >= 0; i--) {
+    result = {[parts[i]]: result}
+  }
+
+  return result as PathSegment
 }
 
 function coerce(segment: string): PathSegment {
@@ -87,7 +105,12 @@ function tokenizeGradientPath(pathStr: string): string[] {
 function parseGradientPath(focusPathStr: string): Path {
   return tokenizeGradientPath(focusPathStr)
     .filter(Boolean)
-    .map((seg) => (seg.includes('==') ? splitAttr(seg) : coerce(seg))) as Path
+    .map((seg) => {
+      if (!seg.includes('==')) {
+        return coerce(seg)
+      }
+      return seg.includes('.') ? parseConstraintSegment(seg) : splitAttr(seg)
+    }) as Path
 }
 
 /**

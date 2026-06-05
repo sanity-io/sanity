@@ -176,11 +176,44 @@ class Parser {
     return this.parseNumber()
   }
 
+  // Parses the lhs of a filter, e.g. `asset._ref` in `[asset._ref == "id"]`.
+  // A leading alias (`@`/`$`) is returned as-is (self reference); only attribute
+  // chains like `asset._ref` are collapsed into a path expression.
+  parseFilterLhs(): AttributeExpr | AliasExpr | PathExpr | null {
+    const alias = this.parseAlias()
+    if (alias) {
+      return alias
+    }
+
+    const first = this.parseAttribute()
+    if (!first) {
+      return null
+    }
+
+    const nodes: AttributeExpr[] = [first]
+    while (this.match({type: 'operator', symbol: '.'})) {
+      const attr = this.parseAttribute()
+      if (!attr) {
+        throw new Error("Expected attribute name following '.'")
+      }
+      nodes.push(attr)
+    }
+
+    if (nodes.length === 1) {
+      return nodes[0]
+    }
+
+    return {
+      type: 'path',
+      nodes,
+    }
+  }
+
   // TODO: Reorder constraints so that literal value is always on rhs, and variable is always
   // on lhs.
   parseFilterExpression(): ConstraintExpr | null {
     const start = this.i
-    const expr = this.parseAttribute() || this.parseAlias()
+    const expr = this.parseFilterLhs()
     if (!expr) {
       return null
     }

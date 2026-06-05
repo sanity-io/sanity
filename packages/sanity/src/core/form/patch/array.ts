@@ -65,6 +65,13 @@ export function _arrayApply(value: FIXME, patch: FIXME) {
   if (tail.length === 0) {
     if (patch.type === 'insert') {
       const {position, items} = patch
+      if (position === 'replace') {
+        if (typeof index !== 'number') {
+          throw new Error(`Expected array index to be a number, instead got "${index}"`)
+        }
+        nextValue.splice(index, 1, ...(Array.isArray(items) ? items : [items]))
+        return nextValue
+      }
       return arrayInsert(value, position, index, items)
     } else if (patch.type === 'unset') {
       if (typeof index !== 'number') {

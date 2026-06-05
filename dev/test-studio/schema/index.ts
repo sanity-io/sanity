@@ -72,6 +72,7 @@ import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
 import {issue4352FullscreenPopoverRepro} from './debug/issue4352FullscreenPopoverRepro'
 import {issue4516AddFilterIntentLink} from './debug/issue4516AddFilterIntentLink'
+import {issue5313JsonPathInsertRepro} from './debug/issue5313JsonPathInsertRepro'
 import {languageFilterDebugType, localeBlockContentType} from './debug/languageFilter'
 import lazyComponents from './debug/lazyComponents'
 import liveEdit from './debug/liveEdit'
@@ -275,6 +276,7 @@ export function createSchemaTypes(projectId: string) {
     invalidPreviews,
     issue4352FullscreenPopoverRepro,
     issue4516AddFilterIntentLink,
+    issue5313JsonPathInsertRepro,
     languageFilterDebugType,
     localeBlockContentType,
     lazyComponents,
