@@ -10,15 +10,11 @@ import {
   makePatches,
   type Patch,
 } from '@sanity/diff-match-patch'
-import {
-  isPortableTextSpan,
-  isPortableTextTextBlock,
-  type PortableTextBlock,
-  type PortableTextTextBlock,
-} from '@sanity/types'
+import {isPortableTextSpan, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 
 import {isTextSelectionComment} from '../../helpers'
 import {type CommentDocument, type CommentsTextSelectionItem} from '../../types'
+import {findTextBlockByKey} from './findTextBlockByKey'
 
 // This must be set high to avoid false positives
 // (for example, when there are multiple occurrences of the same word, and you delete the original commented word)
@@ -84,10 +80,11 @@ export function buildRangeDecorationSelectionsFromComments(
 
   textSelections.forEach((comment) => {
     comment.target.path?.selection?.value.forEach((selectionMember) => {
-      const matchedBlock = value.find((block) => block._key === selectionMember._key)
-      if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
+      const found = findTextBlockByKey(value, selectionMember._key)
+      if (!found) {
         return
       }
+      const {block: matchedBlock, ancestorPath} = found
       const selectionText = selectionMember.text.replaceAll(COMMENT_INDICATORS_REGEX, '')
       const textWithChildSeparators = toPlainTextWithChildSeparators(matchedBlock)
       const {patches} = diffText(selectionText, selectionMember.text)
@@ -149,7 +146,7 @@ export function buildRangeDecorationSelectionsFromComments(
           selection: {
             anchor: {
               path: [
-                {_key: matchedBlock._key},
+                ...ancestorPath,
                 'children',
                 {_key: matchedBlock.children[childIndexAnchor]._key},
               ],
@@ -157,7 +154,7 @@ export function buildRangeDecorationSelectionsFromComments(
             },
             focus: {
               path: [
-                {_key: matchedBlock._key},
+                ...ancestorPath,
                 'children',
                 {_key: matchedBlock.children[childIndexFocus]._key},
               ],
