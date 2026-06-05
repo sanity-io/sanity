@@ -1,6 +1,7 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
+  getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   isCardinalityOneRelease,
   isDraftId,
@@ -14,6 +15,7 @@ import {
   LegacyLayerProvider,
   type ReleaseDocument,
   ScrollContainer,
+  useArchivedReleases,
   useFilteredReleases,
   usePausedScheduledDraft,
   usePerspective,
@@ -197,18 +199,30 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const {isPaused: isPausedDraft} = usePausedScheduledDraft()
 
-  // When viewing an archived scheduled draft, the selectedPerspective will be
-  // a plain string (the release ID) because the release is not in active releases.
-  // In this case, show the archived release banner instead of the "add to release" banner.
-  const isArchivedScheduledDraft =
-    params?.scheduledDraft &&
-    typeof selectedPerspective === 'string' &&
-    !isSystemBundle(selectedPerspective)
+  const {data: archivedReleases} = useArchivedReleases()
+
+  // When viewing an archived scheduled draft, the release is no longer among the
+  // active releases, so `selectedPerspective` falls back to a plain release-id
+  // string. Resolve the selected release from the archived releases and inspect
+  // its state directly: a scheduled draft is a cardinality-one release. This lets
+  // us show the archived release banner instead of the "add to release" banner.
+  const archivedScheduledDraftRelease = useMemo(
+    () =>
+      archivedReleases.find(
+        (release) =>
+          getReleaseIdFromReleaseDocumentId(release._id) === selectedPerspectiveName &&
+          isCardinalityOneRelease(release),
+      ),
+    [archivedReleases, selectedPerspectiveName],
+  )
 
   // eslint-disable-next-line complexity
   const banners = useMemo(() => {
     const archivedReleaseId =
-      params?.historyVersion ?? (isArchivedScheduledDraft ? params?.scheduledDraft : undefined)
+      params?.historyVersion ??
+      (archivedScheduledDraftRelease
+        ? getReleaseIdFromReleaseDocumentId(archivedScheduledDraftRelease._id)
+        : undefined)
     if (archivedReleaseId) {
       return <ArchivedReleaseDocumentBanner releaseId={archivedReleaseId} />
     }
@@ -347,8 +361,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     )
   }, [
     params?.historyVersion,
-    params?.scheduledDraft,
-    isArchivedScheduledDraft,
+    archivedScheduledDraftRelease,
     selectedPerspective,
     displayed,
     selectedReleaseId,
