@@ -2,7 +2,7 @@ import type * as SanityTelemetry from '@sanity/telemetry'
 /* eslint-disable import/first */
 // Regular imports first
 import {render} from '@testing-library/react'
-import {type ReactNode} from 'react'
+import {StrictMode, type ReactNode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 // Disable console.logging of telemetry events in tests
@@ -448,9 +448,10 @@ describe('StudioTelemetryProvider', () => {
       </DeferredTelemetryProvider>,
     )
 
-    expect(mockLog).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
-      advancedVersionControlEnabled: true,
-    })
+    expect(mockLog).toHaveBeenCalledWith(
+      WorkspaceFeaturesObserved,
+      expect.objectContaining({advancedVersionControlEnabled: true}),
+    )
   })
 
   it('emits WorkspaceFeaturesObserved with the flag disabled when advancedVersionControl is undefined', () => {
@@ -470,9 +471,66 @@ describe('StudioTelemetryProvider', () => {
       </DeferredTelemetryProvider>,
     )
 
-    expect(mockLog).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
-      advancedVersionControlEnabled: false,
-    })
+    expect(mockLog).toHaveBeenCalledWith(
+      WorkspaceFeaturesObserved,
+      expect.objectContaining({advancedVersionControlEnabled: false}),
+    )
+  })
+
+  it('emits WorkspaceFeaturesObserved with effective defaults for unset feature flags', () => {
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    expect(mockLog).toHaveBeenCalledWith(
+      WorkspaceFeaturesObserved,
+      expect.objectContaining({
+        releasesEnabled: true,
+        releasesLimit: undefined,
+        tasksEnabled: true,
+        mediaLibraryEnabled: false,
+        canvasEnabled: true,
+        fileDirectUploadsEnabled: true,
+        searchStrategy: 'groqLegacy',
+      }),
+    )
+  })
+
+  it('emits WorkspaceFeaturesObserved reflecting explicitly configured feature flags', () => {
+    vi.mocked(useWorkspace).mockReturnValue({
+      ...mockWorkspace,
+      mediaLibrary: {enabled: true},
+      releases: {enabled: false, limit: 5},
+      scheduledPublishing: {enabled: true, __internal__workspaceEnabled: true},
+      search: {strategy: 'groq2024', unstable_partialIndexing: {enabled: true}},
+      form: {file: {directUploads: false}, image: {directUploads: false}},
+    } as never)
+
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    expect(mockLog).toHaveBeenCalledWith(
+      WorkspaceFeaturesObserved,
+      expect.objectContaining({
+        mediaLibraryEnabled: true,
+        releasesEnabled: false,
+        releasesLimit: 5,
+        scheduledPublishingExplicitlyEnabled: true,
+        searchStrategy: 'groq2024',
+        partialIndexingEnabled: true,
+        fileDirectUploadsEnabled: false,
+        imageDirectUploadsEnabled: false,
+      }),
+    )
   })
 
   it('emits StudioLoaded once on mount with studio version and environment metadata', () => {
@@ -501,5 +559,78 @@ describe('StudioTelemetryProvider', () => {
         screenInnerWidth: expect.any(Number),
       }),
     )
+  })
+
+  it('emits WorkspaceFeaturesObserved only once when mounted in StrictMode', () => {
+    render(
+      <StrictMode>
+        <DeferredTelemetryProvider>
+          <StudioTelemetryProvider>
+            <div>Test Child</div>
+          </StudioTelemetryProvider>
+        </DeferredTelemetryProvider>
+      </StrictMode>,
+    )
+
+    const featureCalls = mockLog.mock.calls.filter(([event]) => event === WorkspaceFeaturesObserved)
+    expect(featureCalls).toHaveLength(1)
+  })
+
+  it('re-emits WorkspaceFeaturesObserved when the active workspace changes', () => {
+    const {rerender} = render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    vi.mocked(useWorkspace).mockReturnValue({
+      ...mockWorkspace,
+      name: 'other-workspace',
+      projectId: 'other-project',
+    } as never)
+
+    rerender(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    const featureCalls = mockLog.mock.calls.filter(([event]) => event === WorkspaceFeaturesObserved)
+    expect(featureCalls).toHaveLength(2)
+  })
+
+  it('emits the complete WorkspaceFeaturesObserved payload shape', () => {
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    expect(mockLog).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
+      advancedVersionControlEnabled: true,
+      releasesEnabled: true,
+      releasesLimit: undefined,
+      tasksEnabled: true,
+      scheduledDraftsEnabled: true,
+      scheduledPublishingEnabled: true,
+      scheduledPublishingExplicitlyEnabled: false,
+      mediaLibraryEnabled: false,
+      canvasEnabled: true,
+      variantsEnabled: false,
+      eventsApiDocumentsEnabled: true,
+      eventsApiReleasesEnabled: false,
+      announcementsEnabled: true,
+      draftsEnabled: true,
+      partialIndexingEnabled: false,
+      fileDirectUploadsEnabled: true,
+      imageDirectUploadsEnabled: true,
+      searchStrategy: 'groqLegacy',
+    })
   })
 })
