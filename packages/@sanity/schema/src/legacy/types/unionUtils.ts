@@ -14,7 +14,7 @@ export function isCompiledUnionType(type: unknown): type is UnionSchemaType {
   return isUnionSchemaType(type)
 }
 
-export function getStoredMemberName(member: any): string {
+function getStoredMemberName(member: any): string {
   return member.name || member.type?.name || member.type
 }
 
