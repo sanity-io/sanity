@@ -20,14 +20,17 @@ export function LiveManifestRegisterProvider() {
   const {theme} = useRootTheme()
 
   useEffect(() => {
-    if (!userApplication || workspaces.length === 0) {
-      // Nothing to register
-      return
-    }
-    // Upload once when workspaces are available
-    registerStudioManifest(userApplication, workspaces, theme).catch((err) => {
-      debug('Failed to upload studio manifest', err)
+    if (!userApplication || workspaces.length === 0) return undefined
+
+    // Abort the in-flight upload on cleanup so StrictMode's double mount, or a dep change,
+    // leaves only the latest upload running rather than racing duplicate requests.
+    const controller = new AbortController()
+    registerStudioManifest(userApplication, workspaces, theme, controller.signal).catch((error) => {
+      if (error?.name === 'AbortError') return
+      debug('Failed to upload studio manifest', error)
     })
+
+    return () => controller.abort()
   }, [userApplication, workspaces, theme])
 
   return null
