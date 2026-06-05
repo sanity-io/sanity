@@ -2,7 +2,7 @@ import type * as SanityTelemetry from '@sanity/telemetry'
 /* eslint-disable import/first */
 // Regular imports first
 import {render} from '@testing-library/react'
-import {type ReactNode} from 'react'
+import {StrictMode, type ReactNode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 // Disable console.logging of telemetry events in tests
@@ -501,5 +501,20 @@ describe('StudioTelemetryProvider', () => {
         screenInnerWidth: expect.any(Number),
       }),
     )
+  })
+
+  it('emits StudioLoaded only once when mounted in StrictMode', () => {
+    render(
+      <StrictMode>
+        <DeferredTelemetryProvider>
+          <StudioTelemetryProvider>
+            <div>Test Child</div>
+          </StudioTelemetryProvider>
+        </DeferredTelemetryProvider>
+      </StrictMode>,
+    )
+
+    const studioLoadedCalls = mockLog.mock.calls.filter(([event]) => event === StudioLoaded)
+    expect(studioLoadedCalls).toHaveLength(1)
   })
 })

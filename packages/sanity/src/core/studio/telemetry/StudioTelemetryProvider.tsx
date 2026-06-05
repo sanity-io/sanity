@@ -184,8 +184,11 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   // eslint-disable-next-line react-hooks/refs
   const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
 
+  // Per-instance guard so StrictMode's double-invoked mount effect logs StudioLoaded once.
+  const studioLoadedFiredRef = useRef(false)
   useEffect(() => {
-    if (!isClient || !contextRef.current) return
+    if (!isClient || !contextRef.current || studioLoadedFiredRef.current) return
+    studioLoadedFiredRef.current = true
     const ctx = contextRef.current
     store.logger.log(StudioLoaded, {
       studioVersion: SANITY_VERSION,
