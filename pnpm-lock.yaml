@@ -210,7 +210,7 @@ importers:
         version: link:../../packages/@repo/eslint-config
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
+        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
       eslint:
         specifier: 'catalog:'
         version: 9.39.4(jiti@2.7.0)
@@ -265,7 +265,7 @@ importers:
     devDependencies:
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
+        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
       eslint:
         specifier: 'catalog:'
         version: 9.39.4(jiti@2.7.0)
@@ -745,7 +745,7 @@ importers:
         version: 1.20.1(babel-plugin-macros@3.1.0)
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
+        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
       babel-plugin-react-compiler:
         specifier: 'catalog:'
         version: 1.0.0
@@ -908,7 +908,7 @@ importers:
         version: 4.17.12
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
+        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 5.2.0(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
@@ -1272,8 +1272,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1
       groq-js:
-        specifier: ^1.29.0
-        version: 1.30.2
+        specifier: https://pkg.pr.new/groq-js@348
+        version: https://pkg.pr.new/groq-js@348
       humanize-list:
         specifier: ^1.0.1
         version: 1.0.1
@@ -1550,7 +1550,7 @@ importers:
         version: 1.20.1(babel-plugin-macros@3.1.0)
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
+        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 5.2.0(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
@@ -1801,8 +1801,8 @@ importers:
         specifier: 3.1.3
         version: 3.1.3
       groq-js:
-        specifier: ^1.29.0
-        version: 1.30.2
+        specifier: https://pkg.pr.new/groq-js@348
+        version: https://pkg.pr.new/groq-js@348
       history:
         specifier: ^5.3.0
         version: 5.3.0
@@ -2007,7 +2007,7 @@ importers:
         version: 1.20.1(babel-plugin-macros@3.1.0)
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
+        version: 5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 5.2.0(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
@@ -8587,6 +8587,11 @@ packages:
 
   groq-js@1.30.2:
     resolution: {integrity: sha512-FqF7NNzBxya6Oq4VkTl9lg3W5Gjd3Cjwc6Et2OeAcTdmHOClwcYeAZkWR6wIm+KPtvESSYtzP59aj/+9egOKZQ==}
+    engines: {node: '>= 14'}
+
+  groq-js@https://pkg.pr.new/groq-js@348:
+    resolution: {integrity: sha512-4UeN9v6nifsHnCP+xlkdzsYXbJ70Tfn/dK8iCu600OBQFgOVFR3euyJ77FofqaI0TYS9wybHpD6gdRXfrKRxIQ==, tarball: https://pkg.pr.new/groq-js@348}
+    version: 1.30.2
     engines: {node: '>= 14'}
 
   groq@3.88.1-typegen-experimental.0:
@@ -16674,11 +16679,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vanilla-extract/compiler@0.7.0(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)':
+  '@vanilla-extract/compiler@0.7.0(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)':
     dependencies:
       '@vanilla-extract/css': 1.20.1(babel-plugin-macros@3.1.0)
       '@vanilla-extract/integration': 8.0.10(babel-plugin-macros@3.1.0)
-      vite: 7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
+      vite: 8.0.15(@types/node@24.13.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vite-node: 6.0.0(@types/node@24.13.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@types/node'
@@ -16687,7 +16692,6 @@ snapshots:
       - esbuild
       - jiti
       - less
-      - lightningcss
       - sass
       - sass-embedded
       - stylus
@@ -16740,9 +16744,9 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@vanilla-extract/vite-plugin@5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)':
+  '@vanilla-extract/vite-plugin@5.2.2(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)':
     dependencies:
-      '@vanilla-extract/compiler': 0.7.0(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
+      '@vanilla-extract/compiler': 0.7.0(@types/node@24.13.0)(babel-plugin-macros@3.1.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       '@vanilla-extract/integration': 8.0.10(babel-plugin-macros@3.1.0)
       vite: 7.3.3(@types/node@24.13.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     transitivePeerDependencies:
@@ -16752,7 +16756,6 @@ snapshots:
       - esbuild
       - jiti
       - less
-      - lightningcss
       - sass
       - sass-embedded
       - stylus
@@ -19164,6 +19167,12 @@ snapshots:
   graceful-fs@4.2.11: {}
 
   groq-js@1.30.2:
+    dependencies:
+      debug: 4.4.3(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - supports-color
+
+  groq-js@https://pkg.pr.new/groq-js@348:
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
