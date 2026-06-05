@@ -61,60 +61,75 @@ export function usePortableTextMemberItemsFromProps(
       node: ObjectFormNode
     }[] = []
 
-    for (const member of members) {
-      if (member.kind === 'item') {
-        const isObjectBlock = !isBlockType(member.item.schemaType)
-        if (isObjectBlock) {
-          result.push({kind: 'objectBlock', member, node: member.item})
-        } else {
-          // Also include regular text blocks with validation, presence, changes or that are open or focused.
-          // This is a performance optimization to avoid accounting for blocks that
-          // doesn't need to be re-rendered (which usually is most of the blocks).
-          if (
-            member.item.validation.length > 0 ||
-            member.item.changed ||
-            member.item.presence?.length ||
-            member.open ||
-            member.item.focusPath.length ||
-            member.item.focused
-          ) {
-            result.push({kind: 'textBlock', member, node: member.item})
-          }
-          // Inline objects
-          const childrenField = member.item.members.find(
-            (f) => f.kind === 'field' && f.name === 'children',
-          )
-          if (
-            childrenField &&
-            childrenField.kind === 'field' &&
-            isMemberArrayOfObjects(childrenField)
-          ) {
-            // eslint-disable-next-line max-depth
-            for (const child of childrenField.field.members) {
-              // eslint-disable-next-line max-depth
-              if (child.kind === 'item' && child.item.schemaType.name !== 'span') {
-                result.push({kind: 'inlineObject', member: child, node: child.item})
-              }
-            }
-          }
-          // Markdefs
-          const markDefArrayMember = member.item.members
-            .filter(isArrayOfObjectsFieldMember)
-            .find((f) => f.name === 'markDefs')
-          if (markDefArrayMember) {
-            // eslint-disable-next-line max-depth
-            for (const child of markDefArrayMember.field.members) {
-              // eslint-disable-next-line max-depth
-              if (child.kind === 'item' && child.item.schemaType.jsonType === 'object') {
-                result.push({
-                  kind: 'annotation',
-                  member: child,
-                  node: child.item,
-                })
-              }
+    // Recurse into any nested array-of-objects fields a block-object
+    // contains. This handles classic depth-2 cases (block.children,
+    // block.markDefs) and Container API v2 cases (e.g.
+    // list.items[].content[].image), so form member items exist for
+    // objects at any nesting depth and click-to-open-dialog works in
+    // containers.
+    function collectFromBlockItem(item: ArrayOfObjectsItemMember): void {
+      const isObjectBlock = !isBlockType(item.item.schemaType)
+      if (isObjectBlock) {
+        result.push({kind: 'objectBlock', member: item, node: item.item})
+        for (const field of item.item.members) {
+          if (field.kind !== 'field' || !isMemberArrayOfObjects(field)) continue
+          for (const child of field.field.members) {
+            if (child.kind === 'item') {
+              collectFromBlockItem(child)
             }
           }
         }
+        return
+      }
+
+      // Also include regular text blocks with validation, presence, changes or that are open or focused.
+      // This is a performance optimization to avoid accounting for blocks that
+      // doesn't need to be re-rendered (which usually is most of the blocks).
+      if (
+        item.item.validation.length > 0 ||
+        item.item.changed ||
+        item.item.presence?.length ||
+        item.open ||
+        item.item.focusPath.length ||
+        item.item.focused
+      ) {
+        result.push({kind: 'textBlock', member: item, node: item.item})
+      }
+      // Inline objects
+      const childrenField = item.item.members.find(
+        (f) => f.kind === 'field' && f.name === 'children',
+      )
+      if (
+        childrenField &&
+        childrenField.kind === 'field' &&
+        isMemberArrayOfObjects(childrenField)
+      ) {
+        for (const child of childrenField.field.members) {
+          if (child.kind === 'item' && child.item.schemaType.name !== 'span') {
+            result.push({kind: 'inlineObject', member: child, node: child.item})
+          }
+        }
+      }
+      // Markdefs
+      const markDefArrayMember = item.item.members
+        .filter(isArrayOfObjectsFieldMember)
+        .find((f) => f.name === 'markDefs')
+      if (markDefArrayMember) {
+        for (const child of markDefArrayMember.field.members) {
+          if (child.kind === 'item' && child.item.schemaType.jsonType === 'object') {
+            result.push({
+              kind: 'annotation',
+              member: child,
+              node: child.item,
+            })
+          }
+        }
+      }
+    }
+
+    for (const member of members) {
+      if (member.kind === 'item') {
+        collectFromBlockItem(member)
       }
     }
 
