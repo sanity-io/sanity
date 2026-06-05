@@ -41,6 +41,9 @@ export const ArrayType = {
     lazyGetter(parsed, 'of', () => {
       return getEffectiveMemberTypes().map((entry) => entry.member)
     })
+    lazyGetter(parsed, 'declaredOf', getMemberTypes, {
+      enumerable: false,
+    })
     lazyGetter(
       parsed,
       '__experimental_arrayOfUnion',

@@ -3102,6 +3102,11 @@ describe('Union schema type descriptors', () => {
           type: 'union',
           of: [{type: 'productPromotion'}, {type: 'articlePromotion'}],
         },
+        {
+          name: 'featuredPromotion',
+          type: 'union',
+          of: [{type: 'promotion'}, {type: 'image', name: 'promotionImage'}],
+        },
       ],
     })
 
@@ -3114,10 +3119,26 @@ describe('Union schema type descriptors', () => {
     const desc = await DESCRIPTOR_CONVERTER.get(schema)
     await expectManifestSchemaConversion(schema, desc)
     const type = findTypeInDesc('promotion', desc)!
+    const getMemberName = (member: {name?: string | null; key?: string}) =>
+      member.name ?? member.key?.split('.').at(-1)
 
-    expect(type.typeDef).toMatchObject({
-      extends: 'union',
-      of: [{name: 'productPromotion'}, {name: 'articlePromotion'}],
-    })
+    expect(type.typeDef).toMatchObject({extends: 'union'})
+    assert(type.typeDef.extends === 'union')
+    expect(type.typeDef.of.map(getMemberName)).toEqual(['productPromotion', 'articlePromotion'])
+    expect(type.typeDef.declaredOf).toEqual([
+      {name: 'productPromotion'},
+      {name: 'articlePromotion'},
+    ])
+
+    const featuredType = findTypeInDesc('featuredPromotion', desc)!
+
+    expect(featuredType.typeDef).toMatchObject({extends: 'union'})
+    assert(featuredType.typeDef.extends === 'union')
+    expect(featuredType.typeDef.of.map(getMemberName)).toEqual([
+      'productPromotion',
+      'articlePromotion',
+      'promotionImage',
+    ])
+    expect(featuredType.typeDef.declaredOf).toEqual([{name: 'promotion'}, {name: 'promotionImage'}])
   })
 })

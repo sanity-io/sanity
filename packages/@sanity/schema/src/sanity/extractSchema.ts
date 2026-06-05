@@ -30,6 +30,15 @@ import {
   type UnknownTypeNode,
 } from 'groq-js'
 
+type NamedUnionTypeNode<T extends TypeNode = TypeNode> = UnionTypeNode<T> & {
+  name?: string
+  declaredOf?: T[]
+}
+
+type ReferenceTypeNodeWithDeclaredTo<T extends TypeNode = TypeNode> = T & {
+  declaredTo?: InlineTypeNode[]
+}
+
 const documentDefaultFields = (typeName: string): Record<string, ObjectAttribute> => ({
   _id: {
     type: 'objectAttribute',
@@ -293,8 +302,27 @@ export function extractSchema(
       .filter((member): member is TypeNode => member.type !== 'unknown')
 
     if (of.length === 0) return {type: 'unknown'} satisfies UnknownTypeNode
-    if (of.length === 1) return of[0]
-    return {type: 'union', of} satisfies UnionTypeNode
+
+    const declaredOf = createDeclaredUnionMembers(unionSchemaType.declaredOf ?? unionSchemaType.of)
+
+    return {
+      type: 'union',
+      name: unionSchemaType.name,
+      of,
+      ...(declaredOf.length > 0 ? {declaredOf} : {}),
+    } satisfies NamedUnionTypeNode
+  }
+
+  function createDeclaredUnionMembers(members: SanitySchemaType[]): TypeNode[] {
+    return members
+      .map((member) => {
+        if (isUnionSchemaType(member) || sortedSchemaTypeNames.includes(member.name)) {
+          return {type: 'inline', name: member.name} satisfies InlineTypeNode
+        }
+
+        return isObjectType(member) ? createObject(member) : convertSchemaType(member)
+      })
+      .filter((member): member is TypeNode => Boolean(member && member.type !== 'unknown'))
   }
 
   function createObject(schemaType: ObjectSchemaType | SanitySchemaType): ObjectTypeNode {
@@ -400,13 +428,18 @@ export function extractSchema(
       return {type: 'null'}
     }
 
+    const declaredOf = isFlattenedUnion
+      ? createDeclaredUnionMembers(arraySchemaType.declaredOf ?? arraySchemaType.of)
+      : []
+
     return {
       type: 'array',
       of:
-        of.length > 1
+        of.length > 1 || isFlattenedUnion
           ? {
               type: 'union',
               of,
+              ...(declaredOf.length > 0 ? {declaredOf} : {}),
             }
           : of[0],
     }
@@ -432,8 +465,19 @@ export function extractSchema(
 
   function createReferenceTypeNodeDefintion(
     reference: ReferenceSchemaType,
-  ): ObjectTypeNode | InlineTypeNode | UnionTypeNode<InlineTypeNode | ObjectTypeNode> {
+  ): ReferenceTypeNodeWithDeclaredTo<
+    ObjectTypeNode | InlineTypeNode | UnionTypeNode<InlineTypeNode | ObjectTypeNode>
+  > {
     const references = gatherReferenceNames(reference)
+    const declaredTo = createDeclaredReferenceTargets(reference)
+
+    function withDeclaredTo<T extends TypeNode>(typeNode: T): ReferenceTypeNodeWithDeclaredTo<T> {
+      if (declaredTo.length === 0) {
+        return typeNode
+      }
+
+      return {...typeNode, declaredTo}
+    }
 
     // Ensure hoisted reference types exist for each referenced document type
     for (const name of references) {
@@ -453,12 +497,12 @@ export function extractSchema(
     if (references.length === 1) {
       const inlined = hoistedRefMap.get(getInlineRefName(references[0]))
       if (inlined) {
-        return {type: 'inline', name: inlined}
+        return withDeclaredTo({type: 'inline', name: inlined})
       }
-      return createReferenceTypeNode(references[0])
+      return withDeclaredTo(createReferenceTypeNode(references[0]))
     }
 
-    return {
+    return withDeclaredTo({
       type: 'union',
       of: references.map((name) => {
         const inlined = hoistedRefMap.get(getInlineRefName(name))
@@ -467,7 +511,7 @@ export function extractSchema(
         }
         return createReferenceTypeNode(name)
       }),
-    }
+    })
   }
 
   return schema
@@ -645,8 +689,33 @@ function gatherReferenceTypes(type: ReferenceSchemaType): ObjectSchemaType[] {
   return refTo
 }
 
+function createDeclaredReferenceTargets(type: ReferenceSchemaType): InlineTypeNode[] {
+  const declaredTo = type.declaredTo
+
+  if (!declaredTo || hasSameReferenceTargets(declaredTo, type.to)) {
+    return []
+  }
+
+  return declaredTo.map((target) => ({type: 'inline', name: target.name}))
+}
+
+function hasSameReferenceTargets(
+  left: ObjectSchemaType[] | undefined,
+  right: ObjectSchemaType[],
+): boolean {
+  if (!left || left.length !== right.length) {
+    return false
+  }
+
+  return left.every((target, index) => target.name === right[index].name)
+}
+
 // Traverse the type tree and gather all the fields
 function gatherFields(type: SanitySchemaType | ObjectSchemaType): ObjectField[] {
+  if (isUnionSchemaType(type)) {
+    return []
+  }
+
   if ('fields' in type) {
     return type.type ? gatherFields(type.type).concat(type.fields) : type.fields
   }
@@ -742,7 +811,12 @@ function sortByDependencies(compiledSchema: SchemaDef): {
     }
     seen.add(schemaType)
 
-    if ('fields' in schemaType) {
+    if (isArrayType(schemaType) || isUnionSchemaType(schemaType)) {
+      // Arrays and standalone unions both model alternatives through `of`; walk each member.
+      for (const item of schemaType.of) {
+        walkDependencies(item, dependencies, path.concat(item.name), !isReferenceType(schemaType))
+      }
+    } else if ('fields' in schemaType) {
       for (const field of gatherFields(schemaType)) {
         const last = lastType(field.type)
         if (last!.name === 'document') {
@@ -789,11 +863,6 @@ function sortByDependencies(compiledSchema: SchemaDef): {
           dependencies.add(field.type)
         }
         walkDependencies(field.type, dependencies, path.concat([field.name]))
-      }
-    } else if (isArrayType(schemaType) || isUnionSchemaType(schemaType)) {
-      // Arrays and standalone unions both model alternatives through `of`; walk each member.
-      for (const item of schemaType.of) {
-        walkDependencies(item, dependencies, path.concat(item.name), !isReferenceType(schemaType))
       }
     }
   }

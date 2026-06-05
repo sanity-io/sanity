@@ -41,8 +41,10 @@ import {
 } from './manifestTypeHelpers'
 import {
   type CreateWorkspaceManifest,
+  type ManifestArrayMember,
   type ManifestField,
   type ManifestFieldset,
+  type ManifestReferenceMember,
   type ManifestSchemaType,
   type ManifestSerializable,
   type ManifestTitledValue,
@@ -240,6 +242,8 @@ function retainCustomTypeProps(type: SchemaType): Record<string, SerializablePro
     'fields',
     'to',
     'of',
+    'declaredTo',
+    'declaredOf',
     'unionKind',
     // not serialized
     'type',
@@ -331,43 +335,75 @@ function transformField(field: ObjectField & {fieldset?: string}, context: Conte
 function transformArrayMember(
   arrayMember: ArraySchemaType,
   context: Context,
-): Pick<ManifestField, 'of'> {
+): Pick<ManifestField, 'of' | 'declaredOf'> {
+  const declaredOf = arrayMember.declaredOf
+
   return {
-    of: arrayMember.of.map((type) => {
-      const typeName = getDefinedTypeName(type) ?? type.name
-      return {
-        ...transformCommonTypeFields(type, typeName, context),
-        type: typeName,
-        ...(typeName === type.name ? {} : {name: type.name}),
-        ...ensureCustomTitle(type.name, type.title),
-      }
-    }),
+    of: transformArrayMembers(arrayMember.of, context),
+    ...(declaredOf && !hasSameManifestMemberNames(declaredOf, arrayMember.of)
+      ? {declaredOf: transformArrayMembers(declaredOf, context)}
+      : {}),
   }
 }
 
-function transformUnion(unionType: UnionSchemaType, context: Context): Pick<ManifestField, 'of'> {
+function transformUnion(
+  unionType: UnionSchemaType,
+  context: Context,
+): Pick<ManifestField, 'of' | 'declaredOf'> {
+  const declaredOf = unionType.declaredOf ?? unionType.of
+
   return {
-    of: unionType.of.map((type) => {
-      const typeName = getDefinedTypeName(type) ?? type.name
-      return {
-        ...transformCommonTypeFields(type, typeName, context),
-        type: typeName,
-        ...(typeName === type.name ? {} : {name: type.name}),
-        ...ensureCustomTitle(type.name, type.title),
-      }
-    }),
+    of: transformArrayMembers(unionType.of, context),
+    declaredOf: transformArrayMembers(declaredOf, context),
   }
 }
 
-function transformReference(reference: ReferenceSchemaType): Pick<ManifestSchemaType, 'to'> {
+function transformReference(
+  reference: ReferenceSchemaType,
+): Pick<ManifestSchemaType, 'to' | 'declaredTo'> {
+  const declaredTo = reference.declaredTo
+
   return {
-    to: (reference.to ?? []).map((type) => {
-      return {
-        ...retainCustomTypeProps(type),
-        type: type.name,
-      }
-    }),
+    to: transformReferenceTargets(reference.to ?? []),
+    ...(declaredTo && !hasSameManifestMemberNames(declaredTo, reference.to)
+      ? {declaredTo: transformReferenceTargets(declaredTo)}
+      : {}),
   }
+}
+
+function transformArrayMembers(members: SchemaType[], context: Context): ManifestArrayMember[] {
+  return members.map((type) => {
+    const typeName = getDefinedTypeName(type) ?? type.name
+    return {
+      ...transformCommonTypeFields(type, typeName, context),
+      type: typeName,
+      ...(typeName === type.name ? {} : {name: type.name}),
+      ...ensureCustomTitle(type.name, type.title),
+    }
+  })
+}
+
+function transformReferenceTargets(members: SchemaType[]): ManifestReferenceMember[] {
+  return members.map((type) => {
+    return {
+      ...retainCustomTypeProps(type),
+      type: type.name,
+    }
+  })
+}
+
+function hasSameManifestMemberNames(left: SchemaType[] | undefined, right: SchemaType[]): boolean {
+  if (!left || left.length !== right.length) {
+    return false
+  }
+
+  return left.every((member, index) => {
+    const rightMember = right[index]
+    return (
+      getDefinedTypeName(member) === getDefinedTypeName(rightMember) &&
+      member.name === rightMember.name
+    )
+  })
 }
 
 function transformCrossDatasetReference(

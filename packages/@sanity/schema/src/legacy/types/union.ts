@@ -77,6 +77,15 @@ export const UnionType = {
     return UNION_CORE
   },
   extend(subTypeDef: any, createMemberType: any) {
+    let memberTypes: any[] | undefined
+
+    function getMemberTypes(): any[] {
+      if (!memberTypes) {
+        memberTypes = subTypeDef.of.map((ofTypeDef: any) => createMemberType.cached(ofTypeDef))
+      }
+      return memberTypes!
+    }
+
     const parsed = Object.assign(pick(UNION_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: UNION_CORE,
       jsonType: 'object',
@@ -89,9 +98,10 @@ export const UnionType = {
     defineUnionFieldsAccessor(parsed)
 
     lazyGetter(parsed, 'of', () => {
-      return flattenUnionMembers(
-        subTypeDef.of.map((ofTypeDef: any) => createMemberType.cached(ofTypeDef)),
-      )
+      return flattenUnionMembers(getMemberTypes())
+    })
+    lazyGetter(parsed, 'declaredOf', getMemberTypes, {
+      enumerable: false,
     })
 
     lazyGetter(parsed, OWN_PROPS_NAME, () => ({...subTypeDef, of: parsed.of}), {

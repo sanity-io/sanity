@@ -1345,6 +1345,11 @@ test('extracts standalone union fields as union nodes', () => {
 
   expect(featuredPromotion).toMatchObject({
     type: 'union',
+    name: 'promotion',
+    declaredOf: [
+      {type: 'inline', name: 'productPromotion'},
+      {type: 'inline', name: 'articlePromotion'},
+    ],
     of: [
       {
         type: 'object',
@@ -1418,6 +1423,7 @@ test('extracts named unions reused in arrays as concrete array members', () => {
   expect(body.type).toBe('array')
   expect(body.of).toMatchObject({
     type: 'union',
+    declaredOf: [{type: 'inline', name: 'promotion'}],
     of: [
       {
         type: 'object',
@@ -1501,6 +1507,55 @@ test('does not extract ordinary arrays as union-expanded arrays when their membe
         },
         rest: {type: 'inline', name: 'articlePromotion'},
       },
+    ],
+  })
+})
+
+test('extracts declared reference targets for named document union references', () => {
+  const schema = createSchema({
+    name: 'test',
+    types: [
+      defineType({
+        name: 'book',
+        type: 'document',
+        fields: [{name: 'title', type: 'string'}],
+      }),
+      defineType({
+        name: 'author',
+        type: 'document',
+        fields: [{name: 'name', type: 'string'}],
+      }),
+      defineType({
+        name: 'editorialTarget',
+        type: 'union',
+        of: [{type: 'book'}, {type: 'author'}],
+      }),
+      defineType({
+        name: 'campaign',
+        type: 'document',
+        fields: [
+          defineField({
+            name: 'target',
+            type: 'reference',
+            to: [{type: 'editorialTarget'}],
+          }),
+        ],
+      }),
+    ],
+  })
+
+  const extracted = extractSchema(schema)
+  const campaign = extracted.find((type) => type.type === 'document' && type.name === 'campaign')
+
+  assert(campaign?.type === 'document')
+  const target = campaign.attributes.target.value
+
+  expect(target).toMatchObject({
+    type: 'union',
+    declaredTo: [{type: 'inline', name: 'editorialTarget'}],
+    of: [
+      {type: 'inline', name: 'book.reference'},
+      {type: 'inline', name: 'author.reference'},
     ],
   })
 })

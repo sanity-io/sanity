@@ -302,6 +302,8 @@ export interface BooleanSchemaType extends BaseSchemaType {
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
   jsonType: 'array'
   of: (Exclude<SchemaType, ArraySchemaType> | ReferenceSchemaType)[]
+  /** @internal */
+  declaredOf?: (Exclude<SchemaType, ArraySchemaType> | ReferenceSchemaType)[]
   options?: ArrayOptions<V> & {layout?: V extends string ? 'tag' : 'grid'}
 }
 
@@ -407,6 +409,8 @@ export interface UnionSchemaType<
   jsonType: 'object'
   unionKind: 'object'
   of: TMember[]
+  /** @internal */
+  declaredOf?: TMember[]
   /** Empty compatibility getter for schema walkers that branch on `jsonType: 'object'`. */
   fields: []
   options?: UnionOptions
@@ -520,6 +524,8 @@ export interface CollapseOptions {
 export interface ReferenceSchemaType extends Omit<ObjectSchemaType, 'options'> {
   jsonType: 'object'
   to: ObjectSchemaType[]
+  /** @internal */
+  declaredTo?: ObjectSchemaType[]
   weak?: boolean
   options?: ReferenceOptions
 }

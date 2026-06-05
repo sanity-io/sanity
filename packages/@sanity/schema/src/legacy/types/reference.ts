@@ -59,6 +59,15 @@ export const ReferenceType = {
         `Missing "to" field in reference definition. Check the type ${subTypeDef.name}`,
       )
     }
+    let targetTypes: any[] | undefined
+
+    function getTargetTypes(): any[] {
+      if (!targetTypes) {
+        targetTypes = arrify(subTypeDef.to).map((toType: any) => createMemberType(toType))
+      }
+      return targetTypes!
+    }
+
     const parsed = Object.assign(pick(REFERENCE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: REFERENCE_CORE,
     })
@@ -72,9 +81,11 @@ export const ReferenceType = {
     })
 
     lazyGetter(parsed, 'to', () => {
-      return flattenUnionMembers(
-        arrify(subTypeDef.to).map((toType: any) => createMemberType(toType)),
-      )
+      return flattenUnionMembers(getTargetTypes())
+    })
+
+    lazyGetter(parsed, 'declaredTo', getTargetTypes, {
+      enumerable: false,
     })
 
     lazyGetter(parsed, 'title', () => subTypeDef.title || buildTitle(parsed))

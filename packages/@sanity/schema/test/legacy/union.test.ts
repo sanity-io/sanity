@@ -61,6 +61,10 @@ describe('legacy schema union compiler', () => {
       'productPromotion',
       'articlePromotion',
     ])
+    expect(promotion.declaredOf.map((member: any) => member.name)).toEqual([
+      'productPromotion',
+      'articlePromotion',
+    ])
   })
 
   it('warns once per caller location when accessing fields on union types', () => {
@@ -170,6 +174,7 @@ describe('legacy schema union compiler', () => {
 
     expect(body.of.map((member) => member.name)).toEqual(['productPromotion', 'articlePromotion'])
     expect(body.of.some(isUnionSchemaType)).toBe(false)
+    expect((body as any).declaredOf.map((member: any) => member.name)).toEqual(['promotion'])
   })
 
   it('expands named unions inside union.of to concrete members', () => {
@@ -198,6 +203,10 @@ describe('legacy schema union compiler', () => {
       'articlePromotion',
     ])
     expect(promotion.of.some(isUnionSchemaType)).toBe(false)
+    expect(promotion.declaredOf.map((member: any) => member.name)).toEqual([
+      'productPromotion',
+      'secondaryPromotion',
+    ])
   })
 
   it('expands named document unions inside reference.to to concrete targets', () => {
@@ -231,6 +240,9 @@ describe('legacy schema union compiler', () => {
 
     expect(reference.to.map((member: any) => member.name)).toEqual(['book', 'author'])
     expect(reference.to.some(isUnionSchemaType)).toBe(false)
+    expect((reference as any).declaredTo.map((member: any) => member.name)).toEqual([
+      'editorialTarget',
+    ])
   })
 
   it('lets concrete array members override compatible members expanded from unions', () => {

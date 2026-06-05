@@ -1,4 +1,9 @@
-import {type Schema, type SchemaType, type SchemaValidationValue} from '@sanity/types'
+import {
+  type Schema,
+  type SchemaType,
+  type SchemaValidationValue,
+  isUnionSchemaType,
+} from '@sanity/types'
 
 import {normalizeValidationRules} from './util/normalizeValidationRules'
 
@@ -29,6 +34,13 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
   // Context-aware validation functions must be evaluated during validation, where context exists.
   if (!usesValidationContext) {
     typeDef.validation = normalizeValidationRules(typeDef)
+  }
+
+  if (isUnionSchemaType(typeDef)) {
+    for (const candidate of typeDef.of) {
+      traverse(candidate, visited)
+    }
+    return
   }
 
   if ('fields' in typeDef) {

@@ -95,16 +95,22 @@ export interface SubtypeDef extends CommonTypeDef {
 export interface ArrayTypeDef extends SubtypeDef {
   extends: 'array'
   of: Array<ArrayElement | HoistedMarker>
+  declaredOf?: DeclaredMember[]
 }
 
 export interface UnionTypeDef extends SubtypeDef {
   extends: 'union'
   of: Array<ArrayElement | HoistedMarker>
+  declaredOf?: DeclaredMember[]
 }
 
 export type ArrayElement = {
   name: string | null
   typeDef: TypeDef
+}
+
+export type DeclaredMember = {
+  name: string | null
 }
 
 export type ObjectField = {
@@ -148,6 +154,7 @@ export type ObjectOrderingBy = {
 export interface ReferenceTypeDef extends SubtypeDef {
   extends: 'reference' | 'crossDatasetReference' | 'globalDocumentReference'
   to: ReferenceTarget[]
+  declaredTo?: ReferenceTarget[]
   weak?: true
 }
 
