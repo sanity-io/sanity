@@ -89,9 +89,13 @@ export const PanelResizer: FunctionComponent<{
 
   const onMouseDown = useCallback(
     (event: ReactMouseEvent) => {
+      // A disabled or hidden resizer must not start a drag: the drag effect
+      // bails for both, so `activeResizer` would never be cleared and would
+      // leave every panel with pointer events disabled until a remount.
+      if (disabled || hidden) return
       startDragging(id, event.nativeEvent)
     },
-    [id, startDragging],
+    [disabled, hidden, id, startDragging],
   )
 
   const onDrag = useCallback(
