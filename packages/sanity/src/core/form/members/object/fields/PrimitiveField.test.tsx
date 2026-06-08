@@ -41,7 +41,7 @@ describe('PrimitiveField', () => {
       expect(input.value).toEqual('')
     })
 
-    it('disables native autocomplete on the input (SAPP-3789)', async () => {
+    it('disables native autocomplete on the input', async () => {
       // Given
       const {member, TestWrapper} = await setupTest('number', undefined)
 

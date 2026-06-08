@@ -26,7 +26,7 @@ describe('StringInputBasic', () => {
     expect(input?.value).toBe('test')
   })
 
-  it('disables native autocomplete (SAPP-3789)', async () => {
+  it('disables native autocomplete', async () => {
     const {result} = await renderStringInput({
       render: (inputProps) => <StringInputBasic {...inputProps} />,
       fieldDefinition: {
