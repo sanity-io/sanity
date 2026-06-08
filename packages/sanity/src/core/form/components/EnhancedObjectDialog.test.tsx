@@ -68,7 +68,8 @@ function dispatchKeyDown(target: Element, init: KeyboardEventInit): KeyboardEven
 describe('EnhancedObjectDialog: Cmd/Ctrl+ArrowUp handler', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Stack depth >= 2 so the navigate-up / close branch is reachable.
+    // The top stack entry's path length must be > 1 for the navigate-up / close
+    // branch to be reachable (the handler checks `lastStackPath.length > 1`).
     mockState = {isTop: true, stack: [{id: 'dialog-1', path: ['arr', {_key: 'k'}]}]}
   })
 
@@ -122,7 +123,7 @@ describe('EnhancedObjectDialog: Cmd/Ctrl+ArrowUp handler', () => {
 
     const event = dispatchKeyDown(button, {key: 'ArrowUp', metaKey: true})
 
-    // stack depth 2 -> parent path length 1 -> close()
+    // path length 2 -> parent path length 1 -> close()
     expect(close).toHaveBeenCalledTimes(1)
     expect(event.defaultPrevented).toBe(true)
   })
