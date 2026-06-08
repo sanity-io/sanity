@@ -115,7 +115,7 @@ describe('useDocumentVersions', () => {
     expect(result.current.versions).toEqual([
       {
         _id: 'versions.rASAP.document-1',
-        system: {
+        _system: {
           bundleId: 'drafts',
           release: null,
           variant: null,
@@ -139,11 +139,11 @@ describe('useDocumentVersions', () => {
     expect(result.current.versions).toEqual([
       {
         _id: 'versions.rASAP.document-1',
-        system: {
+        _system: {
           bundleId: 'rASAP',
-          release: {_type: 'reference', _ref: 'rASAP', _weak: true},
+          release: {_ref: 'rASAP', _weak: true},
           variant: null,
-          group: {_type: 'reference', _ref: 'document-1', _weak: true},
+          group: {_ref: 'document-1', _weak: true},
           scopeId: 'rASAP',
         },
       },
@@ -163,11 +163,11 @@ describe('useDocumentVersions', () => {
     expect(result.current.versions).toEqual([
       {
         _id: 'drafts.document-1',
-        system: {
+        _system: {
           bundleId: 'drafts',
           release: null,
           variant: null,
-          group: {_type: 'reference', _ref: 'document-1', _weak: true},
+          group: {_ref: 'document-1', _weak: true},
           scopeId: null,
         },
       },

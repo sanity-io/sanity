@@ -11,11 +11,11 @@ const variantRef = (variantId: string) =>
 
 const draftDefault: DocumentVersion = {
   _id: 'drafts.article-1',
-  system: {bundleId: 'drafts', release: null, variant: null, group: groupRef, scopeId: null},
+  _system: {bundleId: 'drafts', release: null, variant: null, group: groupRef, scopeId: null},
 }
 const draftAlpha: DocumentVersion = {
   _id: 'drafts.scope.article-1',
-  system: {
+  _system: {
     bundleId: 'drafts',
     release: null,
     variant: variantRef(variantAlphaAudience._id),
@@ -25,7 +25,7 @@ const draftAlpha: DocumentVersion = {
 }
 const publishedAlpha: DocumentVersion = {
   _id: 'published.scope.article-1',
-  system: {
+  _system: {
     bundleId: '$published',
     release: null,
     variant: variantRef(variantAlphaAudience._id),
@@ -38,7 +38,7 @@ const baseArgs = {
   variantsEnabled: true,
   selectedVariant: variantAlphaAudience,
   bundle: 'drafts',
-  documentVersions: {versions: [draftDefault], loading: false},
+  documentVersions: {versions: [draftDefault] as DocumentVersion[], loading: false},
 } as const
 
 describe('isDocumentNotInSelectedVariant', () => {

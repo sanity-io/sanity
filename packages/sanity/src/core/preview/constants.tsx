@@ -37,6 +37,5 @@ export const INVALID_PREVIEW_FALLBACK: PreviewValue = {
   media: <WarningOutlineIcon />,
 }
 
-// TODO: Update to `_system` when the API action ships.
 // oxlint-disable-next-line typescript/prefer-as-const
-export const DOCUMENT_SYSTEM_FIELD: 'system' = 'system'
+export const DOCUMENT_SYSTEM_FIELD: '_system' = '_system'

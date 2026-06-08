@@ -86,11 +86,11 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
 }
 
 /**
- * Temporally builds the document system for a given document id.
- * This is used until the documents are migrated to the new system.
+ * Temporally builds the document _system for a given document id.
+ * This is used until the documents are migrated to the new _system.
  * And only if the documents are not variant documents.
  *
- * Variants will include the system field.
+ * Variants will include the _system field.
  */
 const temporallyBuildDocumentSystem = (id: string): DocumentSystem => {
   const versionId = getVersionFromId(id)
@@ -98,10 +98,9 @@ const temporallyBuildDocumentSystem = (id: string): DocumentSystem => {
     return {
       bundleId: versionId,
       // TODO: Only attach the release if a release actually exists, e.g. agent documents don't have a release.
-      release: {_type: 'reference', _ref: versionId, _weak: true},
+      release: {_ref: versionId, _weak: true},
       variant: null,
       group: {
-        _type: 'reference',
         _ref: getPublishedId(id),
         _weak: true,
       },
@@ -113,7 +112,7 @@ const temporallyBuildDocumentSystem = (id: string): DocumentSystem => {
     bundleId: isPublishedId(id) ? '$published' : 'drafts',
     release: null,
     variant: null,
-    group: {_type: 'reference', _ref: getPublishedId(id), _weak: true},
+    group: {_ref: getPublishedId(id), _weak: true},
     scopeId: versionId || null,
   }
 }

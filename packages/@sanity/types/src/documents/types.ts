@@ -43,7 +43,6 @@ export interface KeyedObject {
  * @internal
  */
 export interface DocumentSystemRef {
-  _type: 'reference'
   _ref: string
   _weak: true
 }

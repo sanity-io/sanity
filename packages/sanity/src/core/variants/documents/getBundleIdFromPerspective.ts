@@ -18,7 +18,6 @@ export function getBundleIdFromPerspective(
 
   if (isReleaseDocument(selectedPerspective)) {
     const releaseRef: DocumentSystemRef = {
-      _type: 'reference',
       _ref: selectedPerspective._id,
       _weak: true,
     }

@@ -12,7 +12,7 @@ const variantRef = (variantId: string) =>
 // Published bundle: a default document plus two variant-scoped documents.
 const publishedDefault: DocumentVersion = {
   _id: PUBLISHED_ID,
-  system: {
+  _system: {
     bundleId: '$published',
     release: null,
     variant: null,
@@ -22,7 +22,7 @@ const publishedDefault: DocumentVersion = {
 }
 const publishedAlpha: DocumentVersion = {
   _id: 'published.bar.article-1',
-  system: {
+  _system: {
     bundleId: '$published',
     release: null,
     variant: variantRef('alpha'),
@@ -34,7 +34,7 @@ const publishedAlpha: DocumentVersion = {
 // Drafts bundle: a default document plus two variant-scoped documents.
 const draftDefault: DocumentVersion = {
   _id: 'drafts.article-1',
-  system: {
+  _system: {
     bundleId: 'drafts',
     release: null,
     variant: null,
@@ -44,7 +44,7 @@ const draftDefault: DocumentVersion = {
 }
 const draftAlpha: DocumentVersion = {
   _id: 'drafts.baz.article-1',
-  system: {
+  _system: {
     bundleId: 'drafts',
     release: null,
     variant: variantRef('alpha'),
@@ -54,7 +54,7 @@ const draftAlpha: DocumentVersion = {
 }
 const draftNorwegian: DocumentVersion = {
   _id: 'drafts.qux.article-1',
-  system: {
+  _system: {
     bundleId: 'drafts',
     release: null,
     variant: variantRef('norwegian'),
@@ -67,7 +67,7 @@ const draftNorwegian: DocumentVersion = {
 const releaseRef = {_type: 'reference', _ref: 'rASAP', _weak: true} as const
 const releaseDefault: DocumentVersion = {
   _id: 'versions.rASAP.article-1',
-  system: {
+  _system: {
     bundleId: 'rASAP',
     release: releaseRef,
     variant: null,
@@ -77,7 +77,7 @@ const releaseDefault: DocumentVersion = {
 }
 const releaseAlpha: DocumentVersion = {
   _id: 'versions.buz.article-1',
-  system: {
+  _system: {
     bundleId: 'rASAP',
     release: releaseRef,
     variant: variantRef('alpha'),
@@ -108,7 +108,8 @@ describe('getTargetDocument', () => {
         bundle: '$published',
         variant: undefined,
         documentVersions: documentVersions.filter(
-          (version) => version.system.bundleId !== '$published' && version.system.variant === null,
+          (version) =>
+            version._system.bundleId !== '$published' && version._system.variant === null,
         ),
       })
       expect(result).toBeUndefined()
@@ -125,7 +126,7 @@ describe('getTargetDocument', () => {
         variant: undefined,
         documentVersions: documentVersions.filter(
           // Filter out the default draft.
-          (version) => version.system.bundleId !== 'drafts' && version.system.variant === null,
+          (version) => version._system.bundleId !== 'drafts' && version._system.variant === null,
         ),
       })
       expect(result).toBeUndefined()
@@ -141,7 +142,7 @@ describe('getTargetDocument', () => {
         bundle: 'rASAP',
         variant: undefined,
         documentVersions: documentVersions.filter(
-          (version) => version.system.bundleId !== 'rASAP' && version.system.variant === null,
+          (version) => version._system.bundleId !== 'rASAP' && version._system.variant === null,
         ),
       })
       expect(result).toBeUndefined()
@@ -164,7 +165,7 @@ describe('getTargetDocument', () => {
         variant: 'alpha',
         documentVersions: documentVersions.filter(
           (version) =>
-            version.system.bundleId !== '$published' && version.system.variant?._ref !== 'alpha',
+            version._system.bundleId !== '$published' && version._system.variant?._ref !== 'alpha',
         ),
       })
       expect(result).toBeUndefined()
@@ -185,9 +186,10 @@ describe('getTargetDocument', () => {
         variant: 'alpha',
         documentVersions: documentVersions.filter(
           (version) =>
-            version.system.bundleId !== 'drafts' && version.system.variant?._ref !== 'alpha',
+            version._system.bundleId !== 'drafts' && version._system.variant?._ref !== 'alpha',
         ),
       })
+      expect(result).toBeUndefined()
     })
 
     it('finds the release document for a given variant', () => {
@@ -205,7 +207,7 @@ describe('getTargetDocument', () => {
         variant: 'alpha',
         documentVersions: documentVersions.filter(
           (version) =>
-            version.system.bundleId !== 'rASAP' && version.system.variant?._ref !== 'alpha',
+            version._system.bundleId !== 'rASAP' && version._system.variant?._ref !== 'alpha',
         ),
       })
       expect(result).toBeUndefined()
