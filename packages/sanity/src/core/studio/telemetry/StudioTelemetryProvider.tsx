@@ -31,6 +31,13 @@ const sessionId = createSessionId()
 /** Telemetry only runs on client */
 const isClient = typeof window !== 'undefined'
 
+/**
+ * Upper bound on how long the first batched flush is held back waiting for the
+ * organization id to hydrate. Events flush regardless once this elapses, so
+ * telemetry is never withheld indefinitely.
+ */
+const ORG_ID_HYDRATION_TIMEOUT_MS = 4000
+
 interface PluginWithNestedPlugins {
   plugins?: PluginWithNestedPlugins[]
 }
@@ -95,6 +102,25 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   // without causing re-memoization of the store
   const contextRef = useRef<TelemetryContext | null>(null)
 
+  // org_id is stamped onto every event at flush time from contextRef, but it
+  // resolves from an async fetch that starts null. Events that flush before it
+  // resolves ship org_id: null permanently. Gate the first batched flush until
+  // org_id hydrates, falling back to a bounded timeout so events are never
+  // withheld indefinitely. Once hydrated this gate is a no-op, leaving
+  // steady-state flushing identical to today.
+  const orgIdHydratedRef = useRef(false)
+  const hydrationDeadlineRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (!isClient) return
+    // Anchor the bounded window on mount, so the gate measures elapsed time
+    // from when the provider first rendered.
+    if (hydrationDeadlineRef.current === null) {
+      hydrationDeadlineRef.current = performance.now() + ORG_ID_HYDRATION_TIMEOUT_MS
+    }
+    if (orgId) orgIdHydratedRef.current = true
+  }, [orgId])
+
   // Update context ref when dynamic values change
   // Telemetry only runs on client - no SSR fallbacks needed
   useEffect(() => {
@@ -152,6 +178,17 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
       // Each event is enriched with the current context
       sendEvents: (batch) => {
         if (!isClient || !contextRef.current) return Promise.resolve()
+
+        // Hold the first flush back until org_id hydrates, but no longer than
+        // the bounded timeout. Rejecting re-buffers the batch in the store, so
+        // it retries on the next flush instead of shipping org_id: null.
+        const deadline = hydrationDeadlineRef.current
+        const withinHydrationWindow = deadline === null || performance.now() < deadline
+        const awaitingOrgId = !orgIdHydratedRef.current && withinHydrationWindow
+        if (awaitingOrgId) {
+          return Promise.reject(new Error('Awaiting org_id hydration before first telemetry flush'))
+        }
+
         const context = contextRef.current
         const enrichedBatch = batch.map((event) => ({
           ...event,

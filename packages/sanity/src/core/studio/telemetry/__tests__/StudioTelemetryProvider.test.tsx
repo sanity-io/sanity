@@ -321,6 +321,9 @@ describe('StudioTelemetryProvider', () => {
       value: null,
     } as never)
 
+    const nowSpy = vi.spyOn(performance, 'now')
+    nowSpy.mockReturnValue(0)
+
     render(
       <DeferredTelemetryProvider>
         <StudioTelemetryProvider>
@@ -328,6 +331,10 @@ describe('StudioTelemetryProvider', () => {
         </StudioTelemetryProvider>
       </DeferredTelemetryProvider>,
     )
+
+    // Advance past the bounded hydration window so the gate lets the (still
+    // null) orgId flush through.
+    nowSpy.mockReturnValue(10000)
 
     const testBatch = [{name: 'Test Event'}]
     await capturedStoreOptions.sendEvents!(testBatch)
@@ -345,6 +352,91 @@ describe('StudioTelemetryProvider', () => {
         }),
       }),
     )
+
+    nowSpy.mockRestore()
+  })
+
+  it('holds the first flush back while orgId is still hydrating', async () => {
+    vi.mocked(useProjectOrganizationId).mockReturnValue({
+      value: null,
+    } as never)
+
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    const testBatch = [{name: 'Early Event'}]
+
+    // While orgId is null and within the bounded window, the flush is rejected
+    // so the store re-buffers and retries instead of shipping org_id: null.
+    await expect(capturedStoreOptions.sendEvents!(testBatch)).rejects.toThrow(/org_id/)
+    expect(mockClient.request).not.toHaveBeenCalled()
+  })
+
+  it('flushes once orgId has hydrated', async () => {
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    const testBatch = [{name: 'Hydrated Event'}]
+    await capturedStoreOptions.sendEvents!(testBatch)
+
+    expect(mockClient.request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          batch: expect.arrayContaining([
+            expect.objectContaining({
+              context: expect.objectContaining({orgId: 'org-123'}),
+            }),
+          ]),
+        }),
+      }),
+    )
+  })
+
+  it('flushes despite null orgId once the hydration timeout has elapsed', async () => {
+    vi.mocked(useProjectOrganizationId).mockReturnValue({
+      value: null,
+    } as never)
+
+    const nowSpy = vi.spyOn(performance, 'now')
+    nowSpy.mockReturnValue(0)
+
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    // Advance past the bounded hydration window.
+    nowSpy.mockReturnValue(10000)
+
+    const testBatch = [{name: 'Late Event'}]
+    await capturedStoreOptions.sendEvents!(testBatch)
+
+    expect(mockClient.request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          batch: expect.arrayContaining([
+            expect.objectContaining({
+              context: expect.objectContaining({orgId: null}),
+            }),
+          ]),
+        }),
+      }),
+    )
+
+    nowSpy.mockRestore()
   })
 
   it('includes screen dimensions in context', async () => {
