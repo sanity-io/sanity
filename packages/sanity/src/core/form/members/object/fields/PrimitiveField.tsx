@@ -107,6 +107,8 @@ export function PrimitiveField(props: {
       ),
       'readOnly': Boolean(member.field.readOnly),
       'placeholder': member.field.schemaType.placeholder,
+      // Disable native browser autocomplete/autofill on content-editing fields (SAPP-3789)
+      'autoComplete': 'off',
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
       'style': {
         anchorName: pathToAnchorIdent('input', member.field.path),

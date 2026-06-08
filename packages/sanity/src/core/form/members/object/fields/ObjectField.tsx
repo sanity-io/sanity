@@ -183,6 +183,9 @@ export const ObjectField = function ObjectField(props: {
       'id': member.field.id,
       'ref': focusRef,
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
+      // Disable native browser autocomplete/autofill for object inputs that render a
+      // native field (e.g. slug); harmless for object inputs that don't (SAPP-3789).
+      'autoComplete': 'off',
       'style': {
         anchorName: pathToAnchorIdent('input', member.field.path),
       },
