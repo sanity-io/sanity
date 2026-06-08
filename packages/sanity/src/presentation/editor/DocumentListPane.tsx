@@ -1,18 +1,11 @@
-import {Card, Code, Flex, Label, Stack} from '@sanity/ui'
+import {Box, Card, Code, Flex, Label, Stack} from '@sanity/ui'
 import {type ErrorInfo, useCallback, useEffect, useMemo, useState} from 'react'
 import {getPublishedId, useTranslation} from 'sanity'
-import {
-  DocumentListPane as StructureDocumentListPane,
-  PaneLayout,
-  type PaneNode,
-  StructureToolProvider,
-} from 'sanity/structure'
 import {styled} from 'styled-components'
 
 import {ErrorBoundary} from '../../ui-components'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
-import {PresentationPaneRouterProvider} from '../paneRouter/PresentationPaneRouterProvider'
 import {
   type MainDocumentState,
   type PresentationNavigate,
@@ -20,22 +13,37 @@ import {
   type StructureDocumentPaneParams,
 } from '../types'
 import {usePresentationTool} from '../usePresentationTool'
+import {DocumentRow} from './DocumentRow'
 
-const RootLayout = styled(PaneLayout)`
+const Root = styled(Flex)`
   height: 100%;
 `
 
-const Root = styled(Flex)`
-  & > div {
-    min-width: none !important;
-    max-width: none !important;
-  }
+const Scroller = styled(Box)`
+  overflow-y: auto;
 `
 
 const WrappedCode = styled(Code)`
   white-space: pre-wrap;
 `
 
+/**
+ * The "Documents on this page" sidebar list in the Presentation tool.
+ *
+ * `refs` arrives in DOM order from the overlay scan. We render rows
+ * ourselves (one `<DocumentRow>` per ref) so the order is preserved.
+ *
+ * Previously this delegated to the structure tool's `<DocumentListPane>`,
+ * which always applied a sort (DEFAULT_ORDERING `_updatedAt desc`, or a
+ * user-persisted sort under the pane id `$root`). That dropped the DOM-order
+ * signal and broke the contract users expect from this list.
+ * See https://github.com/sanity-io/sanity/issues/12956.
+ *
+ * `onEditReference` and `onStructureParams` are kept on the props for API
+ * compatibility — they are wired up by the parent for the structure-tool
+ * route but unused in this list-of-rows rendering, where each row navigates
+ * directly via `StateLink`.
+ */
 export function DocumentListPane(props: {
   mainDocumentState?: MainDocumentState
   onEditReference: PresentationNavigate
@@ -43,33 +51,26 @@ export function DocumentListPane(props: {
   searchParams: PresentationSearchParams
   refs: {_id: string; _type: string}[]
 }): React.JSX.Element {
-  const {mainDocumentState, onEditReference, onStructureParams, searchParams, refs} = props
+  const {mainDocumentState, searchParams, refs} = props
 
   const {t} = useTranslation(presentationLocaleNamespace)
   const {devMode} = usePresentationTool()
 
-  const ids = useMemo(
-    () =>
-      refs
-        .filter((r) => getPublishedId(r._id) !== mainDocumentState?.document?._id)
-        .map((r) => getPublishedId(r._id)),
-    [mainDocumentState, refs],
-  )
-
-  const pane: Extract<PaneNode, {type: 'documentList'}> = useMemo(
-    () => ({
-      id: '$root',
-      options: {
-        filter: '_id in $ids',
-        params: {ids},
-        // defaultOrdering: [{field: '_updatedAt', direction: 'desc'}],
-      },
-      schemaTypeName: '',
-      title: t('document-list-pane.document-list.title'),
-      type: 'documentList',
-    }),
-    [ids, t],
-  )
+  // Filter out the main document (shown separately above) and preserve the
+  // input (DOM) order. Deduplicate by published id so the same document
+  // referenced twice on the page doesn't render twice.
+  const rows = useMemo(() => {
+    const seen = new Set<string>()
+    const result: {id: string; schemaTypeName: string}[] = []
+    for (const ref of refs) {
+      const id = getPublishedId(ref._id)
+      if (id === mainDocumentState?.document?._id) continue
+      if (seen.has(id)) continue
+      seen.add(id)
+      result.push({id, schemaTypeName: ref._type})
+    }
+    return result
+  }, [mainDocumentState, refs])
 
   const [errorParams, setErrorParams] = useState<{
     info: ErrorInfo
@@ -78,9 +79,7 @@ export function DocumentListPane(props: {
 
   const handleRetry = useCallback(() => setErrorParams(null), [])
 
-  const [structureParams] = useState(() => ({}))
-
-  // Reset error state when `refs` value schanges
+  // Reset error state when `refs` value changes
   useEffect(() => setErrorParams(null), [refs])
 
   if (errorParams) {
@@ -103,27 +102,28 @@ export function DocumentListPane(props: {
 
   return (
     <ErrorBoundary onCatch={setErrorParams}>
-      <RootLayout>
-        <StructureToolProvider>
-          <PresentationPaneRouterProvider
-            onEditReference={onEditReference}
-            onStructureParams={onStructureParams}
-            structureParams={structureParams}
-            searchParams={searchParams}
-            refs={refs}
-          >
-            <Root direction="column" flex={1}>
-              <StructureDocumentListPane
-                index={0}
-                itemId="$root"
-                pane={pane}
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                paneKey="$root"
-              />
-            </Root>
-          </PresentationPaneRouterProvider>
-        </StructureToolProvider>
-      </RootLayout>
+      <Root direction="column" flex={1}>
+        <Card paddingX={3} paddingY={2}>
+          <Label muted size={0}>
+            {t('document-list-pane.document-list.title')}
+          </Label>
+        </Card>
+        <Scroller flex={1}>
+          {rows.length > 0 && (
+            <Stack as="ul" padding={2} space={1}>
+              {rows.map((row) => (
+                <Box as="li" key={row.id}>
+                  <DocumentRow
+                    id={row.id}
+                    schemaTypeName={row.schemaTypeName}
+                    searchParams={searchParams}
+                  />
+                </Box>
+              ))}
+            </Stack>
+          )}
+        </Scroller>
+      </Root>
     </ErrorBoundary>
   )
 }
