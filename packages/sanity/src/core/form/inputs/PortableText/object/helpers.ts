@@ -15,12 +15,19 @@ const parseModalType = (value: unknown): 'popover' | 'dialog' | undefined => {
 
 export function _getModalOption(
   schemaType: ObjectSchemaType,
-): {type?: 'dialog' | 'popover'; width: (number | 'auto')[]} | undefined {
+): {type?: 'dialog' | 'popover'; width?: (number | 'auto')[]} | undefined {
   const raw = schemaType.options?.modal
-  return typeof raw === 'object' && raw !== null
-    ? {
-        type: parseModalType(raw.type),
-        width: parseResponsiveWidth(raw.width),
-      }
-    : undefined
+  if (typeof raw !== 'object' || raw === null) {
+    return undefined
+  }
+  const width = parseResponsiveWidth(raw.width)
+  return {
+    type: parseModalType(raw.type),
+    // Return `undefined` (not an empty array) when no width is configured, so the
+    // edit modal components fall back to their own width defaults (popover 960px /
+    // dialog 640px). An empty array is "defined" and would otherwise collapse the
+    // popover to content/auto width — making e.g. a reference field inside an
+    // annotation render uselessly narrow.
+    width: width.length > 0 ? width : undefined,
+  }
 }
