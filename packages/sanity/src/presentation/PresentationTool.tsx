@@ -49,8 +49,8 @@ import {Panels} from './panels/Panels'
 import {
   getPresentationPanelHtmlId,
   type PresentationLayoutTab,
-  PresentationNarrowTabBar,
-} from './panels/PresentationNarrowTabBar'
+} from './panels/presentationLayoutTab'
+import {PresentationNarrowTabBar} from './panels/PresentationNarrowTabBar'
 import {PresentationContent} from './PresentationContent'
 import {PresentationNavigateProvider} from './PresentationNavigateProvider'
 import {usePresentationNavigator} from './PresentationNavigator'

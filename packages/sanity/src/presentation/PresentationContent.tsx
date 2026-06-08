@@ -10,7 +10,7 @@ import {ContentEditor} from './editor/ContentEditor'
 import {DisplayedDocumentBroadcasterProvider} from './loader/DisplayedDocumentBroadcaster'
 import {Panel} from './panels/Panel'
 import {PanelResizer} from './panels/PanelResizer'
-import {getPresentationPanelHtmlId} from './panels/PresentationNarrowTabBar'
+import {getPresentationPanelHtmlId} from './panels/presentationLayoutTab'
 import {
   type MainDocumentState,
   type PresentationNavigate,
