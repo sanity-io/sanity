@@ -8,7 +8,11 @@ interface ProductAnnouncementSharedProperties {
   studio_version?: string
 }
 
-type origin = 'card' | 'help_menu'
+/**
+ * UI surface the announcement was presented on.
+ * `location` follows the SAPP-3815 generic-name + property convention.
+ */
+type AnnouncementLocation = 'card' | 'help_menu'
 
 export const ProductAnnouncementCardSeen = defineEvent<ProductAnnouncementSharedProperties>({
   name: 'Product Announcement Card Seen',
@@ -29,7 +33,7 @@ export const ProductAnnouncementCardDismissed = defineEvent<ProductAnnouncementS
 })
 
 export const ProductAnnouncementViewed = defineEvent<
-  ProductAnnouncementSharedProperties & {scrolled_into_view: boolean; origin: origin}
+  ProductAnnouncementSharedProperties & {scrolled_into_view: boolean; location: AnnouncementLocation}
 >({
   name: 'Product Announcement Viewed',
   version: 1,
@@ -40,7 +44,7 @@ export const ProductAnnouncementLinkClicked = defineEvent<
   ProductAnnouncementSharedProperties & {
     link_url: string
     link_title: string
-    origin: origin
+    location: AnnouncementLocation
   }
 >({
   name: 'Product Announcement Link Clicked',
@@ -50,7 +54,7 @@ export const ProductAnnouncementLinkClicked = defineEvent<
 
 export const ProductAnnouncementModalDismissed = defineEvent<
   ProductAnnouncementSharedProperties & {
-    origin: origin
+    location: AnnouncementLocation
   }
 >({
   name: 'Product Announcement Dismissed',

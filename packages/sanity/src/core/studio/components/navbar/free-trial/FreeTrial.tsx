@@ -96,7 +96,7 @@ export function FreeTrial({type}: FreeTrialProps) {
       telemetry.log(TrialDialogViewed, {
         dialogId: data.showOnClick.id,
         dialogRevision: data.showOnClick._rev,
-        dialogTrigger: 'fromClick',
+        trigger: 'click',
         dialogType: 'modal',
         source: 'studio',
         trialDaysLeft: data.daysLeft,

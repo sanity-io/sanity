@@ -5,9 +5,21 @@ interface UpsellDialogActionsInfo {
   type: 'modal' | 'inspector'
 }
 
+/**
+ * UI surface the upsell dialog was opened from.
+ * `location` follows the SAPP-3815 generic-name + property convention.
+ */
+type UpsellLocation =
+  | 'field_action'
+  | 'document_toolbar'
+  | 'document_action'
+  | 'navbar'
+  | 'link'
+  | 'pte'
+
 /** @internal */
 export interface UpsellDialogViewedInfo extends UpsellDialogActionsInfo {
-  source: 'field_action' | 'document_toolbar' | 'document_action' | 'navbar' | 'link' | 'pte'
+  location: UpsellLocation
 }
 
 /**

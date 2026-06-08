@@ -40,11 +40,11 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
           feature,
           type: 'modal',
         }),
-      dialogViewed: (source: UpsellDialogViewedInfo['source']) =>
+      dialogViewed: (location: UpsellDialogViewedInfo['location']) =>
         telemetry.log(UpsellDialogViewed, {
           feature,
           type: 'modal',
-          source,
+          location,
         }),
       dialogDismissed: () => {
         telemetry.log(UpsellDialogDismissed, {
@@ -52,11 +52,11 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
           type: 'modal',
         })
       },
-      panelViewed: (source: UpsellDialogViewedInfo['source']) =>
+      panelViewed: (location: UpsellDialogViewedInfo['location']) =>
         telemetry.log(UpsellDialogViewed, {
           feature,
           type: 'inspector',
-          source,
+          location,
         }),
       panelDismissed: () =>
         telemetry.log(UpsellDialogDismissed, {

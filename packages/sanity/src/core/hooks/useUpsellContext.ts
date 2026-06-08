@@ -13,15 +13,15 @@ interface UseUpsellContextOptions {
 
 export interface UpsellContextValue {
   upsellDialogOpen: boolean
-  handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
+  handleOpenDialog: (source: UpsellDialogViewedInfo['location']) => void
   handleClose: () => void
   upsellData: UpsellData | null
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
-    dialogViewed: (source: UpsellDialogViewedInfo['source']) => void
+    dialogViewed: (source: UpsellDialogViewedInfo['location']) => void
     dialogDismissed: () => void
-    panelViewed: (source: UpsellDialogViewedInfo['source']) => void
+    panelViewed: (source: UpsellDialogViewedInfo['location']) => void
     panelDismissed: () => void
     panelPrimaryClicked: () => void
     panelSecondaryClicked: () => void
@@ -67,7 +67,7 @@ export function useUpsellContext({dataUri, feature}: UseUpsellContextOptions): U
   }, [telemetryLogs])
 
   const handleOpenDialog = useCallback(
-    (source: UpsellDialogViewedInfo['source']) => {
+    (source: UpsellDialogViewedInfo['location']) => {
       if (hasError) {
         toast.push({
           status: 'error',

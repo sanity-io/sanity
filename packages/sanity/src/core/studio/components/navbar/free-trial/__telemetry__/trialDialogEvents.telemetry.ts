@@ -11,8 +11,15 @@ type BaseDialogEventAttributes = {
   dialogTrialStage: TrialStage
 }
 
+/**
+ * How the trial dialog was initiated.
+ * `trigger` follows the SAPP-3815 generic-name + property convention;
+ * values are snake_case (`click` rather than the prior `fromClick`).
+ */
+type TrialDialogTrigger = 'click' | 'auto'
+
 export interface TrialDialogViewedInfo extends BaseDialogEventAttributes {
-  dialogTrigger: 'fromClick' | 'auto'
+  trigger: TrialDialogTrigger
 }
 
 export const TrialDialogViewed = defineEvent<TrialDialogViewedInfo>({

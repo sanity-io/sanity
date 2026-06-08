@@ -15,11 +15,11 @@ export interface ReleasesUpsellContextValue {
     whenResolved?: (hasPassed: boolean) => void,
   ) => Promise<false | void>
   onReleaseLimitReached: (limit: number) => void
-  handleOpenDialog: (source?: UpsellDialogViewedInfo['source']) => void
+  handleOpenDialog: (source?: UpsellDialogViewedInfo['location']) => void
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
-    panelViewed: (source: UpsellDialogViewedInfo['source']) => void
+    panelViewed: (source: UpsellDialogViewedInfo['location']) => void
     panelDismissed: () => void
     panelPrimaryClicked: () => void
     panelSecondaryClicked: () => void

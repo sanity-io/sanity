@@ -8,7 +8,7 @@ import type {UpsellData} from '../../core/studio/upsell/types'
  */
 export interface AssetLimitUpsellContextValue {
   upsellDialogOpen: boolean
-  handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
+  handleOpenDialog: (source: UpsellDialogViewedInfo['location']) => void
   upsellData: UpsellData | null
   telemetryLogs: {
     dialogSecondaryClicked: () => void

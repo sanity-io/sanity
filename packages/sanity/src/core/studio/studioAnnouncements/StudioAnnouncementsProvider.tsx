@@ -116,7 +116,7 @@ function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProvide
       announcement_internal_name: firstAnnouncement?.name,
       source: 'studio',
       studio_version: SANITY_VERSION,
-      origin: dialogMode ?? 'card',
+      location: dialogMode ?? 'card',
     })
 
     setDialogMode(null)

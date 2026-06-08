@@ -76,7 +76,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const [showMisconfigurationDialog, setShowMisconfigurationDialog] = useState(false)
 
   const handleOpenDialog = useCallback(
-    (source: UpsellDialogViewedInfo['source'] = 'navbar') => {
+    (source: UpsellDialogViewedInfo['location'] = 'navbar') => {
       if (hasError) {
         toast.push({
           status: 'error',

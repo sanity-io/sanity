@@ -181,7 +181,7 @@ describe('StudioAnnouncementsCard', () => {
       announcement_id: 'studioAnnouncement-1',
       announcement_title: 'Announcement 1',
       announcement_internal_name: 'announcement-1',
-      origin: 'card',
+      location: 'card',
       scrolled_into_view: false,
       source: 'studio',
       studio_version: '3.57.0',
@@ -192,7 +192,7 @@ describe('StudioAnnouncementsCard', () => {
       announcement_internal_name: 'announcement-1',
       link_title: 'Content with a link',
       link_url: 'https://github.com/sanity-io/sanity/releases/tag/v3.56.0',
-      origin: 'card',
+      location: 'card',
       source: 'studio',
       studio_version: '3.57.0',
     })

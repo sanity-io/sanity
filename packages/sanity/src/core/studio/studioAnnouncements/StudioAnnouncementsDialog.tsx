@@ -73,7 +73,7 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
         announcement_internal_name: announcement.name,
         source: 'studio',
         studio_version: SANITY_VERSION,
-        origin: mode,
+        location: mode,
         link_url: url,
         link_title: linkTitle,
       })
@@ -89,7 +89,7 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
         source: 'studio',
         studio_version: SANITY_VERSION,
         scrolled_into_view: scrolledIntoView,
-        origin: mode,
+        location: mode,
       })
     },
     [announcement._id, announcement.title, mode, telemetry, announcement.name],
