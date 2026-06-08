@@ -168,7 +168,7 @@ describe('useDocumentVersions', () => {
           release: null,
           variant: null,
           group: {_type: 'reference', _ref: 'document-1', _weak: true},
-          scopeId: undefined,
+          scopeId: null,
         },
       },
     ])
