@@ -77,7 +77,7 @@ describe('EnhancedObjectDialog: Cmd/Ctrl+ArrowUp handler', () => {
     document.body.innerHTML = ''
   })
 
-  it('ignores the shortcut when focus is inside an <input> (SAPP-3704)', () => {
+  it('ignores the shortcut when focus is inside an <input>', () => {
     renderDialog()
     const input = document.createElement('input')
     document.body.appendChild(input)
