@@ -60,7 +60,7 @@ export function getIntentState(
 
 function getPaneParams(
   intent: string,
-  {template, version, inspect, comment, task, scheduledDraft}: Record<string, string>,
+  {template, version, inspect, comment, task, scheduledDraft, path}: Record<string, string>,
 ): {
   template?: string
   version?: string
@@ -68,12 +68,14 @@ function getPaneParams(
   comment?: string
   task?: string
   scheduledDraft?: string
+  path?: string
 } {
   switch (intent) {
     case 'create':
       return {template, version}
     case 'edit':
-      return {inspect, comment, task, scheduledDraft}
+      // `path` deep-links to (and focuses) a specific field when the document opens.
+      return {inspect, comment, task, scheduledDraft, path}
     default:
       return EMPTY_PARAMS
   }
