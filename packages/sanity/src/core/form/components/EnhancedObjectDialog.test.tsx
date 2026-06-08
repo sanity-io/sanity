@@ -31,7 +31,7 @@ vi.mock('@sanity/telemetry/react', () => ({
 // Keep the real useGlobalKeyDown (it registers the window keydown listener under
 // test) but render Box as a plain div so we don't need a full Sanity theme context.
 vi.mock('@sanity/ui', async (importActual) => ({
-  ...(await importActual<typeof import('@sanity/ui')>()),
+  ...((await importActual()) as Record<string, unknown>),
   Box: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
 }))
 
@@ -39,15 +39,15 @@ vi.mock('@sanity/ui', async (importActual) => ({
 // global keydown handler (no theme/portal/presence setup required). Partial mocks
 // preserve the other real exports (e.g. Button used by DialogBreadcrumbs).
 vi.mock('../../../ui-components', async (importActual) => ({
-  ...(await importActual<typeof import('../../../ui-components')>()),
+  ...((await importActual()) as Record<string, unknown>),
   Dialog: ({children}: {children: React.ReactNode}) => <div data-testid="dialog">{children}</div>,
 }))
 vi.mock('../../components', async (importActual) => ({
-  ...(await importActual<typeof import('../../components')>()),
+  ...((await importActual()) as Record<string, unknown>),
   PopoverDialog: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
 }))
 vi.mock('../../presence', async (importActual) => ({
-  ...(await importActual<typeof import('../../presence')>()),
+  ...((await importActual()) as Record<string, unknown>),
   PresenceOverlay: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
 }))
 
@@ -59,10 +59,7 @@ function renderDialog() {
   )
 }
 
-function dispatchKeyDown(
-  target: Element,
-  init: KeyboardEventInit,
-): KeyboardEvent {
+function dispatchKeyDown(target: Element, init: KeyboardEventInit): KeyboardEvent {
   const event = new KeyboardEvent('keydown', {bubbles: true, cancelable: true, ...init})
   target.dispatchEvent(event)
   return event
