@@ -88,6 +88,17 @@ const Container = styled(Flex)`
   overflow-x: auto;
 `
 
+// The navigator tab only exists while the navigator is enabled. If it was the
+// selected tab when the navigator got toggled off, show the preview instead.
+function resolveActiveTab(
+  activeTab: PresentationLayoutTab,
+  navigatorEnabled: boolean,
+): PresentationLayoutTab {
+  if (activeTab === 'navigator' && navigatorEnabled) return 'navigator'
+  if (activeTab === 'navigator') return 'preview'
+  return activeTab
+}
+
 export default function PresentationTool(props: {
   tool: Tool<PresentationPluginOptions>
   canToggleSharePreviewAccess: boolean
@@ -476,10 +487,7 @@ export default function PresentationTool(props: {
   const isNarrow = mediaIndex <= NARROW_MEDIA_INDEX
 
   const [activeTab, setActiveTab] = useState<PresentationLayoutTab>('preview')
-  // The navigator tab only exists while the navigator is enabled; fall back to
-  // the preview if the navigator is toggled off while its tab is selected.
-  const navigatorTabUnavailable = activeTab === 'navigator' && ! navigatorEnabled
-  const resolvedTab: PresentationLayoutTab = navigatorTabUnavailable ? 'preview' : activeTab
+  const resolvedTab = resolveActiveTab(activeTab, navigatorEnabled)
 
   const handleRefresh = useCallback(
     (fallback: () => void) => {
