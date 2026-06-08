@@ -2,7 +2,7 @@ import babel from '@rolldown/plugin-babel'
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
 import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
-import {type Plugin, type UserConfig} from 'vite'
+import {esmExternalRequirePlugin, type Plugin, type UserConfig} from 'vite'
 
 import packageJson from '../package.json' with {type: 'json'}
 
@@ -19,15 +19,7 @@ export const defaultConfig: UserConfig = {
     babel({presets: [reactCompilerPreset({target: '19'})]}),
     vanillaExtractPlugin(),
     stripCssImportsPlugin(),
-  ],
-  build: {
-    emptyOutDir: true,
-    sourcemap: true,
-    lib: {
-      entry: {},
-      formats: ['es'],
-    },
-    rolldownOptions: {
+    esmExternalRequirePlugin({
       // self-externals are required here in order to ensure that the presentation
       // tool and future transitive dependencies that require sanity do not
       // re-include sanity in their bundle
@@ -38,7 +30,18 @@ export const defaultConfig: UserConfig = {
           new RegExp(`^${escapeRegExp(dependency)}\\/`),
         ],
       ),
+    }),
+  ],
+  build: {
+    emptyOutDir: true,
+    sourcemap: true,
+    lib: {
+      entry: {},
+      formats: ['es'],
+    },
+    rolldownOptions: {
       output: {
+        minify: true,
         exports: 'named',
         dir: 'dist',
         format: 'es',
@@ -49,6 +52,21 @@ export const defaultConfig: UserConfig = {
         // CSS assets get a predictable name so the module server can serve them at a known URL
         assetFileNames: (assetInfo) =>
           assetInfo.names?.some((n) => n.endsWith('.css')) ? 'index.css' : '[name]-[hash][extname]',
+      },
+      transform: {
+        // Same options as pkg-utils: https://github.com/sanity-io/pkg-utils/blob/f4e229e2641049008b375caf67576130be83fcdd/packages/%40sanity/pkg-utils/src/node/tasks/rollup/resolveRollupConfig.ts#L220-L227
+        plugins: {
+          styledComponents: {
+            // Unnecessary, as the way we use styled-components in Sanity is usually by wrapping `@sanity/ui` primitives, not declaring new ones like "const Button = styled.button``"
+            fileName: false,
+            // Native template literals take less space than this transpilation
+            transpileTemplateLiterals: false,
+            // Massively helps dead code elimination and tree-shaking
+            pure: true,
+            // disabled, as pkg-utils tends to be used for npm publishing, while other tooling, like `sanity dev`, `next dev`, etc are used for testing
+            cssProp: false,
+          },
+        },
       },
       treeshake: true,
     },
