@@ -8,10 +8,13 @@ export const CanvasLinkCtaClicked = defineEvent({
   description: 'The "Link to Canvas" button is clicked.',
 })
 
-export type CanvasLinkOrigin = 'redirect' | 'diff-dialog'
+/**
+ * Where the redirect to the canvas studio-import page was triggered from.
+ */
+export type CanvasLinkRedirectedTrigger = 'redirect' | 'diff_dialog'
 
 export const CanvasLinkRedirected = defineEvent<{
-  origin: CanvasLinkOrigin
+  trigger: CanvasLinkRedirectedTrigger
   diffs?: DiffTypesCount
 }>({
   name: 'Canvas Link Redirected',
@@ -45,8 +48,11 @@ export const CanvasUnlinkApproved = defineEvent({
   description: 'User confirmed that they want the Studio document unlinked',
 })
 
-export type OpenCanvasOrigin = 'action' | 'banner'
-export const CanvasOpened = defineEvent<{origin: OpenCanvasOrigin; source: 'studio'}>({
+/**
+ * The UI surface the "Edit in Canvas" action was triggered from.
+ */
+export type CanvasOpenedLocation = 'action' | 'banner'
+export const CanvasOpened = defineEvent<{location: CanvasOpenedLocation; source: 'studio'}>({
   name: 'Canvas Opened',
   version: 1,
   description: 'User clicked "Edit in Canvas"',

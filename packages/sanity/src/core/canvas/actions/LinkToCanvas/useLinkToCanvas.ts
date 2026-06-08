@@ -168,7 +168,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
             error: null,
             response: preflight,
             navigateToCanvas: () => {
-              linkRedirected(status === 'diff' ? 'diff-dialog' : 'redirect', preflight.diff)
+              linkRedirected(status === 'diff' ? 'diff_dialog' : 'redirect', preflight.diff)
               navigateToCanvas()
             },
           }

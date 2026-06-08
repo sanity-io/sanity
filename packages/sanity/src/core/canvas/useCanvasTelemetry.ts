@@ -5,24 +5,24 @@ import {
   CanvasLinkCtaClicked,
   CanvasLinkDialogDiffsShown,
   CanvasLinkDialogRejected,
-  type CanvasLinkOrigin,
+  type CanvasLinkRedirectedTrigger,
   CanvasLinkRedirected,
   CanvasOpened,
+  type CanvasOpenedLocation,
   CanvasUnlinkApproved,
   CanvasUnlinkCtaClicked,
   type DiffTypesCount,
-  type OpenCanvasOrigin,
 } from './__telemetry__/canvas.telemetry'
 import {type CanvasDiff} from './types'
 
 interface CanvasTelemetryHookValue {
   linkCtaClicked: () => void
-  linkRedirected: (origin: CanvasLinkOrigin, diffs?: CanvasDiff[]) => void
+  linkRedirected: (trigger: CanvasLinkRedirectedTrigger, diffs?: CanvasDiff[]) => void
   linkDialogDiffsShown: () => void
   linkDialogRejected: (diffs: CanvasDiff[]) => void
   unlinkCtaClicked: () => void
   unlinkApproved: () => void
-  canvasOpened: (origin: OpenCanvasOrigin) => void
+  canvasOpened: (location: CanvasOpenedLocation) => void
 }
 const getDiffTypesCount = (diffs: CanvasDiff[]): DiffTypesCount => {
   return diffs.reduce((acc, diff) => {
@@ -37,9 +37,9 @@ export function useCanvasTelemetry(): CanvasTelemetryHookValue {
   return useMemo(
     (): CanvasTelemetryHookValue => ({
       linkCtaClicked: () => telemetry.log(CanvasLinkCtaClicked),
-      linkRedirected: (origin, diffs) =>
+      linkRedirected: (trigger, diffs) =>
         telemetry.log(CanvasLinkRedirected, {
-          origin,
+          trigger,
           diffs: diffs ? getDiffTypesCount(diffs) : undefined,
         }),
       linkDialogDiffsShown: () => telemetry.log(CanvasLinkDialogDiffsShown),
@@ -47,7 +47,7 @@ export function useCanvasTelemetry(): CanvasTelemetryHookValue {
         telemetry.log(CanvasLinkDialogRejected, {diffs: getDiffTypesCount(diffs)}),
       unlinkCtaClicked: () => telemetry.log(CanvasUnlinkCtaClicked),
       unlinkApproved: () => telemetry.log(CanvasUnlinkApproved),
-      canvasOpened: (origin) => telemetry.log(CanvasOpened, {origin, source: 'studio'}),
+      canvasOpened: (location) => telemetry.log(CanvasOpened, {location, source: 'studio'}),
     }),
     [telemetry],
   )

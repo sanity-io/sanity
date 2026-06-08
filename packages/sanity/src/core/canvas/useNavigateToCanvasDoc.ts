@@ -8,7 +8,7 @@ import {useComlinkStore} from '../store/datastores'
 import {useProjectOrganizationId} from '../store/project/useProjectOrganizationId'
 import {useRenderingContext} from '../store/renderingContext/useRenderingContext'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
-import {type OpenCanvasOrigin} from './__telemetry__/canvas.telemetry'
+import {type CanvasOpenedLocation} from './__telemetry__/canvas.telemetry'
 import {canvasLocaleNamespace} from './i18n'
 import {useCanvasTelemetry} from './useCanvasTelemetry'
 
@@ -19,7 +19,7 @@ import {useCanvasTelemetry} from './useCanvasTelemetry'
  */
 export const useNavigateToCanvasDoc = (
   canvasDocId: string | undefined,
-  origin: OpenCanvasOrigin,
+  location: CanvasOpenedLocation,
 ) => {
   const {value: organizationId} = useProjectOrganizationId()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -34,7 +34,7 @@ export const useNavigateToCanvasDoc = (
     if (!canvasDocId) {
       return
     }
-    canvasOpened(origin)
+    canvasOpened(location)
     // If comlink is connected send the message, otherwise open the url in a new tab
     if (isInDashboard && node) {
       const message: Bridge.Navigation.NavigateToResourceMessage = {
@@ -62,7 +62,7 @@ export const useNavigateToCanvasDoc = (
         '_blank',
       )
     }
-  }, [canvasDocId, canvasOpened, origin, isInDashboard, node, organizationId, client, toast, t])
+  }, [canvasDocId, canvasOpened, location, isInDashboard, node, organizationId, client, toast, t])
 
   return navigateToCanvas
 }
