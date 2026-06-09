@@ -1,44 +1,37 @@
-import {type SanityClient} from '@sanity/client'
-import {getPublishedId, getVersionId} from '@sanity/client/csm'
-import {type DocumentSystem, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
-import {customAlphabet} from 'nanoid'
+import {type SanityClient, type SingleActionResult} from '@sanity/client'
+import {getPublishedId} from '@sanity/client/csm'
+import {type SanityDocumentLike} from '@sanity/types'
 
 import {type ReleaseId, type TargetPerspective} from '../../perspective/types'
-import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
+import {
+  type VariantDocumentBundleId,
+  type VariantDocumentCreateFromBaseAction,
+  variantsClient,
+} from '../store/variantsClient'
+import {getVariantId} from '../tool/util'
 import {type SystemVariant} from '../types'
 import {getBundleIdFromPerspective} from './getBundleIdFromPerspective'
 
-const createScopeIdSuffix = customAlphabet(
-  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-  8,
-)
+function getSupportedBundleId(
+  selectedPerspective: TargetPerspective,
+): VariantDocumentBundleId | undefined {
+  const {bundleId} = getBundleIdFromPerspective(selectedPerspective)
 
-/**
- * @internal temporal.
- * Will be replaced with the new document system API when available.
- */
-function buildVariantDocumentSystem(options: {
-  publishedId: string
-  variant: SystemVariant
-  scopeId: string
-  selectedPerspectiveName: ReleaseId | 'published' | undefined
-  selectedPerspective: TargetPerspective
-}): DocumentSystem {
-  const {publishedId, variant, scopeId, selectedPerspective} = options
-  const {bundleId, release} = getBundleIdFromPerspective(selectedPerspective)
-
-  return {
-    bundleId,
-    release,
-    variant: {_type: 'reference', _ref: variant._id, _weak: true},
-    group: {_type: 'reference', _ref: publishedId, _weak: true},
-    scopeId,
+  if (bundleId === '$published') {
+    return undefined
   }
+
+  if (bundleId === 'drafts') {
+    return 'drafts'
+  }
+
+  throw new Error(
+    `Variant document creation is not supported for bundle "${bundleId}". Only "$published" and "drafts" bundles are supported.`,
+  )
 }
 
 /**
- * Creates a variant-scoped version document. Replace this implementation with the variants
- * document action API when available.
+ * Creates a variant-scoped version document via the variants document create action.
  *
  * @internal
  */
@@ -46,7 +39,6 @@ export async function createVariantScopedDocument({
   client,
   document,
   variant,
-  selectedPerspectiveName,
   selectedPerspective,
 }: {
   client: SanityClient
@@ -55,30 +47,22 @@ export async function createVariantScopedDocument({
   variant: SystemVariant
   selectedPerspectiveName: 'published' | ReleaseId | undefined
   selectedPerspective: TargetPerspective
-}): Promise<SanityDocument> {
+}): Promise<SingleActionResult> {
   if (!document._id) {
     throw new Error('Source document must have an _id')
   }
 
   const publishedId = getPublishedId(document._id)
-  const scopeId = createScopeIdSuffix()
-  const versionId = getVersionId(publishedId, scopeId)
-  const system = buildVariantDocumentSystem({
-    publishedId,
-    variant,
-    scopeId,
-    selectedPerspectiveName,
-    selectedPerspective,
-  })
+  const bundleId = getSupportedBundleId(selectedPerspective)
 
-  const documentPayload = {
-    ...document,
-    _id: versionId,
-    [DOCUMENT_SYSTEM_FIELD]: system,
-    _rev: undefined,
-    _createdAt: undefined,
-    _updatedAt: undefined,
+  const action: VariantDocumentCreateFromBaseAction = {
+    actionType: 'sanity.action.document.variant.create',
+    publishedId,
+    variantId: getVariantId(variant._id),
+    baseId: document._id,
+    ...(document._rev ? {ifBaseRevisionId: document._rev} : {}),
+    ...(bundleId ? {bundleId} : {}),
   }
 
-  return client.create(documentPayload, {autoGenerateArrayKeys: true})
+  return variantsClient(client).action(action, {tag: 'variants.document.create'})
 }

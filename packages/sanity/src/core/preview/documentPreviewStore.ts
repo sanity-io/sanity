@@ -188,7 +188,11 @@ export function createDocumentPreviewStore({
       apiConfig,
       perspective,
     ).pipe(
-      map((res) => (isRecord(res) ? (res as unknown as DocumentSystem) : undefined)),
+      map((res) =>
+        isRecord(res) && isRecord(res[DOCUMENT_SYSTEM_FIELD])
+          ? (res[DOCUMENT_SYSTEM_FIELD] as unknown as DocumentSystem)
+          : undefined,
+      ),
       distinctUntilChanged(),
     )
   }

@@ -160,7 +160,7 @@ export function getOrCreateDocumentVersionsObservable(options: {
 
         return combineLatest(
           documentIds.map((id) =>
-            documentPreviewStore.observeDocumentSystemFromId(id, {projectId, dataset}).pipe(
+            documentPreviewStore.observeDocumentSystemFromId(id).pipe(
               map((system) => ({
                 _id: id,
                 [DOCUMENT_SYSTEM_FIELD]: system ?? temporallyBuildDocumentSystem(id),
