@@ -18,7 +18,14 @@ describe('getIntentState', () => {
 
     const result = getIntentState(
       'edit',
-      {id: 'doc1', type: 'post', path: 'body[_key=="abc"].title'},
+      {
+        id: 'doc1',
+        type: 'post',
+        path: 'body[_key=="abc"].title',
+        // history/release params used to open a release version
+        historyVersion: 'rTest',
+        archivedRelease: 'true',
+      },
       {panes: []},
       undefined,
     )
@@ -28,7 +35,11 @@ describe('getIntentState', () => {
       const lastGroup = result.panes[result.panes.length - 1] as Array<{
         params?: Record<string, string>
       }>
+      // `path` (field deep-link) and the other document-pane params must survive the
+      // fast-path, matching the cold-path resolver.
       expect(lastGroup[0].params?.path).toBe('body[_key=="abc"].title')
+      expect(lastGroup[0].params?.historyVersion).toBe('rTest')
+      expect(lastGroup[0].params?.archivedRelease).toBe('true')
     }
   })
 

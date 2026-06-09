@@ -60,7 +60,20 @@ export function getIntentState(
 
 function getPaneParams(
   intent: string,
-  {template, version, inspect, comment, task, scheduledDraft, path}: Record<string, string>,
+  {
+    template,
+    version,
+    inspect,
+    comment,
+    task,
+    scheduledDraft,
+    path,
+    rev,
+    since,
+    historyEvent,
+    historyVersion,
+    archivedRelease,
+  }: Record<string, string>,
 ): {
   template?: string
   version?: string
@@ -69,13 +82,32 @@ function getPaneParams(
   task?: string
   scheduledDraft?: string
   path?: string
+  rev?: string
+  since?: string
+  historyEvent?: string
+  historyVersion?: string
+  archivedRelease?: string
 } {
   switch (intent) {
     case 'create':
       return {template, version}
+    // Forward the document-pane intent params (notably `path` to deep-link/focus a
+    // field, and the history/release params used to open a release version). The
+    // cold-path resolver (`resolveIntent`) already forwards all params except id/type;
+    // this fast-path previously dropped everything outside a small hardcoded list.
     case 'edit':
-      // `path` deep-links to (and focuses) a specific field when the document opens.
-      return {inspect, comment, task, scheduledDraft, path}
+      return {
+        inspect,
+        comment,
+        task,
+        scheduledDraft,
+        path,
+        rev,
+        since,
+        historyEvent,
+        historyVersion,
+        archivedRelease,
+      }
     default:
       return EMPTY_PARAMS
   }
