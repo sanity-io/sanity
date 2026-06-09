@@ -123,10 +123,12 @@ export function UnionInput(props: UnionInputProps) {
   ])
 
   if (value && !selectedMember) {
+    const actualType = typeof value._type === 'string' ? value._type : 'object'
+
     return (
       <InvalidValueInput
         value={value}
-        actualType={typeof value._type === 'string' ? value._type : 'object'}
+        actualType={actualType}
         validTypes={schemaType.of.map((memberType) => memberType.name)}
         onChange={onChange}
       />
