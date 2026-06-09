@@ -22,9 +22,5 @@ export const LOADER_QUERY_GC_INTERVAL = 30_000 // ms
 // The interval at which we check if existing popups have been closed
 export const POPUP_CHECK_INTERVAL = 1000 // ms
 
-// At or below this `@sanity/ui` media breakpoint index the preview and document
-// panels can no longer sit side-by-side without becoming cramped, so the layout
-// collapses them into a tab bar that shows a single pane at a time. Tuned to
-// trigger below ~900px, where the two 325px-minimum panels stop fitting
-// comfortably alongside the studio chrome.
+// Below this @sanity/ui breakpoint (~900px) the two 325px panels stop fitting side-by-side and collapse into tabs.
 export const NARROW_MEDIA_INDEX = 2

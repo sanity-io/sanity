@@ -4,14 +4,14 @@ import {styled} from 'styled-components'
 
 interface PanelProps extends PropsWithChildren {
   defaultSize?: number | null
-  /** Identifies the panel within the panel group; not rendered to the DOM. */
+  /** Panel group key; not a DOM id. */
   id: string
-  /** Optional DOM id applied to the panel's root element, e.g. for `aria-controls`. */
+  /** DOM id for the root element (e.g. aria-controls target). */
   htmlId?: string
   minWidth?: number
   maxWidth?: number
   order?: number
-  /** Removes the panel from the flex layout without unmounting it, preserving any iframe state. */
+  /** Hide via display:none without unmounting (keeps iframe state). */
   hidden?: boolean
 }
 
@@ -39,9 +39,7 @@ export const Panel: FunctionComponent<PanelProps> = function ({
 
   const {getPanelStyle, registerElement, unregisterElement} = context
 
-  // A hidden panel stays mounted (so the preview iframe keeps its state) but
-  // leaves the flex layout entirely, letting the remaining visible panel fill
-  // the container regardless of its persisted width.
+  // Hidden panels stay mounted (preserving iframe state) but leave the flex layout so siblings fill the space.
   const style = hidden ? {display: 'none'} : getPanelStyle(id)
 
   useLayoutEffect(() => {

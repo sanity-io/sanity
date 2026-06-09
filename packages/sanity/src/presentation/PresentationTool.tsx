@@ -88,8 +88,7 @@ const Container = styled(Flex)`
   overflow-x: auto;
 `
 
-// The navigator tab only exists while the navigator is enabled. If it was the
-// selected tab when the navigator got toggled off, show the preview instead.
+// Fall back to the preview if the navigator tab is selected but no longer enabled.
 function resolveActiveTab(
   activeTab: PresentationLayoutTab,
   navigatorEnabled: boolean,
@@ -481,8 +480,7 @@ export default function PresentationTool(props: {
     unstable_navigator,
   })
 
-  // At narrow viewports the preview and document panels can't sit side-by-side
-  // comfortably, so they collapse into a tab bar that shows one pane at a time.
+  // Narrow viewports collapse the panels into a tab bar showing one pane at a time.
   const mediaIndex = useMediaIndex()
   const isNarrow = mediaIndex <= NARROW_MEDIA_INDEX
 

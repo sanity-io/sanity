@@ -25,13 +25,13 @@ export interface PresentationContentProps {
   documentsOnPage: {_id: string; _type: string}[]
   documentType: PresentationParamsContextValue['type']
   getCommentIntent: CommentIntentGetter
-  /** Removes the document panel from the layout (narrow mode, when another tab is active). */
+  /** Hide the document panel (narrow mode, another tab active). */
   hidden?: boolean
   mainDocumentState: MainDocumentState | undefined
   onEditReference: PresentationNavigate
   onFocusPath: (state: Required<PresentationStateParams>) => void
   onStructureParams: (params: StructureDocumentPaneParams) => void
-  /** Hides the preceding resizer (narrow mode, where panels never sit side-by-side). */
+  /** Hide the preceding resizer (narrow mode). */
   resizerHidden?: boolean
   searchParams: PresentationSearchParams
   setDisplayedDocument: Dispatch<SetStateAction<Partial<SanityDocument> | null | undefined>>

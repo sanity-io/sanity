@@ -1,15 +1,12 @@
 /**
- * Identifies which pane the narrow-viewport tab bar is currently showing. Maps
- * directly onto the panels assembled in `PresentationTool`: the preview iframe,
- * the optional navigator, and the document (structure) editor.
+ * Which pane the narrow-viewport tab bar shows: preview, navigator, or document editor.
  *
  * @internal
  */
 export type PresentationLayoutTab = 'preview' | 'navigator' | 'content'
 
 /**
- * The DOM id applied to a panel's root element so its narrow-mode tab can
- * reference it via `aria-controls`.
+ * DOM id of a panel's root, used as the `aria-controls` target for its tab.
  *
  * @internal
  */

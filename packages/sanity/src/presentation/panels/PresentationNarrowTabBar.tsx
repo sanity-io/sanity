@@ -13,9 +13,7 @@ interface PresentationNarrowTabBarProps {
 }
 
 /**
- * A tab bar shown above the panels at narrow viewports, allowing the user to
- * switch between showing the preview, the optional navigator, and the document
- * editor one at a time rather than cramming them side-by-side.
+ * Tab bar shown above the panels at narrow viewports to switch between panes one at a time.
  *
  * @internal
  */
@@ -24,16 +22,16 @@ export const PresentationNarrowTabBar: FunctionComponent<PresentationNarrowTabBa
     const {activeTab, navigatorEnabled, onTabChange} = props
     const {t} = useTranslation(presentationLocaleNamespace)
 
-    const tabs = useMemo<{id: PresentationLayoutTab; label: string}[]>(
-      () => [
+    const tabs = useMemo<{id: PresentationLayoutTab; label: string}[]>(() => {
+      const orderedTabs: {id: PresentationLayoutTab; label: string}[] = [
         {id: 'preview', label: t('narrow-tabs.preview-tab.label')},
-        ...(navigatorEnabled
-          ? [{id: 'navigator' as const, label: t('narrow-tabs.navigator-tab.label')}]
-          : []),
-        {id: 'content', label: t('narrow-tabs.content-tab.label')},
-      ],
-      [navigatorEnabled, t],
-    )
+      ]
+      if (navigatorEnabled) {
+        orderedTabs.push({id: 'navigator', label: t('narrow-tabs.navigator-tab.label')})
+      }
+      orderedTabs.push({id: 'content', label: t('narrow-tabs.content-tab.label')})
+      return orderedTabs
+    }, [navigatorEnabled, t])
 
     return (
       <Card borderBottom paddingX={2} paddingY={1}>

@@ -19,9 +19,9 @@ export interface UsePresentationNavigatorState {
 
 /** @internal */
 export interface PresentationNavigatorProps {
-  /** Removes the navigator panel from the layout (narrow mode, when another tab is active). */
+  /** Hide the navigator panel (narrow mode, another tab active). */
   hidden?: boolean
-  /** Hides the navigator's resizer (narrow mode, where panels never sit side-by-side). */
+  /** Hide the navigator's resizer (narrow mode). */
   resizerHidden?: boolean
 }
 
