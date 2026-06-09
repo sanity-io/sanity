@@ -519,34 +519,11 @@ describe('search strategy selection', () => {
     expect(workspace.search.strategy).toBe('groq2024')
   })
 
-  it('infers strategy based on `enableLegacySearch`', async () => {
+  it('respects `strategy`', async () => {
     const workspaceA = await createWorkspaceFromConfig({
       projectId,
       dataset,
       search: {
-        enableLegacySearch: true,
-      },
-    })
-
-    expect(workspaceA.search.strategy).toBe('groqLegacy')
-
-    const workspaceB = await createWorkspaceFromConfig({
-      projectId,
-      dataset,
-      search: {
-        enableLegacySearch: false,
-      },
-    })
-
-    expect(workspaceB.search.strategy).toBe('groq2024')
-  })
-
-  it('gives precedence to `strategy`', async () => {
-    const workspaceA = await createWorkspaceFromConfig({
-      projectId,
-      dataset,
-      search: {
-        enableLegacySearch: true,
         strategy: 'groq2024',
       },
     })
@@ -557,7 +534,6 @@ describe('search strategy selection', () => {
       projectId,
       dataset,
       search: {
-        enableLegacySearch: false,
         strategy: 'groqLegacy',
       },
     })
@@ -571,11 +547,11 @@ describe('search strategy selection', () => {
       dataset,
       plugins: [
         getSearchOptionsPlugin({
-          enableLegacySearch: false,
+          strategy: 'groq2024',
         }),
       ],
       search: {
-        enableLegacySearch: true,
+        strategy: 'groqLegacy',
       },
     })
 
@@ -586,75 +562,15 @@ describe('search strategy selection', () => {
       dataset,
       plugins: [
         getSearchOptionsPlugin({
-          enableLegacySearch: true,
-        }),
-      ],
-      search: {
-        enableLegacySearch: false,
-      },
-    })
-
-    expect(workspaceB.search.strategy).toBe('groq2024')
-
-    const workspaceC = await createWorkspaceFromConfig({
-      projectId,
-      dataset,
-      plugins: [
-        getSearchOptionsPlugin({
-          enableLegacySearch: false,
-        }),
-      ],
-      search: {
-        strategy: 'groqLegacy',
-      },
-    })
-
-    expect(workspaceC.search.strategy).toBe('groqLegacy')
-
-    const workspaceD = await createWorkspaceFromConfig({
-      projectId,
-      dataset,
-      plugins: [
-        getSearchOptionsPlugin({
-          strategy: 'groq2024',
-        }),
-      ],
-      search: {
-        strategy: 'groqLegacy',
-      },
-    })
-
-    expect(workspaceD.search.strategy).toBe('groqLegacy')
-
-    const workspaceE = await createWorkspaceFromConfig({
-      projectId,
-      dataset,
-      plugins: [
-        getSearchOptionsPlugin({
-          strategy: 'groq2024',
-        }),
-      ],
-      search: {
-        enableLegacySearch: true,
-      },
-    })
-
-    expect(workspaceE.search.strategy).toBe('groq2024')
-
-    const workspaceF = await createWorkspaceFromConfig({
-      projectId,
-      dataset,
-      plugins: [
-        getSearchOptionsPlugin({
           strategy: 'groqLegacy',
         }),
       ],
       search: {
-        enableLegacySearch: false,
+        strategy: 'groq2024',
       },
     })
 
-    expect(workspaceF.search.strategy).toBe('groqLegacy')
+    expect(workspaceB.search.strategy).toBe('groq2024')
   })
 })
 

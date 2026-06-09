@@ -605,17 +605,6 @@ export const partialIndexingEnabledReducer = (opts: {
   return result
 }
 
-export const legacySearchEnabledReducer: ConfigPropertyReducer<boolean, ConfigContext> = (
-  prev,
-  {search},
-): boolean => {
-  if (typeof search?.enableLegacySearch !== 'undefined') {
-    return search.enableLegacySearch
-  }
-
-  return prev
-}
-
 export const draftsEnabledReducer: ConfigPropertyReducer<boolean, ConfigContext> = (
   prev,
   {document},
@@ -631,17 +620,6 @@ export const draftsEnabledReducer: ConfigPropertyReducer<boolean, ConfigContext>
   return prev
 }
 
-/**
- * Some projects may already be using the `enableLegacySearch` option. In order to gracefully
- * migrate to the `strategy` option, this reducer produces a value that respects any existing
- * `enableLegacySearch` option.
- *
- * If the project currently enables the Text Search API search strategy by setting
- * `enableLegacySearch` to `false`, this is mapped to the `groq2024` strategy.
- *
- * Any explicitly defined `strategy` value will take precedence over the value inferred from
- * `enableLegacySearch`.
- */
 export const searchStrategyReducer = ({
   config,
   initialValue,
@@ -651,41 +629,22 @@ export const searchStrategyReducer = ({
 }): SearchStrategy => {
   const flattenedConfig = flattenConfig(config, [])
 
-  type SearchStrategyReducerState = [
-    implicit: SearchStrategy | undefined,
-    explicit: SearchStrategy | undefined,
-  ]
+  return flattenedConfig.reduce<SearchStrategy>((currentStrategy, entry) => {
+    const {strategy} = entry.config.search ?? {}
 
-  const [implicit, explicit] = flattenedConfig.reduce<SearchStrategyReducerState>(
-    ([currentImplicit, currentExplicit], entry) => {
-      const {enableLegacySearch, strategy} = entry.config.search ?? {}
-
-      // The strategy has been explicitly defined.
-      if (typeof strategy !== 'undefined') {
-        if (!isSearchStrategy(strategy)) {
-          const listFormatter = new Intl.ListFormat('en-US', {
-            type: 'disjunction',
-          })
-          const options = listFormatter.format(searchStrategies.map((value) => `"${value}"`))
-          const received =
-            typeof strategy === 'string' ? `"${strategy}"` : getPrintableType(strategy)
-          throw new Error(`Expected \`search.strategy\` to be ${options}, but received ${received}`)
-        }
-
-        return [currentImplicit, strategy]
+    if (typeof strategy !== 'undefined') {
+      if (!isSearchStrategy(strategy)) {
+        const listFormatter = new Intl.ListFormat('en-US', {type: 'disjunction'})
+        const options = listFormatter.format(searchStrategies.map((value) => `"${value}"`))
+        const received = typeof strategy === 'string' ? `"${strategy}"` : getPrintableType(strategy)
+        throw new Error(`Expected \`search.strategy\` to be ${options}, but received ${received}`)
       }
 
-      // The strategy has been implicitly defined.
-      if (typeof enableLegacySearch === 'boolean') {
-        return [enableLegacySearch ? 'groqLegacy' : 'groq2024', currentExplicit]
-      }
+      return strategy
+    }
 
-      return [currentImplicit, currentExplicit]
-    },
-    [undefined, undefined],
-  )
-
-  return explicit ?? implicit ?? initialValue
+    return currentStrategy
+  }, initialValue)
 }
 
 export const announcementsEnabledReducer = (opts: {
