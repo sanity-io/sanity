@@ -1,7 +1,7 @@
 /**
  * @public
  */
-export const searchStrategies = ['groqLegacy', 'groq2024'] as const
+export const searchStrategies = ['groq2024', 'groqLegacy'] as const
 
 /**
  * @public

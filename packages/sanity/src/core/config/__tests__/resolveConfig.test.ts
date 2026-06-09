@@ -516,7 +516,7 @@ describe('search strategy selection', () => {
       dataset,
     })
 
-    expect(workspace.search.strategy).toBeTypeOf('string')
+    expect(workspace.search.strategy).toBe('groq2024')
   })
 
   it('infers strategy based on `enableLegacySearch`', async () => {

@@ -814,7 +814,7 @@ function resolveSource({
       },
       strategy: searchStrategyReducer({
         config,
-        initialValue: 'groqLegacy',
+        initialValue: 'groq2024',
       }),
       enableLegacySearch: resolveConfigProperty({
         config,
