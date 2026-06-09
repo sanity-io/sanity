@@ -14,7 +14,6 @@ import {
 import deepCompare from 'react-fast-compare'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
-import {EMPTY_ARRAY} from '../util'
 import {pathToString} from '../validation/util/pathToString'
 import {DEBUG} from './constants'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
@@ -37,7 +36,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     isChanged,
     onMouseEnter: onMouseEnterProp,
     onMouseLeave: onMouseLeaveProp,
-    path = EMPTY_ARRAY,
+    path,
     withHoverEffect,
     isInteractive,
     ...restProps

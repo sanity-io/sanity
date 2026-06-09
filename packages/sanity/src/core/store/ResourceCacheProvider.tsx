@@ -5,7 +5,7 @@ import {createMultiKeyWeakMap, type MultiKeyWeakMap} from './createMultiKeyWeakM
 
 /** @internal */
 export interface ResourceCache {
-  get<T = unknown>(options: {namespace: string; dependencies: (object | null)[]}): T | undefined
+  get(options: {namespace: string; dependencies: (object | null)[]}): unknown | undefined
   set(options: {namespace: string; dependencies: (object | null)[]; value: unknown}): void
 }
 

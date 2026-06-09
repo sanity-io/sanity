@@ -118,7 +118,7 @@ export function VisionGui(props: VisionGuiProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const {perspectiveStack} = usePerspective()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
-  const {data: releases = []} = useActiveReleases()
+  const {data: releases} = useActiveReleases()
   const workspace = useWorkspace()
   const isDraftModelEnabled = workspace.document.drafts.enabled
 
@@ -134,7 +134,7 @@ export function VisionGui(props: VisionGuiProps) {
   const storedDataset = localStorage.get('dataset', defaultDataset)
   const storedApiVersion = localStorage.get(
     'apiVersion',
-    prefixApiVersion(`${config.defaultApiVersion}`),
+    prefixApiVersion(config.defaultApiVersion),
   )
   const storedQuery = localStorage.get('query', '')
   const storedParams = localStorage.get('params', '{\n  \n}')

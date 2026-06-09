@@ -34,7 +34,7 @@ export const TableProvider: ComponentType<PropsWithChildren & {defaultSort?: Tab
         return {...s, direction: s.direction === 'asc' ? 'desc' : 'asc'}
       }
 
-      return {column: String(newColumn), direction: 'desc'}
+      return {column: newColumn, direction: 'desc'}
     })
   }, [])
 

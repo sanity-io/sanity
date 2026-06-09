@@ -92,7 +92,7 @@ interface TasksListProps {
  * @internal
  */
 export function TasksList(props: TasksListProps) {
-  const {items = EMPTY_ARRAY, onTaskSelect} = props
+  const {items, onTaskSelect} = props
 
   const tasksByStatus = useMemo(
     () =>

@@ -120,7 +120,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       placeholder,
       readOnly,
       renderBlock = defaultRenderBlock,
-      value = EMPTY_ARRAY,
+      value,
       withAvatar = true,
     } = props
     const [focused, setFocused] = useState<boolean>(false)

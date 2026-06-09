@@ -104,7 +104,7 @@ export function buildCommentBreadcrumbs(
       fieldPaths.push({
         invalid: arrayItemIndex === false,
         isArrayItem: true,
-        title: isNumber ? `#${Number(arrayItemIndex) + 1}` : 'Unknown array item',
+        title: isNumber ? `#${arrayItemIndex + 1}` : 'Unknown array item',
       })
 
       return

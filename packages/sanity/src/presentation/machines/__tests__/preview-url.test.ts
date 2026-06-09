@@ -55,8 +55,8 @@ const client = createFakeClient()
 const studioBasePath = '/'
 const expiresAt = new Date(Date.now() + 1000 * 60 * 60)
 const mockActors = ({
-  allowOption = undefined,
-  previewUrlOption = undefined,
+  allowOption,
+  previewUrlOption,
 }: {
   allowOption?: PreviewUrlAllowOption
   previewUrlOption?: PreviewUrlOption

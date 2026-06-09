@@ -35,7 +35,7 @@ export function useExcludedPerspective(): ExcludedPerspectiveValue {
   )
 
   const isPerspectiveExcluded = useCallback(
-    (perspectiveId: string) => Boolean(excludedPerspectives?.includes(perspectiveId)),
+    (perspectiveId: string) => excludedPerspectives?.includes(perspectiveId),
     [excludedPerspectives],
   )
 

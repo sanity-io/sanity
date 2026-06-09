@@ -143,14 +143,14 @@ function getItemType(arrayType: ArraySchemaType, item: unknown): SchemaType | un
 /** @internal */
 export const DEFAULT_MAX_RECURSION_DEPTH = 10
 
-type ResolveInitialValueForType = <TParams extends Record<string, unknown>>(
+type ResolveInitialValueForType = (
   /**
    * This is the name of the document.
    */ type: SchemaType,
   /**
    * Params is a sanity context object passed to every initial value function.
    */
-  params: TParams,
+  params: Record<string, unknown>,
   /**
    * Maximum recursion depth (default 9).
    */
@@ -223,7 +223,7 @@ const memoizeResolveInitialValueForType: (
  * @internal
  */
 export const resolveInitialValueForType = memoizeResolveInitialValueForType(
-  (type, params, maxDepth = DEFAULT_MAX_RECURSION_DEPTH, context, options): Promise<any> => {
+  (type, params, maxDepth, context, options): Promise<any> => {
     if (maxDepth <= 0) {
       return Promise.resolve(undefined)
     }
@@ -240,9 +240,9 @@ export const resolveInitialValueForType = memoizeResolveInitialValueForType(
   },
 )
 
-async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
+async function resolveInitialArrayValue(
   type: SchemaType,
-  params: Params,
+  params: Record<string, unknown>,
   maxDepth: number,
   context: InitialValueResolverContext,
   options?: Options,
@@ -278,9 +278,9 @@ async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
 }
 
 /** @internal */
-export async function resolveInitialObjectValue<Params extends Record<string, unknown>>(
+export async function resolveInitialObjectValue(
   type: ObjectSchemaType,
-  params: Params,
+  params: Record<string, unknown>,
   maxDepth: number,
   context: InitialValueResolverContext,
   options?: Options,

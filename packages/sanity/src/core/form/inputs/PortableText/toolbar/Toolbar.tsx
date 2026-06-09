@@ -152,7 +152,7 @@ const InnerToolbar = memo(function InnerToolbar({
                 ? 'inputs.portable-text.action.collapse-editor'
                 : 'inputs.portable-text.action.expand-editor',
             ),
-            hotkeys: [`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter'],
+            hotkeys: [IS_MAC ? 'Cmd' : 'Ctrl', 'Enter'],
             placement: isFullscreen ? 'bottom' : 'top',
             portal: 'default',
           }}

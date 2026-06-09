@@ -21,7 +21,6 @@ import {
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
-import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
@@ -65,7 +64,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     changed,
     elementRef,
     focused,
-    focusPath = EMPTY_ARRAY,
+    focusPath,
     elementProps,
     hasFocusWithin,
     hideToolbar,

@@ -40,7 +40,7 @@ const SortHeaderButton = ({
   return (
     <Button
       iconRight={header.sorting && sort?.column === header.id ? sortIcon : undefined}
-      onClick={() => setSortColumn(String(header.id))}
+      onClick={() => setSortColumn(header.id)}
       mode="bleed"
       size="default"
       text={text}
@@ -96,10 +96,10 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
           ({header: Header, style, width, id, sorting}) =>
             !!Header && (
               <Header
-                key={String(id)}
+                key={id}
                 headerProps={{
                   as: 'th',
-                  id: String(id),
+                  id: id,
                   style: {...style, width: width || undefined},
                 }}
                 header={{id, sorting}}

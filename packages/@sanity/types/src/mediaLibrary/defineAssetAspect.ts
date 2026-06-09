@@ -19,7 +19,7 @@ export function defineAssetAspect(
 
   return {
     _type: MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME,
-    _id: `${name}`,
+    _id: name,
     definition,
     ...(assetType && {
       assetType: Array.isArray(assetType) ? assetType : [assetType],

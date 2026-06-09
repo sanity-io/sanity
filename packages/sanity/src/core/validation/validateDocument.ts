@@ -18,7 +18,6 @@ import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/oper
 
 import {type SourceClientOptions, type Workspace} from '../config'
 import {resolveConditionalProperty} from '../form/store/conditional-property/resolveConditionalProperty'
-import {getFallbackLocaleSource} from '../i18n/fallback'
 import {type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
@@ -231,7 +230,7 @@ const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimit
 export function validateDocumentObservable({
   document,
   getClient,
-  i18n = getFallbackLocaleSource(),
+  i18n,
   schema,
   getDocumentExists,
   environment,

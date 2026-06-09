@@ -413,7 +413,7 @@ export const Calendar = forwardRef(function Calendar(
                   icon={EarthGlobeIcon}
                   mode="bleed"
                   size="default"
-                  text={`${timeZone?.abbreviation}`}
+                  text={timeZone?.abbreviation}
                   onClick={handleTimeZoneOpen}
                 />
               )}

@@ -116,12 +116,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const router = useRouter()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
-  const {
-    options,
-    menuItemGroups = DEFAULT_MENU_ITEM_GROUPS,
-    title = null,
-    views: viewsProp = [],
-  } = pane
+  const {options, menuItemGroups = DEFAULT_MENU_ITEM_GROUPS, title, views: viewsProp = []} = pane
   const paneOptions = useUnique(options)
   const documentIdRaw = paneOptions.id
   const documentId = getPublishedId(documentIdRaw)
@@ -150,7 +145,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     }
   }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
 
-  const {data: releases = EMPTY_ARRAY} = useActiveReleases()
+  const {data: releases} = useActiveReleases()
 
   const diffViewRouter = useDiffViewRouter()
 
@@ -193,9 +188,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const getIsDeleted = useCallback(
     (editState: EditStateFor) => {
       if (!timelineReady) return false
-      return (
-        Boolean(!editState?.draft && !editState?.published && !editState?.version) && !isPristine
-      )
+      return !editState?.draft && !editState?.published && !editState?.version && !isPristine
     },
     [timelineReady, isPristine],
   )

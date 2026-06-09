@@ -69,7 +69,7 @@ test.describe('displayedDocument', () => {
     /** Create Documents */
     publishedDocument = await createDocument(sanityClient, {
       ...speciesDocumentNamePublished,
-      _id: `${_testContext.getUniqueDocumentId()}`,
+      _id: _testContext.getUniqueDocumentId(),
     })
 
     singleASAPVersionDocument = await createDocument(sanityClient, {
@@ -93,7 +93,7 @@ test.describe('displayedDocument', () => {
 
     publishedDocumentDupe = await createDocument(sanityClient, {
       ...speciesDocumentNamePublished,
-      _id: `${publishedIdWithVersions}`,
+      _id: publishedIdWithVersions,
     })
 
     publishedWithVersion = await createDocument(sanityClient, {

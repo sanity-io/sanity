@@ -59,12 +59,12 @@ export default {
     {
       name: 'multiReadOnlyCallbackTrue',
       title: 'multiReadOnlyCallbackTrue',
-      readOnly: ({document}) => Boolean(document.readOnly === true),
+      readOnly: ({document}) => document.readOnly === true,
     },
     {
       name: 'multiReadOnlyCallbackFalse',
       title: 'multiReadOnlyCallbackFalse',
-      readOnly: ({document}) => Boolean(document.readOnly === 'asdf'),
+      readOnly: ({document}) => document.readOnly === 'asdf',
     },
     //Single read only
     {
@@ -80,12 +80,12 @@ export default {
     {
       name: 'singleReadOnlyCallbackTrue',
       title: 'singleReadOnlyCallbackTrue',
-      readOnly: ({document}) => Boolean(document.readOnly === true),
+      readOnly: ({document}) => document.readOnly === true,
     },
     {
       name: 'singleReadOnlyCallbackFalse',
       title: 'singleReadOnlyCallbackFalse',
-      readOnly: ({document}) => Boolean(document.readOnly === 'asdf'),
+      readOnly: ({document}) => document.readOnly === 'asdf',
     },
   ],
   fields: [

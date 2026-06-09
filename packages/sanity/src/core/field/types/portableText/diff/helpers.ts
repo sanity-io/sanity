@@ -49,7 +49,7 @@ const allSymbols = startMarkSymbols
   .concat(TextSymbols.INLINE_SYMBOLS)
   .concat(TextSymbols.CHILD_SYMBOL)
   .concat(TextSymbols.SEGMENT_START_SYMBOL)
-const symbolRegex = new RegExp(`${allSymbols.join('|')}`, 'g')
+const symbolRegex = new RegExp(allSymbols.join('|'), 'g')
 const segmentRegex = new RegExp(`${allSymbols.join('|')}|\n`, 'g')
 
 interface BlockSchemaType extends ObjectSchemaType {

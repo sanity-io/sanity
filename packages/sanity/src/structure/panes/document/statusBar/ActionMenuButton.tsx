@@ -128,9 +128,7 @@ export function ActionMenuListItem(props: ActionMenuListItemProps) {
 
   const hotkeys = useMemo(() => {
     return actionState.shortcut
-      ? String(actionState.shortcut)
-          .split('+')
-          .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1))
+      ? actionState.shortcut.split('+').map((s) => s.slice(0, 1).toUpperCase() + s.slice(1))
       : undefined
   }, [actionState.shortcut])
 

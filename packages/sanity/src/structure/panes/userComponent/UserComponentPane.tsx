@@ -26,7 +26,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
   const [ref, setRef] = useState<{
     actionHandlers?: Record<string, StructureToolPaneActionHandler>
   } | null>(null)
-  const {title = ''} = useI18nText(pane)
+  const {title} = useI18nText(pane)
 
   const {key, ...componentProps} = {...restProps, ...restPane}
 

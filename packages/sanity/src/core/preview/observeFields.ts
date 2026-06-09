@@ -286,21 +286,21 @@ export function createObserveFields(options: {
     )
   }
 
-  function createCachedFieldObserver<T>(
+  function createCachedFieldObserver(
     id: string,
     fields: FieldName[],
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
   ): CachedFieldObserver {
     // Note: `undefined` means the memo has not been set, while `null` means the memo is explicitly set to null (e.g. we did fetch, but got null back)
-    let latest: T | undefined | null
+    let latest: unknown | undefined | null
     const changes$ = merge(
       defer(() => (latest === undefined ? EMPTY : of(latest))),
       (apiConfig
         ? (crossDatasetListenFields(id, fields, apiConfig) as any)
-        : currentDatasetListenFields(id, fields, perspective)) as Observable<T>,
+        : currentDatasetListenFields(id, fields, perspective)) as Observable<unknown>,
     ).pipe(
-      tap((v: T | null) => (latest = v)),
+      tap((v: unknown | null) => (latest = v)),
       shareReplay({refCount: true, bufferSize: 1}),
     )
 

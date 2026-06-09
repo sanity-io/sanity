@@ -46,7 +46,7 @@ export const MentionsMenu = forwardRef(function MentionsMenu(
   ref: Ref<MentionsMenuHandle>,
 ) {
   const {t} = useTranslation(commentsLocaleNamespace)
-  const {loading, onSelect, options = [], inputElement} = props
+  const {loading, onSelect, options, inputElement} = props
   const [searchTerm, setSearchTerm] = useState<string>('')
   const commandListRef = useRef<CommandListHandle>(null)
 

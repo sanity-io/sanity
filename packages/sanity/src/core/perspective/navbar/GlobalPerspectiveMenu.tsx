@@ -26,7 +26,7 @@ const OversizedButton = styled(Button)`
 
 export function GlobalPerspectiveMenu({
   selectedPerspectiveName,
-  areReleasesEnabled = true,
+  areReleasesEnabled,
   menuItemProps,
 }: {
   selectedPerspectiveName: string | undefined

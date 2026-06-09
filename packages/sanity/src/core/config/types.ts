@@ -499,10 +499,10 @@ export interface PluginOptions {
      *
      * Can be one of:
      *
-     * - `"groqLegacy"` (default): Use client-side tokenization and schema introspection to search
-     *   using the GROQ Query API.
-     * - `"groq2024"`: (experimental) Perform full text searching using the GROQ Query API and its
+     * * - `"groq2024"`: (default) Perform full text searching using the GROQ Query API and its
      *   new `text::matchQuery` function.
+     * - `"groqLegacy"` (legacy): Use client-side tokenization and schema introspection to search
+     *   using the GROQ Query API.
      */
     strategy?: SearchStrategy
 

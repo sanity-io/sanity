@@ -63,7 +63,7 @@ export default function Tool() {
   const {scheduledPublishing} = useWorkspace()
 
   const {sanity: theme} = useTheme()
-  const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
+  const {error, isInitialLoading, schedules} = usePollSchedules()
   const {t} = useTranslation()
   const {enabled, hasUsedScheduledPublishing} = useScheduledPublishingEnabled()
 

@@ -173,7 +173,7 @@ interface VersionMenuProps {
 }
 
 const VersionMenu: ComponentType<VersionMenuProps> = ({
-  releases = [],
+  releases,
   releasesState,
   onSelectRelease,
   role,

@@ -147,7 +147,7 @@ function CommentFieldInner(
     return commentsCount || 0
   }, [comments.data.open, stringPath])
 
-  const hasComments = Boolean(count > 0)
+  const hasComments = count > 0
 
   const resetMessageValue = useCallback(() => {
     // Reset the value and remove the message from the cache
@@ -289,7 +289,7 @@ function CommentFieldInner(
     () => ({
       button: currentUser && (
         <CommentsFieldButton
-          count={Number(count)}
+          count={count}
           currentUser={currentUser}
           fieldTitle={fieldTitle}
           isCreatingDataset={isCreatingDataset}

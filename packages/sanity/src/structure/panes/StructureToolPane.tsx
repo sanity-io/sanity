@@ -83,8 +83,8 @@ export const StructureToolPane = memo(
     )
   },
   (
-    {params: prevParams = {}, payload: prevPayload = null, ...prev},
-    {params: nextParams = {}, payload: nextPayload = null, ...next},
+    {params: prevParams, payload: prevPayload = null, ...prev},
+    {params: nextParams, payload: nextPayload = null, ...next},
   ) => {
     // deeply compare these objects (it's okay, they're small)
     if (!isEqual(prevParams, nextParams)) return false

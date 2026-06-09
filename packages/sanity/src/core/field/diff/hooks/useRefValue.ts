@@ -3,10 +3,8 @@ import {useEffect, useState} from 'react'
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 
-export function useRefValue<T extends Record<string, any> = Record<string, any>>(
-  refId: string | undefined | null,
-): T | undefined {
-  const [value, setValue] = useState<T | undefined>(undefined)
+export function useRefValue(refId: string | undefined | null): Record<string, any> | undefined {
+  const [value, setValue] = useState<Record<string, any> | undefined>(undefined)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   useEffect(() => {
@@ -14,7 +12,9 @@ export function useRefValue<T extends Record<string, any> = Record<string, any>>
       return undefined
     }
 
-    const subscription = client.observable.getDocument<T>(refId).subscribe(setValue)
+    const subscription = client.observable
+      .getDocument<Record<string, any>>(refId)
+      .subscribe(setValue)
 
     return () => {
       subscription.unsubscribe()

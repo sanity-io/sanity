@@ -118,7 +118,7 @@ export default {
       title: 'Image type with fields',
       type: 'image',
       readOnly: ({document}) => {
-        return Boolean(!document.readOnly)
+        return !document.readOnly
       },
       fields: [
         {
@@ -156,7 +156,7 @@ export default {
       title: 'File type with fields',
       type: 'file',
       readOnly: ({document}) => {
-        return Boolean(!document.readOnly)
+        return !document.readOnly
       },
       fields: [
         {
@@ -189,10 +189,10 @@ export default {
           type: 'number',
           validation: (Rule) => Rule.required().min(10).max(80),
           readOnly: ({document}) => {
-            return Boolean(!document.readOnly)
+            return !document.readOnly
           },
           hidden: ({document}) => {
-            return Boolean(!document.hidden)
+            return !document.hidden
           },
         },
       ],

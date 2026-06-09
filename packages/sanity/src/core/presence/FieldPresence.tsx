@@ -90,7 +90,7 @@ export interface FieldPresenceProps {
 /** @internal */
 export function FieldPresence(props: FieldPresenceProps) {
   const contextPresence = useContext(FormFieldPresenceContext)
-  const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
+  const {presence, maxAvatars} = props
   const [element, setElement] = useState<HTMLDivElement | null>(null)
 
   const reporterId = useId()

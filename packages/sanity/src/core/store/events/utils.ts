@@ -218,7 +218,7 @@ export function sortEvents({
         isEditDocumentVersionEvent(a) &&
         b.versionRevisionId === a.revisionId
       ) {
-        return +1
+        return 1
       }
 
       return Date.parse(b.timestamp) - Date.parse(a.timestamp)

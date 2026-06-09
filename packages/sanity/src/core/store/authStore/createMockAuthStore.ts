@@ -16,7 +16,7 @@ export interface MockAuthStoreOptions {
  *
  * @internal
  */
-export function createMockAuthStore({client, currentUser = null}: MockAuthStoreOptions): AuthStore {
+export function createMockAuthStore({client, currentUser}: MockAuthStoreOptions): AuthStore {
   return {
     state: of({authenticated: true, client, currentUser}),
   }

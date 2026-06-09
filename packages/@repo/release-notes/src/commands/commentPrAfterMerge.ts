@@ -159,8 +159,8 @@ async function getCollaborators(octokit: Octokit, pullRequest: PullRequest) {
  * Returns a new array with unique items, keyed by `keyFn`.
  * Keeps the FIRST item encountered for each key and preserves input order.
  */
-function uniqueBy<T, K>(items: readonly T[], keyFn: (item: T) => K): T[] {
-  const seen = new Set<K>()
+function uniqueBy<T>(items: readonly T[], keyFn: (item: T) => unknown): T[] {
+  const seen = new Set<unknown>()
   const out: T[] = []
   for (const item of items) {
     const key = keyFn(item)

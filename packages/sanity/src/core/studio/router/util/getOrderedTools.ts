@@ -28,7 +28,7 @@ export function getOrderedTools(tools: Tool[]): Tool[] {
 
     target[tool.name] = {
       tool: tool,
-      index: toolIndex === -1 ? +Infinity : toolIndex,
+      index: toolIndex === -1 ? Infinity : toolIndex,
     }
 
     return target
@@ -42,8 +42,8 @@ export function getOrderedTools(tools: Tool[]): Tool[] {
     const toolA = keyed[tool1.name]
     const toolB = keyed[tool2.name]
 
-    const indexA = toolA ? toolA.index : +Infinity
-    const indexB = toolB ? toolB.index : +Infinity
+    const indexA = toolA ? toolA.index : Infinity
+    const indexB = toolB ? toolB.index : Infinity
 
     if (indexA === indexB) {
       return 0

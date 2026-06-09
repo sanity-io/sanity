@@ -142,7 +142,7 @@ export function pathsAreEqual(pathA: Path, pathB: Path): boolean {
     }
 
     if (isIndexSegment(segmentA)) {
-      return Number(segmentA) === Number(segmentB)
+      return segmentA === Number(segmentB)
     }
 
     if (isIndexTuple(segmentA) && isIndexTuple(segmentB)) {

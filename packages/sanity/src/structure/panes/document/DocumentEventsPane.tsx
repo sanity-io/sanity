@@ -83,7 +83,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
       revisionDocument: eventsStore.revision?.document || null,
       sinceDocument: eventsStore.sinceRevision?.document || null,
       ready: !eventsStore.loading,
-      isPristine: Boolean(eventsStore.events.length === 0),
+      isPristine: eventsStore.events.length === 0,
       lastNonDeletedRevId: eventsStore.lastNonDeletedRevId,
     }),
     [eventsStore, rev],

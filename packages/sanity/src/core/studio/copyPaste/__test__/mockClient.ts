@@ -6,7 +6,7 @@ import {type FIXME} from '../../../FIXME'
 export interface ClientWithFetch {
   withConfig: FIXME
   config: FIXME
-  fetch: <R = FIXME, Q = Record<string, unknown>>(query: string, params?: Q) => Promise<R>
+  fetch: <R = FIXME>(query: string, params?: unknown) => Promise<R>
 }
 export function createMockClient(mockData: FIXME[]): ClientWithFetch {
   return {
@@ -19,38 +19,36 @@ export function createMockClient(mockData: FIXME[]): ClientWithFetch {
         projectId: 'mock',
       }
     }),
-    fetch: vi.fn(
-      async <R = FIXME, Q = Record<string, unknown>>(query: string, params?: Q): Promise<R> => {
-        try {
-          const parseOptions: ParseOptions = {
-            params: params as Record<string, unknown>,
-          }
-
-          const tree = parse(query, parseOptions)
-
-          const value = await evaluate(tree, {
-            dataset: mockData,
-            params: params || {},
-          })
-
-          const result = await value.get()
-
-          if (Array.isArray(result)) {
-            return (query.endsWith('[0]') ? result[0] : result) as R
-          }
-
-          return result as R
-        } catch (error) {
-          if (error instanceof Error) {
-            console.error('Error evaluating GROQ query:', error.message)
-            if ('position' in error) {
-              console.error('Error position:', (error as {position: number}).position)
-            }
-          }
-          throw new Error('Error in mock client query execution', {cause: error})
+    fetch: vi.fn(async <R = FIXME>(query: string, params?: unknown): Promise<R> => {
+      try {
+        const parseOptions: ParseOptions = {
+          params: params as Record<string, unknown>,
         }
-      },
-    ),
+
+        const tree = parse(query, parseOptions)
+
+        const value = await evaluate(tree, {
+          dataset: mockData,
+          params: params || {},
+        })
+
+        const result = await value.get()
+
+        if (Array.isArray(result)) {
+          return (query.endsWith('[0]') ? result[0] : result) as R
+        }
+
+        return result as R
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error('Error evaluating GROQ query:', error.message)
+          if ('position' in error) {
+            console.error('Error position:', (error as {position: number}).position)
+          }
+        }
+        throw new Error('Error in mock client query execution', {cause: error})
+      }
+    }),
   }
 }
 

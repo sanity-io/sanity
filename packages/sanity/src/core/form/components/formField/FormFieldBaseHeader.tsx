@@ -222,7 +222,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
     return (
       <SlotBox
-        $fieldActionsVisible={Boolean(showFieldActions)}
+        $fieldActionsVisible={showFieldActions}
         $right={floatingCardWidth}
         ref={setSlotElement}
       >

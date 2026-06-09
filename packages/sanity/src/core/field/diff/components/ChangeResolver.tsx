@@ -1,6 +1,5 @@
 import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
 import {Text} from '@sanity/ui'
-import {Fragment} from 'react'
 
 import {useConditionalProperty} from '../../conditional-property'
 import {type ChangeNode} from '../../types'
@@ -19,7 +18,7 @@ export interface ChangeResolverProps {
 /** @internal */
 export function ChangeResolver(props: ChangeResolverProps) {
   const {change, hidden, readOnly} = props
-  const {value = Fragment} = useDocumentChange()
+  const {value} = useDocumentChange()
 
   const isHidden = useConditionalProperty({
     // @todo: is parent missing here?

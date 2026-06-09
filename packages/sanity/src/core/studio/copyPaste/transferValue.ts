@@ -122,7 +122,7 @@ function isNumberToArrayOfStrings(a: unknown, b: unknown): boolean {
 const defaultKeyGenerator = () => randomKey(12)
 
 interface ClientWithFetch {
-  fetch: <R = FIXME, Q = Record<string, unknown>>(query: string, params?: Q) => Promise<R>
+  fetch: <R = FIXME>(query: string, params?: unknown) => Promise<R>
 }
 
 export interface TransferValueOptions {

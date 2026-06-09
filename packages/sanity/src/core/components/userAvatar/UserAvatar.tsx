@@ -62,7 +62,7 @@ function nameToInitials(fullName: string) {
   const namesArray = fullName.replace(symbols, '').split(whitespace)
 
   if (namesArray.length === 1) {
-    return `${namesArray[0].charAt(0)}`.toUpperCase()
+    return namesArray[0].charAt(0).toUpperCase()
   }
 
   return `${namesArray[0].charAt(0)}${namesArray[namesArray.length - 1].charAt(0)}`

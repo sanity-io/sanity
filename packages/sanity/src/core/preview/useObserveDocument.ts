@@ -15,11 +15,11 @@ const INITIAL_STATE = {loading: true, document: null}
  * Observes a document by its ID and returns the document and loading state
  * it will listen to the document changes.
  */
-export function useUnstableObserveDocument<T extends SanityDocument>(
+export function useUnstableObserveDocument(
   documentId: string,
   apiConfig?: ObserveDocumentAPIConfig,
 ): {
-  document: T | null
+  document: SanityDocument | null
   loading: boolean
 } {
   const documentPreviewStore = useDocumentPreviewStore()
@@ -27,7 +27,7 @@ export function useUnstableObserveDocument<T extends SanityDocument>(
     () =>
       documentPreviewStore
         .unstable_observeDocument(documentId, apiConfig)
-        .pipe(map((document) => ({loading: false, document: document as T}))),
+        .pipe(map((document) => ({loading: false, document: document as SanityDocument}))),
     [documentId, documentPreviewStore, apiConfig],
   )
   return useObservable(observable, INITIAL_STATE)

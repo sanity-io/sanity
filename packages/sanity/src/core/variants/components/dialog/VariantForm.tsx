@@ -148,9 +148,8 @@ export function VariantForm(props: {
   const hasTitle = Boolean(getVariantTitleValue(value))
   const showTitleError = showValidation && !hasTitle
   const lastConditionRow = conditionRows[conditionRows.length - 1]
-  const canAddCondition = Boolean(
-    lastConditionRow && !hasConditionRowsValidationErrors(conditionsValidation),
-  )
+  const canAddCondition =
+    lastConditionRow && !hasConditionRowsValidationErrors(conditionsValidation)
 
   const updateConditionRows = useCallback(
     (nextRows: ConditionRow[]) => {

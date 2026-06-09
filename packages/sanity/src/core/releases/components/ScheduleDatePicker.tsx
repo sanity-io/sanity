@@ -67,7 +67,7 @@ export const ScheduleDatePicker = ({value, onChange, timeZoneScope}: ScheduleDat
         icon={EarthGlobeIcon}
         mode="bleed"
         size="default"
-        text={`${timeZone.abbreviation}`}
+        text={timeZone.abbreviation}
         onClick={dialogTimeZoneShow}
       />
       {DialogTimeZone && <DialogTimeZone {...dialogProps} />}

@@ -54,7 +54,7 @@ export function decodeVariantIdFromRoute(variantIdRaw: string | undefined): stri
     decoded = variantIdRaw
   }
 
-  if (decoded.startsWith(`${VARIANT_ID_PREFIX}`)) {
+  if (decoded.startsWith(VARIANT_ID_PREFIX)) {
     return decoded
   }
 

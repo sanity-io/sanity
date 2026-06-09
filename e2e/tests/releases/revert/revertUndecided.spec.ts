@@ -38,7 +38,7 @@ test.describe('Revert Undecided', () => {
     await createDocument(sanityClient, {
       ...speciesDocumentNameASAP,
       name: 'published',
-      _id: `${versionDocumentId}`,
+      _id: versionDocumentId,
     })
 
     await createDocument(sanityClient, {

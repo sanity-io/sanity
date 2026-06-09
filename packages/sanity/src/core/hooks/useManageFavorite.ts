@@ -348,7 +348,7 @@ function writeRemoteState({
               typeof response === 'object' &&
               response !== null &&
               'success' in response &&
-              Boolean(response.success),
+              response.success,
             isFavorited: value,
           }
         }),

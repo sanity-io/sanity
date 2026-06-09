@@ -276,7 +276,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * @returns menu item builder based on if it should show as action. See {@link MenuItemBuilder}
    */
   showAsAction(showAsAction = true): MenuItemBuilder {
-    return this.clone({showAsAction: Boolean(showAsAction)})
+    return this.clone({showAsAction: showAsAction})
   }
 
   /**

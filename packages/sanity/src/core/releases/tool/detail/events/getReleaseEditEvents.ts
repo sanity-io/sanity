@@ -56,7 +56,7 @@ function getReleaseTransactions({
   client: SanityClient
   toTransaction: string
 }): Observable<TransactionLogEventWithEffects[]> {
-  const cacheKey = `${documentId}`
+  const cacheKey = documentId
   const cachedTransactions = documentTransactionsCache[cacheKey] || []
   if (cachedTransactions.length > 0 && cachedTransactions[0].id === toTransaction) {
     return of(cachedTransactions)

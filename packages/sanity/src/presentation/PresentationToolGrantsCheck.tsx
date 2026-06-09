@@ -57,10 +57,10 @@ export default function PresentationToolGrantsCheck({
       initialPreviewUrl={url}
       vercelProtectionBypass={vercelProtectionBypass}
       canToggleSharePreviewAccess={
-        Boolean(previewAccessSharingCreatePermission?.granted) &&
-        Boolean(previewAccessSharingUpdatePermission?.granted)
+        previewAccessSharingCreatePermission?.granted &&
+        previewAccessSharingUpdatePermission?.granted
       }
-      canUseSharedPreviewAccess={Boolean(previewAccessSharingReadPermission?.granted)}
+      canUseSharedPreviewAccess={previewAccessSharingReadPermission?.granted}
       previewUrlRef={previewUrlRef}
     />
   )

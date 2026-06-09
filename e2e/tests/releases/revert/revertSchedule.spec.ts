@@ -45,7 +45,7 @@ test.describe('Revert Scheduled', () => {
     await createDocument(sanityClient, {
       ...speciesDocumentNameASAP,
       name: 'published',
-      _id: `${versionDocumentId}`,
+      _id: versionDocumentId,
     })
 
     await createDocument(sanityClient, {

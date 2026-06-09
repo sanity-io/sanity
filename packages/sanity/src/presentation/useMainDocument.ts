@@ -17,7 +17,7 @@ import {
 // Helper function to "unwrap" a result when it is either explicitly provided or
 // returned as the result of a passed function
 function fnOrObj<T, U>(arg: T | ((ctx: U) => T), context: U): T {
-  return arg instanceof Function ? arg(context) : arg
+  return typeof arg === 'function' ? arg(context) : arg
 }
 
 function getQueryFromResult(

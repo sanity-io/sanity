@@ -63,7 +63,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     null,
   )
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
-  const hasComments = Boolean(count > 0)
+  const hasComments = count > 0
 
   const closePopover = useCallback(() => {
     if (!open) return

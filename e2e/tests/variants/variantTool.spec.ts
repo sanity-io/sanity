@@ -456,7 +456,7 @@ test.describe('Variants create flow', () => {
 
   test('deletes a seeded variant from the overview', async ({page, sanityClient}) => {
     const runId = createRunId('delete')
-    const variantId = `${runId}` as const
+    const variantId = runId as const
     const documentId = `${VARIANT_DOCUMENTS_PATH}.${variantId}` as const
     const title = `${createVariantTitlePrefix()} Delete Variant ${runId}`
     const value = `delete-${runId}`
@@ -484,7 +484,7 @@ test.describe('Variants create flow', () => {
 
   test('deletes a seeded variant from the detail page', async ({page, sanityClient}) => {
     const runId = createRunId('delete-detail')
-    const variantId = `${runId}` as const
+    const variantId = runId as const
     const documentId = `${VARIANT_DOCUMENTS_PATH}.${variantId}` as const
     const shortVariantId = getVariantShortId(documentId)
     const title = `${createVariantTitlePrefix()} Delete Detail Variant ${runId}`

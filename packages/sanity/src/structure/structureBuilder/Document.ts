@@ -280,7 +280,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
    * @param options - serialization options. See {@link SerializeOptions}
    * @returns document node based on path, index and hint provided in options. See {@link DocumentNode}
    */
-  serialize({path = [], index, hint}: SerializeOptions = {path: []}): DocumentNode {
+  serialize({path, index, hint}: SerializeOptions = {path: []}): DocumentNode {
     const urlId = path[index || path.length - 1]
 
     // Try to grab document ID / editor ID from URL if not defined

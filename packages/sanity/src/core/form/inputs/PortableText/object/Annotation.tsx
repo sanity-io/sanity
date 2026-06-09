@@ -20,7 +20,6 @@ import {
   type RenderPreviewCallback,
 } from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {type AnnotationEntry, useSelectedAnnotations} from '../contexts/SelectedAnnotationsContext'
@@ -80,7 +79,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
     setElementRef,
     value,
   } = props
-  const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
+  const {Markers} = useFormBuilder().__internal.components
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const markDefPath: Path = useMemo(

@@ -19,7 +19,7 @@ export const FOCUS_TERMINATOR = '$'
 // be serialized using square bracket notation.
 const GROQ_DATA_TYPE_VALUES = ['true', 'false', 'null']
 
-export function get<R>(obj: unknown, path: Path | string): R | undefined
+export function get(obj: unknown, path: Path | string): unknown | undefined
 export function get<R>(obj: unknown, path: Path | string, defaultValue: R): R
 export function get(obj: unknown, path: Path | string, defaultVal?: unknown): unknown {
   const select = typeof path === 'string' ? fromString(path) : path
@@ -98,7 +98,7 @@ export function isSegmentEqual(segmentA: PathSegment, segmentB: PathSegment): bo
   }
 
   if (isIndexSegment(segmentA)) {
-    return Number(segmentA) === Number(segmentB)
+    return segmentA === Number(segmentB)
   }
 
   if (isIndexTuple(segmentA) && isIndexTuple(segmentB)) {

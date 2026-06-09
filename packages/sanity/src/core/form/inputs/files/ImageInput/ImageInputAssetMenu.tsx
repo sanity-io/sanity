@@ -285,7 +285,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
       onMenuOpen={setMenuOpen}
       setHotspotButtonElement={setHotspotButtonElement}
       menuButtonRef={menuButtonRef}
-      showEdit={!!showAdvancedEditButton}
+      showEdit={showAdvancedEditButton}
     >
       <ActionsMenu
         upload={uploadMenuItem}

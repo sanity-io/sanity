@@ -63,6 +63,7 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
 
   return (
     <Grid
+      tabIndex={0}
       columns={GRID_COLUMNS}
       gap={1}
       onKeyDown={handleRootKeyDown}

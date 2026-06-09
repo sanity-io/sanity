@@ -113,7 +113,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
    * @param options - serialization options. See {@link SerializeOptions}
    * @returns initial value template item object based on the path, index and hint provided in options. See {@link InitialValueTemplateItem}
    */
-  serialize({path = [], index, hint}: SerializeOptions = {path: []}): InitialValueTemplateItem {
+  serialize({path, index, hint}: SerializeOptions = {path: []}): InitialValueTemplateItem {
     if (typeof this.spec.id !== 'string' || !this.spec.id) {
       throw new SerializeError(
         '`id` is required for initial value template item nodes',

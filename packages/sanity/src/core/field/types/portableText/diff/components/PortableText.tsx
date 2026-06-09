@@ -45,7 +45,7 @@ const allSymbolsStart = decoratorSymbolsStart.concat(annotationSymbolsStart)
 const allSymbolsEnd = decoratorSymbolsEnd.concat(annotationSymbolsEnd)
 
 const allDecoratorSymbols = decoratorSymbolsStart.concat(decoratorSymbolsEnd)
-const markRegex = new RegExp(`${allDecoratorSymbols.concat(allSymbolsEnd).join('|')}`, 'g')
+const markRegex = new RegExp(allDecoratorSymbols.concat(allSymbolsEnd).join('|'), 'g')
 
 type Props = {
   diff: PortableTextDiff

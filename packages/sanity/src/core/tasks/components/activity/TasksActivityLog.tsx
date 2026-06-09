@@ -64,7 +64,7 @@ type Activity =
     }
 
 export function TasksActivityLog(props: TasksActivityLogProps) {
-  const {value, onChange, path, activityData = []} = props
+  const {value, onChange, path, activityData} = props
   const currentUser = useCurrentUser()
 
   const {title: workspaceTitle, basePath, name: workspaceName} = useWorkspace()

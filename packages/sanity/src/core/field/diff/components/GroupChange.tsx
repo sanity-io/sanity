@@ -1,6 +1,5 @@
 import {Box, Stack} from '@sanity/ui'
 import {
-  Fragment,
   type HTMLAttributes,
   startTransition,
   useCallback,
@@ -37,13 +36,7 @@ export function GroupChange(
   const {change: group, readOnly, hidden, ...restProps} = props
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)
-  const {
-    documentId,
-    schemaType,
-    FieldWrapper = Fragment,
-    rootDiff,
-    isComparingCurrent,
-  } = useDocumentChange()
+  const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = useDocumentChange()
 
   const isPortableText = changes.every(
     (change) => isFieldChange(change) && isPTSchemaType(change.schemaType),
@@ -168,7 +161,7 @@ export function GroupChange(
   )
 }
 
-function useHover<T extends HTMLElement>(node: T | null): boolean {
+function useHover(node: HTMLElement | null): boolean {
   const [value, setValue] = useState(false)
 
   useEffect(() => {

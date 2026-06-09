@@ -9,5 +9,5 @@ import {type SanityDocumentLike} from '@sanity/types'
  * @returns boolean if the system delete is set
  */
 export function isGoingToUnpublish(document: SanityDocument | SanityDocumentLike): boolean {
-  return Boolean(document._system?.delete === true)
+  return document._system?.delete === true
 }

@@ -100,7 +100,7 @@ export const stringValidators: Validators = {
 
   regex: (options, value, message, {i18n}) => {
     const {pattern, name, invert} = options
-    const regName = name || `${pattern.toString()}`
+    const regName = name || pattern.toString()
     const strValue = value || ''
     // Regexes with global or sticky flags are stateful (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex).
     // This resets the state stored from the previous check

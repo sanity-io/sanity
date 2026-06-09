@@ -46,7 +46,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
 
   // Check if current release is a paused scheduled draft
-  const {data: releases = []} = useActiveReleases()
+  const {data: releases} = useActiveReleases()
   const perspective = usePerspective()
 
   const currentRelease = useMemo(

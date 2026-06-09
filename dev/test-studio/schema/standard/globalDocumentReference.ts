@@ -188,7 +188,7 @@ export default function createGDRType(projectId: string) {
           title: values.title,
           subtitle: [
             values.authorRefName
-              ? `Author: ${values.authorRefName} (${`Bff: ${values.authorBff || 'none'}`})`
+              ? `Author: ${values.authorRefName} (Bff: ${values.authorBff || 'none'})`
               : '',
             values.bookRefTitle ? `Book title: ${values.bookRefTitle}` : '',
           ]

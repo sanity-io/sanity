@@ -86,7 +86,7 @@ export function getOrCreateDocumentVersionsObservable(options: {
   projectId: string
   dataset: string
 }): Observable<DocumentPerspectiveState> {
-  const {documentPreviewStore, projectId, dataset, publishedId, params = undefined} = options
+  const {documentPreviewStore, projectId, dataset, publishedId, params} = options
   const cacheKey = `${projectId}-${dataset}-${publishedId}`
 
   const cachedObservable = observableCache.get(cacheKey)

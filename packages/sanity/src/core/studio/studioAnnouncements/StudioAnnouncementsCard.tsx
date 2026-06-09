@@ -128,6 +128,7 @@ export function StudioAnnouncementsCard({
       content={
         <Root data-ui="whats-new-root">
           <Card
+            tabIndex={0}
             data-ui="whats-new-card"
             padding={3}
             radius={3}

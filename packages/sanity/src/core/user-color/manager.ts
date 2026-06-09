@@ -173,7 +173,7 @@ export function createUserColorManager(options: UserColorManagerOptions): UserCo
   }
 
   function getLeastUsedHue(tieBreakerPreference?: UserColorHue): UserColorHue {
-    let leastUses = +Infinity
+    let leastUses = Infinity
     let leastUsed: UserColorHue[] = []
 
     userColorKeys.forEach((colorHue) => {

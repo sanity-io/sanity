@@ -31,7 +31,7 @@ export function PreviewLocationInput(props: {
   const targetOrigin = useTargetOrigin(previewUrlRef)
 
   const {t} = useTranslation(presentationLocaleNamespace)
-  const {basePath = '/'} = useActiveWorkspace()?.activeWorkspace || {}
+  const {basePath} = useActiveWorkspace()?.activeWorkspace || {}
 
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [sessionValue, setSessionValue] = useState<string | undefined>(undefined)

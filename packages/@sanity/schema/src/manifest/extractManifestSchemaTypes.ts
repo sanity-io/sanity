@@ -468,7 +468,7 @@ function ensureCustomTitle(typeName: string, value: unknown) {
   return titleObject
 }
 
-function ensureString<Key extends string>(key: Key, value: unknown) {
+function ensureString(key: string, value: unknown) {
   if (typeof value === 'string') {
     return {
       [key]: value,
@@ -478,7 +478,7 @@ function ensureString<Key extends string>(key: Key, value: unknown) {
   return {}
 }
 
-function ensureConditional<const Key extends string>(key: Key, value: unknown) {
+function ensureConditional(key: string, value: unknown) {
   if (typeof value === 'boolean') {
     return {
       [key]: value,

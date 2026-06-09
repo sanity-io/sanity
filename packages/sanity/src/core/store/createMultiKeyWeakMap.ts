@@ -5,7 +5,7 @@ interface MultiKeyWeakMapNode {
 }
 
 export interface MultiKeyWeakMap {
-  get<T>(keys: object[]): T | undefined
+  get(keys: object[]): unknown | undefined
   get(keys: object[]): unknown
 
   set(keys: object[], value: unknown): void
@@ -73,7 +73,7 @@ export function createMultiKeyWeakMap(): MultiKeyWeakMap {
     setDeep(restOfKeys, node.next, value)
   }
 
-  function get<T>(keys: object[]): T | undefined
+  function get(keys: object[]): unknown | undefined
   function get(keys: object[]) {
     return getDeep(arrangeKeys(keys), rootMap)
   }

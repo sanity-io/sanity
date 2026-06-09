@@ -48,7 +48,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
             data-testid="document-status-bar-hotkeys"
             fontSize={1}
             style={{marginTop: -4, marginBottom: -4}}
-            keys={String(firstActionState.shortcut)
+            keys={firstActionState.shortcut
               .split('+')
               .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1).toLowerCase())}
           />
@@ -148,7 +148,7 @@ function RenderHistoryStatusBarActions({states}: {states: ResolvedAction[]}) {
 
   return (
     <DocumentStatusBarActionsInner
-      disabled={connectionState !== 'connected' || Boolean(disabled)}
+      disabled={connectionState !== 'connected' || disabled}
       // If multiple `restore` actions are defined, ensure only the final one is used.
       states={states
         .filter((state) => (state.action ? state.action === useHistoryRestoreAction.action : false))

@@ -17,7 +17,7 @@ export function usePausedScheduledDraft(): {
   currentRelease: ReleaseDocument | undefined
 } {
   const {selectedReleaseId} = usePerspective()
-  const {data: allReleases = []} = useActiveReleases()
+  const {data: allReleases} = useActiveReleases()
 
   return useMemo(() => {
     const currentRelease = selectedReleaseId

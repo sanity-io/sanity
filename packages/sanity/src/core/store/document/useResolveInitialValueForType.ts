@@ -5,7 +5,7 @@ import {DEFAULT_MAX_RECURSION_DEPTH, resolveInitialValueForType} from '../../tem
 import {useInitialValueResolverContext} from './useInitialValue'
 
 /** @internal */
-export function useResolveInitialValueForType<Params extends Record<string, unknown>>(): (
+export function useResolveInitialValueForType(): (
   /**
    * This is the name of the document.
    */
@@ -13,12 +13,12 @@ export function useResolveInitialValueForType<Params extends Record<string, unkn
   /**
    * Params is a sanity context object passed to every initial value function.
    */
-  params: Params,
+  params: Record<string, unknown>,
 ) => Promise<any> {
   const initialValueContext = useInitialValueResolverContext()
 
   return useCallback(
-    (type: SchemaType, params: Params) => {
+    (type: SchemaType, params: Record<string, unknown>) => {
       return resolveInitialValueForType(
         type,
         params,

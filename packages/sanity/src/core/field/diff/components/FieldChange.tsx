@@ -1,6 +1,6 @@
 import {type ObjectSchemaType, type Path} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import {Fragment, type HTMLAttributes, startTransition, useCallback, useMemo, useState} from 'react'
+import {type HTMLAttributes, startTransition, useCallback, useMemo, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
@@ -30,7 +30,7 @@ const ParentWrapper = ({
   hasRevertHover: boolean
   wrap: boolean
 }) => {
-  const {FieldWrapper = Fragment} = useDocumentChange()
+  const {FieldWrapper} = useDocumentChange()
 
   if (wrap) {
     let lastArrayIndex = 0
@@ -60,13 +60,7 @@ export function FieldChange(
 ) {
   const {change, hidden, readOnly, addParentWrapper, ...restProps} = props
   const DiffComponent = change.diffComponent || FallbackDiff
-  const {
-    documentId,
-    schemaType,
-    rootDiff,
-    isComparingCurrent,
-    FieldWrapper = Fragment,
-  } = useDocumentChange()
+  const {documentId, schemaType, rootDiff, isComparingCurrent, FieldWrapper} = useDocumentChange()
   const {selectedReleaseId} = usePerspective()
   const ops = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)

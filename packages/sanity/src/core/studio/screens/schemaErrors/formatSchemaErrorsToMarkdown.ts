@@ -24,7 +24,7 @@ export function formatSchemaErrorsToMarkdown(groups: SchemaValidationProblemGrou
       if (segment.kind === 'type') {
         parts.push(`${segment.name || `<anonymous ${segment.type}>`}:${segment.type}`)
       } else if (segment.kind === 'property') {
-        parts.push(`${segment.name}`)
+        parts.push(segment.name)
       }
     }
     text += `Path: ${parts.join(' → ')}\n`

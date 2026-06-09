@@ -31,7 +31,7 @@ const Media = styled.div<MediaProps>`
 
 export const WorkspacePreviewIcon = ({
   icon,
-  size = 'small',
+  size,
 }: {
   icon: ComponentType | ReactNode
   size: PreviewIconSize

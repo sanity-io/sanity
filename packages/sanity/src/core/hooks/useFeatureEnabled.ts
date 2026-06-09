@@ -73,9 +73,9 @@ export function useFeatureEnabled(featureKey: keyof typeof FEATURES): Features {
   const featureInfoObservable = useMemo(
     () =>
       req.pipe(
-        map((features = []) => ({
+        map((features) => ({
           isLoading: false,
-          enabled: Boolean(features?.includes(featureKey)),
+          enabled: features?.includes(featureKey),
           features,
           error: null,
         })),

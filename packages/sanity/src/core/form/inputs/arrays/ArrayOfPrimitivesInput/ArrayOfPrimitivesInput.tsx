@@ -76,8 +76,8 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
   }
 
   getSnapshotBeforeUpdate(prevProps: ArrayOfPrimitivesInputProps) {
-    const {focusPath: prevFocusPath = [], value: prevValue = []} = prevProps
-    const {focusPath = [], value = []} = this.props
+    const {focusPath: prevFocusPath, value: prevValue = []} = prevProps
+    const {focusPath, value = []} = this.props
     if (prevFocusPath[0] === focusPath[0] && prevValue.length !== value.length) {
       // the length of the array has changed, but the focus path has not, which may happen if someone inserts or removes a new item above the one currently in focus
       const focusIndex = focusPath[0]

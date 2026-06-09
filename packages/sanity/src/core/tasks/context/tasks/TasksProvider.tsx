@@ -17,7 +17,7 @@ const EMPTY_ARRAY: [] = []
 export function TasksProvider(props: TasksProviderProps) {
   const {children} = props
   const [activeDocument, setActiveDocument] = useState<ActiveDocument | null>(null)
-  const {data = EMPTY_ARRAY, isLoading} = useTasksStore({})
+  const {data, isLoading} = useTasksStore({})
 
   // This change is debounced to wait until the next document loads if we are switching between documents.
   const debouncedSetActiveDocument = useMemo(() => debounce(setActiveDocument, 1000), [])

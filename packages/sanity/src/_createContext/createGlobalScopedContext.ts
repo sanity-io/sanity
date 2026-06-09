@@ -8,12 +8,12 @@ const MISSING_CONTEXT_HELP_URL = 'https://www.sanity.io/help/missing-context-err
  * @internal
  * @hidden
  */
-export function createGlobalScopedContext<ContextType, const T extends ContextType = ContextType>(
+export function createGlobalScopedContext<ContextType>(
   /**
    * It's important to prefix these keys as they are global
    */
   key: `sanity/_singletons/context/${string}`,
-  defaultValue: T,
+  defaultValue: ContextType,
 ): Context<ContextType> {
   const symbol = Symbol.for(key)
 
@@ -33,7 +33,10 @@ export function createGlobalScopedContext<ContextType, const T extends ContextTy
   }
 
   if (!globalScope[symbol]) {
-    globalScope[symbol] = {context: createContext<T>(defaultValue), version: SANITY_VERSION}
+    globalScope[symbol] = {
+      context: createContext<ContextType>(defaultValue),
+      version: SANITY_VERSION,
+    }
   } else if (globalScope[symbol].version !== SANITY_VERSION) {
     throw new TypeError(
       `Duplicate instances of context "${key}" with incompatible versions detected: Expected ${SANITY_VERSION} but got ${globalScope[symbol].version}.\n\n` +

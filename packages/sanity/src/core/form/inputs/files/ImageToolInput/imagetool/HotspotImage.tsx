@@ -127,7 +127,7 @@ export const HotspotImage = memo(function HotspotImage(props: HotspotImageProps)
   )
 
   return (
-    <HotspotImageContainer className={`${className}`} style={style} ref={containerElementRef}>
+    <HotspotImageContainer className={className} style={style} ref={containerElementRef}>
       <div style={targetStyles.container}>
         <div style={targetStyles.padding} />
         <div style={targetStyles.crop}>

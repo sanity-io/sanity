@@ -7,7 +7,7 @@ function isLeftClickEvent(event: React.MouseEvent) {
 }
 
 function isModifiedEvent(event: React.MouseEvent) {
-  return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey)
+  return event.metaKey || event.altKey || event.ctrlKey || event.shiftKey
 }
 
 /**

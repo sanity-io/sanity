@@ -79,10 +79,9 @@ export function DocumentNotInReleaseBanner({
   useConditionalToast({
     status: 'info',
     id: 'add-document-to-release',
-    enabled: Boolean(
+    enabled:
       versionCreateState?.status === 'created' &&
       now.getTime() - versionCreateState.lastUpdate.getTime() > TOAST_DELAY,
-    ),
     closable: true,
     title: t('banners.release.waiting.title'),
     description: t('banners.release.waiting.description'),

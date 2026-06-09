@@ -30,7 +30,7 @@ function CustomMenuItem({
 }) {
   const handleClick = useCallback(() => onClick(value), [onClick, value])
 
-  let menuItemText = `${title}`
+  let menuItemText = title
   if (typeof value !== 'undefined' && title !== value) {
     menuItemText += ` (${value})`
   }

@@ -67,7 +67,7 @@ const StyledCard = styled(Card)<{$fill?: boolean}>(({$fill}) => {
   `
 })
 
-const StyledSpinner = styled(Spinner)<{$animatePosition: boolean}>(({$animatePosition = true}) => {
+const StyledSpinner = styled(Spinner)<{$animatePosition: boolean}>(({$animatePosition}) => {
   return css`
     @keyframes fadeIn {
       from {

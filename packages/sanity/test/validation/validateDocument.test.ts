@@ -1060,8 +1060,8 @@ describe('validateItem', () => {
 })
 
 describe('validation behavior', () => {
-  const getValidationMarkers = <TValue extends {_type: string}>(params: {
-    value: TValue
+  const getValidationMarkers = (params: {
+    value: {_type: string}
     types: SchemaTypeDefinition[]
   }) => {
     const schema: Schema = createSchema({

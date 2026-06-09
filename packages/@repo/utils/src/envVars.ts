@@ -1,11 +1,11 @@
-export function readEnv<KnownEnvVar extends string>(name: KnownEnvVar): string {
-  const val = findEnv<KnownEnvVar>(name)
+export function readEnv(name: string): string {
+  const val = findEnv<string>(name)
   if (val === undefined) {
     throw new Error(`Missing required environment variable "${name}"`)
   }
   return val
 }
 
-function findEnv<KnownEnvVar extends string>(name: KnownEnvVar): string | undefined {
+function findEnv(name: string): string | undefined {
   return process.env[name]
 }

@@ -22,7 +22,7 @@ import TimeZoneButtonElementQuery from '../../../components/timeZone/timeZoneBut
 import {FormFieldHeaderText} from '../../../form/components/formField/FormFieldHeaderText'
 import {type TimeZoneScopeType, useTimeZone} from '../../../hooks/useTimeZone'
 import {Translate, useTranslation} from '../../../i18n'
-import {EMPTY_ARRAY, getPublishedId} from '../../../util'
+import {getPublishedId} from '../../../util'
 import {FormFieldBaseHeader} from '../../components/formField/FormFieldBaseHeader'
 import {FormFieldStatus} from '../../components/formField/FormFieldStatus'
 import {useFormValue} from '../../contexts/FormValue'
@@ -151,7 +151,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
     validationError,
     changed,
     path,
-    presence = EMPTY_ARRAY,
+    presence,
   } = props
 
   const [parseError, setParseError] = useState<string | null>(null)

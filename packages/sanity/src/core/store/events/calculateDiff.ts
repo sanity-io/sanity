@@ -96,7 +96,7 @@ export function calculateDiff({
   initialDoc,
   documentId,
   transactions,
-  events = [],
+  events,
 }: {
   initialDoc: SanityDocument
   finalDoc?: SanityDocument

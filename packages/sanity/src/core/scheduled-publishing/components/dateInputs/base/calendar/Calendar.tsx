@@ -69,7 +69,7 @@ export const Calendar = forwardRef(function Calendar(
     selectTime,
     onFocusedDateChange,
     selectedDate = getCurrentZoneDate(),
-    focusedDate = selectedDate,
+    focusedDate,
     timeStep = 1,
     onSelect,
     customValidation,

@@ -14,7 +14,6 @@ import {styled} from 'styled-components'
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {Translate, useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
 import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -64,7 +63,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
     changed,
     level,
     path,
-    focusPath = EMPTY_ARRAY,
+    focusPath,
     presence,
     onChange,
     schemaType,

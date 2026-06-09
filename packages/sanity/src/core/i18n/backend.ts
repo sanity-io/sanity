@@ -191,7 +191,7 @@ function deepExtend(
  * @internal
  */
 function isStringLeaf(target: LocaleResourceKey): target is string {
-  return typeof target === 'string' || target instanceof String
+  return typeof target === 'string' || typeof target === 'string'
 }
 
 /**

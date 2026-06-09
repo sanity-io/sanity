@@ -163,7 +163,7 @@ interface StudioAnnouncementDialogProps {
  * @hidden
  */
 export function StudioAnnouncementsDialog({
-  announcements = [],
+  announcements,
   onClose,
   mode,
 }: StudioAnnouncementDialogProps) {

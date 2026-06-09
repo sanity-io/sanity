@@ -123,7 +123,7 @@ function setupTest() {
     defineType({...field, name: `${field.name}-alias`}),
   )
 
-  function aliasTypeClone<T extends {name: string; type: string}>(field: T) {
+  function aliasTypeClone(field: {name: string; type: string}) {
     const clone: any = {...field}
     delete clone.of
     delete clone.to

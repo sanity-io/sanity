@@ -192,7 +192,7 @@ export function BlockObject(props: BlockObjectProps) {
 
   const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
   const parentSchemaType = schemaTypes.portableText
-  const hasMarkers = Boolean(markers.length > 0)
+  const hasMarkers = markers.length > 0
 
   const presence = useChildPresence(path, true)
   const rootPresence = useMemo(
@@ -381,7 +381,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
   const isImagePreview = isImage(value)
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
-  const hasMarkers = Boolean(markers.length > 0)
+  const hasMarkers = markers.length > 0
   const tone = selected || focused ? 'primary' : 'default'
 
   const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined

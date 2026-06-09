@@ -40,7 +40,7 @@ test.describe('Revert ASAP', () => {
     await createDocument(sanityClient, {
       ...speciesDocumentNameASAP,
       name: 'published',
-      _id: `${versionDocumentId}`,
+      _id: versionDocumentId,
     })
 
     await createDocument(sanityClient, {

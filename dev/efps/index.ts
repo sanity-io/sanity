@@ -208,7 +208,7 @@ async function runAbTest(test: EfpsTest) {
               },
             }),
           )
-          spinner.succeed(`${message}`)
+          spinner.succeed(message)
         } catch (error) {
           lastError = error
           spinner.fail(`${message} - failed, ${TEST_ATTEMPTS - attempt - 1} attempts remaining`)

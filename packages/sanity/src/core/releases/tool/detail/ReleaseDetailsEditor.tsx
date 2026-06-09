@@ -50,7 +50,7 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
       key={release._id}
       release={release}
       onChange={handleOnChange}
-      disabled={Boolean(!hasUpdatePermission)}
+      disabled={!hasUpdatePermission}
     />
   )
 }

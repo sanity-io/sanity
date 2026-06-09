@@ -114,12 +114,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     [transactionsIdMap],
   )
 
-  const {
-    dispatch,
-    data = EMPTY_ARRAY,
-    error,
-    loading,
-  } = useCommentsStore({
+  const {dispatch, data, error, loading} = useCommentsStore({
     documentId,
     releaseId,
     client,

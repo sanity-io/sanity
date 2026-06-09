@@ -76,7 +76,7 @@ function InputDebugger(props: InputProps) {
       {_id: documentId, _type: documentType} satisfies ContentSourceMapDocuments[number],
     ]
     const paths = [
-      `${props.path
+      props.path
         .map((segment) =>
           typeof segment === 'string'
             ? `['${segment}']`
@@ -87,7 +87,7 @@ function InputDebugger(props: InputProps) {
               : undefined,
         )
         .filter(Boolean)
-        .join('')}`,
+        .join(''),
     ]
     const key = `$['${sourcePath}']`
     const mappings = {
