@@ -153,7 +153,7 @@
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
-    "test:ct": "rimraf playwright-ct/template/.cache && playwright test -c playwright-ct.config.ts",
+    "test:browser": "vitest run -c vitest.browser.config.mts",
     "watch": "pkg-utils watch"
   },
   "dependencies": {
@@ -260,8 +260,6 @@
     "xstate": "^5.25.1"
   },
   "devDependencies": {
-    "@playwright/experimental-ct-react": "catalog:",
-    "@playwright/test": "catalog:",
     "@repo/eslint-config": "workspace:*",
     "@repo/package.bundle": "workspace:*",
     "@repo/package.config": "workspace:*",
@@ -290,6 +288,7 @@
     "@vanilla-extract/css": "catalog:",
     "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
     "@vitest/expect": "^4.1.8",
     "babel-plugin-react-compiler": "catalog:",
     "babel-plugin-styled-components": "catalog:",
@@ -308,6 +307,7 @@
     "tsx": "^4.21.0",
     "vite": "catalog:",
     "vitest": "catalog:",
+    "vitest-browser-react": "catalog:",
     "vitest-package-exports": "^1.1.2"
   },
   "peerDependencies": {
