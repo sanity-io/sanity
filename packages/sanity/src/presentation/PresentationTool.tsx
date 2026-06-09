@@ -14,7 +14,7 @@ import {
   urlSearchParamVercelProtectionBypass,
   urlSearchParamVercelSetBypassCookie,
 } from '@sanity/preview-url-secret/constants'
-import {BoundaryElementProvider, Flex} from '@sanity/ui'
+import {BoundaryElementProvider, Flex, useMediaIndex} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   lazy,
@@ -39,13 +39,18 @@ import {
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE} from './constants'
+import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, NARROW_MEDIA_INDEX} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'
 import {presentationMachine} from './machines/presentation-machine'
 import {type PreviewUrlRef} from './machines/preview-url'
 import {SharedStateProvider} from './overlays/SharedStateProvider'
 import {Panel} from './panels/Panel'
 import {Panels} from './panels/Panels'
+import {
+  getPresentationPanelHtmlId,
+  type PresentationLayoutTab,
+} from './panels/presentationLayoutTab'
+import {PresentationNarrowTabBar} from './panels/PresentationNarrowTabBar'
 import {PresentationContent} from './PresentationContent'
 import {PresentationNavigateProvider} from './PresentationNavigateProvider'
 import {usePresentationNavigator} from './PresentationNavigator'
@@ -82,6 +87,16 @@ const PostMessageTelemetry = lazy(() => import('./PostMessageTelemetry'))
 const Container = styled(Flex)`
   overflow-x: auto;
 `
+
+// Fall back to the preview if the navigator tab is selected but no longer enabled.
+function resolveActiveTab(
+  activeTab: PresentationLayoutTab,
+  navigatorEnabled: boolean,
+): PresentationLayoutTab {
+  if (activeTab === 'navigator' && navigatorEnabled) return 'navigator'
+  if (activeTab === 'navigator') return 'preview'
+  return activeTab
+}
 
 export default function PresentationTool(props: {
   tool: Tool<PresentationPluginOptions>
@@ -465,6 +480,13 @@ export default function PresentationTool(props: {
     unstable_navigator,
   })
 
+  // Narrow viewports collapse the panels into a tab bar showing one pane at a time.
+  const mediaIndex = useMediaIndex()
+  const isNarrow = mediaIndex <= NARROW_MEDIA_INDEX
+
+  const [activeTab, setActiveTab] = useState<PresentationLayoutTab>('preview')
+  const resolvedTab = resolveActiveTab(activeTab, navigatorEnabled)
+
   const handleRefresh = useCallback(
     (fallback: () => void) => {
       presentationRef.send({type: 'iframe refresh'})
@@ -533,62 +555,78 @@ export default function PresentationTool(props: {
         <PresentationNavigateProvider navigate={navigate}>
           <PresentationParamsProvider params={params}>
             <SharedStateProvider comlink={visualEditingComlink}>
-              <Container data-testid="presentation-root" height="fill">
-                <Panels>
-                  <PresentationNavigator />
-                  <Panel
-                    id="preview"
-                    minWidth={325}
-                    defaultSize={navigatorEnabled ? 50 : 75}
-                    order={3}
-                  >
-                    <Flex direction="column" flex={1} height="fill" ref={setBoundaryElement}>
-                      <BoundaryElementProvider element={boundaryElement}>
-                        <Preview
-                          // @TODO move closer to the <iframe> element itself to allow for more precise handling of when to reload the iframe and when to reconnect when the target origin changes
-                          // Make sure the iframe is unmounted if the targetOrigin has changed
-                          key={targetOrigin}
-                          canSharePreviewAccess={canSharePreviewAccess}
-                          canToggleSharePreviewAccess={canToggleSharePreviewAccess}
-                          canUseSharedPreviewAccess={canUseSharedPreviewAccess}
-                          header={unstable_header}
-                          initialUrl={initialPreviewUrl}
-                          loadersConnection={loadersConnection}
-                          navigatorEnabled={navigatorEnabled}
-                          onPathChange={handlePreviewPath}
-                          onRefresh={handleRefresh}
-                          openPopup={handleOpenPopup}
-                          overlaysConnection={overlaysConnection}
-                          previewUrl={params.preview}
-                          perspective={perspective}
-                          ref={iframeRef}
-                          setViewport={setViewport}
-                          targetOrigin={targetOrigin}
-                          toggleNavigator={toggleNavigator}
-                          toggleOverlay={toggleOverlay}
-                          viewport={viewport}
-                          vercelProtectionBypass={vercelProtectionBypass}
-                          presentationRef={presentationRef}
-                          previewUrlRef={previewUrlRef}
-                          handlesPerspectiveChange={handlesPerspectiveChange}
-                        />
-                      </BoundaryElementProvider>
-                    </Flex>
-                  </Panel>
-                  <PresentationContent
-                    documentId={params.id}
-                    documentsOnPage={documentsOnPage}
-                    documentType={params.type}
-                    getCommentIntent={getCommentIntent}
-                    mainDocumentState={mainDocumentState}
-                    onEditReference={handleEditReference}
-                    onFocusPath={handleFocusPath}
-                    onStructureParams={handleStructureParams}
-                    searchParams={searchParams}
-                    setDisplayedDocument={setDisplayedDocument}
-                    structureParams={structureParams}
+              <Container data-testid="presentation-root" direction="column" height="fill">
+                {isNarrow && (
+                  <PresentationNarrowTabBar
+                    activeTab={resolvedTab}
+                    navigatorEnabled={navigatorEnabled}
+                    onTabChange={setActiveTab}
                   />
-                </Panels>
+                )}
+                <Flex direction="column" flex={1} style={{minHeight: 0}}>
+                  <Panels>
+                    <PresentationNavigator
+                      hidden={isNarrow && resolvedTab !== 'navigator'}
+                      resizerHidden={isNarrow}
+                    />
+                    <Panel
+                      id="preview"
+                      htmlId={getPresentationPanelHtmlId('preview')}
+                      minWidth={325}
+                      defaultSize={navigatorEnabled ? 50 : 75}
+                      order={3}
+                      hidden={isNarrow && resolvedTab !== 'preview'}
+                    >
+                      <Flex direction="column" flex={1} height="fill" ref={setBoundaryElement}>
+                        <BoundaryElementProvider element={boundaryElement}>
+                          <Preview
+                            // @TODO move closer to the <iframe> element itself to allow for more precise handling of when to reload the iframe and when to reconnect when the target origin changes
+                            // Make sure the iframe is unmounted if the targetOrigin has changed
+                            key={targetOrigin}
+                            canSharePreviewAccess={canSharePreviewAccess}
+                            canToggleSharePreviewAccess={canToggleSharePreviewAccess}
+                            canUseSharedPreviewAccess={canUseSharedPreviewAccess}
+                            header={unstable_header}
+                            initialUrl={initialPreviewUrl}
+                            loadersConnection={loadersConnection}
+                            navigatorEnabled={navigatorEnabled}
+                            onPathChange={handlePreviewPath}
+                            onRefresh={handleRefresh}
+                            openPopup={handleOpenPopup}
+                            overlaysConnection={overlaysConnection}
+                            previewUrl={params.preview}
+                            perspective={perspective}
+                            ref={iframeRef}
+                            setViewport={setViewport}
+                            targetOrigin={targetOrigin}
+                            toggleNavigator={toggleNavigator}
+                            toggleOverlay={toggleOverlay}
+                            viewport={viewport}
+                            vercelProtectionBypass={vercelProtectionBypass}
+                            presentationRef={presentationRef}
+                            previewUrlRef={previewUrlRef}
+                            handlesPerspectiveChange={handlesPerspectiveChange}
+                          />
+                        </BoundaryElementProvider>
+                      </Flex>
+                    </Panel>
+                    <PresentationContent
+                      documentId={params.id}
+                      documentsOnPage={documentsOnPage}
+                      documentType={params.type}
+                      getCommentIntent={getCommentIntent}
+                      hidden={isNarrow && resolvedTab !== 'content'}
+                      mainDocumentState={mainDocumentState}
+                      onEditReference={handleEditReference}
+                      onFocusPath={handleFocusPath}
+                      onStructureParams={handleStructureParams}
+                      resizerHidden={isNarrow}
+                      searchParams={searchParams}
+                      setDisplayedDocument={setDisplayedDocument}
+                      structureParams={structureParams}
+                    />
+                  </Panels>
+                </Flex>
               </Container>
             </SharedStateProvider>
           </PresentationParamsProvider>
