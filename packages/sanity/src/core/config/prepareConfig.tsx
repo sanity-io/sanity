@@ -48,7 +48,6 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   internalTasksReducer,
-  legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
   mediaLibraryFrontendHostReducer,
   mediaLibraryLibraryIdReducer,
@@ -815,13 +814,6 @@ function resolveSource({
       strategy: searchStrategyReducer({
         config,
         initialValue: 'groq2024',
-      }),
-      enableLegacySearch: resolveConfigProperty({
-        config,
-        context,
-        reducer: legacySearchEnabledReducer,
-        propertyName: 'enableLegacySearch',
-        initialValue: true,
       }),
       // we will use this when we add search config to PluginOptions
       /*filters: resolveConfigProperty({
