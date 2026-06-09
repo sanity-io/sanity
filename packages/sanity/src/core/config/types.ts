@@ -495,8 +495,6 @@ export interface PluginOptions {
      * Control the strategy used for searching documents. This should generally only be used if you
      * wish to try experimental search strategies.
      *
-     * This option takes precedence over the deprecated `search.enableLegacySearch` option.
-     *
      * Can be one of:
      *
      * * - `"groq2024"`: (default) Perform full text searching using the GROQ Query API and its
@@ -505,13 +503,6 @@ export interface PluginOptions {
      *   using the GROQ Query API.
      */
     strategy?: SearchStrategy
-
-    /**
-     * Enables the legacy Query API search strategy.
-     *
-     * @deprecated Use `search.strategy` instead.
-     */
-    enableLegacySearch?: boolean
   }
 
   /** Configuration for Scheduled drafts */
@@ -1004,8 +995,6 @@ export interface Source {
     unstable_partialIndexing?: {
       enabled: boolean
     }
-
-    enableLegacySearch?: boolean
     strategy?: SearchStrategy
   }
 
