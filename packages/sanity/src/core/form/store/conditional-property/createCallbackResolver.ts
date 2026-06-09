@@ -1,4 +1,10 @@
-import {type CurrentUser, isKeyedObject, type Path, type SchemaType} from '@sanity/types'
+import {
+  type CurrentUser,
+  isKeyedObject,
+  isObjectSchemaType,
+  type Path,
+  type SchemaType,
+} from '@sanity/types'
 
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {MAX_FIELD_DEPTH} from '../constants'
@@ -50,7 +56,7 @@ function resolveCallbackState({
 
   const children: Record<string, StateTree<boolean>> = {}
 
-  if (schemaType.jsonType === 'object') {
+  if (isObjectSchemaType(schemaType)) {
     // note: this is needed because not all object types gets a ´fieldsets´ property during schema parsing.
     // ideally members should be normalized as part of the schema parsing and not here
     const normalizedSchemaMembers: typeof schemaType.fieldsets = schemaType.fieldsets

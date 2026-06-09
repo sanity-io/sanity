@@ -57,7 +57,9 @@ export interface ManifestSchemaType {
   validation?: ManifestValidationGroup[]
   fields?: ManifestField[]
   to?: ManifestReferenceMember[]
+  declaredTo?: ManifestReferenceMember[]
   of?: ManifestArrayMember[]
+  declaredOf?: ManifestArrayMember[]
   preview?: {
     select: Record<string, string>
   }

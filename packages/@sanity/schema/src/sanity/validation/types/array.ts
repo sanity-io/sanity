@@ -5,20 +5,15 @@ import partition from 'lodash-es/partition.js'
 import {coreTypeNames} from '../../coreTypes'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import {getDupes} from '../utils/getDupes'
+import {
+  getStoredMemberName,
+  isCompatibleMemberOverride,
+  isNamedUnionTypeReference,
+  resolveJsonType,
+} from '../utils/union'
 
 function isPrimitiveTypeName(typeName: any) {
   return typeName === 'string' || typeName === 'number' || typeName === 'boolean'
-}
-
-function resolveJsonType(typeDef: any, visitorContext: any): string | undefined {
-  if ('jsonType' in typeDef) {
-    return typeDef.jsonType
-  }
-  const parentType = visitorContext.getType(typeDef.type)
-  if (!parentType) {
-    return undefined
-  }
-  return resolveJsonType(parentType, visitorContext)
 }
 
 function isAssignable(typeName: any, type: any) {
@@ -43,12 +38,96 @@ function format(value: unknown) {
   return quote(value)
 }
 
+function getUnionDefinition(member: any, visitorContext: any) {
+  return visitorContext.getTypeDefinition?.(member?.type)
+}
+
+function createUnionMemberOverrideWarning(member: any) {
+  return warning(
+    `Array member "${getStoredMemberName(
+      member,
+    )}" overrides a compatible member expanded from a union declaration.`,
+    HELP_IDS.ARRAY_OF_UNION_MEMBER_OVERRIDE,
+  )
+}
+
+function expandUnionMembers(members: any[], visitorContext: any) {
+  const problems: any[] = []
+  let entries: {member: any; source: 'direct' | 'union'}[] = []
+  const warnedDirectMembers = new Set<any>()
+
+  function addEntry(member: any, source: 'direct' | 'union') {
+    if (source === 'direct') {
+      let replacedUnionMember = false
+      entries = entries.flatMap((entry) => {
+        if (
+          entry.source === 'union' &&
+          isCompatibleMemberOverride(member, entry.member, visitorContext)
+        ) {
+          if (!replacedUnionMember) {
+            replacedUnionMember = true
+            return [{member, source}]
+          }
+
+          return []
+        }
+
+        return [entry]
+      })
+
+      if (replacedUnionMember) {
+        problems.push(createUnionMemberOverrideWarning(member))
+        warnedDirectMembers.add(member)
+        return
+      }
+    }
+
+    if (source === 'union') {
+      const compatibleEntry = entries.find((entry) =>
+        isCompatibleMemberOverride(member, entry.member, visitorContext),
+      )
+
+      if (compatibleEntry) {
+        if (
+          compatibleEntry.source === 'direct' &&
+          !warnedDirectMembers.has(compatibleEntry.member)
+        ) {
+          problems.push(createUnionMemberOverrideWarning(compatibleEntry.member))
+          warnedDirectMembers.add(compatibleEntry.member)
+        }
+
+        return
+      }
+    }
+
+    entries.push({member, source})
+  }
+
+  members.forEach((member) => {
+    if (isNamedUnionTypeReference(member, visitorContext)) {
+      const unionDefinition = getUnionDefinition(member, visitorContext)
+      const unionMembers = Array.isArray(unionDefinition?.of) ? unionDefinition.of : []
+
+      unionMembers.forEach((unionMember: any) => addEntry(unionMember, 'union'))
+      return
+    }
+
+    addEntry(member, 'direct')
+  })
+
+  return {of: entries.map((entry) => entry.member), problems}
+}
+
 export default (typeDef: any, visitorContext: any) => {
   // name should already have been marked
   const ofIsArray = Array.isArray(typeDef.of)
+  const expanded = ofIsArray
+    ? expandUnionMembers(typeDef.of, visitorContext)
+    : {of: [], problems: []}
+  const of = expanded.of
 
   if (ofIsArray) {
-    const invalid = typeDef.of.reduce((errs: any, def: any, idx: any) => {
+    const invalid = of.reduce((errs: any, def: any, idx: any) => {
       if (typeof def.name === 'string') {
         // If an array member has been given a "local" type name, we want to trigger an error if the given member type name
         // is one of the builtin types
@@ -118,8 +197,9 @@ export default (typeDef: any, visitorContext: any) => {
   }
 
   const problems = flatten([
+    expanded.problems,
     ofIsArray
-      ? getDupes(typeDef.of, (t) => `${t.name};${t.type}`).map((dupes) =>
+      ? getDupes(of, (t) => `${t.name};${t.type}`).map((dupes) =>
           error(
             `Found ${dupes.length} members with same type, but not unique names "${dupes[0].type}" in array. This makes it impossible to tell their values apart and you should consider naming them`,
             HELP_IDS.ARRAY_OF_NOT_UNIQUE,
@@ -130,7 +210,6 @@ export default (typeDef: any, visitorContext: any) => {
           HELP_IDS.ARRAY_OF_INVALID,
         ),
   ])
-  const of = ofIsArray ? typeDef.of : []
 
   // Don't allow object types without a name in block arrays
   const hasObjectTypesWithoutName = of.some(
@@ -150,7 +229,7 @@ export default (typeDef: any, visitorContext: any) => {
     of,
     (ofType) =>
       isPrimitiveTypeName(ofType.type) ||
-      isPrimitiveTypeName(visitorContext.getType(ofType.type)?.jsonType),
+      isPrimitiveTypeName(resolveJsonType(ofType, visitorContext)),
   )
 
   const isMixedArray = primitiveTypes.length > 0 && objectTypes.length > 0
@@ -203,7 +282,7 @@ export default (typeDef: any, visitorContext: any) => {
       list.forEach((option) => {
         const value = option?.value ?? option
         const isDeclared = primitiveTypes.some((primitiveType) => {
-          return typeof value === visitorContext.getType(primitiveType.type).jsonType
+          return typeof value === resolveJsonType(primitiveType, visitorContext)
         })
         if (!isDeclared) {
           const formattedTypeList = humanizeList(

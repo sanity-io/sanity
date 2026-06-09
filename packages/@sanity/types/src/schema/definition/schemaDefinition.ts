@@ -25,6 +25,7 @@ import {
   type SlugDefinition,
   type StringDefinition,
   type TextDefinition,
+  type UnionDefinition,
   type UrlDefinition,
 } from './type'
 import {type BaseSchemaDefinition} from './type/common'
@@ -62,6 +63,7 @@ export interface IntrinsicDefinitions {
   slug: SlugDefinition
   string: StringDefinition
   text: TextDefinition
+  union: UnionDefinition
   url: UrlDefinition
   email: EmailDefinition
 }
@@ -74,6 +76,9 @@ export interface IntrinsicDefinitions {
  * @public
  */
 export type IntrinsicTypeName = IntrinsicDefinitions[keyof IntrinsicDefinitions]['type']
+
+/** @public */
+export type InlineFieldIntrinsicTypeName = Exclude<IntrinsicTypeName, 'union'>
 
 /**
  * Represents a Sanity schema type definition with an optional type parameter.
@@ -133,6 +138,14 @@ export interface TypeAliasDefinition<
 }
 
 /** @public */
+export interface TypeReferenceDefinition<
+  TType extends string,
+  TAlias extends IntrinsicTypeName | undefined,
+> extends TypeAliasDefinition<TType, TAlias> {
+  of?: never
+}
+
+/** @public */
 export interface FieldDefinitionBase {
   fieldset?: string
   group?: string | string[]
@@ -140,7 +153,7 @@ export interface FieldDefinitionBase {
 
 /** @public */
 export type InlineFieldDefinition = {
-  [K in keyof IntrinsicDefinitions]: Omit<
+  [K in InlineFieldIntrinsicTypeName]: Omit<
     IntrinsicDefinitions[K],
     'initialValue' | 'validation'
   > & {
@@ -163,7 +176,10 @@ export type InlineFieldDefinition = {
  * @public
  */
 export type FieldDefinition<
-  TType extends IntrinsicTypeName = IntrinsicTypeName,
+  TType extends IntrinsicTypeName = InlineFieldIntrinsicTypeName,
   TAlias extends IntrinsicTypeName | undefined = undefined,
-> = (InlineFieldDefinition[TType] | TypeAliasDefinition<AutocompleteString, TAlias>) &
+> = (
+  | InlineFieldDefinition[Extract<TType, InlineFieldIntrinsicTypeName>]
+  | TypeReferenceDefinition<AutocompleteString, TAlias>
+) &
   FieldDefinitionBase

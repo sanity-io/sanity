@@ -9,6 +9,7 @@ import {
   type Path,
   type SchemaType,
   type StringSchemaType,
+  type UnionSchemaType,
 } from '@sanity/types'
 
 import {type FormNodePresence} from '../../../presence'
@@ -202,6 +203,14 @@ export type NumberFormNode<S extends NumberSchemaType = NumberSchemaType> = Base
 
 /** @public */
 export type StringFormNode<S extends StringSchemaType = StringSchemaType> = BaseFormNode<string, S>
+
+/** @public */
+export type UnionFormNode<
+  T extends {_type?: string} = {_type?: string},
+  S extends UnionSchemaType = UnionSchemaType,
+> = BaseFormNode<T, S> & {
+  selectedMember?: ObjectFormNode
+}
 
 /**
  * @hidden

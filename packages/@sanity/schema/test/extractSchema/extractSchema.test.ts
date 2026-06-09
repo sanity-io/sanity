@@ -1304,3 +1304,258 @@ test('reference regression: references pointing to hoisted type', () => {
   assert(postType.attributes.authorRef.value.type === 'inline') // this is a workaround for TS
   expect(postType.attributes.authorRef.value.name).toEqual('author.reference')
 })
+
+test('extracts standalone union fields as union nodes', () => {
+  const schema = createSchema({
+    name: 'test',
+    types: [
+      defineType({
+        name: 'productPromotion',
+        type: 'object',
+        fields: [{name: 'title', type: 'string'}],
+      }),
+      defineType({
+        name: 'articlePromotion',
+        type: 'object',
+        fields: [{name: 'headline', type: 'string'}],
+      }),
+      defineType({
+        name: 'promotion',
+        type: 'union',
+        of: [{type: 'productPromotion'}, {type: 'articlePromotion'}],
+      }),
+      defineType({
+        name: 'campaign',
+        type: 'document',
+        fields: [
+          defineField({
+            name: 'featuredPromotion',
+            type: 'promotion',
+          }),
+        ],
+      }),
+    ],
+  })
+
+  const extracted = extractSchema(schema)
+  const campaign = extracted.find((type) => type.type === 'document' && type.name === 'campaign')
+
+  assert(campaign?.type === 'document')
+  const featuredPromotion = campaign.attributes.featuredPromotion.value
+
+  expect(featuredPromotion).toMatchObject({
+    type: 'union',
+    name: 'promotion',
+    declaredOf: [
+      {type: 'inline', name: 'productPromotion'},
+      {type: 'inline', name: 'articlePromotion'},
+    ],
+    of: [
+      {
+        type: 'object',
+        attributes: {
+          _type: {
+            type: 'objectAttribute',
+            value: {type: 'string', value: 'productPromotion'},
+          },
+          title: {
+            type: 'objectAttribute',
+            value: {type: 'string'},
+          },
+        },
+      },
+      {
+        type: 'object',
+        attributes: {
+          _type: {
+            type: 'objectAttribute',
+            value: {type: 'string', value: 'articlePromotion'},
+          },
+          headline: {
+            type: 'objectAttribute',
+            value: {type: 'string'},
+          },
+        },
+      },
+    ],
+  })
+})
+
+test('extracts named unions reused in arrays as concrete array members', () => {
+  const schema = createSchema({
+    name: 'test',
+    types: [
+      defineType({
+        name: 'productPromotion',
+        type: 'object',
+        fields: [{name: 'title', type: 'string'}],
+      }),
+      defineType({
+        name: 'articlePromotion',
+        type: 'object',
+        fields: [{name: 'headline', type: 'string'}],
+      }),
+      defineType({
+        name: 'promotion',
+        type: 'union',
+        of: [{type: 'productPromotion'}, {type: 'articlePromotion'}],
+      }),
+      defineType({
+        name: 'campaign',
+        type: 'document',
+        fields: [
+          defineField({
+            name: 'body',
+            type: 'array',
+            of: [{type: 'promotion'}],
+          }),
+        ],
+      }),
+    ],
+  })
+
+  const extracted = extractSchema(schema)
+  const campaign = extracted.find((type) => type.type === 'document' && type.name === 'campaign')
+
+  assert(campaign?.type === 'document')
+  const body = campaign.attributes.body.value
+
+  expect(body.type).toBe('array')
+  expect(body.of).toMatchObject({
+    type: 'union',
+    declaredOf: [{type: 'inline', name: 'promotion'}],
+    of: [
+      {
+        type: 'object',
+        attributes: {
+          _key: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {
+            type: 'objectAttribute',
+            value: {type: 'string', value: 'productPromotion'},
+          },
+        },
+      },
+      {
+        type: 'object',
+        attributes: {
+          _key: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {
+            type: 'objectAttribute',
+            value: {type: 'string', value: 'articlePromotion'},
+          },
+        },
+      },
+    ],
+  })
+})
+
+test('does not extract ordinary arrays as union-expanded arrays when their members match a union', () => {
+  const schema = createSchema({
+    name: 'test',
+    types: [
+      defineType({
+        name: 'productPromotion',
+        type: 'object',
+        fields: [{name: 'title', type: 'string'}],
+      }),
+      defineType({
+        name: 'articlePromotion',
+        type: 'object',
+        fields: [{name: 'headline', type: 'string'}],
+      }),
+      defineType({
+        name: 'promotion',
+        type: 'union',
+        of: [{type: 'productPromotion'}, {type: 'articlePromotion'}],
+      }),
+      defineType({
+        name: 'campaign',
+        type: 'document',
+        fields: [
+          defineField({
+            name: 'manualPromotions',
+            type: 'array',
+            of: [{type: 'productPromotion'}, {type: 'articlePromotion'}],
+          }),
+        ],
+      }),
+    ],
+  })
+
+  const extracted = extractSchema(schema)
+  const campaign = extracted.find((type) => type.type === 'document' && type.name === 'campaign')
+
+  assert(campaign?.type === 'document')
+  const manualPromotions = campaign.attributes.manualPromotions.value
+
+  expect(manualPromotions.type).toBe('array')
+  assert(manualPromotions.type === 'array')
+  expect(manualPromotions.of).toMatchObject({
+    type: 'union',
+    of: [
+      {
+        type: 'object',
+        attributes: {
+          _key: {type: 'objectAttribute', value: {type: 'string'}},
+        },
+        rest: {type: 'inline', name: 'productPromotion'},
+      },
+      {
+        type: 'object',
+        attributes: {
+          _key: {type: 'objectAttribute', value: {type: 'string'}},
+        },
+        rest: {type: 'inline', name: 'articlePromotion'},
+      },
+    ],
+  })
+})
+
+test('extracts declared reference targets for named document union references', () => {
+  const schema = createSchema({
+    name: 'test',
+    types: [
+      defineType({
+        name: 'book',
+        type: 'document',
+        fields: [{name: 'title', type: 'string'}],
+      }),
+      defineType({
+        name: 'author',
+        type: 'document',
+        fields: [{name: 'name', type: 'string'}],
+      }),
+      defineType({
+        name: 'editorialTarget',
+        type: 'union',
+        of: [{type: 'book'}, {type: 'author'}],
+      }),
+      defineType({
+        name: 'campaign',
+        type: 'document',
+        fields: [
+          defineField({
+            name: 'target',
+            type: 'reference',
+            to: [{type: 'editorialTarget'}],
+          }),
+        ],
+      }),
+    ],
+  })
+
+  const extracted = extractSchema(schema)
+  const campaign = extracted.find((type) => type.type === 'document' && type.name === 'campaign')
+
+  assert(campaign?.type === 'document')
+  const target = campaign.attributes.target.value
+
+  expect(target).toMatchObject({
+    type: 'union',
+    declaredTo: [{type: 'inline', name: 'editorialTarget'}],
+    of: [
+      {type: 'inline', name: 'book.reference'},
+      {type: 'inline', name: 'author.reference'},
+    ],
+  })
+})

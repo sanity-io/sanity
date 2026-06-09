@@ -3081,3 +3081,64 @@ describe('hoisting', () => {
     expect(encoded.typeDef.of[0]).toMatchObject({__type: 'hoisted'})
   })
 })
+
+describe('Union schema type descriptors', () => {
+  test('converts union schema types', async () => {
+    const schema = createSchema({
+      name: 'custom',
+      types: [
+        {
+          name: 'productPromotion',
+          type: 'object',
+          fields: [{name: 'title', type: 'string'}],
+        },
+        {
+          name: 'articlePromotion',
+          type: 'object',
+          fields: [{name: 'headline', type: 'string'}],
+        },
+        {
+          name: 'promotion',
+          type: 'union',
+          of: [{type: 'productPromotion'}, {type: 'articlePromotion'}],
+        },
+        {
+          name: 'featuredPromotion',
+          type: 'union',
+          of: [{type: 'promotion'}, {type: 'image', name: 'promotionImage'}],
+        },
+      ],
+    })
+
+    if (schema._validation?.length) {
+      throw new Error(
+        `Test contains invalid schema definition: ${JSON.stringify(schema._validation, null, 2)}`,
+      )
+    }
+
+    const desc = await DESCRIPTOR_CONVERTER.get(schema)
+    await expectManifestSchemaConversion(schema, desc)
+    const type = findTypeInDesc('promotion', desc)!
+    const getMemberName = (member: {name?: string | null; key?: string}) =>
+      member.name ?? member.key?.split('.').at(-1)
+
+    expect(type.typeDef).toMatchObject({extends: 'union'})
+    assert(type.typeDef.extends === 'union')
+    expect(type.typeDef.of.map(getMemberName)).toEqual(['productPromotion', 'articlePromotion'])
+    expect(type.typeDef.declaredOf).toEqual([
+      {name: 'productPromotion'},
+      {name: 'articlePromotion'},
+    ])
+
+    const featuredType = findTypeInDesc('featuredPromotion', desc)!
+
+    expect(featuredType.typeDef).toMatchObject({extends: 'union'})
+    assert(featuredType.typeDef.extends === 'union')
+    expect(featuredType.typeDef.of.map(getMemberName)).toEqual([
+      'productPromotion',
+      'articlePromotion',
+      'promotionImage',
+    ])
+    expect(featuredType.typeDef.declaredOf).toEqual([{name: 'promotion'}, {name: 'promotionImage'}])
+  })
+})

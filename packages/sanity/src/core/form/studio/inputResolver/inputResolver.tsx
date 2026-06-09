@@ -3,12 +3,14 @@ import {
   type NumberSchemaType,
   type SchemaType,
   type StringSchemaType,
+  isUnionSchemaType,
 } from '@sanity/types'
 import {type ComponentType} from 'react'
 
 import {type PreviewProps} from '../../../components'
 import {type FIXME} from '../../../FIXME'
 import {SanityDefaultPreview} from '../../../preview'
+import {UnionInput} from '../../inputs/UnionInput'
 import {type InputProps} from '../../types'
 import * as is from '../../utils/is'
 import {StudioReferenceInput} from '../inputs/reference/StudioReferenceInput'
@@ -19,6 +21,10 @@ import {resolveNumberInput} from './resolveNumberInput'
 import {resolveStringInput} from './resolveStringInput'
 
 function resolveComponentFromTypeVariants(type: SchemaType): ComponentType<FIXME> | undefined {
+  if (isUnionSchemaType(type)) {
+    return UnionInput
+  }
+
   if (is.type('array', type)) {
     return resolveArrayInput(type as ArraySchemaType)
   }

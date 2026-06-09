@@ -6,6 +6,7 @@ import {
   isNumberSchemaType,
   isObjectSchemaType,
   isStringSchemaType,
+  isUnionSchemaType,
 } from '@sanity/types'
 
 import {
@@ -16,6 +17,7 @@ import {
   type NumberInputProps,
   type ObjectInputProps,
   type StringInputProps,
+  type UnionInputProps,
 } from './inputProps'
 import {type ItemProps, type ObjectItemProps} from './itemProps'
 
@@ -89,4 +91,13 @@ export function isArrayOfPrimitivesInputProps(
   inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is ArrayOfPrimitivesInputProps {
   return isArrayOfPrimitivesSchemaType(inputProps.schemaType)
+}
+
+/**
+ * @hidden
+ * @beta */
+export function isUnionInputProps(
+  inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
+): inputProps is UnionInputProps {
+  return isUnionSchemaType(inputProps.schemaType)
 }

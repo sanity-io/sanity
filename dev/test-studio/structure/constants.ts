@@ -13,6 +13,7 @@ export const STANDARD_INPUT_TYPES = [
   'slugsTest',
   'stringsTest',
   'textsTest',
+  'unionsTest',
   'urlsTest',
   'globalDocumentReferenceTest',
 ]

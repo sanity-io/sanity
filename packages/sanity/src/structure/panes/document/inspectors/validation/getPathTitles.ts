@@ -1,6 +1,6 @@
 /* eslint-disable no-loop-func */
 
-import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
+import {isObjectSchemaType, type Path, type SanityDocument, type SchemaType} from '@sanity/types'
 import {isArray, isRecord} from 'sanity'
 
 // eslint-disable-next-line max-statements
@@ -22,7 +22,7 @@ export function getPathTitles(options: {
         throw new Error(`Parent value is not an object, cannot get path segment: .${segment}`)
       }
 
-      if (s.jsonType !== 'object') {
+      if (!isObjectSchemaType(s)) {
         throw new Error(
           `Parent type is not an object schema type, cannot get path segment: .${segment}`,
         )
@@ -128,7 +128,7 @@ export function getPathTitles(options: {
 
       // If _type is not set (anonymous object), and there's only one object type, use it
       if (!ofType && !v?._type) {
-        const objectTypes = s.of.filter((i) => i.jsonType === 'object')
+        const objectTypes = s.of.filter(isObjectSchemaType)
         if (objectTypes.length === 1) {
           ofType = objectTypes[0]
         }

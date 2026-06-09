@@ -1,11 +1,14 @@
-import {type ObjectSchemaType, type Schema, type SchemaType} from '@sanity/types'
+import {
+  isObjectSchemaType,
+  type ObjectSchemaType,
+  type Schema,
+  type SchemaType,
+} from '@sanity/types'
 
 import {isNonNullable} from '../../util/isNonNullable'
 
 const isDocumentType = (type: SchemaType): type is ObjectSchemaType =>
   Boolean(type.type && type.type.name === 'document')
-
-const isObjectType = (type: SchemaType): type is ObjectSchemaType => type.jsonType === 'object'
 
 const isIgnoredType = (type: SchemaType): boolean =>
   type.name.startsWith('sanity.') && type.name !== 'sanity.previewUrlSecret'
@@ -31,4 +34,4 @@ export const getSearchableTypes = (
         (isDocumentType(type) && !isIgnoredType(type)) ||
         explicitlyAllowedTypes.includes(type.name),
     )
-    .filter(isObjectType)
+    .filter(isObjectSchemaType)

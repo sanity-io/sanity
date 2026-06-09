@@ -1,7 +1,7 @@
-import {DescriptorConverter} from '@sanity/schema/_internal'
+import {DescriptorConverter, extractManifestSchemaTypes} from '@sanity/schema/_internal'
 import {defineArrayMember, defineField, defineType, type Schema} from '@sanity/types'
 import {createSchema} from 'sanity'
-import {describe, test} from 'vitest'
+import {describe, expect, test} from 'vitest'
 
 import {expectManifestSchemaConversion} from './utils'
 
@@ -1099,6 +1099,63 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
           ],
         }),
       ],
+    })
+
+    await validate(schema)
+  })
+
+  test('can convert a schema with a standalone union', async () => {
+    const schema = createSchema({
+      name: 'test',
+      types: [
+        defineType({
+          name: 'productPromotion',
+          type: 'object',
+          fields: [{name: 'title', type: 'string'}],
+        }),
+        defineType({
+          name: 'articlePromotion',
+          type: 'object',
+          fields: [{name: 'headline', type: 'string'}],
+        }),
+        defineType({
+          name: 'promotion',
+          type: 'union',
+          of: [{type: 'productPromotion'}, {type: 'articlePromotion'}],
+        }),
+        defineType({
+          name: 'featuredPromotion',
+          type: 'union',
+          of: [{type: 'promotion'}, {type: 'image', name: 'promotionImage'}],
+        }),
+        defineType({
+          name: 'campaign',
+          type: 'document',
+          fields: [
+            {name: 'promotion', type: 'featuredPromotion'},
+            {name: 'promotions', type: 'array', of: [{type: 'promotion'}]},
+          ],
+        }),
+      ],
+    })
+
+    const manifestTypes = extractManifestSchemaTypes(schema)
+    const featuredPromotion = manifestTypes.find((type) => type.name === 'featuredPromotion')
+    const campaign = manifestTypes.find((type) => type.name === 'campaign')
+
+    expect(featuredPromotion).toMatchObject({
+      type: 'union',
+      of: [
+        {type: 'productPromotion'},
+        {type: 'articlePromotion'},
+        {type: 'image', name: 'promotionImage'},
+      ],
+      declaredOf: [{type: 'promotion'}, {type: 'image', name: 'promotionImage'}],
+    })
+    expect(campaign?.fields?.find((field) => field.name === 'promotions')).toMatchObject({
+      type: 'array',
+      of: [{type: 'productPromotion'}, {type: 'articlePromotion'}],
+      declaredOf: [{type: 'promotion'}],
     })
 
     await validate(schema)

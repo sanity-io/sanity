@@ -27,6 +27,7 @@ import {
   type ArrayOfPrimitivesFormNode,
   type ObjectFormNode,
   type PrimitiveFormNode,
+  type UnionFormNode,
 } from '../types/nodes'
 import {type StateTree} from '../types/state'
 
@@ -605,6 +606,64 @@ describe('hidden', () => {
     expect(prepareFormState._preparePrimitiveInputState).toHaveBeenCalledTimes(
       expectedCalls.preparePrimitiveInputState,
     )
+  })
+})
+
+describe('union fields', () => {
+  test('prepares the selected object member for a populated standalone union field', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+
+    try {
+      const unionSchema = createSchema({
+        name: 'union-test',
+        types: [
+          defineType({
+            name: 'heroBlock',
+            type: 'object',
+            fields: [defineField({name: 'heading', type: 'string'})],
+          }),
+          defineType({
+            name: 'contentBlock',
+            type: 'union',
+            of: [{type: 'heroBlock'}],
+          }),
+          defineType({
+            name: 'unionDocument',
+            type: 'document',
+            fields: [defineField({name: 'content', type: 'contentBlock'})],
+          }),
+        ],
+      })
+      const unionDocument = unionSchema.get('unionDocument') as ObjectSchemaType
+
+      const formState = prepareFormState({
+        ...defaultOptions,
+        schemaType: unionDocument,
+        documentValue: {
+          _type: 'unionDocument',
+          content: {_type: 'heroBlock', heading: 'Hello'},
+        },
+        comparisonValue: {
+          _type: 'unionDocument',
+          content: {_type: 'heroBlock', heading: 'Hello'},
+        },
+      })
+
+      const contentMember = formState?.members.find(
+        (member): member is FieldMember => member.kind === 'field' && member.name === 'content',
+      )
+      const unionNode = contentMember?.field as UnionFormNode | undefined
+
+      expect(unionNode?.schemaType.name).toBe('contentBlock')
+      expect(unionNode?.selectedMember?.schemaType.name).toBe('heroBlock')
+      expect(
+        unionNode?.selectedMember?.members.some(
+          (member) => member.kind === 'field' && member.name === 'heading',
+        ),
+      ).toBe(true)
+    } finally {
+      warn.mockRestore()
+    }
   })
 })
 

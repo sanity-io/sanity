@@ -13,6 +13,8 @@ import {
   type Rule as IRule,
   type Schema,
   type SchemaType,
+  isUnionSchemaType,
+  type UnionSchemaType,
 } from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import isObject from 'lodash-es/isObject.js'
@@ -39,12 +41,14 @@ import {
   type ObjectOrdering,
   type ObjectOrderingBy,
   type ReferenceTypeDef,
+  type ReferenceTarget,
   type RegistryType,
   type Rule as RuleType,
   type SubtypeDef,
   type TypeDef,
   type UndefinedMarker,
   type UnknownMarker,
+  type UnionTypeDef,
   type Validation,
   type ValidationMessage,
 } from './types'
@@ -295,41 +299,40 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
 
   switch (schemaType.type.name) {
     case 'array': {
+      const arrayType = schemaType as ArraySchemaType
+      const declaredOf = arrayType.declaredOf
       return {
         extends: 'array',
-        of: (schemaType as ArraySchemaType).of.map((ofType, idx) => {
-          const itemPath = `${path}.${ofType.name}`
-          const value = opts.arrayElements.get(ofType)
-          if (value) {
-            // We've seen it before. Mark it as duplicate.
-            const otherPath = opts.duplicateArrayElements.get(value)
-            // We always keep the _smallest_ path around.
-            if (!otherPath || isLessCanonicalName(itemPath, otherPath))
-              opts.duplicateArrayElements.set(value, itemPath)
-            return value
-          }
-          const converted: ArrayElement = {
-            name: ofType.name,
-            typeDef: convertTypeDef(ofType, `${path}.${ofType.name}`, opts),
-          }
-          opts.arrayElements.set(ofType, converted)
-          return converted
-        }),
+        of: arrayType.of.map((ofType) => convertArrayElement(ofType, path, opts)),
+        ...(declaredOf && !hasSameDescriptorMemberNames(declaredOf, arrayType.of)
+          ? {declaredOf: declaredOf.map(convertDeclaredMember)}
+          : {}),
         ...common,
       } satisfies ArrayTypeDef
+    }
+    case 'union': {
+      const unionType = isUnionSchemaType(schemaType)
+        ? schemaType
+        : (schemaType as unknown as UnionSchemaType)
+      return {
+        extends: 'union',
+        of: unionType.of.map((ofType) => convertArrayElement(ofType, path, opts)),
+        declaredOf: (unionType.declaredOf ?? unionType.of).map(convertDeclaredMember),
+        ...common,
+      } satisfies UnionTypeDef
     }
     case 'reference':
     case 'globalDocumentReference':
     case 'crossDatasetReference': {
       const ownProps = getOwnProps(schemaType)
+      const referenceType = schemaType as ReferenceSchemaType
       return {
         extends: schemaType.type.name,
-        to: filterStringKey(
-          'name',
-          (schemaType as ReferenceSchemaType).to
-            // The `toType.type` case is for crossDatasetReferences/crossDatasetReference
-            .map((toType) => ({name: toType.name || toType.type?.name || toType.type})),
-        ),
+        to: convertReferenceTargets(referenceType.to),
+        ...(referenceType.declaredTo &&
+        !hasSameDescriptorMemberNames(referenceType.declaredTo, referenceType.to)
+          ? {declaredTo: convertReferenceTargets(referenceType.declaredTo)}
+          : {}),
         weak: maybeTrue(ownProps.weak),
         ...common,
       } satisfies ReferenceTypeDef
@@ -337,6 +340,54 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
     default:
       return {extends: schemaType.type.name, ...common} satisfies SubtypeDef
   }
+}
+
+function convertArrayElement(
+  ofType: ArraySchemaType['of'][number],
+  path: string,
+  opts: Options,
+): ArrayElement {
+  const itemPath = `${path}.${ofType.name}`
+  const value = opts.arrayElements.get(ofType)
+  if (value) {
+    // We've seen it before. Mark it as duplicate.
+    const otherPath = opts.duplicateArrayElements.get(value)
+    // We always keep the _smallest_ path around.
+    if (!otherPath || isLessCanonicalName(itemPath, otherPath)) {
+      opts.duplicateArrayElements.set(value, itemPath)
+    }
+    return value
+  }
+
+  const converted: ArrayElement = {
+    name: ofType.name,
+    typeDef: convertTypeDef(ofType, itemPath, opts),
+  }
+  opts.arrayElements.set(ofType, converted)
+  return converted
+}
+
+function convertDeclaredMember(member: ArraySchemaType['of'][number]): ReferenceTarget {
+  return {name: member.name}
+}
+
+function convertReferenceTargets(targets: ReferenceSchemaType['to']): ReferenceTarget[] {
+  return filterStringKey(
+    'name',
+    // The `toType.type` case is for crossDatasetReferences/crossDatasetReference
+    targets.map((toType) => ({name: toType.name || toType.type?.name || toType.type})),
+  )
+}
+
+function hasSameDescriptorMemberNames(
+  left: ArraySchemaType['of'] | ReferenceSchemaType['to'],
+  right: ArraySchemaType['of'] | ReferenceSchemaType['to'],
+): boolean {
+  if (left.length !== right.length) {
+    return false
+  }
+
+  return left.every((member, index) => member.name === right[index].name)
 }
 
 function maybeString(val: unknown): string | undefined {

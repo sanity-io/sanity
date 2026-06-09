@@ -1,4 +1,4 @@
-import {isArraySchemaType, type SchemaType} from '@sanity/types'
+import {isArraySchemaType, isObjectSchemaType, type SchemaType} from '@sanity/types'
 import get from 'lodash-es/get.js'
 
 export function getOption(type: SchemaType, optionName: string) {
@@ -29,7 +29,7 @@ export function getFieldLevel(schemaType: SchemaType, currentLevel: number) {
 function getObjectFieldLevel(schemaType: SchemaType, currentLevel: number): number {
   const {type, options} = schemaType
   const typeIfRelevant = asType(type, PSEUDO_OBJECTS)
-  const fields = schemaType?.jsonType === 'object' ? schemaType.fields : undefined
+  const fields = isObjectSchemaType(schemaType) ? schemaType.fields : undefined
 
   const typeName = typeIfRelevant?.name || ''
 

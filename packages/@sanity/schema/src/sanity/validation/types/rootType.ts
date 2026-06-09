@@ -33,6 +33,13 @@ export default (typeDef: any, visitorContext: any) => {
         HELP_IDS.TYPE_NAME_RESERVED,
       ),
     )
+  } else if (typeDef.name === 'union') {
+    problems.push(
+      warning(
+        'The type name "union" conflicts with the intrinsic union type and may be reserved in a future version.',
+        HELP_IDS.TYPE_NAME_UNION_CONFLICT,
+      ),
+    )
   }
 
   if (visitorContext.isDuplicate(typeDef.name)) {

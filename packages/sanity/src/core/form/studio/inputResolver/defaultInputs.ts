@@ -10,6 +10,7 @@ import {ObjectInput} from '../../inputs/ObjectInput'
 import {SlugInput} from '../../inputs/Slug/SlugInput'
 import {StringInput} from '../../inputs/StringInput/StringInput'
 import {TextInput} from '../../inputs/TextInput'
+import {UnionInput} from '../../inputs/UnionInput'
 import {UrlInput} from '../../inputs/UrlInput'
 import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
 import {StudioGlobalDocumentReferenceInput} from '../inputs/globalDocumentReference/StudioGlobalDocumentReferenceInput'
@@ -30,6 +31,7 @@ export const defaultInputs: Record<string, ComponentType<FIXME>> = {
   image: StudioImageInput,
   file: StudioFileInput,
   string: StringInput,
+  union: UnionInput,
   slug: SlugInput,
   crossDatasetReference: StudioCrossDatasetReferenceInput,
   globalDocumentReference: StudioGlobalDocumentReferenceInput,

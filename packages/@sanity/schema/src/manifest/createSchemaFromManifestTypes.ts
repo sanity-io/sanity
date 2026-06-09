@@ -57,11 +57,32 @@ function traverse(obj: unknown) {
     return
   }
 
+  coerceDeclaredMembers(obj)
+
   for (const v of Object.values(obj)) {
     traverse(v)
   }
 
   coerceValidation(obj)
+}
+
+function coerceDeclaredMembers(obj: object) {
+  const manifestType = obj as {
+    declaredOf?: unknown
+    declaredTo?: unknown
+    of?: unknown
+    to?: unknown
+  }
+
+  if (Array.isArray(manifestType.declaredOf)) {
+    manifestType.of = manifestType.declaredOf
+    delete manifestType.declaredOf
+  }
+
+  if (Array.isArray(manifestType.declaredTo)) {
+    manifestType.to = manifestType.declaredTo
+    delete manifestType.declaredTo
+  }
 }
 
 // Convert a json rule into a '@sanity/schema' Rule.

@@ -17,6 +17,8 @@ import {
   type SchemaValidationValue,
   type SpanSchemaType,
   type StringSchemaType,
+  isUnionSchemaType,
+  type UnionSchemaType,
 } from '@sanity/types'
 import startCase from 'lodash-es/startCase.js'
 import {type ComponentType, type ReactNode} from 'react'
@@ -39,8 +41,10 @@ import {
 } from './manifestTypeHelpers'
 import {
   type CreateWorkspaceManifest,
+  type ManifestArrayMember,
   type ManifestField,
   type ManifestFieldset,
+  type ManifestReferenceMember,
   type ManifestSchemaType,
   type ManifestSerializable,
   type ManifestTitledValue,
@@ -88,6 +92,7 @@ type SchemaTypeKey =
   | keyof ObjectSchemaType
   | keyof StringSchemaType
   | keyof ReferenceSchemaType
+  | keyof UnionSchemaType
   | keyof BlockDefinition
   | 'group' // we strip this from fields
 
@@ -153,6 +158,8 @@ function transformCommonTypeFields(
 ): Omit<ManifestSchemaType, 'name' | 'title' | 'type'> {
   const arrayProps =
     typeName === 'array' && type.jsonType === 'array' ? transformArrayMember(type, context) : {}
+  const unionProps =
+    typeName === 'union' && isUnionSchemaType(type) ? transformUnion(type, context) : {}
 
   const referenceProps = isReference(type) ? transformReference(type) : {}
   const crossDatasetRefProps = isCrossDatasetReference(type)
@@ -163,7 +170,7 @@ function transformCommonTypeFields(
     : {}
 
   const objectFields: ObjectFields =
-    type.jsonType === 'object' && type.type && isCustomized(type)
+    type.jsonType === 'object' && type.type && !isUnionSchemaType(type) && isCustomized(type)
       ? {
           fields: getCustomFields(type).map((objectField) => transformField(objectField, context)),
         }
@@ -175,6 +182,7 @@ function transformCommonTypeFields(
     ...ensureString('description', type.description),
     ...objectFields,
     ...arrayProps,
+    ...unionProps,
     ...referenceProps,
     ...crossDatasetRefProps,
     ...globalRefProps,
@@ -190,7 +198,7 @@ function transformCommonTypeFields(
 function transformFieldsets(
   type: SchemaType,
 ): {fieldsets: ManifestFieldset[]} | Record<string, never> {
-  if (type.jsonType !== 'object') {
+  if (type.jsonType !== 'object' || isUnionSchemaType(type) || !('fieldsets' in type)) {
     return {}
   }
   const fieldsets = type.fieldsets
@@ -234,9 +242,13 @@ function retainCustomTypeProps(type: SchemaType): Record<string, SerializablePro
     'fields',
     'to',
     'of',
+    'declaredTo',
+    'declaredOf',
+    'unionKind',
     // not serialized
     'type',
     'jsonType',
+    '__experimental_union',
     '__experimental_actions',
     '__experimental_formPreviewTitle',
     '__experimental_omnisearch_visibility',
@@ -323,29 +335,75 @@ function transformField(field: ObjectField & {fieldset?: string}, context: Conte
 function transformArrayMember(
   arrayMember: ArraySchemaType,
   context: Context,
-): Pick<ManifestField, 'of'> {
+): Pick<ManifestField, 'of' | 'declaredOf'> {
+  const declaredOf = arrayMember.declaredOf
+
   return {
-    of: arrayMember.of.map((type) => {
-      const typeName = getDefinedTypeName(type) ?? type.name
-      return {
-        ...transformCommonTypeFields(type, typeName, context),
-        type: typeName,
-        ...(typeName === type.name ? {} : {name: type.name}),
-        ...ensureCustomTitle(type.name, type.title),
-      }
-    }),
+    of: transformArrayMembers(arrayMember.of, context),
+    ...(declaredOf && !hasSameManifestMemberNames(declaredOf, arrayMember.of)
+      ? {declaredOf: transformArrayMembers(declaredOf, context)}
+      : {}),
   }
 }
 
-function transformReference(reference: ReferenceSchemaType): Pick<ManifestSchemaType, 'to'> {
+function transformUnion(
+  unionType: UnionSchemaType,
+  context: Context,
+): Pick<ManifestField, 'of' | 'declaredOf'> {
+  const declaredOf = unionType.declaredOf ?? unionType.of
+
   return {
-    to: (reference.to ?? []).map((type) => {
-      return {
-        ...retainCustomTypeProps(type),
-        type: type.name,
-      }
-    }),
+    of: transformArrayMembers(unionType.of, context),
+    declaredOf: transformArrayMembers(declaredOf, context),
   }
+}
+
+function transformReference(
+  reference: ReferenceSchemaType,
+): Pick<ManifestSchemaType, 'to' | 'declaredTo'> {
+  const declaredTo = reference.declaredTo
+
+  return {
+    to: transformReferenceTargets(reference.to ?? []),
+    ...(declaredTo && !hasSameManifestMemberNames(declaredTo, reference.to)
+      ? {declaredTo: transformReferenceTargets(declaredTo)}
+      : {}),
+  }
+}
+
+function transformArrayMembers(members: SchemaType[], context: Context): ManifestArrayMember[] {
+  return members.map((type) => {
+    const typeName = getDefinedTypeName(type) ?? type.name
+    return {
+      ...transformCommonTypeFields(type, typeName, context),
+      type: typeName,
+      ...(typeName === type.name ? {} : {name: type.name}),
+      ...ensureCustomTitle(type.name, type.title),
+    }
+  })
+}
+
+function transformReferenceTargets(members: SchemaType[]): ManifestReferenceMember[] {
+  return members.map((type) => {
+    return {
+      ...retainCustomTypeProps(type),
+      type: type.name,
+    }
+  })
+}
+
+function hasSameManifestMemberNames(left: SchemaType[] | undefined, right: SchemaType[]): boolean {
+  if (!left || left.length !== right.length) {
+    return false
+  }
+
+  return left.every((member, index) => {
+    const rightMember = right[index]
+    return (
+      getDefinedTypeName(member) === getDefinedTypeName(rightMember) &&
+      member.name === rightMember.name
+    )
+  })
 }
 
 function transformCrossDatasetReference(
@@ -498,7 +556,11 @@ function transformBlockType(
   blockType: SchemaType,
   context: Context,
 ): Pick<ManifestSchemaType, 'marks' | 'lists' | 'styles' | 'of'> | Record<string, never> {
-  if (blockType.jsonType !== 'object' || !isType(blockType, 'block')) {
+  if (
+    blockType.jsonType !== 'object' ||
+    isUnionSchemaType(blockType) ||
+    !isType(blockType, 'block')
+  ) {
     return {}
   }
 

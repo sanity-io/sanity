@@ -3,6 +3,7 @@ import {
   isCrossDatasetReferenceSchemaType,
   isDateTimeSchemaType,
   isReferenceSchemaType,
+  isUnionSchemaType,
   type SchemaType,
 } from '@sanity/types'
 import {type ComponentType, useMemo, useState} from 'react'
@@ -16,7 +17,12 @@ import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
 import {type FieldMember} from '../../store'
-import {type ArrayFieldProps, type FieldProps, type ObjectFieldProps} from '../../types'
+import {
+  type ArrayFieldProps,
+  type FieldProps,
+  type ObjectFieldProps,
+  type UnionFieldProps,
+} from '../../types'
 import {getTypeChain} from './helpers'
 
 const EMPTY_ARRAY: never[] = []
@@ -221,6 +227,54 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   )
 }
 
+function UnionField(field: UnionFieldProps) {
+  const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
+  const documentId = usePublishedId()
+  const focused = Boolean(field.inputProps.focused)
+
+  return (
+    <>
+      {documentId && field.actions && field.actions.length > 0 && (
+        <FieldActionsResolver
+          actions={field.actions}
+          documentId={documentId}
+          documentType={field.schemaType.name}
+          onActions={setFieldActionNodes}
+          path={field.path}
+          schemaType={field.schemaType}
+        />
+      )}
+
+      <FieldActionsProvider
+        __internal_slot={field.__internal_slot}
+        __internal_comments={field.__internal_comments}
+        actions={fieldActionsNodes}
+        focused={focused}
+        path={field.path}
+      >
+        <FormFieldSet
+          __internal_comments={field.__internal_comments}
+          __internal_slot={field.__internal_slot}
+          __unstable_headerActions={fieldActionsNodes}
+          __unstable_presence={field.presence}
+          data-testid={`field-${field.inputId}`}
+          description={field.description}
+          level={field.level}
+          schemaType={field.schemaType}
+          title={field.title}
+          validation={field.validation}
+          inputId={field.inputId}
+          deprecated={field.schemaType.deprecated}
+          path={field.path}
+          readOnly={field.inputProps.readOnly}
+        >
+          {field.children}
+        </FormFieldSet>
+      </FieldActionsProvider>
+    </>
+  )
+}
+
 function ImageOrFileField(field: ObjectFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
@@ -285,6 +339,10 @@ export function defaultResolveFieldComponent(
 
   if (isDateTimeSchemaType(schemaType)) {
     return DateTimeField as ComponentType<Omit<FieldProps, 'renderDefault'>>
+  }
+
+  if (isUnionSchemaType(schemaType)) {
+    return UnionField as ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   const typeChain = getTypeChain(schemaType, new Set())

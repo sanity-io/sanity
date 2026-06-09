@@ -20,6 +20,7 @@ export const HELP_IDS = {
   ARRAY_OF_DUPLICATE_PRIMITIVE_JSON_TYPE: 'schema-array-of-duplicate-primitive-json-type',
   ARRAY_OF_TYPE_GLOBAL_TYPE_CONFLICT: 'schema-array-of-type-global-type-conflict',
   ARRAY_OF_TYPE_BUILTIN_TYPE_CONFLICT: 'schema-array-of-type-builtin-type-conflict',
+  ARRAY_OF_UNION_MEMBER_OVERRIDE: 'schema-array-of-union-member-override',
   REFERENCE_TO_INVALID: 'schema-reference-to-invalid',
   REFERENCE_TO_NOT_UNIQUE: 'schema-reference-to-invalid',
   REFERENCE_INVALID_OPTIONS: 'schema-reference-invalid-options',
@@ -32,6 +33,9 @@ export const HELP_IDS = {
   DEPRECATED_BLOCKEDITOR_KEY: 'schema-deprecated-blockeditor-key',
   STANDALONE_BLOCK_TYPE: 'schema-standalone-block-type',
   FIELD_TYPE_IS_DOCUMENT: 'schema-field-type-is-document',
+  UNION_OF_INVALID: 'schema-union-of-invalid',
+  UNION_OF_NOT_UNIQUE: 'schema-union-of-not-unique',
+  TYPE_NAME_UNION_CONFLICT: 'schema-type-name-union-conflict',
 }
 
 function createValidationResult(

@@ -12,6 +12,8 @@ import object from './validation/types/object'
 import reference from './validation/types/reference'
 import rootType from './validation/types/rootType'
 import slug from './validation/types/slug'
+import union from './validation/types/union'
+import {isUnionDeclaration} from './validation/utils/union'
 
 const typeVisitors = {
   array,
@@ -24,6 +26,7 @@ const typeVisitors = {
   reference: reference,
   crossDatasetReference: crossDatasetReference,
   globalDocumentReference,
+  union,
 }
 
 const getNoopVisitor = (visitorContext: any) => (schemaDef: any) => ({
@@ -63,10 +66,11 @@ export function validateSchema(
   }: Options = {},
 ) {
   return traverseSanitySchema(schemaTypes, (schemaDef, visitorContext) => {
+    const transformedTypeVisitors = transformTypeVisitors(typeVisitors)
+    const typeName = schemaDef?.type
     const typeVisitor =
-      (schemaDef &&
-        schemaDef.type &&
-        (transformTypeVisitors(typeVisitors) as any)[schemaDef.type]) ||
+      (isUnionDeclaration(schemaDef, visitorContext) && (transformedTypeVisitors as any).union) ||
+      (typeName && typeName !== 'union' && (transformedTypeVisitors as any)[typeName]) ||
       getNoopVisitor(visitorContext)
 
     // Transform common visitors for extensibility

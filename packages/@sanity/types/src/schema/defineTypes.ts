@@ -1,8 +1,10 @@
 import {
   type ArrayOfEntry,
+  type InlineFieldIntrinsicTypeName,
   type IntrinsicDefinitions,
   type IntrinsicTypeName,
   type TypeAliasDefinition,
+  type TypeReferenceDefinition,
 } from './definition'
 import {type PreviewConfig} from './preview'
 import {type InitialValueProperty, type SchemaValidationValue} from './types'
@@ -35,7 +37,7 @@ export type IntrinsicBase = {
 
 /** @beta */
 export type IntrinsicArrayOfBase = {
-  [K in keyof IntrinsicDefinitions]: Omit<ArrayOfEntry<IntrinsicDefinitions[K]>, 'preview'>
+  [K in InlineFieldIntrinsicTypeName]: Omit<ArrayOfEntry<IntrinsicDefinitions[K]>, 'preview'>
 }
 
 /** @beta */
@@ -43,6 +45,14 @@ export type DefineSchemaBase<
   TType extends string,
   TAlias extends IntrinsicTypeName | undefined,
 > = TType extends IntrinsicTypeName ? IntrinsicBase[TType] : TypeAliasDefinition<TType, TAlias>
+
+/** @beta */
+export type DefineFieldBase<
+  TType extends string,
+  TAlias extends IntrinsicTypeName | undefined,
+> = TType extends InlineFieldIntrinsicTypeName
+  ? IntrinsicBase[TType]
+  : TypeReferenceDefinition<TType, TAlias>
 
 /** @beta */
 export type DefineSchemaType<
@@ -56,9 +66,9 @@ export type DefineSchemaType<
 export type DefineArrayMemberBase<
   TType extends string,
   TAlias extends IntrinsicTypeName | undefined,
-> = TType extends IntrinsicTypeName
+> = TType extends InlineFieldIntrinsicTypeName
   ? IntrinsicArrayOfBase[TType]
-  : ArrayOfEntry<TypeAliasDefinition<string, TAlias>>
+  : ArrayOfEntry<TypeReferenceDefinition<string, TAlias>>
 
 /** @beta */
 export type StrictDefinition = boolean | undefined

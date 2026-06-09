@@ -1,5 +1,6 @@
 import {
   type DefineArrayMemberBase,
+  type DefineFieldBase,
   type DefineSchemaBase,
   type DefineSchemaOptions,
   type MaybeAllowUnknownProps,
@@ -221,7 +222,7 @@ export function defineField<
   schemaField: {
     type: TType
     name: TName
-  } & DefineSchemaBase<TType, TAlias> &
+  } & DefineFieldBase<TType, TAlias> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
     MaybeAllowUnknownProps<TStrict> &
     FieldDefinitionBase,
