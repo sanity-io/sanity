@@ -16,7 +16,6 @@ allowBuilds:
   unrs-resolver: false
 
 catalog:
-  '@playwright/experimental-ct-react': 1.60.0
   '@playwright/test': 1.60.0
   '@sanity/client': ^7.22.1
   '@sanity/eslint-config-i18n': ^2.0.0
@@ -32,6 +31,7 @@ catalog:
   '@vanilla-extract/css': ^1.19.0
   '@vanilla-extract/vite-plugin': ^5.2.0
   '@vitejs/plugin-react': ^5.1.2
+  '@vitest/browser-playwright': ^4.1.8
   babel-plugin-react-compiler: ^1.0.0
   babel-plugin-styled-components: ^2.3.0
   esbuild-register: ^3.6.0
@@ -46,6 +46,8 @@ catalog:
   styled-components: npm:@sanity/styled-components@^6.1.24
   vite: ^7.3.1
   vitest: ^4.1.8
+  vitest-browser-react: ^2.2.0
+
 linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
