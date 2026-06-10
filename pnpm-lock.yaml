@@ -28,7 +28,7 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     '@sanity/ui':
-      specifier: ^3.1.14
+      specifier: ^3.2.0
       version: 3.2.0
     '@types/node':
       specifier: ^24.3.0
@@ -95,7 +95,7 @@ catalogs:
       version: 7.3.3
 
 overrides:
-  '@sanity/ui@3': ^3.1.14
+  '@sanity/ui@3': ^3.2.0
   vitest: ^4.1.8
 
 importers:
