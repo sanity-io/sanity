@@ -1642,7 +1642,7 @@ importers:
         specifier: ^1.4.1
         version: 1.4.1
       '@mux/mux-player-react':
-        specifier: ^3.10.2
+        specifier: ^3.13.0
         version: 3.13.0(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@portabletext/editor':
         specifier: ^6.6.5
