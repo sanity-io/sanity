@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.31.0](https://github.com/sanity-io/sanity/compare/v5.30.0...v5.31.0) (2026-06-10)
+
+### Features
+
+* **core:** adds document level presence ([#12918](https://github.com/sanity-io/sanity/issues/12918)) ([735c095](https://github.com/sanity-io/sanity/commit/735c095fa1f8e582682133408a27cac3410f0e20))
+* **core:** use schema preview selection for search ([#12925](https://github.com/sanity-io/sanity/issues/12925)) ([78f227e](https://github.com/sanity-io/sanity/commit/78f227ed67b1635057595941fa11487e9251cbf6))
+* **core:** warn when no login providers are available ([#12957](https://github.com/sanity-io/sanity/issues/12957)) ([967a62d](https://github.com/sanity-io/sanity/commit/967a62d83bda0f2407feb016584c39dd311d38a9))
+* **presentation:** add tab bar to switch panes at narrow viewports ([#12977](https://github.com/sanity-io/sanity/issues/12977)) ([434efa6](https://github.com/sanity-io/sanity/commit/434efa6583e96158f0756273d774675eaab0db15))
+* **vision:** Add shared queries support and UI improvements ([#12270](https://github.com/sanity-io/sanity/issues/12270)) ([88513f9](https://github.com/sanity-io/sanity/commit/88513f926f48a076f50a6816d8ba9b1d78d0a225))
+
+### Bug Fixes
+
+* **core:** increase AuthenticateScreen width ([#12935](https://github.com/sanity-io/sanity/issues/12935)) ([163d020](https://github.com/sanity-io/sanity/commit/163d020a12e3e4229aa51234d6b9ac38b753d73f))
+* **core:** react strict-mode improvements ([#12964](https://github.com/sanity-io/sanity/issues/12964)) ([fcd6dac](https://github.com/sanity-io/sanity/commit/fcd6dacf10057409f67f53ede95b3c24ad772250))
+* **core:** support modal width in Enhanced dialog ([#12955](https://github.com/sanity-io/sanity/issues/12955)) ([37d9ece](https://github.com/sanity-io/sanity/commit/37d9ece0b9ca504b1fa51f5d49df0c7d36ba865c))
+* **deps:** Update CodeMirror ([#13000](https://github.com/sanity-io/sanity/issues/13000)) ([c996dab](https://github.com/sanity-io/sanity/commit/c996dab66c03dc446309aa049bbc762d5ce3ad00))
+* **deps:** update dependency @sanity/cli to ^6.7.2 ([#12939](https://github.com/sanity-io/sanity/issues/12939)) ([f43f22e](https://github.com/sanity-io/sanity/commit/f43f22e3cdd8a8053b5371672d27bdcf637ceab1))
+* **deps:** update dependency @sanity/client to ^7.22.1 ([#12940](https://github.com/sanity-io/sanity/issues/12940)) ([6b1084c](https://github.com/sanity-io/sanity/commit/6b1084ca294b38e9d8cf0956161a751f525b549e))
+* **deps:** update dependency @sanity/client to ^7.22.1 ([#12989](https://github.com/sanity-io/sanity/issues/12989)) ([b830a72](https://github.com/sanity-io/sanity/commit/b830a72a5590389a5939398ae65de1bbdf4508dd))
+* **deps:** update dependency @sanity/insert-menu to v3.0.8 ([#12941](https://github.com/sanity-io/sanity/issues/12941)) ([dd02d30](https://github.com/sanity-io/sanity/commit/dd02d30b27c5154c3665e35e2019633a6e2c4104))
+* **deps:** update dependency @sanity/preview-url-secret to ^4.0.7 ([#12942](https://github.com/sanity-io/sanity/issues/12942)) ([e5fd7f4](https://github.com/sanity-io/sanity/commit/e5fd7f4ff296e93eb304b4e7feb3159a0e4bc619))
+* **deps:** update dependency groq-js to ^1.30.2 ([#12899](https://github.com/sanity-io/sanity/issues/12899)) ([5551206](https://github.com/sanity-io/sanity/commit/555120669482013a2452594c8cc6ef8e3958386a))
+* **deps:** update dependency motion to ^12.40.0 ([#13001](https://github.com/sanity-io/sanity/issues/13001)) ([88044db](https://github.com/sanity-io/sanity/commit/88044dbbda6bad81d9830294d27f7f9746e180d6))
+* **deps:** Update sentry-javascript monorepo to ^8.55.2 ([#13002](https://github.com/sanity-io/sanity/issues/13002)) ([0fe037d](https://github.com/sanity-io/sanity/commit/0fe037dd288b9081c39e29b22033d09e36b0827e))
+* **deps:** Update tanstack-virtual monorepo to ^3.14.2 ([#13005](https://github.com/sanity-io/sanity/issues/13005)) ([01f7bd1](https://github.com/sanity-io/sanity/commit/01f7bd1748b2c6da54b78ee4d8a88c39963fc727))
+* **deps:** Update xstate monorepo ([#12882](https://github.com/sanity-io/sanity/issues/12882)) ([1ec6335](https://github.com/sanity-io/sanity/commit/1ec6335305db5aa768a93b6fbfbe94508d0ae262))
+* **form:** apply default width to annotation edit popover when modal has no width ([#12975](https://github.com/sanity-io/sanity/issues/12975)) ([d13c400](https://github.com/sanity-io/sanity/commit/d13c400d2731f967cc5e0e1c2b723784e405ed98))
+* **form:** keep edit dialog open on cmd+up inside text editors ([#12972](https://github.com/sanity-io/sanity/issues/12972)) ([7752b10](https://github.com/sanity-io/sanity/commit/7752b1018e9efb114bd9001118c0cea7818c992b))
+* **presentation:** ChildLink now renders missing docs ([#12958](https://github.com/sanity-io/sanity/issues/12958)) ([8cadf11](https://github.com/sanity-io/sanity/commit/8cadf115da16954a01eeb752ef21d5701b339298))
+* **sanity:** set touch-action: none on array drag handle ([#12931](https://github.com/sanity-io/sanity/issues/12931)) ([#12932](https://github.com/sanity-io/sanity/issues/12932)) ([365bd6d](https://github.com/sanity-io/sanity/commit/365bd6ded0e57b98ad86c55089783f6ec643d73d))
+* **studio:** hide add-to-release option for archived scheduled drafts ([#12628](https://github.com/sanity-io/sanity/issues/12628)) ([1c3a0c6](https://github.com/sanity-io/sanity/commit/1c3a0c6561793ebccc2bbeb58ba31679402276a6))
+* **test:** prevent variants tests flakes ([#12934](https://github.com/sanity-io/sanity/issues/12934)) ([edcca08](https://github.com/sanity-io/sanity/commit/edcca08c0f695439d22c5d3ed5a40903c8b6e0ef))
 ## [5.30.0](https://github.com/sanity-io/sanity/compare/v5.29.0...v5.30.0) (2026-06-03)
 
 ### Features
