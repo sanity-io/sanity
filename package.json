@@ -91,6 +91,7 @@
     "test:vitest": "vitest --run",
     "test:vitest:watch": "vitest --watch",
     "tsdoc:dev": "sanity-tsdoc dev",
+    "visual-evidence": "node scripts/visual-evidence.mjs",
     "watch": "pnpm --filter @sanity/* --filter sanity watch"
   },
   "devDependencies": {

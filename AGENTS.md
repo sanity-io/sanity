@@ -244,6 +244,45 @@ pnpm test:e2e               # Run E2E tests
 pnpm test:e2e --ui          # Interactive mode
 ```
 
+### Visual evidence for PRs (before/after, no studio)
+
+For UI changes, generate a **before/after** screenshot to attach to the PR — without
+the overhead of running the full authenticated studio (`pnpm dev`). This reuses the
+existing vitest **browser-mode** harness (real headless Chromium, mock providers, no
+auth, no real data, no studio build — see `vitest.browser.config.mts` +
+`test/browser/TestWrapper.tsx`) and the already-installed Playwright. **No new deps.**
+
+1. **Write an evidence story** next to the component: `MyComponent.evidence.tsx`. It
+   renders the component in the relevant state inside `TestWrapper` (or
+   `createTestProvider` when you need i18n/router), then screenshots it:
+
+   ```tsx
+   import {page} from 'vitest/browser'
+   import {render} from 'vitest-browser-react'
+   // …render(<MyComponent … />, {wrapper})
+   const el = page.getByRole('dialog') // or getByTestId(...)
+   await expect.element(el).toBeVisible()
+   await new Promise((r) => setTimeout(r, 700)) // let animations settle
+   await el.screenshot({path: '.visual-evidence/my-component.png'}) // relative to the test dir
+   ```
+
+   `*.evidence.tsx` files are **excluded from the normal `test:browser` suite** (they have
+   no assertions); they run only via the script below (`vitest.evidence.config.mts`).
+
+2. **Generate before/after** — runs the story on your branch (after), checks out the PR's
+   changed source from the base ref and re-runs it (before), then stitches a labelled
+   side-by-side PNG:
+
+   ```bash
+   pnpm visual-evidence --test packages/sanity/src/…/MyComponent.evidence.tsx [--base origin/main] [--open]
+   # → .visual-evidence/before-after.png  (drag into the PR; gitignored)
+   ```
+
+   First run only: `pnpm --filter sanity exec playwright install chromium chromium-headless-shell`.
+   Use `--no-base` when the change isn't a clean source diff (render before/after variants
+   in one story instead). Cold run ≈ 40–70s; warm ≈ seconds. Drag the PNG into the GitHub
+   PR (it uploads on drop) or attach it to the linked Linear issue.
+
 ## Pre-commit Hook
 
 Husky runs `lint-staged` on commit, which:
