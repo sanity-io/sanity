@@ -18,13 +18,20 @@ export function PreviewReferenceValue(props: {
   const {t} = useTranslation()
   const projectId = useProjectId()
 
-  if (referenceInfo.isLoading || referenceInfo.error || !referenceInfo.result) {
+  if (referenceInfo.isLoading || referenceInfo.error) {
     return (
       <Stack space={2} padding={1}>
         <TextSkeleton style={{maxWidth: 320}} radius={1} animated={!referenceInfo.error} />
         <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated={!referenceInfo.error} />
       </Stack>
     )
+  }
+
+  if (!referenceInfo.result) {
+    // Guards the unguarded `referenceInfo.result.availability` access below. The only
+    // non-loading/non-error state with no result is the empty state (a falsy reference
+    // id), so render nothing rather than an indefinite loading skeleton.
+    return null
   }
   const showTypeLabel = type.to.length > 1
 
