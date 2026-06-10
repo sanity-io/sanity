@@ -47,6 +47,13 @@ jobs:
       - name: Update version
         run: pnpm --silent release-notes bump
 
+      - name: Sync lockfile and dependency state
+        # bump rewrites every package.json, which makes pnpm's verify-deps check
+        # consider node_modules stale. Without a full install here, the next pnpm
+        # invocation auto-installs and pollutes stdout — which below is captured
+        # as the PR description
+        run: pnpm install
+
       - name: Get version
         id: release-as
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
@@ -64,9 +71,6 @@ jobs:
 
       - name: Write CHANGELOG.md files
         run: pnpm --silent release-notes write-changelog-files --version=${{ steps.release-as.outputs.version }}
-
-      - name: Sync workspace lockfile
-        run: pnpm install --lockfile-only
 
       - name: Get version commit message
         id: version-commit
