@@ -621,7 +621,7 @@ describe('createSearchQuery', () => {
     })
 
     // https://github.com/sanity-io/sanity/issues/4775
-    it('compiles reference paths from the preview selection to dereferenced GROQ', () => {
+    it('excludes reference-traversing preview paths from score()', () => {
       const referenceSchema = Schema.compile({
         types: [
           defineType({
@@ -658,11 +658,14 @@ describe('createSearchQuery', () => {
         '',
       )
 
-      // `subtitle: 'author.name'` is boosted via its dereferenced expression.
-      expect(query).toContain('author->name match text::query($__query), 5')
-      // The raw dotted path must not leak, and the number field selected in the
-      // preview must not be boosted.
-      expect(query).not.toContain('author.name match')
+      // Content Lake's `score()` rejects dereferences with "score() function
+      // received unexpected expression", so `subtitle: 'author.name'` must not
+      // be boosted — neither as `author->name` nor as the raw dotted path.
+      expect(query).not.toContain('author->name')
+      expect(query).not.toContain('author.name')
+      // Plain preview paths are still boosted, and the number field selected
+      // in the preview must not be.
+      expect(query).toContain('title match text::query($__query), 10')
       expect(query).not.toContain('publicationYear')
     })
   })
