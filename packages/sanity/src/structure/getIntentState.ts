@@ -58,56 +58,19 @@ export function getIntentState(
   return {intent: intent, params, payload}
 }
 
-function getPaneParams(
-  intent: string,
-  {
-    template,
-    version,
-    inspect,
-    comment,
-    task,
-    scheduledDraft,
-    path,
-    rev,
-    since,
-    historyEvent,
-    historyVersion,
-    archivedRelease,
-  }: Record<string, string>,
-): {
-  template?: string
-  version?: string
-  inspect?: string
-  comment?: string
-  task?: string
-  scheduledDraft?: string
-  path?: string
-  rev?: string
-  since?: string
-  historyEvent?: string
-  historyVersion?: string
-  archivedRelease?: string
-} {
+function getPaneParams(intent: string, params: Record<string, string>): Record<string, string> {
   switch (intent) {
     case 'create':
-      return {template, version}
-    // Forward the document-pane intent params (notably `path` to deep-link/focus a
-    // field, and the history/release params used to open a release version). The
-    // cold-path resolver (`resolveIntent`) already forwards all params except id/type;
-    // this fast-path previously dropped everything outside a small hardcoded list.
-    case 'edit':
-      return {
-        inspect,
-        comment,
-        task,
-        scheduledDraft,
-        path,
-        rev,
-        since,
-        historyEvent,
-        historyVersion,
-        archivedRelease,
-      }
+      return {template: params.template, version: params.version}
+    case 'edit': {
+      // Forward every param except those that identify the document (`id`/`type`) or
+      // are create-only (`template`). This mirrors the cold-path resolver
+      // (`resolveIntent`), which rest-spreads `otherParams`. Keeping the two in sync
+      // structurally is important: a hardcoded allow-list silently drops any newly
+      // added edit-intent param (this is exactly how `path` was being lost).
+      const {id: _id, type: _type, template: _template, ...rest} = params
+      return rest
+    }
     default:
       return EMPTY_PARAMS
   }
