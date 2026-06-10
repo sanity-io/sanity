@@ -5,6 +5,14 @@ export const INCLUDE_FIELDS_QUERY = ['_id', '_rev', '_type']
 export const INCLUDE_FIELDS = [...INCLUDE_FIELDS_QUERY, '_key']
 
 /**
+ * Maximum length of textual preview values (title, subtitle, description).
+ * Preview values are display-only; without a cap, a preview sourced from a very
+ * large string field (e.g. a huge text body picked by title auto-detection) is
+ * carried around and rendered wholesale.
+ */
+export const PREVIEW_STRING_MAX_LENGTH = 1024
+
+/**
  * How long to wait after the last subscriber has unsubscribed before resetting the observable and disconnecting the listener.
  * We want to keep the listener alive for a short while after the last subscriber has unsubscribed to avoid unnecessary reconnects.
  * Reduced from 10s to 5s to limit concurrent SSE connections during navigation-heavy sessions.
