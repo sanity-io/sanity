@@ -1,0 +1,94 @@
+name: Create v5 Release PR
+
+on:
+  push:
+    branches:
+      - v5
+
+permissions:
+  contents: read
+
+jobs:
+  create-or-update-pr:
+    # this runs in v5, and we want to skip running it when release PRs are merged
+    if: >
+      !startsWith(github.event.head_commit.message, 'chore(release): publish')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: ./.github/actions/setup
+
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Configure git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Update version
+        run: pnpm --silent release-notes bump
+
+      - name: Get version
+        id: release-as
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        # capture the root changelog entry before writing CHANGELOG.md files so it
+        # can be used as the PR description
+        id: release-notes
+        run: |
+          {
+            echo "notes<<EOF"
+            pnpm --silent release-notes write-changelog-files --version=${{ steps.release-as.outputs.version }} --dryRun
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Write CHANGELOG.md files
+        run: pnpm --silent release-notes write-changelog-files --version=${{ steps.release-as.outputs.version }}
+
+      - name: Sync workspace lockfile
+        run: pnpm install --lockfile-only
+
+      - name: Get version commit message
+        id: version-commit
+        run: |
+          echo "message=chore(release): publish v${{ steps.release-as.outputs.version }}" >> $GITHUB_OUTPUT
+
+      - name: Create or update PR
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
+        id: create-pull-request
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          title: "${{steps.version-commit.outputs.message}}"
+          body: |
+            🤖 I have created a release **squib** **squob**
+
+            Merging this PR will publish v${{steps.release-as.outputs.version}} to npm under the `maintenance-v5` dist-tag 🚀
+
+            ${{steps.release-notes.outputs.notes}}
+          commit-message: "${{steps.version-commit.outputs.message}}"
+          branch: ci/release-v5
+          labels: "release:v5"
+          sign-commits: true
+          base: v5
+          team-reviewers: studio
+          draft: true
