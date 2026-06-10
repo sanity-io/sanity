@@ -12,11 +12,18 @@ describe('_getModalOption', () => {
     expect(_getModalOption({options: {}} as unknown as ObjectSchemaType)).toBeUndefined()
   })
 
-  it('returns an undefined width (not an empty array) when modal is set without a width', () => {
-    // Regression test for the narrow annotation popover: an empty array here would
-    // bypass the edit dialog width defaults and collapse the popover to auto width.
+  it('returns the default width (1) when modal is set without a width', () => {
+    // Regression test for the narrow annotation popover: an unspecified width must
+    // resolve to a real container width — previously an empty array bypassed the edit
+    // dialog width defaults and collapsed the popover to auto width.
     const result = _getModalOption(withModal({type: 'popover'}))
     expect(result?.type).toBe('popover')
+    expect(result?.width).toEqual([1])
+  })
+
+  it('returns an undefined width (not an empty array) for an explicit empty width array', () => {
+    // An empty responsive array still falls through to the edit dialog width defaults.
+    const result = _getModalOption(withModal({type: 'popover', width: []}))
     expect(result?.width).toBeUndefined()
   })
 
