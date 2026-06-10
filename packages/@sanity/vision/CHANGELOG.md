@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.31.0](https://github.com/sanity-io/sanity/compare/v5.30.0...v5.31.0) (2026-06-10)
+
+### Features
+
+* **vision:** Add shared queries support and UI improvements ([#12270](https://github.com/sanity-io/sanity/issues/12270)) ([88513f9](https://github.com/sanity-io/sanity/commit/88513f926f48a076f50a6816d8ba9b1d78d0a225))
+
+### Bug Fixes
+
+* **deps:** Update CodeMirror ([#13000](https://github.com/sanity-io/sanity/issues/13000)) ([c996dab](https://github.com/sanity-io/sanity/commit/c996dab66c03dc446309aa049bbc762d5ce3ad00))
 ## [5.26.0](https://github.com/sanity-io/sanity/compare/v5.25.1...v5.26.0) (2026-05-19)
 
 ### Reverts

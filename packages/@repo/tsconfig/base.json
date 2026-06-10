@@ -3,7 +3,7 @@
   "description": "Shared TS config that are used for builds, dts generation, etl extract, and vscode/intellisense",
   "compilerOptions": {
     // Everything needs to use the same lib settings for `paths` to work consistently throughout the monorepo
-    // Note: `es2023` is used to align with node 20/baseline 2024 - try to keep `browserslist` and this prop in sync.
+    // Note: `es2023` is used to align with node 22/baseline 2024 - try to keep `browserslist` and this prop in sync.
     "lib": ["dom", "es2023"],
 
     // Output settings

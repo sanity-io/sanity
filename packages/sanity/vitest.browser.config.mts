@@ -1,5 +1,6 @@
+import babel from '@rolldown/plugin-babel'
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
 import {playwright} from '@vitest/browser-playwright'
 import {defaultClientConditions, defineConfig} from 'vite'
 
@@ -24,9 +25,8 @@ if (selectedBrowser && browsers.length === 0) {
 export default defineConfig({
   plugins: [
     vanillaExtractPlugin(),
-    react({
-      babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]},
-    }),
+    viteReact(),
+    babel({presets: [reactCompilerPreset({target: '19'})]}),
   ],
   resolve: {
     conditions: ['monorepo', ...defaultClientConditions],
