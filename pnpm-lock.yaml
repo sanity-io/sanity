@@ -49,7 +49,7 @@ catalogs:
       specifier: ^5.2.2
       version: 5.2.2
     '@vitejs/plugin-react':
-      specifier: ^5.1.2
+      specifier: ^5.2.0
       version: 5.2.0
     '@vitest/browser-playwright':
       specifier: ^4.1.8
