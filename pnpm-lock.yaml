@@ -175,7 +175,7 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
       turbo:
-        specifier: ^2.7.5
+        specifier: ^2.9.16
         version: 2.9.16
       typedoc:
         specifier: ^0.28.16
