@@ -13,7 +13,7 @@ catalogs:
       specifier: 1.60.0
       version: 1.60.0
     '@sanity/client':
-      specifier: ^7.22.0
+      specifier: ^7.22.1
       version: 7.22.1
     '@sanity/eslint-config-i18n':
       specifier: ^2.0.0
