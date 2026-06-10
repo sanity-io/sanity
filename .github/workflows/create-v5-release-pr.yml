@@ -58,6 +58,21 @@ jobs:
         id: release-as
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
 
+      - name: Block non-v5 releases
+        # a breaking-change commit (feat!:, fix!: or a BREAKING CHANGE footer) on
+        # this branch makes the version bump compute a new major version, which
+        # must never happen on the v5 maintenance branch
+        run: |
+          echo "Computed version: $RELEASE_AS"
+          if [[ ! "$RELEASE_AS" =~ ^5\. ]]; then
+            echo "::error::Computed version $RELEASE_AS is not a v5 maintenance release. Commits with breaking changes:"
+            git log --oneline "$(git describe --tags --abbrev=0 --first-parent)..HEAD" -E \
+              --grep='^[a-z]+(\([^)]*\))?!:' --grep='BREAKING CHANGE'
+            exit 1
+          fi
+        env:
+          RELEASE_AS: ${{ steps.release-as.outputs.version }}
+
       - name: Generate release notes
         # capture the root changelog entry before writing CHANGELOG.md files so it
         # can be used as the PR description
