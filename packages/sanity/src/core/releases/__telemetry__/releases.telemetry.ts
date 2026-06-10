@@ -13,11 +13,33 @@ interface VersionInfo {
   documentOrigin: DocumentVariantType
 }
 
-export interface OriginInfo {
+/**
+ * UI surface a release was created from.
+ *
+ * Local vocabulary for the `location` convention (snake_case string union).
+ */
+type CreateReleaseLocation = 'structure' | 'release_plugin' | 'document_panel'
+
+export interface CreateReleaseInfo {
   /**
-   * determines where the release was created, either from the structure view or the release plugin
+   * UI surface the release was created from
    */
-  origin: 'structure' | 'release-plugin'
+  location: CreateReleaseLocation
+}
+
+/**
+ * Which release field was copied to the clipboard.
+ *
+ * Local vocabulary that consolidates the previously name-encoded
+ * "Release Link/ID/Title Copied" events into one generic event.
+ */
+type CopiedReleaseField = 'link' | 'id' | 'title'
+
+interface CopiedReleaseInfo {
+  /**
+   * which field of the release was copied
+   */
+  field: CopiedReleaseField
 }
 
 export interface RevertInfo {
@@ -37,7 +59,7 @@ export const AddedVersion = defineEvent<VersionInfo>({
 })
 
 /** When a release is successfully created */
-export const CreatedRelease = defineEvent<OriginInfo>({
+export const CreatedRelease = defineEvent<CreateReleaseInfo>({
   name: 'Release Created',
   version: 1,
   description: 'User created a release',
@@ -99,23 +121,9 @@ export const DuplicatedRelease = defineEvent({
   description: 'User duplicated a release',
 })
 
-/** When a release link is copied to clipboard */
-export const ReleaseLinkCopied = defineEvent({
-  name: 'Release Link Copied',
+/** When a release field (link, id or title) is copied to clipboard */
+export const CopiedRelease = defineEvent<CopiedReleaseInfo>({
+  name: 'Release Copied',
   version: 1,
-  description: 'User copied release link to clipboard',
-})
-
-/** When a release ID is copied to clipboard */
-export const ReleaseIdCopied = defineEvent({
-  name: 'Release ID Copied',
-  version: 1,
-  description: 'User copied release ID to clipboard',
-})
-
-/** When a release title is copied to clipboard */
-export const ReleaseTitleCopied = defineEvent({
-  name: 'Release Title Copied',
-  version: 1,
-  description: 'User copied release title to clipboard',
+  description: 'User copied a release field to clipboard',
 })

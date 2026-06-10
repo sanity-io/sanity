@@ -13,7 +13,7 @@ export const ViewContentReleasesMenuItem: ComponentType = () => {
   const telemetry = useTelemetry()
 
   const logNavigationTelemetry = useCallback(() => {
-    telemetry.log(NavigatedToReleasesOverview, {source: 'menu'})
+    telemetry.log(NavigatedToReleasesOverview, {location: 'menu'})
   }, [telemetry])
 
   const {href, onClick} = useIntentLink({

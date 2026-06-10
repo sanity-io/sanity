@@ -6,7 +6,7 @@ import {type FormEvent, useCallback, useState} from 'react'
 import {Button, Dialog} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
-import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
+import {type CreateReleaseInfo, CreatedRelease} from '../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
@@ -20,11 +20,11 @@ import {ReleaseForm} from './ReleaseForm'
 interface CreateReleaseDialogProps {
   onCancel: () => void
   onSubmit: (createdReleaseId: string) => void
-  origin?: OriginInfo['origin']
+  location?: CreateReleaseInfo['location']
 }
 
 export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.Element {
-  const {onCancel, onSubmit, origin} = props
+  const {onCancel, onSubmit, location} = props
   const toast = useToast()
   const {createRelease} = useReleaseOperations()
   const setPerspective = useSetPerspective()
@@ -57,7 +57,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         await createRelease(releaseValue)
         // Close the dialog after creating the release.
         onCancel()
-        telemetry.log(CreatedRelease, {origin})
+        telemetry.log(CreatedRelease, {location})
 
         // TODO: Remove this! temporary fix to give some time for the release to be created and the releases store state updated before closing the dialog.
         await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -88,7 +88,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       release,
       createRelease,
       telemetry,
-      origin,
+      location,
       setPerspective,
       onSubmit,
       onCancel,

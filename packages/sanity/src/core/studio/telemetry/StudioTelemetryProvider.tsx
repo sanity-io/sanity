@@ -204,11 +204,12 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   }, [store.logger])
 
   const workspaceFeatures = useMemo(() => collectWorkspaceFeatures(workspace), [workspace])
-  // Why: this component creates the TelemetryProvider, so `useTelemetry()` is
-  // unavailable here. Log through `store.logger` directly. The ref dedupes
-  // StrictMode's double-invoked mount effect per workspace while still
+
+  // Dedupes StrictMode's double-invoked mount effect per workspace while still
   // re-emitting when the active workspace changes.
   const observedFeaturesKeyRef = useRef<string | null>(null)
+  // This component creates the TelemetryProvider, so `useTelemetry()` is
+  // unavailable here; log through `store.logger` directly.
   useEffect(() => {
     if (!isClient) return
     const workspaceKey = `${workspace.projectId}:${workspace.name}`

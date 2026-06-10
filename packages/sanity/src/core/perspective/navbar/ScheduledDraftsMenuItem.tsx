@@ -23,7 +23,7 @@ export const ScheduledDraftsMenuItem: ComponentType = () => {
   } = useWorkspace()
 
   const logNavigationTelemetry = useCallback(() => {
-    telemetry.log(NavigatedToScheduledDrafts, {source: 'menu'})
+    telemetry.log(NavigatedToScheduledDrafts, {location: 'menu'})
   }, [telemetry])
 
   const {href, onClick} = useIntentLink({

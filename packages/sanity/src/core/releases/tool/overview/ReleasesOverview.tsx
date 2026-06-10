@@ -624,7 +624,7 @@ export function ReleasesOverview() {
         <CreateReleaseDialog
           onCancel={() => setIsCreateReleaseDialogOpen(false)}
           onSubmit={handleOnCreateRelease}
-          origin="release-plugin"
+          location="release_plugin"
         />
       )}
     </Flex>

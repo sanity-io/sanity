@@ -100,7 +100,7 @@ export function CopyToNewReleaseDialog(props: {
       await createRelease(releaseValue)
 
       handleAddVersion()
-      telemetry.log(CreatedRelease, {origin: 'document-panel'})
+      telemetry.log(CreatedRelease, {location: 'document_panel'})
     } catch (err) {
       if (isReleaseLimitError(err)) {
         onClose()

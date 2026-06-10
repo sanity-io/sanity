@@ -92,7 +92,7 @@ export function GlobalPerspectiveMenu({
         }}
       />
       {createBundleDialogOpen && (
-        <CreateReleaseDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
+        <CreateReleaseDialog onCancel={handleClose} onSubmit={handleClose} location="structure" />
       )}
     </>
   )

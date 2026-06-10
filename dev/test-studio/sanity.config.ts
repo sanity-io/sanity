@@ -300,6 +300,24 @@ const defaultWorkspace = defineConfig({
 export default defineConfig([
   {
     ...defaultWorkspace,
+    name: 'local-gradient',
+    title: 'Local Gradient',
+    subtitle: 'Local gradient content lake via api-gateway',
+    basePath: '/local-gradient',
+    projectId: '6i83sgbs',
+    dataset: 'production',
+    apiHost: 'https://api.localhost:50443',
+    auth: {loginMethod: 'token'},
+    plugins: [sharedSettings({projectId: '6i83sgbs'})],
+    // Local gateway is HTTP/1.1 (no h2 multiplexing); trim long-lived SSE listeners
+    // to stay under the browser's per-host connection cap.
+    scheduledPublishing: {enabled: false},
+    tasks: {enabled: false},
+    releases: {enabled: false},
+    beta: {variants: {enabled: false}},
+  },
+  {
+    ...defaultWorkspace,
     name: 'default-hidden',
     title: 'Default Hidden',
     subtitle: 'Statically hidden and configured as the first (default) workspace',

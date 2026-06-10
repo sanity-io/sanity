@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {LinkIcon, ShareIcon, TargetIcon, TextIcon} from '@sanity/icons'
-import {type DefinedTelemetryLog, useTelemetry} from '@sanity/telemetry/react'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, useToast} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
@@ -8,11 +8,7 @@ import {useRouter} from 'sanity/router'
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
 import {useStudioUrl} from '../../../hooks/useStudioUrl'
 import {useTranslation} from '../../../i18n'
-import {
-  ReleaseIdCopied,
-  ReleaseLinkCopied,
-  ReleaseTitleCopied,
-} from '../../__telemetry__/releases.telemetry'
+import {CopiedRelease} from '../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
@@ -33,9 +29,9 @@ export function CopyReleaseActions(props: CopyReleaseActionsProps) {
   const title = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   const copyToClipboard = useCallback(
-    async (text: string, event: DefinedTelemetryLog<void>, toastKey: string) => {
+    async (text: string, field: 'link' | 'id' | 'title', toastKey: string) => {
       await navigator.clipboard.writeText(text)
-      telemetry.log(event)
+      telemetry.log(CopiedRelease, {field})
       toast.push({
         id: toastKey,
         status: 'info',
@@ -49,15 +45,15 @@ export function CopyReleaseActions(props: CopyReleaseActionsProps) {
     const releasePath = resolvePathFromState({releaseId})
     const url = buildIntentUrl(releasePath)
 
-    await copyToClipboard(url, ReleaseLinkCopied, 'copy-release-link')
+    await copyToClipboard(url, 'link', 'copy-release-link')
   }, [buildIntentUrl, copyToClipboard, releaseId, resolvePathFromState])
 
   const handleCopyReleaseId = useCallback(async () => {
-    await copyToClipboard(releaseId, ReleaseIdCopied, 'copy-release-id')
+    await copyToClipboard(releaseId, 'id', 'copy-release-id')
   }, [copyToClipboard, releaseId])
 
   const handleCopyReleaseTitle = useCallback(async () => {
-    await copyToClipboard(title, ReleaseTitleCopied, 'copy-release-title')
+    await copyToClipboard(title, 'title', 'copy-release-title')
   }, [copyToClipboard, title])
 
   return (

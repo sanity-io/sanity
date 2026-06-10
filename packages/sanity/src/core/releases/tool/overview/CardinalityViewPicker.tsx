@@ -76,7 +76,7 @@ export const CardinalityViewPicker = ({
     (view: CardinalityView) => () => {
       const telemetryEvent =
         view === 'releases' ? NavigatedToReleasesOverview : NavigatedToScheduledDrafts
-      telemetry.log(telemetryEvent, {source: 'view-picker'})
+      telemetry.log(telemetryEvent, {location: 'view_picker'})
 
       onCardinalityViewChange(view)()
     },

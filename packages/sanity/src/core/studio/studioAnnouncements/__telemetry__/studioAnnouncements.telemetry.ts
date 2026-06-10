@@ -33,7 +33,10 @@ export const ProductAnnouncementCardDismissed = defineEvent<ProductAnnouncementS
 })
 
 export const ProductAnnouncementViewed = defineEvent<
-  ProductAnnouncementSharedProperties & {scrolled_into_view: boolean; location: AnnouncementLocation}
+  ProductAnnouncementSharedProperties & {
+    scrolled_into_view: boolean
+    location: AnnouncementLocation
+  }
 >({
   name: 'Product Announcement Viewed',
   version: 1,
