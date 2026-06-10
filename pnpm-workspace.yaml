@@ -22,7 +22,7 @@ catalog:
   '@sanity/migrate': ^6.1.1
   '@sanity/pkg-utils': ^10.5.2
   '@sanity/telemetry': ^1.1.0
-  '@sanity/ui': ^3.1.14
+  '@sanity/ui': ^3.2.0
   '@types/node': ^24.3.0
   '@types/react': ^19.2.11
   '@types/react-dom': ^19.2.3
