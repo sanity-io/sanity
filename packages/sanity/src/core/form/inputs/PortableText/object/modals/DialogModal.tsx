@@ -1,4 +1,4 @@
-import {Box} from '@sanity/ui'
+import {BoundaryElementProvider, Box} from '@sanity/ui'
 import {type ReactNode, useId, useRef, useState} from 'react'
 
 import {Dialog} from '../../../../../../ui-components'
@@ -38,7 +38,9 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
           scrollElement={contentElement}
           containerElement={containerElement}
         >
-          <Box ref={containerElement}>{children}</Box>
+          <BoundaryElementProvider element={contentElement}>
+            <Box ref={containerElement}>{children}</Box>
+          </BoundaryElementProvider>
         </VirtualizerScrollInstanceProvider>
       </PresenceOverlay>
     </Dialog>

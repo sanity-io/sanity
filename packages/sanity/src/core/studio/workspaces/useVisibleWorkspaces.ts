@@ -2,7 +2,7 @@ import {useContext} from 'react'
 import {VisibleWorkspacesContext} from 'sanity/_singletons'
 
 import {type WorkspaceSummary} from '../../config/types'
-import {type AuthState} from '../../store/_legacy/authStore/types'
+import {type AuthState} from '../../store/authStore/types'
 import {type VisibleWorkspacesContextValue} from './VisibleWorkspacesProvider'
 
 /**

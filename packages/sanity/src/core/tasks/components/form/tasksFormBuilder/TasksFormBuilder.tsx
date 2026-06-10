@@ -7,12 +7,7 @@ import {useEffect, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../../components'
-import {
-  createPatchChannel,
-  DivergencesProvider,
-  FormBuilder,
-  useDocumentForm,
-} from '../../../../form'
+import {createPatchChannel, FormBuilder, useDocumentForm} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
 import {useWorkspace} from '../../../../studio'
 import {MentionUserProvider, useMentionUser, useTasks, useTasksNavigation} from '../../../context'
@@ -183,9 +178,7 @@ export function TasksFormBuilder() {
     // This provider needs to be mounted before the TasksAddonWorkspaceProvider.
     <MentionUserProvider>
       <TasksAddonWorkspaceProvider mode={viewMode === 'edit' ? 'edit' : 'create'}>
-        <DivergencesProvider enabled={false}>
-          <TasksFormBuilderInner documentId={selectedTask} initialValue={initialValue} />
-        </DivergencesProvider>
+        <TasksFormBuilderInner documentId={selectedTask} initialValue={initialValue} />
       </TasksAddonWorkspaceProvider>
     </MentionUserProvider>
   )

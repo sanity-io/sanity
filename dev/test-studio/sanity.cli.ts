@@ -1,5 +1,6 @@
 import path from 'node:path'
 
+import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
@@ -42,6 +43,7 @@ export default defineCliConfig({
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     const nextConfig = mergeConfig(viteConfig, {
+      plugins: [vanillaExtractPlugin()],
       server: {
         warmup: {
           clientFiles: [
@@ -72,7 +74,7 @@ export default defineCliConfig({
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
       build: {
-        rollupOptions: {
+        rolldownOptions: {
           input: {
             // NOTE: this is required to build static files for the presentation preview iframe
             preview: path.resolve(__dirname, 'preview/index.html'),

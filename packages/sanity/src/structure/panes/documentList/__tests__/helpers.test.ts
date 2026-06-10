@@ -256,7 +256,6 @@ describe('validateSortOrder()', () => {
 
     const sortByDisplayTitle = {
       by: [{field: 'displayTitle', direction: 'asc' as const}],
-      extendedProjection: 'displayTitle',
     }
 
     const result = validateSortOrder(sortByDisplayTitle, workspaceBSchema.get('page'), fallback)
@@ -287,13 +286,17 @@ describe('validateSortOrder()', () => {
     expect(result).toBe(sortOrder)
   })
 
-  test('preserves extendedProjection on valid sort order', () => {
-    const sortOrder = {
+  test('tolerates legacy persisted shape with extra extendedProjection field', () => {
+    // Old persisted state may carry an `extendedProjection` string.
+    // The new code should silently ignore it — the wrapper-level
+    // `extendedProjection` is no longer part of the runtime shape,
+    // but old localStorage entries shouldn't break hydration.
+    const legacy = {
       by: [{field: 'title', direction: 'asc' as const}],
       extendedProjection: 'title',
-    }
-    const result = validateSortOrder(sortOrder, mockSchema.get('category'), fallback)
-    expect(result).toBe(sortOrder)
+    } as unknown as Parameters<typeof validateSortOrder>[0]
+    const result = validateSortOrder(legacy, mockSchema.get('category'), fallback)
+    expect(result).toBe(legacy)
   })
 })
 

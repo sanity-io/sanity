@@ -14,6 +14,8 @@ import {AppDialog} from './Dialog'
 import {Iframe} from './Iframe'
 
 export interface OpenInSourceDialogProps {
+  /** Opaque key for Media Library iframe picker state partitioning; usually precomputed in the asset source. */
+  pickerPersistenceKey?: string
   asset: Asset
   dialogHeaderTitle: ReactNode
   selectNewAssetButtonLabel: string
@@ -25,7 +27,14 @@ export interface OpenInSourceDialogProps {
  * Dialog that opens an asset in the Media Library for viewing/editing
  */
 export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
-  const {asset, dialogHeaderTitle, onClose, onSelectNewAsset, selectNewAssetButtonLabel} = props
+  const {
+    asset,
+    dialogHeaderTitle,
+    onClose,
+    onSelectNewAsset,
+    selectNewAssetButtonLabel,
+    pickerPersistenceKey,
+  } = props
   const theme = useTheme()
   const {t} = useTranslation()
   const {dark} = theme.sanity.color
@@ -43,8 +52,9 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
       disableNavigation: true,
       selectAssetTypes: [],
       selectionType: 'single',
+      pickerPersistenceKey,
     }),
-    [dark, authType],
+    [dark, authType, pickerPersistenceKey],
   )
 
   const iframeUrl = usePluginFrameUrl(`/assets/${sourceAssetId}`, params)

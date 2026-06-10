@@ -177,6 +177,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     observeAsset,
     readOnly,
     reference,
+    schemaType,
     setHotspotButtonElement,
     menuButtonRef,
     setMenuOpen,
@@ -241,10 +242,13 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     }
   }, [asset, onOpenInSource, openInSourceResult, setMenuOpen])
 
+  const disableNew = schemaType.options?.disableNew === true
+
   const uploadMenuItem = useUploadMenuItem({
     accept,
     assetSourcesWithUpload,
     directUploads,
+    disableNew,
     readOnly,
     onSelectFiles: handleSelectFilesFromAssetSource,
     onOpenSourceForUpload: handleOpenSourceForUpload,

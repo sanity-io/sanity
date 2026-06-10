@@ -63,11 +63,8 @@ Author | Message | Commit
 ------------ | ------------- | -------------
 ${changelogDocument.changelog
   .map((entry) => {
-    return [
-      mention(entry.author),
-      `${stripPr(entry.header, entry.pr)} (#${entry.pr})`,
-      entry.hash,
-    ].join(' | ')
+    const message = entry.pr ? `${stripPr(entry.header, entry.pr)} (#${entry.pr})` : entry.header
+    return [mention(entry.author), message, entry.hash].join(' | ')
   })
   .join('\n')}
   `
@@ -101,10 +98,9 @@ ${changelogDocument.changelog
 }
 
 function mention(author: StudioChangelogEntry['author']) {
-  if (author?.type !== 'bot') {
-    return `@${author?.username}`
-  }
-  return author.username
+  if (!author?.username) return '—'
+  if (author.type === 'bot') return author.username
+  return `@${author.username}`
 }
 
 function ghReleaseTemplate(vars: {

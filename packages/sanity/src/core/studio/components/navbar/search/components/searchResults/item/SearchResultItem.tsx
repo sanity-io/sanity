@@ -60,10 +60,12 @@ export function SearchResultItem({
 
   useEffect(() => {
     if (state.canDisableAction) {
-      grantsStore
+      const subscription = grantsStore
         .checkDocumentPermission('create', {_id: documentId, _type: documentType})
         .subscribe(setCreatePermission)
+      return () => subscription.unsubscribe()
     }
+    return undefined
   }, [documentId, documentType, grantsStore, state.canDisableAction])
 
   // the current search result exists in the release provided by the search provider

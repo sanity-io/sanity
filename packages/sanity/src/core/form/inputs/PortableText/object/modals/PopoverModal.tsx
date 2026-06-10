@@ -1,8 +1,22 @@
 /* eslint-disable react/no-unused-prop-types */
 
 import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {type PropsWithChildren, type ReactNode, useCallback, useRef, useState} from 'react'
+import {
+  BoundaryElementProvider,
+  Box,
+  Flex,
+  Text,
+  useClickOutsideEvent,
+  useGlobalKeyDown,
+} from '@sanity/ui'
+import {
+  type PropsWithChildren,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
 
@@ -102,7 +116,16 @@ function Content(props: PopoverEditDialogProps) {
 
   // This seems to work with regular refs as well, but it might be safer to use state.
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
+  const [boundaryElement, setBoundaryElement] = useState<HTMLElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!contentElement) {
+      setBoundaryElement(null)
+      return
+    }
+    setBoundaryElement(contentElement.closest<HTMLElement>('[data-ui="Popover__wrapper"]'))
+  }, [contentElement])
 
   const handleFocusLockWhiteList = useCallback((element: HTMLElement) => {
     // This is needed in order for focusLock not to trap focus in the
@@ -127,33 +150,35 @@ function Content(props: PopoverEditDialogProps) {
       scrollElement={contentElement}
       containerElement={containerElement}
     >
-      <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
-        <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
-          <ContentHeaderBox flex="none" padding={1}>
-            <Flex align="center">
-              <Box flex={1} padding={2}>
-                <Text weight="medium">{title}</Text>
-              </Box>
+      <BoundaryElementProvider element={boundaryElement}>
+        <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
+          <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
+            <ContentHeaderBox flex="none" padding={1}>
+              <Flex align="center">
+                <Box flex={1} padding={2}>
+                  <Text weight="medium">{title}</Text>
+                </Box>
 
-              <Button
-                autoFocus
-                icon={CloseIcon}
-                mode="bleed"
-                onClick={handleClose}
-                tooltipProps={{content: 'Close'}}
-                data-testid="close-popover-edit-dialog-button"
-              />
-            </Flex>
-          </ContentHeaderBox>
-          <ContentScrollerBox flex={1}>
-            <PresenceOverlay margins={[0, 0, 1, 0]}>
-              <Box padding={3} ref={setContentElement}>
-                {props.children}
-              </Box>
-            </PresenceOverlay>
-          </ContentScrollerBox>
-        </Flex>
-      </FocusLock>
+                <Button
+                  autoFocus
+                  icon={CloseIcon}
+                  mode="bleed"
+                  onClick={handleClose}
+                  tooltipProps={{content: 'Close'}}
+                  data-testid="close-popover-edit-dialog-button"
+                />
+              </Flex>
+            </ContentHeaderBox>
+            <ContentScrollerBox flex={1}>
+              <PresenceOverlay margins={[0, 0, 1, 0]}>
+                <Box padding={3} ref={setContentElement}>
+                  {props.children}
+                </Box>
+              </PresenceOverlay>
+            </ContentScrollerBox>
+          </Flex>
+        </FocusLock>
+      </BoundaryElementProvider>
     </VirtualizerScrollInstanceProvider>
   )
 }

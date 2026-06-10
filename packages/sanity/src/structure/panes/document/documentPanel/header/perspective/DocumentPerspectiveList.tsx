@@ -1,7 +1,6 @@
 import {Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo} from 'react'
 import {
-  formatRelativeLocalePublishDate,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
@@ -23,6 +22,7 @@ import {
   type UseDateTimeFormatOptions,
   useDocumentVersions,
   useFilteredReleases,
+  useFormatRelativeLocalePublishDate,
   useGetDefaultPerspective,
   useAgentVersionDisplay,
   usePerspective,
@@ -42,6 +42,7 @@ import {NonReleaseVersionsSelect} from '../NonReleaseVersionsSelect'
 
 const TooltipContent = ({release}: {release: ReleaseDocument}) => {
   const {t} = useTranslation()
+  const formatPublishDate = useFormatRelativeLocalePublishDate()
 
   if (release.state === 'archived') {
     return <Text size={1}>{t('release.chip.tooltip.archived')}</Text>
@@ -60,7 +61,7 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
               t={t}
               i18nKey="release.chip.tooltip.intended-for-date"
               values={{
-                date: formatRelativeLocalePublishDate(release),
+                date: formatPublishDate(release),
               }}
             />
           ) : (
@@ -68,7 +69,7 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
               t={t}
               i18nKey="release.chip.tooltip.scheduled-for-date"
               values={{
-                date: formatRelativeLocalePublishDate(release),
+                date: formatPublishDate(release),
               }}
             />
           )}

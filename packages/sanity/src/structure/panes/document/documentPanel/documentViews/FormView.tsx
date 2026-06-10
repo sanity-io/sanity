@@ -66,6 +66,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     inspectOpen,
     compareValue,
     hasUpstreamVersion,
+    focusPath,
   } = useDocumentPane()
   const {selectedReleaseId, selectedPerspective} = usePerspective()
   const documentStore = useDocumentStore()
@@ -135,17 +136,25 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   }, [hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
+  const [hasFocusedAnyPath, setHasFocusedAnyPath] = useState(false)
 
-  // We only want to run it on first mount
-  const [focusedFirstDescendant, setFocusedFirstDescendant] = useState(false)
   useEffect(() => {
-    // Only focus on the first descendant if there is not already a focus path
-    // This is to avoid stealing focus from intent links
-    if (!focusedFirstDescendant && ready && !formState?.focusPath.length && formRef) {
-      setFocusedFirstDescendant(true)
+    // Only auto-focus if no path has been focused yet.
+    //
+    // This is to avoid stealing focus from intent links, and to prevent
+    // auto-focusing the first descendant after blurring a path that was focused
+    // for any reason (e.g. by this auto-focus mechanism itself, or by
+    // navigating to a deep-link).
+    if (!hasFocusedAnyPath && ready && !formState?.focusPath.length && formRef) {
       focusFirstDescendant(formRef)
     }
-  }, [focusedFirstDescendant, formRef, formState?.focusPath.length, ready])
+  }, [hasFocusedAnyPath, formRef, formState?.focusPath.length, ready])
+
+  useEffect(() => {
+    if (focusPath.length !== 0) {
+      setHasFocusedAnyPath(true)
+    }
+  }, [focusPath])
 
   const setRef = useCallback(
     (node: HTMLDivElement | null) => {

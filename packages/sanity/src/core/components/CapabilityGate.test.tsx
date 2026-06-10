@@ -3,10 +3,10 @@ import {of} from 'rxjs'
 import {beforeEach, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../test/testUtils/TestProvider'
-import {useRenderingContextStore} from '../store/_legacy/datastores'
+import {useRenderingContextStore} from '../store/datastores'
 import {CapabilityGate} from './CapabilityGate'
 
-vi.mock('../store/_legacy/datastores.ts')
+vi.mock('../store/datastores')
 
 beforeEach(() => {
   vi.clearAllMocks()

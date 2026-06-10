@@ -75,6 +75,7 @@ function ImageInputAssetComponent(props: {
         inputProps.elementProps.onFocus(event)
       }
     },
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
     [inputProps, elementProps.ref?.current],
   )
 

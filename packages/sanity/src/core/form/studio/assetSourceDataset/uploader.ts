@@ -104,6 +104,23 @@ class DatasetUploader implements AssetSourceUploader {
             },
           }),
         )
+      } else {
+        // Surface a clear error when no uploader matches (e.g. image file with no
+        // extension → empty `file.type` → no match against `image/*`). See #12870.
+        // Deferred to a microtask so subscribers attached around `upload()` (via
+        // React state in useAssetSourceUploader) observe the events.
+        const err = new Error(
+          `Unsupported file type: could not determine an uploader for "${file.name || 'file'}"${
+            file.type ? ` (type "${file.type}")` : ''
+          }`,
+        )
+        queueMicrotask(() => {
+          this.updateFile(uploadFile.id, {status: 'error', error: err})
+          this.emit({
+            type: 'error',
+            files: this.files.filter((erroredFile) => erroredFile.status === 'error'),
+          })
+        })
       }
     }
     return this.files

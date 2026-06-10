@@ -33,6 +33,8 @@ import {Iframe} from './Iframe'
 import {filterMediaValidationMarkers} from './validation'
 
 export interface SelectAssetsDialogProps {
+  /** Opaque key for Media Library iframe picker state partitioning; usually precomputed in the asset source. */
+  pickerPersistenceKey?: string
   dialogHeaderTitle?: ReactNode
   open: boolean
   onClose: () => void
@@ -57,6 +59,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const authType = useAuthType()
 
   const {
+    pickerPersistenceKey,
     dialogHeaderTitle,
     onClose,
     open,
@@ -126,8 +129,9 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       scheme: dark ? 'dark' : 'light',
       selectAssetTypes: selectAssetType ? [selectAssetType] : [],
       selectionType,
+      pickerPersistenceKey,
     }),
-    [selectionType, selectAssetType, dark, authType, pluginFilters],
+    [selectionType, selectAssetType, dark, authType, pluginFilters, pickerPersistenceKey],
   )
   const iframeUrl = usePluginFrameUrl('/assets', params)
 

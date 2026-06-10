@@ -36,7 +36,6 @@ export function useDocumentsOnPage(
   const urlRef = useRef<string | undefined>('')
 
   const setDocumentsOnPage = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-shadow
     (key: string, perspective: PresentationPerspective, sourceDocuments: DocumentOnPage[] = []) => {
       const documents = sourceDocuments.filter((sourceDocument) => {
         if ('_projectId' in sourceDocument && sourceDocument._projectId) {
