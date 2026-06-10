@@ -4,18 +4,15 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
-  isCardinalityOneRelease,
   isDraftId,
   isGoingToUnpublish,
   isPublishedId,
   isPublishedPerspective,
-  isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isVersionId,
   type ReleaseDocument,
   ReleaseTitle,
   type SanityDocumentLike,
-  type TargetPerspective,
   Translate,
   useActiveReleases,
   useDateTimeFormat,
@@ -23,7 +20,6 @@ import {
   useDocumentVersions,
   useFilteredReleases,
   useFormatRelativeLocalePublishDate,
-  useGetDefaultPerspective,
   useAgentVersionDisplay,
   usePerspective,
   useSchema,
@@ -36,6 +32,7 @@ import {
 
 import {isLiveEditEnabled} from '../../../../../components/paneItem/helpers'
 import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
+import {usePerspectiveNavigator} from '../../../../../hooks/usePerspectiveNavigator'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'
 import {NonReleaseVersionsSelect} from '../NonReleaseVersionsSelect'
@@ -94,14 +91,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
-  const {params, setParams} = usePaneRouter()
+  const {params} = usePaneRouter()
   const dateTimeFormat = useDateTimeFormat(DATE_TIME_FORMAT)
   const {loading} = useActiveReleases()
   const schema = useSchema()
   const {editState, displayed} = useDocumentPane()
   const {documentType, documentId} = useDocumentPaneInfo()
   const isCreatingDocument = displayed && !displayed._createdAt
-  const defaultPerspective = useGetDefaultPerspective()
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
     displayed,
@@ -130,42 +126,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     }
   }, [params, setPerspective, onSetScheduledDraftPerspective])
 
-  const handlePerspectiveChange = useCallback(
-    (perspective: TargetPerspective) => {
-      if (isReleaseDocument(perspective) && isCardinalityOneRelease(perspective)) {
-        onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(perspective._id))
-        return
-      }
-
-      if (perspective === 'published' && params?.historyVersion) {
-        setParams({
-          ...params,
-          rev: params?.historyEvent || undefined,
-          since: undefined,
-          historyVersion: undefined,
-        })
-      }
-      const newPerspective = isReleaseDocument(perspective)
-        ? getReleaseIdFromReleaseDocumentId(perspective._id)
-        : perspective === defaultPerspective
-          ? ''
-          : perspective
-
-      if (params?.scheduledDraft) {
-        setParams(
-          {...params, scheduledDraft: undefined},
-          // If we have a scheduled draft perspective, then we need to remove that one and set the new perspective.
-          // We cannot do it in two passes, for example first set the paneParam and the use the `setPerspective`
-          // because we will have a race condition in where the last state wins, but the last state won't have the previous change.
-          // So we change the params and perspective in the same call.
-          {perspective: newPerspective},
-        )
-      } else {
-        setPerspective(newPerspective)
-      }
-    },
-    [setPerspective, setParams, params, defaultPerspective, onSetScheduledDraftPerspective],
-  )
+  const {navigate: handlePerspectiveChange} = usePerspectiveNavigator()
 
   const schemaType = schema.get(documentType)
   const isLiveEdit = schemaType ? isLiveEditEnabled(schemaType) : false
