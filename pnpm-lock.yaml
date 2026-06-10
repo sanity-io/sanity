@@ -1696,7 +1696,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/cli':
-        specifier: ^7.0.1
+        specifier: ^7.1.0
         version: 7.1.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.0)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.0)(jiti@2.7.0)(lightningcss@1.32.0)(oxfmt@0.44.0)(rolldown@1.1.0)(terser@5.48.0)(typescript@5.9.3)(xstate@5.32.0)
       '@sanity/client':
         specifier: 'catalog:'
