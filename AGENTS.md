@@ -274,14 +274,18 @@ auth, no real data, no studio build — see `vitest.browser.config.mts` +
    side-by-side PNG:
 
    ```bash
-   pnpm visual-evidence --test packages/sanity/src/…/MyComponent.evidence.tsx [--base origin/main] [--open]
-   # → .visual-evidence/before-after.png  (drag into the PR; gitignored)
+   pnpm visual-evidence --test packages/sanity/src/…/MyComponent.evidence.tsx [--base origin/main] [--pr <number>] [--open]
+   # → .visual-evidence/before-after.png  (gitignored)
    ```
 
    First run only: `pnpm --filter sanity exec playwright install chromium chromium-headless-shell`.
-   Use `--no-base` when the change isn't a clean source diff (render before/after variants
-   in one story instead). Cold run ≈ 40–70s; warm ≈ seconds. Drag the PNG into the GitHub
-   PR (it uploads on drop) or attach it to the linked Linear issue.
+   With `--pr <number>` it hosts the PNG on a dedicated `visual-evidence` assets branch (created
+   off main if missing) and posts it as a PR comment via its raw URL — GitHub has no
+   image-upload API for comments, so this is the automated path (the assets branch keeps
+   screenshots out of code branches/CI and is safe to delete). Without `--pr`, drag the PNG
+   into the PR (GitHub uploads it on drop). Use `--no-base` when the change isn't a clean
+   source diff (render before/after variants in one story instead). Cold run ≈ 40–70s;
+   warm ≈ seconds. The PR branch must have the browser-test deps (be reasonably current with main).
 
 ## Pre-commit Hook
 

@@ -34,21 +34,82 @@ function git(args, opts = {}) {
 }
 
 function parseArgs(argv) {
-  const args = {base: 'origin/main', test: null, noBase: false, open: false}
+  const args = {base: 'origin/main', test: null, noBase: false, open: false, pr: null}
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]
     if (a === '--test') args.test = argv[++i]
     else if (a === '--base') args.base = argv[++i]
     else if (a === '--no-base') args.noBase = true
     else if (a === '--open') args.open = true
+    else if (a === '--pr') args.pr = argv[++i]
   }
   if (!args.test) {
     console.error(
-      'Usage: node scripts/visual-evidence.mjs --test <path.evidence.tsx> [--base ref] [--no-base] [--open]',
+      'Usage: node scripts/visual-evidence.mjs --test <path.evidence.tsx> [--base ref] [--no-base] [--open] [--pr <number>]',
     )
     process.exit(1)
   }
   return args
+}
+
+const ASSETS_BRANCH = 'visual-evidence'
+
+// Hosts the PNG on a dedicated assets branch (created off main if missing) and posts
+// it as a PR comment. GitHub has no image-upload API for comments, so we commit the
+// file via the Contents API and embed its raw URL (which renders inline). The assets
+// branch keeps screenshots out of code branches/CI and is safe to delete anytime.
+function attachToPr(pr, pngPath) {
+  try {
+    sh('gh', ['api', `repos/{owner}/{repo}/git/ref/heads/${ASSETS_BRANCH}`])
+  } catch {
+    const mainSha = git(['rev-parse', 'origin/main'])
+    sh('gh', [
+      'api',
+      '--method',
+      'POST',
+      'repos/{owner}/{repo}/git/refs',
+      '-f',
+      `ref=refs/heads/${ASSETS_BRANCH}`,
+      '-f',
+      `sha=${mainSha}`,
+    ])
+  }
+  const remotePath = `pr-${pr}/before-after.png`
+  let existingSha
+  try {
+    existingSha = sh('gh', [
+      'api',
+      `repos/{owner}/{repo}/contents/${remotePath}?ref=${ASSETS_BRANCH}`,
+      '--jq',
+      '.sha',
+    ]).trim()
+  } catch {
+    /* file doesn't exist yet */
+  }
+  const body = JSON.stringify({
+    message: `evidence: PR #${pr} before/after`,
+    branch: ASSETS_BRANCH,
+    content: readFileSync(pngPath).toString('base64'),
+    ...(existingSha ? {sha: existingSha} : {}),
+  })
+  const res = execFileSync(
+    'gh',
+    ['api', '--method', 'PUT', `repos/{owner}/{repo}/contents/${remotePath}`, '--input', '-'],
+    {encoding: 'utf8', input: body},
+  )
+  const url = JSON.parse(res).content.download_url
+  execFileSync(
+    'gh',
+    [
+      'pr',
+      'comment',
+      String(pr),
+      '--body',
+      `### Before / after\n\n![before-after](${url})\n\n<sub>Generated with \`pnpm visual-evidence\` — headless render, no studio/auth/data.</sub>`,
+    ],
+    {stdio: 'inherit'},
+  )
+  return url
 }
 
 const repoRoot = git(['rev-parse', '--show-toplevel'])
@@ -167,8 +228,14 @@ const main = async () => {
   if (existsSync(evidenceDir)) rmSync(evidenceDir, {recursive: true, force: true})
 
   console.log(`\n✅ ${path.relative(repoRoot, outPng)}`)
-  console.log('  Drag this PNG into the PR description/comment (GitHub uploads it on drop),')
-  console.log('  or attach it to the linked Linear issue.')
+  if (args.pr) {
+    console.log(`• Posting to PR #${args.pr}…`)
+    const url = attachToPr(args.pr, outPng)
+    console.log(`  posted: ${url}`)
+  } else {
+    console.log('  Re-run with --pr <number> to post it as a PR comment,')
+    console.log('  or drag the PNG into the PR (GitHub uploads it on drop).')
+  }
   if (args.open) {
     try {
       execFileSync('open', [outPng])
