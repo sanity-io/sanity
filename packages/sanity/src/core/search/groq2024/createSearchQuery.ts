@@ -103,6 +103,12 @@ export function createSearchQuery(
       const path = entries[0].path.includes('[]')
         ? entries[0].path
         : compileFieldPath(entries[0].schemaType, entries[0].path)
+      // Content Lake's `score()` only accepts simple attribute paths in match
+      // expressions; a dereference fails the entire query with "score()
+      // function received unexpected expression".
+      if (path.includes('->')) {
+        return []
+      }
       return `boost(_type in ${JSON.stringify(entries.map((entry) => entry.typeName))} && ${path} match text::query($__query), ${entries[0].weight})`
     })
     .concat(baseMatch)
