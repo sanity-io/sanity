@@ -19,7 +19,7 @@ catalog:
   '@playwright/test': 1.60.0
   '@sanity/client': ^7.22.1
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/migrate': ^6.1.1
+  '@sanity/migrate': ^6.1.2
   '@sanity/pkg-utils': ^10.5.2
   '@sanity/telemetry': ^1.1.0
   '@sanity/ui': ^3.2.0
