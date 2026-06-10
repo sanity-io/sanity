@@ -79,7 +79,9 @@ describe('unconsumed fetch body prevents connection reuse', () => {
   it('opens one TCP connection per request when body is not consumed', () => {
     // Each sequential fetch() must open a new TCP connection because the
     // previous connection is still occupied by its unfinished response body.
-    expect(unconsumed.connections()).toBe(REQUEST_COUNT)
+    // Newer undici versions (Node 26) may open additional connections beyond
+    // one per request, so assert the lower bound rather than an exact count.
+    expect(unconsumed.connections()).toBeGreaterThanOrEqual(REQUEST_COUNT)
   })
 
   it('reuses connections when body is fully consumed', () => {
