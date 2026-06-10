@@ -158,7 +158,7 @@
   },
   "dependencies": {
     "@algorithm.ts/lcs": "^4.0.5",
-    "@date-fns/tz": "^1.4.1",
+    "@date-fns/tz": "^1.5.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^6.0.1",
     "@dnd-kit/sortable": "^7.0.2",
