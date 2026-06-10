@@ -244,6 +244,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
     __unstable_floatingBoundary: floatingBoundary,
     __unstable_referenceBoundary: referenceBoundary,
     __unstable_referenceElement: referenceElement,
+    changed,
     children,
     focused,
     markers,
@@ -296,6 +297,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
       >
         <PreviewSpan>
           {renderPreview({
+            changed,
             layout: 'inline',
             schemaType,
             skipVisibilityCheck: true,

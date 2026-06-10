@@ -214,6 +214,10 @@ export interface BlockAnnotationProps {
    */
   __unstable_textElementFocus?: boolean
   /**
+   * Whether the annotation has changes compared to the published version.
+   */
+  changed?: boolean
+  /**
    * The input form for the annotation object.
    * @remarks If you wrap this in something, you must make sure to put `contentEditable={false}` on the root container.
    * Otherwise the editor will think content is part of the editable text and will error.
