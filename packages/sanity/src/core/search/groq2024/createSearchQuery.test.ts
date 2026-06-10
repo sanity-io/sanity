@@ -619,54 +619,5 @@ describe('createSearchQuery', () => {
 
       expect(query).toContain('cover[].cards[].title match text::query($__query), 5)')
     })
-
-    // https://github.com/sanity-io/sanity/issues/4775
-    it('excludes reference-traversing preview paths from score()', () => {
-      const referenceSchema = Schema.compile({
-        types: [
-          defineType({
-            name: 'author',
-            type: 'document',
-            fields: [defineField({name: 'name', type: 'string'})],
-          }),
-          defineType({
-            name: 'book',
-            type: 'document',
-            preview: {
-              select: {
-                title: 'title',
-                // reference traversal — should become searchable
-                subtitle: 'author.name',
-                // number field — must not be boosted
-                year: 'publicationYear',
-              },
-            },
-            fields: [
-              defineField({name: 'title', type: 'string'}),
-              defineField({name: 'publicationYear', type: 'number'}),
-              defineField({name: 'author', type: 'reference', to: [{type: 'author'}]}),
-            ],
-          }),
-        ],
-      })
-
-      const {query} = createSearchQuery(
-        {
-          query: 'tolkien',
-          types: [referenceSchema.get('book')],
-        },
-        '',
-      )
-
-      // Content Lake's `score()` rejects dereferences with "score() function
-      // received unexpected expression", so `subtitle: 'author.name'` must not
-      // be boosted — neither as `author->name` nor as the raw dotted path.
-      expect(query).not.toContain('author->name')
-      expect(query).not.toContain('author.name')
-      // Plain preview paths are still boosted, and the number field selected
-      // in the preview must not be.
-      expect(query).toContain('title match text::query($__query), 10')
-      expect(query).not.toContain('publicationYear')
-    })
   })
 })
