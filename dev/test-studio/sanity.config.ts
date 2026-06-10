@@ -40,6 +40,7 @@ import {useTestVersionAction} from './documentActions/actions/TestVersionAction'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
+import {createLocalContentLakeAuthStore} from './localContentLakeAuthStore'
 import {testStudioLocaleBundles} from './locales'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test'
 import {formBuilderReproTool} from './plugins/form-builder-repro'
@@ -672,5 +673,31 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+  },
+  {
+    ...defaultWorkspace,
+    name: 'local-content-lake',
+    title: 'Local Content Lake',
+    basePath: '/local-content-lake',
+    projectId: 'localcontentlake',
+    dataset: 'production',
+    apiHost: 'https://api.localhost:50443',
+    // When start-local.sh has provided the minted dev token (via dev/test-studio/.env.local),
+    // authenticate through a self-contained store so the studio opens with no browser login steps.
+    // Without the token, fall back to normal token login.
+    auth: process.env.SANITY_STUDIO_LOCAL_TOKEN
+      ? createLocalContentLakeAuthStore({
+          token: process.env.SANITY_STUDIO_LOCAL_TOKEN,
+          projectId: 'localcontentlake',
+          dataset: 'production',
+          apiHost: 'https://api.localhost:50443',
+        })
+      : {loginMethod: 'token'},
+    plugins: [sharedSettings({projectId: 'localcontentlake'})],
+    // Local gateway HTTP/1.1 fallback: trim long-lived SSE listeners under the per-host cap.
+    scheduledPublishing: {enabled: false},
+    tasks: {enabled: false},
+    releases: {enabled: false},
+    beta: {variants: {enabled: false}},
   },
 ]) as WorkspaceOptions[]
