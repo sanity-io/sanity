@@ -9,8 +9,23 @@ test('clicking inspect mode sets value in storage', async ({
   page,
   createDraftDocument,
   browserName,
+  sanityClient,
 }) => {
   test.slow(browserName === 'firefox')
+
+  // Clear any existing inspect-view-mode key BEFORE the studio loads. The key
+  // is stored per user (shared across CI runs) — if a previous run left it as
+  // 'raw', the Raw JSON tab is already active, clicking it changes nothing, no
+  // PUT is issued and the test times out. Ignore error if the key doesn't exist.
+  try {
+    await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
+      uri: `/users/me/keyvalue/${INSPECT_KEY}`,
+      method: 'DELETE',
+    })
+  } catch {
+    // Key doesn't exist, which is fine
+  }
+
   // Create document and wait for it to be fully loaded
   await createDraftDocument('/content/book')
   await page.waitForLoadState('load', WAIT_OPTIONS)

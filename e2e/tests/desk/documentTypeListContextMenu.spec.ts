@@ -15,20 +15,21 @@ test('clicking default sort order and direction sets value in storage', async ({
   // For now, only test in Chromium due to flakiness in Firefox and WebKit
   test.skip(browserName !== 'chromium')
 
-  await page.goto('/content/author')
-
-  const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-    uri: `/users/me/keyvalue/${SORT_KEY}`,
-  })
-
-  // If the value is not null there are existingKeys, delete them in that case
-  if (existingKeys[0].value !== null) {
-    // Clear the sort order
+  // Clear any existing sort order key BEFORE the studio loads. The key is
+  // stored per user (shared across CI runs), and the studio only PUTs when the
+  // selected sort order actually changes — leftover state from another run
+  // would make the click below a no-op and time out waiting for the PUT.
+  // Ignore error if the key doesn't exist (the API responds 404).
+  try {
     await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
       uri: `/users/me/keyvalue/${SORT_KEY}`,
       method: 'DELETE',
     })
+  } catch {
+    // Key doesn't exist, which is fine
   }
+
+  await page.goto('/content/author')
 
   const keyValueRequest = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
@@ -67,9 +68,9 @@ test('clicking custom sort order and direction sets value in storage', async ({
   // For now, only test in Chromium due to flakiness in Firefox and WebKit
   test.skip(browserName !== 'chromium')
 
-  await page.goto('/content/book')
-
-  // Clear any existing sort order key (ignore error if key doesn't exist)
+  // Clear any existing sort order key BEFORE the studio loads, so the click
+  // below always changes the selected sort order and issues a PUT (ignore
+  // error if key doesn't exist)
   try {
     await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
       uri: `/users/me/keyvalue/${CUSTOM_SORT_KEY}`,
@@ -78,6 +79,8 @@ test('clicking custom sort order and direction sets value in storage', async ({
   } catch {
     // Key doesn't exist, which is fine
   }
+
+  await page.goto('/content/book')
 
   const keyValueRequest = page.waitForResponse(
     async (response) => {
@@ -114,9 +117,9 @@ test('clicking list view sets value in storage', async ({page, sanityClient, bro
   // For now, only test in Chromium due to flakiness in Firefox and WebKit
   test.skip(browserName !== 'chromium')
 
-  await page.goto('/content/author')
-
-  // Clear any existing layout key (ignore error if key doesn't exist)
+  // Clear any existing layout key BEFORE the studio loads, so the clicks
+  // below always change the layout and issue a PUT (ignore error if key
+  // doesn't exist)
   try {
     await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
       uri: `/users/me/keyvalue/${LAYOUT_KEY}`,
@@ -125,6 +128,8 @@ test('clicking list view sets value in storage', async ({page, sanityClient, bro
   } catch {
     // Key doesn't exist, which is fine
   }
+
+  await page.goto('/content/author')
 
   const contextMenuButton = page.getByTestId('pane').getByTestId('pane-context-menu-button')
   await expect(contextMenuButton).toBeVisible()
