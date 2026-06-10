@@ -15,7 +15,7 @@ export const defaultConfig: UserConfig = {
     'process.env': {},
   },
   plugins: [
-    ...viteReact(),
+    viteReact(),
     babel({presets: [reactCompilerPreset({target: '19'})]}),
     vanillaExtractPlugin(),
     stripCssImportsPlugin(),
