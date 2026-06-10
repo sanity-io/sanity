@@ -304,7 +304,7 @@
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
     "swr": "2.2.5",
-    "tsx": "^4.21.0",
+    "tsx": "^4.22.4",
     "vite": "catalog:",
     "vitest": "catalog:",
     "vitest-browser-react": "catalog:",
