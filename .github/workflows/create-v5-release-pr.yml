@@ -58,6 +58,10 @@ jobs:
         id: release-as
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
 
+      - name: Get last release tag
+        id: last-tag
+        run: echo "tag=$(git describe --tags --abbrev=0 --first-parent)" >> $GITHUB_OUTPUT
+
       - name: Block non-v5 releases
         # a breaking-change commit (feat!:, fix!: or a BREAKING CHANGE footer) on
         # this branch makes the version bump compute a new major version, which
@@ -66,23 +70,44 @@ jobs:
           echo "Computed version: $RELEASE_AS"
           if [[ ! "$RELEASE_AS" =~ ^5\. ]]; then
             echo "::error::Computed version $RELEASE_AS is not a v5 maintenance release. Commits with breaking changes:"
-            git log --oneline "$(git describe --tags --abbrev=0 --first-parent)..HEAD" -E \
+            git log --oneline "$LAST_TAG"..HEAD -E \
               --grep='^[a-z]+(\([^)]*\))?!:' --grep='BREAKING CHANGE'
             exit 1
           fi
         env:
           RELEASE_AS: ${{ steps.release-as.outputs.version }}
+          LAST_TAG: ${{ steps.last-tag.outputs.tag }}
 
       - name: Generate release notes
         # capture the root changelog entry before writing CHANGELOG.md files so it
-        # can be used as the PR description
+        # can be used as the PR description. The changelog entry's compare link
+        # points at the new version tag, which doesn't exist until the release is
+        # published, so for the PR description we point it at the release sha instead
         id: release-notes
         run: |
           {
             echo "notes<<EOF"
-            pnpm --silent release-notes write-changelog-files --version=${{ steps.release-as.outputs.version }} --dryRun
+            pnpm --silent release-notes write-changelog-files --version="$VERSION" --dryRun |
+              sed "s|/compare/$LAST_TAG\.\.\.v$VERSION|/compare/$LAST_TAG...$GITHUB_SHA|"
             echo "EOF"
           } >> $GITHUB_OUTPUT
+        env:
+          VERSION: ${{ steps.release-as.outputs.version }}
+          LAST_TAG: ${{ steps.last-tag.outputs.tag }}
+
+      - name: Generate commit log
+        # the generated changelog entry only includes user-facing commit types, so
+        # also include the full commit log in the PR description
+        id: commit-log
+        run: |
+          {
+            echo "commits<<EOF"
+            git log --pretty=format:'- %s (%h)' "$LAST_TAG"..HEAD
+            echo ""
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+        env:
+          LAST_TAG: ${{ steps.last-tag.outputs.tag }}
 
       - name: Write CHANGELOG.md files
         run: pnpm --silent release-notes write-changelog-files --version=${{ steps.release-as.outputs.version }}
@@ -104,6 +129,10 @@ jobs:
             Merging this PR will publish v${{steps.release-as.outputs.version}} to npm under the `maintenance-v5` dist-tag 🚀
 
             ${{steps.release-notes.outputs.notes}}
+
+            ### Commits since ${{ steps.last-tag.outputs.tag }}
+
+            ${{ steps.commit-log.outputs.commits }}
           commit-message: "${{steps.version-commit.outputs.message}}"
           branch: ci/release-v5
           labels: "release:v5"
