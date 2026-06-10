@@ -307,7 +307,6 @@
     "swr": "2.2.5",
     "tsx": "^4.22.4",
     "vite": "catalog:",
-    "vite7-plugin-react": "npm:@vitejs/plugin-react@^5.2.0",
     "vitest": "catalog:",
     "vitest-browser-react": "catalog:",
     "vitest-package-exports": "^1.2.0"
