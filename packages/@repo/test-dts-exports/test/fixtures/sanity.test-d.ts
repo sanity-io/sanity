@@ -992,6 +992,7 @@ import type {
   MissingKeysError,
   MixedArrayError,
   MockAuthStoreOptions,
+  ModalOptions,
   MultiFieldSet,
   MultipleMutationResult,
   Mutation,
@@ -4726,6 +4727,9 @@ describe('sanity', () => {
   })
   test('MockAuthStoreOptions', () => {
     expectTypeOf<MockAuthStoreOptions>().toBeObject()
+  })
+  test('ModalOptions', () => {
+    expectTypeOf<ModalOptions>().toBeObject()
   })
   test('MultiFieldSet', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
