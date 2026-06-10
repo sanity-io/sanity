@@ -1388,7 +1388,7 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@date-fns/tz':
-        specifier: ^1.4.1
+        specifier: ^1.5.0
         version: 1.5.0
       '@date-fns/utc':
         specifier: ^2.1.1
@@ -1624,7 +1624,7 @@ importers:
         specifier: ^4.0.5
         version: 4.0.6
       '@date-fns/tz':
-        specifier: ^1.4.1
+        specifier: ^1.5.0
         version: 1.5.0
       '@dnd-kit/core':
         specifier: ^6.3.1
