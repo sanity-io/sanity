@@ -21,13 +21,12 @@ vi.mock('sanity', async (importActual) => ({
   useDocumentVersions: vi.fn(),
 }))
 vi.mock('../useReferringDocuments', () => ({useReferringDocuments: vi.fn()}))
-// Stub the body — it renders a VersionsPreviewList that hits the preview store
-// (no real data here). The copy that changed and that we want to capture is the
-// footer confirm button ("Delete all versions" -> "Delete document") plus the
-// dialog header, both rendered by ConfirmDeleteDialog itself.
-vi.mock('../ConfirmDeleteDialogBody', () => ({
-  ConfirmDeleteDialogBody: () => null,
-}))
+// Keep the real dialog body (so its count-aware confirmation sentence is captured)
+// but stub the VersionsPreviewList — it previews each version through the preview
+// store, which has no data here. This leaves both copy changes visible: the body
+// sentence ("…delete this document?" vs "…all the versions…") and the footer
+// button ("Delete document" vs "Delete all versions").
+vi.mock('../VersionsPreviewList', () => ({VersionsPreviewList: () => null}))
 
 const mockUseReferringDocuments = useReferringDocuments as Mock<typeof useReferringDocuments>
 const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
