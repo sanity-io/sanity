@@ -256,6 +256,7 @@
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.6.0",
     "uuid": "^11.1.0",
+    "vite": "catalog:",
     "web-vitals": "^5.1.0",
     "xstate": "^5.32.0"
   },
@@ -306,7 +307,6 @@
     "styled-components": "catalog:",
     "swr": "2.2.5",
     "tsx": "^4.22.4",
-    "vite": "catalog:",
     "vitest": "catalog:",
     "vitest-browser-react": "catalog:",
     "vitest-package-exports": "^1.2.0"

@@ -9,7 +9,7 @@ export default defineConfig({
   },
   plugins: [
     vanillaExtractPlugin(),
-    ...viteReact(),
+    viteReact(),
     babel({presets: [reactCompilerPreset({target: '19'})]}),
   ],
 })
