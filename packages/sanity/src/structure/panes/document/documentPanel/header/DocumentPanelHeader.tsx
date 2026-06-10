@@ -13,7 +13,14 @@ import {
   useRef,
   useState,
 } from 'react'
-import {type DocumentActionDescription, useFieldActions, useTranslation, useZIndex} from 'sanity'
+import {
+  FieldPresenceInner,
+  type DocumentActionDescription,
+  useDocumentPresence,
+  useFieldActions,
+  useTranslation,
+  useZIndex,
+} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
@@ -149,6 +156,11 @@ export const DocumentPanelHeader = memo(
     const showPaneGroupCloseButton = !showSplitPaneCloseButton && !showBackButton && !!BackLink
 
     const {t} = useTranslation(structureLocaleNamespace)
+    const presence = useDocumentPresence(documentId)
+    const documentLevelPresence = useMemo(
+      () => presence.filter((p) => p.path.length === 0),
+      [presence],
+    )
 
     const isMaximizedPane = useMemo(() => {
       return (
@@ -217,6 +229,11 @@ export const DocumentPanelHeader = memo(
 
               <Box flex="none" paddingRight={3}>
                 <Flex align="center" gap={1}>
+                  {documentLevelPresence.length > 0 && (
+                    <Box data-testid="document-level-presence" marginRight={2}>
+                      <FieldPresenceInner presence={documentLevelPresence} stack />
+                    </Box>
+                  )}
                   {unstable_languageFilter.length > 0 && (
                     <>
                       {unstable_languageFilter.map((LanguageFilterComponent, idx) => {

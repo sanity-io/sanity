@@ -10,6 +10,7 @@ import uniq from 'lodash-es/uniq.js'
 import words from 'lodash-es/words.js'
 
 import {
+  compileFieldPath,
   compileSortExpression,
   deriveSearchWeightsFromType,
   ORDERINGS_PROJECTION_KEY,
@@ -41,16 +42,31 @@ export const DEFAULT_LIMIT = 1000
 
 const combinePaths: (paths: string[][]) => string[] = flow([flatten, union, compact])
 
-const pathWithMapper = ({mapWith, path}: SearchPath): string =>
-  mapWith ? `${mapWith}(${path})` : path
+const pathWithMapper = (
+  {mapWith, path: rawPath}: SearchPath,
+  schemaType: SchemaType | CrossDatasetType | undefined,
+): string => {
+  // `[]` array paths are already valid GROQ that `compileFieldPath` can't parse;
+  // only dotted (reference) paths need schema-walking to insert `->`.
+  const path =
+    !schemaType || rawPath.includes('[]') ? rawPath : compileFieldPath(schemaType, rawPath)
+  return mapWith ? `${mapWith}(${path})` : path
+}
 
 /**
  * Create GROQ constraints, given search terms and the full spec of available document types and fields.
  * Essentially a large list of all possible fields (joined by logical OR) to match our search terms against.
  */
-function createConstraints(terms: string[], specs: SearchSpec[]) {
+function createConstraints(
+  terms: string[],
+  specs: {schemaType: SchemaType | CrossDatasetType; searchSpec: SearchSpec}[],
+) {
   const combinedSearchPaths = combinePaths(
-    specs.map((configForType) => (configForType.paths || []).map((opt) => pathWithMapper(opt))),
+    specs.map((configForType) =>
+      (configForType.searchSpec.paths || []).map((opt) =>
+        pathWithMapper(opt, configForType.schemaType),
+      ),
+    ),
   )
 
   const constraints = terms
@@ -112,14 +128,17 @@ export function createSearchQuery(
     searchOpts
 
   const specs = searchTerms.types
-    .map((schemaType) =>
-      deriveSearchWeightsFromType({
+    .map((schemaType) => {
+      return {
         schemaType,
-        maxDepth: maxDepth || DEFAULT_MAX_FIELD_DEPTH,
-        isCrossDataset: isCrossDataset,
-      }),
-    )
-    .filter(({paths}) => paths.length)
+        searchSpec: deriveSearchWeightsFromType({
+          schemaType,
+          maxDepth: maxDepth || DEFAULT_MAX_FIELD_DEPTH,
+          isCrossDataset: isCrossDataset,
+        }),
+      }
+    })
+    .filter(({searchSpec}) => searchSpec.paths.length !== 0)
 
   // Extract search terms from string query, factoring in phrases wrapped in quotes
   const terms = extractTermsFromQuery(searchTerms.query)
@@ -134,12 +153,12 @@ export function createSearchQuery(
 
   const selections = searchOpts.skipSortByScore
     ? []
-    : specs.map((spec) => {
-        const constraint = `_type == "${spec.typeName}" => `
+    : specs.map(({searchSpec, schemaType}) => {
+        const constraint = `_type == "${searchSpec.typeName}" => `
         if (searchOpts.skipSortByScore) {
           return undefined
         }
-        const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
+        const selection = `{ ${searchSpec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg, schemaType)}`)} }`
         return `${constraint}${selection}`
       })
 
@@ -183,7 +202,7 @@ export function createSearchQuery(
     query: updatedQuery,
     params: {
       ...toGroqParams(terms),
-      __types: specs.map((spec) => spec.typeName),
+      __types: specs.map(({searchSpec}) => searchSpec.typeName),
       __limit: limit ?? DEFAULT_LIMIT,
       ...params,
     },
@@ -191,7 +210,7 @@ export function createSearchQuery(
       tag,
       perspective,
     },
-    searchSpec: specs,
+    searchSpec: specs.map(({searchSpec}) => searchSpec),
     terms,
   }
 }

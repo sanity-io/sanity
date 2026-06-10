@@ -7,6 +7,7 @@ import {
 import {toString as pathToString} from '@sanity/util/paths'
 
 import {isRecord} from '../../util'
+import {getPreviewSelectionPathWeights} from './deriveSearchWeightsFromType'
 import {type SearchPath, type SearchSpec} from './types'
 
 interface SearchWeightEntry {
@@ -216,10 +217,24 @@ const getPreviewWeights = (
     )
   }
 
-  return getLeafWeights(schemaType, maxDepth, (type, path) => {
+  const previewSelectionPathWeights = isSchemaType(schemaType)
+    ? getPreviewSelectionPathWeights(
+        schemaType,
+        maxDepth,
+        selectionKeysBySelectionPath,
+        new Set(Object.keys(defaultWeights)),
+      )
+    : {}
+
+  const previewWeightsFromLeafTraversal = getLeafWeights(schemaType, maxDepth, (type, path) => {
     const nested = nestedWeightsBySelectionPath[getFullyQualifiedPath(type, path)]
     return nested ? nested.weight : null
   })
+
+  return {
+    ...previewSelectionPathWeights,
+    ...previewWeightsFromLeafTraversal,
+  }
 }
 
 interface DeriveSearchWeightsFromTypeOptions {

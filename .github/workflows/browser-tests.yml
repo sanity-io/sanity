@@ -1,0 +1,102 @@
+name: Browser Component Tests
+on:
+  # Build on pushes branches that have a PR (including drafts)
+  pull_request:
+  # Build on commits pushed to branches without a PR if it's in the allowlist
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  install:
+    timeout-minutes: 30
+    runs-on: ubuntu-8core
+    outputs:
+      has_code_changes: ${{ steps.changes.outputs.has_changes }}
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/detect-code-changes
+        id: changes
+
+      - uses: ./.github/actions/setup
+        if: steps.changes.outputs.has_changes == 'true'
+
+      - name: Build packages
+        if: steps.changes.outputs.has_changes == 'true'
+        # This warms up the turborepo remote cache
+        run: pnpm build --output-logs=full --log-order=grouped
+
+  browser-test:
+    timeout-minutes: 30
+    needs: [install]
+    if: needs.install.outputs.has_code_changes == 'true'
+    runs-on: ubuntu-8core
+    # Run each browser on its own runner. Running all three on one runner caused
+    # WebKit/Firefox tests to time out under contention.
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          # Key is per-browser so it doesn't collide with other workflows that
+          # share ~/.cache/ms-playwright but install a different browser set
+          # (which previously handed us a cache hit missing the browser we need,
+          # failing with "Executable doesn't exist").
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-${{ matrix.browser }}
+      # System dependencies (apt packages, e.g. libwoff2dec for WebKit) live
+      # outside ~/.cache/ms-playwright, so they are NOT restored by the cache.
+      # Always install them; otherwise a cache hit gives us the browser binary
+      # but a missing shared library, crashing the run on startup.
+      - name: Install Playwright system dependencies
+        run: npx playwright install-deps ${{ matrix.browser }}
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: npx playwright install ${{ matrix.browser }}
+
+      - name: Build packages
+        # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Run browser component tests
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
+          SANITY_VITEST_BROWSER: ${{ matrix.browser }}
+        run: pnpm --filter sanity test:browser
+
+  browser-test-status:
+    name: "Browser Test Status"
+    runs-on: ubuntu-latest
+    needs: [browser-test]
+    if: ${{ !cancelled() }}
+    steps:
+      - name: Check browser test status
+        run: |
+          result="${{ needs.browser-test.result }}"
+          if [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
+            echo "Browser tests failed with status: $result"
+            exit 1
+          fi

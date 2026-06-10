@@ -7,7 +7,7 @@ const parseResponsiveWidth = (value: unknown): (number | 'auto')[] => {
   if (typeof value === 'number') {
     return [value]
   }
-  return value === 'auto' ? ['auto'] : []
+  return value === 'auto' ? ['auto'] : [1]
 }
 const parseModalType = (value: unknown): 'popover' | 'dialog' | undefined => {
   return value === 'dialog' || value === 'popover' ? value : undefined
