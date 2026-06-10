@@ -13,10 +13,16 @@ export type KnownEnvVar =
   | 'GITHUB_TOKEN'
 
 export type PullRequest =
-  RestEndpointMethodTypes['repos']['listPullRequestsAssociatedWithCommit']['response']['data'][number]
+  | RestEndpointMethodTypes['repos']['listPullRequestsAssociatedWithCommit']['response']['data'][number]
+  | RestEndpointMethodTypes['pulls']['get']['response']['data']
+
+export type CommitAuthor = NonNullable<
+  RestEndpointMethodTypes['repos']['getCommit']['response']['data']['author']
+>
 
 export type PullRequestInfo = {
   pr?: PullRequest
+  commitAuthor?: CommitAuthor
   conventionalCommit: Commit
 }
 
