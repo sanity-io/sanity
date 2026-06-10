@@ -6,12 +6,19 @@ import {getOctokit} from '../octokit'
 import {type StudioChangelogEntry} from '../types'
 import {stripPr} from '../utils/stripPrNumber'
 
-export async function publishReleases(options: {dryRun: boolean; targetVersion: string}) {
+export async function publishReleases(options: {
+  dryRun: boolean
+  targetVersion: string
+  source?: string
+  distTag?: string
+  makeLatest?: boolean
+}) {
+  const {source = 'studio', distTag = 'latest', makeLatest = true} = options
   const client = getClient()
   const octokit = getOctokit()
   const changelogDocuments = await client.fetch<{_id: string; changelog: StudioChangelogEntry[]}[]>(
-    '*[_type=="apiChange" && releaseAutomation.source == "studio" && releaseAutomation.tentativeVersion == $version]',
-    {version: options.targetVersion},
+    '*[_type=="apiChange" && releaseAutomation.source == $source && releaseAutomation.tentativeVersion == $version]',
+    {version: options.targetVersion, source},
     {perspective: 'raw'},
   )
 
@@ -77,9 +84,13 @@ ${changelogDocument.changelog
     body: ghReleaseTemplate({
       changelogDocumentId: getPublishedId(changelogDocumentId),
       targetVersion: options.targetVersion,
+      distTag,
       changelog: formattedChangelog,
     }),
     draft: false,
+    // maintenance releases must not become the repo's "Latest" GitHub release
+    // eslint-disable-next-line camelcase
+    make_latest: makeLatest ? ('true' as const) : ('false' as const),
   }
   if (options.dryRun) {
     console.log(
@@ -106,6 +117,7 @@ function mention(author: StudioChangelogEntry['author']) {
 function ghReleaseTemplate(vars: {
   changelogDocumentId: string
   targetVersion: string
+  distTag: string
   changelog: string
 }) {
   return `# Sanity Studio v${vars.targetVersion}
@@ -120,7 +132,7 @@ For the complete changelog with all details, please visit:
 To upgrade to this version, run:
 
 \`\`\`bash
-npm install sanity@latest
+npm install sanity@${vars.distTag}
 \`\`\`
 
 To initiate a new Sanity Studio project or learn more about upgrading, please refer to our comprehensive guide on [Installing and Upgrading Sanity Studio](https://www.sanity.io/docs/upgrade).

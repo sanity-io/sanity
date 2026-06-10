@@ -5,9 +5,12 @@ import {getClient} from '../client'
 import {generateHumanReadableReleaseNotes} from '../utils/generateHumanReadableReleaseNotes'
 import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
 
-export async function draftReleaseNotes(options: {baseVersion: string}) {
+export async function draftReleaseNotes(options: {baseVersion: string; source?: string}) {
   const client = getClient()
-  const {changelogDocumentId} = getSanityDocumentIdsForBaseVersion(options.baseVersion)
+  const {changelogDocumentId} = getSanityDocumentIdsForBaseVersion(
+    options.baseVersion,
+    options.source,
+  )
   const changelogDocument = await client.getDocument(changelogDocumentId.version)
   if (!changelogDocument) {
     throw new Error(`No changelog document found for base version ${options.baseVersion}`)

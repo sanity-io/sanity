@@ -35,9 +35,11 @@ import {uploadImages} from '../utils/uploadImages'
 export async function createOrUpdateChangelogDocs(args: {
   tentativeVersion?: string
   baseVersion: string
+  branch?: string
+  source?: string
   dryRun?: boolean
 }) {
-  const {tentativeVersion, baseVersion, dryRun} = args
+  const {tentativeVersion, baseVersion, branch = 'main', source = 'studio', dryRun} = args
   const client = getClient()
 
   // We obfuscate the base version id so we can use in the changelog document ids
@@ -46,15 +48,17 @@ export async function createOrUpdateChangelogDocs(args: {
   const gitClient = new ConventionalGitClient(MONOREPO_ROOT)
 
   const commits = getCommits(gitClient, await getSemverTags(gitClient), {
-    branch: 'main',
+    branch,
     releaseCount: 1,
   })
   const allCommits = await toArray(commits)
 
   const commitsWithPrs = await fetchCommitPrs(allCommits)
 
-  const {releaseId, changelogDocumentId, apiVersionDocId} =
-    getSanityDocumentIdsForBaseVersion(baseVersion)
+  const {releaseId, changelogDocumentId, apiVersionDocId} = getSanityDocumentIdsForBaseVersion(
+    baseVersion,
+    source,
+  )
 
   await ensureContentRelease(
     client,
@@ -94,7 +98,7 @@ export async function createOrUpdateChangelogDocs(args: {
     patch(changelogDocumentId.version, [
       at('releaseAutomation', setIfMissing({})),
       at('releaseAutomation.tentativeVersion', set(tentativeVersion)),
-      at('releaseAutomation.source', set('studio')),
+      at('releaseAutomation.source', set(source)),
       ...(await mergeChangelogBody(client, changelogDocumentId.version, commitsWithPrs, {dryRun})),
       at('publishedAt', set(new Date())),
       at(

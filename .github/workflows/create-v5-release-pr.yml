@@ -28,6 +28,10 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
+      - name: Ensure v5 exists locally
+        # generate-changelog walks commits on the branch ref, which must exist locally
+        run: git checkout -B v5 origin/v5 && git switch -
+
       - uses: ./.github/actions/setup
 
       - uses: actions/create-github-app-token@v3
@@ -43,6 +47,12 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Get base version
+        # store the current version and use as base version when generating changelog documents
+        id: get-base-version
+        run: |
+          echo "base-version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
 
       - name: Update version
         run: pnpm --silent release-notes bump
@@ -78,37 +88,6 @@ jobs:
           RELEASE_AS: ${{ steps.release-as.outputs.version }}
           LAST_TAG: ${{ steps.last-tag.outputs.tag }}
 
-      - name: Generate release notes
-        # capture the root changelog entry before writing CHANGELOG.md files so it
-        # can be used as the PR description. The changelog entry's compare link
-        # points at the new version tag, which doesn't exist until the release is
-        # published, so for the PR description we point it at the release sha instead
-        id: release-notes
-        run: |
-          {
-            echo "notes<<EOF"
-            pnpm --silent release-notes write-changelog-files --version="$VERSION" --dryRun |
-              sed "s|/compare/$LAST_TAG\.\.\.v$VERSION|/compare/$LAST_TAG...$GITHUB_SHA|"
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
-        env:
-          VERSION: ${{ steps.release-as.outputs.version }}
-          LAST_TAG: ${{ steps.last-tag.outputs.tag }}
-
-      - name: Generate commit log
-        # the generated changelog entry only includes user-facing commit types, so
-        # also include the full commit log in the PR description
-        id: commit-log
-        run: |
-          {
-            echo "commits<<EOF"
-            git log --pretty=format:'- %s (%h)' "$LAST_TAG"..HEAD
-            echo ""
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
-        env:
-          LAST_TAG: ${{ steps.last-tag.outputs.tag }}
-
       - name: Write CHANGELOG.md files
         run: pnpm --silent release-notes write-changelog-files --version=${{ steps.release-as.outputs.version }}
 
@@ -117,6 +96,43 @@ jobs:
         run: |
           echo "message=chore(release): publish v${{ steps.release-as.outputs.version }}" >> $GITHUB_OUTPUT
 
+      - name: Prepare content release with release note document
+        id: release-notes
+        run: |
+          {
+            echo "notes<<EOF"
+            pnpm --silent release-notes generate-changelog \
+              --branch=v5 \
+              --source=studio-v5 \
+              --distTag=maintenance-v5 \
+              --baseVersion="$BASE_VERSION" \
+              --tentativeVersion="$VERSION" \
+              --outputFormat=pr-description
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+        env:
+          VERSION: ${{ steps.release-as.outputs.version }}
+          BASE_VERSION: ${{ steps.get-base-version.outputs.base-version }}
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Draft release notes for upcoming release
+        run: |
+          pnpm --silent release-notes draft-release-notes \
+            --baseVersion="$BASE_VERSION" \
+            --source=studio-v5
+        env:
+          BASE_VERSION: ${{ steps.get-base-version.outputs.base-version }}
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_CLAUDE_API_KEY: ${{ secrets.RELEASE_NOTES_CLAUDE_API_KEY }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
       - name: Create or update PR
         uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         id: create-pull-request
@@ -124,15 +140,7 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           title: "${{steps.version-commit.outputs.message}}"
           body: |
-            🤖 I have created a release **squib** **squob**
-
-            Merging this PR will publish v${{steps.release-as.outputs.version}} to npm under the `maintenance-v5` dist-tag 🚀
-
             ${{steps.release-notes.outputs.notes}}
-
-            ### Commits since ${{ steps.last-tag.outputs.tag }}
-
-            ${{ steps.commit-log.outputs.commits }}
           commit-message: "${{steps.version-commit.outputs.message}}"
           branch: ci/release-v5
           labels: "release:v5"

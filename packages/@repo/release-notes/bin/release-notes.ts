@@ -117,6 +117,22 @@ await yargs(process.argv.slice(2))
           type: 'string',
           demandOption: true,
         },
+        branch: {
+          description: 'Branch to collect commits from',
+          type: 'string',
+          default: 'main',
+        },
+        source: {
+          description:
+            'Source discriminator for changelog documents. Use a distinct value per release line (e.g. studio-v5) to keep documents from colliding.',
+          type: 'string',
+          default: 'studio',
+        },
+        distTag: {
+          description: 'npm dist-tag the release will be published under',
+          type: 'string',
+          default: 'latest',
+        },
         dryRun: {
           description: 'Dry run',
           type: 'boolean',
@@ -127,13 +143,19 @@ await yargs(process.argv.slice(2))
         const result = await createOrUpdateChangelogDocs({
           baseVersion: args.baseVersion,
           tentativeVersion: args.tentativeVersion,
+          branch: args.branch,
+          source: args.source,
           dryRun: args.dryRun,
         })
         if (args.outputFormat === 'pr-description') {
           // oxlint-disable-next-line no-console
           console.log(
             generateChangeLogSummary(
-              {tentativeVersion: args.tentativeVersion, baseVersion: args.baseVersion},
+              {
+                tentativeVersion: args.tentativeVersion,
+                baseVersion: args.baseVersion,
+                distTag: args.distTag,
+              },
               result,
             ),
           )
@@ -158,6 +180,22 @@ await yargs(process.argv.slice(2))
           type: 'string',
           demandOption: true,
         },
+        source: {
+          description:
+            'Source discriminator for changelog documents (must match generate-changelog)',
+          type: 'string',
+          default: 'studio',
+        },
+        distTag: {
+          description: 'npm dist-tag the release was published under',
+          type: 'string',
+          default: 'latest',
+        },
+        makeLatest: {
+          description: 'Mark the GitHub release as the latest release of the repo',
+          type: 'boolean',
+          default: true,
+        },
         dryRun: {
           description: 'Dry run',
           type: 'boolean',
@@ -167,6 +205,9 @@ await yargs(process.argv.slice(2))
       try {
         await publishReleases({
           targetVersion: args.targetVersion,
+          source: args.source,
+          distTag: args.distTag,
+          makeLatest: args.makeLatest,
           dryRun: Boolean(args.dryRun),
         })
         // oxlint-disable-next-line no-console
@@ -224,8 +265,15 @@ await yargs(process.argv.slice(2))
           type: 'string',
           demandOption: true,
         },
+        source: {
+          description:
+            'Source discriminator for changelog documents (must match generate-changelog)',
+          type: 'string',
+          default: 'studio',
+        },
       }),
-    handler: (args) => draftReleaseNotes({baseVersion: args.baseVersion}).then(() => void 0),
+    handler: (args) =>
+      draftReleaseNotes({baseVersion: args.baseVersion, source: args.source}).then(() => void 0),
   })
   .command({
     command: 'status-check-commit',
@@ -269,7 +317,11 @@ type GenerateChangeLogResult = {
 }
 
 function generateChangeLogSummary(
-  {tentativeVersion, baseVersion}: {tentativeVersion: string; baseVersion: string},
+  {
+    tentativeVersion,
+    baseVersion,
+    distTag,
+  }: {tentativeVersion: string; baseVersion: string; distTag: string},
   result: GenerateChangeLogResult,
 ) {
   const {changelogDocumentId, commitsWithPrs, releaseId} = result
@@ -306,7 +358,7 @@ Note: Entries in the changelog document can be safely edited and will never be o
 3. Merge this PR
 
 Once this PR is merged, automation will take care of the rest by:
-- Publishing **\`v${tentativeVersion}\`** of all public packages in this repo to the npm registry and tagging as \`latest\`
+- Publishing **\`v${tentativeVersion}\`** of all public packages in this repo to the npm registry and tagging as \`${distTag}\`
 - Publishing the [content release](${contentReleaseUrl}) for **\`v${tentativeVersion}\`**
 - Tagging, creating, and publishing a GitHub Release for **\`v${tentativeVersion}\`**
 - Building and uploading bundles for Auto Updating Studios
