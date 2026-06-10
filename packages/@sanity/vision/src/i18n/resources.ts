@@ -26,12 +26,22 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Label for executing the query, eg doing a fetch */
   'action.query-execute': 'Fetch',
   /** Label for saving a query */
+  'action.save-personal-copy': 'Save personal copy',
+  /** Label for saving a personal query */
+  'action.save-personal-query': 'Save as personal',
+  /** Label for saving a query */
   'action.save-query': 'Save query',
+  /** Label for saving a shared query */
+  'action.save-shared-query': 'Save as shared',
+  /** Label for unsharing a query */
+  'action.unshare': 'Unshare',
   /** Label for updating a query */
   'action.update': 'Update',
 
   /** Label for actions user can take */
   'label.actions': 'Actions',
+  /** Label for all saved queries */
+  'label.all': 'All',
   /** Label for saved queries that have been edited */
   'label.edited': 'Edited',
 
@@ -50,8 +60,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'label.search-queries': 'Search queries',
   /** Share query */
   'label.share': 'Share',
+  /** Label for query type "shared" */
+  'label.shared': 'Shared',
   /** Label for saved query type "team" */
   'label.team': 'Team',
+  /** Label for untitled query fallback */
+  'label.untitled-query': 'Untitled',
 
   /** Error message for when the "Params" input are not a valid json */
   'params.error.params-invalid-json': 'Parameters are not valid JSON',
@@ -87,8 +101,17 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'save-query.already-saved': 'Query already saved',
   /** Save error label */
   'save-query.error': 'Error saving query',
+  /** Save personal copy success label */
+  'save-query.personal-copy-success': 'Personal copy saved',
+  /** Warning displayed before sharing a query */
+  'save-query.share-warning':
+    'Shared queries are stored as documents in your dataset and count toward your document quota.',
+  /** Save shared query success label */
+  'save-query.shared-success': 'Shared query saved',
   /** Save success label */
   'save-query.success': 'Query saved',
+  /** Save unshared query success label */
+  'save-query.unshared-success': 'Query moved to personal',
 
   /** Label for the "API version" dropdown in settings */
   'settings.api-version-label': 'API version',

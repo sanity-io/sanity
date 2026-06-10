@@ -573,6 +573,51 @@ describe('createSearchQuery', () => {
           '[0...$__limit]',
       )
     })
+
+    // https://github.com/sanity-io/sanity/issues/4775
+    it('compiles reference paths from the preview selection to dereferenced GROQ', () => {
+      const referenceSchema = Schema.compile({
+        types: [
+          defineType({
+            name: 'author',
+            type: 'document',
+            fields: [defineField({name: 'name', type: 'string'})],
+          }),
+          defineType({
+            name: 'book',
+            type: 'document',
+            preview: {
+              select: {
+                title: 'title',
+                // reference traversal — should become searchable
+                subtitle: 'author.name',
+                // number field — must not become a constraint
+                year: 'publicationYear',
+              },
+            },
+            fields: [
+              defineField({name: 'title', type: 'string'}),
+              defineField({name: 'publicationYear', type: 'number'}),
+              defineField({name: 'author', type: 'reference', to: [{type: 'author'}]}),
+            ],
+          }),
+        ],
+      })
+
+      const {query} = createSearchQuery({
+        query: 'term',
+        types: [referenceSchema.get('book')],
+      })
+
+      // `subtitle: 'author.name'` traverses a reference, so it is compiled to
+      // `author->name` in both the match constraint and the score selection.
+      expect(query).toContain('author->name match $t0')
+      expect(query).toMatch(/"w\d+": author->name/)
+      // The raw dotted path must not leak, and the number field selected in the
+      // preview must not be added as a searchable path.
+      expect(query).not.toContain('author.name match')
+      expect(query).not.toContain('publicationYear')
+    })
   })
 })
 
