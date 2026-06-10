@@ -270,7 +270,7 @@
     "@sanity/pkg-utils": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.9",
     "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.1",
+    "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/debug": "^4.1.12",
     "@types/lodash-es": "^4.17.12",
