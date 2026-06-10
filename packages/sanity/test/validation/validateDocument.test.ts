@@ -1227,3 +1227,95 @@ describe('validation behavior', () => {
     ])
   })
 })
+
+describe('slug validation', () => {
+  const createSlugSchema = (validation?: (rule: Rule) => Rule) =>
+    createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'slugDoc',
+          type: 'document',
+          title: 'Slug Document',
+          fields: [
+            {
+              name: 'slug',
+              type: 'slug',
+              // stub uniqueness so the mock client doesn't add unrelated markers
+              options: {isUnique: () => true},
+              ...(validation ? {validation} : {}),
+            },
+          ],
+        },
+      ],
+    })
+
+  const createSlugDocument = (slug: unknown): SanityDocument => ({
+    _id: 'testId',
+    _createdAt: '2021-08-27T14:48:51.650Z',
+    _rev: 'exampleRev',
+    _type: 'slugDoc',
+    _updatedAt: '2021-08-27T14:48:51.650Z',
+    ...(slug === undefined ? {} : {slug}),
+  })
+
+  it('reports a single error for a required, missing slug', async () => {
+    // Regression: the builtin slug type hardcodes a required() rule on its `current`
+    // field (for typegen), which used to surface a second, duplicate "Required" error
+    // at ['slug', 'current'] alongside the user's required() error at ['slug'].
+    const schema = createSlugSchema((rule) => rule.required())
+
+    const result = await validateDocument({
+      getClient,
+      document: createSlugDocument(undefined),
+      workspace: {schema} as Workspace,
+    })
+
+    expect(result).toMatchObject([
+      {
+        level: 'error',
+        message: 'Required',
+        path: ['slug'],
+      },
+    ])
+  })
+
+  it('reports a single error for a slug with an empty current value', async () => {
+    const schema = createSlugSchema((rule) => rule.required())
+
+    const result = await validateDocument({
+      getClient,
+      document: createSlugDocument({_type: 'slug', current: ''}),
+      workspace: {schema} as Workspace,
+    })
+
+    expect(result).toMatchObject([
+      {
+        level: 'error',
+        message: 'Slug must have a value',
+        path: ['slug'],
+      },
+    ])
+  })
+
+  it('still runs object-level Rule.fields() validation declared on a slug field', async () => {
+    const schema = createSlugSchema((rule) =>
+      rule.fields({
+        current: (fieldRule) => fieldRule.max(3),
+      }),
+    )
+
+    const result = await validateDocument({
+      getClient,
+      document: createSlugDocument({_type: 'slug', current: 'too-long'}),
+      workspace: {schema} as Workspace,
+    })
+
+    expect(result).toMatchObject([
+      {
+        level: 'error',
+        path: ['slug', 'current'],
+      },
+    ])
+  })
+})

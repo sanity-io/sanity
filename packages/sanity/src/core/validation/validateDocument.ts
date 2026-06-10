@@ -457,21 +457,29 @@ function validateItemObservable({
         }),
     )
 
-    // Validation from each field's schema `validation: Rule => {/* ... */}` function
-    nestedChecks = nestedChecks.concat(
-      type.fields.map((field) =>
-        validateItemObservable({
-          ...restOfContext,
-          hidden,
-          parent: value,
-          value: isRecord(value) ? value[field.name] : undefined,
-          path: path.concat(field.name),
-          type: field.type,
-          environment,
-          customValidationConcurrencyLimiter,
-        }),
-      ),
-    )
+    // Validation from each field's schema `validation: Rule => {/* ... */}` function.
+    // Skipped for slug types: the builtin slug type hardcodes `Rule.required()` on its
+    // `current` field (only so typegen marks it non-optional), and the slugValidator
+    // attached to every slug already reports a missing/empty `current` at the slug's
+    // own path — so the nested pass would only ever duplicate that error at
+    // ['…', 'current']. Object-level `Rule.fields()` validation (above) still runs.
+    const isSlugType = getTypeChain(type).some((t) => t.name === 'slug')
+    if (!isSlugType) {
+      nestedChecks = nestedChecks.concat(
+        type.fields.map((field) =>
+          validateItemObservable({
+            ...restOfContext,
+            hidden,
+            parent: value,
+            value: isRecord(value) ? value[field.name] : undefined,
+            path: path.concat(field.name),
+            type: field.type,
+            environment,
+            customValidationConcurrencyLimiter,
+          }),
+        ),
+      )
+    }
   }
 
   // note: unlike objects, arrays should not run nested validation for undefined
