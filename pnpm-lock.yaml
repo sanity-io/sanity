@@ -1777,7 +1777,7 @@ importers:
         specifier: ^3.13.24
         version: 3.13.26(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@xstate/react':
-        specifier: ^6.0.0
+        specifier: ^6.1.0
         version: 6.1.0(@types/react@19.2.16)(react@19.2.7)(xstate@5.32.0)
       classnames:
         specifier: ^2.2.5
@@ -1918,7 +1918,7 @@ importers:
         specifier: ^5.1.0
         version: 5.3.0
       xstate:
-        specifier: ^5.25.1
+        specifier: ^5.32.0
         version: 5.32.0
     devDependencies:
       '@playwright/experimental-ct-react':
