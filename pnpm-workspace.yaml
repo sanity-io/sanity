@@ -85,6 +85,7 @@ minimumReleaseAgeExclude:
 
 overrides:
   vitest: 'catalog:'
+  '@sanity/cli': 'workbench'
 
 preferWorkspacePackages: true
 
