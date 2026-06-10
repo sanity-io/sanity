@@ -1753,7 +1753,7 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/schema
       '@sanity/sdk':
-        specifier: ^2.8.0
+        specifier: ^2.12.0
         version: 2.12.0(@types/react@19.2.16)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)
       '@sanity/telemetry':
         specifier: 'catalog:'
