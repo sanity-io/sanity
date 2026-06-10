@@ -1717,7 +1717,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/image-url':
-        specifier: ^2.0.3
+        specifier: ^2.1.1
         version: 2.1.1
       '@sanity/insert-menu':
         specifier: ^3.0.8
