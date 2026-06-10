@@ -1476,7 +1476,7 @@ importers:
         specifier: ^3.7.4
         version: 3.7.4(react@19.2.7)
       '@sanity/lezer-groq':
-        specifier: ^1.0.3
+        specifier: ^1.0.4
         version: 1.0.4
       '@sanity/ui':
         specifier: 'catalog:'
