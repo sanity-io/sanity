@@ -6,6 +6,7 @@ import {
 } from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
 
+import {compileFieldPath} from '../common/compileFieldPath'
 import {compileSortExpression, type CompiledSortEntry} from '../common/compileSortExpression'
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
 import {prefixLast} from '../common/token'
@@ -42,7 +43,6 @@ interface SearchQuery {
    */
   compiledSortEntries: CompiledSortEntry[]
 }
-
 function isSchemaType(
   maybeSchemaType: SchemaType | CrossDatasetType | undefined,
 ): maybeSchemaType is SchemaType {
@@ -69,19 +69,22 @@ export function createSearchQuery(
   }: SearchOptions & SearchFactoryOptions = {},
 ): SearchQuery {
   const specs = searchTerms.types
-    .map((schemaType) =>
-      deriveSearchWeightsFromType2024({
+    .map((schemaType) => {
+      return {
         schemaType,
-        maxDepth: maxDepth || DEFAULT_MAX_FIELD_DEPTH,
-        isCrossDataset: isCrossDataset,
-        processPaths: (paths) => paths.filter(({weight}) => weight !== 1),
-      }),
-    )
-    .filter(({paths}) => paths.length !== 0)
+        searchSpec: deriveSearchWeightsFromType2024({
+          schemaType,
+          maxDepth: maxDepth || DEFAULT_MAX_FIELD_DEPTH,
+          isCrossDataset: isCrossDataset,
+          processPaths: (paths) => paths.filter(({weight}) => weight !== 1),
+        }),
+      }
+    })
+    .filter(({searchSpec}) => searchSpec.paths.length !== 0)
 
   // Note: Computing this is unnecessary when `!isScored`.
-  const flattenedSpecs = specs.flatMap(({typeName, paths}) =>
-    paths.map((path) => ({...path, typeName})),
+  const flattenedSpecs = specs.flatMap(({schemaType, searchSpec}) =>
+    searchSpec.paths.map((path) => ({...path, typeName: searchSpec.typeName, schemaType})),
   )
 
   // Note: Computing this is unnecessary when `!isScored`.
@@ -95,7 +98,12 @@ export function createSearchQuery(
       if (entries.some(({weight}) => weight === 0)) {
         return []
       }
-      return `boost(_type in ${JSON.stringify(entries.map((entry) => entry.typeName))} && ${entries[0].path} match text::query($__query), ${entries[0].weight})`
+      // `[]` array paths are already valid GROQ that `compileFieldPath` can't parse;
+      // only dotted (reference) paths need schema-walking to insert `->`.
+      const path = entries[0].path.includes('[]')
+        ? entries[0].path
+        : compileFieldPath(entries[0].schemaType, entries[0].path)
+      return `boost(_type in ${JSON.stringify(entries.map((entry) => entry.typeName))} && ${path} match text::query($__query), ${entries[0].weight})`
     })
     .concat(baseMatch)
 
