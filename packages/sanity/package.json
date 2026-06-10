@@ -207,7 +207,7 @@
     "@sanity/ui": "catalog:",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.2",
-    "@sentry/react": "^8.55.0",
+    "@sentry/react": "^8.55.2",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.2",
     "@xstate/react": "^6.1.0",

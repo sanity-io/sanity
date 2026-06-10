@@ -1771,7 +1771,7 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2
       '@sentry/react':
-        specifier: ^8.55.0
+        specifier: ^8.55.2
         version: 8.55.2(react@19.2.7)
       '@tanstack/react-table':
         specifier: ^8.21.3
