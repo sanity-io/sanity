@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.31.1](https://github.com/sanity-io/sanity/compare/v5.31.0...v5.31.1) (2026-06-10)
+
+### Bug Fixes
+
+* **core:** exclude dereference paths from groq2024 score boosts ([#13027](https://github.com/sanity-io/sanity/issues/13027)) ([ca4657e](https://github.com/sanity-io/sanity/commit/ca4657e67f58befba2ee62726af072bc7bb31a0a))
+* **core:** revert use schema preview selection for search ([#13029](https://github.com/sanity-io/sanity/issues/13029)) ([ec87ab7](https://github.com/sanity-io/sanity/commit/ec87ab7a3c9f6e65d34b0a57f838b3ab1eb62ce5))
 ## [5.31.0](https://github.com/sanity-io/sanity/compare/v5.30.0...v5.31.0) (2026-06-10)
 
 ### Features
