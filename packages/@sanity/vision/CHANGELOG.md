@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.26.0](https://github.com/sanity-io/sanity/compare/v5.25.1...v5.26.0) (2026-05-19)
+
+### Reverts
+
+* "chore(release): publish v5.26.0" ([#12849](https://github.com/sanity-io/sanity/issues/12849)) ([70545b8](https://github.com/sanity-io/sanity/commit/70545b8d5421f875a171145fe5312742c0c4f959))
+## [5.25.1](https://github.com/sanity-io/sanity/compare/v5.25.0...v5.25.1) (2026-05-13)
+
+### Bug Fixes
+
+* **core:** remove static css import from `sanity` and `vision` ([#12825](https://github.com/sanity-io/sanity/issues/12825)) ([c147d00](https://github.com/sanity-io/sanity/commit/c147d00461c03b07a17bacfd2b029b297248176b))
+## [5.25.0](https://github.com/sanity-io/sanity/compare/v5.24.0...v5.25.0) (2026-05-12)
+
+### Bug Fixes
+
+* **vision:** do not fetch if query is empty ([#12814](https://github.com/sanity-io/sanity/issues/12814)) ([a10c347](https://github.com/sanity-io/sanity/commit/a10c347588c4ae128c5e2b2ad0c77b87d82b213f))
+## [5.23.0](https://github.com/sanity-io/sanity/compare/v5.22.0...v5.23.0) (2026-04-29)
+
+### Features
+
+* enable vanilla-extract CSS ([#12590](https://github.com/sanity-io/sanity/issues/12590)) ([c0fb87f](https://github.com/sanity-io/sanity/commit/c0fb87ff5ea41290df895fd45e3b0e90ce300bc1))
+## [5.21.0](https://github.com/sanity-io/sanity/compare/v5.20.0...v5.21.0) (2026-04-15)
+
+### Features
+
+* **vision:** groq syntax highlighting ([#12594](https://github.com/sanity-io/sanity/issues/12594)) ([95a1dce](https://github.com/sanity-io/sanity/commit/95a1dcee4f388be8c5d6212d118986e1e1742abc))
 
 ## [5.18.0](https://github.com/sanity-io/sanity/compare/v5.17.1...v5.18.0) (2026-03-24)
 

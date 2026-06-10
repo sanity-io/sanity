@@ -6,9 +6,9 @@ import {useObservable} from 'react-rx'
 import {
   BehaviorSubject,
   combineLatest,
+  distinctUntilChanged,
   EMPTY,
   filter,
-  first,
   map,
   merge,
   type Observable,
@@ -136,7 +136,7 @@ type Action =
 interface DivergenceNavigatorContext {
   divergences: Observable<CollatedDocumentDivergencesState>
   schemaType: ObjectSchemaType
-  formState: Pick<FormState, 'groups' | '_allMembers'>
+  formState: Pick<FormState, 'groups' | '_allMembers' | 'value'>
 }
 
 interface StateContext {
@@ -169,7 +169,10 @@ export function useDivergenceNavigator({
   useEffect(() => schemaTypeContext.next(schemaType), [schemaTypeContext, schemaType])
 
   const formStateContext = useMemo(
-    () => new BehaviorSubject<Pick<FormState, 'groups' | '_allMembers'> | undefined>(undefined),
+    () =>
+      new BehaviorSubject<Pick<FormState, 'groups' | '_allMembers' | 'value'> | undefined>(
+        undefined,
+      ),
     [],
   )
   useEffect(() => formStateContext.next(formState), [formStateContext, formState])
@@ -193,9 +196,11 @@ export function useDivergenceNavigator({
         // and interaction with the document editor.
         //
         // It's unnecessary to remap divergences every time the displayed
-        // document or state, like the focus path, changes. Therefore, this
-        // code takes only the first form state value emitted.
-        first(),
+        // document or state, like the focus path, changes. Therefore, the
+        // form state is only emitted when the displayed document id changes
+        // (e.g. when an editor first opens a document, or when they switch to
+        // a different version of a document).
+        distinctUntilChanged((previous, current) => previous.value?._id === current.value?._id),
         map((state) => (state ? pick(state, ['groups', '_allMembers']) : state)),
       ),
     })

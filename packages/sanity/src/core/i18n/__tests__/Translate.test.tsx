@@ -1,7 +1,7 @@
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import {type ComponentProps, type ReactNode} from 'react'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {LocaleProviderBase} from '../components/LocaleProvider'
 import {useTranslation} from '../hooks/useTranslation'
@@ -149,5 +149,94 @@ describe('Translate component', () => {
     expect(await screen.findByTestId('output')).toHaveTextContent(
       '3 people signed up: Bjørge, Rita, and Espen',
     )
+  })
+
+  describe('fallback for invalid translations', () => {
+    it('falls back to interpolated text for a missing self-closing component', async () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const wrapper = await getWrapper([createBundle({message: 'Before <Missing/> after'})])
+      render(<TestComponent i18nKey="message" components={{}} />, {wrapper})
+      expect(await screen.findByTestId('output')).toHaveTextContent('Before <Missing/> after')
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Component not found: Missing'))
+      warnSpy.mockRestore()
+    })
+
+    it('falls back to interpolated text for a missing wrapping component', async () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const wrapper = await getWrapper([
+        createBundle({message: 'Click <Label>here</Label> to continue'}),
+      ])
+      render(<TestComponent i18nKey="message" components={{}} />, {wrapper})
+      expect(await screen.findByTestId('output')).toHaveTextContent(
+        'Click <Label>here</Label> to continue',
+      )
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Component not defined: Label'))
+      warnSpy.mockRestore()
+    })
+
+    it('falls back to interpolated text for an unrecognized HTML tag', async () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const wrapper = await getWrapper([createBundle({message: 'Some <blink>text</blink> here'})])
+      render(<TestComponent i18nKey="message" components={{}} />, {wrapper})
+      expect(await screen.findByTestId('output')).toHaveTextContent('Some <blink>text</blink> here')
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('HTML tag "blink" is not allowed'),
+      )
+      warnSpy.mockRestore()
+    })
+
+    it('falls back to interpolated text for mismatched component tags from stale locales', async () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const wrapper = await getWrapper([
+        createBundle({message: 'The <Label>{{title}}</Label> release'}),
+      ])
+      render(
+        <TestComponent
+          i18nKey="message"
+          components={{
+            VersionBadge: ({children}) => <span>{children}</span>,
+          }}
+          values={{title: 'My Release'}}
+        />,
+        {wrapper},
+      )
+      expect(await screen.findByTestId('output')).toHaveTextContent(
+        'The <Label>My Release</Label> release',
+      )
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Component not defined: Label'))
+      warnSpy.mockRestore()
+    })
+
+    it('does not warn when all components are provided correctly', async () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const wrapper = await getWrapper([
+        createBundle({
+          message: 'Your search for "<Red>{{keyword}}</Red>" took <Bold>{{duration}}ms</Bold>',
+        }),
+      ])
+      render(
+        <TestComponent
+          i18nKey="message"
+          components={{
+            Red: ({children}) => <span style={{color: 'red'}}>{children}</span>,
+            Bold: ({children}) => <b>{children}</b>,
+          }}
+          values={{keyword: 'something', duration: '123'}}
+        />,
+        {wrapper},
+      )
+      await screen.findByTestId('output')
+      expect(warnSpy).not.toHaveBeenCalled()
+      warnSpy.mockRestore()
+    })
+
+    it('does not warn when recognized HTML tags are used', async () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const wrapper = await getWrapper([createBundle({title: 'An <code>embedded</code> thing'})])
+      render(<TestComponent i18nKey="title" components={{}} />, {wrapper})
+      expect(await screen.findByTestId('output')).toHaveTextContent('An embedded thing')
+      expect(warnSpy).not.toHaveBeenCalled()
+      warnSpy.mockRestore()
+    })
   })
 })

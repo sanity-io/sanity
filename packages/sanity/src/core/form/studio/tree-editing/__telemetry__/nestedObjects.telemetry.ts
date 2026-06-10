@@ -9,7 +9,7 @@ interface NestedObjectInfoOrigin extends NestedDialogOpenedInfo {
 }
 
 /**
- * When a nested dialoge dialoge is opened
+ * When a nested dialog is opened
  */
 export const NestedDialogOpened = defineEvent<NestedDialogOpenedInfo>({
   name: 'Nested Dialog Opened',
@@ -17,7 +17,7 @@ export const NestedDialogOpened = defineEvent<NestedDialogOpenedInfo>({
   description: 'User opened a nested dialog',
 })
 
-/** When a nested dialog is successfully closed */
+/** When a nested dialog is closed */
 export const NestedDialogClosed = defineEvent({
   name: 'Nested Dialog Closed',
   version: 2,
@@ -77,18 +77,20 @@ export const RemovedObject = defineEvent<NestedDialogOpenedInfo & NestedObjectIn
   description: 'User removed a object from an array list via actions',
 })
 
-export const OpenedPortableTextEditorFullScreen = defineEvent<
-  NestedDialogOpenedInfo & NestedObjectInfoOrigin
->({
-  name: 'Opened Portable Text Editor Full Screen in Nested Object Dialog',
+interface EditorFullscreenInfo extends NestedObjectInfoOrigin {
+  editor_type: 'pte'
+  fullscreen: true
+  location: 'nested_object_dialog'
+}
+
+export const NestedDialogEditorOpened = defineEvent<EditorFullscreenInfo>({
+  name: 'Editor Opened',
   version: 1,
-  description: 'User opened a portable text editor in full screen mode in a object dialog',
+  description: 'User opened a fullscreen Portable Text Editor inside a nested object dialog',
 })
 
-export const ClosedPortableTextEditorFullScreen = defineEvent<
-  NestedDialogOpenedInfo & NestedObjectInfoOrigin
->({
-  name: 'Closed Portable Text Editor Full Screen in Nested Object Dialog',
+export const NestedDialogEditorClosed = defineEvent<EditorFullscreenInfo>({
+  name: 'Editor Closed',
   version: 1,
-  description: 'User closed a portable text editor in full screen mode in a object dialog',
+  description: 'User closed a fullscreen Portable Text Editor inside a nested object dialog',
 })

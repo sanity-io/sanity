@@ -1,7 +1,7 @@
 import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 
-import {useProjectStore} from '../../../store/_legacy/datastores'
+import {useProjectStore} from '../../../store/datastores'
 
 const PERMISSION_NAME = 'sanity.project.members'
 const GRANT_NAME = 'invite'

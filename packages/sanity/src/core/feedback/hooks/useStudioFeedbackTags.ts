@@ -1,17 +1,18 @@
+import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, version as reactVersion} from 'react'
 import {useRouterState} from 'sanity/router'
 
 import {useClient} from '../../hooks'
 import {useProjectSubscriptions} from '../../hooks/useProjectSubscriptions'
-import {useProject} from '../../store/_legacy/project/useProject'
-import {useProjectOrganizationData} from '../../store/_legacy/project/useProjectOrganizationData'
-import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
+import {useProject} from '../../store/project/useProject'
+import {useProjectOrganizationData} from '../../store/project/useProjectOrganizationData'
+import {useProjectOrganizationId} from '../../store/project/useProjectOrganizationId'
 import {useCurrentUser} from '../../store/user/hooks'
 import {useWorkspace} from '../../studio/workspace'
 import {SANITY_VERSION} from '../../version'
 import {type BaseFeedbackTags, type DynamicFeedbackTags} from '../types'
 
-const sessionId = typeof crypto !== 'undefined' ? crypto.randomUUID() : Math.random().toString(36)
+const sessionId = uuid()
 
 interface PluginEntry {
   name: string

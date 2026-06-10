@@ -21,6 +21,7 @@ import {isValidElementType} from 'react-is'
 
 import {Tooltip} from '../../../ui-components'
 import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews'
+import {resolveBlockImageDimensions} from '../../components/previews/helpers'
 import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
 import {useImageUrl} from '../../form/inputs/files/ImageInput/useImageUrl'
 import {useClient} from '../../hooks'
@@ -186,14 +187,30 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
     return renderIcon
   }, [Icon, imageUrl, mediaProp, renderIcon, renderMedia, title])
 
+  const resolvedMediaDimensions = useMemo<PreviewMediaDimensions | undefined>(() => {
+    if (props.mediaDimensions) {
+      return props.mediaDimensions
+    }
+
+    if (layout !== 'blockImage') {
+      return undefined
+    }
+
+    if (!isImageSource(mediaProp)) {
+      return undefined
+    }
+
+    return resolveBlockImageDimensions(mediaProp)
+  }, [layout, mediaProp, props.mediaDimensions])
+
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
       ...restProps,
-      // @todo: fix `TS2769: No overload matches this call.`
-      media: media as any,
+      media,
+      mediaDimensions: resolvedMediaDimensions,
       title,
     }),
-    [media, restProps, title],
+    [media, resolvedMediaDimensions, restProps, title],
   )
 
   const LayoutComponent = _previewComponents[layout || 'default'] as ComponentType<

@@ -3,7 +3,7 @@ import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/
 import {applyPatch, incremental} from 'mendoza'
 
 import {type Annotation, type ObjectDiff} from '../../field'
-import {wrapValue} from '../_legacy/history/history/diffValue'
+import {wrapValue} from '../history/history/diffValue'
 import {type DocumentGroupEvent, isEditDocumentVersionEvent} from './types'
 
 type EventMeta = {

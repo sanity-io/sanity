@@ -54,17 +54,31 @@ export function IncomingReferencesType({
   const {displayed} = useDocumentPane()
   const {getClient} = useSource()
   const displayedId = displayed?._id as string
+  /**
+   * `filter` is a function or a string, if it's a function it will get a new reference on every render
+   * `filterParams` is an object, so it will also get a new reference on every render.
+   *
+   * If they are not memoized the `references$` observable will be recreated on every render,
+   * causing the list to jump even when the resolved GROQ filter is unchanged.
+   *
+   * It is safe to capture the initial values here because both come from the schema, not
+   * from React render state. Schema changes reload the studio, so pinning the first reference for this mount
+   * does not stale meaningful configuration.
+   */
+  const [memoizedFilter] = useState(() => filter)
+  const [memoizedFilterParams] = useState(() => filterParams)
+
   const references$ = useMemo(
     () =>
       getIncomingReferences({
         documentId: displayedId,
         documentPreviewStore,
         type: type.type,
-        filter,
-        filterParams,
+        filter: memoizedFilter,
+        filterParams: memoizedFilterParams,
         getClient,
       }),
-    [documentPreviewStore, type, filter, filterParams, displayedId, getClient],
+    [documentPreviewStore, type.type, memoizedFilter, memoizedFilterParams, displayedId, getClient],
   )
 
   const {documents, loading} = useObservable(references$, INITIAL_STATE)

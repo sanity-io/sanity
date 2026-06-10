@@ -392,7 +392,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['test/cli/**/*', 'playwright-ct/tests/**/*', 'src/core/config/__tests__/**/*'],
+    files: ['test/cli/**/*', 'src/core/config/__tests__/**/*'],
     rules: {
       'tsdoc/syntax': 'off',
     },
@@ -436,7 +436,6 @@ export default defineConfig([
       'src/presentation/**/*',
       'src/structure/**/*',
       'test/**/*',
-      'playwright-ct/**/*',
     ],
     rules: {
       'import/no-extraneous-dependencies': [
@@ -460,7 +459,10 @@ export default defineConfig([
   {
     ...testingLibrary.configs['flat/react'],
     files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
-    ignores: ['playwright-ct/**/*'],
+    // Vitest browser-mode tests don't use Testing Library — `page.getByX()` is
+    // the vitest-browser query API, not a `render()` result, so its rules
+    // (prefer-screen-queries etc.) don't apply.
+    ignores: ['**/*.browser.test.{ts,tsx}'],
     rules: {
       ...testingLibrary.configs['flat/react'].rules,
       'testing-library/prefer-user-event': 'error',
@@ -471,6 +473,23 @@ export default defineConfig([
       'testing-library/prefer-query-by-disappearance': 'warn',
       'testing-library/render-result-naming-convention': 'warn',
       'testing-library/no-render-in-lifecycle': 'warn',
+    },
+  },
+  {
+    // Vitest browser-mode tests and their co-located story/helper files render
+    // real Studio inputs, so they legitimately import the public API from
+    // `sanity` (the `src/core` relative-import restriction doesn't apply) and
+    // pull in test-only dependencies.
+    name: 'sanity/browser-tests',
+    files: [
+      '**/*.browser.test.{ts,tsx}',
+      'src/core/comments/components/pte/comment-input/__tests__/*Story.tsx',
+      'src/core/form/inputs/arrays/__tests__/*Story.tsx',
+      'src/core/form/inputs/PortableText/__tests__/**/*Story.tsx',
+    ],
+    rules: {
+      'no-restricted-imports': 'off',
+      'import/no-extraneous-dependencies': 'off',
     },
   },
 ])

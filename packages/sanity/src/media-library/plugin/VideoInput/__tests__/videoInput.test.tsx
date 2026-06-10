@@ -12,6 +12,7 @@ import {
 } from '../../../../../test/fixtures/assetSourceMocks'
 import {renderVideoInput} from '../../../../../test/form'
 import {getDataTestIdPrefix} from '../../../../core/form/inputs/files/common/AssetSourceBrowser'
+import {StudioVideoInput} from '../StudioVideoInput'
 import {BaseVideoInput} from '../VideoInput'
 
 // Mock useVideoPlaybackInfo so VideoPreview shows the options menu instead of waiting for API
@@ -54,6 +55,64 @@ describe('VideoInput - local tests', () => {
         `${getDataTestIdPrefix({name: 'sanity.video', jsonType: 'object'})}-browse-button-media-library-mock`,
       ),
     ).toBeInTheDocument()
+  })
+
+  it('renders browse button right-aligned when disableNew is true', async () => {
+    const assetSource = createMockAssetSourceWithMediaLibraryUploader()
+    const videoBrowseTestId = `${getDataTestIdPrefix({name: 'sanity.video', jsonType: 'object'})}-browse-button-media-library-mock`
+
+    await renderVideoInput({
+      assetSources: [assetSource],
+      fieldDefinition: {
+        name: 'someVideo',
+        title: 'A video',
+        type: 'sanity.video',
+        options: {disableNew: true},
+      },
+      observeAsset: observeVideoAssetStub,
+      render: (inputProps) => <BaseVideoInput {...inputProps} />,
+    })
+
+    expect(screen.getByTestId(videoBrowseTestId)).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('file-input-upload-button-media-library-mock'),
+    ).not.toBeInTheDocument()
+
+    const browseButton = screen.getByTestId(videoBrowseTestId)
+    const flexContainer = browseButton.closest('[data-ui="Flex"]')
+    expect(flexContainer).toBeInTheDocument()
+    expect(flexContainer).toHaveStyle('justify-content: flex-end')
+  })
+
+  it('StudioVideoInput hides upload when disableNew is true', async () => {
+    const videoBrowseTestId = `${getDataTestIdPrefix({name: 'sanity.video', jsonType: 'object'})}-browse-button-sanity-media-library`
+
+    await renderVideoInput({
+      fieldDefinition: {
+        name: 'someVideo',
+        title: 'A video',
+        type: 'sanity.video',
+        options: {disableNew: true},
+      },
+      observeAsset: observeVideoAssetStub,
+      render: (inputProps) => {
+        const {
+          assetSources: _assetSources,
+          client: _client,
+          directUploads: _directUploads,
+          observeAsset: _observeAsset,
+          resolveUploader: _resolveUploader,
+          t: _t,
+          ...studioProps
+        } = inputProps
+        return <StudioVideoInput {...studioProps} />
+      },
+    })
+
+    expect(screen.getByTestId(videoBrowseTestId)).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('file-input-upload-button-sanity-media-library'),
+    ).not.toBeInTheDocument()
   })
 
   it('shows invalid video warning when asset ref is not a media-library ref', async () => {

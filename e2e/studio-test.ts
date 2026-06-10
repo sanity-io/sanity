@@ -4,6 +4,8 @@ import {test as baseTest} from '@playwright/test'
 import {createClient, type SanityClient, type SanityDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 
+import {watchForStudioErrors} from './helpers/studioErrors'
+
 class _TestSanityContext {
   documentIds: Set<string>
 
@@ -66,7 +68,9 @@ interface SanityFixtures {
 export const test = baseTest.extend<SanityFixtures>({
   // Extends the goto function to preserve the base pathname if it exists in the baseURL
   // This is used to ensure the navigation goes to the correct workspace.
-  async page({page, baseURL}, use) {
+  async page({page, context, baseURL}, use) {
+    watchForStudioErrors(context)
+
     const originalGoto = page.goto.bind(page)
     const baseUrl = new URL(baseURL || '')
     const basePath = baseUrl.pathname
@@ -75,7 +79,22 @@ export const test = baseTest.extend<SanityFixtures>({
       if (typeof url === 'string' && url.startsWith('/')) {
         url = `${baseUrl.origin}${basePath}${url}`
       }
-      return await originalGoto(url, options)
+      // Default to `domcontentloaded` rather than Playwright's default of `load`.
+      //
+      // The studio loads many subresources after the initial HTML is parsed
+      // (code-split chunks, workspace/auth/config fetches against the staging
+      // API, fonts, etc). On Firefox under CI load, the full `load` event
+      // frequently takes longer than the 60s test timeout, producing
+      // `page.originalGoto: Test timeout of 60000ms exceeded` flakes.
+      //
+      // Every caller already blocks on an explicit readiness signal after
+      // navigating (e.g. `[data-testid="form-view"]` via `createDraftDocument`,
+      // or an `expect(...).toBeVisible()` assertion), so waiting for `load`
+      // here adds latency without making the tests any more correct.
+      //
+      // Callers that genuinely need `load` / `networkidle` can still opt in
+      // by passing `{waitUntil: 'load'}` explicitly.
+      return await originalGoto(url, {waitUntil: 'domcontentloaded', ...options})
     }
 
     // Block the free trial dialog API to prevent overlay from intercepting clicks

@@ -16,7 +16,7 @@ export function NotAuthenticatedScreen() {
   const {activeWorkspace} = useActiveWorkspace()
 
   const handleLogout = useCallback(() => {
-    activeWorkspace.auth.logout?.()
+    void activeWorkspace.auth.logout?.()
   }, [activeWorkspace])
 
   useEffect(() => {

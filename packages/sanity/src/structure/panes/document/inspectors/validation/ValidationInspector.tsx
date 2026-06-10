@@ -13,7 +13,13 @@ import {
 } from '@sanity/types'
 import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
 import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
-import {type DocumentInspectorProps, isGoingToUnpublish, useTranslation} from 'sanity'
+import {
+  type DocumentInspectorProps,
+  isGoingToUnpublish,
+  mergeParseErrors,
+  useParseErrors,
+  useTranslation,
+} from 'sanity'
 
 import {ErrorBoundary} from '../../../../../ui-components'
 import {DocumentInspectorHeader} from '../../documentInspector'
@@ -35,6 +41,11 @@ const MARKER_TONE: Record<'error' | 'warning' | 'info', CardTone> = {
 export function ValidationInspector(props: DocumentInspectorProps) {
   const {onClose} = props
   const {onFocus, onPathOpen, schemaType, validation, value, editState} = useDocumentPane()
+  const parseErrors = useParseErrors()
+  const mergedValidation = useMemo(
+    () => mergeParseErrors(validation, parseErrors),
+    [validation, parseErrors],
+  )
   const {t} = useTranslation('validation')
 
   const handleOpen = useCallback(
@@ -67,16 +78,16 @@ export function ValidationInspector(props: DocumentInspectorProps) {
           </Box>
         ) : (
           <>
-            {validation.length === 0 && (
+            {mergedValidation.length === 0 && (
               <Box padding={2}>
                 <Text muted size={1}>
                   {t('panel.no-errors-message')}
                 </Text>
               </Box>
             )}
-            {validation.length > 0 && (
+            {mergedValidation.length > 0 && (
               <Stack space={2}>
-                {validation.map((marker, i) => (
+                {mergedValidation.map((marker, i) => (
                   <ValidationCard
                     // oxlint-disable-next-line no-array-index-key
                     key={i}

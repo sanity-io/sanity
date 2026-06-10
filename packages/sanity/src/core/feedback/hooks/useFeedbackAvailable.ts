@@ -35,7 +35,14 @@ export function useFeedbackAvailable(options: UseFeedbackAvailableOptions): bool
       // 502 → error: Sentry unreachable
       // catch → error: tunnel itself unreachable (ad blocker, network error)
 
-      .then((response) => setAvailable(response.ok))
+      .then(async (response) => {
+        setAvailable(response.ok)
+
+        // Consume the body stream to free the underlying HTTP connection.
+        // Without this, the unconsumed body keeps the H2/H3 stream open,
+        // which can cause head-of-line blocking on multiplexed connections.
+        await response.arrayBuffer().catch(() => undefined)
+      })
       .catch(() => setAvailable(false))
   }, [dsn, skip])
 

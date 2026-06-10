@@ -1,12 +1,13 @@
 import {defineConfig} from '@repo/test-config/vitest'
-import react from '@vitejs/plugin-react'
+import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
+import viteReact from '@vitejs/plugin-react'
 
 export default defineConfig({
   test: {
     environment: 'jsdom',
     globalSetup: ['./test/setup/global.ts'],
     setupFiles: ['./test/setup/environment.ts'],
-    exclude: ['./playwright-ct', './src/_internal/cli'],
+    exclude: ['./src/_internal/cli', '**/*.browser.test.*'],
     server: {
       deps: {inline: ['vitest-package-exports']},
     },
@@ -17,7 +18,8 @@ export default defineConfig({
     },
   },
   plugins: [
-    react({
+    vanillaExtractPlugin(),
+    viteReact({
       babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]},
     }),
   ],

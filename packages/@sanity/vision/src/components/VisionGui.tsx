@@ -33,6 +33,7 @@ import {
 } from 'sanity'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
+import {groqExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
 import {
@@ -269,7 +270,9 @@ export function VisionGui(props: VisionGuiProps) {
 
       cancelListenerSubscription()
 
-      setQueryInProgress(!context.params.error && Boolean(context.query))
+      const hasQuery = context.query.trim().length > 0
+
+      setQueryInProgress(!context.params.error && hasQuery)
       setListenInProgress(false)
       setListenMutations([])
       setError(context.params.error ? new Error(context.params.error) : undefined)
@@ -277,7 +280,7 @@ export function VisionGui(props: VisionGuiProps) {
       setQueryTime(undefined)
       setE2eTime(undefined)
 
-      if (context.params.error) {
+      if (context.params.error || !hasQuery) {
         return
       }
 
@@ -700,6 +703,7 @@ export function VisionGui(props: VisionGuiProps) {
                         initialValue={query}
                         onChange={setQuery}
                         ref={editorQueryRef}
+                        extensions={groqExtensions}
                       />
                     </Box>
                   </InputContainer>

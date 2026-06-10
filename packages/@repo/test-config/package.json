@@ -1,6 +1,6 @@
 {
   "name": "@repo/test-config",
-  "version": "5.20.0",
+  "version": "5.30.0",
   "private": true,
   "description": "Test (as in unit test) config shared across packages in the sanity monorepo",
   "type": "module",
@@ -8,6 +8,7 @@
     "./vitest": "./vitest/index.mjs"
   },
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   }
 }

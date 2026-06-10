@@ -1,7 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignoreWorkspaces": [
-    "e2e",
     "dev/*",
     "perf/*",
     "packages/@repo/test-exports",
@@ -25,8 +24,6 @@
         "dotenv",
         // keeping it a dev dependency speeds up 'npx only-allow pnpm' in package.json's preinstall script
         "only-allow",
-        // Knip does not bind extra args (`-f gha`) behind e.g. `pnpm turbo run lint` to the target binary
-        "eslint-formatter-gha",
         // See .github/workflows/e2e-ui.yml
         "@sanity/ui",
       ],
@@ -37,19 +34,31 @@
         "sanity-tsdoc",
         // Knip doesn't understand `cd perf/studio && pnpm preview`
         "preview",
+        // `pnpm dist-tag` invocations in tag-latest.yml / tag-stable.yml
+        "dist-tag",
+        // Installed system-wide via brew/uv/pipx, not npm
+        "zizmor",
       ],
+    },
+    // e2e is scanned so its heavy use of `@playwright/test` (catalog) is seen as
+    // used. The playwright plugin is disabled because the config reads required
+    // SANITY_E2E_* env vars at load time. Treat every file as an entry so the
+    // workspace's pre-existing unused files/exports (out of scope for this work)
+    // aren't reported, while dependency usage still is.
+    "e2e": {
+      "entry": ["**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+      "playwright": false,
     },
     "packages/sanity": {
       "entry": [
         "src/_exports/*.ts",
         "bin/sanity",
         "package.config.ts",
-        "playwright-ct/template/index.ts",
         "mock-browser-env-stub-loader.mjs",
       ],
       "project": [
         "src/**/*.{ts,tsx}",
-        "playwright-ct/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
       ],
       "ignoreDependencies": ["@vitest/expect", "babel-plugin-styled-components"],

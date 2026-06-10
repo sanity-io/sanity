@@ -6,7 +6,7 @@ import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
 
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspaceSchemaId} from '../../../hooks/useWorkspaceSchemaId'
-import {useComlinkStore, useProjectStore} from '../../../store/_legacy/datastores'
+import {useComlinkStore, useProjectStore} from '../../../store/datastores'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {useStudioAppIdStore} from '../../../store/studio-app/useStudioAppIdStore'
 import {useWorkspace} from '../../../studio/workspace'

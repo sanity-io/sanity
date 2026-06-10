@@ -1,5 +1,6 @@
 import path from 'node:path'
 
+import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
@@ -42,6 +43,7 @@ export default defineCliConfig({
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     const nextConfig = mergeConfig(viteConfig, {
+      plugins: [vanillaExtractPlugin()],
       server: {
         warmup: {
           clientFiles: [

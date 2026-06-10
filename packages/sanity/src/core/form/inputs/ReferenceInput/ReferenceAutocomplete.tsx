@@ -15,6 +15,7 @@ import {styled} from 'styled-components'
 import {useFormBuilder} from '../..'
 import {Popover} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
+import {useReferenceAutocompletePopoverBoundary} from '../../hooks/useReferenceAutocompletePopoverBoundary'
 
 const StyledPopover = styled(Popover)`
   & > div {
@@ -54,6 +55,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
 
   const {t} = useTranslation()
   const hasResults = props.options && props.options.length > 0
+  const popoverBoundary = useReferenceAutocompletePopoverBoundary(referenceElement)
   const renderPopover = useCallback(
     (
       {
@@ -77,6 +79,8 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         fallbackPlacements={FALLBACK_PLACEMENTS}
         arrow={false}
         constrainSize
+        floatingBoundary={popoverBoundary}
+        referenceBoundary={popoverBoundary}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         content={
@@ -105,7 +109,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         matchReferenceWidth
       />
     ),
-    [hasResults, t, searchString, loading, portalRef, referenceElement],
+    [hasResults, t, searchString, loading, portalRef, referenceElement, popoverBoundary],
   )
   return (
     <Autocomplete

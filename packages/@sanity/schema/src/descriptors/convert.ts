@@ -157,10 +157,15 @@ export class DescriptorConverter {
   }
 }
 
+function getOwnProps(schemaType: SchemaType): Record<string, unknown> {
+  // OWN_PROPS_NAME is only set on subtypes, not the core types.
+  return OWN_PROPS_NAME in schemaType
+    ? (schemaType as any)[OWN_PROPS_NAME]
+    : (schemaType as unknown as Record<string, unknown>)
+}
+
 function convertCommonTypeDef(schemaType: SchemaType, path: string, opts: Options): CommonTypeDef {
-  // Note that OWN_PROPS_NAME is only set on subtypes, not the core types.
-  // We might consider setting OWN_PROPS_NAME on _all_ types to avoid this branch.
-  const ownProps = OWN_PROPS_NAME in schemaType ? (schemaType as any)[OWN_PROPS_NAME] : schemaType
+  const ownProps = getOwnProps(schemaType)
 
   let fields: ObjectField[] | undefined
   if (Array.isArray(ownProps.fields)) {
@@ -222,7 +227,10 @@ function convertCommonTypeDef(schemaType: SchemaType, path: string, opts: Option
     )
   }
 
-  const reason = ownProps.deprecated?.reason
+  const reason =
+    isObject(ownProps.deprecated) && 'reason' in ownProps.deprecated
+      ? ownProps.deprecated.reason
+      : undefined
 
   let orderings: ObjectOrdering[] | undefined
   if (Array.isArray(ownProps.orderings)) {
@@ -312,7 +320,8 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
     }
     case 'reference':
     case 'globalDocumentReference':
-    case 'crossDatasetReference':
+    case 'crossDatasetReference': {
+      const ownProps = getOwnProps(schemaType)
       return {
         extends: schemaType.type.name,
         to: filterStringKey(
@@ -321,8 +330,10 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
             // The `toType.type` case is for crossDatasetReferences/crossDatasetReference
             .map((toType) => ({name: toType.name || toType.type?.name || toType.type})),
         ),
+        weak: maybeTrue(ownProps.weak),
         ...common,
       } satisfies ReferenceTypeDef
+    }
     default:
       return {extends: schemaType.type.name, ...common} satisfies SubtypeDef
   }
@@ -463,7 +474,7 @@ function maybeValidations(obj: unknown): Validation[] | undefined {
     case 'url':
       impliedRules.push({
         type: 'uri',
-        allowRelative: false,
+        scheme: ['http', 'https'],
       })
       break
     case 'slug':
@@ -506,8 +517,12 @@ function maybeValidations(obj: unknown): Validation[] | undefined {
       continue
     }
 
-    // Add implied rules that aren't already defined in the validation
-    const rulesToAdd = impliedRules.filter((ir) => !validation.rules.some((r) => isEqual(r, ir)))
+    // Add implied rules that aren't already defined in the validation.
+    // Implied rules are defaults — if explicit validation already includes a rule of the
+    // same type, the default is redundant. Match by type since that's the semantic identity.
+    const rulesToAdd = impliedRules.filter(
+      (ir) => !validation.rules.some((r) => r.type === ir.type),
+    )
     if (rulesToAdd.length > 0) {
       validation.rules.unshift(...rulesToAdd)
     }
@@ -718,17 +733,33 @@ function convertRuleSpec(spec: unknown, optional?: true): RuleType | undefined {
       }
       return undefined
     case 'uri': {
+      const options =
+        isObject(constraint) && 'options' in constraint && isObject(constraint.options)
+          ? constraint.options
+          : undefined
+
+      const scheme =
+        options && 'scheme' in options && Array.isArray(options.scheme) && options.scheme.length > 0
+          ? options.scheme
+              .map((s: unknown) => convertSchemeValue(s))
+              .filter((s): s is string | {type: 'regex'; pattern: string} => s !== undefined)
+          : undefined
+
       const allowRelative =
-        isObject(constraint) &&
-        'options' in constraint &&
-        isObject(constraint.options) &&
-        'allowRelative' in constraint.options
-          ? maybeBoolean(constraint.options.allowRelative)
+        options && 'allowRelative' in options ? maybeBoolean(options.allowRelative) : undefined
+      const relativeOnly =
+        options && 'relativeOnly' in options ? maybeBoolean(options.relativeOnly) : undefined
+      const allowCredentials =
+        options && 'allowCredentials' in options
+          ? maybeBoolean(options.allowCredentials)
           : undefined
 
       return {
         type: 'uri',
-        ...(allowRelative !== undefined && {allowRelative}),
+        ...(scheme !== undefined && scheme.length > 0 && {scheme}),
+        ...(allowRelative && {allowRelative}),
+        ...(relativeOnly && {relativeOnly}),
+        ...(allowCredentials && {allowCredentials}),
       }
     }
     case 'custom':
@@ -762,6 +793,35 @@ function convertConstraintValue(constraint: unknown): string | FieldReference {
   }
   // Convert to string
   return String(constraint)
+}
+
+// Regex metacharacters that escapeRegex in Rule.ts escapes
+const REGEX_META = /[.*+?^${}()|[\]\\]/
+
+/**
+ * Converts a scheme value to either a plain string or a `{type: 'regex', pattern}` object.
+ * Rule.uri() wraps plain strings as `new RegExp("^" + escapeRegex(str) + "$")`.
+ * If the source matches that pattern (anchored, no metacharacters), recover the plain string.
+ * Otherwise, return a RegexPattern for user-provided RegExp patterns.
+ */
+function convertSchemeValue(val: unknown): string | {type: 'regex'; pattern: string} | undefined {
+  if (val instanceof RegExp) {
+    const {source, flags} = val
+    // If flags are present, always emit a regex pattern with inline modifiers (e.g. (?i))
+    // to preserve flag semantics in a portable way across regex libraries.
+    if (flags) {
+      return {type: 'regex', pattern: `(?${flags})${source}`}
+    }
+    const match = source.match(/^\^(.*)\$$/)
+    if (match && !REGEX_META.test(match[1])) {
+      return match[1]
+    }
+    return {type: 'regex', pattern: source}
+  }
+  if (typeof val === 'string') {
+    return val
+  }
+  return undefined
 }
 
 function maybeBoolean(val: unknown): boolean | undefined {

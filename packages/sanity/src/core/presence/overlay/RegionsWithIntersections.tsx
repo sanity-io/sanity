@@ -9,7 +9,6 @@ import {
   useState,
 } from 'react'
 
-import {resizeObserver} from '../../util/resizeObserver'
 import {
   DEBUG,
   INTERSECTION_ELEMENT_PADDING,
@@ -94,9 +93,16 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
 
     setOverlayWidth(overlayRef.current.offsetWidth)
 
-    return resizeObserver.observe(overlayRef.current, (event) => {
-      setOverlayWidth(event.contentRect.width)
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0]
+      if (entry) {
+        setOverlayWidth(entry.contentRect.width)
+      }
     })
+
+    observer.observe(overlayRef.current)
+
+    return () => observer.disconnect()
   }, [])
 
   const top = intersections['::top']

@@ -41,7 +41,7 @@ export const createGroq2024Search: SearchStrategyFactory<Groq2024SearchResults> 
       ...searchOptions,
     }
 
-    const {query, params, options, sortOrder} = createSearchQuery(
+    const {query, params, options, sortOrder, compiledSortEntries} = createSearchQuery(
       searchTerms,
       searchParams,
       mergedOptions,
@@ -61,7 +61,9 @@ export const createGroq2024Search: SearchStrategyFactory<Groq2024SearchResults> 
           // Search overfetches by 1 to determine whether there is another page to fetch. Therefore,
           // exclude the final result if it's beyond the limit.
           hits: hits.map((hit) => ({hit})).slice(0, searchOptions.limit),
-          nextCursor: hasNextPage ? getNextCursor({lastResult, sortOrder}) : undefined,
+          nextCursor: hasNextPage
+            ? getNextCursor({lastResult, sortOrder, compiledSortEntries})
+            : undefined,
         }
       }),
     )

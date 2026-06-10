@@ -58,6 +58,27 @@ export const TranslateExample = forwardRef(function TranslateExample() {
             }}
           />
         </Text>
+
+        <Text weight="bold">Broken translations (should fall back gracefully, not crash):</Text>
+
+        <Text>
+          Missing self-closing:{' '}
+          <Translate t={t} i18nKey="translate.missing-self-closing" components={{}} />
+        </Text>
+        <Text>
+          Missing wrapping: <Translate t={t} i18nKey="translate.missing-wrapping" components={{}} />
+        </Text>
+        <Text>
+          Mismatched component (issue #12617):{' '}
+          <Translate
+            t={t}
+            i18nKey="translate.mismatched-component"
+            components={{
+              VersionBadge: ({children}) => <span style={{fontWeight: 'bold'}}>{children}</span>,
+            }}
+            values={{title: 'My Release'}}
+          />
+        </Text>
       </Stack>
     </Card>
   )

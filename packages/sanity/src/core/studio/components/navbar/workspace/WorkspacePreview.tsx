@@ -5,6 +5,7 @@ import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 
 export const STATE_TITLES = {
+  'loading': 'Checking…',
   'logged-in': '',
   'logged-out': 'Signed out',
   'no-access': '',
@@ -50,7 +51,7 @@ export interface WorkspacePreviewProps {
   icon?: ComponentType | ReactNode
   iconRight?: ComponentType | ReactNode
   selected?: boolean
-  state?: 'logged-in' | 'logged-out' | 'no-access'
+  state?: 'loading' | 'logged-in' | 'logged-out' | 'no-access'
   subtitle?: string
   title: string
 }

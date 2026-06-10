@@ -1,14 +1,23 @@
 import {defineEvent} from '@sanity/telemetry'
 
-export const InspectedDivergence = defineEvent({
+export interface InspectedDivergenceInfo {
+  sessionId: string | null
+  divergenceCount: number | null
+}
+
+export const InspectedDivergence = defineEvent<InspectedDivergenceInfo>({
   name: 'Inspected Divergence',
   version: 1,
   description: 'User inspected divergence in a single node',
 })
 
-export const ActedOnDivergence = defineEvent<{
+export interface ActedOnDivergenceInfo {
   action: 'take-upstream-value' | 'mark-resolved'
-}>({
+  sessionId: string | null
+  divergenceCount: number | null
+}
+
+export const ActedOnDivergence = defineEvent<ActedOnDivergenceInfo>({
   name: 'Acted On Divergence',
   version: 1,
   description: 'User acted on divergence in a single node',

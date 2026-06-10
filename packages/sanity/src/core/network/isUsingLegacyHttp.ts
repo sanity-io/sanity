@@ -83,7 +83,15 @@ function detectProtocol(checkUrl: string): Observable<string | undefined> {
     ),
   )
 
-  return defer(() => fetch(checkUrl)).pipe(
+  return defer(() =>
+    fetch(checkUrl).then((res) => {
+      // Cancel the body stream to free the underlying HTTP connection.
+      // Without this, the unconsumed body keeps the H2/H3 stream open,
+      // which can cause head-of-line blocking on multiplexed connections.
+      void res.body?.cancel()
+      return res
+    }),
+  ).pipe(
     // when the request is over, we map it to the corresponding timing entry
     mergeMap(() => timingEntry),
     // Race the actual timing detection against a 2.5s timer.

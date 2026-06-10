@@ -77,7 +77,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   }, [])
 
   return (
-    <Card height="fill">
+    <Card data-testid="studio-error-screen" data-error="CORS origin error" height="fill">
       <CenteredContainer align="center" justify="center" padding={4}>
         <ContentWrapper paddingBottom={5}>
           <Stack space={5}>

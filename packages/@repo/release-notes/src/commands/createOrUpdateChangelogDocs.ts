@@ -144,7 +144,10 @@ async function mergeChangelogBody(
 }
 
 function createEntry(client: SanityClient, info: PullRequestInfo, {dryRun}: {dryRun?: boolean}) {
-  return info.pr && info.pr.body ? getReleaseNotesMutations(client, info, {dryRun}) : []
+  // Always emit an entry, even when GitHub didn't return a PR association or
+  // the PR has no body. This keeps the changelog document consistent with the
+  // release-PR description table (both should reflect every commit that shipped).
+  return getReleaseNotesMutations(client, info, {dryRun})
 }
 
 async function getReleaseNotesMutations(

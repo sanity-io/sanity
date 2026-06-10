@@ -1,10 +1,22 @@
-import {useEffect} from 'react'
-
-import {resizeObserver} from '../../util'
+import {useEffect, useEffectEvent} from 'react'
 
 export function useResizeObserver(
   element: HTMLDivElement,
   onResize: (event: ResizeObserverEntry) => void,
 ): void {
-  useEffect(() => resizeObserver.observe(element, onResize), [element, onResize])
+  const handleResize = useEffectEvent((entry: ResizeObserverEntry) => {
+    onResize(entry)
+  })
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries.find((e) => e.target === element)
+      if (entry) {
+        handleResize(entry)
+      }
+    })
+
+    observer.observe(element)
+
+    return () => observer.disconnect()
+  }, [element])
 }

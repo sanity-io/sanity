@@ -14,12 +14,12 @@ import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 /**
  * Renders a dropdown button in the document panel header with two actions:
  * - Copy link to document (perspective-aware URL)
- * - Copy document ID (context-aware, including version/draft prefix)
+ * - Copy document ID (prefixed for versions/drafts, plain for published and live edit types)
  *
  * @internal
  */
 export function CopyDocumentActions() {
-  const {documentId, documentType} = useDocumentPaneInfo()
+  const {documentId, documentType, schemaType} = useDocumentPaneInfo()
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
@@ -36,12 +36,12 @@ export function CopyDocumentActions() {
       return getVersionId(documentId, versionReleaseId)
     }
 
-    if (selectedPerspectiveName === 'published') {
+    if (selectedPerspectiveName === 'published' || schemaType?.liveEdit) {
       return documentId
     }
 
     return getDraftId(documentId)
-  }, [documentId, scheduledDraft, selectedPerspectiveName, selectedReleaseId])
+  }, [documentId, scheduledDraft, schemaType?.liveEdit, selectedPerspectiveName, selectedReleaseId])
 
   const handleCopyLink = useCallback(async () => {
     telemetry.log(DocumentURLCopied)

@@ -1,6 +1,6 @@
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {ToastProvider} from '@sanity/ui'
-import {type ReactNode, useMemo} from 'react'
+import {type ReactNode, useEffect, useMemo} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock'
 import {errorReporter} from '../error/errorReporter'
@@ -33,7 +33,7 @@ import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
-import {WorkspacesProvider} from './workspaces'
+import {VisibleWorkspacesProvider, WorkspacesProvider} from './workspaces'
 
 /**
  * @hidden
@@ -54,13 +54,12 @@ export function StudioProvider({
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
 }: StudioProviderProps) {
-  // We initialize the error reporter as early as possible in order to catch anything that could
-  // occur during configuration loading, React rendering etc. StudioProvider is often the highest
-  // mounted React component that is shared across embedded and standalone studios.
-  errorReporter.initialize()
-
-  // Register refractor languages on first render (deferred from module scope for faster import)
-  ensureRefractorLanguages()
+  // Run in an effect to keep render pure; both calls are idempotent and buffer/guard
+  // their own work, so StrictMode's double mount is safe.
+  useEffect(() => {
+    errorReporter.initialize()
+    ensureRefractorLanguages()
+  }, [])
 
   // Extract the first workspace's projectId for use in error screens
   const primaryProjectId = useMemo(() => {
@@ -113,27 +112,29 @@ export function StudioProvider({
                 basePath={basePath}
                 LoadingComponent={LoadingBlock}
               >
-                <ActiveWorkspaceMatcher
-                  unstable_history={history}
-                  NotFoundComponent={NotFoundScreen}
-                  LoadingComponent={LoadingBlock}
-                >
-                  <StudioThemeProvider>
-                    <UserColorManagerProvider>
-                      {noAuthBoundary ? (
-                        _children
-                      ) : (
-                        <AuthBoundary
-                          LoadingComponent={LoadingBlock}
-                          AuthenticateComponent={AuthenticateScreen}
-                          NotAuthenticatedComponent={NotAuthenticatedScreen}
-                        >
-                          {_children}
-                        </AuthBoundary>
-                      )}
-                    </UserColorManagerProvider>
-                  </StudioThemeProvider>
-                </ActiveWorkspaceMatcher>
+                <VisibleWorkspacesProvider>
+                  <ActiveWorkspaceMatcher
+                    unstable_history={history}
+                    NotFoundComponent={NotFoundScreen}
+                    LoadingComponent={LoadingBlock}
+                  >
+                    <StudioThemeProvider>
+                      <UserColorManagerProvider>
+                        {noAuthBoundary ? (
+                          _children
+                        ) : (
+                          <AuthBoundary
+                            LoadingComponent={LoadingBlock}
+                            AuthenticateComponent={AuthenticateScreen}
+                            NotAuthenticatedComponent={NotAuthenticatedScreen}
+                          >
+                            {_children}
+                          </AuthBoundary>
+                        )}
+                      </UserColorManagerProvider>
+                    </StudioThemeProvider>
+                  </ActiveWorkspaceMatcher>
+                </VisibleWorkspacesProvider>
               </WorkspacesProvider>
             </StudioRootErrorHandler>
           </StudioErrorBoundary>
@@ -155,6 +156,7 @@ function ensureRefractorLanguages() {
       import('refractor/json'),
       import('refractor/jsx'),
       import('refractor/typescript'),
+      import('@sanity/prism-groq').then((m) => ({default: m.refractorGroq})),
     ])
       .then((languages) => languages.forEach((lang) => registerLanguage(lang.default)))
       .catch((error) =>

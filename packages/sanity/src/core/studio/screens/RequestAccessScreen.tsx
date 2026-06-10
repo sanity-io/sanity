@@ -10,7 +10,7 @@ import {finalize} from 'rxjs'
 
 import {Button, Dialog} from '../../../ui-components'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
-import {getProviderTitle} from '../../store/_legacy/authStore/providerTitle'
+import {getProviderTitle} from '../../store/authStore/providerTitle'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 import {NotAuthenticatedScreen} from './NotAuthenticatedScreen'
 
@@ -53,7 +53,7 @@ export function RequestAccessScreen() {
   const {activeWorkspace} = useActiveWorkspace()
 
   const handleLogout = useCallback(() => {
-    activeWorkspace.auth.logout?.()
+    void activeWorkspace.auth.logout?.()
   }, [activeWorkspace])
 
   // Get config info from active workspace

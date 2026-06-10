@@ -260,7 +260,6 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
 export function PreviewHeader(
   props: Omit<PreviewHeaderProps, 'renderDefault'> & {options?: HeaderOptions},
 ): React.JSX.Element {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const renderDefault = useCallback((props: Omit<PreviewHeaderProps, 'renderDefault'>) => {
     return <PreviewHeaderDefault {...props} />
   }, [])

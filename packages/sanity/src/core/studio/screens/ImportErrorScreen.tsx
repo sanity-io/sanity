@@ -40,7 +40,15 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
   }, [autoReload, countdownSeconds])
 
   return (
-    <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
+    <Card
+      data-testid="studio-error-screen"
+      data-error={error.message || 'Import error'}
+      height="fill"
+      overflow="auto"
+      paddingY={[4, 5, 6, 7]}
+      paddingX={4}
+      sizing="border"
+    >
       <View display="flex" height="fill">
         <Container width={3}>
           <Stack space={6}>

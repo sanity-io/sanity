@@ -46,9 +46,18 @@ test('clicking inspect mode sets value in storage', async ({
     value: 'raw',
   })
 
-  // Set up listener for the second network request before clicking
+  // Set up listener for the second network request before clicking.
+  // Match on the response body to avoid catching a late duplicate of the first PUT.
   const keyValueRequest2 = page.waitForResponse(async (response) => {
-    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+    if (!response.url().includes('/users/me/keyvalue') || response.request().method() !== 'PUT') {
+      return false
+    }
+    try {
+      const body = await response.json()
+      return body[0]?.value === 'parsed'
+    } catch {
+      return false
+    }
   })
 
   // Click Parsed tab
