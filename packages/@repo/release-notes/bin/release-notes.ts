@@ -133,6 +133,12 @@ await yargs(process.argv.slice(2))
           type: 'string',
           default: 'latest',
         },
+        inFlightChecks: {
+          description:
+            'Include the in-flight release check instructions in the PR description (only relevant for the main release line)',
+          type: 'boolean',
+          default: true,
+        },
         dryRun: {
           description: 'Dry run',
           type: 'boolean',
@@ -155,6 +161,7 @@ await yargs(process.argv.slice(2))
                 tentativeVersion: args.tentativeVersion,
                 baseVersion: args.baseVersion,
                 distTag: args.distTag,
+                inFlightChecks: args.inFlightChecks,
               },
               result,
             ),
@@ -321,7 +328,8 @@ function generateChangeLogSummary(
     tentativeVersion,
     baseVersion,
     distTag,
-  }: {tentativeVersion: string; baseVersion: string; distTag: string},
+    inFlightChecks,
+  }: {tentativeVersion: string; baseVersion: string; distTag: string; inFlightChecks: boolean},
   result: GenerateChangeLogResult,
 ) {
   const {changelogDocumentId, commitsWithPrs, releaseId} = result
@@ -345,6 +353,17 @@ function generateChangeLogSummary(
   const changelogUrl = `${getAdminStudioUrl()}/intent/edit/id=${changelogDocumentId.published}/?perspective=${releaseId}`
   const contentReleaseUrl = `${getAdminStudioUrl()}/intent/release/id=${releaseId}/?perspective=${releaseId}`
 
+  const releaseSteps = [
+    // the in-flight status checks only guard PRs on the main release line
+    ...(inFlightChecks
+      ? [
+          'Mark this PR as ready for review to block open PRs from being merged while release is in progress',
+        ]
+      : []),
+    `Ensure the [content release](${contentReleaseUrl}) is ready to go and passes validation`,
+    'Merge this PR',
+  ]
+
   return `
 🤖 I have created a release \`**squib**\` \`**squob**\`
 
@@ -353,9 +372,7 @@ function generateChangeLogSummary(
 Note: Entries in the changelog document can be safely edited and will never be overwritten by automation.
 
 ### 🚀 Steps to release
-1. Mark this PR as ready for review to block open PRs from being merged while release is in progress
-2. Ensure the [content release](${contentReleaseUrl}) is ready to go and passes validation
-3. Merge this PR
+${releaseSteps.map((step, index) => `${index + 1}. ${step}`).join('\n')}
 
 Once this PR is merged, automation will take care of the rest by:
 - Publishing **\`v${tentativeVersion}\`** of all public packages in this repo to the npm registry and tagging as \`${distTag}\`

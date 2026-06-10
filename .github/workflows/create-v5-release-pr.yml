@@ -105,6 +105,7 @@ jobs:
               --branch=v5 \
               --source=studio-v5 \
               --distTag=maintenance-v5 \
+              --inFlightChecks=false \
               --baseVersion="$BASE_VERSION" \
               --tentativeVersion="$VERSION" \
               --outputFormat=pr-description
