@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.settings.json",
-  "include": ["./package.json", "./playwright-ct", "./scripts", "./src", "./test", "./typings"],
+  "include": ["./package.json", "./scripts", "./src", "./test", "./typings"],
   "compilerOptions": {
     "customConditions": ["monorepo"]
   }

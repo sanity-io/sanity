@@ -175,7 +175,7 @@ describe('CopyDocumentActions', () => {
       await clickMenuItem('copy-link-to-document')
 
       expect(mockTelemetryLog).toHaveBeenCalledWith(
-        expect.objectContaining({name: 'DocumentURLCopied'}),
+        expect.objectContaining({name: 'Document URL Copied'}),
       )
     })
   })
@@ -264,7 +264,7 @@ describe('CopyDocumentActions', () => {
       await clickMenuItem('copy-document-id')
 
       expect(mockTelemetryLog).toHaveBeenCalledWith(
-        expect.objectContaining({name: 'DocumentIDCopied'}),
+        expect.objectContaining({name: 'Document ID Copied'}),
       )
     })
   })

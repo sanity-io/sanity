@@ -94,7 +94,7 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
       name: `${prefix}cookie-redirectOnSingle`,
       title: `Cookie + redirectOnSingle${titleSuffix}`,
       basePath: `${pathPrefix}/cookie-redirectOnSingle`,
-      auth: {loginMethod: 'cookie', redirectOnSingle: true, providers: [github], mode: 'replace'},
+      auth: {loginMethod: 'cookie', redirectOnSingle: true, providers: [github]},
     },
     {
       ...shared,
@@ -102,7 +102,7 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
       name: `${prefix}token-redirectOnSingle`,
       title: `Token + redirectOnSingle${titleSuffix}`,
       basePath: `${pathPrefix}/token-redirectOnSingle`,
-      auth: {loginMethod: 'token', redirectOnSingle: true, providers: [github], mode: 'replace'},
+      auth: {loginMethod: 'token', redirectOnSingle: true, providers: [github]},
     },
     {
       ...shared,
@@ -110,7 +110,7 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
       name: `${prefix}dual-redirectOnSingle`,
       title: `Dual + redirectOnSingle${titleSuffix}`,
       basePath: `${pathPrefix}/dual-redirectOnSingle`,
-      auth: {loginMethod: 'dual', redirectOnSingle: true, providers: [github], mode: 'replace'},
+      auth: {loginMethod: 'dual', redirectOnSingle: true, providers: [github]},
     },
 
     // SSO — uses createAuthStore with a single SAML provider replacing defaults
@@ -124,7 +124,6 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
         ...env,
         loginMethod: 'cookie',
         providers: [ssoProvider],
-        mode: 'replace',
       }),
     },
     {
@@ -137,7 +136,6 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
         ...env,
         loginMethod: 'token',
         providers: [ssoProvider],
-        mode: 'replace',
       }),
     },
     {
@@ -150,7 +148,6 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
         ...env,
         loginMethod: 'dual',
         providers: [ssoProvider],
-        mode: 'replace',
       }),
     },
 
@@ -166,7 +163,6 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
         loginMethod: 'cookie',
         redirectOnSingle: true,
         providers: [ssoProvider],
-        mode: 'replace',
       }),
     },
     {
@@ -180,7 +176,6 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
         loginMethod: 'token',
         redirectOnSingle: true,
         providers: [ssoProvider],
-        mode: 'replace',
       }),
     },
     {
@@ -194,7 +189,6 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
         loginMethod: 'dual',
         redirectOnSingle: true,
         providers: [ssoProvider],
-        mode: 'replace',
       }),
     },
   ] satisfies WorkspaceOptions[]
@@ -210,7 +204,6 @@ export default defineConfig([
     basePath: `/ppsg7ml5/noProviders`,
     auth: {
       providers: [],
-      mode: 'replace',
     },
   } satisfies WorkspaceOptions,
 ])

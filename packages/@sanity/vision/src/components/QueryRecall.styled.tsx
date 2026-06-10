@@ -9,20 +9,8 @@ export const FixedHeader = styled(Stack)`
 `
 
 export const ScrollContainer = styled(Box)`
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: ${({theme}) => theme.sanity.color.base.border};
-    border-radius: 4px;
-  }
+  height: auto;
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
 `

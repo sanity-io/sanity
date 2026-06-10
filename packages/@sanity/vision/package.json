@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "5.30.0",
+  "version": "5.31.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "admin",
@@ -59,19 +59,19 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.20.0",
-    "@codemirror/commands": "^6.10.1",
-    "@codemirror/lang-javascript": "^6.2.4",
-    "@codemirror/language": "^6.12.1",
-    "@codemirror/search": "^6.6.0",
-    "@codemirror/state": "^6.5.4",
-    "@codemirror/view": "^6.39.11",
+    "@codemirror/autocomplete": "^6.20.3",
+    "@codemirror/commands": "^6.10.3",
+    "@codemirror/lang-javascript": "^6.2.5",
+    "@codemirror/language": "^6.12.3",
+    "@codemirror/search": "^6.7.0",
+    "@codemirror/state": "^6.6.0",
+    "@codemirror/view": "^6.43.0",
     "@lezer/highlight": "^1.2.3",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.6",
     "@sanity/icons": "^3.7.4",
-    "@sanity/lezer-groq": "^1.0.3",
+    "@sanity/lezer-groq": "^1.0.4",
     "@sanity/ui": "catalog:",
     "@sanity/uuid": "^3.0.2",
     "@uiw/react-codemirror": "^4.25.4",
@@ -89,10 +89,11 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@rolldown/plugin-babel": "catalog:",
     "@sanity/client": "catalog:",
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/pkg-utils": "catalog:",
-    "@testing-library/react": "^16.3.1",
+    "@testing-library/react": "^16.3.2",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
     "@typescript/native-preview": "catalog:",
@@ -113,11 +114,10 @@
   },
   "peerDependencies": {
     "react": "^19.2.2",
-    "sanity": "^4.0.0-0 || ^5.0.0-0",
+    "sanity": "^6.0.0-0",
     "styled-components": "^6.1.15"
   },
   "browserslist": [
-    "node >=20.19",
     "node >=22.12",
     "baseline 2024"
   ]

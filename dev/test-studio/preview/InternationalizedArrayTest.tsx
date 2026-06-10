@@ -9,10 +9,12 @@ export function InternationalizedArrayTest(): React.JSX.Element {
     {
       _id: string
       title: string | null
-      titles: {_key: string; value: string}[] | null
+      // `language` is set in sanity-plugin-internationalized-array v5+ data,
+      // while v4 data stores the language id in `_key`
+      titles: {_key: string; language?: string; value: string}[] | null
     }[]
   >(
-    /* groq */ `*[_type == "internationalizedArrayTest"]{_id,"title":title[_key == "en"].value,"titles": title[_key != "en" && defined(value)]{_key,value}}`,
+    /* groq */ `*[_type == "internationalizedArrayTest"]{_id,"title":title[language == "en" || _key == "en"].value,"titles": title[language != "en" && _key != "en" && defined(value)]{_key,language,value}}`,
   )
 
   if (error) {
@@ -56,13 +58,13 @@ export function InternationalizedArrayTest(): React.JSX.Element {
           >
             <h1>{item.title || 'Untitled'}</h1>
             <dl>
-              {item.titles?.map(({_key, value}) => (
+              {item.titles?.map(({_key, language, value}) => (
                 <Fragment key={_key}>
                   <dt
                     data-sanity={dataAttribute.scope(['title', {_key}]).toString()}
                     data-sanity-drag-group={item._id}
                   >
-                    {displayNames.of(_key)}
+                    {displayNames.of(language ?? _key)}
                   </dt>
                   <dd>{value}</dd>
                 </Fragment>

@@ -21,7 +21,7 @@ import {getClient} from '../client'
 import {STUDIO_PLATFORM_DOCUMENT_ID} from '../constants'
 import {type PullRequestInfo, type StudioChangelogEntry} from '../types'
 import {getCommits, getSemverTags} from '../utils/getCommits'
-import {getMergedPRForCommit} from '../utils/github'
+import {getCommitAuthor, getMergedPRForCommit} from '../utils/github'
 import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
 import {parseRenovateReleaseNotes} from '../utils/parseRenovateReleaseNotes'
 import {
@@ -152,7 +152,7 @@ function createEntry(client: SanityClient, info: PullRequestInfo, {dryRun}: {dry
 
 async function getReleaseNotesMutations(
   client: SanityClient,
-  {pr, conventionalCommit}: PullRequestInfo,
+  {pr, commitAuthor, conventionalCommit}: PullRequestInfo,
   options: {dryRun?: boolean},
 ) {
   const cleanSubject = pr
@@ -178,19 +178,23 @@ async function getReleaseNotesMutations(
     conventionalCommit.scope === 'build' ||
     conventionalCommit.scope === 'test'
 
+  // Prefer the commit's git author over the PR user — when a commit lands on
+  // main through someone else's PR (e.g. a rebase-merged integration branch),
+  // the PR user is not the person who wrote the change.
+  const author = commitAuthor ?? pr?.user ?? undefined
+
   const entry: StudioChangelogEntry = {
     _type: 'changelogEntry',
     _key: conventionalCommit.hash!.slice(0, 8),
     pr: pr?.number,
-    author:
-      pr && pr.user
-        ? {
-            username: pr.user?.login,
-            url: pr.user?.html_url,
-            imageUrl: pr.user.avatar_url,
-            type: userType,
-          }
-        : undefined,
+    author: author
+      ? {
+          username: author.login,
+          url: author.html_url,
+          imageUrl: author.avatar_url,
+          type: author.type?.toLowerCase(),
+        }
+      : undefined,
     authorAssociation: pr?.author_association.toLowerCase(),
     exclude: excludeReleaseNotes,
     subject: cleanSubject,
@@ -246,12 +250,15 @@ async function ensureContentRelease(
   return {created}
 }
 
-async function fetchCommitPrs(commits: Commit[]) {
+async function fetchCommitPrs(commits: Commit[]): Promise<PullRequestInfo[]> {
   return pMap(
     commits,
     async (commit) => {
-      const pr = await getMergedPRForCommit('sanity-io', 'sanity', commit.hash!)
-      return {conventionalCommit: commit, pr}
+      const [pr, commitAuthor] = await Promise.all([
+        getMergedPRForCommit('sanity-io', 'sanity', commit.hash!, commit.header ?? undefined),
+        getCommitAuthor('sanity-io', 'sanity', commit.hash!),
+      ])
+      return {conventionalCommit: commit, pr, commitAuthor}
     },
     {concurrency: 4},
   )
