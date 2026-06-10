@@ -1741,7 +1741,7 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(@sanity/client@7.22.1)(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
-        specifier: ^4.0.6
+        specifier: ^4.0.7
         version: 4.0.7(@sanity/client@7.22.1)
       '@sanity/prism-groq':
         specifier: ^1.1.2
