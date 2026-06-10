@@ -1678,8 +1678,8 @@ importers:
         specifier: ^6.2.0
         version: 6.2.0(react@19.2.7)
       '@portabletext/sanity-bridge':
-        specifier: ^3.1.0
-        version: 3.1.0
+        specifier: ^3.1.1
+        version: 3.1.1
       '@portabletext/to-html':
         specifier: ^5.0.2
         version: 5.0.2
@@ -4865,8 +4865,8 @@ packages:
     peerDependencies:
       react: ^18.2 || ^19
 
-  '@portabletext/sanity-bridge@3.1.0':
-    resolution: {integrity: sha512-0xvNcyehNI/afBxMed1RURcLk67m6BJ7N6EtW2vzBkzH0R/PUS12GuOnu307eK4Pw67DJp0hawIaKGcFD6nbMw==}
+  '@portabletext/sanity-bridge@3.1.1':
+    resolution: {integrity: sha512-7u/E82DjZ6wLTk1Sk7Isz3kZWADXGufH5WRVnfbbTLVYNoVuvyKVe4jtQ/MtGkNk0fAqlvmaddzrkMaRW7qR7A==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@portabletext/schema@2.2.0':
@@ -14629,7 +14629,7 @@ snapshots:
       '@portabletext/types': 4.0.2
       react: 19.2.7
 
-  '@portabletext/sanity-bridge@3.1.0':
+  '@portabletext/sanity-bridge@3.1.1':
     dependencies:
       '@portabletext/schema': 2.2.0
       '@sanity/schema': link:packages/@sanity/schema
