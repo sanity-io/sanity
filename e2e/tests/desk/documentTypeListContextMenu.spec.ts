@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
 
+import {clearKeyValueKey} from '../../helpers'
 import {test} from '../../studio-test'
 
 const SORT_KEY = 'studio.structure-tool.sort-order.author'
@@ -19,15 +20,7 @@ test('clicking default sort order and direction sets value in storage', async ({
   // stored per user (shared across CI runs), and the studio only PUTs when the
   // selected sort order actually changes — leftover state from another run
   // would make the click below a no-op and time out waiting for the PUT.
-  // Ignore error if the key doesn't exist (the API responds 404).
-  try {
-    await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-      uri: `/users/me/keyvalue/${SORT_KEY}`,
-      method: 'DELETE',
-    })
-  } catch {
-    // Key doesn't exist, which is fine
-  }
+  await clearKeyValueKey(sanityClient, SORT_KEY)
 
   await page.goto('/content/author')
 
@@ -69,16 +62,8 @@ test('clicking custom sort order and direction sets value in storage', async ({
   test.skip(browserName !== 'chromium')
 
   // Clear any existing sort order key BEFORE the studio loads, so the click
-  // below always changes the selected sort order and issues a PUT (ignore
-  // error if key doesn't exist)
-  try {
-    await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-      uri: `/users/me/keyvalue/${CUSTOM_SORT_KEY}`,
-      method: 'DELETE',
-    })
-  } catch {
-    // Key doesn't exist, which is fine
-  }
+  // below always changes the selected sort order and issues a PUT
+  await clearKeyValueKey(sanityClient, CUSTOM_SORT_KEY)
 
   await page.goto('/content/book')
 
@@ -118,16 +103,8 @@ test('clicking list view sets value in storage', async ({page, sanityClient, bro
   test.skip(browserName !== 'chromium')
 
   // Clear any existing layout key BEFORE the studio loads, so the clicks
-  // below always change the layout and issue a PUT (ignore error if key
-  // doesn't exist)
-  try {
-    await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-      uri: `/users/me/keyvalue/${LAYOUT_KEY}`,
-      method: 'DELETE',
-    })
-  } catch {
-    // Key doesn't exist, which is fine
-  }
+  // below always change the layout and issue a PUT
+  await clearKeyValueKey(sanityClient, LAYOUT_KEY)
 
   await page.goto('/content/author')
 
