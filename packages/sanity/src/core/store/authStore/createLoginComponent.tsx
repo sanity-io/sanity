@@ -22,11 +22,11 @@ interface GetProvidersOptions extends AuthConfig {
 /** @internal */
 export async function getProviders({
   client,
-  mode,
-  providers: customProviders = [],
+  providers: customProviders,
 }: GetProvidersOptions): Promise<AuthProvider[]> {
-  // Short-circuit if we're in replace mode without needing the default providers
-  if (mode === 'replace' && Array.isArray(customProviders)) {
+  // If a static array is provided, use it as-is (replaces defaults) and skip
+  // the /auth/providers request entirely.
+  if (Array.isArray(customProviders)) {
     return customProviders
   }
 
@@ -40,29 +40,11 @@ export async function getProviders({
     uri: '/auth/providers',
   })
 
-  // If a custom reducer function is passed, allow it to modify the default list of providers
-  // any way it wants - eg replace, append, remove etc.
-  if (typeof customProviders === 'function') {
-    return customProviders(providers)
-  }
-
-  // If no providers are specified, use the default list
-  if (customProviders.length === 0) {
-    return providers
-  }
-
-  // -- Note: Deprecated flow below: we now prefer the reducer pattern above --
-  // Replace mode: use the provided list as-is
-  if (mode === 'replace') {
-    return customProviders
-  }
-
-  // Append mode (default):
-  // Append to the list of official providers, but replace any provider that has
-  // the same URL with the custom one (allows customizing the title, name)
-  return providers
-    .filter((official) => customProviders.some((provider) => provider.url !== official.url))
-    .concat(customProviders)
+  return customProviders
+    ? // If a custom reducer function is passed, allow it to modify the default list of providers
+      // any way it wants - eg replace, append, remove etc.
+      customProviders(providers)
+    : providers
 }
 
 interface CreateLoginComponentOptions extends AuthConfig {
@@ -206,9 +188,9 @@ export function createLoginComponent({
     }
 
     // No providers resolved — typically a misconfiguration where `auth.providers`
-    // is an empty array together with `mode: 'replace'`, which swaps the default
-    // providers out for nothing. Surface a warning instead of an empty, dead-end
-    // chooser.
+    // is set to an empty array, which replaces the default providers with nothing
+    // (rather than falling back to them). Surface a warning instead of an empty,
+    // dead-end chooser.
     if (providers.length === 0) {
       return (
         <Card padding={4} radius={2} shadow={1} tone="caution">
@@ -224,12 +206,12 @@ export function createLoginComponent({
               </Text>
               <Text as="p" muted size={1}>
                 The <code>auth.providers</code> setting in your Studio configuration resolved to an
-                empty list. This usually means an empty array is combined with{' '}
-                <code>mode: 'replace'</code>, which replaces the default providers with none.
+                empty list. An empty array replaces the default providers with none rather than
+                falling back to them.
               </Text>
               <Text as="p" muted size={1}>
-                Add at least one provider, or remove <code>mode: 'replace'</code> to keep the
-                defaults.
+                Remove <code>auth.providers</code> to use the defaults, or set it to the providers
+                you want.
               </Text>
               {props.onChooseAnotherWorkspace && (
                 <Flex>

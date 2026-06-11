@@ -404,7 +404,7 @@ export default defineConfig([
       },
     },
     search: {
-      strategy: 'groq2024',
+      strategy: 'groqLegacy',
     },
     mediaLibrary: {
       enabled: true,

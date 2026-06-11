@@ -37,6 +37,13 @@ build/Release
 node_modules
 jspm_packages
 
+# Lockfiles — monorepo uses root pnpm-lock.yaml only
+**/pnpm-lock.yaml
+!pnpm-lock.yaml
+**/package-lock.json
+**/yarn.lock
+**/bun.lockb
+
 # Optional npm cache directory
 .npm
 
