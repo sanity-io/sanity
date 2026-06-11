@@ -1,7 +1,7 @@
 import {Schema} from '@sanity/schema'
 import {type ReferenceSchemaType} from '@sanity/types'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {render} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 
 import {PreviewReferenceValue} from '../PreviewReferenceValue'
@@ -53,22 +53,19 @@ describe('PreviewReferenceValue', () => {
     expect(container.textContent).toBeTruthy()
   })
 
-  it('does not crash when result is undefined (guards against EMPTY_STATE)', () => {
-    // This exercises the guard that was added: `!referenceInfo.result`
-    // The EMPTY_STATE in useReferenceInfo has isLoading:false, error:undefined, result:undefined
-    // Without the fix, this would crash at `referenceInfo.result.availability`
-    const loadable = {
+  it('renders nothing (and does not crash) when result is undefined', () => {
+    // useReferenceInfo's EMPTY_STATE is {isLoading: false, error: undefined, result: undefined}.
+    // The `!referenceInfo.result` guard must short-circuit here — without it the component
+    // crashes accessing `referenceInfo.result.availability`. The guard returns null before
+    // any Source-dependent rendering, so this can be exercised by actually rendering.
+    const {container} = renderPreviewReferenceValue({
       isLoading: false,
       result: undefined,
       error: undefined,
       retry: noop,
-    } as Loadable<ReferenceInfo>
+    } as Loadable<ReferenceInfo>)
 
-    // Before the fix, this would throw: "Cannot read properties of undefined (reading 'availability')"
-    // We can't render the component because SanityDefaultPreview requires Source context,
-    // but we can verify the guard logic is correct by checking the condition
-    const wouldReturnEarly = loadable.isLoading || loadable.error || !loadable.result
-
-    expect(wouldReturnEarly).toBe(true)
+    expect(screen.queryByTestId('preview')).toBeNull()
+    expect(container.textContent).toBe('')
   })
 })
