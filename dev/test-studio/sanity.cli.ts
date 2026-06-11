@@ -1,7 +1,6 @@
 import path from 'node:path'
 
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
-import {DevTools} from '@vitejs/devtools'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
@@ -45,7 +44,7 @@ export default defineCliConfig({
       return reactCompilerAllowList.test(filename)
     },
   },
-  vite(viteConfig: UserConfig, {command, mode}): UserConfig {
+  async vite(viteConfig: UserConfig, {command, mode}): Promise<UserConfig> {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     let nextConfig = mergeConfig(viteConfig, {
@@ -90,6 +89,8 @@ export default defineCliConfig({
     } satisfies UserConfig)
 
     if (isViteDevToolsEnabled) {
+      // Lazy import so the devtools package is only loaded when the flag is enabled
+      const {DevTools} = await import('@vitejs/devtools')
       nextConfig = mergeConfig(nextConfig, {
         plugins: [DevTools()],
         // `devtools: {}` makes `sanity build` emit a Rolldown build session that the DevTools dock can inspect
