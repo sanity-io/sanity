@@ -16,8 +16,11 @@ vi.mock('../useReferringDocuments', () => ({
   useReferringDocuments: vi.fn(),
 }))
 
-vi.mock('../ConfirmDeleteDialogBody', () => ({
-  ConfirmDeleteDialogBody: () => <div data-testid="dialog-body" />,
+// Keep the real ConfirmDeleteDialogBody so the count-aware confirmation copy is
+// exercised; only stub VersionsPreviewList, which previews each version through
+// the preview store (no data in this test).
+vi.mock('../VersionsPreviewList', () => ({
+  VersionsPreviewList: () => null,
 }))
 
 vi.mock('../../DocTitle', () => ({
@@ -59,6 +62,8 @@ describe('ConfirmDeleteDialog', () => {
 
     expect(await screen.findByText('Delete document')).toBeInTheDocument()
     expect(screen.queryByText('Delete all versions')).not.toBeInTheDocument()
+    // The body confirmation copy is singular too.
+    expect(screen.getByText('Are you sure you want to delete this document?')).toBeInTheDocument()
   })
 
   it('uses all-versions copy when multiple versions exist', async () => {
@@ -70,6 +75,10 @@ describe('ConfirmDeleteDialog', () => {
     })
 
     expect(await screen.findByText('Delete all versions')).toBeInTheDocument()
+    // The body confirmation copy is the plural variant.
+    expect(
+      screen.getByText('Are you sure you want to delete all the versions of this document?'),
+    ).toBeInTheDocument()
   })
 
   it('uses single-document copy on the delete-anyway button when references exist', async () => {
