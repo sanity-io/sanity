@@ -31,10 +31,12 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
   const handleCopyToClipboard = async () => {
     let errorsText = formatSchemaErrorsToMarkdown(groupsWithErrors)
 
-    // Include context information in the copied text
+    // Include context information in the copied text. Insert it as a subsection
+    // after the top-level "# Schema errors" heading (rather than before it) so the
+    // heading hierarchy stays valid — a level-2 heading must not precede level-1.
     if (context) {
       const contextText = `## Source Information\n\n- **Source:** ${context.sourceName}\n- **Project ID:** ${context.projectId}\n- **Dataset:** ${context.dataset}\n\n`
-      errorsText = contextText + errorsText
+      errorsText = errorsText.replace(/^(# .*\n\n)/, (heading) => heading + contextText)
     }
 
     try {
