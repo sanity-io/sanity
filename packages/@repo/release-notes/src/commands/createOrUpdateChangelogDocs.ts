@@ -23,6 +23,7 @@ import {type PullRequestInfo, type StudioChangelogEntry} from '../types'
 import {getCommits, getSemverTags} from '../utils/getCommits'
 import {getCommitAuthor, getMergedPRForCommit} from '../utils/github'
 import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
+import {isBreakingChange} from '../utils/isBreakingChange'
 import {parseRenovateReleaseNotes} from '../utils/parseRenovateReleaseNotes'
 import {
   markdownToPortableText,
@@ -169,14 +170,20 @@ async function getReleaseNotesMutations(
       : extractReleaseNotes(markdownToPortableText(pr.body))
     : []
 
+  const breaking = isBreakingChange(conventionalCommit)
+
+  // Breaking changes are never auto-excluded based on commit type/scope
+  // (e.g. a `chore!:` commit still needs release notes), but an explicit
+  // "no release notes" opt-out in the PR description is still respected.
   const excludeReleaseNotes =
     shouldExcludeReleaseNotes(releaseNoteBlocks) ||
     (isBot && releaseNoteBlocks.length === 0) ||
-    conventionalCommit.type === 'chore' ||
-    conventionalCommit.type === 'test' ||
-    conventionalCommit.scope === 'dev' ||
-    conventionalCommit.scope === 'build' ||
-    conventionalCommit.scope === 'test'
+    (!breaking &&
+      (conventionalCommit.type === 'chore' ||
+        conventionalCommit.type === 'test' ||
+        conventionalCommit.scope === 'dev' ||
+        conventionalCommit.scope === 'build' ||
+        conventionalCommit.scope === 'test'))
 
   // Prefer the commit's git author over the PR user — when a commit lands on
   // main through someone else's PR (e.g. a rebase-merged integration branch),
@@ -197,6 +204,7 @@ async function getReleaseNotesMutations(
       : undefined,
     authorAssociation: pr?.author_association.toLowerCase(),
     exclude: excludeReleaseNotes,
+    breaking,
     subject: cleanSubject,
     header: conventionalCommit.header || '',
     coAuthors: conventionalCommit.body ? descriptionToCoAuthors(conventionalCommit.body) : [],

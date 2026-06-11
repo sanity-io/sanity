@@ -14,6 +14,7 @@ import {writeChangelogFiles} from '../src/commands/writeChangelogFiles'
 import {writeCommitCheck} from '../src/commands/writeCommitCheck'
 import {writePrChecks} from '../src/commands/writePrChecks'
 import {type CommitAuthor, type KnownEnvVar, type PullRequest} from '../src/types'
+import {isBreakingChange} from '../src/utils/isBreakingChange'
 import {stripPr} from '../src/utils/stripPrNumber'
 
 function getAdminStudioUrl(): string {
@@ -336,7 +337,9 @@ function formatEntry({
   releaseId: GenerateChangeLogResult['releaseId']
 }) {
   const entryKey = conventionalCommit.hash!.slice(0, 8)
-  const originalCommitMessage = stripPr(conventionalCommit.header || '', pr?.number)
+  const breakingMarker = isBreakingChange(conventionalCommit) ? '⚠️ ' : ''
+  const originalCommitMessage =
+    breakingMarker + stripPr(conventionalCommit.header || '', pr?.number)
   const entryPath = encodeURIComponent(`changelog[_key=="${entryKey}"]`)
   const changelogEntryUrl = `${getAdminStudioUrl()}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
 
