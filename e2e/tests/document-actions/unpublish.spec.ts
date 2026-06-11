@@ -31,29 +31,41 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   await publishButton.click()
   await expectPublishedStatus(documentStatus)
 
-  const documentPerspectiveList = page.getByTestId('document-perspective-list')
-  const publishedButton = documentPerspectiveList.getByRole('button', {
-    name: 'Published',
-    exact: true,
-  })
+  const inventoryButton = page.getByTestId('action-document-group-inventory')
+  const inventory = page.getByTestId('document-group-inventory')
+  const publishedVariant = inventory.getByRole('button', {name: 'Published', exact: true})
+  const draftVariant = inventory.getByRole('button', {name: 'Draft', exact: true})
 
-  await expect(publishedButton).toBeEnabled()
-  await publishedButton.click()
+  // Open the inventory and switch to the published variant.
+  await inventoryButton.click()
+  await expect(publishedVariant).toBeVisible()
+  await publishedVariant.click()
+
+  // Close the inventory so the unpublish action is interactable.
+  await inventoryButton.click()
+
   await expect(unpublishButton).toBeVisible()
   await unpublishButton.click()
 
   await expect(unpublishModal).toBeVisible({timeout: 4_000})
   await page.getByTestId('confirm-button').click()
 
-  // Check the published button is disabled that is the reference to determine the published document doesn't exist.
-  await expect(publishedButton).toBeDisabled()
+  const draftsPerspectiveUrl = new URL(page.url())
+  draftsPerspectiveUrl.searchParams.delete('perspective')
 
-  const draftButton = documentPerspectiveList.getByRole('button', {
-    name: 'Draft',
-    exact: true,
-  })
-  await expect(draftButton).toBeEnabled()
-  await draftButton.click()
+  await expect(unpublishButton).not.toBeVisible()
+  await page.goto(draftsPerspectiveUrl.toString())
+
+  // await expectEditedStatus(documentStatus)
+  await expectUnpublishedStatus(documentStatus)
+
+  // Once unpublished, the published variant no longer exists, so it's removed from the inventory.
+  await inventoryButton.click()
+  await expect(publishedVariant).toBeHidden()
+
+  // Switch to the draft variant and confirm the document is unpublished.
+  await expect(draftVariant).toBeVisible()
+  await draftVariant.click()
 
   await expectUnpublishedStatus(documentStatus)
 })

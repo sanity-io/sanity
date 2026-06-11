@@ -1,4 +1,4 @@
-import {expect} from '@playwright/test'
+import {expect, type Page} from '@playwright/test'
 import {type SanityDocument} from '@sanity/client'
 
 import {test} from '../../../studio-test'
@@ -25,6 +25,30 @@ import {
 // for before all to work with single worker and run only once per tests and describe
 // this is to avoid issues with multiple releases being created per test
 test.describe.configure({mode: 'serial'})
+
+/**
+ * The document group inventory replaces the previous document perspective list/version chips.
+ * It lists the document's existing variants (Published, Draft, releases) in a popover, with the
+ * currently selected perspective marked via a `data-selected` attribute on the variant row.
+ */
+function getInventoryVariant(page: Page, variantName: string) {
+  return page.getByTestId(`document-group-inventory-variant-${variantName.replaceAll(' ', '-')}`)
+}
+
+async function openDocumentGroupInventory(page: Page) {
+  const inventoryButton = page.getByTestId('action-document-group-inventory')
+  await expect(inventoryButton).toBeVisible()
+  await inventoryButton.click()
+  await expect(page.getByTestId('document-group-inventory')).toBeVisible()
+}
+
+/**
+ * The inventory toggle button is labelled with the variant of the currently displayed document
+ * (e.g. "Draft", "Published", or a release title).
+ */
+async function expectDisplayedVariantLabel(page: Page, label: string) {
+  await expect(page.getByTestId('action-document-group-inventory')).toContainText(label)
+}
 
 test.describe('displayedDocument', () => {
   /** documents */
@@ -139,13 +163,7 @@ test.describe('displayedDocument', () => {
       await page.goto(`/content/species;${customDraft._id}?perspective=${asapReleaseId}`)
 
       // wait to load
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
-
-      // chip
-      await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
-        'data-selected',
-      )
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('draft')
@@ -163,11 +181,12 @@ test.describe('displayedDocument', () => {
       // specific document set up for this test in mind
       await page.goto(`/content/species;${publishedDocument._id}`)
 
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-      // chip
-      await expect(page.getByTestId('document-header-Draft-chip')).toHaveAttribute('data-selected')
+      // inventory: only the published variant exists, so it's the displayed document
+      await expectDisplayedVariantLabel(page, 'Published')
+      await openDocumentGroupInventory(page)
+      await expect(getInventoryVariant(page, 'Published')).toBeVisible()
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
@@ -182,17 +201,9 @@ test.describe('displayedDocument', () => {
 
       // specific document set up for this test in mind
       await page.goto(`/content/species;${singleASAPVersionDocument._id}`)
-      const versionChip = page.getByTestId('document-header-ASAP-Release-A-chip')
 
       // wait to load
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-      await expect(versionChip).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
-
-      // chilp
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeDisabled()
-
-      await expect(versionChip).toHaveAttribute('data-selected')
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
@@ -203,19 +214,20 @@ test.describe('displayedDocument', () => {
 
       // specific document set up for this test in mind
       await page.goto(`/content/species;${multipleVersionsDocId}`)
-      const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
-      const undecidedChip = page.getByTestId('document-header-Undecided-Release-A-chip')
 
       // Wait for document to load
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-      await expect(asapChip).toBeVisible()
-      await expect(undecidedChip).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-      // chip
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeDisabled()
-      await expect(asapChip).toHaveAttribute('data-selected')
-      await expect(undecidedChip).not.toHaveAttribute('data-selected')
+      // inventory: both version variants exist (no draft); the first one is the displayed document
+      await expectDisplayedVariantLabel(page, 'ASAP Release A')
+      await openDocumentGroupInventory(page)
+      const asapVariant = getInventoryVariant(page, 'ASAP Release A')
+      const undecidedVariant = getInventoryVariant(page, 'Undecided Release A')
+      await expect(asapVariant).toBeVisible()
+      await expect(undecidedVariant).toBeVisible()
+      await expect(asapVariant).toHaveAttribute('data-selected')
+      await expect(undecidedVariant).not.toHaveAttribute('data-selected')
+      await expect(getInventoryVariant(page, 'Draft')).toHaveCount(0)
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
@@ -245,13 +257,12 @@ test.describe('displayedDocument', () => {
       await page.goto(`/content/species;${publishedDocument._id}?perspective=published`)
 
       // Wait for document to load
-      await expect(page.getByTestId('document-header-Published-chip')).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-      // chip
-      await expect(page.getByTestId('document-header-Published-chip')).toHaveAttribute(
-        'data-selected',
-      )
+      // inventory: the published variant is the selected perspective and displayed document
+      await expectDisplayedVariantLabel(page, 'Published')
+      await openDocumentGroupInventory(page)
+      await expect(getInventoryVariant(page, 'Published')).toHaveAttribute('data-selected')
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
@@ -269,13 +280,12 @@ test.describe('displayedDocument', () => {
       await page.goto(`/content/species;${publishedWithVersion._id}?perspective=published`)
 
       // wait to load
-      await expect(page.getByTestId('document-header-Published-chip')).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-      // chip
-      await expect(page.getByTestId('document-header-Published-chip')).toHaveAttribute(
-        'data-selected',
-      )
+      // inventory: the published variant is the selected perspective and displayed document
+      await expectDisplayedVariantLabel(page, 'Published')
+      await openDocumentGroupInventory(page)
+      await expect(getInventoryVariant(page, 'Published')).toHaveAttribute('data-selected')
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
@@ -301,13 +311,7 @@ test.describe('displayedDocument', () => {
       await page.goto(`/content/species;${customDraft._id}?perspective=${asapReleaseId}`)
 
       // wait to load
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
-
-      // chip
-      await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
-        'data-selected',
-      )
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('draft')
@@ -327,18 +331,16 @@ test.describe('displayedDocument', () => {
         `/content/species;${singleASAPVersionDocument._id}?perspective=${asapReleaseId}`,
       )
 
-      const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
-
       // wait to load
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-      await expect(asapChip).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-      // chip
-      await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
-        'data-selected',
-      )
-      await expect(asapChip).toHaveAttribute('data-selected')
+      // inventory: only the pinned version variant exists, and it's displayed/selected
+      await expectDisplayedVariantLabel(page, 'ASAP Release A')
+      await openDocumentGroupInventory(page)
+      const asapVariant = getInventoryVariant(page, 'ASAP Release A')
+      await expect(asapVariant).toBeVisible()
+      await expect(asapVariant).toHaveAttribute('data-selected')
+      await expect(getInventoryVariant(page, 'Draft')).toHaveCount(0)
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
@@ -354,18 +356,17 @@ test.describe('displayedDocument', () => {
       await page.goto(
         `/content/species;${singleASAPVersionDocument._id}?perspective=${asapReleaseId}`,
       )
-      const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
 
       // wait to load
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-      await expect(asapChip).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-      // chip
-      await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
-        'data-selected',
-      )
-      await expect(asapChip).toHaveAttribute('data-selected')
+      // inventory: only the existing version variant is shown, and it's displayed/selected
+      await expectDisplayedVariantLabel(page, 'ASAP Release A')
+      await openDocumentGroupInventory(page)
+      const asapVariant = getInventoryVariant(page, 'ASAP Release A')
+      await expect(asapVariant).toBeVisible()
+      await expect(asapVariant).toHaveAttribute('data-selected')
+      await expect(getInventoryVariant(page, 'Draft')).toHaveCount(0)
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
@@ -379,18 +380,18 @@ test.describe('displayedDocument', () => {
 
       // specific document set up for this test in mind
       await page.goto(`/content/species;${multipleVersionsDocId}?perspective=${undecidedReleaseId}`)
-      const undecidedChip = page.getByTestId('document-header-Undecided-Release-A-chip')
 
       // wait to load
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-      await expect(undecidedChip).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-      // chip
-      await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
-        'data-selected',
-      )
-      await expect(undecidedChip).toHaveAttribute('data-selected')
+      // inventory: the pinned version variant is displayed/selected, the other version isn't
+      await expectDisplayedVariantLabel(page, 'Undecided Release A')
+      await openDocumentGroupInventory(page)
+      const undecidedVariant = getInventoryVariant(page, 'Undecided Release A')
+      await expect(undecidedVariant).toBeVisible()
+      await expect(undecidedVariant).toHaveAttribute('data-selected')
+      await expect(getInventoryVariant(page, 'ASAP Release A')).not.toHaveAttribute('data-selected')
+      await expect(getInventoryVariant(page, 'Draft')).toHaveCount(0)
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
@@ -421,15 +422,15 @@ test.describe('displayedDocument', () => {
       await page.goto(`/content/species;${multipleVersionsDocId}?perspective=${scheduledId}`)
 
       // wait to load
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-      const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-      // chip
-      await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
-        'data-selected',
-      )
-      await expect(asapChip).toHaveAttribute('data-selected')
+      // inventory: the pinned release has no version, so the first existing version is displayed/selected
+      await expectDisplayedVariantLabel(page, 'ASAP Release A')
+      await openDocumentGroupInventory(page)
+      const asapVariant = getInventoryVariant(page, 'ASAP Release A')
+      await expect(asapVariant).toBeVisible()
+      await expect(asapVariant).toHaveAttribute('data-selected')
+      await expect(getInventoryVariant(page, 'Draft')).toHaveCount(0)
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
@@ -465,16 +466,13 @@ test.describe('displayedDocument', () => {
       await page.goto(`/content/species;${documentId}?perspective=${asapReleaseId}`)
 
       // Wait for document to load
-      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-      const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
-      await expect(asapChip).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-      // Check that the version chip is selected
-      await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
-        'data-selected',
-      )
-      await expect(asapChip).toHaveAttribute('data-selected')
+      // Check that the pinned version variant is selected in the inventory
+      await openDocumentGroupInventory(page)
+      const asapVariant = getInventoryVariant(page, 'ASAP Release A')
+      await expect(asapVariant).toBeVisible()
+      await expect(asapVariant).toHaveAttribute('data-selected')
 
       await expect(page.getByTestId('document-panel-document-title')).not.toHaveText('Untitled')
       // Check that the name field shows the version name

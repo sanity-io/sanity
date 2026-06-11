@@ -417,7 +417,10 @@ const Variant: ComponentType<{
 
   return (
     <>
-      <VariantSetEntry>
+      <VariantSetEntry
+        data-testid={`document-group-inventory-variant-${variant.name.replaceAll(' ', '-')}`}
+        data-selected={isSelected || undefined}
+      >
         <div className="atom">
           <button
             type="button"
