@@ -11,6 +11,20 @@ export interface ErrorInfo {
 }
 
 /**
+ * Timing/outcome record for a completed (or failed) HTTP request, used
+ * for diagnostic breadcrumbs on subsequent error reports.
+ *
+ * @internal
+ */
+export interface RequestRecord {
+  url: string
+  method: string
+  statusCode?: number
+  durationMs: number
+  failed?: boolean
+}
+
+/**
  * @internal
  */
 export interface ErrorReporter {
@@ -25,6 +39,13 @@ export interface ErrorReporter {
    * @returns An object containing information on the reported error, or `null` if ignored
    */
   reportError: (error: Error, options?: ErrorInfo) => {eventId: string} | null
+
+  /**
+   * Records a request timing/outcome as a diagnostic breadcrumb attached
+   * to subsequent error events. No-op when the reporter isn't active.
+   * Callers are responsible for consent gating.
+   */
+  recordRequest?: (record: RequestRecord) => void
 }
 
 /**

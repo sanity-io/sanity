@@ -19,6 +19,7 @@ import {type Config, prepareConfig} from '../../config'
 import {isNetworkError, isTimeoutError} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {RequestErrorDialog} from '../requestErrors/RequestErrorDialog'
+import {observeRequest} from '../requestErrors/requestObservability'
 import {CorsOriginErrorView} from './CorsOriginErrorView'
 import {type WorkspacesContextValue} from './WorkspacesContext'
 
@@ -125,11 +126,14 @@ export function WorkspacesProvider({
     [],
   )
 
-  // The request handler only does one global thing, which is outside any
-  // caller's reach: CORS detection. A misconfigured origin makes the
-  // studio unusable and no plugin can recover from it — the studio always
-  // claims this UX, replacing the workspace render with a guided
-  // full-screen view.
+  // The request handler only does two global things, both of which are
+  // outside any caller's reach:
+  //  1. CORS detection: a misconfigured origin makes the studio unusable
+  //     and no plugin can recover from it — the studio always claims this
+  //     UX, replacing the workspace render with a guided full-screen view.
+  //  2. Observation: request timings and infra-level failures are reported
+  //     to the studio error reporter (consent-gated, pass-through — see
+  //     `requestErrors/requestObservability`).
   //
   // Everything else — network errors, 5xx, 429, 401 — propagates to the
   // caller unchanged. Callers that cannot recover locally delegate
@@ -137,7 +141,11 @@ export function WorkspacesProvider({
   // channel; the studio never decides on their behalf.
   const requestHandler: RequestHandler = useCallback(
     (requestOptions, originalRequest, client) => {
-      return defer(() => originalRequest(requestOptions)).pipe(
+      return observeRequest(
+        client,
+        requestOptions,
+        defer(() => originalRequest(requestOptions)),
+      ).pipe(
         catchError((requestError: unknown, caught) => {
           // Skip the probe for timeouts (the probe itself would time out).
           // `null` from the probe means "couldn't conclude" — re-throw the

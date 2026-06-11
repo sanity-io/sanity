@@ -497,6 +497,7 @@ exports[`exports snapshot 1`] = `
     "normalizeIndexTupleSegment": "function",
     "normalizeKeySegment": "function",
     "normalizePathSegment": "function",
+    "observeRequest": "function",
     "onRetry": "function",
     "operationEvents": "function",
     "operatorDefinitions": "object",

@@ -191,9 +191,31 @@ export function getSentryErrorReporter(): ErrorReporter {
     return eventId ? {eventId} : null
   }
 
+  function recordRequest(record: {
+    url: string
+    method: string
+    statusCode?: number
+    durationMs: number
+    failed?: boolean
+  }) {
+    if (!scope) return
+    scope.addBreadcrumb({
+      type: 'http',
+      category: 'http',
+      level: record.failed ? 'error' : 'info',
+      data: {
+        url: record.url,
+        method: record.method,
+        status_code: record.statusCode,
+        duration_ms: Math.round(record.durationMs),
+      },
+    })
+  }
+
   return {
     initialize,
     reportError,
+    recordRequest,
   }
 }
 
