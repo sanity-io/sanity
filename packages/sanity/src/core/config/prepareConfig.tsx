@@ -38,6 +38,7 @@ import {
   documentAskToEditEnabledReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
+  documentGroupInventoryEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
   draftsEnabledReducer,
@@ -666,6 +667,8 @@ function resolveSource({
     })
   }
 
+  const variantsEnabled = variantsEnabledReducer({config, initialValue: false})
+
   const source: Source = {
     type: 'source',
     name: config.name,
@@ -857,7 +860,13 @@ function resolveSource({
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
       variants: {
-        enabled: variantsEnabledReducer({config, initialValue: false}),
+        enabled: variantsEnabled,
+      },
+      documentGroupInventory: {
+        // The document group inventory is an inherent part of the variants experience.
+        // It cannot be switched off while variants are switched on.
+        enabled:
+          documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
       },
     },
 
