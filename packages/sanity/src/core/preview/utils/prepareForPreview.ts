@@ -209,10 +209,16 @@ function defaultPrepare(value: SelectedValue) {
 const TRUNCATED_PREVIEW_KEYS = ['title', 'subtitle', 'description'] as const
 
 function truncatePreviewString(value: string): string {
+  // Fast path: the UTF-16 length is always >= the code-point count, so if it's
+  // within the limit the string definitely doesn't need truncating.
   if (value.length <= PREVIEW_STRING_MAX_LENGTH) return value
-  // Unicode-safe: slice by code points so surrogate pairs aren't split. The input is
-  // pre-sliced to bound the cost of spreading a potentially huge string.
+  // Otherwise measure by code points so surrogate pairs aren't split, and so a
+  // string that's within the code-point limit but over it in UTF-16 code units
+  // (e.g. mostly emoji) isn't truncated spuriously. Pre-slice to bound the cost
+  // of spreading a potentially huge string: a string of N code points spans at
+  // most 2N code units, so MAX*2 code units always retains the first MAX points.
   const codePoints = Array.from(value.slice(0, PREVIEW_STRING_MAX_LENGTH * 2))
+  if (codePoints.length <= PREVIEW_STRING_MAX_LENGTH) return value
   return `${codePoints.slice(0, PREVIEW_STRING_MAX_LENGTH).join('')}…`
 }
 

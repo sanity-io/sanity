@@ -92,6 +92,24 @@ describe('prepareForPreview string truncation', () => {
     expect(title).toMatch(/…$/)
   })
 
+  it('does not truncate a string within the code-point limit but over it in UTF-16 code units', () => {
+    const type: PreviewableType = {
+      name: 'testDoc',
+      preview: {select: {title: 'name'}},
+    }
+    // 600 emoji = 600 code points but 1200 UTF-16 code units (each is a surrogate
+    // pair). It's within PREVIEW_STRING_MAX_LENGTH (1024) code points yet over it
+    // in code units, so it must pass through untouched (no ellipsis).
+    const value = '😀'.repeat(600)
+    expect(Array.from(value).length).toBeLessThanOrEqual(PREVIEW_STRING_MAX_LENGTH)
+    expect(value.length).toBeGreaterThan(PREVIEW_STRING_MAX_LENGTH)
+
+    const result = prepareForPreview({name: value}, type)
+
+    expect(result.title).toBe(value)
+    expect(result.title).not.toMatch(/…$/)
+  })
+
   it('truncates via invokePrepare directly (covers the no-select-paths branch)', () => {
     const type: PreviewableType = {name: 'testDoc', preview: {}}
 
