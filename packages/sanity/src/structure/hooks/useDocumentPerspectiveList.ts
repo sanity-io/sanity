@@ -9,7 +9,6 @@ import {
   isPublishedId,
   isPublishedPerspective,
   isVersionId,
-  type ReleaseDocument,
   type TargetPerspective,
   useAgentVersionDisplay,
   useDocumentVersions,
@@ -41,8 +40,8 @@ interface DocumentPerspectiveList {
     displayName: string
     tone: BadgeTone
   } | null
-  /** Returns the chip selection/disabled state for a given release. */
-  getReleaseChipState: (release: ReleaseDocument) => {selected: boolean; disabled?: boolean}
+  /** Returns the chip selection/disabled state for a given release id. */
+  getReleaseChipState: (releaseId: string) => {selected: boolean; disabled?: boolean}
   /** Navigates to the draft perspective after copying a version to drafts. */
   handleCopyToDraftsNavigate: () => void
   /** Navigates to the given perspective. */
@@ -122,24 +121,22 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
   }, [isLiveEdit, selectedReleaseId, editState?.published])
 
   const getReleaseChipState = useCallback(
-    (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
+    (releaseId: string): {selected: boolean; disabled?: boolean} => {
       if (!params?.historyVersion) {
         const isCurrentVersionGoingToUnpublish =
           editState?.version &&
           isGoingToUnpublish(editState?.version) &&
-          getReleaseIdFromReleaseDocumentId(release._id) ===
-            getVersionFromId(editState?.version?._id)
+          releaseId === getVersionFromId(editState?.version?._id)
 
         return {
           selected: Boolean(
-            getReleaseIdFromReleaseDocumentId(release._id) ===
-              getVersionFromId(displayed?._id || '') || isCurrentVersionGoingToUnpublish,
+            releaseId === getVersionFromId(displayed?._id || '') ||
+            isCurrentVersionGoingToUnpublish,
           ),
         }
       }
 
-      const isReleaseHistoryMatch =
-        getReleaseIdFromReleaseDocumentId(release._id) === params.historyVersion
+      const isReleaseHistoryMatch = releaseId === params.historyVersion
 
       return {selected: isReleaseHistoryMatch, disabled: isReleaseHistoryMatch}
     },

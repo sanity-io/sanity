@@ -237,7 +237,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                     <TooltipContent release={release} />
                   )
                 }
-                {...getReleaseChipState(release)}
+                {...getReleaseChipState(getReleaseIdFromReleaseDocumentId(release._id))}
                 onClick={() => handlePerspectiveChange(release)}
                 text={displayTitle}
                 tone={getReleaseTone(release)}
