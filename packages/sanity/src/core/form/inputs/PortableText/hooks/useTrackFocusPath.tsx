@@ -32,8 +32,19 @@ export function useTrackFocusPath(props: Props): void {
       return
     }
 
-    // Don't do anything if the editor selection focus path is already equal to the focusPath
+    // The editor holds DOM focus when the user is actively editing inside it. In that case the
+    // editor manages its own selection and scrolling, so we should not interfere.
+    const editorHasDomFocus = Boolean(
+      boundaryElement &&
+      boundaryElement.ownerDocument.activeElement &&
+      boundaryElement.contains(boundaryElement.ownerDocument.activeElement),
+    )
+
+    // Don't do anything if the editor is focused and its selection focus path already equals the
+    // focusPath. When focus came from outside the editor (e.g. Visual Editing), the editor can
+    // retain a matching selection while blurred; we must still re-focus and scroll to it (#12894).
     if (
+      editorHasDomFocus &&
       selection?.focus.path &&
       isEqual(selection.focus.path, focusPath.slice(0, selection.focus.path.length))
     ) {
@@ -114,6 +125,18 @@ export function useTrackFocusPath(props: Props): void {
 
         // Select and focus the editor if we produced a path
         if (path.length) {
+          // Re-focusing a block that is already the editor's current selection is a no-op:
+          // the editor emits no selection change, so neither its native focus nor its
+          // scroll-into-view runs and the block can't be re-entered (#12894).
+          // Deselect first so the subsequent select is a genuine change.
+          const currentSelection = PortableTextEditor.getSelection(editor)
+          const isSameSelection =
+            currentSelection?.focus.path &&
+            isEqual(currentSelection.focus.path.slice(0, path.length), path)
+          if (isSameSelection) {
+            PortableTextEditor.select(editor, null)
+          }
+
           PortableTextEditor.select(editor, {
             anchor: {path, offset: 0},
             focus: {path, offset: 0},
