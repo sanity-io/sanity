@@ -25,7 +25,7 @@ jobs:
       - id: pre-flight
         run: |
           PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          PACKAGES=$(pnpx tsx scripts/listPublishedPackages.ts)
+          PACKAGES=$(pnpm tsx scripts/listPublishedPackages.ts)
           echo "packages=${PACKAGES}" >> "$GITHUB_OUTPUT"
           VERSION="$(jq -r .version package.json)-pr.$PR_NUMBER+$(git rev-parse --short HEAD)"
           echo "process.env.PKG_VERSION will be set to ${VERSION} when building"
@@ -39,7 +39,7 @@ jobs:
 
       - run: |
           echo "Publishing to pkg.pr.new: ${{ steps.pre-flight.outputs.packages }}"
-          pnpx pkg-pr-new publish --pnpm --no-template --json output.json --comment=off --compact ${{ steps.pre-flight.outputs.packages }}
+          pnpm pkg-pr-new publish --pnpm --no-template --json output.json --comment=off --compact ${{ steps.pre-flight.outputs.packages }}
 
       - name: Post or update comment
         uses: actions/github-script@v8

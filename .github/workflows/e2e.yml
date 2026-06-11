@@ -1,7 +1,5 @@
 name: End-to-End Tests
-permissions:
-  contents: write # for checkout and commit comments
-  pull-requests: write # for comment
+permissions: {}
 
 env:
   CHROMIUM_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-chromium-{1}', github.event.number, github.run_id) || format('main-chromium-{0}', github.run_id) }}
@@ -22,6 +20,9 @@ jobs:
   install:
     timeout-minutes: 30
     runs-on: ubuntu-8core
+    permissions:
+      contents: read
+      pull-requests: write # for PR comment placeholder
     outputs:
       has_code_changes: ${{ steps.changes.outputs.has_changes }}
     env:
@@ -91,6 +92,9 @@ jobs:
     runs-on: ubuntu-8core
     needs: [install]
     if: needs.install.outputs.has_code_changes == 'true'
+    permissions:
+      contents: read
+      pull-requests: write # for PR comment with preview URL
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -120,18 +124,22 @@ jobs:
         id: deploy
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+          GITHUB_EVENT_REPOSITORY_NAME: ${{ github.event.repository.name }}
+          COMMIT_AUTHOR_NAME: ${{ github.event.sender.name || 'GitHub Actions' }}
+          COMMIT_REF: ${{ github.head_ref || github.ref_name }}
+          COMMIT_AUTHOR_LOGIN: ${{ github.event.sender.login || github.actor }}
         run: |
           echo "DEPLOY_URL=$(pnpm vercel deploy --prebuilt ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '--prod' || '' }} --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
           -m githubDeployment="1" \
-          -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+          -m githubCommitAuthorName="$COMMIT_AUTHOR_NAME" \
           -m githubCommitMessage="$COMMIT_MESSAGE" \
           -m githubCommitOrg="${{ github.repository_owner }}" \
-          -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
-          -m githubCommitRepo="${{ github.event.repository.name }}" \
+          -m githubCommitRef="$COMMIT_REF" \
+          -m githubCommitRepo="${GITHUB_EVENT_REPOSITORY_NAME}" \
           -m githubCommitSha="${{ github.sha }}" \
           -m githubOrg="${{ github.repository_owner }}" \
-          -m githubRepo="${{ github.event.repository.name }}" \
-          -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
+          -m githubRepo="${GITHUB_EVENT_REPOSITORY_NAME}" \
+          -m githubCommitAuthorLogin="$COMMIT_AUTHOR_LOGIN" | tail -n 1)" >> $GITHUB_OUTPUT
 
       - name: Echo the preview URL
         run: |
@@ -291,6 +299,9 @@ jobs:
     needs: [install, deploy-preview, playwright-test, merge-reports]
     if: always() && needs.install.outputs.has_code_changes == 'true' && needs.merge-reports.result == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # for commit comment on push to main
+      pull-requests: write # for PR comment with report link
     outputs:
       report_url: ${{ steps.deploy.outputs.REPORT_URL }}
     steps:
@@ -314,12 +325,13 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
+          COMMIT_REF: ${{ github.head_ref || github.ref_name }}
         run: |
           echo "REPORT_URL=$(vercel deploy --prebuilt \
             --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
             --yes \
             -m githubDeployment="1" \
-            -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
+            -m githubCommitRef="$COMMIT_REF" \
             -m githubCommitSha="${{ github.sha }}" \
             -m githubRunId="${{ github.run_id }}" \
             | tail -n 1)" >> $GITHUB_OUTPUT
@@ -399,6 +411,8 @@ jobs:
       && needs.install.outputs.has_code_changes == 'true'
       && needs.deploy-report.result != 'success'
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # for PR comment update
     steps:
       - name: Update PR Comment (cancelled)
         if: needs.playwright-test.result == 'cancelled'

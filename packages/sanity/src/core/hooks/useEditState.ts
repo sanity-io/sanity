@@ -1,8 +1,18 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {debounce, merge, share, skip, take, timer} from 'rxjs'
+import {debounce, distinctUntilChanged, merge, share, shareReplay, skip, take, timer} from 'rxjs'
 
 import {type EditStateFor, useDocumentStore} from '../store'
+
+// Snapshot refs (draft/published/version) are preserved upstream when content
+// hasn't changed, so ref equality on those + ready + transactionSyncLock catches
+// real changes without a deep walk. Upstream contract: `document-pair/editState.test.ts`.
+const isSameEditState = (prev: EditStateFor, next: EditStateFor): boolean =>
+  prev.draft === next.draft &&
+  prev.published === next.published &&
+  prev.version === next.version &&
+  prev.ready === next.ready &&
+  prev.transactionSyncLock === next.transactionSyncLock
 
 /** @internal */
 export function useEditState(
@@ -17,8 +27,10 @@ export function useEditState(
   const documentStore = useDocumentStore()
 
   const observable = useMemo(() => {
+    const source = documentStore.pair.editState(publishedDocId, docTypeName, version)
+
     if (priority === 'low') {
-      const base = documentStore.pair.editState(publishedDocId, docTypeName, version).pipe(share())
+      const base = source.pipe(share())
 
       return merge(
         base.pipe(take(1)),
@@ -26,10 +38,13 @@ export function useEditState(
           skip(1),
           debounce(() => timer(1000)),
         ),
-      )
+      ).pipe(distinctUntilChanged(isSameEditState), shareReplay({bufferSize: 1, refCount: true}))
     }
 
-    return documentStore.pair.editState(publishedDocId, docTypeName, version)
+    return source.pipe(
+      distinctUntilChanged(isSameEditState),
+      shareReplay({bufferSize: 1, refCount: true}),
+    )
   }, [docTypeName, documentStore.pair, priority, publishedDocId, version])
   /**
    * We know that since the observable has a startWith operator, it will always emit a value

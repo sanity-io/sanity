@@ -16,6 +16,11 @@ import {isRecord} from '../../../core/util'
 export interface VideoOptions extends ObjectOptions {
   accept?: string
   sources?: AssetSource[]
+  /**
+   * When set to `true`, hides the upload UI, only allowing selection of existing assets from the media library.
+   * Useful for centralized asset management workflows where ad-hoc uploads should be prevented.
+   */
+  disableNew?: boolean
 }
 
 /** @public */

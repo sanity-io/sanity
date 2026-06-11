@@ -12,8 +12,9 @@ import {styled} from 'styled-components'
 
 import {usePanelId} from './usePanelId'
 
-const Resizer = styled.div`
+const Resizer = styled.div<{$hidden: boolean}>`
   position: relative;
+  ${({$hidden}) => $hidden && `display: none;`}
 `
 const ResizerInner = styled.div<{
   $disabled: boolean
@@ -65,7 +66,8 @@ export const PanelResizer: FunctionComponent<{
   id?: string
   order: number
   disabled?: boolean
-}> = function ({id: propId, order, disabled = false}) {
+  hidden?: boolean
+}> = function ({id: propId, order, disabled = false, hidden = false}) {
   const el = useRef<HTMLDivElement>(null)
 
   const context = useContext(PresentationPanelsContext)
@@ -87,9 +89,11 @@ export const PanelResizer: FunctionComponent<{
 
   const onMouseDown = useCallback(
     (event: ReactMouseEvent) => {
+      // Don't drag from a disabled/hidden resizer: the drag effect bails, stranding activeResizer.
+      if (disabled || hidden) return
       startDragging(id, event.nativeEvent)
     },
-    [id, startDragging],
+    [disabled, hidden, id, startDragging],
   )
 
   const onDrag = useCallback(
@@ -152,7 +156,7 @@ export const PanelResizer: FunctionComponent<{
   }, [id, order, registerElement, unregisterElement])
 
   return (
-    <Resizer onMouseDown={onMouseDown} ref={el}>
+    <Resizer $hidden={hidden} onMouseDown={onMouseDown} ref={el}>
       <ResizerInner $disabled={disabled}>
         <span />
         <span />

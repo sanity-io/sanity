@@ -82,7 +82,6 @@ export function getRouteContext(route: Path, url: URL): DocumentResolverContext 
       const matcher = match<Record<string, string>>(path, {decode: decodeURIComponent})
       const result = matcher(url.pathname)
       if (result) {
-        // eslint-disable-next-line @typescript-eslint/no-shadow
         const {params, path} = result
         return {origin, params, path}
       }

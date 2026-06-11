@@ -17,7 +17,7 @@ import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type ReactNode, useCallback, useMemo} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
@@ -100,6 +100,7 @@ export function Editor(props: EditorProps): ReactNode {
   const {isTopLayer} = useLayer()
 
   const {element: boundaryElement} = useBoundaryElement()
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
   // Let escape close fullscreen mode
   useGlobalKeyDown(
@@ -191,20 +192,27 @@ export function Editor(props: EditorProps): ReactNode {
   const collapsibleToolbar = id === FORM_BUILDER_DEFAULT_ID
 
   return (
-    <Root data-fullscreen={isFullscreen} data-testid="pt-editor" $isOneLine={isOneLine}>
+    <Root
+      data-fullscreen={isFullscreen}
+      data-testid="pt-editor"
+      ref={setRootElement}
+      $isOneLine={isOneLine}
+    >
       {isActive && !hideToolbar && (
-        <TooltipDelayGroupProvider>
-          <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
-            <Toolbar
-              collapsible={collapsibleToolbar}
-              hotkeys={hotkeys}
-              isFullscreen={isFullscreen}
-              onMemberOpen={handleToolBarOnMemberOpen}
-              onToggleFullscreen={onToggleFullscreen}
-              readOnly={readOnly}
-            />
-          </ToolbarCard>
-        </TooltipDelayGroupProvider>
+        <BoundaryElementProvider element={isFullscreen ? rootElement : boundaryElement}>
+          <TooltipDelayGroupProvider>
+            <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
+              <Toolbar
+                collapsible={collapsibleToolbar}
+                hotkeys={hotkeys}
+                isFullscreen={isFullscreen}
+                onMemberOpen={handleToolBarOnMemberOpen}
+                onToggleFullscreen={onToggleFullscreen}
+                readOnly={readOnly}
+              />
+            </ToolbarCard>
+          </TooltipDelayGroupProvider>
+        </BoundaryElementProvider>
       )}
 
       <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>

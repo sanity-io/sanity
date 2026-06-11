@@ -18,7 +18,14 @@ export async function commentPrAfterMerge(options: {
   const octokit = getOctokit()
   const pr = await getMergedPRForCommit('sanity-io', 'sanity', options.commit)
   if (!pr) {
-    throw new Error('No PR found for this commit')
+    // GitHub's commit→PR association index is best-effort and occasionally
+    // misses associations. Skip posting the reminder rather than failing the
+    // workflow.
+    console.warn(
+      `⚠️  WARNING: GitHub returned no PR association for commit ${options.commit}. ` +
+        `Skipping release-notes reminder comment.`,
+    )
+    return
   }
 
   console.log(`Found PR #${pr.number}`)

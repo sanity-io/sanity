@@ -38,7 +38,6 @@ const ignores = [
   '**/lib/*',
   '**/node_modules/*',
   '**/report/trace/*',
-  '**/playwright-ct/report/*',
   '**/dist/*',
   '**/*.json',
   '**/*.css',
@@ -221,12 +220,7 @@ export default [
   {
     // Don't fail React Compiler rules on test code, warn instead (as it might be an opportunity to delete manual useMemo and such from tests)
     name: 'sanity/no-react-compiler-on-test-code',
-    files: [
-      `**/*/test/**/*`,
-      '**/*/__tests__/**/*',
-      '**/*.test.{js,ts,tsx}',
-      '**/playwright-ct/**',
-    ],
+    files: [`**/*/test/**/*`, '**/*/__tests__/**/*', '**/*.test.{js,ts,tsx}'],
     rules: {
       'react-hooks/preserve-manual-memoization': 'warn',
       'react-hooks/refs': 'warn',

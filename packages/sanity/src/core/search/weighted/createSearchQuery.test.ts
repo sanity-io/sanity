@@ -45,10 +45,10 @@ describe('createSearchQuery', () => {
 
       expect(query).toEqual(
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)]' +
-          '| order(_id asc)' +
-          '[0...$__limit]' +
-          '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)] ' +
+          '{_type, _id, _originalId, "orderings": [_id], ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })} ' +
+          '| order(orderings[0] asc) ' +
+          '[0...$__limit]',
       )
 
       expect(params).toEqual({
@@ -133,25 +133,167 @@ describe('createSearchQuery', () => {
       expect(terms).toEqual(['term'])
     })
 
-    it('should add extendedProjection to query', () => {
+    it('should project sort entries into the orderings array and use a two-projection query', () => {
       const {query} = createSearchQuery(
         {
           query: 'term',
           types: [testType],
         },
         {
-          __unstable_extendedProjection: 'object{field}',
+          sort: [
+            {
+              direction: 'asc',
+              field: 'translations.se',
+            },
+          ],
         },
       )
 
+      // A single projection includes the sort value via the
+      // top-level `orderings` array alongside the per-spec score
+      // selections, then `order(...)` runs against `orderings[N]`.
       const result = [
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)]{_type, _id, _originalId, object{field}}',
-        '|order(_id asc)[0...$__limit]',
-        '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)] ' +
+          '{_type, _id, _originalId, "orderings": [translations.se], ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
+        ' | order(orderings[0] asc) [0...$__limit]',
       ].join('')
 
       expect(query).toBe(result)
+    })
+
+    it('projects simple sort entries into the orderings array just like complex ones', () => {
+      const {query} = createSearchQuery(
+        {
+          query: 'term',
+          types: [testType],
+        },
+        {
+          sort: [
+            {
+              direction: 'asc',
+              field: 'title',
+            },
+          ],
+        },
+      )
+
+      // Even simple top-level fields are projected into the
+      // `orderings` array for a consistent, predictable shape.
+      expect(query).toContain('"orderings": [title]')
+      expect(query).toContain('| order(orderings[0] asc)')
+      // Project must come before the order pipe.
+      const projectionIndex = query.indexOf('{_type, _id, _originalId,')
+      const orderIndex = query.indexOf('order(orderings[0] asc)')
+      expect(projectionIndex).toBeGreaterThan(0)
+      expect(orderIndex).toBeGreaterThan(projectionIndex)
+    })
+
+    it('should resolve `->` for reference traversal when schemaType is provided', () => {
+      const referenceSchema = Schema.compile({
+        types: [
+          defineType({
+            name: 'author',
+            type: 'document',
+            fields: [defineField({name: 'name', type: 'string'})],
+          }),
+          defineType({
+            name: 'book',
+            type: 'document',
+            fields: [
+              defineField({
+                name: 'title',
+                type: 'string',
+                options: {search: {weight: 10}},
+              }),
+              defineField({
+                name: 'author',
+                type: 'reference',
+                to: [{type: 'author'}],
+              }),
+            ],
+          }),
+        ],
+      })
+      const bookType = referenceSchema.get('book')
+
+      const {query} = createSearchQuery(
+        {
+          query: 'term',
+          types: [bookType],
+        },
+        {
+          sort: [
+            {
+              direction: 'asc',
+              field: 'author.name',
+              schemaType: bookType,
+            },
+          ],
+        },
+      )
+
+      // Reference traversal `author.name` is schema-resolved to
+      // `author->name` and projected into `orderings[0]`.
+      expect(query).toContain('"orderings": [author->name]')
+      expect(query).toContain('order(orderings[0] asc)')
+    })
+
+    it('projects every entry into the orderings array in a multi-sort weighted query', () => {
+      const referenceSchema = Schema.compile({
+        types: [
+          defineType({
+            name: 'author',
+            type: 'document',
+            fields: [defineField({name: 'name', type: 'string'})],
+          }),
+          defineType({
+            name: 'book',
+            type: 'document',
+            fields: [
+              defineField({
+                name: 'title',
+                type: 'string',
+                options: {search: {weight: 10}},
+              }),
+              defineField({
+                name: 'author',
+                type: 'reference',
+                to: [{type: 'author'}],
+              }),
+            ],
+          }),
+        ],
+      })
+      const bookType = referenceSchema.get('book')
+
+      const {query} = createSearchQuery(
+        {
+          query: 'term',
+          types: [bookType],
+        },
+        {
+          sort: [
+            {
+              direction: 'asc',
+              field: 'title',
+              schemaType: bookType,
+              mapWith: 'lower',
+            },
+            {
+              direction: 'desc',
+              field: 'author.name',
+              schemaType: bookType,
+            },
+          ],
+        },
+      )
+
+      // Both entries are projected into `orderings`. `title` (the
+      // simple field) takes index 0; `author.name` (resolved to
+      // `author->name`) takes index 1.
+      expect(query).toContain('"orderings": [title, author->name]')
+      expect(query).toContain('order(lower(orderings[0]) asc,orderings[1] desc)')
     })
   })
 
@@ -228,10 +370,10 @@ describe('createSearchQuery', () => {
 
       expect(query).toEqual(
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)]' +
-          '| order(exampleField desc)' +
-          '[0...$__limit]' +
-          '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)] ' +
+          '{_type, _id, _originalId, "orderings": [exampleField], ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })} ' +
+          '| order(orderings[0] desc) ' +
+          '[0...$__limit]',
       )
     })
 
@@ -260,11 +402,13 @@ describe('createSearchQuery', () => {
         },
       )
 
+      const sortExpressions = 'exampleField, anotherExampleField, mapWithField'
       const result = [
         `// findability-mvi:${FINDABILITY_MVI}\n`,
-        '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)]| ',
-        'order(exampleField desc,anotherExampleField asc,lower(mapWithField) asc)',
-        '[0...$__limit]{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
+        '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)] ',
+        `{_type, _id, _originalId, "orderings": [${sortExpressions}], ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })} `,
+        '| order(orderings[0] desc,orderings[1] asc,lower(orderings[2]) asc) ',
+        '[0...$__limit]',
       ].join('')
 
       expect(query).toEqual(result)
@@ -287,7 +431,10 @@ describe('createSearchQuery', () => {
         },
       )
 
-      expect(query).toContain('order(select(defined(exampleField) => 0, 1),exampleField desc)')
+      // Null-sort override addresses the projected position rather
+      // than the raw field, since by the time `order(...)` runs the
+      // value lives at `orderings[0]`.
+      expect(query).toContain('order(select(defined(orderings[0]) => 0, 1),orderings[0] desc)')
     })
 
     it('should order results by _id ASC if no sort field and direction is configured', () => {
@@ -296,12 +443,14 @@ describe('createSearchQuery', () => {
         types: [testType],
       })
 
+      // `_id` is the default sort field. Like every other sort
+      // field, it's projected into the `orderings` array.
       expect(query).toEqual(
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)]' +
-          '| order(_id asc)' +
-          '[0...$__limit]' +
-          '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)] ' +
+          '{_type, _id, _originalId, "orderings": [_id], ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })} ' +
+          '| order(orderings[0] asc) ' +
+          '[0...$__limit]',
       )
     })
 
@@ -410,14 +559,18 @@ describe('createSearchQuery', () => {
          * This is an improvement over before, where an illegal term was used (number-as-string, ala ["0"]),
          * which lead to no hits at all. */
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || cover[].cards[].title match $t0) && (_id match $t1 || _type match $t1 || cover[].cards[].title match $t1)]' +
-          '| order(_id asc)' +
-          '[0...$__limit]' +
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || cover[].cards[].title match $t0) && (_id match $t1 || _type match $t1 || cover[].cards[].title match $t1)] ' +
+          // The default `_id asc` sort is projected into the
+          // `orderings` array like every other sort entry, alongside
+          // the per-spec score selections — a single projection,
+          // followed by `order(...)`.
           // at this point we could refilter using cover[0].cards[0].title.
           // This solution was discarded at it would increase the size of the query payload by up to 50%
 
           // we still map out the path with number
-          '{_type, _id, _originalId, ...select(_type == "numbers-in-path" => { "w0": _id,"w1": _type,"w2": cover[].cards[].title })}',
+          '{_type, _id, _originalId, "orderings": [_id], ...select(_type == "numbers-in-path" => { "w0": _id,"w1": _type,"w2": cover[].cards[].title })} ' +
+          '| order(orderings[0] asc) ' +
+          '[0...$__limit]',
       )
     })
   })

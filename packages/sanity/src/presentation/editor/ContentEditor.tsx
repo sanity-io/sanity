@@ -50,7 +50,6 @@ export function ContentEditor(props: {
   const schema = useSchema()
 
   const MainDocumentLink = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-shadow
     (props: HTMLProps<HTMLAnchorElement>) => {
       return (
         <StateLink

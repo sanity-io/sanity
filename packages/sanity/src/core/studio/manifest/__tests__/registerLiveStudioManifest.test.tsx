@@ -302,4 +302,33 @@ describe('registerStudioManifest', () => {
       expect(callArgs.body.value.workspaces[0].subtitle).toBeUndefined()
     })
   })
+
+  describe('abort signal', () => {
+    it('should forward the abort signal to the request', async () => {
+      const controller = new AbortController()
+
+      await registerStudioManifest(
+        mockUserApplication,
+        [createMockWorkspace()],
+        mockTheme,
+        controller.signal,
+      )
+
+      expect(mockRequest).toHaveBeenCalledWith(expect.objectContaining({signal: controller.signal}))
+    })
+
+    it('should skip the POST when the signal is already aborted', async () => {
+      const controller = new AbortController()
+      controller.abort()
+
+      await registerStudioManifest(
+        mockUserApplication,
+        [createMockWorkspace()],
+        mockTheme,
+        controller.signal,
+      )
+
+      expect(mockRequest).not.toHaveBeenCalled()
+    })
+  })
 })

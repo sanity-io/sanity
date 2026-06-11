@@ -1,7 +1,7 @@
 import {describe, expect, it, vi} from 'vitest'
 
 import {type WorkspaceHiddenContext, type WorkspaceSummary} from '../../../config/types'
-import {type AuthState} from '../../../store/_legacy/authStore/types'
+import {type AuthState} from '../../../store/authStore/types'
 import {evaluateWorkspaceHidden} from '../useVisibleWorkspaces'
 
 function createWorkspace(

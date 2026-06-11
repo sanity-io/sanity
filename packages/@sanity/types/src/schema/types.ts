@@ -523,3 +523,10 @@ export interface FileSchemaType extends Omit<ObjectSchemaType, 'options'> {
 export interface ImageSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: ImageOptions
 }
+
+/** @public */
+/** @public */
+export interface ModalOptions {
+  type?: 'dialog' | 'popover'
+  width?: 1 | 2 | 3 | 4 | 5 | 'auto' | (1 | 2 | 3 | 4 | 5 | 'auto')[]
+}

@@ -6,23 +6,23 @@
  */
 const requestIdleCallbackShim: typeof window.requestIdleCallback = function requestIdleCallbackShim(
   callback,
-  options?,
+  _options?,
 ): number {
   const start = Date.now()
-  return window.setTimeout(() => {
+  return globalThis.setTimeout(() => {
     callback({
       didTimeout: false,
       timeRemaining() {
         return Math.max(0, Date.now() - start)
       },
     })
-  }, 0)
+  }, 0) as unknown as number
 }
 
 const cancelIdleCallbackShim: typeof window.cancelIdleCallback = function cancelIdleCallbackShim(
   handle: number,
 ): void {
-  return window.clearTimeout(handle)
+  return globalThis.clearTimeout(handle)
 }
 
 const win = typeof window === 'undefined' ? undefined : window

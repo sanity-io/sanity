@@ -13,6 +13,7 @@ export type SuffixType = 'timestamp' | 'commits-ahead'
 interface BumpOptions {
   preid?: string
   suffixType?: SuffixType
+  buildMetadata?: boolean
   dryRun?: boolean
 }
 
@@ -103,7 +104,7 @@ function writeVersion(packagePath: string, newVersion: string): void {
 }
 
 export async function bump(options: BumpOptions = {}): Promise<void> {
-  const {preid, suffixType = 'timestamp', dryRun} = options
+  const {preid, suffixType = 'timestamp', buildMetadata = true, dryRun} = options
 
   const currentVersion = readRootVersion()
   const git = readGitInfo()
@@ -114,11 +115,8 @@ export async function bump(options: BumpOptions = {}): Promise<void> {
   console.error(`Semver increment: ${semverIncrement}`)
 
   // Compute new version
-  const suffix = preid
-    ? suffixType === 'commits-ahead'
-      ? `${git.commitCount}+${git.commitHash}`
-      : `${formatTimestamp(now)}+${git.commitHash}`
-    : undefined
+  const base = suffixType === 'commits-ahead' ? git.commitCount : formatTimestamp(now)
+  const suffix = preid ? (buildMetadata ? `${base}+${git.commitHash}` : base) : undefined
 
   const newVersion = computeVersion({currentVersion, semverIncrement, preid, suffix})
 

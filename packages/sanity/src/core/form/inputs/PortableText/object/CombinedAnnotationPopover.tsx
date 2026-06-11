@@ -1,6 +1,6 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon, TrashIcon} from '@sanity/icons'
-import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {Box, Flex, Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
@@ -10,12 +10,12 @@ import {useSelectedAnnotations} from '../contexts/SelectedAnnotationsContext'
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 interface CombinedAnnotationPopoverProps {
-  floatingBoundary: HTMLElement | null
   referenceBoundary: HTMLElement | null
 }
 
 export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps): ReactNode {
-  const {floatingBoundary, referenceBoundary} = props
+  const {referenceBoundary} = props
+  const {element: floatingBoundary} = useBoundaryElement()
   const {annotations} = useSelectedAnnotations()
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)

@@ -240,6 +240,7 @@ import type {
   CommonProps,
   CompactPreview,
   CompactPreviewProps,
+  compileFieldPath,
   ComplexElementProps,
   ComposableOption,
   ComputeDiff,
@@ -335,8 +336,6 @@ import type {
   DatetimeOptions,
   DatetimeRule,
   dec,
-  DECISION_PARAMETERS_SCHEMA,
-  DecisionParametersConfig,
   decodePath,
   DecorationMember,
   DEFAULT_ANNOTATIONS,
@@ -411,12 +410,14 @@ import type {
   DocumentActionDescription,
   DocumentActionDialogProps,
   DocumentActionGroup,
+  DocumentActionKeys,
   DocumentActionModalDialogProps,
   DocumentActionPopoverDialogProps,
   DocumentActionProps,
   DocumentActionsContext,
   DocumentActionsResolver,
   DocumentActionsVersionType,
+  DocumentAskToEditEnabledContext,
   DocumentAvailability,
   DocumentBadgeComponent,
   DocumentBadgeDescription,
@@ -984,12 +985,14 @@ import type {
   MemberItemProps,
   MendozaEffectPair,
   MendozaPatch,
+  mergeParseErrors,
   MetaInfo,
   MetaInfoProps,
   MissingConfigFile,
   MissingKeysError,
   MixedArrayError,
   MockAuthStoreOptions,
+  ModalOptions,
   MultiFieldSet,
   MultipleMutationResult,
   Mutation,
@@ -1070,6 +1073,8 @@ import type {
   OperatorInputComponentProps,
   Pair,
   ParsedTimeRef,
+  ParseError,
+  ParseErrorsProvider,
   PartialContext,
   PartialExcept,
   PartialIndexSettings,
@@ -1256,6 +1261,7 @@ import type {
   SanityCreateOptions,
   SanityDefaultPreview,
   SanityDefaultPreviewProps,
+  SanityDefinedAction,
   SanityDocument,
   SanityDocumentLike,
   SanityFormConfig,
@@ -1562,6 +1568,7 @@ import type {
   UseFeedbackReturn,
   useFieldActions,
   useFilteredReleases,
+  useFormatRelativeLocalePublishDate,
   useFormattedDuration,
   UseFormattedDurationOptions,
   useFormBuilder,
@@ -1597,6 +1604,8 @@ import type {
   UseNumberFormatOptions,
   useOnlyHasVersions,
   useOnScroll,
+  useParseErrorForPath,
+  useParseErrors,
   usePausedScheduledDraft,
   usePerspective,
   usePresenceStore,
@@ -1620,6 +1629,7 @@ import type {
   useRelativeTime,
   useReleasesIds,
   useRenderingContextStore,
+  useReportParseError,
   useResolveInitialValueForType,
   useResourceCache,
   useReviewChanges,
@@ -2450,6 +2460,9 @@ describe('sanity', () => {
   test('CompactPreviewProps', () => {
     expectTypeOf<CompactPreviewProps>().not.toBeNever()
   })
+  test('compileFieldPath', () => {
+    expectTypeOf<typeof compileFieldPath>().toBeFunction()
+  })
   test('ComplexElementProps', () => {
     expectTypeOf<ComplexElementProps>().toBeObject()
   })
@@ -2739,12 +2752,6 @@ describe('sanity', () => {
   test('dec', () => {
     expectTypeOf<typeof dec>().toBeFunction()
   })
-  test('DECISION_PARAMETERS_SCHEMA', () => {
-    expectTypeOf<typeof DECISION_PARAMETERS_SCHEMA>().not.toBeNever()
-  })
-  test('DecisionParametersConfig', () => {
-    expectTypeOf<DecisionParametersConfig>().toBeObject()
-  })
   test('decodePath', () => {
     expectTypeOf<typeof decodePath>().toBeFunction()
   })
@@ -2967,6 +2974,9 @@ describe('sanity', () => {
   test('DocumentActionGroup', () => {
     expectTypeOf<DocumentActionGroup>().not.toBeNever()
   })
+  test('DocumentActionKeys', () => {
+    expectTypeOf<DocumentActionKeys>().toBeObject()
+  })
   test('DocumentActionModalDialogProps', () => {
     expectTypeOf<DocumentActionModalDialogProps>().toBeObject()
   })
@@ -2984,6 +2994,9 @@ describe('sanity', () => {
   })
   test('DocumentActionsVersionType', () => {
     expectTypeOf<DocumentActionsVersionType>().not.toBeNever()
+  })
+  test('DocumentAskToEditEnabledContext', () => {
+    expectTypeOf<DocumentAskToEditEnabledContext>().toBeObject()
   })
   test('DocumentAvailability', () => {
     expectTypeOf<DocumentAvailability>().not.toBeNever()
@@ -4694,6 +4707,9 @@ describe('sanity', () => {
   test('MendozaPatch', () => {
     expectTypeOf<MendozaPatch>().not.toBeNever()
   })
+  test('mergeParseErrors', () => {
+    expectTypeOf<typeof mergeParseErrors>().toBeFunction()
+  })
   test('MetaInfo', () => {
     expectTypeOf<typeof MetaInfo>().toBeFunction()
   })
@@ -4711,6 +4727,9 @@ describe('sanity', () => {
   })
   test('MockAuthStoreOptions', () => {
     expectTypeOf<MockAuthStoreOptions>().toBeObject()
+  })
+  test('ModalOptions', () => {
+    expectTypeOf<ModalOptions>().toBeObject()
   })
   test('MultiFieldSet', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
@@ -4954,6 +4973,12 @@ describe('sanity', () => {
   })
   test('ParsedTimeRef', () => {
     expectTypeOf<ParsedTimeRef>().not.toBeNever()
+  })
+  test('ParseError', () => {
+    expectTypeOf<ParseError>().toBeObject()
+  })
+  test('ParseErrorsProvider', () => {
+    expectTypeOf<typeof ParseErrorsProvider>().toBeFunction()
   })
   test('PartialContext', () => {
     expectTypeOf<PartialContext<any>>().not.toBeNever()
@@ -5515,6 +5540,9 @@ describe('sanity', () => {
   test('SanityDefaultPreviewProps', () => {
     expectTypeOf<SanityDefaultPreviewProps>().toBeObject()
   })
+  test('SanityDefinedAction', () => {
+    expectTypeOf<SanityDefinedAction>().not.toBeNever()
+  })
   test('SanityDocument', () => {
     expectTypeOf<SanityDocument>().toBeObject()
   })
@@ -5525,8 +5553,6 @@ describe('sanity', () => {
     expectTypeOf<SanityFormConfig>().toBeObject()
   })
   test('ScheduleAction', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
-    expectTypeOf<typeof ScheduleAction>().toBeFunction()
     expectTypeOf<typeof ScheduleAction>().not.toBeNever()
   })
   test('ScheduledBadge', () => {
@@ -6440,6 +6466,9 @@ describe('sanity', () => {
   test('useFilteredReleases', () => {
     expectTypeOf<typeof useFilteredReleases>().toBeFunction()
   })
+  test('useFormatRelativeLocalePublishDate', () => {
+    expectTypeOf<typeof useFormatRelativeLocalePublishDate>().toBeFunction()
+  })
   test('useFormattedDuration', () => {
     expectTypeOf<typeof useFormattedDuration>().toBeFunction()
   })
@@ -6546,6 +6575,12 @@ describe('sanity', () => {
   test('useOnScroll', () => {
     expectTypeOf<typeof useOnScroll>().toBeFunction()
   })
+  test('useParseErrorForPath', () => {
+    expectTypeOf<typeof useParseErrorForPath>().toBeFunction()
+  })
+  test('useParseErrors', () => {
+    expectTypeOf<typeof useParseErrors>().toBeFunction()
+  })
   test('usePausedScheduledDraft', () => {
     expectTypeOf<typeof usePausedScheduledDraft>().toBeFunction()
   })
@@ -6614,6 +6649,9 @@ describe('sanity', () => {
   })
   test('useRenderingContextStore', () => {
     expectTypeOf<typeof useRenderingContextStore>().toBeFunction()
+  })
+  test('useReportParseError', () => {
+    expectTypeOf<typeof useReportParseError>().toBeFunction()
   })
   test('useResolveInitialValueForType', () => {
     expectTypeOf<typeof useResolveInitialValueForType>().toBeFunction()

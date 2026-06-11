@@ -54,7 +54,6 @@ function createIntersectionObserverBased(): IntersectionObservableFor {
     },
   )
 
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   return function intersectionObservableFor(element) {
     return new Observable<void>((observer) => {
       intersectionObserver.observe(element)
@@ -98,7 +97,6 @@ function createLegacyBased() {
     return () => intersects(element.getBoundingClientRect(), getViewport(), ROOT_MARGIN_PX)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   return function intersectionObservableFor(element: HTMLElement): Observable<IntersectionEvent> {
     const isElementInViewport = inViewport(element)
     return merge(observableOf(isElementInViewport()), resize$, scroll$, orientationChange$).pipe(

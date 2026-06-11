@@ -54,7 +54,6 @@ const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (prop
     // event, as we can't rely on emitting it into the void
     const unsubscribe = comlink.on('visual-editing/snapshot-welcome', async () => {
       const event = await new Promise<WelcomeEvent>((resolve) => {
-        // eslint-disable-next-line @typescript-eslint/no-shadow
         welcome.pipe(first()).subscribe((event) => {
           resolve(event)
         })

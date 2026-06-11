@@ -4,6 +4,15 @@ import {fileURLToPath} from 'node:url'
 import * as vitest from 'vitest/config'
 import {configDefaults} from 'vitest/config'
 
+// Node 25+ enables the Web Storage API by default, shadowing the `localStorage`
+// global provided by jsdom (vitest's `populateGlobal` skips keys that already
+// exist on the worker's global). Disable Node's native Web Storage so jsdom's
+// implementation is used. The flag is a no-op on Node versions where Web
+// Storage isn't enabled. See https://github.com/vitest-dev/vitest/issues/8757.
+// Use the canonical `--no-experimental-webstorage` alias since the shorter
+// `--no-webstorage` only exists on Node 26+.
+const workerExecArgv = ['--no-experimental-webstorage']
+
 /**
  *
  * @param [config] {vitest.UserConfig}
@@ -21,6 +30,7 @@ export function defineConfig(config) {
       disableConsoleIntercept: config?.test?.disableConsoleIntercept ?? true,
       // oxlint-disable-next-line no-misused-spread
       alias: {...config?.test?.alias, ...getViteAliases()},
+      execArgv: [...workerExecArgv, ...(config?.test?.execArgv ?? [])],
       typecheck: {
         ...config?.test?.typecheck,
         exclude: [

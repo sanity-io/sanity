@@ -212,7 +212,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
     liveEventsMessages,
   }) || {}
 
-  /* eslint-disable @typescript-eslint/no-shadow,max-params */
+  /* eslint-disable max-params */
   const handleQueryChange = useEffectEvent(
     (
       comlink: LoaderConnection | undefined,
@@ -235,7 +235,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       })
     },
   )
-  /* eslint-enable @typescript-eslint/no-shadow,max-params */
+  /* eslint-enable max-params */
 
   useEffect(() => {
     if (resultSourceMap) {

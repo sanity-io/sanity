@@ -13,7 +13,7 @@ import {publishReleases} from '../src/commands/publishReleases'
 import {writeChangelogFiles} from '../src/commands/writeChangelogFiles'
 import {writeCommitCheck} from '../src/commands/writeCommitCheck'
 import {writePrChecks} from '../src/commands/writePrChecks'
-import {type KnownEnvVar, type PullRequest} from '../src/types'
+import {type CommitAuthor, type KnownEnvVar, type PullRequest} from '../src/types'
 import {stripPr} from '../src/utils/stripPrNumber'
 
 function getAdminStudioUrl(): string {
@@ -39,6 +39,11 @@ await yargs(process.argv.slice(2))
           choices: ['timestamp', 'commits-ahead'] as const,
           default: 'timestamp' as const,
         },
+        buildMetadata: {
+          description: 'Append +<commitHash> build metadata to the version (default: true)',
+          type: 'boolean',
+          default: true,
+        },
         dryRun: {
           description: 'Print the new version without writing files',
           type: 'boolean',
@@ -49,6 +54,7 @@ await yargs(process.argv.slice(2))
         await bump({
           preid: args.preid,
           suffixType: args.suffixType,
+          buildMetadata: args.buildMetadata,
           dryRun: args.dryRun,
         })
       } catch (error) {
@@ -257,7 +263,10 @@ type GenerateChangeLogResult = {
     draft: DraftId
   }
   commitsWithPrs: Array<
-    Exclude<{conventionalCommit: CommitBase & CommitMeta; pr: any}, typeof pMapSkip>
+    Exclude<
+      {conventionalCommit: CommitBase & CommitMeta; pr?: any; commitAuthor?: any},
+      typeof pMapSkip
+    >
   >
   releaseId: string
 }
@@ -277,6 +286,7 @@ function generateChangeLogSummary(
           .map((entry) =>
             formatEntry({
               pr: entry.pr,
+              commitAuthor: entry.commitAuthor,
               conventionalCommit: entry.conventionalCommit,
               changelogDocumentId,
               releaseId,
@@ -315,20 +325,32 @@ ${entriesSection}
 function formatEntry({
   conventionalCommit,
   pr,
+  commitAuthor,
   changelogDocumentId,
   releaseId,
 }: {
   conventionalCommit: Commit
-  pr: PullRequest
+  pr: PullRequest | undefined
+  commitAuthor: CommitAuthor | undefined
   changelogDocumentId: GenerateChangeLogResult['changelogDocumentId']
   releaseId: GenerateChangeLogResult['releaseId']
 }) {
   const entryKey = conventionalCommit.hash!.slice(0, 8)
-  const originalCommitMessage = stripPr(conventionalCommit.header || '', pr.number)
+  const originalCommitMessage = stripPr(conventionalCommit.header || '', pr?.number)
   const entryPath = encodeURIComponent(`changelog[_key=="${entryKey}"]`)
   const changelogEntryUrl = `${getAdminStudioUrl()}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
 
-  const byline = pr.user?.login ? `[${pr.user?.login}](${pr.user.html_url})` : ''
+  if (!pr) {
+    // oxlint-disable-next-line no-console
+    console.warn(
+      `⚠️  WARNING: GitHub returned no PR association for commit ${conventionalCommit.hash}. ` +
+        `Rendering changelog row without author info.`,
+    )
+  }
+
+  const author = commitAuthor ?? pr?.user
+  const byline = author?.login ? `[${author.login}](${author.html_url})` : '—'
+  const prCell = pr ? `[#${pr.number}](${pr.html_url})` : '—'
   const releaseNoteLink = `[:pencil:&nbsp;Edit](${changelogEntryUrl})`
-  return `${byline} | ${originalCommitMessage} | [#${pr.number}](${pr.html_url}) | ${conventionalCommit.hash} | ${releaseNoteLink}`
+  return `${byline} | ${originalCommitMessage} | ${prCell} | ${conventionalCommit.hash} | ${releaseNoteLink}`
 }
