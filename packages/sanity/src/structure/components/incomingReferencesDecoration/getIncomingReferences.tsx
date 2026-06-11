@@ -1,4 +1,13 @@
-import {distinctUntilChanged, filter, map, type Observable, of, startWith, switchMap} from 'rxjs'
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  map,
+  type Observable,
+  of,
+  startWith,
+  switchMap,
+} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
   type DocumentPreviewStore,
@@ -112,6 +121,13 @@ export function getIncomingReferences({
           map((documents) => ({documents, loading: false})),
           startWith(INITIAL_STATE),
         )
+    }),
+    // Consumers render this via `useObservable`, which rethrows stream
+    // errors during render and would crash the document pane. Degrade to
+    // an empty list instead.
+    catchError((err) => {
+      console.error(new Error('Failed to load incoming references', {cause: err}))
+      return of({documents: [], loading: false})
     }),
   )
 }

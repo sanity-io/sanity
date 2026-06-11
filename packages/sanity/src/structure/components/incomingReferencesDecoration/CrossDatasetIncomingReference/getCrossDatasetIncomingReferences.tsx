@@ -1,6 +1,6 @@
 import {DocumentIcon} from '@sanity/icons'
 import {type PreviewValue} from '@sanity/types'
-import {map, type Observable, of, startWith} from 'rxjs'
+import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
   type DocumentAvailability,
@@ -142,5 +142,13 @@ export function getCrossDatasetIncomingReferences({
     }),
     map((documents) => ({documents: documents.filter(isNonNullable), loading: false})),
     startWith(INITIAL_STATE),
+    // Cross-dataset queries are failure-prone (token / dataset permission
+    // errors). Consumers render this via `useObservable`, which rethrows
+    // stream errors during render and would crash the document pane.
+    // Degrade to an empty list instead.
+    catchError((err) => {
+      console.error(new Error('Failed to load cross-dataset incoming references', {cause: err}))
+      return of({documents: [], loading: false})
+    }),
   )
 }

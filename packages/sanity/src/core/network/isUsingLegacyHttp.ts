@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {defer, firstValueFrom, Observable, of, take, timeout} from 'rxjs'
-import {filter, map, mergeMap} from 'rxjs/operators'
+import {catchError, filter, map, mergeMap} from 'rxjs/operators'
 
 /**
  * The /ping route is special in that it allows any origin to access it, and crucially
@@ -67,7 +67,8 @@ function getProtocolForApi(client: SanityClient): Observable<string | undefined>
 /**
  * Creates an Observable that sets up a PerformanceObserver, issues the network request,
  * and emits the `nextHopProtocol` once the resource timing shows up. If the request
- * fails, the Observable will emit an error.
+ * fails (e.g. the browser is offline or the request is blocked), the Observable emits
+ * `undefined` to indicate that the protocol could not be detected.
  *
  * @internal
  */
@@ -97,6 +98,13 @@ function detectProtocol(checkUrl: string): Observable<string | undefined> {
     // Race the actual timing detection against a 2.5s timer.
     // If the timer wins, we emit undefined to indicate we couldn’t detect the protocol.
     timeout({first: 2500, with: () => of(undefined)}),
+    // A failed request (offline, blocked, etc.) also means we couldn’t detect the
+    // protocol — warn and emit undefined instead of erroring so consumers don’t
+    // have to treat a failed probe as an exceptional condition.
+    catchError((error) => {
+      console.warn('[sanity] Could not detect network protocol:', error)
+      return of(undefined)
+    }),
   )
 }
 

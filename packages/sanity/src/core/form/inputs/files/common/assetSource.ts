@@ -115,20 +115,33 @@ export function handleSelectAssetFromSource({
       break
     }
     case 'base64':
-      void base64ToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
-        const uploader = resolveUploader(type, file)
-        if (uploader && uploadWith) {
-          uploadWith(uploader, file, assetOptions)
-        }
-      })
+      base64ToFile(firstAsset.value as FIXME, originalFilename)
+        .then((file) => {
+          const uploader = resolveUploader(type, file)
+          if (uploader && uploadWith) {
+            uploadWith(uploader, file, assetOptions)
+          }
+        })
+        .catch((err) => {
+          // Decoding failed — the upload never starts. Log instead of
+          // leaving an unhandled rejection.
+          console.error(new Error('Failed to decode base64 asset', {cause: err}))
+        })
       break
     case 'url':
-      void urlToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
-        const uploader = resolveUploader(type, file)
-        if (uploader && uploadWith) {
-          uploadWith(uploader, file, assetOptions)
-        }
-      })
+      urlToFile(firstAsset.value as FIXME, originalFilename)
+        .then((file) => {
+          const uploader = resolveUploader(type, file)
+          if (uploader && uploadWith) {
+            uploadWith(uploader, file, assetOptions)
+          }
+        })
+        .catch((err) => {
+          // Fetching the external URL failed (CORS is the common case) —
+          // the upload never starts. Log instead of leaving an unhandled
+          // rejection.
+          console.error(new Error('Failed to fetch asset from URL', {cause: err}))
+        })
       break
     default: {
       throw new Error('Invalid value returned from asset source plugin')
