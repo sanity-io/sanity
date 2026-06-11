@@ -51,6 +51,23 @@ export interface AuthStore {
    * mode). Within the Studio, this is called within the `AuthBoundary`.
    */
   handleCallbackUrl?: () => Promise<HandleCallbackResult>
+  /**
+   * Optional probe used to verify whether the user is actually
+   * unauthenticated before reacting to a 401 from an application request.
+   * Returns:
+   * - `'unauthenticated'` — credentials are missing or rejected; the
+   *   caller should treat this as a logged-out state.
+   * - `'authenticated'` — credentials are still valid; the original 401
+   *   was about that specific request, not the user's session.
+   * - `'unknown'` — the probe couldn't reach a conclusion (network down,
+   *   transient failure). The caller should not take destructive action.
+   *
+   * Implementations should be cheap and side-effect-free (typically a
+   * single `/auth/id` request).
+   *
+   * @internal
+   */
+  probeUnauthenticated?: () => Promise<'authenticated' | 'unauthenticated' | 'unknown'>
 }
 
 /**

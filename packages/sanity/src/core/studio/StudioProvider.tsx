@@ -61,10 +61,12 @@ export function StudioProvider({
     ensureRefractorLanguages()
   }, [])
 
-  // Extract the first workspace's projectId for use in error screens
+  // First workspace's projectId — used by CorsOriginErrorScreen to decide
+  // whether to surface the "Register studio" option (only valid when the
+  // failing project matches the studio's primary project).
   const primaryProjectId = useMemo(() => {
-    const workspace = Array.isArray(config) ? config[0] : config
-    return workspace?.projectId
+    const first = Array.isArray(config) ? config[0] : config
+    return first?.projectId
   }, [config])
 
   const _children = useMemo(
@@ -105,12 +107,13 @@ export function StudioProvider({
     <DeferredTelemetryProvider>
       <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
         <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-          <StudioErrorBoundary primaryProjectId={primaryProjectId}>
-            <StudioRootErrorHandler primaryProjectId={primaryProjectId}>
+          <StudioErrorBoundary>
+            <StudioRootErrorHandler>
               <WorkspacesProvider
                 config={config}
                 basePath={basePath}
                 LoadingComponent={LoadingBlock}
+                primaryProjectId={primaryProjectId}
               >
                 <VisibleWorkspacesProvider>
                   <ActiveWorkspaceMatcher
