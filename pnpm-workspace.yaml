@@ -20,7 +20,7 @@ catalog:
   '@rolldown/plugin-babel': ^0.2.3
   '@sanity/client': ^7.22.1
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/migrate': ^7.0.1
+  '@sanity/migrate': ^7.0.2
   '@sanity/pkg-utils': ^10.5.3
   '@sanity/telemetry': ^1.1.0
   '@sanity/ui': ^3.2.0
