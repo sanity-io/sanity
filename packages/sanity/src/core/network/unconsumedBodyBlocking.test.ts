@@ -76,11 +76,12 @@ describe('unconsumed fetch body prevents connection reuse', () => {
     await Promise.all([unconsumed.close(), consumed.close()])
   })
 
-  it('opens one TCP connection per request when body is not consumed', () => {
+  it('opens at least one new TCP connection per request when body is not consumed', () => {
     // Each sequential fetch() must open a new TCP connection because the
     // previous connection is still occupied by its unfinished response body.
-    // Newer undici versions (Node 26) may open additional connections beyond
-    // one per request, so assert the lower bound rather than an exact count.
+    // On Node 26 (which bumped undici 7 -> 8) CI has intermittently observed a
+    // couple of connections beyond one per request. The property under test is
+    // "no reuse", so assert the lower bound rather than an exact count.
     expect(unconsumed.connections()).toBeGreaterThanOrEqual(REQUEST_COUNT)
   })
 
