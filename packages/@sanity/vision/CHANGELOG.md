@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to vite 8 (#12960)
+* drop support for node 20 (#12859)
+
+### Features
+
+* upgrade to vite 8 ([#12960](https://github.com/sanity-io/sanity/issues/12960)) ([a9d703c](https://github.com/sanity-io/sanity/commit/a9d703cb14b5cab0a9f7b19675910ae453b84593))
+
+### Bug Fixes
+
+* drop support for node 20 ([#12859](https://github.com/sanity-io/sanity/issues/12859)) ([d02289a](https://github.com/sanity-io/sanity/commit/d02289a2ac5aca3de55853812ac6e0b659fa2ef4))
+* use v6 peer dep for `sanity` in `@sanity/vision` ([#12967](https://github.com/sanity-io/sanity/issues/12967)) ([9f33f49](https://github.com/sanity-io/sanity/commit/9f33f4989e6e46e0f2372a382bd88bfb8d923f42))
 ## [5.31.0](https://github.com/sanity-io/sanity/compare/v5.30.0...v5.31.0) (2026-06-10)
 
 ### Features
