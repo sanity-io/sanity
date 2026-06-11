@@ -1,6 +1,6 @@
 // @vitest-environment node
 import {createServer, type Server} from 'node:http'
-import {type AddressInfo} from 'node:net'
+import {type AddressInfo, type Socket} from 'node:net'
 
 import {afterAll, beforeAll, describe, expect, it} from 'vitest'
 
@@ -24,11 +24,16 @@ describe('unconsumed fetch body prevents connection reuse', () => {
 
   function createStreamingServer(): Promise<{
     url: string
-    connections: () => number
+    requestSocketCount: () => number
     close: () => Promise<void>
   }> {
-    let connectionCount = 0
-    const server: Server = createServer((_req, res) => {
+    // Count the unique sockets that actually carried a request, rather than
+    // raw TCP accepts: undici may open extra connections that never serve a
+    // request (observed intermittently on Node 26 / undici 8), and counting
+    // accepts could also mask a reuse regression behind idle preconnects.
+    const requestSockets = new Set<Socket>()
+    const server: Server = createServer((req, res) => {
+      requestSockets.add(req.socket)
       res.writeHead(200, {'content-type': 'text/plain'})
       res.write('start\n')
       const interval = setInterval(() => res.write('.\n'), 50)
@@ -37,15 +42,12 @@ describe('unconsumed fetch body prevents connection reuse', () => {
         res.end('done\n')
       }, BODY_STREAM_DURATION_MS)
     })
-    server.on('connection', () => {
-      connectionCount++
-    })
     return new Promise((resolve) =>
       server.listen(0, '127.0.0.1', () => {
         const {port} = server.address() as AddressInfo
         resolve({
           url: `http://127.0.0.1:${port}/ping`,
-          connections: () => connectionCount,
+          requestSocketCount: () => requestSockets.size,
           close: () => new Promise<void>((r) => server.close(() => r())),
         })
       }),
@@ -76,18 +78,15 @@ describe('unconsumed fetch body prevents connection reuse', () => {
     await Promise.all([unconsumed.close(), consumed.close()])
   })
 
-  it('opens at least one new TCP connection per request when body is not consumed', () => {
-    // Each sequential fetch() must open a new TCP connection because the
+  it('uses a distinct TCP connection per request when body is not consumed', () => {
+    // Each sequential fetch() must ride a new TCP connection because the
     // previous connection is still occupied by its unfinished response body.
-    // On Node 26 (which bumped undici 7 -> 8) CI has intermittently observed a
-    // couple of connections beyond one per request. The property under test is
-    // "no reuse", so assert the lower bound rather than an exact count.
-    expect(unconsumed.connections()).toBeGreaterThanOrEqual(REQUEST_COUNT)
+    expect(unconsumed.requestSocketCount()).toBe(REQUEST_COUNT)
   })
 
   it('reuses connections when body is fully consumed', () => {
     // text() waits for the complete body, then returns the connection to
     // the pool. The next request reuses the existing connection.
-    expect(consumed.connections()).toBeLessThan(unconsumed.connections())
+    expect(consumed.requestSocketCount()).toBeLessThan(REQUEST_COUNT)
   })
 })
