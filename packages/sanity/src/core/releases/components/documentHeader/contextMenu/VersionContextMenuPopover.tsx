@@ -35,6 +35,11 @@ export interface VersionContextMenuPopoverProps {
   isScheduledDraft?: boolean
   scheduledDraftMenuActions?: UseScheduledDraftMenuActionsReturn
   /**
+   * Whether the UI permits discarding versions.
+   * Defaults to `true`.
+   */
+  isDiscardable?: boolean
+  /**
    * Whether the popover should be rendered in a portal. If the trigger is
    * already contained in a portal there is no need to also make the context
    * menu a portal (and it also breaks click-outside detection).
@@ -73,6 +78,7 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
     release,
     isScheduledDraft = false,
     scheduledDraftMenuActions,
+    isDiscardable = true,
     portal = true,
   } = props
 
@@ -98,6 +104,7 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
           release={release}
           isScheduledDraft={isScheduledDraft}
           scheduledDraftMenuActions={scheduledDraftMenuActions}
+          isDiscardable={isDiscardable}
         />
       }
       fallbackPlacements={[]}

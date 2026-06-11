@@ -28,6 +28,11 @@ interface VersionContextMenuProps {
   release?: ReleaseDocument
   isScheduledDraft?: boolean
   scheduledDraftMenuActions?: UseScheduledDraftMenuActionsReturn
+  /**
+   * Whether the UI permits discarding versions.
+   * Defaults to `true`.
+   */
+  isDiscardable?: boolean
 }
 
 export const VersionContextMenu = memo(function VersionContextMenu(props: VersionContextMenuProps) {
@@ -49,6 +54,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     release,
     isScheduledDraft,
     scheduledDraftMenuActions,
+    isDiscardable = true,
   } = props
   const isPublished = isPublishedId(documentId) && !isVersion
 
@@ -119,6 +125,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
       hasCreatePermission={hasCreatePermission}
       hasDiscardPermission={hasDiscardPermission || false}
       isPublished={isPublished}
+      isDiscardable={isDiscardable}
       documentId={documentId}
       documentType={type}
     />
