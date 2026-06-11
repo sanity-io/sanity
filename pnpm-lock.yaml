@@ -976,8 +976,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/mutate':
-        specifier: ^0.18.0
-        version: 0.18.0(xstate@5.32.0)
+        specifier: ^0.18.1
+        version: 0.18.1(xstate@5.32.0)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../@sanity/types
@@ -1744,8 +1744,8 @@ importers:
         specifier: 'catalog:'
         version: 7.0.1(@oclif/core@4.11.4)(@sanity/cli-core@2.0.1(@noble/hashes@2.2.0)(@types/node@24.13.0)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.0)(terser@5.48.0)(yaml@2.9.0))(@types/react@19.2.17)(xstate@5.32.0)
       '@sanity/mutate':
-        specifier: ^0.18.0
-        version: 0.18.0(xstate@5.32.0)
+        specifier: ^0.18.1
+        version: 0.18.1(xstate@5.32.0)
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../@sanity/mutator
@@ -5531,6 +5531,14 @@ packages:
 
   '@sanity/mutate@0.18.0':
     resolution: {integrity: sha512-P77Pw6csAJqzNJzZJaluy/t9jpWS5bcCiBrn6tDY4Fz5ZQSKWwIG8lcku5P/bcULqfCLirf5uH7+V0oEaCshaw==}
+    peerDependencies:
+      xstate: ^5.19.0
+    peerDependenciesMeta:
+      xstate:
+        optional: true
+
+  '@sanity/mutate@0.18.1':
+    resolution: {integrity: sha512-28iICKl33s9yr8XtgpoCHOb+l5kKVbd6CpFYi4Vx0fHNZcFiKDGdY+RzZrC34GWqb6M16wkxwtHSVbEmXbfTpw==}
     peerDependencies:
       xstate: ^5.19.0
     peerDependenciesMeta:
@@ -15276,6 +15284,20 @@ snapshots:
       xstate: 5.32.0
 
   '@sanity/mutate@0.18.0(xstate@5.32.0)':
+    dependencies:
+      '@isaacs/ttlcache': 2.1.5
+      '@sanity/client': 7.22.1
+      '@sanity/diff-match-patch': 3.2.0
+      '@sanity/uuid': 3.0.2
+      hotscript: 1.0.13
+      lodash: 4.18.1
+      mendoza: 3.0.8
+      nanoid: 5.1.11
+      rxjs: 7.8.2
+    optionalDependencies:
+      xstate: 5.32.0
+
+  '@sanity/mutate@0.18.1(xstate@5.32.0)':
     dependencies:
       '@isaacs/ttlcache': 2.1.5
       '@sanity/client': 7.22.1
