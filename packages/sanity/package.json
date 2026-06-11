@@ -1,6 +1,6 @@
 {
   "name": "sanity",
-  "version": "5.30.0",
+  "version": "6.0.0",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "keywords": [
     "cms",
@@ -165,21 +165,21 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@isaacs/ttlcache": "^1.4.1",
     "@mux/mux-player-react": "^3.13.0",
-    "@portabletext/editor": "^6.6.5",
+    "@portabletext/editor": "^7.3.4",
     "@portabletext/html": "^1.0.2",
     "@portabletext/patches": "^2.0.4",
-    "@portabletext/plugin-markdown-shortcuts": "^7.0.29",
-    "@portabletext/plugin-one-line": "^6.0.28",
-    "@portabletext/plugin-paste-link": "^3.0.28",
-    "@portabletext/plugin-typography": "^7.0.28",
+    "@portabletext/plugin-markdown-shortcuts": "^8.0.14",
+    "@portabletext/plugin-one-line": "^7.0.14",
+    "@portabletext/plugin-paste-link": "^4.0.14",
+    "@portabletext/plugin-typography": "^8.0.14",
     "@portabletext/react": "^6.2.0",
-    "@portabletext/sanity-bridge": "^3.1.0",
+    "@portabletext/sanity-bridge": "^3.1.1",
     "@portabletext/to-html": "^5.0.2",
     "@portabletext/toolkit": "^5.0.2",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^1.0.0",
-    "@sanity/cli": "^6.7.2",
+    "@sanity/cli": "^7.2.2",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.6",
     "@sanity/comlink": "^4.0.1",
@@ -256,7 +256,7 @@
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.6.0",
     "uuid": "^11.1.0",
-    "web-vitals": "^5.1.0",
+    "web-vitals": "^5.3.0",
     "xstate": "^5.32.0"
   },
   "devDependencies": {
@@ -265,6 +265,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@rolldown/plugin-babel": "catalog:",
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/generate-help-url": "^4.0.0",
     "@sanity/pkg-utils": "catalog:",
@@ -316,11 +317,10 @@
     "styled-components": "^6.1.15"
   },
   "browserslist": [
-    "node >=20.19",
     "node >=22.12",
     "baseline 2024"
   ],
   "engines": {
-    "node": ">=20.19 <22 || >=22.12"
+    "node": ">=22.12"
   }
 }

@@ -13,8 +13,8 @@
   "dependencies": {
     "@sanity/ui": "catalog:",
     "@sanity/vision": "workspace:*",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
   }

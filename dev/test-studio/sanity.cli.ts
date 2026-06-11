@@ -74,7 +74,7 @@ export default defineCliConfig({
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
       build: {
-        rollupOptions: {
+        rolldownOptions: {
           input: {
             // NOTE: this is required to build static files for the presentation preview iframe
             preview: path.resolve(__dirname, 'preview/index.html'),
