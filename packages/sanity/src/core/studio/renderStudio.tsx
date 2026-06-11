@@ -33,14 +33,14 @@ export function renderStudio(
 export function renderStudio(
   rootElement: HTMLElement | null,
   config: Config,
-  options: RenderStudioOptions | boolean = false,
+  options: RenderStudioOptions | boolean = {},
 ): () => void {
   if (!rootElement) {
     throw new Error('Missing root element to mount application into')
   }
 
   const opts = typeof options === 'boolean' ? {reactStrictMode: options} : options
-  const {reactStrictMode = false, basePath} = opts
+  const {reactStrictMode = true, basePath} = opts
 
   const root = createRoot(rootElement)
 

@@ -13,7 +13,7 @@ import {publishReleases} from '../src/commands/publishReleases'
 import {writeChangelogFiles} from '../src/commands/writeChangelogFiles'
 import {writeCommitCheck} from '../src/commands/writeCommitCheck'
 import {writePrChecks} from '../src/commands/writePrChecks'
-import {type KnownEnvVar, type PullRequest} from '../src/types'
+import {type CommitAuthor, type KnownEnvVar, type PullRequest} from '../src/types'
 import {stripPr} from '../src/utils/stripPrNumber'
 
 function getAdminStudioUrl(): string {
@@ -263,7 +263,10 @@ type GenerateChangeLogResult = {
     draft: DraftId
   }
   commitsWithPrs: Array<
-    Exclude<{conventionalCommit: CommitBase & CommitMeta; pr: any}, typeof pMapSkip>
+    Exclude<
+      {conventionalCommit: CommitBase & CommitMeta; pr?: any; commitAuthor?: any},
+      typeof pMapSkip
+    >
   >
   releaseId: string
 }
@@ -283,6 +286,7 @@ function generateChangeLogSummary(
           .map((entry) =>
             formatEntry({
               pr: entry.pr,
+              commitAuthor: entry.commitAuthor,
               conventionalCommit: entry.conventionalCommit,
               changelogDocumentId,
               releaseId,
@@ -321,11 +325,13 @@ ${entriesSection}
 function formatEntry({
   conventionalCommit,
   pr,
+  commitAuthor,
   changelogDocumentId,
   releaseId,
 }: {
   conventionalCommit: Commit
   pr: PullRequest | undefined
+  commitAuthor: CommitAuthor | undefined
   changelogDocumentId: GenerateChangeLogResult['changelogDocumentId']
   releaseId: GenerateChangeLogResult['releaseId']
 }) {
@@ -342,7 +348,8 @@ function formatEntry({
     )
   }
 
-  const byline = pr?.user?.login ? `[${pr.user.login}](${pr.user.html_url})` : '—'
+  const author = commitAuthor ?? pr?.user
+  const byline = author?.login ? `[${author.login}](${author.html_url})` : '—'
   const prCell = pr ? `[#${pr.number}](${pr.html_url})` : '—'
   const releaseNoteLink = `[:pencil:&nbsp;Edit](${changelogEntryUrl})`
   return `${byline} | ${originalCommitMessage} | ${prCell} | ${conventionalCommit.hash} | ${releaseNoteLink}`

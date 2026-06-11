@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "5.30.0",
+  "version": "6.0.0",
   "description": "",
   "keywords": [
     "cms",
@@ -93,7 +93,6 @@
     "vitest": "catalog:"
   },
   "browserslist": [
-    "node >=20.19",
     "node >=22.12",
     "baseline 2024"
   ]

@@ -1,8 +1,9 @@
 {
   "name": "@repo/package.bundle",
-  "version": "5.30.0",
+  "version": "6.0.0",
   "private": true,
   "description": "Shared package bundle configuration",
+  "type": "module",
   "main": "./src/package.bundle.ts",
   "types": "./src/package.bundle.ts",
   "scripts": {
@@ -14,6 +15,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@rolldown/plugin-babel": "catalog:",
     "@types/lodash-es": "^4.17.12",
     "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/plugin-react": "catalog:",
