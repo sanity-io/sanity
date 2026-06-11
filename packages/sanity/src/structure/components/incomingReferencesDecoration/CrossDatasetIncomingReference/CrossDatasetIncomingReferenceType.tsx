@@ -13,7 +13,6 @@ import {
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../../../i18n'
-import {INITIAL_STATE} from '../getIncomingReferences'
 import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from '../shared'
 import {type CrossDatasetIncomingReference} from '../types'
 import {CrossDatasetIncomingReferenceDocumentPreview} from './CrossDatasetIncomingReferenceDocumentPreview'
@@ -21,6 +20,14 @@ import {
   type CrossDatasetIncomingReferenceDocument,
   getCrossDatasetIncomingReferences,
 } from './getCrossDatasetIncomingReferences'
+
+// Cross-dataset references have their own document shape (id-based), so this list
+// uses its own initial state rather than the SanityDocument-typed one from
+// getIncomingReferences.
+const INITIAL_STATE: {documents: CrossDatasetIncomingReferenceDocument[]; loading: boolean} = {
+  documents: [],
+  loading: true,
+}
 
 export function CrossDatasetIncomingReferenceType({
   type,
