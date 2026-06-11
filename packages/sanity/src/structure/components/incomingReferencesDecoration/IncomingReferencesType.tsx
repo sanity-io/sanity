@@ -24,19 +24,10 @@ import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {AddIncomingReference} from './AddIncomingReference'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
-import {
-  getIncomingReferences,
-  INITIAL_STATE,
-  resolveIncomingReferencesFilter,
-} from './getIncomingReferences'
+import {getIncomingReferences, INITIAL_STATE} from './getIncomingReferences'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
 import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from './shared'
 import {type IncomingReferencesOptions, type IncomingReferenceType} from './types'
-
-const EMPTY_RESOLVED_FILTER: {
-  filter: string | undefined
-  filterParams?: Record<string, unknown> | undefined
-} = {filter: undefined, filterParams: undefined}
 
 export function IncomingReferencesType({
   type,
@@ -90,22 +81,10 @@ export function IncomingReferencesType({
     [documentPreviewStore, type.type, memoizedFilter, memoizedFilterParams, displayedId, getClient],
   )
 
-  const {documents, loading} = useObservable(references$, INITIAL_STATE)
-
-  // Resolve the configured filter (string or function form) so the "link existing" search
-  // applies the same constraint as the rendered list above.
-  const resolvedFilter$ = useMemo(
-    () =>
-      resolveIncomingReferencesFilter({
-        documentId: displayedId,
-        documentPreviewStore,
-        getClient,
-        filter: memoizedFilter,
-        filterParams: memoizedFilterParams,
-      }),
-    [displayedId, documentPreviewStore, getClient, memoizedFilter, memoizedFilterParams],
-  )
-  const resolvedFilter = useObservable(resolvedFilter$, EMPTY_RESOLVED_FILTER)
+  // `resolvedFilter` is emitted by the same getIncomingReferences subscription as
+  // the list, so the "link existing" search applies the same constraint without
+  // resolving the (possibly async) filter a second time.
+  const {documents, loading, resolvedFilter} = useObservable(references$, INITIAL_STATE)
 
   const schema = useSchema()
   const {t} = useTranslation(structureLocaleNamespace)

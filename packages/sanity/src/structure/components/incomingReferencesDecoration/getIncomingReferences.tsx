@@ -9,9 +9,14 @@ import {
 
 import {type IncomingReferencesFilterResolver, type IncomingReferencesOptions} from './types'
 
-export const INITIAL_STATE = {
+export const INITIAL_STATE: {
+  documents: SanityDocument[]
+  loading: boolean
+  resolvedFilter: ResolvedIncomingReferencesFilter
+} = {
   documents: [],
   loading: true,
+  resolvedFilter: {filter: undefined, filterParams: undefined},
 }
 
 async function resolveRawFilterCallback(
@@ -19,7 +24,10 @@ async function resolveRawFilterCallback(
   {
     document,
     getClient,
-  }: {document: SanityDocument; getClient: (options: {apiVersion: string}) => SanityClient},
+  }: {
+    document: SanityDocument | undefined
+    getClient: (options: {apiVersion: string}) => SanityClient
+  },
 ) {
   const resolvedFilter = await filterResolver({document, getClient})
   if (typeof resolvedFilter === 'string') {
@@ -28,7 +36,7 @@ async function resolveRawFilterCallback(
   return resolvedFilter
 }
 
-interface ResolvedIncomingReferencesFilter {
+export interface ResolvedIncomingReferencesFilter {
   filter: string | undefined
   filterParams?: Record<string, unknown> | undefined
 }
@@ -60,7 +68,7 @@ export function resolveIncomingReferencesFilter({
         distinctUntilChanged((a, b) => a?._rev === b?._rev),
         switchMap((document) =>
           resolveRawFilterCallback(filterQueryRaw, {
-            document: document as SanityDocument,
+            document: document as SanityDocument | undefined,
             getClient,
           }),
         ),
@@ -100,6 +108,7 @@ export function getIncomingReferences({
 }: InspectorIncomingReferencesOptions | InputIncomingReferencesOptions): Observable<{
   documents: SanityDocument[]
   loading: boolean
+  resolvedFilter: ResolvedIncomingReferencesFilter
 }> {
   const publishedId = getPublishedId(documentId)
   const filterResolver = resolveIncomingReferencesFilter({
@@ -116,6 +125,7 @@ export function getIncomingReferences({
         a.filter === b.filter && JSON.stringify(a.filterParams) === JSON.stringify(b.filterParams),
     ),
     switchMap(({filter: filterQuery, filterParams}) => {
+      const resolvedFilter: ResolvedIncomingReferencesFilter = {filter: filterQuery, filterParams}
       return documentPreviewStore
         .unstable_observeDocumentIdSet(
           `references("${publishedId}") ${type ? `&& _type == "${type}"` : ''} ${filterQuery ? `&& ${filterQuery}` : ''}`,
@@ -141,8 +151,8 @@ export function getIncomingReferences({
             })
           }),
 
-          map((documents) => ({documents, loading: false})),
-          startWith(INITIAL_STATE),
+          map((documents) => ({documents, loading: false, resolvedFilter})),
+          startWith({...INITIAL_STATE, resolvedFilter}),
         )
     }),
   )
