@@ -42,6 +42,8 @@
     "dev:test-create-studio": "pnpm --filter test-create-integration-studio dev",
     "dev:test-studio": "pnpm --filter sanity-test-studio dev",
     "dev:test-studio-production-profiling": "REACT_PRODUCTION_PROFILING=true turbo run start --filter=sanity-test-studio",
+    "devtools:test-studio": "pnpm devtools:test-studio:build && ENABLE_VITE_DEVTOOLS=true pnpm dev:test-studio",
+    "devtools:test-studio:build": "pnpm build && ENABLE_VITE_DEVTOOLS=true pnpm --filter sanity-test-studio sanity:build",
     "docs:typedocs:cleanup": "pnpm --filter=sanity docs:typedocs:cleanup",
     "docs:typedocs:generate": "pnpm --filter=sanity docs:typedocs:generate",
     "e2e:build": "turbo run build --filter=studio-e2e-testing",
