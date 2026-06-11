@@ -1,10 +1,16 @@
 import path from 'node:path'
 
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
+import {DevTools} from '@vitejs/devtools'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
 const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
+// Enables Vite DevTools (https://devtools.vite.dev) for both `sanity dev` and `sanity build`.
+// During `sanity build` it records a Rolldown build session, which can then be inspected from
+// the DevTools dock in a running `sanity dev` server without restarting it.
+// Usage: `pnpm devtools:test-studio` from the repo root (see AGENTS.md).
+const isViteDevToolsEnabled = process.env.ENABLE_VITE_DEVTOOLS === 'true'
 const reactCompilerAllowList = /\/(?:sanity|@sanity\/vision)\/src\/.*\.tsx?$/
 
 export default defineCliConfig({
@@ -42,7 +48,7 @@ export default defineCliConfig({
   vite(viteConfig: UserConfig, {command, mode}): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
-    const nextConfig = mergeConfig(viteConfig, {
+    let nextConfig = mergeConfig(viteConfig, {
       plugins: [vanillaExtractPlugin()],
       server: {
         warmup: {
@@ -82,6 +88,14 @@ export default defineCliConfig({
         },
       },
     } satisfies UserConfig)
+
+    if (isViteDevToolsEnabled) {
+      nextConfig = mergeConfig(nextConfig, {
+        plugins: [DevTools()],
+        // `devtools: {}` makes `sanity build` emit a Rolldown build session that the DevTools dock can inspect
+        build: {rolldownOptions: {devtools: {}}},
+      } satisfies UserConfig)
+    }
 
     // Support React Production Profiling on deployed studios
     if (reactProductionProfiling && command === 'build') {
