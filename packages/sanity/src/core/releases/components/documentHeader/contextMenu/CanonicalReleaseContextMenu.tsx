@@ -27,6 +27,11 @@ interface CanonicalReleaseContextMenuProps {
   hasCreatePermission: boolean | null
   hasDiscardPermission: boolean
   isPublished: boolean
+  /**
+   * Whether the UI permits discarding versions.
+   * Defaults to `true`.
+   */
+  isDiscardable?: boolean
   documentId: string
   documentType: string
   releases: ReleaseDocument[]
@@ -53,6 +58,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     hasCreatePermission,
     hasDiscardPermission,
     isPublished,
+    isDiscardable = true,
     documentId,
     documentType,
   } = props
@@ -95,8 +101,8 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
           documentType={documentType}
         />
       )}
-      {!isPublished && (showCopyToReleaseMenuItem || release) && <MenuDivider />}
-      {!isPublished && (
+      {!isPublished && isDiscardable && (showCopyToReleaseMenuItem || release) && <MenuDivider />}
+      {!isPublished && isDiscardable && (
         <MenuItem
           icon={TrashIcon}
           onClick={onDiscard}

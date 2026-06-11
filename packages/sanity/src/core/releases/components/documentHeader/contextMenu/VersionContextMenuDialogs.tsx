@@ -26,6 +26,11 @@ export interface VersionContextMenuDialogsProps {
   onCreateVersion: (targetRelease: string) => void
   onCopyToDraftsNavigate: () => void
   isGoingToUnpublish?: boolean
+  /**
+   * Whether the UI permits discarding versions.
+   * Defaults to `true`.
+   */
+  isDiscardable?: boolean
   /** Dialogs rendered for scheduled draft actions, if any. */
   scheduledDraftDialogs?: ReactNode
 }
@@ -51,12 +56,13 @@ export const VersionContextMenuDialogs = memo(function VersionContextMenuDialogs
     onCreateVersion,
     onCopyToDraftsNavigate,
     isGoingToUnpublish = false,
+    isDiscardable = true,
     scheduledDraftDialogs,
   } = props
 
   return (
     <>
-      {dialogState === 'discard-version' && (
+      {dialogState === 'discard-version' && isDiscardable && (
         <DiscardVersionDialog
           onClose={onClose}
           documentId={isVersion ? getVersionId(documentId, bundleId) : documentId}
