@@ -1,5 +1,5 @@
 import {fromUrl} from '@sanity/bifur-client'
-import {createClient, type SanityClient} from '@sanity/client'
+import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
@@ -27,6 +27,7 @@ import {filterDefinitions} from '../studio/components/navbar/search/definitions/
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {fetchCanDeployStudio} from '../studio/manifest/canDeployStudio'
 import {uploadSchema} from '../studio/manifest/uploadSchema'
+import {type RequestErrorChannel} from '../studio/requestErrors/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
@@ -264,7 +265,11 @@ const createDatasetAssetSources = (config: SourceOptions, client: SanityClient) 
  */
 export function prepareConfig(
   config: Config | MissingConfigFile,
-  options?: {basePath?: string},
+  options?: {
+    basePath?: string
+    requestHandler?: RequestHandler
+    requestErrorChannel?: RequestErrorChannel
+  },
 ): PreparedConfig {
   if (!Array.isArray(config) && 'missingConfigFile' in config) {
     throw new ConfigResolutionError({
@@ -356,7 +361,10 @@ export function prepareConfig(
         throw new SchemaError(schema)
       }
 
-      const auth = getAuthStore(source)
+      const auth = getAuthStore(source, {
+        requestHandler: options?.requestHandler,
+        requestErrorChannel: options?.requestErrorChannel,
+      })
       const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {
@@ -415,14 +423,32 @@ export function prepareConfig(
   return {type: 'prepared-config', workspaces}
 }
 
-function getAuthStore(source: SourceOptions): AuthStore {
+function getAuthStore(
+  source: SourceOptions,
+  {
+    requestHandler,
+    requestErrorChannel,
+  }: {requestHandler?: RequestHandler; requestErrorChannel?: RequestErrorChannel},
+): AuthStore {
   if (isAuthStore(source.auth)) {
     return source.auth
   }
 
-  const clientFactory = source.unstable_clientFactory || createClient
+  const _clientFactory = source.unstable_clientFactory || createClient
+
   const {projectId, dataset, apiHost} = source
-  return createAuthStore({apiHost, ...source.auth, clientFactory, dataset, projectId})
+  return createAuthStore({
+    apiHost,
+    ...source.auth,
+    clientFactory: (config) => {
+      return _clientFactory({...config, _requestHandler: requestHandler})
+    },
+    // Passed as a getter so the channel stays out of the auth-store memo
+    // key (it's unhashable runtime wiring).
+    getRequestErrorHandler: () => requestErrorChannel,
+    dataset,
+    projectId,
+  })
 }
 
 interface ResolveSourceOptions {

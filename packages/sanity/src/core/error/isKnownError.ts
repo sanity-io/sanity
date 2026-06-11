@@ -1,14 +1,9 @@
 import isObject from 'lodash-es/isObject.js'
 
 import {ConfigResolutionError, SchemaError} from '../config'
-import {CorsOriginError} from '../store'
 
 export function isKnownError(err: unknown): boolean {
   if (err instanceof SchemaError) {
-    return true
-  }
-
-  if (err instanceof CorsOriginError) {
     return true
   }
 
