@@ -1927,7 +1927,7 @@ importers:
         specifier: ^11.1.0
         version: 11.1.1
       web-vitals:
-        specifier: ^5.1.0
+        specifier: ^5.3.0
         version: 5.3.0
       xstate:
         specifier: ^5.32.0
