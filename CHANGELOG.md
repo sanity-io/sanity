@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to vite 8 (#12960)
+* **core:** remove deprecated auth.mode config (#12865)
+* drop support for node 20 (#12859)
+
+### Features
+
+* **core:** enable react strict mode by default in studio ([#12916](https://github.com/sanity-io/sanity/issues/12916)) ([abdfb76](https://github.com/sanity-io/sanity/commit/abdfb76c3f218d701a13803d167ce5760d2ee3c3))
+* **core:** remove deprecated auth.mode config ([#12865](https://github.com/sanity-io/sanity/issues/12865)) ([da2b451](https://github.com/sanity-io/sanity/commit/da2b451ebf7028ddc60dc6c3a9bf8ac989726275))
+* **studio:** remove deprecated `enableLegacySearch` configuration option ([e6c63e5](https://github.com/sanity-io/sanity/commit/e6c63e53d6f90e44cba9f9b3242294d71888ca66))
+* **studio:** use `groq2024` search strategy by default ([3d9442f](https://github.com/sanity-io/sanity/commit/3d9442f5b37471d0ee958e70b8962fde30cbb7a0))
+* upgrade to vite 8 ([#12960](https://github.com/sanity-io/sanity/issues/12960)) ([a9d703c](https://github.com/sanity-io/sanity/commit/a9d703cb14b5cab0a9f7b19675910ae453b84593))
+
+### Bug Fixes
+
+* bump @sanity/cli to ^7.1.0 ([#13020](https://github.com/sanity-io/sanity/issues/13020)) ([1e48c23](https://github.com/sanity-io/sanity/commit/1e48c2344c3b051081fd255f12d2ae99877f1f51))
+* **deps:** update dependency @sanity/cli to ^7.2.0 ([#13036](https://github.com/sanity-io/sanity/issues/13036)) ([95557ea](https://github.com/sanity-io/sanity/commit/95557ea824111736489fb76da74017a7a93510c1))
+* **deps:** update dependency @sanity/cli to ^7.2.1 ([#13039](https://github.com/sanity-io/sanity/issues/13039)) ([6f0751a](https://github.com/sanity-io/sanity/commit/6f0751a5248e3fa696af995922ff8e31528f703e))
+* **deps:** update dependency @sanity/cli to ^7.2.2 ([#13048](https://github.com/sanity-io/sanity/issues/13048)) ([55cfb88](https://github.com/sanity-io/sanity/commit/55cfb88f2d76e7c53c34daad62068b183ecc4722))
+* **deps:** Update dev-non-major to ^2.13.0 ([#13047](https://github.com/sanity-io/sanity/issues/13047)) ([11c0c0c](https://github.com/sanity-io/sanity/commit/11c0c0c6a320e2eba19fd594c929e50e408956f8))
+* **deps:** Update portabletext ([#13024](https://github.com/sanity-io/sanity/issues/13024)) ([e104652](https://github.com/sanity-io/sanity/commit/e1046523cd6ecd23a4d4472e024c07cebeb71c4a))
+* drop support for node 20 ([#12859](https://github.com/sanity-io/sanity/issues/12859)) ([d02289a](https://github.com/sanity-io/sanity/commit/d02289a2ac5aca3de55853812ac6e0b659fa2ef4))
+* handle `Calling require for "react"` error ([#12966](https://github.com/sanity-io/sanity/issues/12966)) ([8578303](https://github.com/sanity-io/sanity/commit/85783038f23983164f1e7b894dfa50511b18f89a))
+* **release-notes:** credit commit author instead of merging PR's author ([#13023](https://github.com/sanity-io/sanity/issues/13023)) ([16dbf7a](https://github.com/sanity-io/sanity/commit/16dbf7a97229e669a98c2b9e63ecf02890737bf6))
+* Revert "feat(core): use schema preview selection for search" ([#13030](https://github.com/sanity-io/sanity/issues/13030)) ([df43bfa](https://github.com/sanity-io/sanity/commit/df43bfaa384ae0311707ed556806da4fa3edcfce))
+* use v6 peer dep for `sanity` in `@sanity/vision` ([#12967](https://github.com/sanity-io/sanity/issues/12967)) ([9f33f49](https://github.com/sanity-io/sanity/commit/9f33f4989e6e46e0f2372a382bd88bfb8d923f42))
 ## [5.31.0](https://github.com/sanity-io/sanity/compare/v5.30.0...v5.31.0) (2026-06-10)
 
 ### Features
