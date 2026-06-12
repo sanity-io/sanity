@@ -1,12 +1,39 @@
+import {lazy, Suspense} from 'react'
+
 import {definePlugin} from '../../config'
 import {type ObjectInputProps} from '../../form'
 import {tasksUsEnglishLocaleBundle} from '../i18n'
 import {TaskCreateAction} from './TaskCreateAction'
-import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'
-import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
-import {TasksStudioActiveToolLayout} from './TasksStudioActiveToolLayout'
-import {TasksStudioLayout} from './TasksStudioLayout'
-import {TasksStudioNavbar} from './TasksStudioNavbar'
+
+const TasksDocumentInputLayout = lazy(() =>
+  import('./TasksDocumentInputLayout').then((module) => ({
+    default: module.TasksDocumentInputLayout,
+  })),
+)
+const TasksFooterOpenTasks = lazy(() =>
+  import('./TasksFooterOpenTasks').then((module) => ({default: module.TasksFooterOpenTasks})),
+)
+const TasksStudioActiveToolLayout = lazy(() =>
+  import('./TasksStudioActiveToolLayout').then((module) => ({
+    default: module.TasksStudioActiveToolLayout,
+  })),
+)
+const TasksStudioLayout = lazy(() =>
+  import('./TasksStudioLayout').then((module) => ({default: module.TasksStudioLayout})),
+)
+const TasksStudioNavbar = lazy(() =>
+  import('./TasksStudioNavbar').then((module) => ({default: module.TasksStudioNavbar})),
+)
+
+// The footer action is consumed as a `ReactNode` outside any Suspense boundary
+// (see DocumentStatusBarActions), so the lazy component needs its own boundary here.
+function TasksFooterAction() {
+  return (
+    <Suspense fallback={null}>
+      <TasksFooterOpenTasks />
+    </Suspense>
+  )
+}
 
 /**
  * @internal
@@ -21,7 +48,7 @@ export const tasks = definePlugin({
   name: TASKS_NAME,
   // eslint-disable-next-line camelcase
   __internal_tasks: {
-    footerAction: <TasksFooterOpenTasks />,
+    footerAction: <TasksFooterAction />,
   },
   document: {
     actions: (prev) => {
