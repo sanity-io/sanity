@@ -5,7 +5,7 @@ import {
 } from '@portabletext/editor'
 import {isKeyedObject, type KeyedObject, type Path} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
-import {useLayoutEffect} from 'react'
+import {useLayoutEffect, useRef} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
 import {usePortableTextMemberItemElementRefs} from '../contexts/PortableTextMemberItemElementRefsProvider'
@@ -26,34 +26,52 @@ export function useTrackFocusPath(props: Props): void {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
 
+  // Read selection from a ref instead of subscribing to it, so our own select() calls below don't
+  // re-fire the tracking effect into an infinite loop (#12894). Declared first to run before it.
+  const selectionRef = useRef(selection)
+  useLayoutEffect(() => {
+    selectionRef.current = selection
+  }, [selection])
+
   useLayoutEffect(() => {
     // Don't do anything if no focusPath to track
     if (focusPath.length === 0) {
       return
     }
 
-    // The editor holds DOM focus when the user is actively editing inside it. In that case the
-    // editor manages its own selection and scrolling, so we should not interfere.
+    // When the editor holds DOM focus the user is editing inside it; leave its selection/scroll alone.
     const editorHasDomFocus =
       !!boundaryElement?.ownerDocument.activeElement &&
       boundaryElement.contains(boundaryElement.ownerDocument.activeElement)
 
-    // Don't do anything if the editor is focused and its selection focus path already equals the
-    // focusPath. When focus came from outside the editor (e.g. Visual Editing), the editor can
-    // retain a matching selection while blurred; we must still re-focus and scroll to it (#12894).
+    const currentSelection = selectionRef.current
+
+    // The first open member of any kind, used below as the fallback target to scroll to / focus.
+    const openItem = portableTextMemberItems.find((m) => m.member.open)
+
+    // An open annotation/object/inline member has a popover mounted (focus portals outside the boundary).
+    // Text blocks mount none and are excluded, so a re-click from outside still re-focuses them (#12894).
+    const openEditingItem = portableTextMemberItems.find(
+      (m) =>
+        m.member.open &&
+        (m.kind === 'annotation' || m.kind === 'objectBlock' || m.kind === 'inlineObject'),
+    )
+
+    // Bail only when the selection matches the focusPath AND the editor still owns focus (real DOM
+    // focus, or an open editing popover). Focus from outside (Visual Editing) means neither (#12894).
     if (
-      editorHasDomFocus &&
-      selection?.focus.path &&
-      isEqual(selection.focus.path, focusPath.slice(0, selection.focus.path.length))
+      currentSelection?.focus.path &&
+      isEqual(
+        currentSelection.focus.path,
+        focusPath.slice(0, currentSelection.focus.path.length),
+      ) &&
+      (editorHasDomFocus || Boolean(openEditingItem))
     ) {
       return
     }
 
     // Find the focused editor member item (if any)
     const focusedItem = portableTextMemberItems.find((m) => m.member.item.focused)
-
-    // Find the opened member item (if any)
-    const openItem = portableTextMemberItems.find((m) => m.member.open)
 
     // The related editor member to scroll to, or focus, according to the given focusPath
     const relatedEditorItem = focusedItem || openItem
@@ -123,15 +141,12 @@ export function useTrackFocusPath(props: Props): void {
 
         // Select and focus the editor if we produced a path
         if (path.length) {
-          // Re-focusing a block that is already the editor's current selection is a no-op:
-          // the editor emits no selection change, so neither its native focus nor its
-          // scroll-into-view runs and the block can't be re-entered (#12894).
-          // Deselect first so the subsequent select is a genuine change.
-          // Slice the selection path down to the target path length (the reverse of the guard
-          // above): we only care whether the editor is already sitting on this exact block,
-          // regardless of which child the caret is on.
+          // Re-selecting the editor's current selection is a no-op (no event fires, so no native
+          // focus or scroll) and the block can't be re-entered (#12894). Deselect first to force a
+          // real change. isSameSelection slices the selection to the target length: same block, any child.
           const isSameSelection =
-            selection?.focus.path && isEqual(selection.focus.path.slice(0, path.length), path)
+            currentSelection?.focus.path &&
+            isEqual(currentSelection.focus.path.slice(0, path.length), path)
           if (isTextBlock && isSameSelection) {
             PortableTextEditor.select(editor, null)
           }
@@ -140,21 +155,12 @@ export function useTrackFocusPath(props: Props): void {
             anchor: {path, offset: 0},
             focus: {path, offset: 0},
           })
-          // Object blocks will have their interface opened when focused,
-          // so only call focus for regular text blocks
+          // Object blocks open their interface when focused, so only call focus for text blocks.
           if (isTextBlock) {
             PortableTextEditor.focus(editor)
           }
         }
       }
     }
-  }, [
-    boundaryElement,
-    editor,
-    elementRefs,
-    focusPath,
-    onItemClose,
-    portableTextMemberItems,
-    selection?.focus.path,
-  ])
+  }, [boundaryElement, editor, elementRefs, focusPath, onItemClose, portableTextMemberItems])
 }
