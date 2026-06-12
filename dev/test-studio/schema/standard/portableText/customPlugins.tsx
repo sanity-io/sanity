@@ -91,22 +91,13 @@ function TableEditorPlugins(props: PortableTextPluginsProps) {
       )}
       {/* eslint-disable-next-line react/no-danger -- validation rig styling */}
       <style dangerouslySetInnerHTML={{__html: tableEditorCss}} />
-      <label
-        style={{
-          display: 'inline-flex',
-          gap: '0.4em',
-          alignItems: 'center',
-          fontSize: '0.8em',
-          padding: '0.2em 0',
-        }}
+      <button
+        type="button"
+        onClick={() => setTableEnabled((enabled) => !enabled)}
+        style={{cursor: 'pointer', fontSize: '0.85em', padding: '0.2em 0.6em'}}
       >
-        <input
-          type="checkbox"
-          checked={tableEnabled}
-          onChange={(domEvent) => setTableEnabled(domEvent.currentTarget.checked)}
-        />
-        Table plugin enabled
-      </label>
+        {tableEnabled ? '🟢 tables: ON' : '🔴 tables: OFF'}
+      </button>
       {props.renderDefault(props)}
     </>
   )
