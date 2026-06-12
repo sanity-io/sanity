@@ -1012,6 +1012,8 @@ exports[`exports snapshot 1`] = `
   },
   "./workbench": {
     "renderWorkbench": "function",
+    "unstable_defineService": "function",
+    "unstable_defineView": "function",
   },
 }
 `;

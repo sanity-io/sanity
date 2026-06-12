@@ -11,13 +11,6 @@ export default defineConfig({
       'ae-incompatible-release-tags': 'error',
       'ae-missing-release-tag': 'error',
     },
-    // Inline @sanity/federation's types into the generated .d.ts. `sanity/cli`
-    // re-exports the workbench authoring helpers (unstable_defineApp/defineService/
-    // defineView) from it; without bundling, the rolldown dts step would leave a
-    // bare `@sanity/federation` import that consumers of `sanity/cli` can't resolve
-    // (→ `any`). Bundling makes those types self-contained, so apps don't need
-    // @sanity/federation (or @sanity/cli) installed to type their app modules.
-    bundledPackages: (prev) => [...prev, '@sanity/federation'],
   },
 
   babel: {reactCompiler: true, styledComponents: true},
