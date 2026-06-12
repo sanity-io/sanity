@@ -103,8 +103,9 @@ catalogs:
 overrides:
   '@sanity/ui@3': ^3.2.0
   vitest: ^4.1.8
-  '@portabletext/editor': link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/editor
-  '@portabletext/plugin-list-index': link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/plugin-list-index
+  '@portabletext/editor': link:/Users/christian.groengaard/code/@portabletext/editor-validate-studio-integration/packages/editor
+  '@portabletext/plugin-list-index': link:/Users/christian.groengaard/code/@portabletext/editor-validate-studio-integration/packages/plugin-list-index
+  '@portabletext/plugin-table': link:/Users/christian.groengaard/code/@portabletext/editor-validate-studio-integration/packages/plugin-table
 
 importers:
 
@@ -604,14 +605,17 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/editor':
-        specifier: link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/editor
-        version: link:../../../@portabletext/editor-plugin-list-index/packages/editor
+        specifier: link:/Users/christian.groengaard/code/@portabletext/editor-validate-studio-integration/packages/editor
+        version: link:../../../@portabletext/editor-validate-studio-integration/packages/editor
       '@portabletext/html':
         specifier: ^1.0.2
         version: 1.0.2
       '@portabletext/plugin-character-pair-decorator':
         specifier: ^8.0.14
-        version: 8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
+        version: 8.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/plugin-table':
+        specifier: link:/Users/christian.groengaard/code/@portabletext/editor-validate-studio-integration/packages/plugin-table
+        version: link:../../../@portabletext/editor-validate-studio-integration/packages/plugin-table
       '@portabletext/react':
         specifier: ^6.2.0
         version: 6.2.0(react@19.2.7)
@@ -1659,8 +1663,8 @@ importers:
         specifier: ^3.13.0
         version: 3.13.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@portabletext/editor':
-        specifier: link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/editor
-        version: link:../../../@portabletext/editor-plugin-list-index/packages/editor
+        specifier: link:/Users/christian.groengaard/code/@portabletext/editor-validate-studio-integration/packages/editor
+        version: link:../../../@portabletext/editor-validate-studio-integration/packages/editor
       '@portabletext/html':
         specifier: ^1.0.2
         version: 1.0.2
@@ -1668,20 +1672,20 @@ importers:
         specifier: ^2.0.4
         version: 2.0.4
       '@portabletext/plugin-list-index':
-        specifier: link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/plugin-list-index
-        version: link:../../../@portabletext/editor-plugin-list-index/packages/plugin-list-index
+        specifier: link:/Users/christian.groengaard/code/@portabletext/editor-validate-studio-integration/packages/plugin-list-index
+        version: link:../../../@portabletext/editor-validate-studio-integration/packages/plugin-list-index
       '@portabletext/plugin-markdown-shortcuts':
         specifier: ^8.0.14
-        version: 8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
+        version: 8.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/plugin-one-line':
         specifier: ^7.0.14
-        version: 7.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(react@19.2.7)
+        version: 7.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(react@19.2.7)
       '@portabletext/plugin-paste-link':
         specifier: ^4.0.14
-        version: 4.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(react@19.2.7)
+        version: 4.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(react@19.2.7)
       '@portabletext/plugin-typography':
         specifier: ^8.0.14
-        version: 8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
+        version: 8.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/react':
         specifier: ^6.2.0
         version: 6.2.0(react@19.2.7)
@@ -14749,9 +14753,9 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@portabletext/plugin-character-pair-decorator@8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-character-pair-decorator@8.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
+      '@portabletext/editor': link:../@portabletext/editor-validate-studio-integration/packages/editor
       '@xstate/react': 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.0)
       react: 19.2.7
       remeda: 2.37.0
@@ -14759,38 +14763,38 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-input-rule@5.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-input-rule@5.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
+      '@portabletext/editor': link:../@portabletext/editor-validate-studio-integration/packages/editor
       '@xstate/react': 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.0)
       react: 19.2.7
       xstate: 5.32.0
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-markdown-shortcuts@8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-markdown-shortcuts@8.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
-      '@portabletext/plugin-character-pair-decorator': 8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
-      '@portabletext/plugin-input-rule': 5.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': link:../@portabletext/editor-validate-studio-integration/packages/editor
+      '@portabletext/plugin-character-pair-decorator': 8.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/plugin-input-rule': 5.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-one-line@7.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(react@19.2.7)':
+  '@portabletext/plugin-one-line@7.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
+      '@portabletext/editor': link:../@portabletext/editor-validate-studio-integration/packages/editor
       react: 19.2.7
 
-  '@portabletext/plugin-paste-link@4.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(react@19.2.7)':
+  '@portabletext/plugin-paste-link@4.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
+      '@portabletext/editor': link:../@portabletext/editor-validate-studio-integration/packages/editor
       react: 19.2.7
 
-  '@portabletext/plugin-typography@8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-typography@8.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
-      '@portabletext/plugin-input-rule': 5.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': link:../@portabletext/editor-validate-studio-integration/packages/editor
+      '@portabletext/plugin-input-rule': 5.0.14(@portabletext/editor@@portabletext+editor-validate-studio-integration+packages+editor)(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
     transitivePeerDependencies:
       - '@types/react'

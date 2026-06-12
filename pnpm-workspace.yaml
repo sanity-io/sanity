@@ -84,8 +84,9 @@ overrides:
   # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
   '@sanity/ui@3': '$@sanity/ui'
   vitest: $vitest
-  '@portabletext/editor': link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/editor
-  '@portabletext/plugin-list-index': link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/plugin-list-index
+  '@portabletext/editor': link:/Users/christian.groengaard/code/@portabletext/editor-validate-studio-integration/packages/editor
+  '@portabletext/plugin-list-index': link:/Users/christian.groengaard/code/@portabletext/editor-validate-studio-integration/packages/plugin-list-index
+  '@portabletext/plugin-table': link:/Users/christian.groengaard/code/@portabletext/editor-validate-studio-integration/packages/plugin-table
 
 preferWorkspacePackages: true
 

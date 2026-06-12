@@ -1,6 +1,7 @@
 import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
 import {CharacterPairDecoratorPlugin} from '@portabletext/plugin-character-pair-decorator'
+import {TablePlugin} from '@portabletext/plugin-table'
 import {defineArrayMember, defineType} from 'sanity'
 
 export const customPlugins = defineType({
@@ -79,6 +80,77 @@ export const customPlugins = defineType({
                 },
               },
             })
+          },
+        },
+      },
+    },
+
+    /**
+     * Table Editor
+     *
+     * Uses `components.portableText.plugins` to mount the `TablePlugin`,
+     * registering `table`/`row`/`cell` containers for nested editable
+     * tables. Validates that container plugins compose with Studio's
+     * chrome through the consumer extension vehicle.
+     */
+    {
+      type: 'array',
+      name: 'tableEditor',
+      title: 'Table Editor',
+      description:
+        'Editable tables via <TablePlugin /> mounted through components.portableText.plugins',
+      of: [
+        {type: 'block'},
+        {
+          type: 'object',
+          name: 'table',
+          title: 'Table',
+          fields: [
+            {
+              type: 'array',
+              name: 'rows',
+              of: [
+                {
+                  type: 'object',
+                  name: 'row',
+                  fields: [
+                    {
+                      type: 'array',
+                      name: 'cells',
+                      of: [
+                        {
+                          type: 'object',
+                          name: 'cell',
+                          fields: [
+                            {
+                              type: 'array',
+                              name: 'content',
+                              of: [{type: 'block'}],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: 'boolean',
+              name: 'headerRow',
+            },
+          ],
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return (
+              <>
+                <TablePlugin />
+                {props.renderDefault(props)}
+              </>
+            )
           },
         },
       },
