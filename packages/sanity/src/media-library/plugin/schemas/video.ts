@@ -1,7 +1,12 @@
 import {defineType} from '@sanity/types'
+import {lazy} from 'react'
 
-import {StudioVideoInput} from '../VideoInput/StudioVideoInput'
-import {VideoField} from '../VideoInput/VideoField'
+const StudioVideoInput = lazy(() =>
+  import('../VideoInput/StudioVideoInput').then((module) => ({default: module.StudioVideoInput})),
+)
+const VideoField = lazy(() =>
+  import('../VideoInput/VideoField').then((module) => ({default: module.VideoField})),
+)
 
 export const video = defineType({
   name: 'sanity.video',
