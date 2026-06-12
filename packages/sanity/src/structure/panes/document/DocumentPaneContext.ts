@@ -12,6 +12,7 @@ import {
   type DocumentFormNode,
   type DocumentInspector,
   type DocumentLanguageFilterComponent,
+  type DocumentSyncState,
   type EditStateFor,
   type NodeChronologyProps,
   type PatchEvent,
@@ -35,6 +36,11 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   collapsedPaths: StateTree<boolean> | undefined
   compareValue: SanityDocument | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
+  /**
+   * Staged signal for whether the document's edits are reaching the
+   * server: `pending` warns inline; `stalled` locks editing.
+   */
+  syncState: DocumentSyncState
   displayed: Partial<SanityDocument> | null
   displayInlineChanges?: boolean
   documentId: string
