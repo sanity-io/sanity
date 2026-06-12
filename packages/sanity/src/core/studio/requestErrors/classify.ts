@@ -95,3 +95,15 @@ export function classifyRequestError(err: unknown): RequestErrorClassification |
 export function isUnauthorizedError(err: unknown): err is ClientError {
   return err instanceof ClientError && err.statusCode === 401
 }
+
+/**
+ * Whether an error originates from a Sanity client request — i.e. one a
+ * plugin/customization could have delegated to the studio's error UI via
+ * `useStudioErrorHandler()` rather than letting it reach an error
+ * boundary. Used to surface a dev-only "did you mean to opt in?" tip.
+ *
+ * @internal
+ */
+export function isClientRequestError(err: unknown): boolean {
+  return err instanceof ClientError || err instanceof ServerError || isNetworkError(err)
+}

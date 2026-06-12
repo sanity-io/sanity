@@ -1,9 +1,41 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Stack, Text} from '@sanity/ui'
+import {LaunchIcon} from '@sanity/icons'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
 import {type RequestErrorClaim} from './types'
+
+/**
+ * Things a user can check themselves when the studio can't reach the
+ * Sanity API. Ordered most-likely-first.
+ */
+const NETWORK_TROUBLESHOOTING = [
+  'Check that your device is online.',
+  'Disable VPNs, ad blockers, or browser extensions that may block requests.',
+  'Check status.sanity.io for ongoing incidents.',
+]
+
+function NetworkTroubleshooting() {
+  return (
+    <Card border radius={2} padding={3} tone="transparent">
+      <Stack space={3}>
+        <Text size={1} weight="medium">
+          Troubleshooting
+        </Text>
+        <Stack as="ul" space={2} style={{margin: 0, paddingLeft: '1.25em'}}>
+          {NETWORK_TROUBLESHOOTING.map((tip) => (
+            <Box as="li" key={tip}>
+              <Text size={1} muted>
+                {tip}
+              </Text>
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+    </Card>
+  )
+}
 
 /**
  * Ticks down from `claim.retryAfterSeconds` to 0, once per second.
@@ -100,6 +132,7 @@ export function RequestErrorDialog(props: {
     >
       <Stack space={4}>
         <Text>{message}</Text>
+        {claim.type === 'networkError' ? <NetworkTroubleshooting /> : null}
         {claim.type === 'serverError' ? (
           <Text size={1}>
             <a
@@ -108,7 +141,10 @@ export function RequestErrorDialog(props: {
               style={{color: 'var(--card-link-fg-color)'}}
               target="_blank"
             >
-              {'Check Sanity Status →'}
+              <Flex as="span" align="center" gap={2}>
+                <span>Check Sanity Status</span>
+                <LaunchIcon />
+              </Flex>
             </a>
           </Text>
         ) : null}
@@ -158,11 +194,6 @@ function RateLimitedDialog(props: {
     )
   }
 
-  const message =
-    secondsLeft > 0
-      ? `Too many requests at once. Try again in ${secondsLeft} ${secondsLeft === 1 ? 'second' : 'seconds'}.`
-      : 'Too many requests at once. You can try again now.'
-
   return (
     <Dialog
       id="request-error-dialog"
@@ -186,7 +217,7 @@ function RateLimitedDialog(props: {
       }}
     >
       <Stack space={4}>
-        <Text style={{fontVariantNumeric: 'tabular-nums'}}>{message}</Text>
+        <Text>Too many requests at once. You can try again shortly.</Text>
       </Stack>
     </Dialog>
   )
