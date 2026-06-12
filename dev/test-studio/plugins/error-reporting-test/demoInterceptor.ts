@@ -248,33 +248,61 @@ export function makeDemoClient(baseClient: SanityClient): SanityClient {
  * preflight (custom client headers like `x-sanity-app` push the request
  * out of the simple-request set). That bypasses `makeDemoClient`'s
  * request-handler interception, so we install a thin `window.fetch`
- * patch here to synthesize the verdict when the CORS demo is active.
+ * patch to synthesize the verdict when the CORS demo is active.
  *
- * Idempotent — safe to call multiple times.
+ * This is a global monkeypatch on `window.fetch`, so it MUST be scoped to
+ * the lifetime of the error playground view: call this on mount and the
+ * returned function on unmount. Leaving it installed would route every
+ * studio `fetch()` through this wrapper for the rest of the session.
+ *
+ * Idempotent and ref-counted — safe to mount in more than one place.
  *
  * @internal
+ * @returns a function that uninstalls the patch (restoring the previous
+ *   `window.fetch` once the last caller has uninstalled).
  */
-let checkCorsFetchPatched = false
-export function installCheckCorsFetchInterceptor(): void {
-  if (checkCorsFetchPatched) return
-  if (typeof window === 'undefined' || typeof window.fetch !== 'function') return
-  checkCorsFetchPatched = true
+function noop() {
+  // no-op uninstaller, returned when there's nothing to patch (SSR)
+}
 
-  const originalFetch = window.fetch.bind(window)
-  window.fetch = (input, init) => {
-    if (corsDemoMode) {
-      const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
-      if (url.includes('/check/cors')) {
-        const allowed = corsDemoMode === 'no-credentials'
-        const withCredentials = false
-        return Promise.resolve(
-          new Response(JSON.stringify({result: {allowed, withCredentials}}), {
-            status: 200,
-            headers: {'content-type': 'application/json'},
-          }),
-        )
+let installCount = 0
+let originalFetch: typeof window.fetch | undefined
+export function installCheckCorsFetchInterceptor(): () => void {
+  if (typeof window === 'undefined' || typeof window.fetch !== 'function') {
+    return noop
+  }
+
+  if (installCount === 0) {
+    originalFetch = window.fetch.bind(window)
+    const original = originalFetch
+    window.fetch = (input, init) => {
+      if (corsDemoMode) {
+        const url =
+          typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
+        if (url.includes('/check/cors')) {
+          const allowed = corsDemoMode === 'no-credentials'
+          const withCredentials = false
+          return Promise.resolve(
+            new Response(JSON.stringify({result: {allowed, withCredentials}}), {
+              status: 200,
+              headers: {'content-type': 'application/json'},
+            }),
+          )
+        }
       }
+      return original(input, init)
     }
-    return originalFetch(input, init)
+  }
+  installCount += 1
+
+  let uninstalled = false
+  return () => {
+    if (uninstalled) return
+    uninstalled = true
+    installCount -= 1
+    if (installCount === 0 && originalFetch) {
+      window.fetch = originalFetch
+      originalFetch = undefined
+    }
   }
 }

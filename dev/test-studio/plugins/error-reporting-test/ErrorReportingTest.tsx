@@ -23,10 +23,6 @@ import {
   setCorsDemoActive,
 } from './demoInterceptor'
 
-// Install at module load so the studio's bare `fetch` to `/check/cors`
-// gets synthesized when the CORS demo is active. Idempotent.
-installCheckCorsFetchInterceptor()
-
 function triggerCustomErrorOnEvent() {
   throw new Error('Custom error triggered')
 }
@@ -321,6 +317,11 @@ function RequestErrorsDemo() {
   const baseClient = useClient({apiVersion: '2025-02-19'})
   const client = useMemo(() => makeDemoClient(baseClient), [baseClient])
   const {attempt, handle} = useStudioErrorHandler()
+
+  // The CORS demo synthesizes the studio's bare `/check/cors` fetch via a
+  // global window.fetch patch. Scope it to this view so it isn't routing
+  // every studio request through the interceptor once you navigate away.
+  useEffect(() => installCheckCorsFetchInterceptor(), [])
 
   const [lastResult, setLastResult] = useState<string>('')
 
