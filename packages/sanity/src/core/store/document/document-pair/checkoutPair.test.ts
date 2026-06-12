@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {merge, NEVER, of, Subject} from 'rxjs'
+import {merge, NEVER, of, Subject, throwError} from 'rxjs'
 import {delay} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
@@ -163,6 +163,37 @@ describe('checkoutPair -- server actions', () => {
         transactionId: expect.any(String),
       },
     )
+
+    sub.unsubscribe()
+  })
+
+  test('a failed commit does not error the events stream', async () => {
+    // Regression: a network error committing edits used to propagate
+    // through `commits$` → the document `events` stream, which
+    // `useEditState` rethrows during render — crashing the document pane.
+    // The failure must instead be reported to the mutator (so it can
+    // retry/rebase) while the events stream stays alive.
+    const networkError = Object.assign(
+      new Error('Request error while attempting to reach https://example.api.sanity.io'),
+      {isNetworkError: true},
+    )
+    // The commit's action request errors (simulating a network failure).
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => networkError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+
+    let streamErrored = false
+    const sub = combined.subscribe({error: () => (streamErrored = true)})
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    draft.mutate(draft.patch([{set: {title: 'new title'}}]))
+    draft.commit()
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    // The events stream must survive the failed commit.
+    expect(streamErrored).toBe(false)
 
     sub.unsubscribe()
   })
