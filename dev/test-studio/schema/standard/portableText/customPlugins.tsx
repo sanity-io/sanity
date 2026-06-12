@@ -167,7 +167,18 @@ export const customPlugins = defineType({
         'Editable tables via <TablePlugin /> mounted through components.portableText.plugins',
       of: [
         {type: 'block'},
-        {type: 'image'},
+        {
+          type: 'image',
+          name: 'captionedImage',
+          title: 'Image',
+          fields: [
+            {
+              type: 'string',
+              name: 'caption',
+              title: 'Caption',
+            },
+          ],
+        },
         {
           type: 'object',
           name: 'table',
@@ -192,7 +203,21 @@ export const customPlugins = defineType({
                             {
                               type: 'array',
                               name: 'content',
-                              of: [{type: 'block'}, {type: 'image'}],
+                              of: [
+                                {type: 'block'},
+                                {
+                                  type: 'image',
+                                  name: 'captionedImage',
+                                  title: 'Image',
+                                  fields: [
+                                    {
+                                      type: 'string',
+                                      name: 'caption',
+                                      title: 'Caption',
+                                    },
+                                  ],
+                                },
+                              ],
                             },
                           ],
                         },
