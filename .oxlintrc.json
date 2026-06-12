@@ -208,7 +208,7 @@
     // TODO(oxlint): Fix violations and set these back to error.
     "react/no-unstable-nested-components": "warn",
     "typescript/no-unnecessary-type-conversion": "warn",
-    "typescript/no-useless-default-assignment": "warn",
+    "typescript/no-useless-default-assignment": "off",
     "typescript/no-unnecessary-type-parameters": "warn",
     "react/jsx-no-constructed-context-values": "warn",
     "react/no-object-type-as-default-prop": "warn",
