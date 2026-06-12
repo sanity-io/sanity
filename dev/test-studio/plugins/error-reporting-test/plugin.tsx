@@ -10,10 +10,10 @@ export const errorReportingTestPlugin = definePlugin(() => {
     tools: [
       {
         name: 'error-reporting-test',
-        title: 'Errors test',
+        title: 'Error playground',
         icon: AsteriskIcon,
         component: ErrorReportingTest,
-        router: route.create('/'),
+        router: route.create('/', [route.create('/:tab')]),
       },
     ],
   }

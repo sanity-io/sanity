@@ -182,14 +182,18 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
           controller.abort()
           controller = new AbortController()
           if (event.tags.some((tag) => usedTags.includes(tag))) {
-            void fetchShareSecret(event.id, controller.signal)
+            fetchShareSecret(event.id, controller.signal).catch(setError)
           }
         }
       },
       error: setError,
     })
 
-    void fetchShareSecret(null, controller.signal).finally(() => setLoading(false))
+    // `.finally` doesn't catch — without the `.catch` a failed fetch is an
+    // unhandled rejection and the menu silently renders as "no secret".
+    void fetchShareSecret(null, controller.signal)
+      .catch(setError)
+      .finally(() => setLoading(false))
 
     return () => {
       subscription.unsubscribe()

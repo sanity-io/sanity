@@ -106,30 +106,42 @@ export function IncomingReferencesType({
     async (documentId: string) => {
       setIsAdding(false)
       setNewReferenceId(documentId)
-      const liveEdit = Boolean(schemaType?.liveEdit)
-      const document = await client.fetch('*[_id == $id][0]', {id: documentId})
+      try {
+        const liveEdit = Boolean(schemaType?.liveEdit)
+        const document = await client.fetch('*[_id == $id][0]', {id: documentId})
 
-      const linkedDocument = onLinkDocument?.(document, {
-        _type: 'reference',
-        _ref: getPublishedId(referenced.id),
-        ...(publishedExists ? {} : {_weak: true, _strengthenOnPublish: {type: referenced.type}}),
-      })
-      if (!linkedDocument) {
+        const linkedDocument = onLinkDocument?.(document, {
+          _type: 'reference',
+          _ref: getPublishedId(referenced.id),
+          ...(publishedExists ? {} : {_weak: true, _strengthenOnPublish: {type: referenced.type}}),
+        })
+        if (!linkedDocument) {
+          setNewReferenceId(null)
+          toast.push({
+            title: 'Not possible to link to document',
+            description: 'The document you are trying to link cannot be linked to',
+            status: 'error',
+          })
+          return
+        }
+
+        // if the document is published and the schema is not live edit, we want to update the draft id, not the published id
+        // If it's a version, we can update the version document.
+        if (isPublishedId(documentId) && !liveEdit) {
+          linkedDocument._id = getDraftId(documentId)
+        }
+        await client.createOrReplace(linkedDocument)
+      } catch (err) {
+        // The fetch or write failed (e.g. insufficient permissions) —
+        // reset the optimistic row and tell the user.
         setNewReferenceId(null)
+        console.error(err)
         toast.push({
-          title: 'Not possible to link to document',
-          description: 'The document you are trying to link cannot be linked to',
+          title: 'Failed to link document',
+          description: err instanceof Error ? err.message : undefined,
           status: 'error',
         })
-        return
       }
-
-      // if the document is published and the schema is not live edit, we want to update the draft id, not the published id
-      // If it's a version, we can update the version document.
-      if (isPublishedId(documentId) && !liveEdit) {
-        linkedDocument._id = getDraftId(documentId)
-      }
-      await client.createOrReplace(linkedDocument)
     },
     [client, onLinkDocument, referenced, publishedExists, toast, schemaType?.liveEdit],
   )

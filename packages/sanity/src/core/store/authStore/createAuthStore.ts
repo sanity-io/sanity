@@ -21,8 +21,8 @@ import {
 
 import {type AuthConfig} from '../../config/auth/types'
 import {isStaging} from '../../environment/isStaging'
+import {type StudioErrorHandler} from '../../studio/requestErrors/types'
 import {canonicalHash} from '../../util/canonicalHash'
-import {CorsOriginError} from '../cors'
 import {
   AUTH_CLIENT_OPTIONS,
   getAuthTokenStorageKey,
@@ -48,6 +48,13 @@ export interface AuthStoreOptions extends AuthConfig {
   projectId: string
   dataset: string
   /**
+   * Channel for delegating unrecoverable boot-time request errors
+   * (network / 5xx on the initial `/users/me` probe) to the studio's
+   * error dialog instead of crashing the boot sequence.
+   * @internal
+   */
+  requestErrorChannel?: StudioErrorHandler
+  /**
    * Retrieves the session ID from the URL hash for the auth callback flow.
    * Called by `handleCallbackUrl` to obtain the session ID that is exchanged
    * for a token or cookie.
@@ -65,37 +72,43 @@ export interface AuthStoreOptions extends AuthConfig {
 const getCurrentUser = async (
   client: SanityClient,
   tag: string,
-  corsErrorContext: {projectId: string; isStaging: boolean},
+  requestErrorChannel?: StudioErrorHandler,
 ): Promise<CurrentUser | undefined> => {
+  const fetchUser = () =>
+    client
+      .request({
+        uri: '/users/me',
+        tag: `users.get-current${tag ? `.${tag}` : ''}`,
+      })
+      .catch((err) => {
+        // 401 means the user had some kind of credentials but failed to
+        // authenticate — treat it as logged out. Resolved inside the thunk
+        // so the request-error channel never sees the 401: at boot this is
+        // the normal logged-out state (AuthBoundary shows the login
+        // screen), not a session-expiry event to verify and tear down.
+        if (err.statusCode === 401) return undefined
+        throw err
+      })
+
   try {
-    const user = await client.request({
-      uri: '/users/me',
-      tag: `users.get-current${tag ? `.${tag}` : ''}`,
-    })
+    // Network errors / 5xx on this boot-critical read leave the studio
+    // unable to start — there is no local recovery. Delegate them to the
+    // studio's request-error dialog (retryable: it's an idempotent GET)
+    // instead of crashing the boot sequence.
+    const user = requestErrorChannel
+      ? await requestErrorChannel.attempt(fetchUser, {retryable: true})
+      : await fetchUser()
 
     // if the user came back with an id, assume it's a full CurrentUser
     return typeof user?.id === 'string' ? user : undefined
   } catch (err) {
-    if (err.statusCode === 401) {
-      return undefined
+    // Some non-CORS error - is it one of those undefinable network errors?
+    if (err.isNetworkError && !err.message && err.request && err.request.url) {
+      const host = new URL(err.request.url).host
+      throw new Error(`Unknown network error attempting to reach ${host}`, {cause: err})
     }
 
-    // Non-auth failure: probe /ping (which allows all origins) to distinguish
-    // a CORS misconfiguration from a generic network error. If /ping succeeds
-    // without credentials, the origin isn't allowlisted for this project —
-    // throw CorsOriginError so StudioErrorBoundary can render the dedicated
-    // CorsOriginErrorScreen with instructions.
-    const invalidCorsConfig = await client
-      .request({uri: '/ping', withCredentials: false, tag: 'cors-check'})
-      .then(
-        () => true,
-        () => false,
-      )
-
-    if (invalidCorsConfig) {
-      throw new CorsOriginError(corsErrorContext)
-    }
-
+    // Some other error, just throw it
     throw err
   }
 }
@@ -156,6 +169,7 @@ export function _createAuthStore({
   loginMethod = 'dual',
   getSessionId,
   consumeHashToken,
+  requestErrorChannel,
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
   // Precedence when initializing auth:
@@ -205,11 +219,6 @@ export function _createAuthStore({
     hostOptions.apiHost = 'https://api.sanity.work'
   }
 
-  const corsErrorContext = {
-    projectId,
-    isStaging: Boolean(hostOptions.apiHost?.endsWith('.work')),
-  }
-
   const cookieClient = clientFactory({
     ...AUTH_CLIENT_OPTIONS,
     ...hostOptions,
@@ -251,7 +260,7 @@ export function _createAuthStore({
 
   const initial$ = of(initialWorkspaceClient).pipe(
     mergeMap(async (client): Promise<AuthState> => {
-      const currentUser = await getCurrentUser(client, 'initial', corsErrorContext)
+      const currentUser = await getCurrentUser(client, 'initial', requestErrorChannel)
       const authenticated = Boolean(currentUser?.id)
       // Seed cookieAuthState once from the initial probe result. This moves
       // the channel out of 'pending' so cookieAuthChanged$ starts emitting
@@ -373,7 +382,7 @@ export function _createAuthStore({
         if (!client) {
           return {client: cookieClient, authenticated: false, currentUser: null}
         }
-        const currentUser = await getCurrentUser(client, 'update', corsErrorContext)
+        const currentUser = await getCurrentUser(client, 'update', requestErrorChannel)
         return {
           client,
           authenticated: Boolean(currentUser?.id),
@@ -577,12 +586,36 @@ export function _createAuthStore({
     isHandlingCallback: () => _isHandlingCallback,
   })
 
+  /**
+   * Re-check authentication via `/auth/id` to confirm whether a 401 from
+   * an application request reflects an actually-unauthenticated session
+   * (as opposed to a resource-level permission issue). Returns:
+   *
+   *   - `'unauthenticated'`: probe also got a 401 → session really is
+   *     unauthenticated; safe to log out.
+   *   - `'authenticated'`: probe succeeded with a user id → credentials
+   *     are fine; the original 401 was about that request, not the
+   *     session.
+   *   - `'unknown'`: probe failed for some other reason (network down,
+   *     5xx). Caller should not take destructive action.
+   */
+  async function probeUnauthenticated(): Promise<'authenticated' | 'unauthenticated' | 'unknown'> {
+    try {
+      const {client} = await firstValueFrom(authState$)
+      const result = await probeCurrentUser(client)
+      return result.authenticated ? 'authenticated' : 'unauthenticated'
+    } catch {
+      return 'unknown'
+    }
+  }
+
   return {
     handleCallbackUrl,
     state: authState$,
     token: tokenStorage.value.pipe(map((t) => t?.token || null)),
     LoginComponent,
     logout,
+    probeUnauthenticated,
   }
 }
 
@@ -603,5 +636,9 @@ export const createAuthStore: (options: CreateAuthStoreOptions) => AuthStore = m
       getSessionId: defaultGetSessionId,
       consumeHashToken: defaultConsumeHashToken,
     }),
-  canonicalHash,
+  // The request-error channel is identity-typed runtime wiring (functions
+  // and rxjs internals) — hashing it is meaningless, and recursing into a
+  // subscribed observable graph can cycle. Exclude it from the cache key.
+  ({requestErrorChannel: _requestErrorChannel, ...options}: CreateAuthStoreOptions) =>
+    canonicalHash(options),
 )

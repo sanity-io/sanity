@@ -67,38 +67,46 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
   // Resolve union types from an array of unresolved paths
   useEffect(() => {
     return comlink.on('visual-editing/schema-union-types', async (data) => {
-      const documentPathArray = getDocumentPathArray(data.paths)
-      const unionTypes = await Promise.all(
-        documentPathArray.map(async ([id, paths]) => {
-          const arr = Array.from(paths)
-          const projection = arr.map((path, i) => `"${i}": ${path}[0]._type`).join(',')
-          const query = `*[_id == $id][0]{${projection}}`
-          // Should implement max 25 concurrent queries here
-          const result = await client.fetch<Record<number, string | null> | null>(
-            query,
-            {id: getPublishedId(id)},
-            {
-              tag: 'presentation-schema',
-              perspective,
-            },
-          )
-          // `client.fetch` returns `null` when no document matches the active perspective,
-          // and individual projection entries are `null` when the document exists but the
-          // path doesn't resolve. Drop those entries so we only emit fully resolved types.
-          const mapped = arr
-            .map((path, i) =>
-              typeof result?.[i] === 'string' ? {path: path, type: result[i]} : null,
+      try {
+        const documentPathArray = getDocumentPathArray(data.paths)
+        const unionTypes = await Promise.all(
+          documentPathArray.map(async ([id, paths]) => {
+            const arr = Array.from(paths)
+            const projection = arr.map((path, i) => `"${i}": ${path}[0]._type`).join(',')
+            const query = `*[_id == $id][0]{${projection}}`
+            // Should implement max 25 concurrent queries here
+            const result = await client.fetch<Record<number, string | null> | null>(
+              query,
+              {id: getPublishedId(id)},
+              {
+                tag: 'presentation-schema',
+                perspective,
+              },
             )
-            .filter((item) => item !== null)
-          return {id, paths: mapped}
-        }),
-      )
+            // `client.fetch` returns `null` when no document matches the active perspective,
+            // and individual projection entries are `null` when the document exists but the
+            // path doesn't resolve. Drop those entries so we only emit fully resolved types.
+            const mapped = arr
+              .map((path, i) =>
+                typeof result?.[i] === 'string' ? {path: path, type: result[i]} : null,
+              )
+              .filter((item) => item !== null)
+            return {id, paths: mapped}
+          }),
+        )
 
-      const newState: ResolvedSchemaTypeMap = new Map()
-      unionTypes.forEach((action) => {
-        newState.set(action.id, new Map(action.paths.map(({path, type}) => [path, type])))
-      })
-      return {types: newState}
+        const newState: ResolvedSchemaTypeMap = new Map()
+        unionTypes.forEach((action) => {
+          newState.set(action.id, new Map(action.paths.map(({path, type}) => [path, type])))
+        })
+        return {types: newState}
+      } catch (err) {
+        // comlink awaits the handler without a try/catch — a rejection
+        // would be unhandled and leave the iframe waiting forever for a
+        // response. An empty map ("nothing resolved") is contract-legal.
+        console.error(new Error('Failed to resolve schema union types', {cause: err}))
+        return {types: new Map() as ResolvedSchemaTypeMap}
+      }
     })
   }, [comlink, client, perspective])
 

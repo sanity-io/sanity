@@ -128,6 +128,11 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         setAutoUpdatingVersionRaw(nextAutoUpdatingVersion)
         setLatestTaggedVersionRaw(nextLatestVersion)
       })
+      .catch((err) => {
+        // Best-effort version poll — keep the previously known versions
+        // and try again on the next tick.
+        console.warn('[sanity] Failed to check for new studio versions:', err)
+      })
       .finally(() => setVersionCheckStatus({lastCheckedAt: new Date(), checking: false}))
   }, [currentVersion, importMapInfo])
 

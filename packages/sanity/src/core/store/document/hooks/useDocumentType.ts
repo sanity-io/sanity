@@ -46,9 +46,17 @@ export function useDocumentType(documentId: string, specifiedType = '*'): Docume
       return undefined
     }
 
-    const sub = documentStore
-      .resolveTypeForDocument(publishedId, specifiedType)
-      .subscribe((documentType: string) => setDocumentType({documentType, isLoaded: true}))
+    const sub = documentStore.resolveTypeForDocument(publishedId, specifiedType).subscribe({
+      next: (documentType: string) => setDocumentType({documentType, isLoaded: true}),
+      error: (err) => {
+        // Resolve to "loaded, but unknown type" instead of leaving the
+        // pane in a perpetual loading state (and the stream error
+        // unhandled). Consumers already handle `documentType: undefined`
+        // as "unknown document".
+        console.error(new Error('Failed to resolve document type', {cause: err}))
+        setDocumentType({documentType: undefined, isLoaded: true})
+      },
+    })
 
     return () => sub.unsubscribe()
   }, [documentStore, publishedId, specifiedType, isResolved])

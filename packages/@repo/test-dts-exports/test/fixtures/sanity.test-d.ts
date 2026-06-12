@@ -269,8 +269,6 @@ import type {
   CopyOptions,
   CopyPasteContextType,
   CopyPasteProvider,
-  CorsOriginError,
-  CorsOriginErrorOptions,
   createAuthStore,
   CreateAuthStoreOptions,
   createBufferedDocument,
@@ -2546,12 +2544,6 @@ describe('sanity', () => {
   })
   test('CopyPasteProvider', () => {
     expectTypeOf<typeof CopyPasteProvider>().not.toBeNever()
-  })
-  test('CorsOriginError', () => {
-    expectTypeOf<CorsOriginError>().not.toBeNever()
-  })
-  test('CorsOriginErrorOptions', () => {
-    expectTypeOf<CorsOriginErrorOptions>().toBeObject()
   })
   test('createAuthStore', () => {
     expectTypeOf<typeof createAuthStore>().not.toBeNever()

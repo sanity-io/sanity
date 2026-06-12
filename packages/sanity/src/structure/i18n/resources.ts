@@ -446,6 +446,21 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Please hold tight while the document is synced. This usually happens right after the document has been published, and it should not take more than a few seconds',
   /** The title of the sync lock toast on the form view */
   'document-view.form-view.sync-lock-toast.title': 'Syncing document…',
+  /** Description of the toast shown when recent edits haven't synced for a while (still retrying) */
+  'document-view.form-view.sync-pending.description':
+    "We'll keep trying. Your changes are kept in your browser in the meantime.",
+  /** Title of the toast shown when recent edits haven't synced for a while (still retrying) */
+  'document-view.form-view.sync-pending.title': "Your changes aren't saving",
+  /** Description of the toast shown when the connection is back and buffered edits are being submitted */
+  'document-view.form-view.sync-recovering.description':
+    'Editing resumes as soon as your changes are saved.',
+  /** Title of the toast shown when the connection is back and buffered edits are being submitted */
+  'document-view.form-view.sync-recovering.title': 'Saving your changes…',
+  /** Description of the toast shown when edits have been unsynced long enough that editing is locked */
+  'document-view.form-view.sync-stalled.description':
+    'Editing is paused until they save. Your changes are kept in your browser, so keep this tab open while we keep trying.',
+  /** Title of the toast shown when edits have been unsynced long enough that editing is locked */
+  'document-view.form-view.sync-stalled.title': "Your changes still aren't saving",
 
   /** The description for the document favorite action */
   'document.favorites.add-to-favorites': 'Add to favorites',

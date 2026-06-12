@@ -51,7 +51,13 @@ export const fetchLatestAutoUpdatingVersion = async (options: {
         accept: 'application/json',
       },
     })
-    return res.json().then((data): string => data.packageVersion)
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} ${res.statusText}`)
+    }
+    // `return await` (not bare `return`) so a JSON parse rejection is
+    // caught by this try/catch instead of escaping to the caller.
+    const data = await res.json()
+    return data.packageVersion as string
   } catch (err) {
     console.error(
       new Error(`Failed to fetch version for package "${packageName}" (using appId=${appId})`, {
@@ -75,7 +81,13 @@ export const fetchLatestAvailableVersionForPackage = async (options: {
         accept: 'application/json',
       },
     })
-    return res.json().then((data): string => data.latest)
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} ${res.statusText}`)
+    }
+    // `return await` (not bare `return`) so a JSON parse rejection is
+    // caught by this try/catch instead of escaping to the caller.
+    const data = await res.json()
+    return data.latest as string
   } catch (err) {
     console.error(
       `Failed to fetch version for package (using tag=${tag})`,

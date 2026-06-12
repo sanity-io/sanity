@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import {SplitPane} from '@rexxars/react-split-pane'
 import {
+  ClientError,
   type ClientPerspective,
   type ListenEvent,
   type MutationEvent,
@@ -134,7 +135,7 @@ export function VisionGui(props: VisionGuiProps) {
   const storedDataset = localStorage.get('dataset', defaultDataset)
   const storedApiVersion = localStorage.get(
     'apiVersion',
-    prefixApiVersion(`${config.defaultApiVersion}`),
+    prefixApiVersion(config.defaultApiVersion),
   )
   const storedQuery = localStorage.get('query', '')
   const storedParams = localStorage.get('params', '{\n  \n}')
@@ -315,8 +316,30 @@ export function VisionGui(props: VisionGuiProps) {
             setError(undefined)
           },
           error: (err) => {
-            setError(err)
             setQueryInProgress(false)
+            // Defensive: the response shape isn't guaranteed for arbitrary 400s
+            // (proxy error pages, unrelated client misuse), so optional-chain
+            // through and fall through to the global handler when it's not the
+            // expected GROQ parse error.
+            const isQueryParseError =
+              err instanceof ClientError &&
+              err.statusCode === 400 &&
+              (err as ClientError & {response?: {body?: {error?: {type?: string}}}}).response?.body
+                ?.error?.type === 'queryParseError'
+            if (isQueryParseError) {
+              setError(err)
+            } else if (typeof reportError === 'function') {
+              // Re-route to the studio's global error UI without using
+              // `throw` from inside an Observer.error callback (undefined
+              // semantics in rxjs). `reportError` has well-defined behavior:
+              // it posts to the same `window.onerror` channel the studio
+              // root error handler listens on.
+              reportError(err)
+            } else {
+              setTimeout(() => {
+                throw err
+              }, 0)
+            }
           },
         })
     },
