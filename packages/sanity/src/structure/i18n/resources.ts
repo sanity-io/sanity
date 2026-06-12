@@ -577,6 +577,14 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-list-pane.search-input.aria-label': 'Search list',
   /** The search input for the search input on the document list pane */
   'panes.document-list-pane.search-input.placeholder': 'Search list',
+  /** The aria-label for the sort-order control shown beneath the document list search input */
+  'panes.document-list-pane.search-ordering.aria-label': 'Change search result ordering',
+  /** The label for the sort-order control beneath the search input, summarising the applied ordering (e.g. "Sorted by relevance") */
+  'panes.document-list-pane.search-ordering.label': 'Sorted by {{order}}',
+  /** The label for the relevance (best match) option in the document list search sort-order control */
+  'panes.document-list-pane.search-ordering.relevance': 'Relevance',
+  /** The sort-order control summary shown when results are ranked by relevance */
+  'panes.document-list-pane.search-ordering.summary-relevance': 'Sorted by relevance',
   /** The tooltip text shown when a sort menu item references fields not present in the current schema */
   'panes.document-list-pane.sort-order.disabled-reason':
     'This sorting option uses fields that are not part of this document type',

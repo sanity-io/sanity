@@ -1,5 +1,5 @@
 import {SearchIcon, SpinnerIcon} from '@sanity/icons'
-import {Box, TextInput} from '@sanity/ui'
+import {Box, Stack, TextInput} from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
@@ -21,6 +21,12 @@ import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
+import {
+  DocumentListPaneSearchOrdering,
+  getSearchOrderingId,
+  isSortOrderingMenuItem,
+  RELEVANCE_ORDERING_ID,
+} from './DocumentListPaneSearchOrdering'
 import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
 import {useShallowUnique} from './PaneContainer'
 import {type LoadingVariant, type SortOrder} from './types'
@@ -97,6 +103,13 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
+  // The ordering applied while a search term is present. Defaults to relevance
+  // ranking, and resets back to relevance whenever the search is cleared.
+  const [searchOrderingId, setSearchOrderingId] = useState<string>(RELEVANCE_ORDERING_ID)
+
+  // The query the list actually searches on. Whitespace-only input is treated as
+  // empty, so the search-scoped UI must key off the trimmed value too.
+  const trimmedSearchQuery = searchQuery.trim()
 
   const sortWithOrderingFn =
     typeName && sortOrderRaw
@@ -104,6 +117,34 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
       : sortOrderRaw
 
   const sortOrder = useUnique(sortWithOrderingFn)
+
+  // The list's configured orderings, surfaced as choices in the search sort
+  // control (relevance plus these).
+  const searchOrderings = useMemo(
+    () => (pane.menuItems || []).filter(isSortOrderingMenuItem),
+    [pane.menuItems],
+  )
+
+  // While searching, relevance ranking is the default. If the editor picks one
+  // of the configured orderings instead, apply that order and disable scoring.
+  const useRelevance = searchOrderingId === RELEVANCE_ORDERING_ID
+  const selectedSearchOrdering = useRelevance
+    ? undefined
+    : searchOrderings.find((ordering) => getSearchOrderingId(ordering) === searchOrderingId)
+  const searchSchemaType = typeName ? schema.get(typeName) : undefined
+  const effectiveSortOrder = useUnique(
+    selectedSearchOrdering?.params?.by
+      ? // Run the chosen ordering through `applyOrderingFunctions` so it picks up
+        // the same field mappers (e.g. `lower`, `dateTime`) the header sort menu
+        // uses — otherwise the same ordering would sort differently here.
+        // `applyOrderingFunctions` requires a concrete schema type, so only apply
+        // it when the type is statically resolvable; otherwise fall back to the
+        // raw ordering rather than passing `undefined`.
+        searchSchemaType
+        ? applyOrderingFunctions({by: selectedSearchOrdering.params.by}, searchSchemaType as any)
+        : {by: selectedSearchOrdering.params.by}
+      : sortOrder,
+  )
 
   const client = useClient({
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -128,8 +169,9 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     filter,
     perspective: perspectiveStack,
     params,
-    searchQuery: searchQuery?.trim(),
-    sortOrder,
+    searchQuery: trimmedSearchQuery,
+    sortOrder: effectiveSortOrder,
+    searchSortByRelevance: useRelevance,
   })
 
   const isLoading = documentListIsLoading || releases.loading
@@ -174,6 +216,15 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     setEnableSearchSpinner()
   }, [paneKey, handleClearSearch])
 
+  useEffect(() => {
+    // Relevance ranking is search-scoped: whenever the term is cleared (via the
+    // clear button, Escape, emptying the field, or switching panes), reset the
+    // applied ordering back to relevance.
+    if (!trimmedSearchQuery) {
+      setSearchOrderingId(RELEVANCE_ORDERING_ID)
+    }
+  }, [trimmedSearchQuery])
+
   const loadingVariant: LoadingVariant = useMemo(() => {
     if (connected && isLoading && enableSearchSpinner === paneKey) {
       return 'spinner'
@@ -200,28 +251,37 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   return (
     <>
       <Box paddingX={3} paddingBottom={3}>
-        <TextInput
-          aria-label={t('panes.document-list-pane.search-input.aria-label')}
-          autoComplete="off"
-          border={false}
-          clearButton={Boolean(searchQuery)}
-          fontSize={[2, 2, 1]}
-          icon={textInputIcon}
-          iconRight={
-            !connected || (loadingVariant === 'subtle' && !searchInputValue)
-              ? DelayedSubtleSpinnerIcon
-              : null
-          }
-          onChange={handleQueryChange}
-          onClear={handleClearSearch}
-          onKeyDown={handleSearchKeyDown}
-          padding={2}
-          placeholder={t('panes.document-list-pane.search-input.placeholder')}
-          radius={2}
-          ref={setSearchInputElement}
-          spellCheck={false}
-          value={searchInputValue}
-        />
+        <Stack space={3}>
+          <TextInput
+            aria-label={t('panes.document-list-pane.search-input.aria-label')}
+            autoComplete="off"
+            border={false}
+            clearButton={Boolean(searchQuery)}
+            fontSize={[2, 2, 1]}
+            icon={textInputIcon}
+            iconRight={
+              !connected || (loadingVariant === 'subtle' && !searchInputValue)
+                ? DelayedSubtleSpinnerIcon
+                : null
+            }
+            onChange={handleQueryChange}
+            onClear={handleClearSearch}
+            onKeyDown={handleSearchKeyDown}
+            padding={2}
+            placeholder={t('panes.document-list-pane.search-input.placeholder')}
+            radius={2}
+            ref={setSearchInputElement}
+            spellCheck={false}
+            value={searchInputValue}
+          />
+          {trimmedSearchQuery && (
+            <DocumentListPaneSearchOrdering
+              orderings={searchOrderings}
+              value={searchOrderingId}
+              onChange={setSearchOrderingId}
+            />
+          )}
+        </Stack>
       </Box>
       <DocumentListPaneContent
         key={paneKey}
