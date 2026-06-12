@@ -325,8 +325,12 @@ const orgEndpointProxy = createRequestProxy({
 const flapper = FLAP
   ? createConnectionFlapper({
       ...FLAP,
-      onTransition: (online) =>
-        console.info(`[debug-proxy] network ${online ? 'online' : 'offline'}`),
+      onTransition: (online) => {
+        const phaseSeconds = (online ? FLAP.onlineMs : FLAP.offlineMs) / 1000
+        console.info(
+          `[debug-proxy] ${new Date().toLocaleTimeString()} network ${online ? 'online' : 'offline'} for the next ${phaseSeconds}s`,
+        )
+      },
     })
   : undefined
 
