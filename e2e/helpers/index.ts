@@ -1,3 +1,4 @@
+export * from './clearKeyValueKey'
 export * from './constants'
 export * from './createFileDataTransferHandle'
 export * from './createUniqueDocument'
