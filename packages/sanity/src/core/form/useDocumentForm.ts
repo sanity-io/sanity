@@ -376,7 +376,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
-    const syncStalled = syncState === 'stalled'
+    // Lock once edits have stalled, and keep it locked while the backlog
+    // is flushing after reconnect (`recovering`) — we're not in sync yet.
+    const syncBlocked = syncState === 'stalled' || syncState === 'recovering'
     const willBeUnpublished = value ? isGoingToUnpublish(value) : false
 
     // in cases where the document has no draft or published, but has a version,
@@ -423,7 +425,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       createActionDisabled ||
       reconnecting ||
       isLocked ||
-      syncStalled ||
+      syncBlocked ||
       willBeUnpublished ||
       isReleaseLocked
 
