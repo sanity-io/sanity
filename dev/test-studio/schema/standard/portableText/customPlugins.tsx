@@ -2,7 +2,8 @@ import {defineBehavior, effect, forward, raise} from '@portabletext/editor/behav
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
 import {CharacterPairDecoratorPlugin} from '@portabletext/plugin-character-pair-decorator'
 import {TablePlugin} from '@portabletext/plugin-table'
-import {defineArrayMember, defineType} from 'sanity'
+import {useState} from 'react'
+import {defineArrayMember, defineType, type PortableTextPluginsProps} from 'sanity'
 
 /**
  * Upgrade a bare `{_type: 'table'}` insert (what the Studio toolbar
@@ -69,6 +70,47 @@ const tableEditorCss = `
     font-weight: 600;
   }
 `
+
+/**
+ * Plugins for the Table Editor field, with a toggle that mounts and
+ * unmounts the `TablePlugin` live. Toggling off unregisters the
+ * `table`/`row`/`cell` containers, demonstrating dynamic node
+ * registration: the same value re-renders through Studio's block-object
+ * catch-all instead of as an editable container.
+ */
+function TableEditorPlugins(props: PortableTextPluginsProps) {
+  const [tableEnabled, setTableEnabled] = useState(true)
+
+  return (
+    <>
+      {tableEnabled && (
+        <>
+          <TablePlugin />
+          <BehaviorPlugin behaviors={tableEditorBehaviors} />
+        </>
+      )}
+      {/* eslint-disable-next-line react/no-danger -- validation rig styling */}
+      <style dangerouslySetInnerHTML={{__html: tableEditorCss}} />
+      <label
+        style={{
+          display: 'inline-flex',
+          gap: '0.4em',
+          alignItems: 'center',
+          fontSize: '0.8em',
+          padding: '0.2em 0',
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={tableEnabled}
+          onChange={(domEvent) => setTableEnabled(domEvent.currentTarget.checked)}
+        />
+        Table plugin enabled
+      </label>
+      {props.renderDefault(props)}
+    </>
+  )
+}
 
 export const customPlugins = defineType({
   name: 'customPlugins',
@@ -169,14 +211,11 @@ export const customPlugins = defineType({
         {type: 'block'},
         {
           type: 'image',
-          name: 'captionedImage',
           title: 'Image',
+          options: {hotspot: true},
           fields: [
-            {
-              type: 'string',
-              name: 'caption',
-              title: 'Caption',
-            },
+            {name: 'caption', type: 'string', title: 'Caption'},
+            {name: 'alt', type: 'string', title: 'Alternative text'},
           ],
         },
         {
@@ -207,14 +246,11 @@ export const customPlugins = defineType({
                                 {type: 'block'},
                                 {
                                   type: 'image',
-                                  name: 'captionedImage',
                                   title: 'Image',
+                                  options: {hotspot: true},
                                   fields: [
-                                    {
-                                      type: 'string',
-                                      name: 'caption',
-                                      title: 'Caption',
-                                    },
+                                    {name: 'caption', type: 'string', title: 'Caption'},
+                                    {name: 'alt', type: 'string', title: 'Alternative text'},
                                   ],
                                 },
                               ],
@@ -236,17 +272,7 @@ export const customPlugins = defineType({
       ],
       components: {
         portableText: {
-          plugins: (props) => {
-            return (
-              <>
-                <TablePlugin />
-                <BehaviorPlugin behaviors={tableEditorBehaviors} />
-                {/* eslint-disable-next-line react/no-danger -- validation rig styling */}
-                <style dangerouslySetInnerHTML={{__html: tableEditorCss}} />
-                {props.renderDefault(props)}
-              </>
-            )
-          },
+          plugins: TableEditorPlugins,
         },
       },
     },
