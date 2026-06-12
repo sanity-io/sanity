@@ -112,7 +112,7 @@
     "lefthook": "^2.1.6",
     "npm-run-all2": "^6.2.6",
     "only-allow": "^1.2.2",
-    "oxfmt": "^0.44.0",
+    "oxfmt": "^0.54.0",
     "oxlint": "1.68.0",
     "oxlint-tsgolint": "0.23.0",
     "pkg-pr-new": "^0.0.70",
