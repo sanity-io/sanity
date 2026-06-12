@@ -55,6 +55,10 @@ describe('randomLatency', () => {
     await vi.advanceTimersByTimeAsync(200)
     const out = (await promise) as Message[]
     expect(out).toHaveLength(3)
-    expect(out.map((e) => e.message.id).sort()).toEqual(['a', 'b', 'c'])
+    expect(out.map((e) => e.message.id ?? '').sort((a, b) => a.localeCompare(b))).toEqual([
+      'a',
+      'b',
+      'c',
+    ])
   })
 })

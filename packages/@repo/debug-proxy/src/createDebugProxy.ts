@@ -4,7 +4,7 @@ import * as https from 'node:https'
 import * as net from 'node:net'
 import * as tls from 'node:tls'
 
-import {type MonoTypeOperatorFunction, type Subscription} from 'rxjs'
+import {type Subscription} from 'rxjs'
 
 import {
   createRequestProxy,
@@ -314,11 +314,4 @@ export function createDebugProxy(config: DebugProxyConfig = {}): DebugProxyServe
   return api
 }
 
-export type {
-  MonoTypeOperatorFunction,
-  ProxyHeaders,
-  ProxyRequest,
-  ProxyResponse,
-  ProxyTarget,
-  SSEEvent,
-}
+export type {ProxyHeaders, ProxyRequest, ProxyResponse, ProxyTarget, SSEEvent}
