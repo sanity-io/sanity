@@ -96,27 +96,39 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
 
   useConditionalToast(conditionalToastParams)
 
-  // Staged "changes aren't syncing" toasts. `pending` warns; `stalled`
-  // means editing has been locked (handled upstream in `readOnly`). One
-  // toast id so the two states replace each other rather than stack, and
+  // Staged "changes aren't syncing" toast. Three non-synced states:
+  //  - pending:    unsynced + disconnected, warning (editing still open)
+  //  - stalled:    unsynced + disconnected for longer, editing locked
+  //  - recovering: connection back, flushing the backlog (still locked,
+  //                but reassure rather than alarm)
+  // One toast id so the states replace each other rather than stack, and
   // it auto-dismisses when the document syncs again.
-  const syncToastParams = useMemo(
-    () => ({
+  const syncToastParams = useMemo(() => {
+    const copy = {
+      pending: {
+        status: 'warning' as const,
+        title: t('document-view.form-view.sync-pending.title'),
+        description: t('document-view.form-view.sync-pending.description'),
+      },
+      stalled: {
+        status: 'error' as const,
+        title: t('document-view.form-view.sync-stalled.title'),
+        description: t('document-view.form-view.sync-stalled.description'),
+      },
+      recovering: {
+        status: 'warning' as const,
+        title: t('document-view.form-view.sync-recovering.title'),
+        description: t('document-view.form-view.sync-recovering.description'),
+      },
+    }
+    const active = syncState === 'synced' ? copy.pending : copy[syncState]
+    return {
       id: 'document-sync-state',
-      status: syncState === 'stalled' ? ('error' as const) : ('warning' as const),
       enabled: syncState !== 'synced',
-      title:
-        syncState === 'stalled'
-          ? t('document-view.form-view.sync-stalled.title')
-          : t('document-view.form-view.sync-pending.title'),
-      description:
-        syncState === 'stalled'
-          ? t('document-view.form-view.sync-stalled.description')
-          : t('document-view.form-view.sync-pending.description'),
       closable: true,
-    }),
-    [syncState, t],
-  )
+      ...active,
+    }
+  }, [syncState, t])
 
   useConditionalToast(syncToastParams)
 
