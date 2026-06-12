@@ -239,12 +239,17 @@ function submitCommitRequest(
     // crashing the document pane. Complete instead — the failure has
     // already been routed through its proper channel.
     catchError((error) => {
-      const isBadRequest =
-        'statusCode' in error &&
-        typeof error.statusCode === 'number' &&
-        error.statusCode >= 400 &&
-        error.statusCode <= 500
-      if (isBadRequest) {
+      // 4xx (except 429) is a client error: terminal, the buffered
+      // mutations can't succeed by retrying, so cancel (which rejects the
+      // commit and resets the buffer to server HEAD). 5xx / 429 / network
+      // are transient: fail, so the mutator keeps the buffer and retries
+      // with backoff. Note `< 500` — 500 itself is a server error and
+      // must retry, not cancel.
+      const statusCode =
+        'statusCode' in error && typeof error.statusCode === 'number' ? error.statusCode : undefined
+      const isTerminalClientError =
+        statusCode !== undefined && statusCode >= 400 && statusCode < 500 && statusCode !== 429
+      if (isTerminalClientError) {
         request.cancel(error)
       } else {
         request.failure(error)
