@@ -150,6 +150,30 @@ describe('consumeEarlyAuthProbe guard matrix', () => {
     expect(value).toBe(EARLY_PROBE_MISS)
   })
 
+  it('case 16: ok result with no id ({}) -> resolves to EARLY_PROBE_MISS (id-guard)', async () => {
+    seedProbe({promise: Promise.resolve({type: 'ok', user: {}})})
+    const result = consumeEarlyAuthProbe(BASE_OPTS)
+    expect(result).not.toBe(EARLY_PROBE_MISS)
+    const value = await (result as Promise<unknown>)
+    expect(value).toBe(EARLY_PROBE_MISS)
+  })
+
+  it('case 17: ok result with user: null -> resolves to EARLY_PROBE_MISS (id-guard)', async () => {
+    seedProbe({promise: Promise.resolve({type: 'ok', user: null})})
+    const result = consumeEarlyAuthProbe(BASE_OPTS)
+    expect(result).not.toBe(EARLY_PROBE_MISS)
+    const value = await (result as Promise<unknown>)
+    expect(value).toBe(EARLY_PROBE_MISS)
+  })
+
+  it('case 18: ok result with non-string id ({id: 123}) -> resolves to EARLY_PROBE_MISS (id-guard)', async () => {
+    seedProbe({promise: Promise.resolve({type: 'ok', user: {id: 123}})})
+    const result = consumeEarlyAuthProbe(BASE_OPTS)
+    expect(result).not.toBe(EARLY_PROBE_MISS)
+    const value = await (result as Promise<unknown>)
+    expect(value).toBe(EARLY_PROBE_MISS)
+  })
+
   it('case 14: consume-once: second call with identical opts -> EARLY_PROBE_MISS (global deleted on first)', () => {
     seedProbe()
 

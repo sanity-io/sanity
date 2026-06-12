@@ -22,6 +22,7 @@ export interface EarlyAuthProbeEntry {
   credential: 'cookie' | 'token'
   token: string | null
   startedAt: number
+  // Raw body from the CLI inline script; validated at the ok-branch id-guard (trust boundary).
   promise: Promise<
     {type: 'unauthenticated'} | {type: 'ok'; user: unknown} | {type: 'error'; status: number}
   >
@@ -75,6 +76,7 @@ export function consumeEarlyAuthProbe(
   // @ts-expect-error - window.__sanityEarlyAuth is not declared; use ts-expect-error per monorepo convention
   const probe: EarlyAuthProbeEntry | undefined = window.__sanityEarlyAuth
 
+  // Consume-once: delete must happen before any validation that could early-return.
   // @ts-expect-error - window.__sanityEarlyAuth is not declared; use ts-expect-error per monorepo convention
   delete window.__sanityEarlyAuth
 
@@ -98,10 +100,15 @@ export function consumeEarlyAuthProbe(
     return EARLY_PROBE_MISS
   }
 
+  // The 2-tick flush in createAuthStore initial$ depends on this chain being exactly 2
+  // hops (.then + .catch). Adding a hop here breaks the settled-fast-path — update both together.
   return probe.promise
     .then((result) => {
       if (result.type === 'ok') {
-        return result.user as CurrentUser
+        // Validate the raw body before trusting it — a malformed 200 (empty object,
+        // error envelope) must not flow through as a junk CurrentUser.
+        const maybeUser = result.user as {id?: unknown} | null | undefined
+        return typeof maybeUser?.id === 'string' ? (result.user as CurrentUser) : EARLY_PROBE_MISS
       }
       if (result.type === 'unauthenticated') {
         return null

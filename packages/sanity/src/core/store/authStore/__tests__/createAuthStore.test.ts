@@ -887,6 +887,41 @@ describe('early auth probe integration', () => {
     expect(usersMeCallCount).toBe(0)
   })
 
+  it('case 2b: settled ok probe with id-less user ({}) -> falls back to getCurrentUser; malformed body never surfaces', async () => {
+    let usersMeCallCount = 0
+
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/users/me') {
+            usersMeCallCount += 1
+            return Promise.resolve(MOCK_USER)
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    // Probe resolves with a body that looks like ok but has no id — malformed 200 envelope.
+    seedEarlyAuth({promise: Promise.resolve({type: 'ok', user: {}})})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    const state = await waitForState(store, (s) => s.authenticated)
+
+    // The fallback must have fired exactly once
+    expect(usersMeCallCount).toBe(1)
+    // The emitted user must be the real MOCK_USER, never the empty junk object
+    expect(state.currentUser).toEqual(MOCK_USER)
+    expect((state.currentUser as CurrentUser | null)?.id).toBe('mock-user-123')
+  })
+
   it('case 3: projectId mismatch -> falls back to getCurrentUser, request count 1', async () => {
     let usersMeCallCount = 0
 
@@ -948,19 +983,11 @@ describe('early auth probe integration', () => {
   it('case 5: pending probe -> fallback fires immediately while probe is still pending; fallback result wins', async () => {
     let usersMeCallCount = 0
 
-    // Resolve control: we control when getCurrentUser returns
-    let resolveGetCurrentUser!: () => void
-    const getCurrentUserBarrier = new Promise<void>((resolve) => {
-      resolveGetCurrentUser = resolve
-    })
-
     const factory = (_options: SanityClientConfig): SanityClient =>
       ({
         request: vi.fn(({uri}: {uri: string}) => {
           if (uri === '/users/me') {
             usersMeCallCount += 1
-            // Return immediately (barrier already resolves synchronously here)
-            void getCurrentUserBarrier
             return Promise.resolve(MOCK_USER)
           }
           return Promise.resolve({})
@@ -988,8 +1015,67 @@ describe('early auth probe integration', () => {
     expect(state.currentUser).toEqual(MOCK_USER)
     // Assert the /users/me request was fired while the probe was still pending
     expect(usersMeCallCount).toBe(1)
+  })
 
-    resolveGetCurrentUser()
+  it('case 5b: pending probe settles with valid user before fallback resolves -> probe wins, /users/me fired exactly once (hedge)', async () => {
+    let usersMeCallCount = 0
+
+    // Deferred probe: starts pending so the store enters the hedge race path.
+    let resolveProbe!: (value: {type: 'ok'; user: typeof MOCK_USER}) => void
+    const probeDeferred = new Promise<{type: 'ok'; user: typeof MOCK_USER}>((resolve) => {
+      resolveProbe = resolve
+    })
+
+    // Fallback that never resolves — probe wins the race.
+    // We still count the call to confirm the hedge fired.
+    let usersMeResolve!: (value: CurrentUser) => void
+    const factoryBlockingFallback = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/users/me') {
+            usersMeCallCount += 1
+            // Block forever — probe wins the race
+            return new Promise<CurrentUser>((resolve) => {
+              usersMeResolve = resolve
+            })
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    seedEarlyAuth({promise: probeDeferred})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factoryBlockingFallback,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    // Subscribe immediately so initial$ starts executing.
+    // The probe is still pending so the store enters the hedge race:
+    // it fires fetchCurrentUser() (incrementing usersMeCallCount) then awaits Promise.race.
+    const statePromise = waitForState(store, (s) => s.authenticated)
+
+    // Flush enough microtasks for initial$ to reach the Promise.race.
+    // initial$ does: await Promise.resolve() x2 (settled-check) + settled check -> PENDING
+    // -> fires fetchCurrentUser -> awaits Promise.race. That's ~5 await hops total.
+    for (let tick = 0; tick < 10; tick++) {
+      await Promise.resolve()
+    }
+
+    // Now /users/me must have been called (hedge fired). Resolve the probe so it wins.
+    expect(usersMeCallCount).toBe(1)
+    resolveProbe({type: 'ok', user: MOCK_USER})
+
+    const state = await statePromise
+
+    expect(state.authenticated).toBe(true)
+    expect(state.currentUser).toEqual(MOCK_USER)
+    // Unblock the fallback promise to avoid dangling promises
+    usersMeResolve(MOCK_USER)
   })
 
   it('case 6: pending probe + fallback rejects (CorsOriginError) -> rejection propagates', async () => {

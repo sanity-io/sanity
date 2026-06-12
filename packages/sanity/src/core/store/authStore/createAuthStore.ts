@@ -146,6 +146,10 @@ async function exchangeSessionForToken(client: SanityClient, sessionId: string):
   return token
 }
 
+// Deliberate defer-forever primitive: used in the filtered race arm when a probe result
+// is EARLY_PROBE_MISS, so the fallback (including CorsOriginError rejection) always decides.
+const NEVER_SETTLES = new Promise<never>(() => {})
+
 /**
  * @internal
  */
@@ -252,6 +256,7 @@ export function _createAuthStore({
 
   const initial$ = of(initialWorkspaceClient).pipe(
     mergeMap(async (client): Promise<AuthState> => {
+      // token-mode-without-token intentionally matches a cookie-credentialed probe (both fall back to cookie semantics).
       const earlyCredential: 'cookie' | 'token' =
         loginMethod === 'cookie' ? 'cookie' : currentTokenState?.token ? 'token' : 'cookie'
       const earlyToken = currentTokenState?.token ?? null
@@ -282,7 +287,7 @@ export function _createAuthStore({
           // Probe arm is filtered — a MISS settlement stays silent (never resolves),
           // so the fallback (incl. CorsOriginError rejection) always decides on a probe miss.
           const probeArm = probeResult.then((value) =>
-            value === EARLY_PROBE_MISS ? new Promise<never>(() => {}) : value,
+            value === EARLY_PROBE_MISS ? NEVER_SETTLES : value,
           )
           currentUser = await Promise.race([probeArm, fetchCurrentUser()])
         } else if (settled === EARLY_PROBE_MISS) {
