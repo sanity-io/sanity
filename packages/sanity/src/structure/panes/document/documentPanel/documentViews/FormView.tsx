@@ -67,6 +67,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
     compareValue,
     hasUpstreamVersion,
     focusPath,
+    syncState,
   } = useDocumentPane()
   const {selectedReleaseId, selectedPerspective} = usePerspective()
   const documentStore = useDocumentStore()
@@ -94,6 +95,30 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
   )
 
   useConditionalToast(conditionalToastParams)
+
+  // Staged "changes aren't syncing" toasts. `pending` warns; `stalled`
+  // means editing has been locked (handled upstream in `readOnly`). One
+  // toast id so the two states replace each other rather than stack, and
+  // it auto-dismisses when the document syncs again.
+  const syncToastParams = useMemo(
+    () => ({
+      id: 'document-sync-state',
+      status: syncState === 'stalled' ? ('error' as const) : ('warning' as const),
+      enabled: syncState !== 'synced',
+      title:
+        syncState === 'stalled'
+          ? t('document-view.form-view.sync-stalled.title')
+          : t('document-view.form-view.sync-pending.title'),
+      description:
+        syncState === 'stalled'
+          ? t('document-view.form-view.sync-stalled.description')
+          : t('document-view.form-view.sync-pending.description'),
+      closable: true,
+    }),
+    [syncState, t],
+  )
+
+  useConditionalToast(syncToastParams)
 
   useEffect(() => {
     const sub = documentStore.pair
