@@ -34,11 +34,9 @@ export function useTrackFocusPath(props: Props): void {
 
     // The editor holds DOM focus when the user is actively editing inside it. In that case the
     // editor manages its own selection and scrolling, so we should not interfere.
-    const editorHasDomFocus = Boolean(
-      boundaryElement &&
-      boundaryElement.ownerDocument.activeElement &&
-      boundaryElement.contains(boundaryElement.ownerDocument.activeElement),
-    )
+    const editorHasDomFocus =
+      !!boundaryElement?.ownerDocument.activeElement &&
+      boundaryElement.contains(boundaryElement.ownerDocument.activeElement)
 
     // Don't do anything if the editor is focused and its selection focus path already equals the
     // focusPath. When focus came from outside the editor (e.g. Visual Editing), the editor can
@@ -129,11 +127,12 @@ export function useTrackFocusPath(props: Props): void {
           // the editor emits no selection change, so neither its native focus nor its
           // scroll-into-view runs and the block can't be re-entered (#12894).
           // Deselect first so the subsequent select is a genuine change.
-          const currentSelection = PortableTextEditor.getSelection(editor)
+          // Slice the selection path down to the target path length (the reverse of the guard
+          // above): we only care whether the editor is already sitting on this exact block,
+          // regardless of which child the caret is on.
           const isSameSelection =
-            currentSelection?.focus.path &&
-            isEqual(currentSelection.focus.path.slice(0, path.length), path)
-          if (isSameSelection) {
+            selection?.focus.path && isEqual(selection.focus.path.slice(0, path.length), path)
+          if (isTextBlock && isSameSelection) {
             PortableTextEditor.select(editor, null)
           }
 
