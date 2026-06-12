@@ -191,7 +191,7 @@ export const customPlugins = defineType({
                             {
                               type: 'array',
                               name: 'content',
-                              of: [{type: 'block'}],
+                              of: [{type: 'block'}, {type: 'image'}],
                             },
                           ],
                         },
