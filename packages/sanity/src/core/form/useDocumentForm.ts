@@ -36,6 +36,7 @@ import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
+import {type DocumentSyncState, useDocumentSyncState} from '../hooks/useDocumentSyncState'
 import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
 import {useValidationStatus} from '../hooks/useValidationStatus'
@@ -107,6 +108,11 @@ interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersio
    */
   upstreamEditState: EditStateFor
   connectionState: ConnectionState
+  /**
+   * Staged signal for whether the document's edits are reaching the
+   * server. `pending` warns; `stalled` means editing is locked.
+   */
+  syncState: DocumentSyncState
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
   openPath: Path
@@ -206,6 +212,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const connectionState = useConnectionState(documentId, documentType, activeDocumentReleaseId)
   useReconnectingToast(connectionState === 'reconnecting')
+
+  // Staged signal for "the document's edits aren't reaching the server".
+  // `stalled` means it's been unsynced long enough that we lock editing to
+  // stop the user piling more changes onto a document that isn't syncing.
+  const syncState = useDocumentSyncState(documentId, documentType, activeDocumentReleaseId)
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
@@ -369,6 +380,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
+    const syncStalled = syncState === 'stalled'
     const willBeUnpublished = value ? isGoingToUnpublish(value) : false
 
     // in cases where the document has no draft or published, but has a version,
@@ -415,6 +427,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       createActionDisabled ||
       reconnecting ||
       isLocked ||
+      syncStalled ||
       willBeUnpublished ||
       isReleaseLocked
 
@@ -437,6 +450,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     ready,
     isReleaseLocked,
     readOnlyProp,
+    syncState,
   ])
 
   const {patch} = useDocumentOperation(documentId, documentType, activeDocumentReleaseId)
@@ -594,6 +608,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     editState,
     upstreamEditState,
     connectionState,
+    syncState,
     focusPath,
     validation,
     ready,
