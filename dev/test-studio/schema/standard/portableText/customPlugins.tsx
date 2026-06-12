@@ -1,8 +1,74 @@
-import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
+import {defineBehavior, effect, forward, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
 import {CharacterPairDecoratorPlugin} from '@portabletext/plugin-character-pair-decorator'
 import {TablePlugin} from '@portabletext/plugin-table'
 import {defineArrayMember, defineType} from 'sanity'
+
+/**
+ * Upgrade a bare `{_type: 'table'}` insert (what the Studio toolbar
+ * produces) to a 3x3 table. Raising the modified event re-enters the
+ * behavior chain; the guard fails on the upgraded block because it has
+ * rows, so the raise does not loop.
+ */
+const tableEditorBehaviors = [
+  defineBehavior({
+    on: 'insert.block',
+    guard: ({snapshot, event}) => {
+      const block = event.block as {_type?: string; rows?: unknown[]}
+      if (block._type !== 'table' || (block.rows?.length ?? 0) > 0) {
+        return false
+      }
+      return {keyGenerator: snapshot.context.keyGenerator}
+    },
+    actions: [
+      ({event}, {keyGenerator}) => [
+        raise({
+          ...event,
+          block: {
+            ...event.block,
+            rows: Array.from({length: 3}, () => ({
+              _type: 'row',
+              _key: keyGenerator(),
+              cells: Array.from({length: 3}, () => ({
+                _type: 'cell',
+                _key: keyGenerator(),
+                content: [
+                  {
+                    _type: 'block',
+                    _key: keyGenerator(),
+                    style: 'normal',
+                    markDefs: [],
+                    children: [{_type: 'span', _key: keyGenerator(), text: '', marks: []}],
+                  },
+                ],
+              })),
+            })),
+          },
+        }),
+      ],
+    ],
+  }),
+]
+
+const tableEditorCss = `
+  table[data-pt-block='container'] {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+  table[data-pt-block='container'] td {
+    border: 1px solid #c5cad3;
+    padding: 0.35rem 0.6rem;
+    vertical-align: top;
+    min-width: 4rem;
+  }
+  table[data-pt-block='container'][data-pt-plugin-table-header-row]
+    tr:first-child
+    td {
+    background: #f2f3f5;
+    font-weight: 600;
+  }
+`
 
 export const customPlugins = defineType({
   name: 'customPlugins',
@@ -148,6 +214,9 @@ export const customPlugins = defineType({
             return (
               <>
                 <TablePlugin />
+                <BehaviorPlugin behaviors={tableEditorBehaviors} />
+                {/* eslint-disable-next-line react/no-danger -- validation rig styling */}
+                <style dangerouslySetInnerHTML={{__html: tableEditorCss}} />
                 {props.renderDefault(props)}
               </>
             )
