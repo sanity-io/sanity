@@ -258,6 +258,7 @@ exports[`exports snapshot 1`] = `
     "checkoutPair": "function",
     "collate": "function",
     "compileFieldPath": "function",
+    "connectionState": "function",
     "createAuthStore": "function",
     "createBufferedDocument": "function",
     "createConfig": "function",
