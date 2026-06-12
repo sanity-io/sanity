@@ -32,6 +32,7 @@ import {
 import {createBroadcastState} from './createBroadcastState'
 import {createBroadcastStorage} from './createBroadcastStorage'
 import {createLoginComponent} from './createLoginComponent'
+import {consumeEarlyAuthProbe, EARLY_PROBE_MISS} from './earlyAuthProbe'
 import {consumeHashToken as defaultConsumeHashToken} from './hashToken'
 import {clearHashSessionId, getHashSessionId as defaultGetSessionId} from './sessionId'
 import {
@@ -251,7 +252,46 @@ export function _createAuthStore({
 
   const initial$ = of(initialWorkspaceClient).pipe(
     mergeMap(async (client): Promise<AuthState> => {
-      const currentUser = await getCurrentUser(client, 'initial', corsErrorContext)
+      const earlyCredential: 'cookie' | 'token' =
+        loginMethod === 'cookie' ? 'cookie' : currentTokenState?.token ? 'token' : 'cookie'
+      const earlyToken = currentTokenState?.token ?? null
+      const earlyApiHost = hostOptions.apiHost ?? 'https://api.sanity.io'
+
+      const probeResult = consumeEarlyAuthProbe({
+        projectId,
+        apiHost: earlyApiHost,
+        credential: earlyCredential,
+        token: earlyToken,
+      })
+
+      const fetchCurrentUser = () => getCurrentUser(client, 'initial', corsErrorContext)
+
+      let currentUser: CurrentUser | null | undefined
+      if (probeResult === EARLY_PROBE_MISS) {
+        currentUser = await fetchCurrentUser()
+      } else {
+        // Settled-check: flush two microtask ticks so a synchronously-resolved probe.promise
+        // (2 .then/.catch hops through consumeEarlyAuthProbe's chain) can fully settle.
+        // PENDING wins only after an additional flush, so a settled probe always beats it.
+        await Promise.resolve()
+        await Promise.resolve()
+        const PENDING = Symbol('pending')
+        const settled = await Promise.race([probeResult, Promise.resolve(PENDING)])
+        if (settled === PENDING) {
+          // Hedge: fire fallback immediately, race both arms.
+          // Probe arm is filtered — a MISS settlement stays silent (never resolves),
+          // so the fallback (incl. CorsOriginError rejection) always decides on a probe miss.
+          const probeArm = probeResult.then((value) =>
+            value === EARLY_PROBE_MISS ? new Promise<never>(() => {}) : value,
+          )
+          currentUser = await Promise.race([probeArm, fetchCurrentUser()])
+        } else if (settled === EARLY_PROBE_MISS) {
+          currentUser = await fetchCurrentUser()
+        } else {
+          currentUser = settled
+        }
+      }
+
       const authenticated = Boolean(currentUser?.id)
       // Seed cookieAuthState once from the initial probe result. This moves
       // the channel out of 'pending' so cookieAuthChanged$ starts emitting
