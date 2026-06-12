@@ -9,6 +9,7 @@ import {
   type RangeDecoration,
   type RenderAnnotationFunction,
 } from '@portabletext/editor'
+import {ListIndexProvider} from '@portabletext/plugin-list-index'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
 // eslint-disable-next-line camelcase
@@ -139,7 +140,13 @@ export function Editor(props: EditorProps): ReactNode {
       'style': noOutlineStyle,
     } satisfies PortableTextEditableProps
 
-    return <PortableTextEditable {...editableProps} />
+    return (
+      // The provider wraps the editable so the catch-all text-block render's
+      // components can read list indices via `useListIndex`.
+      <ListIndexProvider>
+        <PortableTextEditable {...editableProps} />
+      </ListIndexProvider>
+    )
   }, [
     ariaDescribedBy,
     elementRef,

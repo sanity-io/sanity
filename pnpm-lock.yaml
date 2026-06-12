@@ -103,6 +103,8 @@ catalogs:
 overrides:
   '@sanity/ui@3': ^3.2.0
   vitest: ^4.1.8
+  '@portabletext/editor': link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/editor
+  '@portabletext/plugin-list-index': link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/plugin-list-index
 
 importers:
 
@@ -602,14 +604,14 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/editor':
-        specifier: ^7.3.4
-        version: 7.3.4(@types/react@19.2.17)(react@19.2.7)
+        specifier: link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/editor
+        version: link:../../../@portabletext/editor-plugin-list-index/packages/editor
       '@portabletext/html':
         specifier: ^1.0.2
         version: 1.0.2
       '@portabletext/plugin-character-pair-decorator':
         specifier: ^8.0.14
-        version: 8.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+        version: 8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/react':
         specifier: ^6.2.0
         version: 6.2.0(react@19.2.7)
@@ -1657,26 +1659,29 @@ importers:
         specifier: ^3.13.0
         version: 3.13.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@portabletext/editor':
-        specifier: ^7.3.4
-        version: 7.3.4(@types/react@19.2.17)(react@19.2.7)
+        specifier: link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/editor
+        version: link:../../../@portabletext/editor-plugin-list-index/packages/editor
       '@portabletext/html':
         specifier: ^1.0.2
         version: 1.0.2
       '@portabletext/patches':
         specifier: ^2.0.4
         version: 2.0.4
+      '@portabletext/plugin-list-index':
+        specifier: link:/Users/christian.groengaard/code/@portabletext/editor-plugin-list-index/packages/plugin-list-index
+        version: link:../../../@portabletext/editor-plugin-list-index/packages/plugin-list-index
       '@portabletext/plugin-markdown-shortcuts':
         specifier: ^8.0.14
-        version: 8.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+        version: 8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/plugin-one-line':
         specifier: ^7.0.14
-        version: 7.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
+        version: 7.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(react@19.2.7)
       '@portabletext/plugin-paste-link':
         specifier: ^4.0.14
-        version: 4.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
+        version: 4.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(react@19.2.7)
       '@portabletext/plugin-typography':
         specifier: ^8.0.14
-        version: 8.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+        version: 8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/react':
         specifier: ^6.2.0
         version: 6.2.0(react@19.2.7)
@@ -4777,18 +4782,8 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
-  '@portabletext/editor@7.3.4':
-    resolution: {integrity: sha512-HdvnX1x1sKUEQ6Wo1PHgnF8BMniHtXYtKQk7lKzmTfPHjuXv8sEslbgeHxKQEJWr768MSiiC/0zO/FjGc9QdTw==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    peerDependencies:
-      react: ^19.2.5
-
   '@portabletext/html@1.0.2':
     resolution: {integrity: sha512-99rfmQixUuCvpXAgg0/Wjxq9HHeadCSTOQVC91RCd3SgrIcxSi7b6syJVstbk3KiAC6ND6PQIgfZrzg+UlIqqg==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-
-  '@portabletext/keyboard-shortcuts@2.1.2':
-    resolution: {integrity: sha512-PmrD819NcfKURLJvaKFkCIk1z7va9PxPfo34LuySMAgH/jL94FkYzCCpdzmhp7xyKu/v2aukfKvOVVdskygOkQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@portabletext/markdown@1.4.0':
@@ -14738,29 +14733,10 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7)':
-    dependencies:
-      '@portabletext/html': 1.0.2
-      '@portabletext/keyboard-shortcuts': 2.1.2
-      '@portabletext/markdown': 1.4.0
-      '@portabletext/patches': 2.0.4
-      '@portabletext/schema': 2.2.0
-      '@portabletext/to-html': 5.0.2
-      '@xstate/react': 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.0)
-      debug: 4.4.3(supports-color@8.1.1)
-      react: 19.2.7
-      scroll-into-view-if-needed: 3.1.0
-      xstate: 5.32.0
-    transitivePeerDependencies:
-      - '@types/react'
-      - supports-color
-
   '@portabletext/html@1.0.2':
     dependencies:
       '@portabletext/schema': 2.2.0
       '@vercel/stega': 1.1.0
-
-  '@portabletext/keyboard-shortcuts@2.1.2': {}
 
   '@portabletext/markdown@1.4.0':
     dependencies:
@@ -14773,9 +14749,9 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@portabletext/plugin-character-pair-decorator@8.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-character-pair-decorator@8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.3.4(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
       '@xstate/react': 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.0)
       react: 19.2.7
       remeda: 2.37.0
@@ -14783,38 +14759,38 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-input-rule@5.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-input-rule@5.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.3.4(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
       '@xstate/react': 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.0)
       react: 19.2.7
       xstate: 5.32.0
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-markdown-shortcuts@8.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-markdown-shortcuts@8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.3.4(@types/react@19.2.17)(react@19.2.7)
-      '@portabletext/plugin-character-pair-decorator': 8.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
-      '@portabletext/plugin-input-rule': 5.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
+      '@portabletext/plugin-character-pair-decorator': 8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/plugin-input-rule': 5.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-one-line@7.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)':
+  '@portabletext/plugin-one-line@7.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.3.4(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
       react: 19.2.7
 
-  '@portabletext/plugin-paste-link@4.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)':
+  '@portabletext/plugin-paste-link@4.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.3.4(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
       react: 19.2.7
 
-  '@portabletext/plugin-typography@8.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-typography@8.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.3.4(@types/react@19.2.17)(react@19.2.7)
-      '@portabletext/plugin-input-rule': 5.0.14(@portabletext/editor@7.3.4(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': link:../@portabletext/editor-plugin-list-index/packages/editor
+      '@portabletext/plugin-input-rule': 5.0.14(@portabletext/editor@@portabletext+editor-plugin-list-index+packages+editor)(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
     transitivePeerDependencies:
       - '@types/react'

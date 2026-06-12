@@ -8,10 +8,12 @@ import {
   type OnCopyFn,
   type OnPasteFn as EditorOnPasteFn,
   type PasteData as EditorPasteData,
+  type Path as EditorPath,
   type RangeDecoration,
   type RegistrableNode,
 } from '@portabletext/editor'
 import {NodePlugin} from '@portabletext/editor/plugins'
+import {useListIndex} from '@portabletext/plugin-list-index'
 import {
   type ObjectSchemaType,
   type Path,
@@ -224,7 +226,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       }
 
       return (
-        <div {...attributes}>
+        <TextBlockRoot attributes={attributes} block={block} blockPath={blockPath}>
           <TextBlock
             floatingBoundary={floatingBoundary}
             focused={blockFocused}
@@ -253,7 +255,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           >
             {inner}
           </TextBlock>
-        </div>
+        </TextBlockRoot>
       )
     },
     [
@@ -275,8 +277,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderItem,
       renderPreview,
       schemaTypes.block,
-      schemaTypes.lists,
-      schemaTypes.styles,
       scrollElement,
       setElementRef,
     ],
@@ -299,7 +299,18 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         return blockProps.renderDefault(blockProps)
       }
       return (
-        <div {...attributes}>
+        // Reproduce the legacy pipeline's attribute surface; the new
+        // pipeline strips `data-slate-node`/`data-slate-void` at the
+        // element level and consumers re-add them for backwards
+        // compatibility.
+        <div
+          {...attributes}
+          data-block-key={node._key}
+          data-block-name={node._type}
+          data-block-type="object"
+          data-slate-node="element"
+          data-slate-void
+        >
           {blockProps.children}
           <BlockObject
             floatingBoundary={floatingBoundary}
@@ -370,7 +381,16 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         return childProps.renderDefault(childProps)
       }
       return (
-        <span {...attributes}>
+        // Same backwards-compatibility attribute surface as block objects,
+        // with the inline (`data-child-*`) naming.
+        <span
+          {...attributes}
+          data-child-key={node._key}
+          data-child-name={node._type}
+          data-child-type="object"
+          data-slate-node="element"
+          data-slate-void
+        >
           {childProps.children}
           <InlineObject
             floatingBoundary={floatingBoundary}
@@ -646,5 +666,56 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         </BoundaryElementProvider>
       </PortalProvider>
     </SelectedAnnotationsProvider>
+  )
+}
+
+/**
+ * Root element for the catch-all text-block render. A component rather than
+ * inline JSX because `useListIndex` is a hook and the engine invokes the
+ * registered render as a plain function: hooks belong in a component the
+ * render returns.
+ *
+ * Reproduces the full class and data-attribute surface the legacy pipeline
+ * emitted on text blocks. Consumers target these in CSS and tests, and the
+ * unified input manager's slow path reads `data-block-key` and
+ * `data-block-type` to diff the DOM after IME composition, so this is
+ * load-bearing, not cosmetic. `data-list-index` is served by
+ * `@portabletext/plugin-list-index` (mounted in `Editor.tsx`).
+ */
+function TextBlockRoot(props: {
+  attributes: Record<string, unknown>
+  block: PortableTextTextBlock
+  blockPath: EditorPath
+  children: ReactNode
+}) {
+  const listIndex = useListIndex(props.blockPath)
+  const {block} = props
+
+  return (
+    <div
+      {...props.attributes}
+      className={[
+        'pt-block',
+        'pt-text-block',
+        ...(block.style ? [`pt-text-block-style-${block.style}`] : []),
+        ...(block.listItem
+          ? [
+              'pt-list-item',
+              `pt-list-item-${block.listItem}`,
+              `pt-list-item-level-${block.level ?? 1}`,
+            ]
+          : []),
+      ].join(' ')}
+      data-block-key={block._key}
+      data-block-name={block._type}
+      data-block-type="text"
+      data-slate-node="element"
+      {...(block.listItem === undefined ? {} : {'data-list-item': block.listItem})}
+      {...(block.level === undefined ? {} : {'data-level': block.level})}
+      {...(block.style === undefined ? {} : {'data-style': block.style})}
+      {...(listIndex === undefined ? {} : {'data-list-index': listIndex})}
+    >
+      {props.children}
+    </div>
   )
 }

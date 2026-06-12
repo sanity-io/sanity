@@ -168,6 +168,7 @@
     "@portabletext/editor": "^7.3.4",
     "@portabletext/html": "^1.0.2",
     "@portabletext/patches": "^2.0.4",
+    "@portabletext/plugin-list-index": "^1.0.0",
     "@portabletext/plugin-markdown-shortcuts": "^8.0.14",
     "@portabletext/plugin-one-line": "^7.0.14",
     "@portabletext/plugin-paste-link": "^4.0.14",
