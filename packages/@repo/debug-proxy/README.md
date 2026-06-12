@@ -43,6 +43,8 @@ Configuration is via CLI flags (`--help` for the full list):
 - `--force-http1` — don't offer h2 in the TLS handshake, forcing clients down to HTTP/1.1 over TLS; useful for testing how the studio handles a legacy protocol (e.g. the `isUsingLegacyHttp` warning)
 - `--api-host` — upstream API (`api.sanity.io` or `api.sanity.work` for staging)
 - `--listener-ttl` — disconnect SSE listeners after N seconds to simulate flaky connections
+- `--flap <on>[:<off>]` — simulate flapping connectivity (online → offline → online → …): proxy normally for `<on>` seconds, then go "offline" for `<off>` seconds, repeating. While offline, new requests are reset at the socket level and live SSE streams are cut, so clients see real network-failure errors rather than HTTP error responses. A single number means equal phases, e.g. `--flap 30:15` or `--flap 20`
+- `--latency <ms>[:<maxMs>]` — delay each request by this many milliseconds before forwarding it upstream, simulating a slow network; a range applies random jitter per request, e.g. `--latency 800` or `--latency 200:1500`
 - Fault toggles: `--sse-faults`, `--drop-probability`, `--reset-probability`, `--org-401`
 
 Pass flags through pnpm like so:
@@ -127,6 +129,8 @@ Routes are matched in order — the first route whose `match` returns `true` win
 - `createRequestProxy({transformHeaders?, transformBody?})` — the core proxy primitive (RxJS operators over response headers/body).
 - `createSSEProxy(operator?)` — builds on `createRequestProxy` for streaming endpoints; parses the byte stream into discrete `SSEEvent`s.
 - Scenarios (RxJS operators over the SSE event stream): `randomLatency`, `sendReset`, `duplicateMutations`, `dropMutations`, `shuffleEventDelivery`.
+- `createConnectionFlapper({onlineMs, offlineMs})` — cycles simulated connectivity; `flapper.wrap(handler)` makes any handler's requests fail like a dead network during the offline phases (and cuts in-flight streams on each transition).
+- `withLatency(handler, {minMs, maxMs})` — holds each request back by a random delay in the range before forwarding it upstream.
 - Route matchers: `urlIncludes`, `isListenEndpoint`, `isGetOrgIdEndpoint`, `anyOf`, `allOf`.
 
 ## Writing a new scenario
