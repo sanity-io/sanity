@@ -1,4 +1,4 @@
-import {type ClientError} from '@sanity/client'
+import {type ClientError, ServerError} from '@sanity/client'
 import {
   Box,
   Button,
@@ -85,6 +85,8 @@ export function ErrorReportingTest() {
   const handleTriggerEffectError = useCallback(() => setTriggerEffectError(true), [])
   const [triggerResizeObserverLoop, setTriggerResizeObserverLoop] = useState(false)
   const handleTriggerResizeObserveLoop = useCallback(() => setTriggerResizeObserverLoop(true), [])
+  const [triggerRequestRenderError, setTriggerRequestRenderError] = useState(false)
+  const handleTriggerRequestRenderError = useCallback(() => setTriggerRequestRenderError(true), [])
 
   useEffect(() => {
     if (triggerEffectError) {
@@ -103,12 +105,19 @@ export function ErrorReportingTest() {
       {label: 'Unhandled promise rejection', onClick: triggerPromiseError as () => void},
       {label: 'React render error', onClick: handleShouldRenderWithError},
       {label: 'Resize observer loop', onClick: handleTriggerResizeObserveLoop},
+      {
+        label: 'Uncaught request error (reaches boundary)',
+        description:
+          'Throws a ServerError during render — an unhandled, undelegated request error. In dev the fallback screen shows the "use useStudioErrorHandler()" tip.',
+        onClick: handleTriggerRequestRenderError,
+      },
     ],
     [
       handleShouldRenderWithError,
       handleTriggerReactLazyImportError,
       handleTriggerEffectError,
       handleTriggerResizeObserveLoop,
+      handleTriggerRequestRenderError,
     ],
   )
 
@@ -158,6 +167,7 @@ export function ErrorReportingTest() {
       {triggerReactLazyImportError && <ReactLazyError />}
       {doRenderError && <WithRenderError />}
       {triggerResizeObserverLoop && <ResizeObserverLoop />}
+      {triggerRequestRenderError && <RequestRenderError />}
     </Box>
   )
 }
@@ -169,6 +179,22 @@ const ReactLazyError = lazy(() => {
 
 function WithRenderError({text}: any) {
   return <div>{text.toUpperCase()}</div>
+}
+
+// Throws a request error (ServerError) during render — simulating a
+// plugin that neither handles its request error locally nor delegates it
+// via `useStudioErrorHandler()`, so it escapes to the StudioErrorBoundary.
+// In dev, the fallback screen detects the client-request error and shows
+// the opt-in tip.
+function RequestRenderError(): never {
+  throw new ServerError({
+    statusCode: 503,
+    headers: {},
+    body: {error: {description: 'Example 503 thrown during render'}},
+    url: 'https://example.api.sanity.io/v1/data/query/production',
+    method: 'GET',
+    statusMessage: 'Service Unavailable',
+  } as never)
 }
 
 function ResizeObserverLoop() {
@@ -287,7 +313,7 @@ function InlineCode({children}: {children: ReactNode}) {
  *
  * The studio never intercepts errors on its own — every demo shows a
  * call site deciding what to do: handle locally, or delegate to the
- * studio dialog via `run()` / `handle()`.
+ * studio dialog via `attempt()` / `handle`.
  */
 const demoUrl = (kind: string) => `/demo/global-error/${kind}`
 
@@ -387,7 +413,7 @@ function RequestErrorsDemo() {
   const demos: DemoEntry[] = useMemo(
     () => [
       {
-        label: 'run() · 5xx, recovers on retry',
+        label: 'attempt() · 5xx, recovers on retry',
         description: (
           <>
             <InlineCode>{`attempt(thunk, {retryable: true})`}</InlineCode> · synthetic 503 that
@@ -398,7 +424,7 @@ function RequestErrorsDemo() {
         onClick: () => runRetryable('Recoverable 5xx', 'server-error-recoverable'),
       },
       {
-        label: 'run() · network error, recovers on retry',
+        label: 'attempt() · network error, recovers on retry',
         description: (
           <>
             Same shape with a synthetic network failure · expect the &quot;Network error&quot;
@@ -408,7 +434,7 @@ function RequestErrorsDemo() {
         onClick: () => runRetryable('Recoverable network', 'network-error-recoverable'),
       },
       {
-        label: 'run() · 429 with Retry-After countdown',
+        label: 'attempt() · 429 with Retry-After countdown',
         description: (
           <>
             Synthetic 429 with a 12s window · expect the countdown dialog; &quot;Try again&quot;
@@ -418,7 +444,7 @@ function RequestErrorsDemo() {
         onClick: () => runRetryable('Rate limited', 'rate-limited'),
       },
       {
-        label: 'handle() · persistent 5xx, fire-and-surface',
+        label: 'handle · persistent 5xx, fire-and-surface',
         description: (
           <>
             <InlineCode>.catch(handle)</InlineCode> · no thunk to re-run · expect the reload-only
@@ -443,8 +469,8 @@ function RequestErrorsDemo() {
         description: (
           <>
             Real 401 from <InlineCode>/users/me</InlineCode> using a bogus token, delegated via{' '}
-            <InlineCode>run()</InlineCode>. The studio probes <InlineCode>/auth/id</InlineCode> with
-            your real (valid) session → resource-level 401 → propagated to the local catch.{' '}
+            <InlineCode>attempt()</InlineCode>. The studio probes <InlineCode>/auth/id</InlineCode>{' '}
+            with your real (valid) session → resource-level 401 → propagated to the local catch.{' '}
             <Text as="span" weight="semibold">
               You will NOT be logged out.
             </Text>
