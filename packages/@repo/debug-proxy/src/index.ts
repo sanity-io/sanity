@@ -1,4 +1,9 @@
 export {
+  type ConnectionFlapper,
+  type ConnectionFlapperOptions,
+  createConnectionFlapper,
+} from './connectivity'
+export {
   createDebugProxy,
   type DebugProxyConfig,
   type DebugProxyServer,

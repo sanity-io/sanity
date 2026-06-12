@@ -10,7 +10,8 @@ import {parseArgs, promisify} from 'node:util'
 import {getCertificate} from '@vitejs/plugin-basic-ssl'
 import {map, pipe, takeUntil, tap, timer} from 'rxjs'
 
-import {createDebugProxy} from './createDebugProxy'
+import {createConnectionFlapper} from './connectivity'
+import {createDebugProxy, type ProxyHandler} from './createDebugProxy'
 import {createRequestProxy, createSSEProxy} from './proxy'
 import {isGetOrgIdEndpoint, isListenEndpoint} from './routes'
 import {
@@ -36,6 +37,11 @@ Options:
                               use api.sanity.work for staging)
   --listener-ttl <seconds>    disconnect SSE listeners after this many seconds
                               to simulate flaky connections (default: never)
+  --flap <on>[:<off>]         simulate flapping connectivity: proxy normally
+                              for <on> seconds, then go "offline" for <off>
+                              seconds (new requests reset, live streams cut),
+                              repeating. A single number means equal phases,
+                              e.g. --flap 30:15 or --flap 20
   --sse-faults                apply the SSE fault scenarios (shuffle, duplicate,
                               latency, reset, drop) to the listener endpoint
   --drop-probability <0..1>   probability a mutation event is dropped
@@ -63,6 +69,7 @@ function parseFlags() {
         'http1-port': {type: 'string', default: '3050'},
         'api-host': {type: 'string', default: 'api.sanity.io'},
         'listener-ttl': {type: 'string', default: '0'},
+        'flap': {type: 'string'},
         'sse-faults': {type: 'boolean', default: false},
         'drop-probability': {type: 'string', default: '0'},
         'reset-probability': {type: 'string', default: '0'},
@@ -93,6 +100,26 @@ function intFlag(name: string, value: string): number {
   return Number(value)
 }
 
+/** Parse the --flap value (`<on>[:<off>]` in seconds) into phase durations. */
+function flapFlag(value: string): {onlineMs: number; offlineMs: number} {
+  const [on, off = on, ...rest] = value.split(':')
+  const onlineSec = Number(on)
+  const offlineSec = Number(off)
+  if (
+    rest.length > 0 ||
+    !Number.isFinite(onlineSec) ||
+    !Number.isFinite(offlineSec) ||
+    onlineSec <= 0 ||
+    offlineSec <= 0
+  ) {
+    console.error(
+      `Invalid --flap: expected "<onlineSeconds>:<offlineSeconds>" (or a single number for equal phases), got "${value}"`,
+    )
+    process.exit(1)
+  }
+  return {onlineMs: onlineSec * 1000, offlineMs: offlineSec * 1000}
+}
+
 /** Parse a flag as a probability in [0, 1], exiting with a clear error if not. */
 function probabilityFlag(name: string, value: string): number {
   const parsed = value.trim() === '' ? NaN : Number(value)
@@ -109,6 +136,7 @@ const ENABLE_HTTP1 = flags.http1
 const HTTP1_PORT = intFlag('http1-port', flags['http1-port'])
 const API_HOST = flags['api-host']
 const LISTENER_TTL_MS = intFlag('listener-ttl', flags['listener-ttl']) * 1000
+const FLAP = flags.flap === undefined ? undefined : flapFlag(flags.flap)
 const ENABLE_SSE_FAULTS = flags['sse-faults']
 const DROPPED_MUTATION_PROBABILITY = probabilityFlag('drop-probability', flags['drop-probability'])
 const RESET_PROBABILITY = probabilityFlag('reset-probability', flags['reset-probability'])
@@ -292,13 +320,26 @@ const orgEndpointProxy = createRequestProxy({
     ),
 })
 
+// One flapper shared across all routes and both listeners — every request
+// rides the same simulated network.
+const flapper = FLAP
+  ? createConnectionFlapper({
+      ...FLAP,
+      onTransition: (online) =>
+        console.info(`[debug-proxy] network ${online ? 'online' : 'offline'}`),
+    })
+  : undefined
+
+const withFlap = (handler: ProxyHandler): ProxyHandler =>
+  flapper ? flapper.wrap(handler) : handler
+
 const routes = [
-  ...(FORCE_ORG_401 ? [{match: isGetOrgIdEndpoint(), handler: orgEndpointProxy}] : []),
+  ...(FORCE_ORG_401 ? [{match: isGetOrgIdEndpoint(), handler: withFlap(orgEndpointProxy)}] : []),
   // Only intercept the listener endpoint when a scenario needs it — with no
   // scenarios active, even SSE flows through the byte-transparent default
-  // handler
+  // handler (which is still subject to --flap via withFlap)
   ...(ENABLE_SSE_FAULTS || LISTENER_TTL_MS > 0
-    ? [{match: isListenEndpoint(), handler: listenEndpointProxy}]
+    ? [{match: isListenEndpoint(), handler: withFlap(listenEndpointProxy)}]
     : []),
 ]
 
@@ -306,6 +347,7 @@ const sharedConfig = {
   apiHost: API_HOST,
   token: SANITY_TOKEN,
   routes,
+  defaultHandler: withFlap(createRequestProxy()),
 }
 
 const tlsProxy = createDebugProxy({
@@ -326,4 +368,10 @@ if (ENABLE_HTTP1) {
   const http1Proxy = createDebugProxy({...sharedConfig, port: HTTP1_PORT})
   await http1Proxy.listen()
   console.info(`HTTP/1.1 (cleartext) proxy listening on http://localhost:${HTTP1_PORT}`)
+}
+
+if (FLAP) {
+  console.info(
+    `Flapping connectivity: ${FLAP.onlineMs / 1000}s online → ${FLAP.offlineMs / 1000}s offline, repeating`,
+  )
 }
