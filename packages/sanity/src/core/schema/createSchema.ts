@@ -6,11 +6,19 @@ import {inferFromSchema as inferValidation} from '../validation'
 
 const isError = (problem: SchemaValidationResult) => problem.severity === 'error'
 
-export const builtinSchema: Schema = SchemaBuilder.compile({
-  name: 'studio',
-  types: builtinTypes,
-})
-inferValidation(builtinSchema)
+// Defer the builtin schema compile out of module-eval; compute lazily on first use
+// so importing createSchema does not trigger the SchemaBuilder cost at parse time.
+let _builtinSchema: Schema | undefined
+function getBuiltinSchema(): Schema {
+  if (!_builtinSchema) {
+    _builtinSchema = SchemaBuilder.compile({
+      name: 'studio',
+      types: builtinTypes,
+    })
+    inferValidation(_builtinSchema)
+  }
+  return _builtinSchema
+}
 
 /**
  * @hidden
@@ -23,7 +31,7 @@ export function createSchema(schemaDef: {name: string; types: any[]}): Schema {
   const compiled = SchemaBuilder.compile({
     name: schemaDef.name,
     types: hasErrors ? [] : schemaDef.types.filter(Boolean),
-    parent: builtinSchema,
+    parent: getBuiltinSchema(),
   })
 
   // ;(compiled as any)._source = schemaDef
