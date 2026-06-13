@@ -5,15 +5,9 @@ import {
   type AssetSourceComponentProps,
   type AssetSourceOpenInSourceResult,
 } from '@sanity/types'
-import {lazy} from 'react'
 
+import {MediaLibraryAssetSource} from './shared/MediaLibraryAssetSource'
 import {MediaLibraryUploader} from './uploader'
-
-const MediaLibraryAssetSource = lazy(() =>
-  import('./shared/MediaLibraryAssetSource').then((module) => ({
-    default: module.MediaLibraryAssetSource,
-  })),
-)
 
 // Default name for the Media Library asset source
 // This is used to identify assets created from the Media Library in the openInSource function,

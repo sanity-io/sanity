@@ -1,13 +1,9 @@
 import {type SanityClient} from '@sanity/client'
 import {DocumentsIcon, ImageIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
-import {lazy} from 'react'
 
+import {DatasetAssetSource} from './shared/DatasetAssetSource'
 import {createDatasetUploader} from './uploader'
-
-const DatasetAssetSource = lazy(() =>
-  import('./shared/DatasetAssetSource').then((module) => ({default: module.DatasetAssetSource})),
-)
 
 // Note: Ideally this should be changed to 'sanity-dataset,
 // but of legacy reasons (studio configs) we are probably stuck with it.

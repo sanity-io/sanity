@@ -9,11 +9,10 @@ import {
   type Reference,
 } from '@sanity/types'
 import get from 'lodash-es/get.js'
-import {type ReactNode, Suspense, useCallback, useMemo} from 'react'
+import {type ReactNode, useCallback, useMemo} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type VideoSchemaType} from '../../../../../media-library/plugin/schemas/types'
-import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 
@@ -130,23 +129,13 @@ export function AssetSourceDialog<
     ],
   )
 
-  // Asset source components may be lazy (e.g. the dataset and media library sources),
-  // so renders need a local suspense boundary.
   const renderWithAsset = useCallback(
-    (asset: TAsset) => (
-      <Suspense fallback={<LoadingBlock showText />}>
-        <Component {...commonProps} selectedAssets={[asset as Asset]} />
-      </Suspense>
-    ),
+    (asset: TAsset) => <Component {...commonProps} selectedAssets={[asset as Asset]} />,
     [Component, commonProps],
   )
 
   const renderWithoutAsset = useCallback(
-    () => (
-      <Suspense fallback={<LoadingBlock showText />}>
-        <Component {...commonProps} selectedAssets={[]} />
-      </Suspense>
-    ),
+    () => <Component {...commonProps} selectedAssets={[]} />,
     [Component, commonProps],
   )
 
