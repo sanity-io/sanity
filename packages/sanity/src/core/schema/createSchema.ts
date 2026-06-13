@@ -9,7 +9,13 @@ const isError = (problem: SchemaValidationResult) => problem.severity === 'error
 // Defer the builtin schema compile out of module-eval; compute lazily on first use
 // so importing createSchema does not trigger the SchemaBuilder cost at parse time.
 let _builtinSchema: Schema | undefined
-function getBuiltinSchema(): Schema {
+
+/**
+ * Returns the memoized builtin studio schema, compiling it on first call.
+ *
+ * @internal
+ */
+export function getBuiltinSchema(): Schema {
   if (!_builtinSchema) {
     _builtinSchema = SchemaBuilder.compile({
       name: 'studio',

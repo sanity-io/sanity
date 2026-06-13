@@ -13,7 +13,7 @@ import {
   type EncodedNamedType,
   type ObjectField,
 } from '../../../@sanity/schema/src/descriptors/types'
-import {builtinSchema, createSchema, DESCRIPTOR_CONVERTER} from '../../src/core/schema'
+import {createSchema, DESCRIPTOR_CONVERTER, getBuiltinSchema} from '../../src/core/schema'
 import {Rule} from '../../src/core/validation'
 import {expectManifestSchemaConversion} from './utils'
 
@@ -54,7 +54,7 @@ const justConvertType = async (...types: SchemaTypeDefinition[]): Promise<Encode
 
 describe('Built-in schema', () => {
   test('Object', async () => {
-    const descriptor = await DESCRIPTOR_CONVERTER.get(builtinSchema)
+    const descriptor = await DESCRIPTOR_CONVERTER.get(getBuiltinSchema())
     const findType = (name: string) => findTypeInDesc(name, descriptor)
     const obj = findType('object')
     assert(obj)
