@@ -140,8 +140,7 @@ describe('StudioLayoutComponent telemetry', () => {
         activeToolName: 'structure',
         toolsCount: 2,
         durationMs: expect.any(Number),
-        // Page-visibility context must be stamped onto the event. jsdom reports
-        // a visible document, so a clean foreground load is expected here.
+        // jsdom reports a visible document, so the snapshot is a clean foreground load.
         wasHidden: false,
         visibilityState: 'visible',
         firstHiddenTime: null,
