@@ -140,6 +140,11 @@ describe('StudioLayoutComponent telemetry', () => {
         activeToolName: 'structure',
         toolsCount: 2,
         durationMs: expect.any(Number),
+        // Page-visibility context must be stamped onto the event. jsdom reports
+        // a visible document, so a clean foreground load is expected here.
+        wasHidden: false,
+        visibilityState: 'visible',
+        firstHiddenTime: null,
       }),
     )
     expect(telemetryLog.mock.calls[0][1].durationMs).toBeGreaterThanOrEqual(0)

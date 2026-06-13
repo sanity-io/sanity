@@ -41,6 +41,8 @@ describe('getPageVisibilitySnapshot', () => {
 
   it('captures a hide that happens after load, relative to the measured moment', async () => {
     vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible')
+    // performance.now() is pinned to 500 so the handler latches firstHiddenTime
+    // to a deterministic value when the hide is dispatched below.
     vi.spyOn(performance, 'now').mockReturnValue(500)
 
     const getPageVisibilitySnapshot = await importFresh()
