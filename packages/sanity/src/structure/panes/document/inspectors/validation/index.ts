@@ -1,5 +1,5 @@
 import {CheckmarkCircleIcon, ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {useMemo} from 'react'
+import {lazy, useMemo} from 'react'
 import {
   type DocumentInspector,
   type DocumentInspectorMenuItem,
@@ -17,7 +17,11 @@ import {
 
 import {VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
-import {ValidationInspector} from './ValidationInspector'
+
+// Deferred so the validation inspector UI stays out of the eager structureTool graph; it only renders when the inspector is opened.
+const ValidationInspector = lazy(() =>
+  import('./ValidationInspector').then((module) => ({default: module.ValidationInspector})),
+)
 
 function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {documentType} = props

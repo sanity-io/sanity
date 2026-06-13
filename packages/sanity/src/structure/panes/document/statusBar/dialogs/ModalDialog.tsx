@@ -2,7 +2,7 @@ import {
   Box,
   Dialog, // eslint-disable-line no-restricted-imports
 } from '@sanity/ui'
-import {useId} from 'react'
+import {Suspense, useId} from 'react'
 import {type DocumentActionModalDialogProps, LegacyLayerProvider} from 'sanity'
 
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
@@ -33,7 +33,9 @@ export function ModalDialog(props: {dialog: DocumentActionModalDialogProps}) {
         onClickOutside={dialog.onClose}
         width={dialog.width === undefined ? 1 : DIALOG_WIDTH_TO_UI_WIDTH[dialog.width]}
       >
-        <Box padding={4}>{dialog.content}</Box>
+        <Box padding={4}>
+          <Suspense fallback={null}>{dialog.content}</Suspense>
+        </Box>
       </Dialog>
     </LegacyLayerProvider>
   )
