@@ -7,7 +7,7 @@ import {
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
-} from '../studio'
+} from '../studio/upsell/__telemetry__/upsell.telemetry'
 import {type UpsellData} from '../studio/upsell/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {interpolateTemplate} from '../util/interpolateTemplate'

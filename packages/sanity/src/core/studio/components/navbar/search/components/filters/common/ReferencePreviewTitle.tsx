@@ -3,7 +3,7 @@ import {Skeleton} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
-import {getPreviewStateObservable} from '../../../../../../../preview'
+import {getPreviewStateObservable} from '../../../../../../../preview/utils/getPreviewStateObservable'
 import {useDocumentPreviewStore} from '../../../../../../../store'
 
 export function ReferencePreviewTitle({
