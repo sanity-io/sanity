@@ -1,5 +1,5 @@
 import {TrashIcon} from '@sanity/icons'
-import {useCallback, useState} from 'react'
+import {lazy, useCallback, useState} from 'react'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {
@@ -11,8 +11,14 @@ import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
-import {DiscardVersionDialog} from '../../components/dialog/DiscardVersionDialog'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
+
+// Deferred so the dialog's module graph stays out of the eager action bundle; it only renders after the user opens it.
+const DiscardVersionDialog = lazy(() =>
+  import('../../components/dialog/DiscardVersionDialog').then((module) => ({
+    default: module.DiscardVersionDialog,
+  })),
+)
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */

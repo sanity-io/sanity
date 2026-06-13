@@ -1,16 +1,30 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon, EditIcon, PublishIcon, TrashIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
-import {type ComponentProps, useCallback, useMemo, useState} from 'react'
+import {type ComponentProps, lazy, Suspense, useCallback, useMemo, useState} from 'react'
 
 import {type MenuItem} from '../../../ui-components/menuItem'
 import {Translate, useTranslation} from '../../i18n'
 import {getErrorMessage} from '../../util'
-import {DeleteScheduledDraftDialog} from '../components/DeleteScheduledDraftDialog'
-import {PublishScheduledDraftDialog} from '../components/PublishScheduledDraftDialog'
-import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
 import {useScheduledDraftDocument} from './useScheduledDraftDocument'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
+
+// Deferred so the dialog module graphs stay out of the eager bundle; they only render after the user opens a menu action.
+const DeleteScheduledDraftDialog = lazy(() =>
+  import('../components/DeleteScheduledDraftDialog').then((module) => ({
+    default: module.DeleteScheduledDraftDialog,
+  })),
+)
+const PublishScheduledDraftDialog = lazy(() =>
+  import('../components/PublishScheduledDraftDialog').then((module) => ({
+    default: module.PublishScheduledDraftDialog,
+  })),
+)
+const ScheduleDraftDialog = lazy(() =>
+  import('../components/ScheduleDraftDialog').then((module) => ({
+    default: module.ScheduleDraftDialog,
+  })),
+)
 
 export type ScheduledDraftAction =
   | 'publish-now'
@@ -182,35 +196,42 @@ export function useScheduledDraftMenuActions(
   const dialogs = useMemo(() => {
     if (!selectedAction || !release) return null
 
+    // The lazy dialogs are wrapped locally since this hook's return value is consumed as a bare ReactNode.
     switch (selectedAction) {
       case 'publish-now':
         return (
-          <PublishScheduledDraftDialog
-            release={release}
-            documentType={documentType}
-            onClose={handleDialogClose}
-          />
+          <Suspense fallback={null}>
+            <PublishScheduledDraftDialog
+              release={release}
+              documentType={documentType}
+              onClose={handleDialogClose}
+            />
+          </Suspense>
         )
 
       case 'delete-schedule':
         return (
-          <DeleteScheduledDraftDialog
-            release={release}
-            documentType={documentType}
-            documentId={documentId}
-            onClose={handleDialogClose}
-          />
+          <Suspense fallback={null}>
+            <DeleteScheduledDraftDialog
+              release={release}
+              documentType={documentType}
+              documentId={documentId}
+              onClose={handleDialogClose}
+            />
+          </Suspense>
         )
 
       case 'schedule-publish':
         return (
-          <ScheduleDraftDialog
-            onClose={handleDialogClose}
-            onSchedule={handleSchedulePublish}
-            variant="schedule"
-            loading={isScheduling}
-            initialDate={release?.metadata?.intendedPublishAt}
-          />
+          <Suspense fallback={null}>
+            <ScheduleDraftDialog
+              onClose={handleDialogClose}
+              onSchedule={handleSchedulePublish}
+              variant="schedule"
+              loading={isScheduling}
+              initialDate={release?.metadata?.intendedPublishAt}
+            />
+          </Suspense>
         )
 
       default:

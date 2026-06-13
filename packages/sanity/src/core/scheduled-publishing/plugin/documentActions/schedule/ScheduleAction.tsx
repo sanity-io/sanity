@@ -1,6 +1,6 @@
 import {CalendarIcon, ClockIcon} from '@sanity/icons'
 import {Box, Text} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {lazy, Suspense, useCallback, useState} from 'react'
 
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
 import {
@@ -14,7 +14,6 @@ import {useCurrentUser} from '../../../../store/user/hooks'
 import {debugWithName} from '../../../../studio/timezones/utils/debug'
 import DialogFooter from '../../../components/dialogs/DialogFooter'
 import DialogHeader from '../../../components/dialogs/DialogHeader'
-import {EditScheduleForm} from '../../../components/editScheduleForm'
 import ErrorCallout from '../../../components/errorCallout/ErrorCallout'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../constants'
 import {DocumentActionPropsProvider} from '../../../contexts/documentActionProps'
@@ -23,7 +22,14 @@ import useScheduleForm from '../../../hooks/useScheduleForm'
 import useScheduleOperation from '../../../hooks/useScheduleOperation'
 import {useSchedulePublishingUpsell} from '../../../tool/contexts/SchedulePublishingUpsellProvider'
 import {NewScheduleInfo} from './NewScheduleInfo'
-import Schedules from './Schedules'
+
+// Deferred so the schedule form and schedule list stay out of the eager action bundle; they only render inside the dialog.
+const EditScheduleForm = lazy(() =>
+  import('../../../components/editScheduleForm/EditScheduleForm').then((module) => ({
+    default: module.EditScheduleForm,
+  })),
+)
+const Schedules = lazy(() => import('./Schedules'))
 
 const debug = debugWithName('ScheduleAction')
 
@@ -135,13 +141,15 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
       />
     ) : (
       <DocumentActionPropsProvider value={props}>
-        {hasExistingSchedules ? (
-          <Schedules schedules={schedules} />
-        ) : (
-          <EditScheduleForm onChange={onFormChange} value={formData}>
-            <NewScheduleInfo id={id} schemaType={type} />
-          </EditScheduleForm>
-        )}
+        <Suspense fallback={null}>
+          {hasExistingSchedules ? (
+            <Schedules schedules={schedules} />
+          ) : (
+            <EditScheduleForm onChange={onFormChange} value={formData}>
+              <NewScheduleInfo id={id} schemaType={type} />
+            </EditScheduleForm>
+          )}
+        </Suspense>
       </DocumentActionPropsProvider>
     ),
     footer: !hasExistingSchedules && (

@@ -223,9 +223,9 @@ describe('useScheduledDraftMenuActions', () => {
         </TestProvider>,
       )
 
-      // Click menu item to open dialog
+      // Click menu item to open dialog (lazy-loaded, so await its appearance)
       await userEvent.click(screen.getByTestId('publish-now-menu-item'))
-      expect(screen.getByTestId('publish-scheduled-draft-dialog')).toBeInTheDocument()
+      expect(await screen.findByTestId('publish-scheduled-draft-dialog')).toBeInTheDocument()
 
       // Confirm action
       await userEvent.click(screen.getByTestId('confirm-publish'))
@@ -308,9 +308,9 @@ describe('useScheduledDraftMenuActions', () => {
         </TestProvider>,
       )
 
-      // Click menu item to open dialog
+      // Click menu item to open dialog (lazy-loaded, so await its appearance)
       await userEvent.click(screen.getByTestId('delete-schedule-menu-item'))
-      expect(screen.getByTestId('delete-scheduled-draft-dialog')).toBeInTheDocument()
+      expect(await screen.findByTestId('delete-scheduled-draft-dialog')).toBeInTheDocument()
 
       // Confirm action
       await userEvent.click(screen.getByTestId('confirm-delete'))

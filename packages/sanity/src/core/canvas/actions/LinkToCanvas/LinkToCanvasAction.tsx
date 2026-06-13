@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/client'
 import {ComposeSparklesIcon} from '@sanity/icons'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {lazy, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {
   type DocumentActionComponent,
@@ -18,7 +18,11 @@ import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
-import {LinkToCanvasDialog} from './LinkToCanvasDialog'
+
+// Deferred so the dialog's module graph stays out of the eager action bundle; it only renders after the user opens it.
+const LinkToCanvasDialog = lazy(() =>
+  import('./LinkToCanvasDialog').then((module) => ({default: module.LinkToCanvasDialog})),
+)
 
 const useIsExcludedType = (type: string) => {
   const schema = useSchema()

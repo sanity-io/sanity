@@ -1,6 +1,6 @@
 import {UnlinkIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {lazy, useCallback, useState} from 'react'
 
 import {
   type DocumentActionComponent,
@@ -13,7 +13,13 @@ import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
-import {UnlinkFromCanvasDialog} from './UnlinkFromCanvasDialog'
+
+// Deferred so the dialog's module graph - the last eager motion/react importer in core - stays out of the eager action bundle; it only renders after the user opens it.
+const UnlinkFromCanvasDialog = lazy(() =>
+  import('./UnlinkFromCanvasDialog').then((module) => ({
+    default: module.UnlinkFromCanvasDialog,
+  })),
+)
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 export const useUnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
