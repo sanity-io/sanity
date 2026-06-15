@@ -37,4 +37,5 @@ export const INVALID_PREVIEW_FALLBACK: PreviewValue = {
   media: <WarningOutlineIcon />,
 }
 
-export const DOCUMENT_SYSTEM_FIELD = '_system' as const
+// oxlint-disable-next-line typescript/prefer-as-const
+export const DOCUMENT_SYSTEM_FIELD: '_system' = '_system'
