@@ -51,8 +51,13 @@ export function createVariantsStore(context: {
   const {client, enabled} = context
 
   if (!enabled) {
+    const disabledState: VariantStoreState = {
+      variants: new Map(),
+      state: 'loaded' as const,
+    }
+
     return {
-      state$: of(INITIAL_STATE),
+      state$: of(disabledState),
       dispatch: () => {
         // noop
       },

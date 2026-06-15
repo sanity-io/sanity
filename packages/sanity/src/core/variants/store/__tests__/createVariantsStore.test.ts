@@ -31,6 +31,17 @@ describe('createVariantsStore', () => {
     vi.useRealTimers()
   })
 
+  it('does not fetch or listen when disabled', async () => {
+    const {client, fetch, listen} = createMockClient()
+
+    const store = createVariantsStore({client, enabled: false})
+    const value = await firstValueFrom(store.state$)
+
+    expect(value).toMatchObject({state: 'loaded'})
+    expect(fetch).not.toHaveBeenCalled()
+    expect(listen).not.toHaveBeenCalled()
+  })
+
   it('loads variants from the variants system document path', async () => {
     const variant = createMockVariant('a')
     const {client, fetch, listen, listener$} = createMockClient()
