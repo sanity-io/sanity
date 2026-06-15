@@ -39,7 +39,7 @@ export function useDocumentVersionInfo(documentId: string) {
                   .observePaths({_id: getVersionId(publishedId, releaseId)}, DOCUMENT_STUB_PATHS)
                   .pipe(
                     map((value) =>
-                      // TODO: Map _system with the temporally built system function available in useDocumentVersions
+                      // TODO: Map _system with the temporarily built system function available in useDocumentVersions
                       exists(value) ? (value as VersionInfoDocumentStub) : undefined,
                     ),
                   ),
