@@ -77,6 +77,8 @@ minimumReleaseAgeExclude:
   - 'react-is'
   - 'react-rx'
   - 'sanity-plugin-internationalized-array'
+  - 'sanity-plugin-media'
+  - 'sanity-plugin-utils'
   - 'vitest'
   - 'vite'
 
