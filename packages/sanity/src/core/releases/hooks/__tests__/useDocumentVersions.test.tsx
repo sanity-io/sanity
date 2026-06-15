@@ -49,7 +49,7 @@ async function setupMocks({
   versionIds: string[]
   /**
    * When `false`, versions are returned without `_system`, so the hook
-   * falls back to `temporallyBuildDocumentSystem`.
+   * falls back to `temporarilyBuildDocumentSystem`.
    */
   observeSystem?: boolean
 }) {
@@ -156,7 +156,7 @@ describe('useDocumentVersions', () => {
     ])
   })
 
-  it('should fall back to a temporally built system when the document has no system', async () => {
+  it('should fall back to a temporarily built system when the document has no system', async () => {
     await setupMocks({
       releases: [activeASAPRelease],
       versionIds: ['versions.rASAP.document-1'],

@@ -87,7 +87,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
                 ? version._system
                 : {
                     ...version._system,
-                    ...temporallyBuildDocumentSystem(version._id, releases),
+                    ...temporarilyBuildDocumentSystem(version._id, releases),
                   },
             }
           }),
@@ -107,18 +107,21 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
 }
 
 /**
- * Temporally builds the document _system for a given document id.
+ * Temporarily builds the document _system for a given document id.
  * This is used until the documents are migrated to the new _system.
  * And only if the documents are not variant documents.
  *
  * Variants will include the _system field.
  */
-const temporallyBuildDocumentSystem = (id: string, releases: ReleaseDocument[]): DocumentSystem => {
+const temporarilyBuildDocumentSystem = (
+  id: string,
+  releases: ReleaseDocument[],
+): DocumentSystem => {
   const versionId = getVersionFromId(id)
-  const releaseDocument = releases.find(
-    (release) => getReleaseIdFromReleaseDocumentId(release._id) === versionId,
-  )
   if (versionId) {
+    const releaseDocument = releases.find(
+      (release) => getReleaseIdFromReleaseDocumentId(release._id) === versionId,
+    )
     return {
       bundleId: versionId,
       release: releaseDocument ? {_ref: releaseDocument._id, _weak: true} : null,
