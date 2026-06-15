@@ -7,7 +7,10 @@ import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {useWorkspace} from '../studio/workspace'
 import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
+import {getBundleIdFromPerspective} from '../variants/documents/getBundleIdFromPerspective'
+import {useAllVariants} from '../variants/store/useAllVariants'
 import {getSelectedPerspective} from './getSelectedPerspective'
+import {getSelectedVariant} from './getSelectedVariant'
 import {type PerspectiveContextValue, type ReleaseId} from './types'
 
 /**
@@ -16,13 +19,16 @@ import {type PerspectiveContextValue, type ReleaseId} from './types'
 export function PerspectiveProvider({
   children,
   selectedPerspectiveName,
+  selectedVariantName,
   excludedPerspectives = EMPTY_ARRAY,
 }: {
   children: React.ReactNode
   selectedPerspectiveName: 'published' | ReleaseId | undefined
+  selectedVariantName?: string
   excludedPerspectives?: string[]
 }) {
   const {data: releases} = useActiveReleases()
+  const {byId: variantsById} = useAllVariants()
 
   const {
     document: {
@@ -46,6 +52,11 @@ export function PerspectiveProvider({
     [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
+  const selectedVariant = useMemo(
+    () => getSelectedVariant({selectedVariantName, variantsById}),
+    [selectedVariantName, variantsById],
+  )
+
   const value: PerspectiveContextValue = useMemo(() => {
     // For regular releases and published, use as-is
     return {
@@ -58,6 +69,8 @@ export function PerspectiveProvider({
             .find((releaseName) => releaseName === selectedPerspectiveName),
       perspectiveStack,
       excludedPerspectives,
+      selectedVariant,
+      bundle: getBundleIdFromPerspective(selectedPerspective).bundleId,
     }
   }, [
     selectedPerspectiveName,
@@ -65,6 +78,7 @@ export function PerspectiveProvider({
     selectedPerspective,
     perspectiveStack,
     excludedPerspectives,
+    selectedVariant,
   ])
 
   return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>
