@@ -98,7 +98,8 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
-  // @sanity/sdk@2.14.0 currently has broken d.ts output in dist/
+  // Temporary workaround for @sanity/sdk@2.14.0 broken d.ts output in dist/.
+  // This only affects type checking in node_modules and does not impact runtime behavior.
   if (code === 2307 && file.fileName.includes('/node_modules/@sanity/sdk/dist/')) {
     return false
   }
