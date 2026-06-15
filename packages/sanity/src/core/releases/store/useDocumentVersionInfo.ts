@@ -13,11 +13,12 @@ import {useReleasesIds} from './useReleasesIds'
 function exists(value: any) {
   return value?._rev
 }
-const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt']
+const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system']
 
 const NO_VERSIONS = {} as Record<string, VersionInfoDocumentStub | undefined>
 
 /**
+ * TODO: Deprecate this function and use useDocumentVersions instead.
  * Takes a document id, and returns information about what other versions of the document currently exists
  * @param documentId - The document id. Should be the published id
  * @internal
@@ -38,6 +39,7 @@ export function useDocumentVersionInfo(documentId: string) {
                   .observePaths({_id: getVersionId(publishedId, releaseId)}, DOCUMENT_STUB_PATHS)
                   .pipe(
                     map((value) =>
+                      // TODO: Map _system with the temporally built system function available in useDocumentVersions
                       exists(value) ? (value as VersionInfoDocumentStub) : undefined,
                     ),
                   ),

@@ -36,3 +36,6 @@ export const INVALID_PREVIEW_FALLBACK: PreviewValue = {
   subtitle: 'Check the error log in the console',
   media: <WarningOutlineIcon />,
 }
+
+// oxlint-disable-next-line typescript/prefer-as-const
+export const DOCUMENT_SYSTEM_FIELD: '_system' = '_system'

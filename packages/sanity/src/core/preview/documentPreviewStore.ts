@@ -5,7 +5,7 @@ import {
   type StackablePerspective,
   type WelcomeEvent,
 } from '@sanity/client'
-import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
+import {type DocumentSystem, type PrepareViewOptions, type SanityDocument} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
@@ -14,6 +14,7 @@ import {
   createDocumentStackAvailabilityObserver,
   createPreviewAvailabilityObserver,
 } from './availability'
+import {DOCUMENT_SYSTEM_FIELD} from './constants'
 import {createGlobalListener} from './createGlobalListener'
 import {createObserveDocument, type ObserveDocumentAPIConfig} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
@@ -62,6 +63,11 @@ export interface DocumentPreviewStore {
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
   ) => Observable<string | undefined>
+  observeDocumentSystemFromId: (
+    id: string,
+    apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
+  ) => Observable<DocumentSystem | undefined>
 
   /**
    *
@@ -170,6 +176,26 @@ export function createDocumentPreviewStore({
       distinctUntilChanged(),
     )
   }
+  function observeDocumentSystemFromId(
+    id: string,
+    apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
+    // TODO: This shouldn't be undefined once the documents are migrated.
+  ): Observable<DocumentSystem | undefined> {
+    return observePaths(
+      {_type: 'reference', _ref: id},
+      [DOCUMENT_SYSTEM_FIELD],
+      apiConfig,
+      perspective,
+    ).pipe(
+      map((res) =>
+        isRecord(res) && isRecord(res[DOCUMENT_SYSTEM_FIELD])
+          ? (res[DOCUMENT_SYSTEM_FIELD] as unknown as DocumentSystem)
+          : undefined,
+      ),
+      distinctUntilChanged(),
+    )
+  }
 
   const observeDocumentIdSet = createDocumentIdSetObserver(versionedClient)
 
@@ -195,7 +221,7 @@ export function createDocumentPreviewStore({
     observePaths,
     observeForPreview,
     observeDocumentTypeFromId,
-
+    observeDocumentSystemFromId,
     unstable_observeDocumentIdSet: observeDocumentIdSet,
     unstable_observeDocument: observeDocument,
     unstable_observeDocuments: (ids: string[]) =>
