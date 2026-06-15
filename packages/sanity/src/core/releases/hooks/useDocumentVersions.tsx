@@ -21,6 +21,7 @@ import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId} from '../../util/draftUtils'
+import {isRecord} from '../../util/isRecord'
 import {createSWR} from '../../util/rxSwr'
 import {type VersionInfoDocumentStub} from '../store/types'
 import {useActiveReleases} from '../store/useActiveReleases'
@@ -37,12 +38,6 @@ export interface DocumentPerspectiveState {
   error?: unknown
   loading: boolean
 }
-
-const EMPTY_VERSION_STUB_FIELDS = {
-  _rev: '',
-  _createdAt: '',
-  _updatedAt: '',
-} as const satisfies Pick<VersionInfoDocumentStub, '_rev' | '_createdAt' | '_updatedAt'>
 
 const INITIAL_VALUE: DocumentPerspectiveState = {
   data: [],
@@ -139,6 +134,8 @@ const temporarilyBuildDocumentSystem = (
   }
 }
 
+const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system']
+
 /**
  * Retrieves an observable that emits document IDs matching the document versions that exist for a specific id
  *
@@ -189,13 +186,16 @@ export function getOrCreateDocumentVersionsObservable(options: {
 
         return combineLatest(
           documentIds.map((id) =>
-            documentPreviewStore.observeDocumentSystemFromId(id).pipe(
+            documentPreviewStore.observePaths({_id: id}, DOCUMENT_STUB_PATHS).pipe(
+              map((versionInfo) => (isRecord(versionInfo) ? versionInfo : undefined)),
               map(
-                (_system) =>
+                (versionInfo) =>
                   ({
                     _id: id,
-                    ...EMPTY_VERSION_STUB_FIELDS,
-                    [DOCUMENT_SYSTEM_FIELD]: _system,
+                    _rev: versionInfo?._rev ?? '',
+                    _createdAt: versionInfo?._createdAt ?? '',
+                    _updatedAt: versionInfo?._updatedAt ?? '',
+                    [DOCUMENT_SYSTEM_FIELD]: versionInfo?.[DOCUMENT_SYSTEM_FIELD] as DocumentSystem,
                   }) satisfies VersionInfoDocumentStub,
               ),
             ),
