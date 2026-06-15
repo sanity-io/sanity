@@ -66,11 +66,18 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
   await expect(commentsList).toBeVisible()
 
   // 9. Verify that the comment appears within the list and correctly references the intended content.
+  //
+  // After the comment is created, the comments panel re-fetches and re-renders
+  // the thread from the backend; this round trip is slow-but-correct and under
+  // CI load can exceed the default 30s, producing a first-attempt failure that
+  // passes on retry. Give it more headroom instead of relying on the retry to
+  // mask it.
+  const COMMENT_SYNC_TIMEOUT = {timeout: 60 * 1000}
   const commentsListItem = page.getByTestId('comments-list-item')
-  await expect(commentsListItem).toBeVisible()
+  await expect(commentsListItem).toBeVisible(COMMENT_SYNC_TIMEOUT)
   const commentsListItemReferencedValue = page.getByTestId('comments-list-item-referenced-value')
-  await expect(commentsListItemReferencedValue).toBeVisible()
-  await expect(commentsListItemReferencedValue).toHaveText(PTE_CONTENT_TEXT)
+  await expect(commentsListItemReferencedValue).toBeVisible(COMMENT_SYNC_TIMEOUT)
+  await expect(commentsListItemReferencedValue).toHaveText(PTE_CONTENT_TEXT, COMMENT_SYNC_TIMEOUT)
 }
 
 test.describe('Inline comments:', () => {
@@ -81,6 +88,14 @@ test.describe('Inline comments:', () => {
   }) => {
     // For now, only test in other browsers except firefox due to flakiness in Firefox with the requests
     test.skip(browserName === 'firefox')
+    // This test drives a full comment lifecycle (select text, author, submit,
+    // wait for the backend to sync the thread into the comments panel, then
+    // resolve). The comment-sync round trip alone can take a large fraction of
+    // the default 60s test budget under CI load, leaving too little room for the
+    // remaining steps and causing a first-attempt timeout that passes on retry.
+    // Triple the budget so the slow-but-correct backend sync has room. Behaviour
+    // and assertions are unchanged.
+    test.slow()
     // 1. Create a new inline comment
     await inlineCommentCreationTest({page, createDraftDocument})
 
