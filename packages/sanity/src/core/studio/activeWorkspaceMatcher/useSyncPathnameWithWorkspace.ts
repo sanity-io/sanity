@@ -1,6 +1,7 @@
 import {useMemo, useState} from 'react'
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
 
+import {type WorkspaceAuthStates} from '../components/navbar/workspace/hooks'
 import {type RouterHistory} from '../router'
 import {type WorkspacesContextValue} from '../workspaces'
 import {createCommonBasePathRegex} from './createCommonBasePathRegex'
@@ -14,6 +15,7 @@ import {useNormalizedWorkspaces} from './useNormalizedWorkspaces'
 export function useSyncPathnameWithWorkspace(
   history: RouterHistory,
   _workspaces: WorkspacesContextValue,
+  workspaceAuthStates: WorkspaceAuthStates,
 ): MatchWorkspaceResult {
   // Workspaces changes infrequently, but router matching can fire a lot. And so there's value in memoizing the normalized
   // to avoid creating new arrays on every render.
@@ -31,7 +33,13 @@ export function useSyncPathnameWithWorkspace(
       subscribe: (onStoreChange: () => void) => history.listen(onStoreChange),
       getSnapshot: () => history.location.pathname,
       getServerSnapshot: () => serverSnapshot,
-      selector: (pathname: string) => matchWorkspace({basePathRegex, pathname, workspaces}),
+      selector: (pathname: string) =>
+        matchWorkspace({
+          basePathRegex,
+          pathname,
+          workspaces,
+          workspaceAuthStates,
+        }),
       isEqual: (a: MatchWorkspaceResult, b: MatchWorkspaceResult) => {
         if (a.type !== b.type) return false
         switch (a.type) {
@@ -40,6 +48,7 @@ export function useSyncPathnameWithWorkspace(
           case 'redirect':
             return a.pathname === (b as typeof a).pathname
           case 'not-found':
+          case 'loading':
             return true
           default:
             // oxlint-disable-next-line no-explicit-any
@@ -47,7 +56,7 @@ export function useSyncPathnameWithWorkspace(
         }
       },
     }
-  }, [basePathRegex, history, serverSnapshot, workspaces])
+  }, [basePathRegex, history, serverSnapshot, workspaces, workspaceAuthStates])
 
   return useSyncExternalStoreWithSelector<string, MatchWorkspaceResult>(
     store.subscribe,

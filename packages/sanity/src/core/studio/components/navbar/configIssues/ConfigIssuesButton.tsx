@@ -1,10 +1,11 @@
 /* eslint-disable i18next/no-literal-string */
 import {WarningOutlineIcon} from '@sanity/icons'
-import {Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useId, useState} from 'react'
 
 import {Dialog} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
+import {getCollectedConfigWarnings} from '../../../../config/configWarnings'
 import {useSchema} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {useColorSchemeValue} from '../../../colorScheme'
@@ -16,6 +17,9 @@ export function ConfigIssuesButton() {
     schema._validation?.filter((group) =>
       group.problems.some((problem) => problem.severity === 'warning'),
     ) || []
+
+  const configWarnings = getCollectedConfigWarnings()
+  const totalWarnings = groupsWithWarnings.length + configWarnings.length
 
   // get root scheme
   const scheme = useColorSchemeValue()
@@ -35,7 +39,7 @@ export function ConfigIssuesButton() {
     }
   }, [buttonElement])
 
-  if (groupsWithWarnings.length === 0) {
+  if (totalWarnings === 0) {
     return null
   }
 
@@ -65,14 +69,40 @@ export function ConfigIssuesButton() {
           <Stack space={4}>
             <Stack space={3}>
               <Text as="h2" size={1} weight="medium">
-                Found {groupsWithWarnings.length} schema warnings
+                Found {totalWarnings} configuration warning{totalWarnings === 1 ? '' : 's'}
               </Text>{' '}
               <Text muted size={1}>
                 Configuration checks are only performed during development and will not be visible
                 in production builds
               </Text>
             </Stack>
-            <SchemaProblemGroups problemGroups={groupsWithWarnings} />
+
+            {configWarnings.length > 0 && (
+              <Stack space={3}>
+                {configWarnings.map((warning, index) => (
+                  <Card
+                    key={`${warning.type}-${warning.projectId}-${index}`}
+                    padding={3}
+                    radius={2}
+                    shadow={1}
+                    tone="caution"
+                  >
+                    <Stack space={2}>
+                      <Text size={1} weight="medium">
+                        Divergent auth config
+                      </Text>
+                      <Text size={1} style={{whiteSpace: 'pre-wrap'}}>
+                        {warning.message}
+                      </Text>
+                    </Stack>
+                  </Card>
+                ))}
+              </Stack>
+            )}
+
+            {groupsWithWarnings.length > 0 && (
+              <SchemaProblemGroups problemGroups={groupsWithWarnings} />
+            )}
           </Stack>
         </Dialog>
       )}

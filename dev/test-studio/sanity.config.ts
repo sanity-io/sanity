@@ -6,7 +6,7 @@ import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon, EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
-import {DECISION_PARAMETERS_SCHEMA, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
+import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
@@ -42,6 +42,7 @@ import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test'
+import {formBuilderReproTool} from './plugins/form-builder-repro'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
@@ -57,9 +58,33 @@ import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
 
+// Set by `pnpm dev:proxy` / `pnpm dev:proxy:http1`: routes production-workspace requests through @repo/debug-proxy
+// to exercise the studio under adverse network conditions (see packages/@repo/debug-proxy).
+function getDebugProxyApiHost(): string | undefined {
+  const mode = process.env.SANITY_STUDIO_USE_DEBUG_PROXY
+  if (!mode) {
+    return undefined
+  }
+  if (mode === 'true') {
+    // HTTP/2 over TLS — requires the proxy cert to be trusted (see the package README)
+    return 'https://localhost:3051'
+  }
+  if (mode === 'http1') {
+    return 'http://localhost:3050'
+  }
+  console.warn(`Ignoring unknown SANITY_STUDIO_USE_DEBUG_PROXY value: "${mode}"`)
+  return undefined
+}
+
+const debugProxyApiHost = getDebugProxyApiHost()
+
 const envConfig = {
   // use this for production workspaces
-  production: isStaging ? {apiHost: 'https://api.sanity.io'} : {},
+  production: isStaging
+    ? {apiHost: 'https://api.sanity.io'}
+    : debugProxyApiHost
+      ? {apiHost: debugProxyApiHost}
+      : {},
   // use this for staging workspaces
   staging: isStaging ? {} : {apiHost: 'https://api.sanity.work'},
 }
@@ -215,6 +240,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       muxInput({mp4_support: 'standard'}),
       imageHotspotArrayPlugin(),
       routerDebugTool(),
+      formBuilderReproTool(),
       errorReportingTestPlugin(),
       media(),
       markdownSchema(),
@@ -255,10 +281,6 @@ const defaultWorkspace = defineConfig({
   },
   basePath: '/test',
   icon: SanityMonogram,
-  // eslint-disable-next-line camelcase
-  __internal_serverDocumentActions: {
-    enabled: true,
-  },
   scheduledPublishing: {
     enabled: true,
     inputDateTimeFormat: 'MM/dd/yy h:mm a',
@@ -268,11 +290,6 @@ const defaultWorkspace = defineConfig({
   },
   mediaLibrary: {
     enabled: true,
-  },
-  [DECISION_PARAMETERS_SCHEMA]: {
-    audiences: ['aud-a', 'aud-b', 'aud-c'],
-    locales: ['en-GB', 'en-US'],
-    ages: ['20-29', '30-39'],
   },
   document: {
     actions: (prev, ctx) => {
@@ -297,10 +314,42 @@ const defaultWorkspace = defineConfig({
       return prev
     },
   },
+  beta: {
+    variants: {
+      enabled: true,
+    },
+  },
 })
 
 export default defineConfig([
+  {
+    ...defaultWorkspace,
+    name: 'default-hidden',
+    title: 'Default Hidden',
+    subtitle: 'Statically hidden and configured as the first (default) workspace',
+    basePath: '/default-hidden',
+    hidden: true,
+  },
   defaultWorkspace,
+  {
+    ...defaultWorkspace,
+    name: 'admin-only',
+    title: 'Admin Only',
+    subtitle: 'Hidden unless you have an administrator role',
+    basePath: '/admin-only',
+    hidden: ({currentUser}) => {
+      if (currentUser === null) return false
+      return !currentUser.roles.some((role) => role.name === 'administrator')
+    },
+  },
+  {
+    ...defaultWorkspace,
+    name: 'always-hidden',
+    title: 'Always Hidden',
+    subtitle: 'You should never see this workspace because it is statically hidden',
+    basePath: '/always-hidden',
+    hidden: true,
+  },
   {
     ...defaultWorkspace,
     name: 'us',
@@ -318,6 +367,14 @@ export default defineConfig([
       drafts: {enabled: true},
     },
     releases: {enabled: false},
+  },
+  {
+    ...defaultWorkspace,
+    name: 'secondary',
+    title: 'Secondary test project',
+    projectId: 'q5caobza',
+    dataset: 'production',
+    basePath: '/secondary',
   },
   {
     ...defaultWorkspace,
@@ -371,7 +428,7 @@ export default defineConfig([
       },
     },
     search: {
-      strategy: 'groq2024',
+      strategy: 'groqLegacy',
     },
     mediaLibrary: {
       enabled: true,
@@ -423,6 +480,11 @@ export default defineConfig([
     },
     mediaLibrary: {
       enabled: true,
+    },
+    beta: {
+      variants: {
+        enabled: true,
+      },
     },
   },
   {
@@ -624,6 +686,7 @@ export default defineConfig([
         allowOrigins: ['https://*.sanity.dev'],
         previewUrl: {
           // Intentionally using sanity.build instead of sanity.dev, to test that it's able to recover from the server side domain redirect to sanity.dev
+          // @TODO it is currently not able to recover, it fails eventually, investigate why
           initial: 'https://next.sanity.build',
           previewMode: {enable: '/api/draft-mode/enable'},
         },

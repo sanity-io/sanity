@@ -1,9 +1,15 @@
 import {defineConfig} from '@repo/test-config/vitest'
-import react from '@vitejs/plugin-react'
+import babel from '@rolldown/plugin-babel'
+import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
+import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
 
 export default defineConfig({
   test: {
     environment: 'jsdom',
   },
-  plugins: [react({babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]}})],
+  plugins: [
+    vanillaExtractPlugin(),
+    viteReact(),
+    babel({presets: [reactCompilerPreset({target: '19'})]}),
+  ],
 })

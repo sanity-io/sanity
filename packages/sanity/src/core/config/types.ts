@@ -69,20 +69,6 @@ export interface GroupableActionDescription<GroupType = unknown> extends BaseAct
 }
 
 /**
- * Symbol for configuring decision parameters schema
- * @beta
- */
-export const DECISION_PARAMETERS_SCHEMA = Symbol('__decisionParametersSchema')
-
-/**
- * Configuration for decision parameters
- * @beta
- */
-export interface DecisionParametersConfig {
-  [key: string]: string[]
-}
-
-/**
  * @hidden
  * @beta
  */
@@ -267,8 +253,6 @@ export interface ConfigContext {
    * Localization resources
    */
   i18n: LocaleSource
-  /** @beta */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 }
 
 /** @public */
@@ -354,6 +338,24 @@ export interface DocumentPluginOptions {
   /** @internal */
   comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
+  }
+
+  /**
+   * Configuration for the "Ask to edit" button that appears when a user
+   * lacks edit permissions on a document.
+   *
+   * @hidden
+   * @beta
+   */
+  askToEdit?: {
+    /**
+     * Whether the "Ask to edit" button is enabled. Defaults to `true`.
+     *
+     * Can be a boolean or a function that receives a context object and returns a boolean.
+     * When set to `false`, the "Ask to edit" button will be hidden but the
+     * document will still be read-only for users without edit permissions.
+     */
+    enabled: boolean | ((context: DocumentAskToEditEnabledContext) => boolean)
   }
 
   drafts?: {
@@ -493,33 +495,18 @@ export interface PluginOptions {
      * Control the strategy used for searching documents. This should generally only be used if you
      * wish to try experimental search strategies.
      *
-     * This option takes precedence over the deprecated `search.enableLegacySearch` option.
-     *
      * Can be one of:
      *
-     * - `"groqLegacy"` (default): Use client-side tokenization and schema introspection to search
-     *   using the GROQ Query API.
-     * - `"groq2024"`: (experimental) Perform full text searching using the GROQ Query API and its
+     * * - `"groq2024"`: (default) Perform full text searching using the GROQ Query API and its
      *   new `text::matchQuery` function.
+     * - `"groqLegacy"` (legacy): Use client-side tokenization and schema introspection to search
+     *   using the GROQ Query API.
      */
     strategy?: SearchStrategy
-
-    /**
-     * Enables the legacy Query API search strategy.
-     *
-     * @deprecated Use `search.strategy` instead.
-     */
-    enableLegacySearch?: boolean
   }
-
-  /** @internal */
-  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 
   /** Configuration for Scheduled drafts */
   scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
-
-  /** @beta */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 
   /** Configuration for Content Releases */
   releases?: DefaultPluginsWorkspaceOptions['releases']
@@ -587,12 +574,54 @@ export type AsyncConfigPropertyReducer<TValue, TContext> = (
 export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 
 /**
+ * Context passed to workspace `hidden` callbacks.
+ *
+ * @public
+ */
+export interface WorkspaceHiddenContext {
+  /** The authenticated user, or `null` if unavailable. */
+  currentUser: CurrentUser | null
+}
+
+/**
+ * A boolean or callback that returns `true` to hide the workspace from the UI.
+ *
+ * @public
+ */
+export type WorkspaceHiddenProperty = boolean | ((context: WorkspaceHiddenContext) => boolean)
+
+/**
  * @hidden
  * @beta
  */
 export interface WorkspaceOptions extends SourceOptions {
   basePath: string
   subtitle?: string
+
+  /**
+   * Hides this workspace from the studio UI. Client-side only -
+   * enforce access control server-side via Sanity's RBAC system.
+   *
+   * Callbacks are evaluated after auth state resolves and re-evaluated when it changes.
+   * Before auth resolves, callback-hidden workspaces are treated as visible for
+   * navigation purposes - users will see a loading screen until auth resolves.
+   *
+   * When `currentUser` is `null` (user not yet authenticated in this workspace),
+   * returning `true` will prevent them from seeing and authenticating against the
+   * workspace. Start callbacks with `if (currentUser === null) return false` unless
+   * you intentionally want to hide the workspace from unauthenticated users.
+   *
+   * @example Hide a workspace from non-admin users
+   * ```ts
+   * hidden: ({currentUser}) => {
+   *   if (currentUser === null) return false
+   *   return !currentUser.roles.some((role) => role.name === 'administrator')
+   * }
+   * ```
+   *
+   * @public
+   */
+  hidden?: WorkspaceHiddenProperty
   /**
    * The workspace logo
    *
@@ -631,23 +660,7 @@ export interface WorkspaceOptions extends SourceOptions {
   mediaLibrary?: DefaultPluginsWorkspaceOptions['mediaLibrary']
   apps?: AppsOptions
 
-  /**
-   * @hidden
-   * @internal
-   */
-  __internal_serverDocumentActions?: {
-    /**
-     * @deprecated The Mutations API integration will be removed in a future release.
-     */
-    enabled?: boolean
-  }
-
   scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
-
-  /**
-   * @beta
-   */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
@@ -742,6 +755,12 @@ export interface DocumentInspectorContext extends ConfigContext {
 
 /** @hidden @beta */
 export interface DocumentCommentsEnabledContext {
+  documentId?: string
+  documentType: string
+}
+
+/** @hidden @beta */
+export interface DocumentAskToEditEnabledContext {
   documentId?: string
   documentType: string
 }
@@ -895,6 +914,11 @@ export interface Source {
     comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
     }
+
+    /** @hidden @beta */
+    askToEdit: {
+      enabled: (props: DocumentAskToEditEnabledContext) => boolean
+    }
   }
 
   /** @internal */
@@ -971,8 +995,6 @@ export interface Source {
     unstable_partialIndexing?: {
       enabled: boolean
     }
-
-    enableLegacySearch?: boolean
     strategy?: SearchStrategy
   }
 
@@ -1021,8 +1043,6 @@ export interface Source {
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
   }
 
-  /** @internal */
-  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
   /** Configuration for studio features.
    * @internal
    */
@@ -1077,6 +1097,8 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   customIcon: boolean
   subtitle?: string
   basePath: string
+  /** @see WorkspaceHiddenProperty */
+  hidden?: WorkspaceHiddenProperty
   auth: AuthStore
   projectId: string
   dataset: string
@@ -1206,6 +1228,7 @@ export type {
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
   scheduledDrafts: {enabled: boolean}
+  variants: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
   releases: {
     enabled?: boolean
@@ -1308,5 +1331,11 @@ export interface BetaFeatures {
   eventsAPI?: {
     documents?: boolean
     releases?: boolean
+  }
+  /**
+   * Config for variants beta features in Studio.
+   */
+  variants?: {
+    enabled?: boolean
   }
 }

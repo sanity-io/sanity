@@ -1,7 +1,7 @@
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {useObservable} from 'react-rx'
 
-import {useRenderingContextStore} from '../store/_legacy/datastores'
+import {useRenderingContextStore} from '../store/datastores'
 import {type Capability} from '../store/renderingContext/types'
 
 type Props = PropsWithChildren<{

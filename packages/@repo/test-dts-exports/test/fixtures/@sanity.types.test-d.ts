@@ -229,6 +229,7 @@ import type {
   MediaValidator,
   MendozaEffectPair,
   MendozaPatch,
+  ModalOptions,
   MultiFieldSet,
   MultipleMutationResult,
   Mutation,
@@ -1040,6 +1041,9 @@ describe('@sanity/types', () => {
   })
   test('MendozaPatch', () => {
     expectTypeOf<MendozaPatch>().not.toBeNever()
+  })
+  test('ModalOptions', () => {
+    expectTypeOf<ModalOptions>().toBeObject()
   })
   test('MultiFieldSet', () => {
     expectTypeOf<MultiFieldSet>().toBeObject()

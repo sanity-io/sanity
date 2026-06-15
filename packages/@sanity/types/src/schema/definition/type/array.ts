@@ -6,6 +6,7 @@ import {
   type AutocompleteString,
   type InitialValueProperty,
   type SchemaValidationValue,
+  type ModalOptions,
 } from '../../types'
 import {
   type IntrinsicDefinitions,
@@ -62,7 +63,7 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration, BaseSche
   /** @deprecated This option does not have any effect anymore */
   direction?: 'horizontal' | 'vertical'
   sortable?: boolean
-  modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
+  modal?: ModalOptions
   /** @alpha This API may change */
   insertMenu?: InsertMenuOptions
   /**

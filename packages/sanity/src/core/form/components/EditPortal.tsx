@@ -1,4 +1,4 @@
-import {Box, type ResponsiveWidthProps} from '@sanity/ui'
+import {BoundaryElementProvider, Box, type ResponsiveWidthProps} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useRef, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
@@ -68,7 +68,9 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
           onDrop={onDrop}
           width={width}
         >
-          {contents}
+          <BoundaryElementProvider element={documentScrollElement}>
+            {contents}
+          </BoundaryElementProvider>
         </Dialog>
       </VirtualizerScrollInstanceProvider>
     )
@@ -86,7 +88,9 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
         scrollElement={documentScrollElement}
         containerElement={containerElement}
       >
-        {contents}
+        <BoundaryElementProvider element={documentScrollElement}>
+          {contents}
+        </BoundaryElementProvider>
       </VirtualizerScrollInstanceProvider>
     </PopoverDialog>
   )

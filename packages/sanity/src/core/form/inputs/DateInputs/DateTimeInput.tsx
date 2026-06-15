@@ -12,7 +12,7 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import {getMinutes} from 'date-fns/getMinutes'
 import {parseISO} from 'date-fns/parseISO'
 import {setMinutes} from 'date-fns/setMinutes'
-import {useCallback, useMemo} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {ChangeIndicator} from '../../../changeIndicators'
@@ -28,6 +28,7 @@ import {FormFieldStatus} from '../../components/formField/FormFieldStatus'
 import {useFormValue} from '../../contexts/FormValue'
 import {useFieldActions} from '../../field'
 import {set, unset} from '../../patch'
+import {useReportParseError} from '../../studio/contexts/ParseErrors'
 import {type StringInputProps} from '../../types/inputProps'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels, isValidDate} from './utils'
@@ -147,10 +148,14 @@ export function DateTimeInput(props: DateTimeInputProps) {
     elementProps,
     id,
     validation,
+    validationError,
     changed,
     path,
     presence = EMPTY_ARRAY,
   } = props
+
+  const [parseError, setParseError] = useState<string | null>(null)
+  useReportParseError(path, parseError)
 
   const {
     focused,
@@ -275,6 +280,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                 deserialize={deserialize}
                 formatInputValue={formatInputValue}
                 onChange={handleChange}
+                onParseError={setParseError}
                 parseInputValue={parseInputValue}
                 placeholder={schemaType.placeholder}
                 serialize={serialize}
@@ -282,6 +288,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                 selectTime
                 value={value}
                 timeZoneScope={timeZoneScope}
+                validationError={validationError}
               />
             </div>
           </div>

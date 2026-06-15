@@ -1,7 +1,8 @@
 /* eslint-disable @sanity/i18n/no-attribute-template-literals */
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -10,6 +11,7 @@ import {LoadingBlock} from '../components/loadingBlock'
 import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
 import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
 import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
+import {StudioReadyMeasured} from './__telemetry__/bootstrap.telemetry'
 import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
@@ -20,6 +22,7 @@ import {
   useNavbarComponent,
 } from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
+import {ToolMountTimer} from './ToolMountTimer'
 import {useWorkspace} from './workspace'
 
 const DetectViteDevServerStopped = lazy(() =>
@@ -40,6 +43,11 @@ const SearchFullscreenPortalCard = styled(Card)`
   width: 100%;
   z-index: 200;
 `
+
+// Module-level one-shot guard so the event fires once per page load, not
+// per-mount (StrictMode double-mounts in dev; re-mounting Studio shouldn't
+// refire either).
+let studioReadyFired = false
 
 /** @internal */
 export interface NavbarContextValue {
@@ -86,6 +94,7 @@ export function StudioLayout() {
  * */
 export function StudioLayoutComponent() {
   const {name, title, tools} = useWorkspace()
+  const telemetry = useTelemetry()
 
   // In the background, check if the network protocol used to communicate with the
   // Sanity API is modern (HTTP/2 or newer). Shows a toast if it's not.
@@ -104,6 +113,20 @@ export function StudioLayoutComponent() {
     () => tools.find((tool) => tool.name === activeToolName),
     [activeToolName, tools],
   )
+  // Track T0 for tool-mount timing. Because React Compiler forbids impure
+  // calls like `performance.now()` during render, we capture the timestamp
+  // in an effect that runs when `activeToolName` changes. The effect runs
+  // before the tool's `<Suspense>` resolves (since the Suspense fallback
+  // renders first), so the delta captured in `ToolMountTimer` still
+  // includes lazy-chunk fetch time.
+  const toolMountT0Ref = useRef<number | null>(null)
+  const lastToolNameRef = useRef<string | undefined>(undefined)
+  useEffect(() => {
+    if (activeToolName !== lastToolNameRef.current) {
+      lastToolNameRef.current = activeToolName
+      toolMountT0Ref.current = activeToolName ? performance.now() : null
+    }
+  }, [activeToolName])
   const [searchFullscreenOpen, setSearchFullscreenOpen] = useState<boolean>(false)
   const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
     null,
@@ -127,6 +150,20 @@ export function StudioLayoutComponent() {
     }
     document.title = documentTitle
   }, [documentTitle, toolControlsDocumentTitle])
+
+  // Fire a one-shot "Studio Ready" telemetry event the first time the
+  // active tool resolves. Gives us a user-perceived "Studio is interactive"
+  // timing, from browser navigation start to first tool render.
+  useEffect(() => {
+    if (studioReadyFired) return
+    if (!activeTool) return
+    studioReadyFired = true
+    telemetry.log(StudioReadyMeasured, {
+      durationMs: performance.now(),
+      toolsCount: tools.length,
+      activeToolName: activeTool.name,
+    })
+  }, [activeTool, telemetry, tools.length])
 
   const handleSearchFullscreenOpenChange = useCallback((open: boolean) => {
     setSearchFullscreenOpen(open)
@@ -187,7 +224,7 @@ export function StudioLayoutComponent() {
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
-        {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
+        {/* eslint-disable-next-line react-hooks/static-components -- Navbar comes from useNavbarComponent(), stable per workspace */}
         <Navbar />
       </NavbarContext.Provider>
       {isLegacyDeskRedirect && <RedirectingScreen />}
@@ -215,8 +252,9 @@ export function StudioLayoutComponent() {
               }
             >
               <Suspense fallback={<LoadingBlock showText />}>
-                {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
+                {/* eslint-disable-next-line react-hooks/static-components -- ActiveToolLayout comes from useActiveToolLayoutComponent(), stable per workspace */}
                 <ActiveToolLayout activeTool={activeTool} />
+                <ToolMountTimer toolName={activeTool.name} t0Ref={toolMountT0Ref} />
               </Suspense>
             </RouteScope>
           )}

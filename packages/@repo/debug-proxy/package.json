@@ -1,0 +1,47 @@
+{
+  "name": "@repo/debug-proxy",
+  "version": "6.0.0",
+  "private": true,
+  "description": "Local debugging proxy for the Sanity API — simulate latency, SSE faults, and error responses",
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "bin": {
+    "debug-proxy": "./src/cli.ts"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "check:types": "(cd ../../.. && tsgo --project packages/@repo/debug-proxy/tsconfig.json --erasableSyntaxOnly)",
+    "dev": "tsx watch --env-file-if-exists=.env src/cli.ts",
+    "lint": "eslint .",
+    "start": "tsx --env-file-if-exists=.env src/cli.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "es-toolkit": "^1.39.10",
+    "eventsource-parser": "^3.0.6",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "eslint": "catalog:",
+    "tsx": "^4.22.4",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}

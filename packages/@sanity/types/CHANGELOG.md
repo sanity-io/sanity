@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
+
+### ⚠ BREAKING CHANGES
+
+* drop support for node 20 (#12859)
+
+### Features
+
+* **studio:** use `groq2024` search strategy by default ([3d9442f](https://github.com/sanity-io/sanity/commit/3d9442f5b37471d0ee958e70b8962fde30cbb7a0))
+
+### Bug Fixes
+
+* drop support for node 20 ([#12859](https://github.com/sanity-io/sanity/issues/12859)) ([d02289a](https://github.com/sanity-io/sanity/commit/d02289a2ac5aca3de55853812ac6e0b659fa2ef4))
+## [5.31.0](https://github.com/sanity-io/sanity/compare/v5.30.0...v5.31.0) (2026-06-10)
+
+### Bug Fixes
+
+* **core:** support modal width in Enhanced dialog ([#12955](https://github.com/sanity-io/sanity/issues/12955)) ([37d9ece](https://github.com/sanity-io/sanity/commit/37d9ece0b9ca504b1fa51f5d49df0c7d36ba865c))
+* **deps:** update dependency @sanity/insert-menu to v3.0.8 ([#12941](https://github.com/sanity-io/sanity/issues/12941)) ([dd02d30](https://github.com/sanity-io/sanity/commit/dd02d30b27c5154c3665e35e2019633a6e2c4104))
+## [5.28.0](https://github.com/sanity-io/sanity/compare/v5.27.0...v5.28.0) (2026-05-28)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/insert-menu to v3.0.7 ([#12897](https://github.com/sanity-io/sanity/issues/12897)) ([9dea35a](https://github.com/sanity-io/sanity/commit/9dea35af2b16a7f5142b537ade7b4535d6f65212))
+## [5.26.0](https://github.com/sanity-io/sanity/compare/v5.25.1...v5.26.0) (2026-05-19)
+
+### Reverts
+
+* "chore(release): publish v5.26.0" ([#12849](https://github.com/sanity-io/sanity/issues/12849)) ([70545b8](https://github.com/sanity-io/sanity/commit/70545b8d5421f875a171145fe5312742c0c4f959))
+## [5.22.0](https://github.com/sanity-io/sanity/compare/v5.21.0...v5.22.0) (2026-04-22)
+
+### Features
+
+* **asset-sources:** add persistence key for Media Library plugin ([#12670](https://github.com/sanity-io/sanity/issues/12670)) ([311ac2d](https://github.com/sanity-io/sanity/commit/311ac2d6152be390a424c88860c9f9cb6647b9e3))
+
+### Bug Fixes
+
+* **types:** correct BlockRule value type from any[] to PortableTextBlock ([#12509](https://github.com/sanity-io/sanity/issues/12509)) ([3ca5e31](https://github.com/sanity-io/sanity/commit/3ca5e310a3bb2b8d1a8c5f8e4680e2c7f9dd6e22))
 ## [5.20.0](https://github.com/sanity-io/sanity/compare/v5.19.0...v5.20.0) (2026-04-07)
 
 ### Bug Fixes

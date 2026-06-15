@@ -104,12 +104,9 @@ vi.mock('../../../store/useReleasePermissions', () => ({
 }))
 
 const {mockNavigate, mockResolveIntentLink, mockRouterReturn} = vi.hoisted(() => {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockNavigate = vi.fn()
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockResolveIntentLink = vi.fn(() => '/test')
   // Stable reference so the `[router]` effect dependency doesn't fire on every render
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockRouterReturn = {
     state: {},
     navigate: mockNavigate,

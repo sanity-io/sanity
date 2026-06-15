@@ -21,3 +21,6 @@ export const LOADER_QUERY_GC_INTERVAL = 30_000 // ms
 
 // The interval at which we check if existing popups have been closed
 export const POPUP_CHECK_INTERVAL = 1000 // ms
+
+// Below this @sanity/ui breakpoint (~900px) the two 325px panels stop fitting side-by-side and collapse into tabs.
+export const NARROW_MEDIA_INDEX = 2

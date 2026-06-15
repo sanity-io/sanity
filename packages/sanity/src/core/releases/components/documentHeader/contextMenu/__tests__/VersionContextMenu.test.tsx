@@ -25,7 +25,7 @@ vi.mock('../../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-vi.mock('../../../../../store/_legacy/grants/documentPairPermissions', () => ({
+vi.mock('../../../../../store/grants/documentPairPermissions', () => ({
   useDocumentPairPermissions: vi.fn(() => useDocumentPairPermissionsMockReturn),
 }))
 

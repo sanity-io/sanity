@@ -39,8 +39,8 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
   await titleInput.fill(titleB)
   await expect(titleInput).toHaveValue(titleB)
 
-  // Wait for the document to be saved before publishing.
-  await expectEditedStatus(documentStatus)
+  // Wait for the publish button to become enabled (indicates changes are ready to publish).
+  await expect(publishButton).toBeEnabled()
   await publishButton.click()
   await expectPublishedStatus(documentStatus)
 
@@ -50,6 +50,10 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
   await historyMenuButton.click()
   await expect(historyPane).toBeVisible()
 
+  // `timelineItemButton.nth(1)` resolves before the second revision lands;
+  // without this wait the click targets stale state and `toHaveValue(titleA)`
+  // below fails with "Title B".
+  await expect(timelineItemButton.nth(1)).toBeVisible({timeout: 30_000})
   await previousRevisionButton.click({force: true})
 
   await expect(titleInput).toHaveValue(titleA)
@@ -102,7 +106,7 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   await titleInput.fill(titleB)
   await expect(titleInput).toHaveValue(titleB)
 
-  // Wait for the document to be saved before publishing.
+  // Wait for the document to have unsaved changes before publishing.
   await expectEditedStatus(documentStatus)
   await publishKeypress()
   await expectPublishedStatus(documentStatus)
@@ -112,6 +116,10 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   await expect(contextMenuButton).toBeVisible()
   await historyMenuButton.click()
   await expect(historyPane).toBeVisible()
+  // `timelineItemButton.nth(1)` resolves before the second revision lands;
+  // without this wait the click targets stale state and `toHaveValue(titleA)`
+  // below fails with "Title B".
+  await expect(timelineItemButton.nth(1)).toBeVisible({timeout: 30_000})
   await previousRevisionButton.click({force: true})
 
   await expect(titleInput).toHaveValue(titleA)
@@ -166,8 +174,8 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   await titleInput.fill(titleB)
   await expect(titleInput).toHaveValue(titleB)
 
-  // Wait for the document to be saved before publishing.
-  await expectEditedStatus(documentStatus)
+  // Wait for the publish button to become enabled (indicates changes are ready to publish).
+  await expect(publishButton).toBeEnabled()
   await publishButton.click()
   await expectPublishedStatus(documentStatus)
 
@@ -176,6 +184,10 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   await expect(contextMenuButton).toBeVisible()
   await historyMenuButton.click()
   await expect(historyPane).toBeVisible()
+  // `timelineItemButton.nth(1)` resolves before the second revision lands;
+  // without this wait the click targets stale state and `toHaveValue(titleA)`
+  // below fails with "Title B".
+  await expect(timelineItemButton.nth(1)).toBeVisible({timeout: 30_000})
   await previousRevisionButton.click({force: true})
 
   await expect(titleInput).toHaveValue(titleA)

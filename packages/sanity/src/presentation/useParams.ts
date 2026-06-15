@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 import {type MutableRefObject, useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {getPublishedId} from 'sanity'
 import {type RouterContextValue, type RouterState, type SearchParam} from 'sanity/router'

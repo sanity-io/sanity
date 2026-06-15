@@ -1,10 +1,10 @@
 import {type SanityClient} from '@sanity/client'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
-import {getJsonStream} from '../_legacy/history/history/getJsonStream'
+import {getJsonStream} from '../history/history/getJsonStream'
 import {getTransactionsLogs} from './getTransactionsLogs'
 
-vi.mock('../_legacy/history/history/getJsonStream', () => ({
+vi.mock('../history/history/getJsonStream', () => ({
   getJsonStream: vi.fn(),
 }))
 

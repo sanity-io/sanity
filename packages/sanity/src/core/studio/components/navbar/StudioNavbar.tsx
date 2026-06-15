@@ -68,7 +68,7 @@ const NavGrid = styled(Grid)`
 export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   const {__internal_actions: actions = EMPTY_ARRAY} = props
 
-  const {name, tools} = useWorkspace()
+  const {beta, name, tools} = useWorkspace()
   const routerState = useRouterState()
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
@@ -270,7 +270,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </SearchProvider>
                 </LayerProvider>
 
-                <ReleasesNav withReleasesToolButton />
+                {!beta?.variants?.enabled && <ReleasesNav withReleasesToolButton />}
                 {actionNodes}
                 {shouldRender.tools && <FreeTrial type="topbar" />}
                 <PresenceMenu />

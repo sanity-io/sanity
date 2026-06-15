@@ -55,11 +55,12 @@ export const isEmptyArray = isDeepEmptyArray
  * todo: remove in v4
  * @alias
  */
-/* eslint-enable tsdoc/syntax */
 export const isEmpty = isDeepEmpty
+/* eslint-enable tsdoc/syntax */
 
 /**
  * @deprecated Use `isDeepEmpty` instead
  * todo: remove in v4
+ *
  */
 export const isEmptyObject = isDeepEmptyObject

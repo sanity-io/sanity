@@ -3,10 +3,10 @@ import {of, Subject} from 'rxjs'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
-import {useKeyValueStore} from '../../../store/_legacy/datastores'
+import {useKeyValueStore} from '../../../store/datastores'
 import {type SeenAnnouncementsState, useSeenAnnouncements} from '../useSeenAnnouncements'
 
-vi.mock('../../../store/_legacy/datastores', () => ({
+vi.mock('../../../store/datastores', () => ({
   useKeyValueStore: vi.fn(),
 }))
 

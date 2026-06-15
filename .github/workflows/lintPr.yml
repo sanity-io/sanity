@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
       - name: Oxlint files
-        run: pnpm turbo run check:oxlint -- --format github
+        run: pnpm turbo run check:oxlint
 
   eslint:
     runs-on: ubuntu-latest
@@ -33,7 +33,7 @@ jobs:
         run: git fetch origin main:main
       - uses: ./.github/actions/setup
       - name: ESLint files
-        run: pnpm turbo run lint --affected --output-logs=full --continue -- -f gha
+        run: pnpm turbo run lint --affected --output-logs=full --continue
 
   knip:
     runs-on: ubuntu-latest

@@ -40,6 +40,7 @@ async function resolveSchemaDescriptorId(workspace: WorkspaceSummary): Promise<s
  * @param userApplication - The user application
  * @param workspaces - Array of all workspaces in the Studio
  * @param theme - The Studio theme to use for rendering icons
+ * @param signal - Aborts the upload when the registering effect is torn down
  * @returns Promise that resolves when upload is complete
  * @internal
  */
@@ -47,6 +48,7 @@ export async function registerStudioManifest(
   userApplication: UserApplication,
   workspaces: WorkspaceSummary[],
   theme: RootTheme,
+  signal?: AbortSignal,
 ): Promise<void> {
   const {id, projectId} = userApplication
 
@@ -81,6 +83,11 @@ export async function registerStudioManifest(
     return // if the user isn't authenticated, nothing to do
   }
 
+  // Bail before posting if the registering effect has already been torn down.
+  if (signal?.aborted) {
+    return
+  }
+
   // Post the live manifest via the global api
   await client.withConfig(DEFAULT_STUDIO_CLIENT_OPTIONS).request({
     method: 'POST',
@@ -89,5 +96,6 @@ export async function registerStudioManifest(
       value: liveManifest,
     },
     tag: 'live-manifest-register',
+    signal,
   })
 }
