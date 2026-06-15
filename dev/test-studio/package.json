@@ -69,6 +69,7 @@
     "@types/react-dom": "catalog:",
     "@vanilla-extract/css": "catalog:",
     "@vanilla-extract/vite-plugin": "catalog:",
+    "@vitejs/devtools": "^0.3.1",
     "babel-plugin-react-compiler": "catalog:",
     "chokidar": "^3.6.0",
     "eslint": "catalog:",

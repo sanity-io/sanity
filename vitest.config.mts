@@ -38,6 +38,7 @@ export default defineConfig({
       // pool) test run try to execute *.browser.test.* files, which fails with
       // "vitest/browser can be imported only inside the Browser Mode".
       'perf/tests',
+      'packages/@repo/debug-proxy',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
       'packages/@repo/package.bundle',
