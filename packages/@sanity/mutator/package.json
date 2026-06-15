@@ -65,7 +65,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/pkg-utils": "catalog:",
-    "@types/debug": "^4.1.12",
+    "@types/debug": "^4.1.13",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
