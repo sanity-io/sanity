@@ -51,12 +51,25 @@ export interface DocumentSystemRef {
  * @internal
  */
 export interface DocumentSystem {
-  bundleId: 'drafts' | '$published' | (string & {})
+  /**
+   * It will be empty for the group document (aka published document)
+   */
+  bundleId: 'drafts' | (string & {}) | undefined
+  /**
+   * A weak reference to the release document that the version belongs to.
+   */
   release: DocumentSystemRef | null
+  /**
+   * A weak reference to the variant document that the version belongs to.
+   */
   variant: DocumentSystemRef | null
+  /**
+   * A weak reference to the group document (aka published document).
+   */
   group: DocumentSystemRef
-  // Normal drafts and published documents don't have a scope id.
-  // Variants, release documents and anonymous versions have a scope id.
+  /**
+   * Available only for version documents.
+   */
   scopeId: string | null
 }
 
