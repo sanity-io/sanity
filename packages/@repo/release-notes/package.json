@@ -1,6 +1,6 @@
 {
   "name": "@repo/release-notes",
-  "version": "5.30.0",
+  "version": "6.0.0",
   "private": true,
   "description": "Internal tool for updating release-notes",
   "license": "MIT",
@@ -33,7 +33,7 @@
     "@portabletext/toolkit": "^5.0.2",
     "@sanity/client": "catalog:",
     "@sanity/id-utils": "^1.0.0",
-    "@sanity/mutate": "^0.18.0",
+    "@sanity/mutate": "^0.18.1",
     "@sanity/types": "workspace:*",
     "conventional-changelog": "^7.2.0",
     "conventional-changelog-conventionalcommits": "^9.1.0",
@@ -48,7 +48,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@portabletext/markdown": "^1.2.0",
+    "@portabletext/markdown": "^1.4.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
@@ -62,6 +62,6 @@
     "vitest": "catalog:"
   },
   "engines": {
-    "node": ">=20.19 <22 || >=22.12"
+    "node": ">=22.12"
   }
 }

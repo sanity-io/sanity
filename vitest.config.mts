@@ -31,7 +31,14 @@ export default defineConfig({
       'packages/@sanity/util',
       'packages/@sanity/vision',
       'packages/sanity',
+      // NOTE: the browser-mode project (packages/sanity/vitest.browser.config.mts)
+      // is intentionally NOT registered here. It runs in a real browser via
+      // `pnpm --filter sanity test:browser` (see .github/workflows/browser-tests.yml).
+      // Including it in the default multi-project run makes the regular (forks
+      // pool) test run try to execute *.browser.test.* files, which fails with
+      // "vitest/browser can be imported only inside the Browser Mode".
       'perf/tests',
+      'packages/@repo/debug-proxy',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
       'packages/@repo/package.bundle',

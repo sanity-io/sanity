@@ -33,6 +33,12 @@ export default defineLocalesResources('presentation', {
   'main-document.label': 'Main document',
   /** The warning message text shown when a defined resolver fails to return a main document */
   'main-document.missing.text': 'Missing a main document for <Code>{{path}}</Code>',
+  /** The label for the tab that shows the document editor at narrow viewports */
+  'narrow-tabs.content-tab.label': 'Structure',
+  /** The label for the tab that shows the navigator at narrow viewports */
+  'narrow-tabs.navigator-tab.label': 'Navigator',
+  /** The label for the tab that shows the preview at narrow viewports */
+  'narrow-tabs.preview-tab.label': 'Presentation',
   /** The label for a generic error message */
   'presentation-error.label': 'Error message',
   /** The text shown when the preview frame cannot connect to Presentation */

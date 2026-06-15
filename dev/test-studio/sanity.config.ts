@@ -58,9 +58,33 @@ import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
 
+// Set by `pnpm dev:proxy` / `pnpm dev:proxy:http1`: routes production-workspace requests through @repo/debug-proxy
+// to exercise the studio under adverse network conditions (see packages/@repo/debug-proxy).
+function getDebugProxyApiHost(): string | undefined {
+  const mode = process.env.SANITY_STUDIO_USE_DEBUG_PROXY
+  if (!mode) {
+    return undefined
+  }
+  if (mode === 'true') {
+    // HTTP/2 over TLS — requires the proxy cert to be trusted (see the package README)
+    return 'https://localhost:3051'
+  }
+  if (mode === 'http1') {
+    return 'http://localhost:3050'
+  }
+  console.warn(`Ignoring unknown SANITY_STUDIO_USE_DEBUG_PROXY value: "${mode}"`)
+  return undefined
+}
+
+const debugProxyApiHost = getDebugProxyApiHost()
+
 const envConfig = {
   // use this for production workspaces
-  production: isStaging ? {apiHost: 'https://api.sanity.io'} : {},
+  production: isStaging
+    ? {apiHost: 'https://api.sanity.io'}
+    : debugProxyApiHost
+      ? {apiHost: debugProxyApiHost}
+      : {},
   // use this for staging workspaces
   staging: isStaging ? {} : {apiHost: 'https://api.sanity.work'},
 }
@@ -404,7 +428,7 @@ export default defineConfig([
       },
     },
     search: {
-      strategy: 'groq2024',
+      strategy: 'groqLegacy',
     },
     mediaLibrary: {
       enabled: true,

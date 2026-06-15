@@ -45,7 +45,10 @@ export function ObjectEditModal(props: {
     onClose()
   }, [onClose])
 
-  const modalWidth = schemaModalOption?.width
+  // Treat an empty width array as "unset" so the edit dialog components apply
+  // their own width defaults instead of collapsing to content/auto width.
+  const rawModalWidth = schemaModalOption?.width
+  const modalWidth = rawModalWidth && rawModalWidth.length > 0 ? rawModalWidth : undefined
 
   if (modalType === 'popover') {
     return (
@@ -69,7 +72,7 @@ export function ObjectEditModal(props: {
       type="dialog"
       onClose={onClose}
       header={modalTitle}
-      width={1}
+      width={modalWidth ?? 1}
       autofocus={autoFocus}
     >
       {props.children}

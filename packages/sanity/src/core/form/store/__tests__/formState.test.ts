@@ -507,6 +507,35 @@ describe.each(
   })
 })
 
+describe('presence path filtering', () => {
+  test('document-level presence (path: []) does not propagate to child fields', () => {
+    const docLevelPresence = {
+      path: [] as Path,
+      lastActiveAt: '2024-09-12T21:59:08.362Z',
+      sessionId: 'docSession',
+      user: {id: 'docUser'},
+    }
+    const fieldPresence = {
+      path: ['title'] as Path,
+      lastActiveAt: '2024-09-12T21:59:08.362Z',
+      sessionId: 'fieldSession',
+      user: {id: 'fieldUser'},
+    }
+
+    const formState = prepareFormState({
+      ...defaultOptions,
+      presence: [docLevelPresence, fieldPresence],
+    })
+
+    const titleNode = Array.from(traverseForm(formState)).find(
+      ([node]) => node.path.length === 1 && toString(node.path) === 'title',
+    )?.[0]
+
+    expect(titleNode).toBeDefined()
+    expect(titleNode?.presence).toEqual([fieldPresence])
+  })
+})
+
 describe('hidden', () => {
   const pathsToTest: {
     path: Path

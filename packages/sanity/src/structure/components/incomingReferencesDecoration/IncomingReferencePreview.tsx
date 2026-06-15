@@ -13,14 +13,13 @@ import {PaneItemPreview} from '../paneItem/PaneItemPreview'
 import {usePaneRouter} from '../paneRouter'
 
 interface IncomingReferencePreviewProps {
-  onClick?: () => void
   type: SchemaType
   value: SanityDocument
   path: Path
 }
 
 export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
-  const {onClick, type, value, path} = props
+  const {type, value, path} = props
   const publishedId = getPublishedId(value?._id)
   const documentPresence = useDocumentPresence(publishedId)
   const documentPreviewStore = useDocumentPreviewStore()
@@ -40,7 +39,7 @@ export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
   )
 
   return (
-    <PreviewCard __unstable_focusRing as={Link as FIXME} data-as="a" onClick={onClick} radius={2}>
+    <PreviewCard __unstable_focusRing as={Link as FIXME} data-as="a" radius={2}>
       <PaneItemPreview
         documentPreviewStore={documentPreviewStore}
         icon={type.icon || false}

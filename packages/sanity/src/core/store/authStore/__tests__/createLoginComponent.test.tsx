@@ -50,8 +50,6 @@ describe('getProviders', () => {
 
     await getProviders({
       client: client as unknown as SanityClient,
-      mode: 'append',
-      providers: [],
     })
 
     expect(requestConfigs).toHaveLength(1)
@@ -59,13 +57,12 @@ describe('getProviders', () => {
     expect(requestConfigs[0]?.withCredentials).toBe(false)
   })
 
-  it('skips /auth/providers entirely in replace mode with a provider array', async () => {
+  it('skips /auth/providers entirely when a static provider array is passed', async () => {
     const {client, requestConfigs} = createMockClient({token: 'expired-token'})
     const customProviders = [{name: 'github', title: 'GitHub', url: 'https://example.com/login'}]
 
     const result = await getProviders({
       client: client as unknown as SanityClient,
-      mode: 'replace',
       providers: customProviders,
     })
 
@@ -119,8 +116,6 @@ describe('LoginComponent redirectOnSingle', () => {
       client$: of(client),
       loginMethod: 'dual',
       redirectOnSingle: true,
-      mode: 'append',
-      providers: [],
       wasLogout: () => false,
       isHandlingCallback: opts.isHandlingCallback,
     })
