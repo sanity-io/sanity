@@ -5,7 +5,8 @@ import {useClient} from '../../hooks/useClient'
 import {useTranslation} from '../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, getVersionId} from '../../util/draftUtils'
-import {useDocumentVersionInfo} from '../store/useDocumentVersionInfo'
+import {useDocumentVersions} from '../hooks/useDocumentVersions'
+import {selectDocumentVersionInfo} from '../util/selectDocumentVersionInfo'
 
 export interface UseCopyToDraftsOptions {
   documentId: string
@@ -31,8 +32,8 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
     [documentId, fromRelease],
   )
 
-  const documentVersionInfo = useDocumentVersionInfo(publishedId)
-  const hasDraftVersion = Boolean(documentVersionInfo.draft)
+  const documentVersions = useDocumentVersions({documentId: publishedId})
+  const hasDraftVersion = Boolean(selectDocumentVersionInfo(publishedId, documentVersions).draft)
 
   const handleCopyToDrafts = useCallback(async () => {
     // Workaround for React Compiler not yet fully supporting try/catch syntax

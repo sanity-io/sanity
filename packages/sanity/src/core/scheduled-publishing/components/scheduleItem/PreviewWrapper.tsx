@@ -1,6 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type ElementType, type ReactNode, useState} from 'react'
+import {type ElementType, type ReactNode, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -8,7 +8,8 @@ import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
-import {useDocumentVersionInfo} from '../../../releases/store/useDocumentVersionInfo'
+import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
+import {selectDocumentVersionInfo} from '../../../releases/util/selectDocumentVersionInfo'
 import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
@@ -206,6 +207,10 @@ const PreviewWrapper = (props: Props) => {
 export default PreviewWrapper
 
 function DocumentVersionsStatus({publishedDocumentId}: {publishedDocumentId: string}) {
-  const versionsInfo = useDocumentVersionInfo(publishedDocumentId)
+  const documentVersions = useDocumentVersions({documentId: publishedDocumentId})
+  const versionsInfo = useMemo(
+    () => selectDocumentVersionInfo(publishedDocumentId, documentVersions),
+    [documentVersions, publishedDocumentId],
+  )
   return <DocumentStatusIndicator draft={versionsInfo.draft} published={versionsInfo.published} />
 }

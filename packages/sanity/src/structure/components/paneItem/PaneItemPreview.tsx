@@ -1,3 +1,4 @@
+import {getPublishedId} from '@sanity/client/csm'
 import {
   type PrepareViewOptions,
   type SanityDocument,
@@ -17,7 +18,8 @@ import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   SanityDefaultPreview,
-  useDocumentVersionInfo,
+  selectDocumentVersionInfo,
+  useDocumentVersions,
   usePerspective,
 } from 'sanity'
 
@@ -43,7 +45,11 @@ export interface PaneItemPreviewProps {
 export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {icon, layout, presence, schemaType, sortOrder, value} = props
 
-  const versionsInfo = useDocumentVersionInfo(value._id)
+  const documentVersions = useDocumentVersions({documentId: value._id})
+  const versionsInfo = useMemo(
+    () => selectDocumentVersionInfo(getPublishedId(value._id), documentVersions),
+    [documentVersions, value._id],
+  )
 
   const {perspectiveStack} = usePerspective()
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {

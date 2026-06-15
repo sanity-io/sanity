@@ -1555,7 +1555,6 @@ import type {
   useDocumentType,
   useDocumentValuePermissions,
   useDocumentValues,
-  useDocumentVersionInfo,
   useDocumentVersions,
   useDocumentVersionTypeSortedList,
   useEditState,
@@ -6426,9 +6425,6 @@ describe('sanity', () => {
   })
   test('useDocumentValues', () => {
     expectTypeOf<typeof useDocumentValues>().toBeFunction()
-  })
-  test('useDocumentVersionInfo', () => {
-    expectTypeOf<typeof useDocumentVersionInfo>().toBeFunction()
   })
   test('useDocumentVersions', () => {
     expectTypeOf<typeof useDocumentVersions>().toBeFunction()

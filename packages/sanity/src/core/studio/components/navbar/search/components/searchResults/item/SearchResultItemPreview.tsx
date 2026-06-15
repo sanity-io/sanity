@@ -1,3 +1,4 @@
+import {getPublishedId} from '@sanity/client/csm'
 import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
@@ -14,7 +15,8 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
 } from '../../../../../../../preview'
-import {useDocumentVersionInfo} from '../../../../../../../releases'
+import {useDocumentVersions} from '../../../../../../../releases/hooks/useDocumentVersions'
+import {selectDocumentVersionInfo} from '../../../../../../../releases/util/selectDocumentVersionInfo'
 import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
 
 interface SearchResultItemPreviewProps {
@@ -68,7 +70,11 @@ export function SearchResultItemPreview({
     original: null,
   })
 
-  const versionsInfo = useDocumentVersionInfo(documentId)
+  const documentVersions = useDocumentVersions({documentId})
+  const versionsInfo = useMemo(
+    () => selectDocumentVersionInfo(getPublishedId(documentId), documentVersions),
+    [documentId, documentVersions],
+  )
 
   const status = useMemo(() => {
     if (isLoading) return null

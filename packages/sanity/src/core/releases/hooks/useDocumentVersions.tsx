@@ -19,7 +19,9 @@ import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId} from '../../util/draftUtils'
+import {isRecord} from '../../util/isRecord'
 import {createSWR} from '../../util/rxSwr'
+import {DOCUMENT_STUB_PATHS, toVersionInfoDocumentStub} from '../store/documentVersionStub'
 import {type VersionInfoDocumentStub} from '../store/types'
 import {useActiveReleases} from '../store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -35,12 +37,6 @@ export interface DocumentPerspectiveState {
   error?: unknown
   loading: boolean
 }
-
-const EMPTY_VERSION_STUB_FIELDS = {
-  _rev: '',
-  _createdAt: '',
-  _updatedAt: '',
-} as const satisfies Pick<VersionInfoDocumentStub, '_rev' | '_createdAt' | '_updatedAt'>
 
 const INITIAL_VALUE: DocumentPerspectiveState = {
   data: [],
@@ -186,24 +182,27 @@ export function getOrCreateDocumentVersionsObservable(options: {
 
         return combineLatest(
           documentIds.map((id) =>
-            documentPreviewStore.observeDocumentSystemFromId(id).pipe(
-              map(
-                (_system) =>
-                  ({
-                    _id: id,
-                    ...EMPTY_VERSION_STUB_FIELDS,
-                    [DOCUMENT_SYSTEM_FIELD]: _system,
-                  }) satisfies VersionInfoDocumentStub,
+            documentPreviewStore
+              .observePaths({_id: id}, [...DOCUMENT_STUB_PATHS])
+              .pipe(
+                map((value) =>
+                  toVersionInfoDocumentStub(isRecord(value) ? {...value, _id: id} : {_id: id}),
+                ),
               ),
-            ),
           ),
         ).pipe(
-          map((versions) => ({
-            data: documentIds,
-            versions,
-            error: null,
-            loading: false,
-          })),
+          map((observedVersions) => {
+            const versions = observedVersions.filter(
+              (version): version is VersionInfoDocumentStub => version !== undefined,
+            )
+
+            return {
+              data: versions.map((version) => version._id),
+              versions,
+              error: null,
+              loading: false,
+            }
+          }),
         )
       }),
       catchError((error) => {

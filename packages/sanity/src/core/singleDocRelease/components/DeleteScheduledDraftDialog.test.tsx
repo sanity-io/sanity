@@ -5,7 +5,7 @@ import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {useSchema} from '../../hooks'
 import {scheduledRelease} from '../../releases/__fixtures__/release.fixture'
-import {useDocumentVersionInfo} from '../../releases/store/useDocumentVersionInfo'
+import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {
   mockUseScheduleDraftOperations,
   useScheduleDraftOperationsMockReturn,
@@ -15,7 +15,7 @@ import {DeleteScheduledDraftDialog} from './DeleteScheduledDraftDialog'
 
 vi.mock('../hooks/useScheduledDraftDocument')
 vi.mock('../hooks/useScheduleDraftOperations')
-vi.mock('../../releases/store/useDocumentVersionInfo')
+vi.mock('../../releases/hooks/useDocumentVersions')
 vi.mock('../../hooks', async () => {
   const actual = await vi.importActual('../../hooks')
   return {
@@ -27,9 +27,7 @@ vi.mock('../../hooks', async () => {
 const mockUseScheduledDraftDocument = useScheduledDraftDocument as MockedFunction<
   typeof useScheduledDraftDocument
 >
-const mockUseDocumentVersionInfo = useDocumentVersionInfo as MockedFunction<
-  typeof useDocumentVersionInfo
->
+const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof useDocumentVersions>
 const mockUseSchema = useSchema as MockedFunction<typeof useSchema>
 
 const mockFirstDocument = {
@@ -70,11 +68,11 @@ const mockSchema = {
   get: vi.fn().mockReturnValue(mockSchemaType),
 } as unknown as ReturnType<typeof useSchema>
 
-const createMockVersionInfo = (draft: typeof mockDraftDocument | undefined) => ({
-  isLoading: false,
-  draft,
-  published: undefined,
-  versions: {},
+const createMockDocumentVersions = (draft: typeof mockDraftDocument | undefined) => ({
+  loading: false,
+  data: draft ? [draft._id] : [],
+  versions: draft ? [draft] : [],
+  error: null,
 })
 
 const createMockScheduledDraftDocument = (firstDocument: typeof mockFirstDocument | undefined) => ({
@@ -103,7 +101,7 @@ describe('DeleteScheduledDraftDialog', () => {
   })
 
   it('no draft exists: shows "will save to draft" message and copies on delete', async () => {
-    mockUseDocumentVersionInfo.mockReturnValue(createMockVersionInfo(undefined))
+    mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(undefined))
 
     render(
       <TestProvider>
@@ -132,7 +130,7 @@ describe('DeleteScheduledDraftDialog', () => {
   })
 
   it('draft exists with same revision: shows "already up to date" message and skips copy', async () => {
-    mockUseDocumentVersionInfo.mockReturnValue(createMockVersionInfo(mockDraftDocumentSameRev))
+    mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocumentSameRev))
 
     render(
       <TestProvider>
@@ -161,7 +159,7 @@ describe('DeleteScheduledDraftDialog', () => {
   })
 
   it('draft exists with different revision: shows checkbox (checked by default) and copies when checked', async () => {
-    mockUseDocumentVersionInfo.mockReturnValue(createMockVersionInfo(mockDraftDocument))
+    mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocument))
 
     render(
       <TestProvider>
@@ -194,7 +192,7 @@ describe('DeleteScheduledDraftDialog', () => {
   })
 
   it('draft exists with different revision: skips copy when checkbox unchecked', async () => {
-    mockUseDocumentVersionInfo.mockReturnValue(createMockVersionInfo(mockDraftDocument))
+    mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocument))
 
     render(
       <TestProvider>
