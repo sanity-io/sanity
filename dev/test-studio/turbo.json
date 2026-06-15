@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["REACT_PRODUCTION_PROFILING"],
+      "env": ["ENABLE_VITE_DEVTOOLS", "REACT_PRODUCTION_PROFILING"],
       "outputs": [".sanity/**", "dist/**"]
     },
     "start": {
