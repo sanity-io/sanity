@@ -653,6 +653,7 @@ exports[`exports snapshot 1`] = `
     "useSearchMaxFieldDepth": "function",
     "useSearchState": "function",
     "useSetPerspective": "function",
+    "useSetVariant": "function",
     "useSingleDocRelease": "function",
     "useSource": "function",
     "useStudioFeedbackTags": "function",
