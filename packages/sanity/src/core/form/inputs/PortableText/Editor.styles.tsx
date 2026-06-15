@@ -128,6 +128,22 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
       max-width: ${(props) => getTheme_v2(props.theme).container[1]}px;
     }
 
+    /* Container nodes are rendered by the consumer and don't get the
+     * horizontal gutter Studio's text-block/object components apply via inner
+     * padding. Padding the container element is unreliable (a table element
+     * ignores it for cell layout), so instead narrow the container's box to the
+     * text content column: max-width minus the gutter on both sides, centred by
+     * the margin auto above. Tracks the same fullscreen-responsive gutter. */
+    & > [data-pt-block='container'] {
+      width: calc(
+        100% - ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3]}px
+      );
+      max-width: calc(
+        ${(props) => getTheme_v2(props.theme).container[1]}px -
+          ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3]}px
+      );
+    }
+
     & .pt-drop-indicator {
       pointer-events: none;
       border: 1px solid var(--card-focus-ring-color) !important;

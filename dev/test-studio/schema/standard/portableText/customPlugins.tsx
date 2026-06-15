@@ -16,7 +16,7 @@ const SIMPLE_TABLE_NODES = [
     type: 'table',
     arrayField: 'rows',
     render: ({children, attributes}) => (
-      <table {...attributes} style={{borderCollapse: 'collapse', width: '100%'}}>
+      <table {...attributes} style={{borderCollapse: 'collapse'}}>
         <tbody>{children}</tbody>
       </table>
     ),
