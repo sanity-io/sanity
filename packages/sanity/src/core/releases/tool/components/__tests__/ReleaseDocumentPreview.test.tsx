@@ -57,7 +57,7 @@ vi.mock('sanity/router', () => ({
   },
 }))
 
-vi.mock('../../../../store/_legacy/presence/useDocumentPresence', () => ({
+vi.mock('../../../../store/presence/useDocumentPresence', () => ({
   useDocumentPresence: vi.fn(() => mockDocumentPresence),
 }))
 

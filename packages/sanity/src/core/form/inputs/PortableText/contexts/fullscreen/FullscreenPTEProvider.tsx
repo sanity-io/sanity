@@ -5,8 +5,8 @@ import {FullscreenPTEContext} from 'sanity/_singletons'
 
 import {pathToString} from '../../../../../validation/util/pathToString'
 import {
-  ClosedPortableTextEditorFullScreen,
-  OpenedPortableTextEditorFullScreen,
+  NestedDialogEditorClosed,
+  NestedDialogEditorOpened,
 } from '../../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useEnhancedObjectDialog} from '../../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {type FullscreenPTEContextValue} from './FullscreenPTEContext'
@@ -33,21 +33,35 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
 
   const setFullscreenPath = useCallback(
     (path: Path, isFullscreen: boolean): void => {
-      if (isFullscreen) {
-        telemetry.log(OpenedPortableTextEditorFullScreen, {
-          path: pathToString(path),
+      const pathString = pathToString(path)
+      setFullscreenPaths((currentPaths) => {
+        const alreadyOpen = currentPaths.includes(pathString)
+        // Skip no-op transitions so phantom closes don't flood telemetry.
+        if (isFullscreen) {
+          if (alreadyOpen) return currentPaths
+          telemetry.log(NestedDialogEditorOpened, {
+            path: pathString,
+            origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+            // eslint-disable-next-line camelcase
+            editor_type: 'pte',
+            fullscreen: true,
+            location: 'nested_object_dialog',
+          })
+          return [...currentPaths, pathString]
+        }
+        if (!alreadyOpen) return currentPaths
+        telemetry.log(NestedDialogEditorClosed, {
+          path: pathString,
           origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+          // eslint-disable-next-line camelcase
+          editor_type: 'pte',
+          fullscreen: true,
+          location: 'nested_object_dialog',
         })
-        setFullscreenPaths([...fullscreenPaths, pathToString(path)])
-      } else {
-        telemetry.log(ClosedPortableTextEditorFullScreen, {
-          path: pathToString(path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-        })
-        setFullscreenPaths(fullscreenPaths.filter((savedPath) => savedPath !== pathToString(path)))
-      }
+        return currentPaths.filter((savedPath) => savedPath !== pathString)
+      })
     },
-    [fullscreenPaths, telemetry, enhancedObjectDialogEnabled],
+    [telemetry, enhancedObjectDialogEnabled],
   )
 
   const hasAnyFullscreen = useCallback((): boolean => {

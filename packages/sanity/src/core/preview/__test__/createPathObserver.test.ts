@@ -189,6 +189,37 @@ describe('createPathObserver', () => {
     })
   })
 
+  describe('primitive arrays in preview paths', () => {
+    it('resolves numeric segments and length on string arrays without wiping index 0', () => {
+      const observeFields = vi.fn()
+      const observePaths = createPathObserver({observeFields})
+
+      const {values, unsubscribe} = collectEmissions(
+        observePaths(
+          {
+            _id: 'drafts.issue5378',
+            _type: 'issue5378PreviewStringArray',
+            // @ts-expect-error -  type of Previewable is incorrect.
+            names: ['first', 'second'],
+          },
+          ['names', 'names.0', 'names.length'],
+        ),
+      )
+
+      expect(observeFields).not.toHaveBeenCalled()
+      expect(values).toHaveLength(1)
+      expect(values[0]).toMatchObject({
+        names: {
+          '0': 'first',
+          '1': 'second',
+          'length': 2,
+        },
+      })
+
+      unsubscribe()
+    })
+  })
+
   describe('integration: query count with real observeFields pipeline', () => {
     beforeEach(() => {
       vi.useFakeTimers()

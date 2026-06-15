@@ -1,6 +1,7 @@
 export * from './useCopyToDrafts'
 export * from './useDocumentVersions'
 export * from './useDocumentVersionTypeSortedList'
+export * from './useFormatRelativeLocalePublishDate'
 export * from './useIsReleaseActive'
 export * from './useOnlyHasVersions'
 export * from './useVersionOperations'

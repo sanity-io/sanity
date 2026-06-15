@@ -70,6 +70,7 @@ import type {
   PaneContext,
   PaneLayoutContext,
   PaneRouterContext,
+  ParseErrorsContext,
   PerspectiveContext,
   PortableTextEditorElement,
   PortableTextMarkersContext,
@@ -107,6 +108,7 @@ import type {
   SearchContext,
   SelectedAnnotationsContext,
   SelectedAnnotationsContextValue,
+  SetParseError,
   SingleDocReleaseContext,
   SingleDocReleaseContextValue,
   SingleDocReleaseEnabledContext,
@@ -126,6 +128,7 @@ import type {
   UserColorManagerContext,
   ValidationContext,
   VirtualizerScrollInstanceContext,
+  VisibleWorkspacesContext,
   WorkspaceContext,
   WorkspacesContext,
   ZIndexContext,
@@ -335,6 +338,9 @@ describe('sanity/_singletons', () => {
   test('PaneRouterContext', () => {
     expectTypeOf<typeof PaneRouterContext>().not.toBeNever()
   })
+  test('ParseErrorsContext', () => {
+    expectTypeOf<typeof ParseErrorsContext>().not.toBeNever()
+  })
   test('PerspectiveContext', () => {
     expectTypeOf<typeof PerspectiveContext>().not.toBeNever()
   })
@@ -446,6 +452,9 @@ describe('sanity/_singletons', () => {
   test('SelectedAnnotationsContextValue', () => {
     expectTypeOf<SelectedAnnotationsContextValue>().toBeObject()
   })
+  test('SetParseError', () => {
+    expectTypeOf<SetParseError>().not.toBeNever()
+  })
   test('SingleDocReleaseContext', () => {
     expectTypeOf<typeof SingleDocReleaseContext>().not.toBeNever()
   })
@@ -502,6 +511,9 @@ describe('sanity/_singletons', () => {
   })
   test('VirtualizerScrollInstanceContext', () => {
     expectTypeOf<typeof VirtualizerScrollInstanceContext>().not.toBeNever()
+  })
+  test('VisibleWorkspacesContext', () => {
+    expectTypeOf<typeof VisibleWorkspacesContext>().not.toBeNever()
   })
   test('WorkspaceContext', () => {
     expectTypeOf<typeof WorkspaceContext>().not.toBeNever()

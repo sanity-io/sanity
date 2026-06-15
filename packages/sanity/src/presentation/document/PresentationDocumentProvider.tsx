@@ -24,7 +24,6 @@ export function PresentationDocumentProvider(props: {
   const [optionsArray, setOptionsArray] = useState<PresentationPluginOptions[]>(() => [])
 
   const register = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-shadow
     (options: PresentationPluginOptions) => {
       if (parentRegister) {
         return parentRegister(options)
@@ -47,7 +46,6 @@ export function PresentationDocumentProvider(props: {
     [optionsArray, parent, register],
   )
 
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const registerEffectEvent = useEffectEvent((options: PresentationPluginOptions) =>
     register(options),
   )

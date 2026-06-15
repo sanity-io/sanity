@@ -10,7 +10,14 @@ import {
   type RangeDecoration,
 } from '@portabletext/editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
+import {
+  BoundaryElementProvider,
+  Box,
+  Portal,
+  PortalProvider,
+  useBoundaryElement,
+  usePortal,
+} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
@@ -111,6 +118,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const boundaryElement = useBoundaryElement().element
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
+  const floatingBoundary = isFullscreen ? scrollElement : boundaryElement
 
   const handleToggleFullscreen = useCallback(() => {
     onToggleFullscreen()
@@ -142,7 +150,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
       return (
         <TextBlock
-          floatingBoundary={boundaryElement}
+          floatingBoundary={floatingBoundary}
           focused={blockFocused}
           isFullscreen={isFullscreen}
           onItemClose={onItemClose}
@@ -174,7 +182,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       _renderBlockActions,
       _renderCustomMarkers,
-      boundaryElement,
+      floatingBoundary,
       isFullscreen,
       onItemClose,
       onItemOpen,
@@ -215,7 +223,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       }
       return (
         <BlockObject
-          floatingBoundary={boundaryElement}
+          floatingBoundary={floatingBoundary}
           focused={blockFocused}
           isFullscreen={isFullscreen}
           onItemClose={onItemClose}
@@ -243,7 +251,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
-      boundaryElement,
+      floatingBoundary,
       scrollElement,
       schemaTypes.blockObjects,
       isFullscreen,
@@ -305,7 +313,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       }
       return (
         <InlineObject
-          floatingBoundary={boundaryElement}
+          floatingBoundary={floatingBoundary}
           focused={childFocused}
           onItemClose={onItemClose}
           onItemOpen={onItemOpen}
@@ -332,7 +340,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       schemaTypes.span.name,
       schemaTypes.inlineObjects,
-      boundaryElement,
+      floatingBoundary,
       onItemClose,
       onItemOpen,
       onPathFocus,
@@ -371,7 +379,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       return (
         <Annotation
           editorNodeFocused={editorNodeFocused}
-          floatingBoundary={boundaryElement}
+          floatingBoundary={floatingBoundary}
           focused={Boolean(focused)}
           onItemClose={onItemClose}
           onItemOpen={onItemOpen}
@@ -398,7 +406,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     },
     [
       schemaTypes.annotations,
-      boundaryElement,
+      floatingBoundary,
       scrollElement,
       focused,
       onItemClose,
@@ -539,35 +547,34 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   return (
     <SelectedAnnotationsProvider>
       <PortalProvider __unstable_elements={portalElements} element={portal.element}>
-        <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-          <ChangeIndicator
-            disabled={isFullscreen}
-            hasFocus={Boolean(focused)}
-            isChanged={changed}
-            path={path}
-          >
-            <Root
-              data-focused={editorFocused ? '' : undefined}
-              data-read-only={readOnly ? '' : undefined}
+        <BoundaryElementProvider element={floatingBoundary}>
+          <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+            <ChangeIndicator
+              disabled={isFullscreen}
+              hasFocus={Boolean(focused)}
+              isChanged={changed}
+              path={path}
             >
-              <Box data-wrapper="" ref={setWrapperElement}>
-                <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                  {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
-                  <AnnotationObjectEditModal
-                    focused={focused}
-                    onItemClose={onItemClose}
-                    referenceBoundary={scrollElement}
-                  />
-                  <CombinedAnnotationPopover
-                    floatingBoundary={boundaryElement}
-                    referenceBoundary={scrollElement}
-                  />
-                </Portal>
-              </Box>
-              <div data-border="" />
-            </Root>
-          </ChangeIndicator>
-        </ActivateOnFocus>
+              <Root
+                data-focused={editorFocused ? '' : undefined}
+                data-read-only={readOnly ? '' : undefined}
+              >
+                <Box data-wrapper="" ref={setWrapperElement}>
+                  <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                    {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                    <AnnotationObjectEditModal
+                      focused={focused}
+                      onItemClose={onItemClose}
+                      referenceBoundary={scrollElement}
+                    />
+                    <CombinedAnnotationPopover referenceBoundary={scrollElement} />
+                  </Portal>
+                </Box>
+                <div data-border="" />
+              </Root>
+            </ChangeIndicator>
+          </ActivateOnFocus>
+        </BoundaryElementProvider>
       </PortalProvider>
     </SelectedAnnotationsProvider>
   )

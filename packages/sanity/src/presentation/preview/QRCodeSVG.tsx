@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: ISC
  */
 
-/* eslint-disable @typescript-eslint/no-shadow,no-eq-null,prefer-arrow-callback */
+/* eslint-disable no-eq-null,prefer-arrow-callback */
 
 import {motion} from 'motion/react'
 import {memo, useMemo} from 'react'

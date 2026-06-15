@@ -1,6 +1,6 @@
 import {useObservable} from 'react-rx'
 
-import {useRenderingContextStore} from '../_legacy/datastores'
+import {useRenderingContextStore} from '../datastores'
 
 export function useRenderingContext() {
   const renderingContextStore = useRenderingContextStore()

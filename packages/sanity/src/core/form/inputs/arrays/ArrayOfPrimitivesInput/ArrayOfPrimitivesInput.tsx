@@ -1,4 +1,4 @@
-import {Card, Stack} from '@sanity/ui'
+import {Card, type CardTone, Stack} from '@sanity/ui'
 import get from 'lodash-es/get.js'
 import {PureComponent} from 'react'
 
@@ -157,10 +157,15 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
       elementProps,
       arrayFunctions: ArrayFunctions = ArrayOfPrimitivesFunctions,
       changed,
+      validation,
     } = this.props
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
     const isGrid = schemaType.options?.layout === 'grid'
+
+    // Compute tone for array container based on validation errors
+    const hasErrors = validation?.some((v) => v.level === 'error')
+    const errorTone: CardTone | undefined = hasErrors ? 'critical' : undefined
 
     // Note: we need this in order to generate new id's when items are moved around in the list
     // without it, dndkit will restore focus on the original index of the dragged item
@@ -181,9 +186,9 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
           >
             <Stack space={1}>
               {membersWithSortIds.length === 0 ? (
-                <NoItemsPlaceholder schemaType={schemaType} />
+                <NoItemsPlaceholder schemaType={schemaType} validation={validation} />
               ) : (
-                <Card padding={1} border>
+                <Card padding={1} border tone={errorTone}>
                   <List
                     onItemMove={this.handleSortEnd}
                     onItemMoveStart={this.handleItemMoveStart}

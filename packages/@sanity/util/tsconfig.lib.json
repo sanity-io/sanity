@@ -9,6 +9,7 @@
   ],
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "types": ["node"]
   }
 }

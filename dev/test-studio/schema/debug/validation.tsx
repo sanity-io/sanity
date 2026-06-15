@@ -297,7 +297,8 @@ export default defineType({
       description: 'Reference to a book with custom rule that ensures referenced book has a cover',
       type: 'reference',
       to: [{type: 'book'}],
-      validation: (Rule) =>
+      validation: (Rule) => [
+        Rule.required().error('Book is required'),
         Rule.custom(
           (value) =>
             new Promise((resolve) => {
@@ -312,6 +313,7 @@ export default defineType({
               // })
             }),
         ),
+      ],
     },
     {
       name: 'titleCase',
@@ -374,6 +376,7 @@ export default defineType({
         layout: 'radio',
         list: ['one', 'two', 'three'],
       },
+      validation: (Rule) => Rule.required().error('Radio is required'),
     },
     {
       name: 'readonlyField',

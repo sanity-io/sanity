@@ -17,6 +17,7 @@ import {
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {scan} from 'rxjs/operators'
 import {
+  compileFieldPath,
   createSearch,
   createSWR,
   getSearchableTypes,
@@ -26,7 +27,7 @@ import {
   type SearchStrategy,
 } from 'sanity'
 
-import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
+import {toStaticSortOrder} from './helpers'
 import {type SortOrder} from './types'
 
 interface ListenQueryOptions {
@@ -72,7 +73,6 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     searchStrategy,
   } = options
   const sortBy = sort.by
-  const extendedProjection = sort?.extendedProjection
 
   // Listen for changes with the given filter and params, and whenever a change occurs, we want to
   // re-fetch the documents that match the search query (see below).
@@ -112,7 +112,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     params,
     searchQuery,
     perspective,
-    sort,
+    sort: toStaticSortOrder(sort),
     staticTypeNames,
   })
 
@@ -132,10 +132,16 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
         mergeMap((typeNames: string[]) => {
           const types = getSearchableTypes(schema, staticTypeNames || []).filter((type) => {
             if (typeNames.includes(type.name)) {
-              // make a call to getExtendedProjection in strict mode to verify that all fields are
-              // known. This method will throw an exception if there are any unknown fields specified
-              // in the sort by list
-              getExtendedProjection(type, sort.by, true)
+              // Validate every sort field against the schema in strict
+              // mode. `compileFieldPath` throws an `Error` for unknown
+              // fields, paths into non-object types, range slices,
+              // multi-type array access, etc.
+              for (const entry of sort.by) {
+                if (!entry.field) {
+                  continue
+                }
+                compileFieldPath(type, entry.field, {strict: true})
+              }
               return true
             }
             return false
@@ -155,7 +161,6 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
             }
 
             const searchOptions: SearchOptions = {
-              __unstable_extendedProjection: extendedProjection,
               comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
               limit,
               skipSortByScore: true,

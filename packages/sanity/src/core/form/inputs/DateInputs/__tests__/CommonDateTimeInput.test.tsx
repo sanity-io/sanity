@@ -65,7 +65,7 @@ const CALENDAR_LABELS: CalendarLabels = {
   tooltipText: '',
 }
 
-async function renderInput() {
+async function renderInput({onParseError}: {onParseError?: (error: string | null) => void} = {}) {
   const onChange = vi.fn()
 
   const ret = await renderStringInput({
@@ -83,6 +83,7 @@ async function renderInput() {
           id={id}
           formatInputValue={formatInputValue}
           onChange={onChange}
+          onParseError={onParseError}
           parseInputValue={parseInputValue}
           readOnly={readOnly}
           serialize={serialize}
@@ -115,6 +116,24 @@ test('does not emit onChange after invalid value has been typed', async () => {
   expect(onChange.mock.calls.length).toBe(0)
 })
 
+test('calls onParseError with the parser error when typed input cannot be parsed', async () => {
+  const onParseError = vi.fn()
+  const {result} = await renderInput({onParseError})
+  const input = result.container.querySelector('input')!
+
+  expect(onParseError).toHaveBeenLastCalledWith(null)
+
+  // The underlying input only commits on blur/enter, so type then blur.
+  await userEvent.type(input, 'not-a-date')
+  fireEvent.blur(input)
+
+  const lastError = onParseError.mock.lastCall?.[0]
+  expect(typeof lastError).toBe('string')
+  expect(lastError).toMatch(/format/i)
+  // The same message backs the input's native customValidity.
+  expect(input.validationMessage).toBe(lastError)
+})
+
 test('emits onChange on correct format if a valid value has been typed', async () => {
   const {result, onChange} = await renderInput()
   const input = result.container.querySelector('input')!
@@ -127,4 +146,41 @@ test('emits onChange on correct format if a valid value has been typed', async (
 
   // NOTE: the date is entered and displayed in local time zone but stored in utc
   expect(onChange.mock.calls).toEqual([['2021-03-28T17:23:00.000Z']])
+})
+
+test('passes validationError as native validity message when there is no parse error', async () => {
+  const validationErrorMessage = 'Date must be in the past'
+  const onChange = vi.fn()
+
+  const ret = await renderStringInput({
+    fieldDefinition: defineField({
+      type: 'datetime',
+      name: 'test',
+    }),
+    // Use a valid stored value so there is no parse error
+    props: {documentValue: {test: '2021-03-28T17:23:00.000Z'}},
+    render: (props) => {
+      const {id, readOnly = false, value} = props
+
+      return (
+        <CommonDateTimeInput
+          deserialize={deserialize}
+          calendarLabels={CALENDAR_LABELS}
+          id={id}
+          formatInputValue={formatInputValue}
+          onChange={onChange}
+          parseInputValue={parseInputValue}
+          readOnly={readOnly}
+          serialize={serialize}
+          value={value}
+          timeZoneScope={{type: 'input' as TimeZoneScopeType, id}}
+          validationError={validationErrorMessage}
+        />
+      )
+    },
+  })
+
+  const input = ret.result.container.querySelector('input')!
+  // When customValidity is set, the native input's validationMessage should reflect it
+  expect(input.validationMessage).toBe(validationErrorMessage)
 })

@@ -25,7 +25,7 @@ export function ActiveWorkspaceMatcher({
   unstable_history: historyProp,
 }: ActiveWorkspaceMatcherProps) {
   const allWorkspaces = useWorkspaces()
-  const {visibleWorkspaces, isResolvingHiddenWorkspaces} = useVisibleWorkspaces()
+  const {visibleWorkspaces, workspaceAuthStates} = useVisibleWorkspaces()
   const history = useMemo(() => historyProp || createHistory(), [historyProp])
 
   const setActiveWorkspaceName = useCallback(
@@ -39,13 +39,10 @@ export function ActiveWorkspaceMatcher({
   )
 
   const handleNavigateToDefaultWorkspace = useCallback(() => {
-    const firstVisibleWorkspace = visibleWorkspaces[0]
-    if (firstVisibleWorkspace) {
-      setActiveWorkspaceName(firstVisibleWorkspace.name)
-    }
-  }, [setActiveWorkspaceName, visibleWorkspaces])
+    history.push('/')
+  }, [history])
 
-  const result = useSyncPathnameWithWorkspace(history, allWorkspaces)
+  const result = useSyncPathnameWithWorkspace(history, allWorkspaces, workspaceAuthStates)
 
   useEffect(() => {
     if (result.type === 'redirect') {
@@ -61,7 +58,10 @@ export function ActiveWorkspaceMatcher({
     case 'match': {
       const matchedWorkspace = result.workspace
 
-      if (typeof matchedWorkspace.hidden === 'function' && isResolvingHiddenWorkspaces) {
+      if (
+        typeof matchedWorkspace.hidden === 'function' &&
+        workspaceAuthStates[matchedWorkspace.name] === undefined
+      ) {
         return <LoadingComponent />
       }
 
@@ -84,6 +84,7 @@ export function ActiveWorkspaceMatcher({
       )
     }
     case 'redirect':
+    case 'loading':
       return <LoadingComponent />
     case 'not-found':
       return <NotFoundComponent onNavigateToDefaultWorkspace={handleNavigateToDefaultWorkspace} />

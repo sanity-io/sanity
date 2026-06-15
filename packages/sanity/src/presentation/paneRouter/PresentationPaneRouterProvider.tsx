@@ -18,6 +18,7 @@ import {
 } from '../types'
 import {ChildLink} from './ChildLink'
 import {ReferenceChildLink} from './ReferenceChildLink'
+import {StructureIntentChildLink} from './StructureIntentChildLink'
 
 function encodeQueryString(params: Record<string, unknown> = {}): string {
   const parts = Object.entries(params)
@@ -109,14 +110,19 @@ export function PresentationPaneRouterProvider(
       routerPanesState: [],
       ChildLink: forwardRef<HTMLAnchorElement, ChildLinkProps>(
         function ContextChildLink(childLinkProps, ref) {
-          const {childId, ...rest} = childLinkProps
+          const {childId, childParameters, ...rest} = childLinkProps
           const doc = refs?.find((r) => r._id === childId || getPublishedId(r._id) === childId)
 
           if (!doc) {
-            console.warn(`ChildLink: No document found for childId "${childId}"`)
-            return null
+            return (
+              <StructureIntentChildLink
+                {...rest}
+                ref={ref}
+                childId={childId}
+                childParameters={childParameters}
+              />
+            )
           }
-
           return (
             <ChildLink
               {...rest}

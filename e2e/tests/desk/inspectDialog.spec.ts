@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
 
+import {clearKeyValueKey} from '../../helpers'
 import {test} from '../../studio-test'
 
 const INSPECT_KEY = 'studio.structure-tool.inspect-view-mode'
@@ -9,8 +10,16 @@ test('clicking inspect mode sets value in storage', async ({
   page,
   createDraftDocument,
   browserName,
+  sanityClient,
 }) => {
   test.slow(browserName === 'firefox')
+
+  // Clear any existing inspect-view-mode key BEFORE the studio loads. The key
+  // is stored per user (shared across CI runs) — if a previous run left it as
+  // 'raw', the Raw JSON tab is already active, clicking it changes nothing, no
+  // PUT is issued and the test times out.
+  await clearKeyValueKey(sanityClient, INSPECT_KEY)
+
   // Create document and wait for it to be fully loaded
   await createDraftDocument('/content/book')
   await page.waitForLoadState('load', WAIT_OPTIONS)

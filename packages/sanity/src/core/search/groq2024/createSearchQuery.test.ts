@@ -76,7 +76,7 @@ describe('createSearchQuery', () => {
       expect(query).toMatchInlineSnapshot(
         `
         "// findability-mvi:5
-        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) | order(_score desc) [_score > 0] [0...$__limit] {_score, _type, _id, _originalId}"
+        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
       `,
       )
 
@@ -110,7 +110,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) | order(_score desc) [_score > 0] [0...$__limit] {_score, _type, _id, _originalId}"
+        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
       `)
     })
   })
@@ -193,10 +193,11 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] | order(exampleField desc) [0...$__limit] {exampleField, _type, _id, _originalId}"
+        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] {_type, _id, _originalId, "orderings": [exampleField]} | order(orderings[0] desc) [0...$__limit]"
       `)
 
-      expect(query).toContain('| order(exampleField desc)')
+      expect(query).toContain('| order(orderings[0] desc)')
+      expect(query).toContain('"orderings": [exampleField]')
     })
 
     it('should sort on nested fields', () => {
@@ -222,10 +223,11 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] | order(location.city desc) [0...$__limit] {"location.city": location.city, _type, _id, _originalId}"
+        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] {_type, _id, _originalId, "orderings": [location.city]} | order(orderings[0] desc) [0...$__limit]"
       `)
 
-      expect(query).toContain('| order(location.city desc)')
+      expect(query).toContain('| order(orderings[0] desc)')
+      expect(query).toContain('"orderings": [location.city]')
     })
 
     it('should sort on complex GROQ expressions', () => {
@@ -251,10 +253,198 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] | order(string::length(title) desc) [0...$__limit] {"string::length(title)": string::length(title), _type, _id, _originalId}"
+        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] {_type, _id, _originalId, "orderings": [string::length(title)]} | order(orderings[0] desc) [0...$__limit]"
       `)
 
-      expect(query).toContain('| order(string::length(title) desc)')
+      expect(query).toContain('| order(orderings[0] desc)')
+      expect(query).toContain('"orderings": [string::length(title)]')
+    })
+
+    it('should resolve `->` for reference traversal when schemaType is provided', () => {
+      const referenceSchema = Schema.compile({
+        types: [
+          defineType({
+            name: 'author',
+            type: 'document',
+            fields: [defineField({name: 'name', type: 'string'})],
+          }),
+          defineType({
+            name: 'book',
+            type: 'document',
+            fields: [
+              defineField({name: 'title', type: 'string'}),
+              defineField({
+                name: 'author',
+                type: 'reference',
+                to: [{type: 'author'}],
+              }),
+            ],
+          }),
+        ],
+      })
+      const bookType = referenceSchema.get('book')
+
+      const {query} = createSearchQuery(
+        {
+          query: 'test',
+          types: [bookType],
+        },
+        '',
+        {
+          sort: [
+            {
+              direction: 'asc',
+              field: 'author.name',
+              schemaType: bookType,
+            },
+          ],
+        },
+      )
+
+      expect(query).toContain('| order(orderings[0] asc)')
+      expect(query).toContain('"orderings": [author->name]')
+    })
+
+    it('should resolve `->` for array index + reference traversal', () => {
+      const referenceSchema = Schema.compile({
+        types: [
+          defineType({
+            name: 'arrayMember',
+            type: 'document',
+            fields: [defineField({name: 'value', type: 'string'})],
+          }),
+          defineType({
+            name: 'withArray',
+            type: 'document',
+            fields: [
+              defineField({
+                name: 'items',
+                type: 'array',
+                of: [defineArrayMember({type: 'reference', to: [{type: 'arrayMember'}]})],
+              }),
+            ],
+          }),
+        ],
+      })
+      const withArray = referenceSchema.get('withArray')
+
+      const {query} = createSearchQuery(
+        {
+          query: 'test',
+          types: [withArray],
+        },
+        '',
+        {
+          sort: [
+            {
+              direction: 'desc',
+              field: 'items[0].value',
+              schemaType: withArray,
+            },
+          ],
+        },
+      )
+
+      expect(query).toContain('| order(orderings[0] desc)')
+      expect(query).toContain('"orderings": [items[0]->value]')
+    })
+
+    it('should project every entry into the top-level orderings array, including simple ones', () => {
+      const referenceSchema = Schema.compile({
+        types: [
+          defineType({
+            name: 'author',
+            type: 'document',
+            fields: [defineField({name: 'name', type: 'string'})],
+          }),
+          defineType({
+            name: 'book',
+            type: 'document',
+            fields: [
+              defineField({name: 'title', type: 'string'}),
+              defineField({
+                name: 'author',
+                type: 'reference',
+                to: [{type: 'author'}],
+              }),
+            ],
+          }),
+        ],
+      })
+      const bookType = referenceSchema.get('book')
+
+      const {query, sortOrder} = createSearchQuery(
+        {
+          query: 'test',
+          types: [bookType],
+        },
+        '',
+        {
+          sort: [
+            {direction: 'asc', field: 'title', schemaType: bookType, mapWith: 'lower'},
+            {direction: 'desc', field: 'author.name', schemaType: bookType},
+          ],
+        },
+      )
+
+      // Both entries are projected into the top-level `orderings`
+      // array — even `title`, which is a simple top-level field, is
+      // projected there. This keeps the result shape predictable
+      // and the implementation free of conditional branches.
+      expect(query).toContain('| order(lower(orderings[0]) asc,orderings[1] desc)')
+      expect(query).toContain('"orderings": [title, author->name]')
+      // Base projection fields are still emitted at the top level
+      // alongside `orderings`.
+      expect(query).toContain('{_type, _id, _originalId, "orderings":')
+
+      // Resolved positions in `orderings` are written back onto
+      // the sort order.
+      expect(sortOrder[0].projectionIndex).toBe(0)
+      expect(sortOrder[1].projectionIndex).toBe(1)
+    })
+
+    it('should expose compiledSortEntries for cursor predicate construction', () => {
+      const referenceSchema = Schema.compile({
+        types: [
+          defineType({
+            name: 'author',
+            type: 'document',
+            fields: [defineField({name: 'name', type: 'string'})],
+          }),
+          defineType({
+            name: 'book',
+            type: 'document',
+            fields: [
+              defineField({name: 'title', type: 'string'}),
+              defineField({
+                name: 'author',
+                type: 'reference',
+                to: [{type: 'author'}],
+              }),
+            ],
+          }),
+        ],
+      })
+      const bookType = referenceSchema.get('book')
+
+      const {compiledSortEntries} = createSearchQuery(
+        {
+          query: 'test',
+          types: [bookType],
+        },
+        '',
+        {
+          sort: [
+            {direction: 'asc', field: 'title', schemaType: bookType},
+            {direction: 'desc', field: 'author.name', schemaType: bookType},
+          ],
+        },
+      )
+
+      expect(compiledSortEntries).toEqual([
+        {expression: 'title', projectionIndex: 0},
+        {expression: 'author->name', projectionIndex: 1},
+      ])
     })
 
     it('should use multiple sort fields and directions', () => {
@@ -289,12 +479,11 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] | order(exampleField desc,anotherExampleField asc,lower(mapWithField) asc) [0...$__limit] {exampleField, anotherExampleField, mapWithField, _type, _id, _originalId}"
+        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] {_type, _id, _originalId, "orderings": [exampleField, anotherExampleField, mapWithField]} | order(orderings[0] desc,orderings[1] asc,lower(orderings[2]) asc) [0...$__limit]"
       `)
 
-      expect(query).toContain(
-        '| order(exampleField desc,anotherExampleField asc,lower(mapWithField) asc)',
-      )
+      expect(query).toContain('| order(orderings[0] desc,orderings[1] asc,lower(orderings[2]) asc)')
+      expect(query).toContain('"orderings": [exampleField, anotherExampleField, mapWithField]')
     })
 
     it('should generate null sorting override when nulls is specified', () => {
@@ -319,7 +508,10 @@ describe('createSearchQuery', () => {
         },
       )
 
-      expect(query).toContain('order(select(defined(exampleField) => 0, 1),exampleField desc)')
+      // Null-sort override addresses the projected position, not
+      // the raw field, since by the time `order(...)` runs the
+      // value lives at `orderings[0]`.
+      expect(query).toContain('order(select(defined(orderings[0]) => 0, 1),orderings[0] desc)')
     })
 
     it('should order results by _score desc if no sort field and direction is configured', () => {
@@ -337,10 +529,13 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) | order(_score desc) [_score > 0] [0...$__limit] {_score, _type, _id, _originalId}"
+        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
       `)
 
-      expect(query).toContain('| order(_score desc)')
+      // `_score` is added by the upstream `score()` operator and
+      // projected into `orderings[0]` like any other sort field.
+      expect(query).toContain('| order(orderings[0] desc)')
+      expect(query).toContain('"orderings": [_score]')
     })
 
     it('should prepend comments (with new lines) if comments is configured', () => {
@@ -419,7 +614,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types] | score(boost(_type in ["numbers-in-path"] && cover[].cards[].title match text::query($__query), 5), ([@, _id] match text::query($__query) || references($__rawQuery))) | order(_score desc) [_score > 0] [0...$__limit] {_score, _type, _id, _originalId}"
+        *[_type in $__types] | score(boost(_type in ["numbers-in-path"] && cover[].cards[].title match text::query($__query), 5), ([@, _id] match text::query($__query) || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
       `)
 
       expect(query).toContain('cover[].cards[].title match text::query($__query), 5)')
