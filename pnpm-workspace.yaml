@@ -49,6 +49,8 @@ catalog:
   vitest: ^4.1.8
   vitest-browser-react: ^2.2.0
 
+dedupePeers: true
+dedupeDirectDeps: true
 linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
