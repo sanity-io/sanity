@@ -315,7 +315,7 @@ function CommentsInspectorInner(
       // Clear the selected path when clicking outside the comments inspector.
       // We do this only when the comments inspector is the top layer.
       const isPTETarget =
-        event.target instanceof HTMLElement && event.target?.hasAttribute('data-slate-string')
+        event.target instanceof HTMLElement && event.target?.hasAttribute('data-pt-text')
 
       if (!isPTETarget) {
         handleDeselectPath()
