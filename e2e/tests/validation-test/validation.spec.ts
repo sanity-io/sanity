@@ -64,10 +64,15 @@ test.describe('Validation test', () => {
 
       await expect(arrayItemMenuButton).toBeVisible()
       await expect(arrayItemMenuButton).toBeEnabled()
+      // Opening the array-row context menu is slow-but-correct on a cold Firefox
+      // worker under CI load: the default 5s-per-attempt window expired before
+      // the menu rendered, producing a first-attempt failure that passed on
+      // retry. Give the menu more time to appear per attempt instead.
       await retryingClickUntilVisible(
         page,
         arrayItemMenuButton,
         page.getByRole('menuitem', {name: 'Remove'}),
+        {perAttemptTimeout: 15_000},
       )
       const removeMenuItem = page.getByRole('menuitem', {name: 'Remove'})
       await expect(removeMenuItem).toBeEnabled()
@@ -159,10 +164,12 @@ test.describe('Validation test', () => {
       const firstMenuButton = arrayItemMenuButton.first()
       await expect(firstMenuButton).toBeVisible()
       await expect(firstMenuButton).toBeEnabled()
+      // See note above: give the slow Firefox menu-open more time per attempt.
       await retryingClickUntilVisible(
         page,
         firstMenuButton,
         page.getByRole('menuitem', {name: 'Remove'}),
+        {perAttemptTimeout: 15_000},
       )
       const removeMenuItem = page.getByRole('menuitem', {name: 'Remove'})
       await expect(removeMenuItem).toBeEnabled()
@@ -232,10 +239,12 @@ test.describe('Validation test', () => {
       const arrayItemMenuButton = arrayItemMenuButtons.first()
       await expect(arrayItemMenuButton).toBeVisible()
       await expect(arrayItemMenuButton).toBeEnabled()
+      // See note above: give the slow Firefox menu-open more time per attempt.
       await retryingClickUntilVisible(
         page,
         arrayItemMenuButton,
         page.getByRole('menuitem', {name: 'Remove'}),
+        {perAttemptTimeout: 15_000},
       )
       const removeMenuItem = page.getByRole('menuitem', {name: 'Remove'})
       await expect(removeMenuItem).toBeEnabled()
