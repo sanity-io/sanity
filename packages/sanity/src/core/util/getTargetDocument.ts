@@ -1,8 +1,6 @@
 import {type PerspectiveBundle} from '../perspective/types'
-import {
-  type DocumentPerspectiveState,
-  type DocumentVersion,
-} from '../releases/hooks/useDocumentVersions'
+import {type DocumentPerspectiveState} from '../releases/hooks/useDocumentVersions'
+import {type VersionInfoDocumentStub} from '../releases/store/types'
 
 /**
  * Finds the document version whose _system metadata matches the selected bundle and variant.
@@ -21,7 +19,7 @@ export function getTargetDocument({
   variant: string | undefined
   bundle: PerspectiveBundle
   documentVersions: DocumentPerspectiveState['versions']
-}): DocumentVersion | undefined {
+}): VersionInfoDocumentStub | undefined {
   return documentVersions.find(
     (version) =>
       // Checks the document is in the same bundle.

@@ -8,6 +8,7 @@ import {styled} from 'styled-components'
 import {MenuButton, MenuItem} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {oversizedButtonStyle} from '../../../perspective/styles'
+import {useSetVariant} from '../../../perspective/useSetVariant'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {
@@ -49,6 +50,7 @@ export function VariantsMenu(): React.JSX.Element {
   const selectedVariantDocumentId = decodeVariantIdFromRoute(
     router.stickyParams.variant ?? undefined,
   )
+  const setVariant = useSetVariant()
   const selectedVariant = useMemo(
     () =>
       selectedVariantDocumentId
@@ -62,28 +64,17 @@ export function VariantsMenu(): React.JSX.Element {
     [filterQuery, variants],
   )
 
-  const setVariantSelection = useCallback(
-    (variant: SystemVariant | undefined) => {
-      router.navigate({
-        stickyParams: {
-          variant: variant ? getVariantId(variant._id) : null,
-        },
-      })
-    },
-    [router],
-  )
-
   const handleSelectDefault = useCallback(() => {
-    setVariantSelection(undefined)
+    setVariant(undefined)
     setFilterQuery('')
-  }, [setVariantSelection])
+  }, [setVariant])
 
   const handleSelectVariant = useCallback(
     (variant: SystemVariant) => {
-      setVariantSelection(variant)
+      setVariant(variant)
       setFilterQuery('')
     },
-    [setVariantSelection],
+    [setVariant],
   )
 
   const handleFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {

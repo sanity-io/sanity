@@ -16,6 +16,7 @@ import {
   usePerspective,
   useTranslation,
   VersionChip,
+  getVersionFromId,
 } from 'sanity'
 
 import {useDocumentPerspectiveList} from '../../../../../hooks/useDocumentPerspectiveList'
@@ -87,7 +88,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     getReleaseChipState,
     handleCopyToDraftsNavigate,
     handlePerspectiveChange,
+    handleVariantSelectionChange,
     isDraftDisabled,
+    variantVersions,
     isDraftModelEnabled,
     isDraftSelected,
     isLiveEdit,
@@ -261,12 +264,28 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
       <NonReleaseVersionsSelect
         nonReleaseVersions={nonReleaseVersions}
         selectedPerspective={selectedPerspectiveName}
-        onSelectBundle={handlePerspectiveChange}
+        onSelectBundle={(version) => {
+          const bundleId = getVersionFromId(version._id)
+          if (!bundleId) return
+          handlePerspectiveChange(bundleId)
+        }}
         onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
         releases={filteredReleases.notCurrentReleases}
         releasesLoading={loading}
         documentType={documentType}
         getVersionDisplay={getVersionDisplay}
+        mode="versions"
+      />
+      <NonReleaseVersionsSelect
+        nonReleaseVersions={variantVersions}
+        selectedPerspective={selectedPerspectiveName}
+        onSelectBundle={handleVariantSelectionChange}
+        onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+        releases={filteredReleases.notCurrentReleases}
+        releasesLoading={loading}
+        documentType={documentType}
+        getVersionDisplay={getVersionDisplay}
+        mode="variants"
       />
     </>
   )

@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {type DocumentVersion} from '../../releases/hooks/useDocumentVersions'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {getTargetDocument} from '../getTargetDocument'
 
 const PUBLISHED_ID = 'article-1'
@@ -9,8 +9,17 @@ const groupRef = {_type: 'reference', _ref: PUBLISHED_ID, _weak: true} as const
 const variantRef = (variantId: string) =>
   ({_type: 'reference', _ref: variantId, _weak: true}) as const
 
+const versionStub = (
+  stub: Pick<VersionInfoDocumentStub, '_id' | '_system'>,
+): VersionInfoDocumentStub => ({
+  _rev: '',
+  _createdAt: '',
+  _updatedAt: '',
+  ...stub,
+})
+
 // Published bundle: a default document plus two variant-scoped documents.
-const publishedDefault: DocumentVersion = {
+const publishedDefault = versionStub({
   _id: PUBLISHED_ID,
   _system: {
     bundleId: '$published',
@@ -19,8 +28,8 @@ const publishedDefault: DocumentVersion = {
     group: groupRef,
     scopeId: null,
   },
-}
-const publishedAlpha: DocumentVersion = {
+})
+const publishedAlpha = versionStub({
   _id: 'published.bar.article-1',
   _system: {
     bundleId: '$published',
@@ -29,10 +38,10 @@ const publishedAlpha: DocumentVersion = {
     group: groupRef,
     scopeId: 'bar',
   },
-}
+})
 
 // Drafts bundle: a default document plus two variant-scoped documents.
-const draftDefault: DocumentVersion = {
+const draftDefault = versionStub({
   _id: 'drafts.article-1',
   _system: {
     bundleId: 'drafts',
@@ -41,8 +50,8 @@ const draftDefault: DocumentVersion = {
     group: groupRef,
     scopeId: null,
   },
-}
-const draftAlpha: DocumentVersion = {
+})
+const draftAlpha = versionStub({
   _id: 'drafts.baz.article-1',
   _system: {
     bundleId: 'drafts',
@@ -51,8 +60,8 @@ const draftAlpha: DocumentVersion = {
     group: groupRef,
     scopeId: 'baz',
   },
-}
-const draftNorwegian: DocumentVersion = {
+})
+const draftNorwegian = versionStub({
   _id: 'drafts.qux.article-1',
   _system: {
     bundleId: 'drafts',
@@ -61,11 +70,11 @@ const draftNorwegian: DocumentVersion = {
     group: groupRef,
     scopeId: 'qux',
   },
-}
+})
 
 // Release bundle: a default document plus one variant-scoped document.
 const releaseRef = {_type: 'reference', _ref: 'rASAP', _weak: true} as const
-const releaseDefault: DocumentVersion = {
+const releaseDefault = versionStub({
   _id: 'versions.rASAP.article-1',
   _system: {
     bundleId: 'rASAP',
@@ -74,8 +83,8 @@ const releaseDefault: DocumentVersion = {
     group: groupRef,
     scopeId: 'rASAP',
   },
-}
-const releaseAlpha: DocumentVersion = {
+})
+const releaseAlpha = versionStub({
   _id: 'versions.buz.article-1',
   _system: {
     bundleId: 'rASAP',
@@ -84,9 +93,9 @@ const releaseAlpha: DocumentVersion = {
     group: groupRef,
     scopeId: 'buz',
   },
-}
+})
 
-const documentVersions: DocumentVersion[] = [
+const documentVersions: VersionInfoDocumentStub[] = [
   publishedDefault,
   publishedAlpha,
   draftDefault,

@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {type DocumentVersion} from '../../../releases/hooks/useDocumentVersions'
+import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {isDocumentNotInSelectedVariant} from '../isDocumentNotInSelectedVariant'
 
@@ -9,11 +9,20 @@ const groupRef = {_type: 'reference', _ref: PUBLISHED_ID, _weak: true} as const
 const variantRef = (variantId: string) =>
   ({_type: 'reference', _ref: variantId, _weak: true}) as const
 
-const draftDefault: DocumentVersion = {
+const versionStub = (
+  stub: Pick<VersionInfoDocumentStub, '_id' | '_system'>,
+): VersionInfoDocumentStub => ({
+  _rev: '',
+  _createdAt: '',
+  _updatedAt: '',
+  ...stub,
+})
+
+const draftDefault = versionStub({
   _id: 'drafts.article-1',
   _system: {bundleId: 'drafts', release: null, variant: null, group: groupRef, scopeId: null},
-}
-const draftAlpha: DocumentVersion = {
+})
+const draftAlpha = versionStub({
   _id: 'drafts.scope.article-1',
   _system: {
     bundleId: 'drafts',
@@ -22,8 +31,8 @@ const draftAlpha: DocumentVersion = {
     group: groupRef,
     scopeId: 'scope',
   },
-}
-const publishedAlpha: DocumentVersion = {
+})
+const publishedAlpha = versionStub({
   _id: 'published.scope.article-1',
   _system: {
     bundleId: '$published',
@@ -32,13 +41,13 @@ const publishedAlpha: DocumentVersion = {
     group: groupRef,
     scopeId: 'scope',
   },
-}
+})
 
 const baseArgs = {
   variantsEnabled: true,
   selectedVariant: variantAlphaAudience,
   bundle: 'drafts',
-  documentVersions: {versions: [draftDefault] as DocumentVersion[], loading: false},
+  documentVersions: {versions: [draftDefault], loading: false},
 } as const
 
 describe('isDocumentNotInSelectedVariant', () => {

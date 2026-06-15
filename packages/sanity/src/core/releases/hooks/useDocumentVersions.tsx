@@ -1,4 +1,4 @@
-import {type QueryParams} from '@sanity/client'
+import {type QueryParams, type ReleaseDocument} from '@sanity/client'
 import {getVersionFromId, isPublishedId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {useEffect, useMemo, useState} from 'react'
@@ -20,24 +20,27 @@ import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId} from '../../util/draftUtils'
 import {createSWR} from '../../util/rxSwr'
+import {type VersionInfoDocumentStub} from '../store/types'
+import {useActiveReleases} from '../store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
 
 export interface DocumentPerspectiveProps {
   documentId: string
 }
 
-export interface DocumentVersion {
-  _id: string
-  // TODO: Update to `_system` when the API action ships.
-  [DOCUMENT_SYSTEM_FIELD]: DocumentSystem
-}
-
 export interface DocumentPerspectiveState {
   data: string[]
-  versions: DocumentVersion[]
+  versions: VersionInfoDocumentStub[]
   error?: unknown
   loading: boolean
 }
+
+const EMPTY_VERSION_STUB_FIELDS = {
+  _rev: '',
+  _createdAt: '',
+  _updatedAt: '',
+} as const satisfies Pick<VersionInfoDocumentStub, '_rev' | '_createdAt' | '_updatedAt'>
 
 const INITIAL_VALUE: DocumentPerspectiveState = {
   data: [],
@@ -64,6 +67,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
   const dataset = useDataset()
   const projectId = useProjectId()
   const documentPreviewStore = useDocumentPreviewStore()
+  const {data: releases} = useActiveReleases()
   const [results, setResults] = useState<DocumentPerspectiveState>(INITIAL_VALUE)
 
   const observable: Observable<DocumentPerspectiveState> = useMemo(() => {
@@ -72,8 +76,25 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
       publishedId,
       projectId,
       dataset,
-    })
-  }, [dataset, documentPreviewStore, projectId, publishedId])
+    }).pipe(
+      map((result) => {
+        return {
+          ...result,
+          versions: result.versions.map((version) => {
+            return {
+              ...version,
+              [DOCUMENT_SYSTEM_FIELD]: version._system?.group
+                ? version._system
+                : {
+                    ...version._system,
+                    ...temporallyBuildDocumentSystem(version._id, releases),
+                  },
+            }
+          }),
+        }
+      }),
+    )
+  }, [dataset, documentPreviewStore, projectId, publishedId, releases])
 
   useEffect(() => {
     const subscription = observable.subscribe((result) => {
@@ -92,13 +113,15 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
  *
  * Variants will include the _system field.
  */
-const temporallyBuildDocumentSystem = (id: string): DocumentSystem => {
+const temporallyBuildDocumentSystem = (id: string, releases: ReleaseDocument[]): DocumentSystem => {
   const versionId = getVersionFromId(id)
+  const releaseDocument = releases.find(
+    (release) => getReleaseIdFromReleaseDocumentId(release._id) === versionId,
+  )
   if (versionId) {
     return {
       bundleId: versionId,
-      // TODO: Only attach the release if a release actually exists, e.g. agent documents don't have a release.
-      release: {_ref: versionId, _weak: true},
+      release: releaseDocument ? {_ref: releaseDocument._id, _weak: true} : null,
       variant: null,
       group: {
         _ref: getPublishedId(id),
@@ -138,7 +161,14 @@ export function getOrCreateDocumentVersionsObservable(options: {
   projectId: string
   dataset: string
 }): Observable<DocumentPerspectiveState> {
-  const {documentPreviewStore, projectId, dataset, publishedId, params = undefined} = options
+  const {
+    documentPreviewStore,
+    projectId,
+    dataset,
+    publishedId,
+    params = undefined,
+    releases,
+  } = options
   const cacheKey = `${projectId}-${dataset}-${publishedId}`
 
   const cachedObservable = observableCache.get(cacheKey)
@@ -161,10 +191,14 @@ export function getOrCreateDocumentVersionsObservable(options: {
         return combineLatest(
           documentIds.map((id) =>
             documentPreviewStore.observeDocumentSystemFromId(id).pipe(
-              map((system) => ({
-                _id: id,
-                [DOCUMENT_SYSTEM_FIELD]: system ?? temporallyBuildDocumentSystem(id),
-              })),
+              map(
+                (_system) =>
+                  ({
+                    _id: id,
+                    ...EMPTY_VERSION_STUB_FIELDS,
+                    [DOCUMENT_SYSTEM_FIELD]: _system,
+                  }) satisfies VersionInfoDocumentStub,
+              ),
             ),
           ),
         ).pipe(
@@ -177,7 +211,12 @@ export function getOrCreateDocumentVersionsObservable(options: {
         )
       }),
       catchError((error) => {
-        return of({error, data: [] as string[], versions: [] as DocumentVersion[], loading: false})
+        return of({
+          error,
+          data: [] as string[],
+          versions: [] as VersionInfoDocumentStub[],
+          loading: false,
+        })
       }),
       finalize(() => {
         observableCache.delete(cacheKey)

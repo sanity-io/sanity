@@ -1,4 +1,5 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
+import {DocumentSystem} from '@sanity/types'
 import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
@@ -51,4 +52,5 @@ export interface VersionInfoDocumentStub {
   _rev: string
   _createdAt: string
   _updatedAt: string
+  _system: DocumentSystem
 }

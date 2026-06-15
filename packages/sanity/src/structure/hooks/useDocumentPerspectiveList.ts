@@ -1,3 +1,4 @@
+import {type BadgeTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -17,6 +18,9 @@ import {
   useSetPerspective,
   useSingleDocRelease,
   useWorkspace,
+  useAllVariants,
+  type VersionInfoDocumentStub,
+  useSetVariant,
 } from 'sanity'
 
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
@@ -32,7 +36,10 @@ interface DocumentPerspectiveList {
    * Returns display overrides for a version document ID if it's the current
    * user's agent bundle, or `null` for all other versions.
    */
-  getVersionDisplay: ReturnType<typeof useAgentVersionDisplay>['getVersionDisplay']
+  getVersionDisplay: (version: VersionInfoDocumentStub) => {
+    displayName: string
+    tone: BadgeTone
+  } | null
   /** Returns the chip selection/disabled state for a given release. */
   getReleaseChipState: (release: ReleaseDocument) => {selected: boolean; disabled?: boolean}
   /** Navigates to the draft perspective after copying a version to drafts. */
@@ -45,8 +52,12 @@ interface DocumentPerspectiveList {
   isLiveEdit: boolean
   isPublishedChipDisabled: boolean
   isPublishSelected: boolean
-  /** Version document IDs that don't belong to a release (excluding drafts and published). */
-  nonReleaseVersions: string[]
+  /** Versions that don't belong to a release (excluding drafts and published). */
+  nonReleaseVersions: VersionInfoDocumentStub[]
+  /** Versions that belong to a variant. */
+  variantVersions: VersionInfoDocumentStub[]
+  /** Handles the selection of a variant. */
+  handleVariantSelectionChange: (version: VersionInfoDocumentStub) => void
 }
 
 /**
@@ -72,13 +83,13 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     displayed,
     documentId,
   })
+  const {byId: variants} = useAllVariants()
 
-  const {data: documentVersions} = useDocumentVersions({documentId})
+  const {versions: documentVersions, data: documentVersionsIds} = useDocumentVersions({documentId})
 
   const onlyHasVersions =
-    documentVersions &&
-    documentVersions.length > 0 &&
-    !documentVersions.some((version) => !isVersionId(version))
+    documentVersionsIds.length > 0 &&
+    !documentVersionsIds.some((versionId) => !isVersionId(versionId))
 
   const workspace = useWorkspace()
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
@@ -204,25 +215,55 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
 
   const isDraftModelEnabled = workspace.document.drafts?.enabled
 
-  const {filteredVersionIds, getVersionDisplay} = useAgentVersionDisplay(
-    documentVersions,
+  const {filteredVersionIds, getVersionDisplay: getAgentVersionDisplay} = useAgentVersionDisplay(
+    documentVersionsIds,
     selectedPerspectiveName,
+  )
+  const filteredVersions = useMemo(
+    () => documentVersions.filter((version) => filteredVersionIds.includes(version._id)),
+    [documentVersions, filteredVersionIds],
+  )
+  const getVersionDisplay = useCallback(
+    (version: VersionInfoDocumentStub) => {
+      const isVariantVersion = Boolean(version._system.variant)
+      if (!isVariantVersion) {
+        return getAgentVersionDisplay(version._id)
+      }
+      const variantId = version._system.variant?._ref
+      const variant = variantId ? variants.get(variantId) : undefined
+      return {
+        displayName: variant?.metadata?.title || variant?.name || '',
+        tone: 'caution' as const,
+      }
+    },
+    [getAgentVersionDisplay, variants],
   )
 
   const nonReleaseVersions = useMemo(
     () =>
-      filteredVersionIds.filter((versionDocumentId) => {
-        if (isPublishedId(versionDocumentId) || isDraftId(versionDocumentId)) {
+      filteredVersions.filter((version) => {
+        if (isPublishedId(version._id) || isDraftId(version._id)) {
           return false
         }
-        const hasRelease = filteredReleases.currentReleases.some((release) => {
-          return (
-            getReleaseIdFromReleaseDocumentId(release._id) === getVersionFromId(versionDocumentId)
-          )
-        })
-        return !hasRelease
+        const hasRelease = Boolean(version._system.release)
+        const hasVariant = Boolean(version._system.variant)
+        return !hasRelease && !hasVariant
       }),
-    [filteredVersionIds, filteredReleases.currentReleases],
+    [filteredVersions],
+  )
+
+  const variantVersions = useMemo(
+    () => filteredVersions.filter((version) => Boolean(version._system.variant)),
+    [filteredVersions],
+  )
+  const setVariant = useSetVariant()
+  const handleVariantSelectionChange = useCallback(
+    (version: VersionInfoDocumentStub) => {
+      const variantId = version._system.variant?._ref
+      const variant = variantId ? variants.get(variantId) : undefined
+      setVariant(variant ?? undefined)
+    },
+    [setVariant, variants],
   )
 
   return {
@@ -238,5 +279,7 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     isPublishedChipDisabled,
     isPublishSelected,
     nonReleaseVersions,
+    variantVersions,
+    handleVariantSelectionChange,
   }
 }
