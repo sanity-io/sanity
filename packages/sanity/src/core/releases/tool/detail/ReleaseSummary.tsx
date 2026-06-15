@@ -1,13 +1,14 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, Flex, useToast} from '@sanity/ui'
+import {Card, Container, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {getVersionId} from '../../../util/draftUtils'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
@@ -169,6 +170,31 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     () => (pendingAddedDocument.length ? [...documents, ...pendingAddedDocument] : documents),
     [documents, pendingAddedDocument],
   )
+
+  const isCardinalityOne = isCardinalityOneRelease(release)
+  const hasNoDocuments = !isLoading && documents.length === 0
+
+  if (isCardinalityOne && hasNoDocuments) {
+    return (
+      <Flex
+        direction="column"
+        align="center"
+        justify="center"
+        padding={5}
+        style={FULL_HEIGHT_STYLE}
+        data-testid="cardinality-one-empty-state"
+      >
+        <Stack space={3} style={{textAlign: 'center', maxWidth: '300px'}}>
+          <Text size={1} weight="semibold">
+            {t('summary.no-documents-cardinality-one.title')}
+          </Text>
+          <Text size={1} muted>
+            {t('summary.no-documents-cardinality-one.description')}
+          </Text>
+        </Stack>
+      </Flex>
+    )
+  }
 
   return (
     <Flex direction="column" style={FULL_HEIGHT_STYLE}>

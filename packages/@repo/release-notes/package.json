@@ -1,6 +1,6 @@
 {
   "name": "@repo/release-notes",
-  "version": "5.21.0",
+  "version": "6.0.0",
   "private": true,
   "description": "Internal tool for updating release-notes",
   "license": "MIT",
@@ -22,7 +22,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "check:types": "(cd ../../.. && tsc --project packages/@repo/release-notes/tsconfig.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsgo --project packages/@repo/release-notes/tsconfig.json --erasableSyntaxOnly)",
     "lint": "eslint .",
     "test": "vitest run"
   },
@@ -33,7 +33,7 @@
     "@portabletext/toolkit": "^5.0.2",
     "@sanity/client": "catalog:",
     "@sanity/id-utils": "^1.0.0",
-    "@sanity/mutate": "^0.16.1",
+    "@sanity/mutate": "^0.18.1",
     "@sanity/types": "workspace:*",
     "conventional-changelog": "^7.2.0",
     "conventional-changelog-conventionalcommits": "^9.1.0",
@@ -48,7 +48,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@portabletext/markdown": "^1.2.0",
+    "@portabletext/markdown": "^1.4.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
@@ -57,9 +57,11 @@
     "@types/semver": "^7.5.0",
     "@types/turndown": "^5.0.6",
     "@types/yargs": "^17.0.33",
+    "@typescript/native-preview": "catalog:",
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {
-    "node": ">=20.19 <22 || >=22.12"
+    "node": ">=22.12"
   }
 }

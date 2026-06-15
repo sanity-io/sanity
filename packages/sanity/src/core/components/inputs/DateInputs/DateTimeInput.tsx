@@ -77,6 +77,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     readOnly,
     constrainSize = true,
     monthPickerVariant,
+    customValidity,
     padding,
     disableInput,
     isPastDisabled,
@@ -170,6 +171,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
         readOnly={disableInput || readOnly}
         value={inputValue}
         onChange={onInputChange}
+        customValidity={customValidity}
         suffix={
           isPickerOpen ? (
             // Note: we're conditionally inserting the popover here due to an

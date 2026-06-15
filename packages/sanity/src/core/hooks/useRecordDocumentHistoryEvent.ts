@@ -7,7 +7,7 @@ import {
 import {type DocumentHandle} from '@sanity/sdk'
 import {useCallback} from 'react'
 
-import {useComlinkStore} from '../store/_legacy/datastores'
+import {useComlinkStore} from '../store/datastores'
 
 interface DocumentInteractionHistory {
   recordEvent: (eventType: 'viewed' | 'edited' | 'created' | 'deleted') => void

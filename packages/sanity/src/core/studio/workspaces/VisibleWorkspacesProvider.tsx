@@ -2,22 +2,17 @@ import {type ReactNode, useMemo} from 'react'
 import {VisibleWorkspacesContext} from 'sanity/_singletons'
 
 import {type WorkspaceSummary} from '../../config/types'
-import {useWorkspaceAuthStates} from '../components/navbar/workspace/hooks'
+import {
+  useWorkspaceAuthStates,
+  type WorkspaceAuthStates,
+} from '../components/navbar/workspace/hooks'
 import {evaluateWorkspaceHidden} from './useVisibleWorkspaces'
 import {useWorkspaces} from './useWorkspaces'
 
 /** @internal */
 export interface VisibleWorkspacesContextValue {
   visibleWorkspaces: WorkspaceSummary[]
-  /**
-   * `true` while auth state is still resolving for one or more workspaces
-   * whose visibility depends on a function-based `hidden` property.
-   * `visibleWorkspaces` includes these workspaces optimistically in the
-   * meantime.
-   *
-   * Follows the same fail-open pattern as `evaluateWorkspaceHidden`.
-   */
-  isResolvingHiddenWorkspaces: boolean
+  workspaceAuthStates: WorkspaceAuthStates
 }
 
 /** @internal */
@@ -33,16 +28,16 @@ export function VisibleWorkspacesProvider({children}: {children: ReactNode}) {
     [allWorkspaces],
   )
 
-  const [authStates] = useWorkspaceAuthStates(workspacesNeedingAuth)
+  const [workspaceAuthStates] = useWorkspaceAuthStates(workspacesNeedingAuth)
 
   const value = useMemo<VisibleWorkspacesContextValue>(
     () => ({
       visibleWorkspaces: allWorkspaces.filter(
-        (workspace) => !evaluateWorkspaceHidden(workspace, authStates?.[workspace.name]),
+        (workspace) => !evaluateWorkspaceHidden(workspace, workspaceAuthStates[workspace.name]),
       ),
-      isResolvingHiddenWorkspaces: workspacesNeedingAuth.length > 0 && authStates === undefined,
+      workspaceAuthStates,
     }),
-    [allWorkspaces, workspacesNeedingAuth, authStates],
+    [allWorkspaces, workspaceAuthStates],
   )
 
   return (

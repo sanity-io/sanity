@@ -49,6 +49,11 @@ export const Root = styled(Flex)`
 Root.displayName = 'Root'
 
 export const Header = styled(Card)`
+  position: relative;
+  flex-shrink: 0;
+  z-index: 6;
+  background: var(--card-bg-color);
+  overflow: visible;
   border-bottom: 1px solid var(--card-border-color);
 `
 
@@ -58,6 +63,8 @@ export const StyledLabel = styled(Label)`
 
 export const SplitpaneContainer = styled(Box)`
   position: relative;
+  min-height: 0;
+  z-index: 1;
 `
 
 export const QueryCopyLink = styled.a`
@@ -129,6 +136,7 @@ export const Result = styled(Box)`
 
 export const ResultFooter = styled(Flex)`
   border-top: 1px solid var(--card-border-color);
+  flex-wrap: wrap;
 `
 
 export const TimingsCard = styled(Card)`
@@ -158,6 +166,7 @@ export const SaveResultLabel = styled(Text)`
   }
   > span {
     display: flex !important;
+    flex-wrap: wrap;
     gap: ${({theme}) => rem(theme.sanity.space[3])};
     align-items: center;
   }

@@ -4,7 +4,8 @@ import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 
 import {useTranslation} from '../../../../i18n'
-import {formatRelativeLocalePublishDate, isReleaseScheduledOrScheduling} from '../../../util/util'
+import {useFormatRelativeLocalePublishDate} from '../../../hooks/useFormatRelativeLocalePublishDate'
+import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 import {ReleaseTitle} from '../../ReleaseTitle'
 
@@ -13,6 +14,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
 }) {
   const {release} = props
   const {t} = useTranslation()
+  const formatPublishDate = useFormatRelativeLocalePublishDate()
   const isScheduled = isReleaseScheduledOrScheduling(release)
 
   return (
@@ -28,7 +30,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
           {release.metadata.releaseType === 'asap' && <>{t('release.type.asap')}</>}
           {release.metadata.releaseType === 'scheduled' &&
             (release.metadata.intendedPublishAt ? (
-              <>{formatRelativeLocalePublishDate(release)}</>
+              <>{formatPublishDate(release)}</>
             ) : (
               /** should not be allowed to do, but a fall back in case if somehow no date is added */
               <>{t('release.chip.tooltip.unknown-date')}</>

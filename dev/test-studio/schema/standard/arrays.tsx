@@ -758,4 +758,21 @@ export default defineType({
       type: 'deepNested.body',
     }),
   ],
+  preview: {
+    select: {
+      title: 'title',
+      strings: 'arrayOfStrings',
+      firstItem: 'arrayOfStrings.0',
+      length: 'arrayOfStrings.length',
+    },
+    prepare({title, strings, firstItem, length}) {
+      // oxlint-disable-next-line no-console
+      console.log('arraysTest preview.prepare', {
+        strings,
+        firstItem,
+        length,
+      })
+      return {title}
+    },
+  },
 })

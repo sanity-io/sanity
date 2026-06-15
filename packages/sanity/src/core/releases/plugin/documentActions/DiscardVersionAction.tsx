@@ -9,7 +9,7 @@ import {
 } from '../../../config/document/actions'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
+import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {DiscardVersionDialog} from '../../components/dialog/DiscardVersionDialog'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'

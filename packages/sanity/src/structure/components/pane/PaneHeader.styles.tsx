@@ -38,6 +38,7 @@ export const TitleCard = styled(Card)(({theme}: {theme: Theme}) => {
   // Disable color updates on hover
   return css`
     background-color: ${bg};
+    min-width: 0;
 
     [data-ui='Text'] {
       color: ${fg};
@@ -53,4 +54,5 @@ export const TitleTextSkeleton = styled(TextSkeleton)`
 export const TitleText = styled(Text)`
   cursor: default;
   outline: none;
+  min-width: 0;
 `

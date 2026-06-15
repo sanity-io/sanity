@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
-import {Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
+import {BoundaryElementProvider, Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -9,6 +9,7 @@ import {PopoverDialog} from '../../components'
 import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
 import {PresenceOverlay} from '../../presence'
+import {isNativeEditableElement} from '../../studio/copyPaste/utils'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {
   NavigatedToNestedObjectViaCloseButton,
@@ -130,6 +131,13 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
 
   const handleGlobalKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      // Ignore the shortcut while the user is editing text (e.g. inside a code
+      // block editor, the Portable Text editor, an input or a textarea), where
+      // Cmd/Ctrl+ArrowUp has its own meaning (move the caret to the top).
+      if (event.target && isNativeEditableElement(event.target)) {
+        return
+      }
+
       // Only the top dialog should respond to the keyboard shortcut
       if (isTop && (event.metaKey || event.ctrlKey) && event.key === 'ArrowUp') {
         event.preventDefault()
@@ -200,7 +208,9 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           animate={!shouldDisableAnimation}
           onClickOutside={handleCompleteDialogClose}
         >
-          {contents}
+          <BoundaryElementProvider element={documentScrollElement}>
+            {contents}
+          </BoundaryElementProvider>
         </StyledDialog>
       </VirtualizerScrollInstanceProvider>
     )
@@ -218,7 +228,9 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         containerRef={setDocumentScrollElement}
         referenceElement={props.legacy_referenceElement}
       >
-        {contents}
+        <BoundaryElementProvider element={documentScrollElement}>
+          {contents}
+        </BoundaryElementProvider>
       </PopoverDialog>
     </VirtualizerScrollInstanceProvider>
   )

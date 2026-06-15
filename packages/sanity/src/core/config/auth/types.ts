@@ -30,14 +30,6 @@ export interface AuthConfig {
   loginMethod?: LoginMethod
 
   /**
-   * Whether to append the providers specified in `providers` with the default providers from the
-   * API, or replace the default providers with the ones specified.
-   *
-   * @deprecated Use the function form of `providers` instead for more control
-   */
-  mode?: 'append' | 'replace'
-
-  /**
    * If true, the "Choose login provider" (eg "Google, "GitHub", "E-mail/password") screen
    * will be skipped if only a single provider is configured in the `providers` array -
    * instead it will redirect unauthenticated users straight to the authentication URL.
@@ -50,9 +42,8 @@ export interface AuthConfig {
    * providers. This can be used to selectively replace, add or remove providers from the
    * list of choices.
    *
-   * @remarks If a static array of providers is provided, the `mode` property is taken into account
-   *   when determining what to do with it - `append` will append the providers to the default set
-   *   of providers, while `replace` will replace the default providers with the ones specified.
+   * @remarks If a static array of providers is provided it will replace the default
+   * providers with the ones specified.
    *
    * If not set, the default providers will be used.
    */

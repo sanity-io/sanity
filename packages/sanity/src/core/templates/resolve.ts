@@ -258,8 +258,18 @@ async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
       const itemType = getItemType(type as ArraySchemaType, initialItem)!
       return isObjectSchemaType(itemType)
         ? {
-            ...initialItem,
-            ...(await resolveInitialValueForType(itemType, params, maxDepth - 1, context, options)),
+            // The initial value defined on the parent array field takes precedence over
+            // initial values resolved from the array member type's own fields.
+            ...deepAssign(
+              (await resolveInitialValueForType(
+                itemType,
+                params,
+                maxDepth - 1,
+                context,
+                options,
+              )) || {},
+              initialItem as Record<string, unknown>,
+            ),
             _key: randomKey(),
           }
         : initialItem

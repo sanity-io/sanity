@@ -8,8 +8,6 @@ import type {
   createCliConfig,
   defineCliConfig,
   getCliClient,
-  getStudioEnvironmentVariables,
-  StudioEnvVariablesOptions,
 } from 'sanity/cli'
 import {describe, expectTypeOf, test} from 'vitest'
 
@@ -29,10 +27,6 @@ describe('sanity/cli', () => {
   test('getCliClient', () => {
     expectTypeOf<typeof getCliClient>().not.toBeNever()
   })
-  test('getStudioEnvironmentVariables', () => {
-    expectTypeOf<typeof getStudioEnvironmentVariables>().toBeFunction()
-  })
-  test('StudioEnvVariablesOptions', () => {
-    expectTypeOf<StudioEnvVariablesOptions>().toBeObject()
-  })
+  test.todo('getStudioEnvironmentVariables' /* no declarations found */)
+  test.todo('StudioEnvVariablesOptions' /* no declarations found */)
 })

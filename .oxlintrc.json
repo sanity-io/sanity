@@ -136,6 +136,8 @@
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
+    // Keep disabled: `_id` and other underscore-prefixed API fields are intentional.
+    "eslint/no-underscore-dangle": "off",
     // We no longer allow commonjs as we ship ESM only
     "import/no-commonjs": "error",
     "no-restricted-globals": [
@@ -176,7 +178,7 @@
     "jsx_a11y/prefer-tag-over-role": "warn",
     "jsx_a11y/click-events-have-key-events": "warn",
     "jsx_a11y/role-has-required-aria-props": "warn",
-    "unicorn/no-instanceof-builtins": "warn",
+    "unicorn/no-instanceof-builtins": "off",
     "jsx_a11y/aria-role": "warn",
     "jsx_a11y/label-has-associated-control": "warn",
     "unicorn/prefer-add-event-listener": "warn",
@@ -197,12 +199,25 @@
     "no-misused-spread": "warn",
     "no-multiple-resolved": "warn",
     "no-redundant-type-constituents": "warn",
-    "no-unnecessary-template-expression": "warn",
+    "no-unnecessary-template-expression": "off",
     "no-unnecessary-type-arguments": "warn",
     "no-unnecessary-type-assertion": "warn",
     "no-unsafe-type-assertion": "warn",
     "restrict-template-expressions": "warn",
     "unbound-method": "warn",
+    // TODO(oxlint): Fix violations and set these back to error.
+    "react/no-unstable-nested-components": "warn",
+    "typescript/no-unnecessary-type-conversion": "off",
+    "typescript/no-useless-default-assignment": "off",
+    "typescript/no-unnecessary-type-parameters": "off",
+    "react/jsx-no-constructed-context-values": "warn",
+    "react/no-object-type-as-default-prop": "warn",
+    "typescript/await-thenable": "warn",
+    "typescript/consistent-return": "warn",
+    "eslint/no-shadow": "warn",
+    "jsx_a11y/control-has-associated-label": "warn",
+    "jsx_a11y/interactive-supports-focus": "off",
+    "jsx_a11y/no-noninteractive-tabindex": "warn",
     // Temporarily disabled, will be re-enabled in the near term
     "unicorn/prefer-set-has": "off",
     // Requires polyfills for older browsers

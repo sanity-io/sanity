@@ -6,10 +6,12 @@ import {
 } from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
 
+import {compileSortExpression, type CompiledSortEntry} from '../common/compileSortExpression'
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
 import {prefixLast} from '../common/token'
 import {toOrderClause} from '../common/toOrderClause'
 import {
+  ORDERINGS_PROJECTION_KEY,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchSort,
@@ -30,6 +32,15 @@ interface SearchQuery {
   params: SearchParams
   options: Record<string, unknown>
   sortOrder: SearchSort[]
+  /**
+   * Compiled GROQ expressions corresponding to each entry in
+   * `sortOrder`. Threaded through to `getNextCursor` so the cursor
+   * predicate can address each sort field's source-document value
+   * via the schema-resolved expression (e.g. `author->name`) rather
+   * than the literal `field` (which would only match the projected
+   * shape).
+   */
+  compiledSortEntries: CompiledSortEntry[]
 }
 
 function isSchemaType(
@@ -88,8 +99,20 @@ export function createSearchQuery(
     })
     .concat(baseMatch)
 
-  const sortOrder = sort ?? [{field: '_score', direction: 'desc'}]
-  const isScored = sortOrder.some(({field}) => field === '_score')
+  const inputSortOrder = sort ?? [{field: '_score', direction: 'desc'}]
+  const isScored = inputSortOrder.some(({field}) => field === '_score')
+
+  // Compile each sort entry into its `{expression, projectionIndex}`
+  // shape. Every entry is projected into
+  // `orderings[<projectionIndex>]` — see `compileSortExpression` for
+  // why we always project rather than selectively.
+  const compiledSortEntries = inputSortOrder.map((entry, index) =>
+    compileSortExpression(entry, index),
+  )
+  const sortOrder: SearchSort[] = inputSortOrder.map((entry, index) => ({
+    ...entry,
+    projectionIndex: compiledSortEntries[index].projectionIndex,
+  }))
 
   const filters: string[] = [
     '_type in $__types',
@@ -100,16 +123,17 @@ export function createSearchQuery(
     cursor ?? [],
   ].flat()
 
-  const projectionFields = sortOrder.map(({field}) => field).concat('_type', '_id', '_originalId')
-  const projection = projectionFields.join(', ')
+  const orderingsExpressions = compiledSortEntries.map((entry) => entry.expression)
+  const orderingsProjection = `"${ORDERINGS_PROJECTION_KEY}": [${orderingsExpressions.join(', ')}]`
+  const projection = ['_type', '_id', '_originalId', orderingsProjection].join(', ')
 
   const query = [
     `*[${filters.join(' && ')}]`,
     isScored ? ['|', `score(${score.join(', ')})`] : [],
-    ['|', `order(${toOrderClause(sortOrder)})`],
     isScored ? `[_score > 0]` : [],
-    `[0...$__limit]`,
     `{${projection}}`,
+    ['|', `order(${toOrderClause(sortOrder)})`],
+    `[0...$__limit]`,
   ]
     .flat()
     .join(' ')
@@ -138,5 +162,6 @@ export function createSearchQuery(
     },
     params: finalParams,
     sortOrder,
+    compiledSortEntries,
   }
 }

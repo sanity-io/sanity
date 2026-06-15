@@ -39,16 +39,17 @@ pnpm check:types
 
 These checks run on every PR and **must pass**:
 
-| Check            | Command              | Notes                                                    |
-| ---------------- | -------------------- | -------------------------------------------------------- |
-| **Format**       | `pnpm check:format`  | Uses Prettier. Fix with `pnpm chore:format:fix`          |
-| **Oxlint**       | `pnpm check:oxlint`  | Fast Rust-based linter. Fix with `pnpm chore:oxlint:fix` |
-| **ESLint**       | `pnpm lint`          | Full linting. Fix with `pnpm chore:lint:fix`             |
-| **Type Check**   | `pnpm check:types`   | TypeScript via tsgo + turbo                              |
-| **Unit Tests**   | `pnpm test`          | Vitest, sharded in CI                                    |
-| **Export Tests** | `pnpm test:exports`  | Ensures ESM/CJS/DTS work                                 |
-| **Dep Check**    | `pnpm depcheck`      | Finds unused/missing deps                                |
-| **PR Title**     | Conventional commits | e.g., `feat(scope): description`                         |
+| Check            | Command               | Notes                                                                                                                                                            |
+| ---------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Format**       | `pnpm check:format`   | Uses Prettier. Fix with `pnpm chore:format:fix`                                                                                                                  |
+| **Oxlint**       | `pnpm check:oxlint`   | Fast Rust-based linter. Fix with `pnpm chore:oxlint:fix`                                                                                                         |
+| **ESLint**       | `pnpm lint`           | Full linting. Fix with `pnpm chore:lint:fix`                                                                                                                     |
+| **Type Check**   | `pnpm check:types`    | TypeScript via tsgo + turbo                                                                                                                                      |
+| **Unit Tests**   | `pnpm test`           | Vitest, sharded in CI                                                                                                                                            |
+| **Export Tests** | `pnpm test:exports`   | Ensures ESM/CJS/DTS work                                                                                                                                         |
+| **Dep Check**    | `pnpm depcheck`       | Finds unused/missing deps                                                                                                                                        |
+| **Zizmor**       | `pnpm lint:workflows` | Audits `.github/workflows/` for security issues. Fails CI on high-severity findings. Local run needs [`zizmor`](https://docs.zizmor.sh/installation/) on `PATH`. |
+| **PR Title**     | Conventional commits  | e.g., `feat(scope): description`                                                                                                                                 |
 
 ### Before Committing
 
@@ -158,6 +159,34 @@ Use the dev studio when you need to:
 - Visually verify UI changes
 - Test real document editing workflows
 - Debug issues that only appear with real data
+
+### Inspecting Production Builds with Vite DevTools
+
+The test studio can run with [Vite DevTools](https://devtools.vite.dev) enabled, which lets you inspect the output of `sanity build` runs (module graph, chunks, plugin timings, bundle treemaps, session diffing) from inside a long-running `sanity dev` server—no restart needed.
+
+```bash
+# Builds the test studio with devtools enabled, then starts the dev server
+# (so there's a build session to inspect right away)
+pnpm devtools:test-studio
+```
+
+Open `http://localhost:3333` and use the Vite DevTools dock to explore the recorded Rolldown build session. See the [DevTools for Rolldown features guide](https://devtools.vite.dev/rolldown/features.html) for how to use the module graph, chunk, asset, and plugin panels.
+
+To inspect a **new** build after making changes—while `pnpm devtools:test-studio` is still running—run in a second terminal:
+
+```bash
+# Creates a fresh build session that shows up in the running DevTools dock
+pnpm devtools:test-studio:build
+```
+
+Builds are not hooked into HMR; `sanity build` must be invoked manually (via the command above) each time you want a new session to inspect. Sessions can be compared against each other in the DevTools UI to diff bundle changes.
+
+How it works:
+
+- Both commands set `ENABLE_VITE_DEVTOOLS=true`, which makes `dev/test-studio/sanity.cli.ts` add the `DevTools()` Vite plugin and enable `build.rolldownOptions.devtools`
+- Build sessions are written to `dev/test-studio/node_modules/.rolldown` (gitignored)
+- The flag is declared in `dev/test-studio/turbo.json` so turbo-cached builds are invalidated when it changes
+- Enabling devtools makes `sanity build` noticeably slower; that's why it's opt-in via the env flag
 
 ### E2E Tests (Token Required)
 

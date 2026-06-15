@@ -10,7 +10,15 @@ import {
 } from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
 import throttle from 'lodash-es/throttle.js'
-import {type RefObject, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
+import {
+  type RefObject,
+  useCallback,
+  useEffect,
+  useInsertionEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import deepEquals from 'react-fast-compare'
 
 import {
@@ -51,7 +59,7 @@ import {
   useDocumentValuePermissions,
   usePresenceStore,
 } from '../store'
-import {isNewDocument} from '../store/_legacy/document/isNewDocument'
+import {isNewDocument} from '../store/document/isNewDocument'
 import {useWorkspace} from '../studio/workspace'
 import {
   EMPTY_ARRAY,
@@ -106,7 +114,7 @@ interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersio
 
   ready: boolean
   value: SanityDocumentLike
-  formState: FormState
+  formState: FormState | null
   focusPath: Path
   validation: ValidationMarker[]
   permissions: PermissionCheckResult | undefined
@@ -119,7 +127,7 @@ interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersio
   onChange: (event: PatchEvent) => void
   onPathOpen: (path: Path) => void
   onProgrammaticFocus: (nextPath: Path) => void
-  formStateRef: RefObject<FormState>
+  formStateRef: RefObject<FormState | null>
   schemaType: ObjectSchemaType
 }
 
@@ -298,7 +306,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
   }, [presenceStore, value._id])
 
-  const [openPath, onSetOpenPath] = useState<Path>(EMPTY_ARRAY)
+  const [openPath, onSetOpenPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
   const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
   const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
@@ -480,7 +488,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     changesOpen,
     hasUpstreamVersion,
     displayInlineChanges,
-  })!
+  })
 
   const formStateRef = useRef(formState)
   useEffect(() => {
@@ -490,6 +498,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   useComlinkViewHistory({editState})
 
   const handleSetOpenPath = (path: Path) => {
+    if (!formStateRef.current) return
     const ops = getExpandOperations(formStateRef.current, path)
     ops.forEach((op) => {
       if (op.type === 'expandPath') {
@@ -505,19 +514,37 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetOpenPath(path)
   }
 
-  const updatePresence = (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-    presenceStore.setLocation([
-      {
-        type: 'document',
-        documentId: value._id,
-        path: nextFocusPath,
-        lastActiveAt: new Date().toISOString(),
-        selection: payload?.selection,
-      },
-    ])
-  }
+  const updatePresence = useCallback(
+    (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+      presenceStore.setLocation([
+        {
+          type: 'document',
+          documentId: value._id,
+          path: nextFocusPath,
+          lastActiveAt: new Date().toISOString(),
+          selection: payload?.selection,
+        },
+      ])
+    },
+    [presenceStore, value._id],
+  )
 
-  const updatePresenceThrottled = throttle(updatePresence, 1000, {leading: true, trailing: true})
+  // Announce presence on the document root when the form mounts
+  useEffect(() => {
+    updatePresence(EMPTY_ARRAY)
+  }, [updatePresence])
+
+  const updatePresenceThrottled = useMemo(
+    () => throttle(updatePresence, 1000, {leading: true, trailing: true}),
+    [updatePresence],
+  )
+
+  useEffect(() => {
+    return () => {
+      updatePresenceThrottled.cancel()
+    }
+  }, [updatePresenceThrottled])
+
   const focusPathRef = useRef<Path>([])
 
   const handleFocus = (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
@@ -543,8 +570,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       onFocusPath?.(EMPTY_ARRAY)
     }
 
-    // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
-    // user clicks outside a field without focusing another one
+    // Move presence to the document root (no specific field).
+    // DocumentPanelHeader renders these — see document-level-presence cluster.
+    updatePresenceThrottled(EMPTY_ARRAY)
   }
 
   const handleProgrammaticFocus = (nextPath: Path) => {

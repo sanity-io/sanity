@@ -17,7 +17,6 @@ import {type TFunction} from 'i18next'
 import {type ComponentProps, type ComponentType, useMemo} from 'react'
 import {
   type DocumentLayoutProps,
-  formatRelativeLocalePublishDate,
   getDraftId,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
@@ -36,6 +35,7 @@ import {
   useActiveReleases,
   useDocumentVersions,
   useEditState,
+  useFormatRelativeLocalePublishDate,
   useTranslation,
   useWorkspace,
 } from 'sanity'
@@ -270,6 +270,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
 }) => {
   const {t: tCore} = useTranslation()
   const {t: tStructure} = useTranslation(structureLocaleNamespace)
+  const formatPublishDate = useFormatRelativeLocalePublishDate()
 
   const onClick = () => {
     if (type === 'draft') {
@@ -321,7 +322,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
           )}
           {release.metadata.releaseType === 'scheduled' && (
             <Text muted size={1}>
-              {formatRelativeLocalePublishDate(release)}
+              {formatPublishDate(release)}
             </Text>
           )}
         </Stack>

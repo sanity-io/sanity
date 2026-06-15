@@ -67,5 +67,12 @@ export default defineType({
         }),
       ],
     }),
+    defineVideoField({
+      name: 'video',
+      title: 'Video with disabled upload',
+      options: {
+        disableNew: true,
+      },
+    }),
   ],
 })

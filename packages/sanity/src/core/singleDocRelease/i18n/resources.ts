@@ -1,9 +1,11 @@
+import {defineLocalesResources} from '../../i18n'
+
 /**
  * Defined locale strings for the single doc release tool, in US English.
  *
  * @internal
  */
-const singleDocReleaseLocaleStrings = {
+const singleDocReleaseLocaleStrings = defineLocalesResources('singleDocRelease', {
   /** Action text for scheduling publish of a draft document */
   'action.schedule-publish': 'Schedule publish',
   /** Tooltip text for when a document is scheduled for publishing */
@@ -28,7 +30,7 @@ const singleDocReleaseLocaleStrings = {
     'Schedule and lock draft documents for publishing at a future date and time.',
   /** Empty state action documentation for scheduled drafts */
   'empty-state.action.documentation': 'Learn about scheduling',
-}
+})
 
 /**
  * @alpha
