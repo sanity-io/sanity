@@ -115,6 +115,21 @@ export const test = baseTest.extend<SanityFixtures>({
         .locator('[data-testid="form-view"]:not([data-read-only="true"])')
         .waitFor({state: 'visible', timeout: 30_000})
 
+      // The `form-view` element is rendered before the form fields themselves are.
+      // While the document pair is still connecting (or `formState` is momentarily
+      // `null`), `form-view` only contains a loading spinner / "form hidden" text —
+      // no inputs. `document-panel-document-title` (the form header) is rendered by
+      // `FormView` in the *same* branch as `FormBuilder`, i.e. only once
+      // `formState !== null` and the fields are mounted and interactive.
+      //
+      // Waiting for it here closes a race where callers immediately `.fill()` a
+      // field that has not yet mounted, which surfaced in CI as `locator.fill`
+      // timing out. This does not change what any test asserts; it only awaits a
+      // precondition every caller already implicitly depends on.
+      await page
+        .locator('[data-testid="document-panel-document-title"]')
+        .waitFor({state: 'visible', timeout: 30_000})
+
       return id
     }
 
