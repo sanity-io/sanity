@@ -1,27 +1,17 @@
-import {type QueryParams, type ReleaseDocument} from '@sanity/client'
+import {type ReleaseDocument} from '@sanity/client'
 import {getVersionFromId, isPublishedId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {
-  catchError,
-  combineLatest,
-  finalize,
-  map,
-  type Observable,
-  of,
-  shareReplay,
-  startWith,
-  switchMap,
-} from 'rxjs'
+import {catchError, finalize, map, type Observable, of, shareReplay} from 'rxjs'
 
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
 import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
+import {type DocumentSetObserverState} from '../../preview/liveDocumentSet'
 import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId} from '../../util/draftUtils'
-import {isRecord} from '../../util/isRecord'
 import {createSWR} from '../../util/rxSwr'
 import {type VersionInfoDocumentStub} from '../store/types'
 import {useActiveReleases} from '../store/useActiveReleases'
@@ -48,7 +38,7 @@ const INITIAL_VALUE: DocumentPerspectiveState = {
 
 // Create a singleton cache for observables
 export const observableCache = new Map<string, Observable<DocumentPerspectiveState>>()
-const swr = createSWR<{documentIds: string[]}>({maxSize: 100})
+const swr = createSWR<DocumentSetObserverState<VersionInfoDocumentStub>>({maxSize: 100})
 
 /**
  * Fetches the document versions for a given document
@@ -72,29 +62,25 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
       publishedId,
       projectId,
       dataset,
-    }).pipe(
-      map((result) => {
-        return {
-          ...result,
-          versions: result.versions.map((version) => {
-            return {
-              ...version,
-              [DOCUMENT_SYSTEM_FIELD]: version._system?.group
-                ? version._system
-                : {
-                    ...version._system,
-                    ...temporarilyBuildDocumentSystem(version._id, releases),
-                  },
-            }
-          }),
-        }
-      }),
-    )
-  }, [dataset, documentPreviewStore, projectId, publishedId, releases])
+    })
+  }, [dataset, documentPreviewStore, projectId, publishedId])
+  const result = useObservable(observable, INITIAL_VALUE)
 
-  const results = useObservable(observable, INITIAL_VALUE)
-
-  return results
+  const versions = result.versions.map((version) => {
+    return {
+      ...version,
+      [DOCUMENT_SYSTEM_FIELD]: version._system?.group
+        ? version._system
+        : {
+            ...version._system,
+            ...temporarilyBuildDocumentSystem(version._id, releases),
+          },
+    }
+  })
+  return {
+    ...result,
+    versions,
+  }
 }
 
 /**
@@ -137,11 +123,15 @@ const temporarilyBuildDocumentSystem = (
 const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system']
 
 /**
- * Retrieves an observable that emits document IDs matching the document versions that exist for a specific id
+ * Retrieves an observable that emits the document versions that exist for a specific id.
+ *
+ * The versions (and the fields needed to build each version stub) are resolved in a single
+ * query via {@link DocumentPreviewStore.unstable_observeDocumentSet} and kept in sync in
+ * real time, rather than first resolving the set of ids and then fetching each version's
+ * fields separately.
  *
  * @param options - The options for creating or retrieving the observable.
- * options.documentPreviewStore - The store used to observe document IDs.
- * options.params - The query params to use for the observable.
+ * options.documentPreviewStore - The store used to observe the document set.
  * options.publishedId - The ID of the published document.
  * options.projectId - The project ID.
  * options.dataset - The dataset name.
@@ -152,12 +142,11 @@ const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt',
  */
 export function getOrCreateDocumentVersionsObservable(options: {
   documentPreviewStore: DocumentPreviewStore
-  params?: QueryParams
   publishedId: string
   projectId: string
   dataset: string
 }): Observable<DocumentPerspectiveState> {
-  const {documentPreviewStore, projectId, dataset, publishedId, params = undefined} = options
+  const {documentPreviewStore, projectId, dataset, publishedId} = options
   const cacheKey = `${projectId}-${dataset}-${publishedId}`
 
   const cachedObservable = observableCache.get(cacheKey)
@@ -166,49 +155,30 @@ export function getOrCreateDocumentVersionsObservable(options: {
   }
 
   const newObservable = documentPreviewStore
-    .unstable_observeDocumentIdSet(`sanity::versionOf("${publishedId}")`, params, {
-      apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-    })
+    .unstable_observeDocumentSet<VersionInfoDocumentStub>(
+      `sanity::versionOf("${publishedId}")`,
+      DOCUMENT_STUB_PATHS,
+      {apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion},
+    )
     .pipe(
       swr(cacheKey),
-      map(({value}) => value.documentIds),
-      switchMap((documentIds): Observable<DocumentPerspectiveState> => {
-        if (documentIds.length === 0) {
-          return of({data: [], versions: [], error: null, loading: false})
-        }
-
-        const loadingState: DocumentPerspectiveState = {
-          data: documentIds,
-          versions: [],
-          error: null,
-          loading: true,
-        }
-
-        return combineLatest(
-          documentIds.map((id) =>
-            documentPreviewStore.observePaths({_id: id}, DOCUMENT_STUB_PATHS).pipe(
-              map((versionInfo) => (isRecord(versionInfo) ? versionInfo : undefined)),
-              map(
-                (versionInfo) =>
-                  ({
-                    _id: id,
-                    _rev: versionInfo?._rev ?? '',
-                    _createdAt: versionInfo?._createdAt ?? '',
-                    _updatedAt: versionInfo?._updatedAt ?? '',
-                    [DOCUMENT_SYSTEM_FIELD]: versionInfo?.[DOCUMENT_SYSTEM_FIELD] as DocumentSystem,
-                  }) satisfies VersionInfoDocumentStub,
-              ),
-            ),
+      map(({value}): DocumentPerspectiveState => {
+        const {documents} = value
+        return {
+          data: documents.map((doc) => doc._id),
+          versions: documents.map(
+            (doc) =>
+              ({
+                _id: doc._id,
+                _rev: doc._rev ?? '',
+                _createdAt: doc._createdAt ?? '',
+                _updatedAt: doc._updatedAt ?? '',
+                [DOCUMENT_SYSTEM_FIELD]: doc._system,
+              }) satisfies VersionInfoDocumentStub,
           ),
-        ).pipe(
-          map((versions) => ({
-            data: documentIds,
-            versions,
-            error: null,
-            loading: false,
-          })),
-          startWith(loadingState),
-        )
+          error: null,
+          loading: false,
+        }
       }),
       catchError((error) => {
         return of({
