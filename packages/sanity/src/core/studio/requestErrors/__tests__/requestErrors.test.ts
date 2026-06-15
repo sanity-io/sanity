@@ -3,7 +3,12 @@ import {act, renderHook} from '@testing-library/react'
 import {firstValueFrom, of, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {classifyRequestError, getApiErrorCode, parseRetryAfter} from '../classify'
+import {
+  classifyConfigError,
+  classifyRequestError,
+  getApiErrorCode,
+  parseRetryAfter,
+} from '../classify'
 import {createRequestErrorChannel, passthroughErrorHandler} from '../createRequestErrorChannel'
 import {useRetryCountdown} from '../RequestErrorDialog'
 import {type RequestErrorClaim} from '../types'
@@ -108,6 +113,60 @@ describe('classifyRequestError', () => {
 
   it('leaves arbitrary errors unclassified', () => {
     expect(classifyRequestError(new Error('nope'))).toBeNull()
+  })
+})
+
+describe('classifyConfigError', () => {
+  it('classifies project-not-found via attributes.type', () => {
+    const err = clientErrorWith({
+      statusCode: 404,
+      body: {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Project with ID "nonexistent" not found',
+        attributes: {type: 'project'},
+      },
+    })
+    expect(classifyConfigError(err)).toEqual({type: 'projectNotFound'})
+  })
+
+  it('classifies dataset-not-found via the discrete error field', () => {
+    const err = clientErrorWith({
+      statusCode: 404,
+      body: {
+        error: 'Dataset not found',
+        statusCode: 404,
+        message: 'Dataset "nonexistent" not found for project ID "ppsg7ml5"',
+      },
+    })
+    expect(classifyConfigError(err)).toEqual({type: 'datasetNotFound'})
+  })
+
+  it('leaves generic 404s (no structured discriminator) unclassified', () => {
+    // e.g. a /data 404 or a missing-document 404 — caller-domain.
+    expect(classifyConfigError(clientErrorWith({statusCode: 404, body: {}}))).toBeNull()
+    expect(
+      classifyConfigError(
+        clientErrorWith({statusCode: 404, body: {error: 'Not Found', message: 'nope'}}),
+      ),
+    ).toBeNull()
+  })
+
+  it('does not match attributes.type for non-project resources', () => {
+    const err = clientErrorWith({
+      statusCode: 404,
+      body: {message: 'not found', attributes: {type: 'document'}},
+    })
+    expect(classifyConfigError(err)).toBeNull()
+  })
+
+  it('ignores non-404 client errors and non-client errors', () => {
+    expect(
+      classifyConfigError(
+        clientErrorWith({statusCode: 403, body: {attributes: {type: 'project'}}}),
+      ),
+    ).toBeNull()
+    expect(classifyConfigError(new Error('nope'))).toBeNull()
   })
 })
 

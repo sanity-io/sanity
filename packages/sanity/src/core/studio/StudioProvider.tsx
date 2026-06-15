@@ -33,7 +33,7 @@ import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
-import {VisibleWorkspacesProvider, WorkspacesProvider} from './workspaces'
+import {ConfigErrorGate, VisibleWorkspacesProvider, WorkspacesProvider} from './workspaces'
 
 /**
  * @hidden
@@ -123,17 +123,19 @@ export function StudioProvider({
                   >
                     <StudioThemeProvider>
                       <UserColorManagerProvider>
-                        {noAuthBoundary ? (
-                          _children
-                        ) : (
-                          <AuthBoundary
-                            LoadingComponent={LoadingBlock}
-                            AuthenticateComponent={AuthenticateScreen}
-                            NotAuthenticatedComponent={NotAuthenticatedScreen}
-                          >
-                            {_children}
-                          </AuthBoundary>
-                        )}
+                        <ConfigErrorGate>
+                          {noAuthBoundary ? (
+                            _children
+                          ) : (
+                            <AuthBoundary
+                              LoadingComponent={LoadingBlock}
+                              AuthenticateComponent={AuthenticateScreen}
+                              NotAuthenticatedComponent={NotAuthenticatedScreen}
+                            >
+                              {_children}
+                            </AuthBoundary>
+                          )}
+                        </ConfigErrorGate>
                       </UserColorManagerProvider>
                     </StudioThemeProvider>
                   </ActiveWorkspaceMatcher>

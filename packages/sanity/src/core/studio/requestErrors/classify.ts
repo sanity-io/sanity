@@ -97,6 +97,74 @@ export function isUnauthorizedError(err: unknown): err is ClientError {
 }
 
 /**
+ * A workspace-level configuration error: the project or dataset the
+ * studio is pointed at doesn't exist. Unlike the infrastructure errors
+ * above, these are not transient and not recoverable by retry — the user
+ * has to fix `projectId`/`dataset` in their config (or create the missing
+ * resource). The studio surfaces these as a full-screen takeover rather
+ * than the retry/reload dialog.
+ *
+ * Which variant we can report depends on what the failing endpoint tells
+ * us. Only the project/dataset management API carries a structured
+ * discriminator; the generic `/data` 404 can't tell missing-project from
+ * missing-dataset apart, so it isn't classified as a config error at all
+ * (see {@link classifyConfigError}).
+ *
+ * @internal
+ */
+export type ConfigErrorClassification = {type: 'projectNotFound'} | {type: 'datasetNotFound'}
+
+/** Shape of the structured fields we read off a 404 response body. */
+interface NotFoundBody {
+  error?: unknown
+  attributes?: {type?: unknown}
+}
+
+function notFoundBody(err: ClientError): NotFoundBody | undefined {
+  const body = (err as ClientError & {response?: {body?: unknown}}).response?.body
+  if (body && typeof body === 'object') return body as NotFoundBody
+  return undefined
+}
+
+/**
+ * Classify a 404 as a studio-configuration error — the project or dataset
+ * the studio points at doesn't exist — using only structured response
+ * fields (never message text, which isn't stable across endpoints).
+ *
+ * Recognized structured signals:
+ *  - `attributes.type === 'project'` → `projectNotFound`
+ *    (project management API)
+ *  - `error === 'Dataset not found'` → `datasetNotFound`
+ *    (dataset management API; a discrete error code, not free-form text)
+ *
+ * A 404 without one of these structured signals returns `null` and stays
+ * caller-domain — including the generic `/data` 404s, which carry no
+ * discriminator and so can't be safely attributed to a missing project or
+ * dataset. This classifier only reports what the *response* proves.
+ *
+ * @internal
+ */
+export function classifyConfigError(err: unknown): ConfigErrorClassification | null {
+  if (!(err instanceof ClientError) || err.statusCode !== 404) return null
+  const body = notFoundBody(err)
+  if (!body) return null
+
+  // Project management API tags the response with `attributes.type`.
+  if (body.attributes?.type === 'project') {
+    return {type: 'projectNotFound'}
+  }
+
+  // Dataset management API returns a discrete `error` code. This is an
+  // equality check on a structured field, not a match against free-form
+  // `message` text.
+  if (body.error === 'Dataset not found') {
+    return {type: 'datasetNotFound'}
+  }
+
+  return null
+}
+
+/**
  * The API's machine-readable `errorCode` from a client error response body
  * (e.g. `SIO-401-AEX` for an expired session), or `undefined` if absent. The
  * `ClientError` exposes the parsed body on `response.body` (typed `unknown`);

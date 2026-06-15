@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import type QuickLRU from 'quick-lru'
 
-import {type CorsCheckResult} from './WorkspacesProvider'
+import {type CorsProbeOutcome} from './WorkspacesProvider'
 
 /**
  * Cache of in-flight / recently-settled `/check/cors` probes, keyed by
@@ -10,12 +10,17 @@ import {type CorsCheckResult} from './WorkspacesProvider'
  *
  * @internal
  */
-export type CorsCheckCache = QuickLRU<string, Promise<CorsCheckResult | null>>
+export type CorsCheckCache = QuickLRU<string, Promise<CorsProbeOutcome | null>>
 
 /**
  * Probe `/check/cors` for the current origin, deduping concurrent probes
- * through `cache`. Returns `null` when the probe can't conclude (no
- * projectId/url, non-ok response, network failure, unparseable body).
+ * through `cache`. Returns:
+ *  - a `CorsCheckResult` — the allow/credentials verdict
+ *  - `'project-not-found'` — a `404 / SIO-404-PNF` body, i.e. the project
+ *    doesn't exist (the CORS endpoint still answers with CORS headers, so
+ *    this is the one place a missing project is detectable)
+ *  - `null` when the probe can't conclude (no projectId/url, other non-ok
+ *    response, network failure, unparseable body)
  *
  * @internal
  */
@@ -23,7 +28,7 @@ export function checkCors(
   client: SanityClient,
   cache: CorsCheckCache,
   options: {force?: boolean} = {},
-): Promise<CorsCheckResult | null> {
+): Promise<CorsProbeOutcome | null> {
   const config = client.config()
   const {projectId, apiHost, url: baseUrl} = config
   if (!projectId || !baseUrl) return Promise.resolve(null)
@@ -42,18 +47,25 @@ export function checkCors(
   // off the server's CORS policy without extra round trips.
   const probeUrl = `${baseUrl.replace(/\/+$/, '')}/check/cors`
   const check = fetch(probeUrl, {method: 'GET', credentials: 'omit'})
-    .then(async (response): Promise<CorsCheckResult | null> => {
-      if (!response.ok) return null
+    .then(async (response): Promise<CorsProbeOutcome | null> => {
       const body = (await response.json().catch(() => null)) as {
         result?: {allowed?: boolean; withCredentials?: boolean}
+        errorCode?: string
       } | null
+      // A 404 with the project-not-found error code means the project
+      // doesn't exist — the endpoint still sends CORS headers, so this
+      // request succeeds where the data API requests can't surface a body.
+      if (response.status === 404 && body?.errorCode === 'SIO-404-PNF') {
+        return 'project-not-found'
+      }
+      if (!response.ok) return null
       if (!body) return null
       return {
         allowed: body.result?.allowed === true,
         withCredentials: body.result?.withCredentials === true,
       }
     })
-    .catch((): CorsCheckResult | null => null)
+    .catch((): CorsProbeOutcome | null => null)
     .then((result) => {
       // The cache exists only to dedupe the burst of concurrent probes a
       // CORS outage triggers (every failing request probes at once). Once a
@@ -66,7 +78,11 @@ export function checkCors(
       //    skip the CORS screen.
       // Negative verdicts (misconfig) are left to drive the CORS screen and
       // its own forced re-checks.
-      const isPositive = result !== null && result.allowed && result.withCredentials
+      const isPositive =
+        result !== null &&
+        result !== 'project-not-found' &&
+        result.allowed &&
+        result.withCredentials
       if (result === null || isPositive) cache.delete(cacheKey)
       return result
     })
