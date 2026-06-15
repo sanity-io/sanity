@@ -61,7 +61,12 @@
         "src/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
       ],
+      "ignoreBinaries": ["tzutil"],
       "ignoreDependencies": ["@vitest/expect", "babel-plugin-styled-components"],
+    },
+    "packages/@repo/debug-proxy": {
+      "project": ["src/**/*.ts"],
+      "ignoreBinaries": ["mkcert"],
     },
     "packages/@sanity/schema": {
       "entry": [
