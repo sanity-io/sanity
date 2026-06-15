@@ -54,7 +54,7 @@ export interface DocumentSystem {
   bundleId: 'drafts' | '$published' | (string & {})
   release: DocumentSystemRef | null
   variant: DocumentSystemRef | null
-  group: DocumentSystemRef | null
+  group: DocumentSystemRef
   // Normal drafts and published documents don't have a scope id.
   // Variants, release documents and anonymous versions have a scope id.
   scopeId: string | null
