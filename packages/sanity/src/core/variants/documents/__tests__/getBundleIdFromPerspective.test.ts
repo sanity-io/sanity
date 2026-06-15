@@ -20,30 +20,18 @@ const releaseDocument: ReleaseDocument = {
 
 describe('getBundleIdFromPerspective', () => {
   it('maps drafts perspective to drafts bundle', () => {
-    expect(getBundleIdFromPerspective('drafts')).toEqual({
-      bundleId: 'drafts',
-      release: null,
-    })
+    expect(getBundleIdFromPerspective('drafts')).toBe('drafts')
   })
 
   it('maps published perspective to $published bundle', () => {
-    expect(getBundleIdFromPerspective('published')).toEqual({
-      bundleId: '$published',
-      release: null,
-    })
+    expect(getBundleIdFromPerspective('published')).toBe('$published')
   })
 
-  it('maps release document to release id and ref', () => {
-    expect(getBundleIdFromPerspective(releaseDocument)).toEqual({
-      bundleId: 'rSummer123',
-      release: {_ref: '_.releases.rSummer123', _weak: true},
-    })
+  it('maps release document to release id', () => {
+    expect(getBundleIdFromPerspective(releaseDocument)).toBe('rSummer123')
   })
 
-  it('maps anonymous bundle string to bundle id without release ref', () => {
-    expect(getBundleIdFromPerspective('my-bundle')).toEqual({
-      bundleId: 'my-bundle',
-      release: null,
-    })
+  it('maps anonymous bundle string to bundle id', () => {
+    expect(getBundleIdFromPerspective('my-bundle')).toBe('my-bundle')
   })
 })

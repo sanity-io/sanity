@@ -1,35 +1,26 @@
-import {type DocumentSystem, type DocumentSystemRef} from '@sanity/types'
-
-import {type TargetPerspective} from '../../perspective/types'
+import {type PerspectiveBundle, type TargetPerspective} from '../../perspective/types'
 import {isReleaseDocument} from '../../releases/store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
 
 export function getBundleIdFromPerspective(
   selectedPerspective: TargetPerspective,
-): Pick<DocumentSystem, 'bundleId' | 'release'> {
+): PerspectiveBundle {
   if (isPublishedPerspective(selectedPerspective)) {
-    return {bundleId: '$published', release: null}
+    return '$published'
   }
 
   if (isDraftPerspective(selectedPerspective)) {
-    return {bundleId: 'drafts', release: null}
+    return 'drafts'
   }
 
   if (isReleaseDocument(selectedPerspective)) {
-    const releaseRef: DocumentSystemRef = {
-      _ref: selectedPerspective._id,
-      _weak: true,
-    }
-    return {
-      bundleId: getReleaseIdFromReleaseDocumentId(selectedPerspective._id),
-      release: releaseRef,
-    }
+    return getReleaseIdFromReleaseDocumentId(selectedPerspective._id)
   }
 
   if (typeof selectedPerspective === 'string') {
-    return {bundleId: selectedPerspective, release: null}
+    return selectedPerspective
   }
 
-  return {bundleId: 'drafts', release: null}
+  return 'drafts'
 }

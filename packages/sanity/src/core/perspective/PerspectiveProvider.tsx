@@ -70,7 +70,7 @@ export function PerspectiveProvider({
       perspectiveStack,
       excludedPerspectives,
       selectedVariant,
-      bundle: getBundleIdFromPerspective(selectedPerspective).bundleId,
+      bundle: getBundleIdFromPerspective(selectedPerspective),
     }
   }, [
     selectedPerspectiveName,
