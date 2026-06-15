@@ -1,18 +1,231 @@
-import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin} from '@portabletext/editor/plugins'
+import {defineContainer} from '@portabletext/editor'
+import {defineBehavior, effect, forward, raise} from '@portabletext/editor/behaviors'
+import {BehaviorPlugin, NodePlugin} from '@portabletext/editor/plugins'
 import {CharacterPairDecoratorPlugin} from '@portabletext/plugin-character-pair-decorator'
-import {defineArrayMember, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType, type PortableTextPluginsProps} from 'sanity'
+
+/**
+ * A minimal `defineContainer` table: `table` \> `row` \> `cell` \> text blocks.
+ * Registered via `<NodePlugin>` so the editor renders the nested objects as
+ * editable containers. Only renders as a table when the field sets
+ * `components.portableText.enableContainers`; without it the `table` object
+ * falls through to a regular block object.
+ */
+const SIMPLE_TABLE_NODES = [
+  defineContainer({
+    type: 'table',
+    arrayField: 'rows',
+    render: ({children, attributes}) => (
+      <table {...attributes} style={{borderCollapse: 'collapse', width: '100%'}}>
+        <tbody>{children}</tbody>
+      </table>
+    ),
+    of: [
+      defineContainer({
+        type: 'row',
+        arrayField: 'cells',
+        render: ({children, attributes}) => <tr {...attributes}>{children}</tr>,
+        of: [
+          defineContainer({
+            type: 'cell',
+            arrayField: 'content',
+            render: ({children, attributes}) => (
+              <td {...attributes} style={{border: '1px solid #ccc', padding: '4px 8px'}}>
+                {children}
+              </td>
+            ),
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+
+// Scaffolding for the table-insert behavior below: a freshly inserted `table`
+// should be an editable 3x3 grid, not an empty container. Keys come from the
+// editor's own `keyGenerator` (off the behavior snapshot) so they match how
+// the editor mints keys and honour any configured generator.
+function emptyTableCell(keyGenerator: () => string) {
+  return {
+    _key: keyGenerator(),
+    _type: 'cell',
+    content: [
+      {
+        _key: keyGenerator(),
+        _type: 'block',
+        style: 'normal',
+        markDefs: [],
+        children: [{_key: keyGenerator(), _type: 'span', text: '', marks: []}],
+      },
+    ],
+  }
+}
+
+function emptyTableRow(keyGenerator: () => string) {
+  return {
+    _key: keyGenerator(),
+    _type: 'row',
+    cells: [
+      emptyTableCell(keyGenerator),
+      emptyTableCell(keyGenerator),
+      emptyTableCell(keyGenerator),
+    ],
+  }
+}
+
+// The toolbar's `insert.block object` is translated to a synthetic
+// `insert.block` by the editor machine. Intercept that for an empty `table`
+// and raise `insert.block` with a 3x3 grid instead; not forwarding consumes
+// the empty insert. A table that already has rows (paste, programmatic, or the
+// block we raise here) is left alone, which also stops the raise from
+// re-triggering this behavior.
+const tableScaffoldBehaviors = [
+  defineBehavior({
+    on: 'insert.block',
+    guard: ({event}) => {
+      if (event.block._type !== 'table') {
+        return false
+      }
+      const rows = 'rows' in event.block ? event.block.rows : undefined
+      return !(Array.isArray(rows) && rows.length > 0)
+    },
+    actions: [
+      ({event, snapshot}) => [
+        raise({
+          ...event,
+          block: {
+            _type: 'table',
+            rows: [
+              emptyTableRow(snapshot.context.keyGenerator),
+              emptyTableRow(snapshot.context.keyGenerator),
+              emptyTableRow(snapshot.context.keyGenerator),
+            ],
+          },
+        }),
+      ],
+    ],
+  }),
+]
+
+function SimpleTablePlugins(props: PortableTextPluginsProps) {
+  return (
+    <>
+      {props.renderDefault(props)}
+      <NodePlugin nodes={SIMPLE_TABLE_NODES} />
+      <BehaviorPlugin behaviors={tableScaffoldBehaviors} />
+    </>
+  )
+}
 
 export const customPlugins = defineType({
   name: 'customPlugins',
   title: 'Custom Plugins',
   type: 'document',
   fields: [
+    /**
+     * Container Table
+     *
+     * A `defineContainer` table mounted through `components.portableText.plugins`,
+     * with container support enabled via the sibling
+     * `components.portableText.enableContainers`.
+     */
+    {
+      type: 'array',
+      name: 'containerTable',
+      title: 'Container Table',
+      description:
+        'A defineContainer table (table > row > cell). Images and text blocks live at the root and inside cells. The field enables container support.',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          of: [
+            defineArrayMember({
+              type: 'object',
+              name: 'inlineNote',
+              title: 'Inline note',
+              fields: [defineField({type: 'string', name: 'text', title: 'Text'})],
+              preview: {select: {title: 'text'}},
+            }),
+          ],
+        }),
+        defineArrayMember({
+          type: 'image',
+          options: {hotspot: true},
+          fields: [defineField({name: 'alt', type: 'string', title: 'Alternative text'})],
+        }),
+        defineArrayMember({
+          type: 'object',
+          name: 'table',
+          fields: [
+            defineField({
+              type: 'array',
+              name: 'rows',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  name: 'row',
+                  fields: [
+                    defineField({
+                      type: 'array',
+                      name: 'cells',
+                      of: [
+                        defineArrayMember({
+                          type: 'object',
+                          name: 'cell',
+                          fields: [
+                            defineField({
+                              type: 'array',
+                              name: 'content',
+                              of: [
+                                defineArrayMember({
+                                  type: 'block',
+                                  of: [
+                                    defineArrayMember({
+                                      type: 'object',
+                                      name: 'inlineNote',
+                                      title: 'Inline note',
+                                      fields: [
+                                        defineField({type: 'string', name: 'text', title: 'Text'}),
+                                      ],
+                                      preview: {select: {title: 'text'}},
+                                    }),
+                                  ],
+                                }),
+                                defineArrayMember({
+                                  type: 'image',
+                                  options: {hotspot: true},
+                                  fields: [
+                                    defineField({
+                                      name: 'alt',
+                                      type: 'string',
+                                      title: 'Alternative text',
+                                    }),
+                                  ],
+                                }),
+                              ],
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+      components: {
+        portableText: {
+          enableContainers: true,
+          plugins: SimpleTablePlugins,
+        },
+      },
+    },
     {
       type: 'string',
       name: 'title',
     },
-
     /**
      * One-Line Editor
      *
@@ -32,7 +245,6 @@ export const customPlugins = defineType({
         }),
       ],
     },
-
     /**
      * Custom Markdown Config
      *
@@ -83,7 +295,6 @@ export const customPlugins = defineType({
         },
       },
     },
-
     /**
      * Custom Markdown Config (the deprecated way)
      *
@@ -136,7 +347,6 @@ export const customPlugins = defineType({
         },
       },
     },
-
     /**
      * Markdown Shortcuts Disabled
      */
@@ -166,7 +376,6 @@ export const customPlugins = defineType({
         },
       },
     },
-
     /**
      * Custom Decorator Shortcuts
      *
@@ -243,7 +452,6 @@ export const customPlugins = defineType({
         },
       },
     },
-
     /**
      * All Typographic rules enabled
      */
@@ -274,7 +482,6 @@ export const customPlugins = defineType({
         },
       },
     },
-
     /**
      * No Typographic rules enabled
      */
@@ -304,7 +511,6 @@ export const customPlugins = defineType({
         },
       },
     },
-
     /**
      * Paste Link Disabled
      *
@@ -338,7 +544,6 @@ export const customPlugins = defineType({
         },
       },
     },
-
     /**
      * Custom Paste Link Annotation
      *
@@ -394,7 +599,6 @@ export const customPlugins = defineType({
         },
       },
     },
-
     /**
      * No Plugins
      *
@@ -418,7 +622,6 @@ export const customPlugins = defineType({
         },
       },
     },
-
     /**
      * Custom Behavior
      *
