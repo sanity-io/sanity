@@ -42,6 +42,27 @@ export interface KeyedObject {
 /**
  * @internal
  */
+export interface DocumentSystemRef {
+  _ref: string
+  _weak: true
+}
+
+/**
+ * @internal
+ */
+export interface DocumentSystem {
+  bundleId: 'drafts' | '$published' | (string & {})
+  release: DocumentSystemRef | null
+  variant: DocumentSystemRef | null
+  group: DocumentSystemRef | null
+  // Normal drafts and published documents don't have a scope id.
+  // Variants, release documents and anonymous versions have a scope id.
+  scopeId: string | null
+}
+
+/**
+ * @internal
+ */
 export interface StrictVersionLayeringOptions {
   /**
    * By default, version layering includes all document versions, regardless of their expected
