@@ -119,15 +119,10 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
     padding-bottom: ${({$isFullscreen, $isOneLine, theme}) =>
       $isOneLine ? '0' : theme.sanity.space[$isFullscreen ? 9 : 5]}px;
 
-    & > .pt-block {
+    & > [data-pt-block] {
       margin: 0 auto;
       max-width: ${(props) => getTheme_v2(props.theme).container[1]}px;
     }
-
-    /* & > .pt-block {
-      & .pt-inline-object {
-      }
-    } */
 
     & .pt-drop-indicator {
       pointer-events: none;

@@ -26,7 +26,7 @@ describe('Portable Text Input', () => {
       await expect.element($dialog).toBeVisible()
 
       // Assertion: Object preview should be visible in the main editor
-      const inlineObject = $portableTextInput.element().querySelector('.pt-inline-object')
+      const inlineObject = $portableTextInput.element().querySelector('[data-pt-inline="object"]')
       expect(inlineObject).toBeTruthy()
 
       // Find the nested portable text input within the dialog

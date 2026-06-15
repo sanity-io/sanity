@@ -58,11 +58,11 @@ describe('Portable Text Input', () => {
       await getFocusedPortableTextEditor('field-body')
 
       // Drag and drop the 'Hello world' block to the position of 'Baz'
-      await dragAndDrop('.pt-editable [draggable="true"]', '.pt-block.pt-text-block:nth-child(3)')
+      await dragAndDrop('.pt-editable [draggable="true"]', '[data-pt-block="text"]:nth-child(3)')
 
       // NOTE: `document` is shadowed by the SanityDocument fixture above, so
       // reach for the DOM via `window.document`.
-      const fourthBlock = window.document.querySelector('.pt-block:nth-child(4)')
+      const fourthBlock = window.document.querySelector('[data-pt-block]:nth-child(4)')
       expect(fourthBlock?.textContent).toContain('Baz')
     })
 
@@ -81,7 +81,7 @@ describe('Portable Text Input', () => {
       // Drag and drop the 'Hello world' block to the position of 'Baz' without dropping it
       await dragWithoutDrop(
         '.pt-editable [draggable="true"]',
-        '.pt-block.pt-text-block:nth-child(3)',
+        '[data-pt-block="text"]:nth-child(3)',
       )
 
       // The "can't upload" warning is only shown for external file drags, never
