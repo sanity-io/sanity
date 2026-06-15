@@ -128,10 +128,11 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
               />
             ) : (
               <>
-                {diff && DiffComponent && (
-                  // eslint-disable-next-line react-hooks/static-components
-                  <DiffComponent diff={diff} schemaType={divergence.schemaType} />
-                )}
+                {diff &&
+                  DiffComponent && (
+                    // eslint-disable-next-line react-hooks/static-components
+                    <DiffComponent diff={diff} schemaType={divergence.schemaType} />
+                  )}
               </>
             )}
           </Card>

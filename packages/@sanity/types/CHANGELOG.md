@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
+
+### ⚠ BREAKING CHANGES
+
+* drop support for node 20 (#12859)
+
+### Features
+
+* **studio:** use `groq2024` search strategy by default ([3d9442f](https://github.com/sanity-io/sanity/commit/3d9442f5b37471d0ee958e70b8962fde30cbb7a0))
+
+### Bug Fixes
+
+* drop support for node 20 ([#12859](https://github.com/sanity-io/sanity/issues/12859)) ([d02289a](https://github.com/sanity-io/sanity/commit/d02289a2ac5aca3de55853812ac6e0b659fa2ef4))
 ## [5.31.0](https://github.com/sanity-io/sanity/compare/v5.30.0...v5.31.0) (2026-06-10)
 
 ### Bug Fixes
