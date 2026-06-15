@@ -18,7 +18,6 @@ const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt',
 const NO_VERSIONS = {} as Record<string, VersionInfoDocumentStub | undefined>
 
 /**
- * TODO: Deprecate this function and use useDocumentVersions instead.
  * Takes a document id, and returns information about what other versions of the document currently exists
  * @param documentId - The document id. Should be the published id
  * @internal

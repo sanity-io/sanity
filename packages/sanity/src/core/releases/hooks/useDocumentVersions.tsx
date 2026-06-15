@@ -1,7 +1,8 @@
 import {type QueryParams, type ReleaseDocument} from '@sanity/client'
 import {getVersionFromId, isPublishedId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
-import {useEffect, useMemo, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {
   catchError,
   combineLatest,
@@ -10,6 +11,7 @@ import {
   type Observable,
   of,
   shareReplay,
+  startWith,
   switchMap,
 } from 'rxjs'
 
@@ -68,7 +70,6 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
   const projectId = useProjectId()
   const documentPreviewStore = useDocumentPreviewStore()
   const {data: releases} = useActiveReleases()
-  const [results, setResults] = useState<DocumentPerspectiveState>(INITIAL_VALUE)
 
   const observable: Observable<DocumentPerspectiveState> = useMemo(() => {
     return getOrCreateDocumentVersionsObservable({
@@ -96,12 +97,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
     )
   }, [dataset, documentPreviewStore, projectId, publishedId, releases])
 
-  useEffect(() => {
-    const subscription = observable.subscribe((result) => {
-      setResults(result)
-    })
-    return () => subscription.unsubscribe()
-  }, [observable])
+  const results = useObservable(observable, INITIAL_VALUE)
 
   return results
 }
@@ -184,6 +180,13 @@ export function getOrCreateDocumentVersionsObservable(options: {
           return of({data: [], versions: [], error: null, loading: false})
         }
 
+        const loadingState: DocumentPerspectiveState = {
+          data: documentIds,
+          versions: [],
+          error: null,
+          loading: true,
+        }
+
         return combineLatest(
           documentIds.map((id) =>
             documentPreviewStore.observeDocumentSystemFromId(id).pipe(
@@ -204,6 +207,7 @@ export function getOrCreateDocumentVersionsObservable(options: {
             error: null,
             loading: false,
           })),
+          startWith(loadingState),
         )
       }),
       catchError((error) => {
