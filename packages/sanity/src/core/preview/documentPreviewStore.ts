@@ -21,6 +21,11 @@ import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {createObservePathsDocumentPair} from './documentPair'
 import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from './liveDocumentIdSet'
+import {
+  createDocumentSetObserver,
+  type DocumentSetObserverDocumentStub,
+  type DocumentSetObserverState,
+} from './liveDocumentSet'
 import {createObserveFields} from './observeFields'
 import {
   type ApiConfig,
@@ -122,6 +127,30 @@ export interface DocumentPreviewStore {
   ) => Observable<DocumentIdSetObserverState>
 
   /**
+   * Observes a set of documents matching the given groq-filter, projected to the requested fields.
+   * Unlike {@link DocumentPreviewStore.unstable_observeDocumentIdSet}, this projects the matching
+   * documents in a single query (`*[filter]{...projection}`) The set is fetched once initially and
+   * thereafter kept in sync incrementally from listener transitions.
+   *
+   * @hidden
+   * @beta
+   * @param filter - A groq filter to use for the document set
+   * @param projection - The list of fields to project on each matched document (`_id` is always included)
+   * @param params - Parameters to use with the groq filter
+   * @param options - Options for the observer
+   */
+  unstable_observeDocumentSet: <
+    T extends DocumentSetObserverDocumentStub = DocumentSetObserverDocumentStub,
+  >(
+    filter: string,
+    projection: string[],
+    params?: QueryParams,
+    options?: {
+      apiVersion?: string
+    },
+  ) => Observable<DocumentSetObserverState<T>>
+
+  /**
    * Observe a complete document with the given ID
    * @hidden
    * @beta
@@ -198,6 +227,7 @@ export function createDocumentPreviewStore({
   }
 
   const observeDocumentIdSet = createDocumentIdSetObserver(versionedClient)
+  const observeDocumentSet = createDocumentSetObserver(versionedClient)
 
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
 
@@ -223,6 +253,7 @@ export function createDocumentPreviewStore({
     observeDocumentTypeFromId,
     observeDocumentSystemFromId,
     unstable_observeDocumentIdSet: observeDocumentIdSet,
+    unstable_observeDocumentSet: observeDocumentSet,
     unstable_observeDocument: observeDocument,
     unstable_observeDocuments: (ids: string[]) =>
       combineLatest(ids.map((id) => observeDocument(id))),

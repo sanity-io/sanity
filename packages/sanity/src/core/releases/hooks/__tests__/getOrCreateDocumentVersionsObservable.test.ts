@@ -5,27 +5,30 @@ import {type DocumentPreviewStore} from '../../../preview'
 import {getOrCreateDocumentVersionsObservable, observableCache} from '../useDocumentVersions'
 
 describe('getOrCreateDocumentVersionsObservable', () => {
-  it('emits loading: true while document system metadata is being resolved', async () => {
+  it('maps the observed document set to version stubs in a single emission', async () => {
     observableCache.clear()
 
     const documentPreviewStore = {
-      unstable_observeDocumentIdSet: vi
-        .fn<DocumentPreviewStore['unstable_observeDocumentIdSet']>()
+      unstable_observeDocumentSet: vi
+        .fn<DocumentPreviewStore['unstable_observeDocumentSet']>()
         .mockReturnValue(
           of({
             status: 'connected',
-            documentIds: ['drafts.article-1'],
-          }),
-        ),
-      observeDocumentSystemFromId: vi
-        .fn<DocumentPreviewStore['observeDocumentSystemFromId']>()
-        .mockReturnValue(
-          of({
-            bundleId: 'drafts',
-            release: null,
-            variant: null,
-            group: {_ref: 'article-1', _weak: true},
-            scopeId: null,
+            documents: [
+              {
+                _id: 'drafts.article-1',
+                _rev: 'rev-1',
+                _createdAt: '2024-01-01T00:00:00.000Z',
+                _updatedAt: '2024-01-02T00:00:00.000Z',
+                _system: {
+                  bundleId: 'drafts',
+                  release: null,
+                  variant: null,
+                  group: {_ref: 'article-1', _weak: true},
+                  scopeId: null,
+                },
+              },
+            ],
           }),
         ),
     } as unknown as DocumentPreviewStore
@@ -39,21 +42,22 @@ describe('getOrCreateDocumentVersionsObservable', () => {
       }).pipe(toArray()),
     )
 
+    expect(documentPreviewStore.unstable_observeDocumentSet).toHaveBeenCalledWith(
+      'sanity::versionOf("article-1")',
+      ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system'],
+      undefined,
+      expect.objectContaining({apiVersion: expect.any(String)}),
+    )
+
     expect(emissions).toEqual([
-      {
-        data: ['drafts.article-1'],
-        versions: [],
-        error: null,
-        loading: true,
-      },
       {
         data: ['drafts.article-1'],
         versions: [
           {
             _id: 'drafts.article-1',
-            _rev: '',
-            _createdAt: '',
-            _updatedAt: '',
+            _rev: 'rev-1',
+            _createdAt: '2024-01-01T00:00:00.000Z',
+            _updatedAt: '2024-01-02T00:00:00.000Z',
             _system: {
               bundleId: 'drafts',
               release: null,

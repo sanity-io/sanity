@@ -6,7 +6,6 @@ import {delay, of} from 'rxjs'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
-import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
 import {useDocumentPreviewStore} from '../../../store'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
 import {useActiveReleasesMockReturn} from '../../store/__tests__/__mocks/useActiveReleases.mock'
@@ -59,19 +58,15 @@ async function setupMocks({
   >
 
   mockDocumentPreviewStore.mockReturnValue({
-    unstable_observeDocumentIdSet: vi
-      .fn<DocumentPreviewStore['unstable_observeDocumentIdSet']>()
-      .mockImplementation(() =>
-        of({status: 'connected', documentIds: versionIds} as DocumentIdSetObserverState).pipe(
-          // simulate async initial emission
-          delay(0),
-        ),
-      ),
-    observeDocumentSystemFromId: vi
-      .fn<DocumentPreviewStore['observeDocumentSystemFromId']>()
-      .mockImplementation((id) =>
-        of(
-          observeSystem
+    unstable_observeDocumentSet: vi.fn().mockImplementation(() =>
+      of({
+        status: 'connected',
+        documents: versionIds.map((id) => ({
+          _id: id,
+          _rev: '',
+          _createdAt: '',
+          _updatedAt: '',
+          _system: observeSystem
             ? ({
                 bundleId: 'drafts',
                 release: null,
@@ -80,8 +75,12 @@ async function setupMocks({
                 scopeId: getPublishedId(id),
               } satisfies DocumentSystem)
             : undefined,
-        ),
+        })),
+      }).pipe(
+        // simulate async initial emission
+        delay(0),
       ),
+    ),
   } as unknown as DocumentPreviewStore)
 
   const {useActiveReleases} = await import('../../store/useActiveReleases')
