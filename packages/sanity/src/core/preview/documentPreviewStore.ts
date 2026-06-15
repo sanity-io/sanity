@@ -136,7 +136,6 @@ export interface DocumentPreviewStore {
    * @beta
    * @param filter - A groq filter to use for the document set
    * @param projection - The list of fields to project on each matched document (`_id` is always included)
-   * @param params - Parameters to use with the groq filter
    * @param options - Options for the observer
    */
   unstable_observeDocumentSet: <
@@ -144,7 +143,6 @@ export interface DocumentPreviewStore {
   >(
     filter: string,
     projection: string[],
-    params?: QueryParams,
     options?: {
       apiVersion?: string
     },

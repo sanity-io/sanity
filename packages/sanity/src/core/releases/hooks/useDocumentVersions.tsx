@@ -1,9 +1,9 @@
-import {type QueryParams, type ReleaseDocument} from '@sanity/client'
+import {type ReleaseDocument} from '@sanity/client'
 import {getVersionFromId, isPublishedId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, finalize, map, type Observable, of, shareReplay, tap} from 'rxjs'
+import {catchError, finalize, map, type Observable, of, shareReplay} from 'rxjs'
 
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
@@ -132,7 +132,6 @@ const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt',
  *
  * @param options - The options for creating or retrieving the observable.
  * options.documentPreviewStore - The store used to observe the document set.
- * options.params - The query params to use for the observable.
  * options.publishedId - The ID of the published document.
  * options.projectId - The project ID.
  * options.dataset - The dataset name.
@@ -143,16 +142,14 @@ const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt',
  */
 export function getOrCreateDocumentVersionsObservable(options: {
   documentPreviewStore: DocumentPreviewStore
-  params?: QueryParams
   publishedId: string
   projectId: string
   dataset: string
 }): Observable<DocumentPerspectiveState> {
-  const {documentPreviewStore, projectId, dataset, publishedId, params = undefined} = options
+  const {documentPreviewStore, projectId, dataset, publishedId} = options
   const cacheKey = `${projectId}-${dataset}-${publishedId}`
 
   const cachedObservable = observableCache.get(cacheKey)
-  console.log('cachedObservable', cachedObservable)
   if (cachedObservable) {
     return cachedObservable
   }
@@ -161,7 +158,6 @@ export function getOrCreateDocumentVersionsObservable(options: {
     .unstable_observeDocumentSet<VersionInfoDocumentStub>(
       `sanity::versionOf("${publishedId}")`,
       DOCUMENT_STUB_PATHS,
-      params,
       {apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion},
     )
     .pipe(

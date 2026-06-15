@@ -1,10 +1,12 @@
-import {type QueryParams, type SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import deepEquals from 'react-fast-compare'
-import {of} from 'rxjs'
+import {finalize, of, timer, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map, mergeMap, scan, tap} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../config/types'
 import {versionedClient} from '../studioClient'
+import {LISTENER_RESET_DELAY} from './constants'
+import {shareReplayLatest} from './utils/shareReplayLatest'
 
 /**
  * The minimal shape every observed document is guaranteed to have. `_id` is used
@@ -32,6 +34,14 @@ type DocumentSetAccumulator<T extends DocumentSetObserverDocumentStub> = {
   documentsById: Map<string, T>
 }
 
+function buildCacheKey(
+  queryFilter: string,
+  fields: string[],
+  apiVersion: string | undefined,
+): string {
+  return [apiVersion ?? '', queryFilter, fields.join(',')].join('\0')
+}
+
 /**
  * Creates an observer that resolves the matching documents (projected to the requested fields) in a single query
  *
@@ -44,18 +54,20 @@ type DocumentSetAccumulator<T extends DocumentSetObserverDocumentStub> = {
  * Because updates are applied directly from the mutation event `result` (the document as
  * it looked after the mutation), the listener is configured with `includeResult: true`.
  *
+ * Observables are memoized by filter, projection and apiVersion so multiple
+ * subscribers (or repeated hook calls) share a single listener connection.
+ *
+ *
  * @internal
  */
 export function createDocumentSetObserver(client: SanityClient) {
-  return function observe<T extends DocumentSetObserverDocumentStub>(
+  const MEMO: Record<string, Observable<DocumentSetObserverState>> = Object.create(null)
+
+  function observeCold<T extends DocumentSetObserverDocumentStub>(
     queryFilter: string,
-    projection: string[],
-    params?: QueryParams,
-    options: LiveDocumentSetOptions = {},
+    fields: string[],
+    apiVersion: string | undefined,
   ) {
-    const {apiVersion} = options
-    // `_id` is always required so we can key the set
-    const fields = ['_id', ...projection.filter((field) => field !== '_id')]
     const query = `*[${queryFilter}]{${fields.join(',')}}`
 
     /**
@@ -72,9 +84,13 @@ export function createDocumentSetObserver(client: SanityClient) {
 
     function fetchDocuments() {
       return versionedClient(client, apiVersion)
-        .observable.fetch<T[]>(query, params ?? {}, {
-          tag: 'preview.observe-document-set.fetch',
-        })
+        .observable.fetch<T[]>(
+          query,
+          {},
+          {
+            tag: 'preview.observe-document-set.fetch',
+          },
+        )
         .pipe(
           tap((result) => {
             if (!Array.isArray(result)) {
@@ -87,14 +103,18 @@ export function createDocumentSetObserver(client: SanityClient) {
     }
 
     return versionedClient(client, apiVersion)
-      .observable.listen(`*[${queryFilter}]`, params, {
-        visibility: 'query',
-        events: ['welcome', 'mutation', 'reconnect'],
-        includeResult: true,
-        includeMutations: false,
-        includeAllVersions: true,
-        tag: 'preview.observe-document-set.live-document-set',
-      })
+      .observable.listen(
+        `*[${queryFilter}]`,
+        {},
+        {
+          visibility: 'query',
+          events: ['welcome', 'mutation', 'reconnect'],
+          includeResult: true,
+          includeMutations: false,
+          includeAllVersions: true,
+          tag: 'preview.observe-document-set.live-document-set',
+        },
+      )
       .pipe(
         // The initial `welcome` triggers a single fetch of the whole set; every other
         // event is passed through and applied incrementally in `scan` below.
@@ -149,6 +169,33 @@ export function createDocumentSetObserver(client: SanityClient) {
         ),
         distinctUntilChanged(isSameState),
       )
+  }
+
+  return function observeDocumentSet<T extends DocumentSetObserverDocumentStub>(
+    queryFilter: string,
+    projection: string[],
+    options: LiveDocumentSetOptions = {},
+  ): Observable<DocumentSetObserverState<T>> {
+    const {apiVersion} = options
+    // `_id` is always required so we can key the set
+    const fields = ['_id', ...projection.filter((field) => field !== '_id')]
+    const cacheKey = buildCacheKey(queryFilter, fields, apiVersion)
+
+    if (cacheKey in MEMO) {
+      return MEMO[cacheKey] as Observable<DocumentSetObserverState<T>>
+    }
+
+    MEMO[cacheKey] = observeCold<T>(queryFilter, fields, apiVersion).pipe(
+      finalize(() => {
+        delete MEMO[cacheKey]
+      }),
+      shareReplayLatest({
+        predicate: (state) => state.status === 'connected',
+        resetOnRefCountZero: () => timer(LISTENER_RESET_DELAY),
+      }),
+    )
+
+    return MEMO[cacheKey] as Observable<DocumentSetObserverState<T>>
   }
 }
 

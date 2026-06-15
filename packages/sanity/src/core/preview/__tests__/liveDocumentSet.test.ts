@@ -92,4 +92,18 @@ describe('createDocumentSetObserver', () => {
       {status: 'reconnecting', documents: [{_id: 'a', _rev: '1'}]},
     ])
   })
+
+  it('reuses the same listener for identical observe calls', () => {
+    const listen$ = new Subject<unknown>()
+    const {client, listen} = createMockClient(listen$, [{_id: 'a', _rev: '1'}])
+    const observeDocumentSet = createDocumentSetObserver(client)
+
+    const sub1 = observeDocumentSet<TestDoc>('sanity::versionOf("a")', ['_id', '_rev']).subscribe()
+    const sub2 = observeDocumentSet<TestDoc>('sanity::versionOf("a")', ['_id', '_rev']).subscribe()
+
+    expect(listen).toHaveBeenCalledTimes(1)
+
+    sub1.unsubscribe()
+    sub2.unsubscribe()
+  })
 })

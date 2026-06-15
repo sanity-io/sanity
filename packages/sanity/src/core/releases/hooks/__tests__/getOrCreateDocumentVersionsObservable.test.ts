@@ -45,7 +45,6 @@ describe('getOrCreateDocumentVersionsObservable', () => {
     expect(documentPreviewStore.unstable_observeDocumentSet).toHaveBeenCalledWith(
       'sanity::versionOf("article-1")',
       ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system'],
-      undefined,
       expect.objectContaining({apiVersion: expect.any(String)}),
     )
 
