@@ -1,5 +1,6 @@
-// Fires once per workspace mount. Group by envelope `activeWorkspace` and
-// `activeProjectId` for per-workspace adoption; raw counts skew to heavy users.
+// Fires once per active workspace, re-emitting on workspace switch. Group by
+// envelope `activeWorkspace` and `activeProjectId` for per-workspace adoption;
+// raw counts skew to heavy users.
 import {defineEvent} from '@sanity/telemetry'
 import {type SearchStrategy} from '@sanity/types'
 
@@ -7,23 +8,23 @@ import {type Workspace} from '../../config'
 
 interface WorkspaceFeaturesObservedInfo {
   advancedVersionControlEnabled: boolean
-  releasesEnabled: boolean
+  releasesEnabled: boolean | undefined
   releasesLimit: number | undefined
-  tasksEnabled: boolean
-  scheduledDraftsEnabled: boolean
+  tasksEnabled: boolean | undefined
+  scheduledDraftsEnabled: boolean | undefined
   scheduledPublishingEnabled: boolean
-  scheduledPublishingExplicitlyEnabled: boolean
-  mediaLibraryEnabled: boolean
-  canvasEnabled: boolean
-  variantsEnabled: boolean
-  eventsApiDocumentsEnabled: boolean
-  eventsApiReleasesEnabled: boolean
-  announcementsEnabled: boolean
+  scheduledPublishingExplicitlyEnabled: boolean | undefined
+  mediaLibraryEnabled: boolean | undefined
+  canvasEnabled: boolean | undefined
+  variantsEnabled: boolean | undefined
+  eventsApiDocumentsEnabled: boolean | undefined
+  eventsApiReleasesEnabled: boolean | undefined
+  announcementsEnabled: boolean | undefined
   draftsEnabled: boolean
-  partialIndexingEnabled: boolean
+  partialIndexingEnabled: boolean | undefined
   fileDirectUploadsEnabled: boolean
   imageDirectUploadsEnabled: boolean
-  searchStrategy: SearchStrategy
+  searchStrategy: SearchStrategy | undefined
 }
 
 export const WorkspaceFeaturesObserved = defineEvent<WorkspaceFeaturesObservedInfo>({
@@ -33,37 +34,41 @@ export const WorkspaceFeaturesObserved = defineEvent<WorkspaceFeaturesObservedIn
 })
 
 /**
- * Reads the resolved workspace into the flat, low-cardinality feature snapshot
- * emitted by {@link WorkspaceFeaturesObserved}. Every entry must be a boolean,
- * small enum, or short number; never free text, identifiers, or customer values,
- * which keeps the payload safe to send and cheap to aggregate. Defaults mirror
- * the config reducers so an omitted option reports its effective value, not
- * `undefined`.
+ * Projects the resolved workspace into the flat, low-cardinality feature
+ * snapshot emitted by {@link WorkspaceFeaturesObserved}. Values are read
+ * straight off the resolved workspace, where the config resolver has already
+ * applied every default and merged plugin contributions, so this never restates
+ * a default itself: changing a default upstream flows through with no change
+ * here. A field is `undefined` only when the resolved workspace omits it, which
+ * downstream reads as the default being in effect.
+ *
+ * Every entry must stay a boolean, small enum, or short number; never free
+ * text, identifiers, or customer values, which keeps the payload safe to send
+ * and cheap to aggregate.
  */
-// eslint-disable-next-line complexity -- flat field-by-field mapping, not branching logic
 export function collectWorkspaceFeatures(workspace: Workspace): WorkspaceFeaturesObservedInfo {
   return {
-    advancedVersionControlEnabled: workspace.advancedVersionControl?.enabled ?? false,
-    releasesEnabled: workspace.releases?.enabled ?? true,
+    advancedVersionControlEnabled: workspace.advancedVersionControl.enabled,
+    releasesEnabled: workspace.releases?.enabled,
     releasesLimit: workspace.releases?.limit,
-    tasksEnabled: workspace.tasks?.enabled ?? true,
-    scheduledDraftsEnabled: workspace.scheduledDrafts?.enabled ?? true,
+    tasksEnabled: workspace.tasks?.enabled,
+    scheduledDraftsEnabled: workspace.scheduledDrafts?.enabled,
     // `enabled` is on-by-default and only flips false on explicit opt-out, so it
     // reads as a near-constant; the explicit opt-in is the real adoption signal.
     // See ScheduledPublishingEnabledProvider, which gates on both.
-    scheduledPublishingEnabled: workspace.scheduledPublishing?.enabled ?? true,
+    scheduledPublishingEnabled: workspace.scheduledPublishing.enabled,
     scheduledPublishingExplicitlyEnabled:
-      workspace.scheduledPublishing?.__internal__workspaceEnabled ?? false,
-    mediaLibraryEnabled: workspace.mediaLibrary?.enabled ?? false,
-    canvasEnabled: workspace.apps?.canvas?.enabled ?? true,
-    variantsEnabled: workspace.beta?.variants?.enabled ?? false,
-    eventsApiDocumentsEnabled: workspace.beta?.eventsAPI?.documents ?? true,
-    eventsApiReleasesEnabled: workspace.beta?.eventsAPI?.releases ?? false,
-    announcementsEnabled: workspace.announcements?.enabled ?? true,
-    draftsEnabled: workspace.document?.drafts?.enabled ?? true,
-    partialIndexingEnabled: workspace.search?.unstable_partialIndexing?.enabled ?? false,
-    fileDirectUploadsEnabled: workspace.form?.file?.directUploads ?? true,
-    imageDirectUploadsEnabled: workspace.form?.image?.directUploads ?? true,
-    searchStrategy: workspace.search?.strategy ?? 'groqLegacy',
+      workspace.scheduledPublishing.__internal__workspaceEnabled,
+    mediaLibraryEnabled: workspace.mediaLibrary?.enabled,
+    canvasEnabled: workspace.apps?.canvas?.enabled,
+    variantsEnabled: workspace.beta?.variants?.enabled,
+    eventsApiDocumentsEnabled: workspace.beta?.eventsAPI?.documents,
+    eventsApiReleasesEnabled: workspace.beta?.eventsAPI?.releases,
+    announcementsEnabled: workspace.announcements?.enabled,
+    draftsEnabled: workspace.document.drafts.enabled,
+    partialIndexingEnabled: workspace.search.unstable_partialIndexing?.enabled,
+    fileDirectUploadsEnabled: workspace.form.file.directUploads,
+    imageDirectUploadsEnabled: workspace.form.image.directUploads,
+    searchStrategy: workspace.search.strategy,
   }
 }
