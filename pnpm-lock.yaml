@@ -648,7 +648,7 @@ importers:
         version: 2.2.2(react@19.2.7)
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 7.0.3(@oclif/core@4.11.4)(@sanity/cli-core@2.0.1(@noble/hashes@2.2.0)(@types/node@24.13.2)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(terser@5.48.0)(yaml@2.9.0))(xstate@5.32.0)
+        version: 7.0.3(@oclif/core@4.11.4)(@sanity/cli-core@2.0.1(@noble/hashes@2.2.0)(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(terser@5.48.0)(yaml@2.9.0))(xstate@5.32.0)
       '@sanity/preview-url-secret':
         specifier: ^4.0.7
         version: 4.0.7(@sanity/client@7.22.1)
@@ -1708,6 +1708,9 @@ importers:
       '@portabletext/patches':
         specifier: ^2.0.4
         version: 2.0.4
+      '@portabletext/plugin-dnd':
+        specifier: ^1.0.1
+        version: 1.0.1(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
       '@portabletext/plugin-markdown-shortcuts':
         specifier: ^8.0.16
         version: 8.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
@@ -1788,7 +1791,7 @@ importers:
         version: 0.23.0
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 7.0.3(@oclif/core@4.11.4)(@sanity/cli-core@2.0.1(@noble/hashes@2.2.0)(@types/node@24.13.2)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(terser@5.48.0)(yaml@2.9.0))(xstate@5.32.0)
+        version: 7.0.3(@oclif/core@4.11.4)(@sanity/cli-core@2.0.1(@noble/hashes@2.2.0)(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(terser@5.48.0)(yaml@2.9.0))(xstate@5.32.0)
       '@sanity/mutate':
         specifier: ^0.18.1
         version: 0.18.1(xstate@5.32.0)
@@ -4841,6 +4844,13 @@ packages:
 
   '@portabletext/plugin-character-pair-decorator@8.0.16':
     resolution: {integrity: sha512-IBY8qEv8e1pSMjEjw1oY3RmBhCGN5HU/yGFO+srsZI/BFWVA5UqZ7wVQJw637fEUwvwAIR/g8vNEY1H3f7Y/fg==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@portabletext/editor': ^7.5.0
+      react: ^19.2
+
+  '@portabletext/plugin-dnd@1.0.1':
+    resolution: {integrity: sha512-V7C8e9QDTEkRGf2YybELPTOCfzQzGHOb7JwKNt/KdfxpMt1Kn+zGsSiveBvwT7dqsFQICxQZHJkHIh6PPXafjQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@portabletext/editor': ^7.5.0
@@ -14740,6 +14750,11 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
+  '@portabletext/plugin-dnd@1.0.1(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      '@portabletext/editor': 7.5.0(@types/react@19.2.17)(react@19.2.7)
+      react: 19.2.7
+
   '@portabletext/plugin-input-rule@5.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
       '@portabletext/editor': 7.5.0(@types/react@19.2.17)(react@19.2.7)
@@ -15305,7 +15320,7 @@ snapshots:
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
       '@sanity/import': 6.0.3(@sanity/client@7.22.1)
-      '@sanity/migrate': 7.0.3(@oclif/core@4.11.4)(@sanity/cli-core@2.0.1(@noble/hashes@2.2.0)(@types/node@24.13.2)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(terser@5.48.0)(yaml@2.9.0))(xstate@5.32.0)
+      '@sanity/migrate': 7.0.3(@oclif/core@4.11.4)(@sanity/cli-core@2.0.1(@noble/hashes@2.2.0)(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(terser@5.48.0)(yaml@2.9.0))(xstate@5.32.0)
       '@sanity/runtime-cli': 16.0.0(@types/node@24.13.2)(esbuild@0.28.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.7)
@@ -15671,7 +15686,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.1
 
-  '@sanity/migrate@7.0.3(@oclif/core@4.11.4)(@sanity/cli-core@2.0.1(@noble/hashes@2.2.0)(@types/node@24.13.2)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(terser@5.48.0)(yaml@2.9.0))(xstate@5.32.0)':
+  '@sanity/migrate@7.0.3(@oclif/core@4.11.4)(@sanity/cli-core@2.0.1(@noble/hashes@2.2.0)(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(terser@5.48.0)(yaml@2.9.0))(xstate@5.32.0)':
     dependencies:
       '@oclif/core': 4.11.4
       '@sanity/cli-core': 2.0.1(@noble/hashes@2.2.0)(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(terser@5.48.0)(yaml@2.9.0)

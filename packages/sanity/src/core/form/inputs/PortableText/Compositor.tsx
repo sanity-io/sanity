@@ -14,6 +14,7 @@ import {
   type RegistrableNode,
 } from '@portabletext/editor'
 import {NodePlugin} from '@portabletext/editor/plugins'
+import {DndProvider, useDropPosition} from '@portabletext/plugin-dnd'
 import {
   type ObjectSchemaType,
   type Path,
@@ -236,6 +237,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
       return (
         <div {...attributes}>
+          <BlockDropIndicator path={blockPath} edge="start" />
           <TextBlock
             floatingBoundary={floatingBoundary}
             focused={blockFocused}
@@ -264,6 +266,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           >
             {inner}
           </TextBlock>
+          <BlockDropIndicator path={blockPath} edge="end" />
         </div>
       )
     },
@@ -309,6 +312,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       }
       return (
         <div {...attributes}>
+          <BlockDropIndicator path={blockPath} edge="start" />
           {blockProps.children}
           {/* `draggable` + `contentEditable={false}` on this wrapper is what
               fires the native `dragstart` the editable listens for; the legacy
@@ -342,6 +346,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
               value={node}
             />
           </div>
+          <BlockDropIndicator path={blockPath} edge="end" />
         </div>
       )
     },
@@ -855,8 +860,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   // (as opposed to focus on fields inside object nodes like annotations, inline blocks etc.)
   const editorFocused = focused || hasFocusWithin
 
-  return (
-    <SelectedAnnotationsProvider>
+  const editorContent = (
+    <>
       {isPtNative ? <NodePlugin nodes={catchAllNodes} /> : null}
       <PortalProvider __unstable_elements={portalElements} element={portal.element}>
         <BoundaryElementProvider element={floatingBoundary}>
@@ -888,6 +893,39 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           </ActivateOnFocus>
         </BoundaryElementProvider>
       </PortalProvider>
+    </>
+  )
+
+  // `DndProvider` (from `@portabletext/plugin-dnd`) tracks the live drop
+  // position and serves it through `useDropPosition`, which the catch-all
+  // block renders read to paint a drop indicator. The legacy pipeline gets
+  // its indicator from the engine's void render, so this only wraps pt-native.
+  return (
+    <SelectedAnnotationsProvider>
+      {isPtNative ? <DndProvider>{editorContent}</DndProvider> : editorContent}
     </SelectedAnnotationsProvider>
   )
+}
+
+function DropIndicator() {
+  return (
+    <div
+      className="pt-drop-indicator"
+      contentEditable={false}
+      style={{
+        position: 'absolute',
+        width: '100%',
+        height: 1,
+        borderBottom: '1px solid currentColor',
+        zIndex: 5,
+      }}
+    >
+      <span />
+    </div>
+  )
+}
+
+function BlockDropIndicator(props: {path: Path; edge: 'start' | 'end'}) {
+  const dropPosition = useDropPosition(props.path)
+  return dropPosition === props.edge ? <DropIndicator /> : null
 }
