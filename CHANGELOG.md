@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.1.0](https://github.com/sanity-io/sanity/compare/v6.0.0...v6.1.0) (2026-06-16)
+
+### Features
+
+* **core:** add page-visibility context to studio timing telemetry ([#13083](https://github.com/sanity-io/sanity/issues/13083)) ([467aa57](https://github.com/sanity-io/sanity/commit/467aa574d6e12aea3221d322f32d533bd412d0b2))
+* **releases:** deep-link release validation errors to the offending field ([#12978](https://github.com/sanity-io/sanity/issues/12978)) ([a937280](https://github.com/sanity-io/sanity/commit/a9372805fd81117b6e15a66dd31e50482fc3d965))
+* **test-studio:** add opt-in vite devtools via env flag ([#13051](https://github.com/sanity-io/sanity/issues/13051)) ([f230e56](https://github.com/sanity-io/sanity/commit/f230e56bdab38253c1af6806081d146c27449eb3))
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/cli to ^7.2.3 ([#13065](https://github.com/sanity-io/sanity/issues/13065)) ([6923990](https://github.com/sanity-io/sanity/commit/692399098dcf0952736340c1bba9f3ab7b781d05))
+* **deps:** update dependency @sanity/mutate to ^0.18.1 ([#13059](https://github.com/sanity-io/sanity/issues/13059)) ([939d997](https://github.com/sanity-io/sanity/commit/939d997d810cbabf9436625f62947131f61684b0))
+* **deps:** Update portabletext ([#13049](https://github.com/sanity-io/sanity/issues/13049)) ([80460cc](https://github.com/sanity-io/sanity/commit/80460cc1d3d2e69cefd97351a49e5fd823664624))
+* **deps:** Update portabletext ([#13100](https://github.com/sanity-io/sanity/issues/13100)) ([e079489](https://github.com/sanity-io/sanity/commit/e079489c5b64ee1731752ba5639f1edab89015d3))
+* **deps:** Update portabletext to ^3.1.2 ([#13063](https://github.com/sanity-io/sanity/issues/13063)) ([5ea28e5](https://github.com/sanity-io/sanity/commit/5ea28e5340e24d97f3b55ad25055b4cd026fb182))
+* **form:** re-focus portable text block on re-click from outside editor ([#13072](https://github.com/sanity-io/sanity/issues/13072)) ([37e9ad1](https://github.com/sanity-io/sanity/commit/37e9ad1c1f9c8bdcb30bc112f852bcd8254f5a4f))
+* **types:** allow collapsible and collapsed options on geopoint fields ([#13109](https://github.com/sanity-io/sanity/issues/13109)) ([897b06a](https://github.com/sanity-io/sanity/commit/897b06ad6e275ee81a57066855aeaec06cfb7cc0))
 ## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
 
 ### ⚠ BREAKING CHANGES

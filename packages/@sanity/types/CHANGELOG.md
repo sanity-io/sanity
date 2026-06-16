@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.1.0](https://github.com/sanity-io/sanity/compare/v6.0.0...v6.1.0) (2026-06-16)
+
+### Bug Fixes
+
+* **types:** allow collapsible and collapsed options on geopoint fields ([#13109](https://github.com/sanity-io/sanity/issues/13109)) ([897b06a](https://github.com/sanity-io/sanity/commit/897b06ad6e275ee81a57066855aeaec06cfb7cc0))
 ## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
 
 ### ⚠ BREAKING CHANGES
