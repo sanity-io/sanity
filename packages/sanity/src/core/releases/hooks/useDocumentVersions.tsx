@@ -1,5 +1,5 @@
 import {type QueryParams, type ReleaseDocument} from '@sanity/client'
-import {getVersionFromId, isPublishedId} from '@sanity/client/csm'
+import {getVersionFromId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -20,6 +20,7 @@ import {useProjectId} from '../../hooks/useProjectId'
 import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../store'
+import {isDraftId} from '../../util'
 import {getPublishedId} from '../../util/draftUtils'
 import {isRecord} from '../../util/isRecord'
 import {createSWR} from '../../util/rxSwr'
@@ -126,7 +127,7 @@ const temporarilyBuildDocumentSystem = (
   }
 
   return {
-    bundleId: isPublishedId(id) ? '$published' : 'drafts',
+    bundleId: isDraftId(id) ? 'drafts' : null,
     release: null,
     variant: null,
     group: {_ref: getPublishedId(id), _weak: true},

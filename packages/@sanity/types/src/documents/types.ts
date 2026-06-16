@@ -54,7 +54,7 @@ export interface DocumentSystem {
   /**
    * It will be empty for the group document (aka published document)
    */
-  bundleId: 'drafts' | (string & {}) | undefined
+  bundleId: 'drafts' | (string & {}) | null
   /**
    * A weak reference to the release document that the version belongs to.
    */
