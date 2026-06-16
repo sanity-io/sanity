@@ -157,65 +157,67 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       .map((c) => c.parentComment)
   }, [comments.data.open, stringFieldPath])
 
-  const handleSubmit = useCallback(() => {
-    if (!nextCommentSelection || !editorRef.current) return
+  const handleSubmit = useCallback(
+    (nextValue: CommentMessage) => {
+      if (!nextCommentSelection || !editorRef.current) return
 
-    const editorValue = PortableTextEditor.getValue(editorRef.current)
+      const editorValue = PortableTextEditor.getValue(editorRef.current)
 
-    if (!editorValue) return
+      if (!editorValue) return
 
-    const textSelection = buildTextSelectionFromFragment({
-      fragment: fragment || EMPTY_ARRAY,
-      selection: nextCommentSelection,
-      value: editorValue,
-    })
+      const textSelection = buildTextSelectionFromFragment({
+        fragment: fragment || EMPTY_ARRAY,
+        selection: nextCommentSelection,
+        value: editorValue,
+      })
 
-    const threadId = uuid()
+      const threadId = uuid()
 
-    void operation.create({
-      type: 'field',
-      contentSnapshot: fragment,
-      fieldPath: stringFieldPath,
-      message: nextCommentValue,
-      parentCommentId: undefined,
-      reactions: EMPTY_ARRAY,
-      selection: textSelection,
-      status: 'open',
-      threadId,
-    })
+      void operation.create({
+        type: 'field',
+        contentSnapshot: fragment,
+        fieldPath: stringFieldPath,
+        message: nextValue,
+        parentCommentId: undefined,
+        reactions: EMPTY_ARRAY,
+        selection: textSelection,
+        status: 'open',
+        threadId,
+      })
 
-    // Open the inspector when a new comment is added
-    onCommentsOpen?.()
+      // Open the inspector when a new comment is added
+      onCommentsOpen?.()
 
-    // Set the status to 'open' so that the comment is visible
-    if (status === 'resolved') {
-      setStatus('open')
-    }
+      // Set the status to 'open' so that the comment is visible
+      if (status === 'resolved') {
+        setStatus('open')
+      }
 
-    // Set the selected path to the new comment
-    setSelectedPath({
-      fieldPath: stringFieldPath,
-      threadId,
-      origin: 'form',
-    })
+      // Set the selected path to the new comment
+      setSelectedPath({
+        fieldPath: stringFieldPath,
+        threadId,
+        origin: 'form',
+      })
 
-    // Scroll to the comment
-    scrollToGroup(threadId)
+      // Scroll to the comment
+      scrollToGroup(threadId)
 
-    resetStates()
-  }, [
-    nextCommentSelection,
-    operation,
-    stringFieldPath,
-    nextCommentValue,
-    onCommentsOpen,
-    status,
-    setSelectedPath,
-    scrollToGroup,
-    resetStates,
-    setStatus,
-    fragment,
-  ])
+      resetStates()
+    },
+    [
+      nextCommentSelection,
+      operation,
+      stringFieldPath,
+      onCommentsOpen,
+      status,
+      setSelectedPath,
+      scrollToGroup,
+      resetStates,
+      setStatus,
+      fragment,
+    ],
+  )
 
   const handleDecoratorClick = useCallback(
     (commentId: string) => {
