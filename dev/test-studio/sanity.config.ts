@@ -697,4 +697,125 @@ export default defineConfig([
       enabled: true,
     },
   },
+  {
+    // Repro workspace for https://github.com/sanity-io/sanity/issues/13112
+    //
+    // When @sanity/document-internationalization is configured with
+    // `addTemplates: true` AND the root config provides a `schema.templates`
+    // callback that replaces the plugin's generated templates with same-ID
+    // custom ones, the resolved templates registry contains duplicate IDs.
+    // Downstream consumers use `templates.find((t) => t.id === templateId)`
+    // (first-match-wins), so the + button on a filtered DocumentList can
+    // generate a create-intent for the wrong schema type.
+    //
+    // Repro steps:
+    //   1. pnpm dev
+    //   2. open http://localhost:3333/issue13112
+    //   3. open "Posts (IS)" in the structure
+    //   4. click the + button at the top right
+    //   5. observe: a "Issue 13112 (Page)" document opens instead of a Post.
+    name: 'issue13112',
+    title: 'Issue #13112 (duplicate template IDs)',
+    subtitle: 'DocumentList + button creates wrong schema type',
+    basePath: '/issue13112',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    ...envConfig.production,
+    schema: {
+      types: [
+        // The minimum schema slice the repro needs — the test-studio's full
+        // schema set is also registered, but the structure points at these
+        // two specifically.
+        ...createSchemaTypes('ppsg7ml5').filter(
+          (t) => t.name === 'issue13112Post' || t.name === 'issue13112Page',
+        ),
+      ],
+      // The user's exact pattern: filter the plugin's generated template
+      // IDs out of `prev` and re-append replacements with the SAME IDs.
+      // On `main`, the plugin's contributions survive in `prev` (or are
+      // re-introduced when the plugin's callback runs again at a deeper
+      // config level), producing duplicate IDs in the resolved registry.
+      templates: (prev) => [
+        ...prev.filter(
+          (t) =>
+            ![
+              'issue13112Post-is',
+              'issue13112Post-en',
+              'issue13112Page-is',
+              'issue13112Page-en',
+            ].includes(t.id),
+        ),
+        {
+          id: 'issue13112Post-is',
+          title: 'Post (íslenska)',
+          schemaType: 'issue13112Post',
+          value: {language: 'is'},
+        },
+        {
+          id: 'issue13112Post-en',
+          title: 'Post (English)',
+          schemaType: 'issue13112Post',
+          value: {language: 'en'},
+        },
+        {
+          id: 'issue13112Page-is',
+          title: 'Page (íslenska)',
+          schemaType: 'issue13112Page',
+          value: {language: 'is'},
+        },
+        {
+          id: 'issue13112Page-en',
+          title: 'Page (English)',
+          schemaType: 'issue13112Page',
+          value: {language: 'en'},
+        },
+      ],
+    },
+    plugins: [
+      structureTool({
+        // Minimal custom structure: a DocumentList filtered to
+        // Icelandic posts, with the post-is template item exposed via
+        // `initialValueTemplates`. Clicking + on this pane is the
+        // trigger.
+        structure: (S) =>
+          S.list()
+            .title('Content')
+            .items([
+              S.listItem()
+                .title('Posts (IS)')
+                .child(
+                  S.documentList()
+                    .id('issue13112-posts-is')
+                    .title('Posts (IS)')
+                    .schemaType('issue13112Post')
+                    .filter('_type == "issue13112Post" && language == "is"')
+                    .initialValueTemplates([S.initialValueTemplateItem('issue13112Post-is')]),
+                ),
+              S.listItem()
+                .title('Pages (IS)')
+                .child(
+                  S.documentList()
+                    .id('issue13112-pages-is')
+                    .title('Pages (IS)')
+                    .schemaType('issue13112Page')
+                    .filter('_type == "issue13112Page" && language == "is"')
+                    .initialValueTemplates([S.initialValueTemplateItem('issue13112Page-is')]),
+                ),
+            ]),
+      }),
+      // Plugin contributes templates via `schema.templates` callback
+      // shaped as `[...prev, ...staticTemplates]` — exactly what
+      // `@sanity/document-internationalization` does internally when
+      // `addTemplates: true` is set.
+      documentInternationalization({
+        supportedLanguages: [
+          {id: 'is', title: 'Íslenska'},
+          {id: 'en', title: 'English'},
+        ],
+        schemaTypes: ['issue13112Post', 'issue13112Page'],
+        // addTemplates defaults to true — this is the bug-triggering
+        // setting. Setting `addTemplates: false` is the workaround.
+      }),
+    ],
+  },
 ]) as WorkspaceOptions[]

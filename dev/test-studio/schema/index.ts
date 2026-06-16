@@ -72,6 +72,7 @@ import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
 import {issue4516AddFilterIntentLink} from './debug/issue4516AddFilterIntentLink'
+import {issue13112Page, issue13112Post} from './debug/issue13112DuplicateTemplateIds'
 import {languageFilterDebugType, localeBlockContentType} from './debug/languageFilter'
 import lazyComponents from './debug/lazyComponents'
 import liveEdit from './debug/liveEdit'
@@ -275,6 +276,8 @@ export function createSchemaTypes(projectId: string) {
     inspectorsTestType,
     invalidPreviews,
     issue4516AddFilterIntentLink,
+    issue13112Post,
+    issue13112Page,
     languageFilterDebugType,
     localeBlockContentType,
     lazyComponents,
