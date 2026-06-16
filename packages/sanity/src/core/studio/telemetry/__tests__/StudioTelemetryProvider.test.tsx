@@ -71,6 +71,10 @@ describe('StudioTelemetryProvider', () => {
     getUrl: vi.fn((path: string) => `https://api.sanity.io${path}`),
   }
 
+  // Mirrors a fully resolved workspace: the config resolver has already applied
+  // every default, so each feature field carries its effective value. The
+  // telemetry reads these straight through, so the values here are what the
+  // event reports.
   const mockWorkspace = {
     name: 'test-workspace',
     projectId: 'test-project',
@@ -87,6 +91,18 @@ describe('StudioTelemetryProvider', () => {
       },
     },
     advancedVersionControl: {enabled: true},
+    releases: {enabled: true},
+    tasks: {enabled: true},
+    scheduledDrafts: {enabled: true},
+    // eslint-disable-next-line camelcase
+    scheduledPublishing: {enabled: true, __internal__workspaceEnabled: false},
+    mediaLibrary: {enabled: false},
+    apps: {canvas: {enabled: true}},
+    beta: {variants: {enabled: false}, eventsAPI: {documents: true, releases: false}},
+    announcements: {enabled: true},
+    document: {drafts: {enabled: true}},
+    form: {file: {directUploads: true}, image: {directUploads: true}},
+    search: {strategy: 'groq2024', unstable_partialIndexing: {enabled: false}},
   }
 
   const mockWorkspaces = [
@@ -439,7 +455,7 @@ describe('StudioTelemetryProvider', () => {
     vi.unstubAllGlobals()
   })
 
-  it('emits WorkspaceFeaturesObserved with the advancedVersionControl flag enabled', () => {
+  it('reads the resolved advancedVersionControl flag when enabled', () => {
     render(
       <DeferredTelemetryProvider>
         <StudioTelemetryProvider>
@@ -454,13 +470,10 @@ describe('StudioTelemetryProvider', () => {
     )
   })
 
-  it('emits WorkspaceFeaturesObserved with the flag disabled when advancedVersionControl is undefined', () => {
+  it('reads the resolved advancedVersionControl flag when disabled', () => {
     vi.mocked(useWorkspace).mockReturnValue({
       ...mockWorkspace,
-      name: 'test-workspace',
-      projectId: 'test-project',
-      dataset: 'test-dataset',
-      advancedVersionControl: undefined,
+      advancedVersionControl: {enabled: false},
     } as never)
 
     render(
@@ -477,7 +490,20 @@ describe('StudioTelemetryProvider', () => {
     )
   })
 
-  it('emits WorkspaceFeaturesObserved with effective defaults for unset feature flags', () => {
+  it('reports undefined for optional features the resolved workspace omits', () => {
+    vi.mocked(useWorkspace).mockReturnValue({
+      ...mockWorkspace,
+      releases: undefined,
+      tasks: undefined,
+      scheduledDrafts: undefined,
+      scheduledPublishing: {enabled: true},
+      mediaLibrary: undefined,
+      apps: undefined,
+      beta: undefined,
+      announcements: undefined,
+      search: {},
+    } as never)
+
     render(
       <DeferredTelemetryProvider>
         <StudioTelemetryProvider>
@@ -486,27 +512,36 @@ describe('StudioTelemetryProvider', () => {
       </DeferredTelemetryProvider>,
     )
 
+    // No default is synthesised here: an absent option reads as `undefined`, and
+    // the effective default it stands in for is resolved (and asserted) upstream.
     expect(mockLog).toHaveBeenCalledWith(
       WorkspaceFeaturesObserved,
       expect.objectContaining({
-        releasesEnabled: true,
+        releasesEnabled: undefined,
         releasesLimit: undefined,
-        tasksEnabled: true,
-        mediaLibraryEnabled: false,
-        canvasEnabled: true,
-        fileDirectUploadsEnabled: true,
-        searchStrategy: 'groqLegacy',
+        tasksEnabled: undefined,
+        scheduledDraftsEnabled: undefined,
+        scheduledPublishingExplicitlyEnabled: undefined,
+        mediaLibraryEnabled: undefined,
+        canvasEnabled: undefined,
+        variantsEnabled: undefined,
+        eventsApiDocumentsEnabled: undefined,
+        eventsApiReleasesEnabled: undefined,
+        announcementsEnabled: undefined,
+        partialIndexingEnabled: undefined,
+        searchStrategy: undefined,
       }),
     )
   })
 
-  it('emits WorkspaceFeaturesObserved reflecting explicitly configured feature flags', () => {
+  it('reads explicitly configured feature flags through unchanged', () => {
     vi.mocked(useWorkspace).mockReturnValue({
       ...mockWorkspace,
       mediaLibrary: {enabled: true},
       releases: {enabled: false, limit: 5},
+      // eslint-disable-next-line camelcase
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: true},
-      search: {strategy: 'groq2024', unstable_partialIndexing: {enabled: true}},
+      search: {strategy: 'groqLegacy', unstable_partialIndexing: {enabled: true}},
       form: {file: {directUploads: false}, image: {directUploads: false}},
     } as never)
 
@@ -525,7 +560,7 @@ describe('StudioTelemetryProvider', () => {
         releasesEnabled: false,
         releasesLimit: 5,
         scheduledPublishingExplicitlyEnabled: true,
-        searchStrategy: 'groq2024',
+        searchStrategy: 'groqLegacy',
         partialIndexingEnabled: true,
         fileDirectUploadsEnabled: false,
         imageDirectUploadsEnabled: false,
@@ -645,7 +680,7 @@ describe('StudioTelemetryProvider', () => {
       partialIndexingEnabled: false,
       fileDirectUploadsEnabled: true,
       imageDirectUploadsEnabled: true,
-      searchStrategy: 'groqLegacy',
+      searchStrategy: 'groq2024',
     })
   })
 })
