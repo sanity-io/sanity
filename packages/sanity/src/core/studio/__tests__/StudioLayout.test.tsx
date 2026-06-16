@@ -140,6 +140,10 @@ describe('StudioLayoutComponent telemetry', () => {
         activeToolName: 'structure',
         toolsCount: 2,
         durationMs: expect.any(Number),
+        // jsdom reports a visible document, so the snapshot is a clean foreground load.
+        wasHidden: false,
+        visibilityState: 'visible',
+        firstHiddenTime: null,
       }),
     )
     expect(telemetryLog.mock.calls[0][1].durationMs).toBeGreaterThanOrEqual(0)

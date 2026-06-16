@@ -22,6 +22,7 @@ import {
   useNavbarComponent,
 } from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
+import {getPageVisibilitySnapshot} from './telemetry/pageVisibility'
 import {ToolMountTimer} from './ToolMountTimer'
 import {useWorkspace} from './workspace'
 
@@ -158,10 +159,12 @@ export function StudioLayoutComponent() {
     if (studioReadyFired) return
     if (!activeTool) return
     studioReadyFired = true
+    const durationMs = performance.now()
     telemetry.log(StudioReadyMeasured, {
-      durationMs: performance.now(),
+      durationMs,
       toolsCount: tools.length,
       activeToolName: activeTool.name,
+      ...getPageVisibilitySnapshot(durationMs),
     })
   }, [activeTool, telemetry, tools.length])
 

@@ -107,6 +107,10 @@ describe('AuthBoundary telemetry', () => {
       expect.objectContaining({
         authState: 'logged-in',
         durationMs: expect.any(Number),
+        // jsdom reports a visible document, so the snapshot is a clean foreground load.
+        wasHidden: false,
+        visibilityState: 'visible',
+        firstHiddenTime: null,
       }),
     )
     expect(studioAuthReadyCalls()[0][1].durationMs).toBeGreaterThanOrEqual(0)
