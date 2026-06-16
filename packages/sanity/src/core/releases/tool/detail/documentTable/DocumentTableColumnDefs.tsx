@@ -1,9 +1,11 @@
 import {type ReleaseState} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Badge, Box, Flex, Text} from '@sanity/ui'
+import {toString as pathToString} from '@sanity/util/paths'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
+import {IntentLink} from 'sanity/router'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip'
@@ -13,6 +15,7 @@ import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
+import {getReleaseDocumentIntent} from '../../components/getReleaseDocumentIntent'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
 import {type Column, type InjectedTableProps} from '../../components/Table/types'
@@ -175,9 +178,30 @@ export const getDocumentTableColumnDefs: (
     cell: ({cellProps, datum}) => {
       if (datum.isLoading) return null
 
-      const validationErrorCount = datum.validation.validation.filter(
+      const errors = datum.validation.validation.filter(
         (validation) => validation.level === 'error',
-      ).length
+      )
+      const validationErrorCount = errors.length
+
+      // Deep-link to the first field-level error (fall back to the first error). The
+      // existing params.path -> field-focus plumbing in DocumentPaneProvider scrolls to
+      // and focuses the field when the document opens.
+      const firstError = errors.find((error) => error.path.length > 0) ?? errors[0]
+      const focusPath = firstError ? pathToString(firstError.path) : undefined
+      const intent = getReleaseDocumentIntent({
+        documentId: datum.document._id,
+        documentTypeName: datum.document._type,
+        releaseId,
+        releaseState,
+        documentRevision: datum.document._rev,
+        path: focusPath,
+      })
+      const errorLabel = t(
+        validationErrorCount === 1
+          ? 'document-validation.error_one'
+          : 'document-validation.error_other',
+        {count: validationErrorCount},
+      )
 
       return (
         <Flex {...cellProps} flex={1} padding={1} justify="center" align="center" sizing="border">
@@ -189,18 +213,21 @@ export const getDocumentTableColumnDefs: (
                 <Text muted size={1}>
                   <Flex align={'center'} gap={3} padding={1}>
                     <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-                    {t(
-                      validationErrorCount === 1
-                        ? 'document-validation.error_one'
-                        : 'document-validation.error_other',
-                      {count: validationErrorCount},
-                    )}
+                    {errorLabel}
                   </Flex>
                 </Text>
               }
             >
               <Text size={1}>
-                <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                <IntentLink
+                  intent="edit"
+                  params={intent.params}
+                  searchParams={intent.searchParams}
+                  aria-label={errorLabel}
+                  data-testid={`validation-error-link-${datum.document._id}`}
+                >
+                  <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                </IntentLink>
               </Text>
             </Tooltip>
           )}

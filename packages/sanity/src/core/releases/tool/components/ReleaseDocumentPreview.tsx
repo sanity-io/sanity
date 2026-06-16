@@ -10,6 +10,7 @@ import {useDocumentPresence} from '../../../store/presence/useDocumentPresence'
 import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {getPublishedId} from '../../../util/draftUtils'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseDocumentIntent} from './getReleaseDocumentIntent'
 
 interface ReleaseDocumentPreviewProps {
   documentId: string
@@ -23,9 +24,6 @@ interface ReleaseDocumentPreviewProps {
   isCardinalityOneRelease?: boolean
 }
 
-const isArchivedRelease = (releaseState: ReleaseState | undefined) =>
-  releaseState === 'archived' || releaseState === 'archiving' || releaseState === 'unarchiving'
-
 export function ReleaseDocumentPreview({
   documentId,
   documentTypeName,
@@ -38,33 +36,25 @@ export function ReleaseDocumentPreview({
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
 
-  const intentParams = useMemo(() => {
-    if (isCardinalityOneRelease) {
-      return {
-        scheduledDraft: getReleaseIdFromReleaseDocumentId(releaseId),
-      }
-    }
-    if (releaseState === 'published') {
-      // We are inspecting this document through the published view of the doc.
-      return {
-        rev: `@release:${getReleaseIdFromReleaseDocumentId(releaseId)}`,
-        inspect: 'sanity/structure/history',
-      }
-    }
-
-    if (releaseState === 'archived') {
-      // We are "faking" the release as if it is still valid only to render the document
-      return {
-        rev: '@lastEdited',
-        inspect: 'sanity/structure/history',
-        historyEvent: documentRevision,
-        historyVersion: getReleaseIdFromReleaseDocumentId(releaseId),
-        archivedRelease: 'true',
-      }
-    }
-
-    return {}
-  }, [releaseState, releaseId, documentRevision, isCardinalityOneRelease])
+  const {params, searchParams} = useMemo(
+    () =>
+      getReleaseDocumentIntent({
+        documentId,
+        documentTypeName,
+        releaseId,
+        releaseState,
+        documentRevision,
+        isCardinalityOneRelease,
+      }),
+    [
+      documentId,
+      documentTypeName,
+      releaseId,
+      releaseState,
+      documentRevision,
+      isCardinalityOneRelease,
+    ],
+  )
 
   const LinkComponent = useMemo(
     () =>
@@ -73,28 +63,13 @@ export function ReleaseDocumentPreview({
           <IntentLink
             {...linkProps}
             intent="edit"
-            params={{
-              id: getPublishedId(documentId),
-              type: documentTypeName,
-              ...intentParams,
-            }}
-            searchParams={
-              isCardinalityOneRelease || isArchivedRelease(releaseState)
-                ? undefined
-                : [
-                    [
-                      'perspective',
-                      releaseState === 'published'
-                        ? 'published'
-                        : getReleaseIdFromReleaseDocumentId(releaseId),
-                    ],
-                  ]
-            }
+            params={params}
+            searchParams={searchParams}
             ref={ref}
           />
         )
       }),
-    [documentId, documentTypeName, intentParams, releaseState, releaseId, isCardinalityOneRelease],
+    [params, searchParams],
   )
 
   const previewPresence = useMemo(

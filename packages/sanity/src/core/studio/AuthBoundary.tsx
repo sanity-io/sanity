@@ -9,6 +9,7 @@ import {
 import {StudioAuthReadyMeasured} from './__telemetry__/bootstrap.telemetry'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
 import {AuthenticateScreen, NotAuthenticatedScreen, RequestAccessScreen} from './screens'
+import {getPageVisibilitySnapshot} from './telemetry/pageVisibility'
 
 // Module-level one-shot guard. Survives StrictMode double-mount in dev so the
 // event only fires once per page load (HMR resets this naturally).
@@ -56,9 +57,11 @@ export function AuthBoundary({
     if (authReadyFired) return
     if (loggedIn === 'loading') return
     authReadyFired = true
+    const durationMs = performance.now()
     telemetry.log(StudioAuthReadyMeasured, {
-      durationMs: performance.now(),
+      durationMs,
       authState: loggedIn,
+      ...getPageVisibilitySnapshot(durationMs),
     })
   }, [loggedIn, telemetry])
 
