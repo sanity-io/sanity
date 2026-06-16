@@ -24,5 +24,21 @@ describe('Portable Text Input', () => {
 
       await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
     })
+
+    // A numbered list inside a container cell must number sequentially, scoped
+    // to the cell's own array. The numbering comes from `useListIndex`
+    // (`@portabletext/plugin-list-index`), which only resolves indices for
+    // container-nested blocks once it recurses into container arrays.
+    it('numbers list items nested in a container cell', async () => {
+      const {getFocusedPortableTextEditor} = testHelpers()
+      void render(<ContainerInlineObjectStory />)
+
+      const editor = (await getFocusedPortableTextEditor('field-body')).element()
+      const items = editor.querySelectorAll('.pt-list-item-number')
+
+      expect(items).toHaveLength(2)
+      expect(items[0]?.getAttribute('data-list-index')).toEqual('1')
+      expect(items[1]?.getAttribute('data-list-index')).toEqual('2')
+    })
   })
 })
