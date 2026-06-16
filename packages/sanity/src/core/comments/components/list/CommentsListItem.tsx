@@ -155,9 +155,9 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   const handleMouseEnter = () => setMouseOver(true)
   const handleMouseLeave = () => setMouseOver(false)
 
-  const handleReplySubmit = () => {
+  const handleReplySubmit = (nextValue: CommentMessage) => {
     const nextComment: CommentBaseCreatePayload = {
-      message: value,
+      message: nextValue,
       parentCommentId: parentComment._id,
       status: parentComment?.status || 'open',
       // Since this is a reply to an existing comment, we use the same thread ID as the parent

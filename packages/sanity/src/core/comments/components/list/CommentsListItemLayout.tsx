@@ -296,10 +296,13 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     [_id, onReactionSelect],
   )
 
-  const handleEditSubmit = useCallback(() => {
-    onEdit(_id, {message: value})
-    setIsEditing(false)
-  }, [_id, onEdit, value])
+  const handleEditSubmit = useCallback(
+    (nextValue: CommentMessage) => {
+      onEdit(_id, {message: nextValue})
+      setIsEditing(false)
+    },
+    [_id, onEdit],
+  )
 
   const handleOpenStatusChange = useCallback(() => {
     onStatusChange?.(_id, comment.status === 'open' ? 'resolved' : 'open')
