@@ -1,5 +1,6 @@
-import test from '@playwright/test'
 import {type SanityClient, type SanityDocument} from '@sanity/client'
+
+import {test} from '../../../studio-test'
 
 export const CLIENT_OPTIONS = {
   apiVersion: 'v2025-02-19',

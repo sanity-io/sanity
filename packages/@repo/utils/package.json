@@ -7,8 +7,7 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "check:types": "(cd ../../.. && tsgo --project packages/@repo/utils/tsconfig.json --erasableSyntaxOnly)",
-    "lint": "eslint ."
+    "check:types": "(cd ../../.. && tsgo --project packages/@repo/utils/tsconfig.json --erasableSyntaxOnly)"
   },
   "dependencies": {
     "dotenv": "^16.6.1",
@@ -16,10 +15,8 @@
     "ora": "^8.2.0"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@types/lodash-es": "^4.17.12",
-    "@typescript/native-preview": "catalog:",
-    "eslint": "catalog:"
+    "@typescript/native-preview": "catalog:"
   }
 }

@@ -90,7 +90,7 @@
         "@sanity/cli",
         "@sanity/client",
         "@sanity/comlink",
-        "@sanity/eslint-config-i18n",
+        "@sanity/eslint-plugin-i18n",
         "@sanity/import",
         "@sanity/export",
         "@sanity/icons",
@@ -131,7 +131,7 @@
     {
       "description": "Always upgrade oxlint together",
       "groupName": "oxlint",
-      "matchPackageNames": ["oxlint", "eslint-plugin-oxlint", "oxlint-tsgolint"]
+      "matchPackageNames": ["oxlint", "oxlint-tsgolint"]
     },
     {
       "description": "Include release notes in PR description for @sanity/cli updates",

@@ -53,7 +53,6 @@
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/vision/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
-    "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "test": "vitest",
     "watch": "pkg-utils watch"
@@ -84,14 +83,12 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/package.bundle": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@rolldown/plugin-babel": "catalog:",
     "@sanity/client": "catalog:",
-    "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/pkg-utils": "catalog:",
     "@testing-library/react": "^16.3.2",
     "@types/lodash-es": "^4.17.12",
@@ -102,7 +99,6 @@
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "catalog:",
     "babel-plugin-styled-components": "catalog:",
-    "eslint": "catalog:",
     "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

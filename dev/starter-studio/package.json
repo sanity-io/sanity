@@ -8,7 +8,6 @@
     "build": "sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --port 3337",
-    "lint": "eslint .",
     "start": "sanity preview --port 3337"
   },
   "dependencies": {
@@ -19,8 +18,6 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "eslint": "catalog:",
     "rimraf": "catalog:"
   }
 }

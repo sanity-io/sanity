@@ -8,7 +8,6 @@
     "build": "sanity build --source-maps",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --source-maps",
-    "lint": "eslint .",
     "preview": "sanity preview"
   },
   "dependencies": {
@@ -21,8 +20,6 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "eslint": "catalog:",
     "rimraf": "catalog:",
     "vite": "catalog:"
   }

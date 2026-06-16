@@ -7,14 +7,11 @@
   "main": "./src/package.config.ts",
   "types": "./src/package.config.ts",
   "scripts": {
-    "check:types": "(cd ../../.. && tsc --project packages/@repo/package.config/tsconfig.json --erasableSyntaxOnly)",
-    "lint": "eslint ."
+    "check:types": "(cd ../../.. && tsc --project packages/@repo/package.config/tsconfig.json --erasableSyntaxOnly)"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/pkg-utils": "catalog:",
-    "@types/node": "catalog:",
-    "eslint": "catalog:"
+    "@types/node": "catalog:"
   }
 }

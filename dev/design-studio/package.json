@@ -27,11 +27,9 @@
     "build": "sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --port 4000",
-    "lint": "eslint .",
     "start": "sanity preview --port 4000"
   },
   "dependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@sanity/icons": "^3.7.4",
     "@sanity/ui": "catalog:",
     "react": "catalog:",
@@ -41,9 +39,7 @@
     "vite": "catalog:"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@vanilla-extract/vite-plugin": "catalog:",
-    "eslint": "catalog:",
     "rimraf": "catalog:"
   }
 }

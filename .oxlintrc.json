@@ -15,6 +15,41 @@
     "node",
     "promise"
   ],
+  "jsPlugins": [
+    {"name": "tsdoc", "specifier": "eslint-plugin-tsdoc"},
+    {"name": "i18next", "specifier": "eslint-plugin-i18next"},
+    {"name": "@sanity/i18n", "specifier": "@sanity/eslint-plugin-i18n"},
+    {"name": "boundaries", "specifier": "eslint-plugin-boundaries"},
+    {"name": "testing-library", "specifier": "eslint-plugin-testing-library"}
+  ],
+  "settings": {
+    "import/resolver": {
+      "typescript": true,
+      "node": true
+    },
+    "boundaries/root-path": "packages/sanity",
+    "boundaries/include": ["src/**/*.*"],
+    "boundaries/elements": [
+      {"type": "sanity", "pattern": ["src/_exports/index.ts"], "mode": "full"},
+      {"type": "sanity__contents", "pattern": ["src/core/**/*.*"], "mode": "full"},
+      {"type": "sanity/_internal", "pattern": ["src/_exports/_internal.ts"], "mode": "full"},
+      {"type": "sanity/_internal__contents", "pattern": ["src/_internal/**/*.*"], "mode": "full"},
+      {"type": "sanity/cli", "pattern": ["src/_exports/cli.ts"], "mode": "full"},
+      {"type": "sanity/cli__contents", "pattern": ["src/cli/**/*.*"], "mode": "full"},
+      {"type": "sanity/desk", "pattern": ["src/_exports/desk.ts"], "mode": "file"},
+      {"type": "sanity/desk__contents", "pattern": ["src/desk/**/*.*"], "mode": "file"},
+      {"type": "sanity/router", "pattern": ["src/_exports/router.ts"], "mode": "full"},
+      {"type": "sanity/router__contents", "pattern": ["src/router/**/*.*"], "mode": "full"},
+      {"type": "sanity/structure", "pattern": ["src/_exports/structure.ts"], "mode": "file"},
+      {"type": "sanity/structure__contents", "pattern": ["src/structure/**/*.*"], "mode": "file"},
+      {"type": "sanity/_singletons", "pattern": ["src/_exports/_singletons.ts"], "mode": "file"},
+      {
+        "type": "sanity/_singletons__contents",
+        "pattern": ["src/_singletons/**/*.*"],
+        "mode": "full"
+      }
+    ]
+  },
   "ignorePatterns": [
     "**/etc/*",
     "**/.sanity/*",
@@ -135,6 +170,36 @@
     // Handy rules that are disabled by default
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
+    // React Compiler rules, native nursery rule (replaces eslint-plugin-react-hooks compiler rules).
+    // TODO(oxlint): staged as warn; promote to error once the ~110 existing findings are addressed.
+    "react/react-compiler": "warn",
+    // Import hygiene previously enforced by eslint-plugin-import
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": ["error", {"prefer-inline": true}],
+    "import/consistent-type-specifier-style": ["error", "prefer-inline"],
+    "import/extensions": [
+      "error",
+      {
+        "pattern": {"cjs": "always", "json": "always"},
+        "pathGroupOverrides": [{"pattern": "lodash-es/*", "action": "ignore"}]
+      }
+    ],
+    // Consistent inline type imports (was @typescript-eslint/consistent-type-imports)
+    "typescript/consistent-type-imports": [
+      "error",
+      {"prefer": "type-imports", "fixStyle": "inline-type-imports"}
+    ],
+    "typescript/no-dupe-class-members": "error",
+    // unicorn rules previously enabled as error via eslint-config-sanity
+    "unicorn/prefer-string-slice": "error",
+    "unicorn/prefer-node-protocol": "error",
+    "unicorn/prefer-keyboard-event-key": "error",
+    "unicorn/custom-error-definition": "error",
+    // tsdoc syntax validation (loaded via jsPlugins).
+    // TODO(oxlint): staged as warn; the JS plugin doesn't yet pick up packages/sanity/tsdoc.json
+    // custom tag definitions (@hidden/@todo/@alias), so it would otherwise report false positives.
+    "tsdoc/syntax": "warn",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
     // Keep disabled: `_id` and other underscore-prefixed API fields are intentional.
     "eslint/no-underscore-dangle": "off",
@@ -288,13 +353,688 @@
         "no-await-in-loop": "off",
         "no-explicit-any": "off",
         "no-unused-vars": "error",
-        "no-unnecessary-type-arguments": "off"
+        "no-unnecessary-type-arguments": "off",
+        // Generated dts-export fixtures use top-level type imports and need no extension handling
+        "import/extensions": "off",
+        "import/consistent-type-specifier-style": "off",
+        "typescript/consistent-type-imports": "off"
       }
     },
     {
       "files": ["packages/@repo/bundle-manager/**/*"],
       "rules": {
         "eslint/no-console": "off"
+      }
+    },
+    {
+      "files": ["packages/@repo/release-notes/**/*"],
+      "rules": {
+        "eslint/no-console": "off"
+      }
+    },
+    {
+      "files": ["packages/sanity/test/cli/**/*", "packages/sanity/src/core/config/__tests__/**/*"],
+      "rules": {
+        "tsdoc/syntax": "off"
+      }
+    },
+    {
+      // i18n linting only applies to the studio packages
+      "files": ["packages/sanity/**", "packages/@sanity/vision/**"],
+      "rules": {
+        // TODO(oxlint): staged as warn. The JS plugin doesn't honor some `eslint-disable-next-line`
+        // directives on multi-line JSX (10 of 23 existing intentional disables), so error would
+        // produce false positives. Promote back to error once oxlint honors those directives.
+        "i18next/no-literal-string": "warn",
+        "@sanity/i18n/no-attribute-string-literals": [
+          "error",
+          {
+            "ignores": {
+              "componentPatterns": ["motion$"],
+              "attributes": [
+                "animate",
+                "closed",
+                "documentType",
+                "exit",
+                "fill",
+                "full",
+                "initial",
+                "size",
+                "sortOrder",
+                "status",
+                "group",
+                "textWeight",
+                "showChangesBy",
+                "$area"
+              ]
+            }
+          }
+        ],
+        "@sanity/i18n/no-attribute-template-literals": "error",
+        "@sanity/i18n/no-i18next-import": "error"
+      }
+    },
+    {
+      // No i18n enforcement in tests, debug tooling, or scheduled-publishing (being deprecated)
+      "files": [
+        "**/*/test/**/*",
+        "**/*/__tests__/**/*",
+        "**/*.test.{js,ts,tsx}",
+        "packages/sanity/**/scheduledPublishing/**/*",
+        "packages/sanity/**/scheduled-publishing/**/*",
+        "packages/sanity/**/debug/**/*"
+      ],
+      "rules": {
+        "i18next/no-literal-string": "off",
+        "@sanity/i18n/no-attribute-string-literals": "off",
+        "@sanity/i18n/no-attribute-template-literals": "off"
+      }
+    },
+    {
+      // Known exception: vitest suite prevents switching this import to 'sanity'
+      "files": ["packages/sanity/src/ui-components/dialog/Dialog.tsx"],
+      "rules": {
+        "@sanity/i18n/no-i18next-import": "off"
+      }
+    },
+    {
+      // Architectural boundaries for the sanity package
+      "files": ["packages/sanity/**"],
+      "rules": {
+        "boundaries/dependencies": "error",
+        "boundaries/entry-point": "error",
+        "boundaries/external": "error",
+        "boundaries/element-types": [
+          "error",
+          {
+            "default": "disallow",
+            "rules": [
+              {"from": "sanity/_internal", "allow": ["sanity/_internal__contents"]},
+              {
+                "from": "sanity/_internal__contents",
+                "allow": ["sanity", "sanity/_internal__contents"]
+              },
+              {"from": "sanity/cli", "allow": ["sanity/cli__contents"]},
+              {"from": "sanity/cli__contents", "allow": ["sanity/cli__contents"]},
+              {"from": "sanity", "allow": ["sanity__contents"]},
+              {
+                "from": "sanity__contents",
+                "allow": ["sanity__contents", "sanity/router", "sanity/_singletons"]
+              },
+              {
+                "from": "sanity/desk",
+                "allow": ["sanity/desk__contents", "sanity/structure", "sanity/structure__contents"]
+              },
+              {
+                "from": "sanity/desk__contents",
+                "allow": [
+                  "sanity",
+                  "sanity/desk__contents",
+                  "sanity/router",
+                  "sanity/_internal",
+                  "sanity/structure",
+                  "sanity/structure__contents",
+                  "sanity/_singletons"
+                ]
+              },
+              {"from": "sanity/router", "allow": ["sanity/router__contents"]},
+              {
+                "from": "sanity/router__contents",
+                "allow": ["sanity/router__contents", "sanity/_singletons"]
+              },
+              {"from": "sanity/structure", "allow": ["sanity/structure__contents"]},
+              {
+                "from": "sanity/structure__contents",
+                "allow": [
+                  "sanity",
+                  "sanity/structure__contents",
+                  "sanity/router",
+                  "sanity/_singletons"
+                ]
+              },
+              {"from": "sanity/_singletons", "allow": ["sanity/_singletons__contents"]},
+              {"from": "sanity/_singletons__contents", "allow": ["sanity/_singletons__contents"]},
+              {
+                "from": "sanity/_singletons__contents",
+                "allow": [
+                  "sanity__contents",
+                  "sanity/structure__contents",
+                  "sanity/router__contents"
+                ],
+                "importKind": "type"
+              },
+              {
+                "from": "sanity/_singletons__contents",
+                "disallow": ["sanity", "sanity/structure", "sanity/router"],
+                "importKind": "type"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // The boundaries plugin trips on this specific test file
+      "files": ["packages/sanity/src/core/form/types/definitionExtensions.test.ts"],
+      "rules": {
+        "boundaries/element-types": "off",
+        "boundaries/dependencies": "off",
+        "boundaries/entry-point": "off",
+        "boundaries/external": "off"
+      }
+    },
+    {
+      // Testing Library rules help avoid race conditions in React tests
+      "files": [
+        "packages/sanity/**/__tests__/**/*.{js,jsx,ts,tsx}",
+        "packages/sanity/**/*.test.{js,jsx,ts,tsx}",
+        "packages/sanity/**/*.spec.{js,jsx,ts,tsx}"
+      ],
+      "rules": {
+        "testing-library/await-async-events": ["error", {"eventModule": "userEvent"}],
+        "testing-library/await-async-queries": "error",
+        "testing-library/await-async-utils": "error",
+        "testing-library/no-await-sync-events": ["error", {"eventModules": ["fire-event"]}],
+        "testing-library/no-await-sync-queries": "error",
+        "testing-library/no-container": "warn",
+        "testing-library/no-debugging-utils": "warn",
+        "testing-library/no-dom-import": ["error", "react"],
+        "testing-library/no-global-regexp-flag-in-query": "error",
+        "testing-library/no-manual-cleanup": "error",
+        "testing-library/no-node-access": "warn",
+        "testing-library/no-promise-in-fire-event": "error",
+        "testing-library/no-render-in-lifecycle": "warn",
+        "testing-library/no-unnecessary-act": "error",
+        "testing-library/no-wait-for-multiple-assertions": "error",
+        "testing-library/no-wait-for-side-effects": "error",
+        "testing-library/no-wait-for-snapshot": "error",
+        "testing-library/prefer-find-by": "error",
+        "testing-library/prefer-presence-queries": "error",
+        "testing-library/prefer-query-by-disappearance": "warn",
+        "testing-library/prefer-screen-queries": "error",
+        "testing-library/prefer-user-event": "error",
+        "testing-library/render-result-naming-convention": "warn"
+      }
+    },
+    {
+      // Vitest browser-mode tests use the vitest-browser query API, not Testing Library
+      "files": ["packages/sanity/**/*.browser.test.{ts,tsx}"],
+      "rules": {
+        "testing-library/await-async-events": "off",
+        "testing-library/await-async-queries": "off",
+        "testing-library/await-async-utils": "off",
+        "testing-library/no-await-sync-events": "off",
+        "testing-library/no-await-sync-queries": "off",
+        "testing-library/no-container": "off",
+        "testing-library/no-debugging-utils": "off",
+        "testing-library/no-dom-import": "off",
+        "testing-library/no-global-regexp-flag-in-query": "off",
+        "testing-library/no-manual-cleanup": "off",
+        "testing-library/no-node-access": "off",
+        "testing-library/no-promise-in-fire-event": "off",
+        "testing-library/no-render-in-lifecycle": "off",
+        "testing-library/no-unnecessary-act": "off",
+        "testing-library/no-wait-for-multiple-assertions": "off",
+        "testing-library/no-wait-for-side-effects": "off",
+        "testing-library/no-wait-for-snapshot": "off",
+        "testing-library/prefer-find-by": "off",
+        "testing-library/prefer-presence-queries": "off",
+        "testing-library/prefer-query-by-disappearance": "off",
+        "testing-library/prefer-screen-queries": "off",
+        "testing-library/prefer-user-event": "off",
+        "testing-library/render-result-naming-convention": "off"
+      }
+    },
+    {
+      // Prefer the opinionated sanity/src/ui-components over raw @sanity/ui, and keep the global
+      // restricted-import rules in effect (oxlint overrides replace, rather than merge, this rule)
+      "files": ["packages/sanity/**"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "styled-components",
+                "importNames": ["default"],
+                "message": "Please use `import {styled} from 'styled-components'` instead."
+              },
+              {
+                "name": "styled-components",
+                "importNames": ["ServerStyleSheet"],
+                "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+              },
+              {
+                "name": "react",
+                "importNames": ["default"],
+                "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
+              },
+              {
+                "name": "react",
+                "importNames": ["createElement"],
+                "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
+              },
+              {
+                "name": "react",
+                "importNames": ["createRef"],
+                "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+              },
+              {
+                "name": "react/jsx-runtime",
+                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+              },
+              {
+                "name": "react/jsx-dev-runtime",
+                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+              },
+              {
+                "name": "react/compiler-runtime",
+                "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
+              },
+              {
+                "name": "date-fns",
+                "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
+              },
+              {
+                "name": "lodash-es",
+                "message": "Import from individual modules instead, e.g. `import debounce from 'lodash-es/debounce.js'`. Barrel imports are ~55% slower."
+              },
+              {
+                "name": "@sanity/ui",
+                "importNames": [
+                  "Button",
+                  "ButtonProps",
+                  "Dialog",
+                  "DialogProps",
+                  "ErrorBoundary",
+                  "MenuButton",
+                  "MenuButtonProps",
+                  "MenuGroup",
+                  "MenuGroupProps",
+                  "MenuItem",
+                  "MenuItemProps",
+                  "Popover",
+                  "PopoverProps",
+                  "Tab",
+                  "TabProps",
+                  "Tooltip",
+                  "TooltipProps",
+                  "TooltipDelayGroupProvider",
+                  "TooltipDelayGroupProviderProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "react",
+                "importNames": ["createContext"],
+                "message": "Please place \"context\" in _singletons"
+              },
+              {
+                "name": "sanity",
+                "importNames": ["createContext"],
+                "message": "It's only allowed to call createContext from a file in src/_singletons, otherwise it defeats the purpose of the singleton (it may get duplicated during bundling)"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/scheduled-publishing/**"],
+                "message": "Importing from scheduled-publishing folder is discouraged since we are dropping support for it in the near future"
+              },
+              {
+                "group": ["lodash.*", "lodash/*", "lodash"],
+                "message": "Please use individual imports from 'lodash-es' instead, e.g. `import debounce from 'lodash-es/debounce.js'`."
+              },
+              {
+                "group": ["lodash-es/*", "!lodash-es/*.js"],
+                "message": "lodash-es submodule imports must include the .js extension, e.g. `import debounce from 'lodash-es/debounce.js'`."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // Inside packages/sanity/src/core, imports from the package root must be relative
+      "files": ["packages/sanity/src/core/**"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "sanity",
+                "message": "Please import from a relative path instead (since you are inside `packages/sanity/src/core`)."
+              },
+              {
+                "name": "styled-components",
+                "importNames": ["default"],
+                "message": "Please use `import {styled} from 'styled-components'` instead."
+              },
+              {
+                "name": "styled-components",
+                "importNames": ["ServerStyleSheet"],
+                "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+              },
+              {
+                "name": "react",
+                "importNames": ["default"],
+                "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
+              },
+              {
+                "name": "react",
+                "importNames": ["createElement"],
+                "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
+              },
+              {
+                "name": "react",
+                "importNames": ["createRef"],
+                "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+              },
+              {
+                "name": "react/jsx-runtime",
+                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+              },
+              {
+                "name": "react/jsx-dev-runtime",
+                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+              },
+              {
+                "name": "react/compiler-runtime",
+                "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
+              },
+              {
+                "name": "date-fns",
+                "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
+              },
+              {
+                "name": "lodash-es",
+                "message": "Import from individual modules instead, e.g. `import debounce from 'lodash-es/debounce.js'`. Barrel imports are ~55% slower."
+              },
+              {
+                "name": "@sanity/ui",
+                "importNames": [
+                  "Button",
+                  "ButtonProps",
+                  "Dialog",
+                  "DialogProps",
+                  "ErrorBoundary",
+                  "MenuButton",
+                  "MenuButtonProps",
+                  "MenuGroup",
+                  "MenuGroupProps",
+                  "MenuItem",
+                  "MenuItemProps",
+                  "Popover",
+                  "PopoverProps",
+                  "Tab",
+                  "TabProps",
+                  "Tooltip",
+                  "TooltipProps",
+                  "TooltipDelayGroupProvider",
+                  "TooltipDelayGroupProviderProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "react",
+                "importNames": ["createContext"],
+                "message": "Please place \"context\" in _singletons"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/scheduled-publishing/**"],
+                "message": "Importing from scheduled-publishing folder is discouraged since we are dropping support for it in the near future"
+              },
+              {
+                "group": ["lodash.*", "lodash/*", "lodash"],
+                "message": "Please use individual imports from 'lodash-es' instead, e.g. `import debounce from 'lodash-es/debounce.js'`."
+              },
+              {
+                "group": ["lodash-es/*", "!lodash-es/*.js"],
+                "message": "lodash-es submodule imports must include the .js extension, e.g. `import debounce from 'lodash-es/debounce.js'`."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // _createContext legitimately calls createContext, so it is exempt from that restriction
+      "files": ["packages/sanity/src/_createContext/**"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "styled-components",
+                "importNames": ["default"],
+                "message": "Please use `import {styled} from 'styled-components'` instead."
+              },
+              {
+                "name": "styled-components",
+                "importNames": ["ServerStyleSheet"],
+                "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+              },
+              {
+                "name": "react",
+                "importNames": ["default"],
+                "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
+              },
+              {
+                "name": "react",
+                "importNames": ["createElement"],
+                "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
+              },
+              {
+                "name": "react",
+                "importNames": ["createRef"],
+                "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+              },
+              {
+                "name": "react/jsx-runtime",
+                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+              },
+              {
+                "name": "react/jsx-dev-runtime",
+                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+              },
+              {
+                "name": "react/compiler-runtime",
+                "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
+              },
+              {
+                "name": "date-fns",
+                "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
+              },
+              {
+                "name": "lodash-es",
+                "message": "Import from individual modules instead, e.g. `import debounce from 'lodash-es/debounce.js'`. Barrel imports are ~55% slower."
+              },
+              {
+                "name": "@sanity/ui",
+                "importNames": [
+                  "Button",
+                  "ButtonProps",
+                  "Dialog",
+                  "DialogProps",
+                  "ErrorBoundary",
+                  "MenuButton",
+                  "MenuButtonProps",
+                  "MenuGroup",
+                  "MenuGroupProps",
+                  "MenuItem",
+                  "MenuItemProps",
+                  "Popover",
+                  "PopoverProps",
+                  "Tab",
+                  "TabProps",
+                  "Tooltip",
+                  "TooltipProps",
+                  "TooltipDelayGroupProvider",
+                  "TooltipDelayGroupProviderProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/scheduled-publishing/**"],
+                "message": "Importing from scheduled-publishing folder is discouraged since we are dropping support for it in the near future"
+              },
+              {
+                "group": ["lodash.*", "lodash/*", "lodash"],
+                "message": "Please use individual imports from 'lodash-es' instead, e.g. `import debounce from 'lodash-es/debounce.js'`."
+              },
+              {
+                "group": ["lodash-es/*", "!lodash-es/*.js"],
+                "message": "lodash-es submodule imports must include the .js extension, e.g. `import debounce from 'lodash-es/debounce.js'`."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // Singletons must use relative type imports (the boundaries plugin can't track named type imports)
+      "files": ["packages/sanity/src/_singletons/**"],
+      "rules": {
+        "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "styled-components",
+                "importNames": ["default"],
+                "message": "Please use `import {styled} from 'styled-components'` instead."
+              },
+              {
+                "name": "styled-components",
+                "importNames": ["ServerStyleSheet"],
+                "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+              },
+              {
+                "name": "react",
+                "importNames": ["default"],
+                "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
+              },
+              {
+                "name": "react",
+                "importNames": ["createElement"],
+                "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
+              },
+              {
+                "name": "react",
+                "importNames": ["createRef"],
+                "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+              },
+              {
+                "name": "react/jsx-runtime",
+                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+              },
+              {
+                "name": "react/jsx-dev-runtime",
+                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+              },
+              {
+                "name": "react/compiler-runtime",
+                "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
+              },
+              {
+                "name": "date-fns",
+                "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
+              },
+              {
+                "name": "lodash-es",
+                "message": "Import from individual modules instead, e.g. `import debounce from 'lodash-es/debounce.js'`. Barrel imports are ~55% slower."
+              },
+              {"name": "sanity", "message": "Use relative type imports instead"},
+              {"name": "sanity/presentation", "message": "Use relative type imports instead"},
+              {"name": "sanity/structure", "message": "Use relative type imports instead"},
+              {"name": "sanity/router", "message": "Use relative type imports instead"},
+              {
+                "name": "react",
+                "importNames": ["createContext"],
+                "message": "Use `createContext` from 'sanity/_createContext' instead"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/scheduled-publishing/**"],
+                "message": "Importing from scheduled-publishing folder is discouraged since we are dropping support for it in the near future"
+              },
+              {
+                "group": ["lodash.*", "lodash/*", "lodash"],
+                "message": "Please use individual imports from 'lodash-es' instead, e.g. `import debounce from 'lodash-es/debounce.js'`."
+              },
+              {
+                "group": ["lodash-es/*", "!lodash-es/*.js"],
+                "message": "lodash-es submodule imports must include the .js extension, e.g. `import debounce from 'lodash-es/debounce.js'`."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // Browser-mode tests and their story/helper files render real Studio inputs and may import
+      // the public API and test-only deps freely
+      "files": [
+        "packages/sanity/**/*.browser.test.{ts,tsx}",
+        "packages/sanity/src/core/comments/components/pte/comment-input/__tests__/*Story.tsx",
+        "packages/sanity/src/core/form/inputs/arrays/__tests__/*Story.tsx",
+        "packages/sanity/src/core/form/inputs/PortableText/__tests__/**/*Story.tsx"
+      ],
+      "rules": {
+        "eslint/no-restricted-imports": "off"
+      }
+    },
+    {
+      // e2e tests should import test helpers from studio-test, plus keep the global restrictions
+      "files": ["e2e/**"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@playwright/test",
+                "importNames": ["test", "default"],
+                "message": "Please use named imports, e.g. `import {test} from \"studio-test\"` instead."
+              },
+              {
+                "name": "styled-components",
+                "importNames": ["default"],
+                "message": "Please use `import {styled} from 'styled-components'` instead."
+              },
+              {
+                "name": "react",
+                "importNames": ["default"],
+                "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
+              },
+              {
+                "name": "date-fns",
+                "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
+              },
+              {
+                "name": "lodash-es",
+                "message": "Import from individual modules instead, e.g. `import debounce from 'lodash-es/debounce.js'`. Barrel imports are ~55% slower."
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["lodash.*", "lodash/*", "lodash"],
+                "message": "Please use individual imports from 'lodash-es' instead, e.g. `import debounce from 'lodash-es/debounce.js'`."
+              },
+              {
+                "group": ["lodash-es/*", "!lodash-es/*.js"],
+                "message": "lodash-es submodule imports must include the .js extension, e.g. `import debounce from 'lodash-es/debounce.js'`."
+              }
+            ]
+          }
+        ]
       }
     }
   ]

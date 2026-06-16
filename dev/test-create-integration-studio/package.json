@@ -9,7 +9,6 @@
     "clean": "rimraf .sanity dist",
     "deploy": "npx sanity deploy",
     "dev": "sanity dev",
-    "lint": "eslint .",
     "start": "sanity preview"
   },
   "dependencies": {
@@ -20,8 +19,6 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "eslint": "catalog:",
     "rimraf": "catalog:"
   }
 }

@@ -117,7 +117,6 @@
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
-    "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "watch": "pkg-utils watch"
@@ -131,14 +130,12 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/pkg-utils": "catalog:",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
-    "eslint": "catalog:",
     "rimraf": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

@@ -23,7 +23,6 @@
   },
   "scripts": {
     "check:types": "(cd ../../.. && tsgo --project packages/@repo/release-notes/tsconfig.json --erasableSyntaxOnly)",
-    "lint": "eslint .",
     "test": "vitest run"
   },
   "dependencies": {
@@ -49,7 +48,6 @@
   },
   "devDependencies": {
     "@portabletext/markdown": "^1.4.0",
-    "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",

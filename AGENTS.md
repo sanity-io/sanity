@@ -41,9 +41,8 @@ These checks run on every PR and **must pass**:
 
 | Check            | Command               | Notes                                                                                                                                                            |
 | ---------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Format**       | `pnpm check:format`   | Uses Prettier. Fix with `pnpm chore:format:fix`                                                                                                                  |
-| **Oxlint**       | `pnpm check:oxlint`   | Fast Rust-based linter. Fix with `pnpm chore:oxlint:fix`                                                                                                         |
-| **ESLint**       | `pnpm lint`           | Full linting. Fix with `pnpm chore:lint:fix`                                                                                                                     |
+| **Format**       | `pnpm check:format`   | Uses oxfmt. Fix with `pnpm chore:format:fix`                                                                                                                     |
+| **Oxlint**       | `pnpm check:oxlint`   | Rust linter (type-aware via tsgolint) plus ESLint plugins loaded as oxlint jsPlugins. Fix with `pnpm chore:oxlint:fix`                                           |
 | **Type Check**   | `pnpm check:types`    | TypeScript via tsgo + turbo                                                                                                                                      |
 | **Unit Tests**   | `pnpm test`           | Vitest, sharded in CI                                                                                                                                            |
 | **Export Tests** | `pnpm test:exports`   | Ensures ESM/CJS/DTS work                                                                                                                                         |
@@ -78,7 +77,7 @@ sanity/
 ├── packages/
 │   ├── sanity/           # Main Sanity studio package
 │   ├── @sanity/          # Scoped packages (cli, types, schema, etc.)
-│   └── @repo/            # Internal tooling (eslint-config, test-config, etc.)
+│   └── @repo/            # Internal tooling (test-config, tsconfig, etc.)
 ├── dev/                  # Development studios for testing
 │   └── test-studio/      # Primary dev studio (pnpm dev runs this)
 ├── e2e/                  # End-to-end Playwright tests
@@ -238,11 +237,11 @@ pnpm test:e2e --ui          # Interactive mode
 
 ## Coding Standards
 
-Coding standards are enforced by **oxlint** and **eslint**. Check your code with:
+Coding standards are enforced by **oxlint** (native Rust rules, type-aware rules via tsgolint, and a few ESLint plugins loaded through oxlint's `jsPlugins`). Check your code with:
 
 ```bash
-pnpm lint              # Check for issues
-pnpm lint:fix          # Auto-fix issues
+pnpm lint              # Check for issues (oxlint)
+pnpm lint:fix          # Auto-fix issues (oxfmt + oxlint --fix)
 ```
 
 All packages use **ESM** (`"type": "module"`). TypeScript strict mode is enabled.
@@ -274,10 +273,10 @@ pnpm test:e2e --ui          # Interactive mode
 
 ## Pre-commit Hook
 
-Husky runs `lint-staged` on commit, which:
+Lefthook runs on commit (see `lefthook.yml`), which:
 
-1. Runs Prettier on staged files
-2. Runs oxlint on staged `.js/.ts/.tsx` files
+1. Runs oxfmt on staged files
+2. Runs oxlint `--fix` on staged `.js/.ts/.tsx` files
 
 If the hook fails, run `pnpm lint:fix` to fix issues.
 

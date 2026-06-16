@@ -111,12 +111,6 @@
         "^build"
       ]
     },
-    "transit": {
-      "dependsOn": ["^transit"]
-    },
-    "lint": {
-      "dependsOn": ["transit"]
-    },
     "//#check:format": {},
     "//#check:oxlint": {
       "cache": false

@@ -10,7 +10,6 @@
   "scripts": {
     "build": "sanity build",
     "dev": "sanity dev --port 3339",
-    "lint": "eslint .",
     "preview": "sanity preview --port 3339",
     "start": "sanity preview --port 3339"
   },
@@ -31,9 +30,5 @@
     "sanity-plugin-mux-input": "^3.0.0",
     "sanity-test-studio": "workspace:*",
     "styled-components": "catalog:"
-  },
-  "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "eslint": "catalog:"
   }
 }

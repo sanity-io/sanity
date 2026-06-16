@@ -8,11 +8,9 @@
   "types": "./src/package.bundle.ts",
   "scripts": {
     "check:types": "(cd ../../.. && tsc --project packages/@repo/package.bundle/tsconfig.json --erasableSyntaxOnly)",
-    "lint": "eslint .",
     "test": "vitest run"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@rolldown/plugin-babel": "catalog:",
@@ -20,7 +18,6 @@
     "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "catalog:",
-    "eslint": "catalog:",
     "lodash-es": "^4.18.1",
     "vite": "catalog:",
     "vitest": "catalog:"

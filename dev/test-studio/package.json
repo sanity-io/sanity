@@ -10,7 +10,6 @@
     "check:types": "tsc --noEmit",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev",
-    "lint": "eslint .",
     "sanity:build": "PKG_BUILD_VERSION=$(./get-version.ts) sanity build --source-maps",
     "sanity:dev": "sanity dev",
     "sanity:manifest": "SANITY_AUTH_TOKEN=${VERCEL_SANITY_API_DEPLOY_TOKEN} sanity schema deploy --workspace default",
@@ -63,7 +62,6 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
@@ -72,7 +70,6 @@
     "@vitejs/devtools": "^0.3.3",
     "babel-plugin-react-compiler": "catalog:",
     "chokidar": "^3.6.0",
-    "eslint": "catalog:",
     "rimraf": "catalog:",
     "tsx": "^4.22.4",
     "vite": "catalog:"
