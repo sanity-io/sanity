@@ -23,10 +23,9 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
   test(`opening - when clicking the internationalized array string field, the modal should not open`, async ({
     page,
   }) => {
-    // In sanity-plugin-internationalized-array v5, item `_key`s are random (the
-    // language lives in a dedicated `language` field), so target the value
-    // input by its language label instead of a hardcoded `_key`
-    const input = page.getByTestId('field-greeting').getByRole('textbox', {name: 'EN'})
+    // The value input renders outside the field wrapper and item keys are
+    // random, so match it by its unique "Value" label at page scope.
+    const input = page.getByRole('textbox', {name: 'Value'})
     await expect(input).toBeEnabled()
     await input.click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
@@ -39,7 +38,7 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
     page,
   }) => {
     const greetingField = page.getByTestId('field-greeting')
-    const input = greetingField.getByRole('textbox', {name: 'EN'})
+    const input = page.getByRole('textbox', {name: 'Value'})
     await expect(input).toBeVisible()
     await expect(input).toBeEnabled()
     await input.click()
@@ -49,7 +48,8 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
     await greetingField.getByRole('button', {name: 'FR'}).click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
-    const inputFr = greetingField.getByRole('textbox', {name: 'FR'})
+    // Adding FR yields a second "Value" input; `.last()` selects it.
+    const inputFr = page.getByRole('textbox', {name: 'Value'}).last()
     await expect(inputFr).toBeVisible()
     await expect(inputFr).toBeEnabled()
     await inputFr.click()
