@@ -169,6 +169,7 @@
     "@portabletext/html": "^1.0.2",
     "@portabletext/patches": "^2.0.4",
     "@portabletext/plugin-dnd": "^1.0.1",
+    "@portabletext/plugin-list-index": "^1.0.1",
     "@portabletext/plugin-markdown-shortcuts": "^8.0.16",
     "@portabletext/plugin-one-line": "^7.0.16",
     "@portabletext/plugin-paste-link": "^4.0.16",

@@ -58,6 +58,24 @@ const DOCUMENT: SanityDocument = {
       ],
     },
     {_type: 'callout', _key: 'callout-0', title: 'Note'},
+    {
+      _type: 'block',
+      _key: 'li-0',
+      style: 'normal',
+      listItem: 'number',
+      level: 1,
+      markDefs: [],
+      children: [{_type: 'span', _key: 'li-0-span', text: 'First', marks: []}],
+    },
+    {
+      _type: 'block',
+      _key: 'li-1',
+      style: 'normal',
+      listItem: 'number',
+      level: 1,
+      markDefs: [],
+      children: [{_type: 'span', _key: 'li-1-span', text: 'Second', marks: []}],
+    },
   ],
 }
 

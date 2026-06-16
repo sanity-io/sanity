@@ -1711,6 +1711,9 @@ importers:
       '@portabletext/plugin-dnd':
         specifier: ^1.0.1
         version: 1.0.1(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
+      '@portabletext/plugin-list-index':
+        specifier: ^1.0.1
+        version: 1.0.1(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
       '@portabletext/plugin-markdown-shortcuts':
         specifier: ^8.0.16
         version: 8.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
@@ -4858,6 +4861,13 @@ packages:
 
   '@portabletext/plugin-input-rule@5.0.16':
     resolution: {integrity: sha512-qQAUwGreq3L0Ft/+WMDA3W8nrNrErZxorU8+K3lvGzJ4PQqa3oUz0WfPcnOLQAC38XslerZQztn+36NzN9bfeQ==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@portabletext/editor': ^7.5.0
+      react: ^19.2
+
+  '@portabletext/plugin-list-index@1.0.1':
+    resolution: {integrity: sha512-PJFgm794b6e7pGOum0dDKcryaIfTEV4SPco05oKES52IOni2GACJfDShvihhVddqg9x6bUisd3o1cfPp9I6sRA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@portabletext/editor': ^7.5.0
@@ -14763,6 +14773,11 @@ snapshots:
       xstate: 5.32.0
     transitivePeerDependencies:
       - '@types/react'
+
+  '@portabletext/plugin-list-index@1.0.1(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      '@portabletext/editor': 7.5.0(@types/react@19.2.17)(react@19.2.7)
+      react: 19.2.7
 
   '@portabletext/plugin-markdown-shortcuts@8.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
     dependencies:

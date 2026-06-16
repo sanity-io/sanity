@@ -65,5 +65,24 @@ describe('Portable Text Input', () => {
         expect(inlineObject?.querySelector('[draggable="true"]')).not.toBeNull()
       },
     )
+
+    // Ordered-list numbering is driven by CSS counters keyed on
+    // `[data-level][data-list-index]`. The legacy pipeline gets `data-list-index`
+    // from the engine; the pt-native catch-all gets it from `useListIndex`
+    // (`@portabletext/plugin-list-index`), so both number sequentially.
+    it.each([false, true] as const)(
+      'enableContainers=%s numbers ordered list items with sequential data-list-index',
+      async (enableContainers) => {
+        const {getFocusedPortableTextEditor} = testHelpers()
+        void render(<RenderPipelineStory enableContainers={enableContainers} />)
+
+        const editor = (await getFocusedPortableTextEditor('field-body')).element()
+        const items = editor.querySelectorAll('.pt-list-item-number')
+
+        expect(items).toHaveLength(2)
+        expect(items[0]?.getAttribute('data-list-index')).toEqual('1')
+        expect(items[1]?.getAttribute('data-list-index')).toEqual('2')
+      },
+    )
   })
 })

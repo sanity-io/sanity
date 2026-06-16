@@ -15,6 +15,7 @@ import {
 } from '@portabletext/editor'
 import {NodePlugin} from '@portabletext/editor/plugins'
 import {DndProvider, useDropPosition} from '@portabletext/plugin-dnd'
+import {ListIndexProvider, useListIndex} from '@portabletext/plugin-list-index'
 import {
   type ObjectSchemaType,
   type Path,
@@ -236,7 +237,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       }
 
       return (
-        <div {...attributes}>
+        <TextBlockShell attributes={attributes} block={block} path={blockPath}>
           <BlockDropIndicator path={blockPath} edge="start" />
           <TextBlock
             floatingBoundary={floatingBoundary}
@@ -267,7 +268,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             {inner}
           </TextBlock>
           <BlockDropIndicator path={blockPath} edge="end" />
-        </div>
+        </TextBlockShell>
       )
     },
     [
@@ -896,13 +897,20 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     </>
   )
 
-  // `DndProvider` (from `@portabletext/plugin-dnd`) tracks the live drop
-  // position and serves it through `useDropPosition`, which the catch-all
-  // block renders read to paint a drop indicator. The legacy pipeline gets
-  // its indicator from the engine's void render, so this only wraps pt-native.
+  // pt-native plugin providers. `DndProvider` (`@portabletext/plugin-dnd`)
+  // tracks the live drop position for `useDropPosition` (drop indicators);
+  // `ListIndexProvider` (`@portabletext/plugin-list-index`) computes ordered-
+  // list indices for `useListIndex`. The legacy pipeline gets both from the
+  // engine's void render, so these only wrap pt-native.
   return (
     <SelectedAnnotationsProvider>
-      {isPtNative ? <DndProvider>{editorContent}</DndProvider> : editorContent}
+      {isPtNative ? (
+        <DndProvider>
+          <ListIndexProvider>{editorContent}</ListIndexProvider>
+        </DndProvider>
+      ) : (
+        editorContent
+      )}
     </SelectedAnnotationsProvider>
   )
 }
@@ -928,4 +936,35 @@ function DropIndicator() {
 function BlockDropIndicator(props: {path: Path; edge: 'start' | 'end'}) {
   const dropPosition = useDropPosition(props.path)
   return dropPosition === props.edge ? <DropIndicator /> : null
+}
+
+// The text-block wrapper for the pt-native pipeline. Reproduces the list
+// classes and `data-level`/`data-list-index` attributes the legacy engine
+// void render put on the block element: Studio's CSS counters key the
+// ordered-list numbering off `[data-level][data-list-index]`, and the
+// `.pt-list-item*` classes drive inter-item spacing. `data-list-index` comes
+// from `useListIndex` (`@portabletext/plugin-list-index`), since the new
+// pipeline doesn't expose the engine's internal list-index map.
+function TextBlockShell(props: {
+  attributes: TextBlockRenderProps['attributes']
+  block: PortableTextTextBlock
+  children: ReactNode
+  path: Path
+}) {
+  const {attributes, block, children, path: blockPath} = props
+  const listIndex = useListIndex(blockPath)
+  return (
+    <div
+      {...attributes}
+      className={
+        block.listItem !== undefined
+          ? `pt-list-item pt-list-item-${block.listItem} pt-list-item-level-${block.level ?? 1}`
+          : undefined
+      }
+      {...(block.level !== undefined ? {'data-level': block.level} : {})}
+      {...(listIndex !== undefined ? {'data-list-index': listIndex} : {})}
+    >
+      {children}
+    </div>
+  )
 }
