@@ -64,12 +64,22 @@ describe('Portable Text Input', () => {
       const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
 
-      // Assertion: the annotation toolbar popover should be visible
+      // Insert opens the inline object edit dialog; close it so the floating toolbar can show.
+      await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
+      await page.getByTestId('close-popover-edit-dialog-button').click()
+      await expect.element(page.getByTestId('popover-edit-dialog')).not.toBeInTheDocument()
+
+      // Focus the inline object to surface the toolbar.
+      await page.getByText('Custom preview block:').click()
+
+      const $removeButton = page.getByTestId('remove-inline-object-button')
       await expect.element(page.getByTestId('inline-object-toolbar-popover')).toBeVisible()
-      await expect.element(page.getByTestId('remove-inline-object-button')).toBeVisible()
-      // The toolbar popover floats and continuously repositions, so the button
-      // never passes the "stable" actionability check. Force the click past it.
-      await page.getByTestId('remove-inline-object-button').click({force: true})
+      await expect.element($removeButton).toBeVisible()
+
+      // The toolbar popover floats and continuously repositions in Firefox, so
+      // Playwright's actionability checks are flaky. Click via the DOM node instead.
+      await userEvent.click($removeButton.element())
+
       await expect
         .element(page.getByTestId('inline-object-toolbar-popover'))
         .not.toBeInTheDocument()
