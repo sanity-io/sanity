@@ -42,8 +42,8 @@ vi.mock('../../../index', () => ({
   }),
 }))
 
-vi.mock('../useBundleDocuments', () => ({
-  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
+vi.mock('../useReleaseDocuments', () => ({
+  useReleaseDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))
 
 vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({

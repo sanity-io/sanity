@@ -40,8 +40,8 @@ vi.mock('../../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-vi.mock('../../../detail/useBundleDocuments', () => ({
-  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
+vi.mock('../../../detail/useReleaseDocuments', () => ({
+  useReleaseDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))
 
 vi.mock('../../../../contexts/upsell/useReleasesUpsell', () => ({

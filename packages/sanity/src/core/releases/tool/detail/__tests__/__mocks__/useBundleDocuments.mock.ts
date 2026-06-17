@@ -1,8 +1,9 @@
 import {type Mock, type Mocked} from 'vitest'
 
-import {type DocumentInRelease, useBundleDocuments} from '../../useBundleDocuments'
+import {type DocumentInBundle} from '../../useBundleDocuments'
+import {useReleaseDocuments} from '../../useReleaseDocuments'
 
-export const documentsInRelease: DocumentInRelease = {
+export const documentsInRelease: DocumentInBundle = {
   memoKey: 'a',
   document: {
     _id: 'a',
@@ -19,18 +20,18 @@ export const documentsInRelease: DocumentInRelease = {
   },
 }
 
-export const useBundleDocumentsMockReturn: Mocked<ReturnType<typeof useBundleDocuments>> = {
+export const useBundleDocumentsMockReturn: Mocked<ReturnType<typeof useReleaseDocuments>> = {
   loading: false,
   results: [],
   error: null,
 }
 
 export const useBundleDocumentsMockReturnWithResults: Mocked<
-  ReturnType<typeof useBundleDocuments>
+  ReturnType<typeof useReleaseDocuments>
 > = {
   loading: false,
   results: [documentsInRelease],
   error: null,
 }
 
-export const mockUseBundleDocuments = useBundleDocuments as Mock<typeof useBundleDocuments>
+export const mockUseBundleDocuments = useReleaseDocuments as Mock<typeof useReleaseDocuments>

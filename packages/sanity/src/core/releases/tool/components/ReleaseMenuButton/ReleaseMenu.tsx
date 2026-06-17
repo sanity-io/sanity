@@ -16,7 +16,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {getReleaseDefaults} from '../../../util/util'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {type DocumentInBundle} from '../../detail/useBundleDocuments'
 import {ReleasePublishAllButton} from '../releaseCTAButtons/ReleasePublishAllButton'
 import {ReleaseScheduleButton} from '../releaseCTAButtons/ReleaseScheduleButton'
 import {type ReleaseAction} from './releaseActions'
@@ -25,7 +25,7 @@ import {type ReleaseMenuButtonProps} from './ReleaseMenuButton'
 export type ReleaseMenuProps = Omit<ReleaseMenuButtonProps, 'documentsCount'> & {
   disabled: boolean
   setSelectedAction: Dispatch<SetStateAction<ReleaseAction | undefined>>
-  documents: DocumentInRelease[]
+  documents: DocumentInBundle[]
 }
 
 export const ReleaseMenu = ({

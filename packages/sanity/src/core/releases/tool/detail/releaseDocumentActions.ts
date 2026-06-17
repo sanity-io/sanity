@@ -1,6 +1,6 @@
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 import {type BundleDocumentRow} from './ReleaseSummary'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInBundle} from './useBundleDocuments'
 
 export type DocumentFilterType = 'all' | 'added' | 'changed' | 'unpublished' | 'errors'
 
@@ -46,7 +46,7 @@ export type ActionCounts = Record<'added' | 'changed' | 'unpublished' | 'errors'
  * Counts documents by their action type and validation errors
  */
 export function countDocumentsByAction(
-  documents: (DocumentInRelease | BundleDocumentRow)[],
+  documents: (DocumentInBundle | BundleDocumentRow)[],
 ): ActionCounts {
   return documents.reduce<ActionCounts>(
     (acc, doc) => {
@@ -67,7 +67,7 @@ export function countDocumentsByAction(
  * Checks if a document matches the given filter type
  */
 export function documentMatchesFilter(
-  doc: DocumentInRelease | BundleDocumentRow,
+  doc: DocumentInBundle | BundleDocumentRow,
   filter: DocumentFilterType,
 ): boolean {
   if (filter === 'all') return true
@@ -79,7 +79,7 @@ export function documentMatchesFilter(
  * Determines the action type for a document based on its state
  */
 export function getDocumentActionType(
-  document: DocumentInRelease | BundleDocumentRow,
+  document: DocumentInBundle | BundleDocumentRow,
 ): DocumentActionConfig['key'] | null {
   if (!document.document || document.isPending) {
     return null

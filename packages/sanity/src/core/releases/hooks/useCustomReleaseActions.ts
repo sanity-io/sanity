@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 
 import {type ReleaseActionComponent} from '../../config/releases/actions'
 import {useSource} from '../../studio'
-import {type DocumentInRelease} from '../tool/detail/useBundleDocuments'
+import {type DocumentInBundle} from '../tool/detail/useBundleDocuments'
 
 /**
  * Hook to get custom/configured release actions for a release
@@ -12,7 +12,7 @@ import {type DocumentInRelease} from '../tool/detail/useBundleDocuments'
  */
 export function useCustomReleaseActions(
   release: ReleaseDocument,
-  documents: DocumentInRelease[] = [],
+  documents: DocumentInBundle[] = [],
 ): ReleaseActionComponent[] {
   const source = useSource()
 

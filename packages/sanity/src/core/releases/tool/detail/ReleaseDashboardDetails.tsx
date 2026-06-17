@@ -19,7 +19,7 @@ import {isNotArchivedRelease} from '../../util/util'
 import {ArchivedReleaseBanner} from './ArchivedReleaseBanner'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInBundle} from './useBundleDocuments'
 import {ValidationProgressIndicator} from './ValidationProgressIndicator'
 
 export function ReleaseDashboardDetails({
@@ -27,7 +27,7 @@ export function ReleaseDashboardDetails({
   documents,
 }: {
   release: ReleaseDocument
-  documents: DocumentInRelease[]
+  documents: DocumentInBundle[]
 }) {
   const {state} = release
 

@@ -6,9 +6,9 @@ import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionsLogs'
 import {getPublishedId} from '../../../../../util/draftUtils'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
-import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
+import {type DocumentInBundle} from '../../../detail/useBundleDocuments'
 
-export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
+export const usePostPublishTransactions = (documents: DocumentInBundle[]) => {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const transactionId = documents[0]?.document._rev
 

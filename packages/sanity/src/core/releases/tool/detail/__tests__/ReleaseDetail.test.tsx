@@ -63,8 +63,8 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-vi.mock('../useBundleDocuments', () => ({
-  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturn),
+vi.mock('../useReleaseDocuments', () => ({
+  useReleaseDocuments: vi.fn(() => useBundleDocumentsMockReturn),
 }))
 
 vi.mock('../events/useReleaseEvents', () => ({

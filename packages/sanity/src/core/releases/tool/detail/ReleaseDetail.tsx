@@ -18,7 +18,7 @@ import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
 import {ReleaseDashboardFooter} from './ReleaseDashboardFooter'
 import {ReleaseDashboardHeader} from './ReleaseDashboardHeader'
 import {ReleaseSummary} from './ReleaseSummary'
-import {useBundleDocuments} from './useBundleDocuments'
+import {useReleaseDocuments} from './useReleaseDocuments'
 
 export type ReleaseInspector = 'activity'
 const MotionCard = motion.create(Card)
@@ -36,7 +36,7 @@ export function ReleaseDetail() {
     loading: documentsLoading,
     results,
     error: bundleDocumentsError,
-  } = useBundleDocuments(releaseId)
+  } = useReleaseDocuments(releaseId)
   const releaseEvents = useReleaseEvents(releaseId)
 
   const releaseInDetail = data

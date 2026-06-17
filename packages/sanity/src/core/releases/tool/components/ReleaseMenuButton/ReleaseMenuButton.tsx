@@ -19,7 +19,7 @@ import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {createReleaseId} from '../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {type DocumentInBundle} from '../../detail/useBundleDocuments'
 import {DuplicateReleaseToastLink} from './DuplicateReleaseToastLink'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
 import {ReleaseMenu} from './ReleaseMenu'
@@ -49,7 +49,7 @@ export type ReleaseMenuButtonProps = {
   ignoreCTA?: boolean
   release: ReleaseDocument
   documentsCount: number
-  documents?: DocumentInRelease[]
+  documents?: DocumentInBundle[]
 }
 
 export const ReleaseMenuButton = ({

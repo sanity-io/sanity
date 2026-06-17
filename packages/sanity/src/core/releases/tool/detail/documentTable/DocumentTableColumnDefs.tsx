@@ -21,7 +21,7 @@ import {Headers} from '../../components/Table/TableHeader'
 import {type Column, type InjectedTableProps} from '../../components/Table/types'
 import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
-import {type DocumentInRelease} from '../useBundleDocuments'
+import {type DocumentInBundle} from '../useBundleDocuments'
 import {useReleaseHistory} from './useReleaseHistory'
 
 const MemoReleaseDocumentPreview = memo(
@@ -31,7 +31,7 @@ const MemoReleaseDocumentPreview = memo(
     releaseState,
     documentRevision,
   }: {
-    item: DocumentInRelease
+    item: DocumentInBundle
     releaseId: string
     releaseState?: ReleaseState
     documentRevision?: string

@@ -4,7 +4,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {useClient} from '../../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../../store/translog/getTransactionsLogs'
-import {type DocumentInRelease} from '../../../../detail/useBundleDocuments'
+import {type DocumentInBundle} from '../../../../detail/useBundleDocuments'
 import {usePostPublishTransactions} from '../usePostPublishTransactions'
 
 vi.mock('../../../../../../hooks/useClient', () => ({
@@ -24,7 +24,7 @@ describe('usePostPublishTransactions', () => {
   const mockDocuments = [
     {document: {_id: 'doc1', _rev: 'rev1'}},
     {document: {_id: 'doc2', _rev: 'rev2'}},
-  ] as DocumentInRelease[]
+  ] as DocumentInBundle[]
 
   const mockClient = {getUrl: vi.fn(), config: vi.fn()}
 

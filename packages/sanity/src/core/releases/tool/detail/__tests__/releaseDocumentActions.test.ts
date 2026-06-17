@@ -5,7 +5,7 @@ import {
   type DocumentFilterType,
   documentMatchesFilter,
 } from '../releaseDocumentActions'
-import {type DocumentInRelease} from '../useBundleDocuments'
+import {type DocumentInBundle} from '../useBundleDocuments'
 
 function createMockDocument(
   overrides: Partial<{
@@ -14,7 +14,7 @@ function createMockDocument(
     publishedDocumentExists: boolean
     systemDelete: boolean
   }> = {},
-): DocumentInRelease {
+): DocumentInBundle {
   const {
     isPending = false,
     hasError = false,

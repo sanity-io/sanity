@@ -6,7 +6,7 @@ import {type Source} from '../../../config/types'
 import {useSource} from '../../../studio'
 import {activeASAPRelease} from '../../__fixtures__/release.fixture'
 import {documentsInRelease} from '../../tool/detail/__tests__/__mocks__/useBundleDocuments.mock'
-import {type DocumentInRelease} from '../../tool/detail/useBundleDocuments'
+import {type DocumentInBundle} from '../../tool/detail/useBundleDocuments'
 import {useCustomReleaseActions} from '../useCustomReleaseActions'
 
 vi.mock('../../../studio', () => ({
@@ -181,7 +181,7 @@ describe('useCustomReleaseActions', () => {
         _type: 'document',
         title: 'Document 3',
       },
-    ] as DocumentInRelease[]
+    ] as DocumentInBundle[]
     rerender(newMockDocuments)
 
     expect(mockActionsFunction).toHaveBeenCalledTimes(2)

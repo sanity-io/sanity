@@ -8,7 +8,7 @@ import {getTransactionsLogs} from '../../../../../store/translog/getTransactions
 import {getPublishedId} from '../../../../../util/draftUtils'
 import {promiseWithResolvers} from '../../../../../util/promiseWithResolvers'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
-import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
+import {type DocumentInBundle} from '../../../detail/useBundleDocuments'
 
 export type RevertDocument = SanityDocument & {
   _system?: {
@@ -20,7 +20,7 @@ type RevertDocuments = RevertDocument[]
 
 type DocumentRevertStates = RevertDocuments | null | undefined
 
-export const useDocumentRevertStates = (releaseDocuments: DocumentInRelease[]) => {
+export const useDocumentRevertStates = (releaseDocuments: DocumentInBundle[]) => {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const observableClient = client.observable
   const transactionId = releaseDocuments[0]?.document._rev

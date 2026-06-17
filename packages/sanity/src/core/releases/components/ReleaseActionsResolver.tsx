@@ -6,12 +6,12 @@ import {
   type ReleaseActionComponent,
   type ReleaseActionDescription,
 } from '../../config/releases/actions'
-import {type DocumentInRelease} from '../tool/detail/useBundleDocuments'
+import {type DocumentInBundle} from '../tool/detail/useBundleDocuments'
 
 export interface ReleaseActionsResolverProps {
   actions: ReleaseActionComponent[]
   release: ReleaseDocument
-  documents: DocumentInRelease[]
+  documents: DocumentInBundle[]
   onActions: (actions: ReleaseActionDescription[]) => void
   children?: (props: {states: ReleaseActionDescription[]}) => ReactNode
 }

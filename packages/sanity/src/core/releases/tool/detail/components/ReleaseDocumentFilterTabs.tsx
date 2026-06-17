@@ -11,10 +11,10 @@ import {
   FILTER_TAB_CONFIGS,
   type FilterTabConfig,
 } from '../releaseDocumentActions'
-import {type DocumentInRelease} from '../useBundleDocuments'
+import {type DocumentInBundle} from '../useBundleDocuments'
 
 interface ReleaseDocumentFilterTabsProps {
-  documents: DocumentInRelease[]
+  documents: DocumentInBundle[]
   releaseState: ReleaseState
   isLoading?: boolean
   activeFilter: DocumentFilterType
@@ -69,7 +69,7 @@ export function ReleaseDocumentFilterTabs({
 }
 
 interface ReleaseDocumentFilterTabsInnerProps {
-  documents: DocumentInRelease[]
+  documents: DocumentInBundle[]
   activeFilter: DocumentFilterType
   onFilterChange: (filter: DocumentFilterType) => void
   t: ReturnType<typeof useTranslation>['t']

@@ -6,7 +6,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {useClient} from '../../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../../store/translog/getTransactionsLogs'
-import {type DocumentInRelease} from '../../../../detail/useBundleDocuments'
+import {type DocumentInBundle} from '../../../../detail/useBundleDocuments'
 import {useDocumentRevertStates} from '../useDocumentRevertStates'
 
 vi.mock('../../../../../../hooks/useClient', () => ({
@@ -21,7 +21,7 @@ describe('useDocumentRevertStates', () => {
   const mockDocuments = [
     {document: {_id: 'versions.r1.doc1', _rev: 'rev1'}},
     {document: {_id: 'versions.r1.doc2', _rev: 'rev2'}},
-  ] as DocumentInRelease[]
+  ] as DocumentInBundle[]
 
   /** @todo improve the useClient mock */
   const mockClient = {

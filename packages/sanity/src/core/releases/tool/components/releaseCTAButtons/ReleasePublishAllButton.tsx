@@ -15,11 +15,11 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {type DocumentInBundle} from '../../detail/useBundleDocuments'
 
 interface ReleasePublishAllButtonProps {
   release: ReleaseDocument
-  documents: DocumentInRelease[]
+  documents: DocumentInBundle[]
   disabled?: boolean
   isMenuItem?: boolean
   onConfirmDialogOpen?: () => void

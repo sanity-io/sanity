@@ -20,16 +20,16 @@ import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
 import {type DocumentFilterType, documentMatchesFilter} from './releaseDocumentActions'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInBundle} from './useBundleDocuments'
 
-export type DocumentInReleaseDetail = DocumentInRelease & {
+export type DocumentInReleaseDetail = DocumentInBundle & {
   // TODO: Get this value from the document, it can be calculated by checking if there is a corresponding document with no version attached
   isAdded?: boolean
 }
 export type BundleDocumentRow = DocumentInReleaseDetail
 
 export interface ReleaseSummaryProps {
-  documents: DocumentInRelease[]
+  documents: DocumentInBundle[]
   release: ReleaseDocument
   isLoading?: boolean
 }
@@ -87,7 +87,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
 
   const filterRows = useCallback(
-    (data: DocumentInRelease[], searchTerm: string) => {
+    (data: DocumentInBundle[], searchTerm: string) => {
       // this is a temporary way of doing the search without the previews
       // until we have it moved to the server side
       return data.filter((doc) => {

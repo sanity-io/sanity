@@ -1,4 +1,4 @@
-import {type DocumentInRelease} from '../tool/detail/useBundleDocuments'
+import {type DocumentInBundle} from '../tool/detail/useBundleDocuments'
 import {isGoingToUnpublish} from './isGoingToUnpublish'
 
 /**
@@ -6,7 +6,7 @@ import {isGoingToUnpublish} from './isGoingToUnpublish'
  * @param documents - The list of documents to get the validation loading state for
  * @returns
  */
-export const getDocumentValidationLoading = (documents: DocumentInRelease[]) => {
+export const getDocumentValidationLoading = (documents: DocumentInBundle[]) => {
   let hasError = false
   let isValidating = false
   let validatedCount = 0

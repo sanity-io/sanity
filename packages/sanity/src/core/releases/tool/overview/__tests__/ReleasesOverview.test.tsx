@@ -95,8 +95,8 @@ vi.mock('../../../store/useReleasesMetadata', () => ({
   useReleasesMetadata: vi.fn(() => useReleasesMetadataMockReturn),
 }))
 
-vi.mock('../../detail/useBundleDocuments', () => ({
-  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
+vi.mock('../../detail/useReleaseDocuments', () => ({
+  useReleaseDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))
 
 vi.mock('../../../store/useReleasePermissions', () => ({
