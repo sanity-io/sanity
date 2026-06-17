@@ -6,7 +6,8 @@ import {type PreviewLayoutKey} from '../../../components'
 import {DocumentStatus} from '../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
 import {DocumentPreviewPresence} from '../../../presence'
-import {useDocumentVersionInfo} from '../../../releases'
+import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
+import {getDocumentVersionInfoFromVersions} from '../../../releases/util/getDocumentVersionInfoFromVersions'
 import {useDocumentPresence} from '../../../store'
 import {type RenderPreviewCallback} from '../../types'
 
@@ -25,7 +26,8 @@ export function ReferencePreview(props: {
 
   const documentPresence = useDocumentPresence(id)
 
-  const versionsInfo = useDocumentVersionInfo(id)
+  const {versions} = useDocumentVersions({documentId: id})
+  const versionsInfo = useMemo(() => getDocumentVersionInfoFromVersions(versions), [versions])
 
   // Note: we can't pass the preview values as-is to the Preview-component here since it's a "prepared" value and the
   // Preview component expects the "raw"/unprepared value. By passing only _id and _type we make sure the Preview-component
