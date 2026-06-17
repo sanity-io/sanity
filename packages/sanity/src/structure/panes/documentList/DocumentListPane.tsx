@@ -182,7 +182,12 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         map((event) => event.target.value),
         tap(setSearchInputValue),
         debounce((value) => (value === '' ? of('') : timer(300))),
-        tap(setSearchQuery),
+        tap((value) => {
+          setSearchQuery(value)
+          if (!value.trim()) {
+            setSearchOrderingId(RELEVANCE_ORDERING_ID)
+          }
+        }),
       )
     },
   )
@@ -190,6 +195,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const handleClearSearch = useCallback(() => {
     setSearchQuery('')
     setSearchInputValue('')
+    setSearchOrderingId(RELEVANCE_ORDERING_ID)
   }, [])
 
   const handleSearchKeyDown = useCallback(
@@ -217,15 +223,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     handleClearSearch()
     setEnableSearchSpinner()
   }, [paneKey, handleClearSearch])
-
-  useEffect(() => {
-    // Relevance ranking is search-scoped: whenever the term is cleared (via the
-    // clear button, Escape, emptying the field, or switching panes), reset the
-    // applied ordering back to relevance.
-    if (!trimmedSearchQuery) {
-      setSearchOrderingId(RELEVANCE_ORDERING_ID)
-    }
-  }, [trimmedSearchQuery])
 
   const loadingVariant: LoadingVariant = useMemo(() => {
     if (connected && isLoading && enableSearchSpinner === paneKey) {
