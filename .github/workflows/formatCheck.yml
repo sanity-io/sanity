@@ -20,4 +20,4 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Run format check
-        run: pnpm turbo run check:format
+        run: pnpm check:format
