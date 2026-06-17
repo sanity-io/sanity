@@ -113,7 +113,6 @@ async function summarize(changes: string) {
 
   try {
     const message = await client.messages.create({
-      // eslint-disable-next-line camelcase
       max_tokens: 1024,
       messages: [
         {

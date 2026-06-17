@@ -185,7 +185,6 @@ export class Aligner {
     return Object.values(this._states).every((state) => state.hasAttrs)
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private _apply(state: VersionState, evt: DocumentRemoteMutationVersionEvent) {
     state.attrs = applyPatch(state.attrs, evt.effects.apply as any)
     state.rev = evt.transactionId

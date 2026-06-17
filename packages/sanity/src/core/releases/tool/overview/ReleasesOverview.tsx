@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
@@ -610,7 +609,7 @@ export function ReleasesOverview() {
                 data={filteredReleases}
                 columnDefs={tableColumns}
                 emptyState={tableEmptyState}
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
                 rowId="_id"
                 rowActions={renderRowActions}
                 rowProps={getRowProps}

@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string */
+/* oxlint-disable i18next/no-literal-string */
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useId, useState} from 'react'

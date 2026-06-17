@@ -67,7 +67,6 @@ export const objectValidators: Validators = {
   assetRequired: (flag, value, message, {i18n}) => {
     if (!value || !value.asset || !value.asset._ref) {
       return {
-        // eslint-disable-next-line camelcase
         __internal_metadata: {
           name: 'assetRequired',
         },
@@ -146,7 +145,6 @@ export const objectValidators: Validators = {
     }
 
     const validationErrorMetadata = {
-      // eslint-disable-next-line camelcase
       __internal_metadata: {
         name: 'media',
       },

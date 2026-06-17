@@ -1,4 +1,4 @@
-/* eslint-disable @sanity/i18n/no-attribute-template-literals */
+/* oxlint-disable @sanity/i18n/no-attribute-template-literals */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'

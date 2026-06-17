@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-// eslint-disable-next-line no-restricted-imports
+/* oxlint-disable react-hooks/rules-of-hooks */
+// oxlint-disable-next-line no-restricted-imports
 import {test as baseTest} from '@playwright/test'
 import {createClient, type SanityClient, type SanityDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
@@ -130,7 +130,7 @@ export const test = baseTest.extend<SanityFixtures>({
     await _testContext.teardown(sanityClient)
   },
 
-  // eslint-disable-next-line no-empty-pattern
+  // oxlint-disable-next-line no-empty-pattern
   async sanityClient({}, use) {
     const client = createClient({
       projectId: process.env.SANITY_E2E_PROJECT_ID,

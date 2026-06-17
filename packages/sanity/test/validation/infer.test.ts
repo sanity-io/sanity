@@ -90,7 +90,6 @@ describe('schema validation inference', () => {
       // The first field should only have the validation rules that comes with its type
       expect(
         (fieldWithoutValidation?.type.validation as Rule[]).flatMap(
-          // eslint-disable-next-line dot-notation
           (validation) => validation['_rules'],
         ),
       ).toEqual([{flag: 'type', constraint: 'String'}])
@@ -193,7 +192,6 @@ describe('schema validation inference', () => {
         }),
       ).resolves.toEqual([
         {
-          // eslint-disable-next-line camelcase
           __internal_metadata: {
             name: 'media',
           },

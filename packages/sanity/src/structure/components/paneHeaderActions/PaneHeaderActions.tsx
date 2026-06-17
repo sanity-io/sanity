@@ -127,7 +127,6 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
         const templateId = intentParams.template || intentParams.type
         if (!templateId) return null
 
-        // eslint-disable-next-line max-nested-callbacks
         const template = templates.find((t) => t.id === templateId)
         // the template doesn't exist then the action might be disabled
         if (!template) return null

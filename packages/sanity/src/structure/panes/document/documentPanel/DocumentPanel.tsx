@@ -216,7 +216,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     [archivedReleases, selectedPerspectiveName],
   )
 
-  // eslint-disable-next-line complexity
   const banners = useMemo(() => {
     const archivedReleaseId =
       params?.historyVersion ??

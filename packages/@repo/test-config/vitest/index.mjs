@@ -28,7 +28,6 @@ export function defineConfig(config) {
       // after a test's body resolves but before the worker finishes teardown. Tradeoff:
       // console output goes directly to stdout/stderr instead of through the vitest reporter.
       disableConsoleIntercept: config?.test?.disableConsoleIntercept ?? true,
-      // oxlint-disable-next-line no-misused-spread
       alias: {...config?.test?.alias, ...getViteAliases()},
       execArgv: [...workerExecArgv, ...(config?.test?.execArgv ?? [])],
       typecheck: {

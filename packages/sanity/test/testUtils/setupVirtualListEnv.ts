@@ -1,4 +1,3 @@
-// oxlint-disable no-extend-native
 import {beforeEach, vi} from 'vitest'
 
 export const setupVirtualListEnv = (

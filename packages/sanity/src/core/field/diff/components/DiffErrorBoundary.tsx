@@ -24,7 +24,6 @@ export class DiffErrorBoundary extends Component<DiffErrorBoundaryProps, DiffErr
 
   state: DiffErrorBoundaryState = {}
 
-  // eslint-disable-next-line class-methods-use-this
   componentDidCatch(error: Error) {
     console.error('Error rendering diff component: ')
     console.error(error)

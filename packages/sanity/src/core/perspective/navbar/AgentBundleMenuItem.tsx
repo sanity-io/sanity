@@ -1,5 +1,5 @@
 import {SparkleIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- MenuItem with custom children not supported by ui-components
+// oxlint-disable-next-line no-restricted-imports -- MenuItem with custom children not supported by ui-components
 import {Box, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import {type CSSProperties, memo, useCallback} from 'react'
 

@@ -221,7 +221,6 @@ function annotationForTransactionIndex(timeline: Timeline, idx: number, chunkIdx
   }
 }
 
-// eslint-disable-next-line max-params
 export function diffValue(
   timeline: Timeline,
   firstChunk: Chunk | null,

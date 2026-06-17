@@ -1,7 +1,6 @@
 import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {
   type ForwardedRef,

@@ -38,7 +38,6 @@ export function convertToValidationMarker(
     )
   }
 
-  // eslint-disable-next-line camelcase
   const {message, __internal_metadata} = validatorResult
 
   const normalizedPaths: Path[] = []
@@ -60,7 +59,6 @@ export function convertToValidationMarker(
         item: {message},
         message,
         path: context.path || [],
-        // eslint-disable-next-line camelcase
         __internal_metadata,
       },
     ]
@@ -74,7 +72,6 @@ export function convertToValidationMarker(
     level: level || 'error',
     item: {message},
     message,
-    // eslint-disable-next-line camelcase
     __internal_metadata,
   }))
 }

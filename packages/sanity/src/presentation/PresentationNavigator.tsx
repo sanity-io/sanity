@@ -55,7 +55,6 @@ export function usePresentationNavigator(
 
 function NavigatorComponent(props: NavigatorOptions & PresentationNavigatorProps) {
   const {minWidth, maxWidth, component: NavigatorComponent, hidden, resizerHidden} = props
-  // eslint-disable-next-line no-eq-null
   const navigatorDisabled = minWidth != null && maxWidth != null && minWidth === maxWidth
   return (
     <>

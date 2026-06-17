@@ -259,9 +259,7 @@ export function TestForm(props: TestFormProps) {
 
   const formBuilderProps: FormBuilderProps = useMemo(
     () => ({
-      // eslint-disable-next-line camelcase
       __internal_patchChannel: patchChannel,
-      // eslint-disable-next-line camelcase
       __internal_fieldActions: fieldActions,
       changed: false,
       changesOpen: false,

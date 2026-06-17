@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
+/* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'

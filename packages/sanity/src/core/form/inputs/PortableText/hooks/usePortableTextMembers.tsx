@@ -89,9 +89,7 @@ export function usePortableTextMemberItemsFromProps(
             childrenField.kind === 'field' &&
             isMemberArrayOfObjects(childrenField)
           ) {
-            // eslint-disable-next-line max-depth
             for (const child of childrenField.field.members) {
-              // eslint-disable-next-line max-depth
               if (child.kind === 'item' && child.item.schemaType.name !== 'span') {
                 result.push({kind: 'inlineObject', member: child, node: child.item})
               }
@@ -102,9 +100,7 @@ export function usePortableTextMemberItemsFromProps(
             .filter(isArrayOfObjectsFieldMember)
             .find((f) => f.name === 'markDefs')
           if (markDefArrayMember) {
-            // eslint-disable-next-line max-depth
             for (const child of markDefArrayMember.field.members) {
-              // eslint-disable-next-line max-depth
               if (child.kind === 'item' && child.item.schemaType.jsonType === 'object') {
                 result.push({
                   kind: 'annotation',

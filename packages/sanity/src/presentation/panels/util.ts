@@ -1,4 +1,3 @@
-/* eslint-disable no-eq-null */
 import {
   type ElementMap,
   type InitialDragState,
@@ -14,7 +13,6 @@ function getNextWidth(panel: PanelElement, nextWidth: number, containerWidth: nu
   return Math.min(maxWidth, Math.max(minWidth, nextWidth))
 }
 
-// eslint-disable-next-line max-params
 export function getNextWidths(
   delta: number,
   containerWidth: number,

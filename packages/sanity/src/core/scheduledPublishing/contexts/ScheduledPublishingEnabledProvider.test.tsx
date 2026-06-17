@@ -177,7 +177,6 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
     useWorkspaceMock.mockReturnValue({
       scheduledPublishing: {
         enabled: false,
-        // eslint-disable-next-line camelcase
         scheduledPublishing: {enabled: true, __internal__workspaceEnabled: false},
       },
     })
@@ -196,7 +195,6 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
   it('should not show if they have not used it before and have not opted in', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
     useWorkspaceMock.mockReturnValue({
-      // eslint-disable-next-line camelcase
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: false},
     })
 
@@ -214,7 +212,6 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
   it('should  show default mode if they have not used it before and opted in', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
     useWorkspaceMock.mockReturnValue({
-      // eslint-disable-next-line camelcase
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: true},
     })
 
@@ -232,7 +229,6 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
   it('should  show upsell mode if they have not used it before and opted in, and feature is not available (free plans)', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
     useWorkspaceMock.mockReturnValue({
-      // eslint-disable-next-line camelcase
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: true},
     })
 

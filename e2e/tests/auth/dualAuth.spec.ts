@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-restricted-imports -- auth tests use raw Playwright (no studio-test fixtures)
+// oxlint-disable-next-line no-restricted-imports -- auth tests use raw Playwright (no studio-test fixtures)
 import {expect, type Page, test} from '@playwright/test'
 
 import {watchForStudioErrors} from '../../helpers/studioErrors'

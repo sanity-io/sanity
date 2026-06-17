@@ -1,4 +1,3 @@
-// oxlint-disable no-console
 import {ConventionalGitClient} from '@conventional-changelog/git-client'
 import {MONOREPO_ROOT} from '@repo/utils'
 import {type SanityClient, ClientError} from '@sanity/client'

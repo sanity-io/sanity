@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unused-prop-types */
-
 import {CloseIcon} from '@sanity/icons'
 import {
   BoundaryElementProvider,

@@ -129,7 +129,6 @@ function coerceConstraintRule(val: unknown): any {
   }
 }
 
-// eslint-disable-next-line complexity
 function applyRuleSpec(rule: IRule, ruleSpec: unknown): IRule {
   if (!ruleSpec || typeof ruleSpec !== 'object') {
     return rule

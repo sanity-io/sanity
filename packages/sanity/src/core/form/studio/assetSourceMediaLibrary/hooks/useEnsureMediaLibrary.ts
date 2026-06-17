@@ -23,9 +23,9 @@ class ProvisionError extends Error {
   message: string
   error: string
   code: ErrorCode
-  // eslint-disable-next-line unicorn/custom-error-definition
+  // oxlint-disable-next-line unicorn/custom-error-definition
   constructor(message: string, error: string, code: ErrorCode) {
-    // eslint-disable-next-line unicorn/custom-error-definition
+    // oxlint-disable-next-line unicorn/custom-error-definition
     super(message)
     this.message = message
     this.error = error

@@ -118,7 +118,7 @@ export function DocumentListPane(props: {
                 index={0}
                 itemId="$root"
                 pane={pane}
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
                 paneKey="$root"
               />
             </Root>

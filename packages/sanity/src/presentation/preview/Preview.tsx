@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unused-prop-types */
 import {createConnectionMachine, createController} from '@sanity/comlink'
 import {
   createCompatibilityActors,
@@ -240,7 +239,6 @@ export const Preview = memo(
     }, [continueAnyway, isLoading, isRefreshing, overlaysConnection])
 
     const canUseViewTransition = useSyncExternalStore(
-      // eslint-disable-next-line no-empty-function
       useCallback(() => () => {}, []),
       () => CSS.supports(`(view-transition-name: test)`),
     )

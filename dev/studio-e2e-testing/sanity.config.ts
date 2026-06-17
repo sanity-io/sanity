@@ -117,7 +117,6 @@ const defaultConfig = defineConfig({
     visionTool({
       defaultApiVersion: '2022-08-08',
     }),
-    // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
     media(),
     markdownSchema(),

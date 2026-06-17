@@ -1,5 +1,4 @@
 import {type PortableTextBlock} from '@sanity/types'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {startTransition, useCallback, useEffect, useState} from 'react'
 import {css, styled} from 'styled-components'

@@ -5,7 +5,7 @@ import {
   Container,
   Flex,
   Menu,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   MenuItem,
   Text,
   TextInput,

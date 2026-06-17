@@ -1,6 +1,6 @@
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button,
   Flex,
   Skeleton,
@@ -196,7 +196,7 @@ export function DocumentStatusLine() {
 
   const lastUpdated = value?._updatedAt
 
-  // eslint-disable-next-line consistent-return
+  // oxlint-disable-next-line consistent-return
   useEffect(() => {
     // Schedule an update to set the status to 'saved' when status changed to 'syncing.
     // We use `syncState.isSyncing` here to avoid the status being set to 'saved' when the document is syncing.

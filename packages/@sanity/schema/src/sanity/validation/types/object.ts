@@ -14,7 +14,6 @@ interface PreviewConfig {
   select?: {
     [key: string]: string
   }
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   prepare?: Function
 }
 

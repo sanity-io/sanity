@@ -55,13 +55,10 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
     () =>
       groups.reduce<Array<PTEToolbarAction & {firstInGroup?: true}>>((acc, group) => {
         return acc.concat(
-          group.actions.map(
-            // eslint-disable-next-line max-nested-callbacks
-            (action: PTEToolbarAction, actionIndex) => {
-              if (actionIndex === 0) return {...action, firstInGroup: true}
-              return action
-            },
-          ),
+          group.actions.map((action: PTEToolbarAction, actionIndex) => {
+            if (actionIndex === 0) return {...action, firstInGroup: true}
+            return action
+          }),
         )
       }, []),
     [groups],

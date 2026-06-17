@@ -26,7 +26,6 @@ export function useFeedbackAvailable(options: UseFeedbackAvailableOptions): bool
       return
     }
 
-    // eslint-disable-next-line camelcase
     const body = `${JSON.stringify({dsn, sent_at: new Date().toISOString()})}\n`
 
     fetch(FEEDBACK_TUNNEL_URL, {method: 'POST', body})

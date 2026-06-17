@@ -655,7 +655,6 @@ function isIRuleFunction(val: unknown): val is (rule: IRule) => IRule | undefine
   return typeof val === 'function'
 }
 
-// eslint-disable-next-line complexity
 function convertRuleSpec(spec: unknown, optional?: true): RuleType | undefined {
   if (!isObject(spec) || !('flag' in spec)) {
     return undefined

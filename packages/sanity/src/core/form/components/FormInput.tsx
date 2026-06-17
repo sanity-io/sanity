@@ -290,6 +290,6 @@ function FormInputInner(
 // They are still required in this inner internal component.
 // Ignoring string literal because it is a developer error
 function NullRender() {
-  // eslint-disable-next-line i18next/no-literal-string
+  // oxlint-disable-next-line i18next/no-literal-string
   return <>Missing destination render function</>
 }

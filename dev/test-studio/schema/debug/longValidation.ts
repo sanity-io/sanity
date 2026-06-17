@@ -19,7 +19,6 @@ export const longValidationTestType = defineType({
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
       // Ask for confirmation
-      // eslint-disable-next-line no-alert
       const confirmation = window.confirm('Pass validation?')
       if (confirmation) {
         return true

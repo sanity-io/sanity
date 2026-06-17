@@ -1,6 +1,6 @@
 import {
   type ButtonTone,
-  type DialogProps, // eslint-disable-line no-restricted-imports
+  type DialogProps, // oxlint-disable-line no-restricted-imports
 } from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 
@@ -67,7 +67,6 @@ export type SanityDefinedAction = keyof typeof SANITY_DEFINED_ACTIONS
  *
  * @public
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- empty by design; extended via declaration merging
 export interface DocumentActionKeys extends Record<SanityDefinedAction, never> {}
 
 /**

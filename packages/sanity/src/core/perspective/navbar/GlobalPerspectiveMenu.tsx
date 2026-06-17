@@ -1,5 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
+// oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
 import {Button, Menu} from '@sanity/ui'
 import {useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'

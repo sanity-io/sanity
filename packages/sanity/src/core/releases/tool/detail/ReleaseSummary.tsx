@@ -218,7 +218,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             loading={isLoading}
             data={tableData}
             emptyState={t('summary.no-documents')}
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+            // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
             rowId="document._id"
             columnDefs={documentTableColumnDefs}
             rowActions={renderRowActions}

@@ -1,4 +1,3 @@
-// oxlint-disable no-explicit-any
 import {type ContentSourceMap, type ContentSourceMapDocuments, studioPath} from '@sanity/client/csm'
 import {stegaEncodeSourceMap} from '@sanity/client/stega'
 import {Box, Button, Card, Code, Label, Stack} from '@sanity/ui'

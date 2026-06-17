@@ -1,6 +1,6 @@
 import {
   Box,
-  Dialog, // eslint-disable-line no-restricted-imports
+  Dialog, // oxlint-disable-line no-restricted-imports
 } from '@sanity/ui'
 import {useId} from 'react'
 import {type DocumentActionModalDialogProps, LegacyLayerProvider} from 'sanity'

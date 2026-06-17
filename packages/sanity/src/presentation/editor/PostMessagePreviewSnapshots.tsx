@@ -58,7 +58,6 @@ const PostMessagePreviews: FC<PostMessagePreviewsProps> = (props) => {
                       // Share to prevent double subscribe in the merge
                       share(),
                       // Don't emit if no snapshot is returned
-                      // eslint-disable-next-line max-nested-callbacks
                       skipWhile((p) => p.snapshot === null),
                     )
 
@@ -69,9 +68,7 @@ const PostMessagePreviews: FC<PostMessagePreviewsProps> = (props) => {
             )
 
             return merge(published$.pipe(takeUntil(draft$)), draft$).pipe(
-              // eslint-disable-next-line max-nested-callbacks
               filter((p) => !!p.snapshot),
-              // eslint-disable-next-line max-nested-callbacks
               map((p) => {
                 const snapshot = p.snapshot as PreviewValue & {
                   _id: string

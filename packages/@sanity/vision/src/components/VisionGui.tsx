@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import {SplitPane} from '@rexxars/react-split-pane'
 import {
   type ClientPerspective,
@@ -67,7 +66,6 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
     return false
   }
 
-  // eslint-disable-next-line no-bitwise
   return node === other || !!(node.compareDocumentPosition(other as Node) & 16)
 }
 
@@ -676,7 +674,7 @@ export function VisionGui(props: VisionGuiProps) {
           <Box height="stretch" flex={1}>
             <SplitPane
               className="sidebarPanes"
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+              // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
               split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
               minSize={300}
             >

@@ -1,4 +1,4 @@
-/* eslint-disable no-restricted-imports */
+/* oxlint-disable no-restricted-imports */
 import {
   TooltipDelayGroupProvider as UITooltipDelayGroupProvider,
   type TooltipDelayGroupProviderProps as UITooltipDelayGroupProviderProps,

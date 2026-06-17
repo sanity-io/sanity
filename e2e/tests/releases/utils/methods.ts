@@ -222,7 +222,6 @@ async function waitForReleaseToBeArchived({
   const startTime = Date.now()
 
   return new Promise<void>((resolve, reject) => {
-    // eslint-disable-next-line consistent-return
     const checkStatus = async () => {
       const query = `*[_type == "system.release" && _id == "_.releases.${releaseId}"][0] {state}`
       const release = await sanityClient.fetch(query)
