@@ -18,7 +18,7 @@ allowBuilds:
 catalog:
   '@playwright/test': 1.60.0
   '@rolldown/plugin-babel': ^0.2.3
-  '@sanity/client': ^7.22.1
+  '@sanity/client': ^7.23.0
   '@sanity/migrate': ^7.0.3
   '@sanity/pkg-utils': ^10.5.5
   '@sanity/telemetry': ^1.1.0
