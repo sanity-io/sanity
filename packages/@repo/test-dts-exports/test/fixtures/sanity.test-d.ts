@@ -480,6 +480,8 @@ import type {
   DocumentStore,
   DocumentStoreExtraOptions,
   DocumentStoreOptions,
+  DocumentSystem,
+  DocumentSystemRef,
   DocumentTypeResolveState,
   DocumentValuePermission,
   DocumentValuePermissionsOptions,
@@ -693,6 +695,7 @@ import type {
   getReleaseTone,
   getSchemaTypeTitle,
   getSearchableTypes,
+  getSelectedVariant,
   getTemplatePermissions,
   getValueAtPath,
   getValueError,
@@ -1648,6 +1651,7 @@ import type {
   useSearchMaxFieldDepth,
   useSearchState,
   useSetPerspective,
+  useSetVariant,
   useSingleDocRelease,
   useSource,
   useStudioFeedbackTags,
@@ -3185,6 +3189,12 @@ describe('sanity', () => {
   test('DocumentStoreOptions', () => {
     expectTypeOf<DocumentStoreOptions>().toBeObject()
   })
+  test('DocumentSystem', () => {
+    expectTypeOf<DocumentSystem>().toBeObject()
+  })
+  test('DocumentSystemRef', () => {
+    expectTypeOf<DocumentSystemRef>().toBeObject()
+  })
   test('DocumentTypeResolveState', () => {
     expectTypeOf<DocumentTypeResolveState>().toBeObject()
   })
@@ -3829,6 +3839,9 @@ describe('sanity', () => {
   })
   test('getSearchableTypes', () => {
     expectTypeOf<typeof getSearchableTypes>().not.toBeNever()
+  })
+  test('getSelectedVariant', () => {
+    expectTypeOf<typeof getSelectedVariant>().toBeFunction()
   })
   test('getTemplatePermissions', () => {
     expectTypeOf<typeof getTemplatePermissions>().toBeFunction()
@@ -6706,6 +6719,9 @@ describe('sanity', () => {
   })
   test('useSetPerspective', () => {
     expectTypeOf<typeof useSetPerspective>().toBeFunction()
+  })
+  test('useSetVariant', () => {
+    expectTypeOf<typeof useSetVariant>().toBeFunction()
   })
   test('useSingleDocRelease', () => {
     expectTypeOf<typeof useSingleDocRelease>().toBeFunction()

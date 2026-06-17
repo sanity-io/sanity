@@ -92,6 +92,8 @@ import type {
   DocumentDefinition,
   DocumentOptions,
   DocumentRule,
+  DocumentSystem,
+  DocumentSystemRef,
   EmailDefinition,
   EmailOptions,
   EmailRule,
@@ -630,6 +632,12 @@ describe('@sanity/types', () => {
   })
   test('DocumentRule', () => {
     expectTypeOf<DocumentRule>().toBeObject()
+  })
+  test('DocumentSystem', () => {
+    expectTypeOf<DocumentSystem>().toBeObject()
+  })
+  test('DocumentSystemRef', () => {
+    expectTypeOf<DocumentSystemRef>().toBeObject()
   })
   test('EmailDefinition', () => {
     expectTypeOf<EmailDefinition>().toBeObject()
