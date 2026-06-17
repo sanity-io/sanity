@@ -87,7 +87,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     getReleaseChipState,
     handleCopyToDraftsNavigate,
     handlePerspectiveChange,
+    handleVariantSelectionChange,
     isDraftDisabled,
+    variantVersions,
     isDraftModelEnabled,
     isDraftSelected,
     isLiveEdit,
@@ -261,13 +263,30 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
       <NonReleaseVersionsSelect
         nonReleaseVersions={nonReleaseVersions}
         selectedPerspective={selectedPerspectiveName}
-        onSelectBundle={handlePerspectiveChange}
+        onSelectBundle={(version) => {
+          const scopeId = version._system.scopeId!
+          handlePerspectiveChange(scopeId)
+        }}
         onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
         releases={filteredReleases.notCurrentReleases}
         releasesLoading={loading}
         documentType={documentType}
         getVersionDisplay={getVersionDisplay}
+        mode="versions"
       />
+      {variantVersions.length > 0 ? (
+        <NonReleaseVersionsSelect
+          nonReleaseVersions={variantVersions}
+          selectedPerspective={selectedPerspectiveName}
+          onSelectBundle={handleVariantSelectionChange}
+          onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+          releases={filteredReleases.notCurrentReleases}
+          releasesLoading={loading}
+          documentType={documentType}
+          getVersionDisplay={getVersionDisplay}
+          mode="variants"
+        />
+      ) : null}
     </>
   )
 })

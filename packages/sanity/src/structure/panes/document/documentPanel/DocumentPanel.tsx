@@ -2,8 +2,10 @@ import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sa
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
+  getPublishedId,
   getVersionFromId,
   isCardinalityOneRelease,
+  isDocumentInSelectedVariant,
   isDraftId,
   isGoingToUnpublish,
   isNewDocument,
@@ -16,6 +18,7 @@ import {
   type ReleaseDocument,
   ScrollContainer,
   useArchivedReleases,
+  useDocumentVersions,
   useFilteredReleases,
   usePausedScheduledDraft,
   usePerspective,
@@ -42,6 +45,7 @@ import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBa
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
+import {DocumentNotInVariantBanner} from './banners/DocumentNotInVariantBanner'
 import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {PausedScheduledDraftBanner} from './banners/PausedScheduledDraftBanner'
@@ -189,7 +193,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = usePerspective()
+  const {bundle, selectedReleaseId, selectedPerspectiveName, selectedVariant, selectedPerspective} =
+    usePerspective()
+
+  const documentVersions = useDocumentVersions({documentId: getPublishedId(documentId)})
 
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
@@ -215,6 +222,14 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       ),
     [archivedReleases, selectedPerspectiveName],
   )
+  const isInSelectedVariant =
+    selectedVariant && !documentVersions.loading
+      ? isDocumentInSelectedVariant({
+          selectedVariant,
+          bundle,
+          documentVersions: documentVersions.versions,
+        })
+      : true
 
   // eslint-disable-next-line complexity
   const banners = useMemo(() => {
@@ -281,6 +296,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     )
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
+
+    if (!isInSelectedVariant) {
+      return <DocumentNotInVariantBanner />
+    }
+
     const isCurrentVersionGoingToUnpublish =
       editState?.version && isGoingToUnpublish(editState?.version)
 
@@ -378,6 +398,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     filteredReleases,
     workspace,
     isPausedDraft,
+    isInSelectedVariant,
   ])
   const portalElements = useMemo(
     () => ({documentScrollElement: documentScrollElement}),
