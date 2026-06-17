@@ -2,7 +2,6 @@ import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sa
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
-  getPublishedId,
   getVersionFromId,
   isCardinalityOneRelease,
   isDocumentInSelectedVariant,
@@ -196,7 +195,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {bundle, selectedReleaseId, selectedPerspectiveName, selectedVariant, selectedPerspective} =
     usePerspective()
 
-  const documentVersions = useDocumentVersions({documentId: getPublishedId(documentId)})
+  const documentVersions = useDocumentVersions({documentId})
 
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,

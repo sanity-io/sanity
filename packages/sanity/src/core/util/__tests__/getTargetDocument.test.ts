@@ -7,6 +7,10 @@ import {getTargetDocument} from '../getTargetDocument'
 const PUBLISHED_ID = 'article-1'
 const groupRef = {_type: 'reference', _ref: PUBLISHED_ID, _weak: true} as const
 
+// The backend stores the full variant document id in `_system.variant._ref`.
+const VARIANT_ALPHA_ID = '_.variants.alpha'
+const VARIANT_NORWEGIAN_ID = '_.variants.norwegian'
+
 const variantRef = (variantId: string) =>
   ({_type: 'reference', _ref: variantId, _weak: true}) as const
 
@@ -33,7 +37,7 @@ const publishedAlpha = versionStub({
   _id: 'published.bar.article-1',
   _system: {
     release: null,
-    variant: variantRef('alpha'),
+    variant: variantRef(VARIANT_ALPHA_ID),
     group: groupRef,
     scopeId: 'bar',
   } as unknown as DocumentSystem,
@@ -55,7 +59,7 @@ const draftAlpha = versionStub({
   _system: {
     bundleId: 'drafts',
     release: null,
-    variant: variantRef('alpha'),
+    variant: variantRef(VARIANT_ALPHA_ID),
     group: groupRef,
     scopeId: 'baz',
   },
@@ -65,7 +69,7 @@ const draftNorwegian = versionStub({
   _system: {
     bundleId: 'drafts',
     release: null,
-    variant: variantRef('norwegian'),
+    variant: variantRef(VARIANT_NORWEGIAN_ID),
     group: groupRef,
     scopeId: 'qux',
   },
@@ -88,7 +92,7 @@ const releaseAlpha = versionStub({
   _system: {
     bundleId: 'rASAP',
     release: releaseRef,
-    variant: variantRef('alpha'),
+    variant: variantRef(VARIANT_ALPHA_ID),
     group: groupRef,
     scopeId: 'buz',
   },
@@ -161,7 +165,7 @@ describe('getTargetDocument', () => {
       expect(
         getTargetDocument({
           bundle: 'published',
-          variant: 'alpha',
+          variant: VARIANT_ALPHA_ID,
           documentVersions,
         }),
       ).toEqual(publishedAlpha)
@@ -169,9 +173,10 @@ describe('getTargetDocument', () => {
     it('returns undefined if the published document is not in the bundle', () => {
       const result = getTargetDocument({
         bundle: 'published',
-        variant: 'alpha',
+        variant: VARIANT_ALPHA_ID,
         documentVersions: documentVersions.filter(
-          (version) => version._system.bundleId || version._system.variant?._ref !== 'alpha',
+          (version) =>
+            version._system.bundleId || version._system.variant?._ref !== VARIANT_ALPHA_ID,
         ),
       })
       expect(result).toBeUndefined()
@@ -181,7 +186,7 @@ describe('getTargetDocument', () => {
       expect(
         getTargetDocument({
           bundle: 'drafts',
-          variant: 'alpha',
+          variant: VARIANT_ALPHA_ID,
           documentVersions,
         }),
       ).toEqual(draftAlpha)
@@ -189,10 +194,11 @@ describe('getTargetDocument', () => {
     it('returns undefined if the draft document is not in the bundle', () => {
       const result = getTargetDocument({
         bundle: 'drafts',
-        variant: 'alpha',
+        variant: VARIANT_ALPHA_ID,
         documentVersions: documentVersions.filter(
           (version) =>
-            version._system.bundleId !== 'drafts' && version._system.variant?._ref !== 'alpha',
+            version._system.bundleId !== 'drafts' &&
+            version._system.variant?._ref !== VARIANT_ALPHA_ID,
         ),
       })
       expect(result).toBeUndefined()
@@ -202,7 +208,7 @@ describe('getTargetDocument', () => {
       expect(
         getTargetDocument({
           bundle: 'rASAP',
-          variant: 'alpha',
+          variant: VARIANT_ALPHA_ID,
           documentVersions,
         }),
       ).toEqual(releaseAlpha)
@@ -210,10 +216,11 @@ describe('getTargetDocument', () => {
     it('returns undefined if the release document is not in the bundle', () => {
       const result = getTargetDocument({
         bundle: 'rASAP',
-        variant: 'alpha',
+        variant: VARIANT_ALPHA_ID,
         documentVersions: documentVersions.filter(
           (version) =>
-            version._system.bundleId !== 'rASAP' && version._system.variant?._ref !== 'alpha',
+            version._system.bundleId !== 'rASAP' &&
+            version._system.variant?._ref !== VARIANT_ALPHA_ID,
         ),
       })
       expect(result).toBeUndefined()
@@ -223,7 +230,7 @@ describe('getTargetDocument', () => {
       expect(
         getTargetDocument({
           bundle: 'drafts',
-          variant: 'norwegian',
+          variant: VARIANT_NORWEGIAN_ID,
           documentVersions,
         }),
       ).toEqual(draftNorwegian)
@@ -235,7 +242,7 @@ describe('getTargetDocument', () => {
       expect(
         getTargetDocument({
           bundle: 'published',
-          variant: 'norwegian',
+          variant: VARIANT_NORWEGIAN_ID,
           documentVersions,
         }),
       ).toBeUndefined()

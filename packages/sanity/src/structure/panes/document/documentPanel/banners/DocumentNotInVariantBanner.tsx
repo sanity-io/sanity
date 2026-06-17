@@ -1,5 +1,5 @@
 import {Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {
   getVariantTitle,
   Translate,
@@ -13,22 +13,18 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
+// Once the create action resolves, there's a short delay before the new variant-scoped version
+// propagates and this banner unmounts. Surface a toast if that window exceeds this threshold.
 const TOAST_DELAY = 1000
 
-type VariantDocumentCreateState = {
-  status: 'idle' | 'in-progress' | 'success' | 'failed'
-  lastUpdate: Date
-}
+type VariantDocumentCreateStatus = 'idle' | 'in-progress' | 'success' | 'failed'
 
 export function DocumentNotInVariantBanner() {
   const {t} = useTranslation(structureLocaleNamespace)
   const {value} = useDocumentPane()
   const {selectedPerspective, selectedVariant} = usePerspective()
   const {createVariantDocument} = useVariantDocumentOperations()
-  const [createState, setCreateState] = useState<VariantDocumentCreateState>({
-    status: 'idle',
-    lastUpdate: new Date(),
-  })
+  const [status, setStatus] = useState<VariantDocumentCreateStatus>('idle')
   const toast = useToast()
 
   const variantTitle = selectedVariant ? getVariantTitle(selectedVariant) : ''
@@ -38,14 +34,14 @@ export function DocumentNotInVariantBanner() {
       return
     }
 
-    setCreateState({status: 'in-progress', lastUpdate: new Date()})
+    setStatus('in-progress')
     try {
       await createVariantDocument({
         document: value,
         variant: selectedVariant,
         selectedPerspective,
       })
-      setCreateState({status: 'success', lastUpdate: new Date()})
+      setStatus('success')
     } catch (err) {
       toast.push({
         status: 'error',
@@ -55,19 +51,15 @@ export function DocumentNotInVariantBanner() {
           message: err instanceof Error ? err.message : String(err),
         }),
       })
-      setCreateState({status: 'failed', lastUpdate: new Date()})
+      setStatus('failed')
     }
   }, [createVariantDocument, value, selectedVariant, selectedPerspective, t, toast])
-
-  const now = useCurrentTime(200)
 
   useConditionalToast({
     status: 'info',
     id: 'add-document-to-variant',
-    enabled: Boolean(
-      createState.status === 'success' &&
-      now.getTime() - createState.lastUpdate.getTime() > TOAST_DELAY,
-    ),
+    enabled: status === 'success',
+    delay: TOAST_DELAY,
     closable: true,
     title: t('banners.variant.waiting.title'),
     description: t('banners.variant.waiting.description'),
@@ -93,21 +85,10 @@ export function DocumentNotInVariantBanner() {
       action={{
         text: t('banners.variant.action.add-to-variant'),
         tone: 'suggest',
-        disabled: createState.status === 'in-progress' || createState.status === 'success',
+        disabled: status === 'in-progress' || status === 'success',
         onClick: handleAddToVariant,
         mode: 'default',
       }}
     />
   )
-}
-
-function useCurrentTime(updateIntervalMs: number): Date {
-  const [currentTime, setCurrentTime] = useState(new Date())
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentTime(new Date())
-    }, updateIntervalMs)
-    return () => clearInterval(intervalId)
-  }, [updateIntervalMs])
-  return currentTime
 }

@@ -2,6 +2,7 @@ import {type BadgeTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
+  getVariantTitle,
   getVersionFromId,
   isDraftId,
   isGoingToUnpublish,
@@ -231,8 +232,9 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
       }
       const variantId = version._system.variant?._ref
       const variant = variantId ? variants.get(variantId) : undefined
+      const variantTitle = variant ? getVariantTitle(variant) : (variantId ?? '')
       return {
-        displayName: `${variant?.metadata?.title || variant?.name || ''} [${version._system.bundleId || 'published'}]`,
+        displayName: `${variantTitle} [${version._system.bundleId || 'published'}]`,
         tone: 'caution' as const,
       }
     },
