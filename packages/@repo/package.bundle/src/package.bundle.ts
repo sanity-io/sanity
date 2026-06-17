@@ -51,7 +51,9 @@ export const defaultConfig: UserConfig = {
         chunkFileNames: '[name]-[hash].mjs',
         // CSS assets get a predictable name so the module server can serve them at a known URL
         assetFileNames: (assetInfo) =>
-          assetInfo.names?.some((n) => n.endsWith('.css')) ? 'index.css' : '[name]-[hash][extname]',
+          assetInfo.names?.some((n) => n.endsWith('.css'))
+            ? 'bundle.css'
+            : '[name]-[hash][extname]',
       },
       transform: {
         // Same options as pkg-utils: https://github.com/sanity-io/pkg-utils/blob/f4e229e2641049008b375caf67576130be83fcdd/packages/%40sanity/pkg-utils/src/node/tasks/rollup/resolveRollupConfig.ts#L220-L227
