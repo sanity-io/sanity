@@ -167,5 +167,20 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
           2px
       ) !important;
     }
+
+    /* Blocks nested in a container (a [data-pt-block] inside another, e.g. a
+       table cell) are their own positioning context, so their drop indicator
+       sizes to the block (the cell content) instead of escaping to the
+       container, and it spans the full block with no root gutter inset: the
+       container owns the horizontal spacing. */
+    & [data-pt-block] [data-pt-block] {
+      position: relative;
+    }
+
+    & [data-pt-block] [data-pt-block] .pt-drop-indicator {
+      left: 0;
+      right: 0;
+      width: 100% !important;
+    }
   }
 `

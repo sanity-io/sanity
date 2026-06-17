@@ -189,6 +189,9 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       const {attributes, focused: blockFocused, node, path: blockPath, selected} = textBlockProps
       const block = node as PortableTextTextBlock
       const fullyQualifiedPath = path.concat(blockPath)
+      // A block path deeper than the root array means the block lives inside a
+      // container (e.g. a table cell), so it drops the root horizontal gutter.
+      const isNested = blockPath.length > 1
 
       // Reproduce engine-default Style + ListItem wrapping around the
       // editable children. PTE used to do this in its default text-block
@@ -264,6 +267,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             setElementRef={setElementRef}
             value={block}
             anchorIdent={pathToAnchorIdent('input', fullyQualifiedPath)}
+            nested={isNested}
           >
             {inner}
           </TextBlock>
@@ -301,6 +305,9 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const renderBlockObject = useCallback(
     (blockProps: BlockObjectRenderProps) => {
       const {attributes, focused: blockFocused, node, path: blockPath, selected} = blockProps
+      // A block path deeper than the root array means the block lives inside a
+      // container (e.g. a table cell), so it drops the root horizontal gutter.
+      const isNested = blockPath.length > 1
       const sanitySchemaType: ObjectSchemaType | undefined = schemaTypes.blockObjects.find(
         (type) => type.name === node._type,
       )
@@ -345,6 +352,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
               selected={selected}
               setElementRef={setElementRef}
               value={node}
+              nested={isNested}
             />
           </div>
           <BlockDropIndicator path={blockPath} edge="end" />

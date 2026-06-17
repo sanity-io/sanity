@@ -83,6 +83,9 @@ interface BlockObjectProps extends PropsWithChildren {
   selected: boolean
   setElementRef: SetPortableTextMemberItemElementRef
   value: PortableTextBlock
+  /** When the block lives inside a container (e.g. a table cell), the container
+   * owns the horizontal spacing, so the root gutter is dropped. */
+  nested?: boolean
 }
 
 export function BlockObject(props: BlockObjectProps) {
@@ -110,6 +113,7 @@ export function BlockObject(props: BlockObjectProps) {
     selected,
     setElementRef,
     value,
+    nested,
   } = props
   const {onChange} = useFormCallbacks()
   const {Markers} = useFormBuilder().__internal.components
@@ -172,6 +176,12 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+    if (nested) {
+      // A nested block sits inside a container that owns horizontal spacing
+      // (e.g. a table cell's padding), so the root gutter is dropped.
+      return {paddingX: 0}
+    }
+
     if (isFullscreen && !renderBlockActions) {
       return {paddingX: 5}
     }
@@ -188,7 +198,7 @@ export function BlockObject(props: BlockObjectProps) {
     }
 
     return {paddingX: 3}
-  }, [isFullscreen, renderBlockActions])
+  }, [isFullscreen, renderBlockActions, nested])
 
   const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
   const parentSchemaType = schemaTypes.portableText
