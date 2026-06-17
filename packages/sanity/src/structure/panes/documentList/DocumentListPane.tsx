@@ -223,6 +223,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     // clear button, Escape, emptying the field, or switching panes), reset the
     // applied ordering back to relevance.
     if (!trimmedSearchQuery) {
+      // TODO: Refactor search ordering reset to avoid effect state updates.
+      // oxlint-disable-next-line react/react-compiler
       setSearchOrderingId(RELEVANCE_ORDERING_ID)
     }
   }, [trimmedSearchQuery])
