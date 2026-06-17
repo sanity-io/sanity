@@ -27,6 +27,8 @@ interface PaneHeaderProps {
   setLayout: (layout: GeneralPreviewLayoutKey) => void
   setSortOrder: (sortOrder: SortOrder) => void
   setCustomMenuItemState: (state: Record<string, unknown>) => void
+  restoreDefaultLayout: () => void
+  restoreDefaultSortOrder: () => void
   title: string
 }
 
@@ -41,6 +43,8 @@ export const PaneHeader = memo(
     setLayout,
     setSortOrder,
     setCustomMenuItemState,
+    restoreDefaultLayout,
+    restoreDefaultSortOrder,
     title,
   }: PaneHeaderProps) => {
     const {features} = useStructureTool()
@@ -56,6 +60,8 @@ export const PaneHeader = memo(
         setSortOrder: (sort: SortOrder) => {
           setSortOrder(sort)
         },
+        restoreDefaultLayout,
+        restoreDefaultSortOrder,
         setMenuItemState: (params: {_menuItemId: string; value?: unknown}) => {
           const id = params._menuItemId
           const value = params.value ?? true
@@ -72,7 +78,14 @@ export const PaneHeader = memo(
           }
         },
       }
-    }, [customMenuItemState, setLayout, setSortOrder, setCustomMenuItemState])
+    }, [
+      customMenuItemState,
+      setLayout,
+      setSortOrder,
+      setCustomMenuItemState,
+      restoreDefaultLayout,
+      restoreDefaultSortOrder,
+    ])
 
     return (
       <TooltipDelayGroupProvider>

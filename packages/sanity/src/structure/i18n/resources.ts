@@ -506,10 +506,18 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'menu-items.layout.compact-view': 'Compact view',
   /** The menu item title to use the detailed view */
   'menu-items.layout.detailed-view': 'Detailed view',
+  /** The menu item title that restores the structure-configured default layout */
+  'menu-items.layout.restore-default': 'Default view',
+  /** Tooltip shown when the restore-default layout item is disabled (default already in use) */
+  'menu-items.layout.restore-default.disabled-reason': 'Already using the default view',
   /** The menu item title to Sort by Created */
   'menu-items.sort-by.created': 'Sort by Created',
   /** The menu item title to Sort by Last Edited */
   'menu-items.sort-by.last-edited': 'Sort by Last Edited',
+  /** The menu item title that restores the structure-configured default sort order */
+  'menu-items.sort-by.restore-default': 'Default sort',
+  /** Tooltip shown when the restore-default sort item is disabled (default already in use) */
+  'menu-items.sort-by.restore-default.disabled-reason': 'Already using the default sort order',
 
   /** The link text of the no document type screen that appears directly below the subtitle */
   'no-document-types-screen.link-text': 'Learn how to add a document type →',
