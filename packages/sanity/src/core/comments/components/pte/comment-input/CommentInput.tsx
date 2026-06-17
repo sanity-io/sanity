@@ -1,13 +1,13 @@
 import {
+  type Editor,
   type EditorEmittedEvent,
   EditorProvider,
   keyGenerator,
-  PortableTextEditor,
   type RenderBlockFunction,
   useEditor,
-  usePortableTextEditor,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
+import {getValue} from '@portabletext/editor/selectors'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
@@ -35,13 +35,12 @@ import {CommentInputProvider} from './CommentInputProvider'
 
 /**
  * `EditorProvider` doesn't have a `ref` prop. This plugin takes care of
- * imperatively forwarding the ref.
+ * imperatively forwarding the editor instance.
  */
-const EditorRefPlugin = forwardRef<PortableTextEditor | null>(function EditorRefPlugin(_, ref) {
-  const portableTextEditor = usePortableTextEditor()
-  const portableTextEditorRef = useRef(portableTextEditor)
+const EditorRefPlugin = forwardRef<Editor | null>(function EditorRefPlugin(_, ref) {
+  const editor = useEditor()
 
-  useImperativeHandle(ref, () => portableTextEditorRef.current, [])
+  useImperativeHandle(ref, () => editor, [editor])
 
   return null
 })
@@ -71,7 +70,7 @@ export interface CommentInputProps {
   onFocus?: (e: FormEvent<HTMLDivElement>) => void
   onKeyDown?: (e: KeyboardEvent) => void
   onMentionMenuOpenChange?: (open: boolean) => void
-  onSubmit?: () => void
+  onSubmit?: (value: PortableTextBlock[]) => void
   placeholder?: ReactNode
   readOnly?: boolean
   renderBlock?: RenderBlockFunction
@@ -124,7 +123,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       withAvatar = true,
     } = props
     const [focused, setFocused] = useState<boolean>(false)
-    const editorRef = useRef<PortableTextEditor | null>(null)
+    const editorRef = useRef<Editor | null>(null)
     const editorContainerRef = useRef<HTMLDivElement | null>(null)
     const [showDiscardDialog, setShowDiscardDialog] = useState<boolean>(false)
 
@@ -137,8 +136,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
 
     const requestFocus = useCallback(() => {
       requestAnimationFrame(() => {
-        if (!editorRef.current) return
-        PortableTextEditor.focus(editorRef.current)
+        editorRef.current?.send({type: 'focus'})
       })
     }, [])
 
@@ -175,7 +173,14 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     }, [])
 
     const handleSubmit = useCallback(() => {
-      onSubmit?.()
+      // Read the editor's live value directly rather than the value mirrored
+      // through the debounced `mutation` event, which can lag the latest
+      // keystrokes by up to the flush interval and truncate the comment when
+      // the user submits without pausing.
+      const currentValue = editorRef.current
+        ? getValue(editorRef.current.getSnapshot())
+        : EMPTY_ARRAY
+      onSubmit?.(currentValue)
       resetEditorInstance()
       requestFocus()
       scrollToEditor()
@@ -205,9 +210,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       return {
         focus: requestFocus,
         blur() {
-          if (editorRef.current) {
-            PortableTextEditor.blur(editorRef.current)
-          }
+          editorRef.current?.send({type: 'blur'})
         },
         scrollTo: scrollToEditor,
         reset: resetEditorInstance,

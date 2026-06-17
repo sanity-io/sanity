@@ -33,7 +33,7 @@ interface CommentsFieldButtonProps {
   onChange: (value: PortableTextBlock[]) => void
   onClick?: () => void
   onClose: () => void
-  onCommentAdd: () => void
+  onCommentAdd: (value: PortableTextBlock[]) => void
   onDiscard: () => void
   onInputKeyDown?: (event: React.KeyboardEvent) => void
   open: boolean
@@ -71,10 +71,13 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     addCommentButtonElement?.focus()
   }, [addCommentButtonElement, open, onClose])
 
-  const handleSubmit = useCallback(() => {
-    onCommentAdd()
-    closePopover()
-  }, [closePopover, onCommentAdd])
+  const handleSubmit = useCallback(
+    (nextValue: PortableTextBlock[]) => {
+      onCommentAdd(nextValue)
+      closePopover()
+    },
+    [closePopover, onCommentAdd],
+  )
 
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
 

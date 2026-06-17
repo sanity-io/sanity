@@ -13,7 +13,7 @@ import {useReleasesIds} from './useReleasesIds'
 function exists(value: any) {
   return value?._rev
 }
-const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt']
+const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system']
 
 const NO_VERSIONS = {} as Record<string, VersionInfoDocumentStub | undefined>
 
@@ -38,6 +38,7 @@ export function useDocumentVersionInfo(documentId: string) {
                   .observePaths({_id: getVersionId(publishedId, releaseId)}, DOCUMENT_STUB_PATHS)
                   .pipe(
                     map((value) =>
+                      // TODO: Map _system with the temporarily built system function available in useDocumentVersions
                       exists(value) ? (value as VersionInfoDocumentStub) : undefined,
                     ),
                   ),

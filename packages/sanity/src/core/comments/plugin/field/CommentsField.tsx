@@ -222,58 +222,60 @@ function CommentFieldInner(
     upsellData,
   ])
 
-  const handleCommentAdd = useCallback(() => {
-    if (value) {
-      // Since this is a new comment, we generate a new thread ID
-      const newThreadId = uuid()
+  const handleCommentAdd = useCallback(
+    (nextValue: PortableTextBlock[]) => {
+      if (nextValue) {
+        // Since this is a new comment, we generate a new thread ID
+        const newThreadId = uuid()
 
-      // Construct the comment payload
-      const nextComment: CommentCreatePayload = {
-        type: 'field',
-        fieldPath: PathUtils.toString(props.path),
-        message: value,
-        parentCommentId: undefined,
-        status: 'open',
-        threadId: newThreadId,
-        // New comments have no reactions
-        reactions: EMPTY_ARRAY,
+        // Construct the comment payload
+        const nextComment: CommentCreatePayload = {
+          type: 'field',
+          fieldPath: PathUtils.toString(props.path),
+          message: nextValue,
+          parentCommentId: undefined,
+          status: 'open',
+          threadId: newThreadId,
+          // New comments have no reactions
+          reactions: EMPTY_ARRAY,
+        }
+
+        // Execute the create mutation
+        void operation.create(nextComment)
+
+        // If a comment is added to a field when viewing resolved comments, we switch
+        // to open comments and scroll to the comment that was just added
+        // Open the inspector when a new comment is added
+        onCommentsOpen?.()
+
+        if (status === 'resolved') {
+          // Set the status to 'open' so that the comment is visible
+          setStatus('open')
+        }
+
+        resetMessageValue()
+
+        // Scroll to the thread
+        setSelectedPath({
+          threadId: newThreadId,
+          origin: 'form',
+          fieldPath: PathUtils.toString(props.path),
+        })
+
+        scrollToGroup(newThreadId)
       }
-
-      // Execute the create mutation
-      void operation.create(nextComment)
-
-      // If a comment is added to a field when viewing resolved comments, we switch
-      // to open comments and scroll to the comment that was just added
-      // Open the inspector when a new comment is added
-      onCommentsOpen?.()
-
-      if (status === 'resolved') {
-        // Set the status to 'open' so that the comment is visible
-        setStatus('open')
-      }
-
-      resetMessageValue()
-
-      // Scroll to the thread
-      setSelectedPath({
-        threadId: newThreadId,
-        origin: 'form',
-        fieldPath: PathUtils.toString(props.path),
-      })
-
-      scrollToGroup(newThreadId)
-    }
-  }, [
-    onCommentsOpen,
-    operation,
-    props.path,
-    resetMessageValue,
-    scrollToGroup,
-    setSelectedPath,
-    setStatus,
-    status,
-    value,
-  ])
+    },
+    [
+      onCommentsOpen,
+      operation,
+      props.path,
+      resetMessageValue,
+      scrollToGroup,
+      setSelectedPath,
+      setStatus,
+      status,
+    ],
+  )
 
   const handleClose = useCallback(() => setAuthoringPath(null), [setAuthoringPath])
 

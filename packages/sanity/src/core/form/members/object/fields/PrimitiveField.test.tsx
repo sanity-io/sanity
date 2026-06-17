@@ -41,6 +41,25 @@ describe('PrimitiveField', () => {
       expect(input.value).toEqual('')
     })
 
+    it('disables native autocomplete on the input', async () => {
+      // Given
+      const {member, TestWrapper} = await setupTest('number', undefined)
+
+      // When
+      render(
+        <PrimitiveField
+          member={member}
+          renderInput={defaultRenderInput}
+          renderField={defaultRenderField}
+        />,
+        {wrapper: TestWrapper},
+      )
+
+      // Then
+      const input = screen.getByTestId('number-input') as HTMLInputElement
+      expect(input.getAttribute('autocomplete')).toEqual('off')
+    })
+
     it('renders non-zero number when mounted', async () => {
       // Given
       const {member, TestWrapper} = await setupTest('number', 42)

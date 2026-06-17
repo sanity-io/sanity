@@ -39,10 +39,13 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   const [value, setValue] = useState<CommentMessage>(EMPTY_PT_ARRAY)
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
 
-  const handleSubmit = useCallback(() => {
-    onNewThreadCreate?.(value)
-    setValue(EMPTY_PT_ARRAY)
-  }, [onNewThreadCreate, value])
+  const handleSubmit = useCallback(
+    (nextValue: CommentMessage) => {
+      onNewThreadCreate?.(nextValue)
+      setValue(EMPTY_PT_ARRAY)
+    },
+    [onNewThreadCreate],
+  )
 
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
 
