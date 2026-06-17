@@ -192,4 +192,48 @@ describe('deriveReferenceSearchSpecs', () => {
 
     expect(specs).toEqual([])
   })
+
+  it('skips chained reference paths (more than one hop)', () => {
+    const specs = specsForType(
+      [
+        defineType({
+          name: 'author',
+          type: 'document',
+          fields: [
+            defineField({name: 'name', type: 'string'}),
+            defineField({name: 'bestFriend', type: 'reference', to: [{type: 'author'}]}),
+          ],
+        }),
+        defineType({
+          name: 'book',
+          type: 'document',
+          preview: {select: {subtitle: 'author.bestFriend.name'}},
+          fields: [defineField({name: 'author', type: 'reference', to: [{type: 'author'}]})],
+        }),
+      ],
+      'book',
+    )
+
+    expect(specs).toEqual([])
+  })
+
+  it('respects maxDepth and caches results per depth', () => {
+    const book = createSchema({
+      name: 'test',
+      types: [
+        author,
+        defineType({
+          name: 'book',
+          type: 'document',
+          preview: {select: {subtitle: 'author.name'}},
+          fields: [defineField({name: 'author', type: 'reference', to: [{type: 'author'}]})],
+        }),
+      ],
+    }).get('book')!
+
+    expect(deriveReferenceSearchSpecs({schemaType: book, maxDepth: 0})).toEqual([])
+    expect(deriveReferenceSearchSpecs({schemaType: book, maxDepth: 10})).toEqual([
+      {targetType: 'author', leafPath: 'name', weight: 5},
+    ])
+  })
 })

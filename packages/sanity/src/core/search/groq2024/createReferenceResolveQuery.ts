@@ -1,8 +1,10 @@
 import {type ReferenceSearchSpec} from '../common/deriveReferenceSearchSpecs'
 import {prefixLast} from '../common/token'
 
-// Bounds the resolved-id set for very common terms. Inlined as a literal because
-// GROQ rejects a parameterised slice bound ("slicing must use constant numbers").
+// Bounds the resolved-id set for very common terms. Reference matching is
+// best-effort: beyond this cap some referring documents silently won't surface.
+// Inlined as a literal because GROQ rejects a parameterised slice bound
+// ("slicing must use constant numbers").
 const REFERENCE_RESOLVE_LIMIT = 1000
 
 /**

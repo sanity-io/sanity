@@ -1,7 +1,7 @@
 import {getPublishedId} from '@sanity/client/csm'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
-import {map, mergeMap, type Observable} from 'rxjs'
+import {catchError, map, mergeMap, type Observable, of} from 'rxjs'
 
 import {deriveReferenceSearchSpecs} from '../common/deriveReferenceSearchSpecs'
 import {
@@ -104,6 +104,9 @@ export const createGroq2024Search: SearchStrategyFactory<Groq2024SearchResults> 
         perspective: mergedOptions.perspective,
       })
       .pipe(
+        // Reference resolution is an enhancement: if phase one fails, fall back
+        // to a plain search rather than failing the base term-match too.
+        catchError(() => of<string[]>([])),
         mergeMap((resolvedIds) => {
           // References always point at the published id, so normalise resolved
           // (possibly draft/version) ids before matching with `references()`.

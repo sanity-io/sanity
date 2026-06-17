@@ -1,3 +1,4 @@
+import {parse} from 'groq-js'
 import {describe, expect, it} from 'vitest'
 
 import {type ReferenceSearchSpec} from '../common/deriveReferenceSearchSpecs'
@@ -46,5 +47,19 @@ describe('createReferenceResolveQuery', () => {
     const resolve = createReferenceResolveQuery(specs, 'jane')
 
     expect(resolve?.query).toContain('pt::text(bio) match text::query($__query)')
+  })
+
+  // String assertions can't catch invalid GROQ; parse the generated query to guard
+  // against syntax regressions (e.g. the slice-binding bug that returned nulls).
+  it('produces syntactically valid GROQ', () => {
+    const specs: ReferenceSearchSpec[] = [
+      {targetType: 'author', leafPath: 'name', weight: 5},
+      {targetType: 'author', leafPath: 'bio', weight: 5, mapWith: 'pt::text'},
+      {targetType: 'organisation', leafPath: 'slug.current', weight: 10},
+    ]
+
+    const resolve = createReferenceResolveQuery(specs, 'jane')
+
+    expect(() => parse(resolve!.query)).not.toThrow()
   })
 })

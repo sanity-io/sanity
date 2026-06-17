@@ -31,7 +31,7 @@ const PREVIEW_FIELD_WEIGHT_MAP: Record<string, number> = {
 // Fallback for custom selection keys (e.g. `authorName`) that aren't title/subtitle/description.
 const DEFAULT_PREVIEW_SELECT_WEIGHT = 5
 
-const CACHE = new WeakMap<SchemaType, ReferenceSearchSpec[]>()
+const CACHE = new WeakMap<SchemaType, Map<number, ReferenceSearchSpec[]>>()
 
 const getTypeChain = (type: SchemaType | undefined): SchemaType[] =>
   type ? [type, ...getTypeChain(type.type)] : []
@@ -84,8 +84,9 @@ function resolveLeaf(
     if (isPtField(type)) {
       return {leafPath: '', mapWith: 'pt::text'}
     }
-    // A slug is searchable on its `.current` string.
-    if (isSlugField(type)) {
+    // A slug is searchable on its `.current` string - but only if that field
+    // actually resolves, so a custom object named `slug` doesn't emit a dead clause.
+    if (isSlugField(type) && isStringField(findFieldType(type, 'current'))) {
       return {leafPath: 'current'}
     }
     if (isStringField(type)) {
@@ -157,7 +158,8 @@ export function deriveReferenceSearchSpecs({
     return []
   }
 
-  const cached = CACHE.get(schemaType)
+  const cachedByDepth = CACHE.get(schemaType) ?? new Map<number, ReferenceSearchSpec[]>()
+  const cached = cachedByDepth.get(maxDepth)
   if (cached) {
     return cached
   }
@@ -198,6 +200,7 @@ export function deriveReferenceSearchSpecs({
   }
 
   const specs = Array.from(byTargetAndLeaf.values())
-  CACHE.set(schemaType, specs)
+  cachedByDepth.set(maxDepth, specs)
+  CACHE.set(schemaType, cachedByDepth)
   return specs
 }
