@@ -34,8 +34,10 @@ import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
  * Entries are keyed by the caller-provided `cacheKey` and removed once the last
  * subscriber unsubscribes (see `finalize` below).
  */
-const bundleDocumentsCache: Record<string, Observable<BundleDocumentsResult<unknown>>> =
-  Object.create(null)
+const bundleDocumentsCache: Record<
+  string,
+  Observable<BundleDocumentsResult<unknown>>
+> = Object.create(null)
 
 /** @internal */
 export function resetBundleDocumentsCacheForTests(): void {
@@ -233,6 +235,25 @@ interface UseBundleDocumentsOptions<TResult> extends BundleDocumentsConfig<TResu
   enabled?: boolean
 }
 
+// Resolves (and memoizes) the shared observable for a given `cacheKey`. Kept out of the hook body
+// so that the module-level cache is never mutated directly from within a hook.
+function getOrCreateBundleDocumentsObservable<TResult>(
+  cacheKey: string,
+  create: () => Observable<BundleDocumentsResult<TResult>>,
+): Observable<BundleDocumentsResult<TResult>> {
+  if (!bundleDocumentsCache[cacheKey]) {
+    bundleDocumentsCache[cacheKey] = create().pipe(
+      startWith({loading: true, results: [], error: null}),
+      finalize(() => {
+        delete bundleDocumentsCache[cacheKey]
+      }),
+      shareReplay(1),
+    ) as Observable<BundleDocumentsResult<unknown>>
+  }
+
+  return bundleDocumentsCache[cacheKey] as Observable<BundleDocumentsResult<TResult>>
+}
+
 /**
  * Generic hook that subscribes to {@link getBundleDocumentsObservable} with a shared, ref-counted
  * cache keyed by `cacheKey`. Release-specific and variant-specific hooks build on top of this.
@@ -257,8 +278,8 @@ export function useBundleDocuments<TResult>({
       return of<BundleDocumentsResult<TResult>>({loading: false, results: [], error: null})
     }
 
-    if (!bundleDocumentsCache[cacheKey]) {
-      bundleDocumentsCache[cacheKey] = getBundleDocumentsObservable<TResult>({
+    return getOrCreateBundleDocumentsObservable<TResult>(cacheKey, () =>
+      getBundleDocumentsObservable<TResult>({
         schema,
         documentPreviewStore,
         i18n,
@@ -269,16 +290,8 @@ export function useBundleDocuments<TResult>({
         clientOptions,
         observeDocument,
         mapDocument,
-      }).pipe(
-        startWith({loading: true, results: [], error: null}),
-        finalize(() => {
-          delete bundleDocumentsCache[cacheKey]
-        }),
-        shareReplay(1),
-      ) as Observable<BundleDocumentsResult<unknown>>
-    }
-
-    return bundleDocumentsCache[cacheKey] as Observable<BundleDocumentsResult<TResult>>
+      }),
+    )
   }, [
     cacheKey,
     enabled,
