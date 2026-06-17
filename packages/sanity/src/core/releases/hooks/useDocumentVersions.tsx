@@ -116,8 +116,7 @@ const temporarilyBuildDocumentSystem = (
     )
     return {
       bundleId: versionId,
-      release: releaseDocument ? {_ref: releaseDocument._id, _weak: true} : null,
-      variant: null,
+      release: releaseDocument ? {_ref: releaseDocument._id, _weak: true} : undefined,
       group: {
         _ref: getPublishedId(id),
         _weak: true,
@@ -127,11 +126,8 @@ const temporarilyBuildDocumentSystem = (
   }
 
   return {
-    bundleId: isDraftId(id) ? 'drafts' : null,
-    release: null,
-    variant: null,
+    bundleId: isDraftId(id) ? 'drafts' : undefined,
     group: {_ref: getPublishedId(id), _weak: true},
-    scopeId: versionId || null,
   }
 }
 

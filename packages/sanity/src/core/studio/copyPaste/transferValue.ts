@@ -1,5 +1,3 @@
-/* eslint-disable max-statements */
-/* eslint-disable complexity */
 import {isAssetObjectStub, isFileAssetId, isImageAssetId} from '@sanity/asset-utils'
 import {type SanityClient} from '@sanity/client'
 import {
@@ -652,7 +650,6 @@ async function collateObjectValue({
             getClient,
           })
 
-          // eslint-disable-next-line max-depth
           if (!isMatch) {
             errors.push({
               level: 'error',

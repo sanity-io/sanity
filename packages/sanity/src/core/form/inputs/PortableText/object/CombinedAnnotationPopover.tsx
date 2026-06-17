@@ -103,6 +103,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
   // misses the first click because annotations.length is still 0 when
   // selectionchange runs.
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     handleSelectionChange()
   }, [handleSelectionChange])
 

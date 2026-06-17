@@ -5,7 +5,6 @@ const BLOCKING_TASK_THRESHOLD = 50
 export function measureBlockingTime(page: Page): () => Promise<number> {
   const idleGapLengthsPromise = page.evaluate(
     // Had to add this so we can run the tests
-    // eslint-disable-next-line no-new-func
     new Function(`
     return (async function() {
       const idleGapLengths = []
@@ -34,7 +33,6 @@ export function measureBlockingTime(page: Page): () => Promise<number> {
 
   async function getBlockingTime() {
     await page.evaluate(
-      // eslint-disable-next-line no-new-func
       new Function(`
       document.dispatchEvent(new CustomEvent('__blockingTimeFinish'))
     `) as () => void,

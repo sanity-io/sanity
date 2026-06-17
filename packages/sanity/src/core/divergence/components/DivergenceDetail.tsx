@@ -130,7 +130,7 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
               <>
                 {diff &&
                   DiffComponent && (
-                    // eslint-disable-next-line react-hooks/static-components
+                    // oxlint-disable-next-line react/react-compiler
                     <DiffComponent diff={diff} schemaType={divergence.schemaType} />
                   )}
               </>

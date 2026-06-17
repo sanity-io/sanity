@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {Card, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
@@ -120,6 +118,10 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
       $isOneLine ? '0' : theme.sanity.space[$isFullscreen ? 9 : 5]}px;
 
     & > [data-pt-block] {
+      /* Positioning context for the absolutely-positioned drop indicator so it
+         sizes to the block (the centred text column) instead of the full-width
+         .pt-editable, which overshoots the block in fullscreen. */
+      position: relative;
       margin: 0 auto;
       max-width: ${(props) => getTheme_v2(props.theme).container[1]}px;
     }

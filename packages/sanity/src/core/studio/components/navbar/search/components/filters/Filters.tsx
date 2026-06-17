@@ -37,6 +37,7 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
   const clearFiltersButtonVisible = filters.length > 0 || (showTypeFilter && types.length > 0)
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setIsMounted(true)
   }, [])
 

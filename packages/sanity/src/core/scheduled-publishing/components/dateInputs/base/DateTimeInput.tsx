@@ -1,7 +1,7 @@
 import {CalendarIcon} from '@sanity/icons'
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button,
   LayerProvider,
   useClickOutsideEvent,

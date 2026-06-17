@@ -66,6 +66,7 @@ export function FormCreate(props: ObjectInputProps) {
     // This useEffect takes care of closing the form when a task entered the "creation" state.
     // That action is async and we don't have access to the promise, once the value is updated in the form we will close the form.
     if (creating && savedTask?.createdByUser) {
+      // oxlint-disable-next-line react/react-compiler
       handleCreatingSuccess()
     }
   }, [creating, savedTask?.createdByUser])

@@ -1,5 +1,4 @@
 import {type PortableTextBlock} from '@sanity/types'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {startTransition, useCallback, useEffect, useState} from 'react'
 import {css, styled} from 'styled-components'
@@ -68,6 +67,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
 
   useEffect(() => {
     if (!rootRef) return
+    // oxlint-disable-next-line react/react-compiler
     setTextboxHeight(rootRef)
   }, [value, setTextboxHeight, rootRef])
 

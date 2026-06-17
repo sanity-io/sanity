@@ -1,10 +1,5 @@
 import {_responsive, type CardTone, rem, type ThemeProps} from '@sanity/ui'
-import {
-  // eslint-disable-next-line camelcase
-  getTheme_v2,
-  type ThemeColorSchemeKey,
-  type ThemeFontWeightKey,
-} from '@sanity/ui/theme'
+import {getTheme_v2, type ThemeColorSchemeKey, type ThemeFontWeightKey} from '@sanity/ui/theme'
 import {css, type CSSObject} from 'styled-components'
 
 import {focusRingBorderStyle, focusRingStyle} from '../../../components/formField/styles'

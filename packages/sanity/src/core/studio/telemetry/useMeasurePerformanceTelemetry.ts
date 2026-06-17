@@ -67,7 +67,7 @@ export function useMeasurePerformanceTelemetry() {
     }
     const observer = new PerformanceObserver(onEvent)
     observer.observe({type: 'event', buffered: true})
-    // eslint-disable-next-line consistent-return
+    // oxlint-disable-next-line consistent-return
     return () => {
       observer.disconnect()
     }

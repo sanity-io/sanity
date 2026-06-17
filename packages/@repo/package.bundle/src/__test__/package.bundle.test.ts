@@ -5,7 +5,6 @@ import {stripCssImportsPlugin} from '../package.bundle'
 function runPlugin(bundle: Record<string, any>) {
   const plugin = stripCssImportsPlugin()
   // generateBundle is a Rollup hook — call it directly with a mock context
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   ;(plugin.generateBundle as Function).call({}, {} as never, bundle)
 }
 

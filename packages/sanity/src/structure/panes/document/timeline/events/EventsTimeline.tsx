@@ -216,6 +216,7 @@ export const EventsTimeline = ({
     ],
   )
 
+  // oxlint-disable-next-line react/react-compiler
   useEffect(() => setMounted(true), [])
   const selectedIndex = events.findIndex((event) => event.id === selectedEventId)
 

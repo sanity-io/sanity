@@ -5,7 +5,6 @@
     "perf/*",
     "packages/@repo/test-exports",
     "packages/@repo/test-dts-exports",
-    "packages/@repo/eslint-config",
     "packages/@repo/test-config",
     "packages/@repo/tsconfig",
     "packages/@repo/package.config",
@@ -26,6 +25,9 @@
         "only-allow",
         // See .github/workflows/e2e-ui.yml
         "@sanity/ui",
+        // Used by the boundaries jsPlugin via `settings["import/resolver"]` in .oxlintrc.json,
+        // which knip can't trace (unlike jsPlugins, which it detects)
+        "eslint-import-resolver-typescript",
       ],
       "ignoreBinaries": [
         // No root packages provide these binaries

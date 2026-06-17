@@ -16,7 +16,7 @@ for (const [workspace, paths] of Object.entries(workspaces)) {
       await t.test(
         `await import('${path}')`,
         async (
-          // eslint-disable-next-line @typescript-eslint/no-shadow
+          // oxlint-disable-next-line @typescript-eslint/no-shadow
           t,
         ) => {
           await import(path)

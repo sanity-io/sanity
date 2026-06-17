@@ -76,7 +76,6 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
 /**
  * @internal
  */
-// eslint-disable-next-line max-statements
 export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const {
     children,
@@ -741,7 +740,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   )
 }
 
-// eslint-disable-next-line max-params
 function getDocumentVersionType(
   params: Record<string, string | undefined> | undefined,
   selectedReleaseId: string | undefined,

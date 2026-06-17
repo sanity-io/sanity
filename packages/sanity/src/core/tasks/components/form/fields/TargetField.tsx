@@ -1,6 +1,5 @@
 import {CloseIcon, DocumentIcon} from '@sanity/icons'
 import {Box, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
 import {IntentLink} from 'sanity/router'

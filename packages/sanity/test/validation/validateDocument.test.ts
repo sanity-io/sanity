@@ -21,7 +21,7 @@ import {
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
 type ConvertToValidationMarker =
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-imports
   typeof import('../../src/core/validation/util/convertToValidationMarker')
 
 type RuleWithSkip = Rule & {skip: () => Rule}

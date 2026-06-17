@@ -121,6 +121,8 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       'value': resolveNativeInputValue(member.item.schemaType, member.item.value, localValue),
       'readOnly': Boolean(member.item.readOnly),
       'placeholder': member.item.schemaType.placeholder,
+      // Disable native browser autocomplete/autofill on content-editing fields
+      'autoComplete': 'off',
       'aria-describedby': createDescriptionId(member.item.id, member.item.schemaType.description),
       'style': {
         anchorName: pathToAnchorIdent('input', member.item.path),

@@ -1,4 +1,4 @@
-/* eslint-disable @sanity/i18n/no-i18next-import */
+/* oxlint-disable @sanity/i18n/no-i18next-import */
 import {type TFunction} from 'i18next'
 import {type ComponentType, type ReactNode, useMemo} from 'react'
 

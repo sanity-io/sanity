@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Grid, Text} from '@sanity/ui'
@@ -119,7 +118,7 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
 
     observer.observe(item)
 
-    // eslint-disable-next-line consistent-return
+    // oxlint-disable-next-line consistent-return
     return () => {
       observer.disconnect()
     }

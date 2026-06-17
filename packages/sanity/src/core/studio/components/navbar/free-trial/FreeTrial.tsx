@@ -32,6 +32,7 @@ export function FreeTrial({type}: FreeTrialProps) {
   useEffect(() => {
     if (ref) {
       // set popover visible when the ref has been set (i.e. the element is ready)
+      // oxlint-disable-next-line react/react-compiler
       setShowPopover(true)
     }
   }, [ref])

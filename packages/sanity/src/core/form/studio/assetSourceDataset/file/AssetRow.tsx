@@ -2,7 +2,7 @@ import {ChevronDownIcon, ChevronUpIcon, DocumentIcon, LinkIcon, TrashIcon} from 
 import {type Asset as AssetType} from '@sanity/types'
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
   Flex,

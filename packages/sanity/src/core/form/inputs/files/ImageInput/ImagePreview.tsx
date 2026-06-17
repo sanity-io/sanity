@@ -21,6 +21,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & ImagePreviewPr
   useEffect(() => {
     /* set for when the src is being switched when the image input already had a image src
     - meaning it already had an asset */
+    // oxlint-disable-next-line react/react-compiler
     setLoaded(false)
     setHasError(false)
   }, [src])

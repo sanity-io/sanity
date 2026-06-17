@@ -1,6 +1,6 @@
 import {type Asset} from '@sanity/types'
 import {
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
   useToast,

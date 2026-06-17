@@ -246,7 +246,6 @@ function defineRenderChild({
   schemaType: any
   t: any
 }) {
-  // eslint-disable-next-line react/display-name
   return (ptDiffChild: PortableTextChild) => {
     const spanSchemaType = getChildSchemaType(schemaType.fields, ptDiffChild) as SpanSchemaType
     let decoratorTypes: {title: string; value: string}[] = []

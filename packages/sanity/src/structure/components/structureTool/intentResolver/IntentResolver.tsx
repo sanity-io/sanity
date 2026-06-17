@@ -33,7 +33,7 @@ export const IntentResolver = memo(function IntentResolver() {
   // this re-throws errors so that parent ErrorBoundary's can handle them properly
   if (error) throw error
 
-  // eslint-disable-next-line consistent-return
+  // oxlint-disable-next-line consistent-return
   useEffect(() => {
     if (maybeIntent) {
       const {intent, params, payload} = maybeIntent

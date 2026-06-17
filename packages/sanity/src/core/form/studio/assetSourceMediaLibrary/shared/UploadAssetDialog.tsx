@@ -133,6 +133,7 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
             type: 'uploadRequest',
             files: uploader.getFiles(),
           })
+          // oxlint-disable-next-line react/react-compiler
           setPageReadyForUploads(false)
         }
       }

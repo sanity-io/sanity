@@ -6,7 +6,7 @@ pre-commit:
       stage_fixed: true
       run: |
         pnpm oxfmt --no-error-on-unmatched-pattern {staged_files}
-        pnpm oxlint --disable-nested-config --type-aware --fix --quiet {staged_files}
+        pnpm oxlint --disable-nested-config --fix --quiet {staged_files}
 
     - name: format-other
       glob: "*.{md,yml,yaml,css,json}"

@@ -76,6 +76,7 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
 
   useEffect(() => {
     if (isLinked) {
+      // oxlint-disable-next-line react/react-compiler
       handleCloseDialog()
     }
   }, [isLinked, handleCloseDialog])

@@ -24,6 +24,7 @@ import {
   type SanityDocumentLike,
   type Schema,
   type SearchOptions,
+  type SearchSort,
   type SearchStrategy,
 } from 'sanity'
 
@@ -42,6 +43,11 @@ interface ListenQueryOptions {
   staticTypeNames?: string[] | null
   maxFieldDepth?: number
   searchStrategy?: SearchStrategy
+  /**
+   * Whether to rank results by relevance when a search term is present.
+   * Defaults to `true`. See {@link resolveSearchOrdering}.
+   */
+  sortByRelevance?: boolean
 }
 
 export type SearchQueryEvent =
@@ -58,6 +64,55 @@ export interface SearchQueryState {
 
 const swr = createSWR<{connected: boolean; documents: SanityDocumentLike[]}>({maxSize: 100})
 
+/**
+ * Resolve the score/sort options for a list pane search request.
+ *
+ * When a search term is present, results are ranked by relevance so the most
+ * relevant documents surface first (matching the behaviour of global search).
+ * The configured/selected sort order is preserved as a tiebreaker. With an
+ * empty query there are no scores to sort by, so the configured order is kept
+ * untouched.
+ *
+ * The two search strategies express relevance differently:
+ * - `groq2024` is driven by the presence of a `_score` sort entry, which
+ *   activates the server-side `score(boost(...))` pipeline.
+ * - `groqLegacy` computes scores client-side and sorts by them unless
+ *   `skipSortByScore` is set.
+ *
+ * @internal
+ */
+export function resolveSearchOrdering(options: {
+  searchQuery: string
+  sortBy: SearchSort[]
+  searchStrategy?: SearchStrategy
+  /**
+   * Whether to rank by relevance when a search term is present. Defaults to
+   * `true`. Set to `false` when the editor has explicitly chosen one of the
+   * configured orderings instead of relevance.
+   */
+  useRelevance?: boolean
+}): {skipSortByScore: boolean; sort: SearchSort[]} {
+  const {searchQuery, sortBy, searchStrategy, useRelevance = true} = options
+  const sortByRelevance = Boolean(searchQuery) && useRelevance
+
+  if (!sortByRelevance) {
+    return {skipSortByScore: true, sort: sortBy}
+  }
+
+  // `groqLegacy` cannot order by a projected `_score` field, so it relies on
+  // client-side score sorting (`skipSortByScore: false`) with the configured
+  // order kept as a tiebreaker. `groq2024` ranks by relevance by prepending a
+  // `_score` sort entry.
+  if (searchStrategy === 'groqLegacy') {
+    return {skipSortByScore: false, sort: sortBy}
+  }
+
+  return {
+    skipSortByScore: false,
+    sort: [{field: '_score', direction: 'desc'}, ...sortBy],
+  }
+}
+
 export function listenSearchQuery(options: ListenQueryOptions): Observable<SearchQueryState> {
   const {
     client,
@@ -69,6 +124,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     filter: groqFilter,
     searchQuery,
     staticTypeNames,
+    sortByRelevance,
     maxFieldDepth,
     searchStrategy,
   } = options
@@ -160,19 +216,23 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               types,
             }
 
+            const {skipSortByScore, sort} = resolveSearchOrdering({
+              searchQuery: searchQuery || '',
+              sortBy,
+              searchStrategy,
+              useRelevance: sortByRelevance,
+            })
+
             const searchOptions: SearchOptions = {
               comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
               limit,
-              skipSortByScore: true,
-              sort: sortBy,
+              skipSortByScore,
+              sort,
               perspective,
             }
 
             return search(searchTerms, searchOptions).pipe(
-              map((result) =>
-                // eslint-disable-next-line max-nested-callbacks
-                result.hits.map(({hit}) => hit),
-              ),
+              map((result) => result.hits.map(({hit}) => hit)),
               map((hits) => ({type: 'result' as const, documents: hits})),
             )
           }

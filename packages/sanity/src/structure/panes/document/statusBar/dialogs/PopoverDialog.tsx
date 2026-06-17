@@ -1,5 +1,5 @@
 import {
-  Popover, // eslint-disable-line no-restricted-imports
+  Popover, // oxlint-disable-line no-restricted-imports
   useClickOutsideEvent,
   useGlobalKeyDown,
   useLayer,

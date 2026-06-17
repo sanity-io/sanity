@@ -2,7 +2,7 @@ import {type InvalidValueResolution} from '@portabletext/editor'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
   Code,

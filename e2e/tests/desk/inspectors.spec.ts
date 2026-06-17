@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {expect} from '@playwright/test'
 
 import {createUniqueDocument, withDefaultClient} from '../../helpers'

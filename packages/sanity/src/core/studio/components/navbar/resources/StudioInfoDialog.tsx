@@ -165,7 +165,6 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
         </Flex>
         <Grid columns={2} gap={2}>
           <Flex justify="flex-end" align="center">
-            {/* eslint-disable-next-line i18next/no-literal-string */}
             <Text as="h2" size={1} weight="semibold">
               Sanity Studio
             </Text>

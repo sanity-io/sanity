@@ -205,6 +205,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
   // Calculate floating card's width
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     handleSetFloatingCardElementWidth()
   }, [handleSetFloatingCardElementWidth, showFieldActions])
 
@@ -212,6 +213,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   useEffect(() => {
     if (slotElement) {
       const {width} = slotElement.getBoundingClientRect()
+      // oxlint-disable-next-line react/react-compiler
       setSlotWidth(width || 0)
     }
   }, [slotElement])

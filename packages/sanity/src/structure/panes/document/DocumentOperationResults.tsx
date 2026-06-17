@@ -107,7 +107,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
 
     prevEvent.current = event
 
-    // eslint-disable-next-line consistent-return
+    // oxlint-disable-next-line consistent-return
     return () => clearTimeout(cleanupId)
   }, [event, paneRouter, pushToast, t, documentTitle, handleOpenDialog])
 

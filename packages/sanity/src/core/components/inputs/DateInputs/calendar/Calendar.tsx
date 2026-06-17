@@ -174,7 +174,7 @@ export const Calendar = forwardRef(function Calendar(
 
   useEffect(() => {
     // The change is coming from another source, so we need to update the timeValue to the new value.
-    // eslint-disable-next-line react-hooks/no-deriving-state-in-effects
+    // oxlint-disable-next-line react/react-compiler
     setTimeValue(timeFromDate)
   }, [timeFromDate])
 

@@ -155,7 +155,7 @@ export function VariantDocumentsTable({
         data={rows}
         defaultSort={{column: 'search', direction: 'asc'}}
         emptyState={t('detail.documents.no-documents')}
-        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+        // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
         rowId="document._id"
         scrollContainerRef={scrollContainerRef}
         searchFilter={filterDocuments}

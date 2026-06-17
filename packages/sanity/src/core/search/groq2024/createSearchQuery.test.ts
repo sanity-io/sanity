@@ -116,6 +116,36 @@ describe('createSearchQuery', () => {
   })
 
   describe('searchOptions', () => {
+    // The document list pane ranks search results by relevance by passing a
+    // `_score`-primary sort (with the configured order as a tiebreaker). This
+    // asserts that such a sort produces a genuinely relevance-ranked query:
+    // the `score(boost(...))` pipeline runs, zero-score docs are filtered out,
+    // and results are ordered by `_score` first, then the configured field.
+    it('ranks by relevance when a _score-primary sort is provided (document list pane)', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
+      const {query} = createSearchQuery(
+        {
+          query: 'test',
+          types: [testType],
+        },
+        '',
+        {
+          sort: [
+            {field: '_score', direction: 'desc'},
+            {field: '_updatedAt', direction: 'desc'},
+          ],
+        },
+      )
+
+      expect(query).toMatchInlineSnapshot(`
+        "// findability-mvi:5
+        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score, _updatedAt]} | order(orderings[0] desc,orderings[1] desc) [0...$__limit]"
+      `)
+    })
+
     it('should use provided limit (plus one to determine existence of next page)', () => {
       const testType = Schema.compile({
         types: schemaTypes,

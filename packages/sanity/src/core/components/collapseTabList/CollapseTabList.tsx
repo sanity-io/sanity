@@ -78,7 +78,6 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
   const displayChildren = useMemo(() => {
     if (collapsed) return null // If collapsed, we don't want to show any children
     if (!showChildren) return null // If we haven't run the intersection observer yet, we don't want to show any children
-    // eslint-disable-next-line max-nested-callbacks
     return children.filter((c) => !hiddenElements.some((h) => h.key === c.key))
   }, [children, collapsed, hiddenElements, showChildren])
 
@@ -100,10 +99,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
     () =>
       collapsed
         ? children
-        : children.filter(({key}) =>
-            // eslint-disable-next-line max-nested-callbacks
-            hiddenElements.find((o: React.JSX.Element) => o.key === key),
-          ),
+        : children.filter(({key}) => hiddenElements.find((o: React.JSX.Element) => o.key === key)),
     [children, hiddenElements, collapsed],
   )
 
@@ -115,7 +111,6 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
       const isIntersecting = e.isIntersecting
       if (!isHidden && !isIntersecting) setHiddenElements((prev) => [...prev, child])
       if (isHidden && isIntersecting)
-        // eslint-disable-next-line max-nested-callbacks
         setHiddenElements((prev) => prev.filter((el) => el.key !== child.key))
     },
     [hiddenElements, showChildren, setShowChildren, setHiddenElements],

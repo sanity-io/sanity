@@ -179,6 +179,7 @@ export function useMainDocument(props: {
         }
       }
     }
+    // oxlint-disable-next-line react/react-compiler
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined

@@ -46,7 +46,7 @@ export function Divider({parentRef}: DividerProps): React.JSX.Element {
 
     observer.observe(item)
 
-    // eslint-disable-next-line consistent-return
+    // oxlint-disable-next-line consistent-return
     return () => {
       observer.disconnect()
     }

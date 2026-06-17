@@ -1,4 +1,3 @@
-// oxlint-disable no-console
 import {type Dirent, readdirSync, readFileSync} from 'node:fs'
 import {readdir, readFile, stat, writeFile} from 'node:fs/promises'
 import {type SourceMapPayload} from 'node:module'

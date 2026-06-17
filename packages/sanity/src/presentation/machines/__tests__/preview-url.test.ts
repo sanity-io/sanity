@@ -27,7 +27,6 @@ if (typeof URLPattern === 'undefined') {
 }
 
 const createFakeClient = () => {
-  /* eslint-disable no-empty-function */
   const client = {
     async fetch() {},
     async commit() {},
@@ -48,7 +47,6 @@ const createFakeClient = () => {
       return this
     },
   }
-  /* eslint-enable no-empty-function */
   return client as unknown as SanityClient
 }
 const client = createFakeClient()

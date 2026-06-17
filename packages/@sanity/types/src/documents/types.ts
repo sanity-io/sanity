@@ -54,15 +54,15 @@ export interface DocumentSystem {
   /**
    * It will be empty for the group document (aka published document)
    */
-  bundleId: 'drafts' | (string & {}) | null
+  bundleId?: 'drafts' | (string & {})
   /**
    * A weak reference to the release document that the version belongs to.
    */
-  release: DocumentSystemRef | null
+  release?: DocumentSystemRef
   /**
    * A weak reference to the variant document that the version belongs to.
    */
-  variant: DocumentSystemRef | null
+  variant?: DocumentSystemRef
   /**
    * A weak reference to the group document (aka published document).
    */
@@ -70,7 +70,7 @@ export interface DocumentSystem {
   /**
    * Available only for version documents.
    */
-  scopeId: string | null
+  scopeId?: string
 }
 
 /**

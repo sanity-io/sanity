@@ -13,18 +13,16 @@
   "scripts": {
     "build": "sanity build",
     "dev": "sanity dev",
-    "lint": "eslint .",
     "start": "tsx ./index.ts",
     "test": "pnpm start",
     "write:report": "tsx ./formatefpsResult.ts"
   },
   "dependencies": {
-    "sanity-plugin-internationalized-array": "^5.1.4",
+    "sanity-plugin-internationalized-array": "^5.1.6",
     "styled-components": "catalog:",
     "tsx": "^4.22.4"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
     "@types/react": "catalog:",
@@ -34,7 +32,6 @@
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "dotenv": "^16.6.1",
-    "eslint": "catalog:",
     "ora": "^8.2.0",
     "playwright": "catalog:",
     "react": "catalog:",

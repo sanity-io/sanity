@@ -408,7 +408,6 @@ describe.skip('tree-editing: buildTreeEditingState', () => {
                 {
                   _key: '8c993b716215',
                   _type: 'property',
-                  // eslint-disable-next-line camelcase
                   description_two: [
                     {
                       _key: '981f3db981d8',
@@ -427,12 +426,10 @@ describe.skip('tree-editing: buildTreeEditingState', () => {
                     {
                       _key: '3483ab85466e',
                       _type: 'object2',
-                      // eslint-disable-next-line camelcase
                       item_two: [
                         {
                           _key: '6dd0be61a480',
                           _type: 'object3',
-                          // eslint-disable-next-line camelcase
                           description_three: [
                             {
                               _key: '1513b024fca5',
@@ -451,11 +448,9 @@ describe.skip('tree-editing: buildTreeEditingState', () => {
                             {
                               _key: '8a2392617e21',
                               _type: 'object3',
-                              // eslint-disable-next-line camelcase
                               title_three: 'adas',
                             },
                           ],
-                          // eslint-disable-next-line camelcase
                           title_two: 'Ahhh',
                         },
                       ],

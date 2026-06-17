@@ -1,4 +1,4 @@
-/* eslint-disable no-restricted-imports */
+/* oxlint-disable no-restricted-imports */
 import {
   MenuButton as UIMenuButton,
   type MenuButtonProps as UIMenuButtonProps,

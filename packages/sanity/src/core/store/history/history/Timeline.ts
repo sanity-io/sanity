@@ -289,7 +289,6 @@ export class Timeline {
     return chunk === this._chunks.last
   }
 
-  // eslint-disable-next-line class-methods-use-this
   createTimeId(chunk: Chunk): string {
     return `${chunk.endTimestamp.valueOf()}/${chunk.id}`
   }

@@ -9,5 +9,4 @@ export * from './itemProps'
 export * from './renderCallback'
 
 // this file doesn't have any exports because it just augments a module
-// eslint-disable-next-line import/export
 export * from './definitionExtensions'

@@ -1,5 +1,5 @@
 import type * as SanityTelemetry from '@sanity/telemetry'
-/* eslint-disable import/first */
+/* oxlint-disable import/first */
 // Regular imports first
 import {render} from '@testing-library/react'
 import {StrictMode, type ReactNode} from 'react'
@@ -38,7 +38,7 @@ vi.mock('../PerformanceTelemetry', () => ({
 }))
 
 // Import mocked modules AFTER vi.mock declarations
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+// oxlint-disable-next-line @typescript-eslint/consistent-type-imports
 import {createBatchedStore, createSessionId, SessionId} from '@sanity/telemetry'
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {useRouterState} from 'sanity/router'
@@ -50,7 +50,7 @@ import {StudioLoaded} from '../../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../../workspace'
 import {useWorkspaces} from '../../workspaces'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'
-/* eslint-enable import/first */
+/* oxlint-enable import/first */
 
 function mockRouterTool(tool: string) {
   vi.mocked(useRouterState).mockImplementation(((selector: (state: {tool?: string}) => unknown) =>

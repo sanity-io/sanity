@@ -19,10 +19,8 @@ export function writeCheck({
 
   return getOctokit().checks.create({
     ...REPO,
-    // eslint-disable-next-line camelcase
     external_id: 'release-pr-status-check',
     name: 'Check for in-flight release',
-    // eslint-disable-next-line camelcase
     head_sha: headSha,
     status: canMerge ? 'completed' : 'in_progress',
     ...(canMerge ? {conclusion: 'success'} : {}),

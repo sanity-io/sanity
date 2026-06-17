@@ -21,7 +21,7 @@ export function useConditionalToast(
   const enabled =
     enabledAt && params.enabled && now.getTime() - enabledAt.getTime() > (params?.delay ?? 0)
 
-  // eslint-disable-next-line consistent-return
+  // oxlint-disable-next-line consistent-return
   useEffect(() => {
     if (enabled) {
       toast.push({...params, duration: Infinity})

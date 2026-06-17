@@ -1,4 +1,3 @@
-/* eslint-disable import/export */
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, type RenderOptions} from '@testing-library/react'
 

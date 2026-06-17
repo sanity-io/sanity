@@ -22,9 +22,7 @@ export const FieldActionsContext = createContext<FieldActionsContextValue>(
     actions: [],
     focused: false,
     hovered: false,
-    // eslint-disable-next-line camelcase
     __internal_slot: undefined,
-    // eslint-disable-next-line camelcase
     __internal_comments: undefined,
     onMouseEnter: () => undefined,
     onMouseLeave: () => undefined,

@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable @typescript-eslint/no-require-imports, strict */
 /**
  * **************************************************************
  * This script needs to stay as a CommonJS/JavaScript file

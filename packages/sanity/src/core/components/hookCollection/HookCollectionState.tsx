@@ -54,6 +54,6 @@ function RenderHook<Args, State>({
     [hook, id],
   )
 
-  // eslint-disable-next-line react-hooks/static-components -- yes this is bad, but we can't fix it without a new document actions API that will be a breaking change
+  // oxlint-disable-next-line react/react-compiler -- yes this is bad, but we can't fix it without a new document actions API that will be a breaking change
   return <HookState args={args} handleNext={handleNext} />
 }

@@ -114,7 +114,6 @@ describe('url params without opt-out scoping', () => {
   const router = route.scope(
     'pluginA',
     '/pluginA/:id',
-    // eslint-disable-next-line camelcase
     {__unsafe_disableScopedSearchParams: true},
     [
       route.scope('pluginAB', '/pluginAB/:qux', [
