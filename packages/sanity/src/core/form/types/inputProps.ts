@@ -438,6 +438,7 @@ export interface PrimitiveInputElementProps {
   'id': string
   'readOnly': boolean
   'placeholder'?: string
+  'autoComplete'?: string
   'onChange': FormEventHandler
   'onFocus': FocusEventHandler
   'onBlur': FocusEventHandler
@@ -455,6 +456,7 @@ export interface ComplexElementProps {
   'onBlur': FocusEventHandler
   'ref': MutableRefObject<any>
   'aria-describedby': string | undefined
+  'autoComplete'?: string
   'style': Pick<CSSProperties, 'anchorName'>
 }
 
