@@ -106,6 +106,7 @@ function InlineObjectWithDiff({
 
   useEffect(() => {
     if (isEditing) {
+      // oxlint-disable-next-line react/react-compiler
       setOpen(true)
       onSetFocus(focusPath)
     }

@@ -308,6 +308,7 @@ export default function PresentationTool(props: {
     comlink.onStatus(setOverlaysConnection)
 
     const stop = comlink.start()
+    // oxlint-disable-next-line react/react-compiler
     setVisualEditingComlink(comlink)
     return () => {
       stop()

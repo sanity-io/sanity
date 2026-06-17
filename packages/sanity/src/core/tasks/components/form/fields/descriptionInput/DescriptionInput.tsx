@@ -68,6 +68,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
 
   useEffect(() => {
     if (!rootRef) return
+    // oxlint-disable-next-line react/react-compiler
     setTextboxHeight(rootRef)
   }, [value, setTextboxHeight, rootRef])
 

@@ -121,6 +121,7 @@ function Content(props: PopoverEditDialogProps) {
 
   useEffect(() => {
     if (!contentElement) {
+      // oxlint-disable-next-line react/react-compiler
       setBoundaryElement(null)
       return
     }

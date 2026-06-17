@@ -84,6 +84,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
   }, [onPathFocus])
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setLocalValue(value || DEFAULT_VALUE)
   }, [value])
 

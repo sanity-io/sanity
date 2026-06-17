@@ -619,6 +619,7 @@ export function VisionGui(props: VisionGuiProps) {
   })
   // Handle pinned perspective changes
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     handleStudioPerspectiveChange(perspectiveStack)
   }, [perspectiveStack])
 

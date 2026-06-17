@@ -1,5 +1,8 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "options": {
+    "typeAware": true
+  },
   "env": {
     "node": true,
     "browser": true
@@ -171,8 +174,8 @@
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
     // React Compiler rules, native nursery rule (replaces eslint-plugin-react-hooks compiler rules).
-    // TODO(oxlint): staged as warn; promote to error once the ~110 existing findings are addressed.
-    "react/react-compiler": "warn",
+    // Pre-existing violations are grandfathered with inline `oxlint-disable-next-line` suppressions.
+    "react/react-compiler": "error",
     // Import hygiene previously enforced by eslint-plugin-import
     "import/first": "error",
     "import/newline-after-import": "error",

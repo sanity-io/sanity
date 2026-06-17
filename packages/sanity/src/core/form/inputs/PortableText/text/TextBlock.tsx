@@ -121,6 +121,7 @@ export function TextBlock(props: TextBlockProps) {
   const [memberItemRef, setMemberItemRef] = useState(memberItem)
   useEffect(() => {
     if (memberItem) {
+      // oxlint-disable-next-line react/react-compiler
       setMemberItemRef(memberItem)
     }
   }, [memberItem])

@@ -140,6 +140,7 @@ export const Preview = memo(
         /**
          * Only set the stable perspective if it hasn't been set yet.
          */
+        // oxlint-disable-next-line react/react-compiler
         setStablePerspective((prev) => (prev === null ? perspective : prev))
       }
     }, [handlesPerspectiveChange, perspective])
@@ -203,6 +204,7 @@ export const Preview = memo(
         return undefined
       }
       if (overlaysConnection === 'connected') {
+        // oxlint-disable-next-line react/react-compiler
         setSomethingIsWrong(false)
         setShowOverlaysConnectionState(false)
         setTimedOut(false)

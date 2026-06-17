@@ -284,6 +284,7 @@ export function ReleasesOverview() {
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setHasMounted(true)
   }, [])
 

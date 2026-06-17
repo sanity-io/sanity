@@ -99,6 +99,7 @@ export function useReleaseHistory(
 
   useEffect(() => {
     cancelledRef.current = false
+    // oxlint-disable-next-line react/react-compiler
     void fetchAndParse()
     return () => {
       cancelledRef.current = true

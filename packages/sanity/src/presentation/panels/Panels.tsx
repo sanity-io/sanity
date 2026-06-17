@@ -198,6 +198,7 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
 
     if (storedWidths) {
       const validatedStoredWidths = validateWidths(panels, storedWidths, window.innerWidth)
+      // oxlint-disable-next-line react/react-compiler
       setWidths(validatedStoredWidths)
       return
     }

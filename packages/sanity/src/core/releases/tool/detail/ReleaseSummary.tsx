@@ -161,6 +161,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
     if (documentsNoLongerPending.length)
       // cleanup all resolved added documents
+      // oxlint-disable-next-line react/react-compiler
       setPendingAddedDocument((prev) =>
         prev.filter(({document}) => !documentsNoLongerPending.includes(document._id)),
       )

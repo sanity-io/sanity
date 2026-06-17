@@ -122,6 +122,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   // Update state when we have nested dialogs
   useEffect(() => {
     if (stack.length > 1 && !hasEverBeenNested) {
+      // oxlint-disable-next-line react/react-compiler
       setHasEverBeenNested(true)
     }
   }, [stack.length, hasEverBeenNested])

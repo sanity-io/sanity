@@ -95,6 +95,7 @@ const VirtualListChildBox = styled(Box) //
   width: 100%;
 `
 
+// oxlint-disable-next-line react/react-compiler
 const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(function CommandList(
   {
     activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,

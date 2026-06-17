@@ -194,6 +194,6 @@ const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefault'>) =
     defaultComponent: DefaultPortableTextEditorPlugins,
     pick: pickPortableTextEditorPluginsComponent,
   })
-  // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
+  // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
   return <RenderPlugins {...props} />
 }

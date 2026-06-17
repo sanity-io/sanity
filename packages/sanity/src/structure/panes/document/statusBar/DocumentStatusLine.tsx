@@ -213,12 +213,14 @@ export function DocumentStatusLine() {
 
   // Clear the status when documentId changes to make sure we don't show the wrong status when opening a new document
   useLayoutEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setStatus(null)
   }, [documentId])
 
   // Set status to 'syncing' when lastUpdated changes and we go from not syncing to syncing
   useLayoutEffect(() => {
     if (syncState.isSyncing) {
+      // oxlint-disable-next-line react/react-compiler
       setStatus('syncing')
     }
   }, [syncState.isSyncing, lastUpdated])

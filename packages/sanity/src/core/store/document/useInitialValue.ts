@@ -59,6 +59,7 @@ export function useInitialValue(props: {
       }
     })
 
+    // oxlint-disable-next-line react/react-compiler
     setState({loading: true, error: null, value: defaultValue})
 
     return () => sub.unsubscribe()

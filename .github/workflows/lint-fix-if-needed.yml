@@ -1,4 +1,4 @@
-name: Lint --fix
+name: oxfmt & oxlint --fix
 
 on:
   push:
@@ -23,7 +23,6 @@ jobs:
       - uses: ./.github/actions/setup
 
       - run: pnpm lint:fix
-      - run: pnpm chore:format:fix
       - uses: actions/create-github-app-token@v3
         # Run even if `pnpm lint:fix` fails
         if: always()

@@ -152,6 +152,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
 
   useEffect(() => {
     if (focusPath.length !== 0) {
+      // oxlint-disable-next-line react/react-compiler
       setHasFocusedAnyPath(true)
     }
   }, [focusPath])

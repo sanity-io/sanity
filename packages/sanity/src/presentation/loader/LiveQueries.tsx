@@ -77,6 +77,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
           actors: createCompatibilityActors<LoaderControllerMsg>(),
         }),
       )
+      // oxlint-disable-next-line react/react-compiler
       setComlink(nextComlink)
 
       nextComlink.onStatus(onLoadersConnection)

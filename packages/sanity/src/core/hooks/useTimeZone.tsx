@@ -261,7 +261,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const [timeZone, setTimeZone] = useState<NormalizedTimeZone>(() => getInitialTimeZone())
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/no-deriving-state-in-effects -- @todo fix later
+    // oxlint-disable-next-line react/react-compiler -- @todo fix later
     setTimeZone(getInitialTimeZone())
   }, [getInitialTimeZone])
 

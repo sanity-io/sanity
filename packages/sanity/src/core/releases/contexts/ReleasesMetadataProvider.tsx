@@ -38,6 +38,7 @@ const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) 
   // patch metadata in local state
   useEffect(
     () =>
+      // oxlint-disable-next-line react/react-compiler
       setReleasesMetadata((prevReleaseMetadata) => {
         if (!observedResult.data) return prevReleaseMetadata
 

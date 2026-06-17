@@ -74,6 +74,7 @@ export function StudioErrorBoundary(props: StudioErrorBoundaryProps) {
       setCaughtError({
         error: params.error,
         componentStack: params.info.componentStack,
+        // oxlint-disable-next-line react/react-compiler
         eventId,
       })
     },

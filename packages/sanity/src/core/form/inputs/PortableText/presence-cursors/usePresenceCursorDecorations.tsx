@@ -84,6 +84,7 @@ export function usePresenceCursorDecorations(
       }
     }) as RangeDecoration[]
 
+    // oxlint-disable-next-line react/react-compiler
     setPresenceCursorDecorations(decorations.filter(Boolean))
   }, [currentPresence, handleRangeDecorationMoved])
 

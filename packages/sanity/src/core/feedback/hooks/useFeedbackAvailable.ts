@@ -21,6 +21,7 @@ export function useFeedbackAvailable(options: UseFeedbackAvailableOptions): bool
 
   useEffect(() => {
     if (skip) {
+      // oxlint-disable-next-line react/react-compiler
       setAvailable(false)
       return
     }

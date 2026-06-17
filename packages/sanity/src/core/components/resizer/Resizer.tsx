@@ -91,6 +91,7 @@ export function Resizer(props: {
 
       const handleMouseUp = () => {
         window.removeEventListener('mousemove', handleMouseMove)
+        // oxlint-disable-next-line react/react-compiler
         window.removeEventListener('mouseup', handleMouseUp)
       }
 
