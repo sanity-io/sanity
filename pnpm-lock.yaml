@@ -163,10 +163,10 @@ importers:
         specifier: ^0.55.0
         version: 0.55.0
       oxlint:
-        specifier: 1.70.0
+        specifier: ^1.70.0
         version: 1.70.0(oxlint-tsgolint@0.23.0)
       oxlint-tsgolint:
-        specifier: 0.23.0
+        specifier: ^0.23.0
         version: 0.23.0
       pkg-pr-new:
         specifier: ^0.0.70
