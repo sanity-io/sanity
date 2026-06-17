@@ -8,8 +8,9 @@ import {createVariantsStore, type VariantStore} from './createVariantsStore'
 
 /** @internal */
 export function useVariantsStore(): VariantStore {
-  const resourceCache = useResourceCache()
   const workspace = useWorkspace()
+  const variantsEnabled = Boolean(workspace.beta?.variants?.enabled)
+  const resourceCache = useResourceCache()
   const studioClient = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
 
   return useMemo(() => {
@@ -20,6 +21,7 @@ export function useVariantsStore(): VariantStore {
       }) ||
       createVariantsStore({
         client: studioClient,
+        enabled: variantsEnabled,
       })
 
     resourceCache.set({
@@ -29,5 +31,5 @@ export function useVariantsStore(): VariantStore {
     })
 
     return variantStore
-  }, [resourceCache, workspace, studioClient])
+  }, [variantsEnabled, resourceCache, workspace, studioClient])
 }

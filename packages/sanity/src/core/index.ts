@@ -11,6 +11,7 @@ export * from './FIXME'
 export * from './form'
 export * from './hooks'
 export * from './i18n'
+export {getSelectedVariant} from './perspective/getSelectedVariant'
 export {
   isPerspectiveWriteable,
   type PerspectiveNotWriteableReason,
@@ -106,5 +107,6 @@ export {getDocumentIdForCanvasLink} from './canvas/utils/getDocumentIdForCanvasL
 export {useDivergenceNavigator} from './divergence/divergenceNavigator'
 export {useDocumentLimitsUpsellContext} from './limits/context/documents/DocumentLimitUpsellProvider'
 export {isDocumentLimitError} from './limits/context/documents/isDocumentLimitError'
+export {useSetVariant} from './perspective/useSetVariant'
 export {ReleaseAvatarIcon} from './releases/components/ReleaseAvatar'
 export {DEFAULT_ANNOTATIONS, DEFAULT_DECORATORS} from '@sanity/schema'
