@@ -92,6 +92,7 @@ import type {
   DocumentDefinition,
   DocumentOptions,
   DocumentRule,
+  DocumentSingletonDefinition,
   EmailDefinition,
   EmailOptions,
   EmailRule,
@@ -630,6 +631,9 @@ describe('@sanity/types', () => {
   })
   test('DocumentRule', () => {
     expectTypeOf<DocumentRule>().toBeObject()
+  })
+  test('DocumentSingletonDefinition', () => {
+    expectTypeOf<DocumentSingletonDefinition>().toBeObject()
   })
   test('EmailDefinition', () => {
     expectTypeOf<EmailDefinition>().toBeObject()

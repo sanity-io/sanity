@@ -12,6 +12,7 @@ import {
   type BooleanOptions,
   type DateOptions,
   type DatetimeOptions,
+  type DocumentSingletonDefinition,
   type FileOptions,
   type ImageOptions,
   type NumberOptions,
@@ -237,6 +238,12 @@ export interface BaseSchemaType extends Partial<DeprecationConfiguration> {
   description?: string
   type?: SchemaType
   liveEdit?: boolean
+  /**
+   * Mirrors {@link DocumentSingletonDefinition} from the user-facing schema
+   * definition. Only ever set on document schema types whose definition
+   * declares a `singleton` block. `undefined` for every other compiled type.
+   */
+  singleton?: DocumentSingletonDefinition
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
   icon?: ComponentType

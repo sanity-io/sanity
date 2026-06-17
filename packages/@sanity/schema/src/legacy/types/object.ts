@@ -24,6 +24,7 @@ const OVERRIDABLE_FIELDS = [
   '__experimental_search',
   'blockEditor',
   'icon',
+  'singleton',
 ]
 
 export const ObjectType = {

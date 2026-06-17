@@ -1,4 +1,5 @@
 import {type SchemaType} from '@sanity/types'
+import startCase from 'lodash-es/startCase.js'
 import {type Observable} from 'rxjs'
 import {type I18nTextRecord} from 'sanity'
 
@@ -15,6 +16,7 @@ import {
   type SerializeOptions,
 } from './StructureNodes'
 import {type StructureContext} from './types'
+import {getSingletonDefinition} from './util/getSingletonDefinition'
 import {getStructureNodeId} from './util/getStructureNodeId'
 import {validateId} from './util/validateId'
 
@@ -258,6 +260,42 @@ export class ListItemBuilder implements Serializable<ListItem> {
    */
   schemaType(schemaType: SchemaType | string): ListItemBuilder {
     return this.clone({schemaType})
+  }
+
+  /**
+   * Configure the list item to render a singleton.
+   *
+   * Sugar for declaring a list item with sensible defaults derived from the
+   * singleton schema type:
+   *
+   * - `id` defaults to the schema type name.
+   * - `title` defaults to the schema type's title (falling back to a
+   *   start-cased version of the type name).
+   * - `child` defaults to a `S.document().singleton(schemaTypeName)` node.
+   * - `schemaType` is set to the provided schema type name.
+   *
+   * Each default can be overridden via the standard list-item chain
+   * (`.title(...)`, `.icon(...)`, `.id(...)`, `.child(...)`).
+   *
+   * The schema type must be a singleton or a `SerializeError` is thrown
+   * immediately.
+   *
+   * @param schemaTypeName - the name of the singleton schema type
+   * @returns list item builder configured for the named singleton
+   */
+  singleton(schemaTypeName: string): ListItemBuilder {
+    // Resolve eagerly so we surface a useful error if the schema type isn't a
+    // singleton, even though we don't currently consume the result here.
+    getSingletonDefinition(this._context, schemaTypeName)
+    const schemaType = this._context.schema.get(schemaTypeName)
+    const fallbackTitle = schemaType?.title ?? startCase(schemaTypeName)
+    return this.clone({
+      id: this.spec.id ?? schemaTypeName,
+      title: this.spec.title ?? fallbackTitle,
+      schemaType: schemaTypeName,
+      child:
+        this.spec.child ?? this._context.getStructureBuilder().document().singleton(schemaTypeName),
+    })
   }
 
   /**
