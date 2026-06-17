@@ -25,7 +25,7 @@ jobs:
       - run: pnpm oxfmt .
       - run: pnpm oxlint --disable-nested-config --type-aware --fix --quiet
       - uses: actions/create-github-app-token@v3
-        # Run even if `pnpm lint:fix` fails
+        # Run even if linting commands fail
         if: always()
         id: app-token
         with:
