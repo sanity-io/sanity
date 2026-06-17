@@ -15,6 +15,7 @@ import {
   getVariantDescription,
   getVariantTitle,
 } from '../util'
+import {useVariantDocuments} from './useVariantDocuments'
 import {VariantDetailFooter} from './VariantDetailFooter'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
 
@@ -28,6 +29,19 @@ export function VariantDetail() {
     typeof router.state.variantId === 'string' ? router.state.variantId : undefined
   const variantId = decodeVariantIdFromRoute(variantIdRaw)
   const {byId, loading} = useAllVariants()
+  const {
+    results: variantDocuments,
+    loading: variantDocumentsLoading,
+    error: variantDocumentsError,
+  } = useVariantDocuments(variantId)
+
+  // oxlint-disable-next-line no-console
+  console.log('variant documents', {
+    variantId,
+    loading: variantDocumentsLoading,
+    error: variantDocumentsError,
+    results: variantDocuments,
+  })
 
   const variant = variantId ? byId.get(variantId) : undefined
 
@@ -98,6 +112,11 @@ export function VariantDetail() {
           </Flex>
         </Container>
         <Flex direction="column" flex={1} overflow="hidden" style={{minHeight: 0}}>
+          <Box paddingX={3} paddingBottom={2}>
+            <Text muted size={1}>
+              {variantDocuments.length}
+            </Text>
+          </Box>
           <VariantDocumentsTable documents={EMPTY_VARIANT_DOCUMENTS} />
         </Flex>
       </Flex>
