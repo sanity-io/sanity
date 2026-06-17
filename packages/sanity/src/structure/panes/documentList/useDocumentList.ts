@@ -43,6 +43,11 @@ interface UseDocumentListOpts {
   params: Record<string, unknown>
   searchQuery: string | null
   sortOrder?: SortOrder
+  /**
+   * Whether to rank results by relevance when a search term is present.
+   * Defaults to `true`.
+   */
+  searchSortByRelevance?: boolean
 }
 
 interface DocumentListState {
@@ -107,6 +112,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     sortOrder,
     searchQuery,
     perspective,
+    searchSortByRelevance = true,
   } = opts
   const {strategy: searchStrategy} = useWorkspace().search
   const schema = useSchema()
@@ -135,6 +141,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
       staticTypeNames: typeNameFromFilter,
       maxFieldDepth,
       searchStrategy,
+      sortByRelevance: searchSortByRelevance,
     }
 
     const partialList$ = listenSearchQuery(listenSearchQueryArgs).pipe(
@@ -259,6 +266,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     perspective,
     searchQuery,
     sortOrder,
+    searchSortByRelevance,
     typeNameFromFilter,
     maxFieldDepth,
     searchStrategy,
