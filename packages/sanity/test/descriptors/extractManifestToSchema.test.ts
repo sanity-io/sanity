@@ -493,16 +493,13 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
           //omit
           icon: () => 'remove-icon',
           groups: [{name: 'groups-are-removed'}],
-          // eslint-disable-next-line camelcase
           __experimental_omnisearch_visibility: true,
-          // eslint-disable-next-line camelcase
           __experimental_search: [
             {
               path: 'title',
               weight: 100,
             },
           ],
-          // eslint-disable-next-line camelcase
           __experimental_formPreviewTitle: true,
           components: {
             field: () => 'remove-components',

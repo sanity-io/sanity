@@ -52,7 +52,7 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
     [componentResolver],
   )
 
-  // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
+  // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
   return <DefaultResolvedComponent {...componentProps} renderDefault={renderDefault} />
 }
 

@@ -1,6 +1,5 @@
 import {type StringDiffSegment} from '@sanity/diff'
 import {type BadgeTone, type ButtonTone} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {styled} from 'styled-components'

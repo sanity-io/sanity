@@ -28,6 +28,7 @@ export function LiveUserApplicationProvider({children}: LiveUserApplicationProvi
 
   useEffect(() => {
     let hasSubscriber = true
+    // oxlint-disable-next-line react/react-compiler
     setIsLoading(true)
     findUserApplication(userApplicationCache, workspaces)
       .then((found) => {

@@ -15,7 +15,7 @@ import {mockTypes, schema} from './schema'
 import {setupClipboard, writeItemsToClipboard} from './viClipboard'
 
 vi.mock('@sanity/ui', async () => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-imports
   const actual = await vi.importActual<typeof import('@sanity/ui')>('@sanity/ui')
   return {
     ...actual,

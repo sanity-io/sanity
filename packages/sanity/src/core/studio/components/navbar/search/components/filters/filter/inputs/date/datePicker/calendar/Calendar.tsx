@@ -161,6 +161,7 @@ export function Calendar(props: CalendarProps) {
     // Only date has changed
     if (onlyDateChanged) {
       if (dateIsAfterEndDate) {
+        // oxlint-disable-next-line react/react-compiler
         setSelectEndValue(true)
         onSelect({date, endDate: null})
       }

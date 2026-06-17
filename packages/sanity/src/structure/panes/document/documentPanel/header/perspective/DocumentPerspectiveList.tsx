@@ -72,7 +72,6 @@ const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
   timeStyle: 'short',
 }
 
-// eslint-disable-next-line complexity
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()

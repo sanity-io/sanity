@@ -36,6 +36,7 @@ interface ReleaseActivityListProps {
   loadMore: () => void
   isLoading: boolean
 }
+// oxlint-disable-next-line react/react-compiler
 export const ReleaseActivityList = ({
   events,
   releaseTitle,

@@ -9,7 +9,6 @@ import {
 } from '../types'
 
 /** @internal */
-// eslint-disable-next-line no-empty-function
 export function noop(): void {}
 
 /** @internal */

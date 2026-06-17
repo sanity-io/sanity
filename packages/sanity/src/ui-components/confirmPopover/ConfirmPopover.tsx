@@ -1,4 +1,4 @@
-/* eslint-disable no-restricted-imports, @sanity/i18n/no-i18next-import */
+/* oxlint-disable no-restricted-imports, @sanity/i18n/no-i18next-import */
 import {
   Box,
   Button as UIButton,

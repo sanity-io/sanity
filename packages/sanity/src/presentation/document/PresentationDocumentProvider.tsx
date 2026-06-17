@@ -49,6 +49,7 @@ export function PresentationDocumentProvider(props: {
   const registerEffectEvent = useEffectEvent((options: PresentationPluginOptions) =>
     register(options),
   )
+  // oxlint-disable-next-line react/react-compiler
   useLayoutEffect(() => registerEffectEvent(options), [options])
 
   return (

@@ -1,6 +1,6 @@
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button,
   Flex,
   Skeleton,
@@ -196,7 +196,7 @@ export function DocumentStatusLine() {
 
   const lastUpdated = value?._updatedAt
 
-  // eslint-disable-next-line consistent-return
+  // oxlint-disable-next-line consistent-return
   useEffect(() => {
     // Schedule an update to set the status to 'saved' when status changed to 'syncing.
     // We use `syncState.isSyncing` here to avoid the status being set to 'saved' when the document is syncing.
@@ -213,12 +213,14 @@ export function DocumentStatusLine() {
 
   // Clear the status when documentId changes to make sure we don't show the wrong status when opening a new document
   useLayoutEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setStatus(null)
   }, [documentId])
 
   // Set status to 'syncing' when lastUpdated changes and we go from not syncing to syncing
   useLayoutEffect(() => {
     if (syncState.isSyncing) {
+      // oxlint-disable-next-line react/react-compiler
       setStatus('syncing')
     }
   }, [syncState.isSyncing, lastUpdated])

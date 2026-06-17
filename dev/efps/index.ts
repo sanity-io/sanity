@@ -28,12 +28,9 @@ import {formatPercentageChange, isSignificantlyDifferent} from './utils'
 
 const TEST_ATTEMPTS = process.env.CI ? 3 : 1
 
-// eslint-disable-next-line turbo/no-undeclared-env-vars
 const HEADLESS = process.env.HEADLESS !== 'false'
-// eslint-disable-next-line turbo/no-undeclared-env-vars
 const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
 
-// eslint-disable-next-line turbo/no-undeclared-env-vars
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
 const REFERENCE_STUDIO_URL = 'https://efps.sanity.dev'
 

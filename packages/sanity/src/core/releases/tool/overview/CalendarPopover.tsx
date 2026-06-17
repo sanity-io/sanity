@@ -1,5 +1,5 @@
 import {FilterIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports
+// oxlint-disable-next-line no-restricted-imports
 import {Button, useClickOutsideEvent} from '@sanity/ui'
 import {type ReactNode, useRef, useState} from 'react'
 

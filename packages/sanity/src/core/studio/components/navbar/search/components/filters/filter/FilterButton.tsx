@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
   Card,
   rem,

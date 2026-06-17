@@ -10,7 +10,6 @@ class Clipboard {
 
   async write(data: ClipboardItems): Promise<void> {
     for (const clipboardItem of data) {
-      // eslint-disable-next-line guard-for-in
       for (const _type in clipboardItem) {
         this.clipboardItems = [clipboardItem]
       }

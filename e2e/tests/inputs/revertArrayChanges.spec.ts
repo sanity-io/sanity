@@ -3,7 +3,6 @@ import {expect} from '@playwright/test'
 import {test} from '../../studio-test'
 
 test.describe('Array revert changes', () => {
-  // eslint-disable-next-line max-statements
   test('should revert deletion of middle array item without duplicate key error', async ({
     page,
     createDraftDocument,

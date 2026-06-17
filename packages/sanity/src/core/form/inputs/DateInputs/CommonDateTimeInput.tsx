@@ -69,6 +69,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
   const {t} = useTranslation()
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setLocalValue(null)
   }, [value])
 

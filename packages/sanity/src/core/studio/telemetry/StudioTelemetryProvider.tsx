@@ -181,7 +181,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
 
   // The storeOptions callbacks access contextRef.current, but only when called
   // asynchronously (on flush), not during render. Suppress the lint warning.
-  // eslint-disable-next-line react-hooks/refs
+  // oxlint-disable-next-line react/react-compiler
   const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
 
   // Per-instance guard so StrictMode's double-invoked mount effect logs StudioLoaded once.

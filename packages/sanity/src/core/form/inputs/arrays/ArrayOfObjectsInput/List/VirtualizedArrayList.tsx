@@ -43,6 +43,7 @@ interface VirtualizedArrayListProps<Item extends ObjectItem> {
  * Virtualized array list component. This component must be conditionally rendered
  * to avoid virtualizer initialization issues when inside hidden containers.
  */
+// oxlint-disable-next-line react/react-compiler
 export function VirtualizedArrayList<Item extends ObjectItem>(
   props: VirtualizedArrayListProps<Item>,
 ) {

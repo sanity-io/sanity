@@ -1,7 +1,3 @@
-/* eslint-disable complexity */
-/* eslint-disable max-statements */
-/* eslint-disable no-else-return */
-
 import {diffInput, wrap} from '@sanity/diff'
 import {
   type ArraySchemaType,

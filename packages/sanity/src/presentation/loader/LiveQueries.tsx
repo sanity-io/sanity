@@ -77,6 +77,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
           actors: createCompatibilityActors<LoaderControllerMsg>(),
         }),
       )
+      // oxlint-disable-next-line react/react-compiler
       setComlink(nextComlink)
 
       nextComlink.onStatus(onLoadersConnection)
@@ -212,7 +213,6 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
     liveEventsMessages,
   }) || {}
 
-  /* eslint-disable max-params */
   const handleQueryChange = useEffectEvent(
     (
       comlink: LoaderConnection | undefined,
@@ -235,7 +235,6 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       })
     },
   )
-  /* eslint-enable max-params */
 
   useEffect(() => {
     if (resultSourceMap) {
@@ -272,7 +271,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
   const [error, setError] = useState<unknown>(null)
   if (error) throw error
 
-  /* eslint-disable max-nested-callbacks */
   useEffect(() => {
     const controller = new AbortController()
 
@@ -304,7 +302,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
       controller.abort()
     }
   }, [client, lastLiveEventId, params, perspective, query])
-  /* eslint-enable max-nested-callbacks */
 
   return useMemo(() => {
     if (liveDocument && resultSourceMap) {

@@ -1,7 +1,7 @@
 import {AddCommentIcon, CommentIcon} from '@sanity/icons'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button as SanityUIButton,
   Flex,
   Stack,

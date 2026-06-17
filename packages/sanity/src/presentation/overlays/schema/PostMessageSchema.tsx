@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {type ClientPerspective} from '@sanity/client'
 import {type ResolvedSchemaTypeMap, type UnresolvedPath} from '@sanity/presentation-comlink'
 import {memo, useEffect} from 'react'

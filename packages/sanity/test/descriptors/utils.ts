@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies -- test utility imports descriptor types
 import {
   type EncodableObject,
   type EncodableValue,

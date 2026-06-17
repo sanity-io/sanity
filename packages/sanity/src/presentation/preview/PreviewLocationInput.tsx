@@ -112,6 +112,7 @@ export function PreviewLocationInput(props: {
   }, [targetOrigin, value])
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setCustomValidity(undefined)
     setSessionValue(undefined)
   }, [targetOrigin, value])

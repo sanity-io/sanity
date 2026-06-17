@@ -57,6 +57,7 @@ export function Details(props: DetailsProps) {
 
   const handleToggle = useCallback(() => setOpen((v) => !v), [])
 
+  // oxlint-disable-next-line react/react-compiler
   useEffect(() => setOpen(openProp || false), [openProp])
 
   return (

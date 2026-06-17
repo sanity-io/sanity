@@ -1,6 +1,5 @@
 import {AddIcon, ArrowLeftIcon} from '@sanity/icons'
 import {Box, Container, Flex, rem, Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'

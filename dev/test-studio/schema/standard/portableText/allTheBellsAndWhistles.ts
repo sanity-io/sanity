@@ -470,7 +470,6 @@ export const ptAllTheBellsAndWhistlesType = defineType({
       title: 'Content, comments disabled',
       components: {
         field: (props) => {
-          // eslint-disable-next-line camelcase
           return props.renderDefault({...props, __internal_comments: undefined})
         },
       },

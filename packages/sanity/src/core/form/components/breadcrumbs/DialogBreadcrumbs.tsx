@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, isObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
-// eslint-disable-next-line no-restricted-imports
+// oxlint-disable-next-line no-restricted-imports
 import {Badge, Box, Button, Flex, Inline, Menu, MenuItem, Text, useElementSize} from '@sanity/ui'
 import {
   type ForwardedRef,
@@ -238,7 +238,6 @@ export function DialogBreadcrumbs({
                 path,
                 documentValue,
               )
-              // eslint-disable-next-line max-depth
               if (
                 isObjectSchemaType(itemSchemaType) &&
                 itemSchemaType.fields.some((field) => field.name === nextSegment)

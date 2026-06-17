@@ -3,7 +3,7 @@ import {createClient, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+// oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import startCase from 'lodash-es/startCase.js'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
@@ -479,7 +479,6 @@ function resolveSource({
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
-  /* eslint-disable no-proto */
   const wrappedClient = client as any
   context.client = [...Object.keys(client), ...Object.keys(wrappedClient.__proto__)].reduce(
     (acc, key) => {
@@ -496,7 +495,6 @@ function resolveSource({
     },
     {},
   ) as any as SanityClient
-  /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
   const defaultAssetSources = createDatasetAssetSources(config, client)
@@ -682,7 +680,6 @@ function resolveSource({
     templates,
     auth,
     i18n: i18n.source,
-    // eslint-disable-next-line camelcase
     __internal_tasks: internalTasksReducer({
       config,
     }),

@@ -26,6 +26,7 @@ export function useVisibility(props: Props): boolean {
     }
 
     if (element && 'checkVisibility' in element) {
+      // oxlint-disable-next-line react/react-compiler
       setVisible(element.checkVisibility())
     }
 

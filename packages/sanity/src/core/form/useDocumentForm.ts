@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import {type SanityDocument} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {useTelemetry} from '@sanity/telemetry/react'
@@ -291,7 +290,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
           if (
             prev.length === nextPresence.length &&
             prev.every(
-              // eslint-disable-next-line max-nested-callbacks
               (p, i) =>
                 p.sessionId === nextPresence[i].sessionId &&
                 p.lastActiveAt === nextPresence[i].lastActiveAt &&

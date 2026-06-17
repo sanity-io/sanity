@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useMemo, useState} from 'react'
 import {

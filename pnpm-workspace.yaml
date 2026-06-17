@@ -19,7 +19,6 @@ catalog:
   '@playwright/test': 1.60.0
   '@rolldown/plugin-babel': ^0.2.3
   '@sanity/client': ^7.22.1
-  '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/migrate': ^7.0.2
   '@sanity/pkg-utils': ^10.5.5
   '@sanity/telemetry': ^1.1.0
@@ -36,8 +35,6 @@ catalog:
   babel-plugin-react-compiler: ^1.0.0
   babel-plugin-styled-components: ^2.3.0
   esbuild-register: ^3.6.0
-  eslint: ^9.39.4
-  globals: ^16.2.0
   jsdom: ^29.1.1
   playwright: 1.60.0
   react: ^19.2.7
@@ -67,7 +64,6 @@ minimumReleaseAgeExclude:
   - '@vercel/stega'
   - 'csstype'
   - 'data-uri-to-buffer@7.0.0'
-  - 'eslint-plugin-oxlint'
   - 'get-it'
   - 'get-uri@7.0.0'
   - 'groq-js'

@@ -120,7 +120,6 @@ function uploadTarget<Props>(
         ready.forEach((task) => {
           uploadFile(
             task.file,
-            // eslint-disable-next-line max-nested-callbacks
             sortBy(task.uploaderCandidates, (candidate) => candidate.uploader.priority)[0],
           )
         })

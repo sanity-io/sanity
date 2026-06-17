@@ -7,7 +7,6 @@ import {
   type AvatarStatus,
   Skeleton,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ForwardedRef, forwardRef, useState} from 'react'
 import {css, styled} from 'styled-components'

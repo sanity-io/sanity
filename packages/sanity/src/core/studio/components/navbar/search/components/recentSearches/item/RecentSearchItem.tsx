@@ -2,7 +2,7 @@ import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
   Flex,
   Inline,
@@ -107,7 +107,6 @@ export function RecentSearchItem({
             <Text muted size={1}>
               <ClockIcon />
             </Text>
-            {/* eslint-disable-next-line i18next/no-literal-string */}
             <Text>&#8203;</Text>
           </Inline>
           <Flex align="stretch" flex={1} gap={2} justify="flex-start" marginLeft={3} wrap="wrap">

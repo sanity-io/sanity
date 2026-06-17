@@ -2,7 +2,7 @@ import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {ChevronDownIcon} from '@sanity/icons'
 import {
   Menu,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   MenuItem,
   Text,
 } from '@sanity/ui'

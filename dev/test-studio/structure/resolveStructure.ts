@@ -177,7 +177,6 @@ export const structure: StructureResolver = (
                         }),
                       S.menuItem()
                         .title('Test 1')
-                        // eslint-disable-next-line no-alert
                         .action(() => alert('you clicked!'))
                         .showAsAction(true),
                       S.menuItem()
@@ -491,7 +490,6 @@ export const structure: StructureResolver = (
               S.menuItem()
                 .title('Alert action')
                 .icon(WarningFilledIcon)
-                // eslint-disable-next-line no-alert
                 .action(() => alert('you clicked!')),
 
               S.menuItem()

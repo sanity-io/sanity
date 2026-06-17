@@ -39,7 +39,6 @@ const mockSchemaTypes = [
     ],
   }),
   defineType({
-    // eslint-disable-next-line camelcase
     __experimental_omnisearch_visibility: false,
     name: 'book',
     title: 'Book',

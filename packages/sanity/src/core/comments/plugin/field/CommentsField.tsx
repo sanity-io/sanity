@@ -329,7 +329,6 @@ function CommentFieldInner(
     <FieldStack {...applyCommentsFieldAttr(PathUtils.toString(props.path))} ref={rootRef}>
       {props.renderDefault({
         ...props,
-        // eslint-disable-next-line camelcase
         __internal_comments: internalComments,
       })}
 

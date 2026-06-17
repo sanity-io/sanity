@@ -209,6 +209,5 @@ function formatDiagnostics(diagnostics: PortalDiagnostics): string {
 function describeLocator(locator: Locator): string {
   // Playwright Locator implements toString() with a human-readable description,
   // but the type definitions don't declare it.
-  // oxlint-disable-next-line no-base-to-string -- Locator.toString() is well-defined
   return String(locator)
 }

@@ -139,6 +139,7 @@ function AnnnotationWithDiff({
 
   useEffect(() => {
     if (!open && isEditing) {
+      // oxlint-disable-next-line react/react-compiler
       setOpen(true)
       onSetFocus(myPath)
     }

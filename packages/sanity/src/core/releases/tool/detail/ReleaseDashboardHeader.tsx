@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ChevronRightIcon, RestoreIcon} from '@sanity/icons'
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button, // Custom button with a different textWeight, consider adding textWeight to the shared
   Flex,
   Text,

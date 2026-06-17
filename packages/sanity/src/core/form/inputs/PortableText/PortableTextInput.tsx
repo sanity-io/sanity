@@ -221,6 +221,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const focusedDivergence = divergenceNavigator.enabled
     ? divergenceNavigator.state.focusedDivergence
     : undefined
+  // oxlint-disable-next-line react/react-compiler
   useEffect(() => controlImplicitExpandedState(), [focusedDivergence])
 
   const toast = useToast()
@@ -240,6 +241,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
     if (invalidValue && value !== invalidValue.value) {
+      // oxlint-disable-next-line react/react-compiler
       setInvalidValue(null)
     }
   }, [invalidValue, value])
@@ -249,6 +251,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   // Set active if focused within the editor
   useEffect(() => {
     if (hasFocusWithin) {
+      // oxlint-disable-next-line react/react-compiler
       setIsActive(true)
     }
   }, [hasFocusWithin])
@@ -285,6 +288,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
 
   // Handle editor changes
   const handleEditorChange = useCallback(
+    // oxlint-disable-next-line react/react-compiler
     (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
@@ -323,6 +327,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   )
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setIgnoreValidationError(false)
   }, [value])
 
@@ -346,6 +351,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     return null
   }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, readOnly])
 
+  // oxlint-disable-next-line react/react-compiler
   const handleActivate = useCallback((): void => {
     if (!isActive) {
       setIsActive(true)
@@ -372,9 +378,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       ? diffRangeDecorations
       : [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
 
-    // eslint-disable-next-line react-hooks/refs -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
+    // oxlint-disable-next-line react/react-compiler -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
     const reconciled = immutableReconcile(previousRangeDecorations.current, result)
-    // eslint-disable-next-line react-hooks/refs -- see above
+    // oxlint-disable-next-line react/react-compiler -- see above
     previousRangeDecorations.current = reconciled
     return reconciled
   }, [diffRangeDecorations, displayInlineChanges, presenceCursorDecorations, rangeDecorationsProp])

@@ -30,6 +30,7 @@ export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuI
         newFieldActions[i] = menuItems[i]
       }
 
+      // oxlint-disable-next-line react/react-compiler
       setMenuItems(newFieldActions)
     }
   }, [len, menuItems])

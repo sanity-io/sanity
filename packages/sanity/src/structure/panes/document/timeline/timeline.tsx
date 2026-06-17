@@ -62,6 +62,7 @@ export const Timeline = ({
       const selected = chunksWithMetadata.find((chunk) => chunk.id === selectedChunkId)
       if (selected && isNonPublishChunk(selected) && selected.parentId) {
         const parentId = selected.parentId
+        // oxlint-disable-next-line react/react-compiler
         setExpandedParents((prev) => {
           if (prev.has(parentId)) return prev
           const next = new Set(prev)
@@ -159,6 +160,7 @@ export const Timeline = ({
     ],
   )
 
+  // oxlint-disable-next-line react/react-compiler
   useEffect(() => setMounted(true), [])
 
   return (

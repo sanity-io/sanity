@@ -51,7 +51,6 @@ export function CreateNewIncomingReference({
                   _strengthenOnPublish: {type: referenceToType},
                 },
                 from: {fieldName, type: referenceToType},
-                // eslint-disable-next-line camelcase
                 __internal_isIncomingReferenceCreation: true,
               } satisfies IncomingReferenceCreationParams,
             },

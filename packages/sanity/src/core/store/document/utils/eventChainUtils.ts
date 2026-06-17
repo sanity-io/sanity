@@ -33,7 +33,6 @@ export function toOrderedChains<T extends {previousRev: string; resultRev: strin
     const sortedList: T[] = []
     while (current) {
       sortedList.push(current)
-      // eslint-disable-next-line no-loop-func
       current = events.find((event) => event.previousRev === current?.resultRev)
     }
     return sortedList

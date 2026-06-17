@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string */
+/* oxlint-disable i18next/no-literal-string */
 import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 

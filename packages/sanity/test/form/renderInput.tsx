@@ -207,6 +207,7 @@ export async function renderInput<ElementProps>(props: {
                 onFocus,
                 ref: focusRef,
                 onChange: onDOMChange,
+                autoComplete: 'off',
               },
             },
             {client, formState},

@@ -181,7 +181,7 @@ describe('ReleaseSummary', () => {
   describe('for an active release', () => {
     const prerenderTest = async () => {
       await renderTest({})
-      // eslint-disable-next-line testing-library/prefer-find-by
+      // oxlint-disable-next-line testing-library/prefer-find-by
       await waitFor(() => screen.getByTestId('document-table-card'), {
         timeout: 5000,
         interval: 500,
@@ -313,7 +313,7 @@ describe('ReleaseSummary', () => {
     it('shows the document table normally', async () => {
       await renderTest({release: activeCardinalityOneRelease, documents: releaseDocuments})
 
-      // eslint-disable-next-line testing-library/prefer-find-by
+      // oxlint-disable-next-line testing-library/prefer-find-by
       await waitFor(() => screen.getByTestId('document-table-card'), {
         timeout: 5000,
         interval: 500,

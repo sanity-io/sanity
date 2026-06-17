@@ -210,7 +210,6 @@ export function createUserColorManager(options: UserColorManagerOptions): UserCo
   function getPreferredHue(userId: string): UserColorHue {
     let hash = 0
     for (let i = 0; i < userId.length; i++) {
-      // eslint-disable-next-line no-bitwise
       hash = ((hash << 5) - hash + userId.charCodeAt(i)) | 0
     }
     return userColorKeys[Math.abs(hash) % userColorKeys.length]

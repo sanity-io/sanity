@@ -7,7 +7,6 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "(cd studio && pnpm build)",
-    "lint": "eslint .",
     "perf:codegen": "tsx -r dotenv/config codegen.ts",
     "perf:test": "tsx cli.ts",
     "perf:test:ci": "tsx cli.ts",
@@ -24,13 +23,11 @@
     "tinyglobby": "^0.2.15"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "catalog:",
     "esbuild": "0.28.1",
-    "eslint": "catalog:",
     "tsx": "^4.22.4",
     "vite": "catalog:",
     "vitest": "catalog:"

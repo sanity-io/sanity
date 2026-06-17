@@ -21,7 +21,6 @@ export async function getMergedPRForCommit(
   const {data: prs} = await getOctokit().repos.listPullRequestsAssociatedWithCommit({
     owner,
     repo,
-    // eslint-disable-next-line camelcase
     commit_sha: commitSha,
   })
 
@@ -44,7 +43,6 @@ export async function getMergedPRForCommit(
       .pulls.get({
         owner,
         repo,
-        // eslint-disable-next-line camelcase
         pull_number: subjectPrNumber,
       })
       .then(

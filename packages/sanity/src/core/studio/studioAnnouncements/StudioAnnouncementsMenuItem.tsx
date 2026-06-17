@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback} from 'react'
 

@@ -1,4 +1,4 @@
-/* eslint-disable @sanity/i18n/no-i18next-import */
+/* oxlint-disable @sanity/i18n/no-i18next-import */
 import {type BackendModule, type ReadCallback} from 'i18next'
 import isPlainObject from 'lodash-es/isPlainObject.js'
 

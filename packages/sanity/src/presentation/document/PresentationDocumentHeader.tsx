@@ -1,5 +1,4 @@
 import {rem} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useContext} from 'react'
 import {FormRow, type ObjectSchemaType, type PublishedId} from 'sanity'

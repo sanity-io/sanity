@@ -19,7 +19,6 @@ import {usePaneLanguages} from './usePaneLanguages'
 export interface LanguageFilterMenuButtonProps {
   options: LanguageFilterPluginOptions
 
-  // eslint-disable-next-line react/no-unused-prop-types
   schemaType: ObjectSchemaType
 }
 

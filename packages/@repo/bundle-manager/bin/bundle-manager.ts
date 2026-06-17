@@ -5,7 +5,6 @@ import yargs from 'yargs'
 import {tagVersion, uploadBundles} from '../src'
 import {verify} from '../src/commands/verify'
 
-// oxlint-disable-next-line no-unused-expressions
 const task = yargs(process.argv.slice(2))
   .usage('$0 <command>')
   .command({

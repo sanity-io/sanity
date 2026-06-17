@@ -52,6 +52,7 @@ export function useLoadImage(url: string): ImageLoadState {
   const [state, setState] = useState<ImageLoadState>(INITIAL_STATE)
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setState(INITIAL_STATE)
     const subscription = loadImage(url)
       // .pipe(delay(2000))

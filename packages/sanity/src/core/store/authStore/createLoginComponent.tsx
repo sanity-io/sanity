@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string */
+/* oxlint-disable i18next/no-literal-string */
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
 import {ArrowLeftIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Badge, Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'

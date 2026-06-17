@@ -140,6 +140,7 @@ export function IncomingReferencesType({
       const isAdded = documents.find(
         (document) => getPublishedId(document._id) === getPublishedId(newReferenceId),
       )
+      // oxlint-disable-next-line react/react-compiler
       if (isAdded) setNewReferenceId(null)
     }
   }, [documents, newReferenceId])

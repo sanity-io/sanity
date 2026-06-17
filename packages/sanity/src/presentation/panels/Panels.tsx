@@ -139,7 +139,6 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
 
       const {containerWidth, dragOffset, panelBefore, panelAfter, resizerRect} = dragRef.current
 
-      // eslint-disable-next-line no-eq-null
       if (panelBefore == null || panelAfter == null) {
         return
       }
@@ -198,6 +197,7 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
 
     if (storedWidths) {
       const validatedStoredWidths = validateWidths(panels, storedWidths, window.innerWidth)
+      // oxlint-disable-next-line react/react-compiler
       setWidths(validatedStoredWidths)
       return
     }

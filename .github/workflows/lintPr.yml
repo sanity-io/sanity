@@ -18,22 +18,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
       - name: Oxlint files
-        run: pnpm turbo run check:oxlint
-
-  eslint:
-    runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0 # needed for the --affected flag in turbo to work correctly
-      - name: Ensure local main ref exists for turbo --affected
-        run: git fetch origin main:main
-      - uses: ./.github/actions/setup
-      - name: ESLint files
-        run: pnpm turbo run lint --affected --output-logs=full --continue
+        run: pnpm check:oxlint
 
   knip:
     runs-on: ubuntu-latest

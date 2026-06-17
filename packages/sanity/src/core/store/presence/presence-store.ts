@@ -234,7 +234,6 @@ export function createPresenceStore(context: {
         map((users) =>
           sessions
             .map((session) => ({
-              // eslint-disable-next-line max-nested-callbacks
               user: users.find((res) => res.id === session.userId),
               session: session,
             }))

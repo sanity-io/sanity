@@ -1,7 +1,7 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button,
   Flex,
   Select,
