@@ -144,6 +144,7 @@ export function ParsedDateTextInput({
   useEffect(() => {
     const updatedDate = value && new Date(value)
     if (updatedDate) {
+      // oxlint-disable-next-line react/react-compiler
       processInputString({
         dateString: format(updatedDate, dateFormat),
         triggerOnChange: false,

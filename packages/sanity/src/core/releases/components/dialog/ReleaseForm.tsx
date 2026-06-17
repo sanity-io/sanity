@@ -1,11 +1,11 @@
 import {type EditableReleaseDocument, type ReleaseType} from '@sanity/client'
 import {ChevronDownIcon, InfoOutlineIcon} from '@sanity/icons'
 import {
-  // eslint-disable-next-line no-restricted-imports -- fine-grained control needed
+  // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
   Flex,
   Menu,
-  // eslint-disable-next-line no-restricted-imports -- fine-grained control needed
+  // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   MenuItem,
   Stack,
   TabPanel,

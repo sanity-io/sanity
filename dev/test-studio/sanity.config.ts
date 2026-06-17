@@ -236,7 +236,6 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
       }),
-      // eslint-disable-next-line camelcase
       muxInput({mp4_support: 'standard'}),
       imageHotspotArrayPlugin(),
       routerDebugTool(),

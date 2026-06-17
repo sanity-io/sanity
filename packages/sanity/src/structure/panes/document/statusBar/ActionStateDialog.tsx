@@ -60,7 +60,6 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
       width={1}
     >
       {unknownModal.content || (
-        // eslint-disable-next-line i18next/no-literal-string
         <Text size={1}>
           Unexpected modal type (<code>{unknownModal.type}</code>)
         </Text>

@@ -42,7 +42,6 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
           telemetry.log(NestedDialogEditorOpened, {
             path: pathString,
             origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-            // eslint-disable-next-line camelcase
             editor_type: 'pte',
             fullscreen: true,
             location: 'nested_object_dialog',
@@ -53,7 +52,6 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
         telemetry.log(NestedDialogEditorClosed, {
           path: pathString,
           origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-          // eslint-disable-next-line camelcase
           editor_type: 'pte',
           fullscreen: true,
           location: 'nested_object_dialog',

@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 

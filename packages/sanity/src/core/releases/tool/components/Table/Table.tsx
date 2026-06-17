@@ -51,6 +51,7 @@ export interface TableProps<TableData, AdditionalRowTableData> {
 const ITEM_HEIGHT = 59
 const LOADING_ROW_COUNT = 3
 
+// oxlint-disable-next-line react/react-compiler
 const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
   data,

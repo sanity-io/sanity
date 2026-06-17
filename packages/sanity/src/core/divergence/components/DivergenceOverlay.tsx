@@ -1,6 +1,5 @@
 import {type Path} from '@sanity/types'
 import {type LayerContextValue, Card} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 

@@ -29,7 +29,6 @@ export const FieldActionsProvider = memo(function FieldActionsProvider(
   props: FieldActionsProviderProps,
 ) {
   // by passing the comments and slot here, we can wrap this functionality around any custom field without needing to confirm the title and description
-  // eslint-disable-next-line camelcase
   const {actions, children, path, focused, __internal_comments, __internal_slot} = props
   const {
     onMouseEnter: onFieldMouseEnter,
@@ -58,9 +57,7 @@ export const FieldActionsProvider = memo(function FieldActionsProvider(
       actions,
       focused,
       hovered,
-      // eslint-disable-next-line camelcase
       __internal_comments,
-      // eslint-disable-next-line camelcase
       __internal_slot,
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
@@ -71,9 +68,7 @@ export const FieldActionsProvider = memo(function FieldActionsProvider(
       handleMouseEnter,
       handleMouseLeave,
       hovered,
-      // eslint-disable-next-line camelcase
       __internal_slot,
-      // eslint-disable-next-line camelcase
       __internal_comments,
     ],
   )

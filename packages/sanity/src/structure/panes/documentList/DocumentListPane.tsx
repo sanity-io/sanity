@@ -163,6 +163,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   useEffect(() => {
     if (!enableSearchSpinner && !isLoading) {
+      // oxlint-disable-next-line react/react-compiler
       setEnableSearchSpinner(paneKey)
     }
   }, [enableSearchSpinner, isLoading, paneKey])
@@ -170,6 +171,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   useEffect(() => {
     // Clear search field and disable search spinner
     // when switching between panes (i.e. when paneKey changes).
+    // oxlint-disable-next-line react/react-compiler
     handleClearSearch()
     setEnableSearchSpinner()
   }, [paneKey, handleClearSearch])

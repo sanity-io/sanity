@@ -116,11 +116,11 @@ describe('PrimitiveField', () => {
       const input = screen.getByTestId('number-input')
       // uses fireEvent.change instead of userEvent.type due to https://github.com/testing-library/user-event/issues/1150
       // await userEvent.type(input, '1.01)
-      // eslint-disable-next-line testing-library/prefer-user-event
+      // oxlint-disable-next-line testing-library/prefer-user-event
       fireEvent.change(input, {target: {value: '1', valueAsNumber: 1}})
-      // eslint-disable-next-line testing-library/prefer-user-event
+      // oxlint-disable-next-line testing-library/prefer-user-event
       fireEvent.change(input, {target: {value: '1.0', valueAsNumber: 1}})
-      // eslint-disable-next-line testing-library/prefer-user-event
+      // oxlint-disable-next-line testing-library/prefer-user-event
       fireEvent.change(input, {target: {value: '1.01', valueAsNumber: 1.01}})
 
       // Then
@@ -185,7 +185,7 @@ describe('PrimitiveField', () => {
       // When
       // await userEvent.type(screen.getByTestId('number-input'), '.00')
       // uses fireEvent.change instead of userEvent.type due to https://github.com/testing-library/user-event/issues/1150
-      // eslint-disable-next-line testing-library/prefer-user-event
+      // oxlint-disable-next-line testing-library/prefer-user-event
       fireEvent.change(screen.getByTestId('number-input'), {
         target: {value: '1.00', valueAsNumber: 1},
       })

@@ -2,7 +2,7 @@ import {LoadingBlock} from '../../../components'
 import {WorkspaceLoader} from '../../../studio'
 
 function ConfigErrorsScreen() {
-  // eslint-disable-next-line i18next/no-literal-string
+  // oxlint-disable-next-line i18next/no-literal-string
   return <div>Config errors</div>
 }
 

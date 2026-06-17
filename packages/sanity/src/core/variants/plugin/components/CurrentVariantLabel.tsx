@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
+// oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
 import {Box, Flex, Button, Text} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'

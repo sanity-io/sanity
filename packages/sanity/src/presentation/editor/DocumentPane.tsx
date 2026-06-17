@@ -85,6 +85,7 @@ export function DocumentPane(props: {
 
   // Reset error state when parameters change
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setErrorParams(null)
   }, [documentId, documentType, structureParams])
 
@@ -117,7 +118,7 @@ export function DocumentPane(props: {
         >
           <Suspense fallback={<PresentationSpinner />}>
             <StructureDocumentPane
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+              // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
               paneKey="document"
               index={1}
               itemId="document"

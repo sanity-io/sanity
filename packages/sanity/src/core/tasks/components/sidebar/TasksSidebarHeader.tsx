@@ -1,7 +1,7 @@
 import {AddIcon, ChevronRightIcon, CloseIcon} from '@sanity/icons'
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
   Flex,
   Text,

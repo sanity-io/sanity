@@ -606,13 +606,11 @@ describe.skip('buildArrayState', () => {
                   _key: 'prop1',
                   _type: 'property',
                   name: 'Property 1',
-                  // eslint-disable-next-line camelcase
                   properties_b: [
                     {
                       _key: 'prop_b1',
                       _type: 'propertyB',
                       name: 'Property B1',
-                      // eslint-disable-next-line camelcase
                       properties_c: arrayValue,
                     },
                   ],

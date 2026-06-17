@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
+// oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import {forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'

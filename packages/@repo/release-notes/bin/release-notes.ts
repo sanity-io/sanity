@@ -20,7 +20,6 @@ function getAdminStudioUrl(): string {
   return readEnv<KnownEnvVar>('RELEASE_NOTES_ADMIN_STUDIO_URL')
 }
 
-// oxlint-disable-next-line no-unused-expressions
 await yargs(process.argv.slice(2))
   .strict()
   .usage('$0 <command>')
@@ -58,7 +57,6 @@ await yargs(process.argv.slice(2))
           dryRun: args.dryRun,
         })
       } catch (error) {
-        // oxlint-disable-next-line no-console
         console.error(error)
         process.exit(1)
       }
@@ -86,7 +84,6 @@ await yargs(process.argv.slice(2))
           dryRun: args.dryRun,
         })
       } catch (error) {
-        // oxlint-disable-next-line no-console
         console.error(error)
         process.exit(1)
       }
@@ -130,7 +127,6 @@ await yargs(process.argv.slice(2))
           dryRun: args.dryRun,
         })
         if (args.outputFormat === 'pr-description') {
-          // oxlint-disable-next-line no-console
           console.log(
             generateChangeLogSummary(
               {tentativeVersion: args.tentativeVersion, baseVersion: args.baseVersion},
@@ -138,11 +134,9 @@ await yargs(process.argv.slice(2))
             ),
           )
         } else {
-          // oxlint-disable-next-line no-console
           console.log(result)
         }
       } catch (error) {
-        // oxlint-disable-next-line no-console
         console.error(error)
         process.exit(1)
       }
@@ -169,10 +163,8 @@ await yargs(process.argv.slice(2))
           targetVersion: args.targetVersion,
           dryRun: Boolean(args.dryRun),
         })
-        // oxlint-disable-next-line no-console
         console.info('ℹ️ This was a dry run. Nothing has been released.')
       } catch (error) {
-        // oxlint-disable-next-line no-console
         console.error(error)
         process.exit(1)
       }
@@ -202,7 +194,6 @@ await yargs(process.argv.slice(2))
           adminStudioBaseUrl: getAdminStudioUrl(),
         })
       } catch (error) {
-        // oxlint-disable-next-line no-console
         console.error(error)
         process.exit(1)
       }
@@ -341,7 +332,6 @@ function formatEntry({
   const changelogEntryUrl = `${getAdminStudioUrl()}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
 
   if (!pr) {
-    // oxlint-disable-next-line no-console
     console.warn(
       `⚠️  WARNING: GitHub returned no PR association for commit ${conventionalCommit.hash}. ` +
         `Rendering changelog row without author info.`,

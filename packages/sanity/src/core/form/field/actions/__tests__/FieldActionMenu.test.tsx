@@ -43,7 +43,7 @@ describe('FieldActionMenu', () => {
 
     // Verify that pointerdown's default is prevented, which stops the browser
     // from performing focus-and-scroll behaviour when clicking the menu trigger.
-    // eslint-disable-next-line testing-library/prefer-user-event -- fireEvent is needed to check preventDefault return value
+    // oxlint-disable-next-line testing-library/prefer-user-event -- fireEvent is needed to check preventDefault return value
     const defaultPrevented = !fireEvent.pointerDown(trigger)
     expect(defaultPrevented).toBe(true)
   })
@@ -61,7 +61,7 @@ describe('FieldActionMenu', () => {
 
     // Click the trigger button — the click event should still work even though
     // pointerdown default is prevented.
-    // eslint-disable-next-line testing-library/prefer-user-event -- fireEvent used for consistency with pointerDown test
+    // oxlint-disable-next-line testing-library/prefer-user-event -- fireEvent used for consistency with pointerDown test
     fireEvent.click(trigger)
 
     // The menu should open

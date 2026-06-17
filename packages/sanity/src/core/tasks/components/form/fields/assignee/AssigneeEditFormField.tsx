@@ -2,7 +2,7 @@ import {type Path} from '@sanity/types'
 import {
   Badge,
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button,
   Flex,
   Text,

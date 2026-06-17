@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {rem, type Theme} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ComponentType} from 'react'

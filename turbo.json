@@ -82,8 +82,7 @@
     "XDG_CURRENT_DESKTOP"
   ],
   "globalDependencies": [
-    "pnpm-workspace.yaml",
-    ".oxlintrc.json"
+    "pnpm-workspace.yaml"
   ],
   "tasks": {
     "build": {
@@ -110,20 +109,6 @@
       "dependsOn": [
         "^build"
       ]
-    },
-    "transit": {
-      "dependsOn": ["^transit"]
-    },
-    "lint": {
-      "dependsOn": ["transit"]
-    },
-    "//#check:format": {},
-    "//#check:oxlint": {
-      "cache": false
-    },
-    "//#chore:format:fix": {},
-    "//#chore:oxlint:fix": {
-      "cache": false
     }
   }
 }

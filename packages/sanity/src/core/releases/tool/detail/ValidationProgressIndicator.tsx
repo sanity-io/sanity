@@ -51,6 +51,7 @@ export function ValidationProgressIndicator({
     // If it's not validating, we should not be showing the checkmark
     // it is only shown after a delay set by the previous useEffect
     if (isValidating) {
+      // oxlint-disable-next-line react/react-compiler
       setShowCheckmark(false)
     }
   }, [isValidating])

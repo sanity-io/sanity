@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject, timer} from 'rxjs'

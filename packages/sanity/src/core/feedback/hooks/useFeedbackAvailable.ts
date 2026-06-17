@@ -21,11 +21,11 @@ export function useFeedbackAvailable(options: UseFeedbackAvailableOptions): bool
 
   useEffect(() => {
     if (skip) {
+      // oxlint-disable-next-line react/react-compiler
       setAvailable(false)
       return
     }
 
-    // eslint-disable-next-line camelcase
     const body = `${JSON.stringify({dsn, sent_at: new Date().toISOString()})}\n`
 
     fetch(FEEDBACK_TUNNEL_URL, {method: 'POST', body})

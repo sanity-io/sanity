@@ -51,7 +51,7 @@ export function Decorator(props: BlockDecoratorRenderProps) {
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
-      // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
+      // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [CustomComponent, DefaultComponent, children, focused, sanitySchemaType, selected, value])

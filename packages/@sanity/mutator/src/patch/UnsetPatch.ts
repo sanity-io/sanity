@@ -12,7 +12,6 @@ export class UnsetPatch {
     this.path = path
   }
 
-  // eslint-disable-next-line class-methods-use-this
   apply(targets: Expression[], accessor: ImmutableAccessor): ImmutableAccessor {
     let result = accessor
     switch (accessor.containerType()) {

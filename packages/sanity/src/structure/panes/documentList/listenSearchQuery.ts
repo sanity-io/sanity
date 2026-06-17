@@ -169,10 +169,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
             }
 
             return search(searchTerms, searchOptions).pipe(
-              map((result) =>
-                // eslint-disable-next-line max-nested-callbacks
-                result.hits.map(({hit}) => hit),
-              ),
+              map((result) => result.hits.map(({hit}) => hit)),
               map((hits) => ({type: 'result' as const, documents: hits})),
             )
           }

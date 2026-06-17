@@ -327,6 +327,7 @@ function CommentsInspectorInner(
   const [loggedTelemetry, setLoggedTelemetry] = useState(false)
   useEffect(() => {
     if (loggedTelemetry || mode !== 'upsell') return undefined
+    // oxlint-disable-next-line react/react-compiler
     setLoggedTelemetry(true)
     if (selectedPath?.origin === 'form') {
       upsellTelemetryLogs.panelViewed('field_action')

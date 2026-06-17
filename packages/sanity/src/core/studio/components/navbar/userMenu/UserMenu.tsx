@@ -1,7 +1,7 @@
 import {LeaveIcon} from '@sanity/icons'
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling, user avatar .
   Card,
   Flex,

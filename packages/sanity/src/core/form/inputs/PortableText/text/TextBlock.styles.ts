@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {hues} from '@sanity/color'
 import {Box, Flex, type Theme} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'

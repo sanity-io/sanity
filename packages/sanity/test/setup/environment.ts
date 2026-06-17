@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 // oxlint-disable-next-line no-unassigned-import
 import 'blob-polyfill'
 // oxlint-disable-next-line no-unassigned-import

@@ -1,5 +1,5 @@
 import {
-  type Button, // eslint-disable-line no-restricted-imports
+  type Button, // oxlint-disable-line no-restricted-imports
 } from '@sanity/ui'
 import {type ComponentProps, forwardRef} from 'react'
 

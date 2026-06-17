@@ -1,6 +1,6 @@
 export function ConfigErrorsScreen() {
   /* This screen is not currently being used anywhere. We're keeping it as a basis for future work */
-  /* eslint-disable-next-line i18next/no-literal-string */
+  /* oxlint-disable-next-line i18next/no-literal-string */
   return <>TODO: implement config errors screen</>
   // return (
   //   <Root forwardedAs={Flex}>
@@ -20,13 +20,13 @@ export function ConfigErrorsScreen() {
   //       </Flex>
   //       <Card shadow={1}>
   //         {errors.map((errorInfo, index) => (
-  //           // eslint-disable-next-line react/no-array-index-key
+  //           // oxlint-disable-next-line react/no-array-index-key
   //           <ErrorMessage key={index} {...errorInfo} />
   //         ))}
   //       </Card>
   //       <Button
   //         tone="primary"
-  //         // eslint-disable-next-line react/jsx-no-bind
+  //         // oxlint-disable-next-line react/jsx-no-bind
   //         onClick={() => window.location.reload()}
   //         type="button"
   //         text="Retry"

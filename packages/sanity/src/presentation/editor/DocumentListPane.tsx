@@ -80,7 +80,8 @@ export function DocumentListPane(props: {
 
   const [structureParams] = useState(() => ({}))
 
-  // Reset error state when `refs` value schanges
+  // Reset error state when `refs` value changes
+  // oxlint-disable-next-line react/react-compiler
   useEffect(() => setErrorParams(null), [refs])
 
   if (errorParams) {
@@ -117,7 +118,7 @@ export function DocumentListPane(props: {
                 index={0}
                 itemId="$root"
                 pane={pane}
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
                 paneKey="$root"
               />
             </Root>

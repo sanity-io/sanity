@@ -115,6 +115,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
 
     if (!hasValidationErrors) {
+      // oxlint-disable-next-line react/react-compiler
       doPublish()
     } else {
       // User tried to publish before validation was complete

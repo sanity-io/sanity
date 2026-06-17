@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {type SanityDocument, type StackablePerspective} from '@sanity/client'
 import {getPublishedId} from '@sanity/client/csm'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'

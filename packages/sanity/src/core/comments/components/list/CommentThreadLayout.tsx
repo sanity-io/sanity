@@ -1,6 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
 import {
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
   Flex,
   Stack,

@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unused-prop-types */
-
 import {CloseIcon} from '@sanity/icons'
 import {
   BoundaryElementProvider,
@@ -121,6 +119,7 @@ function Content(props: PopoverEditDialogProps) {
 
   useEffect(() => {
     if (!contentElement) {
+      // oxlint-disable-next-line react/react-compiler
       setBoundaryElement(null)
       return
     }

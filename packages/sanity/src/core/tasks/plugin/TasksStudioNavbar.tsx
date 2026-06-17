@@ -69,7 +69,6 @@ function TasksStudioNavbarInner(props: NavbarProps) {
 
   return props.renderDefault({
     ...props,
-    // eslint-disable-next-line camelcase
     __internal_actions: actions,
   })
 }

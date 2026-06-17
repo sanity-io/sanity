@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {type SanityClient} from '@sanity/client'
 import {defineType, type Path} from '@sanity/types'
 import {render, screen} from '@testing-library/react'

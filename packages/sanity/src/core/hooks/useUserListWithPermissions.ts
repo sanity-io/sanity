@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {type SanityDocument} from '@sanity/client'
 import {type User} from '@sanity/types'
 import sortBy from 'lodash-es/sortBy.js'

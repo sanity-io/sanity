@@ -44,7 +44,6 @@ export function trackFieldChanges(
     previousDocument = applyPatch(currentDocument, effect.revert)
 
     // Track changes for specified fields
-    // eslint-disable-next-line no-loop-func
     fieldsToTrack.forEach((field) => {
       if (previousDocument?.[field] !== currentDocument?.[field]) {
         changes.push({

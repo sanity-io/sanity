@@ -1,5 +1,5 @@
 import {render, waitFor} from '@testing-library/react'
-// eslint-disable-next-line no-restricted-imports
+// oxlint-disable-next-line no-restricted-imports
 import * as SANITY from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 

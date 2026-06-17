@@ -87,7 +87,6 @@ export const CrossDatasetReferenceType = {
       return arrify(subTypeDef.to).map((toType: any) => {
         return {
           ...toType,
-          // eslint-disable-next-line camelcase
           __experimental_search: resolveSearchConfigForBaseFieldPaths(toType),
         }
       })

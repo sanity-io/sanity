@@ -108,7 +108,6 @@ Object.keys(versionRanges).forEach((depName) => {
     console.log(
       `    ${sign} ${packages
         .map((pkgName) => {
-          // eslint-disable-next-line max-nested-callbacks
           const pkg = pkgs.find((p) => p.name === pkgName)!
 
           return `${pkgName} ${chalk.gray(path.relative(rootPath, pkg.file))}`
@@ -142,7 +141,6 @@ fixablePackages.forEach((pkg) => {
 
   let manifest: {dependencies: Record<string, string>; devDependencies: Record<string, string>}
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     manifest = require(manifestPath)
   } catch {
     return

@@ -85,6 +85,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   useEffect(() => {
     focusTrappedRef.current = null
     if (inlineObjectOpen) {
+      // oxlint-disable-next-line react/react-compiler
       setPopoverOpen(false)
       return
     }

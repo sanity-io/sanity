@@ -1,4 +1,4 @@
-/* eslint-disable @sanity/i18n/no-i18next-import */
+/* oxlint-disable @sanity/i18n/no-i18next-import */
 import {useCallback, useContext} from 'react'
 import {I18nContext} from 'react-i18next'
 

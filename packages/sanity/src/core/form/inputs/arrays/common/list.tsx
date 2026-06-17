@@ -195,7 +195,6 @@ interface ItemProps {
   'id': string
 
   // false positive:
-  // eslint-disable-next-line react/no-unused-prop-types
   'sortable'?: boolean
   'disableTransition'?: boolean
   'children'?: ReactNode

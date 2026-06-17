@@ -1,6 +1,6 @@
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children.
   type ResponsiveMarginProps,
   type ResponsivePaddingProps,

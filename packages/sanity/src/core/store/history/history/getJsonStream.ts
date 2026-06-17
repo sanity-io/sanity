@@ -75,7 +75,6 @@ function getStream(response: Response): ReadableStream<StreamResult> {
 
           buffer = lines[lines.length - 1]
 
-          // eslint-disable-next-line consistent-return
           return reader
             .read()
             .then(processResult)

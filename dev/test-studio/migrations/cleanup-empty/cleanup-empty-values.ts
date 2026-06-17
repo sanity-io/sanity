@@ -1,4 +1,4 @@
-/* eslint-disable consistent-return */
+/* oxlint-disable consistent-return */
 import {defineMigration, unset} from 'sanity/migrate'
 
 export default defineMigration({

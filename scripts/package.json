@@ -7,7 +7,6 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "check:types": "(cd ../../.. && tsgo --project packages/@repo/bundle-manager/tsconfig.json --erasableSyntaxOnly)",
-    "lint": "eslint .",
     "test": "vitest run"
   },
   "devDependencies": {

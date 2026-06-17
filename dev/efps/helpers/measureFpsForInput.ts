@@ -1,4 +1,3 @@
-/* eslint-disable no-new-func */
 import {type Page} from 'playwright'
 
 import {type EfpsResult} from '../types'

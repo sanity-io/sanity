@@ -2,17 +2,17 @@ import {CloseIcon, LockIcon, TransferIcon} from '@sanity/icons'
 import {
   Badge,
   Box,
-  // eslint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
+  // oxlint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
   Button,
   type ButtonTone,
   Flex,
   Menu,
-  // eslint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
+  // oxlint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
   MenuItem,
   Stack,
   Text,
 } from '@sanity/ui'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+// oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {type ComponentProps, type ComponentType, useMemo} from 'react'
 import {
@@ -383,7 +383,7 @@ function getMenuButtonProps({
 
   return {
     text: selected,
-    // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+    // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
     icon: <ReleaseAvatar padding={1} releaseType="undecided" />,
     tone: 'neutral',
   }

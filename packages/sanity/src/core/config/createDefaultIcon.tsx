@@ -6,7 +6,6 @@ import {useTheme} from 'styled-components'
 function pseudoRandomNumber(seed: string) {
   const hashCode = seed
     .split('')
-    // eslint-disable-next-line no-bitwise
     .reduce((prevHash, currVal) => ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0, 0)
   return Math.abs((hashCode * 16807) % 2147483647) / 2147483647
 }

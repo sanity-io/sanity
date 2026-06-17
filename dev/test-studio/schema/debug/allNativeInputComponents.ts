@@ -135,7 +135,6 @@ export const allNativeInputComponents = defineType({
         {
           type: 'allNativeInputComponents',
           preview: {select: {title: 'title'}},
-          // eslint-disable-next-line camelcase
           __experimental_search: [{path: 'title'}],
         },
       ],

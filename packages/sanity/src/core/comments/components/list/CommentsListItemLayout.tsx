@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
 import {
@@ -11,7 +10,6 @@ import {
   TextSkeleton,
   useClickOutsideEvent,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
@@ -234,6 +232,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     if (isEditing) return
 
     startMessage.current = message
+    // oxlint-disable-next-line react/react-compiler
     setValue(message)
   }, [isEditing, message])
 

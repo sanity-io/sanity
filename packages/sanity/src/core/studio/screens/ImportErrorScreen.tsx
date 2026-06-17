@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
+/* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {SyncIcon} from '@sanity/icons'
 import {Box, Card, Code, Container, Heading, Inline, Stack, Text} from '@sanity/ui'
 import {useEffect, useMemo} from 'react'

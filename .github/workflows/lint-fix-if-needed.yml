@@ -1,4 +1,4 @@
-name: Prettier & Lint --fix
+name: oxfmt & oxlint --fix
 
 on:
   push:
@@ -22,13 +22,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
-      - name: Cache Prettier
-        uses: actions/cache@v5
-        with:
-          path: node_modules/.cache/prettier/.prettier-cache
-          key: prettier-${{ hashFiles('pnpm-lock.yaml') }}
       - run: pnpm lint:fix
-      - run: pnpm chore:format:fix
       - uses: actions/create-github-app-token@v3
         # Run even if `pnpm lint:fix` fails
         if: always()

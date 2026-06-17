@@ -106,7 +106,6 @@ export function DialogStackProvider({children}: DialogStackProviderProps): React
             if (!entry.path) return false
             // Entry is an ancestor if it's shorter and all its segments match the start of newPath
             if (entry.path.length >= newPath.length) return false
-            // eslint-disable-next-line max-nested-callbacks
             return entry.path.every((segment, index) => {
               const newSegment = newPath[index]
               return isKeySegment(segment) && isKeySegment(newSegment)
@@ -161,7 +160,6 @@ export function DialogStackProvider({children}: DialogStackProviderProps): React
           if (!entry.path) return false
           // Entry must be strictly shorter to be an ancestor
           if (entry.path.length >= targetPath.length) return false
-          // eslint-disable-next-line max-nested-callbacks
           return entry.path.every((segment, index) => {
             const targetSegment = targetPath[index]
             return isKeySegment(segment) && isKeySegment(targetSegment)

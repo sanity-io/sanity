@@ -1,7 +1,6 @@
 import {ArrowRightIcon, ComposeSparklesIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {type BadgeTone, Box, Card, Flex, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {motion} from 'motion/react'
 import {css, styled} from 'styled-components'

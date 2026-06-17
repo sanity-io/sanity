@@ -8,7 +8,6 @@
   },
   "scripts": {
     "generate:dts-exports": "node generate.mjs",
-    "lint": "eslint .",
     "postgenerate:dts-exports": "oxfmt test/fixtures/**",
     "test": "vitest run"
   },
@@ -23,10 +22,8 @@
     "sanity": "workspace:*"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
     "ts-morph": "^26.0.0",
     "typescript": "5.9.3",
     "vite": "catalog:",

@@ -26,7 +26,7 @@ export function SaveCsvButton({blobUrl}: SaveButtonProps) {
       icon={DocumentSheetIcon}
       mode="ghost"
       onClick={isDisabled ? preventSave : undefined}
-      // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+      // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
       text="CSV" // String is a File extension
       tone="default"
     />
@@ -49,7 +49,7 @@ export function SaveJsonButton({blobUrl}: SaveButtonProps) {
       href={blobUrl}
       icon={DocumentSheetIcon}
       mode="ghost"
-      // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+      // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
       text="JSON" // String is a File extension
       tone="default"
     />

@@ -3,7 +3,7 @@
  * Copyright (c) Project Nayuki.
  * SPDX-License-Identifier: MIT
  */
-/* eslint-disable unicorn/prefer-string-slice,no-param-reassign,no-bitwise,max-params */
+/* oxlint-disable unicorn/prefer-string-slice -- vendored file (Project Nayuki) */
 
 type bit = number
 type byte = number

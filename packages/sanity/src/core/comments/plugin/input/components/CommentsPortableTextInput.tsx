@@ -1,5 +1,3 @@
-/* eslint-disable max-statements */
-/* eslint-disable max-nested-callbacks */
 import {
   type EditorSelection,
   type PortableTextBlock,

@@ -727,13 +727,11 @@ function sortByDependencies(compiledSchema: SchemaDef): {
             // duplication.
             if (hoistRepetitions && !validSchemaNames.has(field.type.name)) {
               const fieldPath = path.concat([field.name])
-              // eslint-disable-next-line max-depth
               if (!repeated.has(field) && objectMap.has(field)) {
                 // The field is not in the repeated set, but it's the second time we see it – time to add it
                 const name = pickRepeatedName(fieldPath)
 
                 // If we couldn't pick a name, we skip hoisting for this field
-                // eslint-disable-next-line max-depth
                 if (name !== null) {
                   repeated.set(field, name)
                 }
