@@ -69,8 +69,6 @@ async function setupMocks({
                 _updatedAt: '',
                 _system: {
                   bundleId: 'drafts',
-                  release: null,
-                  variant: null,
                   group: {_ref: getPublishedId(id), _weak: true},
                   scopeId: getPublishedId(id),
                 } satisfies DocumentSystem,
@@ -136,8 +134,6 @@ describe('useDocumentVersions', () => {
         _updatedAt: '',
         _system: {
           bundleId: 'drafts',
-          release: null,
-          variant: null,
           group: {_ref: 'document-1', _weak: true},
           scopeId: 'document-1',
         },
@@ -164,7 +160,7 @@ describe('useDocumentVersions', () => {
         _system: {
           bundleId: 'rASAP',
           release: {_ref: '_.releases.rASAP', _weak: true},
-          variant: null,
+          variant: undefined,
           group: {_ref: 'document-1', _weak: true},
           scopeId: 'rASAP',
         },
@@ -190,10 +186,10 @@ describe('useDocumentVersions', () => {
         _updatedAt: '',
         _system: {
           bundleId: 'drafts',
-          release: null,
-          variant: null,
+          release: undefined,
+          variant: undefined,
           group: {_ref: 'document-1', _weak: true},
-          scopeId: null,
+          scopeId: undefined,
         },
       },
     ])
