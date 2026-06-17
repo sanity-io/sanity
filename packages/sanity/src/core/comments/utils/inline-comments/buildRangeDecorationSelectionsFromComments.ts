@@ -13,12 +13,14 @@ import {
 import {
   isPortableTextSpan,
   isPortableTextTextBlock,
+  type Path,
   type PortableTextBlock,
   type PortableTextTextBlock,
 } from '@sanity/types'
 
 import {isTextSelectionComment} from '../../helpers'
 import {type CommentDocument, type CommentsTextSelectionItem} from '../../types'
+import {resolveCommentArray} from './dataPath'
 
 // This must be set high to avoid false positives
 // (for example, when there are multiple occurrences of the same word, and you delete the original commented word)
@@ -57,6 +59,15 @@ const EMPTY_ARRAY: [] = []
 export interface BuildCommentsRangeDecorationsProps {
   value: PortableTextBlock[] | undefined
   comments: CommentDocument[]
+  /**
+   * The editor's own document path. When provided, each comment's `field` is
+   * resolved relative to it: the editor descends to the block's containing
+   * array (the array is the editor value itself when `field` equals this path)
+   * and prefixes decoration selections so they address from the editor root.
+   * Omitted (e.g. in unit tests) means "search the top-level value", today's
+   * behavior.
+   */
+  basePath?: Path
 }
 
 /**
@@ -75,7 +86,7 @@ export interface BuildCommentsRangeDecorationsResultItem {
 export function buildRangeDecorationSelectionsFromComments(
   props: BuildCommentsRangeDecorationsProps,
 ): BuildCommentsRangeDecorationsResultItem[] {
-  const {value, comments} = props
+  const {value, comments, basePath} = props
 
   if (!value || value.length === 0) return EMPTY_ARRAY
 
@@ -83,8 +94,19 @@ export function buildRangeDecorationSelectionsFromComments(
   const decorators: BuildCommentsRangeDecorationsResultItem[] = []
 
   textSelections.forEach((comment) => {
+    const resolved = basePath
+      ? resolveCommentArray(
+          value as ReadonlyArray<Record<string, unknown>>,
+          basePath,
+          comment.target.path?.field ?? '',
+        )
+      : {array: value as ReadonlyArray<Record<string, unknown>>, prefix: [] as Path}
+    if (!resolved) return
+    const searchArray = resolved.array as unknown as PortableTextBlock[]
+    const {prefix} = resolved
+
     comment.target.path?.selection?.value.forEach((selectionMember) => {
-      const matchedBlock = value.find((block) => block._key === selectionMember._key)
+      const matchedBlock = searchArray.find((block) => block._key === selectionMember._key)
       if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
         return
       }
@@ -149,6 +171,7 @@ export function buildRangeDecorationSelectionsFromComments(
           selection: {
             anchor: {
               path: [
+                ...prefix,
                 {_key: matchedBlock._key},
                 'children',
                 {_key: matchedBlock.children[childIndexAnchor]._key},
@@ -157,6 +180,7 @@ export function buildRangeDecorationSelectionsFromComments(
             },
             focus: {
               path: [
+                ...prefix,
                 {_key: matchedBlock._key},
                 'children',
                 {_key: matchedBlock.children[childIndexFocus]._key},

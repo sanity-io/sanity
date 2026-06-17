@@ -39,6 +39,8 @@ import {
   buildCommentRangeDecorations,
   buildRangeDecorationSelectionsFromComments,
   buildTextSelectionFromFragment,
+  editorOwnsCommentField,
+  getCommentFieldPath,
 } from '../../../utils'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
@@ -109,6 +111,13 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     useState<RangeDecoration[]>(EMPTY_ARRAY)
 
   const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
+
+  // The data paths this editor draws inline (e.g. container content) and so
+  // owns comments for, beyond its own `stringFieldPath`. Empty until the
+  // container render pipeline supplies them; the routing then stays exact-match
+  // and every editor owns exactly its own field path, matching today.
+  const renderedInlinePaths = EMPTY_ARRAY as ReadonlyArray<string>
+
   const [fragment, setFragment] = useState<PortableTextBlock[] | null>(null)
 
   const getFragment = useCallback(() => {
@@ -152,10 +161,12 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
   const textComments = useMemo(() => {
     return comments.data.open
-      .filter((comment) => comment.fieldPath === stringFieldPath)
+      .filter((comment) =>
+        editorOwnsCommentField(props.path, comment.fieldPath, renderedInlinePaths),
+      )
       .filter((c) => isTextSelectionComment(c.parentComment))
       .map((c) => c.parentComment)
-  }, [comments.data.open, stringFieldPath])
+  }, [comments.data.open, props.path, renderedInlinePaths])
 
   const handleSubmit = useCallback(() => {
     if (!nextCommentSelection || !editorRef.current) return
@@ -172,10 +183,19 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
     const threadId = uuid()
 
+    // The comment's `field` is the data path to the commented block's
+    // containing array, derived from the document location, not this editor's
+    // path. For root blocks and dialog/void-object renderings this equals
+    // `stringFieldPath`; for content rendered inline in a container it descends
+    // to the nested array, so the anchor is identical across renderings.
+    const fieldPath = nextCommentSelection
+      ? getCommentFieldPath(props.path, nextCommentSelection.focus.path)
+      : stringFieldPath
+
     void operation.create({
       type: 'field',
       contentSnapshot: fragment,
-      fieldPath: stringFieldPath,
+      fieldPath,
       message: nextCommentValue,
       parentCommentId: undefined,
       reactions: EMPTY_ARRAY,
@@ -194,7 +214,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
     // Set the selected path to the new comment
     setSelectedPath({
-      fieldPath: stringFieldPath,
+      fieldPath,
       threadId,
       origin: 'form',
     })
@@ -206,6 +226,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   }, [
     nextCommentSelection,
     operation,
+    props.path,
     stringFieldPath,
     nextCommentValue,
     onCommentsOpen,
@@ -327,6 +348,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       const [updatedDecoration] = buildRangeDecorationSelectionsFromComments({
         comments: [comment],
         value: editorValue,
+        basePath: props.path,
       })
 
       const nextRange = updatedDecoration?.range ? [updatedDecoration.range] : EMPTY_ARRAY
@@ -380,7 +402,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       })
       return next.filter((p) => p.selection !== null)
     })
-  }, [addedCommentsDecorations, getComment, operation])
+  }, [addedCommentsDecorations, getComment, operation, props.path])
 
   const handleBuildRangeDecorations = useCallback(
     (commentsToDecorate: CommentDocument[]) => {
@@ -396,12 +418,14 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         onDecorationMoved: handleRangeDecorationMoved,
         selectedThreadId: selectedPath?.threadId || null,
         value: editorValue,
+        basePath: props.path,
       })
     },
     [
       currentHoveredCommentId,
       handleDecoratorClick,
       handleRangeDecorationMoved,
+      props.path,
       selectedPath?.threadId,
     ],
   )

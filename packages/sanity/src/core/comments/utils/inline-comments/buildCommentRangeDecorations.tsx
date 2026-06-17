@@ -1,5 +1,5 @@
 import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabletext/editor'
-import {type PortableTextBlock} from '@sanity/types'
+import {type Path, type PortableTextBlock} from '@sanity/types'
 import {memo, useCallback, useEffect, useRef, useState} from 'react'
 
 import {CommentInlineHighlightSpan} from '../../components'
@@ -97,6 +97,7 @@ interface BuildRangeDecorationsProps {
   onDecorationMoved: (details: RangeDecorationOnMovedDetails) => void
   selectedThreadId: string | null
   value: PortableTextBlock[] | undefined
+  basePath?: Path
 }
 
 /**
@@ -112,8 +113,9 @@ export function buildCommentRangeDecorations(props: BuildRangeDecorationsProps) 
     onDecorationMoved,
     selectedThreadId,
     value,
+    basePath,
   } = props
-  const rangeSelections = buildRangeDecorationSelectionsFromComments({comments, value})
+  const rangeSelections = buildRangeDecorationSelectionsFromComments({comments, value, basePath})
 
   const decorations = rangeSelections.map(({selection, comment, range}) => {
     const decoration: RangeDecoration = {
