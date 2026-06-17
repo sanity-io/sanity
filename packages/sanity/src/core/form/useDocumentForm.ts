@@ -156,7 +156,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
-  const {data: documentVersions} = useDocumentVersions({documentId})
+  const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
+    documentId,
+  })
   const workspace = useWorkspace()
 
   const enhancedObjectDialogEnabled = true
@@ -344,7 +346,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const isNonExistent = !value?._id
 
-  const ready = connectionState === 'connected' && editState.ready && !initialValue?.loading
+  const ready =
+    connectionState === 'connected' &&
+    editState.ready &&
+    !initialValue?.loading &&
+    !documentVersionsLoading
 
   const selectedPerspective = useMemo(() => {
     return getSelectedPerspective(selectedPerspectiveName, releases)
