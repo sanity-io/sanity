@@ -463,11 +463,11 @@ importers:
   dev/sdk-app:
     dependencies:
       '@sanity/sdk':
-        specifier: ^2.14.0
-        version: 2.14.0(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)
+        specifier: ^2.14.1
+        version: 2.14.1(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)
       '@sanity/sdk-react':
-        specifier: ^2.14.0
-        version: 2.14.0(@types/react@19.2.17)(immer@11.1.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)
+        specifier: ^2.14.1
+        version: 2.14.1(@types/react@19.2.17)(immer@11.1.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)
       react:
         specifier: 'catalog:'
         version: 19.2.7
@@ -602,14 +602,14 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/editor':
-        specifier: ^7.5.0
-        version: 7.5.0(@types/react@19.2.17)(react@19.2.7)
+        specifier: ^7.5.2
+        version: 7.5.2(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/html':
         specifier: ^1.0.2
         version: 1.0.2
       '@portabletext/plugin-character-pair-decorator':
         specifier: ^8.0.16
-        version: 8.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+        version: 8.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/react':
         specifier: ^6.2.0
         version: 6.2.0(react@19.2.7)
@@ -1700,8 +1700,8 @@ importers:
         specifier: ^3.13.0
         version: 3.13.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@portabletext/editor':
-        specifier: ^7.5.0
-        version: 7.5.0(@types/react@19.2.17)(react@19.2.7)
+        specifier: ^7.5.2
+        version: 7.5.2(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/html':
         specifier: ^1.0.2
         version: 1.0.2
@@ -1710,16 +1710,16 @@ importers:
         version: 2.0.4
       '@portabletext/plugin-markdown-shortcuts':
         specifier: ^8.0.16
-        version: 8.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+        version: 8.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/plugin-one-line':
         specifier: ^7.0.16
-        version: 7.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
+        version: 7.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
       '@portabletext/plugin-paste-link':
         specifier: ^4.0.16
-        version: 4.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
+        version: 4.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
       '@portabletext/plugin-typography':
         specifier: ^8.0.16
-        version: 8.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+        version: 8.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/react':
         specifier: ^6.2.0
         version: 6.2.0(react@19.2.7)
@@ -1808,8 +1808,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/schema
       '@sanity/sdk':
-        specifier: ^2.14.0
-        version: 2.14.0(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)
+        specifier: ^2.14.1
+        version: 2.14.1(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)
       '@sanity/telemetry':
         specifier: 'catalog:'
         version: 1.1.0(react@19.2.7)
@@ -4817,8 +4817,8 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
-  '@portabletext/editor@7.5.0':
-    resolution: {integrity: sha512-prgV26yU61nxoOr6SL2PfCoMj9j+UveHrjCASVHNpb8aSctHOvAjkFVCsgtjK1+/q8Px7nUnX43oWqA/wpwqvg==}
+  '@portabletext/editor@7.5.2':
+    resolution: {integrity: sha512-98zlzKSu6tV/R4QyHVvgS+8/22RuuHl2fF1XwYsBwe1QlSm+jbvlJYqv+PtyJ+XL4cwe39kEoV1t49Owm+v24Q==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2.5
@@ -5756,14 +5756,14 @@ packages:
     engines: {node: '>=20.19'}
     hasBin: true
 
-  '@sanity/sdk-react@2.14.0':
-    resolution: {integrity: sha512-HoNGnVIKHjKtbXviRL1olJWi+iLpYWe+gvgfgyOR7Vj5Bej21vR13LQ8Nq2eFhaZOEE+N0EsOfoMz6E4DE/Fqg==}
+  '@sanity/sdk-react@2.14.1':
+    resolution: {integrity: sha512-4lOr52aMWcqOEhhhmzl/VACqhIhxRXifeHl6nXl59YifMR2u08eWbPPnde1KeTcx81EkSZJL8MVrIwiwo3VQpA==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
 
-  '@sanity/sdk@2.14.0':
-    resolution: {integrity: sha512-y9fxNEuBeb1b8fqupAsiu0QDV87NLpd75H0Swin8ZYGoJ4K9tt9BdsMlKwZaegs3YKyi5UPMRGniJ+K29aaqWw==}
+  '@sanity/sdk@2.14.1':
+    resolution: {integrity: sha512-0qPqDmjHk/XN1WdF8psXfYcl7029zr14hUp7k60zuSQHZEz2PDNf6otxXg0HH0BXuwCW6xEKSGmFhX56y8lFxQ==}
 
   '@sanity/signed-urls@2.0.4':
     resolution: {integrity: sha512-wH7L9iOxQDVTa7COVEXoknalNgjpqxLJoOcZYQa3D/2JVEQOGUm82RgFVgZkKoclhQ8Y8dBby+KPkFoIDoUc1g==}
@@ -14695,7 +14695,7 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
       '@portabletext/html': 1.0.2
       '@portabletext/keyboard-shortcuts': 2.1.2
@@ -14730,9 +14730,9 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@portabletext/plugin-character-pair-decorator@8.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-character-pair-decorator@8.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.5.0(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': 7.5.2(@types/react@19.2.17)(react@19.2.7)
       '@xstate/react': 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.0)
       react: 19.2.7
       remeda: 2.39.0
@@ -14740,38 +14740,38 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-input-rule@5.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-input-rule@5.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.5.0(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': 7.5.2(@types/react@19.2.17)(react@19.2.7)
       '@xstate/react': 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.0)
       react: 19.2.7
       xstate: 5.32.0
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-markdown-shortcuts@8.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-markdown-shortcuts@8.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.5.0(@types/react@19.2.17)(react@19.2.7)
-      '@portabletext/plugin-character-pair-decorator': 8.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
-      '@portabletext/plugin-input-rule': 5.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': 7.5.2(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/plugin-character-pair-decorator': 8.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/plugin-input-rule': 5.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-one-line@7.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)':
+  '@portabletext/plugin-one-line@7.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.5.0(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': 7.5.2(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
 
-  '@portabletext/plugin-paste-link@4.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)':
+  '@portabletext/plugin-paste-link@4.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.5.0(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': 7.5.2(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
 
-  '@portabletext/plugin-typography@8.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
+  '@portabletext/plugin-typography@8.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.5.0(@types/react@19.2.17)(react@19.2.7)
-      '@portabletext/plugin-input-rule': 5.0.16(@portabletext/editor@7.5.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/editor': 7.5.2(@types/react@19.2.17)(react@19.2.7)
+      '@portabletext/plugin-input-rule': 5.0.16(@portabletext/editor@7.5.2(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
     transitivePeerDependencies:
       - '@types/react'
@@ -15832,11 +15832,11 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@sanity/sdk-react@2.14.0(@types/react@19.2.17)(immer@11.1.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)':
+  '@sanity/sdk-react@2.14.1(@types/react@19.2.17)(immer@11.1.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)':
     dependencies:
       '@sanity/client': 7.22.1
       '@sanity/message-protocol': 0.23.0
-      '@sanity/sdk': 2.14.0(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)
+      '@sanity/sdk': 2.14.1(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)
       '@sanity/types': link:packages/@sanity/types
       groq: 3.88.1-typegen-experimental.0
       react: 19.2.7
@@ -15851,7 +15851,7 @@ snapshots:
       - use-sync-external-store
       - xstate
 
-  '@sanity/sdk@2.14.0(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)':
+  '@sanity/sdk@2.14.1(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))(xstate@5.32.0)':
     dependencies:
       '@sanity/bifur-client': 1.0.0
       '@sanity/client': 7.22.1
