@@ -445,72 +445,113 @@
       // Architectural boundaries for the sanity package
       "files": ["packages/sanity/**"],
       "rules": {
-        "boundaries/dependencies": "error",
         "boundaries/entry-point": "error",
         "boundaries/external": "error",
-        "boundaries/element-types": [
+        "boundaries/dependencies": [
           "error",
           {
             "default": "disallow",
             "rules": [
-              {"from": "sanity/_internal", "allow": ["sanity/_internal__contents"]},
               {
-                "from": "sanity/_internal__contents",
-                "allow": ["sanity", "sanity/_internal__contents"]
-              },
-              {"from": "sanity/cli", "allow": ["sanity/cli__contents"]},
-              {"from": "sanity/cli__contents", "allow": ["sanity/cli__contents"]},
-              {"from": "sanity", "allow": ["sanity__contents"]},
-              {
-                "from": "sanity__contents",
-                "allow": ["sanity__contents", "sanity/router", "sanity/_singletons"]
+                "from": {"type": "sanity/_internal"},
+                "allow": {"to": {"type": "sanity/_internal__contents"}}
               },
               {
-                "from": "sanity/desk",
-                "allow": ["sanity/desk__contents", "sanity/structure", "sanity/structure__contents"]
+                "from": {"type": "sanity/_internal__contents"},
+                "allow": {"to": {"type": ["sanity", "sanity/_internal__contents"]}}
+              },
+              {"from": {"type": "sanity/cli"}, "allow": {"to": {"type": "sanity/cli__contents"}}},
+              {
+                "from": {"type": "sanity/cli__contents"},
+                "allow": {"to": {"type": "sanity/cli__contents"}}
+              },
+              {"from": {"type": "sanity"}, "allow": {"to": {"type": "sanity__contents"}}},
+              {
+                "from": {"type": "sanity__contents"},
+                "allow": {
+                  "to": {"type": ["sanity__contents", "sanity/router", "sanity/_singletons"]}
+                }
               },
               {
-                "from": "sanity/desk__contents",
-                "allow": [
-                  "sanity",
-                  "sanity/desk__contents",
-                  "sanity/router",
-                  "sanity/_internal",
-                  "sanity/structure",
-                  "sanity/structure__contents",
-                  "sanity/_singletons"
-                ]
-              },
-              {"from": "sanity/router", "allow": ["sanity/router__contents"]},
-              {
-                "from": "sanity/router__contents",
-                "allow": ["sanity/router__contents", "sanity/_singletons"]
-              },
-              {"from": "sanity/structure", "allow": ["sanity/structure__contents"]},
-              {
-                "from": "sanity/structure__contents",
-                "allow": [
-                  "sanity",
-                  "sanity/structure__contents",
-                  "sanity/router",
-                  "sanity/_singletons"
-                ]
-              },
-              {"from": "sanity/_singletons", "allow": ["sanity/_singletons__contents"]},
-              {"from": "sanity/_singletons__contents", "allow": ["sanity/_singletons__contents"]},
-              {
-                "from": "sanity/_singletons__contents",
-                "allow": [
-                  "sanity__contents",
-                  "sanity/structure__contents",
-                  "sanity/router__contents"
-                ],
-                "importKind": "type"
+                "from": {"type": "sanity/desk"},
+                "allow": {
+                  "to": {
+                    "type": [
+                      "sanity/desk__contents",
+                      "sanity/structure",
+                      "sanity/structure__contents"
+                    ]
+                  }
+                }
               },
               {
-                "from": "sanity/_singletons__contents",
-                "disallow": ["sanity", "sanity/structure", "sanity/router"],
-                "importKind": "type"
+                "from": {"type": "sanity/desk__contents"},
+                "allow": {
+                  "to": {
+                    "type": [
+                      "sanity",
+                      "sanity/desk__contents",
+                      "sanity/router",
+                      "sanity/_internal",
+                      "sanity/structure",
+                      "sanity/structure__contents",
+                      "sanity/_singletons"
+                    ]
+                  }
+                }
+              },
+              {
+                "from": {"type": "sanity/router"},
+                "allow": {"to": {"type": "sanity/router__contents"}}
+              },
+              {
+                "from": {"type": "sanity/router__contents"},
+                "allow": {"to": {"type": ["sanity/router__contents", "sanity/_singletons"]}}
+              },
+              {
+                "from": {"type": "sanity/structure"},
+                "allow": {"to": {"type": "sanity/structure__contents"}}
+              },
+              {
+                "from": {"type": "sanity/structure__contents"},
+                "allow": {
+                  "to": {
+                    "type": [
+                      "sanity",
+                      "sanity/structure__contents",
+                      "sanity/router",
+                      "sanity/_singletons"
+                    ]
+                  }
+                }
+              },
+              {
+                "from": {"type": "sanity/_singletons"},
+                "allow": {"to": {"type": "sanity/_singletons__contents"}}
+              },
+              {
+                "from": {"type": "sanity/_singletons__contents"},
+                "allow": {"to": {"type": "sanity/_singletons__contents"}}
+              },
+              {
+                "from": {"type": "sanity/_singletons__contents"},
+                "allow": {
+                  "to": {
+                    "type": [
+                      "sanity__contents",
+                      "sanity/structure__contents",
+                      "sanity/router__contents"
+                    ]
+                  },
+                  "dependency": {"kind": "type"}
+                }
+              },
+              {
+                "from": {"type": "sanity/_singletons__contents"},
+                "disallow": {
+                  "to": {"type": ["sanity", "sanity/structure", "sanity/router"]},
+                  "dependency": {"kind": "type"}
+                }
               }
             ]
           }
@@ -521,7 +562,6 @@
       // The boundaries plugin trips on this specific test file
       "files": ["packages/sanity/src/core/form/types/definitionExtensions.test.ts"],
       "rules": {
-        "boundaries/element-types": "off",
         "boundaries/dependencies": "off",
         "boundaries/entry-point": "off",
         "boundaries/external": "off"
