@@ -23,8 +23,8 @@ describe('getBundleIdFromPerspective', () => {
     expect(getBundleIdFromPerspective('drafts')).toBe('drafts')
   })
 
-  it('maps published perspective to $published bundle', () => {
-    expect(getBundleIdFromPerspective('published')).toBe('$published')
+  it('maps published perspective to published bundle', () => {
+    expect(getBundleIdFromPerspective('published')).toBe('published')
   })
 
   it('maps release document to release id', () => {

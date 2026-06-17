@@ -31,7 +31,7 @@ export type SelectedPerspective = TargetPerspective
  */
 export type PerspectiveStack = ExtractArray<ClientPerspective>
 
-export type PerspectiveBundle = '$published' | 'drafts' | (string & {})
+export type PerspectiveBundle = 'published' | 'drafts' | (string & {})
 /**
  * @beta
  */
@@ -60,7 +60,7 @@ export interface PerspectiveContextValue {
    */
   selectedVariant: SystemVariant | undefined
   /**
-   * The selected bundle, either `$published`, `drafts` or a release id or the bundle id for anonymous bundles like agent documents.
+   * The selected bundle, either `published`, `drafts` or a release id or the bundle id for anonymous bundles like agent documents.
    */
   bundle: PerspectiveBundle
 }

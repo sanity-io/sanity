@@ -7,7 +7,7 @@ export function getBundleIdFromPerspective(
   selectedPerspective: TargetPerspective,
 ): PerspectiveBundle {
   if (isPublishedPerspective(selectedPerspective)) {
-    return '$published'
+    return 'published'
   }
 
   if (isDraftPerspective(selectedPerspective)) {
