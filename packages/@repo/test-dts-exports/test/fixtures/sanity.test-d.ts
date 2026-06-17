@@ -843,6 +843,7 @@ import type {
   isDraft,
   isDraftId,
   isDraftPerspective,
+  isDraftVersion,
   isEditDocumentVersionEvent,
   isEmptyObject,
   IsEqualFunction,
@@ -877,12 +878,14 @@ import type {
   isPublishDocumentVersionEvent,
   isPublishedId,
   isPublishedPerspective,
+  isPublishedVersion,
   isRecord,
   isReference,
   isReferenceSchemaType,
   isReleaseDocument,
   isReleasePerspective,
   isReleaseScheduledOrScheduling,
+  isReleaseVersion,
   isRemovedItemDiff,
   isSanityDefinedAction,
   isSanityDocument,
@@ -911,6 +914,7 @@ import type {
   isValidationInfoMarker,
   isValidationWarning,
   isValidationWarningMarker,
+  isVariantVersion,
   isVersionId,
   ItemDiff,
   ItemProps,
@@ -4285,6 +4289,9 @@ describe('sanity', () => {
   test('isDraftPerspective', () => {
     expectTypeOf<typeof isDraftPerspective>().toBeFunction()
   })
+  test('isDraftVersion', () => {
+    expectTypeOf<typeof isDraftVersion>().toBeFunction()
+  })
   test('isEditDocumentVersionEvent', () => {
     expectTypeOf<typeof isEditDocumentVersionEvent>().not.toBeNever()
   })
@@ -4387,6 +4394,9 @@ describe('sanity', () => {
   test('isPublishedPerspective', () => {
     expectTypeOf<typeof isPublishedPerspective>().toBeFunction()
   })
+  test('isPublishedVersion', () => {
+    expectTypeOf<typeof isPublishedVersion>().toBeFunction()
+  })
   test('isRecord', () => {
     expectTypeOf<typeof isRecord>().toBeFunction()
   })
@@ -4404,6 +4414,9 @@ describe('sanity', () => {
   })
   test('isReleaseScheduledOrScheduling', () => {
     expectTypeOf<typeof isReleaseScheduledOrScheduling>().toBeFunction()
+  })
+  test('isReleaseVersion', () => {
+    expectTypeOf<typeof isReleaseVersion>().toBeFunction()
   })
   test('isRemovedItemDiff', () => {
     expectTypeOf<typeof isRemovedItemDiff>().toBeFunction()
@@ -4488,6 +4501,9 @@ describe('sanity', () => {
   })
   test('isValidationWarningMarker', () => {
     expectTypeOf<typeof isValidationWarningMarker>().toBeFunction()
+  })
+  test('isVariantVersion', () => {
+    expectTypeOf<typeof isVariantVersion>().toBeFunction()
   })
   test('isVersionId', () => {
     expectTypeOf<typeof isVersionId>().toBeFunction()
