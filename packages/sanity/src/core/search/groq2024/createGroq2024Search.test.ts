@@ -82,6 +82,19 @@ describe('createGroq2024Search two-phase orchestration', () => {
     expect(fetch).toHaveBeenCalledTimes(1)
   })
 
+  it('excludes the overfetched element when no limit is passed', async () => {
+    const overfetched = Array.from({length: 1001}, (_unused, index) => ({
+      _id: `note-${index}`,
+      _type: 'note',
+    }))
+    const fetch = vi.fn().mockReturnValue(of(overfetched))
+    const search = createGroq2024Search([typeByName('note')], createMockClient(fetch), {})
+
+    const result = await lastValueFrom(search({query: 'jane', types: [typeByName('note')]}))
+
+    expect(result.hits).toHaveLength(1000)
+  })
+
   it('falls back to a plain search when phase one fails', async () => {
     const fetch = vi
       .fn()

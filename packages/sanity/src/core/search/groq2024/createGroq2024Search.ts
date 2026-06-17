@@ -79,9 +79,10 @@ export const createGroq2024Search: SearchStrategyFactory<Groq2024SearchResults> 
 
           return {
             type: 'groq2024' as const,
-            // Search overfetches by 1 to determine whether there is another page to fetch. Therefore,
-            // exclude the final result if it's beyond the limit.
-            hits: hits.map((hit) => ({hit})).slice(0, searchOptions.limit),
+            // Search overfetches by 1 to detect a next page. Slice to the effective
+            // limit - falling back to `__limit - 1` when no limit was passed - so the
+            // overfetched element never leaks.
+            hits: hits.map((hit) => ({hit})).slice(0, searchOptions.limit ?? params.__limit - 1),
             nextCursor: hasNextPage
               ? getNextCursor({lastResult, sortOrder, compiledSortEntries})
               : undefined,
