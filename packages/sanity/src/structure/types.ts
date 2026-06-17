@@ -323,6 +323,8 @@ export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList
     params?: Record<string, unknown>
     apiVersion?: string
   }
+  /** Suppresses auto-injected restore-default sort/layout menu items for panes with a fixed ordering choice. */
+  suppressRestoreDefaultMenuItems?: boolean
   schemaTypeName: string
   source?: string
 }

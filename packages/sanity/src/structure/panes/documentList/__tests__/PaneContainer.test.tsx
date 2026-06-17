@@ -1,12 +1,21 @@
 import {render, screen} from '@testing-library/react'
 import {defineConfig, type PerspectiveContextValue, useSearchState} from 'sanity'
-import {describe, it, type Mock, vi} from 'vitest'
+import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
-import {type DocumentListPaneNode, type StructureToolContextValue} from '../../../types'
+import {
+  type DocumentListPaneNode,
+  type PaneMenuItem,
+  type StructureToolContextValue,
+} from '../../../types'
 import {useStructureToolSetting} from '../../../useStructureToolSetting'
-import {PaneContainer} from '../PaneContainer'
+import {DEFAULT_ORDERING} from '../constants'
+import {
+  addSelectedStateToMenuItems,
+  appendRestoreDefaultItems,
+  PaneContainer,
+} from '../PaneContainer'
 
 vi.mock('../../../useStructureToolSetting', () => ({
   useStructureToolSetting: vi.fn(),
@@ -71,5 +80,62 @@ describe('PaneContainer', () => {
     )
 
     await screen.findByTestId('document-list-pane')
+  })
+})
+
+describe('appendRestoreDefaultItems', () => {
+  const menuItems: PaneMenuItem[] = [
+    {group: 'sorting', action: 'setSortOrder', title: 'Last edited'},
+  ]
+
+  it('returns the input untouched when restore defaults are suppressed', () => {
+    const result = appendRestoreDefaultItems({
+      menuItems,
+      isSortDefault: false,
+      isLayoutDefault: false,
+      restoreSortDisabledReason: 'sort',
+      restoreLayoutDisabledReason: 'layout',
+      suppressRestoreDefaults: true,
+    })
+
+    expect(result).toEqual(menuItems)
+  })
+
+  it('appends restore-default items when not suppressed', () => {
+    const result = appendRestoreDefaultItems({
+      menuItems,
+      isSortDefault: false,
+      isLayoutDefault: false,
+      restoreSortDisabledReason: 'sort',
+      restoreLayoutDisabledReason: 'layout',
+    })
+
+    expect(result).toHaveLength(menuItems.length + 2)
+    expect(result.map((item) => item.action)).toContain('restoreDefaultSortOrder')
+    expect(result.map((item) => item.action)).toContain('restoreDefaultLayout')
+  })
+})
+
+describe('addSelectedStateToMenuItems', () => {
+  it('selects the menu item whose sort order matches DEFAULT_ORDERING', () => {
+    const menuItems: PaneMenuItem[] = [
+      {
+        group: 'sorting',
+        action: 'setSortOrder',
+        title: 'Last edited',
+        params: {by: DEFAULT_ORDERING.by},
+      },
+      {
+        group: 'sorting',
+        action: 'setSortOrder',
+        title: 'Created',
+        params: {by: [{field: '_createdAt', direction: 'desc'}]},
+      },
+    ]
+
+    const result = addSelectedStateToMenuItems({menuItems, sortOrderRaw: DEFAULT_ORDERING})
+
+    expect(result?.[0].selected).toBe(true)
+    expect(result?.[1].selected).toBe(false)
   })
 })

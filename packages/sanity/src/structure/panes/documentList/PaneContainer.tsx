@@ -120,6 +120,7 @@ export const appendRestoreDefaultItems = (options: {
   isLayoutDefault: boolean
   restoreSortDisabledReason: string
   restoreLayoutDisabledReason: string
+  suppressRestoreDefaults?: boolean
 }): PaneMenuItem[] => {
   const {
     menuItems = [],
@@ -127,7 +128,10 @@ export const appendRestoreDefaultItems = (options: {
     isLayoutDefault,
     restoreSortDisabledReason,
     restoreLayoutDisabledReason,
+    suppressRestoreDefaults,
   } = options
+
+  if (suppressRestoreDefaults) return menuItems
 
   const restoreDefaultSortOrderItem: PaneMenuItem = {
     group: 'sorting',
@@ -174,6 +178,7 @@ export const PaneContainer = memo(function PaneContainer(
     menuItemGroups,
     menuItems,
     options,
+    suppressRestoreDefaultMenuItems,
   } = pane
   const {defaultOrdering = EMPTY_ARRAY, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -281,8 +286,15 @@ export const PaneContainer = memo(function PaneContainer(
         isLayoutDefault,
         restoreSortDisabledReason: t('menu-items.sort-by.restore-default.disabled-reason'),
         restoreLayoutDisabledReason: t('menu-items.layout.restore-default.disabled-reason'),
+        suppressRestoreDefaults: suppressRestoreDefaultMenuItems,
       }),
-    [menuItemsWithSelectedState, isSortDefault, isLayoutDefault, t],
+    [
+      menuItemsWithSelectedState,
+      isSortDefault,
+      isLayoutDefault,
+      t,
+      suppressRestoreDefaultMenuItems,
+    ],
   )
 
   return (
