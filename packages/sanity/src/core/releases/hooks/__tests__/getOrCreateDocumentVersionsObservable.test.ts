@@ -25,10 +25,7 @@ describe('getOrCreateDocumentVersionsObservable', () => {
           _updatedAt: '2024-01-02T00:00:00.000Z',
           _system: {
             bundleId: 'drafts',
-            release: null,
-            variant: null,
             group: {_ref: 'article-1', _weak: true},
-            scopeId: null,
           },
         }),
       ),
@@ -69,10 +66,7 @@ describe('getOrCreateDocumentVersionsObservable', () => {
             _updatedAt: '2024-01-02T00:00:00.000Z',
             _system: {
               bundleId: 'drafts',
-              release: null,
-              variant: null,
               group: {_ref: 'article-1', _weak: true},
-              scopeId: null,
             },
           },
         ],
