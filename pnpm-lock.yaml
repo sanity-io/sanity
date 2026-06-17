@@ -17,7 +17,7 @@ catalogs:
       specifier: ^7.22.1
       version: 7.22.1
     '@sanity/migrate':
-      specifier: ^7.0.2
+      specifier: ^7.0.3
       version: 7.0.3
     '@sanity/pkg-utils':
       specifier: ^10.5.5
