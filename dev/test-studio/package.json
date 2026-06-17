@@ -54,7 +54,7 @@
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
     "sanity-plugin-asset-source-unsplash": "^7.0.8",
-    "sanity-plugin-hotspot-array": "^4.0.0",
+    "sanity-plugin-hotspot-array": "^5.0.1",
     "sanity-plugin-internationalized-array": "^5.1.6",
     "sanity-plugin-markdown": "8.0.7",
     "sanity-plugin-media": "^4.3.1",
