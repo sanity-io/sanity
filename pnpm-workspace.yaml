@@ -76,6 +76,8 @@ minimumReleaseAgeExclude:
   - 'sanity-plugin-internationalized-array'
   - 'sanity-plugin-hotspot-array'
   - 'sanity-plugin-media'
+  - 'sanity-plugin-asset-source-unsplash'
+  - 'sanity-plugin-mux-input'
   - 'sanity-plugin-utils'
   - 'vitest'
   - 'vite'
