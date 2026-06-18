@@ -957,7 +957,7 @@ importers:
         specifier: ^5.0.6
         version: 5.0.6
       '@types/yargs':
-        specifier: ^17.0.33
+        specifier: ^17.0.35
         version: 17.0.35
       '@typescript/native-preview':
         specifier: 'catalog:'
