@@ -638,8 +638,8 @@ importers:
         specifier: ^6.5.0
         version: 6.5.0
       '@turf/points-within-polygon':
-        specifier: ^5.1.5
-        version: 5.1.5
+        specifier: ^6.5.0
+        version: 6.5.0
       '@vercel/stega':
         specifier: 1.1.0
         version: 1.1.0
@@ -5810,23 +5810,20 @@ packages:
     cpu: [arm64]
     os: [win32]
 
-  '@turf/boolean-point-in-polygon@5.1.5':
-    resolution: {integrity: sha512-y+gbAhLmsAZH9uYhv+C68pu06mxsGIm3o7l0hzVkc/PXYdbkr+vKe7n7PfSN3xpVA3qoDLKLpCGOqeW8/ThaJA==}
-
-  '@turf/helpers@5.1.5':
-    resolution: {integrity: sha512-/lF+JR+qNDHZ8bF9d+Cp58nxtZWJ3sqFe6n3u3Vpj+/0cqkjk4nXKYBSY0azm+GIYB5mWKxUXvuP/m0ZnKj1bw==}
+  '@turf/boolean-point-in-polygon@6.5.0':
+    resolution: {integrity: sha512-DtSuVFB26SI+hj0SjrvXowGTUCHlgevPAIsukssW6BG5MlNSBQAo70wpICBNJL6RjukXg8d2eXaAWuD/CqL00A==}
 
   '@turf/helpers@6.5.0':
     resolution: {integrity: sha512-VbI1dV5bLFzohYYdgqwikdMVpe7pJ9X3E+dlr425wa2/sMJqYDhTO++ec38/pcPvPE6oD9WEEeU3Xu3gza+VPw==}
 
-  '@turf/invariant@5.2.0':
-    resolution: {integrity: sha512-28RCBGvCYsajVkw2EydpzLdcYyhSA77LovuOvgCJplJWaNVyJYH6BOR3HR9w50MEkPqb/Vc/jdo6I6ermlRtQA==}
+  '@turf/invariant@6.5.0':
+    resolution: {integrity: sha512-Wv8PRNCtPD31UVbdJE/KVAWKe7l6US+lJItRR/HOEW3eh+U/JwRCSUl/KZ7bmjM/C+zLNoreM2TU6OoLACs4eg==}
 
-  '@turf/meta@5.2.0':
-    resolution: {integrity: sha512-ZjQ3Ii62X9FjnK4hhdsbT+64AYRpaI8XMBMcyftEOGSmPMUVnkbvuv3C9geuElAXfQU7Zk1oWGOcrGOD9zr78Q==}
+  '@turf/meta@6.5.0':
+    resolution: {integrity: sha512-RrArvtsV0vdsCBegoBtOalgdSOfkBrTJ07VkpiCnq/491W67hnMWmDu7e6Ztw0C3WldRYTXkg3SumfdzZxLBHA==}
 
-  '@turf/points-within-polygon@5.1.5':
-    resolution: {integrity: sha512-nexe2AHVOY8wEBvs+CYSOp10NyOCkyZ1gkhIfsx0mzU8LPYBxD9ctjlKveheKh4AAldLcFupd/gSCBTKF1JS7A==}
+  '@turf/points-within-polygon@6.5.0':
+    resolution: {integrity: sha512-YyuheKqjliDsBDt3Ho73QVZk1VXX1+zIA2gwWvuz8bR1HXOkcuwk/1J76HuFMOQI3WK78wyAi+xbkx268PkQzQ==}
 
   '@tybys/wasm-util@0.10.2':
     resolution: {integrity: sha512-RoBvJ2X0wuKlWFIjrwffGw1IqZHKQqzIchKaadZZfnNpsAYp2mM0h36JtPCjNDAHGgYez/15uMBpfGwchhiMgg==}
@@ -15359,28 +15356,26 @@ snapshots:
   '@turbo/windows-arm64@2.9.18':
     optional: true
 
-  '@turf/boolean-point-in-polygon@5.1.5':
+  '@turf/boolean-point-in-polygon@6.5.0':
     dependencies:
-      '@turf/helpers': 5.1.5
-      '@turf/invariant': 5.2.0
-
-  '@turf/helpers@5.1.5': {}
+      '@turf/helpers': 6.5.0
+      '@turf/invariant': 6.5.0
 
   '@turf/helpers@6.5.0': {}
 
-  '@turf/invariant@5.2.0':
+  '@turf/invariant@6.5.0':
     dependencies:
-      '@turf/helpers': 5.1.5
+      '@turf/helpers': 6.5.0
 
-  '@turf/meta@5.2.0':
+  '@turf/meta@6.5.0':
     dependencies:
-      '@turf/helpers': 5.1.5
+      '@turf/helpers': 6.5.0
 
-  '@turf/points-within-polygon@5.1.5':
+  '@turf/points-within-polygon@6.5.0':
     dependencies:
-      '@turf/boolean-point-in-polygon': 5.1.5
-      '@turf/helpers': 5.1.5
-      '@turf/meta': 5.2.0
+      '@turf/boolean-point-in-polygon': 6.5.0
+      '@turf/helpers': 6.5.0
+      '@turf/meta': 6.5.0
 
   '@tybys/wasm-util@0.10.2':
     dependencies:
