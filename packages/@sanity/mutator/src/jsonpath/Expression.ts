@@ -144,18 +144,14 @@ export class Expression {
       return false
     }
 
-    // Walk the LHS down the probe. A bare `attribute` LHS is a single hop; a
-    // `path` LHS (e.g. `asset._ref`, from a filter like `[asset._ref == "x"]`,
-    // see #5313) walks the chain of attribute names. If any intermediate hop
-    // encounters a non-object container or a missing key, the constraint is
-    // falsy (same semantics as a missing single attribute).
+    // The LHS attribute chain: one name for a bare `attribute`, the dotted chain
+    // for a `path` LHS (`asset._ref`, see #5313).
     const attrNames =
       lhs.type === 'attribute'
         ? [lhs.name]
         : lhs.nodes.map((node) => {
-            // `parseAttributePath()` in parse.ts only ever emits `AttributeExpr`
-            // segments inside a path LHS. Anything else is a programming error
-            // upstream and we'd rather see a loud throw than silently mis-match.
+            // parseAttributePath() only emits attribute segments; anything else
+            // is a malformed AST upstream, so throw rather than mis-match.
             if (node.type !== 'attribute') {
               throw new Error(
                 `Constraint target path with non-attribute segment '${node.type}' not supported`,
@@ -164,6 +160,8 @@ export class Expression {
             return node.name
           })
 
+    // A missing key or non-object container mid-walk is falsy, matching the
+    // behaviour for a missing single attribute.
     let cursor: Probe | null = probe
     for (let i = 0; i < attrNames.length - 1; i++) {
       if (cursor.containerType() !== 'object') {

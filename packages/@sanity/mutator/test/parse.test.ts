@@ -187,9 +187,8 @@ const cases = {
     type: 'attribute',
     name: 'trueOrFalseField',
   },
-  // Dotted-attribute LHS in a filter constraint (issue #5313). The Content Lake
-  // accepts these selectors, so an incoming patch using one must parse here too
-  // rather than throwing `Expected ]` from parseUnion.
+  // Dotted-attribute LHS in a filter constraint (#5313): the Content Lake
+  // accepts these, so an incoming patch using one must parse here, not throw.
   'arr[asset._ref == "abc"]': {
     type: 'path',
     nodes: [
@@ -260,8 +259,8 @@ const cases = {
       },
     ],
   },
-  // A dotted path with no comparator must rewind and fall through to a path
-  // subscript (a union containing a `path` node), NOT a half-consumed constraint.
+  // No comparator: must rewind to a path subscript (a union of a `path` node),
+  // not a half-consumed constraint.
   'arr[asset._ref]': {
     type: 'path',
     nodes: [
