@@ -103,7 +103,7 @@
     "@repo/tsconfig": "workspace:*",
     "@sanity/eslint-plugin-i18n": "^1.1.0",
     "@sanity/ui": "catalog:",
-    "@types/node": "^24.6.1",
+    "@types/node": "^24.13.2",
     "@typescript/native-preview": "catalog:",
     "@vitest/coverage-v8": "^4.1.9",
     "dotenv": "^17.4.2",

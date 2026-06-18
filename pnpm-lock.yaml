@@ -29,7 +29,7 @@ catalogs:
       specifier: ^3.2.0
       version: 3.2.0
     '@types/node':
-      specifier: ^24.3.0
+      specifier: ^24.13.2
       version: 24.13.2
     '@types/react':
       specifier: ^19.2.17
@@ -116,7 +116,7 @@ importers:
         specifier: 'catalog:'
         version: 3.2.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.2)
       '@types/node':
-        specifier: ^24.6.1
+        specifier: ^24.13.2
         version: 24.13.2
       '@typescript/native-preview':
         specifier: 'catalog:'
