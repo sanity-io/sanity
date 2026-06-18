@@ -750,7 +750,7 @@ importers:
   packages/@repo/bundle-manager:
     dependencies:
       '@google-cloud/storage':
-        specifier: ^7.17.3
+        specifier: ^7.21.0
         version: 7.21.0
       '@repo/utils':
         specifier: workspace:*
