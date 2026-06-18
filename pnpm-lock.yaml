@@ -496,8 +496,8 @@ importers:
         specifier: ^6.0.7
         version: 6.0.7(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       '@sanity/google-maps-input':
-        specifier: ^4.2.1
-        version: 4.2.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
+        specifier: ^5.0.0
+        version: 5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@19.2.7)
@@ -596,8 +596,8 @@ importers:
         specifier: ^6.2.8
         version: 6.2.8(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity-plugin-internationalized-array@5.1.9)(sanity@packages+sanity)
       '@sanity/google-maps-input':
-        specifier: ^4.2.1
-        version: 4.2.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
+        specifier: ^5.0.0
+        version: 5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@19.2.7)
@@ -5395,12 +5395,13 @@ packages:
   '@sanity/generate-help-url@4.0.0':
     resolution: {integrity: sha512-Ooa4xkLT3TLaX+mw/13fq3IeGdnAkx4rbpVASvRVixzBBvvcL6jPqj50fjlCd+EhgB5GRXBCNNAy/hWXwjZEUA==}
 
-  '@sanity/google-maps-input@4.2.1':
-    resolution: {integrity: sha512-dN7ZMTQj/Vz7eXIQ1h8lvTyr1bu1QCLLVNsgFDbRpAIXIGHX2ZlVS8xiG4NWCTl9JAnxxg+EG2njnq7BKgvrOg==}
-    engines: {node: '>=18'}
+  '@sanity/google-maps-input@5.0.0':
+    resolution: {integrity: sha512-cUMmqsQWk2RqwkhaGFv5+wMmDFdA0mE+7ciemc0IOD/j/RcW3dCvrWY7UDQ9u5kr3SwnlqhKBs5a8YpVYQaMKQ==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      react: ^18 || ^19
-      sanity: ^3.19.0 || ^4.0.0-0 || ^5.0.0
+      react: ^19.2
+      react-dom: ^19.2
+      sanity: ^5 || ^6.0.0-0
       styled-components: ^6.1
 
   '@sanity/icons@3.7.4':
@@ -14746,17 +14747,16 @@ snapshots:
 
   '@sanity/generate-help-url@4.0.0': {}
 
-  '@sanity/google-maps-input@4.2.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)':
+  '@sanity/google-maps-input@5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)':
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.7)
-      '@sanity/incompatible-plugin': 1.0.5(react-dom@19.2.7)(react@19.2.7)
       '@sanity/ui': 3.2.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
       sanity: link:packages/sanity
       styled-components: '@sanity/styled-components@6.1.24(react-dom@19.2.7)(react@19.2.7)'
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
-      - react-dom
       - react-is
 
   '@sanity/icons@3.7.4(react@19.2.7)':
@@ -15527,8 +15527,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.61.0(typescript@5.9.3)
-      '@typescript-eslint/types': 8.61.0
+      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@5.9.3)
+      '@typescript-eslint/types': 8.56.1
       debug: 4.4.3(supports-color@8.1.1)
       typescript: 5.9.3
     transitivePeerDependencies:
