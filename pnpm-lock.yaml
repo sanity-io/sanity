@@ -914,7 +914,7 @@ importers:
         specifier: ^11.2.0
         version: 11.2.0
       date-fns:
-        specifier: ^4.1.0
+        specifier: ^4.4.0
         version: 4.4.0
       description-to-co-authors:
         specifier: ^0.3.0
@@ -1287,7 +1287,7 @@ importers:
         specifier: workspace:*
         version: link:../types
       date-fns:
-        specifier: ^4.1.0
+        specifier: ^4.4.0
         version: 4.4.0
       rxjs:
         specifier: ^7.8.2
@@ -1661,7 +1661,7 @@ importers:
         specifier: ^2.2.3
         version: 2.2.3
       date-fns:
-        specifier: ^4.1.0
+        specifier: ^4.4.0
         version: 4.4.0
       debug:
         specifier: ^4.4.3
