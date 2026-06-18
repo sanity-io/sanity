@@ -125,8 +125,8 @@ importers:
         specifier: ^4.1.8
         version: 4.1.9(@vitest/browser@4.1.9)(vitest@4.1.9)
       dotenv:
-        specifier: ^16.6.1
-        version: 16.6.1
+        specifier: ^17.4.2
+        version: 17.4.2
       dotenv-flow:
         specifier: ^4.1.0
         version: 4.1.0
@@ -342,8 +342,8 @@ importers:
         specifier: ^0.6.5
         version: 0.6.5
       dotenv:
-        specifier: ^16.6.1
-        version: 16.6.1
+        specifier: ^17.4.2
+        version: 17.4.2
       ora:
         specifier: ^8.2.0
         version: 8.2.0
@@ -1066,8 +1066,8 @@ importers:
   packages/@repo/utils:
     dependencies:
       dotenv:
-        specifier: ^16.6.1
-        version: 16.6.1
+        specifier: ^17.4.2
+        version: 17.4.2
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
@@ -1975,8 +1975,8 @@ importers:
         specifier: ^3.0.2
         version: 3.0.3
       dotenv:
-        specifier: ^16.6.1
-        version: 16.6.1
+        specifier: ^17.4.2
+        version: 17.4.2
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
