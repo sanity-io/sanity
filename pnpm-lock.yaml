@@ -1342,7 +1342,7 @@ importers:
         specifier: ^6.6.0
         version: 6.6.0
       '@codemirror/view':
-        specifier: ^6.43.0
+        specifier: ^6.43.1
         version: 6.43.1
       '@lezer/highlight':
         specifier: ^1.2.3
