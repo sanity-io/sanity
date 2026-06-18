@@ -162,13 +162,13 @@ export class Expression {
 
     // A missing key or non-object container mid-walk is falsy, matching the
     // behaviour for a missing single attribute.
-    let cursor: Probe | null = probe
+    let cursor: Probe = probe
     for (let i = 0; i < attrNames.length - 1; i++) {
       if (cursor.containerType() !== 'object') {
         return false
       }
       const next = cursor.getAttribute(attrNames[i])
-      if (next === undefined || next === null) {
+      if (next === null) {
         return false
       }
       cursor = next
