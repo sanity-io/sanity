@@ -116,7 +116,7 @@
     "eslint-plugin-tsdoc": "^0.5.2",
     "knip": "^6.16.1",
     "lefthook": "^2.1.6",
-    "npm-run-all2": "^6.2.6",
+    "npm-run-all2": "^9.0.2",
     "only-allow": "^1.2.2",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.70.0",
