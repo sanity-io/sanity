@@ -39,6 +39,6 @@
     "sanity": "workspace:*",
     "source-map": "^0.7.6",
     "tinyglobby": "^0.2.17",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   }
 }
