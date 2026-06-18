@@ -206,7 +206,7 @@
     "@sanity/ui": "catalog:",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.2",
-    "@sentry/react": "^8.55.2",
+    "@sentry/react": "^10.58.0",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.2",
     "@xstate/react": "^6.1.0",
@@ -254,7 +254,7 @@
     "use-device-pixel-ratio": "^1.1.2",
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.6.0",
-    "uuid": "^11.1.0",
+    "uuid": "^14.0.0",
     "web-vitals": "^5.3.0",
     "xstate": "^5.32.1"
   },

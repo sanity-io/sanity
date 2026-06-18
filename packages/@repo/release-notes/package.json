@@ -44,7 +44,7 @@
     "p-map": "^7.0.3",
     "semver": "^7.8.4",
     "turndown": "^7.2.2",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "@portabletext/markdown": "^1.4.0",
