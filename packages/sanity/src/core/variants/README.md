@@ -140,24 +140,24 @@ Covered behavior:
 - back navigation
 - read-only title, description, and condition summary
 - edit dialog
-- placeholder documents table
+- documents table wired to variant membership
 - footer with creation status and a detail-specific actions menu
 
 The detail actions menu is separate from the overview row menu. This is intentional because the two menus are expected to diverge as the detail page gains more actions.
 
-## Documents Table Placeholder
+## Documents Table
 
-`tool/detail/VariantDocumentsTable.tsx` is a placeholder for the future list of documents that belong to a variant.
+`tool/detail/VariantDocumentsTable.tsx` lists documents that belong to a variant.
 
-It currently receives an empty `SanityDocument[]`, but it already follows the release table layout:
+Data flow:
 
-- `Version` column placeholder
-- document type column
-- document preview/search column
-- edited date column
-- empty state
+- `useVariantDocuments(variantId)` fetches a flat list of variant-scoped document versions via `_system.variant._ref == $variantId`
+- `groupVariantDocumentsByGroup()` optionally groups that flat list into one row per document group
+- the table renders bundle chips, type, preview, and edited columns using the shared releases table component
 
-Pending work is to connect this to the real source of documents for a variant.
+To revert to one row per document version, pass the flat `useVariantDocuments()` results directly to the table and switch `rowId` from `groupId` to `document._id`.
+
+There is a tracked TODO to replace the fallback GROQ filter with `sanity::partOfVariant($variantId)` when the native function ships.
 
 ## Footer
 
@@ -170,7 +170,7 @@ Covered behavior:
 - detail-specific menu button
 - delete action navigates back to the overview after success
 
-The delete action currently does not confirm or check whether the variant has documents. That is pending until variant membership is implemented.
+The delete action currently does not confirm or check whether the variant has documents.
 
 ## Test Coverage
 
@@ -223,7 +223,7 @@ Local browser execution has previously hit `EMFILE: too many open files, watch` 
 ## Pending Work
 
 - Drop the local `SanityClientWithVariantsActions` typing wrapper once `@sanity/client` exports the variant definition action types.
-- Wire the detail documents table to the real list of documents that belong to a variant.
+- Replace `_system.variant._ref` document membership queries with `sanity::partOfVariant($variantId)`.
 - Decide how document counts affect deleting variants.
 - Add a delete confirmation or disabled state once variants can have documents.
 - Expand the detail-specific actions menu independently from the overview row menu.

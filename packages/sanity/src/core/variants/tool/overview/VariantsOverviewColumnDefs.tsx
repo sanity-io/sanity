@@ -6,11 +6,14 @@ import {type UseTranslationResponse, useTranslation} from '../../../i18n'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
 import {variantsLocaleNamespace} from '../../i18n'
-import {type SystemVariant} from '../../types'
 import {getVariantId, getVariantConditionsText, getVariantTitle} from '../util'
+import {type VariantOverviewRow} from './types'
 
-const VariantDocumentsCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, datum}) => {
-  if (datum.isLoading) {
+const VariantDocumentsCell: VisibleColumn<VariantOverviewRow>['cell'] = ({
+  cellProps,
+  datum: variant,
+}) => {
+  if (variant.isLoading) {
     return (
       <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
         <Text size={1}>
@@ -23,13 +26,16 @@ const VariantDocumentsCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, 
   return (
     <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
       <Text muted size={1}>
-        0
+        {variant.documentGroupCount ?? 0}
       </Text>
     </Flex>
   )
 }
 
-const VariantTitleCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, datum: variant}) => {
+const VariantTitleCell: VisibleColumn<VariantOverviewRow>['cell'] = ({
+  cellProps,
+  datum: variant,
+}) => {
   const {t} = useTranslation(variantsLocaleNamespace)
 
   const encodedVariantId = getVariantId(variant._id)
@@ -82,7 +88,7 @@ const VariantTitleCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, datu
 
 export function variantsOverviewColumnDefs(
   t: UseTranslationResponse<'variants', undefined>['t'],
-): Column<SystemVariant>[] {
+): Column<VariantOverviewRow>[] {
   return [
     {
       id: 'metadata.title',

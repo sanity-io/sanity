@@ -64,8 +64,14 @@ const variantsLocaleStrings = {
   'detail.documents.table.search-placeholder': 'Search documents',
   /** Type column header for variant document table. */
   'detail.documents.table.type': 'Type',
-  /** Version column header for variant document table. */
-  'detail.documents.table.version': 'Version',
+  /** Bundle column header for variant document table. */
+  'detail.documents.table.bundle': 'Bundle',
+  /** Validation error tooltip for a single error in the variant document table. */
+  'detail.documents.table.validation.error_one': '{{count}} validation error',
+  /** Validation error tooltip for multiple errors in the variant document table. */
+  'detail.documents.table.validation.error_other': '{{count}} validation errors',
+  /** Error message when variant documents fail to load. */
+  'detail.documents.error': 'Unable to load documents for this variant',
   /** Description for the missing Variant detail page. */
   'detail.not-found.description': 'The requested variant could not be found.',
   /** Title for the missing Variant detail page. */

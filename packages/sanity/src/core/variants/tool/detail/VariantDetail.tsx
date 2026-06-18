@@ -1,11 +1,12 @@
-import {type SanityDocument} from '@sanity/client'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {LoadingBlock} from '../../../components'
 import {useTranslation} from '../../../i18n'
+import {useActiveReleases} from '../../../releases/store/useActiveReleases'
+import {getReleaseTitleDetails} from '../../../releases/util/getReleaseTitleDetails'
 import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -15,14 +16,16 @@ import {
   getVariantDescription,
   getVariantTitle,
 } from '../util'
+import {groupVariantDocumentsByGroup} from './groupVariantDocumentsByGroup'
+import {useVariantDocuments} from './useVariantDocuments'
 import {VariantDetailFooter} from './VariantDetailFooter'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
-
-const EMPTY_VARIANT_DOCUMENTS: SanityDocument[] = []
 
 export function VariantDetail() {
   const router = useRouter()
   const {t} = useTranslation(variantsLocaleNamespace)
+  const {t: tCore} = useTranslation()
+  const {data: releases} = useActiveReleases()
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const variantIdRaw =
     typeof router.state.variantId === 'string' ? router.state.variantId : undefined
@@ -30,6 +33,27 @@ export function VariantDetail() {
   const {byId, loading} = useAllVariants()
 
   const variant = variantId ? byId.get(variantId) : undefined
+  const {
+    loading: documentsLoading,
+    results: variantDocuments,
+    error: variantDocumentsError,
+  } = useVariantDocuments(variant?._id)
+
+  const getReleaseTitle = useMemo(() => {
+    const releasesById = new Map(releases.map((release) => [release._id, release]))
+    const releaseTitleFallback = tCore('release.placeholder-untitled-release')
+
+    return (releaseRef: string) => {
+      const release = releasesById.get(releaseRef)
+
+      return getReleaseTitleDetails(release?.metadata?.title, releaseTitleFallback).fullTitle
+    }
+  }, [releases, tCore])
+
+  const tableRows = useMemo(
+    () => groupVariantDocumentsByGroup(variantDocuments, getReleaseTitle),
+    [getReleaseTitle, variantDocuments],
+  )
 
   if (loading) {
     return <LoadingBlock fill title={t('detail.loading')} />
@@ -98,7 +122,15 @@ export function VariantDetail() {
           </Flex>
         </Container>
         <Flex direction="column" flex={1} overflow="hidden" style={{minHeight: 0}}>
-          <VariantDocumentsTable documents={EMPTY_VARIANT_DOCUMENTS} />
+          {variantDocumentsError ? (
+            <Box padding={4}>
+              <Text muted size={1}>
+                {t('detail.documents.error')}
+              </Text>
+            </Box>
+          ) : (
+            <VariantDocumentsTable loading={documentsLoading} rows={tableRows} />
+          )}
         </Flex>
       </Flex>
       <VariantDetailFooter variant={variant} />

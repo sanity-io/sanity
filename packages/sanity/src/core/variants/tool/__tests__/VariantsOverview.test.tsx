@@ -72,6 +72,10 @@ vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../overview/useVariantDocumentGroupCounts', () => ({
+  useVariantDocumentGroupCounts: vi.fn(() => new Map()),
+}))
+
 setupVirtualListEnv()
 
 describe('VariantsOverview', () => {

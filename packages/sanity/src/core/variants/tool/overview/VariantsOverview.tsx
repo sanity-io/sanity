@@ -11,6 +11,8 @@ import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant} from '../../types'
 import {filterVariantsForSearch, getVariantId} from '../util'
+import {type VariantOverviewRow} from './types'
+import {useVariantDocumentGroupCounts} from './useVariantDocumentGroupCounts'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
 import {variantsOverviewColumnDefs} from './VariantsOverviewColumnDefs'
@@ -39,14 +41,24 @@ export function VariantsOverview() {
 
   const columnDefs = useMemo(() => variantsOverviewColumnDefs(t), [t])
   const renderRowActions = useCallback<
-    NonNullable<TableProps<SystemVariant, undefined>['rowActions']>
+    NonNullable<TableProps<VariantOverviewRow, undefined>['rowActions']>
   >(({datum}) => <VariantMenuButton variant={datum as SystemVariant} />, [])
 
   const variantsList = useMemo(() => variants ?? [], [variants])
+  const documentGroupCounts = useVariantDocumentGroupCounts()
+
+  const variantsWithDocumentCounts = useMemo<VariantOverviewRow[]>(
+    () =>
+      variantsList.map((variant) => ({
+        ...variant,
+        documentGroupCount: documentGroupCounts.get(variant._id) ?? 0,
+      })),
+    [documentGroupCounts, variantsList],
+  )
 
   const filteredVariants = useMemo(
-    () => filterVariantsForSearch(variantsList, searchQuery),
-    [variantsList, searchQuery],
+    () => filterVariantsForSearch(variantsWithDocumentCounts, searchQuery),
+    [searchQuery, variantsWithDocumentCounts],
   )
 
   const hasVariants = variantsList.length > 0
@@ -119,7 +131,7 @@ export function VariantsOverview() {
 
       {/* Full-width scroll region so table borders span the tool pane (same pattern as release detail summary). */}
       <Box flex={1} overflow="auto" ref={setScrollContainerRef}>
-        <Table<SystemVariant>
+        <Table<VariantOverviewRow>
           columnDefs={columnDefs}
           data={filteredVariants}
           emptyState={tableEmptyState}

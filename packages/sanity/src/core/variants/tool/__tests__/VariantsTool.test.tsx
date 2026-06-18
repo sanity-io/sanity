@@ -54,6 +54,26 @@ vi.mock('../../store/useAllVariants', () => ({
   })),
 }))
 
+vi.mock('../overview/useVariantDocumentGroupCounts', () => ({
+  useVariantDocumentGroupCounts: vi.fn(() => new Map()),
+}))
+
+vi.mock('../detail/useVariantDocuments', () => ({
+  useVariantDocuments: vi.fn(() => ({
+    loading: false,
+    results: [],
+    error: null,
+  })),
+}))
+
+vi.mock('../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => ({
+    data: [],
+    loading: false,
+    error: null,
+  })),
+}))
+
 setupVirtualListEnv()
 
 describe('VariantsTool', () => {
