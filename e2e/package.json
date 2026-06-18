@@ -21,7 +21,7 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
-    "@sanity/uuid": "^3.0.2",
+    "@sanity/uuid": "^3.0.3",
     "tsx": "^4.22.4"
   },
   "engines": {
