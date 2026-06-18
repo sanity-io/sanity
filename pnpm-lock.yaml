@@ -1706,8 +1706,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       nanoid:
-        specifier: ^3.3.11
-        version: 3.3.12
+        specifier: ^5.1.11
+        version: 5.1.11
       observable-callback:
         specifier: ^1.0.3
         version: 1.0.3(rxjs@7.8.2)
