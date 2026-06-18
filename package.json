@@ -105,7 +105,7 @@
     "@sanity/ui": "catalog:",
     "@types/node": "^24.6.1",
     "@typescript/native-preview": "catalog:",
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.9",
     "dotenv": "^17.4.2",
     "dotenv-flow": "^4.1.0",
     "esbuild-register": "catalog:",

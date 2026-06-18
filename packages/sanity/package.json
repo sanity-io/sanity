@@ -287,7 +287,7 @@
     "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/browser-playwright": "catalog:",
-    "@vitest/expect": "^4.1.8",
+    "@vitest/expect": "^4.1.9",
     "babel-plugin-react-compiler": "catalog:",
     "babel-plugin-styled-components": "catalog:",
     "blob-polyfill": "^9.0.20240710",

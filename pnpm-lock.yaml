@@ -53,7 +53,7 @@ catalogs:
       specifier: ^6.0.2
       version: 6.0.2
     '@vitest/browser-playwright':
-      specifier: ^4.1.8
+      specifier: ^4.1.9
       version: 4.1.9
     babel-plugin-react-compiler:
       specifier: ^1.0.0
@@ -94,7 +94,7 @@ catalogs:
 
 overrides:
   '@sanity/ui@3': ^3.2.0
-  vitest: ^4.1.8
+  vitest: ^4.1.9
 
 importers:
 
@@ -122,7 +122,7 @@ importers:
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
       '@vitest/coverage-v8':
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@vitest/browser@4.1.9)(vitest@4.1.9)
       dotenv:
         specifier: ^17.4.2
@@ -194,7 +194,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   dev/auth-test-studio:
@@ -790,7 +790,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   packages/@repo/debug-proxy:
@@ -827,7 +827,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   packages/@repo/package.bundle:
@@ -860,7 +860,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   packages/@repo/package.config:
@@ -966,7 +966,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   packages/@repo/test-config:
@@ -975,7 +975,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   packages/@repo/test-dts-exports:
@@ -1021,7 +1021,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
       zod:
         specifier: ^4.1.12
@@ -1156,7 +1156,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   packages/@sanity/schema:
@@ -1223,7 +1223,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   packages/@sanity/types:
@@ -1269,7 +1269,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   packages/@sanity/util:
@@ -1318,7 +1318,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   packages/@sanity/vision:
@@ -1463,7 +1463,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   packages/groq:
@@ -1878,7 +1878,7 @@ importers:
         specifier: 'catalog:'
         version: 4.1.9(playwright@1.60.0)(vite@8.0.16)(vitest@4.1.9)
       '@vitest/expect':
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9
       babel-plugin-react-compiler:
         specifier: 'catalog:'
@@ -1917,7 +1917,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
       vitest-browser-react:
         specifier: 'catalog:'
@@ -2009,7 +2009,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.8
+        specifier: ^4.1.9
         version: 4.1.9(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(vite@8.0.16)
 
   scripts:
@@ -6655,18 +6655,18 @@ packages:
     resolution: {integrity: sha512-Bq1rOGf9waevzG3EOkO/dene6bvKTUsZMVg8S1i+WH3JcMjuXEjiahP9rAqZRELUqjBySOJsvvSWqK/B3wjKQw==}
     peerDependencies:
       playwright: '*'
-      vitest: ^4.1.8
+      vitest: ^4.1.9
 
   '@vitest/browser@4.1.9':
     resolution: {integrity: sha512-j1BKtWmPcqpMhmx/L9EPLgAJpCb0zKfwoWLmqBbxaogCXHjOwHFSEoHCBfnGtx93xKQwilZ26m+UOsHqHMkRNg==}
     peerDependencies:
-      vitest: ^4.1.8
+      vitest: ^4.1.9
 
   '@vitest/coverage-v8@4.1.9':
     resolution: {integrity: sha512-G9/lgqibheLVBDRuya45EbsEXTYcWoSG+TLg7i2axuzx0Eq62eXn+aWXyaVdV5vKvFSWd6ywcX8hA7la9Pvu8g==}
     peerDependencies:
       '@vitest/browser': 4.1.9
-      vitest: ^4.1.8
+      vitest: ^4.1.9
     peerDependenciesMeta:
       '@vitest/browser':
         optional: true
@@ -11255,7 +11255,7 @@ packages:
       '@types/react-dom': ^18.0.0 || ^19.0.0
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
-      vitest: ^4.1.8
+      vitest: ^4.1.9
     peerDependenciesMeta:
       '@types/react':
         optional: true
