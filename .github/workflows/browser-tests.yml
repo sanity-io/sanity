@@ -74,7 +74,6 @@ jobs:
       - name: Install Playwright system dependencies
         run: pnpm exec playwright install-deps ${{ matrix.browser }}
       - name: Install Playwright Browsers
-        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: pnpm exec playwright install ${{ matrix.browser }}
 
       - name: Build packages
