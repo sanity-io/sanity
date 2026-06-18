@@ -96,6 +96,20 @@ export type NarrowPreview<
     : unknown
 
 /** @beta */
+export type MaybePreviewProperty<
+  TType extends string,
+  TAlias extends IntrinsicTypeName | undefined,
+  TPreview,
+> = DefineSchemaType<TType, TAlias> extends {preview?: object}
+  ? {preview?: TPreview}
+  : unknown
+
+/** @beta */
+export type PreserveDefinedPreview<TPreview> = TPreview extends undefined
+  ? unknown
+  : {preview: TPreview}
+
+/** @beta */
 // Must type-widen some fields on the way out of the define functions to be compatible with FieldDefinition and ArrayDefinition
 export interface WidenValidation {
   validation?: SchemaValidationValue

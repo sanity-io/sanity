@@ -3,7 +3,10 @@ import {
   type DefineSchemaBase,
   type DefineSchemaOptions,
   type MaybeAllowUnknownProps,
+  type MaybePreview,
+  type MaybePreviewProperty,
   type NarrowPreview,
+  type PreserveDefinedPreview,
   type StrictDefinition,
   type WidenInitialValue,
   type WidenValidation,
@@ -177,17 +180,19 @@ export function defineType<
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
+  TPreview extends MaybePreview<TSelect, TPrepareValue> | undefined,
 >(
   schemaDefinition: {
     type: TType
     name: TName
   } & DefineSchemaBase<TType, TAlias> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
+    MaybePreviewProperty<TType, TAlias, TPreview> &
     MaybeAllowUnknownProps<TStrict>,
 
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
-): typeof schemaDefinition {
-  return schemaDefinition
+): typeof schemaDefinition & PreserveDefinedPreview<TPreview> {
+  return schemaDefinition as typeof schemaDefinition & PreserveDefinedPreview<TPreview>
 }
 
 /**
@@ -217,19 +222,27 @@ export function defineField<
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
+  TPreview extends MaybePreview<TSelect, TPrepareValue> | undefined,
 >(
   schemaField: {
     type: TType
     name: TName
   } & DefineSchemaBase<TType, TAlias> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
+    MaybePreviewProperty<TType, TAlias, TPreview> &
     MaybeAllowUnknownProps<TStrict> &
     FieldDefinitionBase,
 
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
-): typeof schemaField & WidenValidation & WidenInitialValue {
+): typeof schemaField &
+  PreserveDefinedPreview<TPreview> &
+  WidenValidation &
+  WidenInitialValue {
   // TODO: re-evaluate the need for this cast
-  return schemaField as typeof schemaField & WidenValidation & WidenInitialValue
+  return schemaField as typeof schemaField &
+    PreserveDefinedPreview<TPreview> &
+    WidenValidation &
+    WidenInitialValue
 }
 
 /**
@@ -259,6 +272,7 @@ export function defineArrayMember<
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
+  TPreview extends MaybePreview<TSelect, TPrepareValue> | undefined,
 >(
   arrayOfSchema: {
     type: TType
@@ -271,12 +285,19 @@ export function defineArrayMember<
     name?: TName
   } & DefineArrayMemberBase<TType, TAlias> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
+    MaybePreviewProperty<TType, TAlias, TPreview> &
     MaybeAllowUnknownProps<TStrict>,
 
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
-): typeof arrayOfSchema & WidenValidation & WidenInitialValue {
+): typeof arrayOfSchema &
+  PreserveDefinedPreview<TPreview> &
+  WidenValidation &
+  WidenInitialValue {
   // TODO: re-evaluate the need for this cast
-  return arrayOfSchema as typeof arrayOfSchema & WidenValidation & WidenInitialValue
+  return arrayOfSchema as typeof arrayOfSchema &
+    PreserveDefinedPreview<TPreview> &
+    WidenValidation &
+    WidenInitialValue
 }
 
 /**

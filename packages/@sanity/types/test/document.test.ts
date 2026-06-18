@@ -85,7 +85,7 @@ describe('document types', () => {
         fields: [{type: 'string', name: 'string'}],
       })
 
-      defineType({
+      const documentWithPreview = defineType({
         type: 'document',
         name: 'custom-document',
         preview: {
@@ -99,6 +99,8 @@ describe('document types', () => {
         },
         fields: [{type: 'string', name: 'string'}],
       })
+
+      documentWithPreview.preview.prepare({title: 'Title', subtitle: 'Subtitle'})
 
       defineType({
         type: 'document',
@@ -131,7 +133,7 @@ describe('document types', () => {
         fields: [{type: 'string', name: 'string'}],
       })
 
-      defineField({
+      const fieldWithPreview = defineField({
         type: 'object',
         name: 'custom-object-field',
         preview: {
@@ -146,6 +148,25 @@ describe('document types', () => {
         },
         fields: [{type: 'string', name: 'string'}],
       })
+
+      fieldWithPreview.preview.prepare({title: 'Title'})
+
+      const arrayMemberWithPreview = defineArrayMember({
+        type: 'object',
+        name: 'custom-array-object',
+        preview: {
+          select: {
+            title: 'a',
+            subtitle: 'b',
+          },
+          prepare: ({title, subtitle}) => {
+            return {title, subtitle}
+          },
+        },
+        fields: [{type: 'string', name: 'string'}],
+      })
+
+      arrayMemberWithPreview.preview.prepare({title: 'Title', subtitle: 'Subtitle'})
 
       defineArrayMember({
         type: 'object',
