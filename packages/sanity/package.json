@@ -297,7 +297,7 @@
     "rimraf": "catalog:",
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
-    "swr": "2.2.5",
+    "swr": "2.4.1",
     "tsx": "^4.22.4",
     "vite": "catalog:",
     "vitest": "catalog:",
