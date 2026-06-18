@@ -160,7 +160,7 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 

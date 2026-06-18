@@ -29,7 +29,7 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true'
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium firefox
+        run: pnpm exec playwright install --with-deps chromium firefox
 
   test:
     if: needs.install.outputs.has_code_changes == 'true'
@@ -67,7 +67,7 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
@@ -80,7 +80,7 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.project }}
+        run: pnpm exec playwright install --with-deps ${{ matrix.project }}
 
       - name: Build
         run: pnpm build

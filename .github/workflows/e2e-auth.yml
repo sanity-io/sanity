@@ -29,7 +29,7 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true'
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers
@@ -42,7 +42,7 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Build packages and auth-test-studio
         if: steps.changes.outputs.has_changes == 'true'
