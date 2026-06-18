@@ -73,3 +73,38 @@ test('Expression toIndicies', () => {
   const index = new Expression(parseAsPath('[2]').nodes[0])
   expect([2]).toEqual(index.toIndicies(new PlainProbe(['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'])))
 })
+
+// Regression for https://github.com/sanity-io/sanity/issues/5313.
+//
+// The parser used to only accept a single-attribute LHS in a filter, and the
+// evaluator used to throw `Constraint target path not supported` for any
+// non-attribute LHS. Both surfaces now accept a dotted-attribute LHS like
+// `asset._ref`. These tests pin the runtime behaviour against `PlainProbe`,
+// covering equality, deep paths, the existence operator (`?`), and the
+// short-circuit cases (missing key, non-object container mid-walk).
+test('Expression constraints with dotted-attribute LHS — issue #5313', () => {
+  // `asset._ref == "image-abc"` — the exact shape the user reported.
+  const refCompare = new Expression(parseAsPath('[asset._ref == "image-abc"]').nodes[0])
+  expect(true).toEqual(refCompare.testConstraint(new PlainProbe({asset: {_ref: 'image-abc'}})))
+  expect(false).toEqual(refCompare.testConstraint(new PlainProbe({asset: {_ref: 'image-xyz'}})))
+
+  // Missing intermediate attribute short-circuits to false (does NOT throw).
+  expect(false).toEqual(refCompare.testConstraint(new PlainProbe({asset: null})))
+  expect(false).toEqual(refCompare.testConstraint(new PlainProbe({})))
+
+  // Non-object container mid-walk short-circuits to false.
+  expect(false).toEqual(refCompare.testConstraint(new PlainProbe({asset: 'not-an-object'})))
+
+  // Deeper chains work just as well.
+  const deep = new Expression(parseAsPath('[meta.author.name == "jane"]').nodes[0])
+  expect(true).toEqual(deep.testConstraint(new PlainProbe({meta: {author: {name: 'jane'}}})))
+  expect(false).toEqual(deep.testConstraint(new PlainProbe({meta: {author: {name: 'bob'}}})))
+  expect(false).toEqual(deep.testConstraint(new PlainProbe({meta: {author: {}}})))
+
+  // Existence constraint `?` over a dotted LHS — the leaf must exist and be
+  // primitive for the constraint to be true.
+  const exists = new Expression(parseAsPath('[asset._ref?]').nodes[0])
+  expect(true).toEqual(exists.testConstraint(new PlainProbe({asset: {_ref: 'image-abc'}})))
+  expect(false).toEqual(exists.testConstraint(new PlainProbe({asset: {}})))
+  expect(false).toEqual(exists.testConstraint(new PlainProbe({})))
+})

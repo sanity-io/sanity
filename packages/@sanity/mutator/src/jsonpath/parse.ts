@@ -176,11 +176,46 @@ class Parser {
     return this.parseNumber()
   }
 
+  // Parse an attribute LHS for a filter expression, optionally a dotted chain
+  // (e.g. `asset._ref` or `meta.author.name`). Returns an `AttributeExpr` when
+  // the LHS is a single attribute, or a `PathExpr` when it is a dotted chain.
+  // Only `.<attribute>` continuations are allowed — no `[unions]` or `..recursive`
+  // segments — because anything outside that subset makes the rewind semantics
+  // in `parseFilterExpression()` ambiguous.
+  parseAttributePath(): AttributeExpr | PathExpr | null {
+    const first = this.parseAttribute()
+    if (!first) {
+      return null
+    }
+
+    const nodes: AttributeExpr[] = [first]
+    while (this.probe({type: 'operator', symbol: '.'})) {
+      // Only consume the dot if a `.attribute` actually follows. We use `probe`
+      // first so that a stray `.` (which shouldn't happen, but if it did) doesn't
+      // get consumed and break rewind. Then `match` it for real.
+      this.match({type: 'operator', symbol: '.'})
+      const next = this.parseAttribute()
+      if (!next) {
+        throw new Error("Expected attribute name following '.'")
+      }
+      nodes.push(next)
+    }
+
+    if (nodes.length === 1) {
+      return nodes[0]
+    }
+
+    return {
+      type: 'path',
+      nodes: nodes,
+    }
+  }
+
   // TODO: Reorder constraints so that literal value is always on rhs, and variable is always
   // on lhs.
   parseFilterExpression(): ConstraintExpr | null {
     const start = this.i
-    const expr = this.parseAttribute() || this.parseAlias()
+    const expr = this.parseAttributePath() || this.parseAlias()
     if (!expr) {
       return null
     }

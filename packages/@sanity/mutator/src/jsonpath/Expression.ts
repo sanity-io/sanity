@@ -136,7 +136,7 @@ export class Expression {
       throw new Error('No LHS of expression')
     }
 
-    if (lhs.type !== 'attribute') {
+    if (lhs.type !== 'attribute' && lhs.type !== 'path') {
       throw new Error(`Constraint target ${lhs.type} not supported`)
     }
 
@@ -144,7 +144,43 @@ export class Expression {
       return false
     }
 
-    const lhsValue = probe.getAttribute(lhs.name)
+    // Walk the LHS down the probe. A bare `attribute` LHS is a single hop; a
+    // `path` LHS (e.g. `asset._ref`, from a filter like `[asset._ref == "x"]`,
+    // see #5313) walks the chain of attribute names. If any intermediate hop
+    // encounters a non-object container or a missing key, the constraint is
+    // falsy (same semantics as a missing single attribute).
+    const attrNames =
+      lhs.type === 'attribute'
+        ? [lhs.name]
+        : lhs.nodes.map((node) => {
+            // `parseAttributePath()` in parse.ts only ever emits `AttributeExpr`
+            // segments inside a path LHS. Anything else is a programming error
+            // upstream and we'd rather see a loud throw than silently mis-match.
+            if (node.type !== 'attribute') {
+              throw new Error(
+                `Constraint target path with non-attribute segment '${node.type}' not supported`,
+              )
+            }
+            return node.name
+          })
+
+    let cursor: Probe | null = probe
+    for (let i = 0; i < attrNames.length - 1; i++) {
+      if (cursor.containerType() !== 'object') {
+        return false
+      }
+      const next = cursor.getAttribute(attrNames[i])
+      if (next === undefined || next === null) {
+        return false
+      }
+      cursor = next
+    }
+
+    if (cursor.containerType() !== 'object') {
+      return false
+    }
+
+    const lhsValue = cursor.getAttribute(attrNames[attrNames.length - 1])
     if (lhsValue === undefined || lhsValue === null || lhsValue.containerType() !== 'primitive') {
       // LHS is void and empty, or it is a collection
       return false
