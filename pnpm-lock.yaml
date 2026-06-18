@@ -1490,7 +1490,7 @@ importers:
   packages/sanity:
     dependencies:
       '@algorithm.ts/lcs':
-        specifier: ^4.0.5
+        specifier: ^4.0.6
         version: 4.0.6
       '@date-fns/tz':
         specifier: ^1.5.0
