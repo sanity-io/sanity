@@ -64,7 +64,7 @@ jobs:
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
-        if: steps.changes.outputs.has_changes == 'true'
+        if: steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium firefox
 
   dataset-setup:
@@ -201,6 +201,7 @@ jobs:
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps ${{ matrix.project }}
 
       - name: Run E2E tests
