@@ -881,7 +881,7 @@ importers:
         specifier: ^0.72.1
         version: 0.72.1(zod@4.4.3)
       '@conventional-changelog/git-client':
-        specifier: ^2.5.1
+        specifier: ^2.7.0
         version: 2.7.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
       '@octokit/rest':
         specifier: ^22.0.0

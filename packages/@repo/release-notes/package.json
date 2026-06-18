@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.72.1",
-    "@conventional-changelog/git-client": "^2.5.1",
+    "@conventional-changelog/git-client": "^2.7.0",
     "@octokit/rest": "^22.0.0",
     "@portabletext/toolkit": "^5.0.2",
     "@sanity/client": "catalog:",
