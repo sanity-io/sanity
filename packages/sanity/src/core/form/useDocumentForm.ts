@@ -40,7 +40,7 @@ import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
 import {useValidationStatus} from '../hooks/useValidationStatus'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
-import {type ReleaseId} from '../perspective/types'
+import {type PerspectiveBundle, type ReleaseId} from '../perspective/types'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {useDocumentVersionTypeSortedList} from '../releases/hooks/useDocumentVersionTypeSortedList'
 import {useOnlyHasVersions} from '../releases/hooks/useOnlyHasVersions'
@@ -64,11 +64,13 @@ import {
   EMPTY_ARRAY,
   getDraftId,
   getPublishedId,
+  getTargetDocument,
   getVersionFromId,
   getVersionId,
   isSystemBundle,
   useUnique,
 } from '../util'
+import {type SystemVariant} from '../variants/types'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
 
@@ -89,6 +91,16 @@ interface DocumentFormOptions {
     | ((editState: EditStateFor) => Partial<SanityDocument>)
     | null
   onFocusPath?: (path: Path) => void
+  /**
+   * The currently selected variant, if any. When set, the form resolves the variant-scoped
+   * version document for the current `bundle` and makes it editable.
+   */
+  selectedVariant?: SystemVariant
+  /**
+   * The canonical bundle id (`published`, `drafts` or release id) of the current perspective.
+   * Used together with `selectedVariant` to resolve the variant-scoped version document.
+   */
+  bundle?: PerspectiveBundle
   changesOpen?: boolean
   /**
    * Callback that allows to transform the value before it's passed to the form
@@ -148,6 +160,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     releaseId,
     initialFocusPath,
     selectedPerspectiveName,
+    selectedVariant,
+    bundle,
     readOnly: readOnlyProp,
     onFocusPath,
     displayInlineChanges,
@@ -155,10 +169,29 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
-  const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
+  const {
+    data: documentVersions,
+    versions: documentVersionStubs,
+    loading: documentVersionsLoading,
+  } = useDocumentVersions({
     documentId,
   })
   const workspace = useWorkspace()
+  const isVariantsEnabled = Boolean(workspace.beta?.variants?.enabled)
+
+  // When a variant is selected and a variant-scoped version exists for the current bundle, resolve
+  // its (non-deterministic) `scopeId` so it can be threaded through the version-editing pipeline.
+  const variantScopeId = useMemo(() => {
+    if (!isVariantsEnabled || !selectedVariant || typeof bundle === 'undefined') {
+      return undefined
+    }
+    const targetVariantDocument = getTargetDocument({
+      bundle,
+      variant: selectedVariant._id,
+      documentVersions: documentVersionStubs,
+    })
+    return targetVariantDocument?._system.scopeId ?? undefined
+  }, [selectedVariant, bundle, documentVersionStubs, isVariantsEnabled])
 
   const enhancedObjectDialogEnabled = true
 
@@ -185,6 +218,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       : undefined
 
   const activeDocumentReleaseId = useMemo(() => {
+    // When editing a variant-scoped document, the resolved scopeId identifies the version document
+    // (`versions.<scopeId>.<publishedId>`) regardless of which bundle is selected.
+    if (variantScopeId) {
+      return variantScopeId
+    }
     if (isSystemBundle(selectedPerspectiveName)) {
       return undefined
     }
@@ -200,7 +238,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
 
     return getVersionFromId(firstVersion ?? '')
-  }, [documentVersions, onlyHasVersions, selectedPerspectiveName, firstVersion])
+  }, [variantScopeId, documentVersions, onlyHasVersions, selectedPerspectiveName, firstVersion])
 
   const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
 
@@ -211,6 +249,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
+    // When a variant-scoped version was resolved, the editable document is always the version
+    // document, regardless of which bundle (published/drafts/release) the variant belongs to.
+    if (variantScopeId) {
+      return editState.version || baseValue
+    }
     // Only treat releaseId as an actual release/anonymous bundle if it's not a system bundle ('published' or 'drafts')
     // System bundles are handled by subsequent conditions below
     if (releaseId && !isSystemBundle(releaseId)) {
@@ -239,6 +282,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
     return editState?.draft || editState?.published || baseValue
   }, [
+    variantScopeId,
     documentId,
     documentType,
     editState.draft,
@@ -371,39 +415,45 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const isLocked = editState.transactionSyncLock?.enabled
     const willBeUnpublished = value ? isGoingToUnpublish(value) : false
 
-    // in cases where the document has no draft or published, but has a version,
-    // and that version doesn't match current pinned version
-    // we disable editing
-    if (
-      editState.version &&
-      !editState.draft &&
-      !editState.published &&
-      onlyHasVersions &&
-      selectedPerspectiveName !== getVersionFromId(editState.version._id) &&
-      isNewDocument(editState) === false
-    ) {
-      return true
+    // When editing a resolved variant-scoped version, the document id intentionally doesn't match
+    // the selected bundle/perspective (variant docs live under `versions.<scopeId>.<publishedId>`),
+    // so the perspective/bundle-mismatch guards below must be skipped.
+    if (!variantScopeId) {
+      // in cases where the document has no draft or published, but has a version,
+      // and that version doesn't match current pinned version
+      // we disable editing
+      if (
+        editState.version &&
+        !editState.draft &&
+        !editState.published &&
+        onlyHasVersions &&
+        selectedPerspectiveName !== getVersionFromId(editState.version._id) &&
+        isNewDocument(editState) === false
+      ) {
+        return true
+      }
+
+      if (!liveEdit && selectedPerspectiveName === 'published') {
+        return true
+      }
+
+      // If a release is selected, validate that the document id matches the selected release id.
+      //
+      // If the user is viewing a new document (a document that exists locally, but has not yet been
+      // created in the dataset), they are permitted to edit it, regardless of which perspective was
+      // selected when they created it. This will cause it to be created in the dataset, attached to
+      // the currently selected perspective.
+      if (
+        releaseId &&
+        getVersionFromId(value._id) !== releaseId &&
+        isNewDocument(editState) === false
+      ) {
+        return true
+      }
     }
 
     // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
     if (liveEdit && editState.draft?._id) {
-      return true
-    }
-    if (!liveEdit && selectedPerspectiveName === 'published') {
-      return true
-    }
-
-    // If a release is selected, validate that the document id matches the selected release id.
-    //
-    // If the user is viewing a new document (a document that exists locally, but has not yet been
-    // created in the dataset), they are permitted to edit it, regardless of which perspective was
-    // selected when they created it. This will cause it to be created in the dataset, attached to
-    // the currently selected perspective.
-    if (
-      releaseId &&
-      getVersionFromId(value._id) !== releaseId &&
-      isNewDocument(editState) === false
-    ) {
       return true
     }
 
@@ -434,6 +484,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     selectedPerspectiveName,
     liveEdit,
     releaseId,
+    variantScopeId,
     ready,
     isReleaseLocked,
     readOnlyProp,

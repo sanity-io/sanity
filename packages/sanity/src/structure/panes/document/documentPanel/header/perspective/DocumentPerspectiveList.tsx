@@ -1,6 +1,7 @@
 import {Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 import {
+  Chip,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   isGoingToUnpublish,
@@ -95,6 +96,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     isPublishedChipDisabled,
     isPublishSelected,
     nonReleaseVersions,
+    selectedVariantDisplay,
   } = useDocumentPerspectiveList()
 
   return (
@@ -273,6 +275,14 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         getVersionDisplay={getVersionDisplay}
         mode="versions"
       />
+      {selectedVariantDisplay ? (
+        <Chip
+          selected
+          tone={selectedVariantDisplay.tone}
+          mode="bleed"
+          text={selectedVariantDisplay.displayName}
+        />
+      ) : null}
       {variantVersions.length > 0 ? (
         <NonReleaseVersionsSelect
           nonReleaseVersions={variantVersions}

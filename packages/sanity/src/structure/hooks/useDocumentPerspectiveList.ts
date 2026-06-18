@@ -21,6 +21,7 @@ import {
   useAllVariants,
   type VersionInfoDocumentStub,
   useSetVariant,
+  getTargetDocument,
 } from 'sanity'
 
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
@@ -58,6 +59,8 @@ interface DocumentPerspectiveList {
   variantVersions: VersionInfoDocumentStub[]
   /** Handles the selection of a variant. */
   handleVariantSelectionChange: (version: VersionInfoDocumentStub) => void
+  /** Display props for the currently selected variant in the active bundle, if any. */
+  selectedVariantDisplay: {displayName: string; tone: BadgeTone} | null
 }
 
 /**
@@ -71,7 +74,7 @@ interface DocumentPerspectiveList {
  * @internal
  */
 export function useDocumentPerspectiveList(): DocumentPerspectiveList {
-  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName, selectedVariant, bundle} = usePerspective()
   const setPerspective = useSetPerspective()
   const {params} = usePaneRouter()
   const schema = useSchema()
@@ -232,7 +235,7 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
       const variantTitle = variant ? getVariantTitle(variant) : (variantId ?? '')
       return {
         displayName: `${variantTitle} [${version._system.bundleId || 'published'}]`,
-        tone: 'caution' as const,
+        tone: version._system.bundleId ? ('caution' as const) : ('positive' as const),
       }
     },
     [getAgentVersionDisplay, variants],
@@ -260,10 +263,30 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     (version: VersionInfoDocumentStub) => {
       const variantId = version._system.variant?._ref
       const variant = variantId ? variants.get(variantId) : undefined
-      setVariant(variant ?? undefined)
+      const versionBundle = version._system.bundleId
+      const perspective = !versionBundle ? 'published' : versionBundle
+      setVariant(variant ?? undefined, {perspective})
     },
     [setVariant, variants],
   )
+
+  // Temporary display the selected variant in the header, this will be replaced by the inventory.
+  const selectedVariantDisplay = useMemo(() => {
+    if (!selectedVariant) {
+      return null
+    }
+
+    const targetVariantDocument = getTargetDocument({
+      bundle,
+      variant: selectedVariant._id,
+      documentVersions,
+    })
+
+    if (targetVariantDocument) {
+      return getVersionDisplay(targetVariantDocument)
+    }
+    return null
+  }, [selectedVariant, bundle, documentVersions, getVersionDisplay])
 
   return {
     filteredReleases,
@@ -280,5 +303,6 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     nonReleaseVersions,
     variantVersions,
     handleVariantSelectionChange,
+    selectedVariantDisplay,
   }
 }
