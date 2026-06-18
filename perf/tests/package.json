@@ -20,7 +20,7 @@
     "dotenv": "^17.4.2",
     "lodash-es": "^4.18.1",
     "rxjs": "^7.8.2",
-    "tinyglobby": "^0.2.15"
+    "tinyglobby": "^0.2.17"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",
