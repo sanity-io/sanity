@@ -127,7 +127,7 @@
     "tsx": "^4.22.4",
     "turbo": "^2.9.16",
     "typedoc": "^0.28.16",
-    "vercel": "^48.12.1",
+    "vercel": "^54.14.0",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
