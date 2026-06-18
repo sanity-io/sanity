@@ -21,7 +21,7 @@
     "minimist": "^1.2.8",
     "rimraf": "catalog:",
     "rxjs": "^7.8.2",
-    "semver": "^7.7.3",
+    "semver": "^7.8.4",
     "tinyglobby": "^0.2.15"
   },
   "engines": {
