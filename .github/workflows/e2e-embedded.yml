@@ -39,7 +39,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
       - name: Install Playwright Browsers
         if: steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
@@ -76,7 +76,7 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
