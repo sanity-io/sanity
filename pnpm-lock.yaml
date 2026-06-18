@@ -152,7 +152,7 @@ importers:
         specifier: ^6.16.1
         version: 6.16.1
       lefthook:
-        specifier: ^2.1.6
+        specifier: ^2.1.9
         version: 2.1.9
       npm-run-all2:
         specifier: ^9.0.2
