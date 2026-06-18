@@ -308,7 +308,7 @@ importers:
   dev/efps:
     dependencies:
       sanity-plugin-internationalized-array:
-        specifier: ^5.1.6
+        specifier: ^5.1.8
         version: 5.1.9(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.1.3)(@sanity/language-filter@5.0.4)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       styled-components:
         specifier: 'catalog:'
@@ -520,7 +520,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
-        specifier: ^5.1.6
+        specifier: ^5.1.8
         version: 5.1.9(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.1.3)(@sanity/language-filter@5.0.4)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       sanity-plugin-markdown:
         specifier: 8.0.7
@@ -541,7 +541,7 @@ importers:
   dev/test-create-integration-studio:
     dependencies:
       '@sanity/code-input':
-        specifier: ^7.1.3
+        specifier: ^7.1.4
         version: 7.1.4(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(codemirror@6.0.2)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       react:
         specifier: 'catalog:'
@@ -632,7 +632,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: ^5.4.3
+        specifier: ^5.4.4
         version: 5.4.4(@emotion/is-prop-valid@1.4.0)(@sanity/client@7.23.0)(@sanity/styled-components@6.1.24)(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(typescript@5.9.3)
       '@turf/helpers':
         specifier: ^6.5.0
@@ -674,13 +674,13 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-asset-source-unsplash:
-        specifier: ^7.0.8
+        specifier: ^7.0.9
         version: 7.0.9(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@types/react@19.2.17)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       sanity-plugin-hotspot-array:
         specifier: ^5.0.1
         version: 5.0.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       sanity-plugin-internationalized-array:
-        specifier: ^5.1.6
+        specifier: ^5.1.8
         version: 5.1.9(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.1.3)(@sanity/language-filter@5.0.4)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       sanity-plugin-markdown:
         specifier: 8.0.7
