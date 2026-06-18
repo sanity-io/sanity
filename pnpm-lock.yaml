@@ -1652,7 +1652,7 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.1)
       classnames:
-        specifier: ^2.2.5
+        specifier: ^2.5.1
         version: 2.5.1
       color2k:
         specifier: ^2.0.3
