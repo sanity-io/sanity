@@ -126,7 +126,7 @@
     "@date-fns/utc": "^2.1.1",
     "@sanity/client": "catalog:",
     "@sanity/types": "workspace:*",
-    "date-fns": "^4.1.0",
+    "date-fns": "^4.4.0",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {

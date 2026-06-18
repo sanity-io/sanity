@@ -494,6 +494,48 @@ export const variantsEnabledReducer = (opts: {
   return result
 }
 
+export const documentGroupInventoryEnabledReducer = ({
+  config,
+  initialValue,
+}: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
+    const documentGroupInventory: unknown = innerConfig.beta?.documentGroupInventory
+
+    if (typeof documentGroupInventory === 'undefined') {
+      return value
+    }
+
+    if (!isRecord(documentGroupInventory)) {
+      throw new Error(
+        `Expected \`beta.documentGroupInventory\` to be an object, but received ${getPrintableType(
+          documentGroupInventory,
+        )}`,
+      )
+    }
+
+    const enabled = documentGroupInventory.enabled
+
+    if (typeof enabled === 'undefined') {
+      return value
+    }
+
+    if (typeof enabled === 'boolean') {
+      return enabled
+    }
+
+    throw new Error(
+      `Expected \`beta.documentGroupInventory.enabled\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+}
+
 export const mediaLibraryEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean

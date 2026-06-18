@@ -696,9 +696,11 @@ import type {
   getSchemaTypeTitle,
   getSearchableTypes,
   getSelectedVariant,
+  getTargetDocument,
   getTemplatePermissions,
   getValueAtPath,
   getValueError,
+  getVariantTitle,
   getVersionFromId,
   getVersionId,
   getVersionInlineBadge,
@@ -838,6 +840,7 @@ import type {
   isDeprecatedSchemaType,
   isDeprecationConfiguration,
   isDev,
+  isDocumentInSelectedVariant,
   isDocumentLimitError,
   isDocumentSchemaType,
   isDraft,
@@ -1414,6 +1417,7 @@ import type {
   SyncState,
   SystemBundle,
   systemBundles,
+  SystemVariant,
   TagsArrayInput,
   TagsArrayInputProps,
   TagValue,
@@ -1515,6 +1519,7 @@ import type {
   useActiveWorkspace,
   useAddonDataset,
   useAgentVersionDisplay,
+  useAllVariants,
   useAnnotationColor,
   useArchivedReleases,
   useCanvasCompanionDoc,
@@ -1686,6 +1691,7 @@ import type {
   useUserStore,
   useValidationStatus,
   useValuePreview,
+  useVariantDocumentOperations,
   useVersionOperations,
   useVirtualizerScrollInstance,
   useVisibleWorkspaces,
@@ -3847,6 +3853,9 @@ describe('sanity', () => {
   test('getSelectedVariant', () => {
     expectTypeOf<typeof getSelectedVariant>().toBeFunction()
   })
+  test('getTargetDocument', () => {
+    expectTypeOf<typeof getTargetDocument>().toBeFunction()
+  })
   test('getTemplatePermissions', () => {
     expectTypeOf<typeof getTemplatePermissions>().toBeFunction()
   })
@@ -3855,6 +3864,9 @@ describe('sanity', () => {
   })
   test('getValueError', () => {
     expectTypeOf<typeof getValueError>().toBeFunction()
+  })
+  test('getVariantTitle', () => {
+    expectTypeOf<typeof getVariantTitle>().toBeFunction()
   })
   test('getVersionFromId', () => {
     expectTypeOf<typeof getVersionFromId>().toBeFunction()
@@ -4273,6 +4285,9 @@ describe('sanity', () => {
   })
   test('isDev', () => {
     expectTypeOf<typeof isDev>().not.toBeNever()
+  })
+  test('isDocumentInSelectedVariant', () => {
+    expectTypeOf<typeof isDocumentInSelectedVariant>().toBeFunction()
   })
   test('isDocumentLimitError', () => {
     expectTypeOf<typeof isDocumentLimitError>().not.toBeNever()
@@ -6009,6 +6024,9 @@ describe('sanity', () => {
   test('systemBundles', () => {
     expectTypeOf<typeof systemBundles>().not.toBeNever()
   })
+  test('SystemVariant', () => {
+    expectTypeOf<SystemVariant>().toBeObject()
+  })
   test('TagsArrayInput', () => {
     expectTypeOf<typeof TagsArrayInput>().toBeFunction()
   })
@@ -6313,6 +6331,9 @@ describe('sanity', () => {
   })
   test('useAgentVersionDisplay', () => {
     expectTypeOf<typeof useAgentVersionDisplay>().toBeFunction()
+  })
+  test('useAllVariants', () => {
+    expectTypeOf<typeof useAllVariants>().toBeFunction()
   })
   test('useAnnotationColor', () => {
     expectTypeOf<typeof useAnnotationColor>().toBeFunction()
@@ -6828,6 +6849,9 @@ describe('sanity', () => {
   })
   test('useValuePreview', () => {
     expectTypeOf<typeof useValuePreview>().toBeFunction()
+  })
+  test('useVariantDocumentOperations', () => {
+    expectTypeOf<typeof useVariantDocumentOperations>().toBeFunction()
   })
   test('useVersionOperations', () => {
     expectTypeOf<typeof useVersionOperations>().toBeFunction()

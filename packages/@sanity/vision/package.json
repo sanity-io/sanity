@@ -64,7 +64,7 @@
     "@codemirror/language": "^6.12.3",
     "@codemirror/search": "^6.7.0",
     "@codemirror/state": "^6.6.0",
-    "@codemirror/view": "^6.43.0",
+    "@codemirror/view": "^6.43.1",
     "@lezer/highlight": "^1.2.3",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
@@ -78,7 +78,7 @@
     "json-2-csv": "^5.5.9",
     "json5": "^2.2.3",
     "lodash-es": "^4.18.1",
-    "quick-lru": "^5.1.1",
+    "quick-lru": "^7.3.0",
     "react-rx": "^4.2.2",
     "rxjs": "^7.8.2"
   },
