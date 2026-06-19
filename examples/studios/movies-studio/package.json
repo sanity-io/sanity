@@ -28,7 +28,7 @@
     "start": "sanity dev --port 3334"
   },
   "dependencies": {
-    "@sanity/google-maps-input": "^5.0.0",
+    "@sanity/google-maps-input": "^5.0.2",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
