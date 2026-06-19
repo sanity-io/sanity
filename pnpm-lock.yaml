@@ -799,7 +799,7 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0(vite@8.0.16)
       es-toolkit:
-        specifier: ^1.39.10
+        specifier: ^1.47.1
         version: 1.47.1
       eventsource-parser:
         specifier: ^3.0.6
