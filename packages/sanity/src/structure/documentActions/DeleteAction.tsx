@@ -1,5 +1,7 @@
 import {TrashIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo, useState} from 'react'
+import {filter, firstValueFrom} from 'rxjs'
 import {
   type DocumentActionComponent,
   getVersionFromId,
@@ -9,12 +11,14 @@ import {
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
+  useDocumentStore,
   useDocumentVersionTypeSortedList,
   useTranslation,
 } from 'sanity'
 
-import {ConfirmDeleteDialog} from '../components'
+import {ConfirmDeleteDialog, type DeleteReferenceCounts} from '../components'
 import {structureLocaleNamespace} from '../i18n'
+import {DocumentDeleted} from './__telemetry__/documentActions.telemetry'
 
 const DISABLED_REASON_TITLE_KEY = {
   NOTHING_TO_DELETE: 'action.delete.disabled.nothing-to-delete',
@@ -29,6 +33,8 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
   const {delete: deleteOp} = useDocumentOperation(id, type, bundleId)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const documentStore = useDocumentStore()
+  const telemetry = useTelemetry()
 
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -40,13 +46,42 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
   }, [])
 
   const handleConfirm = useCallback(
-    (versions: string[]) => {
+    async (versions: string[], referenceCounts: DeleteReferenceCounts) => {
+      const {
+        totalReferenceCount: referenceCount,
+        internalReferenceCount,
+        crossDatasetReferenceCount,
+      } = referenceCounts
+      const referenceInfo = {
+        documentId: id,
+        referenceCount,
+        internalReferenceCount,
+        crossDatasetReferenceCount,
+      }
+
       setConfirmDialogOpen(false)
       setIsDeleting(true)
+
+      telemetry.log(DocumentDeleted, {...referenceInfo, stage: 'confirmed'})
+
+      // set up the listener before executing so we don't miss the outcome
+      const deleteOutcome = firstValueFrom(
+        documentStore.pair.operationEvents(id, type).pipe(filter((event) => event.op === 'delete')),
+      )
+
       deleteOp.execute(versions)
-      setIsDeleting(false)
+
+      try {
+        const outcome = await deleteOutcome
+        telemetry.log(DocumentDeleted, {
+          ...referenceInfo,
+          stage: outcome.type === 'success' ? 'deleted' : 'failed',
+        })
+      } finally {
+        setIsDeleting(false)
+      }
     },
-    [deleteOp],
+    [deleteOp, documentStore.pair, id, telemetry, type],
   )
 
   const handle = useCallback(() => {
