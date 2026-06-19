@@ -60,6 +60,22 @@ vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../../hooks/useVariantDocuments', () => ({
+  useVariantDocuments: vi.fn(() => ({
+    loading: false,
+    results: [],
+    error: null,
+  })),
+}))
+
+vi.mock('../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => ({
+    data: [],
+    loading: false,
+    error: null,
+  })),
+}))
+
 describe('VariantDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -139,7 +155,7 @@ describe('VariantDetail', () => {
     expect(screen.getByText('audience: "alpha", locale: "en-US"')).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Edit variant'})).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Back to variants'})).toBeInTheDocument()
-    expect(screen.getByText('Version')).toBeInTheDocument()
+    expect(screen.getByText('Bundle')).toBeInTheDocument()
     expect(screen.getByText('Type')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search documents')).toBeInTheDocument()
     expect(screen.getByText('Edited')).toBeInTheDocument()
