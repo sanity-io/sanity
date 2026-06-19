@@ -1,4 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
+import {type DocumentSystem} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
@@ -84,5 +85,58 @@ describe('VariantDocumentsTable', () => {
 
     expect(screen.getByText('Second article')).toBeInTheDocument()
     expect(screen.queryByText('First article')).not.toBeInTheDocument()
+  })
+
+  it('groups documents by their document group ref', async () => {
+    const sharedGroupRef = 'article-group'
+    const groupedDocuments: SanityDocument[] = [
+      {
+        _id: 'versions.summer.article-a',
+        _type: 'article',
+        _rev: 'rev-1',
+        _createdAt: '2025-01-01T00:00:00Z',
+        _updatedAt: '2025-06-01T00:00:00Z',
+        title: 'Summer article',
+        _system: {
+          group: {_ref: sharedGroupRef, _weak: true},
+          bundleId: 'drafts',
+        } satisfies DocumentSystem,
+      },
+      {
+        _id: 'article-other',
+        _type: 'article',
+        _rev: 'rev-2',
+        _createdAt: '2025-01-02T00:00:00Z',
+        _updatedAt: '2025-06-02T00:00:00Z',
+        title: 'Other article',
+        _system: {
+          group: {_ref: 'other-group', _weak: true},
+          bundleId: 'drafts',
+        } satisfies DocumentSystem,
+      },
+      {
+        _id: 'versions.published.article-a',
+        _type: 'article',
+        _rev: 'rev-3',
+        _createdAt: '2025-01-03T00:00:00Z',
+        _updatedAt: '2025-06-03T00:00:00Z',
+        title: 'Published article',
+        _system: {
+          group: {_ref: sharedGroupRef, _weak: true},
+        } satisfies DocumentSystem,
+      },
+    ]
+
+    await renderTable(groupedDocuments)
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(3)
+    })
+
+    const rowTitles = screen.getAllByTestId('table-row').map((row) => row.textContent)
+
+    expect(rowTitles[0]).toContain('Published article')
+    expect(rowTitles[1]).toContain('Summer article')
+    expect(rowTitles[2]).toContain('Other article')
   })
 })

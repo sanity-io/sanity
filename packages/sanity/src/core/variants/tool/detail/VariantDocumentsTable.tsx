@@ -1,18 +1,69 @@
-import {type SanityDocument} from '@sanity/client'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
+import {type DocumentSystem} from '@sanity/types'
+import {Badge, type BadgeTone, Box, Card, Flex, Text} from '@sanity/ui'
 import {type CSSProperties, memo, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 
 import {RelativeTime} from '../../../components/RelativeTime'
 import {useSchema} from '../../../hooks'
 import {type UseTranslationResponse, useTranslation} from '../../../i18n'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
+import {useReleasesStore} from '../../../releases/store/useReleasesStore'
 import {Table} from '../../../releases/tool/components/Table/Table'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column} from '../../../releases/tool/components/Table/types'
+import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTitleDetails} from '../../../releases/util/getReleaseTitleDetails'
+import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {variantsLocaleNamespace} from '../../i18n'
+
+interface VariantDocumentVersion {
+  label: string
+  tone: BadgeTone
+}
 
 interface VariantDocumentRow {
   document: SanityDocument
+  version: VariantDocumentVersion
+}
+
+/**
+ * Derives the bundle a variant document belongs to from its `_system` metadata and returns the
+ * label and tone for its version chip. Variant documents are scoped to both a variant and a bundle
+ * (a release, the published bundle, or drafts).
+ */
+function getVariantDocumentVersion({
+  document,
+  releasesById,
+  t,
+}: {
+  document: SanityDocument
+  releasesById: Map<string, ReleaseDocument> | undefined
+  t: UseTranslationResponse<'variants', undefined>['t']
+}): VariantDocumentVersion {
+  const system = document._system as DocumentSystem | undefined
+  const releaseRef = system?.release?._ref
+
+  if (releaseRef) {
+    const release = releasesById?.get(releaseRef)
+
+    if (release) {
+      const {displayTitle} = getReleaseTitleDetails(
+        release.metadata?.title,
+        getReleaseIdFromReleaseDocumentId(release._id),
+      )
+
+      return {label: displayTitle, tone: getReleaseTone(release)}
+    }
+
+    return {label: getReleaseIdFromReleaseDocumentId(releaseRef), tone: 'default'}
+  }
+
+  if (system?.bundleId === 'drafts') {
+    return {label: t('detail.documents.table.version.drafts'), tone: getReleaseTone('drafts')}
+  }
+
+  return {label: t('detail.documents.table.version.published'), tone: getReleaseTone('published')}
 }
 
 const TABLE_CARD_STYLE: CSSProperties = {
@@ -36,10 +87,39 @@ const MemoDocumentType = memo(
   (prev, next) => prev.type === next.type,
 )
 
+function getVariantDocumentVersionSortRank(document: SanityDocument): number {
+  const system = document._system as DocumentSystem | undefined
+
+  if (system?.release?._ref) {
+    return 2
+  }
+
+  if (system?.bundleId === 'drafts') {
+    return 1
+  }
+
+  return 0
+}
+
+function getVariantDocumentGroupSortKey({document, version}: VariantDocumentRow): string {
+  const groupRef = (document._system as DocumentSystem | undefined)?.group._ref ?? document._id
+  const versionRank = getVariantDocumentVersionSortRank(document)
+
+  // Group by document family, then order versions Published → Drafts → Releases.
+  return `${groupRef}\0${versionRank}\0${version.label}\0${document._id}`
+}
+
 function getVariantDocumentColumnDefs(
   t: UseTranslationResponse<'variants', undefined>['t'],
 ): Column<VariantDocumentRow>[] {
   return [
+    {
+      id: 'documentGroup',
+      hidden: true,
+      width: null,
+      sorting: true,
+      sortTransform: getVariantDocumentGroupSortKey,
+    },
     {
       id: 'version',
       width: null,
@@ -50,12 +130,14 @@ function getVariantDocumentColumnDefs(
           <Headers.BasicHeader text={t('detail.documents.table.version')} />
         </Flex>
       ),
-      cell: ({cellProps}) => (
+      cell: ({cellProps, datum}) => (
         <Flex align="center" {...cellProps}>
           <Box paddingX={2}>
-            <Text muted size={1}>
-              -
-            </Text>
+            {!datum.isLoading && datum.version && (
+              <Badge fontSize={1} mode="outline" radius={2} tone={datum.version.tone}>
+                {datum.version.label}
+              </Badge>
+            )}
           </Box>
         </Flex>
       ),
@@ -145,15 +227,25 @@ export function VariantDocumentsTable({
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
+  const {state$} = useReleasesStore()
+  const releasesState = useObservable(state$)
+  const releasesById = releasesState?.releases
   const columnDefs = useMemo(() => getVariantDocumentColumnDefs(t), [t])
-  const rows = useMemo(() => documents.map((document) => ({document})), [documents])
+  const rows = useMemo(
+    () =>
+      documents.map((document) => ({
+        document,
+        version: getVariantDocumentVersion({document, releasesById, t}),
+      })),
+    [documents, releasesById, t],
+  )
 
   return (
     <Card flex={1} ref={setScrollContainerRef} style={TABLE_CARD_STYLE}>
       <Table<VariantDocumentRow>
         columnDefs={columnDefs}
         data={rows}
-        defaultSort={{column: 'search', direction: 'asc'}}
+        defaultSort={{column: 'documentGroup', direction: 'asc'}}
         emptyState={t('detail.documents.no-documents')}
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
         rowId="document._id"

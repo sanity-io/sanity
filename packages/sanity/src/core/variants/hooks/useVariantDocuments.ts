@@ -8,11 +8,9 @@ import {
 /**
  * Hook to fetch the documents that belong to a variant.
  *
- * Reuses the generic {@link useBundleDocuments} machinery with the `sanity::partOfVariant`
- * GROQ filter.
- *
- * Note: `sanity::partOfVariant` is not yet supported in content lake, so this hook will
- * return no documents until that support lands.
+ * Reuses the generic {@link useBundleDocuments} machinery. Currently filters by
+ * `_system.variant._ref` until `sanity::partOfVariant($variantId)` is supported
+ * in content lake.
  *
  * @internal
  */
