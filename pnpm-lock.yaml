@@ -802,7 +802,7 @@ importers:
         specifier: ^1.47.1
         version: 1.47.1
       eventsource-parser:
-        specifier: ^3.0.6
+        specifier: ^3.1.0
         version: 3.1.0
       rxjs:
         specifier: ^7.8.2
