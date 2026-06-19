@@ -1,17 +1,21 @@
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
-import {type TargetPerspective} from '../../perspective/types'
-import {type ReleasesReducerState} from '../../releases/store/reducer'
-import {useReleasesStore} from '../../releases/store/useReleasesStore'
-import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
-import {getVersionFromId, isDraftId} from '../../util/draftUtils'
+import {type TargetPerspective} from '../perspective/types'
+import {type ReleasesReducerState} from '../releases/store/reducer'
+import {useReleasesStore} from '../releases/store/useReleasesStore'
+import {getReleaseDocumentIdFromReleaseId} from '../releases/util/getReleaseDocumentIdFromReleaseId'
+import {getVersionFromId, isDraftId} from '../util/draftUtils'
 
 type Result = Pick<ReleasesReducerState, 'error' | 'state'> & {
   release: TargetPerspective | undefined
 }
 
 /**
+ * Determine the `TargetPerspective` (a release or variant name) that
+ * corresponds with the provided document id by looking for its owner in the
+ * known list of releases.
+ *
  * @internal
  */
 export function useVersionRelease(documentId: string | undefined): Result {

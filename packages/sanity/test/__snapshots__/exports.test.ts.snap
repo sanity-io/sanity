@@ -691,6 +691,7 @@ exports[`exports snapshot 1`] = `
     "useValuePreview": "function",
     "useVariantDocumentOperations": "function",
     "useVersionOperations": "function",
+    "useVersionRelease": "function",
     "useVirtualizerScrollInstance": "function",
     "useVisibleWorkspaces": "function",
     "useWorkspace": "function",
