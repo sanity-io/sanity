@@ -29,7 +29,9 @@ export function VariantDetail() {
 
   const variant = variantId ? byId.get(variantId) : undefined
 
-  const {results: variantDocuments} = useVariantDocuments(variantId ?? '')
+  const {results: variantDocuments, loading: documentsLoading} = useVariantDocuments(
+    variantId ?? '',
+  )
   const documents = useMemo(
     () => variantDocuments.map((result) => result.document),
     [variantDocuments],
@@ -102,7 +104,7 @@ export function VariantDetail() {
           </Flex>
         </Container>
         <Flex direction="column" flex={1} overflow="hidden" style={{minHeight: 0}}>
-          <VariantDocumentsTable documents={documents} />
+          <VariantDocumentsTable documents={documents} loading={documentsLoading} />
         </Flex>
       </Flex>
       <VariantDetailFooter variant={variant} />

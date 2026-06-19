@@ -40,11 +40,13 @@ const mockDocuments: SanityDocument[] = [
 ]
 
 describe('VariantDocumentsTable', () => {
-  const renderTable = async (documents: SanityDocument[] = mockDocuments) => {
+  const renderTable = async (documents: SanityDocument[] = mockDocuments, loading = false) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<VariantDocumentsTable documents={documents} />, {wrapper})
+    const result = render(<VariantDocumentsTable documents={documents} loading={loading} />, {
+      wrapper,
+    })
     await screen.findByPlaceholderText('Search documents')
     return result
   }
@@ -53,6 +55,13 @@ describe('VariantDocumentsTable', () => {
     await renderTable([])
 
     expect(screen.getByText('No documents in this variant')).toBeInTheDocument()
+  })
+
+  it('shows loading skeleton rows while documents are loading', async () => {
+    await renderTable([], true)
+
+    expect(screen.getAllByTestId('table-row-skeleton')).toHaveLength(3)
+    expect(screen.queryByText('No documents in this variant')).not.toBeInTheDocument()
   })
 
   it('renders document rows with title, type, and edited columns', async () => {

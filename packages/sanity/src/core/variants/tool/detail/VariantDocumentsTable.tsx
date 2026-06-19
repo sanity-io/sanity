@@ -222,8 +222,10 @@ function filterDocuments(rows: VariantDocumentRow[], searchTerm: string): Varian
 
 export function VariantDocumentsTable({
   documents,
+  loading = false,
 }: {
   documents: SanityDocument[]
+  loading?: boolean
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
@@ -247,6 +249,7 @@ export function VariantDocumentsTable({
         data={rows}
         defaultSort={{column: 'documentGroup', direction: 'asc'}}
         emptyState={t('detail.documents.no-documents')}
+        loading={loading}
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
         rowId="document._id"
         scrollContainerRef={scrollContainerRef}
