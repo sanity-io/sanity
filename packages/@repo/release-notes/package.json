@@ -26,7 +26,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.72.1",
+    "@anthropic-ai/sdk": "^0.104.2",
     "@conventional-changelog/git-client": "^2.7.0",
     "@octokit/rest": "^22.0.1",
     "@portabletext/toolkit": "^5.0.2",
