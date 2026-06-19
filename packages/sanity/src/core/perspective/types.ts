@@ -10,7 +10,7 @@ import {type SystemVariant} from '../variants/types'
  * @beta
  */
 // todo: replace with branded type from @sanity/id-utils
-export type ReleaseId = string & {}
+export type ReleaseId = string
 
 /**
  * A value representing a perspective, including the data describing it. This is either the name of a
@@ -18,7 +18,7 @@ export type ReleaseId = string & {}
  *
  * @public
  */
-export type TargetPerspective = ReleaseDocument | SystemBundle | (string & {})
+export type TargetPerspective = ReleaseDocument | SystemBundle | string
 
 /**
  * @beta
