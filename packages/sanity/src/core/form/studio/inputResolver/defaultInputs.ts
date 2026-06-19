@@ -13,8 +13,8 @@ import {TextInput} from '../../inputs/TextInput'
 import {UrlInput} from '../../inputs/UrlInput'
 import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
 import {StudioGlobalDocumentReferenceInput} from '../inputs/globalDocumentReference/StudioGlobalDocumentReferenceInput'
-import {StudioFileInput} from '../inputs/StudioFileInput'
-import {StudioImageInput} from '../inputs/StudioImageInput'
+import {StudioFileInputLazy} from '../inputs/StudioFileInputLazy'
+import {StudioImageInputLazy} from '../inputs/StudioImageInputLazy'
 
 export const defaultInputs: Record<string, ComponentType<FIXME>> = {
   document: ObjectInput,
@@ -27,8 +27,8 @@ export const defaultInputs: Record<string, ComponentType<FIXME>> = {
   datetime: DateTimeInput,
   date: DateInput,
   url: UrlInput,
-  image: StudioImageInput,
-  file: StudioFileInput,
+  image: StudioImageInputLazy,
+  file: StudioFileInputLazy,
   string: StringInput,
   slug: SlugInput,
   crossDatasetReference: StudioCrossDatasetReferenceInput,

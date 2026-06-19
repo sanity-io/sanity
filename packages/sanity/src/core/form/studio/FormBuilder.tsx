@@ -4,8 +4,9 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {useCallback, useMemo, useRef} from 'react'
+import {Suspense, useCallback, useMemo, useRef} from 'react'
 
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {type DocumentFieldAction} from '../../config'
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
@@ -174,7 +175,9 @@ export function FormBuilder(props: FormBuilderProps) {
   const renderInput = useCallback(
     (inputProps: Omit<InputProps, 'renderDefault'>) => (
       <FormBuilderInputErrorBoundary>
-        <Input {...inputProps} />
+        <Suspense fallback={<LoadingBlock />}>
+          <Input {...inputProps} />
+        </Suspense>
       </FormBuilderInputErrorBoundary>
     ),
     [Input],
