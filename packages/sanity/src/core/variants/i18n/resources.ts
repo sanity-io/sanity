@@ -40,6 +40,8 @@ const variantsLocaleStrings = {
   'overview.search.placeholder': 'Search variant definitions…',
   /** Column header for the variant title column in the overview table. */
   'overview.table.variant': 'Variant',
+  /** Column header for the documents count column in the overview table. */
+  'overview.table.documents': 'Documents',
   /** Fallback text when a variant has no conditions. */
   'overview.table.no-conditions': 'No conditions',
   /** Title for the Variants overview. */
