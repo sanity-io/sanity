@@ -107,7 +107,7 @@ export const DocumentActionShortcuts = memo(
             actionsBoxElement={actionsBoxElement}
             as={as}
             onActionStart={onActionStart}
-            //  Temporary hide the actions when editing a variant document. Until actions are supported on variant documents.
+            // Temporarily hide the actions when editing a variant document, until actions are supported on variant documents.
             states={isEditingVariantDocument ? [] : states}
           >
             {children}
