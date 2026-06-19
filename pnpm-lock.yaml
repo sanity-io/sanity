@@ -1715,8 +1715,8 @@ importers:
         specifier: ^6.3.0
         version: 6.3.0
       player.style:
-        specifier: ^0.1.9
-        version: 0.1.10(react@19.2.7)
+        specifier: ^0.3.4
+        version: 0.3.4(react@19.2.7)
       polished:
         specifier: ^4.3.1
         version: 4.3.1
@@ -6515,9 +6515,6 @@ packages:
     resolution: {integrity: sha512-VYNCgUc0nOmC4WJmWw9GkrKdfr8Zl4/rxhC5SvgacBgxiW9W/9NRttUoHHXV8xdII3MaRgkZZVX8Ikzc/Jmjag==}
     engines: {node: '>=14'}
 
-  '@vercel/edge@1.3.1':
-    resolution: {integrity: sha512-k0tKWeYEWOv6qU6+Z8+hv2Nt/u3vFHRZdB0uvwE0DxoddU/5kWX/Chu8F6ojvqmRlnZwuX/7kyZFVeCP6DxqBg==}
-
   '@vercel/elysia@0.1.93':
     resolution: {integrity: sha512-36yzZJVU9o7/CcH1TbqeGTRwBePDaCEzv1CYfS183HdLXzsD+pOjOkTqZOBJu7h9aHpJFCCau55Ed0xOQC2jhA==}
 
@@ -9016,9 +9013,6 @@ packages:
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
 
-  media-chrome@4.11.1:
-    resolution: {integrity: sha512-+2niDc4qOwlpFAjwxg1OaizK/zKV6y7QqGm4nBFEVlSaG0ZBgOmfc4IXAPiirZqAlZGaFFUaMqCl1SpGU0/naA==}
-
   media-chrome@4.19.2:
     resolution: {integrity: sha512-4ai1ITN8wBhwugQcRgqe3tN0z6OSKGOXqHLNrS04MgKFfsLqu6Dm8MPq02pI9Y9ZKoXtFjIl85jOryIW9es3BA==}
 
@@ -9639,9 +9633,6 @@ packages:
 
   pkg-types@1.3.1:
     resolution: {integrity: sha512-/Jm5M4RvtBFVkKWRu2BLUTNP8/M2a+UwuAX+ae4770q1qVGtfjG+WTCupoZixokjmHiry8uI+dlY8KXYV5HVVQ==}
-
-  player.style@0.1.10:
-    resolution: {integrity: sha512-Jxv7tlaQ3SFCddsN35jzoGnCHB3/xMTbJOgn4zcsmF0lcZvRPq5UkRRAD5tZm8CvzKndUvtoDlG6GSPL/N/SrA==}
 
   player.style@0.3.4:
     resolution: {integrity: sha512-5O9bkbq0APQIkhptyZwp0gUgheCeImGPFo4hvPF2M5xBmgsUYzsUPHCfMye2xyeRE1zvQBKtziaC3jPgnHE1tw==}
@@ -16093,8 +16084,6 @@ snapshots:
 
   '@vercel/detect-agent@1.2.3': {}
 
-  '@vercel/edge@1.3.1': {}
-
   '@vercel/elysia@0.1.93(rollup@4.62.0)':
     dependencies:
       '@vercel/node': 5.8.17(rollup@4.62.0)
@@ -18960,13 +18949,6 @@ snapshots:
 
   mdurl@2.0.0: {}
 
-  media-chrome@4.11.1(react@19.2.7):
-    dependencies:
-      '@vercel/edge': 1.3.1
-      ce-la-react: 0.3.2(react@19.2.7)
-    transitivePeerDependencies:
-      - react
-
   media-chrome@4.19.2(react@19.2.7):
     dependencies:
       ce-la-react: 0.3.2(react@19.2.7)
@@ -19622,12 +19604,6 @@ snapshots:
       confbox: 0.1.8
       mlly: 1.8.2
       pathe: 2.0.3
-
-  player.style@0.1.10(react@19.2.7):
-    dependencies:
-      media-chrome: 4.11.1(react@19.2.7)
-    transitivePeerDependencies:
-      - react
 
   player.style@0.3.4(react@19.2.7):
     dependencies:
