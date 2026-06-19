@@ -437,11 +437,11 @@ These notes apply to the Cursor Cloud Agent VM. The standard commands above (`pn
 
 ### Node / pnpm
 
-- `pnpm` (11.8.0, the `packageManager` version) is provided via `nvm` on the VM. If `pnpm` is not found in a fresh shell, run `. "$HOME/.nvm/nvm.sh" && nvm use default`. Node is v22.x, which is within the CI test matrix (`[22, 24, 26]`).
+- `pnpm` (11.8.0, the `packageManager` version) is provided via `nvm` on the VM. If `pnpm` is not found in a fresh shell, run `. "$HOME/.nvm/nvm.sh" && nvm use default`. The VM ships Node v22.x; this is acceptable because it's in the CI test matrix (`[22, 24, 26]`), but Node v24+ remains the preferred baseline for contributors (see Prerequisites above).
 
 ### `pnpm test` and the `tsc` typecheck shim (important)
 
-- `vitest` runs with `typecheck.enabled: true` (see `vitest.config.mts`), which spawns a **global `tsc`** for the `sanity` and `@sanity/types` projects. GitHub CI runners ship a global `tsc`; this VM does not.
+- `vitest` runs with `typecheck.enabled: true` (see `vitest.config.mts`), which spawns `tsc` (resolved from `PATH`, typically a local `node_modules/.bin/tsc`) for the `sanity` and `@sanity/types` projects. GitHub CI runners happen to provide a `tsc` on `PATH`; this VM does not, because `typescript` is only a transitive dep and isn't linked into the root `node_modules/.bin`.
 - Without a `tsc` on the PATH that pnpm scripts use, `pnpm test` reports `spawn tsc ENOENT` unhandled errors and exits non-zero **even though every test passes**.
 - The startup update script creates a small wrapper at `node_modules/.bin/tsc` (pnpm automatically prepends `node_modules/.bin` to PATH for scripts) that execs the workspace-installed TypeScript. This makes `pnpm test` exit 0 with `Type Errors  no errors`. The wrapper lives in (gitignored) `node_modules`, so the update script recreates it after every `pnpm install`. Do not symlink it with a relative path — the TypeScript bin shim resolves its own location, so use an `exec`-by-absolute-path wrapper (or a real global `tsc`).
 
