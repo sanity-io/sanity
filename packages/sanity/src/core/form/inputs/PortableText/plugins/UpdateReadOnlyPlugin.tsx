@@ -3,7 +3,7 @@ import {useEffect} from 'react'
 
 /**
  * `EditorProvider` doesn't have a `readOnly` prop. Instead, this custom PTE
- * plugin listens for the prop change and sends a `toggle readOnly` event to
+ * plugin listens for the prop change and sends an `update readOnly` event to
  * the editor.
  *
  * @internal

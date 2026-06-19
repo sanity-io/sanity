@@ -58,21 +58,26 @@ describe('lazy shim — rejection path', () => {
   })
 
   it('is caught by FormBuilderInputErrorBoundary instead of propagating', async () => {
-    // Suppress the expected error-boundary console.error noise.
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    // Suppress the expected error-boundary console.error noise. Restored in
+    // `finally` so the mock never leaks into later tests in this file.
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    render(
-      <TestProvider>
-        <FormBuilderInputErrorBoundary>
-          <Suspense fallback={<LoadingBlock />}>
-            <RejectingComponent />
-          </Suspense>
-        </FormBuilderInputErrorBoundary>
-      </TestProvider>,
-    )
+    try {
+      render(
+        <TestProvider>
+          <FormBuilderInputErrorBoundary>
+            <Suspense fallback={<LoadingBlock />}>
+              <RejectingComponent />
+            </Suspense>
+          </FormBuilderInputErrorBoundary>
+        </TestProvider>,
+      )
 
-    await waitFor(() => {
-      expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
-    })
+      await waitFor(() => {
+        expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+      })
+    } finally {
+      consoleErrorSpy.mockRestore()
+    }
   })
 })
