@@ -18,10 +18,7 @@ export function useSetVariant() {
   const router = useRouter()
   const defaultPerspective = useGetDefaultPerspective()
   const setVariant = useCallback(
-    (
-      variant: SystemVariant | undefined,
-      options?: {perspective?: SystemBundle | ReleaseId},
-    ) => {
+    (variant: SystemVariant | undefined, options?: {perspective?: SystemBundle | ReleaseId}) => {
       const {perspective} = options ?? {}
 
       router.navigate({
