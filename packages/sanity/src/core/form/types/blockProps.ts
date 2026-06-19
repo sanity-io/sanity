@@ -457,6 +457,10 @@ export interface PortableTextPluginsProps {
            * @deprecated - add the configuration directly to `markdown` instead
            */
           config: MarkdownConfig
+          /**
+           * @defaultValue true
+           */
+          enabled?: boolean
         }
       | (MarkdownShortcutsPluginProps & {
           config?: undefined
