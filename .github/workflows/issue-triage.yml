@@ -41,10 +41,13 @@ jobs:
           install: false
           runtime: node@lts
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
       - name: Trigger issue triage
         if: github.event.action != 'closed'
-        run: node scripts/trigger-triage/src/index.ts --verbose "$ISSUE_URL"
+        run: pnpm issue-triage --verbose "$ISSUE_URL"
 
       - name: Archive issue triage channel
         if: github.event.action == 'closed'
-        run: node scripts/trigger-triage/src/archive.ts --verbose "$ISSUE_URL"
+        run: pnpm issue-triage:archive --verbose "$ISSUE_URL"
