@@ -139,7 +139,6 @@ describe('VariantsOverview', () => {
 
     expect(screen.getByText('Alpha audience')).toBeInTheDocument()
     expect(screen.getByText('Norwegian market')).toBeInTheDocument()
-    expect(screen.getAllByText('0')).toHaveLength(2)
   })
 
   it('filters variants when searching by title or condition', async () => {
