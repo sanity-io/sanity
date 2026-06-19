@@ -5,7 +5,7 @@ import {type TargetPerspective} from '../../perspective/types'
 import {type ReleasesReducerState} from '../../releases/store/reducer'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
-import {getVersionFromId} from '../../util/draftUtils'
+import {getVersionFromId, isDraftId} from '../../util/draftUtils'
 
 type Result = Pick<ReleasesReducerState, 'error' | 'state'> & {
   release: TargetPerspective | undefined
@@ -33,7 +33,7 @@ export function useVersionRelease(documentId: string | undefined): Result {
 
   if (typeof versionId === 'undefined') {
     return {
-      release: 'published',
+      release: isDraftId(documentId) ? 'drafts' : 'published',
       state: 'loaded',
     }
   }
