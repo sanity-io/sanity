@@ -39,6 +39,7 @@ jobs:
       - uses: pnpm/setup@v1
         with:
           install: false
+          cache: true
           runtime: node@lts
 
       - name: Install dependencies
