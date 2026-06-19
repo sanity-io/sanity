@@ -54,7 +54,7 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright Browsers for Playwright's Version
@@ -72,10 +72,10 @@ jobs:
       # Always install them; otherwise a cache hit gives us the browser binary
       # but a missing shared library, crashing the run on startup.
       - name: Install Playwright system dependencies
-        run: npx playwright install-deps ${{ matrix.browser }}
+        run: pnpm exec playwright install-deps ${{ matrix.browser }}
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install ${{ matrix.browser }}
+        run: pnpm exec playwright install ${{ matrix.browser }}
 
       - name: Build packages
         # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job

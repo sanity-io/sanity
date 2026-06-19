@@ -51,7 +51,7 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true'
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
@@ -61,11 +61,11 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
       - name: Install Playwright Browsers
         if: steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium firefox
+        run: pnpm exec playwright install --with-deps chromium firefox
 
   dataset-setup:
     timeout-minutes: 10
@@ -103,6 +103,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
+
+      # preferWorkspacePackages resolves sanity-plugin-media's "groq" import to the
+      # packages/groq workspace package, whose entry points only exist once built.
+      - name: Build groq package
+        run: pnpm --filter groq build
 
       - name: Pull Vercel Environment Information
         env:
@@ -184,7 +189,7 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
@@ -193,11 +198,11 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.project }}
+        run: pnpm exec playwright install --with-deps ${{ matrix.project }}
 
       - name: Run E2E tests
         env:
@@ -261,7 +266,7 @@ jobs:
           path: all-blob-reports
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports/blob-report
+        run: pnpm exec playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports/blob-report
 
       - name: Extract test summary
         id: summary
