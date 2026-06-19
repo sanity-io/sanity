@@ -185,7 +185,7 @@ importers:
         specifier: ^2.9.18
         version: 2.9.18
       typedoc:
-        specifier: ^0.28.16
+        specifier: ^0.28.19
         version: 0.28.19(typescript@5.9.3)
       vercel:
         specifier: ^54.14.0
