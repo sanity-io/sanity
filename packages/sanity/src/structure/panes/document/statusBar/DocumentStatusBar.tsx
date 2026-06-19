@@ -118,7 +118,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
             style={{flexShrink: 0, marginLeft: 'auto'}}
           >
             <SpacerButton />
-            {/* Temporary hide the actions when editing a variant document. Until actions are supported on variant documents. */}
+            {/* Temporarily hide the actions when editing a variant document, until actions are supported on variant documents. */}
             {!isEditingVariantDocument && actions}
           </Flex>
         </Flex>
