@@ -923,7 +923,7 @@ importers:
         specifier: ^4.18.1
         version: 4.18.1
       p-map:
-        specifier: ^7.0.3
+        specifier: ^7.0.4
         version: 7.0.4
       semver:
         specifier: ^7.8.4
