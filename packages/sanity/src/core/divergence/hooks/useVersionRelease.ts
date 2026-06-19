@@ -38,8 +38,9 @@ export function useVersionRelease(documentId: string | undefined): Result {
     }
   }
 
+  // `release` falls back to the version id if the version is a member of an anonymous bundle.
   return {
     ...releasesState,
-    release: releasesState?.releases.get(getReleaseDocumentIdFromReleaseId(versionId)),
+    release: releasesState?.releases.get(getReleaseDocumentIdFromReleaseId(versionId)) ?? versionId,
   }
 }
