@@ -36,20 +36,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v5
-
-      - uses: actions/setup-node@v6
+      - uses: pnpm/setup@v1
         with:
-          node-version: lts/*
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
+          install: false
+          runtime: node@lts
 
       - name: Trigger issue triage
         if: github.event.action != 'closed'
-        run: pnpm issue-triage --verbose "$ISSUE_URL"
+        run: node scripts/trigger-triage/src/index.ts --verbose "$ISSUE_URL"
 
       - name: Archive issue triage channel
         if: github.event.action == 'closed'
-        run: pnpm issue-triage:archive --verbose "$ISSUE_URL"
+        run: node scripts/trigger-triage/src/archive.ts --verbose "$ISSUE_URL"
