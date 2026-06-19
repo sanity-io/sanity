@@ -61,7 +61,7 @@ jobs:
 
       - name: Check valid token
         run: |
-          WHOAMI_RESULT=$(pnpm whoami)
+          WHOAMI_RESULT=$(pnpm --silent whoami)
           echo "pnpm whoami result: $WHOAMI_RESULT"
           if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
             echo "Error: pnpm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
