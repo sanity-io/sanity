@@ -20,7 +20,7 @@ export function useSetVariant() {
   const setVariant = useCallback(
     (
       variant: SystemVariant | undefined,
-      options?: {perspective: SystemBundle | ReleaseId | undefined},
+      options?: {perspective?: SystemBundle | ReleaseId},
     ) => {
       const {perspective} = options ?? {}
 

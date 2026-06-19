@@ -270,7 +270,7 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     [setVariant, variants],
   )
 
-  // Temporary display the selected variant in the header, this will be replaced by the inventory.
+  // Temporarily display the selected variant in the header; this will be replaced by the inventory.
   const selectedVariantDisplay = useMemo(() => {
     if (!selectedVariant) {
       return null

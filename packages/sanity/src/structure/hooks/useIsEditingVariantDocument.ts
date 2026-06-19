@@ -6,8 +6,8 @@ import {useDocumentPaneInfo} from '../panes/document/useDocumentPaneInfo'
  * Returns true when a variant is selected and the open document has a variant-scoped
  * version for that variant in the current bundle (i.e. the user is editing a variant document).
  *
- * Temporary hook to check if the user is editing a variant document, this could be removed once we allow actions on variant documents.
- * Do not export this
+ * Temporary hook used by the document pane UI to hide actions while editing variant documents.
+ * Intended for internal use and can be removed once actions are supported on variant documents.
  */
 export function useIsEditingVariantDocument(): boolean {
   const {selectedVariant, bundle} = usePerspective()
