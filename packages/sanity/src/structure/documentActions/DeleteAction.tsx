@@ -1,7 +1,7 @@
 import {TrashIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo, useState} from 'react'
-import {filter, firstValueFrom} from 'rxjs'
+import {catchError, filter, firstValueFrom, map, of, timeout} from 'rxjs'
 import {
   type DocumentActionComponent,
   getVersionFromId,
@@ -24,6 +24,10 @@ const DISABLED_REASON_TITLE_KEY = {
   NOTHING_TO_DELETE: 'action.delete.disabled.nothing-to-delete',
   NOT_READY: 'action.delete.disabled.not-ready',
 }
+
+// A superseding operation on the same document cancels the delete before it
+// emits any outcome, so the wait is bounded to guarantee the action state resets.
+const DELETE_OUTCOME_TIMEOUT = 30000
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
@@ -66,20 +70,24 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
 
       // set up the listener before executing so we don't miss the outcome
       const deleteOutcome = firstValueFrom(
-        documentStore.pair.operationEvents(id, type).pipe(filter((event) => event.op === 'delete')),
+        documentStore.pair.operationEvents(id, type).pipe(
+          filter((event) => event.op === 'delete'),
+          map((event) => event.type),
+          timeout({first: DELETE_OUTCOME_TIMEOUT}),
+          catchError(() => of('dropped' as const)),
+        ),
       )
 
       deleteOp.execute(versions)
 
-      try {
-        const outcome = await deleteOutcome
+      const outcome = await deleteOutcome
+      if (outcome !== 'dropped') {
         telemetry.log(DocumentDeleted, {
           ...referenceInfo,
-          stage: outcome.type === 'success' ? 'deleted' : 'failed',
+          stage: outcome === 'success' ? 'deleted' : 'failed',
         })
-      } finally {
-        setIsDeleting(false)
       }
+      setIsDeleting(false)
     },
     [deleteOp, documentStore.pair, id, telemetry, type],
   )
