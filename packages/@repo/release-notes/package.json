@@ -47,7 +47,7 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@portabletext/markdown": "^1.4.0",
+    "@portabletext/markdown": "^1.4.1",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
