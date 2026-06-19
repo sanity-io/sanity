@@ -102,6 +102,15 @@ describe('document types', () => {
 
       documentWithPreview.preview.prepare({title: 'Title', subtitle: 'Subtitle'})
 
+      const documentWithoutPreview = defineType({
+        type: 'document',
+        name: 'custom-document',
+        fields: [{type: 'string', name: 'string'}],
+      })
+
+      //@ts-expect-error preview is not known to be required when it was not defined
+      const previewIsRequired: {preview: unknown} = documentWithoutPreview
+
       defineType({
         type: 'document',
         name: 'custom-document',
