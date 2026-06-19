@@ -52,6 +52,7 @@ import {
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {PortableTextEditorPlugins} from './object/Plugins'
+import {UpdateReadOnlyPlugin} from './plugins/UpdateReadOnlyPlugin'
 import {
   type PresenceCursorDecorationsHookProps,
   usePresenceCursorDecorations,
@@ -563,25 +564,7 @@ function UpdateValuePlugin(props: {value: Array<PortableTextBlock> | undefined})
   return null
 }
 
-/**
- * `EditorProvider` doesn't have a `readOnly` prop. Instead, this custom PTE
- * plugin listens for the prop change and sends a `toggle readOnly` event to
- * the editor.
- *
- * @internal
- */
-export function UpdateReadOnlyPlugin(props: {readOnly: boolean}) {
-  const editor = useEditor()
-
-  useEffect(() => {
-    editor.send({
-      type: 'update readOnly',
-      readOnly: props.readOnly,
-    })
-  }, [editor, props.readOnly])
-
-  return null
-}
+export {UpdateReadOnlyPlugin} from './plugins/UpdateReadOnlyPlugin'
 
 function toFormPatches(patches: any) {
   return patches.map((p: Patch) => ({...p, patchType: SANITY_PATCH_TYPE}))
