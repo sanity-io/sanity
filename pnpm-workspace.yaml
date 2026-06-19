@@ -85,7 +85,6 @@ minimumReleaseAgeExclude:
 
 overrides:
   vitest: 'catalog:'
-  '@sanity/cli': 'workbench'
 
 preferWorkspacePackages: true
 
@@ -96,8 +95,6 @@ trustPolicyExclude:
   - '@octokit/plugin-paginate-rest@9.2.2'
   - '@reduxjs/toolkit@2.9.0 || 2.10.1 || 2.11.0'
   - '@sanity/cli'
-  - '@sanity/cli-build'
-  - '@sanity/cli-core'
   - '@sanity/mutate@0.11.0-canary.4'
   - '@sanity/sdk@2.1.2'
   - '@swc/core@1.13.5'
