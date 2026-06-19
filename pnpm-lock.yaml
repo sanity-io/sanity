@@ -1984,7 +1984,7 @@ importers:
         specifier: ^7.8.2
         version: 7.8.2
       tinyglobby:
-        specifier: ^0.2.15
+        specifier: ^0.2.17
         version: 0.2.17
     devDependencies:
       '@repo/test-config':
@@ -2051,7 +2051,7 @@ importers:
         specifier: ^7.8.4
         version: 7.8.4
       tinyglobby:
-        specifier: ^0.2.15
+        specifier: ^0.2.17
         version: 0.2.17
 
 packages:
