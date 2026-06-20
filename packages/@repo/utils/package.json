@@ -10,9 +10,9 @@
     "check:types": "(cd ../../.. && tsgo --project packages/@repo/utils/tsconfig.json --erasableSyntaxOnly)"
   },
   "dependencies": {
-    "dotenv": "^16.6.1",
+    "dotenv": "^17.4.2",
     "lodash-es": "^4.18.1",
-    "ora": "^8.2.0"
+    "ora": "^9.4.0"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",

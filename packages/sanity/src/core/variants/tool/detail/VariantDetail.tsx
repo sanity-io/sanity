@@ -1,12 +1,12 @@
-import {type SanityDocument} from '@sanity/client'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {LoadingBlock} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
+import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {
@@ -18,8 +18,6 @@ import {
 import {VariantDetailFooter} from './VariantDetailFooter'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
 
-const EMPTY_VARIANT_DOCUMENTS: SanityDocument[] = []
-
 export function VariantDetail() {
   const router = useRouter()
   const {t} = useTranslation(variantsLocaleNamespace)
@@ -30,6 +28,14 @@ export function VariantDetail() {
   const {byId, loading} = useAllVariants()
 
   const variant = variantId ? byId.get(variantId) : undefined
+
+  const {results: variantDocuments, loading: documentsLoading} = useVariantDocuments(
+    variantId ?? '',
+  )
+  const documents = useMemo(
+    () => variantDocuments.map((result) => result.document),
+    [variantDocuments],
+  )
 
   if (loading) {
     return <LoadingBlock fill title={t('detail.loading')} />
@@ -98,7 +104,7 @@ export function VariantDetail() {
           </Flex>
         </Container>
         <Flex direction="column" flex={1} overflow="hidden" style={{minHeight: 0}}>
-          <VariantDocumentsTable documents={EMPTY_VARIANT_DOCUMENTS} />
+          <VariantDocumentsTable documents={documents} loading={documentsLoading} />
         </Flex>
       </Flex>
       <VariantDetailFooter variant={variant} />

@@ -24,10 +24,10 @@
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "ts-morph": "^26.0.0",
+    "ts-morph": "^28.0.0",
     "typescript": "5.9.3",
     "vite": "catalog:",
     "vitest": "catalog:",
-    "zod": "^4.1.12"
+    "zod": "^4.4.3"
   }
 }

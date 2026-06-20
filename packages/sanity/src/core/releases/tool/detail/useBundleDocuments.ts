@@ -1,4 +1,3 @@
-import {type ReleaseDocument} from '@sanity/client'
 import {
   type CurrentUser,
   isValidationErrorMarker,
@@ -10,19 +9,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
-import {
-  catchError,
-  delay,
-  distinctUntilChanged,
-  expand,
-  filter,
-  finalize,
-  map,
-  reduce,
-  shareReplay,
-  startWith,
-  switchMap,
-} from 'rxjs/operators'
+import {catchError, delay, filter, finalize, map, shareReplay, switchMap} from 'rxjs/operators'
 
 import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'
@@ -31,12 +18,9 @@ import {useDocumentPreviewStore} from '../../../store/datastores'
 import {useSource} from '../../../studio'
 import {schedulerYield} from '../../../util/schedulerYield'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
-import {useReleasesStore} from '../../store/useReleasesStore'
-import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
-import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 
-const bundleDocumentsCache: Record<string, ReleaseDocumentsObservableResult> = Object.create(null)
+const bundleDocumentsCache: Record<string, BundleDocumentsObservableResult> = Object.create(null)
 
 export interface DocumentValidationStatus extends ValidationStatus {
   hasError: boolean
@@ -49,32 +33,47 @@ export interface DocumentInRelease {
   validation: DocumentValidationStatus
 }
 
-type ReleaseDocumentsObservableResult = Observable<{
+export type BundleDocumentsObservableResult = Observable<{
   loading: boolean
   results: DocumentInRelease[]
   error: Error | null
 }>
 
-const getActiveReleaseDocumentsObservable = ({
-  schema,
-  documentPreviewStore,
-  i18n,
-  getClient,
-  releaseId,
-  currentUser,
-}: {
+interface BundleDocumentsObservableOptions {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
   i18n: LocaleSource
   getClient: ReturnType<typeof useSource>['getClient']
-  releaseId: string
   currentUser?: Omit<CurrentUser, 'role'> | null
-}): ReleaseDocumentsObservableResult => {
-  const groqFilter = `sanity::partOfRelease($releaseId)`
+  /**
+   * The GROQ filter used to resolve the set of documents to fetch,
+   * e.g. `sanity::partOfRelease($releaseId)` or `sanity::partOfVariant($variantId)`.
+   */
+  groqFilter: string
+  /**
+   * The params referenced by `groqFilter`, e.g. `{releaseId}` or `{variantId}`.
+   */
+  params: Record<string, unknown>
+  /**
+   * Returns `true` for documents that should not be validated (validation is short-circuited).
+   * Used, for example, to skip documents that are going to be unpublished in a release.
+   */
+  skipValidation?: (document: SanityDocument) => boolean
+}
 
+const buildBundleDocumentsObservable = ({
+  schema,
+  documentPreviewStore,
+  i18n,
+  getClient,
+  currentUser,
+  groqFilter,
+  params,
+  skipValidation,
+}: Omit<BundleDocumentsObservableOptions, 'cacheKey'>): BundleDocumentsObservableResult => {
   // Helper function to create validation observable
   const createValidationObservable = (ctx: any, document: SanityDocument) => {
-    if (isGoingToUnpublish(document)) {
+    if (skipValidation?.(document)) {
       return of({
         isValidating: false,
         validation: [],
@@ -150,13 +149,9 @@ const getActiveReleaseDocumentsObservable = ({
   }
 
   return documentPreviewStore
-    .unstable_observeDocumentIdSet(
-      groqFilter,
-      {releaseId},
-      {
-        apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-      },
-    )
+    .unstable_observeDocumentIdSet(groqFilter, params, {
+      apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+    })
     .pipe(
       map((state) => state.documentIds || []),
       switchMap((documentIds) => {
@@ -197,164 +192,83 @@ const getActiveReleaseDocumentsObservable = ({
     )
 }
 
-const getPublishedArchivedReleaseDocumentsObservable = ({
-  getClient,
-  release,
-}: {
-  getClient: ReturnType<typeof useSource>['getClient']
-  release: ReleaseDocument
-}): ReleaseDocumentsObservableResult => {
-  const client = getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
-  const observableClient = client.observable
-  const dataset = client.config().dataset
-
-  if (!release.finalDocumentStates?.length) return of({loading: false, results: [], error: null})
-
-  function batchRequestDocumentFromHistory(startIndex: number) {
-    const finalIndex = startIndex + 10
-    return observableClient
-      .request<{documents: DocumentInRelease['document'][]}>({
-        url: `/data/history/${dataset}/documents/${release.finalDocumentStates
-          ?.slice(startIndex, finalIndex)
-          .map((d) => d.id)
-          .join(',')}?lastRevision=true`,
-      })
-      .pipe(map(({documents}) => ({documents, finalIndex})))
-  }
-
-  const documents$ = batchRequestDocumentFromHistory(0).pipe(
-    expand((response) => {
-      if (release.finalDocumentStates && response.finalIndex < release.finalDocumentStates.length) {
-        // Continue with next batch
-        return batchRequestDocumentFromHistory(response.finalIndex)
-      }
-      // End recursion by emitting an empty observable
-      return of()
-    }),
-    reduce(
-      (documents: DocumentInRelease['document'][], batch) => documents.concat(batch.documents),
-      [],
-    ),
-  )
-
-  return documents$.pipe(
-    map((documents) => ({
-      loading: false,
-      results: documents.map((document) => ({
-        document,
-        memoKey: uuid(),
-        validation: {validation: [], hasError: false, isValidating: false},
-      })),
-      error: null,
-    })),
-    catchError((error) => {
-      return of({loading: false, results: [], error})
-    }),
-  )
-}
-
-const getReleaseDocumentsObservable = ({
-  schema,
-  documentPreviewStore,
-  getClient,
-  releaseId,
-  i18n,
-  releasesState$,
-  currentUser,
-}: {
-  schema: Schema
-  documentPreviewStore: DocumentPreviewStore
-  getClient: ReturnType<typeof useSource>['getClient']
-  releaseId: string
-  i18n: LocaleSource
-  releasesState$: ReturnType<typeof useReleasesStore>['state$']
-  currentUser?: Omit<CurrentUser, 'role'> | null
-}): ReleaseDocumentsObservableResult => {
-  if (!bundleDocumentsCache[releaseId]) {
-    bundleDocumentsCache[releaseId] = releasesState$.pipe(
-      map((releasesState) =>
-        releasesState.releases.get(getReleaseDocumentIdFromReleaseId(releaseId)),
-      ),
-      filter(Boolean), // Removes falsey values
-      distinctUntilChanged((prev, next) => {
-        // Only skip re-validation if the core fields that affect document validation haven't changed
-        // Return true to skip, false to trigger re-validation
-        // _rev wasn't enough since it changed on every edit of the release document itself
-        return prev.state === next.state && prev.finalDocumentStates === next.finalDocumentStates
+/**
+ * Generic document-fetching machinery shared across releases and variants.
+ *
+ * Resolves the set of documents matching `groqFilter`/`params`, then observes each document along
+ * with its published availability and validation status. Results are batched to avoid overwhelming
+ * the main thread, and shared across subscribers via a module-level cache keyed by `cacheKey`.
+ *
+ * @internal
+ */
+export const getBundleDocumentsObservable = ({
+  cacheKey,
+  ...options
+}: BundleDocumentsObservableOptions & {cacheKey: string}): BundleDocumentsObservableResult => {
+  if (!bundleDocumentsCache[cacheKey]) {
+    bundleDocumentsCache[cacheKey] = buildBundleDocumentsObservable(options).pipe(
+      finalize(() => {
+        delete bundleDocumentsCache[cacheKey]
       }),
-      switchMap((release) => {
-        // Create cache key based on fields that affect document validation + _rev
-        const cacheKey = [
-          releaseId,
-          release.state,
-          release.finalDocumentStates?.flatMap((doc) => doc.id),
-          release._rev,
-        ].join('-')
-
-        if (!bundleDocumentsCache[cacheKey]) {
-          let observable: ReleaseDocumentsObservableResult
-
-          if (release.state === 'published' || release.state === 'archived') {
-            observable = getPublishedArchivedReleaseDocumentsObservable({
-              getClient,
-              release,
-            })
-          } else {
-            observable = getActiveReleaseDocumentsObservable({
-              schema,
-              documentPreviewStore,
-              i18n,
-              getClient,
-              releaseId,
-              currentUser,
-            })
-          }
-
-          bundleDocumentsCache[cacheKey] = observable.pipe(
-            finalize(() => {
-              delete bundleDocumentsCache[cacheKey]
-            }),
-            shareReplay(1),
-          )
-        }
-
-        return bundleDocumentsCache[cacheKey]
-      }),
-      startWith({loading: true, results: [], error: null}),
       shareReplay(1),
     )
   }
 
-  return bundleDocumentsCache[releaseId]
+  return bundleDocumentsCache[cacheKey]
 }
 
-export function useBundleDocuments(releaseId: string): {
+const BUNDLE_DOCUMENTS_INITIAL_STATE = {
+  loading: true,
+  results: [],
+  error: null,
+}
+
+/**
+ * Generic hook to fetch the documents matching a GROQ filter, along with their validation and
+ * published availability. Used by release- and variant-specific hooks.
+ *
+ * @internal
+ */
+export function useBundleDocuments(options: {
+  groqFilter: string
+  params: Record<string, unknown>
+  cacheKey: string
+  skipValidation?: (document: SanityDocument) => boolean
+}): {
   loading: boolean
   results: DocumentInRelease[]
   error: null | Error
 } {
+  const {groqFilter, params, cacheKey, skipValidation} = options
   const documentPreviewStore = useDocumentPreviewStore()
   const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
-  const {state$: releasesState$} = useReleasesStore()
 
-  const releaseDocumentsObservable = useMemo(
+  const bundleDocumentsObservable = useMemo(
     () =>
-      getReleaseDocumentsObservable({
+      getBundleDocumentsObservable({
         schema,
         documentPreviewStore,
         getClient,
-        releaseId,
         i18n,
-        releasesState$,
         currentUser,
+        groqFilter,
+        params,
+        cacheKey,
+        skipValidation,
       }),
-    [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$, currentUser],
+    [
+      schema,
+      documentPreviewStore,
+      getClient,
+      i18n,
+      currentUser,
+      groqFilter,
+      params,
+      cacheKey,
+      skipValidation,
+    ],
   )
 
-  return useObservable(releaseDocumentsObservable, {
-    loading: true,
-    results: [],
-    error: null,
-  })
+  return useObservable(bundleDocumentsObservable, BUNDLE_DOCUMENTS_INITIAL_STATE)
 }

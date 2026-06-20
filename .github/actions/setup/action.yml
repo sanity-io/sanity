@@ -5,18 +5,12 @@ inputs:
   node-version:
     description: "Node.js version to use"
     required: true
-    default: lts/*
+    default: lts
 
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v5
-
-    - uses: actions/setup-node@v6
+    - uses: pnpm/setup@v1
       with:
-        cache: pnpm
-        node-version: ${{ inputs.node-version }}
-
-    - name: Install project dependencies
-      run: pnpm install --ignore-scripts
-      shell: bash
+        cache: true
+        runtime: node@${{ inputs.node-version }}
