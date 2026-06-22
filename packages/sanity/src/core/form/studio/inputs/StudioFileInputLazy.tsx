@@ -1,6 +1,6 @@
 import {lazy, Suspense} from 'react'
 
-import {LoadingBlock} from '../../../components/loadingBlock'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {type FileInputProps} from './StudioFileInput'
 
 const StudioFileInputComponent = lazy(() =>
