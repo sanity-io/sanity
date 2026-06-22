@@ -25,12 +25,9 @@ const DISABLED_REASON_TITLE_KEY = {
   NOT_READY: 'action.delete.disabled.not-ready',
 }
 
-// A delete waits for the document to become consistent, then runs. If another
-// operation supersedes it first, operationEvents cancels the in-flight delete by
-// design and no outcome ever emits, so the await would hang and leave the action
-// stuck "deleting". The bound guarantees the state resets. 30s clears a real
-// delete (consistency wait plus round-trip on a slow connection) yet still
-// recovers the UI when no outcome arrives.
+// operationEvents switchMaps per document, so a superseding operation drops the
+// delete before it emits an outcome. The telemetry wait is bounded so its
+// subscription is released when no outcome ever arrives.
 const DELETE_OUTCOME_TIMEOUT = 30000
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
@@ -54,7 +51,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
   }, [])
 
   const handleConfirm = useCallback(
-    async (versions: string[], referenceCounts: DeleteReferenceCounts) => {
+    (versions: string[], referenceCounts: DeleteReferenceCounts) => {
       const {
         totalReferenceCount: referenceCount,
         internalReferenceCount,
@@ -72,25 +69,25 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
 
       telemetry.log(DocumentDeleted, {...referenceInfo, stage: 'confirmed'})
 
-      // set up the listener before executing so we don't miss the outcome
-      const deleteOutcome = firstValueFrom(
+      // Log the result without gating UI state on it. Subscribe before executing
+      // so we don't miss the outcome.
+      void firstValueFrom(
         documentStore.pair.operationEvents(id, type).pipe(
           filter((event) => event.op === 'delete'),
           map((event) => event.type),
           timeout({first: DELETE_OUTCOME_TIMEOUT}),
           catchError(() => of('dropped' as const)),
         ),
-      )
+      ).then((outcome) => {
+        if (outcome !== 'dropped') {
+          telemetry.log(DocumentDeleted, {
+            ...referenceInfo,
+            stage: outcome === 'success' ? 'deleted' : 'failed',
+          })
+        }
+      })
 
       deleteOp.execute(versions)
-
-      const outcome = await deleteOutcome
-      if (outcome !== 'dropped') {
-        telemetry.log(DocumentDeleted, {
-          ...referenceInfo,
-          stage: outcome === 'success' ? 'deleted' : 'failed',
-        })
-      }
       setIsDeleting(false)
     },
     [deleteOp, documentStore.pair, id, telemetry, type],
