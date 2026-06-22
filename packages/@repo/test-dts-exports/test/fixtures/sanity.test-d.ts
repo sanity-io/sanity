@@ -1693,6 +1693,7 @@ import type {
   useValuePreview,
   useVariantDocumentOperations,
   useVersionOperations,
+  useVersionRelease,
   useVirtualizerScrollInstance,
   useVisibleWorkspaces,
   useWorkspace,
@@ -6855,6 +6856,9 @@ describe('sanity', () => {
   })
   test('useVersionOperations', () => {
     expectTypeOf<typeof useVersionOperations>().toBeFunction()
+  })
+  test('useVersionRelease', () => {
+    expectTypeOf<typeof useVersionRelease>().toBeFunction()
   })
   test('useVirtualizerScrollInstance', () => {
     expectTypeOf<typeof useVirtualizerScrollInstance>().toBeFunction()
