@@ -878,8 +878,8 @@ importers:
   packages/@repo/release-notes:
     dependencies:
       '@anthropic-ai/sdk':
-        specifier: ^0.104.2
-        version: 0.104.2(zod@4.4.3)
+        specifier: ^0.105.0
+        version: 0.105.0(zod@4.4.3)
       '@conventional-changelog/git-client':
         specifier: ^2.7.0
         version: 2.7.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
@@ -2083,8 +2083,8 @@ packages:
   '@algorithm.ts/lcs@4.0.6':
     resolution: {integrity: sha512-uu6TgA77++klfI1kM3q9LotWsTrzOzsnot8CmICzdNSG7GWxKvVb+IMMUVILrTbUKoLVfv2Js33PqfXnvkusag==}
 
-  '@anthropic-ai/sdk@0.104.2':
-    resolution: {integrity: sha512-s1wEVDAtEwkS7Ajgep6PZKJLFqybRkmD3Byz+iVVsSpbDY0gjROXE9aOft6V3PMqynn3NTcycV5whga9tCzmKA==}
+  '@anthropic-ai/sdk@0.105.0':
+    resolution: {integrity: sha512-sDyu+aM9cE6uZE+HgRjjHRb+qqb87GHZOx+8bE0YlWetdL1YcVLxn8h9ltxGOflyChTe6PMEo50kMQV4cw0hfg==}
     hasBin: true
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
@@ -11433,7 +11433,7 @@ snapshots:
 
   '@algorithm.ts/lcs@4.0.6': {}
 
-  '@anthropic-ai/sdk@0.104.2(zod@4.4.3)':
+  '@anthropic-ai/sdk@0.105.0(zod@4.4.3)':
     dependencies:
       json-schema-to-ts: 3.1.1
       standardwebhooks: 1.0.0
