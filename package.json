@@ -119,7 +119,7 @@
     "npm-run-all2": "^9.0.2",
     "only-allow": "^1.2.2",
     "oxfmt": "^0.55.0",
-    "oxlint": "^1.70.0",
+    "oxlint": "^1.71.0",
     "oxlint-tsgolint": "^0.23.0",
     "pkg-pr-new": "^0.0.75",
     "playwright": "catalog:",
