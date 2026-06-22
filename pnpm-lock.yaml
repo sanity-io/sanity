@@ -496,8 +496,8 @@ importers:
         specifier: ^6.0.7
         version: 6.0.7(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       '@sanity/google-maps-input':
-        specifier: ^5.0.0
-        version: 5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
+        specifier: ^5.0.2
+        version: 5.0.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@19.2.7)
@@ -541,8 +541,8 @@ importers:
   dev/test-create-integration-studio:
     dependencies:
       '@sanity/code-input':
-        specifier: ^7.1.4
-        version: 7.1.4(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(codemirror@6.0.2)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
+        specifier: ^7.1.6
+        version: 7.1.6(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(codemirror@6.0.2)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       react:
         specifier: 'catalog:'
         version: 19.2.7
@@ -590,14 +590,14 @@ importers:
         specifier: ^6.0.7
         version: 6.0.7(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       '@sanity/debug-preview-url-secret-plugin':
-        specifier: ^2.0.11
-        version: 2.0.11(@sanity/client@7.23.0)(react@19.2.7)(sanity@packages+sanity)
+        specifier: ^2.0.12
+        version: 2.0.12(@sanity/client@7.23.0)(react@19.2.7)(sanity@packages+sanity)
       '@sanity/document-internationalization':
-        specifier: ^6.2.8
-        version: 6.2.8(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity-plugin-internationalized-array@5.1.9)(sanity@packages+sanity)
+        specifier: ^6.2.9
+        version: 6.2.9(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity-plugin-internationalized-array@5.1.9)(sanity@packages+sanity)
       '@sanity/google-maps-input':
-        specifier: ^5.0.0
-        version: 5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
+        specifier: ^5.0.2
+        version: 5.0.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@19.2.7)
@@ -5495,8 +5495,8 @@ packages:
     resolution: {integrity: sha512-4VFcLeP/lD0lhe5TD102tSnoW72ERT6xD/ZLb9pdLNMbZgbOciAy3m0hAYvs1vjA6663ZjNM6SLwl1Utq97DHA==}
     engines: {node: '>=20'}
 
-  '@sanity/code-input@7.1.4':
-    resolution: {integrity: sha512-gvsCbL40/fzD8kAOosWbdc3RTl4nMXzpVYi6kSFrwjiCT2gDec2aLPyyl+/tLC186xtugK3NI50Tw9C6j+2pkQ==}
+  '@sanity/code-input@7.1.6':
+    resolution: {integrity: sha512-G0PQLvtTbffSL/gjZuMvZ8SRV+zGakZ5O3dGq/pmld5aOUSls6tg7ZzCjc5BjO5CoZSagppLB8UU1aY5vc6xpQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
@@ -5534,8 +5534,8 @@ packages:
     resolution: {integrity: sha512-A82+nP4Niam+9TfWjU6TkZL1hDwYYjPj3075XwYCeyPl/taUiXnZJB+31rouPR29LyyWr0SFSonfouJG7tEwmw==}
     engines: {node: '>=18'}
 
-  '@sanity/debug-preview-url-secret-plugin@2.0.11':
-    resolution: {integrity: sha512-w5n1xY6IggW0XXZ0vfhJYtJA9o41GCU15lu01Xhft5M7yKmZk0ZHZeD1LkS077tfrStse6lBz/t/chzMDp9AiQ==}
+  '@sanity/debug-preview-url-secret-plugin@2.0.12':
+    resolution: {integrity: sha512-okr9AcAAHS1ZfdYaKj1e2h4P8/fRYgttXxGyOUujgYVsh89gT5VhUTBcyYbEIViFTYHI1VKUYlxmSMnAINlBUA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
@@ -5557,8 +5557,8 @@ packages:
     resolution: {integrity: sha512-oJ5kZQV6C/DAlcpRLEU7AcVWXrSPuJb3Z1TQ9tm/qZOVWJENwWln45jtepQEYolTIuGx9jUlhYUi3hGIkOt8RA==}
     engines: {node: '>=18.2'}
 
-  '@sanity/document-internationalization@6.2.8':
-    resolution: {integrity: sha512-ff/A78zq9zdoBA9+3obpqaLJQiirGVJBDVZJCurNgXM2jLGzMFSGuJGewfY6/HbRjkkqwVUvAzk9/6t7CHWS+w==}
+  '@sanity/document-internationalization@6.2.9':
+    resolution: {integrity: sha512-rjqIq8TY+h9Dbkjn8fiY5eLwQPQUNofwIcrF45gJvBoMlUakWpYQjn9NH77Zmyw0p71eByQaldLbl+bsDJ8ehw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
@@ -5580,8 +5580,8 @@ packages:
   '@sanity/generate-help-url@4.0.0':
     resolution: {integrity: sha512-Ooa4xkLT3TLaX+mw/13fq3IeGdnAkx4rbpVASvRVixzBBvvcL6jPqj50fjlCd+EhgB5GRXBCNNAy/hWXwjZEUA==}
 
-  '@sanity/google-maps-input@5.0.0':
-    resolution: {integrity: sha512-cUMmqsQWk2RqwkhaGFv5+wMmDFdA0mE+7ciemc0IOD/j/RcW3dCvrWY7UDQ9u5kr3SwnlqhKBs5a8YpVYQaMKQ==}
+  '@sanity/google-maps-input@5.0.2':
+    resolution: {integrity: sha512-34tIwisT01ttddII5FhPRjrBfAGfJadQOogw975AvSeC2z4Hr3wwmpHanFD1qO0KeIzWPzhCbJMqx9fZ26AB8A==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
@@ -10413,6 +10413,7 @@ packages:
 
   stream-to-promise@2.2.0:
     resolution: {integrity: sha512-HAGUASw8NT0k8JvIVutB2Y/9iBk7gpgEyAudXwNJmZERdMITGdajOa4VJfD/kNiA3TppQpTP4J+CtcHwdzKBAw==}
+    deprecated: Deprecated. Use node:stream/promises and node:stream/consumers instead.
 
   streamx@2.28.0:
     resolution: {integrity: sha512-1Yowhzjf0ivGMrTIkY9hav5TxobO9qIVqUE41fiCGMGgc3CLlf4MY+9AHmZqBWgDTue0fY9zWjYFVyf6Diuobw==}
@@ -14610,7 +14611,7 @@ snapshots:
       nanoid: 3.3.12
       rxjs: 7.8.2
 
-  '@sanity/code-input@7.1.4(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(codemirror@6.0.2)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)':
+  '@sanity/code-input@7.1.6(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(codemirror@6.0.2)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)':
     dependencies:
       '@codemirror/lang-html': 6.4.11
       '@codemirror/lang-java': 6.0.2
@@ -14706,7 +14707,7 @@ snapshots:
       - '@sanity/types'
       - typescript
 
-  '@sanity/debug-preview-url-secret-plugin@2.0.11(@sanity/client@7.23.0)(react@19.2.7)(sanity@packages+sanity)':
+  '@sanity/debug-preview-url-secret-plugin@2.0.12(@sanity/client@7.23.0)(react@19.2.7)(sanity@packages+sanity)':
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.7)
       '@sanity/preview-url-secret': 4.0.7(@sanity/client@7.23.0)
@@ -14729,7 +14730,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@sanity/document-internationalization@6.2.8(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity-plugin-internationalized-array@5.1.9)(sanity@packages+sanity)':
+  '@sanity/document-internationalization@6.2.9(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity-plugin-internationalized-array@5.1.9)(sanity@packages+sanity)':
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.7)
       '@sanity/mutator': link:packages/@sanity/mutator
@@ -14772,7 +14773,7 @@ snapshots:
 
   '@sanity/generate-help-url@4.0.0': {}
 
-  '@sanity/google-maps-input@5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)':
+  '@sanity/google-maps-input@5.0.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)':
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.7)
       '@sanity/ui': 3.2.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
