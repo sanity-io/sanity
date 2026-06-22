@@ -58,7 +58,7 @@
     "sanity-plugin-internationalized-array": "^5.1.9",
     "sanity-plugin-markdown": "8.0.7",
     "sanity-plugin-media": "^5.0.0",
-    "sanity-plugin-mux-input": "^3.0.4",
+    "sanity-plugin-mux-input": "^4.0.2",
     "styled-components": "catalog:"
   },
   "devDependencies": {
