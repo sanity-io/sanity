@@ -1706,7 +1706,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       nanoid:
-        specifier: ^5.1.11
+        specifier: ^5.1.14
         version: 5.1.14
       observable-callback:
         specifier: ^1.0.3
