@@ -25,8 +25,12 @@ const DISABLED_REASON_TITLE_KEY = {
   NOT_READY: 'action.delete.disabled.not-ready',
 }
 
-// A superseding operation on the same document cancels the delete before it
-// emits any outcome, so the wait is bounded to guarantee the action state resets.
+// A delete waits for the document to become consistent, then runs. If another
+// operation supersedes it first, operationEvents cancels the in-flight delete by
+// design and no outcome ever emits, so the await would hang and leave the action
+// stuck "deleting". The bound guarantees the state resets. 30s clears a real
+// delete (consistency wait plus round-trip on a slow connection) yet still
+// recovers the UI when no outcome arrives.
 const DELETE_OUTCOME_TIMEOUT = 30000
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
