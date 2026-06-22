@@ -75,6 +75,7 @@ describe('lazy shim — rejection path', () => {
 
       await waitFor(() => {
         expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+        expect(screen.getByTestId('alert-error')).toBeInTheDocument()
       })
     } finally {
       consoleErrorSpy.mockRestore()
