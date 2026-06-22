@@ -1,11 +1,15 @@
 import {CommentIcon} from '@sanity/icons'
+import {lazy} from 'react'
 
 import {defineDocumentInspector, type DocumentInspectorMenuItem} from '../../../config'
 import {useTranslation} from '../../../i18n'
 import {COMMENTS_INSPECTOR_NAME} from '../../constants'
 import {useCommentsEnabled} from '../../hooks'
 import {commentsLocaleNamespace} from '../../i18n'
-import {CommentsInspector} from './CommentsInspector'
+
+const CommentsInspector = lazy(() =>
+  import('./CommentsInspector').then((module) => ({default: module.CommentsInspector})),
+)
 
 function useMenuItem(): DocumentInspectorMenuItem {
   const {t} = useTranslation(commentsLocaleNamespace)

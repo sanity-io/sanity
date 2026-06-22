@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import {useCallback} from 'react'
+import {Suspense, useCallback} from 'react'
 import {Resizable} from 'sanity'
 
 import {usePane} from '../../../components'
@@ -29,7 +29,9 @@ export function DocumentInspectorPanel(
 
   const Component = inspector.component
   const element = (
-    <Component onClose={handleClose} documentId={documentId} documentType={documentType} />
+    <Suspense fallback={null}>
+      <Component onClose={handleClose} documentId={documentId} documentType={documentType} />
+    </Suspense>
   )
 
   if (features.resizablePanes) {
