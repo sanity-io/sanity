@@ -33,6 +33,8 @@ type DocumentGroupInventoryEvents =
   | {type: 'selection.changed'; selectedIds: Set<string>}
   | {type: 'deletion.activated'}
   | {type: 'deletion.deactivated'}
+  | {type: 'feedback.begin'}
+  | {type: 'feedback.end'}
 
 export const documentGroupInventoryMachine = setup({
   types: {} as {
@@ -42,6 +44,9 @@ export const documentGroupInventoryMachine = setup({
   },
   actors: {
     meta: fromObservable<SelectionMeta, unknown>(() => EMPTY),
+  },
+  actions: {
+    onFeedbackBegin: () => {},
   },
 }).createMachine({
   id: 'documentGroupInventory',
@@ -99,6 +104,15 @@ export const documentGroupInventoryMachine = setup({
     },
     'deletion.deactivated': {
       actions: sendTo(({context}) => context.selectionRef, {type: 'selection.unlock'}),
+    },
+    'feedback.begin': '.feedback',
+    'feedback.end': '.idle',
+  },
+  initial: 'idle',
+  states: {
+    idle: {},
+    feedback: {
+      entry: 'onFeedbackBegin',
     },
   },
 })
