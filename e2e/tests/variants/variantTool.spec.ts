@@ -148,7 +148,7 @@ function escapeRegExp(value: string): string {
 
 async function openVariantsTool(page: Page): Promise<void> {
   await page.goto('/variants')
-  await expect(page.getByRole('heading', {name: 'Variants'})).toBeVisible()
+  await expect(page.getByRole('heading', {name: 'Variants'}).first()).toBeVisible()
   // The heading renders before the overview has settled its data subscriptions.
   // Wait for the create button to be interactive so the first dialog-open click
   // is not dispatched while the page is still mounting and silently dropped.
@@ -503,7 +503,7 @@ test.describe('Variants create flow', () => {
     await page.getByRole('menuitem', {name: 'Delete variant'}).click()
     await expect(page.getByRole('menuitem', {name: 'Delete variant'})).toBeHidden()
 
-    await expect(page.getByRole('heading', {name: 'Variants'})).toBeVisible()
+    await expect(page.getByRole('heading', {name: 'Variants'}).first()).toBeVisible()
     await expect(getVariantRow(page, title)).toBeHidden()
     await expect.poll(async () => sanityClient.getDocument(documentId)).toBeUndefined()
   })
