@@ -509,6 +509,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** --- Document inventory --- */
 
+  /** The label used in the feedback dialog asking how easy the document group inventory is to use */
+  'document-group-inventory.feedback.sentiment-label':
+    'How easy or difficult is the new version inventory to use?',
   /** The label for the input that filters the variants in the document group inventory */
   'document-group-inventory.filter-string.label': 'Filter {{subject}}',
   /** The document inventory title (singular) */

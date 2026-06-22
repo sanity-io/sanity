@@ -1,6 +1,6 @@
-import {EyeOpenIcon, SearchIcon, TrashIcon} from '@sanity/icons'
+import {EyeOpenIcon, FeedbackIcon, SearchIcon, TrashIcon} from '@sanity/icons'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Card, PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, Flex, PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
 import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {useActorRef, useSelector} from '@xstate/react'
 import {type ComponentType, useMemo, type ChangeEvent, useState, useEffect} from 'react'
@@ -10,10 +10,13 @@ import {styled, css} from 'styled-components'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
+import {STUDIO_DSN} from '../../error/sentry/sentryErrorReporter'
+import {StudioFeedbackDialog} from '../../feedback/components/StudioFeedbackDialog'
+import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n'
-import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
+import {feedbackLocaleNamespace, studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {type TargetPerspective} from '../../perspective/types'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
@@ -95,6 +98,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   components,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
+  const {t: feedbackT} = useTranslation(feedbackLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
   const versionState = useDocumentVersionsObservable({documentId})
@@ -102,6 +106,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
   const [menuPortalElement, setMenuPortalElement] = useState<HTMLDivElement | null>(null)
+  const {feedbackDialogOpened} = useFeedbackTelemetry()
 
   const filterString = useMemo(
     () =>
@@ -121,8 +126,11 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
         actors: {
           meta: fromObservable(() => combineLatest({versionState, releases})),
         },
+        actions: {
+          onFeedbackBegin: feedbackDialogOpened,
+        },
       }),
-    [versionState, releases],
+    [versionState, releases, feedbackDialogOpened],
   )
 
   const inventoryRef = useActorRef(inventoryMachine, {
@@ -166,6 +174,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const selectionCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
   const isReadOnly = useSelector(selectionRef, (snapshot) => snapshot.matches('readonly'))
   const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
+  const isFeedbackActive = useSelector(inventoryRef, (snapshot) => snapshot.matches('feedback'))
 
   const canRequestDeletion = useSelector(deletionRef, (machine) =>
     machine.can({type: 'delete.request'}),
@@ -185,19 +194,28 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
     <>
       <Container ref={setContainerElement} data-testid="document-group-inventory">
         <Header>
-          <search>
-            <TextInput
-              name={t('document-group-inventory.filter-string.label', {
-                subject: t('document-group.subject.version_other'),
-              })}
-              placeholder={t('document-group-inventory.filter-string.label', {
-                subject: t('document-group.subject.version_other'),
-              })}
-              icon={<SearchIcon />}
-              readOnly={isReadOnly}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
-            />
-          </search>
+          <Stack gap={4}>
+            <TextButton onClick={() => inventoryRef.send({type: 'feedback.begin'})}>
+              <Text size={1}>
+                <Flex gap={2} align="center" justify="flex-end">
+                  <FeedbackIcon /> {feedbackT('feedback.menu-item')}
+                </Flex>
+              </Text>
+            </TextButton>
+            <search>
+              <TextInput
+                name={t('document-group-inventory.filter-string.label', {
+                  subject: t('document-group.subject.version_other'),
+                })}
+                placeholder={t('document-group-inventory.filter-string.label', {
+                  subject: t('document-group.subject.version_other'),
+                })}
+                icon={<SearchIcon />}
+                readOnly={isReadOnly}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
+              />
+            </search>
+          </Stack>
         </Header>
         <Body>
           {schema && (
@@ -251,6 +269,15 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           selectionRef={selectionRef}
           portalElementName={portalElementName}
           components={components}
+        />
+      )}
+      {isFeedbackActive && (
+        <StudioFeedbackDialog
+          dsn={STUDIO_DSN}
+          feedbackVersion="1"
+          source="document-group-inventory"
+          onClose={() => inventoryRef.send({type: 'feedback.end'})}
+          sentimentLabel={t('document-group-inventory.feedback.sentiment-label')}
         />
       )}
     </>
@@ -565,6 +592,10 @@ const TextButton = styled.button(({theme}) => {
 
     * {
       color: inherit;
+    }
+
+    svg[data-sanity-icon] {
+      color: currentColor;
     }
   `
 })
