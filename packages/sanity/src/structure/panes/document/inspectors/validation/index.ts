@@ -10,26 +10,21 @@ import {
   isValidationWarning,
   mergeParseErrors,
   useParseErrors,
-  usePerspective,
   useTranslation,
-  useValidationStatus,
 } from 'sanity'
 
 import {VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
 import {ValidationInspector} from './ValidationInspector'
 
-function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
-  const {documentType} = props
+function useMenuItem(_props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {t} = useTranslation('validation')
-  const {selectedReleaseId} = usePerspective()
-  const {value} = useDocumentPane()
-
-  const {validation: validationMarkers} = useValidationStatus(
-    value._id,
-    documentType,
-    !selectedReleaseId,
-  )
+  // Read the same validation the inspector panel uses (from the document pane),
+  // rather than fetching it directly from the live document. This keeps the
+  // status-bar badge and the panel in sync — e.g. both are empty while viewing
+  // a historical revision, where validation is suppressed. Reading it directly
+  // here would leave a stale red badge that opens an empty panel.
+  const {validation: validationMarkers, value} = useDocumentPane()
   const parseErrors = useParseErrors()
 
   const validation: FormNodeValidation[] = useMemo(() => {
