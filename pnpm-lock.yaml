@@ -188,7 +188,7 @@ importers:
         specifier: ^0.28.19
         version: 0.28.19(typescript@5.9.3)
       vercel:
-        specifier: ^54.14.0
+        specifier: ^54.14.2
         version: 54.14.2(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)(rollup@4.62.0)
       vite:
         specifier: 'catalog:'
