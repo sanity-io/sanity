@@ -26,7 +26,7 @@
     "sanity": "workspace:*",
     "sanity-plugin-internationalized-array": "^5.1.9",
     "sanity-plugin-markdown": "9.0.0",
-    "sanity-plugin-media": "^4.3.5",
+    "sanity-plugin-media": "^5.0.0",
     "sanity-plugin-mux-input": "^3.0.4",
     "sanity-test-studio": "workspace:*",
     "styled-components": "catalog:"

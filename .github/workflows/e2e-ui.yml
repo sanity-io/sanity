@@ -16,7 +16,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v5
       - uses: actions/setup-node@v6
         with:
@@ -47,7 +47,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
@@ -80,7 +80,7 @@ jobs:
         # Be sure to update all instances in this file if updated, as well as github required checks
         project: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
@@ -143,7 +143,7 @@ jobs:
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
@@ -198,7 +198,7 @@ jobs:
     needs: [playwright-test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup

@@ -147,12 +147,12 @@ function DefaultMarkdownShortcutsPlugin(
 ) {
   const props = incomingProps ?? {}
 
-  if (!props.config) {
-    const {enabled, config, ...markdownShortcutsPluginProps} = props
+  if (props.enabled === false) {
+    return null
+  }
 
-    if (enabled === false) {
-      return null
-    }
+  if (!props.config) {
+    const {enabled: _enabled, config: _config, ...markdownShortcutsPluginProps} = props
 
     return <MarkdownShortcutsPlugin {...markdownShortcutsPluginProps} />
   }
