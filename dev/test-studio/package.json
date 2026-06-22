@@ -24,7 +24,7 @@
     "@sanity/assist": "^6.1.3",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.6",
-    "@sanity/color-input": "^6.0.7",
+    "@sanity/color-input": "^6.0.8",
     "@sanity/debug-preview-url-secret-plugin": "^2.0.12",
     "@sanity/document-internationalization": "^6.2.9",
     "@sanity/google-maps-input": "^5.0.2",
