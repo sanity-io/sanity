@@ -167,7 +167,10 @@ export default function PresentationTool(props: {
 
   const viewport = useMemo(() => (params.viewport ? 'mobile' : 'desktop'), [params.viewport])
 
-  const [documentsOnPage, setDocumentsOnPage] = useDocumentsOnPage(perspective, frameStateRef)
+  const [documentsOnPage, setDocumentsOnPage, visualOrderPublishedIds] = useDocumentsOnPage(
+    perspective,
+    frameStateRef,
+  )
 
   const projectId = useProjectId()
   const dataset = useDataset()
@@ -614,6 +617,7 @@ export default function PresentationTool(props: {
                     <PresentationContent
                       documentId={params.id}
                       documentsOnPage={documentsOnPage}
+                      visualOrderPublishedIds={visualOrderPublishedIds}
                       documentType={params.type}
                       getCommentIntent={getCommentIntent}
                       hidden={isNarrow && resolvedTab !== 'content'}

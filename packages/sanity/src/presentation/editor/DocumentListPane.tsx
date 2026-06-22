@@ -3,6 +3,7 @@ import {type ErrorInfo, useCallback, useEffect, useMemo, useState} from 'react'
 import {getPublishedId, useTranslation} from 'sanity'
 import {
   DocumentListPane as StructureDocumentListPane,
+  ORDER_BY_IDS_PARAM_FIELD,
   PaneLayout,
   type PaneNode,
   StructureToolProvider,
@@ -36,38 +37,108 @@ const WrappedCode = styled(Code)`
   white-space: pre-wrap;
 `
 
+/**
+ * Visual page order seeds the list; `refs` then appends any documents visual
+ * editing did not report. `refs` ids are normalised to published ids (they carry
+ * draft/version variants); `visualOrderPublishedIds` already are.
+ */
+export function deriveOrderedIds({
+  visualOrderPublishedIds,
+  refs,
+  mainDocumentId,
+}: {
+  visualOrderPublishedIds: string[]
+  refs: {_id: string; _type: string}[]
+  mainDocumentId?: string
+}): string[] {
+  const seenPublishedIds = new Set<string>()
+  const candidatePublishedIds = [
+    ...visualOrderPublishedIds,
+    ...refs.map((ref) => getPublishedId(ref._id)),
+  ]
+
+  return candidatePublishedIds.reduce<string[]>((accumulatedIds, publishedId) => {
+    if (publishedId === mainDocumentId || seenPublishedIds.has(publishedId)) {
+      return accumulatedIds
+    }
+    seenPublishedIds.add(publishedId)
+    accumulatedIds.push(publishedId)
+    return accumulatedIds
+  }, [])
+}
+
 export function DocumentListPane(props: {
   mainDocumentState?: MainDocumentState
   onEditReference: PresentationNavigate
   onStructureParams: (params: StructureDocumentPaneParams) => void
   searchParams: PresentationSearchParams
   refs: {_id: string; _type: string}[]
+  visualOrderPublishedIds: string[]
 }): React.JSX.Element {
-  const {mainDocumentState, onEditReference, onStructureParams, searchParams, refs} = props
+  const {
+    mainDocumentState,
+    onEditReference,
+    onStructureParams,
+    searchParams,
+    refs,
+    visualOrderPublishedIds,
+  } = props
 
   const {t} = useTranslation(presentationLocaleNamespace)
   const {devMode} = usePresentationTool()
 
   const ids = useMemo(
     () =>
-      refs
-        .filter((r) => getPublishedId(r._id) !== mainDocumentState?.document?._id)
-        .map((r) => getPublishedId(r._id)),
-    [mainDocumentState, refs],
+      deriveOrderedIds({
+        visualOrderPublishedIds,
+        refs,
+        mainDocumentId: mainDocumentState?.document?._id,
+      }),
+    [mainDocumentState, refs, visualOrderPublishedIds],
   )
 
   const pane: Extract<PaneNode, {type: 'documentList'}> = useMemo(
     () => ({
-      id: '$root',
+      id: 'presentationDocumentsOnPage',
       options: {
         filter: '_id in $ids',
         params: {ids},
-        // defaultOrdering: [{field: '_updatedAt', direction: 'desc'}],
+        defaultOrdering: [{field: ORDER_BY_IDS_PARAM_FIELD, direction: 'asc'}],
       },
       schemaTypeName: '',
       title: t('document-list-pane.document-list.title'),
       type: 'documentList',
+      menuItemGroups: [{id: 'sorting'}],
+      menuItems: [
+        {
+          group: 'sorting',
+          action: 'setSortOrder',
+          i18n: {
+            title: {
+              key: 'document-list-pane.ordering.by-appearance',
+              ns: presentationLocaleNamespace,
+            },
+          },
+          title: 'By appearance',
+          params: {by: [{field: ORDER_BY_IDS_PARAM_FIELD, direction: 'asc'}]},
+        },
+        {
+          group: 'sorting',
+          action: 'setSortOrder',
+          i18n: {
+            title: {
+              key: 'document-list-pane.ordering.last-edited',
+              ns: presentationLocaleNamespace,
+            },
+          },
+          title: 'Last edited',
+          params: {by: [{field: '_updatedAt', direction: 'desc'}]},
+        },
+      ],
+      suppressRestoreDefaultMenuItems: true,
     }),
+    // Pane id drives the keyvalue persistence key (global across pages). Avoid
+    // `$` — the keyvalue store rejects it as a key segment.
     [ids, t],
   )
 
