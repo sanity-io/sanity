@@ -1,9 +1,14 @@
 import {RestoreIcon} from '@sanity/icons'
+import {lazy} from 'react'
 import {type DocumentInspector, useTranslation} from 'sanity'
 
 import {useStructureTool} from '../../../../useStructureTool'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
-import {ChangesTabs} from './ChangesTabs'
+
+// Deferred so the changes/diff inspector UI stays out of the eager structureTool graph; it only renders when the inspector is opened.
+const ChangesTabs = lazy(() =>
+  import('./ChangesTabs').then((module) => ({default: module.ChangesTabs})),
+)
 
 export const changesInspector: DocumentInspector = {
   name: HISTORY_INSPECTOR_NAME,

@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
-import {useCallback} from 'react'
-import {Resizable} from 'sanity'
+import {Suspense, useCallback} from 'react'
+import {LoadingBlock, Resizable} from 'sanity'
 
 import {usePane} from '../../../components'
 import {useStructureTool} from '../../../useStructureTool'
@@ -28,8 +28,11 @@ export function DocumentInspectorPanel(
   if (collapsed || !inspector) return null
 
   const Component = inspector.component
+  // Inspector components are lazy-loaded, so guarantee a local Suspense boundary rather than relying on an ancestor.
   const element = (
-    <Component onClose={handleClose} documentId={documentId} documentType={documentType} />
+    <Suspense fallback={<LoadingBlock showText />}>
+      <Component onClose={handleClose} documentId={documentId} documentType={documentType} />
+    </Suspense>
   )
 
   if (features.resizablePanes) {

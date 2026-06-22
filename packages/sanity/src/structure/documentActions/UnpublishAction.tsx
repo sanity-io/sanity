@@ -1,5 +1,5 @@
 import {UnpublishIcon} from '@sanity/icons'
-import {useCallback, useMemo, useState} from 'react'
+import {lazy, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionModalDialogProps,
@@ -11,8 +11,14 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ConfirmDeleteDialog} from '../components'
 import {structureLocaleNamespace} from '../i18n'
+
+// Imported directly rather than via the components barrel, which statically drags DocumentPane; deferred since the dialog only renders after the user opens it.
+const ConfirmDeleteDialog = lazy(() =>
+  import('../components/confirmDeleteDialog/ConfirmDeleteDialog').then((module) => ({
+    default: module.ConfirmDeleteDialog,
+  })),
+)
 
 const DISABLED_REASON_KEY = {
   NOT_PUBLISHED: 'action.unpublish.disabled.not-published',

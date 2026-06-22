@@ -1,5 +1,5 @@
 import {PortalProvider, Text, usePortal} from '@sanity/ui'
-import {type ReactNode, useId} from 'react'
+import {type ReactNode, Suspense, useId} from 'react'
 import {type DocumentActionDialogProps} from 'sanity'
 
 import {Dialog} from '../../../../ui-components'
@@ -44,7 +44,11 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
   }
 
   if (dialog.type === 'custom') {
-    return <DocumentActionPortalProvider>{dialog?.component}</DocumentActionPortalProvider>
+    return (
+      <DocumentActionPortalProvider>
+        <Suspense fallback={null}>{dialog?.component}</Suspense>
+      </DocumentActionPortalProvider>
+    )
   }
 
   // @todo: add validation?
