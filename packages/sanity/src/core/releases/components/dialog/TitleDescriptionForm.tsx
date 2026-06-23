@@ -118,19 +118,17 @@ export function TitleDescriptionForm({
     })
 
   useEffect(() => {
-    if (descriptionRef.current) {
-      setScrollHeight(descriptionRef.current.scrollHeight)
-    }
-    if (titleRef.current) {
-      resizeTextarea(titleRef.current)
-    }
-  }, [])
-
-  useEffect(() => {
     if (titleRef.current) {
       resizeTextarea(titleRef.current)
     }
   }, [release.metadata.title])
+
+  useEffect(() => {
+    if (descriptionRef.current) {
+      resizeTextarea(descriptionRef.current)
+      setScrollHeight(descriptionRef.current.scrollHeight)
+    }
+  }, [release.metadata.description])
 
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
