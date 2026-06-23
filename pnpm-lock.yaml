@@ -1706,8 +1706,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       nanoid:
-        specifier: ^5.1.14
-        version: 5.1.14
+        specifier: ^5.1.15
+        version: 5.1.15
       observable-callback:
         specifier: ^1.0.3
         version: 1.0.3(rxjs@7.8.2)
@@ -9133,6 +9133,11 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
 
+  nanoid@5.1.15:
+    resolution: {integrity: sha512-kBg3RpGtIe+RpTbyXwoI6pk5yD7KUiI3sygUqgeBMRst42KmhB4RZC7eiO9Wa1HIpaCCtpE2DJ6OI4Wi5ebwFw==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+
   napi-postinstall@0.3.4:
     resolution: {integrity: sha512-PHI5f1O0EP5xJ9gQmFGMS6IZcrVvTjpXjz7Na41gTE7eE2hK11lg04CECCYEEjdc17EV4DO+fkGEtt7TpTaTiQ==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
@@ -14471,7 +14476,7 @@ snapshots:
 
   '@sanity/bifur-client@1.0.0':
     dependencies:
-      nanoid: 5.1.14
+      nanoid: 5.1.15
       rxjs: 7.8.2
 
   '@sanity/blueprints-parser@0.4.0': {}
@@ -14650,7 +14655,7 @@ snapshots:
       jsonc-parser: 3.3.1
       lodash-es: 4.18.1
       minimist: 1.2.8
-      nanoid: 5.1.14
+      nanoid: 5.1.15
       oneline: 2.0.0
       open: 11.0.0
       p-map: 7.0.4
@@ -19128,6 +19133,8 @@ snapshots:
   nanoid@3.3.13: {}
 
   nanoid@5.1.14: {}
+
+  nanoid@5.1.15: {}
 
   napi-postinstall@0.3.4: {}
 
