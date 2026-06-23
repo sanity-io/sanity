@@ -60,6 +60,8 @@ minimumReleaseAgeExclude:
   - '@sanity/*'
   - '@types/*'
   - '@typescript/*'
+  - '@vanilla-extract/css'
+  - '@vanilla-extract/vite-plugin'
   - '@vercel/stega'
   - 'csstype'
   - 'data-uri-to-buffer@7.0.0'
