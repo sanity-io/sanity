@@ -247,7 +247,7 @@
     "rxjs-mergemap-array": "^0.1.0",
     "scroll-into-view-if-needed": "^3.1.0",
     "scrollmirror": "^1.2.4",
-    "semver": "^7.8.4",
+    "semver": "^7.8.5",
     "shallow-equals": "^1.0.0",
     "speakingurl": "^14.0.1",
     "urlpattern-polyfill": "10.1.0",
