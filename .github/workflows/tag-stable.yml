@@ -51,7 +51,7 @@ jobs:
       EXPECTED_NPM_USER: sanity-svc.npm
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Set publishing config
@@ -96,7 +96,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Update manifest with stable tag (staging)

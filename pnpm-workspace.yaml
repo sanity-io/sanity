@@ -20,7 +20,7 @@ catalog:
   '@rolldown/plugin-babel': ^0.2.3
   '@sanity/client': ^7.23.0
   '@sanity/migrate': ^7.0.3
-  '@sanity/pkg-utils': ^10.5.7
+  '@sanity/pkg-utils': ^10.5.8
   '@sanity/telemetry': ^1.1.0
   '@sanity/ui': ^3.2.0
   '@types/node': ^24.13.2
@@ -76,6 +76,7 @@ minimumReleaseAgeExclude:
   - 'sanity-plugin-internationalized-array'
   - 'sanity-plugin-hotspot-array'
   - 'sanity-plugin-media'
+  - 'sanity-plugin-markdown'
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-mux-input'
   - 'sanity-plugin-utils'

@@ -118,7 +118,7 @@
     "lefthook": "^2.1.9",
     "npm-run-all2": "^9.0.2",
     "only-allow": "^1.2.2",
-    "oxfmt": "^0.55.0",
+    "oxfmt": "^0.56.0",
     "oxlint": "^1.70.0",
     "oxlint-tsgolint": "^0.23.0",
     "pkg-pr-new": "^0.0.75",
@@ -127,7 +127,7 @@
     "tsx": "^4.22.4",
     "turbo": "^2.9.18",
     "typedoc": "^0.28.19",
-    "vercel": "^54.14.0",
+    "vercel": "^54.14.2",
     "vite": "catalog:",
     "vitest": "catalog:"
   },

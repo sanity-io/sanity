@@ -1,6 +1,7 @@
 import {validateApiPerspective} from '@sanity/client'
 import isEqual from 'fast-deep-equal'
 import {type MutableRefObject, useCallback, useMemo, useRef, useState} from 'react'
+import {getPublishedId} from 'sanity'
 
 import {type FrameState, type PresentationPerspective} from './types'
 import {defineWarnOnce} from './util/warnOnce'
@@ -25,6 +26,7 @@ export function useDocumentsOnPage(
 ): [
   DocumentOnPage[],
   (key: string, perspective: PresentationPerspective, state: DocumentOnPage[]) => void,
+  string[],
 ] {
   validateApiPerspective(perspective)
 
@@ -90,5 +92,33 @@ export function useDocumentsOnPage(
     return Object.values(uniqueDocuments)
   }, [perspective, previewDrafts, published])
 
-  return [documentsOnPage, setDocumentsOnPage]
+  // The 'visual-editing' keyed cache is the authoritative source of visual page
+  // order; other keys (preview-kit, loaders) are CSM-derived and only lexical.
+  const visualOrderPublishedIds = useMemo(() => {
+    const keyedCache = perspective === 'published' ? published : previewDrafts
+    const visualCache = keyedCache['visual-editing']
+    if (!visualCache) {
+      return []
+    }
+
+    const {orderedIds} = Object.values(visualCache).reduce<{
+      orderedIds: string[]
+      seen: Set<string>
+    }>(
+      (accumulator, document) => {
+        const publishedId = getPublishedId(document._id)
+        if (accumulator.seen.has(publishedId)) {
+          return accumulator
+        }
+        accumulator.seen.add(publishedId)
+        accumulator.orderedIds.push(publishedId)
+        return accumulator
+      },
+      {orderedIds: [], seen: new Set<string>()},
+    )
+
+    return orderedIds
+  }, [perspective, previewDrafts, published])
+
+  return [documentsOnPage, setDocumentsOnPage, visualOrderPublishedIds]
 }
