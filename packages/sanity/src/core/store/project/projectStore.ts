@@ -1,11 +1,13 @@
 import {type SanityClient} from '@sanity/client'
 import {
   catchError,
+  distinctUntilChanged,
   map,
   type Observable,
   of,
   repeat,
   ReplaySubject,
+  scan,
   share,
   shareReplay,
   timer,
@@ -37,6 +39,12 @@ const getProjectOrg = memoize(
           return of(null)
         }),
         repeat({delay: REFETCH_INTERVAL}),
+        // A transient refetch failure emits `null`. Retain the last known
+        // project data so a failed refetch does not clobber a previously-good
+        // organization id (which would strip org_id from telemetry events
+        // flushed during the refetch window). See SAPP-3824.
+        scan<ProjectData | null, ProjectData | null>((lastKnown, next) => next ?? lastKnown, null),
+        distinctUntilChanged(),
         share({
           connector: () => new ReplaySubject(1),
           resetOnComplete: true,
