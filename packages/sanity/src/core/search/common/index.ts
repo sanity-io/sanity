@@ -1,5 +1,6 @@
 export * from './compileFieldPath'
 export * from './compileSortExpression'
+export * from './deriveReferenceSearchSpecs'
 export * from './deriveSearchWeightsFromType'
 export * from './deriveSearchWeightsFromType2024'
 export * from './getSearchableTypes'
