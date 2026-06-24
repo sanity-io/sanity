@@ -235,9 +235,10 @@ function submitCommitRequest(
     // the buffered document can retry/rebase on reconnect). After that, we
     // must NOT let the error propagate down this observable: it feeds
     // `commits$` → `combinedEvents` → the document `events` stream, and an
-    // errored events stream is rethrown by `useEditState` during render,
-    // crashing the document pane. Complete instead — the failure has
-    // already been routed through its proper channel.
+    // errored events stream is rethrown by `useObservable` (react-rx) when
+    // `useEditState` reads it during render, crashing the document pane.
+    // Complete instead — the failure has already been routed through its
+    // proper channel.
     catchError((error) => {
       // 4xx (except 429) is a client error: terminal, the buffered
       // mutations can't succeed by retrying, so cancel (which rejects the
@@ -363,6 +364,10 @@ export function checkoutPair(
 
   // Each new commit request restarts the timer via switchMap.
   // The timer is cancelled when the commit succeeds or pending mutations resolve.
+  // Note: a *failed* commit no longer emits on `commits$` (it completes via
+  // `catchError` in `submitCommitRequest`), so `commitResolved$` does not fire
+  // for it — a commit that fails after SLOW_COMMIT_TIMEOUT_MS still triggers
+  // `onSlowCommit`. That's intentional: it was slow, and it's now failing.
   const slowCommitWarning$ = onSlowCommit
     ? commitRequests$.pipe(
         switchMap(() => timer(SLOW_COMMIT_TIMEOUT_MS).pipe(takeUntil(commitResolved$))),
