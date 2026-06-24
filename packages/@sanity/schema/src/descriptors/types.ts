@@ -48,20 +48,18 @@ export interface CommonTypeDef extends EncodableObject {
   marks?: BlockMarks
 }
 
-/** A title/value pair, e.g. a single block decorator (`{value: 'strong', title: 'Strong'}`). */
-export type BlockTitledValue = {
-  value: string
-  title?: string
-}
-
 /**
  * Unlike the manifest and userland `marks` (which carry both `decorators` and
  * `annotations`), the descriptor's `marks` carries only `decorators`. Annotations
  * are field-expressed on a compiled block (via the `markDefs` field) and so are
  * already represented in the descriptor — duplicating them here would be redundant.
+ *
+ * Decorators are serialized with the same generic encoder as style/list options, so
+ * they keep extras like `i18nTitleKey` and encode a non-serializable `icon` as a
+ * marker — consistent with how the descriptor serializes every other option list.
  */
 export type BlockMarks = {
-  decorators: BlockTitledValue[]
+  decorators: EncodableValue
 }
 
 /** In some scenarios we need to encode special information. */
