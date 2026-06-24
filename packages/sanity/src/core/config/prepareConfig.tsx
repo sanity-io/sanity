@@ -25,6 +25,7 @@ import {type AuthStore, createAuthStore, isAuthStore} from '../store'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
+import {fetchCanDeployStudio} from '../studio/manifest/canDeployStudio'
 import {uploadSchema} from '../studio/manifest/uploadSchema'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
@@ -669,6 +670,25 @@ function resolveSource({
 
   const variantsEnabled = variantsEnabledReducer({config, initialValue: false})
 
+  // Upload the schema descriptor to Content Lake, but only when the user is
+  // authenticated and actually holds the `deployStudio` grant. Checking the
+  // grant first avoids firing a POST that would 403 for users without it.
+  const schemaDescriptorId: Promise<string | undefined> = authenticated
+    ? (async () => {
+        const studioClient = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+        if (!(await fetchCanDeployStudio(studioClient))) {
+          debug('Skipping schema upload: user lacks the deployStudio grant')
+          return undefined
+        }
+        return uploadSchema(schema, studioClient)
+      })().catch((err) => {
+        // Resolve to `undefined` (rather than rejecting) so consumers awaiting
+        // `schemaDescriptorId` don't have to handle a rejection.
+        debug('Uploading schema failed', {err})
+        return undefined
+      })
+    : Promise.resolve(undefined)
+
   const source: Source = {
     type: 'source',
     name: config.name,
@@ -837,12 +857,7 @@ function resolveSource({
       i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,
-      schemaDescriptorId: authenticated
-        ? catchTap(uploadSchema(schema, getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)), (err) => {
-            debug('Uploading schema failed', {err})
-            return undefined
-          })
-        : Promise.resolve(undefined),
+      schemaDescriptorId,
     },
     onUncaughtError: (error: Error, errorInfo: ErrorInfo) => {
       return onUncaughtErrorResolver({
@@ -956,13 +971,4 @@ function joinBasePath(rootPath: string, basePath?: string) {
     .join('/')
 
   return `/${joined}`
-}
-
-/**
- * Registers a catch to a promise (to prevent it from being caught by the
- * "unhandled promise" handler) while returning the original promise.
- */
-function catchTap<T>(promise: Promise<T>, cb: (reason: unknown) => void): Promise<T> {
-  promise.catch(cb)
-  return promise
 }

@@ -351,6 +351,7 @@ exports[`exports snapshot 1`] = `
     "getPreviewPaths": "function",
     "getPreviewStateObservable": "function",
     "getPreviewValueWithFallback": "function",
+    "getProjectGrants": "function",
     "getProviderTitle": "function",
     "getPublishedId": "function",
     "getReferencePaths": "function",

@@ -67,6 +67,29 @@ const getOrganizationData = memoize(
   (client) => `${client.config().projectId}-${client.config().dataset}`,
 )
 
+/**
+ * Fetches the project grants for the current user, shared and replayed so all
+ * permission checks reuse a single request. Memoized so callers outside the
+ * project store (e.g. the schema/manifest upload gate) hit the same cached
+ * observable instead of issuing a duplicate `/grants` request.
+ *
+ * Keyed by `projectId-dataset`, matching the other memoized requests in this
+ * module, so a client for a different project/dataset never reuses another's
+ * grants.
+ *
+ * @internal
+ */
+export const getProjectGrants = memoize(
+  (client: SanityClient): Observable<ProjectGrants> =>
+    client.observable
+      .request<ProjectGrants>({
+        url: `/projects/${client.config().projectId}/grants`,
+        tag: 'get-grants',
+      })
+      .pipe(shareReplay(1)),
+  (client) => `${client.config().projectId}-${client.config().dataset}`,
+)
+
 /** @internal */
 export function createProjectStore(context: {client: SanityClient}): ProjectStore {
   const {client} = context
@@ -87,20 +110,12 @@ export function createProjectStore(context: {client: SanityClient}): ProjectStor
     })
   }
 
-  // Share and replay the grants result so permission checks reuse the same response.
-  const grants$ = versionedClient.observable
-    .request<ProjectGrants>({
-      url: `/projects/${projectId}/grants`,
-      tag: 'get-grants',
-    })
-    .pipe(shareReplay(1))
-
   const projectOrgData$ = getProjectOrg(versionedClient)
 
   return {
     get,
     getDatasets,
-    getGrants: () => grants$,
+    getGrants: () => getProjectGrants(versionedClient),
     getOrganizationData: () => projectOrgData$.pipe(map((res) => res?.organization ?? null)),
     getOrganizationId: () => projectOrgData$.pipe(map((res) => res?.organizationId ?? null)),
   }
