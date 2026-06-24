@@ -8,9 +8,8 @@ import {LoadingBlock} from '../../components'
 import {useSchema} from '../../hooks'
 import {Translate, useTranslation} from '../../i18n'
 import {Preview} from '../../preview'
-import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
-import {getDocumentVersionInfoFromVersions} from '../../releases/util/getDocumentVersionInfoFromVersions'
+import {useDocumentVersionInfo} from '../../releases/store/useDocumentVersionInfo'
 import {getErrorMessage, getPublishedId} from '../../util'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../hooks/useScheduleDraftOperations'
@@ -178,13 +177,12 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
   })
 
   const publishedId = useMemo(() => getPublishedId(documentId), [documentId])
-  const {versions} = useDocumentVersions({documentId: publishedId})
-  const versionsInfo = useMemo(() => getDocumentVersionInfoFromVersions(versions), [versions])
+  const {draft: draftVersionInfo} = useDocumentVersionInfo(publishedId)
 
   const dialogDescription = useMemo(() => {
     const scheduledDraftBaseRev = firstDocument?._system?.base?.rev
-    return getDialogDescription(versionsInfo.draft, scheduledDraftBaseRev)
-  }, [versionsInfo.draft, firstDocument])
+    return getDialogDescription(draftVersionInfo, scheduledDraftBaseRev)
+  }, [draftVersionInfo, firstDocument])
 
   const [shouldCopyToDraft, setShouldCopyToDraft] = useState(dialogDescription.copy.default)
 
@@ -247,7 +245,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
 }
 
 /**
- * Used when there's no document in the release, avoiding unnecessary calls to useDocumentVersions.
+ * Used when there's no document in the release, avoiding unnecessary calls to useDocumentVersionInfo.
  */
 function DeleteScheduledDraftDialogWithEmptyRelease({
   onClose,
