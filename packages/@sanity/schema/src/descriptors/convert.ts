@@ -13,6 +13,7 @@ import {
   type Rule as IRule,
   type Schema,
   type SchemaType,
+  type SpanSchemaType,
 } from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import isObject from 'lodash-es/isObject.js'
@@ -23,6 +24,8 @@ import {IdleScheduler, type Scheduler, SYNC_SCHEDULER} from './scheduler'
 import {
   type ArrayElement,
   type ArrayTypeDef,
+  type BlockMarks,
+  type BlockTitledValue,
   type CommonTypeDef,
   type CoreTypeDef,
   type CyclicMarker,
@@ -334,9 +337,78 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
         ...common,
       } satisfies ReferenceTypeDef
     }
-    default:
-      return {extends: schemaType.type.name, ...common} satisfies SubtypeDef
+    default: {
+      const marks = maybeBlockMarks(schemaType)
+      return {
+        extends: schemaType.type.name,
+        ...common,
+        ...(marks && {marks}),
+      } satisfies SubtypeDef
+    }
   }
+}
+
+/**
+ * Walks the type chain to check whether `schemaType` is (a subtype of) `typeName`.
+ * Mirrors `isType` from the manifest extractor so block detection stays consistent
+ * between the two serializers.
+ */
+function isType(schemaType: SchemaType, typeName: string): boolean {
+  let current: SchemaType | undefined = schemaType
+  while (current) {
+    if (current.name === typeName) return true
+    current = current.type
+  }
+  return false
+}
+
+/**
+ * Serializes a portable-text block's decorators, mirroring `resolveEnabledDecorators`
+ * in the manifest extractor (`extractManifestSchemaTypes.ts`).
+ *
+ * The generic converter already picks up styles/lists/annotations/inline objects
+ * because they're field-expressed on a compiled block. Decorators are the exception:
+ * they live as `span.decorators` metadata with no field representation, so without
+ * this they'd be dropped from the descriptor entirely.
+ */
+function maybeBlockMarks(schemaType: SchemaType): BlockMarks | undefined {
+  if (schemaType.jsonType !== 'object' || !isType(schemaType, 'block')) {
+    return undefined
+  }
+
+  const childrenField = (schemaType as ObjectSchemaType).fields?.find(
+    (field) => field.name === 'children',
+  )
+  const childrenOf = (childrenField?.type as ArraySchemaType | undefined)?.of
+  const spanType = childrenOf?.find((memberType) => memberType.name === 'span')
+  if (!spanType || !('decorators' in spanType)) {
+    return undefined
+  }
+
+  const decorators = convertTitledValues((spanType as SpanSchemaType).decorators)
+  return decorators ? {decorators} : undefined
+}
+
+/**
+ * Reduces a list of title/value definitions to the serializable `{value, title?}`
+ * shape, dropping anything without a string `value`. Mirrors `resolveTitleValueArray`
+ * in the manifest extractor (which is why non-serializable extras such as `icon` and
+ * `i18nTitleKey` are intentionally stripped).
+ */
+function convertTitledValues(possibleArray: unknown): BlockTitledValue[] | undefined {
+  if (!Array.isArray(possibleArray)) return undefined
+
+  const titledValues = possibleArray
+    .filter(
+      (item): item is {value: string; title?: unknown} =>
+        isObject(item) && 'value' in item && typeof item.value === 'string',
+    )
+    .map((item) => ({
+      value: item.value,
+      ...(typeof item.title === 'string' ? {title: item.title} : {}),
+    }))
+
+  return titledValues.length > 0 ? titledValues : undefined
 }
 
 function maybeString(val: unknown): string | undefined {

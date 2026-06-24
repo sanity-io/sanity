@@ -2533,6 +2533,18 @@ describe('Block', () => {
     )
     assert(level)
     expect(level.typeDef.extends).toBe('number')
+
+    // Decorators are span metadata (not a field), so they're carried explicitly
+    // on the block typeDef. A default block exposes the default decorator set.
+    expect(type.typeDef.marks).toEqual({
+      decorators: [
+        {value: 'strong', title: 'Strong'},
+        {value: 'em', title: 'Italic'},
+        {value: 'code', title: 'Code'},
+        {value: 'underline', title: 'Underline'},
+        {value: 'strike-through', title: 'Strike'},
+      ],
+    })
   })
 
   test('custom settings', async () => {
@@ -2600,6 +2612,11 @@ describe('Block', () => {
     )
     assert(level)
     expect(level.typeDef.extends).toBe('number')
+
+    // Custom decorators replace the defaults and must survive into the descriptor.
+    expect(type.typeDef.marks).toEqual({
+      decorators: [{value: 'weak', title: 'Weak'}],
+    })
   })
 })
 

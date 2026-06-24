@@ -36,6 +36,26 @@ export interface CommonTypeDef extends EncodableObject {
   rows?: string
 
   orderings?: ObjectOrdering[]
+
+  /**
+   * Portable-text block marks. Only present on `block` types.
+   *
+   * Styles, lists and annotations are field-expressed on a compiled block (so the
+   * generic walker serializes them as ordinary fields), but decorators are span
+   * metadata with no field representation. They're carried here explicitly so the
+   * descriptor stays consistent with the manifest extractor.
+   */
+  marks?: BlockMarks
+}
+
+/** A title/value pair, e.g. a single block decorator (`{value: 'strong', title: 'Strong'}`). */
+export type BlockTitledValue = {
+  value: string
+  title?: string
+}
+
+export type BlockMarks = {
+  decorators: BlockTitledValue[]
 }
 
 /** In some scenarios we need to encode special information. */
