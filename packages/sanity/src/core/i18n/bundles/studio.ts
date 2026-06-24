@@ -1523,7 +1523,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.view-scheduled-drafts': 'View scheduled drafts',
   /** Label for banner when release is scheduled */
   'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
+
+  /** Label for button to show other variants in the document perspective list */
+  'release.chip.button.other-variants_one': '+{{count}} variant',
+  /** Label for button to show other variants in the document perspective list */
+  'release.chip.button.other-variants_other': '+{{count}} variants',
+
+  /** Label for button to show other versions in the document perspective list*/
   'release.chip.button.other-versions_one': '+{{count}} version',
+  /** Label for button to show other versions in the document perspective list */
   'release.chip.button.other-versions_other': '+{{count}} versions',
   /** Label for Draft chip in document header */
   'release.chip.draft': 'Draft',
@@ -1546,6 +1554,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.no-edits': 'No edits',
   /** Label for tooltip in chip when document isn't published */
   'release.chip.tooltip.not-published': 'Not published',
+  'release.chip.tooltip.other-variants_one': 'One variant',
+  'release.chip.tooltip.other-variants_other': '{{count}} variants',
+
   'release.chip.tooltip.other-versions_one': 'One additional version outside of releases',
   'release.chip.tooltip.other-versions_other': '{{count}} additional versions outside of releases',
   /** Label for tooltip in chip with the published date */
