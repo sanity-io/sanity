@@ -14,7 +14,8 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
 } from '../../../../../../../preview'
-import {useDocumentVersionInfo} from '../../../../../../../releases'
+import {useDocumentVersions} from '../../../../../../../releases/hooks/useDocumentVersions'
+import {getDocumentVersionInfoFromVersions} from '../../../../../../../releases/util/getDocumentVersionInfoFromVersions'
 import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
 
 interface SearchResultItemPreviewProps {
@@ -68,7 +69,8 @@ export function SearchResultItemPreview({
     original: null,
   })
 
-  const versionsInfo = useDocumentVersionInfo(documentId)
+  const {versions} = useDocumentVersions({documentId})
+  const versionsInfo = useMemo(() => getDocumentVersionInfoFromVersions(versions), [versions])
 
   const status = useMemo(() => {
     if (isLoading) return null
