@@ -10,7 +10,9 @@ import {parseArgs, promisify} from 'node:util'
 import {getCertificate} from '@vitejs/plugin-basic-ssl'
 import {map, pipe, takeUntil, tap, timer} from 'rxjs'
 
-import {createDebugProxy} from './createDebugProxy'
+import {createConnectionFlapper} from './connectivity'
+import {createDebugProxy, type ProxyHandler} from './createDebugProxy'
+import {withLatency} from './latency'
 import {createRequestProxy, createSSEProxy} from './proxy'
 import {isGetOrgIdEndpoint, isListenEndpoint} from './routes'
 import {
@@ -36,6 +38,15 @@ Options:
                               use api.sanity.work for staging)
   --listener-ttl <seconds>    disconnect SSE listeners after this many seconds
                               to simulate flaky connections (default: never)
+  --flap <on>[:<off>]         simulate flapping connectivity: proxy normally
+                              for <on> seconds, then go "offline" for <off>
+                              seconds (new requests reset, live streams cut),
+                              repeating. A single number means equal phases,
+                              e.g. --flap 30:15 or --flap 20
+  --latency <ms>[:<maxMs>]    delay each request by this many milliseconds
+                              before forwarding it upstream; a range applies
+                              random jitter per request, e.g. --latency 800
+                              or --latency 200:1500
   --sse-faults                apply the SSE fault scenarios (shuffle, duplicate,
                               latency, reset, drop) to the listener endpoint
   --drop-probability <0..1>   probability a mutation event is dropped
@@ -63,6 +74,8 @@ function parseFlags() {
         'http1-port': {type: 'string', default: '3050'},
         'api-host': {type: 'string', default: 'api.sanity.io'},
         'listener-ttl': {type: 'string', default: '0'},
+        'flap': {type: 'string'},
+        'latency': {type: 'string'},
         'sse-faults': {type: 'boolean', default: false},
         'drop-probability': {type: 'string', default: '0'},
         'reset-probability': {type: 'string', default: '0'},
@@ -93,6 +106,46 @@ function intFlag(name: string, value: string): number {
   return Number(value)
 }
 
+/** Parse the --flap value (`<on>[:<off>]` in seconds) into phase durations. */
+function flapFlag(value: string): {onlineMs: number; offlineMs: number} {
+  const [on, off = on, ...rest] = value.split(':')
+  const onlineSec = Number(on)
+  const offlineSec = Number(off)
+  if (
+    rest.length > 0 ||
+    !Number.isFinite(onlineSec) ||
+    !Number.isFinite(offlineSec) ||
+    onlineSec <= 0 ||
+    offlineSec <= 0
+  ) {
+    console.error(
+      `Invalid --flap: expected "<onlineSeconds>:<offlineSeconds>" (or a single number for equal phases), got "${value}"`,
+    )
+    process.exit(1)
+  }
+  return {onlineMs: onlineSec * 1000, offlineMs: offlineSec * 1000}
+}
+
+/** Parse the --latency value (`<ms>[:<maxMs>]`) into a delay range. */
+function latencyFlag(value: string): {minMs: number; maxMs: number} {
+  const [min, max = min, ...rest] = value.split(':')
+  const minMs = Number(min)
+  const maxMs = Number(max)
+  if (
+    rest.length > 0 ||
+    !Number.isInteger(minMs) ||
+    !Number.isInteger(maxMs) ||
+    minMs < 0 ||
+    maxMs < minMs
+  ) {
+    console.error(
+      `Invalid --latency: expected "<ms>" or "<minMs>:<maxMs>" (non-negative, max >= min), got "${value}"`,
+    )
+    process.exit(1)
+  }
+  return {minMs, maxMs}
+}
+
 /** Parse a flag as a probability in [0, 1], exiting with a clear error if not. */
 function probabilityFlag(name: string, value: string): number {
   const parsed = value.trim() === '' ? NaN : Number(value)
@@ -109,6 +162,8 @@ const ENABLE_HTTP1 = flags.http1
 const HTTP1_PORT = intFlag('http1-port', flags['http1-port'])
 const API_HOST = flags['api-host']
 const LISTENER_TTL_MS = intFlag('listener-ttl', flags['listener-ttl']) * 1000
+const FLAP = flags.flap === undefined ? undefined : flapFlag(flags.flap)
+const LATENCY = flags.latency === undefined ? undefined : latencyFlag(flags.latency)
 const ENABLE_SSE_FAULTS = flags['sse-faults']
 const DROPPED_MUTATION_PROBABILITY = probabilityFlag('drop-probability', flags['drop-probability'])
 const RESET_PROBABILITY = probabilityFlag('reset-probability', flags['reset-probability'])
@@ -292,13 +347,66 @@ const orgEndpointProxy = createRequestProxy({
     ),
 })
 
+// Render a live, in-place countdown to the next flap transition. On a TTY the
+// line rewrites itself each second via carriage return; otherwise (piped, e.g.
+// under run-p) we skip the ticking and just log the transition once, since
+// carriage returns would render as noise.
+const isTty = process.stdout.isTTY
+let countdownTimer: ReturnType<typeof setInterval> | undefined
+
+function startCountdown(online: boolean, phaseMs: number) {
+  clearInterval(countdownTimer)
+  const label = online ? 'online' : 'offline'
+  const deadline = Date.now() + phaseMs
+
+  if (!isTty) {
+    console.info(`[debug-proxy] network ${label} for the next ${Math.round(phaseMs / 1000)}s`)
+    return
+  }
+
+  const render = () => {
+    const remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000))
+    // \r returns to the line start; padding clears any longer previous line
+    process.stdout.write(`\r[debug-proxy] network ${label} — next change in ${remaining}s   `)
+    if (remaining <= 0) {
+      clearInterval(countdownTimer)
+    }
+  }
+  render()
+  countdownTimer = setInterval(render, 1000)
+  countdownTimer.unref?.()
+}
+
+// One flapper shared across all routes and both listeners — every request
+// rides the same simulated network.
+const flapper = FLAP
+  ? createConnectionFlapper({
+      ...FLAP,
+      onTransition: (online) => {
+        if (isTty) {
+          process.stdout.write('\n')
+        }
+        startCountdown(online, online ? FLAP.onlineMs : FLAP.offlineMs)
+      },
+    })
+  : undefined
+
+// Network-level scenarios applied to every handler: --latency delays each
+// request, --flap sits outside it so offline resets stay immediate.
+const withNetworkScenarios = (handler: ProxyHandler): ProxyHandler => {
+  const delayed = LATENCY ? withLatency(handler, LATENCY) : handler
+  return flapper ? flapper.wrap(delayed) : delayed
+}
+
 const routes = [
-  ...(FORCE_ORG_401 ? [{match: isGetOrgIdEndpoint(), handler: orgEndpointProxy}] : []),
+  ...(FORCE_ORG_401
+    ? [{match: isGetOrgIdEndpoint(), handler: withNetworkScenarios(orgEndpointProxy)}]
+    : []),
   // Only intercept the listener endpoint when a scenario needs it — with no
   // scenarios active, even SSE flows through the byte-transparent default
-  // handler
+  // handler (which is still subject to --flap and --latency)
   ...(ENABLE_SSE_FAULTS || LISTENER_TTL_MS > 0
-    ? [{match: isListenEndpoint(), handler: listenEndpointProxy}]
+    ? [{match: isListenEndpoint(), handler: withNetworkScenarios(listenEndpointProxy)}]
     : []),
 ]
 
@@ -306,6 +414,7 @@ const sharedConfig = {
   apiHost: API_HOST,
   token: SANITY_TOKEN,
   routes,
+  defaultHandler: withNetworkScenarios(createRequestProxy()),
 }
 
 const tlsProxy = createDebugProxy({
@@ -326,4 +435,21 @@ if (ENABLE_HTTP1) {
   const http1Proxy = createDebugProxy({...sharedConfig, port: HTTP1_PORT})
   await http1Proxy.listen()
   console.info(`HTTP/1.1 (cleartext) proxy listening on http://localhost:${HTTP1_PORT}`)
+}
+
+if (FLAP) {
+  console.info(
+    `Flapping connectivity: ${FLAP.onlineMs / 1000}s online → ${FLAP.offlineMs / 1000}s offline, repeating`,
+  )
+  // Start the countdown for the initial (online) phase now that the startup
+  // banner has printed, so the in-place countdown line stays at the bottom.
+  startCountdown(true, FLAP.onlineMs)
+}
+
+if (LATENCY) {
+  console.info(
+    LATENCY.minMs === LATENCY.maxMs
+      ? `Latency: ${LATENCY.minMs}ms per request`
+      : `Latency: ${LATENCY.minMs}–${LATENCY.maxMs}ms per request (random jitter)`,
+  )
 }
