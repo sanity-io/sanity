@@ -28,11 +28,11 @@ import {
 } from '../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseDetail} from '../ReleaseDetail'
+import {documentsInRelease} from './__mocks__/useBundleDocuments.mock'
 import {
-  documentsInRelease,
-  mockUseBundleDocuments,
-  useBundleDocumentsMockReturn,
-} from './__mocks__/useBundleDocuments.mock'
+  mockUseReleaseDocuments,
+  useReleaseDocumentsMockReturn,
+} from './__mocks__/useReleaseDocuments.mock'
 import {useReleaseEventsMockReturn} from './__mocks__/useReleaseEvents.mock'
 
 vi.mock('sanity/router', async (importOriginal) => {
@@ -63,8 +63,8 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-vi.mock('../useBundleDocuments', () => ({
-  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturn),
+vi.mock('../useReleaseDocuments', () => ({
+  useReleaseDocuments: vi.fn(() => useReleaseDocumentsMockReturn),
 }))
 
 vi.mock('../events/useReleaseEvents', () => ({
@@ -162,9 +162,9 @@ describe('ReleaseDetail', () => {
       vi.clearAllMocks()
 
       mockUseActiveReleases.mockClear()
-      mockUseBundleDocuments.mockClear()
+      mockUseReleaseDocuments.mockClear()
 
-      mockUseBundleDocuments.mockReturnValue({...useBundleDocumentsMockReturn, loading: true})
+      mockUseReleaseDocuments.mockReturnValue({...useReleaseDocumentsMockReturn, loading: true})
 
       mockUseActiveReleases.mockReturnValue({
         ...useActiveReleasesMockReturn,
@@ -211,7 +211,7 @@ describe('after releases have loaded', () => {
       beforeEach(async () => {
         vi.clearAllMocks()
 
-        mockUseBundleDocuments.mockReturnValue({
+        mockUseReleaseDocuments.mockReturnValue({
           loading: false,
           results: [
             {
@@ -237,7 +237,7 @@ describe('after releases have loaded', () => {
 
     describe('with passing document validation', () => {
       beforeEach(async () => {
-        mockUseBundleDocuments.mockReturnValue({
+        mockUseReleaseDocuments.mockReturnValue({
           loading: false,
           results: [documentsInRelease],
           error: null,
@@ -295,7 +295,7 @@ describe('after releases have loaded', () => {
 
     describe('with failing document validation', () => {
       beforeEach(async () => {
-        mockUseBundleDocuments.mockReturnValue({
+        mockUseReleaseDocuments.mockReturnValue({
           loading: false,
           results: [
             {
