@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
+
+### Features
+
+* **core:** add document `_system` to useDocumentVersions ([#13094](https://github.com/sanity-io/sanity/issues/13094)) ([d4acef0](https://github.com/sanity-io/sanity/commit/d4acef01712a803588033ae68d94b92fcfda514b))
+* **core:** add selectedVariant and bundle to perspective context ([#13093](https://github.com/sanity-io/sanity/issues/13093)) ([d5f2d75](https://github.com/sanity-io/sanity/commit/d5f2d75c4e605f30a213a075f2d78c67bd8e4551))
+* **core:** make reference fields searchable in list previews ([#13138](https://github.com/sanity-io/sanity/issues/13138)) ([9cc7566](https://github.com/sanity-io/sanity/commit/9cc756677534be16f6f71f29a542d650c8fea313))
+* **presentation:** add appearance ordering to documents on this page ([#13135](https://github.com/sanity-io/sanity/issues/13135)) ([f82ee8b](https://github.com/sanity-io/sanity/commit/f82ee8b4a94753e00bb971150026814c1ea220e1))
+* **structure:** sort document list search results by relevance ([#13082](https://github.com/sanity-io/sanity/issues/13082)) ([4a56294](https://github.com/sanity-io/sanity/commit/4a56294cdc5308becd40ac8448285069c9c4bd5b))
+
+### Bug Fixes
+
+* **CLDX-5683:** preserve an explicit empty block decorator set ([#13291](https://github.com/sanity-io/sanity/issues/13291)) ([234029c](https://github.com/sanity-io/sanity/commit/234029c74f57dd1250b9dff173fdbdf43d4207fa))
+* **CLDX-5683:** preserve portable text block decorators in schema descriptor ([#13288](https://github.com/sanity-io/sanity/issues/13288)) ([fa8b84c](https://github.com/sanity-io/sanity/commit/fa8b84cb0734ca75b74719a3b26858aef2cf99d0))
+* **comments:** submit the editor's live value, not the debounced draft ([8575f65](https://github.com/sanity-io/sanity/commit/8575f65e1c40936c867b804359313fc18d3ef20b))
+* **core:** guard against undefined CSS global in node test environments ([#13232](https://github.com/sanity-io/sanity/issues/13232)) ([abcdb34](https://github.com/sanity-io/sanity/commit/abcdb3460a64225abf02d96b2533081b33162d2d))
+* **core:** retain last known org id when project fetch fails ([#12968](https://github.com/sanity-io/sanity/issues/12968)) ([62d250c](https://github.com/sanity-io/sanity/commit/62d250c2bd86d9fad1bd74b931f28d27dc0b39f7))
+* **deps:** update dependency @sanity/cli to ^7.3.0 ([#13265](https://github.com/sanity-io/sanity/issues/13265)) ([57e23d1](https://github.com/sanity-io/sanity/commit/57e23d18102c319d6ca83ae9a75a351017aa3f69))
+* **deps:** update dependency @sanity/cli to ^7.4.0 ([#13278](https://github.com/sanity-io/sanity/issues/13278)) ([ca74118](https://github.com/sanity-io/sanity/commit/ca741184f7d89f6a4244fce952b244bfebdb9dcb))
+* **deps:** Update dnd-kit monorepo to v10 ([#13154](https://github.com/sanity-io/sanity/issues/13154)) ([4bb6ffd](https://github.com/sanity-io/sanity/commit/4bb6ffd4fc5e9047eaa02c290d680f997905e082))
+* **deps:** Update dnd-kit monorepo to v7 ([#13151](https://github.com/sanity-io/sanity/issues/13151)) ([1846f73](https://github.com/sanity-io/sanity/commit/1846f737dcad050a15b1b140e3d596629929e7a4))
+* **deps:** Update dnd-kit monorepo to v9 ([#13153](https://github.com/sanity-io/sanity/issues/13153)) ([ccb210c](https://github.com/sanity-io/sanity/commit/ccb210c70781c4d62a9613fea19b453dde687c19))
+* **deps:** Update portabletext ([#13127](https://github.com/sanity-io/sanity/issues/13127)) ([0e29c52](https://github.com/sanity-io/sanity/commit/0e29c5277e6290e5dce4e8a2a0914dedb2515d8c))
+* **deps:** Update portabletext ([#13144](https://github.com/sanity-io/sanity/issues/13144)) ([99f7a63](https://github.com/sanity-io/sanity/commit/99f7a6390c78845c55b15f62124d368ca5100c7a))
+* **deps:** update portabletext ([#13271](https://github.com/sanity-io/sanity/issues/13271)) ([59300a7](https://github.com/sanity-io/sanity/commit/59300a7dc42ac03884bed37977700d3d9a469185))
+* **deps:** Update portabletext to ^3.1.3 ([#13192](https://github.com/sanity-io/sanity/issues/13192)) ([70c6352](https://github.com/sanity-io/sanity/commit/70c6352f5bd5931505bc084f1565e53dbf651e82))
+* **deps:** Update sentry-javascript monorepo to v10 ([#13168](https://github.com/sanity-io/sanity/issues/13168)) ([344c861](https://github.com/sanity-io/sanity/commit/344c861e352260189d050b64ee684719f7d71c55))
+* **deps:** Update tanstack-virtual monorepo to ^3.14.3 ([#13193](https://github.com/sanity-io/sanity/issues/13193)) ([bbf2274](https://github.com/sanity-io/sanity/commit/bbf2274a364bf547107a4bf37f0d387a91d7d68e))
+* **deps:** Update xstate monorepo to ^5.32.1 ([#13128](https://github.com/sanity-io/sanity/issues/13128)) ([4dd08ac](https://github.com/sanity-io/sanity/commit/4dd08acb888a0fc18abf447e45a9b6e14d362448))
+* **form:** disable native browser autocomplete on input fields ([#12973](https://github.com/sanity-io/sanity/issues/12973)) ([896ed12](https://github.com/sanity-io/sanity/commit/896ed1273f51aaee1eeb847421c8b92405167f50))
+* **form:** honor `enabled` on the markdown plugin alongside deprecated `config` ([51ce0ce](https://github.com/sanity-io/sanity/commit/51ce0ced848aa5497efaf11370c31138d51e6660))
+* **portable-text:** size the drop indicator to the block, not the full editable ([54785f6](https://github.com/sanity-io/sanity/commit/54785f64cf4ded6027a67e9c12dc944ddb4e23e2))
+* **releases:** return undefined for empty values in temporarilyBuildDocumentSystem ([#13121](https://github.com/sanity-io/sanity/issues/13121)) ([46aaaf0](https://github.com/sanity-io/sanity/commit/46aaaf02d86f6f69b69ed5681fb4c9d3c83cd4f2))
+* revert "chore(core): deprecate useDocumentVersionInfo hook ([#13113](https://github.com/sanity-io/sanity/issues/13113))" ([d9160f5](https://github.com/sanity-io/sanity/commit/d9160f585673e2e922cd072267e23846aac283be))
+* revert "chore(core): variant documents creation ([#13105](https://github.com/sanity-io/sanity/issues/13105))" ([b5cf9f7](https://github.com/sanity-io/sanity/commit/b5cf9f7b81a8f77c5cac4a5cc76e0c6a6618d044))
+* revert "refactor(core): abstract use bundle documents , reuse for variants ([#13226](https://github.com/sanity-io/sanity/issues/13226))" ([e9a865e](https://github.com/sanity-io/sanity/commit/e9a865e55c932da74c03f0c041a69b9ddd67a68c))
+* **structure:** resolve lint-fix workflow failure in DocumentListPane ([#13134](https://github.com/sanity-io/sanity/issues/13134)) ([c85f177](https://github.com/sanity-io/sanity/commit/c85f177bf23482105504bec9c52f00ab4100d4b6))
+* **structure:** restore default sort order and layout in document list pane ([#13110](https://github.com/sanity-io/sanity/issues/13110)) ([31c46eb](https://github.com/sanity-io/sanity/commit/31c46eb91f60081393e782d92600c013f71f733b))
+
+### Performance Improvements
+
+* **core:** lazy-load default plugin and asset source UI components ([#13088](https://github.com/sanity-io/sanity/issues/13088)) ([9fd25d9](https://github.com/sanity-io/sanity/commit/9fd25d9381782cfae51c8e65994182bcf70bda09))
 ## [6.1.0](https://github.com/sanity-io/sanity/compare/v6.0.0...v6.1.0) (2026-06-16)
 
 ### Features

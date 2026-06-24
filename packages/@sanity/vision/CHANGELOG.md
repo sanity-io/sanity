@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#13250](https://github.com/sanity-io/sanity/issues/13250)) ([e11d6ae](https://github.com/sanity-io/sanity/commit/e11d6ae64ceeba8bd176bbdb3169db7bc8634185))
+* **deps:** Update CodeMirror to ^6.43.1 ([#13184](https://github.com/sanity-io/sanity/issues/13184)) ([4f5443d](https://github.com/sanity-io/sanity/commit/4f5443d1ed5b3d84c7fdf8f28afad966e63e00cc))
 ## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
 
 ### ⚠ BREAKING CHANGES
