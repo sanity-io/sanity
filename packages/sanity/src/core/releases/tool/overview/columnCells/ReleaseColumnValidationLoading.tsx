@@ -1,12 +1,12 @@
 import {Spinner} from '@sanity/ui'
 
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {useReleaseDocuments} from '../../detail/useReleaseDocuments'
+import {useBundleDocuments} from '../../detail/useBundleDocuments'
 import {ValidationProgressIndicator} from '../../detail/ValidationProgressIndicator'
 
 export function ReleaseColumnValidationLoading({releaseId}: {releaseId: string}) {
   const rId = getReleaseIdFromReleaseDocumentId(releaseId)
-  const {results: documents, loading} = useReleaseDocuments(rId)
+  const {results: documents, loading} = useBundleDocuments(rId)
 
   return loading ? (
     <Spinner size={1} muted />
