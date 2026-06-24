@@ -41,8 +41,15 @@ vi.mock('sanity', async (importOriginal) => ({
     data: [],
     error: null,
     loading: true,
+    versions: [],
   }),
   useActiveReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+  useAllVariants: vi.fn().mockReturnValue({
+    data: [],
+    byId: new Map(),
+    loading: false,
+  }),
+  useSetVariant: vi.fn().mockReturnValue(vi.fn()),
   useArchivedReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   SANITY_VERSION: '0.0.0',
 }))
@@ -210,6 +217,7 @@ describe('DocumentPerspectiveList', () => {
     mockUseDocumentVersions.mockReturnValue({
       loading: false,
       data: [],
+      versions: [],
     })
 
     mockUseFilteredReleases.mockReturnValue({
@@ -247,6 +255,7 @@ describe('DocumentPerspectiveList', () => {
       mockUseDocumentVersions.mockReturnValue({
         loading: false,
         data: [],
+        versions: [],
       })
 
       mockUseFilteredReleases.mockReturnValue({
@@ -332,6 +341,7 @@ describe('DocumentPerspectiveList', () => {
       mockUseDocumentVersions.mockReturnValue({
         loading: false,
         data: ['versions.foo.xyz'],
+        versions: [],
       })
       mockUseFilteredReleases.mockReturnValue({
         currentReleases: [mockCurrent],
@@ -529,6 +539,7 @@ describe('DocumentPerspectiveList', () => {
         mockUseDocumentVersions.mockReturnValue({
           loading: false,
           data: ['versions.rSpringDrop.foo'],
+          versions: [],
         })
 
         mockUseFilteredReleases.mockReturnValue({
@@ -559,6 +570,7 @@ describe('DocumentPerspectiveList', () => {
         mockUseDocumentVersions.mockReturnValue({
           loading: false,
           data: [],
+          versions: [],
         })
 
         mockUseFilteredReleases.mockReturnValue({
