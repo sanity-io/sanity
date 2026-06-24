@@ -121,7 +121,9 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
         description: t('document-view.form-view.sync-recovering.description'),
       },
     }
-    const active = syncState === 'synced' ? copy.pending : copy[syncState]
+    // No copy when synced — the toast is disabled, so title/description are
+    // never read (useConditionalToast only pushes while `enabled`).
+    const active = syncState === 'synced' ? undefined : copy[syncState]
     return {
       id: 'document-sync-state',
       enabled: syncState !== 'synced',
