@@ -357,6 +357,11 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
  * They're encoded with the same `convertUnknown` walker used for style/list options,
  * so the decorator shape (incl. `i18nTitleKey`, and `icon` as a function/jsx marker)
  * matches how the descriptor serializes every other option list.
+ *
+ * An explicit empty set (`marks.decorators: []`, which disables all decorators) is
+ * preserved as `[]` — it's distinct from a block with no decorators declared, which
+ * compiles to the default set. Collapsing it to `undefined` would make the consumer
+ * fall back to the defaults, silently re-enabling decorators the schema disabled.
  */
 function maybeBlockMarks(schemaType: SchemaType): BlockMarks | undefined {
   if (schemaType.jsonType !== 'object' || !isType(schemaType, 'block')) {
@@ -368,7 +373,7 @@ function maybeBlockMarks(schemaType: SchemaType): BlockMarks | undefined {
   )
   const childrenOf = (childrenField?.type as ArraySchemaType | undefined)?.of
   const spanType = childrenOf?.find((memberType) => memberType.name === 'span')
-  if (!spanType || !isSpanSchemaType(spanType) || spanType.decorators.length === 0) {
+  if (!spanType || !isSpanSchemaType(spanType)) {
     return undefined
   }
 

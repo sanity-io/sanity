@@ -2627,6 +2627,22 @@ describe('Block', () => {
       decorators: [{value: 'weak', title: 'Weak'}],
     })
   })
+
+  test('explicit empty decorator set is preserved', async () => {
+    // `marks.decorators: []` disables all decorators and compiles to an empty span
+    // decorator set — distinct from a block with no decorators declared (which gets
+    // the defaults). The descriptor must carry `[]` so a consumer doesn't fall back
+    // to the default set and silently re-enable them.
+    // (justConvertType: the manifest extractor drops empty title/value arrays, so the
+    // manifest round-trip check doesn't apply to this descriptor-only behavior.)
+    const type = await justConvertType({
+      name: 'paragraph',
+      type: 'block',
+      marks: {decorators: []},
+    })
+
+    expect(type.typeDef.marks).toEqual({decorators: []})
+  })
 })
 
 describe('Type-specific options', () => {
