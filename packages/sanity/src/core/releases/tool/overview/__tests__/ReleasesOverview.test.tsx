@@ -50,7 +50,7 @@ import {
   useReleasesMetadataMockReturn,
 } from '../../../store/__tests__/__mocks/useReleasesMetadata.mock'
 import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
-import {useReleaseDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useReleaseDocuments.mock'
+import {useBundleDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {
   mockUseReleaseCreator,
   useReleaseCreatorMockReturn,
@@ -95,8 +95,8 @@ vi.mock('../../../store/useReleasesMetadata', () => ({
   useReleasesMetadata: vi.fn(() => useReleasesMetadataMockReturn),
 }))
 
-vi.mock('../../detail/useReleaseDocuments', () => ({
-  useReleaseDocuments: vi.fn(() => useReleaseDocumentsMockReturnWithResults),
+vi.mock('../../detail/useBundleDocuments', () => ({
+  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))
 
 vi.mock('../../../store/useReleasePermissions', () => ({

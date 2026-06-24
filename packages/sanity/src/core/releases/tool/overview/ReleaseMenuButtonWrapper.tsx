@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
-import {useReleaseDocuments} from '../detail/useReleaseDocuments'
+import {useBundleDocuments} from '../detail/useBundleDocuments'
 
 export const ReleaseMenuButtonWrapper = ({
   release,
@@ -11,7 +11,7 @@ export const ReleaseMenuButtonWrapper = ({
   release: ReleaseDocument
   documentsCount: number
 }) => {
-  const {results: documents} = useReleaseDocuments(getReleaseIdFromReleaseDocumentId(release._id))
+  const {results: documents} = useBundleDocuments(getReleaseIdFromReleaseDocumentId(release._id))
 
   return (
     <ReleaseMenuButton release={release} documentsCount={documentsCount} documents={documents} />
