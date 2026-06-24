@@ -619,6 +619,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Toast title shown when saving changes is taking longer than expected */
   'document-store.slow-commit.title': 'Saving is taking longer than expected',
 
+  /** Toast title shown when a document's initial value could not be resolved */
+  'document.initial-value.error.title': 'Could not resolve initial value',
+  /**
+   * Toast description shown when a document's initial value could not be
+   * resolved. Includes the underlying error message.
+   */
+  'document.initial-value.error.description':
+    'The document opened with an empty value. {{errorMessage}}',
+
   /** Label to indicate that a document type was not found */
   'document.type.not-found': 'Document type "{{type}}" not found',
 

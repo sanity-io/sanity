@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string */
 import {LaunchIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
@@ -51,6 +51,10 @@ export function useRetryCountdown(claim: {retryAfterSeconds?: number}): number {
 
   useEffect(() => {
     const initial = claim.retryAfterSeconds ?? 0
+    // Reset the countdown when a new claim arrives (a re-rate-limited retry
+    // produces a fresh claim with a new Retry-After). Intentional derived-state
+    // sync driven by the external claim, not a render cascade.
+    // oxlint-disable-next-line react/react-compiler
     setSecondsLeft(initial)
     if (initial <= 0) return undefined
     const id = setInterval(() => {
@@ -75,7 +79,7 @@ export function useRetryCountdown(claim: {retryAfterSeconds?: number}): number {
  *  - `retryable: true` → "Try again" re-runs the parked request(s),
  *    plus "Reload Studio" as an escape hatch.
  *  - `retryable: false` → only "Reload Studio", with conservative copy
- *    warning that the last change may or may not have been applied.
+ *    warning that the last change may not have been applied.
  *  - 429 additionally gates "Try again" behind a live Retry-After
  *    countdown.
  *
@@ -97,10 +101,10 @@ export function RequestErrorDialog(props: {
     claim.type === 'serverError'
       ? claim.retryable
         ? "The server ran into an issue and couldn't complete the request. You can try again, or reload the Studio."
-        : "The server ran into an issue and couldn't complete the request. Your last change may or may not have been saved. Reload the Studio to see the current state."
+        : "The server ran into an issue and couldn't complete the request. Your last change may not have been saved. Reload the Studio to see the current state."
       : claim.retryable
         ? "Couldn't reach the Sanity servers. Check your network connection and try again."
-        : "Couldn't reach the Sanity servers. Your last change may or may not have been sent. Check your network connection and reload the Studio to see the current state."
+        : "Couldn't reach the Sanity servers. Your last change may not have been sent. Check your network connection and reload the Studio to see the current state."
 
   return (
     <Dialog
@@ -166,6 +170,9 @@ function RateLimitedDialog(props: {
   // the signal that the in-flight retry concluded.
   const [retrying, setRetrying] = useState(false)
   useEffect(() => {
+    // A new claim object means the in-flight retry concluded — clear the
+    // disabled state. Intentional sync to the external claim, not a cascade.
+    // oxlint-disable-next-line react/react-compiler
     setRetrying(false)
   }, [claim])
   const handleRetry = useCallback(() => {

@@ -200,7 +200,7 @@ function responseObservable(
       statusCode: status,
       statusMessage: 'OK',
       headers: {'content-type': 'application/json'},
-    } as HttpRequestEvent)
+    })
     subscriber.complete()
   })
 }
@@ -240,7 +240,7 @@ export function makeDemoClient(baseClient: SanityClient): SanityClient {
 
   return baseClient.withConfig({
     _requestHandler: handler,
-  } as unknown as Parameters<typeof baseClient.withConfig>[0])
+  })
 }
 
 /**

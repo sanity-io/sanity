@@ -83,7 +83,12 @@ export function checkCors(
         result !== 'project-not-found' &&
         result.allowed &&
         result.withCredentials
-      if (result === null || isPositive) cache.delete(cacheKey)
+      // Only evict our own entry: a concurrent `force` recheck may have
+      // already replaced it with a newer in-flight probe, and evicting that
+      // would resurrect the dedupe-burst this cache exists to prevent.
+      if ((result === null || isPositive) && cache.get(cacheKey) === check) {
+        cache.delete(cacheKey)
+      }
       return result
     })
   cache.set(cacheKey, check)

@@ -98,7 +98,7 @@ export function ErrorReportingTest() {
       {label: 'Error in useEffect', onClick: handleTriggerEffectError},
       {label: 'Type error on event handler', onClick: triggerTypeErrorOnEvent as () => void},
       {label: 'Async background error (timeout)', onClick: triggerTimeoutError},
-      {label: 'Unhandled promise rejection', onClick: triggerPromiseError as () => void},
+      {label: 'Unhandled promise rejection', onClick: triggerPromiseError},
       {label: 'React render error', onClick: handleShouldRenderWithError},
       {label: 'Resize observer loop', onClick: handleTriggerResizeObserveLoop},
       {
@@ -190,7 +190,7 @@ function RequestRenderError(): never {
     url: 'https://example.api.sanity.io/v1/data/query/production',
     method: 'GET',
     statusMessage: 'Service Unavailable',
-  } as never)
+  })
 }
 
 function ResizeObserverLoop() {
