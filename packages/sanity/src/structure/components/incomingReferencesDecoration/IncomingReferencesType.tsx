@@ -81,7 +81,10 @@ export function IncomingReferencesType({
     [documentPreviewStore, type.type, memoizedFilter, memoizedFilterParams, displayedId, getClient],
   )
 
-  const {documents, loading} = useObservable(references$, INITIAL_STATE)
+  // `resolvedFilter` is emitted by the same getIncomingReferences subscription as
+  // the list, so the "link existing" search applies the same constraint without
+  // resolving the (possibly async) filter a second time.
+  const {documents, loading, resolvedFilter} = useObservable(references$, INITIAL_STATE)
 
   const schema = useSchema()
   const {t} = useTranslation(structureLocaleNamespace)
@@ -214,6 +217,8 @@ export function IncomingReferencesType({
             onLinkDocument={handleLinkDocument}
             creationAllowed={creationAllowed}
             fieldName={fieldName}
+            filter={resolvedFilter.filter}
+            filterParams={resolvedFilter.filterParams}
           />
         )}
       </Card>
