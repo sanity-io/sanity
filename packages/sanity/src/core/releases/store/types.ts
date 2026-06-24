@@ -52,5 +52,5 @@ export interface VersionInfoDocumentStub {
   _rev: string
   _createdAt: string
   _updatedAt: string
-  _system: DocumentSystem
+  _system?: DocumentSystem
 }
