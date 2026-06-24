@@ -3,7 +3,6 @@ import {ChevronDownIcon, ChevronUpIcon} from '@sanity/icons'
 import {Container, Flex, useClickOutsideEvent} from '@sanity/ui'
 import {useMemo, useRef, useState} from 'react'
 import {
-  type VersionInfoDocumentStub,
   Chip,
   getPublishedId,
   getVersionFromId,
@@ -15,15 +14,14 @@ import {
 import {Popover, Tooltip} from '../../../../../ui-components'
 
 export function NonReleaseVersionsSelect(props: {
-  nonReleaseVersions: VersionInfoDocumentStub[]
+  nonReleaseVersions: string[]
   selectedPerspective?: string
-  onSelectBundle: (version: VersionInfoDocumentStub) => void
+  onSelectBundle: (bundle: string) => void
   onCopyToDraftsNavigate: () => void
   releases: ReleaseDocument[]
   releasesLoading: boolean
   documentType: string
-  getVersionDisplay: (version: VersionInfoDocumentStub) => AgentVersionDisplay | null
-  mode: 'versions' | 'variants'
+  getVersionDisplay: (versionDocumentId: string) => AgentVersionDisplay | null
 }) {
   const {
     nonReleaseVersions,
@@ -34,14 +32,13 @@ export function NonReleaseVersionsSelect(props: {
     getVersionDisplay,
     releasesLoading,
     releases,
-    mode,
   } = props
   const {t} = useTranslation()
   const [nonReleaseDropdownOpen, setNonReleaseDropdownOpen] = useState(false)
   const [popoverReferenceElement, setPopoverReferenceElement] = useState<HTMLElement | null>(null)
 
   const [selectedNonReleaseVersion, otherNonReleaseVersions] = useMemo(() => {
-    return extract(nonReleaseVersions, (v) => getVersionFromId(v._id) === selectedPerspective)
+    return extract(nonReleaseVersions, (v) => getVersionFromId(v) === selectedPerspective)
   }, [selectedPerspective, nonReleaseVersions])
 
   const popoverRef = useRef(null)
@@ -74,18 +71,18 @@ export function NonReleaseVersionsSelect(props: {
     <>
       {selectedNonReleaseVersion &&
         (() => {
-          const bundleId = getVersionFromId(selectedNonReleaseVersion._id)!
+          const bundleId = getVersionFromId(selectedNonReleaseVersion)!
           const versionDisplay = getVersionDisplay(selectedNonReleaseVersion)
           return (
             <VersionChip
-              key={selectedNonReleaseVersion._id}
+              key={selectedNonReleaseVersion}
               selected
               text={versionDisplay?.displayName ?? bundleId}
               tone={versionDisplay?.tone ?? 'default'}
-              onClick={() => onSelectBundle(selectedNonReleaseVersion)}
+              onClick={() => onSelectBundle(bundleId)}
               onCopyToDraftsNavigate={onCopyToDraftsNavigate}
               contextValues={{
-                documentId: getPublishedId(selectedNonReleaseVersion._id),
+                documentId: getPublishedId(selectedNonReleaseVersion),
                 releases,
                 releasesLoading: releasesLoading,
                 documentType: documentType,
@@ -97,7 +94,7 @@ export function NonReleaseVersionsSelect(props: {
         })()}
       {otherNonReleaseVersions.length > 0 ? (
         <Tooltip
-          content={t(`release.chip.tooltip.other-${mode}`, {
+          content={t('release.chip.tooltip.other-versions', {
             count: otherNonReleaseVersions.length,
           })}
           fallbackPlacements={[]}
@@ -112,7 +109,7 @@ export function NonReleaseVersionsSelect(props: {
             iconRight={nonReleaseDropdownOpen ? ChevronUpIcon : ChevronDownIcon}
             ref={setPopoverReferenceElement}
             onClick={() => setNonReleaseDropdownOpen((v) => !v)}
-            text={t(`release.chip.button.other-${mode}`, {count: otherNonReleaseVersions.length})}
+            text={t('release.chip.button.other-versions', {count: otherNonReleaseVersions.length})}
           />
         </Tooltip>
       ) : null}
@@ -129,27 +126,27 @@ export function NonReleaseVersionsSelect(props: {
         content={
           <Container width={1}>
             <Flex width={1} padding={3} gap={2} wrap="wrap">
-              {otherNonReleaseVersions.map((nonReleaseVersion) => {
-                const scopeId = nonReleaseVersion._system.scopeId!
-                const selected = selectedPerspective === scopeId
+              {otherNonReleaseVersions.map((nonReleaseVersionId) => {
+                const bundle = getVersionFromId(nonReleaseVersionId)!
+                const selected = selectedPerspective === bundle
 
-                const versionDisplay = getVersionDisplay(nonReleaseVersion)
+                const versionDisplay = getVersionDisplay(nonReleaseVersionId)
                 return (
                   <VersionChip
-                    key={nonReleaseVersion._id}
+                    key={nonReleaseVersionId}
                     selected={selected}
-                    text={versionDisplay?.displayName ?? scopeId}
+                    text={versionDisplay?.displayName ?? bundle}
                     disabled={false}
                     contextMenuPortal={false}
                     tone={versionDisplay?.tone ?? 'default'}
-                    onClick={() => onSelectBundle(nonReleaseVersion)}
+                    onClick={() => onSelectBundle(bundle)}
                     onCopyToDraftsNavigate={onCopyToDraftsNavigate}
                     contextValues={{
-                      documentId: getPublishedId(nonReleaseVersion._id),
+                      documentId: getPublishedId(nonReleaseVersionId),
                       releases,
                       releasesLoading: releasesLoading,
                       documentType: documentType,
-                      bundleId: scopeId,
+                      bundleId: bundle,
                       isVersion: true,
                     }}
                   />
