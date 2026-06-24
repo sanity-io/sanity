@@ -338,14 +338,12 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
         ...common,
       } satisfies ReferenceTypeDef
     }
-    default: {
-      const marks = maybeBlockMarks(schemaType)
+    default:
       return {
         extends: schemaType.type.name,
         ...common,
-        ...(marks && {marks}),
+        marks: maybeBlockMarks(schemaType),
       } satisfies SubtypeDef
-    }
   }
 }
 
