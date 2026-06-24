@@ -8,18 +8,19 @@ import {
   type ArraySchemaType,
   type FieldGroupDefinition,
   type FieldsetDefinition,
+  isSpanSchemaType,
   type ObjectSchemaType,
   type ReferenceSchemaType,
   type Rule as IRule,
   type Schema,
   type SchemaType,
-  type SpanSchemaType,
 } from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import isObject from 'lodash-es/isObject.js'
 
 import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
+import {isType} from '../manifest/manifestTypeHelpers'
 import {IdleScheduler, type Scheduler, SYNC_SCHEDULER} from './scheduler'
 import {
   type ArrayElement,
@@ -349,20 +350,6 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
 }
 
 /**
- * Walks the type chain to check whether `schemaType` is (a subtype of) `typeName`.
- * Mirrors `isType` from the manifest extractor so block detection stays consistent
- * between the two serializers.
- */
-function isType(schemaType: SchemaType, typeName: string): boolean {
-  let current: SchemaType | undefined = schemaType
-  while (current) {
-    if (current.name === typeName) return true
-    current = current.type
-  }
-  return false
-}
-
-/**
  * Serializes a portable-text block's decorators, mirroring `resolveEnabledDecorators`
  * in the manifest extractor (`extractManifestSchemaTypes.ts`).
  *
@@ -381,19 +368,20 @@ function maybeBlockMarks(schemaType: SchemaType): BlockMarks | undefined {
   )
   const childrenOf = (childrenField?.type as ArraySchemaType | undefined)?.of
   const spanType = childrenOf?.find((memberType) => memberType.name === 'span')
-  if (!spanType || !('decorators' in spanType)) {
+  if (!spanType || !isSpanSchemaType(spanType)) {
     return undefined
   }
 
-  const decorators = convertTitledValues((spanType as SpanSchemaType).decorators)
+  const decorators = convertTitledValues(spanType.decorators)
   return decorators ? {decorators} : undefined
 }
 
 /**
  * Reduces a list of title/value definitions to the serializable `{value, title?}`
- * shape, dropping anything without a string `value`. Mirrors `resolveTitleValueArray`
- * in the manifest extractor (which is why non-serializable extras such as `icon` and
- * `i18nTitleKey` are intentionally stripped).
+ * shape, dropping anything without a non-empty string `value`. Mirrors
+ * `resolveTitleValueArray` in the manifest extractor — including its rejection of
+ * empty-string values — which is why non-serializable extras such as `icon` and
+ * `i18nTitleKey` are intentionally stripped.
  */
 function convertTitledValues(possibleArray: unknown): BlockTitledValue[] | undefined {
   if (!Array.isArray(possibleArray)) return undefined
@@ -401,7 +389,7 @@ function convertTitledValues(possibleArray: unknown): BlockTitledValue[] | undef
   const titledValues = possibleArray
     .filter(
       (item): item is {value: string; title?: unknown} =>
-        isObject(item) && 'value' in item && typeof item.value === 'string',
+        isObject(item) && 'value' in item && typeof item.value === 'string' && item.value !== '',
     )
     .map((item) => ({
       value: item.value,

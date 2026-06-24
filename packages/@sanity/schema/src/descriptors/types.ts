@@ -54,6 +54,12 @@ export type BlockTitledValue = {
   title?: string
 }
 
+/**
+ * Unlike the manifest and userland `marks` (which carry both `decorators` and
+ * `annotations`), the descriptor's `marks` carries only `decorators`. Annotations
+ * are field-expressed on a compiled block (via the `markDefs` field) and so are
+ * already represented in the descriptor — duplicating them here would be redundant.
+ */
 export type BlockMarks = {
   decorators: BlockTitledValue[]
 }
