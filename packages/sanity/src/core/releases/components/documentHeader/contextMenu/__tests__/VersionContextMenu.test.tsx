@@ -29,15 +29,6 @@ vi.mock('../../../../../store/grants/documentPairPermissions', () => ({
   useDocumentPairPermissions: vi.fn(() => useDocumentPairPermissionsMockReturn),
 }))
 
-vi.mock('../../../../store/useDocumentVersionInfo', () => ({
-  useDocumentVersionInfo: vi.fn(() => ({
-    isLoading: false,
-    versions: {},
-    draft: undefined,
-    published: undefined,
-  })),
-}))
-
 describe('VersionContextMenu', () => {
   const mockReleases: ReleaseDocument[] = [
     {
