@@ -50,7 +50,7 @@ jobs:
 
       - name: Check valid token
         run: |
-          WHOAMI_RESULT=$(pnpm whoami)
+          WHOAMI_RESULT=$(pnpm --silent whoami)
           echo "pnpm whoami result: $WHOAMI_RESULT"
           if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
             echo "Error: pnpm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
@@ -59,9 +59,7 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
-        run: pnpm -r publish --tag workbench --no-git-checks
-        env:
-          NPM_CONFIG_PROVENANCE: true
+        run: pnpm -r publish --tag workbench --no-git-checks --provenance
 
       - name: Summary
         run: |
