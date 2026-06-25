@@ -34,7 +34,6 @@ export const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
 export const PLUGIN_INPUT_TYPES = [
   'codeTest',
   'geopointTest',
-  'hotspotArrayTest',
   //'orderableCategory',
   //'orderableTag',
 ]

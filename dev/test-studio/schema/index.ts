@@ -116,7 +116,6 @@ import playlist from './playlist'
 import playlistTrack from './playlistTrack'
 import code from './plugins/code'
 import geopoint from './plugins/geopoint'
-import {hotspot, hotspotArrayTest} from './plugins/hotspotArray'
 import species from './species'
 import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
 import booleans from './standard/booleans'
@@ -334,8 +333,6 @@ export function createSchemaTypes(projectId: string) {
     // @todo temporary, until code input is v3 compatible
     codeInputType,
     geopoint,
-    hotspot,
-    hotspotArrayTest,
 
     // Test documents with 3rd party plugin inputs
     internationalizedArray,
