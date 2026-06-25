@@ -72,6 +72,7 @@ export interface TextBlockProps {
   spellCheck?: boolean
   value: PortableTextTextBlock
   anchorIdent?: string
+  relativePath: Path
 }
 
 export function TextBlock(props: TextBlockProps) {
@@ -101,7 +102,10 @@ export function TextBlock(props: TextBlockProps) {
     spellCheck,
     value,
     anchorIdent,
+    relativePath,
   } = props
+  // A path deeper than the root array means the block is nested in a container.
+  const nested = relativePath.length > 1
   const {Markers} = useFormBuilder().__internal.components
   const markers = usePortableTextMarkers(path)
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
@@ -184,6 +188,12 @@ export function TextBlock(props: TextBlockProps) {
   }, [value.listItem, value.level, children])
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+    if (nested) {
+      // A nested block sits inside a container that owns horizontal spacing
+      // (e.g. a table cell's padding), so the root gutter is dropped.
+      return {paddingX: 0}
+    }
+
     if (isFullscreen && !renderBlockActions) {
       return {paddingX: 5}
     }
@@ -200,7 +210,7 @@ export function TextBlock(props: TextBlockProps) {
     }
 
     return {paddingX: 3}
-  }, [isFullscreen, renderBlockActions])
+  }, [isFullscreen, renderBlockActions, nested])
 
   const outerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (value.listItem) {

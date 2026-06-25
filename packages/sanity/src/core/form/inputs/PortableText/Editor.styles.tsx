@@ -126,6 +126,20 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
       max-width: ${(props) => getTheme_v2(props.theme).container[1]}px;
     }
 
+    /* Container nodes are consumer-rendered and miss the inner-padding gutter
+     * the text-block/object components apply. Padding a container is unreliable
+     * (a table ignores it for cell layout), so narrow the box via max-width
+     * minus the gutter on both sides instead, centred by the margin auto above. */
+    & > [data-pt-block='container'] {
+      width: calc(
+        100% - ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3]}px
+      );
+      max-width: calc(
+        ${(props) => getTheme_v2(props.theme).container[1]}px -
+          ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3]}px
+      );
+    }
+
     & .pt-drop-indicator {
       pointer-events: none;
       border: 1px solid var(--card-focus-ring-color) !important;
@@ -148,6 +162,19 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
             $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} +
           2px
       ) !important;
+    }
+
+    /* A block nested in a container is its own positioning context, so its drop
+       indicator sizes to the block (the cell) instead of escaping to the
+       container, and spans the full width: the container owns the gutter. */
+    & [data-pt-block] [data-pt-block] {
+      position: relative;
+    }
+
+    & [data-pt-block] [data-pt-block] .pt-drop-indicator {
+      left: 0;
+      right: 0;
+      width: 100% !important;
     }
   }
 `
