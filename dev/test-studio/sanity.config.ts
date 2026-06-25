@@ -1,6 +1,7 @@
 import {assist} from '@sanity/assist'
 import {debugSecrets} from '@sanity/debug-preview-url-secret-plugin'
 import {documentInternationalization} from '@sanity/document-internationalization'
+import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon, EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
@@ -217,6 +218,14 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
           {id: 'es', title: 'Spanish'},
         ],
         types: ['languageFilterDebug'],
+      }),
+      googleMapsInput({
+        apiKey: 'AIzaSyDDO2FFi5wXaQdk88S1pQUa70bRtWuMhkI',
+        defaultZoom: 11,
+        defaultLocation: {
+          lat: 40.7058254,
+          lng: -74.1180863,
+        },
       }),
       visionTool({
         // uncomment to test

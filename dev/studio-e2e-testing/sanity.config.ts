@@ -1,3 +1,4 @@
+import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon, PlayIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, type ReleaseActionComponent} from 'sanity'
@@ -100,6 +101,14 @@ const defaultConfig = defineConfig({
         {id: 'es', title: 'Spanish'},
       ],
       types: ['languageFilterDebug'],
+    }),
+    googleMapsInput({
+      apiKey: 'AIzaSyDDO2FFi5wXaQdk88S1pQUa70bRtWuMhkI',
+      defaultZoom: 11,
+      defaultLocation: {
+        lat: 40.7058254,
+        lng: -74.1180863,
+      },
     }),
     visionTool({
       defaultApiVersion: '2022-08-08',
