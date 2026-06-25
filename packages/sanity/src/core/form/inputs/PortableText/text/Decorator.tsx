@@ -4,7 +4,7 @@ import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {type BlockDecoratorProps} from '../../../types'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {usePortableTextMemberSchemaTypesForBlockPath} from '../contexts/PortableTextMemberSchemaTypes'
 import {TEXT_DECORATOR_TAGS} from './constants'
 
 const Root = styled.span(({theme}: {theme: Theme}) => {
@@ -21,7 +21,9 @@ const Root = styled.span(({theme}: {theme: Theme}) => {
 
 export function Decorator(props: BlockDecoratorRenderProps) {
   const {value, focused, selected, children, schemaType} = props
-  const schemaTypes = usePortableTextMemberSchemaTypes()
+  // `props.path` points at the decorated span; the block (which defines the
+  // decorators) is two segments up (`[...blockPath, 'children', {_key}]`).
+  const schemaTypes = usePortableTextMemberSchemaTypesForBlockPath(props.path.slice(0, -2))
   const sanitySchemaType = schemaTypes.decorators.find((type) => type.value === schemaType.value)
   if (!sanitySchemaType) {
     // This should never happen

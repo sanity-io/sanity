@@ -2,7 +2,7 @@ import {type BlockListItemRenderProps} from '@portabletext/editor'
 import {useMemo} from 'react'
 
 import {type BlockListItemProps} from '../../../types'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {usePortableTextMemberSchemaTypesForBlockPath} from '../contexts/PortableTextMemberSchemaTypes'
 
 const DefaultComponent = (dProps: BlockListItemProps) => {
   return <>{dProps.children}</>
@@ -10,7 +10,7 @@ const DefaultComponent = (dProps: BlockListItemProps) => {
 
 export const ListItem = (props: BlockListItemRenderProps) => {
   const {block, children, schemaType, selected, focused, level, value} = props
-  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const schemaTypes = usePortableTextMemberSchemaTypesForBlockPath(props.path)
   const sanitySchemaType = schemaTypes.lists.find((type) => type.value === schemaType.value)
   if (!sanitySchemaType) {
     // This should never happen

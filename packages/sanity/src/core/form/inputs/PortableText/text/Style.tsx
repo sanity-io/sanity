@@ -2,12 +2,12 @@ import {type BlockStyleRenderProps} from '@portabletext/editor'
 import {useCallback, useMemo} from 'react'
 
 import {type BlockStyleProps} from '../../../types'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {usePortableTextMemberSchemaTypesForBlockPath} from '../contexts/PortableTextMemberSchemaTypes'
 import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 
 export const Style = (props: BlockStyleRenderProps) => {
   const {block, focused, children, selected, schemaType} = props
-  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const schemaTypes = usePortableTextMemberSchemaTypesForBlockPath(props.path)
   const sanitySchemaType = schemaTypes.styles.find((type) => type.value === schemaType.value)
   if (!sanitySchemaType) {
     // This should never happen
