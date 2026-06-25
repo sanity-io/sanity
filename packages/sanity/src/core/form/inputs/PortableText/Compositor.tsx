@@ -8,8 +8,14 @@ import {
   type OnPasteFn as EditorOnPasteFn,
   type PasteData as EditorPasteData,
   type RangeDecoration,
+  useEditor,
 } from '@portabletext/editor'
-import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
+import {
+  isObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type PortableTextTextBlock,
+} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Box,
@@ -21,6 +27,7 @@ import {
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
+import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
@@ -98,6 +105,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   } = props
 
   const schemaTypes = usePortableTextMemberSchemaTypes()
+  const editor = useEditor()
   const setElementRef = useSetPortableTextMemberItemElementRef()
 
   // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with
@@ -147,6 +155,15 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     (blockProps: EditorBlockRenderProps) => {
       const {children, focused: blockFocused, path: blockPath, selected, value: block} = blockProps
       const fullyQualifiedPath = path.concat(blockPath)
+      const sanitySchemaType = resolveSchemaTypeForPath(
+        schemaTypes.portableText,
+        blockPath,
+        editor.getSnapshot().context.value,
+      )
+      if (!sanitySchemaType || !isObjectSchemaType(sanitySchemaType)) {
+        // This should never happen
+        throw new Error(`Could not find Sanity schema type for text block: ${block._type}`)
+      }
 
       return (
         <TextBlock
@@ -169,7 +186,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderCustomMarkers={_renderCustomMarkers}
           renderPreview={renderPreview}
           renderBlock={renderBlock}
-          schemaType={schemaTypes.block}
+          schemaType={sanitySchemaType}
           selected={selected}
           setElementRef={setElementRef}
           value={block as PortableTextTextBlock}
@@ -180,6 +197,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
+      editor,
       _renderBlockActions,
       _renderCustomMarkers,
       floatingBoundary,
@@ -197,7 +215,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
-      schemaTypes.block,
+      schemaTypes.portableText,
       scrollElement,
       setElementRef,
     ],
@@ -212,10 +230,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaType: blockSchemaType,
         value: blockValue,
       } = blockProps
-      const sanitySchemaType = schemaTypes.blockObjects.find(
-        (type) => type.name === blockSchemaType.name,
+      const sanitySchemaType = resolveSchemaTypeForPath(
+        schemaTypes.portableText,
+        blockPath,
+        editor.getSnapshot().context.value,
       )
-      if (!sanitySchemaType) {
+      if (!sanitySchemaType || !isObjectSchemaType(sanitySchemaType)) {
         // This should never happen
         throw new Error(
           `Could not find Sanity schema type for block object: ${blockSchemaType.name}`,
@@ -251,9 +271,10 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
+      editor,
       floatingBoundary,
       scrollElement,
-      schemaTypes.blockObjects,
+      schemaTypes.portableText,
       isFullscreen,
       onItemClose,
       onItemOpen,
@@ -302,10 +323,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       if (isSpan) {
         return children
       }
-      const sanitySchemaType = schemaTypes.inlineObjects.find(
-        (type) => type.name === childSchemaType.name,
+      const sanitySchemaType = resolveSchemaTypeForPath(
+        schemaTypes.portableText,
+        childPath,
+        editor.getSnapshot().context.value,
       )
-      if (!sanitySchemaType) {
+      if (!sanitySchemaType || !isObjectSchemaType(sanitySchemaType)) {
         // This should never happen
         throw new Error(
           `Could not find Sanity schema type for inline object: ${childSchemaType.name}`,
@@ -338,8 +361,9 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
+      editor,
       schemaTypes.span.name,
-      schemaTypes.inlineObjects,
+      schemaTypes.portableText,
       floatingBoundary,
       onItemClose,
       onItemOpen,
@@ -369,10 +393,17 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaType: aSchemaType,
         value: aValue,
       } = annotationProps
-      const sanitySchemaType = schemaTypes.annotations.find(
-        (type) => type.name === aSchemaType.name,
+      // `aPath` points at the span where the annotation is applied
+      // (`[...blockPath, 'children', {_key: spanKey}]`); resolving the
+      // annotation type means walking to the block's `markDefs` entry,
+      // not the span itself.
+      const annotationPath = [...aPath.slice(0, -2), 'markDefs', {_key: aValue._key}]
+      const sanitySchemaType = resolveSchemaTypeForPath(
+        schemaTypes.portableText,
+        annotationPath,
+        editor.getSnapshot().context.value,
       )
-      if (!sanitySchemaType) {
+      if (!sanitySchemaType || !isObjectSchemaType(sanitySchemaType)) {
         // This should never happen
         throw new Error(`Could not find Sanity schema type for annotation: ${aSchemaType.name}`)
       }
@@ -405,7 +436,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
-      schemaTypes.annotations,
+      editor,
+      schemaTypes.portableText,
       floatingBoundary,
       scrollElement,
       focused,
