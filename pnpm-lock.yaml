@@ -1504,6 +1504,12 @@ importers:
       '@portabletext/patches':
         specifier: ^2.0.5
         version: 2.0.5
+      '@portabletext/plugin-dnd':
+        specifier: ^1.0.1
+        version: 1.0.9(@portabletext/editor@7.8.1)(react@19.2.7)
+      '@portabletext/plugin-list-index':
+        specifier: ^1.0.4
+        version: 1.0.9(@portabletext/editor@7.8.1)(react@19.2.7)
       '@portabletext/plugin-markdown-shortcuts':
         specifier: ^8.0.24
         version: 8.0.24(@portabletext/editor@7.8.1)(@types/react@19.2.17)(react@19.2.7)
@@ -4810,8 +4816,22 @@ packages:
       '@portabletext/editor': ^7.8.1
       react: ^19.2
 
+  '@portabletext/plugin-dnd@1.0.9':
+    resolution: {integrity: sha512-+bFSNpVkCE1X889bG3MbUctHlHy4uZX2Obp9x9ffD95580MHmvEBlwO5PUK7fzAeBAV2MKHVHc+dQE3XtZeF5w==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@portabletext/editor': ^7.8.1
+      react: ^19.2
+
   '@portabletext/plugin-input-rule@5.0.24':
     resolution: {integrity: sha512-XvQ5IcQb6z5V7MiaF3hY7drvutPmZlH8SAJyQONZts5PaUo5aYT4di54QNE6n7uDuX9xJhIRKzC2zvqJUEKEiA==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@portabletext/editor': ^7.8.1
+      react: ^19.2
+
+  '@portabletext/plugin-list-index@1.0.9':
+    resolution: {integrity: sha512-wjxN5SX5C3x6R1Ed+5KjxwTkKa0kpayuZ7BDVHU9uWhpsDZxPSH6+//kjUPiBO5TB9kvYLh9vU3BE1HzB8FOdQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@portabletext/editor': ^7.8.1
@@ -13910,6 +13930,11 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
+  '@portabletext/plugin-dnd@1.0.9(@portabletext/editor@7.8.1)(react@19.2.7)':
+    dependencies:
+      '@portabletext/editor': 7.8.1(@types/react@19.2.17)(react@19.2.7)
+      react: 19.2.7
+
   '@portabletext/plugin-input-rule@5.0.24(@portabletext/editor@7.8.1)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
       '@portabletext/editor': 7.8.1(@types/react@19.2.17)(react@19.2.7)
@@ -13918,6 +13943,11 @@ snapshots:
       xstate: 5.32.1
     transitivePeerDependencies:
       - '@types/react'
+
+  '@portabletext/plugin-list-index@1.0.9(@portabletext/editor@7.8.1)(react@19.2.7)':
+    dependencies:
+      '@portabletext/editor': 7.8.1(@types/react@19.2.17)(react@19.2.7)
+      react: 19.2.7
 
   '@portabletext/plugin-markdown-shortcuts@8.0.24(@portabletext/editor@7.8.1)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:

@@ -144,6 +144,8 @@
     "@portabletext/editor": "^7.8.1",
     "@portabletext/html": "^1.1.0",
     "@portabletext/patches": "^2.0.5",
+    "@portabletext/plugin-dnd": "^1.0.1",
+    "@portabletext/plugin-list-index": "^1.0.4",
     "@portabletext/plugin-markdown-shortcuts": "^8.0.24",
     "@portabletext/plugin-one-line": "^7.0.24",
     "@portabletext/plugin-paste-link": "^4.0.24",
