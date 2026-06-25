@@ -443,6 +443,11 @@ import type {
   DocumentFieldActionTone,
   DocumentFormNode,
   DocumentGroupEvent,
+  DocumentGroupInventory,
+  DocumentGroupInventoryAction,
+  DocumentGroupInventoryPerspectiveList,
+  DocumentGroupInventoryProps,
+  DocumentGroupInventoryReferencePreviewLinkProps,
   documentIdEquals,
   DocumentIdStack,
   DocumentInspector,
@@ -3078,6 +3083,21 @@ describe('sanity', () => {
   })
   test('DocumentGroupEvent', () => {
     expectTypeOf<DocumentGroupEvent>().not.toBeNever()
+  })
+  test('DocumentGroupInventory', () => {
+    expectTypeOf<typeof DocumentGroupInventory>().not.toBeNever()
+  })
+  test('DocumentGroupInventoryAction', () => {
+    expectTypeOf<typeof DocumentGroupInventoryAction>().not.toBeNever()
+  })
+  test('DocumentGroupInventoryPerspectiveList', () => {
+    expectTypeOf<DocumentGroupInventoryPerspectiveList>().toBeObject()
+  })
+  test('DocumentGroupInventoryProps', () => {
+    expectTypeOf<DocumentGroupInventoryProps>().toBeObject()
+  })
+  test('DocumentGroupInventoryReferencePreviewLinkProps', () => {
+    expectTypeOf<DocumentGroupInventoryReferencePreviewLinkProps>().toBeObject()
   })
   test('documentIdEquals', () => {
     expectTypeOf<typeof documentIdEquals>().toBeFunction()
