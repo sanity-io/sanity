@@ -24,6 +24,7 @@ export {
   type Retry,
   type SSEEvent,
 } from './proxy'
+export {intermittentServiceErrors} from './requestScenarios'
 export {allOf, anyOf, isGetOrgIdEndpoint, isListenEndpoint, urlIncludes} from './routes'
 export {
   dropMutations,
