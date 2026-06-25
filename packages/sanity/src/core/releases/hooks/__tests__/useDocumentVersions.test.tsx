@@ -40,22 +40,15 @@ async function setupMocks({
    * falls back to `temporarilyBuildDocumentSystem`.
    */
   observeSystem?: boolean
-  /** When `true`, the id set observable never emits (initial loading state). */
+  /** When `true`, the version document ids observable never emits (initial loading state). */
   pendingIdSet?: boolean
 }) {
   const mockDocumentPreviewStore = useDocumentPreviewStore as Mock<typeof useDocumentPreviewStore>
 
   mockDocumentPreviewStore.mockReturnValue({
-    unstable_observeDocumentIdSet: vi
-      .fn<DocumentPreviewStore['unstable_observeDocumentIdSet']>()
-      .mockReturnValue(
-        pendingIdSet
-          ? NEVER
-          : of({
-              status: 'connected',
-              documentIds: versionIds,
-            }),
-      ),
+    unstable_observeVersionDocumentIds: vi
+      .fn<DocumentPreviewStore['unstable_observeVersionDocumentIds']>()
+      .mockReturnValue(pendingIdSet ? NEVER : of(versionIds)),
     observePaths: vi
       .fn<DocumentPreviewStore['observePaths']>()
       .mockImplementation((value: {_id: string}) => {

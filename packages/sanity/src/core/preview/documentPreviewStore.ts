@@ -22,6 +22,7 @@ import {createPreviewObserver} from './createPreviewObserver'
 import {createObservePathsDocumentPair} from './documentPair'
 import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from './liveDocumentIdSet'
 import {createObserveFields} from './observeFields'
+import {createObserveVersionDocumentIds} from './observeVersionDocumentIds'
 import {
   type ApiConfig,
   type DocumentStackAvailability,
@@ -102,6 +103,7 @@ export interface DocumentPreviewStore {
    * transitions on the received listener events.
    * This provides a lightweight way of subscribing to a list of ids for simple cases where you just want to subscribe to a set of documents ids
    * that matches a particular filter.
+   *
    * @hidden
    * @beta
    * @param filter - A groq filter to use for the document set
@@ -122,7 +124,23 @@ export interface DocumentPreviewStore {
   ) => Observable<DocumentIdSetObserverState>
 
   /**
+   * Observes the set of version and variant document ids that exist for a given
+   * document group id.
+   *
+   * Unlike `unstable_observeDocumentIdSet`, this does not open a dedicated
+   * real-time listener for each published id. Instead, it is driven by the
+   * shared global listener and batches the discovery queries for all observed
+   * document group ids into a single combined query, returning the ids in
+   * ascending order.
+   *
+   * @hidden
+   * @beta
+   */
+  unstable_observeVersionDocumentIds: (publishedId: string) => Observable<string[]>
+
+  /**
    * Observe a complete document with the given ID
+   *
    * @hidden
    * @beta
    */
@@ -130,8 +148,10 @@ export interface DocumentPreviewStore {
     id: string,
     clientConfig?: ObserveDocumentAPIConfig,
   ) => Observable<SanityDocument | undefined>
+
   /**
    * Observe a list of complete documents with the given IDs
+   *
    * @hidden
    * @beta
    */
@@ -199,6 +219,11 @@ export function createDocumentPreviewStore({
 
   const observeDocumentIdSet = createDocumentIdSetObserver(versionedClient)
 
+  const observeVersionDocumentIds = createObserveVersionDocumentIds({
+    client: versionedClient,
+    invalidationChannel,
+  })
+
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
 
   const observeDocumentStackAvailability = createDocumentStackAvailabilityObserver(
@@ -223,6 +248,7 @@ export function createDocumentPreviewStore({
     observeDocumentTypeFromId,
     observeDocumentSystemFromId,
     unstable_observeDocumentIdSet: observeDocumentIdSet,
+    unstable_observeVersionDocumentIds: observeVersionDocumentIds,
     unstable_observeDocument: observeDocument,
     unstable_observeDocuments: (ids: string[]) =>
       combineLatest(ids.map((id) => observeDocument(id))),

@@ -9,14 +9,9 @@ describe('getOrCreateDocumentVersionsObservable', () => {
     observableCache.clear()
 
     const documentPreviewStore = {
-      unstable_observeDocumentIdSet: vi
-        .fn<DocumentPreviewStore['unstable_observeDocumentIdSet']>()
-        .mockReturnValue(
-          of({
-            status: 'connected',
-            documentIds: ['drafts.article-1'],
-          }),
-        ),
+      unstable_observeVersionDocumentIds: vi
+        .fn<DocumentPreviewStore['unstable_observeVersionDocumentIds']>()
+        .mockReturnValue(of(['drafts.article-1'])),
       observePaths: vi.fn<DocumentPreviewStore['observePaths']>().mockReturnValue(
         of({
           _id: 'drafts.article-1',
