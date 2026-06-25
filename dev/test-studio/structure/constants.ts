@@ -33,7 +33,6 @@ export const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
 
 export const PLUGIN_INPUT_TYPES = [
   'codeTest',
-  'colorTest',
   'geopointTest',
   'hotspotArrayTest',
   //'orderableCategory',
@@ -124,8 +123,6 @@ export const DEBUG_FIELD_GROUP_TYPES = [
 ]
 
 export const EXTERNAL_PLUGIN_INPUT_TYPES = [
-  'markdownTest',
-  'muxVideoPost',
   'internationalizedArrayTest',
   'documentI18nTest',
   'translation.metadata',
