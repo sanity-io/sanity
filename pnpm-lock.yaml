@@ -345,8 +345,8 @@ importers:
         specifier: ^17.4.2
         version: 17.4.2
       ora:
-        specifier: ^9.4.0
-        version: 9.4.0
+        specifier: ^9.4.1
+        version: 9.4.1
       playwright:
         specifier: 'catalog:'
         version: 1.61.0
@@ -443,11 +443,11 @@ importers:
   dev/sdk-app:
     dependencies:
       '@sanity/sdk':
-        specifier: ^2.14.1
-        version: 2.14.1(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.1)
+        specifier: ^2.15.0
+        version: 2.15.0(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.1)
       '@sanity/sdk-react':
-        specifier: ^2.14.1
-        version: 2.14.1(@types/react@19.2.17)(immer@11.1.8)(react-dom@19.2.7)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.1)
+        specifier: ^2.15.0
+        version: 2.15.0(@types/react@19.2.17)(immer@11.1.8)(react-dom@19.2.7)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.1)
       react:
         specifier: 'catalog:'
         version: 19.2.7
@@ -520,8 +520,8 @@ importers:
         specifier: ^5.1.9
         version: 5.1.9(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.1.3)(@sanity/language-filter@5.0.4)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       sanity-plugin-media:
-        specifier: ^5.0.0
-        version: 5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@types/react@19.2.17)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
+        specifier: ^5.0.2
+        version: 5.0.3(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@types/react@19.2.17)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       sanity-test-studio:
         specifier: workspace:*
         version: link:../test-studio
@@ -668,8 +668,8 @@ importers:
         specifier: ^5.1.9
         version: 5.1.9(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.1.3)(@sanity/language-filter@5.0.4)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       sanity-plugin-media:
-        specifier: ^5.0.0
-        version: 5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@types/react@19.2.17)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
+        specifier: ^5.0.2
+        version: 5.0.3(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@types/react@19.2.17)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       styled-components:
         specifier: 'catalog:'
         version: '@sanity/styled-components@6.1.24(react-dom@19.2.7)(react@19.2.7)'
@@ -5611,14 +5611,17 @@ packages:
     engines: {node: '>=22.12'}
     hasBin: true
 
-  '@sanity/sdk-react@2.14.1':
-    resolution: {integrity: sha512-4lOr52aMWcqOEhhhmzl/VACqhIhxRXifeHl6nXl59YifMR2u08eWbPPnde1KeTcx81EkSZJL8MVrIwiwo3VQpA==}
+  '@sanity/sdk-react@2.15.0':
+    resolution: {integrity: sha512-17GUGxfEV1wfkjvEkaCBa5v8fKesDRmFm3r6F+KSGicm7kMQ1UzzK3cYxRWVPE6fhkvlb1zJ2smibGMBkpBs0w==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
 
   '@sanity/sdk@2.14.1':
     resolution: {integrity: sha512-0qPqDmjHk/XN1WdF8psXfYcl7029zr14hUp7k60zuSQHZEz2PDNf6otxXg0HH0BXuwCW6xEKSGmFhX56y8lFxQ==}
+
+  '@sanity/sdk@2.15.0':
+    resolution: {integrity: sha512-d8+qzZ5SbFY5QDPSkCmVgwtR4ucACriyEDsjhaPv/zV7zUKh364vm+5sPz+lYx8Egbw4Kyqmcp1bV3GN/AxSGg==}
 
   '@sanity/signed-urls@2.0.4':
     resolution: {integrity: sha512-wH7L9iOxQDVTa7COVEXoknalNgjpqxLJoOcZYQa3D/2JVEQOGUm82RgFVgZkKoclhQ8Y8dBby+KPkFoIDoUc1g==}
@@ -9216,6 +9219,10 @@ packages:
     resolution: {integrity: sha512-84cglkRILFxdtA8hAvLNdMrtBpPNBTrQ9/ulg0FA7xLMnD6mifv+enAIeRmvtv+WgdCE+LPGOfQmtJRrVaIVhQ==}
     engines: {node: '>=20'}
 
+  ora@9.4.1:
+    resolution: {integrity: sha512-6VlU9MLXbjVQD04AZCMX28hVtA5bUoadvUqO76MUCVA0ilwJbMiHsITRPfyVm6p/BC0Av/BXMujx39WCe1LEqw==}
+    engines: {node: '>=20'}
+
   os-homedir@1.0.2:
     resolution: {integrity: sha512-B5JU3cabzk8c67mRRd3ECmROafjYMXbuzlwtqdM8IbS8ktlTix8aFGb2bAGKrSRIlnfKwovGUUr72JUPyOb6kQ==}
     engines: {node: '>=0.10.0'}
@@ -9663,8 +9670,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-hook-form@7.79.0:
-    resolution: {integrity: sha512-mhYp/MTmXvzYX6AJcJVko0rktoIhhmRnEouObj4wF5i/tCttgJvnp1+9wRkpITZjDTqpo4IOSJqu0dBlPlV/Lw==}
+  react-hook-form@7.80.0:
+    resolution: {integrity: sha512-4P+fk6oXsxY+6xSj7Euhc2sumQD8zQqCuVHoJwoyp9EchP+IUW9OESB7uHFJOKsIBQ4MQqYE84INJFqUCYNoOg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -10014,8 +10021,8 @@ packages:
       '@sanity/assist':
         optional: true
 
-  sanity-plugin-media@5.0.0:
-    resolution: {integrity: sha512-WNtT5b0GyLMYo7bVdXuP655a4mu+xRBeyvHJJlzzX3bbl54Eul0YAoH3VkUDlZRGLmNc0zAxFuAVCizWvtOJVA==}
+  sanity-plugin-media@5.0.3:
+    resolution: {integrity: sha512-1Gw83/FSSallxiwxPsqeaMk6Y1oH2W5exfTjIXMzaWxu02VaR0zV7G/DtW2IerMFyKGuX08M7NZWccoNtwKr9Q==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^18.3 || ^19
@@ -12725,10 +12732,10 @@ snapshots:
       - encoding
       - supports-color
 
-  '@hookform/resolvers@4.1.3(react-hook-form@7.79.0)':
+  '@hookform/resolvers@4.1.3(react-hook-form@7.80.0)':
     dependencies:
       '@standard-schema/utils': 0.3.0
-      react-hook-form: 7.79.0(react@19.2.7)
+      react-hook-form: 7.80.0(react@19.2.7)
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -14927,11 +14934,11 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@sanity/sdk-react@2.14.1(@types/react@19.2.17)(immer@11.1.8)(react-dom@19.2.7)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.1)':
+  '@sanity/sdk-react@2.15.0(@types/react@19.2.17)(immer@11.1.8)(react-dom@19.2.7)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.1)':
     dependencies:
       '@sanity/client': 7.23.0
       '@sanity/message-protocol': 0.23.0
-      '@sanity/sdk': 2.14.1(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.1)
+      '@sanity/sdk': 2.15.0(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.1)
       '@sanity/types': link:packages/@sanity/types
       groq: 3.88.1-typegen-experimental.0
       react: 19.2.7
@@ -14947,6 +14954,33 @@ snapshots:
       - xstate
 
   '@sanity/sdk@2.14.1(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.1)':
+    dependencies:
+      '@sanity/bifur-client': 1.0.0
+      '@sanity/client': 7.23.0
+      '@sanity/comlink': 4.0.1
+      '@sanity/diff-match-patch': 3.2.0
+      '@sanity/diff-patch': 6.0.0
+      '@sanity/id-utils': 1.0.0
+      '@sanity/image-url': 2.1.1
+      '@sanity/json-match': 1.0.5
+      '@sanity/message-protocol': 0.23.0
+      '@sanity/mutate': 0.18.1(xstate@5.32.1)
+      '@sanity/telemetry': 1.1.0(react@19.2.7)
+      '@sanity/types': link:packages/@sanity/types
+      groq: 3.88.1-typegen-experimental.0
+      groq-js: 1.30.2
+      reselect: 5.2.0
+      rxjs: 7.8.2
+      zustand: 5.0.14(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - immer
+      - react
+      - supports-color
+      - use-sync-external-store
+      - xstate
+
+  '@sanity/sdk@2.15.0(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.1)':
     dependencies:
       '@sanity/bifur-client': 1.0.0
       '@sanity/client': 7.23.0
@@ -18990,6 +19024,17 @@ snapshots:
       stdin-discarder: 0.3.2
       string-width: 8.2.1
 
+  ora@9.4.1:
+    dependencies:
+      chalk: 5.6.2
+      cli-cursor: 5.0.0
+      cli-spinners: 3.4.0
+      is-interactive: 2.0.0
+      is-unicode-supported: 2.1.0
+      log-symbols: 7.0.1
+      stdin-discarder: 0.3.2
+      string-width: 8.2.1
+
   os-homedir@1.0.2: {}
 
   os-paths@4.4.0: {}
@@ -19522,7 +19567,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.17
 
-  react-hook-form@7.79.0(react@19.2.7):
+  react-hook-form@7.80.0(react@19.2.7):
     dependencies:
       react: 19.2.7
 
@@ -19951,9 +19996,9 @@ snapshots:
       - react-is
       - styled-components
 
-  sanity-plugin-media@5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@types/react@19.2.17)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity):
+  sanity-plugin-media@5.0.3(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@types/react@19.2.17)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity):
     dependencies:
-      '@hookform/resolvers': 4.1.3(react-hook-form@7.79.0)
+      '@hookform/resolvers': 4.1.3(react-hook-form@7.80.0)
       '@reduxjs/toolkit': 2.12.0(react-redux@9.3.0)(react@19.2.7)
       '@sanity/client': 7.23.0
       '@sanity/color': 3.0.6
@@ -19966,13 +20011,13 @@ snapshots:
       filesize: 9.0.11
       groq: link:packages/groq
       is-hotkey-esm: 1.0.0
-      nanoid: 3.3.13
+      nanoid: 5.1.15
       pluralize: 8.0.0
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       react-dropzone: 11.7.1(react@19.2.7)
       react-file-icon: 1.6.0(react-dom@19.2.7)(react@19.2.7)
-      react-hook-form: 7.79.0(react@19.2.7)
+      react-hook-form: 7.80.0(react@19.2.7)
       react-is: 19.2.7
       react-redux: 9.3.0(@types/react@19.2.17)(react@19.2.7)(redux@5.0.1)
       react-select: 5.10.2(@types/react@19.2.17)(react-dom@19.2.7)(react@19.2.7)
