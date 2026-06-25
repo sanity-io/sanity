@@ -1,13 +1,260 @@
-import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin} from '@portabletext/editor/plugins'
+import {defineContainer} from '@portabletext/editor'
+import {defineBehavior, effect, forward, raise} from '@portabletext/editor/behaviors'
+import {BehaviorPlugin, NodePlugin} from '@portabletext/editor/plugins'
 import {CharacterPairDecoratorPlugin} from '@portabletext/plugin-character-pair-decorator'
-import {defineArrayMember, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType, type PortableTextPluginsProps} from 'sanity'
+
+const CONTAINER_NODES = [
+  defineContainer({
+    type: 'table',
+    arrayField: 'rows',
+    render: ({children, attributes}) => (
+      <table {...attributes} style={{borderCollapse: 'collapse'}}>
+        <tbody>{children}</tbody>
+      </table>
+    ),
+    of: [
+      defineContainer({
+        type: 'row',
+        arrayField: 'cells',
+        render: ({children, attributes}) => <tr {...attributes}>{children}</tr>,
+        of: [
+          defineContainer({
+            type: 'cell',
+            arrayField: 'content',
+            render: ({children, attributes}) => (
+              <td {...attributes} style={{border: '1px solid #ccc', padding: '4px 8px'}}>
+                {children}
+              </td>
+            ),
+          }),
+        ],
+      }),
+    ],
+  }),
+  defineContainer({
+    type: 'codeBlock',
+    arrayField: 'code',
+    render: ({children, attributes}) => (
+      <pre
+        {...attributes}
+        style={{
+          background: '#f6f6f6',
+          border: '1px solid #ddd',
+          borderRadius: 4,
+          padding: '8px 12px',
+          fontFamily: 'monospace',
+          whiteSpace: 'pre-wrap',
+        }}
+      >
+        {children}
+      </pre>
+    ),
+  }),
+]
+
+// Keys come from the editor's own `keyGenerator` (off the behavior snapshot)
+// so they honour any configured generator.
+function emptyTextBlock(keyGenerator: () => string) {
+  return {
+    _key: keyGenerator(),
+    _type: 'block',
+    style: 'normal',
+    markDefs: [],
+    children: [{_key: keyGenerator(), _type: 'span', text: '', marks: []}],
+  }
+}
+
+function emptyTableCell(keyGenerator: () => string) {
+  return {
+    _key: keyGenerator(),
+    _type: 'cell',
+    content: [emptyTextBlock(keyGenerator)],
+  }
+}
+
+function emptyTableRow(keyGenerator: () => string) {
+  return {
+    _key: keyGenerator(),
+    _type: 'row',
+    cells: [
+      emptyTableCell(keyGenerator),
+      emptyTableCell(keyGenerator),
+      emptyTableCell(keyGenerator),
+    ],
+  }
+}
+
+// The guard skips containers that already have content, which also stops the
+// raise below from re-triggering.
+const containerScaffoldBehaviors = [
+  defineBehavior({
+    on: 'insert.block',
+    guard: ({event}) => {
+      if (event.block._type !== 'table') {
+        return false
+      }
+      const rows = 'rows' in event.block ? event.block.rows : undefined
+      return !(Array.isArray(rows) && rows.length > 0)
+    },
+    actions: [
+      ({event, snapshot}) => [
+        raise({
+          ...event,
+          block: {
+            ...event.block,
+            rows: [
+              emptyTableRow(snapshot.context.keyGenerator),
+              emptyTableRow(snapshot.context.keyGenerator),
+              emptyTableRow(snapshot.context.keyGenerator),
+            ],
+          },
+        }),
+      ],
+    ],
+  }),
+  defineBehavior({
+    on: 'insert.block',
+    guard: ({event}) => {
+      if (event.block._type !== 'codeBlock') {
+        return false
+      }
+      const code = 'code' in event.block ? event.block.code : undefined
+      return !(Array.isArray(code) && code.length > 0)
+    },
+    actions: [
+      ({event, snapshot}) => [
+        raise({
+          ...event,
+          block: {
+            ...event.block,
+            code: [emptyTextBlock(snapshot.context.keyGenerator)],
+          },
+        }),
+      ],
+    ],
+  }),
+]
+
+function ContainerPlugins(props: PortableTextPluginsProps) {
+  return (
+    <>
+      {props.renderDefault(props)}
+      <NodePlugin nodes={CONTAINER_NODES} />
+      <BehaviorPlugin behaviors={containerScaffoldBehaviors} />
+    </>
+  )
+}
 
 export const customPlugins = defineType({
   name: 'customPlugins',
   title: 'Custom Plugins',
   type: 'document',
   fields: [
+    {
+      type: 'array',
+      name: 'containerTable',
+      title: 'Container Table',
+      description:
+        'A defineContainer table (table > row > cell). Images and text blocks live at the root and inside cells. The field enables container support.',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          of: [
+            defineArrayMember({
+              type: 'object',
+              name: 'inlineNote',
+              title: 'Inline note',
+              fields: [defineField({type: 'string', name: 'text', title: 'Text'})],
+              preview: {select: {title: 'text'}},
+            }),
+          ],
+        }),
+        defineArrayMember({
+          type: 'image',
+          options: {hotspot: true},
+          fields: [defineField({name: 'alt', type: 'string', title: 'Alternative text'})],
+        }),
+        defineArrayMember({
+          type: 'object',
+          name: 'table',
+          fields: [
+            defineField({
+              type: 'array',
+              name: 'rows',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  name: 'row',
+                  fields: [
+                    defineField({
+                      type: 'array',
+                      name: 'cells',
+                      of: [
+                        defineArrayMember({
+                          type: 'object',
+                          name: 'cell',
+                          fields: [
+                            defineField({
+                              type: 'array',
+                              name: 'content',
+                              of: [
+                                defineArrayMember({
+                                  type: 'block',
+                                  of: [
+                                    defineArrayMember({
+                                      type: 'object',
+                                      name: 'inlineNote',
+                                      title: 'Inline note',
+                                      fields: [
+                                        defineField({type: 'string', name: 'text', title: 'Text'}),
+                                      ],
+                                      preview: {select: {title: 'text'}},
+                                    }),
+                                  ],
+                                }),
+                                defineArrayMember({
+                                  type: 'image',
+                                  options: {hotspot: true},
+                                  fields: [
+                                    defineField({
+                                      name: 'alt',
+                                      type: 'string',
+                                      title: 'Alternative text',
+                                    }),
+                                  ],
+                                }),
+                              ],
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+        defineArrayMember({
+          type: 'object',
+          name: 'codeBlock',
+          title: 'Code block',
+          fields: [
+            defineField({
+              type: 'array',
+              name: 'code',
+              of: [defineArrayMember({type: 'block', marks: {decorators: []}})],
+            }),
+          ],
+        }),
+      ],
+      components: {
+        portableText: {
+          plugins: ContainerPlugins,
+        },
+      },
+    },
     {
       type: 'string',
       name: 'title',
