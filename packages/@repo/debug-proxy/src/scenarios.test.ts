@@ -1,8 +1,14 @@
 import {firstValueFrom, from, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
-import {type Message} from './proxy'
-import {dropMutations, duplicateMutations, randomLatency, sendReset} from './scenarios'
+import {type Message, type ProxyRequest, type ProxyResponse} from './proxy'
+import {
+  dropMutations,
+  duplicateMutations,
+  expiredToken,
+  randomLatency,
+  sendReset,
+} from './scenarios'
 
 function mutation(id: string): Message {
   return {type: 'message', message: {event: 'mutation', id, data: '{}'}}
@@ -42,6 +48,78 @@ describe('sendReset', () => {
     expect(out[1]?.message.event).toBe('reset')
     // preserves the original event id
     expect(out[1]?.message.id).toBe('a')
+  })
+})
+
+type FakeRes = {head?: {status: number; headers: Record<string, unknown>}; body?: string}
+
+function fakeReq(method: string, origin?: string): ProxyRequest {
+  return {method, headers: origin ? {origin} : {}} as unknown as ProxyRequest
+}
+
+function fakeRes(): {res: ProxyResponse; captured: FakeRes} {
+  const captured: FakeRes = {}
+  const res = {
+    writeHead: (status: number, _statusText: string, headers: Record<string, unknown>) => {
+      captured.head = {status, headers}
+    },
+    end: (body?: string) => {
+      captured.body = body
+    },
+  }
+  return {res: res as unknown as ProxyResponse, captured}
+}
+
+describe('expiredToken', () => {
+  const target = {url: new URL('https://example.localhost/v1/users/me')}
+
+  test('returns the expired-session 401 once expired, without calling upstream', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('GET'), res, target)
+
+    expect(forwarded).toBe(false)
+    expect(captured.head?.status).toBe(401)
+    expect(JSON.parse(captured.body ?? '{}')).toMatchObject({
+      statusCode: 401,
+      errorCode: 'SIO-401-AEX',
+    })
+  })
+
+  test('forwards to the wrapped handler while not yet expired', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => false,
+    )
+
+    handler(fakeReq('GET'), fakeRes().res, target)
+    expect(forwarded).toBe(true)
+  })
+
+  test('always forwards CORS preflights so the browser can read the 401', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    handler(fakeReq('OPTIONS', 'https://app.localhost'), fakeRes().res, target)
+    expect(forwarded).toBe(true)
   })
 })
 
