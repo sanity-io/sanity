@@ -5,6 +5,7 @@ import {type Source, type WorkspaceSummary} from '../../config/types'
 import {type UserApplication} from '../../store/userApplications'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {SANITY_VERSION} from '../../version'
+import {fetchCanDeployStudio} from './canDeployStudio'
 import {generateStudioManifest} from './generateStudioManifest'
 import {resolveIcon} from './icon'
 
@@ -83,13 +84,22 @@ export async function registerStudioManifest(
     return // if the user isn't authenticated, nothing to do
   }
 
+  // Skip the POST when the user lacks the `deployStudio` grant, to avoid a 403.
+  // The schema upload is gated on the same grant, so in practice the manifest
+  // is already empty in that case; this is an explicit guard so registration
+  // doesn't depend on that implicit coupling.
+  const studioClient = client.withConfig(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  if (!(await fetchCanDeployStudio(studioClient))) {
+    return
+  }
+
   // Bail before posting if the registering effect has already been torn down.
   if (signal?.aborted) {
     return
   }
 
   // Post the live manifest via the global api
-  await client.withConfig(DEFAULT_STUDIO_CLIENT_OPTIONS).request({
+  await studioClient.request({
     method: 'POST',
     uri: `/projects/${projectId}/user-applications/${id}/config/live-manifest`,
     body: {

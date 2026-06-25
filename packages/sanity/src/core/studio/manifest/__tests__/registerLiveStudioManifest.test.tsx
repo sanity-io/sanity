@@ -5,11 +5,18 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {type Source, type WorkspaceSummary} from '../../../config/types'
 import {type AuthStore} from '../../../store'
 import {type UserApplication} from '../../../store/userApplications'
+import {fetchCanDeployStudio} from '../canDeployStudio'
 import {registerStudioManifest} from '../registerLiveStudioManifest'
 
 // Mock the icon module to avoid styled-components complexity in tests
 vi.mock('../icon', () => ({
   resolveIcon: vi.fn(() => '<svg>mock-icon</svg>'),
+}))
+
+// Gate the manifest POST on the deployStudio grant; default to granted so the
+// existing registration tests exercise the POST path.
+vi.mock('../canDeployStudio', () => ({
+  fetchCanDeployStudio: vi.fn(() => Promise.resolve(true)),
 }))
 
 const mockTheme: RootTheme = buildTheme()
@@ -229,6 +236,15 @@ describe('registerStudioManifest', () => {
 
     it('should skip registration when workspaces array is empty', async () => {
       await registerStudioManifest(mockUserApplication, [], mockTheme)
+
+      expect(mockRequest).not.toHaveBeenCalled()
+    })
+
+    it('should skip the POST when the user lacks the deployStudio grant', async () => {
+      vi.mocked(fetchCanDeployStudio).mockResolvedValueOnce(false)
+      const workspace = createMockWorkspace()
+
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
 
       expect(mockRequest).not.toHaveBeenCalled()
     })
