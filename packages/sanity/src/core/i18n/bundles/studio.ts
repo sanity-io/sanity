@@ -135,6 +135,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Insert asset error */
   'asset-source.dialog.insert-asset-error':
     'Error inserting asset. See the console for more information.',
+  /** Toast title shown when the list of assets failed to load */
+  'asset-source.dialog.load-error': 'Failed to load assets',
   /** Select asset dialog load more items */
   'asset-source.dialog.load-more': 'Load more',
   /** Text shown when selecting a file but there's no files to select from
