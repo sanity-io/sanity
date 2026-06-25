@@ -5,13 +5,15 @@ import {type BlockStyleProps} from '../../../types'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 
-export const Style = (props: BlockStyleRenderProps) => {
-  const {block, focused, children, selected, schemaType} = props
+type StyleProps = Pick<BlockStyleRenderProps, 'block' | 'children' | 'focused' | 'selected'>
+
+export const Style = (props: StyleProps) => {
+  const {block, focused, children, selected} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
-  const sanitySchemaType = schemaTypes.styles.find((type) => type.value === schemaType.value)
+  const sanitySchemaType = schemaTypes.styles.find((type) => type.value === block.style)
   if (!sanitySchemaType) {
     // This should never happen
-    throw new Error(`Could not find Sanity schema type for style: ${schemaType.value}`)
+    throw new Error(`Could not find Sanity schema type for style: ${block.style}`)
   }
   const DefaultComponentWithFallback = useMemo(
     () =>

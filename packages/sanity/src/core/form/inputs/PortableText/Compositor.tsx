@@ -1,15 +1,28 @@
 import {
   type BlockAnnotationRenderProps,
-  type BlockChildRenderProps as EditorChildRenderProps,
-  type BlockRenderProps as EditorBlockRenderProps,
+  type BlockObjectRenderProps,
+  defineBlockObject,
+  defineInlineObject,
+  defineTextBlock,
   type EditorSelection,
   type HotkeyOptions,
+  type InlineObjectRenderProps,
   type OnCopyFn,
   type OnPasteFn as EditorOnPasteFn,
   type PasteData as EditorPasteData,
   type RangeDecoration,
+  type RegistrableNode,
+  type TextBlockRenderProps,
 } from '@portabletext/editor'
-import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
+import {NodePlugin} from '@portabletext/editor/plugins'
+import {DndProvider, useDropPosition} from '@portabletext/plugin-dnd'
+import {ListIndexProvider, useListIndex} from '@portabletext/plugin-list-index'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type PortableTextTextBlock,
+} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Box,
@@ -41,6 +54,8 @@ import {CombinedAnnotationPopover} from './object/CombinedAnnotationPopover'
 import {InlineObject} from './object/InlineObject'
 import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditModal'
 import {TextBlock} from './text'
+import {ListItem} from './text/ListItem'
+import {Style} from './text/Style'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement | null>
@@ -144,39 +159,60 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
   const renderTextBlock = useCallback(
-    (blockProps: EditorBlockRenderProps) => {
-      const {children, focused: blockFocused, path: blockPath, selected, value: block} = blockProps
+    (textBlockProps: TextBlockRenderProps) => {
+      const {attributes, focused: blockFocused, node, path: blockPath, selected} = textBlockProps
+      const block = node
       const fullyQualifiedPath = path.concat(blockPath)
+      let inner = textBlockProps.children
+      if (block.style !== undefined) {
+        inner = (
+          <Style block={block} focused={blockFocused} selected={selected}>
+            {inner}
+          </Style>
+        )
+      }
+      if (block.listItem !== undefined) {
+        inner = (
+          <ListItem block={block} focused={blockFocused} selected={selected}>
+            {inner}
+          </ListItem>
+        )
+      }
 
       return (
-        <TextBlock
-          floatingBoundary={floatingBoundary}
-          focused={blockFocused}
-          isFullscreen={isFullscreen}
-          onItemClose={onItemClose}
-          onItemOpen={onItemOpen}
-          onItemRemove={onItemRemove}
-          onPathFocus={onPathFocus}
-          path={path.concat(blockPath)}
-          readOnly={readOnly}
-          referenceBoundary={scrollElement}
-          renderAnnotation={renderAnnotation}
-          renderField={renderField}
-          renderInlineBlock={renderInlineBlock}
-          renderInput={renderInput}
-          renderItem={renderItem}
-          renderBlockActions={_renderBlockActions}
-          renderCustomMarkers={_renderCustomMarkers}
-          renderPreview={renderPreview}
-          renderBlock={renderBlock}
-          schemaType={schemaTypes.block}
-          selected={selected}
-          setElementRef={setElementRef}
-          value={block as PortableTextTextBlock}
-          anchorIdent={pathToAnchorIdent('input', fullyQualifiedPath)}
-        >
-          {children}
-        </TextBlock>
+        <TextBlockShell attributes={attributes} block={block} path={blockPath}>
+          <BlockDropIndicator path={blockPath} edge="start" />
+          <TextBlock
+            floatingBoundary={floatingBoundary}
+            focused={blockFocused}
+            isFullscreen={isFullscreen}
+            onItemClose={onItemClose}
+            onItemOpen={onItemOpen}
+            onItemRemove={onItemRemove}
+            onPathFocus={onPathFocus}
+            path={fullyQualifiedPath}
+            readOnly={readOnly}
+            referenceBoundary={scrollElement}
+            renderAnnotation={renderAnnotation}
+            renderField={renderField}
+            renderInlineBlock={renderInlineBlock}
+            renderInput={renderInput}
+            renderItem={renderItem}
+            renderBlockActions={_renderBlockActions}
+            renderCustomMarkers={_renderCustomMarkers}
+            renderPreview={renderPreview}
+            renderBlock={renderBlock}
+            schemaType={schemaTypes.block}
+            selected={selected}
+            setElementRef={setElementRef}
+            value={block}
+            anchorIdent={pathToAnchorIdent('input', fullyQualifiedPath)}
+            relativePath={blockPath}
+          >
+            {inner}
+          </TextBlock>
+          <BlockDropIndicator path={blockPath} edge="end" />
+        </TextBlockShell>
       )
     },
     [
@@ -203,51 +239,51 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     ],
   )
 
-  const renderObjectBlock = useCallback(
-    (blockProps: EditorBlockRenderProps) => {
-      const {
-        focused: blockFocused,
-        path: blockPath,
-        selected: blockSelected,
-        schemaType: blockSchemaType,
-        value: blockValue,
-      } = blockProps
-      const sanitySchemaType = schemaTypes.blockObjects.find(
-        (type) => type.name === blockSchemaType.name,
+  const renderBlockObject = useCallback(
+    (blockProps: BlockObjectRenderProps) => {
+      const {attributes, focused: blockFocused, node, path: blockPath, selected} = blockProps
+      const sanitySchemaType: ObjectSchemaType | undefined = schemaTypes.blockObjects.find(
+        (type) => type.name === node._type,
       )
       if (!sanitySchemaType) {
-        // This should never happen
-        throw new Error(
-          `Could not find Sanity schema type for block object: ${blockSchemaType.name}`,
-        )
+        // `schemaTypes.blockObjects` lists only the array's top-level object
+        // types, so a type defined deeper (e.g. inside a container) isn't here.
+        throw new Error(`Could not find Sanity schema type for block object: ${node._type}`)
       }
       return (
-        <BlockObject
-          floatingBoundary={floatingBoundary}
-          focused={blockFocused}
-          isFullscreen={isFullscreen}
-          onItemClose={onItemClose}
-          onItemOpen={onItemOpen}
-          onItemRemove={onItemRemove}
-          onPathFocus={onPathFocus}
-          path={path.concat(blockPath)}
-          readOnly={readOnly}
-          referenceBoundary={scrollElement}
-          relativePath={blockPath}
-          renderAnnotation={renderAnnotation}
-          renderBlock={renderBlock}
-          renderBlockActions={_renderBlockActions}
-          renderCustomMarkers={_renderCustomMarkers}
-          renderField={renderField}
-          renderInlineBlock={renderInlineBlock}
-          renderInput={renderInput}
-          renderItem={renderItem}
-          renderPreview={renderPreview}
-          schemaType={sanitySchemaType}
-          selected={blockSelected}
-          setElementRef={setElementRef}
-          value={blockValue}
-        />
+        <div {...attributes}>
+          <BlockDropIndicator path={blockPath} edge="start" />
+          {blockProps.children}
+          <div contentEditable={false} draggable={!readOnly}>
+            <BlockObject
+              floatingBoundary={floatingBoundary}
+              focused={blockFocused}
+              isFullscreen={isFullscreen}
+              onItemClose={onItemClose}
+              onItemOpen={onItemOpen}
+              onItemRemove={onItemRemove}
+              onPathFocus={onPathFocus}
+              path={path.concat(blockPath)}
+              readOnly={readOnly}
+              referenceBoundary={scrollElement}
+              relativePath={blockPath}
+              renderAnnotation={renderAnnotation}
+              renderBlock={renderBlock}
+              renderBlockActions={_renderBlockActions}
+              renderCustomMarkers={_renderCustomMarkers}
+              renderField={renderField}
+              renderInlineBlock={renderInlineBlock}
+              renderInput={renderInput}
+              renderItem={renderItem}
+              renderPreview={renderPreview}
+              schemaType={sanitySchemaType}
+              selected={selected}
+              setElementRef={setElementRef}
+              value={node}
+            />
+          </div>
+          <BlockDropIndicator path={blockPath} edge="end" />
+        </div>
       )
     },
     [
@@ -274,71 +310,49 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     ],
   )
 
-  // This is the function that is sent to PortableTextEditor's renderBlock callback
-  const editorRenderBlock = useCallback(
-    (blockProps: EditorBlockRenderProps) => {
-      const {value: block} = blockProps
-      const isTextBlock = block._type === schemaTypes.block.name
-      if (isTextBlock) {
-        return renderTextBlock(blockProps)
-      }
-      return renderObjectBlock(blockProps)
-    },
-    [schemaTypes.block.name, renderObjectBlock, renderTextBlock],
-  )
-
-  // This is the function that is sent to PortableTextEditor's renderChild callback
-  const editorRenderChild = useCallback(
-    (childProps: EditorChildRenderProps) => {
-      const {
-        children,
-        focused: childFocused,
-        path: childPath,
-        selected,
-        schemaType: childSchemaType,
-        value: child,
-      } = childProps
-      const isSpan = child._type === schemaTypes.span.name
-      if (isSpan) {
-        return children
-      }
-      const sanitySchemaType = schemaTypes.inlineObjects.find(
-        (type) => type.name === childSchemaType.name,
+  const renderInlineObject = useCallback(
+    (childProps: InlineObjectRenderProps) => {
+      const {attributes, focused: childFocused, node, path: childPath, selected} = childProps
+      const sanitySchemaType: ObjectSchemaType | undefined = schemaTypes.inlineObjects.find(
+        (type) => type.name === node._type,
       )
       if (!sanitySchemaType) {
-        // This should never happen
-        throw new Error(
-          `Could not find Sanity schema type for inline object: ${childSchemaType.name}`,
-        )
+        // `schemaTypes.inlineObjects` lists only the array's top-level inline
+        // types, so a type defined deeper (e.g. inside a container) isn't here.
+        throw new Error(`Could not find Sanity schema type for inline object: ${node._type}`)
       }
       return (
-        <InlineObject
-          floatingBoundary={floatingBoundary}
-          focused={childFocused}
-          onItemClose={onItemClose}
-          onItemOpen={onItemOpen}
-          onPathFocus={onPathFocus}
-          path={path.concat(childPath)}
-          readOnly={readOnly}
-          referenceBoundary={scrollElement}
-          relativePath={childPath}
-          renderAnnotation={renderAnnotation}
-          renderBlock={renderBlock}
-          renderCustomMarkers={renderCustomMarkers}
-          renderField={renderField}
-          renderInlineBlock={renderInlineBlock}
-          renderInput={renderInput}
-          renderItem={renderItem}
-          renderPreview={renderPreview}
-          schemaType={sanitySchemaType}
-          selected={selected}
-          setElementRef={setElementRef}
-          value={child}
-        />
+        <span {...attributes}>
+          {childProps.children}
+          <span draggable={!readOnly} style={{display: 'inline-block'}}>
+            <InlineObject
+              floatingBoundary={floatingBoundary}
+              focused={childFocused}
+              onItemClose={onItemClose}
+              onItemOpen={onItemOpen}
+              onPathFocus={onPathFocus}
+              path={path.concat(childPath)}
+              readOnly={readOnly}
+              referenceBoundary={scrollElement}
+              relativePath={childPath}
+              renderAnnotation={renderAnnotation}
+              renderBlock={renderBlock}
+              renderCustomMarkers={renderCustomMarkers}
+              renderField={renderField}
+              renderInlineBlock={renderInlineBlock}
+              renderInput={renderInput}
+              renderItem={renderItem}
+              renderPreview={renderPreview}
+              schemaType={sanitySchemaType}
+              selected={selected}
+              setElementRef={setElementRef}
+              value={node}
+            />
+          </span>
+        </span>
       )
     },
     [
-      schemaTypes.span.name,
       schemaTypes.inlineObjects,
       floatingBoundary,
       onItemClose,
@@ -357,6 +371,17 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderPreview,
       setElementRef,
     ],
+  )
+
+  // Stable reference: `NodePlugin` re-runs its registration effect when
+  // `nodes` changes by reference.
+  const catchAllNodes = useMemo<RegistrableNode[]>(
+    () => [
+      defineTextBlock({type: '*', render: renderTextBlock}),
+      defineBlockObject({type: '*', render: renderBlockObject}),
+      defineInlineObject({type: '*', render: renderInlineObject}),
+    ],
+    [renderTextBlock, renderBlockObject, renderInlineObject],
   )
 
   const editorRenderAnnotation = useCallback(
@@ -482,8 +507,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             rangeDecorations={rangeDecorations}
             readOnly={readOnly}
             renderAnnotation={editorRenderAnnotation}
-            renderBlock={editorRenderBlock}
-            renderChild={editorRenderChild}
             setPortalElement={setPortalElement}
             scrollElement={scrollElement}
             setScrollElement={setScrollElement}
@@ -514,8 +537,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       path,
       rangeDecorations,
       editorRenderAnnotation,
-      editorRenderBlock,
-      editorRenderChild,
       scrollElement,
     ],
   )
@@ -546,36 +567,95 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   return (
     <SelectedAnnotationsProvider>
-      <PortalProvider __unstable_elements={portalElements} element={portal.element}>
-        <BoundaryElementProvider element={floatingBoundary}>
-          <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-            <ChangeIndicator
-              disabled={isFullscreen}
-              hasFocus={Boolean(focused)}
-              isChanged={changed}
-              path={path}
-            >
-              <Root
-                data-focused={editorFocused ? '' : undefined}
-                data-read-only={readOnly ? '' : undefined}
-              >
-                <Box data-wrapper="" ref={setWrapperElement}>
-                  <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                    {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
-                    <AnnotationObjectEditModal
-                      focused={focused}
-                      onItemClose={onItemClose}
-                      referenceBoundary={scrollElement}
-                    />
-                    <CombinedAnnotationPopover referenceBoundary={scrollElement} />
-                  </Portal>
-                </Box>
-                <div data-border="" />
-              </Root>
-            </ChangeIndicator>
-          </ActivateOnFocus>
-        </BoundaryElementProvider>
-      </PortalProvider>
+      <DndProvider>
+        <ListIndexProvider>
+          <NodePlugin nodes={catchAllNodes} />
+          <PortalProvider __unstable_elements={portalElements} element={portal.element}>
+            <BoundaryElementProvider element={floatingBoundary}>
+              <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+                <ChangeIndicator
+                  disabled={isFullscreen}
+                  hasFocus={Boolean(focused)}
+                  isChanged={changed}
+                  path={path}
+                >
+                  <Root
+                    data-focused={editorFocused ? '' : undefined}
+                    data-read-only={readOnly ? '' : undefined}
+                  >
+                    <Box data-wrapper="" ref={setWrapperElement}>
+                      <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                        {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                        <AnnotationObjectEditModal
+                          focused={focused}
+                          onItemClose={onItemClose}
+                          referenceBoundary={scrollElement}
+                        />
+                        <CombinedAnnotationPopover referenceBoundary={scrollElement} />
+                      </Portal>
+                    </Box>
+                    <div data-border="" />
+                  </Root>
+                </ChangeIndicator>
+              </ActivateOnFocus>
+            </BoundaryElementProvider>
+          </PortalProvider>
+        </ListIndexProvider>
+      </DndProvider>
     </SelectedAnnotationsProvider>
+  )
+}
+
+function DropIndicator() {
+  return (
+    <div
+      className="pt-drop-indicator"
+      contentEditable={false}
+      style={{
+        position: 'absolute',
+        width: '100%',
+        height: 1,
+        borderBottom: '1px solid currentColor',
+        zIndex: 5,
+      }}
+    >
+      <span />
+    </div>
+  )
+}
+
+function BlockDropIndicator(props: {path: Path; edge: 'start' | 'end'}) {
+  const dropPosition = useDropPosition(props.path)
+  return dropPosition === props.edge ? <DropIndicator /> : null
+}
+
+// Reproduces the list classes and `data-level`/`data-list-index` the engine's
+// own text-block render emits: Studio's CSS keys ordered-list numbering off
+// `[data-level][data-list-index]` and inter-item spacing off `.pt-list-item*`.
+// `data-list-index` comes from `useListIndex`; the new pipeline doesn't expose
+// the engine's list-index map.
+function TextBlockShell(props: {
+  attributes: TextBlockRenderProps['attributes']
+  block: PortableTextTextBlock
+  children: ReactNode
+  path: Path
+}) {
+  const {attributes, block, children, path: blockPath} = props
+  const listIndex = useListIndex(blockPath)
+  // `level` is optional even on list items; default it to 1 so `data-level` is
+  // always present for `Editor.styles`' `[data-level][data-list-index]`
+  // ordered-list counter.
+  const level = block.listItem !== undefined ? (block.level ?? 1) : block.level
+  return (
+    <div
+      {...attributes}
+      className={
+        block.listItem !== undefined ? `pt-list-item pt-list-item-${block.listItem}` : undefined
+      }
+      {...(level !== undefined ? {'data-level': level} : {})}
+      {...(listIndex !== undefined ? {'data-list-index': listIndex} : {})}
+    >
+      {children}
+    </div>
   )
 }
