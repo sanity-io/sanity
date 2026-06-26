@@ -4,8 +4,9 @@ import {Badge, Box, Flex, Text} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {memo} from 'react'
+import {memo, useCallback, useState} from 'react'
 import {IntentLink} from 'sanity/router'
+import {styled} from 'styled-components'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip'
@@ -52,14 +53,57 @@ const MemoReleaseDocumentPreview = memo(
   (prev, next) => prev.item.memoKey === next.item.memoKey && prev.releaseId === next.releaseId,
 )
 
-const MemoDocumentType = memo(
-  function DocumentType({type}: {type: string}) {
-    const schema = useSchema()
-    const schemaType = schema.get(type)
-    return <Text size={1}>{schemaType?.title || 'Not found'}</Text>
-  },
-  (prev, next) => prev.type === next.type,
-)
+/**
+ * Inner span that clips with an ellipsis. Rendered inside a {@link Text} so it inherits
+ * the correct font size, but carries its own overflow CSS because @sanity/ui's
+ * `textOverflow="ellipsis"` prop is inert in this render path.
+ */
+const TruncatedSpan = styled.span`
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+/** @internal - exported for unit testing only */
+export function DocumentType({type}: {type: string}) {
+  const schema = useSchema()
+  const schemaType = schema.get(type)
+  const title = schemaType?.title || 'Not found'
+
+  const [isTruncated, setIsTruncated] = useState(false)
+
+  const refCallback = useCallback((element: HTMLElement | null) => {
+    if (!element) return
+
+    const checkTruncation = () => setIsTruncated(element.scrollWidth > element.clientWidth)
+
+    checkTruncation()
+
+    const observer = new ResizeObserver(checkTruncation)
+    observer.observe(element)
+
+    return () => observer.disconnect()
+  }, [])
+
+  const textElement = (
+    <Text size={1}>
+      <TruncatedSpan ref={refCallback}>{title}</TruncatedSpan>
+    </Text>
+  )
+
+  if (isTruncated) {
+    return (
+      <Tooltip portal content={<Text size={1}>{title}</Text>}>
+        {textElement}
+      </Tooltip>
+    )
+  }
+
+  return textElement
+}
+
+const MemoDocumentType = memo(DocumentType, (prev, next) => prev.type === next.type)
 
 const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentRow> = (t) => ({
   id: 'action',
@@ -110,7 +154,7 @@ export const getDocumentTableColumnDefs: (
   {
     id: 'document._type',
     width: null,
-    style: {minWidth: 100},
+    style: {minWidth: 100, maxWidth: 200},
     sorting: true,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
@@ -119,7 +163,7 @@ export const getDocumentTableColumnDefs: (
     ),
     cell: ({cellProps, datum}) => (
       <Flex align="center" {...cellProps}>
-        <Box paddingX={2}>
+        <Box paddingX={2} style={{minWidth: 0}}>
           {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
         </Box>
       </Flex>
