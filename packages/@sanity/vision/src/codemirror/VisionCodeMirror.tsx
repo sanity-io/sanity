@@ -1,14 +1,37 @@
 import {type Extension} from '@codemirror/state'
-import {useTheme} from '@sanity/ui'
+import {rem, useTheme} from '@sanity/ui'
 import CodeMirror, {
   EditorSelection,
   type ReactCodeMirrorProps,
   type ReactCodeMirrorRef,
 } from '@uiw/react-codemirror'
-import {forwardRef, useCallback, useImperativeHandle, useRef, useState} from 'react'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {forwardRef, type ReactNode, useCallback, useImperativeHandle, useRef, useState} from 'react'
 
 import {useCodemirrorTheme} from './useCodemirrorTheme'
-import {EditorRoot} from './VisionCodeMirror.styled'
+import {
+  contentBorderRightWidthVar,
+  contentPaddingTopVar,
+  editorRoot,
+  linePaddingLeftVar,
+} from './VisionCodeMirror.css'
+
+function EditorRoot({children}: {children: ReactNode}) {
+  const {sanity} = useTheme()
+
+  return (
+    <div
+      className={editorRoot}
+      style={assignInlineVars({
+        [linePaddingLeftVar]: `${rem(sanity.space[3])}`,
+        [contentBorderRightWidthVar]: `${rem(sanity.space[4])}`,
+        [contentPaddingTopVar]: `${rem(sanity.space[5])}`,
+      })}
+    >
+      {children}
+    </div>
+  )
+}
 
 export interface VisionCodeMirrorHandle {
   resetEditorContent: (newContent: string) => void
