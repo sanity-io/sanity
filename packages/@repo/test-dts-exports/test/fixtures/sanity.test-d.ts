@@ -6239,7 +6239,7 @@ describe('sanity', () => {
     expectTypeOf<typeof unstable_useObserveDocument>().not.toBeNever()
   })
   test('unstable_useValuePreview', () => {
-    expectTypeOf<typeof unstable_useValuePreview>().toBeFunction()
+    expectTypeOf<typeof unstable_useValuePreview>().not.toBeNever()
   })
   test('UpdateLiveDocumentEvent', () => {
     expectTypeOf<UpdateLiveDocumentEvent>().toBeObject()
