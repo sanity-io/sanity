@@ -693,6 +693,7 @@ import type {
   getPreviewPaths,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
+  getProjectGrants,
   getProviderTitle,
   getPublishedId,
   getReferencePaths,
@@ -3839,6 +3840,9 @@ describe('sanity', () => {
   })
   test('getPreviewValueWithFallback', () => {
     expectTypeOf<typeof getPreviewValueWithFallback>().toBeFunction()
+  })
+  test('getProjectGrants', () => {
+    expectTypeOf<typeof getProjectGrants>().not.toBeNever()
   })
   test('getProviderTitle', () => {
     expectTypeOf<typeof getProviderTitle>().toBeFunction()
