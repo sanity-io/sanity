@@ -20,10 +20,7 @@ import {type Previewable} from './types'
  * @internal
  * @deprecated use useValuePreview instead
  */
-export function unstable_useValuePreview(args: Parameters<typeof useValuePreview>[0]) {
-  // oxlint-disable-next-line react-hooks/rules-of-hooks -- deprecated wrapper for backwards compatibility
-  return useValuePreview(args)
-}
+export const unstable_useValuePreview = useValuePreview
 
 interface State {
   isLoading: boolean
