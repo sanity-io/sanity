@@ -114,7 +114,7 @@
     "eslint-plugin-i18next": "^6.1.4",
     "eslint-plugin-testing-library": "^7.16.2",
     "eslint-plugin-tsdoc": "^0.5.2",
-    "knip": "^6.17.1",
+    "knip": "^6.18.0",
     "lefthook": "^2.1.9",
     "npm-run-all2": "^9.0.2",
     "only-allow": "^1.2.2",
