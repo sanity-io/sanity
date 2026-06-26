@@ -1750,6 +1750,9 @@ importers:
       speakingurl:
         specifier: ^14.0.1
         version: 14.0.1
+      swr:
+        specifier: ^2.4.1
+        version: 2.4.1(react@19.2.7)
       urlpattern-polyfill:
         specifier: 10.1.0
         version: 10.1.0
@@ -1886,9 +1889,6 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: '@sanity/styled-components@6.1.24(react-dom@19.2.7)(react@19.2.7)'
-      swr:
-        specifier: 2.4.1
-        version: 2.4.1(react@19.2.7)
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
