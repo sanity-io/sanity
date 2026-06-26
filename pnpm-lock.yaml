@@ -1151,6 +1151,9 @@ importers:
       arrify:
         specifier: ^3.0.0
         version: 3.0.0
+      get-it:
+        specifier: ^8.8.0
+        version: 8.8.0
       groq-js:
         specifier: ^1.30.3
         version: 1.30.3
