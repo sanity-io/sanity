@@ -30,6 +30,10 @@ for (const packageName of Object.keys(dependencies)) {
     continue
   }
   for (const [key, value] of Object.entries(packageJson.exports)) {
+    // Skip CSS exports (e.g. `./bundle.css`) as they have no type declarations
+    if (key.endsWith('.css')) {
+      continue
+    }
     if (typeof value === 'object' && 'default' in value) {
       const bareIdentifier = path.join(packageName, key)
       const dtsFilePath = path.join(packageName, value.default).replace(/\.(m|c)?js$/, '.d.ts')
