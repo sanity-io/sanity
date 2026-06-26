@@ -31,10 +31,6 @@
     "mock-browser-env-stub-loader.mjs"
   ],
   "type": "module",
-  "sideEffects": [
-    "*.css",
-    "*.css.ts"
-  ],
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
