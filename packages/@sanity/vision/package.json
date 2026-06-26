@@ -28,10 +28,7 @@
     "lib"
   ],
   "type": "module",
-  "sideEffects": [
-    "*.css",
-    "*.css.ts"
-  ],
+  "sideEffects": true,
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
