@@ -4,7 +4,7 @@ import {Badge, Box, Flex, Text} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {memo, useCallback, useState} from 'react'
+import {memo, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -53,11 +53,7 @@ const MemoReleaseDocumentPreview = memo(
   (prev, next) => prev.item.memoKey === next.item.memoKey && prev.releaseId === next.releaseId,
 )
 
-/**
- * Inner span that clips with an ellipsis. Rendered inside a {@link Text} so it inherits
- * the correct font size, but carries its own overflow CSS because @sanity/ui's
- * `textOverflow="ellipsis"` prop is inert in this render path.
- */
+// Carries its own overflow CSS because @sanity/ui's `textOverflow` prop is inert here.
 const TruncatedSpan = styled.span`
   display: block;
   white-space: nowrap;
@@ -68,27 +64,29 @@ const TruncatedSpan = styled.span`
 /** @internal - exported for unit testing only */
 export function DocumentType({type}: {type: string}) {
   const schema = useSchema()
-  const schemaType = schema.get(type)
-  const title = schemaType?.title || 'Not found'
+  const title = schema.get(type)?.title || 'Not found'
 
+  const spanRef = useRef<HTMLSpanElement>(null)
   const [isTruncated, setIsTruncated] = useState(false)
 
-  const refCallback = useCallback((element: HTMLElement | null) => {
-    if (!element) return
+  // Re-measures on mount, on element resize, and whenever `title` changes - a content
+  // change alone does not resize the box, so the ResizeObserver would otherwise miss it.
+  useEffect(() => {
+    const element = spanRef.current
+    if (element) {
+      const checkTruncation = () => setIsTruncated(element.scrollWidth > element.clientWidth)
+      checkTruncation()
 
-    const checkTruncation = () => setIsTruncated(element.scrollWidth > element.clientWidth)
-
-    checkTruncation()
-
-    const observer = new ResizeObserver(checkTruncation)
-    observer.observe(element)
-
-    return () => observer.disconnect()
-  }, [])
+      const observer = new ResizeObserver(checkTruncation)
+      observer.observe(element)
+      return () => observer.disconnect()
+    }
+    return undefined
+  }, [title])
 
   const textElement = (
     <Text size={1}>
-      <TruncatedSpan ref={refCallback}>{title}</TruncatedSpan>
+      <TruncatedSpan ref={spanRef}>{title}</TruncatedSpan>
     </Text>
   )
 

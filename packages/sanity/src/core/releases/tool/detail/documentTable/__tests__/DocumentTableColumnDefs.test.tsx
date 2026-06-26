@@ -9,8 +9,6 @@ vi.mock('../../../../../hooks', () => ({
   useSchema: vi.fn(),
 }))
 
-// Stub only the Text component so tests run without a styled-components theme context.
-// Use importOriginal so every other @sanity/ui export remains intact.
 vi.mock('@sanity/ui', async (importOriginal) => ({
   ...(await importOriginal()),
   Text: ({children, size: _size}: {children: React.ReactNode; size?: number}) => (
@@ -75,10 +73,14 @@ describe('DocumentType', () => {
     it('renders a tooltip containing the full title when the text is truncated', () => {
       mockUseSchema.mockReturnValue(buildMockSchema('A Very Long Schema Type Title That Overflows'))
 
-      // Override the global ResizeObserver so observe() immediately fires the callback.
-      // Combined with the scrollWidth override below, this puts isTruncated into the true branch.
       const originalResizeObserver = globalThis.ResizeObserver
+      const originalDescriptor = Object.getOwnPropertyDescriptor(
+        HTMLElement.prototype,
+        'scrollWidth',
+      )
 
+      // Fire the observer callback synchronously on observe() and report every element as
+      // wider than its visible box, driving the effect's check into the truncated branch.
       globalThis.ResizeObserver = class {
         private callback: () => void
 
@@ -99,12 +101,6 @@ describe('DocumentType', () => {
         }
       } as unknown as typeof ResizeObserver
 
-      // Make every HTMLElement report as wider-than-visible so the truncation
-      // condition (scrollWidth > clientWidth) is met when the ref callback fires.
-      const originalDescriptor = Object.getOwnPropertyDescriptor(
-        HTMLElement.prototype,
-        'scrollWidth',
-      )
       Object.defineProperty(HTMLElement.prototype, 'scrollWidth', {
         configurable: true,
         get() {
@@ -112,18 +108,20 @@ describe('DocumentType', () => {
         },
       })
 
-      render(<DocumentType type="longType" />)
+      try {
+        render(<DocumentType type="longType" />)
 
-      // Restore before assertions so subsequent tests are not affected.
-      if (originalDescriptor) {
-        Object.defineProperty(HTMLElement.prototype, 'scrollWidth', originalDescriptor)
+        expect(screen.getByTestId('tooltip-wrapper')).toBeInTheDocument()
+        expect(screen.getByTestId('tooltip-content')).toHaveTextContent(
+          'A Very Long Schema Type Title That Overflows',
+        )
+      } finally {
+        // Restore in finally so a thrown assertion cannot leak overrides into later tests.
+        if (originalDescriptor) {
+          Object.defineProperty(HTMLElement.prototype, 'scrollWidth', originalDescriptor)
+        }
+        globalThis.ResizeObserver = originalResizeObserver
       }
-      globalThis.ResizeObserver = originalResizeObserver
-
-      expect(screen.getByTestId('tooltip-wrapper')).toBeInTheDocument()
-      expect(screen.getByTestId('tooltip-content')).toHaveTextContent(
-        'A Very Long Schema Type Title That Overflows',
-      )
     })
   })
 })
