@@ -20,7 +20,7 @@ catalogs:
       specifier: ^7.0.3
       version: 7.0.3
     '@sanity/pkg-utils':
-      specifier: ^10.5.8
+      specifier: ^10.5.7
       version: 10.5.8
     '@sanity/telemetry':
       specifier: ^1.1.0
