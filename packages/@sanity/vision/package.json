@@ -40,11 +40,23 @@
       "monorepo": "./src/index.ts",
       "default": "./lib/index.js"
     },
+    "./bundle.css": {
+      "browser": "./lib/bundle.css",
+      "style": "./lib/bundle.css",
+      "node": "./lib/bundle.css.js",
+      "default": "./lib/bundle.css.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "exports": {
       ".": "./lib/index.js",
+      "./bundle.css": {
+        "browser": "./lib/bundle.css",
+        "style": "./lib/bundle.css",
+        "node": "./lib/bundle.css.js",
+        "default": "./lib/bundle.css.js"
+      },
       "./package.json": "./package.json"
     }
   },

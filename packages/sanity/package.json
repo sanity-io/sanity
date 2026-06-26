@@ -37,37 +37,6 @@
   ],
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "_internal": [
-        "./lib/_internal.d.ts"
-      ],
-      "_singletons": [
-        "./lib/_singletons.d.ts"
-      ],
-      "_createContext": [
-        "./lib/_createContext.d.ts"
-      ],
-      "cli": [
-        "./lib/cli.d.ts"
-      ],
-      "desk": [
-        "./lib/desk.d.ts"
-      ],
-      "migrate": [
-        "./lib/migrate.d.ts"
-      ],
-      "presentation": [
-        "./lib/presentation.d.ts"
-      ],
-      "router": [
-        "./lib/router.d.ts"
-      ],
-      "structure": [
-        "./lib/structure.d.ts"
-      ]
-    }
-  },
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
@@ -124,6 +93,12 @@
       "monorepo": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
+    "./bundle.css": {
+      "browser": "./lib/bundle.css",
+      "style": "./lib/bundle.css",
+      "node": "./lib/bundle.css.js",
+      "default": "./lib/bundle.css.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -139,6 +114,12 @@
       "./structure": "./lib/structure.js",
       "./media-library": "./lib/media-library.js",
       "./migrate": "./lib/migrate.js",
+      "./bundle.css": {
+        "browser": "./lib/bundle.css",
+        "style": "./lib/bundle.css",
+        "node": "./lib/bundle.css.js",
+        "default": "./lib/bundle.css.js"
+      },
       "./package.json": "./package.json"
     }
   },

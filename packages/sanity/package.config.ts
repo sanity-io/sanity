@@ -22,19 +22,6 @@ export default defineConfig({
   // consumer's bundler handles external tree-shaking anyway.
   rollup: {
     treeshake: {moduleSideEffects: true},
-    output: {
-      intro: (chunkInfo) => {
-        /**
-         * TODO: we are avoiding importing the bundle.css file here because it's producing
-         * errors when using `sanity` with node or for server rendering:
-         * `Error: Unknown file extension ".css"`
-         */
-        // if (chunkInfo.isEntry && chunkInfo.name === 'index') {
-        //   return `import './bundle.css'`
-        // }
-        return ''
-      },
-    },
     vanillaExtract: true,
   },
 })
