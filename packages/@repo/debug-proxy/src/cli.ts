@@ -14,6 +14,7 @@ import {createConnectionFlapper} from './connectivity'
 import {createDebugProxy, type ProxyHandler} from './createDebugProxy'
 import {withLatency} from './latency'
 import {createRequestProxy, createSSEProxy} from './proxy'
+import {intermittentServiceErrors} from './requestScenarios'
 import {isGetOrgIdEndpoint, isListenEndpoint} from './routes'
 import {
   dropMutations,
@@ -47,6 +48,10 @@ Options:
                               before forwarding it upstream; a range applies
                               random jitter per request, e.g. --latency 800
                               or --latency 200:1500
+  --error-probability <0..1>  simulate an incident: each request independently
+                              fails with a random 5xx (500/502/503/504) instead
+                              of being forwarded upstream, at this probability
+                              (default: 0)
   --sse-faults                apply the SSE fault scenarios (shuffle, duplicate,
                               latency, reset, drop) to the listener endpoint
   --drop-probability <0..1>   probability a mutation event is dropped
@@ -76,6 +81,7 @@ function parseFlags() {
         'listener-ttl': {type: 'string', default: '0'},
         'flap': {type: 'string'},
         'latency': {type: 'string'},
+        'error-probability': {type: 'string', default: '0'},
         'sse-faults': {type: 'boolean', default: false},
         'drop-probability': {type: 'string', default: '0'},
         'reset-probability': {type: 'string', default: '0'},
@@ -164,6 +170,7 @@ const API_HOST = flags['api-host']
 const LISTENER_TTL_MS = intFlag('listener-ttl', flags['listener-ttl']) * 1000
 const FLAP = flags.flap === undefined ? undefined : flapFlag(flags.flap)
 const LATENCY = flags.latency === undefined ? undefined : latencyFlag(flags.latency)
+const ERROR_PROBABILITY = probabilityFlag('error-probability', flags['error-probability'])
 const ENABLE_SSE_FAULTS = flags['sse-faults']
 const DROPPED_MUTATION_PROBABILITY = probabilityFlag('drop-probability', flags['drop-probability'])
 const RESET_PROBABILITY = probabilityFlag('reset-probability', flags['reset-probability'])
@@ -391,10 +398,15 @@ const flapper = FLAP
     })
   : undefined
 
+// --error-probability sits between the (optional) latency delay and the handler
+// so a faulted request returns its 5xx immediately rather than after the delay.
+const faultRequests = intermittentServiceErrors(ERROR_PROBABILITY)
+
 // Network-level scenarios applied to every handler: --latency delays each
 // request, --flap sits outside it so offline resets stay immediate.
 const withNetworkScenarios = (handler: ProxyHandler): ProxyHandler => {
-  const delayed = LATENCY ? withLatency(handler, LATENCY) : handler
+  const faulted = faultRequests(handler)
+  const delayed = LATENCY ? withLatency(faulted, LATENCY) : faulted
   return flapper ? flapper.wrap(delayed) : delayed
 }
 
@@ -451,5 +463,11 @@ if (LATENCY) {
     LATENCY.minMs === LATENCY.maxMs
       ? `Latency: ${LATENCY.minMs}ms per request`
       : `Latency: ${LATENCY.minMs}–${LATENCY.maxMs}ms per request (random jitter)`,
+  )
+}
+
+if (ERROR_PROBABILITY > 0) {
+  console.info(
+    `Simulated incident: ${Math.round(ERROR_PROBABILITY * 100)}% of requests fail with a random 5xx (500/502/503/504)`,
   )
 }
