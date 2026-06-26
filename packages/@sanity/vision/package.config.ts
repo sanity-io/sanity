@@ -6,22 +6,16 @@ export default defineConfig({
   external: ['sanity'],
   babel: {reactCompiler: true, styledComponents: true},
   reactCompilerOptions: {target: '19'},
+  strictOptions: {
+    ...baseConfig.strictOptions,
+    // pkg-utils injects an `import './bundle.css'` side effect into the entry, so this package
+    // is not side-effect-free. Omitting `sideEffects` (treated as "everything has side effects")
+    // is the correct declaration here and keeps the css import from being tree-shaken away, so
+    // allow it rather than requiring an explicit `sideEffects` field.
+    noImplicitSideEffects: 'off',
+  },
   rollup: {
     treeshake: {moduleSideEffects: true},
-    output: {
-      intro: (chunkInfo) => {
-        /**
-         * TODO: we are avoiding importing the bundle.css file here because it's producing
-         * errors when using `sanity` with node or for server rendering
-         * `Error: Unknown file extension ".css"`
-         */
-        // if (chunkInfo.isEntry && chunkInfo.name === 'index') {
-        //   return `import './bundle.css'`
-        // }
-
-        return ''
-      },
-    },
     vanillaExtract: true,
   },
 })
