@@ -14,6 +14,44 @@ export const customPlugins = defineType({
     },
 
     /**
+     * Focus Test (custom highlight) -- MAIN render pipeline, no clean break
+     */
+    {
+      type: 'array',
+      name: 'focusTest',
+      title: 'Focus Test (custom style/list component)',
+      description:
+        'With the caret in the editor, toggle the Highlight style or the Arrow list; checking whether a consumer `component` override drops editor focus.',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          styles: [
+            {value: 'normal', title: 'Normal'},
+            {
+              value: 'highlight',
+              title: 'Highlight',
+              component: ({children}) => (
+                <span style={{backgroundColor: 'yellow', padding: '0 0.2em'}}>{children}</span>
+              ),
+            },
+          ],
+          lists: [
+            {
+              value: 'arrow',
+              title: 'Arrow',
+              component: ({children}) => (
+                <span>
+                  {'\u2794 '}
+                  {children}
+                </span>
+              ),
+            },
+          ],
+        }),
+      ],
+    },
+
+    /**
      * One-Line Editor
      *
      * Uses the `OneLinePlugin` to restrict the editor to one line of text.
