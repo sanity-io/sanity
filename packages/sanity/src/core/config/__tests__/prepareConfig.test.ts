@@ -1,8 +1,25 @@
+import {createClient} from '@sanity/client'
+import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import type * as SchemaModule from '../../schema'
+import {createSchema} from '../../schema'
+import {createMockAuthStore} from '../../store'
 import {getCollectedConfigWarnings} from '../configWarnings'
 import {prepareConfig} from '../prepareConfig'
+import {SchemaError} from '../SchemaError'
 import {type WorkspaceOptions} from '../types'
+
+// Wrap createSchema in a spy so ordering tests can assert call timing.
+// Using importActual on the small internal schema module (not the full 'sanity'
+// package) is safe and avoids the timeout risk documented in MEMORY.md.
+vi.mock('../../schema', async () => {
+  const actual = await vi.importActual<typeof SchemaModule>('../../schema')
+  return {
+    ...actual,
+    createSchema: vi.fn(actual.createSchema),
+  }
+})
 
 // Minimum viable workspace for prepareConfig — avoids pulling in real
 // schema/client resolution. projectId is randomized per test so the
@@ -189,5 +206,107 @@ describe('prepareConfig — workspace hidden property', () => {
     ])
 
     expect(workspaces.find((w) => w.name === 'callback')?.hidden).toBe(hidden)
+  })
+})
+
+// Build a minimal Sanity client that satisfies resolveSource without making
+// real network requests.
+function createTestClient(projectId: string) {
+  return createClient({
+    projectId,
+    dataset: 'test',
+    apiVersion: '2021-06-07',
+    useCdn: false,
+  })
+}
+
+describe('prepareConfig — deferred schema compilation', () => {
+  const createSchemaSpy = vi.mocked(createSchema)
+
+  beforeEach(() => {
+    createSchemaSpy.mockClear()
+  })
+
+  describe('(a) ordering: createSchema not called until source$ is subscribed', () => {
+    it('does not call createSchema during prepareConfig; calls it exactly once on first subscription', async () => {
+      const projectId = `ordering-${Math.random().toString(36).slice(2)}`
+      const client = createTestClient(projectId)
+      const authStore = createMockAuthStore({client, currentUser: null})
+
+      const {workspaces} = prepareConfig([
+        createWorkspace({name: 'default', projectId, auth: authStore}),
+      ])
+
+      // Schema compile must NOT have run yet — prepareConfig is pre-auth.
+      expect(createSchemaSpy).not.toHaveBeenCalled()
+
+      const sourceObservable = workspaces[0].__internal.sources[0].source
+
+      // First subscription triggers auth.state emission -> getSchema() -> createSchema.
+      await firstValueFrom(sourceObservable)
+
+      expect(createSchemaSpy).toHaveBeenCalledTimes(1)
+
+      // Second subscription reuses the memoized schema; createSchema stays at 1.
+      await firstValueFrom(sourceObservable)
+
+      expect(createSchemaSpy).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('(b) deferred schema error: SchemaError surfaces on source$ instead of synchronously', () => {
+    it('does not throw from prepareConfig when schema types are invalid; source$ errors with SchemaError', async () => {
+      const projectId = `schema-err-${Math.random().toString(36).slice(2)}`
+      const client = createTestClient(projectId)
+      const authStore = createMockAuthStore({client, currentUser: null})
+
+      // A type definition whose name collides with a built-in type triggers a
+      // schema validation error (severity: 'error') in @sanity/schema.
+      const invalidSchemaTypes = [{name: 'object', type: 'object', fields: []}]
+
+      // prepareConfig must NOT throw synchronously even with an invalid schema.
+      const {workspaces} = prepareConfig([
+        createWorkspace({
+          name: 'default',
+          projectId,
+          auth: authStore,
+          schema: {types: invalidSchemaTypes},
+        }),
+      ])
+
+      const sourceObservable = workspaces[0].__internal.sources[0].source
+
+      // Subscribing triggers the deferred compile; the SchemaError must surface.
+      let caughtError: unknown
+      await firstValueFrom(sourceObservable).catch((err) => {
+        caughtError = err
+      })
+
+      expect(caughtError).toBeInstanceOf(SchemaError)
+    })
+  })
+
+  describe('(c) end-to-end: valid workspace resolves Source with expected deferred schema', () => {
+    it('source$ emits a resolved Source whose schema contains the configured document types', async () => {
+      const projectId = `e2e-${Math.random().toString(36).slice(2)}`
+      const client = createTestClient(projectId)
+      const authStore = createMockAuthStore({client, currentUser: null})
+
+      const {workspaces} = prepareConfig([
+        createWorkspace({
+          name: 'default',
+          projectId,
+          auth: authStore,
+          schema: {
+            types: [{name: 'article', type: 'document', fields: [{name: 'title', type: 'string'}]}],
+          },
+        }),
+      ])
+
+      const resolvedSource = await firstValueFrom(workspaces[0].__internal.sources[0].source)
+
+      expect(resolvedSource.schema).toBeDefined()
+      expect(resolvedSource.schema.getTypeNames()).toContain('article')
+    })
   })
 })

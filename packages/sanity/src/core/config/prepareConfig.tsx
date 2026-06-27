@@ -341,35 +341,39 @@ export function prepareConfig(
         })
       }
 
-      const schema = createSchema({
-        name: source.name,
-        types: schemaTypes,
-      })
-
-      const schemaValidationProblemGroups = schema._validation
-      const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
-        msg.problems.some(isError),
-      )
-
-      if (schemaValidationProblemGroups && schemaErrors?.length) {
-        // TODO: consider using the `ConfigResolutionError`
-        throw new SchemaError(schema)
-      }
-
       const auth = getAuthStore(source)
       const i18n = prepareI18n(source)
+
+      // Compile the schema lazily on the first auth emission (post-auth) and
+      // memoize it so re-emissions of auth.state do not trigger recompilation.
+      let compiledSchema: Schema | undefined
+      const getSchema = (): Schema => {
+        if (compiledSchema) return compiledSchema
+        const schema = createSchema({name: source.name, types: schemaTypes})
+        const schemaValidationProblemGroups = schema._validation
+        const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
+          msg.problems.some(isError),
+        )
+        if (schemaValidationProblemGroups && schemaErrors?.length) {
+          // TODO: consider using the `ConfigResolutionError`
+          throw new SchemaError(schema)
+        }
+        compiledSchema = schema
+        return schema
+      }
+
       const source$ = auth.state.pipe(
-        map(({client, authenticated, currentUser}) => {
-          return resolveSource({
+        map(({client, authenticated, currentUser}) =>
+          resolveSource({
             config: source,
             client,
             currentUser,
-            schema,
+            schema: getSchema(),
             authenticated,
             auth,
             i18n,
-          })
-        }),
+          }),
+        ),
         shareReplay(1),
       )
 
@@ -379,7 +383,6 @@ export function prepareConfig(
         dataset: source.dataset,
         title: source.title || startCase(source.name),
         auth,
-        schema,
         i18n: i18n.source,
         source: source$,
       }
@@ -393,7 +396,6 @@ export function prepareConfig(
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
       apiHost: rootSource.apiHost,
-      schema: resolvedSources[0].schema,
       i18n: resolvedSources[0].i18n,
       customIcon: !!rootSource.icon,
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),

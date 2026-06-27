@@ -1109,7 +1109,11 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
    */
   apiHost?: string
   theme: StudioTheme
-  schema: Schema
+  /**
+   * Schema compiled from this workspace's source types. Resolved post-auth
+   * via the source observable; undefined until the first auth emission.
+   */
+  schema?: Schema
   i18n: LocaleSource
   /**
    * @internal
@@ -1122,7 +1126,11 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
       dataset: string
       title: string
       auth: AuthStore
-      schema: Schema
+      /**
+       * Schema compiled from this source's types. Resolved post-auth via the
+       * source observable; undefined until the first auth emission.
+       */
+      schema?: Schema
       i18n: LocaleSource
       source: Observable<Source>
     }>
