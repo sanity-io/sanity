@@ -9,6 +9,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {CorsOriginError} from '../../cors'
 import {_createAuthStore} from '../createAuthStore'
+import {_clearEarlyAuthGlobal, type EarlyAuthProbeEntry} from '../earlyAuthProbe'
 import {type AuthStore} from '../types'
 
 // Mock supportsLocalStorage to return true so createBroadcastStorage uses localStorage.
@@ -786,5 +787,326 @@ describe('createAuthStore: cross-tab sync', () => {
       // can render CorsOriginErrorScreen.
       await expect(firstValueFrom(store.state)).rejects.toBeInstanceOf(CorsOriginError)
     })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Early auth probe integration
+// ---------------------------------------------------------------------------
+
+function seedEarlyAuth(overrides?: Partial<EarlyAuthProbeEntry>): void {
+  const entry: EarlyAuthProbeEntry = {
+    projectId: PROJECT_ID,
+    apiHost: 'api.sanity.io',
+    credential: 'cookie',
+    token: null,
+    startedAt: Date.now(),
+    promise: Promise.resolve({type: 'ok', user: MOCK_USER}),
+    ...overrides,
+  }
+  // @ts-expect-error - window.__sanityEarlyAuth not declared
+  window.__sanityEarlyAuth = entry
+}
+
+describe('early auth probe integration', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+    _clearEarlyAuthGlobal()
+    vi.restoreAllMocks()
+  })
+
+  it('case 1: matching fresh settled ok probe -> getCurrentUser request count is 0; store emits probe user', async () => {
+    let usersMeCallCount = 0
+
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/users/me') {
+            usersMeCallCount += 1
+            return Promise.resolve(MOCK_USER)
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    // Seed a matching, fresh, synchronously-resolved probe
+    seedEarlyAuth({promise: Promise.resolve({type: 'ok', user: MOCK_USER})})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    const state = await waitForState(store, (s) => s.authenticated)
+
+    expect(state.authenticated).toBe(true)
+    expect(state.currentUser).toEqual(MOCK_USER)
+    // Probe was used; no /users/me request should have been made
+    expect(usersMeCallCount).toBe(0)
+  })
+
+  it('case 2: matching settled unauthenticated probe -> store emits authenticated:false, request count 0', async () => {
+    let usersMeCallCount = 0
+
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/users/me') {
+            usersMeCallCount += 1
+            return Promise.resolve(MOCK_USER)
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    seedEarlyAuth({promise: Promise.resolve({type: 'unauthenticated'})})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    const state = await waitForState(store, (s) => !s.authenticated)
+
+    expect(state.authenticated).toBe(false)
+    expect(state.currentUser).toBeNull()
+    expect(usersMeCallCount).toBe(0)
+  })
+
+  it('case 2b: settled ok probe with id-less user ({}) -> falls back to getCurrentUser; malformed body never surfaces', async () => {
+    let usersMeCallCount = 0
+
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/users/me') {
+            usersMeCallCount += 1
+            return Promise.resolve(MOCK_USER)
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    // Probe resolves with a body that looks like ok but has no id — malformed 200 envelope.
+    seedEarlyAuth({promise: Promise.resolve({type: 'ok', user: {}})})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    const state = await waitForState(store, (s) => s.authenticated)
+
+    // The fallback must have fired exactly once
+    expect(usersMeCallCount).toBe(1)
+    // The emitted user must be the real MOCK_USER, never the empty junk object
+    expect(state.currentUser).toEqual(MOCK_USER)
+    expect((state.currentUser as CurrentUser | null)?.id).toBe('mock-user-123')
+  })
+
+  it('case 3: projectId mismatch -> falls back to getCurrentUser, request count 1', async () => {
+    let usersMeCallCount = 0
+
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/users/me') {
+            usersMeCallCount += 1
+            return Promise.resolve(MOCK_USER)
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    // Probe with mismatched projectId
+    seedEarlyAuth({projectId: 'wrong-project'})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    await waitForState(store, (s) => s.authenticated)
+    expect(usersMeCallCount).toBe(1)
+  })
+
+  it('case 4: absent probe -> falls back to getCurrentUser, request count 1', async () => {
+    let usersMeCallCount = 0
+
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/users/me') {
+            usersMeCallCount += 1
+            return Promise.resolve(MOCK_USER)
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    // No probe seeded
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    await waitForState(store, (s) => s.authenticated)
+    expect(usersMeCallCount).toBe(1)
+  })
+
+  it('case 5: pending probe -> fallback fires immediately while probe is still pending; fallback result wins', async () => {
+    let usersMeCallCount = 0
+
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/users/me') {
+            usersMeCallCount += 1
+            return Promise.resolve(MOCK_USER)
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    // A probe promise that never settles — the hedge must fire the fallback anyway
+    const neverSettlingProbe = new Promise<never>(() => {})
+    seedEarlyAuth({promise: neverSettlingProbe})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    // Wait for the store to emit. Since the probe never settles,
+    // the fallback must have fired immediately and won.
+    const state = await waitForState(store, (s) => s.authenticated)
+
+    expect(state.authenticated).toBe(true)
+    expect(state.currentUser).toEqual(MOCK_USER)
+    // Assert the /users/me request was fired while the probe was still pending
+    expect(usersMeCallCount).toBe(1)
+  })
+
+  it('case 5b: pending probe settles with valid user before fallback resolves -> probe wins, /users/me fired exactly once (hedge)', async () => {
+    let usersMeCallCount = 0
+
+    // Deferred probe: starts pending so the store enters the hedge race path.
+    let resolveProbe!: (value: {type: 'ok'; user: typeof MOCK_USER}) => void
+    const probeDeferred = new Promise<{type: 'ok'; user: typeof MOCK_USER}>((resolve) => {
+      resolveProbe = resolve
+    })
+
+    // Fallback that never resolves — probe wins the race.
+    // We still count the call to confirm the hedge fired.
+    let usersMeResolve!: (value: CurrentUser) => void
+    const factoryBlockingFallback = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/users/me') {
+            usersMeCallCount += 1
+            // Block forever — probe wins the race
+            return new Promise<CurrentUser>((resolve) => {
+              usersMeResolve = resolve
+            })
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    seedEarlyAuth({promise: probeDeferred})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factoryBlockingFallback,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    // Subscribe immediately so initial$ starts executing.
+    // The probe is still pending so the store enters the hedge race:
+    // it fires fetchCurrentUser() (incrementing usersMeCallCount) then awaits Promise.race.
+    const statePromise = waitForState(store, (s) => s.authenticated)
+
+    // Flush enough microtasks for initial$ to reach the Promise.race.
+    // initial$ does: await Promise.resolve() x2 (settled-check) + settled check -> PENDING
+    // -> fires fetchCurrentUser -> awaits Promise.race. That's ~5 await hops total.
+    for (let tick = 0; tick < 10; tick++) {
+      await Promise.resolve()
+    }
+
+    // Now /users/me must have been called (hedge fired). Resolve the probe so it wins.
+    expect(usersMeCallCount).toBe(1)
+    resolveProbe({type: 'ok', user: MOCK_USER})
+
+    const state = await statePromise
+
+    expect(state.authenticated).toBe(true)
+    expect(state.currentUser).toEqual(MOCK_USER)
+    // Unblock the fallback promise to avoid dangling promises
+    usersMeResolve(MOCK_USER)
+  })
+
+  it('case 6: pending probe + fallback rejects (CorsOriginError) -> rejection propagates', async () => {
+    const nonAuthError = Object.assign(new Error('Network error'), {
+      statusCode: 0,
+      isNetworkError: true,
+    })
+
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri, withCredentials}: {uri: string; withCredentials?: boolean}) => {
+          if (uri === '/users/me') return Promise.reject(nonAuthError)
+          if (uri === '/ping' && withCredentials === false) return Promise.resolve({})
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    // Never-settling probe: hedge fires fallback; fallback rejects with CorsOriginError
+    const neverSettlingProbe = new Promise<never>(() => {})
+    seedEarlyAuth({promise: neverSettlingProbe})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    // The CorsOriginError rejection must propagate out of initial$
+    await expect(firstValueFrom(store.state)).rejects.toBeInstanceOf(CorsOriginError)
   })
 })
