@@ -6,7 +6,10 @@ import {useObservable} from 'react-rx'
 
 import {useClient, useSchema, useTemplates} from '../hooks'
 import {useTranslation} from '../i18n/hooks/useTranslation'
-import {createDocumentPreviewStore, type DocumentPreviewStore} from '../preview'
+import {
+  createDocumentPreviewStore,
+  type DocumentPreviewStore,
+} from '../preview/documentPreviewStore'
 import {useSource, useWorkspace} from '../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {createComlinkStore} from './comlink/createComlinkStore'

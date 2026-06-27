@@ -2,7 +2,7 @@ import {isBooleanSchemaType, isNumberSchemaType, type SchemaType} from '@sanity/
 import {type ChangeEvent, type FocusEvent, useCallback, useMemo, useRef, useState} from 'react'
 
 import {type FIXME} from '../../../../FIXME'
-import {useCopyPaste} from '../../../../studio'
+import {useCopyPaste} from '../../../../studio/copyPaste/CopyPasteProvider'
 import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
