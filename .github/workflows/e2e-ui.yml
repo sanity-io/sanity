@@ -125,6 +125,10 @@ jobs:
           VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
           # the id is based on the PR number and the workflow run id
           SANITY_E2E_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-{1}-{2}', github.event.number, matrix.project, github.run_id) || vars.SANITY_E2E_DATASET_STAGING }}
+          # the tarball `pnpm add -w` above rewrites the `@sanity/ui` override, so pnpm's
+          # pre-run dependency verification would trigger a frozen install here and fail
+          # with ERR_PNPM_LOCKFILE_CONFIG_MISMATCH
+          npm_config_verify_deps_before_run: "false"
         run: pnpm e2e:setup && pnpm e2e:build
 
   playwright-test:
