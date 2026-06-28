@@ -305,6 +305,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     onFocusPath,
     getFormDocumentValue: getDisplayed,
     displayInlineChanges: router.stickyParams.displayInlineChanges === 'true',
+    isOlderRevision: onOlderRevision,
   })
 
   const actionsVersionType = useMemo(

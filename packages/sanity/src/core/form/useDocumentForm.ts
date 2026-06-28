@@ -96,6 +96,13 @@ interface DocumentFormOptions {
    */
   getFormDocumentValue?: (value: SanityDocumentLike) => SanityDocumentLike
   displayInlineChanges?: boolean
+  /**
+   * Whether the form is displaying a historical revision (e.g. via "Review
+   * changes"). When `true`, the live document's validation markers are not
+   * applied, since they describe the editable draft/published document rather
+   * than the read-only revision being viewed.
+   */
+  isOlderRevision?: boolean
 }
 interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
   /**
@@ -151,6 +158,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     readOnly: readOnlyProp,
     onFocusPath,
     displayInlineChanges,
+    isOlderRevision,
   } = options
   const schema = useSchema()
   const presenceStore = usePresenceStore()
@@ -258,7 +266,12 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     !releaseId,
   )
 
-  const validation = useUnique(validationRaw)
+  // Validation is computed against the live editable document (draft/published/
+  // version). When viewing a historical revision those markers don't describe
+  // what's on screen, so don't surface them on the read-only revision.
+  const validation = useUnique(
+    isOlderRevision ? (EMPTY_ARRAY as ValidationMarker[]) : validationRaw,
+  )
 
   const {previousId: upstreamId} = useDocumentIdStack({
     strict: true,
