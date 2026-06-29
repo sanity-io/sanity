@@ -89,7 +89,7 @@ export function DocumentType({type}: {type: string}) {
       // The late font swap widens the text but not the column-locked box, so the
       // ResizeObserver never fires - re-measure once fonts settle.
       let cancelled = false
-      void document.fonts?.ready.then(() => {
+      void document.fonts?.ready?.then(() => {
         if (!cancelled) checkTruncation()
       })
 
