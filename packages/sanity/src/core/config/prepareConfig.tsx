@@ -21,7 +21,12 @@ import {
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {createSchema} from '../schema'
-import {type AuthStore, createAuthStore, isAuthStore} from '../store'
+import {
+  type AuthStore,
+  createAuthStore,
+  isAuthStore,
+  type RequestFailureDiagnostics,
+} from '../store'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
@@ -269,6 +274,7 @@ export function prepareConfig(
     basePath?: string
     requestHandler?: RequestHandler
     requestErrorChannel?: RequestErrorChannel
+    requestFailureDiagnostics?: RequestFailureDiagnostics
   },
 ): PreparedConfig {
   if (!Array.isArray(config) && 'missingConfigFile' in config) {
@@ -364,6 +370,7 @@ export function prepareConfig(
       const auth = getAuthStore(source, {
         requestHandler: options?.requestHandler,
         requestErrorChannel: options?.requestErrorChannel,
+        requestFailureDiagnostics: options?.requestFailureDiagnostics,
       })
       const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
@@ -428,7 +435,12 @@ function getAuthStore(
   {
     requestHandler,
     requestErrorChannel,
-  }: {requestHandler?: RequestHandler; requestErrorChannel?: RequestErrorChannel},
+    requestFailureDiagnostics,
+  }: {
+    requestHandler?: RequestHandler
+    requestErrorChannel?: RequestErrorChannel
+    requestFailureDiagnostics?: RequestFailureDiagnostics
+  },
 ): AuthStore {
   if (isAuthStore(source.auth)) {
     return source.auth
@@ -443,9 +455,10 @@ function getAuthStore(
     clientFactory: (config) => {
       return _clientFactory({...config, _requestHandler: requestHandler})
     },
-    // Passed as a getter so the channel stays out of the auth-store memo
-    // key (it's unhashable runtime wiring).
+    // Passed as getters so this unhashable runtime wiring stays out of the
+    // auth-store memo key.
     getRequestErrorHandler: () => requestErrorChannel,
+    getRequestFailureDiagnostics: () => requestFailureDiagnostics,
     dataset,
     projectId,
   })

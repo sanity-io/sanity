@@ -21,6 +21,11 @@ import {
 
 import {type AuthConfig} from '../../config/auth/types'
 import {isStaging} from '../../environment/isStaging'
+import {isUnauthorizedError} from '../../studio/requestErrors/classify'
+import {
+  type RequestFailureProbe,
+  type RequestFailureResult,
+} from '../../studio/requestErrors/diagnoseRequestFailure'
 import {type StudioErrorHandler} from '../../studio/requestErrors/types'
 import {canonicalHash} from '../../util/canonicalHash'
 import {
@@ -56,6 +61,16 @@ export interface AuthStoreOptions extends AuthConfig {
    */
   getRequestErrorHandler?: () => StudioErrorHandler | undefined
   /**
+   * Lazily resolves diagnostics for the `/users/me` probe, so it can detect
+   * and report the CORS / missing-project-or-dataset failures the studio
+   * request handler would otherwise catch (the probe bypasses that handler).
+   * Resolved lazily for the same reason as `getRequestErrorHandler`: it's
+   * unhashable runtime wiring that must stay out of the auth-store memo key.
+   *
+   * @internal
+   */
+  getRequestFailureDiagnostics?: () => RequestFailureDiagnostics | undefined
+  /**
    * Retrieves the session ID from the URL hash for the auth callback flow.
    * Called by `handleCallbackUrl` to obtain the session ID that is exchanged
    * for a token or cookie.
@@ -70,24 +85,80 @@ export interface AuthStoreOptions extends AuthConfig {
   consumeHashToken: () => string | undefined
 }
 
+/**
+ * Lets the auth store's `/users/me` probe diagnose and report the failures the
+ * studio request handler would normally catch — but can't here, because the
+ * probe runs on a client with that handler stripped (see {@link getCurrentUser}).
+ *
+ * - `diagnose` — the shared classifier. The client is passed per call rather
+ *   than bound up front, because the auth store builds its own clients
+ *   internally (so there's no single client to bind the probe to).
+ * - `onRequestFailure` — reports a non-`unknown` result to the studio so it
+ *   can take over the screen (CORS / missing project or dataset). Must be
+ *   idempotent: the probe runs inside a retryable thunk, so a recurring
+ *   failure can report the same result more than once.
+ *
+ * @internal
+ */
+export interface RequestFailureDiagnostics {
+  diagnose: (err: unknown, client: SanityClient) => ReturnType<RequestFailureProbe>
+  onRequestFailure: (
+    result: Exclude<RequestFailureResult, {type: 'unknown'}>,
+    client: SanityClient,
+  ) => void
+}
+
 const getCurrentUser = async (
   client: SanityClient,
   tag: string,
   getRequestErrorHandler?: () => StudioErrorHandler | undefined,
+  diagnostics?: RequestFailureDiagnostics,
 ): Promise<CurrentUser | undefined> => {
+  // Probe with the forced-logout middleware stripped off. That middleware
+  // (installed on every studio client) parks 401s forever to drive forced
+  // logout — but this probe IS the auth-state source of truth and handles its
+  // own 401 below. If the middleware parked this request, `fetchUser` would
+  // never settle, so the auth state could never transition to logged-out and
+  // the studio would freeze instead of showing the login screen. The 401 must
+  // reach the `.catch` here, not the channel.
+  //
+  // Guarded for custom `unstable_clientFactory` clients that may not implement
+  // `withConfig` — those don't carry the middleware anyway.
+  const probeClient =
+    typeof client.withConfig === 'function'
+      ? client.withConfig({_requestHandler: undefined})
+      : client
   const fetchUser = () =>
-    client
+    probeClient
       .request({
         uri: '/users/me',
         tag: `users.get-current${tag ? `.${tag}` : ''}`,
       })
-      .catch((err) => {
+      .catch(async (err) => {
         // 401 means the user had some kind of credentials but failed to
         // authenticate — treat it as logged out. Resolved inside the thunk
         // so the request-error channel never sees the 401: at boot this is
         // the normal logged-out state (AuthBoundary shows the login
         // screen), not a session-expiry event to verify and tear down.
-        if (err.statusCode === 401) return undefined
+        if (isUnauthorizedError(err)) return undefined
+
+        // This probe runs on a client with the studio request handler stripped
+        // (so its 401 reaches the branch above), which means it bypasses the
+        // handler's CORS / missing-project-or-dataset detection. Diagnose those
+        // here instead: when the studio can't reach the project because the
+        // origin isn't allowed (CORS — which can change at any time) or the
+        // project/dataset doesn't exist, report it so the studio takes over the
+        // screen, and resolve as logged-out rather than surfacing a generic
+        // network error.
+        if (diagnostics) {
+          const result = await diagnostics.diagnose(err, probeClient)
+          if (result.type !== 'unknown') {
+            // `attempt` (below) may re-run this thunk on a recurring failure, so
+            // this can fire more than once — `onRequestFailure` is idempotent.
+            diagnostics.onRequestFailure(result, probeClient)
+            return undefined
+          }
+        }
         throw err
       })
 
@@ -121,7 +192,19 @@ const getCurrentUser = async (
  * Probe whether a given auth method works by calling /auth/id.
  */
 const probeCurrentUser = (client: SanityClient): Promise<AuthProbeResult> => {
-  return client
+  // Strip the studio's request handler: it parks any 401 (returns a
+  // never-settling observable) so the studio can show the login screen. But
+  // this probe IS an auth-state check and handles its own 401 below — if the
+  // middleware parked it, the probe would never settle, and the post-login
+  // callback (`processCallback`) that awaits it would hang, leaving the studio
+  // stuck instead of transitioning to authenticated. The 401 must reach the
+  // `.catch` here. Guarded for custom clients that may not implement
+  // `withConfig` (those don't carry the middleware anyway).
+  const probeClient =
+    typeof client.withConfig === 'function'
+      ? client.withConfig({_requestHandler: undefined})
+      : client
+  return probeClient
     .request<{id: string; expiry: number}>({
       uri: '/auth/id',
       tag: 'auth.check-id',
@@ -174,6 +257,7 @@ export function _createAuthStore({
   getSessionId,
   consumeHashToken,
   getRequestErrorHandler,
+  getRequestFailureDiagnostics,
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
   // Precedence when initializing auth:
@@ -264,7 +348,12 @@ export function _createAuthStore({
 
   const initial$ = of(initialWorkspaceClient).pipe(
     mergeMap(async (client): Promise<AuthState> => {
-      const currentUser = await getCurrentUser(client, 'initial', getRequestErrorHandler)
+      const currentUser = await getCurrentUser(
+        client,
+        'initial',
+        getRequestErrorHandler,
+        getRequestFailureDiagnostics?.(),
+      )
       const authenticated = Boolean(currentUser?.id)
       // Seed cookieAuthState once from the initial probe result. This moves
       // the channel out of 'pending' so cookieAuthChanged$ starts emitting
@@ -386,7 +475,12 @@ export function _createAuthStore({
         if (!client) {
           return {client: cookieClient, authenticated: false, currentUser: null}
         }
-        const currentUser = await getCurrentUser(client, 'update', getRequestErrorHandler)
+        const currentUser = await getCurrentUser(
+          client,
+          'update',
+          getRequestErrorHandler,
+          getRequestFailureDiagnostics?.(),
+        )
         return {
           client,
           authenticated: Boolean(currentUser?.id),
@@ -570,11 +664,20 @@ export function _createAuthStore({
     // to this request succeeding would leave the studio frozen on a failed
     // logout instead of landing on the login screen.
     //
+    // The parking middleware must be stripped: it catches any 401 and returns
+    // a never-settling observable, so a forced logout reacting to a 401 (the
+    // session is already gone) would hit an `/auth/logout` that also 401s, and
+    // `Promise.allSettled` would never resolve — the exact freeze this branch
+    // fixes for the `/users/me` probe. Guarded for custom clients that may not
+    // implement `withConfig` (those don't carry the middleware anyway).
+    //
     // Both clients are hit: even with loginMethod=token an auth cookie may
     // be set on the project api domain, so both must be destroyed.
+    const stripMiddleware = (c: SanityClient) =>
+      typeof c.withConfig === 'function' ? c.withConfig({_requestHandler: undefined}) : c
     await Promise.allSettled([
-      tokenClient.request({uri: '/auth/logout', method: 'POST'}),
-      cookieClient.request({uri: '/auth/logout', method: 'POST'}),
+      stripMiddleware(tokenClient).request({uri: '/auth/logout', method: 'POST'}),
+      stripMiddleware(cookieClient).request({uri: '/auth/logout', method: 'POST'}),
     ])
 
     // Clear local auth state regardless of the server call's outcome. This
@@ -619,9 +722,12 @@ export const createAuthStore: (options: CreateAuthStoreOptions) => AuthStore = m
       getSessionId: defaultGetSessionId,
       consumeHashToken: defaultConsumeHashToken,
     }),
-  // `getRequestErrorHandler` is a function (not hashable, and not part of
-  // the store's identity — it just looks up UI wiring lazily). Exclude it
-  // from the cache key.
-  ({getRequestErrorHandler: _getRequestErrorHandler, ...options}: CreateAuthStoreOptions) =>
-    canonicalHash(options),
+  // `getRequestErrorHandler` / `getRequestFailureDiagnostics` are functions
+  // (not hashable, and not part of the store's identity — they just look up UI
+  // wiring lazily). Exclude them from the cache key.
+  ({
+    getRequestErrorHandler: _getRequestErrorHandler,
+    getRequestFailureDiagnostics: _getRequestFailureDiagnostics,
+    ...options
+  }: CreateAuthStoreOptions) => canonicalHash(options),
 )
