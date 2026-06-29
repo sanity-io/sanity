@@ -4,7 +4,6 @@ import {isEqual} from '@sanity/util/paths'
 import {type ComponentType, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
-import {pathToString} from '../../../../field'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
@@ -27,7 +26,7 @@ import {type AnnotationEntry, useSelectedAnnotations} from '../contexts/Selected
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
-import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
+import {usePortableTextMemberItem} from '../hooks/usePortableTextMemberItem'
 import {Root, TooltipBox} from './Annotation.styles'
 
 interface AnnotationProps {
@@ -88,7 +87,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
     [path, value._key],
   )
   const [spanElement, setSpanElement] = useState<HTMLSpanElement | null>(null)
-  const memberItem = usePortableTextMemberItem(pathToString(markDefPath))
+  const memberItem = usePortableTextMemberItem(markDefPath)
   const {validation} = useMemberValidation(memberItem?.node)
   const markers = usePortableTextMarkers(path)
 
@@ -222,7 +221,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
   const setRef = useCallback(
     (elm: HTMLSpanElement) => {
       if (memberItem) {
-        setElementRef({key: memberItem.member.key, elementRef: elm})
+        setElementRef({key: memberItem.key, elementRef: elm})
       }
       setSpanElement(elm) // update state here so the reference element is available on first render
     },

@@ -5,18 +5,31 @@ import {
   PortableTextMemberItemElementRefsContext,
 } from 'sanity/_singletons'
 
-import {type PortableTextMemberItem} from '../PortableTextInput'
-
+/**
+ * Update a registered element reference for a Portable Text member.
+ *
+ * `key` is the stringified full path of the member (see
+ * `pathToString`). Path-keyed registration avoids `_key` collisions
+ * between identically-keyed blocks in different containers.
+ *
+ * @internal
+ */
 export type SetPortableTextMemberItemElementRef = ({
   key,
   elementRef,
 }: {
-  key: PortableTextMemberItem['member']['key']
+  key: string
   elementRef: PortableTextEditorElement | null
 }) => void
 
+/**
+ * Returns the current map of registered element refs, keyed by
+ * stringified member path.
+ *
+ * @internal
+ */
 export function usePortableTextMemberItemElementRefs(): Record<
-  PortableTextMemberItem['member']['key'],
+  string,
   PortableTextEditorElement | null | undefined
 > {
   const behaviorSubject = useContext(PortableTextMemberItemElementRefsContext)
@@ -24,6 +37,7 @@ export function usePortableTextMemberItemElementRefs(): Record<
   return useObservable(behaviorSubject, {})
 }
 
+/** @internal */
 export function useSetPortableTextMemberItemElementRef(): SetPortableTextMemberItemElementRef {
   const behaviorSubject = useContext(PortableTextMemberItemElementRefsContext)
 

@@ -45,7 +45,7 @@ import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSc
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
-import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
+import {usePortableTextMemberItem} from '../hooks/usePortableTextMemberItem'
 import {
   BlockActionsInner,
   BlockActionsOuter,
@@ -123,7 +123,7 @@ export function BlockObject(props: BlockObjectProps) {
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
-  const memberItem = usePortableTextMemberItem(pathToString(path))
+  const memberItem = usePortableTextMemberItem(path)
   const isDeleting = useRef<boolean>(false)
 
   const selfSelection = useMemo(
@@ -298,7 +298,7 @@ export function BlockObject(props: BlockObjectProps) {
   const setRef = useCallback(
     (elm: HTMLDivElement) => {
       if (memberItem) {
-        setElementRef({key: memberItem.member.key, elementRef: elm})
+        setElementRef({key: memberItem.key, elementRef: elm})
       }
       setDivElement(elm) // update state here so the reference element is available on first render
     },

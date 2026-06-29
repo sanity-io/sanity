@@ -31,7 +31,7 @@ import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSc
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
-import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
+import {usePortableTextMemberItem} from '../hooks/usePortableTextMemberItem'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -109,7 +109,7 @@ export function TextBlock(props: TextBlockProps) {
   const {Markers} = useFormBuilder().__internal.components
   const markers = usePortableTextMarkers(path)
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
-  const memberItem = usePortableTextMemberItem(pathToString(path))
+  const memberItem = usePortableTextMemberItem(path)
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const {onChange} = useFormCallbacks()
@@ -308,7 +308,7 @@ export function TextBlock(props: TextBlockProps) {
   const setRef = useCallback(
     (elm: HTMLDivElement) => {
       if (memberItem) {
-        setElementRef({key: memberItem.member.key, elementRef: elm})
+        setElementRef({key: memberItem.key, elementRef: elm})
       }
       setDivElement(elm) // update state here so the reference element is available on first render
     },

@@ -1,10 +1,11 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {useBoundaryElement} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
+import {useCallback} from 'react'
 
 import {isEmptyItem} from '../../../../store/utils/isEmptyItem'
 import {usePortableTextMemberItemElementRefs} from '../../contexts/PortableTextMemberItemElementRefsProvider'
-import {usePortableTextMemberItems} from '../../hooks/usePortableTextMembers'
+import {useOpenPortableTextMember} from '../../hooks/useOpenPortableTextMember'
+import {usePortableTextMemberItem} from '../../hooks/usePortableTextMemberItem'
 import {ObjectEditModal} from './ObjectEditModal'
 
 export function AnnotationObjectEditModal(props: {
@@ -14,11 +15,9 @@ export function AnnotationObjectEditModal(props: {
 }) {
   const editor = usePortableTextEditor()
   const boundaryElement = useBoundaryElement().element
-  const portableTextMemberItems = usePortableTextMemberItems()
   const elementRefs = usePortableTextMemberItemElementRefs()
-  const openAnnotation = useMemo(() => {
-    return portableTextMemberItems.find((m) => m.kind === 'annotation' && m.member.open)
-  }, [portableTextMemberItems])
+  const openAnnotation = useOpenPortableTextMember((kind) => kind === 'annotation')
+  const annotationItem = usePortableTextMemberItem(openAnnotation?.member.item.path ?? [])
 
   const onClose = useCallback(() => {
     if (!openAnnotation) {
@@ -34,11 +33,11 @@ export function AnnotationObjectEditModal(props: {
     PortableTextEditor.focus(editor)
   }, [editor, props, openAnnotation])
 
-  if (!openAnnotation) {
+  if (!openAnnotation || !annotationItem) {
     return null
   }
 
-  const elementRef = elementRefs[openAnnotation.member.key]
+  const elementRef = elementRefs[openAnnotation.key]
 
   if (!elementRef) {
     return null
@@ -54,7 +53,7 @@ export function AnnotationObjectEditModal(props: {
       referenceElement={elementRef}
       schemaType={openAnnotation.node.schemaType}
     >
-      {openAnnotation.input}
+      {annotationItem.input}
     </ObjectEditModal>
   )
 }

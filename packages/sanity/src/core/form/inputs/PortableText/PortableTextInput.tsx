@@ -9,9 +9,10 @@ import {
   usePortableTextEditor,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
+import {isInline} from '@portabletext/editor/traversal'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
+import {type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {fromString, startsWith} from '@sanity/util/paths'
@@ -20,6 +21,7 @@ import {
   type ReactNode,
   startTransition,
   useCallback,
+  useContext,
   useEffect,
   useEffectEvent,
   useImperativeHandle,
@@ -27,6 +29,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {PortableTextRootMembersContext} from 'sanity/_singletons'
 
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util'
@@ -37,19 +40,19 @@ import {
 } from '../../__telemetry__/form.telemetry'
 import {useDocumentDivergences} from '../../contexts/DivergencesProvider'
 import {SANITY_PATCH_TYPE} from '../../patch'
-import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
 import {type EditorChange, type PortableTextInputProps} from '../../types'
 import {Compositor} from './Compositor'
 import {useFullscreenPTE} from './contexts/fullscreen'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
-import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {PortableTextMemberSchemaTypesProvider} from './contexts/PortableTextMemberSchemaTypes'
+import {type PortableTextRootMembersContextValue} from './contexts/PortableTextRootMembersContextValue'
+import {PortableTextRootMembersProvider} from './contexts/PortableTextRootMembersProvider'
 import {
   type PortableTextOptimisticDiffApi,
   useOptimisticPortableTextDiff,
 } from './diff/useOptimisticPortableTextDiff'
-import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
+import {resolveMemberAtPath} from './hooks/resolveMemberAtPath'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {PortableTextEditorPlugins} from './object/Plugins'
 import {
@@ -78,13 +81,7 @@ const EditorRefPlugin = forwardRef<PortableTextEditor | null>((_, ref) => {
 EditorRefPlugin.displayName = 'EditorRefPlugin'
 
 /** @internal */
-export interface PortableTextMemberItem {
-  kind: 'annotation' | 'textBlock' | 'objectBlock' | 'inlineObject'
-  key: string
-  member: ArrayOfObjectsItemMember
-  node: ObjectFormNode
-  input?: ReactNode
-}
+export type {PortableTextMemberItem} from './hooks/usePortableTextMemberItem'
 
 /**
  * Input component for editing block content
@@ -246,7 +243,39 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     }
   }, [invalidValue, value])
 
-  const portableTextMemberItems = usePortableTextMemberItemsFromProps(props)
+  // Memoize the root-members context value. Members + render
+  // callbacks come from props directly; consumers query the tree
+  // lazily via path lookup, so this provider doesn't enumerate
+  // anything upfront.
+  const rootMembersValue = useMemo<PortableTextRootMembersContextValue>(
+    () => ({
+      rootMembers: props.members,
+      ptInputPath: path,
+      schemaType,
+      formInputMembers: props.members,
+      renderAnnotation: props.renderAnnotation,
+      renderBlock: props.renderBlock,
+      renderField: props.renderField,
+      renderInlineBlock: props.renderInlineBlock,
+      renderInput: props.renderInput,
+      renderItem: props.renderItem,
+      renderPreview: props.renderPreview,
+      onPathFocus,
+    }),
+    [
+      path,
+      schemaType,
+      props.members,
+      props.renderAnnotation,
+      props.renderBlock,
+      props.renderField,
+      props.renderInlineBlock,
+      props.renderInput,
+      props.renderItem,
+      props.renderPreview,
+      onPathFocus,
+    ],
+  )
 
   // Set active if focused within the editor
   useEffect(() => {
@@ -256,34 +285,28 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     }
   }, [hasFocusWithin])
 
+  // Detection of "this selection landed on a span" is handled by
+  // `EditorChangePlugin` below, which has access to `useEditor()` and
+  // can ask `isInline` directly. Outer scope only needs to know what
+  // focusPath to report.
   const setFocusPathFromEditorSelection = useCallback(
-    (nextSelection: EditorSelection) => {
+    (nextSelection: EditorSelection, isSpanPath: boolean) => {
       const focusPath = nextSelection?.focus.path
       if (!focusPath) return
-
-      // Report focus on spans with `.text` appended to the reported focusPath.
-      // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
-      // The PT-input already supports these paths the other way around.
-      // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
-      // having to change the PTE's internals.
-      const isSpanPath =
-        focusPath.length === 3 && // A span path is always 3 segments long
-        focusPath[1] === 'children' && // Is a child of a block
-        isKeySegment(focusPath[2]) && // Contains the key of the child
-        !portableTextMemberItems.some(
-          (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
-        )
+      // Report focus on spans with `.text` appended. This supports the
+      // Presentation tool which uses span-text paths to refer to
+      // texts.
       const nextFocusPath = isSpanPath ? focusPath.concat(['text']) : focusPath
-
-      // Must called in a transition useTrackFocusPath hook
-      // will try to effectuate a focusPath that is different from what currently is the editor focusPath
+      // Wrap in a transition — useTrackFocusPath will try to
+      // effectuate a focusPath that is different from the editor's
+      // current focusPath.
       startTransition(() => {
         onPathFocus(nextFocusPath, {
           selection: nextSelection,
         })
       })
     },
-    [onPathFocus, portableTextMemberItems],
+    [onPathFocus],
   )
 
   // Handle editor changes
@@ -293,9 +316,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       switch (change.type) {
         case 'mutation':
           onChange(toFormPatches(change.patches))
-          break
-        case 'selection':
-          setFocusPathFromEditorSelection(change.selection)
           break
         case 'focus':
           setIsActive(true)
@@ -323,7 +343,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         onEditorChange(change, editorRef.current)
       }
     },
-    [editorRef, onEditorChange, onChange, setFocusPathFromEditorSelection, onBlur, toast],
+    [editorRef, onEditorChange, onChange, onBlur, toast],
   )
 
   useEffect(() => {
@@ -391,7 +411,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       {(!invalidValue || ignoreValidationError) && (
         <PortableTextMemberSchemaTypesProvider schemaType={schemaType}>
           <PortableTextMarkersProvider markers={markers}>
-            <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
+            <PortableTextRootMembersProvider value={rootMembersValue}>
               <EditorProvider
                 initialConfig={{
                   initialValue: value,
@@ -403,6 +423,8 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 <EditorChangePlugin
                   onChange={handleEditorChange}
                   onOptimisticChange={onOptimisticChange}
+                  onSelectionChange={setFocusPathFromEditorSelection}
+                  ptInputPath={path}
                 />
                 <EditorRefPlugin ref={editorRef} />
                 <PatchesPlugin path={path} />
@@ -428,7 +450,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                   renderCustomMarkers={renderCustomMarkers}
                 />
               </EditorProvider>
-            </PortableTextMemberItemsProvider>
+            </PortableTextRootMembersProvider>
           </PortableTextMarkersProvider>
         </PortableTextMemberSchemaTypesProvider>
       )}
@@ -437,15 +459,26 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
 }
 
 /**
- * Custom PTE plugin that translates `EditorEmittedEvent`s to `EditorChange`s
+ * Custom PTE plugin that translates `EditorEmittedEvent`s to `EditorChange`s.
+ *
+ * Selection events get an extra hop: the plugin asks `isInline` against
+ * the live editor snapshot to discriminate "span text path" (engine has
+ * no form-store member for the leaf) from "inline-object path" (it
+ * does). The verdict goes to `onSelectionChange` so the outer
+ * `onPathFocus` reporter can append `.text` to span paths — without
+ * encoding a shallow-depth shape predicate.
  *
  * @internal
  */
 function EditorChangePlugin(
   props: {
     onChange: (change: EditorChange) => void
+    onSelectionChange: (selection: EditorSelection, isSpanPath: boolean) => void
+    ptInputPath: Path
   } & Pick<PortableTextOptimisticDiffApi, 'onOptimisticChange'>,
 ) {
+  const editor = useEditor()
+  const rootMembersCtx = useContext(PortableTextRootMembersContext)
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
       switch (event.type) {
@@ -506,7 +539,30 @@ function EditorChangePlugin(
           props.onChange(event)
           break
         case 'selection': {
+          // Forward the change to any external consumer.
           props.onChange(event)
+          // Discriminate span-text paths from inline-object paths via
+          // the live snapshot. Spans don't enumerate as form-store
+          // members; inline objects do. The depth-agnostic predicate
+          // is "the focus path resolves to an inline node, AND the
+          // form-store has no member at that path" — true for spans
+          // at any container nesting depth.
+          const focusPath = event.selection?.focus.path
+          let isSpanPath = false
+          if (focusPath) {
+            const snapshot = editor.getSnapshot()
+            if (isInline(snapshot, focusPath)) {
+              const inlineMember = rootMembersCtx
+                ? resolveMemberAtPath(
+                    rootMembersCtx.rootMembers,
+                    rootMembersCtx.ptInputPath,
+                    focusPath,
+                  )
+                : undefined
+              isSpanPath = !inlineMember
+            }
+          }
+          props.onSelectionChange(event.selection, isSpanPath)
           break
         }
         case 'value changed':
@@ -518,7 +574,7 @@ function EditorChangePlugin(
         default:
       }
     },
-    [props],
+    [editor, props, rootMembersCtx],
   )
 
   return <EventListenerPlugin on={handleEditorEvent} />

@@ -9,7 +9,6 @@ import {isEqual} from '@sanity/util/paths'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
-import {pathToString} from '../../../../field/paths'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useChildPresence} from '../../../studio/contexts/Presence'
@@ -28,7 +27,7 @@ import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableText
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
-import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
+import {usePortableTextMemberItem} from '../hooks/usePortableTextMemberItem'
 import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 import {ObjectEditModal} from './modals/ObjectEditModal'
@@ -86,7 +85,7 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const markers = usePortableTextMarkers(path)
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
-  const memberItem = usePortableTextMemberItem(pathToString(path))
+  const memberItem = usePortableTextMemberItem(path)
   const {validation, hasError, hasInfo, hasWarning} = useMemberValidation(memberItem?.node)
   const parentSchemaType = schemaTypes.block
   const hasMarkers = markers.length > 0
@@ -211,7 +210,7 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
   const setRef = useCallback(
     (elm: HTMLDivElement) => {
       if (memberItem) {
-        setElementRef({key: memberItem.member.key, elementRef: elm})
+        setElementRef({key: memberItem.key, elementRef: elm})
       }
       setDivElement(elm) // update state here so the reference element is available on first render
     },
