@@ -307,7 +307,7 @@ const defaultWorkspace = defineConfig({
   },
   beta: {
     variants: {
-      enabled: true,
+      enabled: false,
     },
   },
 })
@@ -474,7 +474,7 @@ export default defineConfig([
     },
     beta: {
       variants: {
-        enabled: true,
+        enabled: false,
       },
     },
   },
