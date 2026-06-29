@@ -4,7 +4,7 @@ import {Badge, Box, Flex, Text} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {memo, useEffect, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -66,26 +66,54 @@ export function DocumentType({type}: {type: string}) {
   const schema = useSchema()
   const title = schema.get(type)?.title || 'Not found'
 
-  const spanRef = useRef<HTMLSpanElement>(null)
+  const elementRef = useRef<HTMLSpanElement | null>(null)
   const [isTruncated, setIsTruncated] = useState(false)
 
-  // Re-measures on mount, on element resize, and whenever `title` changes - a content
-  // change alone does not resize the box, so the ResizeObserver would otherwise miss it.
+  const checkTruncation = useCallback(() => {
+    const element = elementRef.current
+    if (element) setIsTruncated(element.scrollWidth > element.clientWidth)
+  }, [])
+
+  // A callback ref ensures React invokes measurement the moment the node attaches, regardless
+  // of which commit that happens in - avoiding the race where a useEffect fires before the ref
+  // is populated. Returning a cleanup function from the callback is the React 19 mechanism for
+  // disconnecting the observer when the node detaches.
+  const measureRef = useCallback(
+    (element: HTMLSpanElement | null) => {
+      elementRef.current = element
+      if (!element) return undefined
+
+      checkTruncation()
+
+      const observer = new ResizeObserver(checkTruncation)
+      observer.observe(element)
+
+      // Web fonts usually finish loading after the first paint. The font swap widens the
+      // text and triggers the CSS ellipsis, but the span's box stays locked to the column
+      // width - so the ResizeObserver never fires and the overflow would go undetected.
+      let cancelled = false
+      void document.fonts?.ready.then(() => {
+        if (!cancelled) checkTruncation()
+      })
+
+      return () => {
+        cancelled = true
+        observer.disconnect()
+        elementRef.current = null
+      }
+    },
+    [checkTruncation],
+  )
+
+  // A title change rewrites the text without resizing the box, so the ResizeObserver would
+  // miss it - re-measure explicitly when the title changes.
   useEffect(() => {
-    const element = spanRef.current
-    if (!element) return undefined
-
-    const checkTruncation = () => setIsTruncated(element.scrollWidth > element.clientWidth)
     checkTruncation()
-
-    const observer = new ResizeObserver(checkTruncation)
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [title])
+  }, [title, checkTruncation])
 
   const textElement = (
     <Text size={1}>
-      <TruncatedSpan ref={spanRef}>{title}</TruncatedSpan>
+      <TruncatedSpan ref={measureRef}>{title}</TruncatedSpan>
     </Text>
   )
 

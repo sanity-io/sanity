@@ -1,5 +1,5 @@
 import {type Schema} from '@sanity/types'
-import {render, screen} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useSchema} from '../../../../../hooks'
@@ -61,9 +61,8 @@ describe('DocumentType', () => {
     it('does not render a tooltip when the text is not truncated (scrollWidth === clientWidth)', () => {
       mockUseSchema.mockReturnValue(buildMockSchema('Short Title'))
 
-      // The global ResizeObserver mock (from test setup) is a no-op so the callback
-      // never fires. scrollWidth and clientWidth both default to 0 in jsdom,
-      // so isTruncated stays false.
+      // The callback ref measures on mount; scrollWidth and clientWidth both default to 0
+      // in jsdom, so isTruncated stays false and no tooltip is rendered.
       render(<DocumentType type="shortType" />)
 
       expect(screen.queryByTestId('tooltip-wrapper')).not.toBeInTheDocument()
@@ -79,8 +78,9 @@ describe('DocumentType', () => {
         'scrollWidth',
       )
 
-      // Fire the observer callback synchronously on observe() and report every element as
-      // wider than its visible box, driving the effect's check into the truncated branch.
+      // Report every element as wider than its visible box so the measurement lands in the
+      // truncated branch. The ResizeObserver fires its callback on observe() as well, but the
+      // callback ref already measures synchronously on mount.
       globalThis.ResizeObserver = class {
         private callback: () => void
 
@@ -117,6 +117,64 @@ describe('DocumentType', () => {
           Object.defineProperty(HTMLElement.prototype, 'scrollWidth', originalDescriptor)
         }
         globalThis.ResizeObserver = originalResizeObserver
+      }
+    })
+
+    it('re-measures once web fonts load and reveals the overflow', async () => {
+      mockUseSchema.mockReturnValue(buildMockSchema('A Title That Only Overflows Once Fonts Load'))
+
+      const originalDescriptor = Object.getOwnPropertyDescriptor(
+        HTMLElement.prototype,
+        'scrollWidth',
+      )
+      const originalFonts = Object.getOwnPropertyDescriptor(document, 'fonts')
+
+      // The text fits until the web font swaps in: scrollWidth only exceeds clientWidth (0)
+      // after fonts settle. This isolates the fonts.ready re-measure from the mount measure,
+      // which would otherwise see the text as fitting and never render the tooltip.
+      let fontsLoaded = false
+      let resolveFontsReady!: () => void
+      const fontsReady = new Promise<void>((resolve) => {
+        resolveFontsReady = resolve
+      })
+      Object.defineProperty(HTMLElement.prototype, 'scrollWidth', {
+        configurable: true,
+        get() {
+          return fontsLoaded ? 400 : 0
+        },
+      })
+      Object.defineProperty(document, 'fonts', {
+        configurable: true,
+        value: {ready: fontsReady},
+      })
+
+      try {
+        render(<DocumentType type="lateFontType" />)
+
+        // No tooltip on mount - the text still fits.
+        expect(screen.queryByTestId('tooltip-wrapper')).not.toBeInTheDocument()
+
+        // The font swap widens the text, then fonts.ready resolves and the re-measure runs.
+        fontsLoaded = true
+        resolveFontsReady()
+
+        await waitFor(() => {
+          expect(screen.getByTestId('tooltip-wrapper')).toBeInTheDocument()
+        })
+        expect(screen.getByTestId('tooltip-content')).toHaveTextContent(
+          'A Title That Only Overflows Once Fonts Load',
+        )
+      } finally {
+        if (originalDescriptor) {
+          Object.defineProperty(HTMLElement.prototype, 'scrollWidth', originalDescriptor)
+        }
+        if (originalFonts) {
+          Object.defineProperty(document, 'fonts', originalFonts)
+        } else {
+          // jsdom has no `document.fonts` by default; remove the stub we added.
+          // @ts-expect-error -- deleting an optional DOM property in teardown
+          delete document.fonts
+        }
       }
     })
   })
