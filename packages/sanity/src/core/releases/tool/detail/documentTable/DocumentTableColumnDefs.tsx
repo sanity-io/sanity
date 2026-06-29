@@ -73,15 +73,14 @@ export function DocumentType({type}: {type: string}) {
   // change alone does not resize the box, so the ResizeObserver would otherwise miss it.
   useEffect(() => {
     const element = spanRef.current
-    if (element) {
-      const checkTruncation = () => setIsTruncated(element.scrollWidth > element.clientWidth)
-      checkTruncation()
+    if (!element) return undefined
 
-      const observer = new ResizeObserver(checkTruncation)
-      observer.observe(element)
-      return () => observer.disconnect()
-    }
-    return undefined
+    const checkTruncation = () => setIsTruncated(element.scrollWidth > element.clientWidth)
+    checkTruncation()
+
+    const observer = new ResizeObserver(checkTruncation)
+    observer.observe(element)
+    return () => observer.disconnect()
   }, [title])
 
   const textElement = (
@@ -151,8 +150,11 @@ export const getDocumentTableColumnDefs: (
   ...(releaseState === 'archived' || releaseState === 'published' ? [] : [documentActionColumn(t)]),
   {
     id: 'document._type',
-    width: null,
-    style: {minWidth: 100, maxWidth: 200},
+    // Fixed width so the header and body cells agree: the table renders the header row and
+    // each body row as independent flexboxes, so a content-sized column (width: null) settles
+    // at the short header's width in the header row and the long title's width in the body row,
+    // misaligning the two. A fixed width is what every other column here relies on to line up.
+    width: 150,
     sorting: true,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">

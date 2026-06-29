@@ -92,13 +92,9 @@ describe('DocumentType', () => {
           this.callback()
         }
 
-        unobserve(): void {
-          // no-op
-        }
+        unobserve(): void {}
 
-        disconnect(): void {
-          // no-op
-        }
+        disconnect(): void {}
       } as unknown as typeof ResizeObserver
 
       Object.defineProperty(HTMLElement.prototype, 'scrollWidth', {
