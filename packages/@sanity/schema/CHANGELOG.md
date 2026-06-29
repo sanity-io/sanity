@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
+
+### Bug Fixes
+
+* **CLDX-5683:** preserve an explicit empty block decorator set ([#13291](https://github.com/sanity-io/sanity/issues/13291)) ([234029c](https://github.com/sanity-io/sanity/commit/234029c74f57dd1250b9dff173fdbdf43d4207fa))
+* **CLDX-5683:** preserve portable text block decorators in schema descriptor ([#13288](https://github.com/sanity-io/sanity/issues/13288)) ([fa8b84c](https://github.com/sanity-io/sanity/commit/fa8b84cb0734ca75b74719a3b26858aef2cf99d0))
 ## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
 
 ### ⚠ BREAKING CHANGES

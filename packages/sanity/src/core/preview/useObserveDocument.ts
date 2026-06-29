@@ -38,9 +38,8 @@ export function useUnstableObserveDocument<T extends SanityDocument>(
  * @internal
  * @beta
  */
-export const unstable_useObserveDocument = (
+export const unstable_useObserveDocument = function useObserveDocument(
   args: Parameters<typeof useUnstableObserveDocument>,
-) => {
-  // oxlint-disable-next-line react-hooks/rules-of-hooks -- deprecated wrapper for backwards compatibility
+) {
   return useUnstableObserveDocument(...args)
 }

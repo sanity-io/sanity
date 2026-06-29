@@ -8,6 +8,7 @@ import {
   type ArraySchemaType,
   type FieldGroupDefinition,
   type FieldsetDefinition,
+  isSpanSchemaType,
   type ObjectSchemaType,
   type ReferenceSchemaType,
   type Rule as IRule,
@@ -19,10 +20,12 @@ import isObject from 'lodash-es/isObject.js'
 
 import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
+import {isType} from '../manifest/manifestTypeHelpers'
 import {IdleScheduler, type Scheduler, SYNC_SCHEDULER} from './scheduler'
 import {
   type ArrayElement,
   type ArrayTypeDef,
+  type BlockMarks,
   type CommonTypeDef,
   type CoreTypeDef,
   type CyclicMarker,
@@ -335,8 +338,47 @@ function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): Ty
       } satisfies ReferenceTypeDef
     }
     default:
-      return {extends: schemaType.type.name, ...common} satisfies SubtypeDef
+      return {
+        extends: schemaType.type.name,
+        ...common,
+        marks: maybeBlockMarks(schemaType),
+      } satisfies SubtypeDef
   }
+}
+
+/**
+ * Serializes a portable-text block's decorators.
+ *
+ * The generic converter already picks up styles/lists/annotations/inline objects
+ * because they're field-expressed on a compiled block. Decorators are the exception:
+ * they live as `span.decorators` metadata with no field representation, so without
+ * this they'd be dropped from the descriptor entirely.
+ *
+ * They're encoded with the same `convertUnknown` walker used for style/list options,
+ * so the decorator shape (incl. `i18nTitleKey`, and `icon` as a function/jsx marker)
+ * matches how the descriptor serializes every other option list.
+ *
+ * An explicit empty set (`marks.decorators: []`, which disables all decorators) is
+ * preserved as `[]` — it's distinct from a block with no decorators declared, which
+ * compiles to the default set. Collapsing it to `undefined` would make the consumer
+ * fall back to the defaults, silently re-enabling decorators the schema disabled.
+ */
+function maybeBlockMarks(schemaType: SchemaType): BlockMarks | undefined {
+  if (schemaType.jsonType !== 'object' || !isType(schemaType, 'block')) {
+    return undefined
+  }
+
+  const childrenField = (schemaType as ObjectSchemaType).fields?.find(
+    (field) => field.name === 'children',
+  )
+  const childrenOf = (childrenField?.type as ArraySchemaType | undefined)?.of
+  const spanType = childrenOf?.find((memberType) => memberType.name === 'span')
+  if (!spanType || !isSpanSchemaType(spanType)) {
+    return undefined
+  }
+
+  const decorators = convertUnknown(spanType.decorators)
+  return decorators === undefined ? undefined : {decorators}
 }
 
 function maybeString(val: unknown): string | undefined {

@@ -1,6 +1,6 @@
 {
   "name": "@repo/release-notes",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "private": true,
   "description": "Internal tool for updating release-notes",
   "license": "MIT",
@@ -34,7 +34,7 @@
     "@sanity/id-utils": "^1.0.0",
     "@sanity/mutate": "^0.18.1",
     "@sanity/types": "workspace:*",
-    "conventional-changelog": "^7.2.0",
+    "conventional-changelog": "^7.2.1",
     "conventional-changelog-conventionalcommits": "^9.3.1",
     "conventional-commits-parser": "^6.4.0",
     "conventional-recommended-bump": "^11.2.0",
@@ -42,12 +42,12 @@
     "description-to-co-authors": "^0.3.0",
     "lodash-es": "^4.18.1",
     "p-map": "^7.0.4",
-    "semver": "^7.8.4",
+    "semver": "^7.8.5",
     "turndown": "^7.2.4",
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@portabletext/markdown": "^1.4.1",
+    "@portabletext/markdown": "^1.4.2",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",

@@ -176,7 +176,7 @@ export interface ReferringDocumentsOptions {
  *
  * @internal
  */
-function referringDocuments({
+export function referringDocuments({
   documentId,
   versionedClient,
   documentStore,

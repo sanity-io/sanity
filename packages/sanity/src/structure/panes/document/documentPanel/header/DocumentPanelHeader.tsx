@@ -19,6 +19,7 @@ import {
   useFieldActions,
   useTranslation,
   useZIndex,
+  useWorkspace,
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
@@ -104,6 +105,7 @@ export const DocumentPanelHeader = memo(
       documentId,
     } = useDocumentPane()
     const {features} = useStructureTool()
+    const {beta} = useWorkspace()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const {maximizedPane} = useResolvedPanesList()
     const {actions: fieldActions} = useFieldActions()
@@ -124,6 +126,7 @@ export const DocumentPanelHeader = memo(
 
     const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
     const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
+    const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
     const {collapsed, isLast} = usePane()
     // Prevent focus if this is the last (non-collapsed) pane.
@@ -212,19 +215,22 @@ export const DocumentPanelHeader = memo(
             style={{lineHeight: 0, position: 'relative', zIndex: paneHeaderZIndex}}
             borderBottom
           >
-            <Flex gap={3} paddingY={3}>
-              <HorizontalScroller $showGradient={showGradient}>
-                <Flex
-                  flex={1}
-                  gap={1}
-                  overflow="auto"
-                  paddingX={3}
-                  data-testid="document-perspective-list"
-                  ref={scrollContainerRef}
-                >
-                  <DocumentPerspectiveList />
-                </Flex>
-              </HorizontalScroller>
+            <Flex gap={3} paddingY={3} justify="space-between">
+              {!hasDocumentGroupInventory && (
+                <HorizontalScroller $showGradient={showGradient}>
+                  <Flex
+                    flex={1}
+                    gap={1}
+                    overflow="auto"
+                    paddingX={3}
+                    data-testid="document-perspective-list"
+                    ref={scrollContainerRef}
+                  >
+                    <DocumentPerspectiveList />
+                  </Flex>
+                </HorizontalScroller>
+              )}
+              {hasDocumentGroupInventory && <div />}
 
               <Box flex="none" paddingRight={3}>
                 <Flex align="center" gap={1}>

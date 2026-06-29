@@ -36,6 +36,30 @@ export interface CommonTypeDef extends EncodableObject {
   rows?: string
 
   orderings?: ObjectOrdering[]
+
+  /**
+   * Portable-text block marks. Only present on `block` types.
+   *
+   * Styles, lists and annotations are field-expressed on a compiled block (so the
+   * generic walker serializes them as ordinary fields), but decorators are span
+   * metadata with no field representation. They're carried here explicitly so the
+   * descriptor stays consistent with the manifest extractor.
+   */
+  marks?: BlockMarks
+}
+
+/**
+ * Unlike the manifest and userland `marks` (which carry both `decorators` and
+ * `annotations`), the descriptor's `marks` carries only `decorators`. Annotations
+ * are field-expressed on a compiled block (via the `markDefs` field) and so are
+ * already represented in the descriptor — duplicating them here would be redundant.
+ *
+ * Decorators are serialized with the same generic encoder as style/list options, so
+ * they keep extras like `i18nTitleKey` and encode a non-serializable `icon` as a
+ * marker — consistent with how the descriptor serializes every other option list.
+ */
+export type BlockMarks = {
+  decorators: EncodableValue
 }
 
 /** In some scenarios we need to encode special information. */

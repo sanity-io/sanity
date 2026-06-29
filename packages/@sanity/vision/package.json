@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "admin",
@@ -28,10 +28,6 @@
     "lib"
   ],
   "type": "module",
-  "sideEffects": [
-    "*.css",
-    "*.css.ts"
-  ],
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
@@ -40,11 +36,23 @@
       "monorepo": "./src/index.ts",
       "default": "./lib/index.js"
     },
+    "./bundle.css": {
+      "browser": "./lib/bundle.css",
+      "style": "./lib/bundle.css",
+      "node": "./lib/bundle.css.js",
+      "default": "./lib/bundle.css.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "exports": {
       ".": "./lib/index.js",
+      "./bundle.css": {
+        "browser": "./lib/bundle.css",
+        "style": "./lib/bundle.css",
+        "node": "./lib/bundle.css.js",
+        "default": "./lib/bundle.css.js"
+      },
       "./package.json": "./package.json"
     }
   },

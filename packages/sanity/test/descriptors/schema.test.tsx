@@ -2533,6 +2533,27 @@ describe('Block', () => {
     )
     assert(level)
     expect(level.typeDef.extends).toBe('number')
+
+    // Decorators are span metadata (not a field), so they're carried explicitly
+    // on the block typeDef. A default block exposes the default decorator set,
+    // serialized like style/list options (so `i18nTitleKey` is preserved).
+    expect(type.typeDef.marks).toEqual({
+      decorators: [
+        {value: 'strong', title: 'Strong', i18nTitleKey: 'inputs.portable-text.decorator.strong'},
+        {value: 'em', title: 'Italic', i18nTitleKey: 'inputs.portable-text.decorator.emphasis'},
+        {value: 'code', title: 'Code', i18nTitleKey: 'inputs.portable-text.decorator.code'},
+        {
+          value: 'underline',
+          title: 'Underline',
+          i18nTitleKey: 'inputs.portable-text.decorator.underline',
+        },
+        {
+          value: 'strike-through',
+          title: 'Strike',
+          i18nTitleKey: 'inputs.portable-text.decorator.strike-through',
+        },
+      ],
+    })
   })
 
   test('custom settings', async () => {
@@ -2600,6 +2621,27 @@ describe('Block', () => {
     )
     assert(level)
     expect(level.typeDef.extends).toBe('number')
+
+    // Custom decorators replace the defaults and must survive into the descriptor.
+    expect(type.typeDef.marks).toEqual({
+      decorators: [{value: 'weak', title: 'Weak'}],
+    })
+  })
+
+  test('explicit empty decorator set is preserved', async () => {
+    // `marks.decorators: []` disables all decorators and compiles to an empty span
+    // decorator set — distinct from a block with no decorators declared (which gets
+    // the defaults). The descriptor must carry `[]` so a consumer doesn't fall back
+    // to the default set and silently re-enable them.
+    // (justConvertType: the manifest extractor drops empty title/value arrays, so the
+    // manifest round-trip check doesn't apply to this descriptor-only behavior.)
+    const type = await justConvertType({
+      name: 'paragraph',
+      type: 'block',
+      marks: {decorators: []},
+    })
+
+    expect(type.typeDef.marks).toEqual({decorators: []})
   })
 })
 

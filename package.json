@@ -1,6 +1,6 @@
 {
   "name": "sanity-root",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -114,7 +114,7 @@
     "eslint-plugin-i18next": "^6.1.4",
     "eslint-plugin-testing-library": "^7.16.2",
     "eslint-plugin-tsdoc": "^0.5.2",
-    "knip": "^6.17.1",
+    "knip": "^6.18.0",
     "lefthook": "^2.1.9",
     "npm-run-all2": "^9.0.2",
     "only-allow": "^1.2.2",
@@ -127,10 +127,10 @@
     "tsx": "^4.22.4",
     "turbo": "^2.9.18",
     "typedoc": "^0.28.19",
-    "vercel": "^54.14.2",
+    "vercel": "^54.15.0",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@11.8.0",
+  "packageManager": "pnpm@11.9.0",
   "//": "pnpm settings moved to pnpm-workspace.yaml"
 }

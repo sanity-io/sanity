@@ -1,12 +1,9 @@
-import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon, PlayIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, type ReleaseActionComponent} from 'sanity'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
-import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
-import {muxInput} from 'sanity-plugin-mux-input'
 import {imageAssetSource} from 'sanity-test-studio/assetSources'
 import {resolveDocumentActions as documentActions} from 'sanity-test-studio/documentActions'
 import {assistFieldActionGroup} from 'sanity-test-studio/fieldActions/assistFieldActionGroup'
@@ -113,13 +110,10 @@ const defaultConfig = defineConfig({
         lng: -74.1180863,
       },
     }),
-    colorInput(),
     visionTool({
       defaultApiVersion: '2022-08-08',
     }),
-    muxInput({mp4_support: 'standard'}),
     media(),
-    markdownSchema(),
     internationalizedArray({
       languages: [
         {id: 'en', title: 'English'},

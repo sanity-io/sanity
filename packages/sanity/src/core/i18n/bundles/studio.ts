@@ -507,6 +507,92 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'divergence.unresolved-divergence_other':
     '{{count}} unresolved changes in {{versionName}} version',
 
+  /** --- Document inventory --- */
+
+  /** The label used in the feedback dialog asking how easy the document group inventory is to use */
+  'document-group-inventory.feedback.sentiment-label':
+    'How easy or difficult is the new version inventory to use?',
+  /** The label for the input that filters the variants in the document group inventory */
+  'document-group-inventory.filter-string.label': 'Filter {{subject}}',
+  /** The document inventory title (singular) */
+  'document-group-inventory.title': '{{count}} {{subject}}',
+  /** The document inventory title (plural) */
+  'document-group-inventory.title_one': '{{count}} {{subject}}',
+  /** The document inventory title (plural) */
+  'document-group-inventory.title_other': '{{count}} {{subject}}',
+  /** The label text that indicates an item in the document group inventory is currently being viewed */
+  'document-group-inventory.viewing-item-label': 'viewing',
+
+  /** --- Document group --- */
+
+  /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
+  'document-group.delete.cancel-button.text': 'Cancel',
+  /** Used in `document-group.delete.cdr-summary.title` */
+  'document-group.delete.cdr-summary.document-count_one': '1 document',
+  /** Used in `document-group.delete.cdr-summary.title` */
+  'document-group.delete.cdr-summary.document-count_other': '{{count}} documents',
+  /** The text that appears in the subtitle `<summary>` that lists the datasets below the title */
+  'document-group.delete.cdr-summary.subtitle_one': 'Dataset: {{datasets}}',
+  /** The text that appears in the subtitle `<summary>` that lists the datasets below the title */
+  'document-group.delete.cdr-summary.subtitle_other': 'Datasets: {{datasets}}',
+  /** The text that appears in the subtitle `<summary>` that lists the datasets below the title */
+  'document-group.delete.cdr-summary.subtitle_unavailable_one': 'Unavailable dataset',
+  /** The text that appears in the subtitle `<summary>` that lists the datasets below the title */
+  'document-group.delete.cdr-summary.subtitle_unavailable_other': 'Unavailable datasets',
+  /** The text that appears in the title `<summary>` that includes the list of CDRs (singular) */
+  'document-group.delete.cdr-summary.title_one': '{{documentCount}} in another dataset',
+  /** The text that appears in the title `<summary>` that includes the list of CDRs (plural) */
+  'document-group.delete.cdr-summary.title_other': '{{documentCount}} in {{count}} datasets',
+  /** Appears when hovering over the copy button to copy */
+  'document-group.delete.cdr-table.copy-id-button.tooltip': 'Copy ID to clipboard',
+  /** The header for the dataset column in the list of cross-dataset references found */
+  'document-group.delete.cdr-table.dataset.label': 'Dataset',
+  /** The header for the document ID column in the list of cross-dataset references found */
+  'document-group.delete.cdr-table.document-id.label': 'Document ID',
+  /** The toast title when the copy button has been clicked but copying failed */
+  'document-group.delete.cdr-table.id-copied-toast.title-failed': 'Failed to copy document ID',
+  /** The header for the project ID column in the list of cross-dataset references found */
+  'document-group.delete.cdr-table.project-id.label': 'Project ID',
+  /** The text in the "Delete now" button in the confirm delete dialog that confirms the action (singular) */
+  'document-group.delete.confirm-button.text_one': 'Delete (1)',
+  /** The text in the "Delete now" button in the confirm delete dialog that confirms the action (plural) */
+  'document-group.delete.confirm-button.text_other': 'Delete ({{count}})',
+  /** The message shown after deletion fails */
+  'document-group.delete.error.message':
+    'An error occurred while attempting to delete this document. This usually means that there are other documents that refer to it.',
+  /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
+  'document-group.delete.other-reference-count.title_one': '1 other reference not show',
+  /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
+  'document-group.delete.other-reference-count.title_other': '{{count}} other references not shown',
+  /** Text in the tooltip of this component if hovering over the info icon */
+  'document-group.delete.other-reference-count.tooltip':
+    "We can't display metadata for these references due to a missing access token for the related datasets.",
+  /** Appears when unable to render a document preview in the referring document list */
+  'document-group.delete.preview-item.preview-unavailable.subtitle': 'ID: {{documentId}}',
+  /** Appears when unable to render a document preview in the referring document list */
+  'document-group.delete.preview-item.preview-unavailable.title': 'Preview unavailable',
+  /** Tells the user the count of how many other referring documents there are before listing them. (singular) */
+  'document-group.delete.referring-document-count.text_one':
+    '1 document refers to “<DocumentTitle/>”',
+  /** Tells the user the count of how many other referring documents there are before listing them. (plural) */
+  'document-group.delete.referring-document-count.text_other':
+    '{{count}} documents refer to “<DocumentTitle/>”',
+  /** Describes the list of documents that refer to the one trying to be deleted (delete) */
+  'document-group.delete.referring-documents-descriptor.text':
+    'You may not be able to delete “<DocumentTitle/>” because the following documents refer to it:',
+  /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (singular) */
+  'document-group.delete.title_one': 'Delete {{count}} {{subject}}',
+  /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (plural) */
+  'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
+  /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (singular) */
+  'document-group.subject.variant_one': 'variant',
+  /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
+  'document-group.subject.variant_other': 'variants',
+  /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (singular) */
+  'document-group.subject.version_one': 'version',
+  /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
+  'document-group.subject.version_other': 'versions',
+
   /** Label to show in the document footer indicating the creation date of the document */
   'document-status.created': 'Created {{date}}',
 
@@ -1435,15 +1521,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.view-scheduled-drafts': 'View scheduled drafts',
   /** Label for banner when release is scheduled */
   'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
-
-  /** Label for button to show other variants in the document perspective list */
-  'release.chip.button.other-variants_one': '+{{count}} variant',
-  /** Label for button to show other variants in the document perspective list */
-  'release.chip.button.other-variants_other': '+{{count}} variants',
-
-  /** Label for button to show other versions in the document perspective list*/
   'release.chip.button.other-versions_one': '+{{count}} version',
-  /** Label for button to show other versions in the document perspective list */
   'release.chip.button.other-versions_other': '+{{count}} versions',
   /** Label for Draft chip in document header */
   'release.chip.draft': 'Draft',
@@ -1466,9 +1544,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.no-edits': 'No edits',
   /** Label for tooltip in chip when document isn't published */
   'release.chip.tooltip.not-published': 'Not published',
-  'release.chip.tooltip.other-variants_one': 'One variant',
-  'release.chip.tooltip.other-variants_other': '{{count}} variants',
-
   'release.chip.tooltip.other-versions_one': 'One additional version outside of releases',
   'release.chip.tooltip.other-versions_other': '{{count}} additional versions outside of releases',
   /** Label for tooltip in chip with the published date */

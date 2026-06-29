@@ -4,6 +4,7 @@ export * from './components'
 export * from './components/collapseMenu'
 export * from './components/scroll'
 export * from './config'
+export * from './documentGroupInventory'
 export * from './environment'
 export * from './feedback'
 export * from './field'
@@ -97,10 +98,6 @@ export {
   validateDocument,
   type ValidateDocumentOptions,
 } from './validation'
-export {isDocumentInSelectedVariant} from './variants/documents/isDocumentInSelectedVariant'
-export {useVariantDocumentOperations} from './variants/hooks/useVariantDocumentOperations'
-export {getVariantTitle} from './variants/tool/util'
-export {type SystemVariant} from './variants/types'
 export * from './version'
 export {type ReleaseDocument} from '@sanity/client'
 
@@ -113,5 +110,4 @@ export {useDocumentLimitsUpsellContext} from './limits/context/documents/Documen
 export {isDocumentLimitError} from './limits/context/documents/isDocumentLimitError'
 export {useSetVariant} from './perspective/useSetVariant'
 export {ReleaseAvatarIcon} from './releases/components/ReleaseAvatar'
-export {useAllVariants} from './variants/store/useAllVariants'
 export {DEFAULT_ANNOTATIONS, DEFAULT_DECORATORS} from '@sanity/schema'

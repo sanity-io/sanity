@@ -72,7 +72,7 @@ jobs:
       - name: Update npm dist-tags to stable
         run: |
           # Get all published (non-private) packages in the workspace
-          packages=$(pnpm tsx scripts/listPublishedPackages.ts)
+          packages=$(pnpm --silent tsx scripts/listPublishedPackages.ts)
           version="${{ needs.get-version.outputs.version }}"
 
           echo "Using version: $version"

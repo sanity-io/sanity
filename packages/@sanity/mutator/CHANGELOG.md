@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
+
+### Bug Fixes
+
+* **@sanity/mutator:** accept dotted-attribute LHS in filter expressions ([#5313](https://github.com/sanity-io/sanity/issues/5313)) ([#13139](https://github.com/sanity-io/sanity/issues/13139)) ([f08e9c5](https://github.com/sanity-io/sanity/commit/f08e9c54095eecac51012bce9a303159f763e68c))
 ## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
 
 ### ⚠ BREAKING CHANGES

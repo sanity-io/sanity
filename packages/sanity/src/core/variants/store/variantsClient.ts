@@ -1,5 +1,4 @@
-import {type BaseActionOptions, type SanityClient, type SingleActionResult} from '@sanity/client'
-import {type SanityDocumentLike} from '@sanity/types'
+import {type BaseActionOptions, type SanityClient} from '@sanity/client'
 
 import {type EditableSystemVariant} from '../types'
 
@@ -10,9 +9,6 @@ import {type EditableSystemVariant} from '../types'
 export interface VariantDefinitionActionResult {
   transactionId: string
 }
-
-/** Supported bundle targets for variant document creation. Release names are not yet supported. */
-export type VariantDocumentBundleId = undefined | 'drafts'
 
 /**
  * Variant definition action payloads. See ../ACTIONS.md.
@@ -48,30 +44,8 @@ export type VariantDefinitionAction =
   | VariantDefinitionEditAction
   | VariantDefinitionDeleteAction
 
-interface VariantDocumentCreateActionBase {
-  actionType: 'sanity.action.document.variant.create'
-  publishedId: string
-  variantId: string
-  bundleId?: VariantDocumentBundleId
-}
-
-export interface VariantDocumentCreateFromDocumentAction extends VariantDocumentCreateActionBase {
-  document: SanityDocumentLike
-}
-
-export interface VariantDocumentCreateFromBaseAction extends VariantDocumentCreateActionBase {
-  baseId: string
-  ifBaseRevisionId?: string
-}
-
-export type VariantDocumentCreateAction =
-  | VariantDocumentCreateFromDocumentAction
-  | VariantDocumentCreateFromBaseAction
-
-export type VariantAction = VariantDefinitionAction | VariantDocumentCreateAction
-
 /**
- * Temporary client typing until sanity/client exports variant actions.
+ * Temporary client typing until sanity/client exports variant definition actions.
  *
  */
 export interface SanityClientWithVariantsActions extends Omit<SanityClient, 'action'> {
@@ -79,18 +53,10 @@ export interface SanityClientWithVariantsActions extends Omit<SanityClient, 'act
     action: VariantDefinitionAction,
     options?: BaseActionOptions,
   ): Promise<VariantDefinitionActionResult>
-  action(
-    action: VariantDocumentCreateAction,
-    options?: BaseActionOptions,
-  ): Promise<SingleActionResult>
-  action(
-    action: VariantAction,
-    options?: BaseActionOptions,
-  ): Promise<VariantDefinitionActionResult | SingleActionResult>
 }
 
 /**
- * Returns a client whose `action` method accepts variant actions.
+ * Returns a client whose `action` method accepts variant definition actions.
  * Remove once sanity/client exports these action types.
  *
  */

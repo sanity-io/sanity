@@ -38,6 +38,7 @@ export type StudioChangelogEntry = {
   coAuthors: CoAuthor[]
   authorAssociation?: string
   exclude: boolean
+  breaking?: boolean
   hash?: string
   pr?: number
   contents: NormalizedMarkdownBlock[]

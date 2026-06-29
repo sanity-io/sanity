@@ -21,6 +21,18 @@ const LoadingContainer = styled(Flex).attrs({
   height: 110px;
 `
 
+/**
+ * The reference counts known at the point a delete is confirmed, surfaced so
+ * callers can record telemetry about how heavily referenced a document was.
+ *
+ * @internal
+ */
+export interface DeleteReferenceCounts {
+  totalReferenceCount: number
+  internalReferenceCount: number
+  crossDatasetReferenceCount: number
+}
+
 /** @internal */
 export interface ConfirmDeleteDialogProps {
   /**
@@ -39,7 +51,7 @@ export interface ConfirmDeleteDialogProps {
    */
   action?: 'delete' | 'unpublish'
   onCancel: () => void
-  onConfirm: (versions: string[]) => void
+  onConfirm: (versions: string[], referenceCounts: DeleteReferenceCounts) => void
 }
 
 /**
@@ -74,8 +86,12 @@ export function ConfirmDeleteDialog({
   })
 
   const handleConfirm = useCallback(() => {
-    onConfirm(documentVersions)
-  }, [onConfirm, documentVersions])
+    onConfirm(documentVersions, {
+      totalReferenceCount: totalCount,
+      internalReferenceCount: internalReferences?.totalCount ?? 0,
+      crossDatasetReferenceCount: crossDatasetReferences?.totalCount ?? 0,
+    })
+  }, [onConfirm, documentVersions, totalCount, internalReferences, crossDatasetReferences])
 
   return (
     <Dialog

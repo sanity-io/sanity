@@ -89,14 +89,12 @@ export function Resizer(props: {
         onResize(mouseXRef.current - e.pageX)
       }
 
-      const handleMouseUp = () => {
-        window.removeEventListener('mousemove', handleMouseMove)
-        // oxlint-disable-next-line react/react-compiler
-        window.removeEventListener('mouseup', handleMouseUp)
-      }
+      const controller = new AbortController()
+      const handleMouseUp = () => controller.abort()
 
-      window.addEventListener('mousemove', handleMouseMove)
-      window.addEventListener('mouseup', handleMouseUp)
+      const {signal} = controller
+      window.addEventListener('mousemove', handleMouseMove, {signal})
+      window.addEventListener('mouseup', handleMouseUp, {signal})
     },
     [onResize, onResizeStart],
   )

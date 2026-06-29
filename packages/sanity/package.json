@@ -1,6 +1,6 @@
 {
   "name": "sanity",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "keywords": [
     "cms",
@@ -31,43 +31,8 @@
     "mock-browser-env-stub-loader.mjs"
   ],
   "type": "module",
-  "sideEffects": [
-    "*.css",
-    "*.css.ts"
-  ],
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "_internal": [
-        "./lib/_internal.d.ts"
-      ],
-      "_singletons": [
-        "./lib/_singletons.d.ts"
-      ],
-      "_createContext": [
-        "./lib/_createContext.d.ts"
-      ],
-      "cli": [
-        "./lib/cli.d.ts"
-      ],
-      "desk": [
-        "./lib/desk.d.ts"
-      ],
-      "migrate": [
-        "./lib/migrate.d.ts"
-      ],
-      "presentation": [
-        "./lib/presentation.d.ts"
-      ],
-      "router": [
-        "./lib/router.d.ts"
-      ],
-      "structure": [
-        "./lib/structure.d.ts"
-      ]
-    }
-  },
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
@@ -124,6 +89,12 @@
       "monorepo": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
+    "./bundle.css": {
+      "browser": "./lib/bundle.css",
+      "style": "./lib/bundle.css",
+      "node": "./lib/bundle.css.js",
+      "default": "./lib/bundle.css.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -139,6 +110,12 @@
       "./structure": "./lib/structure.js",
       "./media-library": "./lib/media-library.js",
       "./migrate": "./lib/migrate.js",
+      "./bundle.css": {
+        "browser": "./lib/bundle.css",
+        "style": "./lib/bundle.css",
+        "node": "./lib/bundle.css.js",
+        "default": "./lib/bundle.css.js"
+      },
       "./package.json": "./package.json"
     }
   },
@@ -164,21 +141,21 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@isaacs/ttlcache": "^1.4.1",
     "@mux/mux-player-react": "^3.13.0",
-    "@portabletext/editor": "^7.6.2",
-    "@portabletext/html": "^1.0.3",
-    "@portabletext/patches": "^2.0.4",
-    "@portabletext/plugin-markdown-shortcuts": "^8.0.21",
-    "@portabletext/plugin-one-line": "^7.0.21",
-    "@portabletext/plugin-paste-link": "^4.0.21",
-    "@portabletext/plugin-typography": "^8.0.21",
+    "@portabletext/editor": "^7.8.1",
+    "@portabletext/html": "^1.1.0",
+    "@portabletext/patches": "^2.0.5",
+    "@portabletext/plugin-markdown-shortcuts": "^8.0.24",
+    "@portabletext/plugin-one-line": "^7.0.24",
+    "@portabletext/plugin-paste-link": "^4.0.24",
+    "@portabletext/plugin-typography": "^8.0.24",
     "@portabletext/react": "^6.2.0",
-    "@portabletext/sanity-bridge": "^3.1.5",
+    "@portabletext/sanity-bridge": "^3.2.0",
     "@portabletext/to-html": "^5.0.2",
     "@portabletext/toolkit": "^5.0.2",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^1.0.0",
-    "@sanity/cli": "^7.3.0",
+    "@sanity/cli": "^7.4.0",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.6",
     "@sanity/comlink": "^4.0.1",
@@ -200,13 +177,13 @@
     "@sanity/preview-url-secret": "^4.0.7",
     "@sanity/prism-groq": "^1.1.2",
     "@sanity/schema": "workspace:*",
-    "@sanity/sdk": "^2.14.1",
+    "@sanity/sdk": "^2.15.0",
     "@sanity/telemetry": "catalog:",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.3",
-    "@sentry/react": "^10.58.0",
+    "@sentry/react": "^10.59.0",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.3",
     "@xstate/react": "^6.1.0",
@@ -228,7 +205,7 @@
     "mendoza": "^3.0.8",
     "motion": "^12.40.0",
     "nano-pubsub": "^3.0.0",
-    "nanoid": "^5.1.14",
+    "nanoid": "^5.1.15",
     "observable-callback": "^1.0.3",
     "path-to-regexp": "^6.3.0",
     "player.style": "^0.3.4",
@@ -247,14 +224,15 @@
     "rxjs-mergemap-array": "^0.1.0",
     "scroll-into-view-if-needed": "^3.1.0",
     "scrollmirror": "^1.2.4",
-    "semver": "^7.8.4",
+    "semver": "^7.8.5",
     "shallow-equals": "^1.0.0",
     "speakingurl": "^14.0.1",
+    "swr": "^2.4.2",
     "urlpattern-polyfill": "10.1.0",
     "use-device-pixel-ratio": "^1.1.2",
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.6.0",
-    "uuid": "^14.0.0",
+    "uuid": "^14.0.1",
     "web-vitals": "^5.3.0",
     "xstate": "^5.32.1"
   },
@@ -297,7 +275,6 @@
     "rimraf": "catalog:",
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
-    "swr": "2.4.1",
     "tsx": "^4.22.4",
     "vite": "catalog:",
     "vitest": "catalog:",

@@ -1,5 +1,7 @@
 import {TrashIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo, useState} from 'react'
+import {catchError, filter, firstValueFrom, map, of, timeout} from 'rxjs'
 import {
   type DocumentActionComponent,
   getVersionFromId,
@@ -9,17 +11,24 @@ import {
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
+  useDocumentStore,
   useDocumentVersionTypeSortedList,
   useTranslation,
 } from 'sanity'
 
-import {ConfirmDeleteDialog} from '../components'
+import {ConfirmDeleteDialog, type DeleteReferenceCounts} from '../components'
 import {structureLocaleNamespace} from '../i18n'
+import {DocumentDeleted} from './__telemetry__/documentActions.telemetry'
 
 const DISABLED_REASON_TITLE_KEY = {
   NOTHING_TO_DELETE: 'action.delete.disabled.nothing-to-delete',
   NOT_READY: 'action.delete.disabled.not-ready',
 }
+
+// operationEvents switchMaps per document, so a superseding operation drops the
+// delete before it emits an outcome. The telemetry wait is bounded so its
+// subscription is released when no outcome ever arrives.
+const DELETE_OUTCOME_TIMEOUT = 30000
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
@@ -29,6 +38,8 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
   const {delete: deleteOp} = useDocumentOperation(id, type, bundleId)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const documentStore = useDocumentStore()
+  const telemetry = useTelemetry()
 
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -40,13 +51,46 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
   }, [])
 
   const handleConfirm = useCallback(
-    (versions: string[]) => {
+    (versions: string[], referenceCounts: DeleteReferenceCounts) => {
+      const {
+        totalReferenceCount: referenceCount,
+        internalReferenceCount,
+        crossDatasetReferenceCount,
+      } = referenceCounts
+      const referenceInfo = {
+        documentId: id,
+        referenceCount,
+        internalReferenceCount,
+        crossDatasetReferenceCount,
+      }
+
       setConfirmDialogOpen(false)
       setIsDeleting(true)
+
+      telemetry.log(DocumentDeleted, {...referenceInfo, stage: 'confirmed'})
+
+      // Log the result without gating UI state on it. Subscribe before executing
+      // so we don't miss the outcome.
+      void firstValueFrom(
+        documentStore.pair.operationEvents(id, type).pipe(
+          filter((event) => event.op === 'delete'),
+          map((event) => event.type),
+          timeout({first: DELETE_OUTCOME_TIMEOUT}),
+          catchError(() => of('dropped' as const)),
+        ),
+      ).then((outcome) => {
+        if (outcome !== 'dropped') {
+          telemetry.log(DocumentDeleted, {
+            ...referenceInfo,
+            stage: outcome === 'success' ? 'deleted' : 'failed',
+          })
+        }
+      })
+
       deleteOp.execute(versions)
       setIsDeleting(false)
     },
-    [deleteOp],
+    [deleteOp, documentStore.pair, id, telemetry, type],
   )
 
   const handle = useCallback(() => {

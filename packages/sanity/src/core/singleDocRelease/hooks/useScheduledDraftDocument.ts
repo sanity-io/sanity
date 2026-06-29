@@ -3,7 +3,7 @@ import {type PreviewValue, type ValidationMarker} from '@sanity/types'
 
 import {useSchema} from '../../hooks'
 import {unstable_useValuePreview as useValuePreview} from '../../preview/useValuePreview'
-import {useReleaseDocuments} from '../../releases/tool/detail/useReleaseDocuments'
+import {useBundleDocuments} from '../../releases/tool/detail/useBundleDocuments'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 
 /**
@@ -25,7 +25,7 @@ export function useScheduledDraftDocument(
 } {
   const {includePreview = false} = options
   const releaseId = releaseDocumentId ? getReleaseIdFromReleaseDocumentId(releaseDocumentId) : ''
-  const {results: documents, loading, error} = useReleaseDocuments(releaseId)
+  const {results: documents, loading, error} = useBundleDocuments(releaseId)
   const schema = useSchema()
 
   const firstDocument = documents?.[0]?.document

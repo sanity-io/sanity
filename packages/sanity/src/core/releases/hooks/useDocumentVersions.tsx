@@ -53,12 +53,26 @@ const swr = createSWR<{documentIds: string[]}>({maxSize: 100})
 
 /**
  * Fetches the document versions for a given document
+ *
  * @param props - document Id of the document (might include release id)
  * @returns - data: document versions, loading, errors
  * @hidden
  * @beta
  */
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
+  const observable = useDocumentVersionsObservable(props)
+  return useObservable(observable, INITIAL_VALUE)
+}
+
+/**
+ * Creates an observable that emits the document versions for a given document.
+ *
+ * @hidden
+ * @beta
+ */
+export function useDocumentVersionsObservable(
+  props: DocumentPerspectiveProps,
+): Observable<DocumentPerspectiveState> {
   const {documentId} = props
   const publishedId = getPublishedId(documentId)
 
@@ -93,9 +107,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
     )
   }, [dataset, documentPreviewStore, projectId, publishedId, releases])
 
-  const results = useObservable(observable, INITIAL_VALUE)
-
-  return results
+  return observable
 }
 
 /**

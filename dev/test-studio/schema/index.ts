@@ -111,15 +111,11 @@ import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
 import {documentInternationalizationTest} from './externalPlugins/documentInternationalization'
 import internationalizedArray from './externalPlugins/internationalizedArray'
-import markdown from './externalPlugins/markdown'
-import mux from './externalPlugins/mux'
 import house from './house'
 import playlist from './playlist'
 import playlistTrack from './playlistTrack'
 import code from './plugins/code'
-import color from './plugins/color'
 import geopoint from './plugins/geopoint'
-import {hotspot, hotspotArrayTest} from './plugins/hotspotArray'
 import species from './species'
 import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
 import booleans from './standard/booleans'
@@ -336,14 +332,9 @@ export function createSchemaTypes(projectId: string) {
     code,
     // @todo temporary, until code input is v3 compatible
     codeInputType,
-    color,
     geopoint,
-    hotspot,
-    hotspotArrayTest,
 
     // Test documents with 3rd party plugin inputs
-    markdown,
-    mux,
     internationalizedArray,
     documentInternationalizationTest,
     // Other documents

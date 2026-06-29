@@ -66,10 +66,6 @@ const variantsLocaleStrings = {
   'detail.documents.table.type': 'Type',
   /** Version column header for variant document table. */
   'detail.documents.table.version': 'Version',
-  /** Version chip label for a document that belongs to the published bundle. */
-  'detail.documents.table.version.published': 'Published',
-  /** Version chip label for a document that belongs to the drafts bundle. */
-  'detail.documents.table.version.drafts': 'Drafts',
   /** Description for the missing Variant detail page. */
   'detail.not-found.description': 'The requested variant could not be found.',
   /** Title for the missing Variant detail page. */
