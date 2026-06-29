@@ -94,7 +94,6 @@
     "packages/@sanity/vision": {
       "entry": ["package.config.ts"],
       "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": ["babel-plugin-styled-components"],
     },
     "packages/@sanity/util": {
       "entry": ["src/_exports/*.ts", "package.config.ts"],

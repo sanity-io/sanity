@@ -201,7 +201,14 @@ export function VisionGuiHeader({
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel>
                   {t('query.url')}&nbsp;
-                  <QueryCopyLink onClick={handleCopyUrl}>
+                  <QueryCopyLink
+                    href={url}
+                    onClick={(event) => {
+                      // This is a copy-to-clipboard action, not a navigation
+                      event.preventDefault()
+                      handleCopyUrl()
+                    }}
+                  >
                     [{t('action.copy-url-to-clipboard')}]
                   </QueryCopyLink>
                 </StyledLabel>

@@ -58,7 +58,7 @@ export function VisionGuiResult({
           flex={1}
           overflow="hidden"
           tone={error ? 'critical' : 'default'}
-          $isInvalid={Boolean(error)}
+          isInvalid={Boolean(error)}
         >
           <Result overflow="auto">
             <InputBackgroundContainer>

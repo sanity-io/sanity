@@ -19,14 +19,22 @@ import {
   useToast,
 } from '@sanity/ui'
 import isEqual from 'lodash-es/isEqual.js'
-import {type ReactElement, useCallback, useState} from 'react'
+import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
-import {FixedHeader, ScrollContainer} from './QueryRecall.styled'
+import {fixedHeader, scrollContainer} from './QueryRecall.css'
 import {type ParsedUrlState} from './VisionGui'
 import {StyledLabel} from './VisionGui.styled'
+
+function FixedHeader(props: ComponentProps<typeof Stack>) {
+  return <Stack {...props} className={fixedHeader} />
+}
+
+function ScrollContainer(props: ComponentProps<typeof Box>) {
+  return <Box {...props} className={scrollContainer} />
+}
 
 export function QueryRecall({
   url,

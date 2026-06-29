@@ -1,13 +1,56 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
 import {LinkIcon} from '@sanity/icons'
-import {Code} from '@sanity/ui'
+import {Code, rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import LRU from 'quick-lru'
+import {type ReactNode} from 'react'
 import {useDataset} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
-import {ResultViewWrapper} from './ResultView.styled'
+import {
+  codeFamilyVar,
+  codeFontSizeVar,
+  codeLineHeightVar,
+  resultViewWrapper,
+  space0Var,
+  space2Var,
+  space4HalfVar,
+  space4Var,
+  syntaxBooleanVar,
+  syntaxConstantVar,
+  syntaxNumberVar,
+  syntaxPropertyVar,
+  syntaxStringVar,
+} from './ResultView.css'
 
 const lru = new LRU({maxSize: 50000})
+
+function ResultViewWrapper({children}: {children: ReactNode}) {
+  const {color, font, space} = useThemeV2()
+  const codeSize = font.code.sizes[2]
+
+  return (
+    <div
+      className={resultViewWrapper}
+      style={assignInlineVars({
+        [codeFamilyVar]: font.code.family,
+        [codeFontSizeVar]: `${codeSize.fontSize}px`,
+        [codeLineHeightVar]: `${codeSize.lineHeight}px`,
+        [space0Var]: `${rem(space[0])}`,
+        [space2Var]: `${rem(space[2])}`,
+        [space4Var]: `${rem(space[4])}`,
+        [space4HalfVar]: `${rem(space[4] / 2)}`,
+        [syntaxPropertyVar]: color.syntax.property,
+        [syntaxConstantVar]: color.syntax.constant,
+        [syntaxStringVar]: color.syntax.string,
+        [syntaxBooleanVar]: color.syntax.boolean,
+        [syntaxNumberVar]: color.syntax.number,
+      })}
+    >
+      {children}
+    </div>
+  )
+}
 
 export function ResultView(props: {data: unknown; datasetName: string}): React.JSX.Element {
   const {data, datasetName} = props
