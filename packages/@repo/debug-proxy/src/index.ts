@@ -31,6 +31,7 @@ export {
   isAuthEndpoint,
   isGetOrgIdEndpoint,
   isListenEndpoint,
+  isLogoutEndpoint,
   urlIncludes,
 } from './routes'
 export {

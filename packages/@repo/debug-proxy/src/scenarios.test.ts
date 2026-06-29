@@ -53,8 +53,8 @@ describe('sendReset', () => {
 
 type FakeRes = {head?: {status: number; headers: Record<string, unknown>}; body?: string}
 
-function fakeReq(method: string, origin?: string): ProxyRequest {
-  return {method, headers: origin ? {origin} : {}} as unknown as ProxyRequest
+function fakeReq(method: string, url = '/v1/users/me', origin?: string): ProxyRequest {
+  return {method, url, headers: origin ? {origin} : {}} as unknown as ProxyRequest
 }
 
 function fakeRes(): {res: ProxyResponse; captured: FakeRes} {
@@ -118,7 +118,87 @@ describe('expiredToken', () => {
       () => true,
     )
 
-    handler(fakeReq('OPTIONS', 'https://app.localhost'), fakeRes().res, target)
+    handler(fakeReq('OPTIONS', '/v1/users/me', 'https://app.localhost'), fakeRes().res, target)
+    expect(forwarded).toBe(true)
+  })
+
+  test('answers logout with a 204 so the session can still be torn down', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('POST', '/vX/auth/logout'), res, target)
+
+    expect(forwarded).toBe(false)
+    expect(captured.head?.status).toBe(204)
+    expect(captured.body).toBeUndefined()
+  })
+
+  test('never forwards logout upstream, even before expiry, so real credentials survive', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => false,
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('POST', '/vX/auth/logout'), res, target)
+
+    expect(forwarded).toBe(false)
+    expect(captured.head?.status).toBe(204)
+    expect(captured.body).toBeUndefined()
+  })
+
+  test('forwards /auth/fetch upstream even while expired, so re-login can succeed', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    handler(fakeReq('GET', '/v1/auth/fetch?sid=abc'), fakeRes().res, target)
+    expect(forwarded).toBe(true)
+  })
+
+  test('invokes onReauthenticated on a /auth/fetch token exchange', () => {
+    let reauthenticated = 0
+    const handler = expiredToken(
+      () => ({unsubscribe: () => {}}) as never,
+      () => true,
+      {onReauthenticated: () => (reauthenticated += 1)},
+    )
+
+    handler(fakeReq('GET', '/v1/auth/fetch?sid=abc'), fakeRes().res, target)
+    expect(reauthenticated).toBe(1)
+
+    // a non-auth-fetch request must not re-arm the timer
+    handler(fakeReq('GET', '/v1/users/me'), fakeRes().res, target)
+    expect(reauthenticated).toBe(1)
+  })
+
+  test('forwards public auth endpoints (e.g. /auth/providers) instead of 401-ing', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    handler(fakeReq('GET', '/v1/auth/providers'), fakeRes().res, target)
     expect(forwarded).toBe(true)
   })
 })
