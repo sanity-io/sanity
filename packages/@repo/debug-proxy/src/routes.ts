@@ -25,6 +25,16 @@ export function isGetOrgIdEndpoint(): RouteMatcher {
   return urlIncludes('get-org-id')
 }
 
+/**
+ * Match the endpoints the studio uses to establish/refresh auth state: the
+ * `/users/me` probe that decides whether the session is valid, and the
+ * `/auth/*` family (id/fetch/logout). Forcing these to 401 simulates an
+ * expired token (see {@link expiredToken}).
+ */
+export function isAuthEndpoint(): RouteMatcher {
+  return anyOf(urlIncludes('/users/me'), urlIncludes('/auth/'))
+}
+
 /** Combine matchers with logical OR. */
 export function anyOf(...matchers: RouteMatcher[]): RouteMatcher {
   return (req) => matchers.some((m) => m(req))
