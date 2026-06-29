@@ -131,6 +131,11 @@ export function IncomingReferencesType({
           linkedDocument._id = getDraftId(documentId)
         }
         await client.createOrReplace(linkedDocument)
+        // Clear the optimistic placeholder on success. The effect below also
+        // clears it once the linked document shows up in `documents`, but that
+        // never happens if the references stream has degraded to an empty list
+        // (e.g. after a load error), so don't rely on it alone.
+        setNewReferenceId(null)
       } catch (err) {
         // The fetch or write failed (e.g. insufficient permissions) —
         // reset the optimistic row and tell the user.

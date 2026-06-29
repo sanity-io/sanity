@@ -8,11 +8,15 @@ export async function resolveTypeForDocument(
   const query = '*[sanity::versionOf($publishedId)][0]._type'
 
   try {
-    return await getClient(DEFAULT_STUDIO_CLIENT_OPTIONS).fetch(
+    // `fetch` resolves to `null` when no document matches the query. Coalesce
+    // to `undefined` so the return type stays accurate and callers only have to
+    // handle a single "not resolved" value.
+    const type = await getClient(DEFAULT_STUDIO_CLIENT_OPTIONS).fetch<string | null>(
       query,
       {publishedId: getPublishedId(id)},
       {tag: 'structure.resolve-type'},
     )
+    return type ?? undefined
   } catch (err) {
     // Returning undefined keeps pane resolution from crashing on a failed
     // request during navigation. The two callers handle it differently:

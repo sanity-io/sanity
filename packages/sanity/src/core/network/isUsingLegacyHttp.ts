@@ -81,6 +81,11 @@ function detectProtocol(checkUrl: string): Observable<string | undefined> {
       ),
       take(1),
       map((entry) => localStorage._sanity_debugProtocol ?? entry.nextHopProtocol),
+      // The timing entry may never arrive (e.g. the fetch failed before any
+      // resource timing was recorded). Settle after the same window as the
+      // outer race so this promise resolves and the PerformanceObserver is
+      // torn down deterministically instead of leaking a subscription.
+      timeout({first: 2500, with: () => of(undefined)}),
     ),
   )
 

@@ -107,6 +107,9 @@ describe('isUsingLegacyHttp', () => {
 
   describe('error handling', () => {
     it('emits undefined instead of erroring when the probe request fails', async () => {
+      // Silence (and assert) the expected warning from the error path.
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
       // e.g. the browser is offline or the request is blocked
       vi.mocked(fetch).mockRejectedValue(new TypeError('Failed to fetch'))
 
@@ -130,6 +133,7 @@ describe('isUsingLegacyHttp', () => {
       } as unknown as SanityClient
 
       await expect(firstValueFrom(isUsingLegacyHttp(client))).resolves.toBeUndefined()
+      expect(warnSpy).toHaveBeenCalled()
     })
   })
 })
