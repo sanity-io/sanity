@@ -175,6 +175,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive] = useState(false)
   const {lastRevisionDocument} = useDeletedDocumentLastRevision()
 
   /**
@@ -562,6 +563,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         setTimelineRange,
         setIsDeleting,
         isDeleting,
+        isDocumentGroupInventoryActive,
+        setIsDocumentGroupInventoryActive,
         isDeleted,
         timelineError,
         timelineStore,
@@ -626,6 +629,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       permissions,
       setTimelineRange,
       isDeleting,
+      isDocumentGroupInventoryActive,
       isDeleted,
       timelineError,
       timelineStore,

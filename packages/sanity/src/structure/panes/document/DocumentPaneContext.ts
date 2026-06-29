@@ -79,6 +79,8 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   timelineMode?: undefined
   setTimelineRange(since: string | null, rev: string | null): void
   setIsDeleting: (state: boolean) => void
+  isDocumentGroupInventoryActive: boolean
+  setIsDocumentGroupInventoryActive: (active: boolean) => void
   timelineError: Error | null
   /**
    * Soon to be deprecated with the upcoming `releases` changes.

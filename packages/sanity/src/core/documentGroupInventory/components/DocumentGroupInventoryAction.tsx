@@ -1,6 +1,6 @@
 import {ChevronDownIcon, ChevronUpIcon} from '@sanity/icons'
 import {LayerProvider, useClickOutsideEvent} from '@sanity/ui'
-import {type ComponentType, type PropsWithChildren, useMemo, useRef, useState} from 'react'
+import {type ComponentType, type PropsWithChildren, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
 import {map} from 'rxjs'
 import {styled} from 'styled-components'
@@ -17,9 +17,16 @@ export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
     documentId: string
     portalElementName: string
+    isDocumentGroupInventoryActive: boolean
+    setIsDocumentGroupInventoryActive: (active: boolean) => void
   }>
-> = ({children, documentId, portalElementName}) => {
-  const [isActive, setIsActive] = useState<boolean>(false)
+> = ({
+  children,
+  documentId,
+  portalElementName,
+  isDocumentGroupInventoryActive,
+  setIsDocumentGroupInventoryActive,
+}) => {
   const displayedRelease = useVersionRelease(documentId)
   const buttonElement = useRef<HTMLButtonElement | null>(null)
   const popoverElement = useRef<HTMLDivElement | null>(null)
@@ -43,7 +50,7 @@ export const DocumentGroupInventoryAction: ComponentType<
         }
       }
 
-      setIsActive(false)
+      setIsDocumentGroupInventoryActive(false)
     },
     () => [buttonElement.current, popoverElement.current],
   )
@@ -59,7 +66,7 @@ export const DocumentGroupInventoryAction: ComponentType<
         content={children}
         placement="top-end"
         padding={0}
-        open={isActive}
+        open={isDocumentGroupInventoryActive}
         portal={portalElementName}
       >
         <Button
@@ -67,9 +74,9 @@ export const DocumentGroupInventoryAction: ComponentType<
           data-testid="action-document-group-inventory"
           text={variantLabel(displayedRelease?.release)}
           tone="neutral"
-          onClick={() => setIsActive((current) => !current)}
+          onClick={() => setIsDocumentGroupInventoryActive(!isDocumentGroupInventoryActive)}
           icon={<VariantIcon perspective={displayedRelease.release} />}
-          iconRight={isActive ? ChevronDownIcon : ChevronUpIcon}
+          iconRight={isDocumentGroupInventoryActive ? ChevronDownIcon : ChevronUpIcon}
           tooltipProps={{}}
           mode="ghost"
         />
