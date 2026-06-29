@@ -74,10 +74,8 @@ export function DocumentType({type}: {type: string}) {
     if (element) setIsTruncated(element.scrollWidth > element.clientWidth)
   }, [])
 
-  // A callback ref ensures React invokes measurement the moment the node attaches, regardless
-  // of which commit that happens in - avoiding the race where a useEffect fires before the ref
-  // is populated. Returning a cleanup function from the callback is the React 19 mechanism for
-  // disconnecting the observer when the node detaches.
+  // A callback ref measures on attach, avoiding the race where a useEffect fires before the
+  // ref is populated. The returned cleanup runs when the node detaches.
   const measureRef = useCallback(
     (element: HTMLSpanElement | null) => {
       elementRef.current = element
@@ -88,9 +86,8 @@ export function DocumentType({type}: {type: string}) {
       const observer = new ResizeObserver(checkTruncation)
       observer.observe(element)
 
-      // Web fonts usually finish loading after the first paint. The font swap widens the
-      // text and triggers the CSS ellipsis, but the span's box stays locked to the column
-      // width - so the ResizeObserver never fires and the overflow would go undetected.
+      // The late font swap widens the text but not the column-locked box, so the
+      // ResizeObserver never fires - re-measure once fonts settle.
       let cancelled = false
       void document.fonts?.ready.then(() => {
         if (!cancelled) checkTruncation()
@@ -105,8 +102,7 @@ export function DocumentType({type}: {type: string}) {
     [checkTruncation],
   )
 
-  // A title change rewrites the text without resizing the box, so the ResizeObserver would
-  // miss it - re-measure explicitly when the title changes.
+  // A title change rewrites the text without resizing the box, so re-measure on title change.
   useEffect(() => {
     checkTruncation()
   }, [title, checkTruncation])
@@ -178,10 +174,8 @@ export const getDocumentTableColumnDefs: (
   ...(releaseState === 'archived' || releaseState === 'published' ? [] : [documentActionColumn(t)]),
   {
     id: 'document._type',
-    // Fixed width so the header and body cells agree: the table renders the header row and
-    // each body row as independent flexboxes, so a content-sized column (width: null) settles
-    // at the short header's width in the header row and the long title's width in the body row,
-    // misaligning the two. A fixed width is what every other column here relies on to line up.
+    // Header and body rows are independent flexboxes, so a content-sized column (width: null)
+    // settles at different widths in each and misaligns. A fixed width keeps them in sync.
     width: 150,
     sorting: true,
     header: (props) => (

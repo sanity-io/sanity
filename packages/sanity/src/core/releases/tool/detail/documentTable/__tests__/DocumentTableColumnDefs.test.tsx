@@ -61,8 +61,7 @@ describe('DocumentType', () => {
     it('does not render a tooltip when the text is not truncated (scrollWidth === clientWidth)', () => {
       mockUseSchema.mockReturnValue(buildMockSchema('Short Title'))
 
-      // The callback ref measures on mount; scrollWidth and clientWidth both default to 0
-      // in jsdom, so isTruncated stays false and no tooltip is rendered.
+      // scrollWidth and clientWidth both default to 0 in jsdom, so nothing reads as truncated.
       render(<DocumentType type="shortType" />)
 
       expect(screen.queryByTestId('tooltip-wrapper')).not.toBeInTheDocument()
@@ -78,9 +77,7 @@ describe('DocumentType', () => {
         'scrollWidth',
       )
 
-      // Report every element as wider than its visible box so the measurement lands in the
-      // truncated branch. The ResizeObserver fires its callback on observe() as well, but the
-      // callback ref already measures synchronously on mount.
+      // Report every element as wider than its visible box so the measurement reads as truncated.
       globalThis.ResizeObserver = class {
         private callback: () => void
 
@@ -129,9 +126,8 @@ describe('DocumentType', () => {
       )
       const originalFonts = Object.getOwnPropertyDescriptor(document, 'fonts')
 
-      // The text fits until the web font swaps in: scrollWidth only exceeds clientWidth (0)
-      // after fonts settle. This isolates the fonts.ready re-measure from the mount measure,
-      // which would otherwise see the text as fitting and never render the tooltip.
+      // Text fits until the font swaps in (scrollWidth exceeds clientWidth only after fonts
+      // settle), isolating the fonts.ready re-measure from the mount measure.
       let fontsLoaded = false
       let resolveFontsReady!: () => void
       const fontsReady = new Promise<void>((resolve) => {
