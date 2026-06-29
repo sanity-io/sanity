@@ -1,6 +1,9 @@
 export {DescriptorConverter} from '../descriptors/convert'
 export * from '../descriptors/sync'
 export {
+  type PreparedSchemaUpload,
+  prepareSchemaUpload,
+  type PrepareSchemaUploadOptions,
   uploadSchema,
   type UploadSchemaOptions,
   type UploadSchemaPhase,

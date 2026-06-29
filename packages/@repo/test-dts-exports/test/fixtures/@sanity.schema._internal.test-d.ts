@@ -24,6 +24,9 @@ import type {
   ManifestWorkspaceFile,
   ParsedWorkspaceSchemaId,
   parseWorkspaceSchemaId,
+  PreparedSchemaUpload,
+  prepareSchemaUpload,
+  PrepareSchemaUploadOptions,
   Problem,
   ProblemPath,
   ProblemPathPropertySegment,
@@ -109,6 +112,15 @@ describe('@sanity/schema/_internal', () => {
   })
   test('parseWorkspaceSchemaId', () => {
     expectTypeOf<typeof parseWorkspaceSchemaId>().toBeFunction()
+  })
+  test('PreparedSchemaUpload', () => {
+    expectTypeOf<PreparedSchemaUpload>().toBeObject()
+  })
+  test('prepareSchemaUpload', () => {
+    expectTypeOf<typeof prepareSchemaUpload>().toBeFunction()
+  })
+  test('PrepareSchemaUploadOptions', () => {
+    expectTypeOf<PrepareSchemaUploadOptions>().not.toBeNever()
   })
   test('Problem', () => {
     expectTypeOf<Problem>().toBeObject()
