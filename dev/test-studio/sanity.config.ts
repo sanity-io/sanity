@@ -307,6 +307,9 @@ const defaultWorkspace = defineConfig({
   },
   beta: {
     variants: {
+      enabled: false,
+    },
+    documentGroupInventory: {
       enabled: true,
     },
   },
@@ -474,6 +477,9 @@ export default defineConfig([
     },
     beta: {
       variants: {
+        enabled: false,
+      },
+      documentGroupInventory: {
         enabled: true,
       },
     },
