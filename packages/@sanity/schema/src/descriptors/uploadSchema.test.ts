@@ -5,7 +5,7 @@ import {builtinTypes} from '../sanity/builtinTypes'
 import {groupProblems} from '../sanity/groupProblems'
 import {validateSchema} from '../sanity/validateSchema'
 import {defaultShouldRetry, type DescriptorRequestOptions} from './transport'
-import {uploadSchema} from './uploadSchema'
+import {uploadSchema, type UploadSchemaPhase} from './uploadSchema'
 
 describe('defaultShouldRetry', () => {
   test('retries on 429 and 5xx, not on 4xx or non-http errors', () => {
@@ -230,5 +230,143 @@ describe('uploadSchema — synchronization', () => {
       uploadSchema(makeSchema(), {contextKey: 'studio:1', requester, maxSyncIterations: 2}),
     ).rejects.toThrow(/didn't succeed in 2 iterations/)
     expect(calls.some((c) => c.url.endsWith('/commit'))).toBe(false)
+  })
+})
+
+describe('uploadSchema — onPhaseComplete', () => {
+  test('claim already complete → emits convert, claim, commit, total in order (no synchronize)', async () => {
+    const {requester} = recording((opts) => {
+      if (opts.url.endsWith('/claim')) return {synchronization: {type: 'complete'}, commitId: 'c1'}
+      if (opts.url.endsWith('/commit')) return {}
+      throw new Error(`unexpected call to ${opts.url}`)
+    })
+    const events: UploadSchemaPhase[] = []
+    await uploadSchema(makeSchema(), {
+      contextKey: 'studio:1',
+      requester,
+      onPhaseComplete: (event) => events.push(event),
+    })
+    expect(events.map((e) => e.phase)).toEqual(['convert', 'claim', 'commit', 'total'])
+  })
+
+  test('incomplete then complete → one synchronize phase (iteration 0) before commit and total', async () => {
+    const {requester} = recording((opts) => {
+      if (opts.url.endsWith('/claim')) {
+        const did = (opts.body as {descriptorId: string}).descriptorId
+        return {synchronization: {type: 'incomplete', missingIds: [did]}, commitId: 'c1'}
+      }
+      if (opts.url.endsWith('/synchronize')) return {type: 'complete'}
+      if (opts.url.endsWith('/commit')) return {}
+      throw new Error(`unexpected call to ${opts.url}`)
+    })
+    const events: UploadSchemaPhase[] = []
+    await uploadSchema(makeSchema(), {
+      contextKey: 'studio:1',
+      requester,
+      onPhaseComplete: (event) => events.push(event),
+    })
+    expect(events.map((e) => e.phase)).toEqual([
+      'convert',
+      'claim',
+      'synchronize',
+      'commit',
+      'total',
+    ])
+    const synchronize = events.find((e) => e.phase === 'synchronize')!
+    expect(synchronize.iteration).toBe(0)
+  })
+
+  test('iteration is present only on synchronize phases and is zero-based', async () => {
+    let round = 0
+    const {requester} = recording((opts) => {
+      if (opts.url.endsWith('/claim')) {
+        const did = (opts.body as {descriptorId: string}).descriptorId
+        return {synchronization: {type: 'incomplete', missingIds: [did]}, commitId: 'c1'}
+      }
+      if (opts.url.endsWith('/synchronize')) {
+        round += 1
+        // Stay incomplete for the first round (echo the requested id so the sync
+        // protocol keeps asking), then complete on the second.
+        if (round >= 2) return {type: 'complete'}
+        const did = (opts.body as {id: string}).id
+        return {type: 'incomplete', missingIds: [did]}
+      }
+      if (opts.url.endsWith('/commit')) return {}
+      throw new Error(`unexpected call to ${opts.url}`)
+    })
+    const events: UploadSchemaPhase[] = []
+    await uploadSchema(makeSchema(), {
+      contextKey: 'studio:1',
+      requester,
+      onPhaseComplete: (event) => events.push(event),
+    })
+    const syncIterations = events.filter((e) => e.phase === 'synchronize').map((e) => e.iteration)
+    expect(syncIterations).toEqual([0, 1])
+    for (const event of events) {
+      if (event.phase !== 'synchronize') expect(event.iteration).toBeUndefined()
+    }
+  })
+
+  test('every emitted durationSeconds is a finite number >= 0', async () => {
+    const {requester} = recording((opts) => {
+      if (opts.url.endsWith('/claim')) return {synchronization: {type: 'complete'}, commitId: 'c1'}
+      if (opts.url.endsWith('/commit')) return {}
+      throw new Error(`unexpected call to ${opts.url}`)
+    })
+    const events: UploadSchemaPhase[] = []
+    await uploadSchema(makeSchema(), {
+      contextKey: 'studio:1',
+      requester,
+      onPhaseComplete: (event) => events.push(event),
+    })
+    expect(events.length).toBeGreaterThan(0)
+    for (const event of events) {
+      expect(Number.isFinite(event.durationSeconds)).toBe(true)
+      expect(event.durationSeconds).toBeGreaterThanOrEqual(0)
+    }
+  })
+
+  test('a hook that throws is swallowed; the upload still resolves the descriptorId', async () => {
+    const {requester} = recording((opts) => {
+      if (opts.url.endsWith('/claim')) return {synchronization: {type: 'complete'}, commitId: 'c1'}
+      if (opts.url.endsWith('/commit')) return {}
+      throw new Error(`unexpected call to ${opts.url}`)
+    })
+    const id = await uploadSchema(makeSchema(), {
+      contextKey: 'studio:1',
+      requester,
+      onPhaseComplete: () => {
+        throw new Error('boom')
+      },
+    })
+    expect(typeof id).toBe('string')
+    expect(id.length).toBeGreaterThan(0)
+  })
+
+  test('failure path → emits convert, claim, synchronize but neither commit nor total', async () => {
+    const {requester} = recording((opts) => {
+      if (opts.url.endsWith('/claim')) {
+        const did = (opts.body as {descriptorId: string}).descriptorId
+        return {synchronization: {type: 'incomplete', missingIds: [did]}, commitId: 'c1'}
+      }
+      if (opts.url.endsWith('/commit')) return {}
+      const did = (opts.body as {id: string}).id
+      return {type: 'incomplete', missingIds: [did]}
+    })
+    const events: UploadSchemaPhase[] = []
+    await expect(
+      uploadSchema(makeSchema(), {
+        contextKey: 'studio:1',
+        requester,
+        maxSyncIterations: 2,
+        onPhaseComplete: (event) => events.push(event),
+      }),
+    ).rejects.toThrow(/didn't succeed in 2 iterations/)
+    const phases = events.map((e) => e.phase)
+    expect(phases).toContain('convert')
+    expect(phases).toContain('claim')
+    expect(phases).toContain('synchronize')
+    expect(phases).not.toContain('commit')
+    expect(phases).not.toContain('total')
   })
 })

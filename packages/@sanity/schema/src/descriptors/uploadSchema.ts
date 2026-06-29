@@ -42,6 +42,28 @@ function mergeHeaders(
   }
 }
 
+/**
+ * A completed phase of an `uploadSchema` call, passed to `onPhaseComplete`.
+ *
+ * @internal
+ */
+export interface UploadSchemaPhase {
+  /**
+   * - `convert`     — schema → descriptor set. Awaited but CPU-bound; the shared
+   *   converter's `WeakMap` cache makes this ~0s on a repeat upload of the same
+   *   compiled `Schema` instance.
+   * - `claim`       — the permanent-claim request.
+   * - `synchronize` — one synchronize iteration (see `iteration`).
+   * - `commit`      — the commit request that pins the descriptor.
+   * - `total`       — the whole `uploadSchema` call; emitted last, on success only.
+   */
+  phase: 'convert' | 'claim' | 'synchronize' | 'commit' | 'total'
+  /** Elapsed wall-clock time for this phase, in seconds. */
+  durationSeconds: number
+  /** Zero-based iteration index. Present only for `phase: 'synchronize'`. */
+  iteration?: number
+}
+
 interface BaseUploadSchemaOptions {
   /** Context key the server uses to scope/optimize synchronization, e.g. `studio:<appId>`. */
   contextKey: string
@@ -53,6 +75,16 @@ interface BaseUploadSchemaOptions {
   apiVersion?: string
   /** Max synchronize iterations before throwing. Default 5. */
   maxSyncIterations?: number
+  /**
+   * Optional observability hook. Invoked once per phase as it completes, with
+   * the elapsed wall-clock time for that phase. The success-only `total` is
+   * emitted last; a failing call emits whatever phases completed but neither
+   * `commit` nor `total`.
+   *
+   * Fire-and-forget: the return value is ignored and any error it throws is
+   * swallowed, so instrumentation can never break or slow an upload.
+   */
+  onPhaseComplete?: (event: UploadSchemaPhase) => void
 }
 
 /**
@@ -117,16 +149,40 @@ export async function uploadSchema(schema: Schema, options: UploadSchemaOptions)
     return `/${apiVersion}/descriptors/${path}`
   }
 
+  // Fire-and-forget phase timing. The hook is observation only, so a throwing
+  // hook must never surface as an upload failure. `startedAt` is captured before
+  // the awaited work and read here at completion.
+  const {onPhaseComplete} = options
+  function emit(phase: UploadSchemaPhase['phase'], startedAt: number, iteration?: number): void {
+    if (!onPhaseComplete) return
+    const event: UploadSchemaPhase = {
+      phase,
+      durationSeconds: (performance.now() - startedAt) / 1000,
+    }
+    if (iteration !== undefined) event.iteration = iteration
+    try {
+      onPhaseComplete(event)
+    } catch {
+      // observability must never break the upload
+    }
+  }
+
+  const startedTotal = performance.now()
+
+  const startedConvert = performance.now()
   const sync = await sharedConverter.get(schema)
   const descriptorId = sync.set.id
+  emit('convert', startedConvert)
 
   // A permanent claim returns a `commitId` (rather than the temporary claim's
   // `expiresAt`); the descriptor is not pinned until that id is committed below.
+  const startedClaim = performance.now()
   const claimResponse = await request<ClaimResponse>({
     url: url('claim'),
     method: 'POST',
     body: {descriptorId, contextKey: options.contextKey, permanent: true},
   })
+  emit('claim', startedClaim)
 
   if (!claimResponse.commitId) {
     throw new Error('uploadSchema: claim response is missing `commitId` for the permanent claim')
@@ -144,21 +200,26 @@ export async function uploadSchema(schema: Schema, options: UploadSchemaOptions)
       // descriptor survives indefinitely. Only commit on success; the
       // iteration-exhaustion path below intentionally leaves the claim
       // uncommitted (it will expire) rather than pinning a partial upload.
+      const startedCommit = performance.now()
       await request({
         url: url('commit'),
         method: 'POST',
         body: {contextKey: options.contextKey, id: claimResponse.commitId},
       })
+      emit('commit', startedCommit)
+      emit('total', startedTotal)
       return descriptorId
     }
     if (i === maxSyncIterations) {
       break
     }
+    const startedSync = performance.now()
     syncResult = await request<SchemaSynchronizationResult>({
       url: url('synchronize'),
       method: 'POST',
       body: syncRequest,
     })
+    emit('synchronize', startedSync, i)
   }
 
   throw new Error(`Schema synchronization didn't succeed in ${maxSyncIterations} iterations`)
