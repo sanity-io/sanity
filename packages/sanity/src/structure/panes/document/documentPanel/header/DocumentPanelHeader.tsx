@@ -44,6 +44,7 @@ import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMen
 import {useDocumentPane} from '../../useDocumentPane'
 import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetry__/focus.telemetry'
 import {CopyDocumentActions} from './CopyDocumentActions'
+import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
@@ -215,7 +216,7 @@ export const DocumentPanelHeader = memo(
             style={{lineHeight: 0, position: 'relative', zIndex: paneHeaderZIndex}}
             borderBottom
           >
-            <Flex gap={3} paddingY={3} justify="space-between">
+            <Flex gap={3} paddingY={3} justify="space-between" align="center">
               {!hasDocumentGroupInventory && (
                 <HorizontalScroller $showGradient={showGradient}>
                   <Flex
@@ -230,7 +231,11 @@ export const DocumentPanelHeader = memo(
                   </Flex>
                 </HorizontalScroller>
               )}
-              {hasDocumentGroupInventory && <div />}
+              {hasDocumentGroupInventory && (
+                <Box paddingX={3}>
+                  <DocumentGroupInventoryHint />
+                </Box>
+              )}
 
               <Box flex="none" paddingRight={3}>
                 <Flex align="center" gap={1}>

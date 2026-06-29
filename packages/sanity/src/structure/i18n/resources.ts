@@ -420,6 +420,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text shown if a document's title via a preview value cannot be determined due to an unknown schema type */
   'doc-title.unknown-schema-type.text': 'Unknown schema type: {{schemaType}}',
 
+  /** Hint shown to help guide users to the new document group inventory */
+  'document-group-inventory.onboarding-hint': 'Where did the version buttons go?',
+
   /** Tooltip text shown for the close button of the document inspector */
   'document-inspector.close-button.tooltip': 'Close',
   /** The title shown in the dialog header, when inspecting a valid document */
