@@ -204,5 +204,29 @@ describe('Portable Text Input', () => {
         .element(page.getByRole('button', {name: 'Insert Object Without Title (block)'}))
         .toBeVisible()
     })
+
+    it('editing an inline object field syncs to the document value', async () => {
+      const {getFocusedPortableTextEditor, waitForDocumentState} = testHelpers()
+      void render(<ObjectBlockStory />)
+      const $pte = await getFocusedPortableTextEditor('field-body')
+      await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
+      const $locatorDialog = page.getByTestId('popover-edit-dialog')
+      // Assertion: the inline object edit dialog should be visible
+      await expect.element($locatorDialog).toBeVisible()
+
+      await $locatorDialog.getByRole('textbox').fill('Hello note')
+
+      // Assertion: the edited field is reflected in the document value
+      const documentState = await waitForDocumentState((state) => {
+        const child = state?.body?.[0]?.children?.find(
+          (member: {_type: string}) => member._type !== 'span',
+        )
+        return child?.title === 'Hello note'
+      })
+      const inlineObject = documentState.body[0].children.find(
+        (member: {_type: string}) => member._type !== 'span',
+      )
+      expect(inlineObject.title).toEqual('Hello note')
+    })
   })
 })

@@ -82,6 +82,29 @@ describe('Portable Text Input', () => {
       }
     })
 
+    it('applying a decorator writes `marks` to the document value', async () => {
+      const {
+        getFocusedPortableTextEditor,
+        getModifierKey,
+        insertPortableText,
+        toggleHotkey,
+        waitForDocumentState,
+      } = testHelpers()
+      void render(<DecoratorsStory />)
+      const $pte = await getFocusedPortableTextEditor('field-defaultDecorators')
+      const modifierKey = getModifierKey()
+
+      await toggleHotkey('b', modifierKey)
+      await insertPortableText('bold text', $pte)
+
+      // Assertion: the span carries the decorator mark
+      const documentState = await waitForDocumentState((state) => {
+        const span = state?.defaultDecorators?.[0]?.children?.[0]
+        return span?.text === 'bold text' && span?.marks?.includes('strong')
+      })
+      expect(documentState.defaultDecorators[0].children[0].marks).toEqual(['strong'])
+    })
+
     describe('Toolbar buttons', () => {
       it('Should display all default decorator buttons', async () => {
         const {getFocusedPortableTextInput} = testHelpers()
