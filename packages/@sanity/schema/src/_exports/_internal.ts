@@ -1,6 +1,10 @@
 export {DescriptorConverter} from '../descriptors/convert'
 export * from '../descriptors/sync'
-export {uploadSchema, type UploadSchemaOptions} from '../descriptors/uploadSchema'
+export {
+  uploadSchema,
+  type UploadSchemaOptions,
+  type UploadSchemaPhase,
+} from '../descriptors/uploadSchema'
 export type {DescriptorRequester} from '../descriptors/transport'
 export {isActionEnabled} from '../legacy/actionUtils'
 export {
