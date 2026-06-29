@@ -149,8 +149,8 @@ importers:
         specifier: ^0.5.2
         version: 0.5.2(eslint@10.5.0)(typescript@5.9.3)
       knip:
-        specifier: ^6.18.0
-        version: 6.18.0
+        specifier: ^6.21.0
+        version: 6.21.0
       lefthook:
         specifier: ^2.1.9
         version: 2.1.9
@@ -8616,8 +8616,8 @@ packages:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
 
-  knip@6.18.0:
-    resolution: {integrity: sha512-RlT6fK3epETsEUCVdlz96CiJN3DQJwuxOuQhEeAVWjNRuAUJHWwe+XolTL8vIiwLPZ38tTdPWJUgZyTdskOEog==}
+  knip@6.21.0:
+    resolution: {integrity: sha512-q7K9VGSFfdVaCjhj9u+5aI2t5CZt3edZeLi+1wjnGAvYB2WfW6+T9UWAREsTR88aB8YeDqkKVZiVMV7va3oTmg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
@@ -18487,7 +18487,7 @@ snapshots:
 
   kleur@3.0.3: {}
 
-  knip@6.18.0:
+  knip@6.21.0:
     dependencies:
       fdir: 6.5.0(picomatch@4.0.4)
       formatly: 0.3.0
