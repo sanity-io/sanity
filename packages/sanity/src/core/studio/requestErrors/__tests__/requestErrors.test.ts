@@ -3,7 +3,7 @@ import {act, renderHook} from '@testing-library/react'
 import {firstValueFrom, of, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {classifyRequestError, parseRetryAfter} from '../classify'
+import {classifyRequestError, getApiErrorCode, parseRetryAfter} from '../classify'
 import {createRequestErrorChannel, passthroughErrorHandler} from '../createRequestErrorChannel'
 import {useRetryCountdown} from '../RequestErrorDialog'
 import {type RequestErrorClaim} from '../types'
@@ -108,6 +108,27 @@ describe('classifyRequestError', () => {
 
   it('leaves arbitrary errors unclassified', () => {
     expect(classifyRequestError(new Error('nope'))).toBeNull()
+  })
+})
+
+describe('getApiErrorCode', () => {
+  it('reads the errorCode from the response body', () => {
+    const err = clientErrorWith({
+      statusCode: 401,
+      body: {error: 'Unauthorized', errorCode: 'SIO-401-AEX'},
+    })
+    expect(getApiErrorCode(err)).toBe('SIO-401-AEX')
+  })
+
+  it('returns undefined when there is no errorCode', () => {
+    expect(getApiErrorCode(clientErrorWith({statusCode: 401, body: {error: 'Unauthorized'}}))).toBe(
+      undefined,
+    )
+  })
+
+  it('returns undefined for non-client errors', () => {
+    expect(getApiErrorCode(new Error('nope'))).toBe(undefined)
+    expect(getApiErrorCode(undefined)).toBe(undefined)
   })
 })
 

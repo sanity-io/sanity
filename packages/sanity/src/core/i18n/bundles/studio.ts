@@ -1401,6 +1401,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The title for the insufficient permissions message component */
   'insufficient-permissions-message.title': 'Insufficient permissions',
 
+  /** Body of the logged-out banner shown above the login form for an unknown reason */
+  'login.logged-out.generic': 'Your session is no longer valid. Please sign in again.',
+  /** Body of the logged-out banner shown above the login form when the session expired */
+  'login.logged-out.session-expired': 'Your session expired. Please sign in again.',
+  /** Title of the banner shown above the login form after the studio logs the user out */
+  'login.logged-out.title': "You've been logged out",
+
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 

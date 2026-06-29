@@ -97,6 +97,32 @@ export function isUnauthorizedError(err: unknown): err is ClientError {
 }
 
 /**
+ * The API's machine-readable `errorCode` from a client error response body
+ * (e.g. `SIO-401-AEX` for an expired session), or `undefined` if absent. The
+ * `ClientError` exposes the parsed body on `response.body` (typed `unknown`);
+ * fall back to the stringified `responseBody` since older error shapes only
+ * carry that.
+ *
+ * @internal
+ */
+export function getApiErrorCode(err: unknown): string | undefined {
+  if (!(err instanceof ClientError)) return undefined
+  const fromResponse = readErrorCode(err.response?.body)
+  if (fromResponse) return fromResponse
+  try {
+    return readErrorCode(JSON.parse(err.responseBody ?? ''))
+  } catch {
+    return undefined
+  }
+}
+
+function readErrorCode(value: unknown): string | undefined {
+  if (typeof value !== 'object' || value === null || !('errorCode' in value)) return undefined
+  const code = value.errorCode
+  return typeof code === 'string' ? code : undefined
+}
+
+/**
  * Whether an error originates from a Sanity client request — i.e. one a
  * plugin/customization could have delegated to the studio's error UI via
  * `useStudioErrorHandler()` rather than letting it reach an error
