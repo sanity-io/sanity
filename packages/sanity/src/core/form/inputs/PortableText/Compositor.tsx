@@ -13,16 +13,13 @@ import {
   type RangeDecoration,
   type RegistrableNode,
   type TextBlockRenderProps,
+  useEditor,
 } from '@portabletext/editor'
 import {NodePlugin} from '@portabletext/editor/plugins'
 import {DndProvider, useDropPosition} from '@portabletext/plugin-dnd'
 import {ListIndexProvider, useListIndex} from '@portabletext/plugin-list-index'
-import {
-  type ObjectSchemaType,
-  type Path,
-  type PortableTextBlock,
-  type PortableTextTextBlock,
-} from '@sanity/types'
+import {getSanitySubSchema} from '@portabletext/sanity-bridge'
+import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Box,
@@ -114,6 +111,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const setElementRef = useSetPortableTextMemberItemElementRef()
+  const editor = useEditor()
 
   // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with
   // Sanity-specific PortableTextMemberSchemaTypes instead of the editor's
@@ -242,12 +240,14 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const renderBlockObject = useCallback(
     (blockProps: BlockObjectRenderProps) => {
       const {attributes, focused: blockFocused, node, path: blockPath, selected} = blockProps
-      const sanitySchemaType: ObjectSchemaType | undefined = schemaTypes.blockObjects.find(
-        (type) => type.name === node._type,
-      )
+      const sanitySchemaType = getSanitySubSchema(
+        schemaTypes.portableText,
+        editor.getSnapshot().context.value,
+        blockPath,
+      ).blockObjects.find((t) => t.name === node._type)
       if (!sanitySchemaType) {
-        // `schemaTypes.blockObjects` lists only the array's top-level object
-        // types, so a type defined deeper (e.g. inside a container) isn't here.
+        // `getSanitySubSchema` returned the sub-schema at this path, but no
+        // block-object type in it matches `node._type`.
         throw new Error(`Could not find Sanity schema type for block object: ${node._type}`)
       }
       return (
@@ -289,7 +289,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       floatingBoundary,
       scrollElement,
-      schemaTypes.blockObjects,
+      schemaTypes.portableText,
       isFullscreen,
       onItemClose,
       onItemOpen,
@@ -307,18 +307,21 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderItem,
       renderPreview,
       setElementRef,
+      editor,
     ],
   )
 
   const renderInlineObject = useCallback(
     (childProps: InlineObjectRenderProps) => {
       const {attributes, focused: childFocused, node, path: childPath, selected} = childProps
-      const sanitySchemaType: ObjectSchemaType | undefined = schemaTypes.inlineObjects.find(
-        (type) => type.name === node._type,
-      )
+      const sanitySchemaType = getSanitySubSchema(
+        schemaTypes.portableText,
+        editor.getSnapshot().context.value,
+        childPath,
+      ).inlineObjects.find((t) => t.name === node._type)
       if (!sanitySchemaType) {
-        // `schemaTypes.inlineObjects` lists only the array's top-level inline
-        // types, so a type defined deeper (e.g. inside a container) isn't here.
+        // `getSanitySubSchema` returned the sub-schema at this path, but no
+        // inline-object type in it matches `node._type`.
         throw new Error(`Could not find Sanity schema type for inline object: ${node._type}`)
       }
       return (
@@ -353,7 +356,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
-      schemaTypes.inlineObjects,
+      schemaTypes.portableText,
       floatingBoundary,
       onItemClose,
       onItemOpen,
@@ -370,6 +373,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderItem,
       renderPreview,
       setElementRef,
+      editor,
     ],
   )
 
@@ -394,9 +398,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaType: aSchemaType,
         value: aValue,
       } = annotationProps
-      const sanitySchemaType = schemaTypes.annotations.find(
-        (type) => type.name === aSchemaType.name,
-      )
+      const annotationPath = [...aPath.slice(0, -2), 'markDefs', {_key: aValue._key}]
+      const sanitySchemaType = getSanitySubSchema(
+        schemaTypes.portableText,
+        editor.getSnapshot().context.value,
+        annotationPath,
+      ).annotations.find((t) => t.name === aSchemaType.name)
       if (!sanitySchemaType) {
         // This should never happen
         throw new Error(`Could not find Sanity schema type for annotation: ${aSchemaType.name}`)
@@ -430,7 +437,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
-      schemaTypes.annotations,
+      schemaTypes.portableText,
       floatingBoundary,
       scrollElement,
       focused,
@@ -448,6 +455,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderItem,
       renderPreview,
       setElementRef,
+      editor,
     ],
   )
   const ariaDescribedBy = elementProps['aria-describedby']
