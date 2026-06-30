@@ -163,7 +163,7 @@ describe('Portable Text Input', () => {
     const $inlineObject = page.getByTestId('inline-preview')
     await $inlineObject.click()
     await expect.poll(lastPath).toEqual(['body', {_key: 'g'}, 'children', {_key: 'i'}])
-    const $blockObject = page.getByTestId('pte-block-object')
+    const $blockObject = page.getByTestId('pte-block-object').first()
     await $blockObject.click()
     await expect.poll(lastPath).toEqual(['body', {_key: 'k'}])
   })
