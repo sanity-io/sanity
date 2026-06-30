@@ -209,10 +209,14 @@ export interface BlockAnnotationProps {
    */
   __unstable_referenceElement: HTMLElement | null
   /**
-   * Wether the annotated text node has editor focus.
-   * @remarks differs from `focused` which is wether the annotation object has form focus.
+   * Whether the annotated text node has editor focus.
+   * @remarks differs from `focused` which is whether the annotation object has form focus.
    */
   __unstable_textElementFocus?: boolean
+  /**
+   * Whether the annotation has changes compared to the published version.
+   */
+  changed?: boolean
   /**
    * The input form for the annotation object.
    * @remarks If you wrap this in something, you must make sure to put `contentEditable={false}` on the root container.
