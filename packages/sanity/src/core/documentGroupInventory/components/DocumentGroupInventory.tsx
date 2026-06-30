@@ -27,6 +27,7 @@ import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
+import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {
   getPublishedId,
@@ -104,6 +105,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const schema = useSchema().get(documentType)
   const versionState = useDocumentVersionsObservable({documentId})
   const {state$: releases} = useReleasesStore()
+  const {state$: agentBundles} = useAgentBundlesStore()
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
   const [menuPortalElement, setMenuPortalElement] = useState<HTMLDivElement | null>(null)
@@ -125,13 +127,13 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
     () =>
       documentGroupInventoryMachine.provide({
         actors: {
-          meta: fromObservable(() => combineLatest({versionState, releases})),
+          meta: fromObservable(() => combineLatest({versionState, releases, agentBundles})),
         },
         actions: {
           onFeedbackBegin: feedbackDialogOpened,
         },
       }),
-    [versionState, releases, feedbackDialogOpened],
+    [versionState, releases, agentBundles, feedbackDialogOpened],
   )
 
   const inventoryRef = useActorRef(inventoryMachine, {
