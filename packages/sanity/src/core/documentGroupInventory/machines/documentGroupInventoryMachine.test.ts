@@ -5,7 +5,7 @@ import {createActor, fromObservable, fromPromise} from 'xstate'
 
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {deletionMachine} from './deletionMachine'
-import {documentGroupInventoryMachine, type SelectionMeta} from './documentGroupInventoryMachine'
+import {documentGroupInventoryMachine, type Meta} from './documentGroupInventoryMachine'
 import {selectionMachine} from './selectionMachine'
 
 interface IncomingReference {
@@ -72,7 +72,7 @@ function withCrossDatasetReferences(
 const loadedMeta = {
   versionState: {data: ['drafts.foo', 'foo'], loading: false, error: null},
   releases: {releases: new Map(), state: 'loaded' as const},
-} as unknown as SelectionMeta
+} as unknown as Meta
 
 function createTestActor(
   initial: ReferringDocuments,
@@ -83,7 +83,7 @@ function createTestActor(
   }: {
     requestDeletionConfirmation?: () => void
     deleteVariants?: () => Promise<unknown>
-    meta?: SelectionMeta
+    meta?: Meta
   } = {},
 ) {
   const references$ = new BehaviorSubject<ReferringDocuments>(initial)
@@ -435,7 +435,7 @@ describe('documentGroupInventoryMachine', () => {
         error: null,
       },
       releases: {releases, state: 'loaded' as const},
-    } as unknown as SelectionMeta
+    } as unknown as Meta
 
     const expectedVariants = [
       {id: 'drafts.foo', name: 'Draft'},
@@ -462,7 +462,7 @@ describe('documentGroupInventoryMachine', () => {
     const meta = {
       versionState: {data: [], loading: false, error: new Error('meta failed')},
       releases: {releases: new Map(), state: 'loaded' as const},
-    } as unknown as SelectionMeta
+    } as unknown as Meta
 
     const {selectionRef} = createTestActor(loading, {meta})
     expect(selectionRef.getSnapshot().matches('error')).toBe(true)

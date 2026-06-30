@@ -12,7 +12,7 @@ import {type selectionMachine, type Variant} from './selectionMachine'
 type SelectionLogic = typeof selectionMachine
 type DeletionLogic = typeof deletionMachine
 
-export interface SelectionMeta {
+export interface Meta {
   versionState: DocumentPerspectiveState
   releases: ReleasesReducerState
 }
@@ -44,7 +44,7 @@ export const documentGroupInventoryMachine = setup({
     events: DocumentGroupInventoryEvents
   },
   actors: {
-    meta: fromObservable<SelectionMeta, unknown>(() => EMPTY),
+    meta: fromObservable<Meta, unknown>(() => EMPTY),
   },
   actions: {
     onFeedbackBegin: () => {},
@@ -118,7 +118,7 @@ export const documentGroupInventoryMachine = setup({
   },
 })
 
-function metaHasError(meta: SelectionMeta | undefined): boolean {
+function metaHasError(meta: Meta | undefined): boolean {
   if (!meta) {
     return false
   }
@@ -126,11 +126,11 @@ function metaHasError(meta: SelectionMeta | undefined): boolean {
   return Boolean(meta.versionState.error) || meta.releases.state === 'error'
 }
 
-function metaIsLoaded(meta: SelectionMeta | undefined): boolean {
+function metaIsLoaded(meta: Meta | undefined): boolean {
   return meta?.versionState.loading === false && meta.releases.state === 'loaded'
 }
 
-function computeSets(meta: SelectionMeta | undefined, current: VariantSet[]): VariantSet[] {
+function computeSets(meta: Meta | undefined, current: VariantSet[]): VariantSet[] {
   if (!meta) {
     return current
   }
