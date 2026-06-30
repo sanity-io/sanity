@@ -745,6 +745,7 @@ function resolveSource({
     tools,
     currentUser,
     authenticated,
+    sdk: config.sdk,
     templates,
     auth,
     i18n: i18n.source,
