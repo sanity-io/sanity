@@ -72,6 +72,7 @@ function withCrossDatasetReferences(
 const loadedMeta = {
   versionState: {data: ['drafts.foo', 'foo'], loading: false, error: null},
   releases: {releases: new Map(), state: 'loaded' as const},
+  agentBundles: {bundles: [], loading: false},
 } as unknown as Meta
 
 function createTestActor(
