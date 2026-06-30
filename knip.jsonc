@@ -23,8 +23,6 @@
         "dotenv",
         // keeping it a dev dependency speeds up 'npx only-allow pnpm' in package.json's preinstall script
         "only-allow",
-        // See .github/workflows/e2e-ui.yml
-        "@sanity/ui",
         // Used by the boundaries jsPlugin via `settings["import/resolver"]` in .oxlintrc.json,
         // which knip can't trace (unlike jsPlugins, which it detects)
         "eslint-import-resolver-typescript",
