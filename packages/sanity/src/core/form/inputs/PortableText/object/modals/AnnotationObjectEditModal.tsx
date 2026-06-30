@@ -38,7 +38,7 @@ export function AnnotationObjectEditModal(props: {
     return null
   }
 
-  const elementRef = elementRefs[openAnnotation.member.key]
+  const elementRef = elementRefs[openAnnotation.key]
 
   if (!elementRef) {
     return null

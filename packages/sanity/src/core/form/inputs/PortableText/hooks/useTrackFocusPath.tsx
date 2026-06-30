@@ -96,7 +96,7 @@ export function useTrackFocusPath(props: Props): void {
     // Prefer the path-resolved enclosing block: open/focused heuristics fall back to
     // ancestor containers at depth when nothing inside them is explicitly open.
     const relatedEditorItem = focusedItem || enclosingBlockItem || openItem
-    const elementRef = relatedEditorItem ? elementRefs[relatedEditorItem.member.key] : undefined
+    const elementRef = relatedEditorItem ? elementRefs[relatedEditorItem.key] : undefined
 
     if (relatedEditorItem && elementRef) {
       if (boundaryElement) {

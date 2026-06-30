@@ -222,7 +222,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
   const setRef = useCallback(
     (elm: HTMLSpanElement) => {
       if (memberItem) {
-        setElementRef({key: memberItem.member.key, elementRef: elm})
+        setElementRef({key: memberItem.key, elementRef: elm})
       }
       setSpanElement(elm) // update state here so the reference element is available on first render
     },
