@@ -414,10 +414,17 @@ const flapper = FLAP
 const faultRequests = intermittentServiceErrors(ERROR_PROBABILITY)
 
 // Session-expiry deadline: requests after this wall-clock time get the 401.
-// Computed once at startup; a 0s delay means "already past", i.e. expire now.
-const sessionExpiresAt =
+// Armed at startup; a 0s delay means "already past", i.e. expire now. Re-armed
+// whenever the studio re-authenticates (a `/auth/fetch` token exchange), so you
+// can log back in and watch the simulated session lapse again — see below.
+let sessionExpiresAt =
   EXPIRE_TOKEN_AFTER_MS === undefined ? undefined : Date.now() + EXPIRE_TOKEN_AFTER_MS
 const isSessionExpired = () => sessionExpiresAt !== undefined && Date.now() >= sessionExpiresAt
+const rearmSessionExpiry = () => {
+  if (EXPIRE_TOKEN_AFTER_MS !== undefined) {
+    sessionExpiresAt = Date.now() + EXPIRE_TOKEN_AFTER_MS
+  }
+}
 
 // Network-level scenarios applied to every handler: --expire-token replaces the
 // response with the API's expired-session 401 once the deadline passes,
@@ -427,7 +434,9 @@ const withNetworkScenarios = (handler: ProxyHandler): ProxyHandler => {
   // An expired session would fail at the API for any request, so this wraps the
   // real handler rather than being scoped to a route.
   const maybeExpired =
-    EXPIRE_TOKEN_AFTER_MS === undefined ? handler : expiredToken(handler, isSessionExpired)
+    EXPIRE_TOKEN_AFTER_MS === undefined
+      ? handler
+      : expiredToken(handler, isSessionExpired, {onReauthenticated: rearmSessionExpiry})
   const faulted = faultRequests(maybeExpired)
   const delayed = LATENCY ? withLatency(faulted, LATENCY) : faulted
   return flapper ? flapper.wrap(delayed) : delayed

@@ -35,6 +35,32 @@ export function isAuthEndpoint(): RouteMatcher {
   return anyOf(urlIncludes('/users/me'), urlIncludes('/auth/'))
 }
 
+/** Match the logout endpoint (`/auth/logout`). */
+export function isLogoutEndpoint(): RouteMatcher {
+  return urlIncludes('/auth/logout')
+}
+
+/**
+ * Match the token-exchange endpoint (`/auth/fetch`). The studio calls this with
+ * a fresh session ID immediately after a login callback to swap it for a token,
+ * so a request here is the proxy's signal that the user just re-authenticated
+ * (see {@link expiredToken}, which re-arms its expiry deadline on it).
+ */
+export function isAuthFetchEndpoint(): RouteMatcher {
+  return urlIncludes('/auth/fetch')
+}
+
+/**
+ * Match auth endpoints that don't require an authenticated session. The login
+ * screen fetches `/auth/providers` to render the list of login options, so it
+ * must keep working even when the session has expired — answering it with a 401
+ * (like {@link expiredToken} does for protected endpoints) would leave the
+ * studio unable to render its login UI.
+ */
+export function isPublicEndpoint(): RouteMatcher {
+  return urlIncludes('/auth/providers')
+}
+
 /** Combine matchers with logical OR. */
 export function anyOf(...matchers: RouteMatcher[]): RouteMatcher {
   return (req) => matchers.some((m) => m(req))
