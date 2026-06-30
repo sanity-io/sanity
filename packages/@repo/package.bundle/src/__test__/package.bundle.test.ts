@@ -162,6 +162,19 @@ describe('cleanupCssOutputPlugin() — Vite hash marker removal', () => {
     expect(bundle['theme.css'].source).toBe(':root{}')
   })
 
+  // Rolldown only appends a single marker per file, so this can't happen in
+  // practice — but it guards the regex's global flag: without `/g`, only the
+  // first marker would be removed.
+  it('removes every marker within a single CSS asset', () => {
+    const bundle = {
+      'index.css': {type: 'asset', source: 'a{}/*$vite$:1*/b{}/*$vite$:2*/'},
+    } as any
+
+    runPlugin(bundle)
+
+    expect(bundle['index.css'].source).toBe('a{}b{}')
+  })
+
   it('leaves CSS assets without the marker untouched', () => {
     const bundle = {
       'index.css': {type: 'asset', source: 'body{color:red}'},
