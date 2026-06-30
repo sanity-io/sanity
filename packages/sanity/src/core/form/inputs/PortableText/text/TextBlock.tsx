@@ -308,7 +308,7 @@ export function TextBlock(props: TextBlockProps) {
   const setRef = useCallback(
     (elm: HTMLDivElement) => {
       if (memberItem) {
-        setElementRef({key: memberItem.member.key, elementRef: elm})
+        setElementRef({key: memberItem.key, elementRef: elm})
       }
       setDivElement(elm) // update state here so the reference element is available on first render
     },
