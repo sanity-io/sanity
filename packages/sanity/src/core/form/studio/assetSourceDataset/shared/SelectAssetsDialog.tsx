@@ -141,6 +141,9 @@ const SelectAssetsComponent = function SelectAssetsComponent(
               // would surface as an unhandled rxjs error).
               console.error(err)
               setIsLoading(false)
+              // Roll back the page that failed to load so the next "Load more"
+              // retries it instead of skipping ahead and leaving a gap.
+              currentPageNumber.current = pageNumber > 0 ? pageNumber - 1 : 0
               toast.push({
                 status: 'error',
                 title: t('asset-source.dialog.load-error'),
