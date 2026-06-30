@@ -71,7 +71,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@types/react": "^19.2"
+    "@types/react": "*"
   },
   "browserslist": [
     "node >=22.12",
