@@ -698,6 +698,18 @@ export interface SourceOptions extends PluginOptions {
   auth?: AuthConfig | AuthStore
 
   /**
+   * When `true`, the Studio mounts a single Sanity App SDK provider (`SanityApp`)
+   * at the workspace root, so App SDK hooks (e.g. from `@sanity/sdk-react`) work
+   * inside the Studio with no extra configuration.
+   *
+   * One provider is created per workspace and shared by everything beneath it,
+   * so SDK code in tools, panes, and inputs reuses the same instance instead of
+   * each creating its own. Leave it unset (the default) if you don't use the
+   * App SDK in this Studio.
+   */
+  sdk?: boolean
+
+  /**
    * @hidden
    * @beta
    */
@@ -825,6 +837,13 @@ export interface Source {
   currentUser: CurrentUser | null
   /** Whether the user is authenticated. */
   authenticated: boolean
+
+  /**
+   * Whether this workspace mounts a shared Sanity App SDK provider at its root
+   * so App SDK hooks work inside the Studio without extra configuration.
+   * Resolved from the `sdk` config option.
+   */
+  sdk?: boolean
 
   /** @internal */
   auth: AuthStore
