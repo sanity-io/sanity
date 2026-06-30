@@ -1,14 +1,14 @@
 import {describe, expect, it} from 'vitest'
 
-import {stripCssImportsPlugin} from '../package.bundle'
+import {cleanupCssOutputPlugin} from '../package.bundle'
 
 function runPlugin(bundle: Record<string, any>) {
-  const plugin = stripCssImportsPlugin()
+  const plugin = cleanupCssOutputPlugin()
   // generateBundle is a Rollup hook — call it directly with a mock context
   ;(plugin.generateBundle as Function).call({}, {} as never, bundle)
 }
 
-describe('stripCssImportsPlugin()', () => {
+describe('cleanupCssOutputPlugin() — CSS import stripping', () => {
   it('removes imports for CSS assets produced by the build', () => {
     const bundle = {
       // CSS asset produced by vanilla-extract
@@ -121,5 +121,90 @@ describe('stripCssImportsPlugin()', () => {
     expect(bundle['index.mjs'].code).not.toContain("import './theme.css'")
     // External CSS import preserved
     expect(bundle['index.mjs'].code).toContain("import 'external/styles.css'")
+  })
+})
+
+describe('cleanupCssOutputPlugin() — Vite hash marker removal', () => {
+  it('removes the leftover Vite hash-update marker from CSS assets', () => {
+    const bundle = {
+      'index.css': {
+        type: 'asset',
+        // mirrors the real CDN output, where the marker leaks onto a trailing line
+        source: '#sanity{--static-css-file-loaded-studio:true}\n/*$vite$:1*/',
+      },
+    } as any
+
+    runPlugin(bundle)
+
+    expect(bundle['index.css'].source).not.toContain('$vite$')
+    expect(bundle['index.css'].source).toContain('#sanity{--static-css-file-loaded-studio:true}')
+  })
+
+  it('removes markers with any numeric suffix', () => {
+    const bundle = {
+      'index.css': {type: 'asset', source: 'body{}/*$vite$:42*/'},
+    } as any
+
+    runPlugin(bundle)
+
+    expect(bundle['index.css'].source).toBe('body{}')
+  })
+
+  it('strips the marker from every CSS asset', () => {
+    const bundle = {
+      'index.css': {type: 'asset', source: 'body{}/*$vite$:1*/'},
+      'theme.css': {type: 'asset', source: ':root{}/*$vite$:1*/'},
+    } as any
+
+    runPlugin(bundle)
+
+    expect(bundle['index.css'].source).toBe('body{}')
+    expect(bundle['theme.css'].source).toBe(':root{}')
+  })
+
+  // Rolldown only appends a single marker per file, so this can't happen in
+  // practice — but it guards the regex's global flag: without `/g`, only the
+  // first marker would be removed.
+  it('removes every marker within a single CSS asset', () => {
+    const bundle = {
+      'index.css': {type: 'asset', source: 'a{}/*$vite$:1*/b{}/*$vite$:2*/'},
+    } as any
+
+    runPlugin(bundle)
+
+    expect(bundle['index.css'].source).toBe('a{}b{}')
+  })
+
+  it('leaves CSS assets without the marker untouched', () => {
+    const bundle = {
+      'index.css': {type: 'asset', source: 'body{color:red}'},
+    } as any
+
+    runPlugin(bundle)
+
+    expect(bundle['index.css'].source).toBe('body{color:red}')
+  })
+
+  it('does not touch non-string CSS asset sources', () => {
+    const source = new Uint8Array([1, 2, 3])
+    const bundle = {
+      'index.css': {type: 'asset', source},
+    } as any
+
+    runPlugin(bundle)
+
+    expect(bundle['index.css'].source).toBe(source)
+  })
+
+  it('does not introduce the marker into JS chunks', () => {
+    const bundle = {
+      'index.css': {type: 'asset', source: 'body{}/*$vite$:1*/'},
+      'index.mjs': {type: 'chunk', code: 'export default {}\n'},
+    } as any
+
+    runPlugin(bundle)
+
+    expect(bundle['index.css'].source).toBe('body{}')
+    expect(bundle['index.mjs'].code).toBe('export default {}\n')
   })
 })
