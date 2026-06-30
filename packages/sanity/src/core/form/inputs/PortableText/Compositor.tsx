@@ -564,6 +564,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   // Scroll to the DOM element of the "opened" portable text member when relevant.
   useTrackFocusPath({
     focusPath,
+    ptInputPath: path,
     boundaryElement: scrollElement,
     onItemClose,
   })
