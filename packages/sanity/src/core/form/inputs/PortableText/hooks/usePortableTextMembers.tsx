@@ -61,11 +61,24 @@ export function usePortableTextMemberItemsFromProps(
       node: ObjectFormNode
     }[] = []
 
-    for (const member of members) {
-      if (member.kind === 'item') {
+    // Walk `members` plus any nested portable-text arrays inside
+    // object-blocks (containers) iteratively, so members at any depth
+    // show up in the flat list.
+    const stack: (typeof members)[] = [members]
+    while (stack.length) {
+      const arrayMembers = stack.pop()!
+      for (const member of arrayMembers) {
+        if (member.kind !== 'item') continue
         const isObjectBlock = !isBlockType(member.item.schemaType)
         if (isObjectBlock) {
           result.push({kind: 'objectBlock', member, node: member.item})
+          // Only descend into arrays whose items are objects. Non-object
+          // arrays (primitives, references) surface no block-shaped items.
+          for (const field of member.item.members) {
+            if (field.kind === 'field' && isMemberArrayOfObjects(field)) {
+              stack.push(field.field.members)
+            }
+          }
         } else {
           // Also include regular text blocks with validation, presence, changes or that are open or focused.
           // This is a performance optimization to avoid accounting for blocks that
