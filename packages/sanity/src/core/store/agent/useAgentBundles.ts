@@ -6,6 +6,7 @@ import {useProjectStore, useResourceCache} from '../../store'
 import {useWorkspace} from '../../studio'
 import {
   type AgentBundlesState,
+  type AgentBundlesStore,
   createAgentBundlesStore,
   INITIAL_STATE,
 } from './createAgentBundlesStore'
@@ -13,22 +14,17 @@ import {
 const CLIENT_OPTIONS = {apiVersion: 'v2025-02-19'} as const
 
 /**
- * Returns the current user's active agent bundles, streamed in real time from
- * the agent's SSE endpoint.
- *
- * The underlying SSE connection is shared across all callers within the same
- * workspace (via `useResourceCache`), so mounting this hook in multiple
- * components does not open multiple connections.
+ * Retrieve the shared agent bundles store, instantiating it if necessary.
  *
  * @internal
  */
-export function useAgentBundles(): AgentBundlesState {
+export function useAgentBundlesStore(): AgentBundlesStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
   const client = useClient(CLIENT_OPTIONS)
   const projectStore = useProjectStore()
 
-  const store = useMemo(() => {
+  return useMemo(() => {
     const agentBundlesStore =
       resourceCache.get<ReturnType<typeof createAgentBundlesStore>>({
         namespace: 'AgentBundlesStore',
@@ -47,6 +43,19 @@ export function useAgentBundles(): AgentBundlesState {
 
     return agentBundlesStore
   }, [resourceCache, workspace, client, projectStore])
+}
 
-  return useObservable(store.state$, INITIAL_STATE)
+/**
+ * Returns the current user's active agent bundles, streamed in real time from
+ * the agent's SSE endpoint.
+ *
+ * The underlying SSE connection is shared across all callers within the same
+ * workspace (via `useResourceCache`), so mounting this hook in multiple
+ * components does not open multiple connections.
+ *
+ * @internal
+ */
+export function useAgentBundles(): AgentBundlesState {
+  const {state$} = useAgentBundlesStore()
+  return useObservable(state$, INITIAL_STATE)
 }
