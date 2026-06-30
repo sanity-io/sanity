@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.3.0](https://github.com/sanity-io/sanity/compare/v6.2.0...v6.3.0) (2026-06-30)
+
+### Features
+
+* **core:** re-add bundle.css export via conditional exports ([#13322](https://github.com/sanity-io/sanity/issues/13322)) ([d0ce99f](https://github.com/sanity-io/sanity/commit/d0ce99f46b715c0cd6173046a1e3a3f730657128))
 ## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
 
 ### Bug Fixes
