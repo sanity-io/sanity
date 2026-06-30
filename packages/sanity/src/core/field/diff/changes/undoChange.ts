@@ -194,6 +194,7 @@ function buildMovePatches(
       unset: [pathToString(path)],
     },
     {
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       insert: {...insertLocation, items: [fromValue]} as any,
     },
   ]
@@ -276,6 +277,7 @@ function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>):
       const prevSeg = isKeyedObject(prevItem) ? {_key: prevItem._key} : indexAtPrev - 1
       const after = pathToString(subPath.concat(indexAtPrev < 1 ? 0 : prevSeg))
       stubs.push({setIfMissing: {[pathStr]: []}})
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       stubs.push({insert: {after, items: [getStubValue(nextItem)]} as any})
 
       i++

@@ -215,6 +215,7 @@ export const ReleasePublishAllButton = ({
         isPublishButtonDisabled || publishBundleStatus === 'publishing' || documents.length === 0,
       text: t('action.publish-all-documents'),
       handleOnClick: handleInitialPublish,
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       tooltipProps: {
         disabled: !isPublishButtonDisabled,
         content: publishTooltipContent,

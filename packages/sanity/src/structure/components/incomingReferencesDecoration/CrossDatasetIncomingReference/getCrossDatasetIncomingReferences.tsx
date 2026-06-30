@@ -100,6 +100,7 @@ export function getCrossDatasetIncomingReferences({
               type: document.documentType,
               id: document.documentId,
               preview: {
+                // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
                 published: {
                   _id: document.documentId,
                   title: `Document Id: ${document.documentId}`,

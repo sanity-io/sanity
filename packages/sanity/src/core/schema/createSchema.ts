@@ -29,5 +29,6 @@ export function createSchema(schemaDef: {name: string; types: any[]}): Schema {
   // ;(compiled as any)._source = schemaDef
   ;(compiled as any)._validation = validation
 
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   return inferValidation(compiled as Schema)
 }
