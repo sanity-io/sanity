@@ -1696,8 +1696,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3(rxjs@7.8.2)
       path-to-regexp:
-        specifier: ^6.3.0
-        version: 6.3.0
+        specifier: ^7.2.0
+        version: 7.2.0
       player.style:
         specifier: ^0.3.4
         version: 0.3.4(react@19.2.7)
@@ -9437,6 +9437,10 @@ packages:
 
   path-to-regexp@6.3.0:
     resolution: {integrity: sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==}
+
+  path-to-regexp@7.2.0:
+    resolution: {integrity: sha512-0W4AcUxPpFlcS8ql8ZEmFwaI0X5WshUVAFdXe3PBurrt18DK8bvSS+UKHvJUAfGILco/nTtc/E4LcPNfVysfwQ==}
+    engines: {node: '>=16'}
 
   path-to-regexp@8.2.0:
     resolution: {integrity: sha512-TdrF7fW9Rphjq4RjrW0Kp2AW0Ahwu9sRGTkS6bvDi0SCwZlEZYmcfDbEsTz8RVk0EHIS/Vd1bv3JhG+1xZuAyQ==}
@@ -19367,6 +19371,8 @@ snapshots:
   path-to-regexp@6.1.0: {}
 
   path-to-regexp@6.3.0: {}
+
+  path-to-regexp@7.2.0: {}
 
   path-to-regexp@8.2.0: {}
 
