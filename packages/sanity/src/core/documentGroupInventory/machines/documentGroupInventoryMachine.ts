@@ -2,6 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {EMPTY} from 'rxjs'
 import {assign, forwardTo, fromObservable, sendTo, setup, type ActorRefFromLogic} from 'xstate'
 
+import {type TFunction} from '../../i18n/types'
 import {type DocumentPerspectiveState} from '../../releases/hooks/useDocumentVersions'
 import {type ReleasesReducerState} from '../../releases/store/reducer'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
@@ -29,6 +30,7 @@ interface DocumentGroupInventoryContext {
   deletionRef: ActorRefFromLogic<DeletionLogic>
   sets: VariantSet[]
   releases: Map<string, ReleaseDocument>
+  t: TFunction
 }
 
 type DocumentGroupInventoryEvents =
@@ -41,7 +43,7 @@ type DocumentGroupInventoryEvents =
 export const documentGroupInventoryMachine = setup({
   // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   types: {} as {
-    input: {selectionMachine: SelectionLogic; deletionMachine: DeletionLogic}
+    input: {selectionMachine: SelectionLogic; deletionMachine: DeletionLogic; t: TFunction}
     context: DocumentGroupInventoryContext
     events: DocumentGroupInventoryEvents
   },
@@ -64,13 +66,15 @@ export const documentGroupInventoryMachine = setup({
     }),
     sets: [],
     releases: new Map(),
+    t: input.t,
   }),
   invoke: {
     src: 'meta',
     onSnapshot: {
       actions: [
         assign({
-          sets: ({context, event}) => computeSets(event.snapshot.context, context.sets),
+          sets: ({context, event}) =>
+            computeSets({meta: event.snapshot.context, current: context.sets, t: context.t}),
           releases: ({event}) => event.snapshot.context?.releases.releases ?? new Map(),
         }),
         sendTo(
@@ -132,12 +136,25 @@ function metaIsLoaded(meta: Meta | undefined): boolean {
   return meta?.versionState.loading === false && meta.releases.state === 'loaded'
 }
 
-function computeSets(meta: Meta | undefined, current: VariantSet[]): VariantSet[] {
+function computeSets({
+  meta,
+  current,
+  t,
+}: {
+  meta: Meta | undefined
+  current: VariantSet[]
+  t: TFunction
+}): VariantSet[] {
   if (!meta) {
     return current
   }
 
   const {releases} = meta.releases
+  const userBundleIds = new Set(meta.agentBundles.bundles.map(({id}) => id))
+  const proposedChangesId = meta.versionState.data.find((id) => {
+    const bundleId = getVersionFromId(id)
+    return typeof bundleId === 'string' && userBundleIds.has(bundleId)
+  })
 
   return [
     {
@@ -147,7 +164,15 @@ function computeSets(meta: Meta | undefined, current: VariantSet[]): VariantSet[
         .map((id) => ({
           id,
           name: getVariantName(id, releases),
-        })),
+        }))
+        .concat(
+          typeof proposedChangesId === 'undefined'
+            ? []
+            : {
+                id: proposedChangesId,
+                name: t('version.agent-bundle.proposed-changes'),
+              },
+        ),
     },
   ]
 }
