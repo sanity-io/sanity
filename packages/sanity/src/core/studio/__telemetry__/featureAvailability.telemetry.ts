@@ -17,6 +17,7 @@ interface WorkspaceFeaturesObservedInfo {
   mediaLibraryEnabled: boolean | undefined
   canvasEnabled: boolean | undefined
   variantsEnabled: boolean | undefined
+  documentGroupInventoryEnabled: boolean | undefined
   eventsApiDocumentsEnabled: boolean | undefined
   eventsApiReleasesEnabled: boolean | undefined
   announcementsEnabled: boolean | undefined
@@ -39,8 +40,10 @@ export const WorkspaceFeaturesObserved = defineEvent<WorkspaceFeaturesObservedIn
  * straight off the resolved workspace, where the config resolver has already
  * applied every default and merged plugin contributions, so this never restates
  * a default itself: changing a default upstream flows through with no change
- * here. A field is `undefined` only when the resolved workspace omits it, which
- * downstream reads as the default being in effect.
+ * here. The `| undefined` unions track the input `Workspace` type rather than
+ * runtime behaviour: the resolver writes concrete defaults for almost all of
+ * these, so `releasesLimit` (unset when no release limit is configured) is the
+ * only field that is genuinely `undefined` at runtime.
  *
  * Every entry must stay a boolean, small enum, or short number; never free
  * text, identifiers, or customer values, which keeps the payload safe to send
@@ -62,6 +65,7 @@ export function collectWorkspaceFeatures(workspace: Workspace): WorkspaceFeature
     mediaLibraryEnabled: workspace.mediaLibrary?.enabled,
     canvasEnabled: workspace.apps?.canvas?.enabled,
     variantsEnabled: workspace.beta?.variants?.enabled,
+    documentGroupInventoryEnabled: workspace.beta?.documentGroupInventory?.enabled,
     eventsApiDocumentsEnabled: workspace.beta?.eventsAPI?.documents,
     eventsApiReleasesEnabled: workspace.beta?.eventsAPI?.releases,
     announcementsEnabled: workspace.announcements?.enabled,

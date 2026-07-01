@@ -94,11 +94,14 @@ describe('StudioTelemetryProvider', () => {
     releases: {enabled: true},
     tasks: {enabled: true},
     scheduledDrafts: {enabled: true},
-    // eslint-disable-next-line camelcase
     scheduledPublishing: {enabled: true, __internal__workspaceEnabled: false},
     mediaLibrary: {enabled: false},
     apps: {canvas: {enabled: true}},
-    beta: {variants: {enabled: false}, eventsAPI: {documents: true, releases: false}},
+    beta: {
+      variants: {enabled: false},
+      documentGroupInventory: {enabled: false},
+      eventsAPI: {documents: true, releases: false},
+    },
     announcements: {enabled: true},
     document: {drafts: {enabled: true}},
     form: {file: {directUploads: true}, image: {directUploads: true}},
@@ -525,6 +528,7 @@ describe('StudioTelemetryProvider', () => {
         mediaLibraryEnabled: undefined,
         canvasEnabled: undefined,
         variantsEnabled: undefined,
+        documentGroupInventoryEnabled: undefined,
         eventsApiDocumentsEnabled: undefined,
         eventsApiReleasesEnabled: undefined,
         announcementsEnabled: undefined,
@@ -539,7 +543,6 @@ describe('StudioTelemetryProvider', () => {
       ...mockWorkspace,
       mediaLibrary: {enabled: true},
       releases: {enabled: false, limit: 5},
-      // eslint-disable-next-line camelcase
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: true},
       search: {strategy: 'groqLegacy', unstable_partialIndexing: {enabled: true}},
       form: {file: {directUploads: false}, image: {directUploads: false}},
@@ -565,6 +568,30 @@ describe('StudioTelemetryProvider', () => {
         fileDirectUploadsEnabled: false,
         imageDirectUploadsEnabled: false,
       }),
+    )
+  })
+
+  it('reads the resolved documentGroupInventory flag when explicitly enabled', () => {
+    vi.mocked(useWorkspace).mockReturnValue({
+      ...mockWorkspace,
+      beta: {
+        variants: {enabled: false},
+        documentGroupInventory: {enabled: true},
+        eventsAPI: {documents: true, releases: false},
+      },
+    } as never)
+
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    expect(mockLog).toHaveBeenCalledWith(
+      WorkspaceFeaturesObserved,
+      expect.objectContaining({documentGroupInventoryEnabled: true, variantsEnabled: false}),
     )
   })
 
@@ -673,6 +700,7 @@ describe('StudioTelemetryProvider', () => {
       mediaLibraryEnabled: false,
       canvasEnabled: true,
       variantsEnabled: false,
+      documentGroupInventoryEnabled: false,
       eventsApiDocumentsEnabled: true,
       eventsApiReleasesEnabled: false,
       announcementsEnabled: true,
