@@ -32,6 +32,7 @@ import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseD
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {isAgentBundleName} from '../../store'
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
+import {useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {
   getPublishedId,
@@ -103,6 +104,8 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   referringDocuments$,
   components,
 }) => {
+  const {beta} = useWorkspace()
+  const variantsEnabled = beta?.variants?.enabled
   const {t} = useTranslation(studioLocaleNamespace)
   const {t: feedbackT} = useTranslation(feedbackLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -143,6 +146,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const inventoryRef = useActorRef(inventoryMachine, {
     input: {
       t,
+      variantsEnabled,
       selectionMachine: useMemo(
         () =>
           selectionMachine.provide({
