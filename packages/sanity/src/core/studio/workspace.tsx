@@ -1,8 +1,7 @@
-import {SanityApp, SDKStudioContext} from '@sanity/sdk-react'
+import {SDKStudioContext} from '@sanity/sdk-react'
 import {useContext} from 'react'
 import {WorkspaceContext} from 'sanity/_singletons'
 
-import {LoadingBlock} from '../components/loadingBlock'
 import {type Workspace} from '../config'
 
 /** @internal */
@@ -19,21 +18,13 @@ export function WorkspaceProvider({
   return (
     <WorkspaceContext.Provider value={workspace}>
       {/*
-       * Always provide the workspace to the App SDK so SDK hooks can resolve the
-       * project, dataset, and auth token. When the `sdk` config option is set, we
-       * also mount a single SanityApp at the workspace root. Everything beneath
-       * reuses that one instance (SanityApp/ResourceProvider reuse the nearest
-       * ancestor instance), so SDK code works without any extra providers and we
-       * avoid spawning a separate instance per consumer. SanityApp must render
-       * inside SDKStudioContext so it can derive its config from the workspace.
+       * Expose the workspace to the App SDK via SDKStudioContext so SDK hooks can
+       * resolve the current project, dataset, and auth token. This is provided by
+       * every WorkspaceProvider (including nested ones, e.g. the Tasks addon
+       * workspace), but the single SanityApp that actually creates an SDK instance
+       * is mounted once, for the primary workspace, in WorkspaceLoader.
        */}
-      <SDKStudioContext.Provider value={workspace}>
-        {workspace.sdk ? (
-          <SanityApp fallback={<LoadingBlock fill />}>{children}</SanityApp>
-        ) : (
-          children
-        )}
-      </SDKStudioContext.Provider>
+      <SDKStudioContext.Provider value={workspace}>{children}</SDKStudioContext.Provider>
     </WorkspaceContext.Provider>
   )
 }

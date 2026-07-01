@@ -1,3 +1,4 @@
+import {SanityApp} from '@sanity/sdk-react'
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 import {combineLatest, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
@@ -92,14 +93,26 @@ function WorkspaceLoader({
 
   return (
     <WorkspaceProvider workspace={workspace}>
-      <SourceProvider
-        // the first source is always the root source and is always present
-        source={workspace.unstable_sources[0]}
-      >
-        <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
-          {children}
-        </WorkspaceRouterProvider>
-      </SourceProvider>
+      {/*
+       * Mount a single App SDK instance for the primary workspace so SDK hooks
+       * work anywhere in the Studio without extra providers. This lives here
+       * (rather than in WorkspaceProvider) so nested workspaces, e.g. the Tasks
+       * addon dataset workspace, don't each spawn their own SanityApp instance.
+       * SanityApp derives its config from the SDKStudioContext supplied by the
+       * enclosing WorkspaceProvider. By the time this renders the Studio auth
+       * boundary has already passed, so the workspace has a token and the SDK
+       * resolves to a logged-in state.
+       */}
+      <SanityApp fallback={<LoadingComponent />}>
+        <SourceProvider
+          // the first source is always the root source and is always present
+          source={workspace.unstable_sources[0]}
+        >
+          <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
+            {children}
+          </WorkspaceRouterProvider>
+        </SourceProvider>
+      </SanityApp>
     </WorkspaceProvider>
   )
 }
