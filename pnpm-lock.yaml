@@ -1177,8 +1177,8 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/tsconfig
       '@sanity/icons':
-        specifier: ^3.7.4
-        version: 3.7.4(react@19.2.7)
+        specifier: ^3.7.6
+        version: 3.7.6(react@19.2.7)
       '@sanity/pkg-utils':
         specifier: 'catalog:'
         version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
@@ -1335,8 +1335,8 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@sanity/icons':
-        specifier: ^3.7.4
-        version: 3.7.4(react@19.2.7)
+        specifier: ^3.7.6
+        version: 3.7.6(react@19.2.7)
       '@sanity/lezer-groq':
         specifier: ^1.0.4
         version: 1.0.4
@@ -1564,8 +1564,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       '@sanity/icons':
-        specifier: ^3.7.4
-        version: 3.7.4(react@19.2.7)
+        specifier: ^3.7.6
+        version: 3.7.6(react@19.2.7)
       '@sanity/id-utils':
         specifier: ^1.0.0
         version: 1.0.0
@@ -5519,6 +5519,12 @@ packages:
 
   '@sanity/icons@3.7.4':
     resolution: {integrity: sha512-O9MnckiDsphFwlRS8Q3kj3n+JYUZ0UzKRujnSikMZOKI0dayucRe4U2XvxikRhJnFhcEJXW2RkWJoBaCoup9Sw==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: ^18.3 || ^19.0.0-0
+
+  '@sanity/icons@3.7.6':
+    resolution: {integrity: sha512-dwBEm1VLRUJ0vqFV3FTluaMFxbF82Fd+LkfCkT9+b6OhM9tnDgWTSP0SDpyt5CKR74GSJfTJlBQYPfbtTNjsZA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: ^18.3 || ^19.0.0-0
@@ -14690,6 +14696,10 @@ snapshots:
       - react-is
 
   '@sanity/icons@3.7.4(react@19.2.7)':
+    dependencies:
+      react: 19.2.7
+
+  '@sanity/icons@3.7.6(react@19.2.7)':
     dependencies:
       react: 19.2.7
 
