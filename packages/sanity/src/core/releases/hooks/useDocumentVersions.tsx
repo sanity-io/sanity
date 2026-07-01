@@ -25,8 +25,10 @@ import {getPublishedId} from '../../util/draftUtils'
 import {isRecord} from '../../util/isRecord'
 import {createSWR} from '../../util/rxSwr'
 import {type VersionInfoDocumentStub} from '../store/types'
-import {useActiveReleases} from '../store/useActiveReleases'
+import {useReleasesStore} from '../store/useReleasesStore'
+import {ARCHIVED_RELEASE_STATES} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {sortReleases} from './utils'
 
 export interface DocumentPerspectiveProps {
   documentId: string
@@ -48,6 +50,8 @@ const INITIAL_VALUE: DocumentPerspectiveState = {
 
 // Create a singleton cache for observables
 export const observableCache = new Map<string, Observable<DocumentPerspectiveState>>()
+// releases flow via combineLatest, never in the cache key — avoids cache thrash on every release edit
+export const withSystemCache = new Map<string, Observable<DocumentPerspectiveState>>()
 const swr = createSWR<string[]>({maxSize: 100})
 
 /**
@@ -78,33 +82,33 @@ export function useDocumentVersionsObservable(
   const dataset = useDataset()
   const projectId = useProjectId()
   const documentPreviewStore = useDocumentPreviewStore()
-  const {data: releases} = useActiveReleases()
+  const {state$: releasesState$} = useReleasesStore()
 
-  const observable: Observable<DocumentPerspectiveState> = useMemo(() => {
-    return getOrCreateDocumentVersionsObservable({
-      documentPreviewStore,
-      publishedId,
-      projectId,
-      dataset,
-    }).pipe(
-      map((result) => {
-        return {
-          ...result,
-          versions: result.versions.map((version) => {
-            return {
-              ...version,
-              [DOCUMENT_SYSTEM_FIELD]: version._system?.group
-                ? version._system
-                : {
-                    ...version._system,
-                    ...temporarilyBuildDocumentSystem(version._id, releases),
-                  },
-            }
-          }),
-        }
+  const releases$ = useMemo(
+    () =>
+      releasesState$.pipe(
+        map((state) =>
+          sortReleases(
+            Array.from(state.releases.values()).filter(
+              (release) => !ARCHIVED_RELEASE_STATES.includes(release.state),
+            ),
+          ).reverse(),
+        ),
+      ),
+    [releasesState$],
+  )
+
+  const observable: Observable<DocumentPerspectiveState> = useMemo(
+    () =>
+      getOrCreateDocumentVersionsWithSystemObservable({
+        documentPreviewStore,
+        publishedId,
+        projectId,
+        dataset,
+        releases$,
       }),
-    )
-  }, [dataset, documentPreviewStore, projectId, publishedId, releases])
+    [dataset, documentPreviewStore, projectId, publishedId, releases$],
+  )
 
   return observable
 }
@@ -143,6 +147,43 @@ const temporarilyBuildDocumentSystem = (
 }
 
 const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system']
+
+function getOrCreateDocumentVersionsWithSystemObservable(options: {
+  documentPreviewStore: DocumentPreviewStore
+  publishedId: string
+  projectId: string
+  dataset: string
+  releases$: Observable<ReleaseDocument[]>
+}): Observable<DocumentPerspectiveState> {
+  const {documentPreviewStore, projectId, dataset, publishedId, releases$} = options
+  const cacheKey = `${projectId}-${dataset}-${publishedId}`
+
+  const cached = withSystemCache.get(cacheKey)
+  if (cached) return cached
+
+  const withSystem = combineLatest([
+    getOrCreateDocumentVersionsObservable({documentPreviewStore, publishedId, projectId, dataset}),
+    releases$,
+  ]).pipe(
+    map(([result, releases]) => ({
+      ...result,
+      versions: result.versions.map((version) => ({
+        ...version,
+        [DOCUMENT_SYSTEM_FIELD]: version._system?.group
+          ? version._system
+          : {
+              ...version._system,
+              ...temporarilyBuildDocumentSystem(version._id, releases),
+            },
+      })),
+    })),
+    finalize(() => withSystemCache.delete(cacheKey)),
+    shareReplay({refCount: true, bufferSize: 1}),
+  )
+
+  withSystemCache.set(cacheKey, withSystem)
+  return withSystem
+}
 
 /**
  * Retrieves an observable that emits document IDs matching the document versions that exist for a specific id
