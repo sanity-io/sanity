@@ -143,6 +143,17 @@ function getItemType(arrayType: ArraySchemaType, item: unknown): SchemaType | un
 /** @internal */
 export const DEFAULT_MAX_RECURSION_DEPTH = 10
 
+/**
+ * Backstop for an initial-value resolver whose request never settles — e.g.
+ * a `client.fetch` parked by the studio's network/CORS error handling.
+ * Without it the editor hangs in a loading state and the create-document menu
+ * loads forever instead of surfacing the failure. Both call sites
+ * (`getInitialValueStream`, `getTemplatePermissions`) time out on this bound.
+ *
+ * @internal
+ */
+export const RESOLVE_INITIAL_VALUE_TIMEOUT_MS = 10_000
+
 type ResolveInitialValueForType = <TParams extends Record<string, unknown>>(
   /**
    * This is the name of the document.

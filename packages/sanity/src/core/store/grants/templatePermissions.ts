@@ -1,10 +1,15 @@
 import {type InitialValueResolverContext, type Schema} from '@sanity/types'
 import {useMemo} from 'react'
 import {combineLatest, defer, from, type Observable, of} from 'rxjs'
-import {concatMap, map, switchMap, toArray} from 'rxjs/operators'
+import {catchError, map, mergeMap, switchMap, timeout, toArray} from 'rxjs/operators'
 
 import {useSchema, useTemplates} from '../../hooks'
-import {type InitialValueTemplateItem, resolveInitialValue, type Template} from '../../templates'
+import {
+  type InitialValueTemplateItem,
+  RESOLVE_INITIAL_VALUE_TIMEOUT_MS,
+  resolveInitialValue,
+  type Template,
+} from '../../templates'
 import {
   createHookFromObservableFactory,
   getDraftId,
@@ -60,10 +65,20 @@ export function getTemplatePermissions({
   if (!templateItems?.length) return of([])
 
   return defer(() => {
-    // Process items sequentially
+    // Resolve each template's initial value concurrently. Resolution must
+    // not be allowed to block the whole menu: a single resolver can reject
+    // (its `client.fetch` errored) or never settle at all — the studio's
+    // request-error handling parks failed requests (network / CORS) so they
+    // hang indefinitely. A per-item timeout backstops the hang case.
+    //
+    // On failure we keep the template (don't drop it) and fall back to an
+    // empty initial value for the permission check. The template stays
+    // creatable/clickable in the menus; the real resolution error is then
+    // surfaced in the editor when the user navigates there (see
+    // `useInitialValue`). This avoids a misleading "insufficient
+    // permissions" state for what is really a resolution failure.
     return from(templateItems).pipe(
-      // Serialize and resolve each item one at a time
-      concatMap(async (item) => {
+      mergeMap((item) => {
         const serializedItem = serialize(item)
         const template = templates.find((t) => t.id === serializedItem.templateId)
 
@@ -71,15 +86,27 @@ export function getTemplatePermissions({
           throw new Error(`template not found: "${serializedItem.templateId}"`)
         }
 
-        const resolvedInitialValue = await resolveInitialValue(
-          schema,
-          template,
-          serializedItem.parameters,
-          context,
-          {useCache: true},
+        // Resolve in-stream (rather than `mergeMap(async …)`) so RxJS owns
+        // the timeout timer and cancels the in-flight resolution when the
+        // consumer tears down — e.g. the create-document menu closes while a
+        // resolver is still hanging on a parked request.
+        return from(
+          resolveInitialValue(schema, template, serializedItem.parameters, context, {
+            useCache: true,
+          }),
+        ).pipe(
+          timeout({first: RESOLVE_INITIAL_VALUE_TIMEOUT_MS}),
+          map((resolvedInitialValue) => ({item: serializedItem, template, resolvedInitialValue})),
+          catchError((resolveError) => {
+            console.error(
+              `Failed to resolve initial value for template "${serializedItem.templateId}":`,
+              resolveError,
+            )
+            // Fall back to an empty initial value so the template is still
+            // offered; the editor surfaces the resolution error on navigate.
+            return of({item: serializedItem, template, resolvedInitialValue: {}})
+          }),
         )
-
-        return {item: serializedItem, template, resolvedInitialValue}
       }),
       // Convert each resolved item into a permission check observable
       map(({item, template, resolvedInitialValue}) => {
@@ -123,8 +150,13 @@ export function getTemplatePermissions({
       }),
       // Collect all permission check observables
       toArray(),
-      // Switch to combined observable of all permission checks
-      switchMap((observables) => combineLatest(observables)),
+      // Switch to combined observable of all permission checks.
+      // `combineLatest([])` completes without emitting, which would leave
+      // the consumer's loading state stuck on forever — emit an empty
+      // result instead when no templates resolved.
+      switchMap((observables) =>
+        observables.length ? combineLatest(observables) : of([] as TemplatePermissionsResult[]),
+      ),
     )
   })
 }

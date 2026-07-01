@@ -1,8 +1,10 @@
 import {type InitialValueResolverContext, type SanityDocumentLike} from '@sanity/types'
+import {useToast} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
 
 import {useDataset, useProjectId, useSchema} from '../../hooks'
-import {useSource} from '../../studio'
+import {useTranslation} from '../../i18n'
+import {classifyRequestError, useSource, useStudioErrorHandler} from '../../studio'
 import {getVersionId, useUnique} from '../../util'
 import {useDocumentStore} from '../datastores'
 import {useCurrentUser} from '../user'
@@ -22,6 +24,9 @@ export function useInitialValue(props: {
   const templateParams = useUnique(templateParamsRaw)
   const documentStore = useDocumentStore()
   const context = useInitialValueResolverContext()
+  const errorHandler = useStudioErrorHandler()
+  const toast = useToast()
+  const {t} = useTranslation()
 
   const defaultValue: SanityDocumentLike = useMemo(
     () => ({
@@ -55,6 +60,32 @@ export function useInitialValue(props: {
       }
 
       if (msg.type === 'error') {
+        const pushErrorToast = () =>
+          toast.push({
+            id: `initial-value-error-${documentId}`,
+            status: 'error',
+            title: t('document.initial-value.error.title'),
+            description: t('document.initial-value.error.description', {
+              errorMessage: msg.error.message,
+            }),
+          })
+
+        // The document opens with the empty default value either way; how we
+        // surface the failure depends on its kind:
+        //  - Infrastructure errors (network down, 5xx, rate limited) from a
+        //    resolver's `client.fetch` go to the studio's request-error
+        //    dialog (with retry) — the dialog is the surface, no toast.
+        //  - Everything else (resolver bugs, validation, 404s) gets a toast
+        //    so the failure isn't silent.
+        if (classifyRequestError(msg.error)) {
+          // `handle` rejects when no handler claims the error — e.g. the
+          // passthrough handler used when there's no WorkspacesProvider (an
+          // embedded/standalone render). Fall back to the toast so a
+          // classifiable-but-unhandled infra error is never fully silent.
+          void errorHandler.handle(msg.error).catch(pushErrorToast)
+        } else {
+          pushErrorToast()
+        }
         setState({loading: false, error: msg.error, value: defaultValue})
       }
     })
@@ -63,7 +94,18 @@ export function useInitialValue(props: {
     setState({loading: true, error: null, value: defaultValue})
 
     return () => sub.unsubscribe()
-  }, [defaultValue, documentId, documentStore, documentType, templateName, templateParams, context])
+  }, [
+    defaultValue,
+    documentId,
+    documentStore,
+    documentType,
+    templateName,
+    templateParams,
+    context,
+    errorHandler,
+    toast,
+    t,
+  ])
 
   return state
 }

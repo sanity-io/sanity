@@ -1,4 +1,4 @@
-import {type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {type InitialValueResolverContext, type SanityDocumentLike, type Schema} from '@sanity/types'
 import {from, merge, type Observable, of} from 'rxjs'
 import {
   catchError,
@@ -9,10 +9,15 @@ import {
   scan,
   startWith,
   switchMap,
+  timeout,
 } from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../../preview'
-import {resolveInitialValue, type Template} from '../../../templates'
+import {
+  RESOLVE_INITIAL_VALUE_TIMEOUT_MS,
+  resolveInitialValue,
+  type Template,
+} from '../../../templates'
 import {getDraftId, getPublishedId} from '../../../util'
 import {
   type InitialValueErrorMsg,
@@ -68,7 +73,7 @@ export function getInitialValueStream(
   )
 
   return value$.pipe(
-    switchMap((document) => {
+    switchMap((document): Observable<InitialValueMsg> => {
       // Already exists, so no initial value is needed
       if (document) {
         return of({type: 'success', value: null})
@@ -76,54 +81,52 @@ export function getInitialValueStream(
 
       if (!opts.templateName) {
         // @todo: Make sure this is the correct behavior
-        return of({isResolving: false, initialValue: undefined, type: 'success'})
+        return of({type: 'success', value: null})
       }
 
       const template = initialValueTemplates.find((t) => t.id === opts.templateName)
 
       if (!template) {
         console.warn('Template "%s" not defined, using empty initial value', opts.templateName)
-        return of({isResolving: false, initialValue: undefined, type: 'success'})
+        return of({type: 'success', value: null})
       }
 
-      const initialValueWithParams$ = from(
+      const resolved$ = from(
         resolveInitialValue(schema, template, opts.templateParams, context),
-      )
-        .pipe(map((initialValue) => ({isResolving: false, initialValue})))
-        .pipe(
-          catchError((resolveError) => {
-            // oxlint-disable no-console
-            console.group('Failed to resolve initial value')
-            console.error(resolveError)
-            console.error('Template ID: %s', opts.templateName)
-            console.error('Parameters: %o', opts.templateParams)
-            console.groupEnd()
-            // oxlint-enable no-console
-
-            const msg: InitialValueErrorMsg = {type: 'error', error: resolveError}
-
-            return of(msg)
+      ).pipe(
+        // A resolver whose request is parked (network/CORS) never settles —
+        // time it out so the failure surfaces rather than hanging the editor.
+        timeout({first: RESOLVE_INITIAL_VALUE_TIMEOUT_MS}),
+        map(
+          (initialValue): InitialValueSuccessMsg => ({
+            type: 'success',
+            // The resolver returns an arbitrary record; by contract it's a
+            // document-like value (the template's `_type` was merged in).
+            value: initialValue as SanityDocumentLike,
           }),
-        )
+        ),
+        catchError((resolveError: Error) => {
+          // oxlint-disable no-console
+          console.group('Failed to resolve initial value')
+          console.error(resolveError)
+          console.error('Template ID: %s', opts.templateName)
+          console.error('Parameters: %o', opts.templateParams)
+          console.groupEnd()
+          // oxlint-enable no-console
 
-      return merge(of({isResolving: true}), initialValueWithParams$).pipe(
-        switchMap(({isResolving, initialValue, resolveError}: any) => {
-          if (resolveError) {
-            return of({type: 'error', message: 'Failed to resolve initial value'})
-          }
-
-          if (isResolving) {
-            return of(LOADING_MSG)
-          }
-
-          const msg: InitialValueSuccessMsg = {type: 'success', value: initialValue}
-
+          // Carry the original error so the consumer can classify it
+          // (a network/5xx failure in a resolver's `client.fetch` is
+          // delegated to the studio's request-error dialog) and re-throwing
+          // resolver bugs stay caller-domain.
+          const msg: InitialValueErrorMsg = {type: 'error', error: resolveError}
           return of(msg)
         }),
       )
+
+      return merge(of<InitialValueMsg>(LOADING_MSG), resolved$)
     }),
 
     startWith(LOADING_MSG),
     distinctUntilChanged(),
-  ) as Observable<InitialValueMsg>
+  )
 }
