@@ -1,6 +1,5 @@
 import {ResetIcon} from '@sanity/icons'
 import {Flex, Skeleton, Text} from '@sanity/ui'
-import {type CSSProperties} from 'react'
 
 import {useTranslation} from '../../../core/i18n'
 import {Button} from '../../../ui-components/button'
@@ -21,7 +20,7 @@ export function VideoSkeleton({error, retry, aspectRatio}: VideoSkeletonProps) {
     <RatioBox
       tone={error ? 'critical' : 'transparent'}
       $isPortrait={ratio < 0.75}
-      style={{'--aspect-ratio': ratio} as CSSProperties}
+      style={{'--aspect-ratio': ratio}}
     >
       {error ? (
         <Flex

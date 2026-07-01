@@ -116,8 +116,7 @@ export function ContentEditor(props: {
           {mainDocumentState.document ? (
             <PreviewCard
               __unstable_focusRing
-              // oxlint-disable-next-line no-explicit-any
-              as={MainDocumentLink as any}
+              as={MainDocumentLink}
               data-as="a"
               radius={2}
               sizing="border"
