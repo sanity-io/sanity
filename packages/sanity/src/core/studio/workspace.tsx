@@ -21,8 +21,8 @@ export function WorkspaceProvider({
        * Expose the workspace to the App SDK via SDKStudioContext so SDK hooks can
        * resolve the current project, dataset, and auth token. This is provided by
        * every WorkspaceProvider (including nested ones, e.g. the Tasks addon
-       * workspace), but the single SanityApp that actually creates an SDK instance
-       * is mounted once, for the primary workspace, in WorkspaceLoader.
+       * workspace), but the single SDK instance is created once, for the primary
+       * workspace, by the ResourceProvider mounted in WorkspaceLoader.
        */}
       <SDKStudioContext.Provider value={workspace}>{children}</SDKStudioContext.Provider>
     </WorkspaceContext.Provider>
