@@ -1,6 +1,5 @@
 import {DocumentSheetIcon} from '@sanity/icons'
 import {Button, Tooltip} from '@sanity/ui'
-import {type ElementType, type MouseEvent} from 'react'
 import {useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../i18n'
@@ -9,35 +8,37 @@ interface SaveButtonProps {
   blobUrl: string | undefined
 }
 
-function preventSave(evt: MouseEvent<HTMLAnchorElement>) {
-  return evt.preventDefault()
-}
-
 export function SaveCsvButton({blobUrl}: SaveButtonProps) {
   const {t} = useTranslation(visionLocaleNamespace)
-  const isDisabled = !blobUrl
 
-  const button = (
+  // An anchor cannot be disabled, so when there is nothing to download we render a plain
+  // disabled button (which also prevents the click natively) instead of a disabled link.
+  if (!blobUrl) {
+    return (
+      <Tooltip content={t('result.save-result-as-csv.not-csv-encodable')} placement="top">
+        <Button
+          disabled
+          icon={DocumentSheetIcon}
+          mode="ghost"
+          // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+          text="CSV" // String is a File extension
+          tone="default"
+        />
+      </Tooltip>
+    )
+  }
+
+  return (
     <Button
-      as={'a' as ElementType}
-      disabled={isDisabled}
-      download={isDisabled ? undefined : 'query-result.csv'}
+      as="a"
+      download="query-result.csv"
       href={blobUrl}
       icon={DocumentSheetIcon}
       mode="ghost"
-      onClick={isDisabled ? preventSave : undefined}
       // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
       text="CSV" // String is a File extension
       tone="default"
     />
-  )
-
-  return isDisabled ? (
-    <Tooltip content={t('result.save-result-as-csv.not-csv-encodable')} placement="top">
-      {button}
-    </Tooltip>
-  ) : (
-    button
   )
 }
 

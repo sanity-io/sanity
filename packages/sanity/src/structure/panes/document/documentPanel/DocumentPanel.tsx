@@ -111,7 +111,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {features} = useStructureTool()
   const [_portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
-  const formContainerElement = useRef<HTMLDivElement | null>(null)
+  const formContainerElement = useRef<HTMLFormElement | null>(null)
   const workspace = useWorkspace()
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
