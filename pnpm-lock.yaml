@@ -131,10 +131,10 @@ importers:
         version: 4.1.0
       esbuild-register:
         specifier: 'catalog:'
-        version: 3.6.0(esbuild@0.28.1)(supports-color@8.1.1)
+        version: 3.6.0(esbuild@0.28.1)
       eslint-import-resolver-typescript:
         specifier: ^4.4.5
-        version: 4.4.5(eslint@10.5.0)(supports-color@8.1.1)
+        version: 4.4.5(eslint@10.5.0)
       eslint-plugin-boundaries:
         specifier: ^6.0.2
         version: 6.0.2(eslint-import-resolver-typescript@4.4.5)(eslint@10.5.0)
@@ -143,10 +143,10 @@ importers:
         version: 6.1.4
       eslint-plugin-testing-library:
         specifier: ^7.16.2
-        version: 7.16.2(eslint@10.5.0)(supports-color@8.1.1)(typescript@5.9.3)
+        version: 7.16.2(eslint@10.5.0)(typescript@5.9.3)
       eslint-plugin-tsdoc:
         specifier: ^0.5.2
-        version: 0.5.2(eslint@10.5.0)(supports-color@8.1.1)(typescript@5.9.3)
+        version: 0.5.2(eslint@10.5.0)(typescript@5.9.3)
       knip:
         specifier: ^6.21.0
         version: 6.21.0
@@ -188,7 +188,7 @@ importers:
         version: 0.28.19(typescript@5.9.3)
       vercel:
         specifier: ^54.17.3
-        version: 54.17.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(rollup@4.62.2)(supports-color@8.1.1)
+        version: 54.17.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(rollup@4.62.2)
       vite:
         specifier: 'catalog:'
         version: 8.1.0(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
@@ -554,7 +554,7 @@ importers:
     dependencies:
       '@portabletext/editor':
         specifier: ^7.9.0
-        version: 7.9.0(@types/react@19.2.17)(react@19.2.7)(supports-color@8.1.1)
+        version: 7.9.0(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/html':
         specifier: ^1.1.0
         version: 1.1.0
@@ -596,7 +596,7 @@ importers:
         version: 2.2.2(react@19.2.7)
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 7.0.3(@oclif/core@4.11.7)(@sanity/cli-core@2.1.2)(supports-color@8.1.1)(xstate@5.32.2)
+        version: 7.0.3(@oclif/core@4.11.7)(@sanity/cli-core@2.1.2)(xstate@5.32.2)
       '@sanity/preview-url-secret':
         specifier: ^4.0.7
         version: 4.0.7(@sanity/client@7.23.0)
@@ -848,7 +848,7 @@ importers:
         version: link:../tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(supports-color@8.1.1)(typescript@5.9.3)
+        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.2
@@ -1077,7 +1077,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(supports-color@8.1.1)(typescript@5.9.3)
+        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
@@ -1114,7 +1114,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(supports-color@8.1.1)(typescript@5.9.3)
+        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/debug':
         specifier: ^4.1.13
         version: 4.1.13
@@ -1177,11 +1177,11 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/tsconfig
       '@sanity/icons':
-        specifier: ^3.7.4
-        version: 3.7.4(react@19.2.7)
+        specifier: ^3.7.6
+        version: 3.7.6(react@19.2.7)
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(supports-color@8.1.1)(typescript@5.9.3)
+        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -1227,7 +1227,7 @@ importers:
         version: 3.0.8(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)(styled-components@6.4.2)
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(supports-color@8.1.1)(typescript@5.9.3)
+        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.17
@@ -1282,7 +1282,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(supports-color@8.1.1)(typescript@5.9.3)
+        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.2
@@ -1335,8 +1335,8 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@sanity/icons':
-        specifier: ^3.7.4
-        version: 3.7.4(react@19.2.7)
+        specifier: ^3.7.6
+        version: 3.7.6(react@19.2.7)
       '@sanity/lezer-groq':
         specifier: ^1.0.4
         version: 1.0.4
@@ -1454,7 +1454,7 @@ importers:
         version: link:../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(supports-color@8.1.1)(typescript@5.9.3)
+        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.2
@@ -1493,7 +1493,7 @@ importers:
         version: 3.13.0(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.7)(react@19.2.7)
       '@portabletext/editor':
         specifier: ^7.9.0
-        version: 7.9.0(@types/react@19.2.17)(react@19.2.7)(supports-color@8.1.1)
+        version: 7.9.0(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/html':
         specifier: ^1.1.0
         version: 1.1.0
@@ -1564,8 +1564,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       '@sanity/icons':
-        specifier: ^3.7.4
-        version: 3.7.4(react@19.2.7)
+        specifier: ^3.7.6
+        version: 3.7.6(react@19.2.7)
       '@sanity/id-utils':
         specifier: ^1.0.0
         version: 1.0.0
@@ -1586,7 +1586,7 @@ importers:
         version: 0.23.0
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 7.0.3(@oclif/core@4.11.7)(@sanity/cli-core@2.1.2)(supports-color@8.1.1)(xstate@5.32.2)
+        version: 7.0.3(@oclif/core@4.11.7)(@sanity/cli-core@2.1.2)(xstate@5.32.2)
       '@sanity/mutate':
         specifier: ^0.18.1
         version: 0.18.1(xstate@5.32.2)
@@ -5519,6 +5519,12 @@ packages:
 
   '@sanity/icons@3.7.4':
     resolution: {integrity: sha512-O9MnckiDsphFwlRS8Q3kj3n+JYUZ0UzKRujnSikMZOKI0dayucRe4U2XvxikRhJnFhcEJXW2RkWJoBaCoup9Sw==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: ^18.3 || ^19.0.0-0
+
+  '@sanity/icons@3.7.6':
+    resolution: {integrity: sha512-dwBEm1VLRUJ0vqFV3FTluaMFxbF82Fd+LkfCkT9+b6OhM9tnDgWTSP0SDpyt5CKR74GSJfTJlBQYPfbtTNjsZA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: ^18.3 || ^19.0.0-0
@@ -13859,7 +13865,7 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@portabletext/editor@7.9.0(@types/react@19.2.17)(react@19.2.7)(supports-color@8.1.1)':
+  '@portabletext/editor@7.9.0(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
       '@portabletext/html': 1.1.0
       '@portabletext/keyboard-shortcuts': 2.1.3
@@ -13896,7 +13902,7 @@ snapshots:
 
   '@portabletext/plugin-character-pair-decorator@8.0.26(@portabletext/editor@7.9.0)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)(supports-color@8.1.1)
+      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)
       '@xstate/react': 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.2)
       react: 19.2.7
       xstate: 5.32.2
@@ -13905,12 +13911,12 @@ snapshots:
 
   '@portabletext/plugin-dnd@1.0.11(@portabletext/editor@7.9.0)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)(supports-color@8.1.1)
+      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
 
   '@portabletext/plugin-input-rule@5.0.26(@portabletext/editor@7.9.0)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)(supports-color@8.1.1)
+      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)
       '@xstate/react': 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.2)
       react: 19.2.7
       xstate: 5.32.2
@@ -13919,12 +13925,12 @@ snapshots:
 
   '@portabletext/plugin-list-index@1.0.11(@portabletext/editor@7.9.0)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)(supports-color@8.1.1)
+      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
 
   '@portabletext/plugin-markdown-shortcuts@8.0.26(@portabletext/editor@7.9.0)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)(supports-color@8.1.1)
+      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/plugin-character-pair-decorator': 8.0.26(@portabletext/editor@7.9.0)(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/plugin-input-rule': 5.0.26(@portabletext/editor@7.9.0)(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
@@ -13933,17 +13939,17 @@ snapshots:
 
   '@portabletext/plugin-one-line@7.0.26(@portabletext/editor@7.9.0)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)(supports-color@8.1.1)
+      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
 
   '@portabletext/plugin-paste-link@4.0.26(@portabletext/editor@7.9.0)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)(supports-color@8.1.1)
+      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
 
   '@portabletext/plugin-typography@8.0.26(@portabletext/editor@7.9.0)(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
-      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)(supports-color@8.1.1)
+      '@portabletext/editor': 7.9.0(@types/react@19.2.17)(react@19.2.7)
       '@portabletext/plugin-input-rule': 5.0.26(@portabletext/editor@7.9.0)(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
     transitivePeerDependencies:
@@ -14435,7 +14441,7 @@ snapshots:
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
       '@sanity/import': 6.0.3(@sanity/client@7.23.0)
-      '@sanity/migrate': 7.0.3(@oclif/core@4.11.7)(@sanity/cli-core@2.1.2)(supports-color@8.1.1)(xstate@5.32.2)
+      '@sanity/migrate': 7.0.3(@oclif/core@4.11.7)(@sanity/cli-core@2.1.2)(xstate@5.32.2)
       '@sanity/runtime-cli': 17.0.0(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.7)
@@ -14693,6 +14699,10 @@ snapshots:
     dependencies:
       react: 19.2.7
 
+  '@sanity/icons@3.7.6(react@19.2.7)':
+    dependencies:
+      react: 19.2.7
+
   '@sanity/id-utils@1.0.0':
     dependencies:
       '@sanity/uuid': 3.0.3
@@ -14781,7 +14791,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.1
 
-  '@sanity/migrate@7.0.3(@oclif/core@4.11.7)(@sanity/cli-core@2.1.2)(supports-color@8.1.1)(xstate@5.32.2)':
+  '@sanity/migrate@7.0.3(@oclif/core@4.11.7)(@sanity/cli-core@2.1.2)(xstate@5.32.2)':
     dependencies:
       '@oclif/core': 4.11.7
       '@sanity/cli-core': 2.1.2(@noble/hashes@2.2.0)(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(terser@5.48.0)(yaml@2.9.0)
@@ -14855,64 +14865,7 @@ snapshots:
       rolldown: 1.1.3
       rolldown-plugin-dts: 0.26.0(@typescript/native-preview@7.0.0-dev.20260421.2)(oxc-resolver@11.21.3)(rolldown@1.1.3)(typescript@5.9.3)
       rollup: 4.62.2
-      rollup-plugin-esbuild: 6.2.1(esbuild@0.28.1)(rollup@4.62.2)(supports-color@8.1.1)
-      rxjs: 7.8.2
-      treeify: 1.1.0
-      tsx: 4.22.4
-      typescript: 5.9.3
-      zod: 4.4.3
-      zod-validation-error: 5.0.0(zod@4.4.3)
-    optionalDependencies:
-      babel-plugin-react-compiler: 1.0.0
-    transitivePeerDependencies:
-      - '@ts-macro/tsc'
-      - '@types/babel__core'
-      - '@types/node'
-      - '@typescript/native-preview'
-      - babel-plugin-macros
-      - oxc-resolver
-      - supports-color
-      - vue-tsc
-
-  '@sanity/pkg-utils@10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(supports-color@8.1.1)(typescript@5.9.3)':
-    dependencies:
-      '@babel/core': 7.29.7
-      '@babel/preset-typescript': 7.29.7(@babel/core@7.29.7)
-      '@microsoft/api-extractor': 7.58.9(@types/node@24.13.2)
-      '@microsoft/tsdoc-config': 0.18.1
-      '@optimize-lodash/rollup-plugin': 6.0.0(rollup@4.62.2)
-      '@rollup/plugin-alias': 6.0.0(rollup@4.62.2)
-      '@rollup/plugin-babel': 7.1.0(@babel/core@7.29.7)(rollup@4.62.2)
-      '@rollup/plugin-commonjs': 29.0.3(rollup@4.62.2)
-      '@rollup/plugin-json': 6.1.0(rollup@4.62.2)
-      '@rollup/plugin-node-resolve': 16.0.3(rollup@4.62.2)
-      '@rollup/plugin-replace': 6.0.3(rollup@4.62.2)
-      '@rollup/plugin-terser': 1.0.0(rollup@4.62.2)
-      '@sanity/browserslist-config': 1.0.5
-      '@sanity/parse-package-json': 2.2.1
-      '@vanilla-extract/rollup-plugin': 1.5.3(babel-plugin-macros@3.1.0)(rollup@4.62.2)
-      browserslist: 4.28.2
-      cac: 7.0.0
-      chalk: 5.6.2
-      chokidar: 5.0.0
-      empathic: 2.0.1
-      esbuild: 0.28.1
-      find-config: 1.0.0
-      get-latest-version: 6.0.1
-      git-url-parse: 16.1.0
-      globby: 16.2.0
-      jsonc-parser: 3.3.1
-      lightningcss: 1.32.0
-      mkdirp: 3.0.1
-      outdent: 0.8.0
-      prettier: 3.8.4
-      pretty-bytes: 7.1.0
-      prompts: 2.4.2
-      rimraf: 6.1.3
-      rolldown: 1.1.3
-      rolldown-plugin-dts: 0.26.0(@typescript/native-preview@7.0.0-dev.20260421.2)(oxc-resolver@11.21.3)(rolldown@1.1.3)(typescript@5.9.3)
-      rollup: 4.62.2
-      rollup-plugin-esbuild: 6.2.1(esbuild@0.28.1)(rollup@4.62.2)(supports-color@8.1.1)
+      rollup-plugin-esbuild: 6.2.1(esbuild@0.28.1)(rollup@4.62.2)
       rxjs: 7.8.2
       treeify: 1.1.0
       tsx: 4.22.4
@@ -15539,7 +15492,7 @@ snapshots:
     dependencies:
       '@types/yargs-parser': 21.0.3
 
-  '@typescript-eslint/project-service@8.56.1(supports-color@8.1.1)(typescript@5.9.3)':
+  '@typescript-eslint/project-service@8.56.1(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.61.1(typescript@5.9.3)
       '@typescript-eslint/types': 8.61.1
@@ -15548,7 +15501,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/project-service@8.61.1(supports-color@8.1.1)(typescript@5.9.3)':
+  '@typescript-eslint/project-service@8.61.1(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.61.1(typescript@5.9.3)
       '@typescript-eslint/types': 8.61.1
@@ -15579,9 +15532,9 @@ snapshots:
 
   '@typescript-eslint/types@8.61.1': {}
 
-  '@typescript-eslint/typescript-estree@8.56.1(supports-color@8.1.1)(typescript@5.9.3)':
+  '@typescript-eslint/typescript-estree@8.56.1(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/project-service': 8.56.1(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/project-service': 8.56.1(typescript@5.9.3)
       '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@5.9.3)
       '@typescript-eslint/types': 8.56.1
       '@typescript-eslint/visitor-keys': 8.56.1
@@ -15594,9 +15547,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/typescript-estree@8.61.1(supports-color@8.1.1)(typescript@5.9.3)':
+  '@typescript-eslint/typescript-estree@8.61.1(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/project-service': 8.61.1(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/project-service': 8.61.1(typescript@5.9.3)
       '@typescript-eslint/tsconfig-utils': 8.61.1(typescript@5.9.3)
       '@typescript-eslint/types': 8.61.1
       '@typescript-eslint/visitor-keys': 8.61.1
@@ -15609,23 +15562,23 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.56.1(eslint@10.5.0)(supports-color@8.1.1)(typescript@5.9.3)':
+  '@typescript-eslint/utils@8.56.1(eslint@10.5.0)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.5.0)
       '@typescript-eslint/scope-manager': 8.56.1
       '@typescript-eslint/types': 8.56.1
-      '@typescript-eslint/typescript-estree': 8.56.1(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/typescript-estree': 8.56.1(typescript@5.9.3)
       eslint: 10.5.0(jiti@2.7.0)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.61.1(eslint@10.5.0)(supports-color@8.1.1)(typescript@5.9.3)':
+  '@typescript-eslint/utils@8.61.1(eslint@10.5.0)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.5.0)
       '@typescript-eslint/scope-manager': 8.61.1
       '@typescript-eslint/types': 8.61.1
-      '@typescript-eslint/typescript-estree': 8.61.1(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/typescript-estree': 8.61.1(typescript@5.9.3)
       eslint: 10.5.0(jiti@2.7.0)
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -17362,7 +17315,7 @@ snapshots:
 
   es-toolkit@1.49.0: {}
 
-  esbuild-register@3.6.0(esbuild@0.28.1)(supports-color@8.1.1):
+  esbuild-register@3.6.0(esbuild@0.28.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       esbuild: 0.28.1
@@ -17456,7 +17409,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@4.4.5(eslint@10.5.0)(supports-color@8.1.1):
+  eslint-import-resolver-typescript@4.4.5(eslint@10.5.0):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       eslint: 10.5.0(jiti@2.7.0)
@@ -17475,7 +17428,7 @@ snapshots:
     optionalDependencies:
       eslint: 10.5.0(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 4.4.5(eslint@10.5.0)(supports-color@8.1.1)
+      eslint-import-resolver-typescript: 4.4.5(eslint@10.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -17499,20 +17452,20 @@ snapshots:
       lodash: 4.18.1
       requireindex: 1.1.0
 
-  eslint-plugin-testing-library@7.16.2(eslint@10.5.0)(supports-color@8.1.1)(typescript@5.9.3):
+  eslint-plugin-testing-library@7.16.2(eslint@10.5.0)(typescript@5.9.3):
     dependencies:
       '@typescript-eslint/scope-manager': 8.61.1
-      '@typescript-eslint/utils': 8.61.1(eslint@10.5.0)(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.61.1(eslint@10.5.0)(typescript@5.9.3)
       eslint: 10.5.0(jiti@2.7.0)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  eslint-plugin-tsdoc@0.5.2(eslint@10.5.0)(supports-color@8.1.1)(typescript@5.9.3):
+  eslint-plugin-tsdoc@0.5.2(eslint@10.5.0)(typescript@5.9.3):
     dependencies:
       '@microsoft/tsdoc': 0.16.0
       '@microsoft/tsdoc-config': 0.18.1
-      '@typescript-eslint/utils': 8.56.1(eslint@10.5.0)(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.56.1(eslint@10.5.0)(typescript@5.9.3)
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -17949,7 +17902,7 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
-  get-uri@6.0.5(supports-color@8.1.1):
+  get-uri@6.0.5:
     dependencies:
       basic-ftp: 5.3.1
       data-uri-to-buffer: 6.0.2
@@ -19271,12 +19224,12 @@ snapshots:
 
   p-try@2.2.0: {}
 
-  pac-proxy-agent@7.2.0(supports-color@8.1.1):
+  pac-proxy-agent@7.2.0:
     dependencies:
       '@tootallnate/quickjs-emscripten': 0.23.0
       agent-base: 7.1.4
       debug: 4.4.3(supports-color@8.1.1)
-      get-uri: 6.0.5(supports-color@8.1.1)
+      get-uri: 6.0.5
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
       pac-resolver: 7.0.1
@@ -19495,14 +19448,14 @@ snapshots:
 
   protocols@2.0.2: {}
 
-  proxy-agent@6.4.0(supports-color@8.1.1):
+  proxy-agent@6.4.0:
     dependencies:
       agent-base: 7.1.4
       debug: 4.4.3(supports-color@8.1.1)
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
       lru-cache: 7.18.3
-      pac-proxy-agent: 7.2.0(supports-color@8.1.1)
+      pac-proxy-agent: 7.2.0
       proxy-from-env: 1.1.0
       socks-proxy-agent: 8.0.5
     transitivePeerDependencies:
@@ -19917,7 +19870,7 @@ snapshots:
       '@rolldown/binding-win32-arm64-msvc': 1.1.3
       '@rolldown/binding-win32-x64-msvc': 1.1.3
 
-  rollup-plugin-esbuild@6.2.1(esbuild@0.28.1)(rollup@4.62.2)(supports-color@8.1.1):
+  rollup-plugin-esbuild@6.2.1(esbuild@0.28.1)(rollup@4.62.2):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       es-module-lexer: 1.7.0
@@ -19994,7 +19947,7 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sandbox@3.1.2(supports-color@8.1.1):
+  sandbox@3.1.2:
     dependencies:
       '@vercel/sandbox': 2.1.1
       async-retry: 1.3.3
@@ -20826,7 +20779,7 @@ snapshots:
       spdx-correct: 3.2.0
       spdx-expression-parse: 3.0.1
 
-  vercel@54.17.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(rollup@4.62.2)(supports-color@8.1.1):
+  vercel@54.17.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(rollup@4.62.2):
     dependencies:
       '@vercel/backends': 0.8.18(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(rollup@4.62.2)
       '@vercel/blob': 2.4.0
@@ -20859,8 +20812,8 @@ snapshots:
       form-data: 4.0.6
       jose: 5.9.6
       luxon: 3.7.2
-      proxy-agent: 6.4.0(supports-color@8.1.1)
-      sandbox: 3.1.2(supports-color@8.1.1)
+      proxy-agent: 6.4.0
+      sandbox: 3.1.2
       smol-toml: 1.5.2
       zod: 4.1.11
     transitivePeerDependencies:
