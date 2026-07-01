@@ -3,6 +3,7 @@ import {type Page} from 'playwright'
 import {type EfpsResult} from '../types'
 import {aggregateLatencies} from './aggregateLatencies'
 import {measureBlockingTime} from './measureBlockingTime'
+import {setUpMarkers, typeCharacterReliably} from './typeCharacterReliably'
 
 interface MeasureFpsForInputOptions {
   label?: string
@@ -78,6 +79,12 @@ export async function measureFpsForInput({
       el: HTMLInputElement | HTMLTextAreaElement,
     ) => Promise<{value: string; timestamp: number}[]>,
   )
+  // This evaluate runs until the field blurs and is only awaited later. If the
+  // context is torn down first — the A/B harness closes both browsers once one
+  // side settles — this promise would reject with no handler attached, an
+  // *unhandled rejection* that crashes the process and bypasses retries.
+  // Swallow that here so a failing run stays catchable.
+  const safeRendersPromise = rendersPromise.catch((): {value: string; timestamp: number}[] => [])
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const inputEvents: {character: string; timestamp: number}[] = []
@@ -85,20 +92,34 @@ export async function measureFpsForInput({
   const startingMarker = '__START__|'
   const endingMarker = '__END__'
 
-  await input.pressSequentially(endingMarker)
-  await new Promise((resolve) => setTimeout(resolve, 500))
-  for (let i = 0; i < endingMarker.length; i++) {
-    await input.press('ArrowLeft')
-  }
-  await input.pressSequentially(startingMarker)
+  await setUpMarkers({
+    page,
+    input,
+    startingMarker,
+    endingMarker,
+    getValue: () => input.inputValue(),
+    timeout,
+    clearFirst: true,
+  })
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const getBlockingTime = measureBlockingTime(page)
 
   for (const character of characters) {
-    inputEvents.push({character, timestamp: Date.now()})
-    await input.pressSequentially(character)
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    // Type the character and confirm it registered before moving on, retrying
+    // if it was swallowed by a transient read-only flip. The returned timestamp
+    // is the moment the landing keystroke was dispatched, so a retried
+    // character's latency isn't inflated. See `typeCharacterReliably`.
+    const timestamp = await typeCharacterReliably({
+      page,
+      input,
+      character,
+      startingMarker,
+      endingMarker,
+      getValue: () => input.inputValue(),
+      timeout,
+    })
+    inputEvents.push({character, timestamp})
   }
 
   await input.blur()
@@ -106,7 +127,7 @@ export async function measureFpsForInput({
   await page.evaluate(() => window.document.dispatchEvent(new CustomEvent('__finish')))
 
   const blockingTime = await getBlockingTime()
-  const renderEvents = await rendersPromise
+  const renderEvents = await safeRendersPromise
 
   await new Promise((resolve) => setTimeout(resolve, 500))
 
