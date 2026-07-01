@@ -77,6 +77,7 @@ export async function renderVideoInput(options: {
       directUploads: true,
       observeAsset,
       resolveUploader,
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       schemaType: schemaType as VideoSchemaType,
       value: value as Record<string, unknown>,
     }

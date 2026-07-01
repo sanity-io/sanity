@@ -179,6 +179,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
   const published = getPublishedId(_id as string)
   const timeZoneScope = useMemo(
     () => ({
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       type: 'input' as TimeZoneScopeType,
       defaultTimeZone: displayTimeZone,
       // we want to make sure that if allowTimeZoneSwitch is switched to false that we respect the default only

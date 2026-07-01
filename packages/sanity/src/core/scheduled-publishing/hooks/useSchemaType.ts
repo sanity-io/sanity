@@ -14,6 +14,7 @@ export function useScheduleSchemaType(schedule: Schedule): SchemaType | undefine
     if (!schemaName) {
       return undefined
     }
+    // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
     return schema.get(schemaName) as SchemaType
   }, [schemaName, schema])
 }

@@ -73,6 +73,7 @@ const PostMessagePreviews: FC<PostMessagePreviewsProps> = (props) => {
                 const snapshot = p.snapshot as PreviewValue & {
                   _id: string
                 }
+                // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
                 return {
                   _id: getPublishedId(snapshot._id),
                   title: snapshot.title,

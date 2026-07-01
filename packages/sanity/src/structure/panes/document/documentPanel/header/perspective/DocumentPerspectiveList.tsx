@@ -252,7 +252,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                   isVersion: true,
                   release,
                   isGoingToUnpublish: editState?.version
-                    ? isGoingToUnpublish(editState?.version as SanityDocumentLike)
+                    ? // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
+                      isGoingToUnpublish(editState?.version as SanityDocumentLike)
                     : false,
                 }}
               />

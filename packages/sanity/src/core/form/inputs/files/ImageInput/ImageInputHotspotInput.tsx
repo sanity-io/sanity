@@ -36,6 +36,7 @@ export function ImageInputHotspotInput(props: {
             <ImageToolInput
               {...imageInputProps}
               imageUrl={imageUrl}
+              // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
               value={value as FIXME}
               presence={inputProps.presence}
               changed={changed}

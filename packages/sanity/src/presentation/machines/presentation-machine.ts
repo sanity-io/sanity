@@ -13,6 +13,7 @@ type Event =
   | {type: 'iframe reload'}
 
 export const presentationMachine = setup({
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   types: {} as {
     context: Context
     events: Event

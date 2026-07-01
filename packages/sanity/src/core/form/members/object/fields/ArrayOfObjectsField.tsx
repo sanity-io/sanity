@@ -366,6 +366,7 @@ export function ArrayOfObjectsField(props: {
       handleSelectAssetFromSourceShared({
         assetsFromSource: assets,
         onChange: (patches) =>
+          // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
           handleChange(PatchEvent.from(patches as PatchEvent).prefixAll({_key: key})),
         type: schemaType,
         resolveUploader,
@@ -468,6 +469,7 @@ export function ArrayOfObjectsField(props: {
     return {
       level: member.field.level,
       members: member.field.members,
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       value: member.field.value as any,
       readOnly: member.field.readOnly,
       schemaType: member.field.schemaType,

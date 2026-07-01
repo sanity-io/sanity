@@ -75,7 +75,8 @@ export const dateValidators: Validators = {
     }
 
     const dateTimeOptions: DateTimeOptions = isRecord(type.options)
-      ? (type.options as DateTimeOptions)
+      ? // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
+        (type.options as DateTimeOptions)
       : {}
 
     return (
@@ -107,7 +108,8 @@ export const dateValidators: Validators = {
     }
 
     const dateTimeOptions: DateTimeOptions = isRecord(type.options)
-      ? (type.options as DateTimeOptions)
+      ? // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
+        (type.options as DateTimeOptions)
       : {}
 
     return (

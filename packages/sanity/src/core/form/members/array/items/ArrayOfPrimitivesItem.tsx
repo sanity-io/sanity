@@ -144,11 +144,13 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     return {
       changed: member.item.changed,
       level: member.item.level,
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       value: member.item.value as FIXME,
       compareValue: member.item.compareValue,
       __unstable_computeDiff: member.item.__unstable_computeDiff,
       hasUpstreamVersion: member.item.hasUpstreamVersion,
       readOnly: member.item.readOnly,
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       schemaType: member.item.schemaType as FIXME,
       id: member.item.id,
       path: member.item.path,
@@ -211,6 +213,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       hasUpstreamVersion={member.item.hasUpstreamVersion}
       title={member.item.schemaType.title}
       description={member.item.schemaType.description}
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       schemaType={member.item.schemaType as FIXME}
       parentSchemaType={member.parentSchemaType}
       onInsert={onInsert}

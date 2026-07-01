@@ -118,6 +118,7 @@ export function UnpublishVersionDialog(props: {
               Label: ({children}) => {
                 return (
                   <span
+                    /* oxlint-disable typescript/no-unnecessary-type-assertion */
                     style={
                       {
                         color: `var(--card-badge-${tone ?? 'default'}-fg-color)`,
@@ -128,6 +129,7 @@ export function UnpublishVersionDialog(props: {
                         fontWeight: 500,
                       } as CSSProperties
                     }
+                    /* oxlint-enable typescript/no-unnecessary-type-assertion */
                   >
                     {children}
                   </span>
