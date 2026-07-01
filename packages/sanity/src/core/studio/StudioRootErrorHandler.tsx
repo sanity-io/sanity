@@ -120,7 +120,9 @@ export function StudioRootErrorHandler(props: StudioRootErrorHandlerProps) {
   }
 
   if (errorState.error instanceof SchemaError) {
-    return <SchemaErrorsScreen schema={errorState.error.schema} />
+    return (
+      <SchemaErrorsScreen schema={errorState.error.schema} context={errorState.error.context} />
+    )
   }
 
   if (isImportError(errorState.error)) {
