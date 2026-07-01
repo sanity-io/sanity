@@ -28,7 +28,6 @@ import {type VersionInfoDocumentStub} from '../store/types'
 import {useReleasesStore} from '../store/useReleasesStore'
 import {ARCHIVED_RELEASE_STATES} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {sortReleases} from './utils'
 
 export interface DocumentPerspectiveProps {
   documentId: string
@@ -88,11 +87,9 @@ export function useDocumentVersionsObservable(
     () =>
       releasesState$.pipe(
         map((state) =>
-          sortReleases(
-            Array.from(state.releases.values()).filter(
-              (release) => !ARCHIVED_RELEASE_STATES.includes(release.state),
-            ),
-          ).reverse(),
+          Array.from(state.releases.values()).filter(
+            (release) => !ARCHIVED_RELEASE_STATES.includes(release.state),
+          ),
         ),
       ),
     [releasesState$],

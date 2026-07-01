@@ -134,6 +134,8 @@ describe('getOrCreateDocumentVersionsWithSystemObservable', () => {
     // The base observable's leaf `observePaths` is created once for the single
     // version id, regardless of how many subscribers attach to the shared chain.
     expect(observePathsSpy).toHaveBeenCalledTimes(1)
+    // The stitch layer (withSystemCache) also builds exactly one entry for N subscribers.
+    expect(withSystemCache.size).toBe(1)
 
     subscriptions.forEach((subscription) => subscription.unsubscribe())
   })
