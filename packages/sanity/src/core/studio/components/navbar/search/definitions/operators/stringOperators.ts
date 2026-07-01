@@ -1,7 +1,20 @@
-import {SearchFilterStringInput} from '../../components/filters/filter/inputs/string/String'
-import {SearchFilterStringListInput} from '../../components/filters/filter/inputs/string/StringList'
+import {type ComponentType, lazy} from 'react'
+
 import {defineSearchOperator, type SearchOperatorInput} from './operatorTypes'
 import {toJSON} from './operatorUtils'
+
+// Operator definitions are evaluated pre-auth via prepareConfig; lazy-load filter input
+// components to keep them out of the eager bundle.
+const SearchFilterStringInput = lazy(() =>
+  import('../../components/filters/filter/inputs/string/String').then((m) => ({
+    default: m.SearchFilterStringInput,
+  })),
+) as ComponentType<any>
+const SearchFilterStringListInput = lazy(() =>
+  import('../../components/filters/filter/inputs/string/StringList').then((m) => ({
+    default: m.SearchFilterStringListInput,
+  })),
+) as ComponentType<any>
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
 // we understand why `npm etl` fails with 'Unable to follow symbol' errors
