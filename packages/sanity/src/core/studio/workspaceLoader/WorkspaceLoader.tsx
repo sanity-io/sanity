@@ -1,4 +1,4 @@
-import {SanityApp} from '@sanity/sdk-react'
+import {ResourceProvider} from '@sanity/sdk-react'
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 import {combineLatest, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
@@ -95,15 +95,25 @@ function WorkspaceLoader({
     <WorkspaceProvider workspace={workspace}>
       {/*
        * Mount a single App SDK instance for the primary workspace so SDK hooks
-       * work anywhere in the Studio without extra providers. This lives here
-       * (rather than in WorkspaceProvider) so nested workspaces, e.g. the Tasks
-       * addon dataset workspace, don't each spawn their own SanityApp instance.
-       * SanityApp derives its config from the SDKStudioContext supplied by the
-       * enclosing WorkspaceProvider. By the time this renders the Studio auth
-       * boundary has already passed, so the workspace has a token and the SDK
-       * resolves to a logged-in state.
+       * work anywhere in the Studio. It lives here, not in WorkspaceProvider, so
+       * nested workspaces (e.g. the Tasks addon dataset) don't each spawn one.
+       *
+       * We use ResourceProvider, not SanityApp: SanityApp also mounts the SDK's
+       * AuthBoundary, which replaces its whole subtree on an SDK auth error and
+       * would take over the Studio. The Studio already gates auth above this, so
+       * we only want the SDK instance and its Suspense boundary. The instance is
+       * configured in studio mode from the workspace token, so hooks auth via the
+       * Studio session.
        */}
-      <SanityApp fallback={<LoadingComponent />}>
+      <ResourceProvider
+        projectId={workspace.projectId}
+        dataset={workspace.dataset}
+        studio={{
+          authenticated: workspace.authenticated,
+          auth: workspace.auth.token ? {token: workspace.auth.token} : undefined,
+        }}
+        fallback={<LoadingComponent />}
+      >
         <SourceProvider
           // the first source is always the root source and is always present
           source={workspace.unstable_sources[0]}
@@ -112,7 +122,7 @@ function WorkspaceLoader({
             {children}
           </WorkspaceRouterProvider>
         </SourceProvider>
-      </SanityApp>
+      </ResourceProvider>
     </WorkspaceProvider>
   )
 }
