@@ -31,6 +31,7 @@ interface DocumentGroupInventoryContext {
   sets: VariantSet[]
   releases: Map<string, ReleaseDocument>
   t: TFunction
+  variantsEnabled: boolean | undefined
 }
 
 type DocumentGroupInventoryEvents =
@@ -43,7 +44,12 @@ type DocumentGroupInventoryEvents =
 export const documentGroupInventoryMachine = setup({
   // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   types: {} as {
-    input: {selectionMachine: SelectionLogic; deletionMachine: DeletionLogic; t: TFunction}
+    input: {
+      selectionMachine: SelectionLogic
+      deletionMachine: DeletionLogic
+      t: TFunction
+      variantsEnabled: boolean | undefined
+    }
     context: DocumentGroupInventoryContext
     events: DocumentGroupInventoryEvents
   },
@@ -67,6 +73,7 @@ export const documentGroupInventoryMachine = setup({
     sets: [],
     releases: new Map(),
     t: input.t,
+    variantsEnabled: input.variantsEnabled,
   }),
   invoke: {
     src: 'meta',
@@ -74,7 +81,12 @@ export const documentGroupInventoryMachine = setup({
       actions: [
         assign({
           sets: ({context, event}) =>
-            computeSets({meta: event.snapshot.context, current: context.sets, t: context.t}),
+            computeSets({
+              meta: event.snapshot.context,
+              current: context.sets,
+              t: context.t,
+              variantsEnabled: context.variantsEnabled,
+            }),
           releases: ({event}) => event.snapshot.context?.releases.releases ?? new Map(),
         }),
         sendTo(
@@ -140,10 +152,12 @@ function computeSets({
   meta,
   current,
   t,
+  variantsEnabled,
 }: {
   meta: Meta | undefined
   current: VariantSet[]
   t: TFunction
+  variantsEnabled: boolean | undefined
 }): VariantSet[] {
   if (!meta) {
     return current
