@@ -67,6 +67,7 @@ export interface ReferenceSearchHit {
   id: string
   type: string
   published: boolean
+  originalId: string
 }
 
 export interface ReferenceInputProps<Value = Reference> extends ObjectInputProps<
