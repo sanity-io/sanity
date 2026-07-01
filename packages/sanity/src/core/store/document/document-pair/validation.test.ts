@@ -627,4 +627,91 @@ describe('validation', () => {
 
     mockEditStateSubject.complete()
   })
+
+  describe('memoization by currentUser', () => {
+    it('returns DISTINCT observables for different currentUser ids', () => {
+      const client = getMockClient()
+      const mockEditStateSubject = new Subject<EditStateFor>()
+      mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+
+      // Use a random published id to avoid collisions with the module-level cache from other tests
+      const publishedId = `movie-${Math.random().toString(36).slice(2)}`
+      const idPair = {publishedId, draftId: `drafts.${publishedId}`}
+      const sharedCtx = {
+        client,
+        getClient: () => client,
+        schema,
+        observeDocumentPairAvailability: () => EMPTY,
+        i18n: getFallbackLocaleSource(),
+      }
+
+      const observableUserA = validation(
+        {...sharedCtx, currentUser: {id: 'user-a'}},
+        idPair,
+        'movie',
+        'draft',
+      )
+      const observableUserB = validation(
+        {...sharedCtx, currentUser: {id: 'user-b'}},
+        idPair,
+        'movie',
+        'draft',
+      )
+
+      expect(observableUserA).not.toBe(observableUserB)
+    })
+
+    it('returns the SAME observable for the same currentUser id', () => {
+      const client = getMockClient()
+      const mockEditStateSubject = new Subject<EditStateFor>()
+      mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+
+      const publishedId = `movie-${Math.random().toString(36).slice(2)}`
+      const idPair = {publishedId, draftId: `drafts.${publishedId}`}
+      const sharedCtx = {
+        client,
+        getClient: () => client,
+        schema,
+        observeDocumentPairAvailability: () => EMPTY,
+        i18n: getFallbackLocaleSource(),
+        currentUser: {id: 'user-c'},
+      }
+
+      const firstObservable = validation(sharedCtx, idPair, 'movie', 'draft')
+      const secondObservable = validation(sharedCtx, idPair, 'movie', 'draft')
+
+      expect(firstObservable).toBe(secondObservable)
+    })
+
+    it('returns DISTINCT observables for null vs defined currentUser', () => {
+      const client = getMockClient()
+      const mockEditStateSubject = new Subject<EditStateFor>()
+      mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+
+      const publishedId = `movie-${Math.random().toString(36).slice(2)}`
+      const idPair = {publishedId, draftId: `drafts.${publishedId}`}
+      const sharedCtx = {
+        client,
+        getClient: () => client,
+        schema,
+        observeDocumentPairAvailability: () => EMPTY,
+        i18n: getFallbackLocaleSource(),
+      }
+
+      const observableWithUser = validation(
+        {...sharedCtx, currentUser: {id: 'user-d'}},
+        idPair,
+        'movie',
+        'draft',
+      )
+      const observableWithoutUser = validation(
+        {...sharedCtx, currentUser: null},
+        idPair,
+        'movie',
+        'draft',
+      )
+
+      expect(observableWithUser).not.toBe(observableWithoutUser)
+    })
+  })
 })

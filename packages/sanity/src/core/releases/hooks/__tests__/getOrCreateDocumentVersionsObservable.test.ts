@@ -1,8 +1,15 @@
-import {firstValueFrom, of, toArray} from 'rxjs'
-import {describe, expect, it, vi} from 'vitest'
+import {type ReleaseDocument} from '@sanity/client'
+import {BehaviorSubject, firstValueFrom, of, toArray} from 'rxjs'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
-import {getOrCreateDocumentVersionsObservable, observableCache} from '../useDocumentVersions'
+import {
+  type DocumentPerspectiveState,
+  getOrCreateDocumentVersionsObservable,
+  getOrCreateDocumentVersionsWithSystemObservable,
+  observableCache,
+  withSystemCache,
+} from '../useDocumentVersions'
 
 describe('getOrCreateDocumentVersionsObservable', () => {
   it('emits loading: true while document stub fields are being resolved', async () => {
@@ -69,5 +76,129 @@ describe('getOrCreateDocumentVersionsObservable', () => {
         loading: false,
       },
     ])
+  })
+})
+
+/**
+ * Builds a `documentPreviewStore` whose version documents carry no `_system`,
+ * so the with-system factory always runs the `buildDocumentSystem`
+ * stitch. `observePathsSpy` counts how often the leaf observable is created.
+ */
+function createSystemlessPreviewStore(versionIds: string[]) {
+  const observePathsSpy = vi
+    .fn<DocumentPreviewStore['observePaths']>()
+    .mockImplementation((value) =>
+      of({
+        _id: '_id' in value ? value._id : '',
+        _rev: '',
+        _createdAt: '',
+        _updatedAt: '',
+      }),
+    )
+
+  const documentPreviewStore: Partial<DocumentPreviewStore> = {
+    unstable_observeVersionDocumentIds: vi
+      .fn<DocumentPreviewStore['unstable_observeVersionDocumentIds']>()
+      .mockReturnValue(of(versionIds)),
+    observePaths: observePathsSpy,
+  }
+
+  return {documentPreviewStore: documentPreviewStore as DocumentPreviewStore, observePathsSpy}
+}
+
+const asapReleaseDocument = {_id: '_.releases.rASAP'} as ReleaseDocument
+
+describe('getOrCreateDocumentVersionsWithSystemObservable', () => {
+  beforeEach(() => {
+    observableCache.clear()
+    withSystemCache.clear()
+  })
+
+  it('runs the derivation once for N subscribers', () => {
+    const {documentPreviewStore, observePathsSpy} = createSystemlessPreviewStore([
+      'versions.rASAP.document-1',
+    ])
+    const releases$ = new BehaviorSubject<ReleaseDocument[]>([asapReleaseDocument])
+
+    const observable = getOrCreateDocumentVersionsWithSystemObservable({
+      documentPreviewStore,
+      publishedId: 'document-1',
+      projectId: 'test-project',
+      dataset: 'test',
+      releases$,
+    })
+
+    const subscriberCount = 5
+    const subscriptions = Array.from({length: subscriberCount}, () => observable.subscribe())
+
+    // The base observable's leaf `observePaths` is created once for the single
+    // version id, regardless of how many subscribers attach to the shared chain.
+    expect(observePathsSpy).toHaveBeenCalledTimes(1)
+    // The stitch layer (withSystemCache) also builds exactly one entry for N subscribers.
+    expect(withSystemCache.size).toBe(1)
+
+    subscriptions.forEach((subscription) => subscription.unsubscribe())
+  })
+
+  it('pushing a new releases$ array updates all subscribers', () => {
+    const {documentPreviewStore} = createSystemlessPreviewStore(['versions.rASAP.document-1'])
+    // Start with no releases so the stitched `_system.release` is undefined.
+    const releases$ = new BehaviorSubject<ReleaseDocument[]>([])
+
+    const observable = getOrCreateDocumentVersionsWithSystemObservable({
+      documentPreviewStore,
+      publishedId: 'document-1',
+      projectId: 'test-project',
+      dataset: 'test',
+      releases$,
+    })
+
+    const subscriberCount = 2
+    const latestBySubscriber: Array<DocumentPerspectiveState> = []
+    const subscriptions = Array.from({length: subscriberCount}, (_unused, index) =>
+      observable.subscribe((state) => {
+        latestBySubscriber[index] = state
+      }),
+    )
+
+    // Before the new releases arrive, no release is matched.
+    latestBySubscriber.forEach((state) => {
+      expect(state.versions[0]._system.release).toBeUndefined()
+    })
+
+    // Pushing a new releases array flows through combineLatest (dataflow), not a
+    // stale closure, so every subscriber sees the newly matched release.
+    releases$.next([asapReleaseDocument])
+
+    latestBySubscriber.forEach((state) => {
+      expect(state.versions[0]._system.release).toEqual({_ref: '_.releases.rASAP', _weak: true})
+    })
+
+    subscriptions.forEach((subscription) => subscription.unsubscribe())
+  })
+
+  it('evicts the cache to size 0 after the last unsubscribe', () => {
+    const {documentPreviewStore} = createSystemlessPreviewStore(['versions.rASAP.document-1'])
+    const releases$ = new BehaviorSubject<ReleaseDocument[]>([asapReleaseDocument])
+
+    const observable = getOrCreateDocumentVersionsWithSystemObservable({
+      documentPreviewStore,
+      publishedId: 'document-1',
+      projectId: 'test-project',
+      dataset: 'test',
+      releases$,
+    })
+
+    const firstSubscription = observable.subscribe()
+    const secondSubscription = observable.subscribe()
+
+    expect(withSystemCache.size).toBe(1)
+
+    firstSubscription.unsubscribe()
+    secondSubscription.unsubscribe()
+
+    // finalize (which runs before shareReplay) deletes the cache key once the
+    // refCount drops to zero, so there is no leak.
+    expect(withSystemCache.size).toBe(0)
   })
 })
