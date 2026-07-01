@@ -1,3 +1,4 @@
+import {ResourceProvider} from '@sanity/sdk-react'
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 import {combineLatest, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
@@ -92,14 +93,36 @@ function WorkspaceLoader({
 
   return (
     <WorkspaceProvider workspace={workspace}>
-      <SourceProvider
-        // the first source is always the root source and is always present
-        source={workspace.unstable_sources[0]}
+      {/*
+       * Mount a single App SDK instance for the primary workspace so SDK hooks
+       * work anywhere in the Studio. It lives here, not in WorkspaceProvider, so
+       * nested workspaces (e.g. the Tasks addon dataset) don't each spawn one.
+       *
+       * We use ResourceProvider, not SanityApp: SanityApp also mounts the SDK's
+       * AuthBoundary, which replaces its whole subtree on an SDK auth error and
+       * would take over the Studio. The Studio already gates auth above this, so
+       * we only want the SDK instance and its Suspense boundary. The instance is
+       * configured in studio mode from the workspace token, so hooks auth via the
+       * Studio session.
+       */}
+      <ResourceProvider
+        projectId={workspace.projectId}
+        dataset={workspace.dataset}
+        studio={{
+          authenticated: workspace.authenticated,
+          auth: workspace.auth.token ? {token: workspace.auth.token} : undefined,
+        }}
+        fallback={<LoadingComponent />}
       >
-        <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
-          {children}
-        </WorkspaceRouterProvider>
-      </SourceProvider>
+        <SourceProvider
+          // the first source is always the root source and is always present
+          source={workspace.unstable_sources[0]}
+        >
+          <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
+            {children}
+          </WorkspaceRouterProvider>
+        </SourceProvider>
+      </ResourceProvider>
     </WorkspaceProvider>
   )
 }
