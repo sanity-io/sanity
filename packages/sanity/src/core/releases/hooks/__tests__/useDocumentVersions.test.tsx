@@ -2,18 +2,19 @@ import {type ReleaseDocument} from '@sanity/client'
 import {getPublishedId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {renderHook, waitFor} from '@testing-library/react'
-import {concat, NEVER, of} from 'rxjs'
+import {BehaviorSubject, concat, NEVER, of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
-import {useActiveReleasesMockReturn} from '../../store/__tests__/__mocks/useActiveReleases.mock'
+import {type ReleasesReducerState} from '../../store/reducer'
 import {
   type DocumentPerspectiveState,
   getOrCreateDocumentVersionsObservable,
   observableCache,
   useDocumentVersions,
+  withSystemCache,
 } from '../useDocumentVersions'
 
 vi.mock('../../../hooks/useDataset', () => ({
@@ -28,8 +29,15 @@ vi.mock('../../../store', () => ({
   useDocumentPreviewStore: vi.fn(),
 }))
 
-vi.mock('../../store/useActiveReleases', () => ({
-  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
+const initialReleasesState: ReleasesReducerState = {
+  releases: new Map(),
+  state: 'loaded',
+}
+const mockReleasesState$ = new BehaviorSubject<ReleasesReducerState>(initialReleasesState)
+const mockDispatch = vi.fn()
+
+vi.mock('../../store/useReleasesStore', () => ({
+  useReleasesStore: () => ({state$: mockReleasesState$, dispatch: mockDispatch}),
 }))
 
 async function setupMocks({
@@ -81,16 +89,17 @@ async function setupMocks({
       }),
   } as unknown as DocumentPreviewStore)
 
-  const {useActiveReleases} = await import('../../store/useActiveReleases')
-  vi.mocked(useActiveReleases).mockReturnValue({
-    ...useActiveReleasesMockReturn,
-    data: releases,
+  mockReleasesState$.next({
+    releases: new Map(releases.map((release) => [release._id, release])),
+    state: 'loaded',
   })
 }
 
 describe('useDocumentVersions', () => {
   beforeEach(() => {
     observableCache.clear()
+    withSystemCache.clear()
+    mockReleasesState$.next(initialReleasesState)
   })
 
   it('should return initial state', async () => {
