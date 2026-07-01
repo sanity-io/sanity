@@ -3,9 +3,10 @@ import {BehaviorSubject, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 import {createActor, fromObservable, fromPromise} from 'xstate'
 
+import {type TFunction} from '../../i18n/types'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {deletionMachine} from './deletionMachine'
-import {documentGroupInventoryMachine, type SelectionMeta} from './documentGroupInventoryMachine'
+import {documentGroupInventoryMachine, type Meta} from './documentGroupInventoryMachine'
 import {selectionMachine} from './selectionMachine'
 
 interface IncomingReference {
@@ -72,7 +73,10 @@ function withCrossDatasetReferences(
 const loadedMeta = {
   versionState: {data: ['drafts.foo', 'foo'], loading: false, error: null},
   releases: {releases: new Map(), state: 'loaded' as const},
-} as unknown as SelectionMeta
+  agentBundles: {bundles: [], loading: false},
+} as unknown as Meta
+
+const t = ((key: string) => key) as unknown as TFunction
 
 function createTestActor(
   initial: ReferringDocuments,
@@ -83,7 +87,7 @@ function createTestActor(
   }: {
     requestDeletionConfirmation?: () => void
     deleteVariants?: () => Promise<unknown>
-    meta?: SelectionMeta
+    meta?: Meta
   } = {},
 ) {
   const references$ = new BehaviorSubject<ReferringDocuments>(initial)
@@ -95,6 +99,7 @@ function createTestActor(
     {
       input: {
         selectionMachine,
+        t,
         deletionMachine: deletionMachine.provide({
           actors: {
             referringDocuments: fromObservable(() => references$),
@@ -435,7 +440,8 @@ describe('documentGroupInventoryMachine', () => {
         error: null,
       },
       releases: {releases, state: 'loaded' as const},
-    } as unknown as SelectionMeta
+      agentBundles: {bundles: [], loading: false},
+    } as unknown as Meta
 
     const expectedVariants = [
       {id: 'drafts.foo', name: 'Draft'},
@@ -458,11 +464,45 @@ describe('documentGroupInventoryMachine', () => {
     expect(selectionRef.getSnapshot().context.variants).toEqual(expectedVariants)
   })
 
+  it('surfaces the most recent agent bundle and hides agent bundle versions from the version state', () => {
+    const meta = {
+      versionState: {
+        data: ['drafts.foo', 'foo', 'versions.agent-abc.foo'],
+        loading: false,
+        error: null,
+      },
+      releases: {releases: new Map(), state: 'loaded' as const},
+      agentBundles: {
+        bundles: [
+          {id: 'versions.agent-abc.foo', applicationKey: 'app-1'},
+          {id: 'versions.agent-def.foo', applicationKey: 'app-2'},
+        ],
+        loading: false,
+      },
+    } as unknown as Meta
+
+    const expectedVariants = [
+      {id: 'drafts.foo', name: 'Draft'},
+      {id: 'foo', name: 'Published'},
+      // Agent bundle versions are dropped from the version state and only the
+      // most recent bundle is appended, labelled through the translator.
+      {id: 'versions.agent-abc.foo', name: 'version.agent-bundle.proposed-changes'},
+    ]
+
+    const {inventoryRef, selectionRef} = createTestActor(loading, {meta})
+
+    const {sets} = inventoryRef.getSnapshot().context
+    expect(sets).toHaveLength(1)
+    expect(sets[0].variants).toEqual(expectedVariants)
+    expect(selectionRef.getSnapshot().context.variants).toEqual(expectedVariants)
+  })
+
   it('drives the selection machine into the error state when meta reports an error', () => {
     const meta = {
       versionState: {data: [], loading: false, error: new Error('meta failed')},
       releases: {releases: new Map(), state: 'loaded' as const},
-    } as unknown as SelectionMeta
+      agentBundles: {bundles: [], loading: false},
+    } as unknown as Meta
 
     const {selectionRef} = createTestActor(loading, {meta})
     expect(selectionRef.getSnapshot().matches('error')).toBe(true)
