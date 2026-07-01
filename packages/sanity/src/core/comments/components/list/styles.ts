@@ -1,23 +1,20 @@
 import {hues} from '@sanity/color'
 import {Card} from '@sanity/ui'
-import {type Theme} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 
-export const ThreadCard = styled(Card).attrs({padding: 3, radius: 3, sizing: 'border'})(
-  (props: {theme: Theme}) => {
-    const {theme} = props
-    const isDark = theme.sanity.color.dark
-    const activeBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 900 : 50].hex
-    const defaultBg = hues.gray[isDark ? 900 : 50].hex
+export const ThreadCard = styled(Card).attrs({padding: 3, radius: 3, sizing: 'border'})((props) => {
+  const {theme} = props
+  const isDark = theme.sanity.color.dark
+  const activeBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 900 : 50].hex
+  const defaultBg = hues.gray[isDark ? 900 : 50].hex
 
-    return css`
-      background-color: ${defaultBg};
+  return css`
+    background-color: ${defaultBg};
 
-      &[data-active='true'] {
-        background-color: ${activeBg};
-      }
-    `
-  },
-)
+    &[data-active='true'] {
+      background-color: ${activeBg};
+    }
+  `
+})
