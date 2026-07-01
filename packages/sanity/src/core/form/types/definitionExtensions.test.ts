@@ -369,6 +369,8 @@ describe('definitionExtensions', () => {
         },
       })
       const components: DocumentComponents | undefined = type.components
+      const componentsIsRequired: {components: unknown} = type
+      void componentsIsRequired
     })
 
     it('should extend components for file', () => {

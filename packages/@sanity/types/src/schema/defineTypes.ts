@@ -1,5 +1,6 @@
 import {
   type ArrayOfEntry,
+  type FieldDefinitionBase,
   type IntrinsicDefinitions,
   type IntrinsicTypeName,
   type TypeAliasDefinition,
@@ -72,6 +73,38 @@ export type MaybeAllowUnknownProps<TStrict extends StrictDefinition> = TStrict e
   : unknown
 
 /** @beta */
+export type NoExtraProperties<TActual, TExpected> = TActual &
+  Record<Exclude<keyof TActual, keyof TExpected>, never> &
+  NoExtraOptions<TActual, TExpected>
+
+/** @beta */
+export type NoExtraOptions<TActual, TExpected> = 'options' extends keyof TActual
+  ? {} extends Pick<TActual, 'options'>
+    ? unknown
+    : 'options' extends keyof TExpected
+      ? {options: NoExtraObjectProperties<TActual['options'], NonNullable<TExpected['options']>>}
+      : unknown
+  : unknown
+
+/** @beta */
+export type NoExtraObjectProperties<TActual, TExpected> = keyof TExpected extends never
+  ? TActual
+  : unknown extends TExpected
+    ? TActual
+    : TActual extends object
+      ? TExpected extends object
+        ? TActual & Record<Exclude<keyof TActual, keyof TExpected>, never>
+        : TActual
+      : TActual
+
+/** @beta */
+export type MaybeEnsureNoUnknownProps<
+  TActual,
+  TExpected,
+  TStrict extends StrictDefinition,
+> = TStrict extends false ? TActual : NoExtraProperties<TActual, TExpected>
+
+/** @beta */
 export type MaybePreview<
   Select extends Record<string, string> | undefined,
   PrepareValue extends Record<keyof Select, any> | undefined,
@@ -96,12 +129,68 @@ export type NarrowPreview<
     : unknown
 
 /** @beta */
+export type DefineTypeDefinition<
+  TType extends string,
+  TName extends string,
+  TSelect extends Record<string, string> | undefined,
+  TPrepareValue extends Record<keyof TSelect, any> | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+> = {
+  type: TType
+  name: TName
+} & DefineSchemaBase<TType, TAlias> &
+  NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
+  MaybeAllowUnknownProps<TStrict>
+
+/** @beta */
+export type DefineFieldDefinition<
+  TType extends string,
+  TName extends string,
+  TSelect extends Record<string, string> | undefined,
+  TPrepareValue extends Record<keyof TSelect, any> | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+> = DefineTypeDefinition<TType, TName, TSelect, TPrepareValue, TAlias, TStrict> &
+  FieldDefinitionBase
+
+/** @beta */
+export type DefineArrayMemberDefinition<
+  TType extends string,
+  TName extends string,
+  TSelect extends Record<string, string> | undefined,
+  TPrepareValue extends Record<keyof TSelect, any> | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+> = {
+  type: TType
+  /**
+   * When provided, `name` is used as `_type` for the array item when stored.
+   *
+   * Necessary when an array contains multiple entries with the same `type`, each with
+   * different configuration (title and initialValue for instance).
+   */
+  name?: TName
+} & DefineArrayMemberBase<TType, TAlias> &
+  NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
+  MaybeAllowUnknownProps<TStrict>
+
+/** @beta */
 // Must type-widen some fields on the way out of the define functions to be compatible with FieldDefinition and ArrayDefinition
 export interface WidenValidation {
   validation?: SchemaValidationValue
 }
 
 /** @beta */
+export type MaybeWidenValidation<TSchemaDefinition> = 'validation' extends keyof TSchemaDefinition
+  ? WidenValidation
+  : unknown
+
+/** @beta */
 export interface WidenInitialValue {
   initialValue?: InitialValueProperty<any, any>
 }
+
+/** @beta */
+export type MaybeWidenInitialValue<TSchemaDefinition> =
+  'initialValue' extends keyof TSchemaDefinition ? WidenInitialValue : unknown

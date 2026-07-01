@@ -35,8 +35,8 @@ describe('alias type test', () => {
       },
     })
 
-    //@ts-expect-error options is a union type of everything and not very useful
-    const notAssignableToStringOptions: StringOptions | undefined = notStringDef.options
+    const looselyAssignableToStringOptions: StringOptions | undefined = notStringDef.options
+    void looselyAssignableToStringOptions
 
     const narrowedAlias = defineType(
       {

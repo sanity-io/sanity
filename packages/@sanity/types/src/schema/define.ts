@@ -1,14 +1,14 @@
 import {
-  type DefineArrayMemberBase,
-  type DefineSchemaBase,
+  type DefineArrayMemberDefinition,
+  type DefineFieldDefinition,
   type DefineSchemaOptions,
-  type MaybeAllowUnknownProps,
-  type NarrowPreview,
+  type DefineTypeDefinition,
+  type MaybeEnsureNoUnknownProps,
+  type MaybeWidenInitialValue,
+  type MaybeWidenValidation,
   type StrictDefinition,
-  type WidenInitialValue,
-  type WidenValidation,
 } from './defineTypes'
-import {type FieldDefinitionBase, type IntrinsicTypeName} from './definition'
+import {type IntrinsicTypeName} from './definition'
 import {type AutocompleteString} from './types'
 
 /**
@@ -175,19 +175,34 @@ export function defineType<
   const TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TAlias extends IntrinsicTypeName | undefined,
-  TStrict extends StrictDefinition,
+  TAlias extends IntrinsicTypeName | undefined = undefined,
+  TStrict extends StrictDefinition = undefined,
+  const TSchemaDefinition extends DefineTypeDefinition<
+    TType,
+    TName,
+    TSelect,
+    TPrepareValue,
+    NoInfer<TAlias>,
+    NoInfer<TStrict>
+  > = DefineTypeDefinition<TType, TName, TSelect, TPrepareValue, NoInfer<TAlias>, NoInfer<TStrict>>,
 >(
-  schemaDefinition: {
-    type: TType
-    name: TName
-  } & DefineSchemaBase<TType, TAlias> &
-    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
-    MaybeAllowUnknownProps<TStrict>,
+  schemaDefinition: DefineTypeDefinition<
+    TType,
+    TName,
+    TSelect,
+    TPrepareValue,
+    NoInfer<TAlias>,
+    NoInfer<TStrict>
+  > &
+    MaybeEnsureNoUnknownProps<
+      TSchemaDefinition,
+      DefineTypeDefinition<TType, TName, TSelect, TPrepareValue, NoInfer<TAlias>, NoInfer<TStrict>>,
+      NoInfer<TStrict>
+    >,
 
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
-): typeof schemaDefinition {
-  return schemaDefinition
+): TSchemaDefinition {
+  return schemaDefinition as TSchemaDefinition
 }
 
 /**
@@ -215,21 +230,53 @@ export function defineField<
   const TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TAlias extends IntrinsicTypeName | undefined,
-  TStrict extends StrictDefinition,
+  TAlias extends IntrinsicTypeName | undefined = undefined,
+  TStrict extends StrictDefinition = undefined,
+  const TSchemaDefinition extends DefineFieldDefinition<
+    TType,
+    TName,
+    TSelect,
+    TPrepareValue,
+    NoInfer<TAlias>,
+    NoInfer<TStrict>
+  > = DefineFieldDefinition<
+    TType,
+    TName,
+    TSelect,
+    TPrepareValue,
+    NoInfer<TAlias>,
+    NoInfer<TStrict>
+  >,
 >(
-  schemaField: {
-    type: TType
-    name: TName
-  } & DefineSchemaBase<TType, TAlias> &
-    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
-    MaybeAllowUnknownProps<TStrict> &
-    FieldDefinitionBase,
+  schemaField: DefineFieldDefinition<
+    TType,
+    TName,
+    TSelect,
+    TPrepareValue,
+    NoInfer<TAlias>,
+    NoInfer<TStrict>
+  > &
+    MaybeEnsureNoUnknownProps<
+      TSchemaDefinition,
+      DefineFieldDefinition<
+        TType,
+        TName,
+        TSelect,
+        TPrepareValue,
+        NoInfer<TAlias>,
+        NoInfer<TStrict>
+      >,
+      NoInfer<TStrict>
+    >,
 
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
-): typeof schemaField & WidenValidation & WidenInitialValue {
+): TSchemaDefinition &
+  MaybeWidenValidation<TSchemaDefinition> &
+  MaybeWidenInitialValue<TSchemaDefinition> {
   // TODO: re-evaluate the need for this cast
-  return schemaField as typeof schemaField & WidenValidation & WidenInitialValue
+  return schemaField as TSchemaDefinition &
+    MaybeWidenValidation<TSchemaDefinition> &
+    MaybeWidenInitialValue<TSchemaDefinition>
 }
 
 /**
@@ -257,26 +304,53 @@ export function defineArrayMember<
   const TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TAlias extends IntrinsicTypeName | undefined,
-  TStrict extends StrictDefinition,
+  TAlias extends IntrinsicTypeName | undefined = undefined,
+  TStrict extends StrictDefinition = undefined,
+  const TSchemaDefinition extends DefineArrayMemberDefinition<
+    TType,
+    TName,
+    TSelect,
+    TPrepareValue,
+    NoInfer<TAlias>,
+    NoInfer<TStrict>
+  > = DefineArrayMemberDefinition<
+    TType,
+    TName,
+    TSelect,
+    TPrepareValue,
+    NoInfer<TAlias>,
+    NoInfer<TStrict>
+  >,
 >(
-  arrayOfSchema: {
-    type: TType
-    /**
-     * When provided, `name` is used as `_type` for the array item when stored.
-     *
-     * Necessary when an array contains multiple entries with the same `type`, each with
-     * different configuration (title and initialValue for instance).
-     */
-    name?: TName
-  } & DefineArrayMemberBase<TType, TAlias> &
-    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
-    MaybeAllowUnknownProps<TStrict>,
+  arrayOfSchema: DefineArrayMemberDefinition<
+    TType,
+    TName,
+    TSelect,
+    TPrepareValue,
+    NoInfer<TAlias>,
+    NoInfer<TStrict>
+  > &
+    MaybeEnsureNoUnknownProps<
+      TSchemaDefinition,
+      DefineArrayMemberDefinition<
+        TType,
+        TName,
+        TSelect,
+        TPrepareValue,
+        NoInfer<TAlias>,
+        NoInfer<TStrict>
+      >,
+      NoInfer<TStrict>
+    >,
 
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
-): typeof arrayOfSchema & WidenValidation & WidenInitialValue {
+): TSchemaDefinition &
+  MaybeWidenValidation<TSchemaDefinition> &
+  MaybeWidenInitialValue<TSchemaDefinition> {
   // TODO: re-evaluate the need for this cast
-  return arrayOfSchema as typeof arrayOfSchema & WidenValidation & WidenInitialValue
+  return arrayOfSchema as TSchemaDefinition &
+    MaybeWidenValidation<TSchemaDefinition> &
+    MaybeWidenInitialValue<TSchemaDefinition>
 }
 
 /**
