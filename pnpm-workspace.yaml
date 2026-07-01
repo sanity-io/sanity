@@ -85,6 +85,7 @@ minimumReleaseAgeExclude:
 
 overrides:
   vitest: 'catalog:'
+  smol-toml: '1.6.1'
 
 preferWorkspacePackages: true
 
