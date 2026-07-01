@@ -84,6 +84,7 @@ export function ConfirmDeleteDialogBody({
             t={t}
             i18nKey="confirm-delete-dialog.confirmation.text"
             context={action}
+            values={{count: documentVersions.length}}
             components={{DocumentTitle: () => <strong>{documentTitle}</strong>}}
           />
         </Text>
