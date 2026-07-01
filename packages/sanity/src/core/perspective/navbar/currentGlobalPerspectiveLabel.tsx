@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 // oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Box, Button, Text} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type ReactNode, useMemo} from 'react'
+import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -27,7 +27,7 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
   const ReleasesIntentLink = useMemo(
     () =>
       forwardRef(function ReleasesIntentLink(
-        {children, ...intentProps}: {children: ReactNode},
+        {children, ...intentProps}: React.ComponentPropsWithoutRef<'a'>,
         linkRef: ForwardedRef<HTMLAnchorElement>,
       ) {
         return (

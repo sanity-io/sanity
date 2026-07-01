@@ -1,7 +1,6 @@
 import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
 import {type ReactNode, useCallback} from 'react'
 import {
-  type FIXME,
   getPublishedId,
   pathToString,
   PreviewCard,
@@ -39,7 +38,7 @@ export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
   )
 
   return (
-    <PreviewCard __unstable_focusRing as={Link as FIXME} data-as="a" radius={2}>
+    <PreviewCard __unstable_focusRing as={Link} data-as="a" radius={2}>
       <PaneItemPreview
         documentPreviewStore={documentPreviewStore}
         icon={type.icon || false}

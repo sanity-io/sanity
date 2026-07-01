@@ -46,7 +46,7 @@ function ScheduledDraftsBanner() {
 
   if (isScheduledDraftsEnabled) {
     return (
-      <Card padding={4} tone="caution" width="fill">
+      <Card padding={4} tone="caution">
         <Flex gap={3} align="center" justify="center">
           <Text size={1} weight="medium">
             Scheduled Drafts is enabled for this Studio. All new Scheduled Drafts will be{' '}

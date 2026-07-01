@@ -40,7 +40,7 @@ interface FormViewProps {
 
 const preventDefault = (ev: FormEvent) => ev.preventDefault()
 
-export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormView(props, ref) {
+export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function FormView(props, ref) {
   const {hidden, margins} = props
 
   const {
@@ -135,7 +135,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     // React to changes in hasRev only
   }, [hasRev])
 
-  const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
+  const [formRef, setFormRef] = useState<null | HTMLFormElement>(null)
   const [hasFocusedAnyPath, setHasFocusedAnyPath] = useState(false)
 
   useEffect(() => {
@@ -158,7 +158,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   }, [focusPath])
 
   const setRef = useCallback(
-    (node: HTMLDivElement | null) => {
+    (node: HTMLFormElement | null) => {
       setFormRef(node)
       if (typeof ref === 'function') {
         ref(node)

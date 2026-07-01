@@ -173,7 +173,7 @@ export function CopyToNewReleaseDialog(props: {
         )}
         <ReleaseForm onChange={handleOnChange} value={release} />
 
-        <Flex width="full" gap={3} justify="flex-end" paddingTop={3} align="center">
+        <Flex gap={3} justify="flex-end" paddingTop={3} align="center">
           <Button
             disabled={isSubmitting}
             text={t('common.dialog.cancel-button.text')}

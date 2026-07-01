@@ -97,7 +97,10 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const {t} = useTranslation(tasksLocaleNamespace)
   const CardLink = useMemo(
     () =>
-      forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
+      forwardRef(function LinkComponent(
+        linkProps: React.ComponentPropsWithoutRef<'a'>,
+        ref: ForwardedRef<HTMLAnchorElement>,
+      ) {
         const versionId = getVersionFromId(documentId)
 
         return (

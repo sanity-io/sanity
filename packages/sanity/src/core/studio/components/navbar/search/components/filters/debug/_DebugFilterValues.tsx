@@ -21,13 +21,13 @@ export function DebugFilterValues({filter}: DebugFilterValuesProps) {
           Filter
         </Code>
         {fieldDefinition?.fieldPath && <Code size={0}>fieldPath: {fieldDefinition.fieldPath}</Code>}
-        <Code muted size={0} style={{whiteSpace: 'normal'}}>
+        <Code size={0} style={{whiteSpace: 'normal'}}>
           filterName: {filter.filterName}
         </Code>
-        <Code muted size={0} style={{whiteSpace: 'normal'}}>
+        <Code size={0} style={{whiteSpace: 'normal'}}>
           operatorType: {filter.operatorType}
         </Code>
-        <Code muted size={0} style={{whiteSpace: 'normal'}}>
+        <Code size={0} style={{whiteSpace: 'normal'}}>
           value: {typeof filter?.value === 'undefined' ? '' : JSON.stringify(filter.value)}
         </Code>
       </Stack>

@@ -8,7 +8,15 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {forwardRef, type HTMLProps, isValidElement, type ReactNode, type Ref, useMemo} from 'react'
+import {
+  type ElementType,
+  forwardRef,
+  type HTMLProps,
+  isValidElement,
+  type ReactNode,
+  type Ref,
+  useMemo,
+} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 
@@ -25,7 +33,7 @@ const SubtitleText = styled(Text)`
 
 /** @internal */
 export type MenuItemProps = Pick<
-  UIMenuItemProps,
+  UIMenuItemProps<ElementType>,
   'as' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
 > & {
   badgeText?: string

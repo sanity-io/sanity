@@ -36,7 +36,10 @@ export function DocumentPreview({
 
   const Link = useMemo(
     () =>
-      forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
+      forwardRef(function LinkComponent(
+        linkProps: React.ComponentPropsWithoutRef<'a'>,
+        ref: React.ForwardedRef<HTMLAnchorElement>,
+      ) {
         return (
           <StyledIntentLink
             {...linkProps}

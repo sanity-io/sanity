@@ -361,7 +361,7 @@ export function QueryRecall({
         <Flex padding={3} paddingTop={2} paddingBottom={0} justify="space-between" align="center">
           <StyledLabel muted>{t('label.saved-queries')}</StyledLabel>
           <Button
-            label={t('action.save-query')}
+            aria-label={t('action.save-query')}
             icon={AddIcon}
             disabled={saving}
             onClick={() => void handleSave()}
@@ -418,7 +418,6 @@ export function QueryRecall({
           return (
             <Card
               key={q._key}
-              width={'fill'}
               paddingX={compactMode ? 3 : 4}
               paddingY={compactMode ? 3 : 4}
               tone="default"
@@ -568,12 +567,10 @@ export function QueryRecall({
                     placement="top"
                     portal
                   >
-                    <Code muted size={1}>
-                      {shortQueryPreview}
-                    </Code>
+                    <Code size={1}>{shortQueryPreview}</Code>
                   </Tooltip>
                 ) : (
-                  <Code muted />
+                  <Code />
                 )}
 
                 {compactMode ? (
@@ -671,7 +668,6 @@ export function QueryRecall({
                   <Button
                     mode="ghost"
                     tone="default"
-                    size={1}
                     padding={2}
                     style={{
                       height: '24px',
@@ -699,7 +695,7 @@ export function QueryRecall({
           header={t('label.share')}
           onClose={() => setShareDialogQuery(null)}
           footer={
-            <Flex width="fill" justify="flex-end" gap={3} padding={3} align="center">
+            <Flex justify="flex-end" gap={3} padding={3} align="center">
               <Button
                 mode="bleed"
                 padding={2}
