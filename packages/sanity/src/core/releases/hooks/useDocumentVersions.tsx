@@ -52,7 +52,7 @@ const INITIAL_VALUE: DocumentPerspectiveState = {
 
 // Create a singleton cache for observables
 export const observableCache = new Map<string, Observable<DocumentPerspectiveState>>()
-// releases flow via combineLatest, never in the cache key — avoids cache thrash on every release edit
+// releases flow via combineLatest, never in the cache key, to avoid cache thrash on every release edit
 export const withSystemCache = new Map<string, Observable<DocumentPerspectiveState>>()
 const swr = createSWR<string[]>({maxSize: 100})
 
