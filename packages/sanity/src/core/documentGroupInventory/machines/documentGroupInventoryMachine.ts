@@ -5,7 +5,7 @@ import {assign, forwardTo, fromObservable, sendTo, setup, type ActorRefFromLogic
 import {type DocumentPerspectiveState} from '../../releases/hooks/useDocumentVersions'
 import {type ReleasesReducerState} from '../../releases/store/reducer'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
-import {type AgentBundlesState} from '../../store/agent/createAgentBundlesStore'
+import {isAgentBundleName, type AgentBundlesState} from '../../store/agent/createAgentBundlesStore'
 import {getVersionFromId, isDraftId, isPublishedId} from '../../util/draftUtils'
 import {type deletionMachine} from './deletionMachine'
 import {type selectionMachine, type Variant} from './selectionMachine'
@@ -142,7 +142,12 @@ function computeSets(meta: Meta | undefined, current: VariantSet[]): VariantSet[
   return [
     {
       key: 'studio:all',
-      variants: meta.versionState.data.map((id) => ({id, name: getVariantName(id, releases)})),
+      variants: meta.versionState.data
+        .filter((id) => !isAgentBundleName(getVersionFromId(id)))
+        .map((id) => ({
+          id,
+          name: getVariantName(id, releases),
+        })),
     },
   ]
 }
