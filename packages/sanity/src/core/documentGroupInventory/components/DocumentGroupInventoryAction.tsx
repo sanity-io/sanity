@@ -8,10 +8,12 @@ import {styled} from 'styled-components'
 import {Button as BaseButton} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'
 import {useVersionRelease} from '../../hooks/useVersionRelease'
+import {type TFunction, useTranslation} from '../../i18n'
 import {type TargetPerspective} from '../../perspective/types'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
+import {isAgentBundleName} from '../../store'
 
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
@@ -27,6 +29,7 @@ export const DocumentGroupInventoryAction: ComponentType<
   isDocumentGroupInventoryActive,
   setIsDocumentGroupInventoryActive,
 }) => {
+  const {t} = useTranslation()
   const displayedRelease = useVersionRelease(documentId)
   const buttonElement = useRef<HTMLButtonElement | null>(null)
   const popoverElement = useRef<HTMLDivElement | null>(null)
@@ -72,7 +75,7 @@ export const DocumentGroupInventoryAction: ComponentType<
         <Button
           ref={buttonElement}
           data-testid="action-document-group-inventory"
-          text={variantLabel(displayedRelease?.release)}
+          text={variantLabel({perspective: displayedRelease?.release, t})}
           tone="neutral"
           onClick={() => setIsDocumentGroupInventoryActive(!isDocumentGroupInventoryActive)}
           icon={<VariantIcon perspective={displayedRelease.release} />}
@@ -85,9 +88,19 @@ export const DocumentGroupInventoryAction: ComponentType<
   )
 }
 
-function variantLabel(perspective: TargetPerspective | undefined): string {
+function variantLabel({
+  perspective,
+  t,
+}: {
+  perspective: TargetPerspective | undefined
+  t: TFunction
+}): string {
   if (typeof perspective === 'undefined') {
     return ''
+  }
+
+  if (isAgentBundleName(perspective)) {
+    return t('version.agent-bundle.proposed-changes')
   }
 
   if (isDraftPerspective(perspective)) {

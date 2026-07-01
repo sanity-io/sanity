@@ -27,6 +27,7 @@ import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
+import {isAgentBundleName} from '../../store'
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {
@@ -137,6 +138,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
 
   const inventoryRef = useActorRef(inventoryMachine, {
     input: {
+      t,
       selectionMachine: useMemo(
         () =>
           selectionMachine.provide({
@@ -483,12 +485,16 @@ const Variant: ComponentType<{
             </StatusBadge>
           )}
           <Text size={1}>
-            <ReleaseAvatarIcon
-              release={
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
-                (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
-              }
-            />
+            {isAgentBundleName(getVersionFromId(variant.id)) ? (
+              <ReleaseAvatarIcon tone="suggest" />
+            ) : (
+              <ReleaseAvatarIcon
+                release={
+                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
+                  (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
+                }
+              />
+            )}
           </Text>
         </div>
       </VariantSetEntry>
