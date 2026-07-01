@@ -81,32 +81,32 @@ describe('getOrCreateDocumentVersionsObservable', () => {
 
 /**
  * Builds a `documentPreviewStore` whose version documents carry no `_system`,
- * so the with-system factory always runs the `temporarilyBuildDocumentSystem`
- * stitch. `observePathsSpy` counts how often the leaf observable is created,
- * which stays flat across additional subscribers because the base observable is
- * shared.
+ * so the with-system factory always runs the `buildDocumentSystem`
+ * stitch. `observePathsSpy` counts how often the leaf observable is created.
  */
 function createSystemlessPreviewStore(versionIds: string[]) {
   const observePathsSpy = vi
     .fn<DocumentPreviewStore['observePaths']>()
-    .mockImplementation((value: {_id: string}) =>
-      of({_id: value._id, _rev: '', _createdAt: '', _updatedAt: ''}),
+    .mockImplementation((value) =>
+      of({
+        _id: '_id' in value ? value._id : '',
+        _rev: '',
+        _createdAt: '',
+        _updatedAt: '',
+      }),
     )
 
-  const documentPreviewStore = {
+  const documentPreviewStore: Partial<DocumentPreviewStore> = {
     unstable_observeVersionDocumentIds: vi
       .fn<DocumentPreviewStore['unstable_observeVersionDocumentIds']>()
       .mockReturnValue(of(versionIds)),
     observePaths: observePathsSpy,
-  } as unknown as DocumentPreviewStore
+  }
 
-  return {documentPreviewStore, observePathsSpy}
+  return {documentPreviewStore: documentPreviewStore as DocumentPreviewStore, observePathsSpy}
 }
 
-const asapReleaseDocument = {
-  _id: '_.releases.rASAP',
-  name: 'rASAP',
-} as unknown as ReleaseDocument
+const asapReleaseDocument = {_id: '_.releases.rASAP'} as ReleaseDocument
 
 describe('getOrCreateDocumentVersionsWithSystemObservable', () => {
   beforeEach(() => {
