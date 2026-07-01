@@ -44,7 +44,7 @@ async function setupMocks({
   versionIds: string[]
   /**
    * When `false`, versions are returned without `_system`, so the hook
-   * falls back to `temporarilyBuildDocumentSystem`.
+   * falls back to `buildDocumentSystem`.
    */
   observeSystem?: boolean
   /** When `true`, the version document ids observable never emits (initial loading state). */
