@@ -49,6 +49,7 @@ import {Footer} from './Footer'
 import {Header} from './Header'
 import {StatusBadge} from './VariantSet/StatusBadge'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
+import {VariantSet} from './VariantSet/VariantSet'
 import {VariantSetEntry} from './VariantSet/VariantSetEntry'
 import {VariantSetHeader} from './VariantSet/VariantSetHeader'
 
@@ -318,49 +319,47 @@ const Select: ComponentType<{
   return (
     <Stack gap={5}>
       {sets.map((set) => (
-        <div key={set.key}>
-          <Card border radius={3}>
-            <VariantSetHeader as="header">
-              <Text size={1} weight="bold">
-                {t('document-group-inventory.title', {
+        <VariantSet key={set.key}>
+          <VariantSetHeader as="header">
+            <Text size={1} weight="bold">
+              {t('document-group-inventory.title', {
+                count: set.variants.length,
+                subject: t('document-group.subject.version', {
                   count: set.variants.length,
-                  subject: t('document-group.subject.version', {
-                    count: set.variants.length,
-                  }),
-                })}
+                }),
+              })}
+            </Text>
+            <TextButton
+              onClick={() => {
+                set.variants.forEach((variant) =>
+                  machine.send({type: 'selection.add', variantId: variant.id}),
+                )
+              }}
+            >
+              {/* These strings will be removed in the next iteration, so we've skipped internationalisation. */}
+              <Text size={1}>
+                {isSelectable
+                  ? `Select all ${set.variants.length}`
+                  : `${set.variants.length} documents`}
               </Text>
-              <TextButton
-                onClick={() => {
-                  set.variants.forEach((variant) =>
-                    machine.send({type: 'selection.add', variantId: variant.id}),
-                  )
-                }}
-              >
-                {/* These strings will be removed in the next iteration, so we've skipped internationalisation. */}
-                <Text size={1}>
-                  {isSelectable
-                    ? `Select all ${set.variants.length}`
-                    : `${set.variants.length} documents`}
-                </Text>
-              </TextButton>
-            </VariantSetHeader>
-            {set.variants
-              .filter(({id}) => !hasFilterString || filterMatchingVariantIds.has(id))
-              .map((variant) => (
-                <Variant
-                  key={variant.id}
-                  variant={variant}
-                  machine={machine}
-                  inventoryRef={inventoryRef}
-                  documentType={documentType}
-                  onPrimaryAction={onPrimaryAction}
-                  isSelectable={isSelectable}
-                  menuPortalElement={menuPortalElement}
-                  perspectiveList={perspectiveList}
-                />
-              ))}
-          </Card>
-        </div>
+            </TextButton>
+          </VariantSetHeader>
+          {set.variants
+            .filter(({id}) => !hasFilterString || filterMatchingVariantIds.has(id))
+            .map((variant) => (
+              <Variant
+                key={variant.id}
+                variant={variant}
+                machine={machine}
+                inventoryRef={inventoryRef}
+                documentType={documentType}
+                onPrimaryAction={onPrimaryAction}
+                isSelectable={isSelectable}
+                menuPortalElement={menuPortalElement}
+                perspectiveList={perspectiveList}
+              />
+            ))}
+        </VariantSet>
       ))}
     </Stack>
   )
