@@ -114,7 +114,6 @@ function ConfirmPopoverContent({
             mode="ghost"
             padding={2}
             text={cancelButtonText || t('common.dialog.cancel-button.text')}
-            size={1}
           />
           <UIButton
             data-testid="confirm-popover-confirm-button"
@@ -123,7 +122,6 @@ function ConfirmPopoverContent({
             padding={2}
             text={confirmButtonText || t('common.dialog.confirm-button.text')}
             tone={tone}
-            size={1}
           />
         </Grid>
       </Box>

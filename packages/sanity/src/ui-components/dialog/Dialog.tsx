@@ -77,7 +77,7 @@ export const Dialog = forwardRef(function Dialog(
       ref={ref}
       footer={
         (footer?.confirmButton || footer?.cancelButton) && (
-          <Flex width="full" gap={3} justify="flex-end" padding={3} align="center">
+          <Flex gap={3} justify="flex-end" padding={3} align="center">
             {footer?.description && (
               <Box flex={1} paddingLeft={1}>
                 <Text size={1} muted>

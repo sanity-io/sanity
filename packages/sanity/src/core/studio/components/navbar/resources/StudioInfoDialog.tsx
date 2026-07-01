@@ -177,7 +177,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                   <Badge tone={versionBadgeTone}>
                     {ensureVersionPrefix(currentVersion.version)}
                   </Badge>
-                  <Badge size={1}>
+                  <Badge>
                     {currentVersionType === 'development'
                       ? t('about-dialog.version-info.tooltip.development')
                       : currentVersionType === 'prerelease'

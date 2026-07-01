@@ -407,7 +407,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     <PaneContent>
       <Flex height="fill">
         {showFormView && (
-          <Flex height="fill" direction="column" width="fill" flex={2}>
+          <Flex height="fill" direction="column" flex={2}>
             <LegacyLayerProvider zOffset="paneHeader">
               {banners}
               <DocumentPanelSubHeader />

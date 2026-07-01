@@ -202,7 +202,6 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       width={3}
       footer={
         <Card
-          width="full"
           height="fill"
           padding={3}
           shadow={1}
@@ -211,8 +210,8 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
             minHeight: '2dvh',
           }}
         >
-          <Flex width="full" gap={3} justify="flex-end">
-            <Flex width="full" gap={2} justify="flex-end" align="center">
+          <Flex gap={3} justify="flex-end">
+            <Flex gap={2} justify="flex-end" align="center">
               {validation.length > 0 && (
                 <FormFieldValidationStatus fontSize={2} placement="top" validation={validation} />
               )}
