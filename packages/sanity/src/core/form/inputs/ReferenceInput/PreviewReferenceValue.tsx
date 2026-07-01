@@ -28,6 +28,13 @@ export function PreviewReferenceValue(props: {
     return <SanityDefaultPreview isPlaceholder layout={layout} />
   }
 
+  if (!referenceInfo.result) {
+    // Guards the unguarded `referenceInfo.result.availability` access below. The only
+    // non-loading/non-error state with no result is the empty state (a falsy reference
+    // id), so render nothing rather than an indefinite loading skeleton.
+    return null
+  }
+
   // Special handling for "create refs in place"
   // When a reference is created in place, the newly created document may not yet exist (or may have been deleted)
   // This is a completely valid case, and we handle it by showing the preview for the referenced type

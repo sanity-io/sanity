@@ -15,7 +15,7 @@ export function PreviewReferenceValue(props: {
   hasStudioUrl?: boolean
   type: GlobalDocumentReferenceSchemaType
   referenceInfo: Loadable<GlobalDocumentReferenceInfo>
-}): React.JSX.Element {
+}): React.ReactNode {
   const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo} = props
   const {t} = useTranslation()
 
@@ -26,6 +26,13 @@ export function PreviewReferenceValue(props: {
         <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated={!referenceInfo.error} />
       </Stack>
     )
+  }
+
+  if (!referenceInfo.result) {
+    // Guards the unguarded `referenceInfo.result.availability` access below. The only
+    // non-loading/non-error state with no result is the empty state (a falsy reference
+    // id), so render nothing rather than an indefinite loading skeleton.
+    return null
   }
   const showTypeLabel = type.to.length > 1
 

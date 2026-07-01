@@ -26,6 +26,13 @@ export function PreviewReferenceValue(props: {
       </Stack>
     )
   }
+
+  if (!referenceInfo.result) {
+    // Guards the unguarded `referenceInfo.result.availability` access below. The only
+    // non-loading/non-error state with no result is the empty state (a falsy reference
+    // id), so render nothing rather than an indefinite loading skeleton.
+    return null
+  }
   const showTypeLabel = type.to.length > 1
 
   const refTypeName = referenceInfo.result?.type
