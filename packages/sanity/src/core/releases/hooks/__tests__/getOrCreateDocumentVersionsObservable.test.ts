@@ -114,7 +114,7 @@ describe('getOrCreateDocumentVersionsWithSystemObservable', () => {
     withSystemCache.clear()
   })
 
-  it('runs the derivation once for N subscribers', async () => {
+  it('runs the derivation once for N subscribers', () => {
     const {documentPreviewStore, observePathsSpy} = createSystemlessPreviewStore([
       'versions.rASAP.document-1',
     ])
@@ -138,7 +138,7 @@ describe('getOrCreateDocumentVersionsWithSystemObservable', () => {
     subscriptions.forEach((subscription) => subscription.unsubscribe())
   })
 
-  it('pushing a new releases$ array updates all subscribers', async () => {
+  it('pushing a new releases$ array updates all subscribers', () => {
     const {documentPreviewStore} = createSystemlessPreviewStore(['versions.rASAP.document-1'])
     // Start with no releases so the stitched `_system.release` is undefined.
     const releases$ = new BehaviorSubject<ReleaseDocument[]>([])
@@ -151,8 +151,9 @@ describe('getOrCreateDocumentVersionsWithSystemObservable', () => {
       releases$,
     })
 
-    const latestBySubscriber: Array<DocumentPerspectiveState> = [{} as never, {} as never]
-    const subscriptions = latestBySubscriber.map((_placeholder, index) =>
+    const subscriberCount = 2
+    const latestBySubscriber: Array<DocumentPerspectiveState> = []
+    const subscriptions = Array.from({length: subscriberCount}, (_unused, index) =>
       observable.subscribe((state) => {
         latestBySubscriber[index] = state
       }),
@@ -174,7 +175,7 @@ describe('getOrCreateDocumentVersionsWithSystemObservable', () => {
     subscriptions.forEach((subscription) => subscription.unsubscribe())
   })
 
-  it('evicts the cache to size 0 after the last unsubscribe', async () => {
+  it('evicts the cache to size 0 after the last unsubscribe', () => {
     const {documentPreviewStore} = createSystemlessPreviewStore(['versions.rASAP.document-1'])
     const releases$ = new BehaviorSubject<ReleaseDocument[]>([asapReleaseDocument])
 
