@@ -702,9 +702,11 @@ import type {
   getSchemaTypeTitle,
   getSearchableTypes,
   getSelectedVariant,
+  getTargetDocument,
   getTemplatePermissions,
   getValueAtPath,
   getValueError,
+  getVariantTitle,
   getVersionFromId,
   getVersionId,
   getVersionInlineBadge,
@@ -844,11 +846,13 @@ import type {
   isDeprecatedSchemaType,
   isDeprecationConfiguration,
   isDev,
+  isDocumentInSelectedVariant,
   isDocumentLimitError,
   isDocumentSchemaType,
   isDraft,
   isDraftId,
   isDraftPerspective,
+  isDraftVersion,
   isEditDocumentVersionEvent,
   isEmptyObject,
   IsEqualFunction,
@@ -883,12 +887,14 @@ import type {
   isPublishDocumentVersionEvent,
   isPublishedId,
   isPublishedPerspective,
+  isPublishedVersion,
   isRecord,
   isReference,
   isReferenceSchemaType,
   isReleaseDocument,
   isReleasePerspective,
   isReleaseScheduledOrScheduling,
+  isReleaseVersion,
   isRemovedItemDiff,
   isSanityDefinedAction,
   isSanityDocument,
@@ -917,6 +923,7 @@ import type {
   isValidationInfoMarker,
   isValidationWarning,
   isValidationWarningMarker,
+  isVariantVersion,
   isVersionId,
   ItemDiff,
   ItemProps,
@@ -1416,6 +1423,7 @@ import type {
   SyncState,
   SystemBundle,
   systemBundles,
+  SystemVariant,
   TagsArrayInput,
   TagsArrayInputProps,
   TagValue,
@@ -1517,6 +1525,7 @@ import type {
   useActiveWorkspace,
   useAddonDataset,
   useAgentVersionDisplay,
+  useAllVariants,
   useAnnotationColor,
   useArchivedReleases,
   useCanvasCompanionDoc,
@@ -1688,6 +1697,7 @@ import type {
   useUserStore,
   useValidationStatus,
   useValuePreview,
+  useVariantDocumentOperations,
   useVersionOperations,
   useVersionRelease,
   useVirtualizerScrollInstance,
@@ -3868,6 +3878,9 @@ describe('sanity', () => {
   test('getSelectedVariant', () => {
     expectTypeOf<typeof getSelectedVariant>().toBeFunction()
   })
+  test('getTargetDocument', () => {
+    expectTypeOf<typeof getTargetDocument>().toBeFunction()
+  })
   test('getTemplatePermissions', () => {
     expectTypeOf<typeof getTemplatePermissions>().toBeFunction()
   })
@@ -3876,6 +3889,9 @@ describe('sanity', () => {
   })
   test('getValueError', () => {
     expectTypeOf<typeof getValueError>().toBeFunction()
+  })
+  test('getVariantTitle', () => {
+    expectTypeOf<typeof getVariantTitle>().toBeFunction()
   })
   test('getVersionFromId', () => {
     expectTypeOf<typeof getVersionFromId>().toBeFunction()
@@ -4295,6 +4311,9 @@ describe('sanity', () => {
   test('isDev', () => {
     expectTypeOf<typeof isDev>().not.toBeNever()
   })
+  test('isDocumentInSelectedVariant', () => {
+    expectTypeOf<typeof isDocumentInSelectedVariant>().toBeFunction()
+  })
   test('isDocumentLimitError', () => {
     expectTypeOf<typeof isDocumentLimitError>().not.toBeNever()
   })
@@ -4309,6 +4328,9 @@ describe('sanity', () => {
   })
   test('isDraftPerspective', () => {
     expectTypeOf<typeof isDraftPerspective>().toBeFunction()
+  })
+  test('isDraftVersion', () => {
+    expectTypeOf<typeof isDraftVersion>().toBeFunction()
   })
   test('isEditDocumentVersionEvent', () => {
     expectTypeOf<typeof isEditDocumentVersionEvent>().not.toBeNever()
@@ -4412,6 +4434,9 @@ describe('sanity', () => {
   test('isPublishedPerspective', () => {
     expectTypeOf<typeof isPublishedPerspective>().toBeFunction()
   })
+  test('isPublishedVersion', () => {
+    expectTypeOf<typeof isPublishedVersion>().toBeFunction()
+  })
   test('isRecord', () => {
     expectTypeOf<typeof isRecord>().toBeFunction()
   })
@@ -4429,6 +4454,9 @@ describe('sanity', () => {
   })
   test('isReleaseScheduledOrScheduling', () => {
     expectTypeOf<typeof isReleaseScheduledOrScheduling>().toBeFunction()
+  })
+  test('isReleaseVersion', () => {
+    expectTypeOf<typeof isReleaseVersion>().toBeFunction()
   })
   test('isRemovedItemDiff', () => {
     expectTypeOf<typeof isRemovedItemDiff>().toBeFunction()
@@ -4513,6 +4541,9 @@ describe('sanity', () => {
   })
   test('isValidationWarningMarker', () => {
     expectTypeOf<typeof isValidationWarningMarker>().toBeFunction()
+  })
+  test('isVariantVersion', () => {
+    expectTypeOf<typeof isVariantVersion>().toBeFunction()
   })
   test('isVersionId', () => {
     expectTypeOf<typeof isVersionId>().toBeFunction()
@@ -6018,6 +6049,9 @@ describe('sanity', () => {
   test('systemBundles', () => {
     expectTypeOf<typeof systemBundles>().not.toBeNever()
   })
+  test('SystemVariant', () => {
+    expectTypeOf<SystemVariant>().toBeObject()
+  })
   test('TagsArrayInput', () => {
     expectTypeOf<typeof TagsArrayInput>().toBeFunction()
   })
@@ -6098,7 +6132,7 @@ describe('sanity', () => {
     expectTypeOf<typeof TextWithTone>().not.toBeNever()
   })
   test('TextWithToneProps', () => {
-    expectTypeOf<TextWithToneProps>().toBeObject()
+    expectTypeOf<TextWithToneProps>().not.toBeNever()
   })
   test('TFunction', () => {
     expectTypeOf<TFunction<any, any>>().toBeObject()
@@ -6322,6 +6356,9 @@ describe('sanity', () => {
   })
   test('useAgentVersionDisplay', () => {
     expectTypeOf<typeof useAgentVersionDisplay>().toBeFunction()
+  })
+  test('useAllVariants', () => {
+    expectTypeOf<typeof useAllVariants>().toBeFunction()
   })
   test('useAnnotationColor', () => {
     expectTypeOf<typeof useAnnotationColor>().toBeFunction()
@@ -6837,6 +6874,9 @@ describe('sanity', () => {
   })
   test('useValuePreview', () => {
     expectTypeOf<typeof useValuePreview>().toBeFunction()
+  })
+  test('useVariantDocumentOperations', () => {
+    expectTypeOf<typeof useVariantDocumentOperations>().toBeFunction()
   })
   test('useVersionOperations', () => {
     expectTypeOf<typeof useVersionOperations>().toBeFunction()
