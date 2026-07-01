@@ -14307,7 +14307,7 @@ snapshots:
       '@portabletext/types': 4.0.2
       '@sanity/client': 7.23.0
       '@sanity/color': 3.0.6
-      '@sanity/icons': 3.7.6(react@19.2.7)
+      '@sanity/icons': 3.7.4(react@19.2.7)
       '@sanity/mutator': link:packages/@sanity/mutator
       '@sanity/ui': 3.2.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       date-fns: 4.4.0
@@ -14758,7 +14758,7 @@ snapshots:
 
   '@sanity/language-filter@5.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)':
     dependencies:
-      '@sanity/icons': 3.7.6(react@19.2.7)
+      '@sanity/icons': 3.7.4(react@19.2.7)
       '@sanity/ui': 3.2.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
