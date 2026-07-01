@@ -161,7 +161,7 @@ const temporarilyBuildDocumentSystem = (
 
 const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system']
 
-function getOrCreateDocumentVersionsWithSystemObservable(options: {
+export function getOrCreateDocumentVersionsWithSystemObservable(options: {
   documentPreviewStore: DocumentPreviewStore
   publishedId: string
   projectId: string
