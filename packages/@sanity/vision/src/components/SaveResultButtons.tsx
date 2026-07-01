@@ -1,6 +1,6 @@
 import {DocumentSheetIcon} from '@sanity/icons'
 import {Button, Tooltip} from '@sanity/ui'
-import {type MouseEvent} from 'react'
+import {type ElementType, type MouseEvent} from 'react'
 import {useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../i18n'
@@ -9,7 +9,7 @@ interface SaveButtonProps {
   blobUrl: string | undefined
 }
 
-function preventSave(evt: MouseEvent<HTMLButtonElement>) {
+function preventSave(evt: MouseEvent<HTMLAnchorElement>) {
   return evt.preventDefault()
 }
 
@@ -19,7 +19,7 @@ export function SaveCsvButton({blobUrl}: SaveButtonProps) {
 
   const button = (
     <Button
-      as="a"
+      as={'a' as ElementType}
       disabled={isDisabled}
       download={isDisabled ? undefined : 'query-result.csv'}
       href={blobUrl}

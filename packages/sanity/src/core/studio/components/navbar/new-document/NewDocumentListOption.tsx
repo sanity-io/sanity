@@ -1,6 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {isValidElement, type MouseEvent, useCallback, useMemo} from 'react'
+import {type ElementType, isValidElement, type MouseEvent, useCallback, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {useIntentLink} from 'sanity/router'
 
@@ -57,7 +57,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
     >
       <div>
         <Card
-          as={option.hasPermission ? 'a' : 'button'}
+          as={(option.hasPermission ? 'a' : 'button') as ElementType}
           data-testid={`create-new-${option.templateId}`}
           disabled={!option.hasPermission}
           href={href}

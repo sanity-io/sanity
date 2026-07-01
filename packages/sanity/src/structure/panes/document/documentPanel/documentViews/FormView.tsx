@@ -1,5 +1,6 @@
 import {Box, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
 import {
+  type ElementType,
   type FormEvent,
   forwardRef,
   useCallback,
@@ -175,7 +176,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     <FormContainer hidden={hidden}>
       <PresenceOverlay margins={margins}>
         <Box
-          as="form"
+          as={'form' as ElementType}
           onSubmit={preventDefault}
           ref={setRef}
           data-testid="form-view"

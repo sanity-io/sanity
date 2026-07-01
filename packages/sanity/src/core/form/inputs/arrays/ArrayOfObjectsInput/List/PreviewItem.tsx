@@ -87,9 +87,9 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
 
-  const [previewCardElement, setPreviewCardElement] = useState<HTMLDivElement | null>(null)
-  const previewCardRef = useRef<HTMLDivElement | null>(null)
-  useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(
+  const [previewCardElement, setPreviewCardElement] = useState<HTMLButtonElement | null>(null)
+  const previewCardRef = useRef<HTMLButtonElement | null>(null)
+  useImperativeHandle<HTMLButtonElement | null, HTMLButtonElement | null>(
     previewCardRef,
     () => previewCardElement,
     [previewCardElement],

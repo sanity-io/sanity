@@ -26,7 +26,9 @@ const Meta = styled.div`
 `
 
 /** @internal */
-export function DiffInspectWrapper(props: DiffInspectWrapperProps & BoxProps): React.JSX.Element {
+export function DiffInspectWrapper(
+  props: DiffInspectWrapperProps & Omit<BoxProps, 'as'>,
+): React.JSX.Element {
   const {children, as, change, ...restProps} = props
   const isHovering = useRef(false)
   const [isInspecting, setIsInspecting] = useState(false)

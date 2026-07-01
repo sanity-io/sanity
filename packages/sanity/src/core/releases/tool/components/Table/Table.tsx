@@ -2,7 +2,14 @@ import {Box, Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns/isValid'
 import get from 'lodash-es/get.js'
-import {type CSSProperties, Fragment, type HTMLProps, type RefAttributes, useMemo} from 'react'
+import {
+  type CSSProperties,
+  type ElementType,
+  Fragment,
+  type HTMLProps,
+  type RefAttributes,
+  useMemo,
+} from 'react'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {TableEmptyState} from './TableEmptyState'
@@ -16,7 +23,7 @@ type RowDatum<TableData, AdditionalRowTableData> = (AdditionalRowTableData exten
   : TableData & AdditionalRowTableData) & {isLoading?: boolean}
 
 export type TableRowProps = Omit<
-  CardProps & Omit<HTMLProps<HTMLDivElement>, 'height' | 'as'>,
+  CardProps<ElementType> & Omit<HTMLProps<HTMLDivElement>, 'height' | 'as'>,
   'ref'
 > &
   RefAttributes<HTMLDivElement>
@@ -162,7 +169,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
             borderBottom
             display="flex"
             data-index={datum.index}
-            as="tr"
+            as={'tr' as ElementType}
             style={{
               height: `${datum.virtualRow.size}px`,
               position: 'absolute',
