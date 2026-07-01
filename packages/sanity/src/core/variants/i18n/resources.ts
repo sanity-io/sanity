@@ -40,7 +40,7 @@ const variantsLocaleStrings = {
   'overview.search.placeholder': 'Search variant definitions…',
   /** Column header for the variant title column in the overview table. */
   'overview.table.variant': 'Variant',
-  /** Column header for document count in the overview table. */
+  /** Column header for the documents count column in the overview table. */
   'overview.table.documents': 'Documents',
   /** Fallback text when a variant has no conditions. */
   'overview.table.no-conditions': 'No conditions',
@@ -64,12 +64,14 @@ const variantsLocaleStrings = {
   'detail.documents.table.search-placeholder': 'Search documents',
   /** Type column header for variant document table. */
   'detail.documents.table.type': 'Type',
-  /** Version column header for variant document table. */
-  'detail.documents.table.version': 'Version',
-  /** Version chip label for a document that belongs to the published bundle. */
-  'detail.documents.table.version.published': 'Published',
-  /** Version chip label for a document that belongs to the drafts bundle. */
-  'detail.documents.table.version.drafts': 'Drafts',
+  /** Bundle column header for variant document table. */
+  'detail.documents.table.bundle': 'Bundle',
+  /** Validation error tooltip for a single error in the variant document table. */
+  'detail.documents.table.validation.error_one': '{{count}} validation error',
+  /** Validation error tooltip for multiple errors in the variant document table. */
+  'detail.documents.table.validation.error_other': '{{count}} validation errors',
+  /** Error message when variant documents fail to load. */
+  'detail.documents.error': 'Unable to load documents for this variant',
   /** Description for the missing Variant detail page. */
   'detail.not-found.description': 'The requested variant could not be found.',
   /** Title for the missing Variant detail page. */

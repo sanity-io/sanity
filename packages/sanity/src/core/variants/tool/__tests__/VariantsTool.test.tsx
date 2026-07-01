@@ -54,6 +54,22 @@ vi.mock('../../store/useAllVariants', () => ({
   })),
 }))
 
+vi.mock('../../hooks/useVariantDocuments', () => ({
+  useVariantDocuments: vi.fn(() => ({
+    loading: false,
+    results: [],
+    error: null,
+  })),
+}))
+
+vi.mock('../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => ({
+    data: [],
+    loading: false,
+    error: null,
+  })),
+}))
+
 setupVirtualListEnv()
 
 describe('VariantsTool', () => {
