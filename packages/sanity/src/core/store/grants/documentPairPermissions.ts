@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema, type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
+import {map, shareReplay, switchMap} from 'rxjs/operators'
 
 import {useClient, useSchema} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -15,7 +15,12 @@ import {
 } from '../../util'
 import {useGrantsStore} from '../datastores'
 import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
+import {memoize} from '../document/utils/createMemoizer'
 import {type GrantsStore, type PermissionCheckResult} from './types'
+
+function shareLatestWithRefCount<T>() {
+  return shareReplay<T>({bufferSize: 1, refCount: true})
+}
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
   const type = schema.get(typeName)
@@ -194,7 +199,7 @@ export interface DocumentPairPermissionsOptions {
  *
  * @internal
  */
-export function getDocumentPairPermissions({
+function getDocumentPairPermissionsUncached({
   client,
   grantsStore,
   schema,
@@ -266,6 +271,15 @@ export function getDocumentPairPermissions({
     }),
   )
 }
+
+export const getDocumentPairPermissions = memoize(
+  (options: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> =>
+    getDocumentPairPermissionsUncached(options).pipe(shareLatestWithRefCount()),
+  ({client, id, type, version, permission}: DocumentPairPermissionsOptions): string => {
+    const {dataset = '', projectId = ''} = client.config()
+    return [dataset, projectId, id, version ?? '', type, permission].join('-')
+  },
+)
 
 /**
  * Gets document pair permissions based on a document ID and a type.
