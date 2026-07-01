@@ -96,6 +96,32 @@ describe('getDocumentPairPermissions (Pattern-B memoization)', () => {
     expect(publishObservable).not.toBe(deleteObservable)
   })
 
+  it('returns the SAME observable for ids that normalize to the same published id', () => {
+    createSnapshotPairMock()
+    const grantsStore = createGrantsStore()
+    const publishedId = `book-${Math.random().toString(36).slice(2)}`
+
+    const shared = {client, schema, grantsStore, type: 'book', permission: 'publish'} as const
+
+    const fromPublishedId = getDocumentPairPermissions({...shared, id: publishedId})
+    const fromDraftId = getDocumentPairPermissions({...shared, id: `drafts.${publishedId}`})
+
+    expect(fromPublishedId).toBe(fromDraftId)
+  })
+
+  it('returns DISTINCT observables for different version', () => {
+    createSnapshotPairMock()
+    const grantsStore = createGrantsStore()
+    const id = `book-${Math.random().toString(36).slice(2)}`
+
+    const shared = {client, schema, grantsStore, id, type: 'book', permission: 'publish'} as const
+
+    const versionA = getDocumentPairPermissions({...shared, version: 'rABC'})
+    const versionB = getDocumentPairPermissions({...shared, version: 'rXYZ'})
+
+    expect(versionA).not.toBe(versionB)
+  })
+
   it('builds the underlying chain only once for N subscribers', () => {
     const {draft$, published$, version$} = createSnapshotPairMock()
     const grantsStore = createGrantsStore()

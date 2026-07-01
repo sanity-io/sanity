@@ -16,6 +16,7 @@ import {
 import {useGrantsStore} from '../datastores'
 import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
 import {memoize} from '../document/utils/createMemoizer'
+import {useCurrentUser} from '../user'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
 function shareLatestWithRefCount<T>() {
@@ -185,6 +186,12 @@ export interface DocumentPairPermissionsOptions {
   version?: string
   permission: DocumentPermission
   /**
+   * Identity of the current user. Included in the memoization key so that an
+   * in-place user switch (same project, no reload) does not replay a previous
+   * user's grants from the module-level memo cache.
+   */
+  userId?: string
+  /**
    * @deprecated Does nothing. Preserved to avoid breaking changes.
    * Will be removed in the next major version.
    */
@@ -275,9 +282,21 @@ function getDocumentPairPermissionsUncached({
 export const getDocumentPairPermissions = memoize(
   (options: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> =>
     getDocumentPairPermissionsUncached(options).pipe(shareLatestWithRefCount()),
-  ({client, id, type, version, permission}: DocumentPairPermissionsOptions): string => {
+  ({client, id, type, version, permission, userId}: DocumentPairPermissionsOptions): string => {
     const {dataset = '', projectId = ''} = client.config()
-    return [dataset, projectId, id, version ?? '', type, permission].join('-')
+    // `id` is normalized to its published id because the underlying chain reduces
+    // (id, version) to `getIdPair(id, {version})`, a pure function of
+    // (getPublishedId(id), version). The raw `version` string is kept as-is;
+    // never call getIdPair here (it throws on version 'drafts'|'published').
+    return [
+      dataset,
+      projectId,
+      getPublishedId(id),
+      version ?? '',
+      userId ?? '',
+      type,
+      permission,
+    ].join('-')
   },
 )
 
@@ -325,6 +344,7 @@ export function useDocumentPairPermissions({
   const defaultClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const defaultSchema = useSchema()
   const defaultGrantsStore = useGrantsStore()
+  const currentUser = useCurrentUser()
 
   const client = useMemo(() => overrideClient || defaultClient, [defaultClient, overrideClient])
   const schema = useMemo(() => overrideSchema || defaultSchema, [defaultSchema, overrideSchema])
@@ -332,6 +352,7 @@ export function useDocumentPairPermissions({
     () => overrideGrantsStore || defaultGrantsStore,
     [defaultGrantsStore, overrideGrantsStore],
   )
+  const userId = currentUser?.id
 
   return useDocumentPairPermissionsFromHookFactory(
     useMemo(
@@ -344,8 +365,9 @@ export function useDocumentPairPermissions({
         type,
         pairListenerOptions,
         version,
+        userId,
       }),
-      [client, schema, grantsStore, id, permission, type, pairListenerOptions, version],
+      [client, schema, grantsStore, id, permission, type, pairListenerOptions, version, userId],
     ),
   )
 }
