@@ -242,8 +242,8 @@ importers:
   dev/design-studio:
     dependencies:
       '@sanity/icons':
-        specifier: ^3.7.4
-        version: 3.7.4(react@19.2.7)
+        specifier: ^4.1.0
+        version: 4.1.0(react@19.2.7)
       '@sanity/ui':
         specifier: 'catalog:'
         version: 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
@@ -495,8 +495,8 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       '@sanity/icons':
-        specifier: ^3.7.4
-        version: 3.7.4(react@19.2.7)
+        specifier: ^4.1.0
+        version: 4.1.0(react@19.2.7)
       '@sanity/ui':
         specifier: 'catalog:'
         version: 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
@@ -586,8 +586,8 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       '@sanity/icons':
-        specifier: ^3.7.4
-        version: 3.7.4(react@19.2.7)
+        specifier: ^4.1.0
+        version: 4.1.0(react@19.2.7)
       '@sanity/image-url':
         specifier: ^2.1.1
         version: 2.1.1
@@ -1177,8 +1177,8 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/tsconfig
       '@sanity/icons':
-        specifier: ^3.7.6
-        version: 3.7.6(react@19.2.7)
+        specifier: ^4.1.0
+        version: 4.1.0(react@19.2.7)
       '@sanity/pkg-utils':
         specifier: 'catalog:'
         version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
@@ -1335,8 +1335,8 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@sanity/icons':
-        specifier: ^3.7.6
-        version: 3.7.6(react@19.2.7)
+        specifier: ^4.1.0
+        version: 4.1.0(react@19.2.7)
       '@sanity/lezer-groq':
         specifier: ^1.0.4
         version: 1.0.4
@@ -1564,8 +1564,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       '@sanity/icons':
-        specifier: ^3.7.6
-        version: 3.7.6(react@19.2.7)
+        specifier: ^4.1.0
+        version: 4.1.0(react@19.2.7)
       '@sanity/id-utils':
         specifier: ^1.0.0
         version: 1.0.0
@@ -5520,17 +5520,17 @@ packages:
       sanity: ^5 || ^6.0.0-0
       styled-components: ^6.1
 
-  '@sanity/icons@3.7.4':
-    resolution: {integrity: sha512-O9MnckiDsphFwlRS8Q3kj3n+JYUZ0UzKRujnSikMZOKI0dayucRe4U2XvxikRhJnFhcEJXW2RkWJoBaCoup9Sw==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      react: ^18.3 || ^19.0.0-0
-
   '@sanity/icons@3.7.6':
     resolution: {integrity: sha512-dwBEm1VLRUJ0vqFV3FTluaMFxbF82Fd+LkfCkT9+b6OhM9tnDgWTSP0SDpyt5CKR74GSJfTJlBQYPfbtTNjsZA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: ^18.3 || ^19.0.0-0
+
+  '@sanity/icons@4.1.0':
+    resolution: {integrity: sha512-UssuBHPNXSdm4jK2bb7SKdK9VdbodWHqB5KUMuioYSe+xZw4+IUkEnVjT71mKP3bHOKIgCRheiFHN7WsWgiDDQ==}
+    engines: {node: '>=22.12'}
+    peerDependencies:
+      react: ^19
 
   '@sanity/id-utils@1.0.0':
     resolution: {integrity: sha512-2sb7tbdMDuUuVyocJPKG0gZBiOML/ovCe+mJiLrv1j69ODOfa2LfUjDVR+dRw/A/+XuxoJSSP8ebG7NiwTOgIA==}
@@ -14611,7 +14611,7 @@ snapshots:
       '@codemirror/state': 6.6.0
       '@codemirror/view': 6.43.1
       '@lezer/highlight': 1.2.3
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       '@sanity/lezer-groq': 1.0.4
       '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       '@uiw/codemirror-themes': 4.25.10(@codemirror/language@6.12.3)(@codemirror/state@6.6.0)(@codemirror/view@6.43.1)
@@ -14681,7 +14681,7 @@ snapshots:
 
   '@sanity/debug-preview-url-secret-plugin@2.0.12(@sanity/client@7.23.0)(react@19.2.7)(sanity@packages+sanity)':
     dependencies:
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       '@sanity/preview-url-secret': 4.0.7(@sanity/client@7.23.0)
       react: 19.2.7
       sanity: link:packages/sanity
@@ -14704,7 +14704,7 @@ snapshots:
 
   '@sanity/document-internationalization@6.2.9(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity-plugin-internationalized-array@5.1.9)(sanity@packages+sanity)':
     dependencies:
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       '@sanity/mutator': link:packages/@sanity/mutator
       '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       '@sanity/util': link:packages/@sanity/util
@@ -14747,7 +14747,7 @@ snapshots:
 
   '@sanity/google-maps-input@6.0.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)':
     dependencies:
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       '@vis.gl/react-google-maps': 1.8.3(react-dom@19.2.7)(react@19.2.7)
       react: 19.2.7
@@ -14758,11 +14758,11 @@ snapshots:
       - '@emotion/is-prop-valid'
       - react-is
 
-  '@sanity/icons@3.7.4(react@19.2.7)':
+  '@sanity/icons@3.7.6(react@19.2.7)':
     dependencies:
       react: 19.2.7
 
-  '@sanity/icons@3.7.6(react@19.2.7)':
+  '@sanity/icons@4.1.0(react@19.2.7)':
     dependencies:
       react: 19.2.7
 
@@ -14796,7 +14796,7 @@ snapshots:
 
   '@sanity/insert-menu@3.0.8(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)':
     dependencies:
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       lodash-es: 4.18.1
@@ -14809,7 +14809,7 @@ snapshots:
 
   '@sanity/insert-menu@3.0.8(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)(styled-components@6.4.2)':
     dependencies:
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 3.3.0(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.2)
       lodash-es: 4.18.1
@@ -15095,7 +15095,7 @@ snapshots:
       '@floating-ui/react-dom': 2.1.8(react-dom@19.2.7)(react@19.2.7)
       '@juggle/resize-observer': 3.4.0
       '@sanity/color': 3.0.6
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       csstype: 3.2.3
       motion: 12.42.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react@19.2.7)
       react: 19.2.7
@@ -15113,7 +15113,7 @@ snapshots:
       '@floating-ui/react-dom': 2.1.8(react-dom@19.2.7)(react@19.2.7)
       '@juggle/resize-observer': 3.4.0
       '@sanity/color': 3.0.6
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       csstype: 3.2.3
       motion: 12.42.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react@19.2.7)
       react: 19.2.7
@@ -15159,7 +15159,7 @@ snapshots:
   '@sanity/visual-editing@5.4.4(@emotion/is-prop-valid@1.4.0)(@sanity/client@7.23.0)(@sanity/styled-components@6.1.24)(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(typescript@5.9.3)':
     dependencies:
       '@sanity/comlink': 4.0.1
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       '@sanity/insert-menu': 3.0.8(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)
       '@sanity/mutate': 0.18.1(xstate@5.32.2)
       '@sanity/presentation-comlink': 2.1.0(@sanity/client@7.23.0)(@sanity/types@packages+@sanity+types)
@@ -20039,7 +20039,7 @@ snapshots:
 
   sanity-plugin-asset-source-unsplash@7.0.10(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@types/react@19.2.17)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity):
     dependencies:
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       lodash-es: 4.18.1
       react: 19.2.7
@@ -20054,7 +20054,7 @@ snapshots:
 
   sanity-plugin-internationalized-array@5.1.9(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.1.3)(@sanity/language-filter@5.0.4)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity):
     dependencies:
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       '@sanity/language-filter': 5.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
       '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       '@sanity/util': link:packages/@sanity/util
@@ -20075,7 +20075,7 @@ snapshots:
       '@reduxjs/toolkit': 2.12.0(react-redux@9.3.0)(react@19.2.7)
       '@sanity/client': 7.23.0
       '@sanity/color': 3.0.6
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       '@sanity/uuid': 3.0.3
       '@tanem/react-nprogress': 5.0.63(react-dom@19.2.7)(react@19.2.7)
@@ -20109,7 +20109,7 @@ snapshots:
   sanity-plugin-utils@2.0.3(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity):
     dependencies:
       '@sanity/asset-utils': 2.3.0
-      '@sanity/icons': 3.7.4(react@19.2.7)
+      '@sanity/icons': 3.7.6(react@19.2.7)
       '@sanity/image-url': 2.1.1
       '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       react: 19.2.7

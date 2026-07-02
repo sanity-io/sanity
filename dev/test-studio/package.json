@@ -27,7 +27,7 @@
     "@sanity/debug-preview-url-secret-plugin": "^2.0.12",
     "@sanity/document-internationalization": "^6.2.9",
     "@sanity/google-maps-input": "^6.0.1",
-    "@sanity/icons": "^3.7.4",
+    "@sanity/icons": "^4.1.0",
     "@sanity/image-url": "^2.1.1",
     "@sanity/logos": "^2.2.2",
     "@sanity/migrate": "catalog:",
