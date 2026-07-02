@@ -37,6 +37,7 @@ export function useUser(userId: string): LoadingTuple<User | null | undefined> {
  *
  * if (currentUser) {
  *  console.log('Logged in as', currentUser.name)
+ *  const department = currentUser.attributes?.find((attr) => attr.key === 'department')
  * }
  * ```
  */

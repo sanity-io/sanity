@@ -327,6 +327,7 @@ import type {
   CrossDatasetReferenceValue,
   CrossDatasetType,
   CurrentUser,
+  CurrentUserAttribute,
   CustomValidator,
   CustomValidatorResult,
   DashboardNotificationPayload,
@@ -1658,6 +1659,8 @@ import type {
   useProjectId,
   useProjectStore,
   User,
+  UserAttributeType,
+  UserAttributeValue,
   UserAvatar,
   UserAvatarProps,
   UserColor,
@@ -2770,6 +2773,9 @@ describe('sanity', () => {
   })
   test('CurrentUser', () => {
     expectTypeOf<CurrentUser>().toBeObject()
+  })
+  test('CurrentUserAttribute', () => {
+    expectTypeOf<CurrentUserAttribute>().toBeObject()
   })
   test('CustomValidator', () => {
     expectTypeOf<CustomValidator<any>>().toBeObject()
@@ -6784,6 +6790,12 @@ describe('sanity', () => {
   })
   test('User', () => {
     expectTypeOf<User>().toBeObject()
+  })
+  test('UserAttributeType', () => {
+    expectTypeOf<UserAttributeType>().not.toBeNever()
+  })
+  test('UserAttributeValue', () => {
+    expectTypeOf<UserAttributeValue>().not.toBeNever()
   })
   test('UserAvatar', () => {
     expectTypeOf<typeof UserAvatar>().toBeFunction()
