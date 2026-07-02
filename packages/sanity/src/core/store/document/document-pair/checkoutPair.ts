@@ -221,6 +221,19 @@ function commitMutations(
   })
 }
 
+/**
+ * The 4xx statuses we positively know are terminal for a commit: resubmitting
+ * the same mutation can never succeed, so the buffered edits are cancelled
+ * (rejected + reset to server HEAD) instead of retried. Opt-in by explicit
+ * status rather than a blanket 4xx rule, because the buckets have opposite
+ * failure modes: wrongly retrying a terminal error leaves the document
+ * visibly stalled with the edits preserved (recoverable), while wrongly
+ * cancelling a transient error silently destroys the user's work. Statuses
+ * not listed here — including transient 4xx like 408/429 and any 4xx we
+ * haven't classified — take the conservative retry path.
+ */
+const TERMINAL_COMMIT_STATUSES = new Set([400, 401, 402, 403, 404, 409, 410, 412, 413, 422])
+
 function submitCommitRequest(
   client: SanityClient,
   idPair: IdPair,
@@ -240,12 +253,12 @@ function submitCommitRequest(
     // Complete instead — the failure has already been routed through its
     // proper channel.
     catchError((error) => {
-      // 4xx (except 429) is a client error: terminal, the buffered
-      // mutations can't succeed by retrying, so cancel (which rejects the
-      // commit and resets the buffer to server HEAD). 5xx / 429 / network
-      // are transient: fail, so the mutator keeps the buffer and retries
-      // with backoff. Note `< 500` — 500 itself is a server error and
-      // must retry, not cancel.
+      // A known-terminal client error cancels: the buffered mutations can't
+      // succeed by retrying, so the commit is rejected and the buffer reset
+      // to server HEAD (see TERMINAL_COMMIT_STATUSES for the rationale).
+      // Everything else — 5xx, transient 4xx (408/429), unclassified 4xx,
+      // network errors — fails, so the mutator keeps the buffer and retries
+      // with backoff.
       // `error` can be any thrown value — guard before using `in`, which
       // throws on primitives.
       const statusCode =
@@ -255,9 +268,7 @@ function submitCommitRequest(
         typeof error.statusCode === 'number'
           ? error.statusCode
           : undefined
-      const isTerminalClientError =
-        statusCode !== undefined && statusCode >= 400 && statusCode < 500 && statusCode !== 429
-      if (isTerminalClientError) {
+      if (statusCode !== undefined && TERMINAL_COMMIT_STATUSES.has(statusCode)) {
         request.cancel(error)
       } else {
         request.failure(error)
