@@ -11,6 +11,7 @@ import {
   useDocumentStore,
   usePausedScheduledDraft,
   usePerspective,
+  useSetVariant,
   useSource,
 } from 'sanity'
 
@@ -52,7 +53,6 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const {documentId, documentType} = useDocumentPane()
   const showingRevision = Boolean(params?.rev)
 
-  const {navigate: navigatePerspective} = usePerspectiveNavigator()
   const perspectiveList = useDocumentPerspectiveList()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentStore = useDocumentStore()
@@ -119,7 +119,6 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
             documentId={displayed._id}
             documentType={documentType}
             portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
-            navigatePerspective={navigatePerspective}
             perspectiveList={perspectiveList}
             referringDocuments$={referringDocuments$}
             components={documentGroupInventoryComponents}

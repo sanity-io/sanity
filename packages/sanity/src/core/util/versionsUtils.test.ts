@@ -46,6 +46,8 @@ const releaseVersion = createVersion('versions.a.doc1', {
   },
 })
 
+const agentVersion = createVersion('versions.agent-x.doc1')
+
 describe('isPublishedVersion', () => {
   describe('default constraint (anyVariant)', () => {
     it('returns true for the base published version', () => {
@@ -149,5 +151,28 @@ describe('isDraftVersion', () => {
     it('returns false for the base published version', () => {
       expect(isDraftVersion(publishedBase, {constraint: {baseVariant: true}})).toBe(false)
     })
+  })
+})
+
+describe('readVersionType', () => {
+  it('classifies the base published version as published', () => {
+    expect(readVersionType(publishedBase)).toBe('published')
+  })
+
+  it('classifies drafts as draft', () => {
+    expect(readVersionType(draftBase)).toBe('draft')
+    expect(readVersionType(draftVariant)).toBe('draft')
+  })
+
+  it('classifies release versions as version', () => {
+    expect(readVersionType(releaseVersion)).toBe('release')
+  })
+
+  it('classifies agent versions as agent', () => {
+    expect(readVersionType(agentVersion)).toBe('agent')
+  })
+
+  it('returns undefined for undefined input', () => {
+    expect(readVersionType(undefined)).toBeUndefined()
   })
 })

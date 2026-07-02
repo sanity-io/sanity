@@ -530,6 +530,7 @@ exports[`exports snapshot 1`] = `
     "prepareConfig": "function",
     "prepareForPreview": "function",
     "prepareTemplates": "function",
+    "readVersionType": "function",
     "remoteSnapshots": "function",
     "removeDupes": "function",
     "removeMissingReferences": "function",
