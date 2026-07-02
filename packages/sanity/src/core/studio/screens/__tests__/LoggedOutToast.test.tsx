@@ -45,7 +45,10 @@ describe('LoggedOutToast', () => {
   })
 
   test('uses the generic copy for a non-expiry reason', async () => {
-    await renderWithReason('unauthorized')
+    // No such reason exists today ('session-expired' is the only member of
+    // the union), but the toast keeps a generic fallback so a future reason
+    // added without copy still renders something sensible.
+    await renderWithReason('some-future-reason' as LoggedOutReason)
     expect(useConditionalToast).toHaveBeenCalledWith(
       expect.objectContaining({
         enabled: true,
