@@ -8,7 +8,10 @@ import {type ReleaseId} from './types'
 import {useGetDefaultPerspective} from './useGetDefaultPerspective'
 import {getPerspectiveParam} from './useSetPerspective'
 
-type SetVariant = (
+/**
+ * @internal
+ */
+export type SetVariant = (
   options:
     | {
         variantId: SystemVariant['_id'] | undefined

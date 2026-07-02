@@ -1,6 +1,7 @@
 import {type VersionInfoDocumentStub} from '../releases/store/types'
+import {isAgentBundleName} from '../store/agent/createAgentBundlesStore'
 import {getVariantId} from '../variants/tool/util'
-import {getDraftId} from './draftUtils'
+import {getDraftId, getVersionFromId} from './draftUtils'
 
 type VariantConstraint =
   | {
@@ -29,6 +30,9 @@ type VariantConstraint =
        */
       anyVariant: true
     }
+
+/** @beta */
+export type VersionType = 'draft' | 'published' | 'release' | 'agent'
 
 /**
  * Uses the `_system` field to check if a version is a published version.
@@ -118,4 +122,32 @@ export function isVariantVersion(version: VersionInfoDocumentStub): boolean {
  */
 export function isReleaseVersion(version: VersionInfoDocumentStub): boolean {
   return Boolean(version._system?.release)
+}
+
+/**
+ * Uses the _system field to determine the version type of a document.
+ * @beta
+ */
+export function readVersionType(
+  version: VersionInfoDocumentStub | undefined,
+): VersionType | undefined {
+  if (typeof version === 'undefined') {
+    return undefined
+  }
+
+  if (isAgentBundleName(getVersionFromId(version._id))) {
+    return 'agent'
+  }
+
+  if (isPublishedVersion(version)) {
+    return 'published'
+  }
+
+  if (isReleaseVersion(version)) {
+    return 'release'
+  }
+
+  if (isDraftVersion(version)) {
+    return 'draft'
+  }
 }

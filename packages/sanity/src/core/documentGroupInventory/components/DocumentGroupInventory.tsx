@@ -21,6 +21,8 @@ import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n'
 import {feedbackLocaleNamespace, studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {type TargetPerspective} from '../../perspective/types'
+import {type SetVariant, useSetVariant} from '../../perspective/useSetVariant'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
@@ -40,12 +42,18 @@ import {
   isDraftId,
   isPublishedId,
   isVersionId,
+  type SystemBundle,
 } from '../../util/draftUtils'
+import {readVersionType} from '../../util/versionsUtils'
 import {type VariantStoreState} from '../../variants/store/reducer'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
+import {isVariantId} from '../../variants/types'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
-import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
-import {selectionMachine} from '../machines/selectionMachine'
+import {
+  documentGroupInventoryMachine,
+  type VariantSet as VariantSetType,
+} from '../machines/documentGroupInventoryMachine'
+import {selectionMachine, type Variant} from '../machines/selectionMachine'
 import {
   type DocumentGroupInventoryPerspectiveList,
   type DocumentGroupInventoryReferencePreviewLinkProps,
@@ -73,10 +81,6 @@ export interface DocumentGroupInventoryProps {
    */
   portalElementName: string
   /**
-   * Navigate to the provided perspective.
-   */
-  navigatePerspective: (perspective: TargetPerspective) => void
-  /**
    * Derived perspective list state for the inventory document.
    */
   perspectiveList: DocumentGroupInventoryPerspectiveList
@@ -101,7 +105,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   documentType,
   documentId,
   portalElementName,
-  navigatePerspective,
   perspectiveList,
   referringDocuments$,
   components,
@@ -120,6 +123,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
   const [menuPortalElement, setMenuPortalElement] = useState<HTMLDivElement | null>(null)
   const {feedbackDialogOpened} = useFeedbackTelemetry()
+  const setVariant = useSetVariant()
 
   const filterString = useMemo(
     () =>
@@ -242,27 +246,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
               documentType={documentType}
               menuPortalElement={menuPortalElement}
               perspectiveList={perspectiveList}
-              onPrimaryAction={(variantId) => {
-                let perspective: TargetPerspective | undefined
-
-                switch (true) {
-                  case isPublishedId(variantId):
-                    perspective = 'published'
-                    break
-                  case isDraftId(variantId):
-                    perspective = 'drafts'
-                    break
-                  case isVersionId(variantId):
-                    perspective = getVersionFromId(variantId)
-                    break
-                  default:
-                    perspective = undefined
-                }
-
-                if (typeof perspective !== 'undefined') {
-                  navigatePerspective(perspective)
-                }
-              }}
+              onPrimaryAction={setVariant}
             />
           )}
         </Body>
@@ -305,7 +289,7 @@ const Select: ComponentType<{
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
   documentType: string
-  onPrimaryAction: (variantId: string) => void
+  onPrimaryAction: SetVariant
   menuPortalElement: HTMLElement | null
   perspectiveList: DocumentGroupInventoryPerspectiveList
 }> = ({
@@ -335,15 +319,10 @@ const Select: ComponentType<{
   return (
     <Stack gap={5}>
       {sets.map((set) => (
-        <VariantSet key={set.key}>
+        <VariantSet key={set.key} data-variant-set={set.name}>
           <VariantSetHeader as="header">
             <Text size={1} weight="bold">
-              {t('document-group-inventory.title', {
-                count: set.variants.length,
-                subject: t('document-group.subject.version', {
-                  count: set.variants.length,
-                }),
-              })}
+              {set.name}
             </Text>
             <TextButton
               onClick={() => {
@@ -382,11 +361,11 @@ const Select: ComponentType<{
 }
 
 const Variant: ComponentType<{
-  variant: {id: string; name: string}
+  variant: Variant
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
   documentType: string
-  onPrimaryAction: (variantId: string) => void
+  onPrimaryAction: SetVariant
   isSelectable: boolean
   menuPortalElement: HTMLElement | null
   perspectiveList: DocumentGroupInventoryPerspectiveList
@@ -459,16 +438,39 @@ const Variant: ComponentType<{
 
   return (
     <>
-      <VariantSetEntry
-        data-testid={`document-group-inventory-variant-${variant.name.replaceAll(' ', '-')}`}
-        data-selected={isSelected || undefined}
-      >
+      <VariantSetEntry data-variant-name={variant.name} data-selected={isSelected || undefined}>
         <div className="atom">
           <button
             type="button"
             className="primary-action"
             ref={setReferenceElement}
-            onClick={() => onPrimaryAction(variant.id)}
+            onClick={() => {
+              let bundle
+
+              switch (readVersionType(variant.document)) {
+                case 'release':
+                  bundle = getReleaseIdFromReleaseDocumentId(
+                    variant?.document?._system.release?._ref ?? '',
+                  )
+                  break
+                case 'published':
+                  bundle = 'published'
+                  break
+                case 'draft':
+                  bundle = 'drafts'
+                  break
+              }
+
+              const variantId = isVariantId(variant.document?._system?.variant?._ref)
+                ? variant.document._system.variant._ref
+                : undefined
+
+              const agentId = isAgentBundleName(getVersionFromId(variant.id))
+                ? getVersionFromId(variant.id)
+                : undefined
+
+              onPrimaryAction({variantId, perspective: agentId ?? bundle})
+            }}
             onContextMenu={contextMenuHandler}
           >
             {variant.name}
