@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.3.1](https://github.com/sanity-io/sanity/compare/v6.3.0...v6.3.1) (2026-07-02)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/cli to ^7.5.0 ([#13389](https://github.com/sanity-io/sanity/issues/13389)) ([24bce9d](https://github.com/sanity-io/sanity/commit/24bce9d59be1abd575b2202a0af5b8520ebe35bc))
+* **deps:** update dependency @sanity/icons to ^3.7.6 ([#13384](https://github.com/sanity-io/sanity/issues/13384)) ([260a282](https://github.com/sanity-io/sanity/commit/260a282c2dc38d88e8d03e1f89b677aca765f173))
+* **portable-text:** collect form members at any depth ([e8af647](https://github.com/sanity-io/sanity/commit/e8af6477fcf5f72d34d906dddd1deb8206863e37))
+* **portable-text:** key the element-ref registry by full path ([7ebc0ec](https://github.com/sanity-io/sanity/commit/7ebc0eca0eacbf79e66cab7ffbee49500a865167))
+* **portable-text:** resolve render-callback schema types by path ([4b785dc](https://github.com/sanity-io/sanity/commit/4b785dc8e7e27ecee03711c69989a600c87b6792))
+* **portable-text:** track focus into nested-container blocks ([4c6e970](https://github.com/sanity-io/sanity/commit/4c6e970a29e66b48daae0a4817dcb1bc16dd9d9b))
 ## [6.3.0](https://github.com/sanity-io/sanity/compare/v6.2.0...v6.3.0) (2026-06-30)
 
 ### Features
