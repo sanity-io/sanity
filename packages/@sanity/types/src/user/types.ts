@@ -16,13 +16,13 @@ export type UserAttributeType =
   | 'boolean'
 
 type UserAttributeValueByType = {
-  string: string
+  'string': string
   'string-array': string[]
-  integer: number
+  'integer': number
   'integer-array': number[]
-  number: number
+  'number': number
   'number-array': number[]
-  boolean: boolean
+  'boolean': boolean
 }
 
 /** @public */
