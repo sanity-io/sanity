@@ -619,6 +619,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Toast title shown when saving changes is taking longer than expected */
   'document-store.slow-commit.title': 'Saving is taking longer than expected',
 
+  /** Toast title shown when a document's initial value could not be resolved */
+  'document.initial-value.error.title': 'Could not resolve initial value',
+  /**
+   * Toast description shown when a document's initial value could not be
+   * resolved. Includes the underlying error message.
+   */
+  'document.initial-value.error.description':
+    'The document opened with an empty value. {{errorMessage}}',
+
   /** Label to indicate that a document type was not found */
   'document.type.not-found': 'Document type "{{type}}" not found',
 
@@ -1400,6 +1409,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'insufficient-permissions-message.roles': 'Your roles: <Roles/>',
   /** The title for the insufficient permissions message component */
   'insufficient-permissions-message.title': 'Insufficient permissions',
+
+  /** Body of the logged-out banner shown above the login form for an unknown reason */
+  'login.logged-out.generic': 'Your session is no longer valid. Please sign in again.',
+  /** Body of the logged-out banner shown above the login form when the session expired */
+  'login.logged-out.session-expired': 'Your session expired. Please sign in again.',
+  /** Title of the banner shown above the login form after the studio logs the user out */
+  'login.logged-out.title': "You've been logged out",
 
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',

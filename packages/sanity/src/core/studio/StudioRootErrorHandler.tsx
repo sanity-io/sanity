@@ -7,9 +7,8 @@ import {errorReporter} from '../error/errorReporter'
 import {isImportError} from '../error/isImportError'
 import {isKnownError} from '../error/isKnownError'
 import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
-import {CorsOriginError} from '../store'
 import {globalScope} from '../util'
-import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
+import {SchemaErrorsScreen} from './screens'
 import {FallbackErrorScreen} from './screens/FallbackErrorScreen'
 import {ImportErrorScreen} from './screens/ImportErrorScreen'
 
@@ -28,24 +27,23 @@ const errorChannel = globalScope.__sanityErrorChannel
  * Note2: This should not be used as a general React error boundary, and there should never be more than one instance of this
  * per Studio application.
  * To wrap React subtrees, use the {@link StudioErrorBoundary} component instead.
+ *
+ * Classified request errors (CORS, network, 5xx, 401, 429) are handled
+ * locally by `WorkspacesProvider` — they don't reach this handler.
  */
 interface StudioRootErrorHandlerProps {
   children: ReactNode
-  /**
-   * The project ID of the first workspace in the Studio config.
-   * Used to show the "Register Studio" option in the CORS error screen.
-   */
-  primaryProjectId?: string
 }
 
 export function StudioRootErrorHandler(props: StudioRootErrorHandlerProps) {
-  const {children, primaryProjectId} = props
+  const {children} = props
   const [errorState, setErrorState] = useState<ErrorState>()
 
   const handleResetError = useCallback(() => setErrorState(undefined), [])
   const toast = useToast()
 
   useHotModuleReload(handleResetError)
+
   useEffect(() => {
     if (!errorChannel) return undefined
 
@@ -107,16 +105,6 @@ export function StudioRootErrorHandler(props: StudioRootErrorHandlerProps) {
 
   if (!errorState?.error) {
     return children
-  }
-
-  if (errorState.error instanceof CorsOriginError) {
-    return (
-      <CorsOriginErrorScreen
-        projectId={errorState.error.projectId}
-        isStaging={errorState.error.isStaging}
-        primaryProjectId={primaryProjectId}
-      />
-    )
   }
 
   if (errorState.error instanceof SchemaError) {

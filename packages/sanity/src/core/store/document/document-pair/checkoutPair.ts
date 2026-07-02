@@ -9,6 +9,7 @@ import {type SanityDocument} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
 import {defer, EMPTY, from, merge, type Observable, timer} from 'rxjs'
 import {
+  catchError,
   filter,
   map,
   mergeMap,
@@ -227,19 +228,34 @@ function submitCommitRequest(
 ): Observable<MultipleActionResult | MutationResult> {
   return from(commitActions(client, idPair, request.mutation.params)).pipe(
     tap({
-      error: (error) => {
-        const isBadRequest =
-          'statusCode' in error &&
-          typeof error.statusCode === 'number' &&
-          error.statusCode >= 400 &&
-          error.statusCode <= 500
-        if (isBadRequest) {
-          request.cancel(error)
-        } else {
-          request.failure(error)
-        }
-      },
       next: () => request.success(),
+    }),
+    // A failed commit is reported to the mutator via `request.cancel` /
+    // `request.failure` (which rejects the corresponding commit promise so
+    // the buffered document can retry/rebase on reconnect). After that, we
+    // must NOT let the error propagate down this observable: it feeds
+    // `commits$` → `combinedEvents` → the document `events` stream, and an
+    // errored events stream is rethrown by `useObservable` (react-rx) when
+    // `useEditState` reads it during render, crashing the document pane.
+    // Complete instead — the failure has already been routed through its
+    // proper channel.
+    catchError((error) => {
+      // 4xx (except 429) is a client error: terminal, the buffered
+      // mutations can't succeed by retrying, so cancel (which rejects the
+      // commit and resets the buffer to server HEAD). 5xx / 429 / network
+      // are transient: fail, so the mutator keeps the buffer and retries
+      // with backoff. Note `< 500` — 500 itself is a server error and
+      // must retry, not cancel.
+      const statusCode =
+        'statusCode' in error && typeof error.statusCode === 'number' ? error.statusCode : undefined
+      const isTerminalClientError =
+        statusCode !== undefined && statusCode >= 400 && statusCode < 500 && statusCode !== 429
+      if (isTerminalClientError) {
+        request.cancel(error)
+      } else {
+        request.failure(error)
+      }
+      return EMPTY
     }),
   )
 }
@@ -348,6 +364,10 @@ export function checkoutPair(
 
   // Each new commit request restarts the timer via switchMap.
   // The timer is cancelled when the commit succeeds or pending mutations resolve.
+  // Note: a *failed* commit no longer emits on `commits$` (it completes via
+  // `catchError` in `submitCommitRequest`), so `commitResolved$` does not fire
+  // for it — a commit that fails after SLOW_COMMIT_TIMEOUT_MS still triggers
+  // `onSlowCommit`. That's intentional: it was slow, and it's now failing.
   const slowCommitWarning$ = onSlowCommit
     ? commitRequests$.pipe(
         switchMap(() => timer(SLOW_COMMIT_TIMEOUT_MS).pipe(takeUntil(commitResolved$))),

@@ -7,7 +7,6 @@ import {type CurrentUser} from '@sanity/types'
 import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {CorsOriginError} from '../../cors'
 import {_createAuthStore} from '../createAuthStore'
 import {type AuthStore} from '../types'
 
@@ -753,25 +752,242 @@ describe('createAuthStore: cross-tab sync', () => {
       expect(usersMeProbes).toBe(1)
     })
 
-    it('throws CorsOriginError when /users/me fails for a non-auth reason but /ping succeeds', async () => {
-      // Previously, getCurrentUser probed /ping to detect CORS misconfig and threw
-      // CorsOriginError, which StudioErrorBoundary renders as CorsOriginErrorScreen.
-      // After the refactor, the raw error is propagated and the helpful CORS screen
-      // never appears.
-      const nonAuthError = Object.assign(new Error('Network error'), {
-        statusCode: 0,
-        isNetworkError: true,
+    it('transitions to unauthenticated on logout despite the forced-logout middleware parking 401s', async () => {
+      // Regression: after a mid-session 401 forces a logout, the dual-mode
+      // re-check probes /users/me again. In the studio that probe rides a
+      // client carrying the forced-logout middleware (`_requestHandler`), which
+      // claims the 401 and parks it forever — so the probe never settles,
+      // `getCurrentUser`'s own 401-catch never runs, authState$ never emits
+      // `authenticated: false`, and the studio freezes instead of showing the
+      // login screen.
+      //
+      // The fix probes with `withConfig({_requestHandler: undefined})`, so the
+      // 401 reaches getCurrentUser's catch. We model the middleware faithfully:
+      // a client built WITH `_requestHandler` parks its /users/me 401 (hangs);
+      // stripping it via withConfig makes the same 401 reject normally.
+      let sessionValid = true
+
+      const makeClient = (options: SanityClientConfig): SanityClient => {
+        const middlewareActive = Boolean((options as {_requestHandler?: unknown})._requestHandler)
+        const client = {
+          config: () => options,
+          // Mirrors @sanity/client: withConfig merges config and returns a new
+          // client. The fix calls this with `_requestHandler: undefined`.
+          withConfig: (next: SanityClientConfig) => makeClient({...options, ...next}),
+          request: vi.fn(({uri, method}: {uri: string; method?: string}) => {
+            if (uri === '/auth/logout' && method === 'POST') return Promise.resolve({ok: true})
+            if (uri === '/users/me') {
+              if (sessionValid) return Promise.resolve(MOCK_USER)
+              // A 401 on a middleware-bearing client is parked forever; on a
+              // stripped client it rejects normally (the real behavior).
+              return middlewareActive ? new Promise(() => {}) : Promise.reject(create401Error())
+            }
+            if (uri === '/auth/id') {
+              return sessionValid
+                ? Promise.resolve({id: 'x', expiry: Math.floor(Date.now() / 1000) + 3600})
+                : Promise.reject(create401Error())
+            }
+            return Promise.resolve({})
+          }),
+        }
+        return client as unknown as SanityClient
+      }
+
+      // prepareConfig installs `_requestHandler` on every studio client; emulate
+      // that so the probe client carries the parking middleware by default.
+      const factory = (options: SanityClientConfig): SanityClient =>
+        makeClient({...options, _requestHandler: (() => {}) as never})
+
+      const store = _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod: 'dual',
+        clientFactory: factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
       })
 
+      await waitForState(store, (s) => s.authenticated)
+
+      // Session lapses: /users/me now 401s (parked on a middleware-bearing
+      // client, rejects on a stripped one).
+      sessionValid = false
+
+      // Against the bug this rejects with waitForState's own timeout, since the
+      // parked probe leaves authState$ without a post-logout emission.
+      const unauthState = waitForState(store, (s) => !s.authenticated, 2000)
+      await (store.logout!() as unknown as Promise<void>)
+
+      const state = await unauthState
+      expect(state.authenticated).toBe(false)
+      expect(state.currentUser).toBeNull()
+    })
+
+    it('transitions to unauthenticated when /auth/logout itself 401s on a middleware-bearing client', async () => {
+      // Regression: a forced logout reacting to a mid-session 401 POSTs
+      // /auth/logout to invalidate the (already-gone) session. In the studio
+      // those clients carry the forced-logout middleware (`_requestHandler`),
+      // which parks any 401 forever. If the logout endpoint answers 401 (the
+      // session is already gone), the parked request never settles,
+      // `Promise.allSettled` never resolves, and the local teardown that
+      // transitions auth state to unauthenticated never runs — the studio
+      // freezes instead of landing on the login screen.
+      //
+      // The fix strips the middleware from the logout clients via
+      // `withConfig({_requestHandler: undefined})`, so the 401 rejects normally
+      // and teardown proceeds. We model the middleware faithfully: /auth/logout
+      // 401s, parked on a middleware-bearing client, rejecting on a stripped
+      // one.
+      // The session is valid until it lapses; after that everything 401s,
+      // including the `/auth/logout` the forced logout POSTs.
+      let sessionValid = true
+
+      const makeClient = (options: SanityClientConfig): SanityClient => {
+        const middlewareActive = Boolean((options as {_requestHandler?: unknown})._requestHandler)
+        const client = {
+          config: () => options,
+          withConfig: (next: SanityClientConfig) => makeClient({...options, ...next}),
+          request: vi.fn(({uri, method}: {uri: string; method?: string}) => {
+            if (uri === '/auth/logout' && method === 'POST') {
+              // Session already gone: the logout endpoint 401s. Parked forever
+              // on a middleware-bearing client; rejects on a stripped one.
+              return middlewareActive ? new Promise(() => {}) : Promise.reject(create401Error())
+            }
+            if (uri === '/users/me') {
+              if (sessionValid) return Promise.resolve(MOCK_USER)
+              // A 401 on a middleware-bearing client is parked forever; on a
+              // stripped (probe) client it rejects normally.
+              return middlewareActive ? new Promise(() => {}) : Promise.reject(create401Error())
+            }
+            if (uri === '/auth/id') {
+              return sessionValid
+                ? Promise.resolve({id: 'x', expiry: Math.floor(Date.now() / 1000) + 3600})
+                : Promise.reject(create401Error())
+            }
+            return Promise.resolve({})
+          }),
+        }
+        return client as unknown as SanityClient
+      }
+
+      // prepareConfig installs `_requestHandler` on every studio client; emulate
+      // that so the logout clients carry the parking middleware by default.
+      const factory = (options: SanityClientConfig): SanityClient =>
+        makeClient({...options, _requestHandler: (() => {}) as never})
+
+      const store = _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod: 'dual',
+        clientFactory: factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
+      })
+
+      await waitForState(store, (s) => s.authenticated)
+
+      // Session lapses: everything now 401s, including /auth/logout.
+      sessionValid = false
+
+      // Against the bug this rejects with waitForState's own timeout, since the
+      // parked /auth/logout leaves allSettled (and thus teardown) hanging.
+      const unauthState = waitForState(store, (s) => !s.authenticated, 2000)
+      await (store.logout!() as unknown as Promise<void>)
+
+      const state = await unauthState
+      expect(state.authenticated).toBe(false)
+      expect(state.currentUser).toBeNull()
+    })
+
+    it('completes handleCallbackUrl with token fallback when the cookie probe 401s on a middleware-bearing client', async () => {
+      // Regression: on login-after-logout, `handleCallbackUrl` exchanges the sid
+      // for a token, then `probeCurrentUser` checks /auth/id to see whether the
+      // cookie was established. In the studio that probe rides a client carrying
+      // the forced-logout middleware (`_requestHandler`); when the cookie is NOT
+      // established, /auth/id 401s, the middleware parks it forever, and
+      // `processCallback` (which awaits the probe) never resolves — the login
+      // callback hangs and the navbar never appears (the auth e2e failure).
+      //
+      // The fix probes with `withConfig({_requestHandler: undefined})` so the
+      // 401 reaches probeCurrentUser's own catch and the flow falls back to
+      // token auth. We model the middleware faithfully: /auth/id 401s (cookie
+      // not established), parked on a middleware-bearing client, rejecting on a
+      // stripped one; the token exchange and /users/me succeed via the token.
+      const TOKEN = 'valid-exchanged-token'
+
+      const makeClient = (options: SanityClientConfig): SanityClient => {
+        const middlewareActive = Boolean((options as {_requestHandler?: unknown})._requestHandler)
+        const usesToken = (options as {token?: string}).token === TOKEN
+        const client = {
+          config: () => options,
+          withConfig: (next: SanityClientConfig) => makeClient({...options, ...next}),
+          request: vi.fn(({uri, method}: {uri: string; method?: string}) => {
+            if (uri === '/auth/fetch') return Promise.resolve({token: TOKEN})
+            if (uri === '/auth/logout' && method === 'POST') return Promise.resolve({ok: true})
+            // The cookie is never established, so /auth/id 401s. Parked forever
+            // on a middleware-bearing client; rejects on a stripped one.
+            if (uri === '/auth/id') {
+              return middlewareActive ? new Promise(() => {}) : Promise.reject(create401Error())
+            }
+            // /users/me authenticates only via the exchanged token.
+            if (uri === '/users/me') {
+              return usesToken ? Promise.resolve(MOCK_USER) : Promise.reject(create401Error())
+            }
+            return Promise.resolve({})
+          }),
+        }
+        return client as unknown as SanityClient
+      }
+
+      // prepareConfig installs `_requestHandler` on every studio client.
+      const factory = (options: SanityClientConfig): SanityClient =>
+        makeClient({...options, _requestHandler: (() => {}) as never})
+
+      let sessionIdConsumed = false
+      const getSessionId = () => {
+        if (sessionIdConsumed) return undefined
+        sessionIdConsumed = true
+        return 'mock-session-id-12345678'
+      }
+
+      const store = _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod: 'dual',
+        clientFactory: factory,
+        getSessionId,
+        consumeHashToken: () => undefined,
+      })
+
+      // Against the bug, the parked /auth/id leaves handleCallbackUrl pending
+      // forever; this await never resolves and the test times out.
+      const result = await store.handleCallbackUrl!()
+      expect(result.success).toBe(true)
+
+      const state = await waitForState(store, (s) => s.authenticated, 2000)
+      expect(state.authenticated).toBe(true)
+      expect(state.currentUser).toEqual(MOCK_USER)
+    })
+
+    it('reports a diagnosed CORS/config failure on the boot probe and resolves logged-out', async () => {
+      // The /users/me probe bypasses the studio request handler (its middleware
+      // is stripped), so a CORS / missing-project failure would otherwise show
+      // a generic network error. With diagnostics injected, it's diagnosed and
+      // reported, and the probe resolves as logged-out (no thrown boot error).
       const factory = (_options: SanityClientConfig): SanityClient =>
         ({
-          request: vi.fn(({uri, withCredentials}: {uri: string; withCredentials?: boolean}) => {
-            if (uri === '/users/me') return Promise.reject(nonAuthError)
-            // /ping succeeds without credentials → indicates CORS origin isn't allowlisted
-            if (uri === '/ping' && withCredentials === false) return Promise.resolve({})
+          request: vi.fn(({uri}: {uri: string}) => {
+            if (uri === '/users/me') {
+              return Promise.reject(
+                Object.assign(new Error('Failed to fetch'), {isNetworkError: true}),
+              )
+            }
             return Promise.resolve({})
           }),
         }) as unknown as SanityClient
+
+      const onRequestFailure = vi.fn()
+      const diagnose = vi.fn(async () => ({type: 'project-not-found'}) as const)
 
       const store = _createAuthStore({
         projectId: PROJECT_ID,
@@ -780,11 +996,13 @@ describe('createAuthStore: cross-tab sync', () => {
         clientFactory: factory,
         getSessionId: () => undefined,
         consumeHashToken: () => undefined,
+        getRequestFailureDiagnostics: () => ({diagnose, onRequestFailure}),
       })
 
-      // The state stream should error with a CorsOriginError so the StudioErrorBoundary
-      // can render CorsOriginErrorScreen.
-      await expect(firstValueFrom(store.state)).rejects.toBeInstanceOf(CorsOriginError)
+      const state = await waitForState(store, (s) => !s.authenticated, 2000)
+      expect(state.authenticated).toBe(false)
+      expect(diagnose).toHaveBeenCalled()
+      expect(onRequestFailure).toHaveBeenCalledWith({type: 'project-not-found'}, expect.anything())
     })
   })
 })

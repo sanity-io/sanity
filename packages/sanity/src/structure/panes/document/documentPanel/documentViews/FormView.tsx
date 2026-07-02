@@ -67,6 +67,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
     compareValue,
     hasUpstreamVersion,
     focusPath,
+    syncState,
   } = useDocumentPane()
   const {selectedReleaseId, selectedPerspective} = usePerspective()
   const documentStore = useDocumentStore()
@@ -94,6 +95,44 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
   )
 
   useConditionalToast(conditionalToastParams)
+
+  // Staged "changes aren't syncing" toast. Three non-synced states:
+  //  - pending:    unsynced + disconnected, warning (editing still open)
+  //  - stalled:    unsynced + disconnected for longer, editing locked
+  //  - recovering: connection back, flushing the backlog (still locked,
+  //                but reassure rather than alarm)
+  // One toast id so the states replace each other rather than stack, and
+  // it auto-dismisses when the document syncs again.
+  const syncToastParams = useMemo(() => {
+    const copy = {
+      pending: {
+        status: 'warning' as const,
+        title: t('document-view.form-view.sync-pending.title'),
+        description: t('document-view.form-view.sync-pending.description'),
+      },
+      stalled: {
+        status: 'error' as const,
+        title: t('document-view.form-view.sync-stalled.title'),
+        description: t('document-view.form-view.sync-stalled.description'),
+      },
+      recovering: {
+        status: 'warning' as const,
+        title: t('document-view.form-view.sync-recovering.title'),
+        description: t('document-view.form-view.sync-recovering.description'),
+      },
+    }
+    // No copy when synced — the toast is disabled, so title/description are
+    // never read (useConditionalToast only pushes while `enabled`).
+    const active = syncState === 'synced' ? undefined : copy[syncState]
+    return {
+      id: 'document-sync-state',
+      enabled: syncState !== 'synced',
+      closable: true,
+      ...active,
+    }
+  }, [syncState, t])
+
+  useConditionalToast(syncToastParams)
 
   useEffect(() => {
     const sub = documentStore.pair

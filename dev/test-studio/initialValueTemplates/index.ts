@@ -1,3 +1,4 @@
+import {type ClientConfig, type SanityClient} from '@sanity/client'
 import {CogIcon, RocketIcon} from '@sanity/icons'
 import {type Template} from 'sanity'
 
@@ -17,6 +18,18 @@ export const resolveInitialValueTemplates: Template[] = [
     schemaType: 'author',
     icon: RocketIcon,
     value: {locked: false},
+  },
+  {
+    id: 'client-error-test',
+    title: 'Author, but client error',
+    description: 'An unlocked author',
+    schemaType: 'author',
+    icon: RocketIcon,
+    value: async (params: any, ctx: {getClient(cfg: ClientConfig): SanityClient}) => {
+      const client = ctx.getClient({apiVersion: 'v2026-06-24'})
+      // add a syntax error to trigger a 4xx
+      return client.fetch('{}')
+    },
   },
   {
     id: 'book-by-author',
