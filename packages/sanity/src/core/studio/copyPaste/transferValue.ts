@@ -39,7 +39,7 @@ import {type FIXME} from '../../FIXME'
 import {resolveConditionalProperty} from '../../form/store/conditional-property/resolveConditionalProperty'
 import {accepts} from '../../form/studio/uploads/accepts'
 import {randomKey} from '../../form/utils/randomKey'
-import {getIdPair} from '../../util/draftUtils'
+import {getPublishedId} from '../../util/draftUtils'
 import {isRecord} from '../../util/isRecord'
 import {documentMatchesGroqFilter} from './documentMatchesGroqFilter'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
@@ -592,13 +592,15 @@ async function collateObjectValue({
     // Validate the actual reference value
     if (options?.validateReferences && options.client && isReference(sourceValue)) {
       try {
+        // `sanity::versionOf` matches the published document as well as any draft or release
+        // version of it, so references to documents that only exist within a release (e.g.
+        // created while a release was the selected perspective) validate correctly.
         // We need to fetch the whole reference document if a filter is defined
         const query = targetSchemaType.options?.filter
-          ? `*[_id in $ids]|order(_updatedAt)[0]`
-          : `*[_id in $ids]|order(_updatedAt)[0]{_id, _type}`
-        const {publishedId, draftId} = getIdPair(sourceValue._ref)
+          ? `*[sanity::versionOf($publishedId)]|order(_updatedAt)[0]`
+          : `*[sanity::versionOf($publishedId)]|order(_updatedAt)[0]{_id, _type}`
         const reference = await (options.client as SanityClient).fetch(query, {
-          ids: [publishedId, draftId],
+          publishedId: getPublishedId(sourceValue._ref),
         })
 
         // Test that we have an actual referenced object if this is not a weak reference
