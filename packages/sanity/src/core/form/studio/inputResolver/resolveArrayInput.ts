@@ -4,7 +4,7 @@ import {type ComponentType} from 'react'
 import {ArrayOfObjectsInput} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {ArrayOfOptionsInput} from '../../inputs/arrays/ArrayOfOptionsInput'
 import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
-import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
+import {PortableTextInputLazy} from '../../inputs/PortableText/PortableTextInputLazy'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import * as is from '../../utils/is'
 
@@ -48,7 +48,7 @@ export function resolveArrayInput(type: ArraySchemaType): ComponentType<any> {
 
   // Use Portable Text editor if portable text.
   if (isPortableText(type)) {
-    return PortableTextInput
+    return PortableTextInputLazy
   }
 
   return ArrayOfObjectsInput
