@@ -430,3 +430,11 @@ See `turbo.json` for full list of environment variables that affect builds.
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Full contribution guidelines
 - [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) - Community guidelines
 - [packages/sanity/README.md](./packages/sanity/README.md) - Main package docs
+
+## Cursor Cloud specific instructions
+
+These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The startup update script already runs `pnpm install`.
+
+- **`pnpm test` needs `tsc` at the repo root, but the repo only uses `tsgo`.** Vitest is configured with `typecheck.enabled: true` (see `vitest.config.mts` and `packages/sanity/vitest.config.mts`), which spawns the real `tsc` binary for `*.test-d.*` type tests (in the `sanity` and `@sanity/types` projects). The repo intentionally depends on `@typescript/native-preview` (`tsgo`) and does not declare `typescript` directly, so pnpm only hoists `typescript` into the virtual store (`node_modules/.pnpm/node_modules/typescript`) and never creates a root `node_modules/.bin/tsc`. Without `tsc` on the path, `pnpm test` still passes every test but exits non-zero with `Spawning typechecker failed - is typescript installed?`. The startup update script fixes this by symlinking the hoisted `typescript` to the root (`node_modules/typescript` + `node_modules/.bin/tsc`). If you ever run a manual `pnpm install` that wipes these symlinks and then see that error, re-create them (or re-run the update script). Running a single project (e.g. `pnpm vitest run --project=sanity`) also triggers this.
+- **Dev studio requires Sanity staging auth.** `pnpm dev` serves the app at `http://localhost:3333` but connects to the staging API (`api.sanity.work`) and shows a "Choose login provider" screen (Google / GitHub / e-mail+password). Creating or editing documents requires logging in with a Sanity **staging** account; there is no anonymous/offline mode. Most changes should be verified with `pnpm build && pnpm test` instead (no auth needed).
+- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect building, testing, or running the studio.
