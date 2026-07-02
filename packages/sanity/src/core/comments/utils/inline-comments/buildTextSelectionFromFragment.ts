@@ -1,19 +1,48 @@
 import {type EditorSelection} from '@portabletext/editor'
 import {toPlainText} from '@portabletext/react'
 import {
-  isKeySegment,
   isPortableTextSpan,
   isPortableTextTextBlock,
+  type Path,
   type PortableTextBlock,
+  type PortableTextTextBlock,
 } from '@sanity/types'
 
+import {getValueAtPath} from '../../../field'
 import {type CommentTextSelection} from '../../types'
 import {COMMENT_INDICATORS} from './buildRangeDecorationSelectionsFromComments'
 
 interface BuildSelectionFromFragmentProps {
   fragment: PortableTextBlock[]
-  value: PortableTextBlock[]
+  documentValue: unknown
+  basePath: Path
   selection: EditorSelection
+}
+
+/**
+ * Walk the selection path from its full depth up to root and return the
+ * deepest enclosing text block along with the path segments that reach it
+ * (relative to `basePath`). Selection paths from PTE are editor-relative
+ * (start at a block key), so the walker prepends `basePath` before descending
+ * the document value. The block is identified structurally — `isPortableTextTextBlock`
+ * checks for `children` and `markDefs` — so container-nested blocks resolve the
+ * same as top-level ones without needing a schema.
+ *
+ * @internal
+ */
+export function findEnclosingTextBlock(
+  documentValue: unknown,
+  basePath: Path,
+  path: Path,
+): {node: PortableTextTextBlock; path: Path} | undefined {
+  for (let end = path.length; end > 0; end--) {
+    const relative = path.slice(0, end)
+    const candidate = getValueAtPath(documentValue, [...basePath, ...relative])
+    if (isPortableTextTextBlock(candidate)) {
+      return {node: candidate, path: relative}
+    }
+  }
+  return undefined
 }
 
 /**
@@ -22,27 +51,46 @@ interface BuildSelectionFromFragmentProps {
 export function buildTextSelectionFromFragment(
   props: BuildSelectionFromFragmentProps,
 ): CommentTextSelection {
-  const {fragment, value, selection} = props
+  const {fragment, documentValue, basePath, selection} = props
   if (!selection) {
     throw new Error('Selection is required')
   }
   const normalizedSelection: EditorSelection = selection.backward
     ? {backward: false, anchor: selection.focus, focus: selection.anchor}
     : selection
+
+  // Walk to the enclosing block through the document value rather than a
+  // top-level lookup against the editor slice. Same structural resolution
+  // whether the block lives at the root of the editor's array or several
+  // container levels deep.
+  const anchorBlock = findEnclosingTextBlock(
+    documentValue,
+    basePath,
+    normalizedSelection.anchor.path,
+  )?.node
+  const focusBlock = findEnclosingTextBlock(
+    documentValue,
+    basePath,
+    normalizedSelection.focus.path,
+  )?.node
+
   const textSelection: CommentTextSelection = {
     type: 'text',
     value: fragment.map((fragmentBlock) => {
-      const originalBlock = value.find((b) => b._key === fragmentBlock._key)
+      const originalBlock =
+        anchorBlock?._key === fragmentBlock._key
+          ? anchorBlock
+          : focusBlock?._key === fragmentBlock._key
+            ? focusBlock
+            : undefined
       if (!isPortableTextTextBlock(originalBlock)) {
         return {
           _key: fragmentBlock._key,
           text: '',
         }
       }
-      const anchorBlockKey =
-        isKeySegment(normalizedSelection.anchor.path[0]) && normalizedSelection.anchor.path[0]._key
-      const focusBlockKey =
-        isKeySegment(normalizedSelection.focus.path[0]) && normalizedSelection.focus.path[0]._key
+      const anchorBlockKey = anchorBlock?._key
+      const focusBlockKey = focusBlock?._key
       const fragmentBlockText = toPlainText([fragmentBlock])
       const fragmentStartSpan = isPortableTextTextBlock(fragmentBlock)
         ? fragmentBlock.children[0]

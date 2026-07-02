@@ -13,10 +13,13 @@ import {
 import {
   isPortableTextSpan,
   isPortableTextTextBlock,
+  type Path,
   type PortableTextBlock,
   type PortableTextTextBlock,
 } from '@sanity/types'
+import * as PathUtils from '@sanity/util/paths'
 
+import {getValueAtPath} from '../../../field'
 import {isTextSelectionComment} from '../../helpers'
 import {type CommentDocument, type CommentsTextSelectionItem} from '../../types'
 
@@ -57,6 +60,21 @@ const EMPTY_ARRAY: [] = []
 export interface BuildCommentsRangeDecorationsProps {
   value: PortableTextBlock[] | undefined
   comments: CommentDocument[]
+  /**
+   * Document value used together with `basePath` to resolve each comment's
+   * stored `field` as a data path. Comments live at the document level, so
+   * container-nested blocks resolve through the same walk as top-level ones.
+   * When absent, falls back to a flat top-level `value.find(...)` — the shape
+   * existing unit tests exercise.
+   */
+  documentValue?: unknown
+  /**
+   * The editor's own document path. Used together with `documentValue` to
+   * strip the document-level prefix from each comment's `field` before
+   * descending into the editor value, and to prefix the emitted decoration
+   * selection paths so they address from the editor root.
+   */
+  basePath?: Path
 }
 
 /**
@@ -75,7 +93,7 @@ export interface BuildCommentsRangeDecorationsResultItem {
 export function buildRangeDecorationSelectionsFromComments(
   props: BuildCommentsRangeDecorationsProps,
 ): BuildCommentsRangeDecorationsResultItem[] {
-  const {value, comments} = props
+  const {value, comments, documentValue, basePath} = props
 
   if (!value || value.length === 0) return EMPTY_ARRAY
 
@@ -83,8 +101,27 @@ export function buildRangeDecorationSelectionsFromComments(
   const decorators: BuildCommentsRangeDecorationsResultItem[] = []
 
   textSelections.forEach((comment) => {
+    const field = comment.target.path?.field ?? ''
+
+    // Compute the editor-relative prefix from the stored data path. Without a
+    // documentValue + basePath, the comment is assumed to point at a top-level
+    // block, matching today's behavior and the existing unit-test fixtures.
+    let relative: Path = []
+    if (documentValue !== undefined && basePath) {
+      const fieldPath = PathUtils.fromString(field)
+      if (!PathUtils.startsWith(basePath, fieldPath)) return
+      relative = fieldPath.slice(basePath.length)
+    }
+
     comment.target.path?.selection?.value.forEach((selectionMember) => {
-      const matchedBlock = value.find((block) => block._key === selectionMember._key)
+      const matchedBlock =
+        documentValue !== undefined && basePath
+          ? (getValueAtPath(documentValue, [
+              ...basePath,
+              ...relative,
+              {_key: selectionMember._key},
+            ]) as PortableTextBlock | undefined)
+          : value.find((block) => block._key === selectionMember._key)
       if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
         return
       }
@@ -149,6 +186,7 @@ export function buildRangeDecorationSelectionsFromComments(
           selection: {
             anchor: {
               path: [
+                ...relative,
                 {_key: matchedBlock._key},
                 'children',
                 {_key: matchedBlock.children[childIndexAnchor]._key},
@@ -157,6 +195,7 @@ export function buildRangeDecorationSelectionsFromComments(
             },
             focus: {
               path: [
+                ...relative,
                 {_key: matchedBlock._key},
                 'children',
                 {_key: matchedBlock.children[childIndexFocus]._key},

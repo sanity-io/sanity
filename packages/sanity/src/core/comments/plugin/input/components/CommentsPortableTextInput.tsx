@@ -7,14 +7,18 @@ import {
 } from '@portabletext/editor'
 import {isPortableTextTextBlock} from '@sanity/types'
 import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
-import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import debounce from 'lodash-es/debounce.js'
 import isEqual from 'lodash-es/isEqual.js'
 import {AnimatePresence} from 'motion/react'
 import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type EditorChange, type PortableTextInputProps, useFieldActions} from '../../../../form'
+import {
+  type EditorChange,
+  type PortableTextInputProps,
+  useFieldActions,
+  useFormValue,
+} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
 import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
 import {CommentInlineHighlightSpan} from '../../../components'
@@ -37,6 +41,7 @@ import {
   buildCommentRangeDecorations,
   buildRangeDecorationSelectionsFromComments,
   buildTextSelectionFromFragment,
+  getCommentFieldPath,
 } from '../../../utils'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
@@ -85,6 +90,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const [mousePressed, setMousePressed] = useState<boolean>(false)
 
   const editorRef = useRef<PortableTextEditor | null>(null)
+  const documentValue = useFormValue([])
 
   // A reference to the authoring decoration element that highlights the selected text
   // when starting to author a comment.
@@ -106,7 +112,6 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const [addedCommentsDecorations, setAddedCommentsDecorations] =
     useState<RangeDecoration[]>(EMPTY_ARRAY)
 
-  const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
   const [fragment, setFragment] = useState<PortableTextBlock[] | null>(null)
 
   const getFragment = useCallback(() => {
@@ -150,31 +155,36 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
   const textComments = useMemo(() => {
     return comments.data.open
-      .filter((comment) => comment.fieldPath === stringFieldPath)
       .filter((c) => isTextSelectionComment(c.parentComment))
       .map((c) => c.parentComment)
-  }, [comments.data.open, stringFieldPath])
+  }, [comments.data.open])
 
   const handleSubmit = useCallback(
     (nextValue: CommentMessage) => {
       if (!nextCommentSelection || !editorRef.current) return
 
-      const editorValue = PortableTextEditor.getValue(editorRef.current)
-
-      if (!editorValue) return
-
       const textSelection = buildTextSelectionFromFragment({
         fragment: fragment || EMPTY_ARRAY,
         selection: nextCommentSelection,
-        value: editorValue,
+        documentValue,
+        basePath: props.path,
       })
 
       const threadId = uuid()
 
+      // Anchor on the block's data path so the comment resolves the same
+      // regardless of where the block is rendered (root, container, dialog).
+      const fieldPath = getCommentFieldPath(
+        documentValue,
+        props.path,
+        nextCommentSelection.focus.path,
+      )
+      if (!fieldPath) return
+
       void operation.create({
         type: 'field',
         contentSnapshot: fragment,
-        fieldPath: stringFieldPath,
+        fieldPath,
         message: nextValue,
         parentCommentId: undefined,
         reactions: EMPTY_ARRAY,
@@ -193,7 +203,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
       // Set the selected path to the new comment
       setSelectedPath({
-        fieldPath: stringFieldPath,
+        fieldPath,
         threadId,
         origin: 'form',
       })
@@ -204,9 +214,10 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       resetStates()
     },
     [
+      documentValue,
       nextCommentSelection,
       operation,
-      stringFieldPath,
+      props.path,
       onCommentsOpen,
       status,
       setSelectedPath,
@@ -327,6 +338,8 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       const [updatedDecoration] = buildRangeDecorationSelectionsFromComments({
         comments: [comment],
         value: editorValue,
+        documentValue,
+        basePath: props.path,
       })
 
       const nextRange = updatedDecoration?.range ? [updatedDecoration.range] : EMPTY_ARRAY
@@ -380,7 +393,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       })
       return next.filter((p) => p.selection !== null)
     })
-  }, [addedCommentsDecorations, getComment, operation])
+  }, [addedCommentsDecorations, documentValue, getComment, operation, props.path])
 
   const handleBuildRangeDecorations = useCallback(
     (commentsToDecorate: CommentDocument[]) => {
@@ -396,12 +409,16 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         onDecorationMoved: handleRangeDecorationMoved,
         selectedThreadId: selectedPath?.threadId || null,
         value: editorValue,
+        documentValue,
+        basePath: props.path,
       })
     },
     [
       currentHoveredCommentId,
+      documentValue,
       handleDecoratorClick,
       handleRangeDecorationMoved,
+      props.path,
       selectedPath?.threadId,
     ],
   )
