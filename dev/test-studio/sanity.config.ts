@@ -474,7 +474,7 @@ export default defineConfig([
     name: 'staging',
     title: 'Staging',
     subtitle: 'Staging dataset',
-    projectId: 'deadbeef',
+    projectId: 'exx11uqh',
     dataset: 'playground',
     ...envConfig.staging,
     plugins: [sharedSettings({projectId: 'exx11uqh'})],
