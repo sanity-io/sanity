@@ -15,15 +15,23 @@ export type UserAttributeType =
   | 'number-array'
   | 'boolean'
 
-/** @public */
-export type UserAttributeValue = string | number | boolean | string[] | number[]
+type UserAttributeValueByType = {
+  string: string
+  'string-array': string[]
+  integer: number
+  'integer-array': number[]
+  number: number
+  'number-array': number[]
+  boolean: boolean
+}
 
 /** @public */
-export interface CurrentUserAttribute {
-  key: string
-  type: UserAttributeType
-  value: UserAttributeValue
-}
+export type UserAttributeValue = UserAttributeValueByType[UserAttributeType]
+
+/** @public */
+export type CurrentUserAttribute = {
+  [T in UserAttributeType]: {key: string; type: T; value: UserAttributeValueByType[T]}
+}[UserAttributeType]
 
 /** @public */
 export interface CurrentUser {
