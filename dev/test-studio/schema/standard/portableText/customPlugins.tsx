@@ -2,7 +2,13 @@ import {defineContainer} from '@portabletext/editor'
 import {defineBehavior, effect, forward, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, NodePlugin} from '@portabletext/editor/plugins'
 import {CharacterPairDecoratorPlugin} from '@portabletext/plugin-character-pair-decorator'
-import {defineArrayMember, defineField, defineType, type PortableTextPluginsProps} from 'sanity'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  type PortableTextPluginsProps,
+  useFormValue,
+} from 'sanity'
 
 const CONTAINER_NODES = [
   defineContainer({
@@ -137,11 +143,19 @@ const containerScaffoldBehaviors = [
 ]
 
 function ContainerPlugins(props: PortableTextPluginsProps) {
+  // Flips the same document between inline container rendering and
+  // dialog-edited block objects; see the `containersEnabled` field description.
+  const containersEnabled = useFormValue(['containersEnabled']) !== false
+
   return (
     <>
       {props.renderDefault(props)}
-      <NodePlugin nodes={CONTAINER_NODES} />
-      <BehaviorPlugin behaviors={containerScaffoldBehaviors} />
+      {containersEnabled ? (
+        <>
+          <NodePlugin nodes={CONTAINER_NODES} />
+          <BehaviorPlugin behaviors={containerScaffoldBehaviors} />
+        </>
+      ) : null}
     </>
   )
 }
@@ -151,6 +165,14 @@ export const customPlugins = defineType({
   title: 'Custom Plugins',
   type: 'document',
   fields: [
+    {
+      type: 'boolean',
+      name: 'containersEnabled',
+      title: 'Render containers inline',
+      description:
+        'When off, the Container Table field renders `table` and `codeBlock` as block objects edited through the dialog. Author a comment on nested text in one mode and toggle to verify it resolves in the other.',
+      initialValue: true,
+    },
     {
       type: 'array',
       name: 'containerTable',
