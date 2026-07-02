@@ -1,4 +1,4 @@
-import {SortIcon} from '@sanity/icons'
+import {SortIcon} from '@sanity/icons/Sort'
 import {type SchemaType, type SortOrdering, type SortOrderingItem} from '@sanity/types'
 import {type I18nTextRecord} from 'sanity'
 

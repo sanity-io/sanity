@@ -1,5 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon, EditIcon, PublishIcon, TrashIcon} from '@sanity/icons'
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {EditIcon} from '@sanity/icons/Edit'
+import {PublishIcon} from '@sanity/icons/Publish'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {useToast} from '@sanity/ui'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 

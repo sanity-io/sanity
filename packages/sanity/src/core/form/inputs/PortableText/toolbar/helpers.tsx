@@ -1,18 +1,16 @@
 import {type HotkeyOptions, PortableTextEditor} from '@portabletext/editor'
 import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
-import {
-  BlockElementIcon,
-  BoldIcon,
-  CodeIcon,
-  InlineElementIcon,
-  ItalicIcon,
-  LinkIcon,
-  OlistIcon,
-  StrikethroughIcon,
-  UlistIcon,
-  UnderlineIcon,
-  UnknownIcon,
-} from '@sanity/icons'
+import {BlockElementIcon} from '@sanity/icons/BlockElement'
+import {BoldIcon} from '@sanity/icons/Bold'
+import {CodeIcon} from '@sanity/icons/Code'
+import {InlineElementIcon} from '@sanity/icons/InlineElement'
+import {ItalicIcon} from '@sanity/icons/Italic'
+import {LinkIcon} from '@sanity/icons/Link'
+import {OlistIcon} from '@sanity/icons/Olist'
+import {StrikethroughIcon} from '@sanity/icons/Strikethrough'
+import {UlistIcon} from '@sanity/icons/Ulist'
+import {UnderlineIcon} from '@sanity/icons/Underline'
+import {UnknownIcon} from '@sanity/icons/Unknown'
 import {type ObjectSchemaType} from '@sanity/types'
 import capitalize from 'lodash-es/capitalize.js'
 import get from 'lodash-es/get.js'

@@ -1,4 +1,5 @@
-import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'

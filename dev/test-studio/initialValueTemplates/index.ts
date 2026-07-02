@@ -1,5 +1,6 @@
 import {type ClientConfig, type SanityClient} from '@sanity/client'
-import {CogIcon, RocketIcon} from '@sanity/icons'
+import {CogIcon} from '@sanity/icons/Cog'
+import {RocketIcon} from '@sanity/icons/Rocket'
 import {type Template} from 'sanity'
 
 export const resolveInitialValueTemplates: Template[] = [

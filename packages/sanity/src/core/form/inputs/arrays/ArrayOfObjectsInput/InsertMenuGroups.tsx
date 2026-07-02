@@ -1,4 +1,5 @@
-import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
+import {InsertAboveIcon} from '@sanity/icons/InsertAbove'
+import {InsertBelowIcon} from '@sanity/icons/InsertBelow'
 import {type SchemaType} from '@sanity/types'
 import {type ComponentProps, memo} from 'react'
 

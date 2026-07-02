@@ -1,4 +1,4 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
 import {
   type ChangeEvent,

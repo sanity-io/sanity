@@ -1,4 +1,4 @@
-import {PublishIcon} from '@sanity/icons'
+import {PublishIcon} from '@sanity/icons/Publish'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {Text, useToast} from '@sanity/ui'

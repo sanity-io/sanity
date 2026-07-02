@@ -1,4 +1,6 @@
-import {ComposeSparklesIcon, InfoOutlineIcon, LaunchIcon} from '@sanity/icons'
+import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {Box, Card, Container, Flex, Heading, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {

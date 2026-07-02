@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon, ChevronDownIcon} from '@sanity/icons'
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Menu, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'

@@ -1,4 +1,5 @@
-import {AddUserIcon, CogIcon} from '@sanity/icons'
+import {AddUserIcon} from '@sanity/icons/AddUser'
+import {CogIcon} from '@sanity/icons/Cog'
 import {Card, Stack} from '@sanity/ui'
 
 import {Button} from '../../../../../ui-components'

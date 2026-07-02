@@ -1,4 +1,4 @@
-import {UploadIcon} from '@sanity/icons'
+import {UploadIcon} from '@sanity/icons/Upload'
 import {type AssetSource, type SchemaType} from '@sanity/types'
 import {Flex, useElementSize} from '@sanity/ui'
 import get from 'lodash-es/get.js'

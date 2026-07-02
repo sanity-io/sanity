@@ -1,4 +1,5 @@
-import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'
+import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
+import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
 import {Box, Inline, Text} from '@sanity/ui'
 import {styled} from 'styled-components'

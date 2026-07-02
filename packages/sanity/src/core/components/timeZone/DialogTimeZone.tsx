@@ -1,4 +1,4 @@
-import {SearchIcon} from '@sanity/icons'
+import {SearchIcon} from '@sanity/icons/Search'
 import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'

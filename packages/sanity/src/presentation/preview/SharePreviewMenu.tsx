@@ -1,5 +1,6 @@
 import {type ClientPerspective, type SyncTag} from '@sanity/client'
-import {CopyIcon, ShareIcon} from '@sanity/icons'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {ShareIcon} from '@sanity/icons/Share'
 import {SanityMonogram} from '@sanity/logos'
 import {fetchSharedAccessQuery} from '@sanity/preview-url-secret/constants'
 import {

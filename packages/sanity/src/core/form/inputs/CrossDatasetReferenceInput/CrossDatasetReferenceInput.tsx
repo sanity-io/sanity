@@ -1,4 +1,5 @@
-import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
+import {ResetIcon as ClearIcon} from '@sanity/icons/Reset'
+import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
 import {Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {

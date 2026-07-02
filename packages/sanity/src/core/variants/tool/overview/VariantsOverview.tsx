@@ -1,4 +1,5 @@
-import {AddIcon, SearchIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
+import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Container, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'

@@ -1,4 +1,4 @@
-import {PauseIcon} from '@sanity/icons'
+import {PauseIcon} from '@sanity/icons/Pause'
 import {Text} from '@sanity/ui'
 import {Translate, useTranslation} from 'sanity'
 

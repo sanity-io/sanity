@@ -1,4 +1,4 @@
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
 import {Fragment, useMemo} from 'react'
 import {styled} from 'styled-components'

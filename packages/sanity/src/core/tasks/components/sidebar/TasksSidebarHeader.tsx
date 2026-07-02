@@ -1,4 +1,6 @@
-import {AddIcon, ChevronRightIcon, CloseIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {CloseIcon} from '@sanity/icons/Close'
 import {
   Box,
   // oxlint-disable-next-line no-restricted-imports

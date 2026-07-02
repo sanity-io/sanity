@@ -1,11 +1,9 @@
-import {
-  AddDocumentIcon,
-  CloseIcon,
-  CopyIcon,
-  LaunchIcon as OpenInNewTabIcon,
-  SyncIcon as ReplaceIcon,
-  TrashIcon,
-} from '@sanity/icons'
+import {AddDocumentIcon} from '@sanity/icons/AddDocument'
+import {CloseIcon} from '@sanity/icons/Close'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {LaunchIcon as OpenInNewTabIcon} from '@sanity/icons/Launch'
+import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
 import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
 import {useCallback, useRef, useState} from 'react'

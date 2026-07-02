@@ -1,4 +1,6 @@
-import {LinkIcon, ShareIcon, TargetIcon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons/Link'
+import {ShareIcon} from '@sanity/icons/Share'
+import {TargetIcon} from '@sanity/icons/Target'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, useToast} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'

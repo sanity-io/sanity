@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Text} from '@sanity/ui'
 import {getPublishedId, Translate, useScheduledDraftDocument, useTranslation} from 'sanity'
 

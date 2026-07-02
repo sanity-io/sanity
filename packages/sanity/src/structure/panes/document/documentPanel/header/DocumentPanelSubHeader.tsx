@@ -1,4 +1,4 @@
-import {ArrowLeftIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {memo, useMemo} from 'react'
 import {CapabilityGate, useActiveWorkspace, useTranslation} from 'sanity'
 

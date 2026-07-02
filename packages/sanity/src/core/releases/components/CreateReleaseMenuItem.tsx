@@ -1,4 +1,4 @@
-import {AddIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
 import {type ComponentProps, type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {from} from 'rxjs'

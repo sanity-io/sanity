@@ -1,4 +1,4 @@
-import {UserIcon} from '@sanity/icons'
+import {UserIcon} from '@sanity/icons/User'
 import {type User} from '@sanity/types'
 import {type AvatarSize, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'

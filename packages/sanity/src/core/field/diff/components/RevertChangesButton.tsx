@@ -1,4 +1,4 @@
-import {RevertIcon} from '@sanity/icons'
+import {RevertIcon} from '@sanity/icons/Revert'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
 

@@ -1,4 +1,4 @@
-import {BinaryDocumentIcon} from '@sanity/icons'
+import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ReactNode, type RefObject} from 'react'
 

@@ -1,4 +1,4 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 
 function getMissingDocumentFallback(document: Partial<SanityDocument> | PreviewValue) {

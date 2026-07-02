@@ -1,5 +1,5 @@
 import {red} from '@sanity/color'
-import {UnknownIcon} from '@sanity/icons'
+import {UnknownIcon} from '@sanity/icons/Unknown'
 
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {type Schedule} from '../../types'

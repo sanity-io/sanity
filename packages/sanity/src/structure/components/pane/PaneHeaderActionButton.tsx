@@ -1,4 +1,4 @@
-import {UnknownIcon} from '@sanity/icons'
+import {UnknownIcon} from '@sanity/icons/Unknown'
 import {Menu} from '@sanity/ui'
 import {type MouseEvent, useCallback, useId} from 'react'
 import {StatusButton, useI18nText, useTranslation} from 'sanity'

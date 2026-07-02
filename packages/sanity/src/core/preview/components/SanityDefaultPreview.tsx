@@ -1,6 +1,7 @@
 import {isImageSource, isSanityImageUrl, parseImageAssetUrl} from '@sanity/asset-utils'
 import {type SanityClient} from '@sanity/client'
-import {DocumentIcon, WarningOutlineIcon} from '@sanity/icons'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {
   createImageUrlBuilder,
   type ImageUrlBuilder,

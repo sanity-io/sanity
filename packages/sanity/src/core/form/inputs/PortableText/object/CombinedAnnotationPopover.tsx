@@ -1,5 +1,6 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {EditIcon, TrashIcon} from '@sanity/icons'
+import {EditIcon} from '@sanity/icons/Edit'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {Box, Flex, Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 

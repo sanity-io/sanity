@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CopyIcon} from '@sanity/icons'
+import {CopyIcon} from '@sanity/icons/Copy'
 import {MenuDivider, Stack} from '@sanity/ui'
 import {memo} from 'react'
 import {styled} from 'styled-components'

@@ -1,4 +1,4 @@
-import {CheckmarkCircleIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {defineType} from 'sanity'
 
 export default defineType({

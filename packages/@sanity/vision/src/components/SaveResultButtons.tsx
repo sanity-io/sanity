@@ -1,4 +1,4 @@
-import {DocumentSheetIcon} from '@sanity/icons'
+import {DocumentSheetIcon} from '@sanity/icons/DocumentSheet'
 import {Button, Tooltip} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 

@@ -1,4 +1,4 @@
-import {HighlightIcon} from '@sanity/icons'
+import {HighlightIcon} from '@sanity/icons/Highlight'
 import {
   DEFAULT_ANNOTATIONS,
   DEFAULT_DECORATORS,

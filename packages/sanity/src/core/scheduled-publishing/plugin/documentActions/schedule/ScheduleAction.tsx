@@ -1,4 +1,5 @@
-import {CalendarIcon, ClockIcon} from '@sanity/icons'
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {ClockIcon} from '@sanity/icons/Clock'
 import {Box, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 

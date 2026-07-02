@@ -1,4 +1,6 @@
-import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
+import {ComposeIcon} from '@sanity/icons/Compose'
+import {DropIcon} from '@sanity/icons/Drop'
+import {ImageIcon} from '@sanity/icons/Image'
 import {Box, Text} from '@sanity/ui'
 import {
   BlockEditor,

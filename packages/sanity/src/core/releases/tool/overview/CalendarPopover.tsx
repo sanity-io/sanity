@@ -1,4 +1,4 @@
-import {FilterIcon} from '@sanity/icons'
+import {FilterIcon} from '@sanity/icons/Filter'
 // oxlint-disable-next-line no-restricted-imports
 import {Button, useClickOutsideEvent} from '@sanity/ui'
 import {type ReactNode, useRef, useState} from 'react'

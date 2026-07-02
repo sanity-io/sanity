@@ -1,4 +1,4 @@
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Inline, Menu, MenuDivider} from '@sanity/ui'
 import {useCallback, useId} from 'react'
 

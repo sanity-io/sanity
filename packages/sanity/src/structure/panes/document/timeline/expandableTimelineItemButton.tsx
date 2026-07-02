@@ -1,4 +1,4 @@
-import {ChevronLeftIcon} from '@sanity/icons'
+import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {type MouseEvent, useCallback} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'

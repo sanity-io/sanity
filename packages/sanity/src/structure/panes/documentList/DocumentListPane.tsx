@@ -1,4 +1,5 @@
-import {SearchIcon, SpinnerIcon} from '@sanity/icons'
+import {SearchIcon} from '@sanity/icons/Search'
+import {SpinnerIcon} from '@sanity/icons/Spinner'
 import {Box, Stack, TextInput} from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'

@@ -1,4 +1,4 @@
-import {AddIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
 import {type InitialValueTemplateItem} from 'sanity'
 
 import {type BaseIntentParams, type IntentParams} from './Intent'

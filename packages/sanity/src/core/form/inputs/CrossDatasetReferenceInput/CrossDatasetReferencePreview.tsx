@@ -1,5 +1,7 @@
 import {isImageSource} from '@sanity/asset-utils'
-import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
+import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
+import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {createImageUrlBuilder} from '@sanity/image-url'
 import {type CrossDatasetType, type PreviewValue} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'

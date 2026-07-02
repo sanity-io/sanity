@@ -1,4 +1,7 @@
-import {CheckmarkIcon, EarthAmericasIcon, JsonIcon, TransferIcon} from '@sanity/icons'
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {EarthAmericasIcon} from '@sanity/icons/EarthAmericas'
+import {JsonIcon} from '@sanity/icons/Json'
+import {TransferIcon} from '@sanity/icons/Transfer'
 import {
   type DocumentIdStack,
   type DocumentInspector,

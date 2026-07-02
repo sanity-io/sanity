@@ -1,4 +1,4 @@
-import {ControlsIcon} from '@sanity/icons'
+import {ControlsIcon} from '@sanity/icons/Controls'
 import {Flex, Inline, Text} from '@sanity/ui'
 
 import {Translate, useTranslation} from '../../../../../i18n'

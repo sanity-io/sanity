@@ -1,4 +1,4 @@
-import {UnpublishIcon} from '@sanity/icons'
+import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,

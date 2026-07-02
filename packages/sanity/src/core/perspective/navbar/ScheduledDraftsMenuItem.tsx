@@ -1,4 +1,4 @@
-import {CalendarIcon} from '@sanity/icons'
+import {CalendarIcon} from '@sanity/icons/Calendar'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ComponentType, useCallback} from 'react'
 import {useIntentLink} from 'sanity/router'

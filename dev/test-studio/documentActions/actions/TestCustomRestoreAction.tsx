@@ -1,4 +1,4 @@
-import {RocketIcon} from '@sanity/icons'
+import {RocketIcon} from '@sanity/icons/Rocket'
 import memoize from 'lodash-es/memoize.js'
 import {type DocumentActionComponent} from 'sanity'
 
