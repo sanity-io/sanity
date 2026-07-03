@@ -1,12 +1,10 @@
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const SvgWrapper = styled.svg`
-  pointer-events: none;
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-`
+import {svgWrapper} from './ConnectorsOverlay.css'
+
+export function SvgWrapper(props: ComponentProps<'svg'>) {
+  const {className, ...restProps} = props
+
+  return <svg {...restProps} className={clsx(svgWrapper, className)} />
+}

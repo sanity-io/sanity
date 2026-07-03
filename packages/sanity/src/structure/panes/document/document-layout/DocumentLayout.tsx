@@ -1,6 +1,7 @@
 import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {isHotkey} from 'is-hotkey-esm'
-import {useCallback, useMemo, useState} from 'react'
+import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 import {
   ChangeConnectorRoot,
   type DocumentFieldActionNode,
@@ -15,7 +16,6 @@ import {
   useZIndex,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
 import {DocumentActionsProvider} from '../../../DocumentActionsProvider'
@@ -33,6 +33,7 @@ import {DocumentPanelHeader} from '../documentPanel/header'
 import {DocumentActionShortcuts} from '../keyboardShortcuts'
 import {getMenuItems} from '../menuItems'
 import {useDocumentPane} from '../useDocumentPane'
+import {changeConnectorRoot} from './DocumentLayout.css'
 import {DocumentLayoutError} from './DocumentLayoutError'
 import {DocumentLayoutFooter} from './DocumentLayoutFooter'
 
@@ -46,13 +47,11 @@ const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   'absolute',
 ]
 
-const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-`
+function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorRoot>) {
+  const {className, ...restProps} = props
+
+  return <ChangeConnectorRoot {...restProps} className={clsx(changeConnectorRoot, className)} />
+}
 
 export function DocumentLayout() {
   const {
