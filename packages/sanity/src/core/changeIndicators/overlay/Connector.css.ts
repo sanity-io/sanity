@@ -29,7 +29,7 @@ export const interactivePath = style({
   },
 })
 
-export const rightBar = style({
+export const rightBarWrapper = style({
   stroke: 'none',
   pointerEvents: 'none',
   fill: 'var(--card-badge-caution-dot-color)',

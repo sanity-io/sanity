@@ -3,7 +3,7 @@ import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
 import memoize from 'lodash-es/memoize.js'
 import noop from 'lodash-es/noop.js'
-import {type ReactNode, Suspense, use, useState} from 'react'
+import {type ComponentProps, type ReactNode, Suspense, use, useState} from 'react'
 import {
   ChangeConnectorRoot,
   ColorSchemeProvider,
@@ -34,6 +34,10 @@ interface TestWrapperProps {
   schemaTypes: SchemaTypeDefinition[]
 }
 const studioThemeConfig: RootTheme = buildTheme()
+
+function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorRoot>) {
+  return <ChangeConnectorRoot {...props} className={changeConnectorRoot} />
+}
 
 const router = route.create('/')
 const getCachedMockWorkspace = memoize(
@@ -97,8 +101,7 @@ const TestWrapperContents = (
                     <CopyPasteProvider>
                       <ColorSchemeProvider>
                         <UserColorManagerProvider>
-                          <ChangeConnectorRoot
-                            className={changeConnectorRoot}
+                          <StyledChangeConnectorRoot
                             isReviewChangesOpen={false}
                             onOpenReviewChanges={noop}
                             onSetFocus={noop}
@@ -115,7 +118,7 @@ const TestWrapperContents = (
                                 </Pane>
                               </PaneLayout>
                             </PerspectiveProvider>
-                          </ChangeConnectorRoot>
+                          </StyledChangeConnectorRoot>
                         </UserColorManagerProvider>
                       </ColorSchemeProvider>
                     </CopyPasteProvider>

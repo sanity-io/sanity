@@ -1,6 +1,6 @@
 import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {useCallback, useMemo, useState} from 'react'
+import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 import {
   ChangeConnectorRoot,
   type DocumentFieldActionNode,
@@ -45,6 +45,10 @@ const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // And we use the `position: absolute` strategy (within panes) on wide screens.
   'absolute',
 ]
+
+function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorRoot>) {
+  return <ChangeConnectorRoot {...props} className={changeConnectorRoot} />
+}
 
 export function DocumentLayout() {
   const {
@@ -212,8 +216,7 @@ export function DocumentLayout() {
             <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
               <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
-                <ChangeConnectorRoot
-                  className={changeConnectorRoot}
+                <StyledChangeConnectorRoot
                   data-testid="change-connector-root"
                   isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
                   onOpenReviewChanges={onHistoryOpen}
@@ -233,7 +236,7 @@ export function DocumentLayout() {
                       />
                     }
                   />
-                </ChangeConnectorRoot>
+                </StyledChangeConnectorRoot>
               </Flex>
             </DialogProvider>
             <DocumentOperationResults />

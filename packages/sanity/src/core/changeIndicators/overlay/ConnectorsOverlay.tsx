@@ -11,7 +11,7 @@ import {isChangeBar} from '../helpers/isChangeBar'
 import {scrollIntoView} from '../helpers/scrollIntoView'
 import {type TrackedArea, type TrackedChange, useChangeIndicatorsReportedValues} from '../tracker'
 import {Connector} from './Connector'
-import {svgWrapper} from './ConnectorsOverlay.css'
+import {SvgWrapper} from './ConnectorsOverlay.styled'
 import {DebugLayers} from './DebugLayers'
 import {useResizeObserver} from './useResizeObserver'
 
@@ -142,8 +142,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   }, [connectors])
 
   return (
-    <svg
-      className={svgWrapper}
+    <SvgWrapper
       data-testid="change-connectors-overlay"
       style={{zIndex: visibleConnector && visibleConnector.field.zIndex}}
     >
@@ -156,7 +155,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
           setHovered={setHovered}
         />
       )}
-    </svg>
+    </SvgWrapper>
   )
 }
 

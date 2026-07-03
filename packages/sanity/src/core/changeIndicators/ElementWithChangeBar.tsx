@@ -1,23 +1,16 @@
 import {useLayer} from '@sanity/ui'
-import classNames from 'classnames'
 import {type ReactNode, useContext, useMemo} from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {Tooltip} from '../../ui-components'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {
-  changeBar,
-  changeBarButton,
-  changeBarButtonInteractive,
-  changeBarButtonWithHoverEffect,
-  changeBarMarker,
-  changeBarWrapper,
-  changeBarWrapperDisabled,
-  changeBarWrapperFocused,
-  changeBarWrapperNotChanged,
-  changeBarWrapperReviewOpen,
-  fieldWrapper,
-} from './ElementWithChangeBar.css'
+  ChangeBar,
+  ChangeBarButton,
+  ChangeBarMarker,
+  ChangeBarWrapper,
+  FieldWrapper,
+} from './ElementWithChangeBar.styled'
 
 export function ElementWithChangeBar(props: {
   children: ReactNode
@@ -40,26 +33,23 @@ export function ElementWithChangeBar(props: {
   const {zIndex} = useLayer()
   const {t} = useTranslation()
 
-  const changeBarElement = useMemo(
+  const changeBar = useMemo(
     () =>
       disabled || !isChanged ? null : (
-        <div className={changeBar} data-testid="change-bar" style={{zIndex}}>
-          <div className={changeBarMarker} data-testid="change-bar__marker" />
+        <ChangeBar data-testid="change-bar" zIndex={zIndex}>
+          <ChangeBarMarker data-testid="change-bar__marker" />
           <Tooltip content={t('changes.change-bar.aria-label')} portal disabled={!isInteractive}>
-            <button
+            <ChangeBarButton
               aria-label={t('changes.change-bar.aria-label')}
-              className={classNames(
-                changeBarButton,
-                withHoverEffect && changeBarButtonWithHoverEffect,
-                isInteractive && changeBarButtonInteractive,
-              )}
               data-testid="change-bar__button"
               onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
               tabIndex={-1}
               type="button"
+              withHoverEffect={withHoverEffect}
+              isInteractive={isInteractive}
             />
           </Tooltip>
-        </div>
+        </ChangeBar>
       ),
     [
       disabled,
@@ -74,20 +64,15 @@ export function ElementWithChangeBar(props: {
   )
 
   return (
-    <div
-      className={classNames(
-        changeBarWrapper,
-        disabled && changeBarWrapperDisabled,
-        hasFocus && changeBarWrapperFocused,
-        !isChanged && changeBarWrapperNotChanged,
-        isReviewChangesOpen && changeBarWrapperReviewOpen,
-      )}
+    <ChangeBarWrapper
       data-testid="change-bar-wrapper"
+      changed={isChanged}
+      disabled={disabled}
+      hasFocus={hasFocus}
+      isReviewChangeOpen={isReviewChangesOpen}
     >
-      <div className={fieldWrapper} data-testid="change-bar__field-wrapper">
-        {children}
-      </div>
-      {changeBarElement}
-    </div>
+      <FieldWrapper data-testid="change-bar__field-wrapper">{children}</FieldWrapper>
+      {changeBar}
+    </ChangeBarWrapper>
   )
 }
