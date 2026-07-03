@@ -1497,6 +1497,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.create-new': 'New release',
   /** Description for toast when version creation failed */
   'release.action.create-version.failure': 'Failed to create version',
+  /** Description for toast when deleting a document from within a release failed */
+  'release.action.delete-document.failure': 'Failed to delete document',
+  /** Description for toast when a document was successfully deleted from within a release */
+  'release.action.delete-document.success': 'Successfully deleted <strong>{{title}}</strong>',
   /** Action message for deleting a scheduled publish */
   'release.action.delete-schedule': 'Delete schedule',
   /** Action message for when document is already in release  */

@@ -1,4 +1,4 @@
-import {CloseIcon, UnpublishIcon} from '@sanity/icons'
+import {CloseIcon, TrashIcon, UnpublishIcon} from '@sanity/icons'
 import {Box, Card, Label, Menu, MenuDivider} from '@sanity/ui'
 import {memo, useMemo, useState} from 'react'
 
@@ -9,6 +9,7 @@ import {useTranslation} from '../../../../i18n'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
 import {DiscardVersionDialog} from '../../../components'
+import {DeleteDocumentDialog} from '../../../components/dialog/DeleteDocumentDialog'
 import {UnpublishVersionDialog} from '../../../components/dialog/UnpublishVersionDialog'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
@@ -23,6 +24,7 @@ const DocumentActionsInner = memo(
     releaseTitle: string | undefined
   }) {
     const [showDiscardDialog, setShowDiscardDialog] = useState(false)
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [showUnpublishDialog, setShowUnpublishDialog] = useState(false)
     const {t: coreT} = useTranslation()
     const {t} = useTranslation(releasesLocaleNamespace)
@@ -45,9 +47,16 @@ const DocumentActionsInner = memo(
       version,
       permission: 'unpublish',
     })
+    const [deletePermission, isDeletePermissionsLoading] = useDocumentPairPermissions({
+      id: publishedId,
+      type,
+      version,
+      permission: 'delete',
+    })
 
     const isDiscardVersionActionDisabled =
       !discardVersionPermission?.granted || isDiscardVersionPermissionsLoading
+    const isDeleteActionDisabled = !deletePermission?.granted || isDeletePermissionsLoading
     const noPermissionToUnpublish = !unpublishPermission?.granted || isUnpublishPermissionsLoading
 
     const unPublishTooltipContent = useMemo(() => {
@@ -90,6 +99,17 @@ const DocumentActionsInner = memo(
                     content: t('permissions.error.discard-version'),
                   }}
                 />
+                <MenuItem
+                  text={t('action.delete-document')}
+                  icon={TrashIcon}
+                  tone="critical"
+                  onClick={() => setShowDeleteDialog(true)}
+                  disabled={isDeleteActionDisabled}
+                  tooltipProps={{
+                    disabled: !isDeleteActionDisabled,
+                    content: t('permissions.error.delete-document'),
+                  }}
+                />
                 <MenuDivider />
                 <Box padding={3} paddingBottom={2}>
                   <Label size={1}>{t('menu.group.when-releasing')}</Label>
@@ -115,6 +135,13 @@ const DocumentActionsInner = memo(
             documentId={document.document._id}
             documentType={document.document._type}
             fromPerspective={releaseTitle || t('release-placeholder.title')}
+          />
+        )}
+        {showDeleteDialog && (
+          <DeleteDocumentDialog
+            onClose={() => setShowDeleteDialog(false)}
+            documentVersionId={document.document._id}
+            documentType={document.document._type}
           />
         )}
         {showUnpublishDialog && (

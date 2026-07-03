@@ -26,6 +26,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'action.paused': 'Paused',
   /** Action text for staging a new revert release */
   'action.create-revert-release': 'Create a new release',
+  /** Action text for deleting a document (published, draft and all versions) from the release detail context menu */
+  'action.delete-document': 'Delete document',
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',
   /** Menu item label for showing scheduled drafts */
@@ -142,6 +144,31 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Label for the button to proceed deleting a release */
   'delete-dialog.confirm-delete-button': 'Yes, delete release',
 
+  /** Text action in the delete document dialog to cancel */
+  'delete-document-dialog.action.cancel': 'Cancel',
+  /** Text action in the delete document dialog to confirm the delete */
+  'delete-document-dialog.action.delete': 'Delete document',
+  /** Description for the delete document dialog, explaining the scope of the deletion */
+  'delete-document-dialog.description':
+    'This will permanently delete the document, including its published and draft versions and its versions in any release. This action cannot be undone.',
+  /** Title for the dialog confirming the delete of a document from within a release */
+  'delete-document-dialog.header': 'Are you sure you want to delete this document?',
+  /** Warning shown in the delete document dialog when the document also has versions in other releases */
+  'delete-document-dialog.warning.other-releases_one':
+    'This document has a version in 1 other release, which will also be deleted.',
+  /** Warning shown in the delete document dialog when the document also has versions in other releases */
+  'delete-document-dialog.warning.other-releases_other':
+    'This document has versions in {{count}} other releases, which will also be deleted.',
+  /** Warning shown in the delete document dialog when other documents reference the document being deleted */
+  'delete-document-dialog.warning.referring-documents_one':
+    '1 document refers to this document. If you delete it, that reference will break.',
+  /** Warning shown in the delete document dialog when other documents reference the document being deleted */
+  'delete-document-dialog.warning.referring-documents_other':
+    '{{count}} documents refer to this document. If you delete it, those references will break.',
+  /** Warning shown in the delete document dialog when the document cannot be deleted because it is part of a scheduled release */
+  'delete-document-dialog.warning.scheduled-release':
+    'This document cannot be deleted because it is part of a scheduled release.',
+
   /** Text for when there's no changes in a release diff */
   'diff.no-changes': 'No changes',
   /** Text for when there's no changes in a release diff */
@@ -254,6 +281,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Title for the release tool */
   'overview.title': 'Releases',
 
+  /** Tooltip label when the user doesn't have permission for deleting a document */
+  'permissions.error.delete-document': 'You do not have permission to delete this document',
   /** Tooltip label when the user doesn't have permission for discarding a version */
   'permissions.error.discard-version': 'You do not have permission to discard this version',
   /** Tooltip label when the user doesn't have permission for unpublishing a document */
