@@ -6378,9 +6378,6 @@ packages:
   '@vanilla-extract/compiler@0.7.0':
     resolution: {integrity: sha512-rZQ40HVmsxfGLjoflwwsaUBLfpbpKDoZC19oiDA0FHq4LdrYtyVbFkc0MfqkNo/qBCvaZfsRezCqk0QQxCqZ8w==}
 
-  '@vanilla-extract/css@1.21.0':
-    resolution: {integrity: sha512-lqdRtP622Z85RprHlJemV5+ipdi+g48J115LaL8nrI64iixIp4SWPlvAEPf3o9pwEZaZPb5/ZfRwiXLE4p3+kQ==}
-
   '@vanilla-extract/css@1.21.1':
     resolution: {integrity: sha512-T6z6oeT+o0OwqukE6kLs9w5ooB75b8NPRadyU9pPTml83l40TPN+mscPt2OQ9P9cYfwEBMfsfivwiJujs2mzmg==}
 
@@ -15770,7 +15767,7 @@ snapshots:
 
   '@vanilla-extract/compiler@0.7.0(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)':
     dependencies:
-      '@vanilla-extract/css': 1.21.0(babel-plugin-macros@3.1.0)
+      '@vanilla-extract/css': 1.21.1(babel-plugin-macros@3.1.0)
       '@vanilla-extract/integration': 8.0.10(babel-plugin-macros@3.1.0)
       vite: 8.1.2(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vite-node: 6.0.0(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
@@ -15789,22 +15786,6 @@ snapshots:
       - terser
       - tsx
       - yaml
-
-  '@vanilla-extract/css@1.21.0(babel-plugin-macros@3.1.0)':
-    dependencies:
-      '@emotion/hash': 0.9.2
-      '@vanilla-extract/private': 1.0.9
-      css-what: 6.2.2
-      csstype: 3.2.3
-      dedent: 1.7.2(babel-plugin-macros@3.1.0)
-      deep-object-diff: 1.1.9
-      deepmerge: 4.3.1
-      lru-cache: 10.4.3
-      media-query-parser: 2.0.2
-      modern-ahocorasick: 1.1.0
-      picocolors: 1.1.1
-    transitivePeerDependencies:
-      - babel-plugin-macros
 
   '@vanilla-extract/css@1.21.1(babel-plugin-macros@3.1.0)':
     dependencies:
@@ -15831,7 +15812,7 @@ snapshots:
       '@babel/core': 7.29.7
       '@babel/plugin-syntax-typescript': 7.29.7(@babel/core@7.29.7)
       '@vanilla-extract/babel-plugin-debug-ids': 1.2.2
-      '@vanilla-extract/css': 1.21.0(babel-plugin-macros@3.1.0)
+      '@vanilla-extract/css': 1.21.1(babel-plugin-macros@3.1.0)
       dedent: 1.7.2(babel-plugin-macros@3.1.0)
       esbuild: 0.28.1
       eval: 0.1.8
