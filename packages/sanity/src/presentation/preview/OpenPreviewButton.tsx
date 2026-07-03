@@ -1,4 +1,4 @@
-import {LaunchIcon} from '@sanity/icons'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {urlSearchParamPreviewPerspective} from '@sanity/preview-url-secret/constants'
 import {Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'

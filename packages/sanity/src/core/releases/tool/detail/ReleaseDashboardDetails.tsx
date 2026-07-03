@@ -1,5 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ErrorOutlineIcon, PinFilledIcon, PinIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {PinIcon} from '@sanity/icons/Pin'
+import {PinFilledIcon} from '@sanity/icons/PinFilled'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
 

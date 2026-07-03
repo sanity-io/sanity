@@ -1,4 +1,4 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Flex, Text} from '@sanity/ui'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'

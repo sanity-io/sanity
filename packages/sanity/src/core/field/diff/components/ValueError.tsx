@@ -1,4 +1,4 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../i18n'

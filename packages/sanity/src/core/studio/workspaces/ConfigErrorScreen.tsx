@@ -1,5 +1,6 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {ArrowLeftIcon, LaunchIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'

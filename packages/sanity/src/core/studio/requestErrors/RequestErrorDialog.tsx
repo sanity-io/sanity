@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
-import {LaunchIcon} from '@sanity/icons'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 

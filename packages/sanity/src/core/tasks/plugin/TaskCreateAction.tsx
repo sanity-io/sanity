@@ -1,4 +1,4 @@
-import {TaskIcon} from '@sanity/icons'
+import {TaskIcon} from '@sanity/icons/Task'
 import {useCallback, useMemo} from 'react'
 
 import {type DocumentActionDescription} from '../../config'

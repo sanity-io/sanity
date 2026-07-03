@@ -1,4 +1,4 @@
-import {CheckmarkIcon} from '@sanity/icons'
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 

@@ -1,4 +1,4 @@
-import {LockIcon} from '@sanity/icons'
+import {LockIcon} from '@sanity/icons/Lock'
 import {Text, Tooltip} from '@sanity/ui'
 
 export function PrivateIcon() {

@@ -1,4 +1,4 @@
-import {LinkIcon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons/Link'
 import {defineType} from 'sanity'
 
 export default defineType({

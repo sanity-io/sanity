@@ -1,4 +1,8 @@
-import {ArchiveIcon, CloseCircleIcon, CopyIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
+import {ArchiveIcon} from '@sanity/icons/Archive'
+import {CloseCircleIcon} from '@sanity/icons/CloseCircle'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {UnarchiveIcon} from '@sanity/icons/Unarchive'
 import {
   type Dispatch,
   type MouseEventHandler,

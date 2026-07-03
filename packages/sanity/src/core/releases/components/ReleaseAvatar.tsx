@@ -1,5 +1,7 @@
 import {type ReleaseType} from '@sanity/client'
-import {BoltIcon, ClockIcon, DotIcon} from '@sanity/icons'
+import {BoltIcon} from '@sanity/icons/Bolt'
+import {ClockIcon} from '@sanity/icons/Clock'
+import {DotIcon} from '@sanity/icons/Dot'
 import {type BadgeTone, Box, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 

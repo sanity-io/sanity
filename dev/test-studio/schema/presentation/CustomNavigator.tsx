@@ -1,4 +1,4 @@
-import {AddDocumentIcon} from '@sanity/icons'
+import {AddDocumentIcon} from '@sanity/icons/AddDocument'
 import {Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useActiveWorkspace} from 'sanity'
 import {usePresentationNavigate, usePresentationParams} from 'sanity/presentation'

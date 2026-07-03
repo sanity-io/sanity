@@ -1,4 +1,4 @@
-import {BulbOutlineIcon} from '@sanity/icons'
+import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'

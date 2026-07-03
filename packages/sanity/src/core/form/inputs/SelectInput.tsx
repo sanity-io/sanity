@@ -1,4 +1,4 @@
-import {ResetIcon} from '@sanity/icons'
+import {ResetIcon} from '@sanity/icons/Reset'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
 import {Box, Card, type CardTone, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import capitalize from 'lodash-es/capitalize.js'

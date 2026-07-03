@@ -1,5 +1,5 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports

@@ -1,4 +1,7 @@
-import {EyeOpenIcon, FeedbackIcon, SearchIcon, TrashIcon} from '@sanity/icons'
+import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
+import {FeedbackIcon} from '@sanity/icons/Feedback'
+import {SearchIcon} from '@sanity/icons/Search'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Card, Flex, PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
 import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'

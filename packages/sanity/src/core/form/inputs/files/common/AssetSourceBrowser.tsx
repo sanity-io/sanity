@@ -1,4 +1,6 @@
-import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ImageIcon} from '@sanity/icons/Image'
+import {SearchIcon} from '@sanity/icons/Search'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
 import {useCallback, useId} from 'react'

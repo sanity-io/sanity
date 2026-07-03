@@ -1,4 +1,5 @@
-import {AddIcon, SearchIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
+import {SearchIcon} from '@sanity/icons/Search'
 import {isDeprecatedSchemaType} from '@sanity/types'
 import {
   Card,

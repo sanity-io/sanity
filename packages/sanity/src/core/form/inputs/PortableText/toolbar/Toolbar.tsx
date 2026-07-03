@@ -4,7 +4,8 @@ import {
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@portabletext/editor'
-import {CollapseIcon, ExpandIcon} from '@sanity/icons'
+import {CollapseIcon} from '@sanity/icons/Collapse'
+import {ExpandIcon} from '@sanity/icons/Expand'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'

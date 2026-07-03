@@ -1,4 +1,4 @@
-import {EnvelopeIcon} from '@sanity/icons'
+import {EnvelopeIcon} from '@sanity/icons/Envelope'
 import {defineType} from 'sanity'
 
 export default defineType({

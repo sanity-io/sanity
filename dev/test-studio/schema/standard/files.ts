@@ -1,4 +1,4 @@
-import {BinaryDocumentIcon} from '@sanity/icons'
+import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {defineField, defineType} from 'sanity'
 
 export default defineType({

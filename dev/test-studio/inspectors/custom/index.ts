@@ -1,4 +1,4 @@
-import {RocketIcon} from '@sanity/icons'
+import {RocketIcon} from '@sanity/icons/Rocket'
 import {defineDocumentInspector} from 'sanity'
 
 import {CustomInspector} from './inspector'

@@ -1,4 +1,5 @@
-import {CloseIcon, LeaveIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {LeaveIcon} from '@sanity/icons/Leave'
 import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'

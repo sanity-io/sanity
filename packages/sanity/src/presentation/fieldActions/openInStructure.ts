@@ -1,4 +1,4 @@
-import {MasterDetailIcon} from '@sanity/icons'
+import {MasterDetailIcon} from '@sanity/icons/MasterDetail'
 import {useContext, useMemo} from 'react'
 import {
   defineDocumentFieldAction,

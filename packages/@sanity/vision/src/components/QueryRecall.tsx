@@ -1,4 +1,9 @@
-import {AddIcon, LockIcon, SearchIcon, TrashIcon, UnpublishIcon, UsersIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
+import {LockIcon} from '@sanity/icons/Lock'
+import {SearchIcon} from '@sanity/icons/Search'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {UnpublishIcon} from '@sanity/icons/Unpublish'
+import {UsersIcon} from '@sanity/icons/Users'
 import {
   Badge,
   Box,

@@ -1,4 +1,4 @@
-import {MasterDetailIcon} from '@sanity/icons'
+import {MasterDetailIcon} from '@sanity/icons/MasterDetail'
 import {lazy} from 'react'
 import {definePlugin, type DocumentActionComponent} from 'sanity'
 

@@ -1,4 +1,4 @@
-import {DiamondIcon} from '@sanity/icons'
+import {DiamondIcon} from '@sanity/icons/Diamond'
 import {Card, Flex, Text} from '@sanity/ui'
 
 import {RelativeTime} from '../../../components'

@@ -1,4 +1,5 @@
-import {CheckmarkCircleIcon, ErrorOutlineIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Card, type CardTone, Flex, Text} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
 

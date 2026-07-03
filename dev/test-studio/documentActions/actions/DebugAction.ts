@@ -1,4 +1,4 @@
-import {BugIcon} from '@sanity/icons'
+import {BugIcon} from '@sanity/icons/Bug'
 import {useId, useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 

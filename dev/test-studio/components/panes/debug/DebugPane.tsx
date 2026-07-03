@@ -1,4 +1,7 @@
-import {ChevronDownIcon, ChevronRightIcon, ControlsIcon, LinkIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {ControlsIcon} from '@sanity/icons/Controls'
+import {LinkIcon} from '@sanity/icons/Link'
 import {Box, Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'

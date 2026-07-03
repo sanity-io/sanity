@@ -1,4 +1,5 @@
-import {CloseIcon, EyeOpenIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {Box, Button, Card, Checkbox, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {

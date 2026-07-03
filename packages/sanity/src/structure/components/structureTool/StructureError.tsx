@@ -1,5 +1,5 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import {SyncIcon} from '@sanity/icons'
+import {SyncIcon} from '@sanity/icons/Sync'
 import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useTranslation} from 'sanity'

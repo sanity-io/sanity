@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {RestoreIcon} from '@sanity/icons'
+import {RestoreIcon} from '@sanity/icons/Restore'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'

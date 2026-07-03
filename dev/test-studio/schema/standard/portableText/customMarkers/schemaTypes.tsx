@@ -1,4 +1,5 @@
-import {LinkIcon, RocketIcon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons/Link'
+import {RocketIcon} from '@sanity/icons/Rocket'
 import {type BlockAnnotationProps, defineType} from 'sanity'
 
 import {CustomContentInput} from './CustomContentInput'

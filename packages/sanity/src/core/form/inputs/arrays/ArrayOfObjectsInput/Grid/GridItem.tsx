@@ -1,4 +1,6 @@
-import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
+import {AddDocumentIcon} from '@sanity/icons/AddDocument'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {type SchemaType, type UploadState} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'

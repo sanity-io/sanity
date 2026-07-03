@@ -1,6 +1,6 @@
 import {toPlainText} from '@portabletext/react'
 import {hues} from '@sanity/color'
-import {LinkRemovedIcon} from '@sanity/icons'
+import {LinkRemovedIcon} from '@sanity/icons/LinkRemoved'
 import {isPortableTextTextBlock} from '@sanity/types'
 import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'

@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon} from '@sanity/icons'
+import {CalendarIcon} from '@sanity/icons/Calendar'
 import {Menu, MenuDivider} from '@sanity/ui'
 import {memo} from 'react'
 import {IntentLink} from 'sanity/router'

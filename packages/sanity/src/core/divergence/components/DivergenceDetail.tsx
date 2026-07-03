@@ -1,5 +1,7 @@
 import {diffInput, wrap} from '@sanity/diff'
-import {ArrowLeftIcon, ArrowRightIcon, CloseIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
+import {CloseIcon} from '@sanity/icons/Close'
 import {Box, Card, Flex, Skeleton, Spinner, Text, useLayer} from '@sanity/ui'
 import {fromString} from '@sanity/util/paths'
 import {type RefObject, type ComponentType, Fragment} from 'react'

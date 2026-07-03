@@ -1,5 +1,5 @@
 import {useSortable} from '@dnd-kit/sortable'
-import {DragHandleIcon} from '@sanity/icons'
+import {DragHandleIcon} from '@sanity/icons/DragHandle'
 import {useContext} from 'react'
 import {SortableItemIdContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
