@@ -16,7 +16,7 @@
   "dependencies": {
     "@repo/utils": "workspace:*",
     "@sanity/google-maps-input": "^6.0.1",
-    "@sanity/icons": "^4.1.0",
+    "@sanity/icons": "^5.0.0",
     "@sanity/ui": "catalog:",
     "@sanity/vision": "workspace:*",
     "babel-plugin-react-compiler": "catalog:",
