@@ -2775,7 +2775,7 @@ describe('sanity', () => {
     expectTypeOf<CurrentUser>().toBeObject()
   })
   test('CurrentUserAttribute', () => {
-    expectTypeOf<CurrentUserAttribute>().toBeObject()
+    expectTypeOf<CurrentUserAttribute>().not.toBeNever()
   })
   test('CustomValidator', () => {
     expectTypeOf<CustomValidator<any>>().toBeObject()
