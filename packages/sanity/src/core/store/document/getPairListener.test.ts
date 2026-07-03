@@ -1,7 +1,8 @@
 import {type SanityClient} from '@sanity/client'
-import {of, Subject} from 'rxjs'
+import {Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
+import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {type ListenerEvent, getPairListener} from './getPairListener'
 import {type IdPair, type MutationEvent} from './types'
 import {OutOfSyncError} from './utils/sequentializeListenerEvents'
@@ -69,8 +70,8 @@ function createMockClient(listenerEvents$: Subject<ListenerEvent>) {
   const client = {
     observable: {
       listen: vi.fn(() => listenerEvents$),
-      getDocuments: vi.fn(() => of([publishedDoc, draftDoc])),
     },
+    getDocuments: vi.fn(() => Promise.resolve([publishedDoc, draftDoc])),
     withConfig: vi.fn(() => client),
   }
   return client as unknown as SanityClient
@@ -253,8 +254,8 @@ describe('getPairListener', () => {
             attemptCount++
             return attemptCount === 1 ? attempt1$ : attempt2$
           }),
-          getDocuments: vi.fn(() => of([publishedDoc, draftDoc])),
         },
+        getDocuments: vi.fn(() => Promise.resolve([publishedDoc, draftDoc])),
         withConfig: vi.fn(function (this: unknown) {
           return this
         }),
@@ -300,10 +301,8 @@ describe('getPairListener', () => {
       const mockClient = {
         observable: {
           listen: vi.fn(() => errorListener$),
-          getDocuments: vi.fn(() => {
-            throw error
-          }),
         },
+        getDocuments: vi.fn(() => Promise.reject(error)),
         withConfig: vi.fn(function (this: unknown) {
           return this
         }),
@@ -362,9 +361,8 @@ describe('getPairListener', () => {
     })
 
     test('mutation events do not trigger snapshot fetch', async () => {
-      const getDocuments = (
-        client as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}}
-      ).observable.getDocuments
+      const getDocuments = (client as unknown as {getDocuments: ReturnType<typeof vi.fn>})
+        .getDocuments
 
       const sub = getPairListener(client, idPair).subscribe({next: vi.fn()})
 
@@ -388,9 +386,8 @@ describe('getPairListener', () => {
     })
 
     test('welcomeback event does NOT trigger snapshot fetch', async () => {
-      const getDocuments = (
-        client as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}}
-      ).observable.getDocuments
+      const getDocuments = (client as unknown as {getDocuments: ReturnType<typeof vi.fn>})
+        .getDocuments
 
       const sub = getPairListener(client, idPair).subscribe({next: vi.fn()})
 
@@ -404,6 +401,51 @@ describe('getPairListener', () => {
 
       // welcomeback means resume succeeded — no snapshot fetch needed
       expect(getDocuments.mock.calls.length).toBe(fetchCountAfterWelcome)
+
+      sub.unsubscribe()
+    })
+  })
+
+  describe('snapshot fetch error delegation', () => {
+    test('delegates snapshot fetch failures to the error handler and recovers when it re-runs the request', async () => {
+      const getDocuments = (client as unknown as {getDocuments: ReturnType<typeof vi.fn>})
+        .getDocuments
+      // First attempt fails; the re-run falls back to the default mock and
+      // succeeds.
+      const serverError = new Error('HTTP 504')
+      getDocuments.mockImplementationOnce(() => Promise.reject(serverError))
+
+      // Ad-hoc handler implementing the recovery contract: re-run a failed
+      // retryable request and resolve off the successful attempt.
+      const delegated: unknown[] = []
+      const errorHandler: StoreRequestErrorHandler = {
+        attempt: (thunk, options) =>
+          thunk().catch((err) => {
+            if (!options?.retryable) throw err
+            delegated.push(err)
+            return thunk()
+          }),
+      }
+
+      const events: ListenerEvent[] = []
+      const errors: unknown[] = []
+      const sub = getPairListener(client, idPair, {
+        snapshotFetchErrorHandler: errorHandler,
+      }).subscribe({
+        next: (event) => events.push(event),
+        error: (err) => errors.push(err),
+      })
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+
+      // The failure is handed to the handler instead of erroring the event
+      // streams; the snapshots are emitted off the re-run request.
+      await vi.waitFor(() => {
+        expect(events.filter((event) => event.type === 'snapshot')).toHaveLength(2)
+      })
+      expect(errors).toEqual([])
+      expect(delegated).toEqual([serverError])
+      expect(getDocuments).toHaveBeenCalledTimes(2)
 
       sub.unsubscribe()
     })

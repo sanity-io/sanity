@@ -163,6 +163,7 @@ export function useDocumentStore(): DocumentStore {
   const telemetry = useTelemetry()
   const toast = useToast()
   const {t} = useTranslation()
+  const errorHandler = useStudioErrorHandler()
 
   const handleSyncErrorRecovery = useCallback(
     (error: OutOfSyncError) => {
@@ -251,6 +252,7 @@ export function useDocumentStore(): DocumentStore {
           onDocumentPairLoaded: handleDocumentPairLoaded,
           onReportMutationPerformance: handleReportMutationPerformance,
           onDocumentRebase: handleDocumentRebase,
+          snapshotFetchErrorHandler: errorHandler,
         },
       })
 
@@ -285,6 +287,7 @@ export function useDocumentStore(): DocumentStore {
     handleDocumentPairLoaded,
     handleReportMutationPerformance,
     handleDocumentRebase,
+    errorHandler,
   ])
 }
 
