@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "@sanity/client": "catalog:",
-    "@sanity/media-library-types": "^1.4.0"
+    "@sanity/media-library-types": "^1.5.0"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
