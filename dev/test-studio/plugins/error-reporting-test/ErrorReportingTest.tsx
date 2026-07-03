@@ -431,8 +431,9 @@ function RequestErrorsDemo() {
         const cerr = err as ClientError & {statusCode?: number}
         setResult(
           label,
-          `401 propagated to local catch: statusCode=${cerr.statusCode ?? '?'}. The studio ` +
-            `verified your real session via /auth/id and found it valid, so no forced logout.`,
+          `401 propagated to local catch: statusCode=${cerr.statusCode ?? '?'}. The 401 is not ` +
+            `tagged with the API's session-expiry code (SIO-401-AEX), so the studio treats it ` +
+            `as a resource-level denial — no forced logout.`,
         )
       }
     },
@@ -518,20 +519,21 @@ function RequestErrorsDemo() {
         result: results['Local handling only (no reporter)'],
       },
       {
-        label: '401 via reporter · verified, then propagated',
+        label: '401 via reporter · not session expiry, propagated',
         description: (
           <>
             Real 401 from <InlineCode>/users/me</InlineCode> using a bogus token, delegated via{' '}
-            <InlineCode>attempt()</InlineCode>. The studio probes <InlineCode>/auth/id</InlineCode>{' '}
-            with your real (valid) session → resource-level 401 → propagated to the local catch.{' '}
+            <InlineCode>attempt()</InlineCode>. The studio only claims 401s the API tags with its
+            session-expiry code (<InlineCode>SIO-401-AEX</InlineCode>); this one isn&apos;t tagged →
+            resource-level denial → propagated to the local catch.{' '}
             <Text as="span" weight="semibold">
               You will NOT be logged out.
             </Text>
           </>
         ),
-        onClick: () => triggerUnauthorized('401 via reporter · verified, then propagated'),
+        onClick: () => triggerUnauthorized('401 via reporter · not session expiry, propagated'),
         tone: 'caution',
-        result: results['401 via reporter · verified, then propagated'],
+        result: results['401 via reporter · not session expiry, propagated'],
       },
       {
         label: 'CORS misconfig · origin not allowed',

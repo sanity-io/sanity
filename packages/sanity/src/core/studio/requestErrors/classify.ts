@@ -72,8 +72,8 @@ export type RequestErrorClassification =
  *
  * Note: 401 is intentionally NOT classified here — whether a 401 means
  * "session expired" (studio concern) or "this resource refuses you"
- * (caller concern) requires probing the session, which the channel does
- * separately.
+ * (caller concern) is decided by the API's explicit error code, which the
+ * channel checks separately (see {@link isSessionExpiredError}).
  *
  * @internal
  */
@@ -94,6 +94,19 @@ export function classifyRequestError(err: unknown): RequestErrorClassification |
 /** @internal */
 export function isUnauthorizedError(err: unknown): err is ClientError {
   return err instanceof ClientError && err.statusCode === 401
+}
+
+/**
+ * Whether a 401 positively signals a dead session. Every API endpoint tags
+ * session-expiry 401s with the `SIO-401-AEX` error code; a 401 *without*
+ * it is a resource-level denial (e.g. an authenticated user lacking a
+ * grant — some endpoints answer those with 401, not 403) and must stay
+ * caller-domain rather than force a logout.
+ *
+ * @internal
+ */
+export function isSessionExpiredError(err: unknown): err is ClientError {
+  return isUnauthorizedError(err) && getApiErrorCode(err) === 'SIO-401-AEX'
 }
 
 /**

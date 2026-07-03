@@ -246,8 +246,15 @@ function submitCommitRequest(
       // are transient: fail, so the mutator keeps the buffer and retries
       // with backoff. Note `< 500` — 500 itself is a server error and
       // must retry, not cancel.
+      // `error` can be any thrown value — guard before using `in`, which
+      // throws on primitives.
       const statusCode =
-        'statusCode' in error && typeof error.statusCode === 'number' ? error.statusCode : undefined
+        typeof error === 'object' &&
+        error !== null &&
+        'statusCode' in error &&
+        typeof error.statusCode === 'number'
+          ? error.statusCode
+          : undefined
       const isTerminalClientError =
         statusCode !== undefined && statusCode >= 400 && statusCode < 500 && statusCode !== 429
       if (isTerminalClientError) {
