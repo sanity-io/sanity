@@ -24,6 +24,10 @@ const MOCK_USER: CurrentUser = {
   provider: 'google',
   role: '',
   roles: [{name: 'administrator', title: 'Administrator'}],
+  attributes: [
+    {key: 'department', type: 'string', value: 'engineering'},
+    {key: 'locale', type: 'string-array', value: ['EN', 'ES']},
+  ],
 }
 
 const PROJECT_ID = 'test-project'
@@ -1004,5 +1008,34 @@ describe('createAuthStore: cross-tab sync', () => {
       expect(diagnose).toHaveBeenCalled()
       expect(onRequestFailure).toHaveBeenCalledWith({type: 'project-not-found'}, expect.anything())
     })
+  })
+})
+
+describe('createAuthStore: currentUser attributes', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+    vi.restoreAllMocks()
+  })
+
+  it('preserves attributes from /users/me response', async () => {
+    const mock = createMockClientFactory()
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: mock.factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    const state = await waitForState(store, (s) => s.authenticated)
+    expect(state.currentUser?.attributes).toEqual(MOCK_USER.attributes)
   })
 })
