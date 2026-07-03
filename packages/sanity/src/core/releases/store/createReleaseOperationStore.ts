@@ -1,6 +1,7 @@
 import {
   type BaseActionOptions,
   type CreateVersionAction,
+  type DiscardVersionAction,
   type EditableReleaseDocument,
   type IdentifiedSanityDocumentStub,
   type ReleaseDocument,
@@ -8,7 +9,7 @@ import {
   type SingleActionResult,
 } from '@sanity/client'
 
-import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
+import {getDraftId, getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -16,6 +17,10 @@ import {isReleaseLimitError} from './isReleaseLimitError'
 
 export interface ReleaseOperationsStore {
   publishRelease: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
+  discardDrafts: (
+    documentIds: string[],
+    opts?: BaseActionOptions,
+  ) => Promise<SingleActionResult | undefined>
   schedule: (releaseId: string, date: Date, opts?: BaseActionOptions) => Promise<SingleActionResult>
   unschedule: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
   archive: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
@@ -117,6 +122,33 @@ export function createReleaseOperationsStore(options: {
       client.releases.publish({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts),
       opts,
     )
+
+  /**
+   * Discards the draft versions of the given documents, if any exist. Used after publishing a
+   * release to bring the drafts in line with the newly published content ("release to drafts").
+   */
+  const handleDiscardDrafts = async (documentIds: string[], opts?: BaseActionOptions) => {
+    const draftIds = [...new Set(documentIds.map((documentId) => getDraftId(documentId)))]
+
+    if (draftIds.length === 0) return undefined
+
+    // only discard drafts that still exist, so the transaction doesn't fail on documents whose
+    // drafts were removed after the draft ids were resolved
+    const existingDraftIds = await client.fetch<string[]>(
+      '*[_id in $draftIds]._id',
+      {draftIds},
+      {perspective: 'raw', tag: 'release.discard-drafts'},
+    )
+
+    if (existingDraftIds.length === 0) return undefined
+
+    const discardDraftActions: DiscardVersionAction[] = existingDraftIds.map((draftId) => ({
+      actionType: 'sanity.action.document.version.discard',
+      versionId: draftId,
+    }))
+
+    return client.action(discardDraftActions, {tag: 'release.discard-drafts', ...opts})
+  }
 
   const handleScheduleRelease = (releaseId: string, publishAt: Date, opts?: BaseActionOptions) =>
     handleReleaseLimitError(
@@ -264,6 +296,7 @@ export function createReleaseOperationsStore(options: {
     createRelease: handleCreateRelease,
     updateRelease: handleUpdateRelease,
     publishRelease: handlePublishRelease,
+    discardDrafts: handleDiscardDrafts,
     deleteRelease: handleDeleteRelease,
     revertRelease: handleRevertRelease,
     duplicateRelease: handleDuplicateRelease,
