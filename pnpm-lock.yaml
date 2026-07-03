@@ -20,8 +20,8 @@ catalogs:
       specifier: ^7.0.3
       version: 7.0.3
     '@sanity/pkg-utils':
-      specifier: ^10.8.1
-      version: 10.8.1
+      specifier: ^10.9.0
+      version: 10.9.0
     '@sanity/telemetry':
       specifier: ^1.1.0
       version: 1.1.0
@@ -848,7 +848,7 @@ importers:
         version: link:../tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
+        version: 10.9.0(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.2
@@ -1077,7 +1077,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
+        version: 10.9.0(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
@@ -1114,7 +1114,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
+        version: 10.9.0(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/debug':
         specifier: ^4.1.13
         version: 4.1.13
@@ -1181,7 +1181,7 @@ importers:
         version: 5.0.0(react@19.2.7)
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
+        version: 10.9.0(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -1227,7 +1227,7 @@ importers:
         version: 3.0.8(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)(styled-components@6.4.2)
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
+        version: 10.9.0(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.17
@@ -1282,7 +1282,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
+        version: 10.9.0(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.2
@@ -1394,7 +1394,7 @@ importers:
         version: 7.23.0
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
+        version: 10.9.0(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@testing-library/react':
         specifier: ^16.3.2
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.7)(react@19.2.7)
@@ -1454,7 +1454,7 @@ importers:
         version: link:../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
+        version: 10.9.0(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.2
@@ -1803,7 +1803,7 @@ importers:
         version: 4.0.0
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
+        version: 10.9.0(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)
       '@sanity/visual-editing-csm':
         specifier: ^3.0.9
         version: 3.0.9(@sanity/client@7.23.0)(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
@@ -5600,8 +5600,8 @@ packages:
     resolution: {integrity: sha512-PHxDNBUfs3H7b0AVvY7M8N8R76nx1oi2RonbQ+mZ5H/RChtme+xdrqy7krV9e55eBChJ8psYTaqbnbWm91Qhng==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@sanity/pkg-utils@10.8.1':
-    resolution: {integrity: sha512-3JQchgbTCRLMDYrGOZugg7SOJupP3A0RGLLDalKw4VM3gig15mT6jrOhE3ndbUGKGAt6Knvib1+fg4mAAVXCGQ==}
+  '@sanity/pkg-utils@10.9.0':
+    resolution: {integrity: sha512-xqoZsUMDVcEjNoXUOvztBhfwDquOLlMPIqhL0U44eFx74E6bp+GwtdUhdhaxMCjQX74fgu871fq974dOh4qjZg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     hasBin: true
     peerDependencies:
@@ -6978,6 +6978,11 @@ packages:
 
   browserslist@4.28.2:
     resolution: {integrity: sha512-48xSriZYYg+8qXna9kwqjIVzuQxi+KYWp2+5nCYnYKPTr0LvD89Jqk2Or5ogxz0NUMfIjhh2lIUX/LyX9B4oIg==}
+    engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
+    hasBin: true
+
+  browserslist@4.28.4:
+    resolution: {integrity: sha512-MTc8i/x9jBQd1iMw2CFGS+rwMa07eYjLR0CCTLDACl9xhxy+nIs3KeML/biicXtk9JrZ6dnnTatmc7ErPXIxqw==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
@@ -14890,7 +14895,7 @@ snapshots:
     dependencies:
       zod: 4.4.3
 
-  '@sanity/pkg-utils@10.8.1(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)':
+  '@sanity/pkg-utils@10.9.0(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@5.9.3)':
     dependencies:
       '@babel/core': 7.29.7
       '@babel/preset-typescript': 7.29.7(@babel/core@7.29.7)
@@ -14907,7 +14912,7 @@ snapshots:
       '@sanity/browserslist-config': 1.0.5
       '@sanity/parse-package-json': 2.2.1
       '@vanilla-extract/rollup-plugin': 1.5.3(babel-plugin-macros@3.1.0)(rollup@4.62.2)
-      browserslist: 4.28.2
+      browserslist: 4.28.4
       cac: 7.0.0
       chalk: 5.6.2
       chokidar: 5.0.0
@@ -16818,6 +16823,14 @@ snapshots:
       electron-to-chromium: 1.5.376
       node-releases: 2.0.48
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
+
+  browserslist@4.28.4:
+    dependencies:
+      baseline-browser-mapping: 2.10.38
+      caniuse-lite: 1.0.30001799
+      electron-to-chromium: 1.5.376
+      node-releases: 2.0.48
+      update-browserslist-db: 1.2.3(browserslist@4.28.4)
 
   buffer-crc32@0.2.13: {}
 
@@ -20783,6 +20796,12 @@ snapshots:
   update-browserslist-db@1.2.3(browserslist@4.28.2):
     dependencies:
       browserslist: 4.28.2
+      escalade: 3.2.0
+      picocolors: 1.1.1
+
+  update-browserslist-db@1.2.3(browserslist@4.28.4):
+    dependencies:
+      browserslist: 4.28.4
       escalade: 3.2.0
       picocolors: 1.1.1
 
