@@ -15,18 +15,44 @@ import {
   type PermissionCheckResult,
 } from './types'
 
+/**
+ * Handles failures of requests made by the grants store. The store has no
+ * way to recover when the grants request fails — every permission check
+ * depends on it — so it hands the failed request to this handler instead
+ * of erroring its permission streams.
+ *
+ * @internal
+ */
+export interface GrantsStoreErrorHandler {
+  /**
+   * Runs `thunk` and takes responsibility for its failures. An
+   * implementation may recover by re-invoking the thunk — the returned
+   * promise resolves with the first successful attempt. Failures the
+   * handler cannot take responsibility for reject the returned promise.
+   *
+   * `retryable: true` is the store's assertion that the request is
+   * idempotent and safe to re-run.
+   */
+  attempt<T>(thunk: () => Promise<T>, options?: {retryable?: boolean}): Promise<T>
+}
+
 async function getDatasetGrants(
   client: SanityClient,
   projectId: string,
   dataset: string,
+  errorHandler: GrantsStoreErrorHandler | undefined,
 ): Promise<Grant[]> {
   // `acl` stands for access control list and returns a list of grants
-  const grants: Grant[] = await client.request({
-    uri: `/projects/${projectId}/datasets/${dataset}/acl`,
-    tag: 'acl.get',
-  })
+  const fetchGrants = () =>
+    client.request<Grant[]>({
+      uri: `/projects/${projectId}/datasets/${dataset}/acl`,
+      tag: 'acl.get',
+    })
 
-  return grants
+  // Every permission check depends on this read, so there is no local
+  // recovery if it fails — delegate failures to the error handler when one
+  // is provided. Retryable: it's an idempotent GET, safe to re-run.
+  return errorHandler ? errorHandler.attempt(fetchGrants, {retryable: true}) : fetchGrants()
 }
 
 function getParams(userId: string | null): EvaluationParams {
@@ -60,6 +86,11 @@ async function matchesFilter(userId: string | null, filter: string, document: Sa
 interface GrantsStoreOptionsCurrentUser {
   client: SanityClient
   /**
+   * Optional handler for failures of requests made by the store. When
+   * omitted, request failures propagate to the permission streams.
+   */
+  errorHandler?: GrantsStoreErrorHandler
+  /**
    * @deprecated The `currentUser` option is deprecated. Use `userId` instead.
    */
   currentUser: CurrentUser | null
@@ -67,6 +98,11 @@ interface GrantsStoreOptionsCurrentUser {
 
 interface GrantsStoreOptionsUserId {
   client: SanityClient
+  /**
+   * Optional handler for failures of requests made by the store. When
+   * omitted, request failures propagate to the permission streams.
+   */
+  errorHandler?: GrantsStoreErrorHandler
   userId: string | null
 }
 
@@ -75,7 +111,7 @@ export type GrantsStoreOptions = GrantsStoreOptionsCurrentUser | GrantsStoreOpti
 
 /** @internal */
 export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
-  const {client} = opts
+  const {client, errorHandler} = opts
   const versionedClient = client.withConfig({apiVersion: '2021-06-07'})
   const userId = 'userId' in opts ? opts.userId : opts?.currentUser?.id || null
 
@@ -84,7 +120,7 @@ export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
       if (!projectId || !dataset) {
         throw new Error('Missing projectId or dataset')
       }
-      return getDatasetGrants(versionedClient, projectId, dataset)
+      return getDatasetGrants(versionedClient, projectId, dataset, errorHandler)
     }),
   )
 

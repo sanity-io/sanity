@@ -7,7 +7,7 @@ import {useObservable} from 'react-rx'
 import {useClient, useSchema, useTemplates} from '../hooks'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../preview'
-import {useSource, useWorkspace} from '../studio'
+import {useSource, useStudioErrorHandler, useWorkspace} from '../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {createComlinkStore} from './comlink/createComlinkStore'
 import {type ComlinkStore} from './comlink/types'
@@ -82,22 +82,23 @@ export function useGrantsStore(): GrantsStore {
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const currentUser = useCurrentUser()
   const resourceCache = useResourceCache()
+  const errorHandler = useStudioErrorHandler()
 
   return useMemo(() => {
     const grantsStore =
       resourceCache.get<GrantsStore>({
         namespace: 'grantsStore',
-        dependencies: [client, currentUser],
-      }) || createGrantsStore({client, userId: currentUser?.id || null})
+        dependencies: [client, currentUser, errorHandler],
+      }) || createGrantsStore({client, userId: currentUser?.id || null, errorHandler})
 
     resourceCache.set({
       namespace: 'grantsStore',
-      dependencies: [client, currentUser],
+      dependencies: [client, currentUser, errorHandler],
       value: grantsStore,
     })
 
     return grantsStore
-  }, [client, currentUser, resourceCache])
+  }, [client, currentUser, errorHandler, resourceCache])
 }
 
 /**
