@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {ClientError, type SanityClient} from '@sanity/client'
 import {merge, NEVER, of, type Observable, Subject, throwError} from 'rxjs'
 import {delay} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
@@ -416,6 +416,89 @@ describe('checkoutPair -- failed commit routing', () => {
     sub.unsubscribe()
   })
 
+  test('a 401 tagged as session expiry (SIO-401-AEX) is retried, not cancelled', async () => {
+    // A session-expiry 401 says nothing about the mutation itself — after
+    // re-authentication the same commit can succeed. The buffered edits must
+    // therefore be preserved and retried, not wiped to server HEAD mid-edit.
+    // (The session itself is handled by the force-logout flow, not here.)
+    const sessionExpiredError = new ClientError({
+      statusCode: 401,
+      headers: {},
+      body: {error: 'Unauthorized', errorCode: 'SIO-401-AEX'},
+      url: 'https://abc123.api.sanity.io/v1/data/actions/production',
+      method: 'POST',
+    } as never)
+    // Only the first attempt fails; the retry succeeds via the default mock —
+    // as it would after the user re-authenticates.
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => sessionExpiredError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'session expired'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    // Failure path: still unsynced, buffer retained.
+    expect(consistency.values.at(-1)).toBe(false)
+
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    expect(mockedActionRequest.mock.calls[1][0]).toEqual([
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'draftId',
+        publishedId: 'publishedId',
+        patch: {set: {title: 'session expired'}},
+      },
+    ])
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
+  test('a 401 without the session-expiry tag is cancelled, not retried', async () => {
+    // A plain 401 is a resource-level denial (e.g. missing grant — some
+    // endpoints answer those with 401, not 403): terminal for this user, so
+    // retrying can never succeed. Guards the session-expiry carve-out against
+    // widening into "all 401s retry".
+    const deniedError = new ClientError({
+      statusCode: 401,
+      headers: {},
+      body: {error: 'Unauthorized'},
+      url: 'https://abc123.api.sanity.io/v1/data/actions/production',
+      method: 'POST',
+    } as never)
+    mockedActionRequest.mockImplementation(() => throwError(() => deniedError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'denied'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    // Cancel path: reset to server HEAD → consistent again.
+    expect(consistency.values.at(-1)).toBe(true)
+
+    // Terminal: never retried.
+    await vi.advanceTimersByTimeAsync(60_000)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
   test('a 408 (request timeout) commit failure is retried, not cancelled', async () => {
     // 408 is a 4xx but transient — a timeout says nothing about the mutation
     // itself, so the buffered edits must be retained and re-attempted. Guards
@@ -483,9 +566,9 @@ describe('checkoutPair -- failed commit routing', () => {
     sub.unsubscribe()
   })
 
-  test('a 429 (too many requests) commit failure is retried, not cancelled — guards the !== 429 boundary', async () => {
-    // 429 is in the 4xx range but is explicitly excluded from the terminal
-    // client-error branch: it is transient (rate limiting) and must retry.
+  test('a 429 (too many requests) commit failure is retried, not cancelled — transient 4xx stays out of the terminal allowlist', async () => {
+    // 429 is in the 4xx range but not in the terminal allowlist: it is
+    // transient (rate limiting) and must retry.
     const rateLimitError = Object.assign(new Error('Too Many Requests'), {statusCode: 429})
     // Only the first attempt fails; the retry succeeds via the default mock.
     mockedActionRequest.mockImplementationOnce(() => throwError(() => rateLimitError) as any)
