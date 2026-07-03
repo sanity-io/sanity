@@ -1,4 +1,4 @@
-import {CopyIcon} from '@sanity/icons'
+import {CopyIcon} from '@sanity/icons/Copy'
 import {useCallback} from 'react'
 
 import {defineDocumentFieldAction} from '../../../config/document/fieldActions/define'

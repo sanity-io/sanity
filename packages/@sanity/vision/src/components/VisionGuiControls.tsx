@@ -1,4 +1,5 @@
-import {PlayIcon, StopIcon} from '@sanity/icons'
+import {PlayIcon} from '@sanity/icons/Play'
+import {StopIcon} from '@sanity/icons/Stop'
 import {Box, Button, Card, Flex, Hotkeys, Text, Tooltip} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 

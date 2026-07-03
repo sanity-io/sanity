@@ -1,4 +1,4 @@
-import {RestoreIcon} from '@sanity/icons'
+import {RestoreIcon} from '@sanity/icons/Restore'
 import {type DocumentInspector, useTranslation} from 'sanity'
 
 import {useStructureTool} from '../../../../useStructureTool'

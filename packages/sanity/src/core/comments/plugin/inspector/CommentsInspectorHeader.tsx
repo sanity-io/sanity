@@ -1,4 +1,6 @@
-import {CheckmarkIcon, ChevronDownIcon, CloseIcon} from '@sanity/icons'
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {CloseIcon} from '@sanity/icons/Close'
 import {Card, Flex, Menu, Text} from '@sanity/ui'
 import {forwardRef, useCallback} from 'react'
 import {styled} from 'styled-components'

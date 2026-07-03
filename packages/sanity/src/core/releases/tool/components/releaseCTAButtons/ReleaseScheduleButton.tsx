@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
+import {ClockIcon} from '@sanity/icons/Clock'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {format} from 'date-fns/format'

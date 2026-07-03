@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback, useEffect, useState} from 'react'

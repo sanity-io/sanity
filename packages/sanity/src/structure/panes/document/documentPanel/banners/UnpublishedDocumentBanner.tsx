@@ -1,4 +1,4 @@
-import {UnpublishIcon} from '@sanity/icons'
+import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {Stack, Text} from '@sanity/ui'
 import {
   getVersionInlineBadge,

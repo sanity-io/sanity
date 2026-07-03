@@ -1,4 +1,4 @@
-import {AsteriskIcon} from '@sanity/icons'
+import {AsteriskIcon} from '@sanity/icons/Asterisk'
 import {definePlugin} from 'sanity'
 import {route} from 'sanity/router'
 

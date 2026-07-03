@@ -1,4 +1,5 @@
-import {PinFilledIcon, PinIcon} from '@sanity/icons'
+import {PinIcon} from '@sanity/icons/Pin'
+import {PinFilledIcon} from '@sanity/icons/PinFilled'
 import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'

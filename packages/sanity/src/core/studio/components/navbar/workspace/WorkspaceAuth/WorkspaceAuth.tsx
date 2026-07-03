@@ -1,4 +1,5 @@
-import {AddIcon, ArrowLeftIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {Box, Container, Flex, rem, Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useState} from 'react'

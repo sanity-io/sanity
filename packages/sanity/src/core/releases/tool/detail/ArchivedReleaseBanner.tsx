@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {InfoOutlineIcon} from '@sanity/icons'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {format} from 'date-fns/format'

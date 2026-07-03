@@ -1,4 +1,5 @@
-import {BinaryDocumentIcon, UploadIcon} from '@sanity/icons'
+import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
+import {UploadIcon} from '@sanity/icons/Upload'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 
 import {Button} from '../../../ui-components'

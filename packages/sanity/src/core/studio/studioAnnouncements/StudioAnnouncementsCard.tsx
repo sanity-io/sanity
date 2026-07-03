@@ -1,4 +1,4 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'

@@ -913,6 +913,7 @@ import type {
   isSanityDocument,
   isScheduleDocumentVersionEvent,
   isSearchStrategy,
+  isSessionExpiredError,
   isSlug,
   isSpanSchemaType,
   isString,
@@ -2775,7 +2776,7 @@ describe('sanity', () => {
     expectTypeOf<CurrentUser>().toBeObject()
   })
   test('CurrentUserAttribute', () => {
-    expectTypeOf<CurrentUserAttribute>().toBeObject()
+    expectTypeOf<CurrentUserAttribute>().not.toBeNever()
   })
   test('CustomValidator', () => {
     expectTypeOf<CustomValidator<any>>().toBeObject()
@@ -4541,6 +4542,9 @@ describe('sanity', () => {
   })
   test('isSearchStrategy', () => {
     expectTypeOf<typeof isSearchStrategy>().toBeFunction()
+  })
+  test('isSessionExpiredError', () => {
+    expectTypeOf<typeof isSessionExpiredError>().toBeFunction()
   })
   test('isSlug', () => {
     expectTypeOf<typeof isSlug>().toBeFunction()

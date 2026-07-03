@@ -1,4 +1,5 @@
-import {BasketIcon, ImageIcon} from '@sanity/icons'
+import {BasketIcon} from '@sanity/icons/Basket'
+import {ImageIcon} from '@sanity/icons/Image'
 import {defineField} from 'sanity'
 
 export const emailsType = defineField({

@@ -1,4 +1,4 @@
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {type CurrentUser} from '@sanity/types'
 import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
 import {

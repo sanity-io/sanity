@@ -1,4 +1,4 @@
-import {ComposeSparklesIcon} from '@sanity/icons'
+import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 
 import {
   type DocumentActionComponent,

@@ -1,4 +1,4 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type Card, Text} from '@sanity/ui'
 import {type ComponentProps, useCallback, useEffect, useState} from 'react'
 

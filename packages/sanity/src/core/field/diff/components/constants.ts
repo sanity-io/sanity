@@ -1,15 +1,13 @@
-import {
-  AddCircleIcon,
-  CalendarIcon,
-  CircleIcon,
-  CloseIcon,
-  EditIcon,
-  type IconComponent,
-  PublishIcon,
-  TimelineIcon,
-  TrashIcon,
-  UnpublishIcon,
-} from '@sanity/icons'
+import {type IconComponent} from '@sanity/icons'
+import {AddCircleIcon} from '@sanity/icons/AddCircle'
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {CircleIcon} from '@sanity/icons/Circle'
+import {CloseIcon} from '@sanity/icons/Close'
+import {EditIcon} from '@sanity/icons/Edit'
+import {PublishIcon} from '@sanity/icons/Publish'
+import {TimelineIcon} from '@sanity/icons/Timeline'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 
 import {type StudioLocaleResourceKeys} from '../../../i18n/bundles/studio'

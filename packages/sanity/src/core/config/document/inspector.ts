@@ -62,7 +62,7 @@ export interface DocumentInspector {
  * ```ts
  * // sanity.config.ts
  *
- * import {RocketIcon} from '@sanity/icons'
+ * import {RocketIcon} from '@sanity/icons/Rocket'
  * import {defineConfig, defineDocumentInspector} from 'sanity'
  *
  * const customInspector = defineDocumentInspector({

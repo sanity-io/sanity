@@ -1,4 +1,4 @@
-import {TrashIcon} from '@sanity/icons'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {type Asset as AssetType} from '@sanity/types'
 import {Box, Stack} from '@sanity/ui'
 import {useMemo} from 'react'

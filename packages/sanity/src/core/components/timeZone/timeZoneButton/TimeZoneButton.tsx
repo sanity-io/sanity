@@ -1,4 +1,4 @@
-import {EarthAmericasIcon} from '@sanity/icons'
+import {EarthAmericasIcon} from '@sanity/icons/EarthAmericas'
 import {Box, Inline, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode} from 'react'

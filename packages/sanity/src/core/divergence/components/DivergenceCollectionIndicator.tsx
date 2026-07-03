@@ -1,4 +1,4 @@
-import {EditIcon} from '@sanity/icons'
+import {EditIcon} from '@sanity/icons/Edit'
 // oxlint-disable-next-line no-restricted-imports -- Indicator requires more fine-grained styling than Studio button
 import {Button} from '@sanity/ui'
 import {motion} from 'motion/react'

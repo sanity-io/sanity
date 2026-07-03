@@ -1,4 +1,5 @@
-import {CheckmarkIcon, CircleIcon} from '@sanity/icons'
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {CircleIcon} from '@sanity/icons/Circle'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path, type TitledListValue} from '@sanity/types'
 import {Menu} from '@sanity/ui'

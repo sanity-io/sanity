@@ -1,5 +1,5 @@
 import {purple, yellow} from '@sanity/color'
-import {BoltIcon} from '@sanity/icons'
+import {BoltIcon} from '@sanity/icons/Bolt'
 import {Card, Text} from '@sanity/ui'
 import {forwardRef, type Ref} from 'react'
 import {styled} from 'styled-components'

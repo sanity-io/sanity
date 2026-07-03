@@ -1,4 +1,6 @@
-import {ChevronRightIcon, DocumentIcon, FolderIcon} from '@sanity/icons'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {FolderIcon} from '@sanity/icons/Folder'
 import {
   isSanityDocument,
   type PreviewValue,

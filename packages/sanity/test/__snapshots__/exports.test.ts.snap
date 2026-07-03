@@ -477,6 +477,7 @@ exports[`exports snapshot 1`] = `
     "isSanityDocument": "function",
     "isScheduleDocumentVersionEvent": "function",
     "isSearchStrategy": "function",
+    "isSessionExpiredError": "function",
     "isSlug": "function",
     "isSpanSchemaType": "function",
     "isString": "function",

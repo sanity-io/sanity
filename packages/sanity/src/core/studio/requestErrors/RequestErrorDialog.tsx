@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
-import {LaunchIcon} from '@sanity/icons'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {startTransition, useCallback, useEffect, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
 import {type RequestErrorClaim} from './types'
@@ -53,9 +53,9 @@ export function useRetryCountdown(claim: {retryAfterSeconds?: number}): number {
     const initial = claim.retryAfterSeconds ?? 0
     // Reset the countdown when a new claim arrives (a re-rate-limited retry
     // produces a fresh claim with a new Retry-After). Intentional derived-state
-    // sync driven by the external claim, not a render cascade.
-    // oxlint-disable-next-line react/react-compiler
-    setSecondsLeft(initial)
+    // sync driven by the external claim, not a render cascade — deferred via
+    // startTransition so React can schedule the resulting re-render lazily.
+    startTransition(() => setSecondsLeft(initial))
     if (initial <= 0) return undefined
     const id = setInterval(() => {
       setSecondsLeft((current) => {
@@ -171,9 +171,9 @@ function RateLimitedDialog(props: {
   const [retrying, setRetrying] = useState(false)
   useEffect(() => {
     // A new claim object means the in-flight retry concluded — clear the
-    // disabled state. Intentional sync to the external claim, not a cascade.
-    // oxlint-disable-next-line react/react-compiler
-    setRetrying(false)
+    // disabled state. Intentional sync to the external claim, not a cascade —
+    // deferred via startTransition so React can schedule the re-render lazily.
+    startTransition(() => setRetrying(false))
   }, [claim])
   const handleRetry = useCallback(() => {
     setRetrying(true)

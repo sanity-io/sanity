@@ -1,4 +1,4 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.

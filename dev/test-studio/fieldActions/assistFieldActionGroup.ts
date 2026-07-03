@@ -1,4 +1,4 @@
-import {SparklesIcon} from '@sanity/icons'
+import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {useMemo} from 'react'
 import {defineDocumentFieldAction} from 'sanity'
 

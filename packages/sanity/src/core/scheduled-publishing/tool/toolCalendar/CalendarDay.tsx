@@ -1,4 +1,4 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {Badge, Box, Card, type CardTone, Flex, Inline, Label, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {isWeekend} from 'date-fns/isWeekend'

@@ -1,4 +1,4 @@
-import {CalendarIcon} from '@sanity/icons'
+import {CalendarIcon} from '@sanity/icons/Calendar'
 import {isValidationErrorMarker} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'

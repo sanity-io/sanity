@@ -1,4 +1,4 @@
-import {MenuIcon} from '@sanity/icons'
+import {MenuIcon} from '@sanity/icons/Menu'
 import {
   BoundaryElementProvider,
   Box,

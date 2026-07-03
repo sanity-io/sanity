@@ -1,4 +1,7 @@
-import {DesktopIcon, MobileDeviceIcon, PanelLeftIcon, RefreshIcon} from '@sanity/icons'
+import {DesktopIcon} from '@sanity/icons/Desktop'
+import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
+import {PanelLeftIcon} from '@sanity/icons/PanelLeft'
+import {RefreshIcon} from '@sanity/icons/Refresh'
 import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
 import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'

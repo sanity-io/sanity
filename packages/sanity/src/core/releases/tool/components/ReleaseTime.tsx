@@ -1,4 +1,4 @@
-import {LockIcon} from '@sanity/icons'
+import {LockIcon} from '@sanity/icons/Lock'
 import {Box, Flex, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../i18n'

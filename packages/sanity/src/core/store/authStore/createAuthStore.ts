@@ -21,7 +21,7 @@ import {
 
 import {type AuthConfig} from '../../config/auth/types'
 import {isStaging} from '../../environment/isStaging'
-import {isUnauthorizedError} from '../../studio/requestErrors/classify'
+import {isNetworkError, isUnauthorizedError} from '../../studio/requestErrors/classify'
 import {
   type RequestFailureProbe,
   type RequestFailureResult,
@@ -177,10 +177,15 @@ const getCurrentUser = async (
     return typeof user?.id === 'string' ? user : undefined
   } catch (err) {
     // Reached only in the no-channel fallback path, or for errors the
-    // channel declined to claim.
-    if (err.isNetworkError && !err.message && err.request && err.request.url) {
-      const host = new URL(err.request.url).host
-      throw new Error(`Unknown network error attempting to reach ${host}`, {cause: err})
+    // channel declined to claim. Guarded: a thrown value can be anything,
+    // so don't touch properties until it's confirmed to be a network error.
+    if (isNetworkError(err) && !err.message) {
+      const url = (err as Error & {request?: {url?: string}}).request?.url
+      if (url) {
+        throw new Error(`Unknown network error attempting to reach ${new URL(url).host}`, {
+          cause: err,
+        })
+      }
     }
 
     // Some other error, just throw it

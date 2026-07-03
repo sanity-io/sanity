@@ -1,4 +1,4 @@
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
 import {Flex, Text, useClickOutsideEvent} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'

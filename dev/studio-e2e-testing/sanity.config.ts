@@ -1,5 +1,6 @@
 import {googleMapsInput} from '@sanity/google-maps-input'
-import {BookIcon, PlayIcon} from '@sanity/icons'
+import {BookIcon} from '@sanity/icons/Book'
+import {PlayIcon} from '@sanity/icons/Play'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, type ReleaseActionComponent} from 'sanity'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'

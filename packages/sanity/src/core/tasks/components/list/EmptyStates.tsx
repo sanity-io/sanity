@@ -1,4 +1,4 @@
-import {AddIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'

@@ -1,4 +1,5 @@
-import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Box, Flex, Text} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'

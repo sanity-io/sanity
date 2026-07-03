@@ -1,4 +1,4 @@
-import {SearchIcon} from '@sanity/icons'
+import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Flex} from '@sanity/ui'
 import {type ChangeEvent, forwardRef} from 'react'
 import {styled} from 'styled-components'

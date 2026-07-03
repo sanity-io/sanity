@@ -1,4 +1,5 @@
-import {CopyIcon, SyncIcon} from '@sanity/icons'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {SyncIcon} from '@sanity/icons/Sync'
 import {Inline} from '@sanity/ui'
 import {type ComponentProps, type ComponentType} from 'react'
 

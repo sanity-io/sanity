@@ -1,4 +1,5 @@
-import {LinkIcon, TrashIcon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons/Link'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {Menu} from '@sanity/ui'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'

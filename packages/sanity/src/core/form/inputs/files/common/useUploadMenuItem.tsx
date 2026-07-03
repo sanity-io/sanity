@@ -1,4 +1,4 @@
-import {UploadIcon} from '@sanity/icons'
+import {UploadIcon} from '@sanity/icons/Upload'
 import {type AssetSource} from '@sanity/types'
 import {type ReactNode, useMemo} from 'react'
 

@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 

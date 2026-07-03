@@ -12,7 +12,7 @@
     "start": "sanity preview"
   },
   "dependencies": {
-    "@sanity/code-input": "^7.1.6",
+    "@sanity/code-input": "^7.2.2",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",

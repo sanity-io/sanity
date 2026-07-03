@@ -1,4 +1,4 @@
-import {HelpCircleIcon} from '@sanity/icons'
+import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {Menu} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import semver from 'semver'

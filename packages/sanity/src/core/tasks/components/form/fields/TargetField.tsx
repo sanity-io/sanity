@@ -1,4 +1,5 @@
-import {CloseIcon, DocumentIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {DocumentIcon} from '@sanity/icons/Document'
 import {Box, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'

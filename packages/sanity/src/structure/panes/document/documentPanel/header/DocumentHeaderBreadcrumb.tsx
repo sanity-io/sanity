@@ -1,4 +1,4 @@
-import {ArrowRightIcon} from '@sanity/icons'
+import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {Box, Flex, Text} from '@sanity/ui'
 import {Fragment} from 'react'
 

@@ -1,4 +1,5 @@
-import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Box, Flex, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'

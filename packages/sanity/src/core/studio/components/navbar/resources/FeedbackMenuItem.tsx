@@ -1,4 +1,4 @@
-import {FeedbackIcon} from '@sanity/icons'
+import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {MenuDivider} from '@sanity/ui'
 
 import {MenuItem} from '../../../../../ui-components'

@@ -1,6 +1,7 @@
 /* oxlint-disable i18next/no-literal-string */
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
 import {Box, Breadcrumbs, Card, Flex, Stack, Text, type ThemeColorToneKey} from '@sanity/ui'
 import capitalize from 'lodash-es/capitalize.js'

@@ -1,5 +1,6 @@
 import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
-import {AddIcon, TrashIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {type Path} from '@sanity/mutate'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'

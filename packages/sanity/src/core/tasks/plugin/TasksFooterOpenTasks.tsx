@@ -1,4 +1,4 @@
-import {TaskIcon} from '@sanity/icons'
+import {TaskIcon} from '@sanity/icons/Task'
 import {Badge, useMediaIndex} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'

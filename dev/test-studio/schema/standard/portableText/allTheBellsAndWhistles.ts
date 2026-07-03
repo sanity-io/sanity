@@ -1,11 +1,9 @@
-import {
-  BellIcon,
-  ColorWheelIcon,
-  DocumentPdfIcon,
-  ImageIcon,
-  InfoOutlineIcon,
-  LinkIcon,
-} from '@sanity/icons'
+import {BellIcon} from '@sanity/icons/Bell'
+import {ColorWheelIcon} from '@sanity/icons/ColorWheel'
+import {DocumentPdfIcon} from '@sanity/icons/DocumentPdf'
+import {ImageIcon} from '@sanity/icons/Image'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {LinkIcon} from '@sanity/icons/Link'
 import {type Rule} from '@sanity/types'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 

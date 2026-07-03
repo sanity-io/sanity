@@ -1,4 +1,4 @@
-import {DocumentIcon} from '@sanity/icons'
+import {DocumentIcon} from '@sanity/icons/Document'
 import {type PreviewValue} from '@sanity/types'
 import {catchError, map, type Observable, of, startWith, switchMap} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'

@@ -1,4 +1,6 @@
-import {CloseIcon, LockIcon, TransferIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {LockIcon} from '@sanity/icons/Lock'
+import {TransferIcon} from '@sanity/icons/Transfer'
 import {
   Badge,
   Box,
