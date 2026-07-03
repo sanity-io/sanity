@@ -913,6 +913,7 @@ import type {
   isSanityDocument,
   isScheduleDocumentVersionEvent,
   isSearchStrategy,
+  isSessionExpiredError,
   isSlug,
   isSpanSchemaType,
   isString,
@@ -4541,6 +4542,9 @@ describe('sanity', () => {
   })
   test('isSearchStrategy', () => {
     expectTypeOf<typeof isSearchStrategy>().toBeFunction()
+  })
+  test('isSessionExpiredError', () => {
+    expectTypeOf<typeof isSessionExpiredError>().toBeFunction()
   })
   test('isSlug', () => {
     expectTypeOf<typeof isSlug>().toBeFunction()
