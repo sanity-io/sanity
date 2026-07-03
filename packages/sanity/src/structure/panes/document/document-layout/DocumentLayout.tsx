@@ -1,4 +1,5 @@
 import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 import {
@@ -47,7 +48,9 @@ const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
 ]
 
 function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorRoot>) {
-  return <ChangeConnectorRoot {...props} className={changeConnectorRoot} />
+  const {className, ...restProps} = props
+
+  return <ChangeConnectorRoot {...restProps} className={clsx(changeConnectorRoot, className)} />
 }
 
 export function DocumentLayout() {

@@ -1,4 +1,4 @@
-import classNames from 'classnames'
+import {clsx} from 'clsx'
 import {type ComponentProps} from 'react'
 
 import {
@@ -23,48 +23,54 @@ export function ChangeBarWrapper(
     isReviewChangeOpen: boolean
   },
 ) {
-  const {changed, disabled, hasFocus, isReviewChangeOpen, ...restProps} = props
+  const {changed, className, disabled, hasFocus, isReviewChangeOpen, ...restProps} = props
 
   return (
     <div
       {...restProps}
-      className={classNames(
+      className={clsx(
         changeBarWrapper,
         disabled && changeBarWrapperDisabled,
         hasFocus && changeBarWrapperFocused,
         !changed && changeBarWrapperNotChanged,
         isReviewChangeOpen && changeBarWrapperReviewOpen,
+        className,
       )}
     />
   )
 }
 
 export function FieldWrapper(props: ComponentProps<'div'>) {
-  return <div {...props} className={fieldWrapper} />
+  const {className, ...restProps} = props
+
+  return <div {...restProps} className={clsx(fieldWrapper, className)} />
 }
 
 export function ChangeBar(props: ComponentProps<'div'> & {zIndex: number}) {
-  const {zIndex, style, ...restProps} = props
+  const {className, style, zIndex, ...restProps} = props
 
-  return <div {...restProps} className={changeBar} style={{...style, zIndex}} />
+  return <div {...restProps} className={clsx(changeBar, className)} style={{...style, zIndex}} />
 }
 
 export function ChangeBarMarker(props: ComponentProps<'div'>) {
-  return <div {...props} className={changeBarMarker} />
+  const {className, ...restProps} = props
+
+  return <div {...restProps} className={clsx(changeBarMarker, className)} />
 }
 
 export function ChangeBarButton(
   props: ComponentProps<'button'> & {isInteractive?: boolean; withHoverEffect?: boolean},
 ) {
-  const {isInteractive, withHoverEffect, ...restProps} = props
+  const {className, isInteractive, withHoverEffect, ...restProps} = props
 
   return (
     <button
       {...restProps}
-      className={classNames(
+      className={clsx(
         changeBarButton,
         withHoverEffect && changeBarButtonWithHoverEffect,
         isInteractive && changeBarButtonInteractive,
+        className,
       )}
     />
   )

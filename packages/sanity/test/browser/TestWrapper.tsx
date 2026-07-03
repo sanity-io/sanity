@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
+import {clsx} from 'clsx'
 import memoize from 'lodash-es/memoize.js'
 import noop from 'lodash-es/noop.js'
 import {type ComponentProps, type ReactNode, Suspense, use, useState} from 'react'
@@ -36,7 +37,9 @@ interface TestWrapperProps {
 const studioThemeConfig: RootTheme = buildTheme()
 
 function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorRoot>) {
-  return <ChangeConnectorRoot {...props} className={changeConnectorRoot} />
+  const {className, ...restProps} = props
+
+  return <ChangeConnectorRoot {...restProps} className={clsx(changeConnectorRoot, className)} />
 }
 
 const router = route.create('/')
