@@ -22,11 +22,16 @@ const defaultTableStyle: CSSProperties = {
  * @internal
  */
 export const TableLayout = ({isEmptyState, header, content, contentHeight}: TableLayoutProps) => {
+  // display: block makes the tbody the containing block for the absolutely
+  // positioned virtualized rows in Safari too — WebKit doesn't support
+  // `position: relative` on internal table boxes (https://bugs.webkit.org/show_bug.cgi?id=240961),
+  // which left the rows positioned from the top of the table and the first row
+  // hidden behind the sticky header
   const tbodyStyle = useMemo<CSSProperties>(
     () =>
       isEmptyState
-        ? {height: '100%', position: 'relative', overflow: 'hidden'}
-        : {height: contentHeight, position: 'relative'},
+        ? {display: 'block', height: '100%', position: 'relative', overflow: 'hidden'}
+        : {display: 'block', height: contentHeight, position: 'relative'},
     [isEmptyState, contentHeight],
   )
 
