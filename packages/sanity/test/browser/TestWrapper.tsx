@@ -18,7 +18,6 @@ import {
   type WorkspaceOptions,
   WorkspaceProvider,
 } from 'sanity'
-import {styled} from 'styled-components'
 
 import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'
 import {PerspectiveProvider} from '../../src/core/perspective/PerspectiveProvider'
@@ -27,6 +26,7 @@ import {RouterProvider} from '../../src/router/RouterProvider'
 import {Pane, PaneContent, PaneLayout} from '../../src/structure/components/pane'
 import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../test/testUtils/getMockWorkspaceFromConfig'
+import {changeConnectorRoot} from './TestWrapper.css'
 
 interface TestWrapperProps {
   children?: ReactNode
@@ -34,14 +34,6 @@ interface TestWrapperProps {
   schemaTypes: SchemaTypeDefinition[]
 }
 const studioThemeConfig: RootTheme = buildTheme()
-
-const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-`
 
 const router = route.create('/')
 const getCachedMockWorkspace = memoize(
@@ -105,7 +97,8 @@ const TestWrapperContents = (
                     <CopyPasteProvider>
                       <ColorSchemeProvider>
                         <UserColorManagerProvider>
-                          <StyledChangeConnectorRoot
+                          <ChangeConnectorRoot
+                            className={changeConnectorRoot}
                             isReviewChangesOpen={false}
                             onOpenReviewChanges={noop}
                             onSetFocus={noop}
@@ -122,7 +115,7 @@ const TestWrapperContents = (
                                 </Pane>
                               </PaneLayout>
                             </PerspectiveProvider>
-                          </StyledChangeConnectorRoot>
+                          </ChangeConnectorRoot>
                         </UserColorManagerProvider>
                       </ColorSchemeProvider>
                     </CopyPasteProvider>
