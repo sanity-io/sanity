@@ -1,4 +1,5 @@
 import {act, render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {afterAll, beforeAll, describe, expect, it} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
@@ -112,6 +113,39 @@ describe('ConnectorsOverlay', () => {
     render(<Harness isReviewChangesOpen={false} />, {wrapper: TestProvider})
 
     const overlay = screen.getByTestId('change-connectors-overlay')
+
+    await waitForOverlayToSettle()
+    expect(overlay.querySelector('path')).toBeNull()
+  })
+
+  it('draws a connector when hovering a diff whose form field is registered at a deeper path', async () => {
+    // Image and file inputs register their change indicator at `<field>.asset` while the
+    // changes panel registers the diff at `<field>`.
+    const TestProvider = await createTestProvider()
+
+    render(
+      <ChangeConnectorRoot isReviewChangesOpen onOpenReviewChanges={() => {}} onSetFocus={() => {}}>
+        <ChangeIndicator hasFocus={false} isChanged path={['image', 'asset']}>
+          <div>field</div>
+        </ChangeIndicator>
+        <ChangeFieldWrapper hasRevertHover={false} path={['image']}>
+          <div>change</div>
+        </ChangeFieldWrapper>
+      </ChangeConnectorRoot>,
+      {wrapper: TestProvider},
+    )
+
+    const overlay = screen.getByTestId('change-connectors-overlay')
+
+    await waitForOverlayToSettle()
+    expect(overlay.querySelector('path')).toBeNull()
+
+    await userEvent.hover(screen.getByText('change'))
+
+    await waitForOverlayToSettle()
+    expect(overlay.querySelector('path')).not.toBeNull()
+
+    await userEvent.unhover(screen.getByText('change'))
 
     await waitForOverlayToSettle()
     expect(overlay.querySelector('path')).toBeNull()

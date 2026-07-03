@@ -31,6 +31,31 @@ export function findMostSpecificTarget(
     }
   }
 
+  /* Neither an exact nor a less specific match exists, so look for the closest changed target
+   * nested inside the path. Some inputs only register change indicators at a deeper path than
+   * the change itself, e.g. image and file inputs register `<field>.asset`, while the changes
+   * panel registers the diff at `<field>`. Without this, hovering such a diff finds no
+   * form-side target, so no connector is drawn.
+   */
+  let closestDescendant: TrackedChange | undefined
+  for (const [targetId, target] of values) {
+    if (!('path' in target) || !targetId.startsWith(targetType)) {
+      continue
+    }
+
+    if (
+      target.isChanged &&
+      target.path.length > path.length &&
+      PathUtils.numEqualSegments(path, target.path) === path.length &&
+      (!closestDescendant || target.path.length < closestDescendant.path.length)
+    ) {
+      closestDescendant = target
+    }
+  }
+  if (closestDescendant) {
+    return closestDescendant
+  }
+
   let mostSpecific: TrackedChange | undefined
   for (const [targetId, target] of values) {
     if (!('path' in target) || !targetId.startsWith(targetType)) {
