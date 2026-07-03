@@ -1,7 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {type ReactNode, useCallback} from 'react'
 import {
-  type FIXME,
   getPublishedId,
   PreviewCard,
   type SanityDocument,
@@ -42,7 +41,7 @@ export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
   )
 
   return (
-    <PreviewCard __unstable_focusRing as={Link as FIXME} data-as="a" onClick={onClick} radius={2}>
+    <PreviewCard __unstable_focusRing as={Link} data-as="a" onClick={onClick} radius={2}>
       <PaneItemPreview
         documentPreviewStore={documentPreviewStore}
         icon={type?.icon}

@@ -49,8 +49,11 @@ test(`file drop event should not propagate to dialog parent`, async ({
   // Ensure the list contains one item.
   await expect(item).toHaveCount(1)
 
-  // Open the dialog.
-  await page.getByRole('button', {name: fileName}).click()
+  // Open the dialog. The button stays disabled until the asset finishes
+  // uploading, which can exceed the default click timeout under CI load.
+  const fileButton = page.getByRole('button', {name: fileName})
+  await expect(fileButton).toBeEnabled({timeout: 30_000})
+  await fileButton.click()
   await expect(page.getByRole('dialog')).toBeVisible()
 
   // Drop the file again; this time, while the dialog is open.
@@ -160,7 +163,7 @@ test(`Scenario: Adding new array item before using the context menu`, async ({
 
   // And the "insert dialog" is closed
   await closeDialogButton.click()
-  await insertDialog.isHidden()
+  await expect(insertDialog).toBeHidden()
 
   // Then a new "(Dog)Dog" is inserted before "Book titleBy <unknown>"
   await expect(items.first()).toHaveText('(Dog)Dog')
@@ -171,8 +174,7 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
   page,
   createDraftDocument,
 }) => {
-  const {popoverMenu, popoverMenuItem, insertDialog, input, closeDialogButton, items} =
-    createArrayFieldLocators(page)
+  const {popoverMenu, popoverMenuItem, insertDialog, input, items} = createArrayFieldLocators(page)
 
   // Given an array field allowing multiple types
   await createDraftDocument('/content/input-standard;arraysTest')
@@ -222,7 +224,7 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
 
   // And the "insert dialog" is closed
   await page.keyboard.press('Escape')
-  await insertDialog.isHidden()
+  await expect(insertDialog).toBeHidden()
 
   // Then a new "(Cat)Cat" is inserted after "Book titleBy <unknown>"
   await expect(items.first()).toBeVisible()
@@ -258,25 +260,20 @@ async function addInitialArrayItem(
   page: Page,
   item: {menuItemLabel: string; inputLabel: string; content: string},
 ) {
-  const {
-    addItemButton,
-    popoverMenu,
-    popoverMenuItem,
-    insertDialog,
-    input,
-    closeDialogButton,
-    items,
-  } = createArrayFieldLocators(page)
+  const {addItemButton, popoverMenu, popoverMenuItem, insertDialog, input, items} =
+    createArrayFieldLocators(page)
 
   await addItemButton.click()
-  await popoverMenu.isVisible()
+  // Use auto-retrying `expect` rather than `locator.isVisible()`, which returns
+  // immediately and let the `fill` below race the dialog opening.
+  await expect(popoverMenu).toBeVisible()
   await popoverMenuItem(item.menuItemLabel).click()
-  await insertDialog.isVisible()
+  await expect(insertDialog).toBeVisible()
   await input(item.inputLabel).fill(item.content)
   await page.keyboard.press('Escape')
-  await insertDialog.isHidden()
+  await expect(insertDialog).toBeHidden()
   const insertedItem = items.first()
-  await insertedItem.isVisible()
+  await expect(insertedItem).toBeVisible()
 
   return insertedItem
 }

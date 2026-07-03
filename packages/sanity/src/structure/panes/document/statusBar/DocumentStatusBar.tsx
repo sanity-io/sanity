@@ -1,7 +1,13 @@
 import {Card, Flex} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
-import {isPublishedPerspective, isReleaseDocument, usePerspective} from 'sanity'
+import {
+  isDocumentInSelectedVariant,
+  isPublishedPerspective,
+  isReleaseDocument,
+  useDocumentVersions,
+  usePerspective,
+} from 'sanity'
 
 import {usePaneRouter} from '../../../components'
 import {SpacerButton} from '../../../components/spacerButton'
@@ -23,9 +29,10 @@ const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {editState, revisionNotFound} = useDocumentPane()
+  const {documentId, editState, revisionNotFound} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
-  const {selectedPerspective} = usePerspective()
+  const {selectedPerspective, selectedVariant, bundle} = usePerspective()
+  const documentVersions = useDocumentVersions({documentId})
 
   const showingRevision = Boolean(params.rev)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
@@ -39,6 +46,20 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   const shouldRender = useMemo(() => {
     const isReady = Boolean(editState?.ready && typeof collapsed === 'boolean')
+
+    // Hide the footer (status + actions) when the document has no variant-scoped version for the
+    // selected variant. Mirrors the not-in-variant banner and read-only form state.
+    if (
+      selectedVariant &&
+      !isDocumentInSelectedVariant({
+        selectedVariant,
+        bundle,
+        documentVersions: documentVersions.versions,
+      })
+    ) {
+      return false
+    }
+
     if (selectedPerspective) {
       if (isPublishedPerspective(selectedPerspective)) {
         return isReady && Boolean(editState?.published)
@@ -48,7 +69,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
       }
     }
     return isReady
-  }, [collapsed, editState?.published, editState?.ready, editState?.version, selectedPerspective])
+  }, [collapsed, editState, selectedPerspective, selectedVariant, bundle, documentVersions])
 
   let actions: React.JSX.Element | null = null
   if (showingRevision) {

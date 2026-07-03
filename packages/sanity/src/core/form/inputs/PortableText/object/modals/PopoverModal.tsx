@@ -7,14 +7,7 @@ import {
   useClickOutsideEvent,
   useGlobalKeyDown,
 } from '@sanity/ui'
-import {
-  type PropsWithChildren,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import {type ComponentProps, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
 
@@ -39,7 +32,7 @@ interface PopoverEditDialogProps {
  * Wrapper for focus lock that maintains scroll on the popover
  * Unlike Fragment (on some react versions) this does not absorb the ref prop
  */
-const NoopContainer = ({children, ...props}: PropsWithChildren) => (
+const NoopContainer = ({children, ...props}: ComponentProps<'div'>) => (
   <div
     {...props}
     // Makes the div focusable so clicking on the popover will move the focus away from the input once focus lock is active

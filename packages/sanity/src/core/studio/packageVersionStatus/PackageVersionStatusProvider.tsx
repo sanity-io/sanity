@@ -125,8 +125,21 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
 
     void Promise.all([resolveLatestTaggedVersion, resolveAutoUpdatingVersion])
       .then(([nextLatestVersion, nextAutoUpdatingVersion]) => {
-        setAutoUpdatingVersionRaw(nextAutoUpdatingVersion)
-        setLatestTaggedVersionRaw(nextLatestVersion)
+        // `fetchLatestVersions` resolves `undefined` on a failed fetch (rather
+        // than rejecting), so only overwrite state when we actually got a value.
+        // This keeps the previously known versions on a transient failure and
+        // we try again on the next tick.
+        if (typeof nextAutoUpdatingVersion !== 'undefined') {
+          setAutoUpdatingVersionRaw(nextAutoUpdatingVersion)
+        }
+        if (typeof nextLatestVersion !== 'undefined') {
+          setLatestTaggedVersionRaw(nextLatestVersion)
+        }
+      })
+      .catch((err) => {
+        // Best-effort version poll — keep the previously known versions
+        // and try again on the next tick.
+        console.warn('[sanity] Failed to check for new studio versions:', err)
       })
       .finally(() => setVersionCheckStatus({lastCheckedAt: new Date(), checking: false}))
   }, [currentVersion, importMapInfo])

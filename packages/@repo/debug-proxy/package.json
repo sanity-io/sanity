@@ -1,6 +1,6 @@
 {
   "name": "@repo/debug-proxy",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "private": true,
   "description": "Local debugging proxy for the Sanity API — simulate latency, SSE faults, and error responses",
   "license": "MIT",
@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@vitejs/plugin-basic-ssl": "^2.3.0",
-    "es-toolkit": "^1.48.1",
+    "es-toolkit": "^1.49.0",
     "eventsource-parser": "^3.1.0",
     "rxjs": "^7.8.2"
   },

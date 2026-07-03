@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.3.0](https://github.com/sanity-io/sanity/compare/v6.2.0...v6.3.0) (2026-06-30)
+
+### Features
+
+* **core:** add document delete references telemetry ([#13235](https://github.com/sanity-io/sanity/issues/13235)) ([b68b358](https://github.com/sanity-io/sanity/commit/b68b3585e2826167c0203372521286c3fc7a49bb))
+* **core:** re-add bundle.css export via conditional exports ([#13322](https://github.com/sanity-io/sanity/issues/13322)) ([d0ce99f](https://github.com/sanity-io/sanity/commit/d0ce99f46b715c0cd6173046a1e3a3f730657128))
+* **portable-text:** render Studio PT through the `defineX` catch-all pipeline ([e7c1bf4](https://github.com/sanity-io/sanity/commit/e7c1bf4dfa5f5f9e7f92bba977fb56de01690cfe))
+
+### Bug Fixes
+
+* **build:** strip leftover vite hash marker from published css ([#13360](https://github.com/sanity-io/sanity/issues/13360)) ([df7ab24](https://github.com/sanity-io/sanity/commit/df7ab2486dfb864629e4645139054ad0a65b5dd3))
+* **core:** remove sideEffects so injected bundle.css is not tree-shaken ([#13332](https://github.com/sanity-io/sanity/issues/13332)) ([7598190](https://github.com/sanity-io/sanity/commit/7598190c4c845ac91098ac328aaaa6772bccb3c1))
+* **core:** skip studio manifest upload without deployStudio grant ([#13294](https://github.com/sanity-io/sanity/issues/13294)) ([9a63625](https://github.com/sanity-io/sanity/commit/9a636257fb5acce380060a789190c3c14c73d6e7))
+* **deps:** update dependency @sanity/cli to ^7.4.1 ([#13353](https://github.com/sanity-io/sanity/issues/13353)) ([f6a51e6](https://github.com/sanity-io/sanity/commit/f6a51e6bcd06953e74eea8f7d3e00f8324e9ba36))
+* **deps:** update dependency @sanity/cli to ^7.4.2 ([#13374](https://github.com/sanity-io/sanity/issues/13374)) ([83b59b6](https://github.com/sanity-io/sanity/commit/83b59b611a43c4e8549d775f85b9c923eeeccd24))
+* **deps:** update dependency groq-js to ^1.30.3 ([#13354](https://github.com/sanity-io/sanity/issues/13354)) ([49db0b0](https://github.com/sanity-io/sanity/commit/49db0b0d4c3e499040d8eb0154ec7cb6ab350ae5))
+* **deps:** update dependency motion to ^12.42.0 ([#13356](https://github.com/sanity-io/sanity/issues/13356)) ([98e30ca](https://github.com/sanity-io/sanity/commit/98e30ca9926c30dbc898ee3b255768bdcbe24dfb))
+* **deps:** update dependency xstate to ^5.32.2 ([#13355](https://github.com/sanity-io/sanity/issues/13355)) ([528e635](https://github.com/sanity-io/sanity/commit/528e635c316dbee89166bc3e4732d0d7fd1144a1))
+* **deps:** update dev-non-major ([#13305](https://github.com/sanity-io/sanity/issues/13305)) ([ffe7c30](https://github.com/sanity-io/sanity/commit/ffe7c309ae1c92bb56090f170fce1f03719afe03))
+* **deps:** update playwright monorepo to v1.61.1 ([#13364](https://github.com/sanity-io/sanity/issues/13364)) ([f55971f](https://github.com/sanity-io/sanity/commit/f55971fd8ab244d4de78079a748355ee176b364a))
+* **deps:** update portabletext ([#13306](https://github.com/sanity-io/sanity/issues/13306)) ([15f519a](https://github.com/sanity-io/sanity/commit/15f519a6cf334ef1a7fde177b12a64db1b04d821))
+* **deps:** update portabletext ([#13357](https://github.com/sanity-io/sanity/issues/13357)) ([2963186](https://github.com/sanity-io/sanity/commit/296318617b329c6a0b34c4a7c7f8b022f48ac81c))
+* enable react compiler on `<Resizer>` component ([#13310](https://github.com/sanity-io/sanity/issues/13310)) ([c3fc74b](https://github.com/sanity-io/sanity/commit/c3fc74b3c388847aed985efaa3995d612f180545))
+* **form:** clear validation markers when viewing a historical revision ([#13245](https://github.com/sanity-io/sanity/issues/13245)) ([d882e8c](https://github.com/sanity-io/sanity/commit/d882e8cfdd31cb796d8b1be1cb1b962b443e3e7f))
+* **form:** detect multi-block PT selection by enclosing block, not `path[0]` ([115d396](https://github.com/sanity-io/sanity/commit/115d396c8dcd88c744378f9a5215eb3dc725aa83))
+* prevent pnpm warnings polluting list packages output ([94cad37](https://github.com/sanity-io/sanity/commit/94cad375666feca1b480d8a4254ede2c7e8256cd))
+* **release-notes:** handle breaking-change commit headers ([#13055](https://github.com/sanity-io/sanity/issues/13055)) ([bcefeff](https://github.com/sanity-io/sanity/commit/bcefefffbe53ebe0fdeadc2a266e9ff6df3ca9be))
+* **releases:** allow scrolling in description field when content exceeds max height ([#13277](https://github.com/sanity-io/sanity/issues/13277)) ([6e3e816](https://github.com/sanity-io/sanity/commit/6e3e8165fccb32fa931e23708bb7887a1068f3a1))
+* **releases:** preview the draft in the discard draft dialog ([#13251](https://github.com/sanity-io/sanity/issues/13251)) ([539addc](https://github.com/sanity-io/sanity/commit/539addc0ebcd18bc92501ec1df94511a450cdc87))
+* **releases:** truncate document type column with tooltip on overflow ([#13335](https://github.com/sanity-io/sanity/issues/13335)) ([c1fbdd2](https://github.com/sanity-io/sanity/commit/c1fbdd2560504335c05d449d57f719547c2bc0a9))
+* **sanity:** condense and batch version observer requests ([d98e4a2](https://github.com/sanity-io/sanity/commit/d98e4a24e0195c5b78128939a7851ea3c02fb545))
+* **studio:** handle request errors in non-critical fetch paths ([#13345](https://github.com/sanity-io/sanity/issues/13345)) ([6ac5756](https://github.com/sanity-io/sanity/commit/6ac5756fe84fbf59c9927974f14c0305fef9240a))
 ## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
 
 ### Features

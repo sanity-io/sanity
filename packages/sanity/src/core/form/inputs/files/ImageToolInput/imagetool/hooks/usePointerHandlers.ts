@@ -63,6 +63,7 @@ export function usePointerHandlers({
       initialCropRef.current = {...(value.crop || DEFAULT_CROP)}
       initialHotspotRef.current = {...(value.hotspot || DEFAULT_HOTSPOT)}
 
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       const element = e.currentTarget as SVGElement
       const handle = element.dataset.handle
 

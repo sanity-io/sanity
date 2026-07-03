@@ -146,6 +146,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
     return {_id}
   }, [value])
 
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   const loadableReferenceInfo = useReferenceInfo(refDoc as FIXME, getReferenceInfoMemo)
 
   const [autocompletePopoverReferenceElement, setAutocompletePopoverReferenceElement] =

@@ -1,6 +1,6 @@
 /* oxlint-disable no-restricted-imports */
 import {MenuGroup as UIMenuGroup, type MenuGroupProps as UIMenuGroupProps} from '@sanity/ui'
-import {type HTMLProps} from 'react'
+import {type ComponentProps} from 'react'
 
 import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 
@@ -14,7 +14,7 @@ export type MenuGroupProps = Pick<UIMenuGroupProps, 'icon' | 'popover' | 'text' 
  */
 export const MenuGroup = (
   props: MenuGroupProps &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'tabIndex' | 'popover'> & {
+    Omit<ComponentProps<'button'>, 'as' | 'height' | 'ref' | 'tabIndex' | 'popover'> & {
       tooltipProps?: TooltipProps | null
     },
 ) => {

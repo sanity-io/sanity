@@ -79,7 +79,7 @@ export function ReleaseForm(props: {
     [handleOnChangeAndStorage, value],
   )
 
-  const handleReleaseTypeChange = useCallback<MouseEventHandler<HTMLDivElement>>(
+  const handleReleaseTypeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     (event) => {
       const pickedReleaseType = event.currentTarget.dataset.value
 

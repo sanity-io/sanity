@@ -62,6 +62,7 @@ export function CrossDatasetReferencePreview(props: {
         ) : (
           <img
             src={createImageUrlBuilder({dataset, projectId})
+              // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
               .image(previewMedia as FIXME)
               .withOptions(dimensions)
               .url()}

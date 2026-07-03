@@ -108,11 +108,9 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
           <BoundaryElementProvider element={boundaryElement}>
             <DiffViewPaneLayout
               ref={setBoundaryElement}
-              style={
-                {
-                  '--grid-area': `${role}-document`,
-                } as CSSProperties
-              }
+              style={{
+                '--grid-area': `${role}-document`,
+              }}
               borderLeft={role === 'next'}
             >
               <Scroller

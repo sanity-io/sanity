@@ -345,6 +345,7 @@ export function ArrayOfPrimitivesField(props: {
     return {
       level: member.field.level,
       members: member.field.members,
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       value: member.field.value as any,
       compareValue: member.field.compareValue,
       readOnly: member.field.readOnly,

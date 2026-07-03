@@ -26,6 +26,7 @@ import {
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
+  isDocumentInSelectedVariant,
   isGoingToUnpublish,
   isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
@@ -40,6 +41,7 @@ import {
   useDocumentDivergences,
   useDocumentForm,
   useDocumentIdStack,
+  useDocumentVersions,
   usePerspective,
   useSchema,
   useSource,
@@ -128,12 +130,9 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
   const perspective = usePerspective()
 
-  const {
-    advancedVersionControl: {enabled: advancedVersionControlEnabled},
-    document: {
-      drafts: {enabled: isDraftModelEnabled},
-    },
-  } = useWorkspace()
+  const workspace = useWorkspace()
+  const advancedVersionControlEnabled = workspace.advancedVersionControl.enabled
+  const isDraftModelEnabled = workspace.document.drafts.enabled
 
   const enhancedObjectDialogEnabled = true
 
@@ -175,6 +174,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive] = useState(false)
   const {lastRevisionDocument} = useDeletedDocumentLastRevision()
 
   /**
@@ -212,6 +212,18 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
+  const documentVersions = useDocumentVersions({documentId})
+
+  // When a variant is selected but no variant-scoped version exists for the current bundle, the
+  // form must be read-only (the not-in-variant banner offers to create it).
+  const isInSelectedVariant = perspective.selectedVariant
+    ? isDocumentInSelectedVariant({
+        selectedVariant: perspective.selectedVariant,
+        bundle: perspective.bundle,
+        documentVersions: documentVersions.versions,
+      })
+    : true
+
   const getIsReadOnly = useCallback(
     (editState: EditStateFor): boolean => {
       const isDeleted = getIsDeleted(editState)
@@ -223,10 +235,16 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       )
       const isPaused = isPausedCardinalityOneRelease(currentRelease)
 
+      // Temporary disable read-only for variant documents
+      // Variant documents cannot be edited yet in the studio. Coming soon.
+      if (perspective.selectedVariant) {
+        return true
+      }
       return (
         seeingHistoryDocument ||
         isDeleting ||
         isDeleted ||
+        !isInSelectedVariant ||
         (!isPaused &&
           !isPerspectiveWriteable({
             selectedPerspective: perspective.selectedPerspective,
@@ -241,9 +259,11 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isDraftModelEnabled,
       params.rev,
       perspective.selectedPerspective,
+      isInSelectedVariant,
       schemaType,
       releases,
       selectedReleaseId,
+      perspective.selectedVariant,
     ],
   )
 
@@ -272,6 +292,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     upstreamEditState,
     hasUpstreamVersion,
     connectionState,
+    syncState,
     focusPath,
     onChange,
     validation,
@@ -521,6 +542,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         collapsedPaths,
         compareValue,
         connectionState,
+        syncState,
         displayed: currentDisplayed,
         documentId,
         documentIdRaw,
@@ -562,6 +584,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         setTimelineRange,
         setIsDeleting,
         isDeleting,
+        isDocumentGroupInventoryActive,
+        setIsDocumentGroupInventoryActive,
         isDeleted,
         timelineError,
         timelineStore,
@@ -586,6 +610,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       collapsedPaths,
       compareValue,
       connectionState,
+      syncState,
       currentDisplayed,
       documentId,
       documentIdRaw,
@@ -626,6 +651,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       permissions,
       setTimelineRange,
       isDeleting,
+      isDocumentGroupInventoryActive,
       isDeleted,
       timelineError,
       timelineStore,

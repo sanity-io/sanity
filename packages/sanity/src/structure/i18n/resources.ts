@@ -232,6 +232,20 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text content for the unpublished document banner letting the user know that the current published version is being shown */
   'banners.unpublished-release-banner.text-with-published':
     'Showing the current <strong>published</strong> version:',
+  /** The text that appears for the action button to add the current document to the selected variant */
+  'banners.variant.action.add-to-variant': 'Add to variant',
+  /** Toast description in case an error occurs when adding a document to a variant */
+  'banners.variant.error.description':
+    'An error occurred when adding document to the variant: {{message}}',
+  /** Toast title in case an error occurs when adding a document to a variant */
+  'banners.variant.error.title': 'Error adding document to variant',
+  /** The text for the banner that appears when a document is not in the selected variant */
+  'banners.variant.not-in-variant': 'Not in the <VariantBadge>{{title}}</VariantBadge> variant.',
+  /** Description of toast that will appear while the document is added to the variant */
+  'banners.variant.waiting.description':
+    'Please hold tight while the document is added to the variant. It should not take longer than a few seconds.',
+  /** Title of toast that will appear while the document is added to the variant */
+  'banners.variant.waiting.title': 'Adding document to variant…',
   /** Browser/tab title when creating a new document of a given type */
   'browser-document-title.new-document': 'New {{schemaType}}',
   /** Browser/tab title when editing a document where the title cannot be resolved from preview configuration */
@@ -420,6 +434,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text shown if a document's title via a preview value cannot be determined due to an unknown schema type */
   'doc-title.unknown-schema-type.text': 'Unknown schema type: {{schemaType}}',
 
+  /** Hint shown to help guide users to the new document group inventory */
+  'document-group-inventory.onboarding-hint': 'Where did the version buttons go?',
+
   /** Tooltip text shown for the close button of the document inspector */
   'document-inspector.close-button.tooltip': 'Close',
   /** The title shown in the dialog header, when inspecting a valid document */
@@ -446,6 +463,21 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Please hold tight while the document is synced. This usually happens right after the document has been published, and it should not take more than a few seconds',
   /** The title of the sync lock toast on the form view */
   'document-view.form-view.sync-lock-toast.title': 'Syncing document…',
+  /** Description of the toast shown when recent edits haven't synced for a while (still retrying) */
+  'document-view.form-view.sync-pending.description':
+    "We'll keep trying. Your changes are kept in your browser in the meantime.",
+  /** Title of the toast shown when recent edits haven't synced for a while (still retrying) */
+  'document-view.form-view.sync-pending.title': "Your changes aren't saving",
+  /** Description of the toast shown when the connection is back and buffered edits are being submitted */
+  'document-view.form-view.sync-recovering.description':
+    'Editing resumes as soon as your changes are saved.',
+  /** Title of the toast shown when the connection is back and buffered edits are being submitted */
+  'document-view.form-view.sync-recovering.title': 'Saving your changes…',
+  /** Description of the toast shown when edits have been unsynced long enough that editing is locked */
+  'document-view.form-view.sync-stalled.description':
+    'Editing is paused until they save. Your changes are kept in your browser, so keep this tab open while we keep trying.',
+  /** Title of the toast shown when edits have been unsynced long enough that editing is locked */
+  'document-view.form-view.sync-stalled.title': "Your changes still aren't saving",
 
   /** The description for the document favorite action */
   'document.favorites.add-to-favorites': 'Add to favorites',

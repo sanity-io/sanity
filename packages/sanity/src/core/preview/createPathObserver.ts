@@ -82,6 +82,7 @@ function observePaths(
             ...createEmpty(nextHeads),
             ...(isReference(value) ? {...value, ...refApiConfig} : value),
             ...snapshot,
+            // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
           } as Previewable,
           paths,
           observeFields,

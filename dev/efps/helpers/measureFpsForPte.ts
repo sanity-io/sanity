@@ -3,6 +3,7 @@ import {type Page} from 'playwright'
 import {type EfpsResult} from '../types'
 import {aggregateLatencies} from './aggregateLatencies'
 import {measureBlockingTime} from './measureBlockingTime'
+import {setUpMarkers, typeCharacterReliably} from './typeCharacterReliably'
 
 interface MeasureFpsForPteOptions {
   fieldName: string
@@ -74,6 +75,14 @@ export async function measureFpsForPte({
       }[]
     >,
   )
+  // This evaluate runs until the field blurs and is only awaited later. If the
+  // context is torn down first — the A/B harness closes both browsers once one
+  // side settles — this promise would reject with no handler attached, an
+  // *unhandled rejection* that crashes the process and bypasses retries.
+  // Swallow that here so a failing run stays catchable.
+  const safeRendersPromise = rendersPromise.catch(
+    (): {value: string; timestamp: number; textContentProcessingTime: number}[] => [],
+  )
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const inputEvents: {character: string; timestamp: number}[] = []
@@ -81,25 +90,38 @@ export async function measureFpsForPte({
   const startingMarker = '___START___|'
   const endingMarker = '___END___'
 
-  await contentEditable.pressSequentially(endingMarker)
-  await new Promise((resolve) => setTimeout(resolve, 500))
-  for (let i = 0; i < endingMarker.length; i++) {
-    await contentEditable.press('ArrowLeft')
-  }
-  await contentEditable.pressSequentially(startingMarker)
+  await setUpMarkers({
+    page,
+    input: contentEditable,
+    startingMarker,
+    endingMarker,
+    getValue: async () => (await contentEditable.textContent()) ?? '',
+    timeout,
+  })
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const getBlockingTime = measureBlockingTime(page)
   for (const character of characters) {
-    inputEvents.push({character, timestamp: Date.now()})
-    await contentEditable.pressSequentially(character)
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    // Type the character and confirm it registered before moving on, retrying
+    // if it was swallowed by a transient read-only flip. The returned timestamp
+    // is the moment the landing keystroke was dispatched, so a retried
+    // character's latency isn't inflated. See `typeCharacterReliably`.
+    const timestamp = await typeCharacterReliably({
+      page,
+      input: contentEditable,
+      character,
+      startingMarker,
+      endingMarker,
+      getValue: async () => (await contentEditable.textContent()) ?? '',
+      timeout,
+    })
+    inputEvents.push({character, timestamp})
   }
 
   await contentEditable.blur()
 
   const blockingTime = await getBlockingTime()
-  const renderEvents = await rendersPromise
+  const renderEvents = await safeRendersPromise
 
   const latencies = inputEvents.map((inputEvent) => {
     const matchingEvent = renderEvents.find(({value}) => {

@@ -47,7 +47,7 @@ const CanvasPopoverContent = ({
     : t('canvas.banner.editable.popover-description')
 
   return (
-    <Card radius={3} overflow={'hidden'} width={0} ref={ref}>
+    <Card radius={3} overflow={'hidden'} ref={ref}>
       <Container width={0}>
         <Image src={CANVAS_IMAGE_URL} alt={'Canvas'} />
         <Flex paddingX={4} paddingBottom={4} paddingTop={3} direction={'column'}>
@@ -66,7 +66,7 @@ const CanvasPopoverContent = ({
             <Text size={1}>{popoverDescription}</Text>
           </Box>
         </Flex>
-        <Flex width="full" gap={3} justify="flex-end" paddingX={4} paddingBottom={4}>
+        <Flex gap={3} justify="flex-end" paddingX={4} paddingBottom={4}>
           <Button
             mode="bleed"
             text={t('canvas.banner.popover-button-text')}

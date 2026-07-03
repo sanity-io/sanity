@@ -110,6 +110,7 @@ export async function runArchive(opts: RunArchiveOptions): Promise<CliResult> {
     return {stdout, stderr, exitCode: 0}
   }
 
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   const miriadEnv = resolveMiriadEnv(env as MiriadEnvSource)
   const createMiriadClient =
     opts.createMiriadClient ?? ((clientOpts) => new MiriadRestClient(clientOpts))
@@ -137,6 +138,7 @@ async function main(): Promise<void> {
   try {
     const result = await runArchive({
       argv: process.argv.slice(2),
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       env: process.env as MiriadEnvSource,
       loadEnv: loadLocalEnv,
     })

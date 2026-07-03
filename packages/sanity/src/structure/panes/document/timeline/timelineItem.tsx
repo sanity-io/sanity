@@ -131,7 +131,7 @@ export function TimelineItem({
   }, [timestamp, dateFormat])
 
   const handleClick = useCallback(
-    (evt: MouseEvent<HTMLDivElement>) => {
+    (evt: MouseEvent<HTMLButtonElement>) => {
       evt.preventDefault()
       evt.stopPropagation()
 

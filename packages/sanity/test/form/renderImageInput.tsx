@@ -66,6 +66,7 @@ export async function renderImageInput(options: {
       isUploading: false,
       observeAsset,
       resolveUploader,
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       schemaType: schemaType as ImageSchemaType,
       value: value as Record<string, any>,
     }

@@ -2,7 +2,7 @@ import {Box, Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns/isValid'
 import get from 'lodash-es/get.js'
-import {type CSSProperties, Fragment, type HTMLProps, type RefAttributes, useMemo} from 'react'
+import {type CSSProperties, type ElementType, Fragment, useMemo} from 'react'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {TableEmptyState} from './TableEmptyState'
@@ -15,11 +15,7 @@ type RowDatum<TableData, AdditionalRowTableData> = (AdditionalRowTableData exten
   ? TableData
   : TableData & AdditionalRowTableData) & {isLoading?: boolean}
 
-export type TableRowProps = Omit<
-  CardProps & Omit<HTMLProps<HTMLDivElement>, 'height' | 'as'>,
-  'ref'
-> &
-  RefAttributes<HTMLDivElement>
+export type TableRowProps = CardProps<ElementType>
 
 type VirtualDatum = {
   virtualRow: VirtualItem

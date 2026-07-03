@@ -135,6 +135,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Insert asset error */
   'asset-source.dialog.insert-asset-error':
     'Error inserting asset. See the console for more information.',
+  /** Toast title shown when the list of assets failed to load */
+  'asset-source.dialog.load-error': 'Failed to load assets',
   /** Select asset dialog load more items */
   'asset-source.dialog.load-more': 'Load more',
   /** Text shown when selecting a file but there's no files to select from
@@ -616,6 +618,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-store.slow-commit.description': 'Your changes are still being saved.',
   /** Toast title shown when saving changes is taking longer than expected */
   'document-store.slow-commit.title': 'Saving is taking longer than expected',
+
+  /** Toast title shown when a document's initial value could not be resolved */
+  'document.initial-value.error.title': 'Could not resolve initial value',
+  /**
+   * Toast description shown when a document's initial value could not be
+   * resolved. Includes the underlying error message.
+   */
+  'document.initial-value.error.description':
+    'The document opened with an empty value. {{errorMessage}}',
 
   /** Label to indicate that a document type was not found */
   'document.type.not-found': 'Document type "{{type}}" not found',
@@ -1399,6 +1410,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The title for the insufficient permissions message component */
   'insufficient-permissions-message.title': 'Insufficient permissions',
 
+  /** Body of the logged-out banner shown above the login form for an unknown reason */
+  'login.logged-out.generic': 'Your session is no longer valid. Please sign in again.',
+  /** Body of the logged-out banner shown above the login form when the session expired */
+  'login.logged-out.session-expired': 'Your session expired. Please sign in again.',
+  /** Title of the banner shown above the login form after the studio logs the user out */
+  'login.logged-out.title': "You've been logged out",
+
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 
@@ -1521,7 +1539,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.view-scheduled-drafts': 'View scheduled drafts',
   /** Label for banner when release is scheduled */
   'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
+
+  /** Label for button to show other variants in the document perspective list */
+  'release.chip.button.other-variants_one': '+{{count}} variant',
+  /** Label for button to show other variants in the document perspective list */
+  'release.chip.button.other-variants_other': '+{{count}} variants',
+
+  /** Label for button to show other versions in the document perspective list*/
   'release.chip.button.other-versions_one': '+{{count}} version',
+  /** Label for button to show other versions in the document perspective list */
   'release.chip.button.other-versions_other': '+{{count}} versions',
   /** Label for Draft chip in document header */
   'release.chip.draft': 'Draft',
@@ -1544,6 +1570,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.no-edits': 'No edits',
   /** Label for tooltip in chip when document isn't published */
   'release.chip.tooltip.not-published': 'Not published',
+  'release.chip.tooltip.other-variants_one': 'One variant',
+  'release.chip.tooltip.other-variants_other': '{{count}} variants',
+
   'release.chip.tooltip.other-versions_one': 'One additional version outside of releases',
   'release.chip.tooltip.other-versions_other': '{{count}} additional versions outside of releases',
   /** Label for tooltip in chip with the published date */

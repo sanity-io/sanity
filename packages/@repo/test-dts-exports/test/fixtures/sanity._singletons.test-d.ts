@@ -23,6 +23,8 @@ import type {
   CommentsOnboardingContext,
   CommentsSelectedPathContext,
   CommentsUpsellContext,
+  ConfigErrorContext,
+  ConfigErrorValue,
   CopyPasteContext,
   DialogStackContext,
   DialogStackContextValue,
@@ -62,6 +64,8 @@ import type {
   LiveUserApplicationContextValue,
   LocaleContext,
   LocaleContextValue,
+  LoggedOutReason,
+  LoggedOutReasonContext,
   MediaLibraryIdsContext,
   MentionUserContext,
   NavbarContext,
@@ -119,6 +123,7 @@ import type {
   SourceContext,
   StructureToolContext,
   StudioAnnouncementContext,
+  StudioErrorHandlerContext,
   TableContext,
   TasksContext,
   TasksEnabledContext,
@@ -196,6 +201,12 @@ describe('sanity/_singletons', () => {
   })
   test('CommentsUpsellContext', () => {
     expectTypeOf<typeof CommentsUpsellContext>().not.toBeNever()
+  })
+  test('ConfigErrorContext', () => {
+    expectTypeOf<typeof ConfigErrorContext>().not.toBeNever()
+  })
+  test('ConfigErrorValue', () => {
+    expectTypeOf<ConfigErrorValue>().toBeObject()
   })
   test('CopyPasteContext', () => {
     expectTypeOf<typeof CopyPasteContext>().not.toBeNever()
@@ -313,6 +324,12 @@ describe('sanity/_singletons', () => {
   })
   test('LocaleContextValue', () => {
     expectTypeOf<LocaleContextValue>().toBeObject()
+  })
+  test('LoggedOutReason', () => {
+    expectTypeOf<LoggedOutReason>().not.toBeNever()
+  })
+  test('LoggedOutReasonContext', () => {
+    expectTypeOf<typeof LoggedOutReasonContext>().not.toBeNever()
   })
   test('MediaLibraryIdsContext', () => {
     expectTypeOf<typeof MediaLibraryIdsContext>().not.toBeNever()
@@ -484,6 +501,9 @@ describe('sanity/_singletons', () => {
   })
   test('StudioAnnouncementContext', () => {
     expectTypeOf<typeof StudioAnnouncementContext>().not.toBeNever()
+  })
+  test('StudioErrorHandlerContext', () => {
+    expectTypeOf<typeof StudioErrorHandlerContext>().not.toBeNever()
   })
   test('TableContext', () => {
     expectTypeOf<typeof TableContext>().not.toBeNever()

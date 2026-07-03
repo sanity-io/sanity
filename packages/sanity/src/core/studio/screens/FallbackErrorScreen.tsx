@@ -4,10 +4,19 @@ import {styled} from 'styled-components'
 
 import {ErrorActions} from '../../components'
 import {isDev, isProd} from '../../environment'
+import {isClientRequestError} from '../requestErrors/classify'
 
 const View = styled(Box)`
   align-items: center;
 `
+
+const TIP_SNIPPET = `const {attempt, handle} = useStudioErrorHandler()
+
+// retryable read — the dialog offers "Try again"
+const data = await attempt(() => client.fetch(query), {retryable: true})
+
+// or fire-and-surface in a .catch
+client.create(doc).catch(handle)`
 
 export function FallbackErrorScreen(props: {
   error: Error
@@ -18,6 +27,11 @@ export function FallbackErrorScreen(props: {
   const {error, eventId, heading = 'An error occurred', onReset} = props
   const message = error?.message
   const stack = typeof error?.stack === 'string' && error?.stack
+
+  // Dev-only nudge: an uncaught request error reached the boundary, which
+  // means it wasn't handled locally or delegated to the studio. Point the
+  // author at the opt-in so transient failures stop crashing the studio.
+  const showRequestErrorTip = isDev && isClientRequestError(error)
 
   return (
     <Card
@@ -51,6 +65,26 @@ export function FallbackErrorScreen(props: {
                     )}
                     {stack && <Code size={1}>{stack}</Code>}
                     {eventId && <Code size={1}>Event ID: {eventId}</Code>}
+                  </Stack>
+                </Card>
+              )}
+              {showRequestErrorTip && (
+                <Card border radius={2} padding={4} tone="caution">
+                  <Stack space={3}>
+                    <Text size={1} weight="medium">
+                      Developer tip
+                    </Text>
+                    <Text size={1} muted>
+                      Request errors that the Studio can recover from (network failures, 5xx, 429,
+                      session expiry) shouldn&apos;t reach this screen. Handle the error where you
+                      issue the request, or delegate it to the Studio&apos;s built-in error UI:
+                    </Text>
+                    <Card border radius={1} overflow="auto" padding={3} tone="transparent">
+                      <Code size={1}>{TIP_SNIPPET}</Code>
+                    </Card>
+                    <Text size={1} muted>
+                      This tip is only shown in development.
+                    </Text>
                   </Stack>
                 </Card>
               )}

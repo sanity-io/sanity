@@ -239,6 +239,7 @@ export class SquashingBuffer {
 
     nextOps.push(...this.staged)
     if (nextOps.length > 0) {
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       this.PRESTAGE = new Mutation({mutations: nextOps}).apply(this.PRESTAGE) as Doc
       this.staged = []
       this.setOperations = {}
@@ -268,6 +269,7 @@ export class SquashingBuffer {
       // @todo was this supposed to be `this.out.length > 0`?
       // surely this is always `true`?
       if (this.out) {
+        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
         this.PRESTAGE = new Mutation({mutations: this.out}).apply(this.BASIS) as Doc
       } else {
         this.PRESTAGE = this.BASIS

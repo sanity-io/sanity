@@ -19,6 +19,7 @@ import {isGetOrgIdEndpoint, isListenEndpoint} from './routes'
 import {
   dropMutations,
   duplicateMutations,
+  expiredToken,
   randomLatency,
   sendReset,
   shuffleEventDelivery,
@@ -59,6 +60,11 @@ Options:
   --reset-probability <0..1>  probability a reset is sent instead of a mutation
                               (requires --sse-faults; default: 0)
   --org-401                   make the get-org-id endpoint return 401
+  --expire-token <seconds>    after <seconds>, answer every API request with the
+                              API's expired-session 401 (without forwarding
+                              upstream), simulating a token that expires
+                              mid-session. Use 0 to expire immediately, e.g.
+                              --expire-token 30 or --expire-token 0
   -h, --help                  show this help
 
 Environment:
@@ -86,6 +92,7 @@ function parseFlags() {
         'drop-probability': {type: 'string', default: '0'},
         'reset-probability': {type: 'string', default: '0'},
         'org-401': {type: 'boolean', default: false},
+        'expire-token': {type: 'string'},
         'help': {type: 'boolean', short: 'h', default: false},
       },
     }).values
@@ -175,6 +182,10 @@ const ENABLE_SSE_FAULTS = flags['sse-faults']
 const DROPPED_MUTATION_PROBABILITY = probabilityFlag('drop-probability', flags['drop-probability'])
 const RESET_PROBABILITY = probabilityFlag('reset-probability', flags['reset-probability'])
 const FORCE_ORG_401 = flags['org-401']
+const EXPIRE_TOKEN_AFTER_MS =
+  flags['expire-token'] === undefined
+    ? undefined
+    : intFlag('expire-token', flags['expire-token']) * 1000
 const SANITY_TOKEN = process.env.SANITY_TOKEN
 
 if (!SANITY_TOKEN) {
@@ -402,10 +413,31 @@ const flapper = FLAP
 // so a faulted request returns its 5xx immediately rather than after the delay.
 const faultRequests = intermittentServiceErrors(ERROR_PROBABILITY)
 
-// Network-level scenarios applied to every handler: --latency delays each
+// Session-expiry deadline: requests after this wall-clock time get the 401.
+// Armed at startup; a 0s delay means "already past", i.e. expire now. Re-armed
+// whenever the studio re-authenticates (a `/auth/fetch` token exchange), so you
+// can log back in and watch the simulated session lapse again — see below.
+let sessionExpiresAt =
+  EXPIRE_TOKEN_AFTER_MS === undefined ? undefined : Date.now() + EXPIRE_TOKEN_AFTER_MS
+const isSessionExpired = () => sessionExpiresAt !== undefined && Date.now() >= sessionExpiresAt
+const rearmSessionExpiry = () => {
+  if (EXPIRE_TOKEN_AFTER_MS !== undefined) {
+    sessionExpiresAt = Date.now() + EXPIRE_TOKEN_AFTER_MS
+  }
+}
+
+// Network-level scenarios applied to every handler: --expire-token replaces the
+// response with the API's expired-session 401 once the deadline passes,
+// --error-probability faults requests with a random 5xx, --latency delays each
 // request, --flap sits outside it so offline resets stay immediate.
 const withNetworkScenarios = (handler: ProxyHandler): ProxyHandler => {
-  const faulted = faultRequests(handler)
+  // An expired session would fail at the API for any request, so this wraps the
+  // real handler rather than being scoped to a route.
+  const maybeExpired =
+    EXPIRE_TOKEN_AFTER_MS === undefined
+      ? handler
+      : expiredToken(handler, isSessionExpired, {onReauthenticated: rearmSessionExpiry})
+  const faulted = faultRequests(maybeExpired)
   const delayed = LATENCY ? withLatency(faulted, LATENCY) : faulted
   return flapper ? flapper.wrap(delayed) : delayed
 }
@@ -469,5 +501,13 @@ if (LATENCY) {
 if (ERROR_PROBABILITY > 0) {
   console.info(
     `Simulated incident: ${Math.round(ERROR_PROBABILITY * 100)}% of requests fail with a random 5xx (500/502/503/504)`,
+  )
+}
+
+if (EXPIRE_TOKEN_AFTER_MS !== undefined) {
+  console.info(
+    EXPIRE_TOKEN_AFTER_MS === 0
+      ? 'Session expiry: every API request returns the expired-session 401'
+      : `Session expiry: API requests return the expired-session 401 after ${EXPIRE_TOKEN_AFTER_MS / 1000}s`,
   )
 }

@@ -21,7 +21,7 @@ interface PopoverContentProps {
 
 export function PopoverContent({content, handleClose, handleOpenNext}: PopoverContentProps) {
   return (
-    <Card radius={3} overflow={'hidden'} width={0}>
+    <Card radius={3} overflow={'hidden'}>
       <Container width={0}>
         {content.image && (
           <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
@@ -34,7 +34,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
             <UpsellDescriptionSerializer blocks={content.descriptionText} />
           </Box>
         </Flex>
-        <Flex width="full" gap={3} justify="flex-end" padding={3}>
+        <Flex gap={3} justify="flex-end" padding={3}>
           {content.secondaryButton?.text && (
             <Button
               mode="bleed"

@@ -45,7 +45,8 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, states} = props
   const {__internal_tasks, beta} = useSource()
-  const {displayed, editState} = useDocumentPane()
+  const {displayed, editState, isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive} =
+    useDocumentPane()
   const {params} = usePaneRouter()
   const {documentId, documentType} = useDocumentPane()
   const showingRevision = Boolean(params?.rev)
@@ -110,6 +111,8 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
         <DocumentGroupInventoryAction
           documentId={displayed._id}
           portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
+          isDocumentGroupInventoryActive={isDocumentGroupInventoryActive}
+          setIsDocumentGroupInventoryActive={setIsDocumentGroupInventoryActive}
         >
           <DocumentGroupInventory
             documentId={displayed._id}

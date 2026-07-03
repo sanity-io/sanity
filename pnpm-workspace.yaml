@@ -16,19 +16,20 @@ allowBuilds:
   unrs-resolver: false
 
 catalog:
-  '@playwright/test': 1.61.0
+  '@playwright/test': 1.61.1
   '@rolldown/plugin-babel': ^0.2.3
   '@sanity/client': ^7.23.0
   '@sanity/migrate': ^7.0.3
-  '@sanity/pkg-utils': ^10.7.2
+  '@sanity/pkg-utils': ^10.8.1
   '@sanity/telemetry': ^1.1.0
-  '@sanity/ui': ^3.2.0
+  '@sanity/ui': ^3.3.0
   '@types/node': ^24.13.2
   '@types/react': ^19.2.17
   '@types/react-dom': ^19.2.3
   '@types/react-is': ^19.2.0
   '@typescript/native-preview': beta
   '@vanilla-extract/css': ^1.21.0
+  '@vanilla-extract/dynamic': ^2.1.5
   '@vanilla-extract/vite-plugin': ^5.2.3
   '@vitejs/plugin-react': ^6.0.3
   '@vitest/browser-playwright': ^4.1.9
@@ -36,7 +37,7 @@ catalog:
   babel-plugin-styled-components: ^2.3.0
   esbuild-register: ^3.6.0
   jsdom: ^29.1.1
-  playwright: 1.61.0
+  playwright: 1.61.1
   react: ^19.2.7
   react-dom: ^19.2.7
   react-is: ^19.2.7
@@ -83,8 +84,6 @@ minimumReleaseAgeExclude:
   - 'vite'
 
 overrides:
-  # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
-  '@sanity/ui@3': 'catalog:'
   vitest: 'catalog:'
 
 preferWorkspacePackages: true

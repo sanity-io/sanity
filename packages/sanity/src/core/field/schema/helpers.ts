@@ -42,9 +42,11 @@ function resolveArrayMemberType(
   const typeName = resolveTypeName(value)
   const declared = schemaType.of.find((candidate) => candidate.name === typeName)
   if (declared) {
+    // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
     return declared as any
   }
 
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   return (schemaType.of.length === 1 ? schemaType.of[0] : undefined) as any
 }
 

@@ -49,6 +49,7 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
       {...cardProps}
       {...linkProps}
       data-ui="ReferenceLinkCard"
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       ref={ref as unknown as ForwardedRef<HTMLDivElement>}
     />
   )

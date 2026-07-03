@@ -66,6 +66,7 @@ export function GlobalDocumentReferencePreview(props: {
         ) : (
           <img
             src={createImageUrlBuilder(projectDataset)
+              // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
               .image(previewMedia as FIXME)
               .withOptions(dimensions)
               .url()}

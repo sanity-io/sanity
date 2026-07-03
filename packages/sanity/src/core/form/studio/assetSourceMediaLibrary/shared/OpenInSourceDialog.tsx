@@ -90,7 +90,6 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
       width={3}
       footer={
         <Card
-          width="full"
           height="fill"
           padding={3}
           shadow={1}
@@ -99,7 +98,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
             minHeight: '2dvh',
           }}
         >
-          <Flex width="full" gap={3} align="center" justify="space-between">
+          <Flex gap={3} align="center" justify="space-between">
             <Button
               onClick={onSelectNewAsset}
               text={selectNewAssetButtonLabel}

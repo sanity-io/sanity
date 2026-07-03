@@ -86,7 +86,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
 
           return (
             // oxlint-disable-next-line no-array-index-key
-            <Flex key={index} align="center" as="label" muted={disabled}>
+            <Flex key={index} align="center" as="label">
               <Checkbox
                 disabled={disabled}
                 checked={checked}

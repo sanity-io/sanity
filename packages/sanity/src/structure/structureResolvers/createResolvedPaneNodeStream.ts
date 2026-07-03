@@ -255,7 +255,8 @@ function resolvePaneTree({
           nextStream = resolvePaneTree({
             unresolvedPane:
               typeof paneNode.child === 'function'
-                ? (memoBind(paneNode, 'child') as PaneNodeResolver)
+                ? // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
+                  (memoBind(paneNode, 'child') as PaneNodeResolver)
                 : paneNode.child,
             flattenedRouterPanes: rest,
             parent: paneNode,

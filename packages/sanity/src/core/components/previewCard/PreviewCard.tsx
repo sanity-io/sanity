@@ -1,5 +1,12 @@
 import {Card, type CardProps} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps, useContext, useMemo} from 'react'
+import {
+  type ElementType,
+  type ForwardedRef,
+  forwardRef,
+  type HTMLProps,
+  useContext,
+  useMemo,
+} from 'react'
 import {PreviewCardContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
@@ -36,7 +43,7 @@ export function usePreviewCard(): PreviewCardContextValue {
 
 /** @internal */
 export const PreviewCard = forwardRef(function PreviewCard(
-  props: CardProps & Omit<HTMLProps<HTMLDivElement>, 'height'>,
+  props: CardProps<ElementType> & Omit<HTMLProps<HTMLDivElement>, 'height'>,
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {children, selected, as, ...restProps} = props

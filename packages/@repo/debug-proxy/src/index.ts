@@ -25,10 +25,19 @@ export {
   type SSEEvent,
 } from './proxy'
 export {intermittentServiceErrors} from './requestScenarios'
-export {allOf, anyOf, isGetOrgIdEndpoint, isListenEndpoint, urlIncludes} from './routes'
+export {
+  allOf,
+  anyOf,
+  isAuthEndpoint,
+  isGetOrgIdEndpoint,
+  isListenEndpoint,
+  isLogoutEndpoint,
+  urlIncludes,
+} from './routes'
 export {
   dropMutations,
   duplicateMutations,
+  expiredToken,
   randomLatency,
   sendReset,
   shuffleEventDelivery,

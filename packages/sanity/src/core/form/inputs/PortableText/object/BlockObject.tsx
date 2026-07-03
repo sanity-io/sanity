@@ -111,6 +111,8 @@ export function BlockObject(props: BlockObjectProps) {
     setElementRef,
     value,
   } = props
+  // A path deeper than the root array means the block is nested in a container.
+  const nested = relativePath.length > 1
   const {onChange} = useFormCallbacks()
   const {Markers} = useFormBuilder().__internal.components
   const hoveredChange = useHoveredChange()
@@ -172,6 +174,12 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+    if (nested) {
+      // A nested block sits inside a container that owns horizontal spacing
+      // (e.g. a table cell's padding), so the root gutter is dropped.
+      return {paddingX: 0}
+    }
+
     if (isFullscreen && !renderBlockActions) {
       return {paddingX: 5}
     }
@@ -188,7 +196,7 @@ export function BlockObject(props: BlockObjectProps) {
     }
 
     return {paddingX: 3}
-  }, [isFullscreen, renderBlockActions])
+  }, [isFullscreen, renderBlockActions, nested])
 
   const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
   const parentSchemaType = schemaTypes.portableText
@@ -290,7 +298,7 @@ export function BlockObject(props: BlockObjectProps) {
   const setRef = useCallback(
     (elm: HTMLDivElement) => {
       if (memberItem) {
-        setElementRef({key: memberItem.member.key, elementRef: elm})
+        setElementRef({key: memberItem.key, elementRef: elm})
       }
       setDivElement(elm) // update state here so the reference element is available on first render
     },
