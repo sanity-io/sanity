@@ -11,10 +11,9 @@ const mockedActionRequest = vi.fn(() => of({}))
 const client = {
   observable: {
     listen: () => of({type: 'welcome'}).pipe(delay(0)),
+    getDocuments: (ids: string[]) => of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
     action: mockedActionRequest,
   },
-  getDocuments: (ids: string[]) =>
-    Promise.resolve(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
   dataRequest: mockedDataRequest,
   withConfig: vi.fn(function (this: SanityClient) {
     return this

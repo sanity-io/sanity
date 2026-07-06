@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {Subject} from 'rxjs'
+import {of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
@@ -70,8 +70,8 @@ function createMockClient(listenerEvents$: Subject<ListenerEvent>) {
   const client = {
     observable: {
       listen: vi.fn(() => listenerEvents$),
+      getDocuments: vi.fn(() => of([publishedDoc, draftDoc])),
     },
-    getDocuments: vi.fn(() => Promise.resolve([publishedDoc, draftDoc])),
     withConfig: vi.fn(() => client),
   }
   return client as unknown as SanityClient
@@ -254,8 +254,8 @@ describe('getPairListener', () => {
             attemptCount++
             return attemptCount === 1 ? attempt1$ : attempt2$
           }),
+          getDocuments: vi.fn(() => of([publishedDoc, draftDoc])),
         },
-        getDocuments: vi.fn(() => Promise.resolve([publishedDoc, draftDoc])),
         withConfig: vi.fn(function (this: unknown) {
           return this
         }),
@@ -301,8 +301,10 @@ describe('getPairListener', () => {
       const mockClient = {
         observable: {
           listen: vi.fn(() => errorListener$),
+          getDocuments: vi.fn(() => {
+            throw error
+          }),
         },
-        getDocuments: vi.fn(() => Promise.reject(error)),
         withConfig: vi.fn(function (this: unknown) {
           return this
         }),
@@ -361,8 +363,9 @@ describe('getPairListener', () => {
     })
 
     test('mutation events do not trigger snapshot fetch', async () => {
-      const getDocuments = (client as unknown as {getDocuments: ReturnType<typeof vi.fn>})
-        .getDocuments
+      const getDocuments = (
+        client as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}}
+      ).observable.getDocuments
 
       const sub = getPairListener(client, idPair).subscribe({next: vi.fn()})
 
@@ -386,8 +389,9 @@ describe('getPairListener', () => {
     })
 
     test('welcomeback event does NOT trigger snapshot fetch', async () => {
-      const getDocuments = (client as unknown as {getDocuments: ReturnType<typeof vi.fn>})
-        .getDocuments
+      const getDocuments = (
+        client as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}}
+      ).observable.getDocuments
 
       const sub = getPairListener(client, idPair).subscribe({next: vi.fn()})
 
@@ -408,12 +412,13 @@ describe('getPairListener', () => {
 
   describe('snapshot fetch error delegation', () => {
     test('delegates snapshot fetch failures to the error handler and recovers when it re-runs the request', async () => {
-      const getDocuments = (client as unknown as {getDocuments: ReturnType<typeof vi.fn>})
-        .getDocuments
+      const getDocuments = (
+        client as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}}
+      ).observable.getDocuments
       // First attempt fails; the re-run falls back to the default mock and
       // succeeds.
       const serverError = new Error('HTTP 504')
-      getDocuments.mockImplementationOnce(() => Promise.reject(serverError))
+      getDocuments.mockReturnValueOnce(throwError(() => serverError))
 
       // Ad-hoc handler implementing the recovery contract: re-run a failed
       // retryable request and resolve off the successful attempt.

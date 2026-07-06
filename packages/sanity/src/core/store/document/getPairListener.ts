@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
-import {defer, merge, type Observable, of, throwError} from 'rxjs'
+import {defer, lastValueFrom, merge, type Observable, of, throwError} from 'rxjs'
 import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
@@ -277,9 +277,11 @@ export function getPairListener(
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
     const fetchDocuments = () =>
-      client.getDocuments<SanityDocument>(
-        [publishedId, draftId, versionId].filter((id): id is string => typeof id === 'string'),
-        {tag: 'document.pair.fetch'},
+      lastValueFrom(
+        client.observable.getDocuments<SanityDocument>(
+          [publishedId, draftId, versionId].filter((id): id is string => typeof id === 'string'),
+          {tag: 'document.pair.fetch'},
+        ),
       )
 
     // The pair cannot load without these snapshots, and there is no local
