@@ -341,6 +341,57 @@ export default defineConfig([
     subtitle: 'Workspace with a nonexistent dataset',
     basePath: '/nonexistent-dataset',
   },
+  // Reproduction workspaces for https://github.com/sanity-io/sanity/issues/12794
+  // ("Presentation tool writes sanity.previewUrlSecret to wrong dataset in
+  // multi-workspace hosted Studio"). Same projectId, different datasets, both
+  // with the Presentation tool enabled — matches the reported config shape.
+  // The extra `presentation-repro` tool instance below sets an explicit
+  // `previewMode`, so opening it actually resolves a (non-`false`) preview
+  // mode and triggers `create preview secret` — the default `sharedSettings`
+  // presentationTool uses a bare string `previewUrl`, which makes
+  // `resolve-preview-mode.ts` short-circuit to `false` and skip secret
+  // creation entirely.
+  // Locally this is expected to work correctly (see reproduction notes in
+  // dev/test-studio/PRESENTATION_DATASET_REPRO.md); the reported bug only
+  // manifests in the hosted (core-ui) Studio.
+  {
+    ...defaultWorkspace,
+    name: 'presentation-dataset-repro-a',
+    title: 'Presentation dataset repro (A)',
+    subtitle: 'SAPP-3833 / sanity-io/sanity#12794 — dataset "test"',
+    dataset: 'test',
+    basePath: '/presentation-dataset-repro-a',
+    plugins: [
+      ...defaultWorkspace.plugins,
+      presentationTool({
+        name: 'presentation-repro',
+        title: 'Presentation (repro)',
+        previewUrl: {
+          initial: '/preview/index.html',
+          previewMode: {enable: '/preview/index.html'},
+        },
+      }),
+    ],
+  },
+  {
+    ...defaultWorkspace,
+    name: 'presentation-dataset-repro-b',
+    title: 'Presentation dataset repro (B)',
+    subtitle: 'SAPP-3833 / sanity-io/sanity#12794 — dataset "test-us"',
+    dataset: 'test-us',
+    basePath: '/presentation-dataset-repro-b',
+    plugins: [
+      ...defaultWorkspace.plugins,
+      presentationTool({
+        name: 'presentation-repro',
+        title: 'Presentation (repro)',
+        previewUrl: {
+          initial: '/preview/index.html',
+          previewMode: {enable: '/preview/index.html'},
+        },
+      }),
+    ],
+  },
   {
     ...defaultWorkspace,
     name: 'admin-only',
