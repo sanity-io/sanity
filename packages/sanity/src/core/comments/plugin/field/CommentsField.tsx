@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {type PortableTextBlock} from '@sanity/types'
+import {type Path, type PortableTextBlock} from '@sanity/types'
 import {Stack, useBoundaryElement} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
@@ -11,7 +11,7 @@ import {type FieldProps} from '../../../form'
 import {getSchemaTypeTitle} from '../../../schema'
 import {useCurrentUser} from '../../../store'
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
-import {isTextSelectionComment} from '../../helpers'
+import {isTextSelectionComment, parseCommentFieldPath} from '../../helpers'
 import {
   applyCommentsFieldAttr,
   useComments,
@@ -129,8 +129,8 @@ function CommentFieldInner(
   const isSelected = useMemo(() => {
     if (!isCommentsOpen) return false
     if (selectedPath?.origin === 'form' || selectedPath?.origin === 'url') return false
-    return selectedPath?.fieldPath === stringPath
-  }, [isCommentsOpen, selectedPath?.fieldPath, selectedPath?.origin, stringPath])
+    return belongsToField(selectedPath?.fieldPath, props.path)
+  }, [isCommentsOpen, selectedPath?.fieldPath, selectedPath?.origin, props.path])
 
   const isInlineCommentThread = useMemo(() => {
     return comments.data.open
@@ -138,14 +138,16 @@ function CommentFieldInner(
       .some((x) => isTextSelectionComment(x.parentComment))
   }, [comments.data.open, selectedPath?.threadId])
 
-  // Total number of comments for the current field
+  // Total number of comments for the current field, including comments on
+  // blocks nested below it (container-nested and dialog-authored comments
+  // store the block's data path as their `fieldPath`).
   const count = useMemo(() => {
     const commentsCount = comments.data.open
-      .map((c) => (c.fieldPath === stringPath ? c.commentsCount : 0))
+      .map((c) => (belongsToField(c.fieldPath, props.path) ? c.commentsCount : 0))
       .reduce((acc, val) => acc + val, 0)
 
     return commentsCount || 0
-  }, [comments.data.open, stringPath])
+  }, [comments.data.open, props.path])
 
   const hasComments = Boolean(count > 0)
 
@@ -170,22 +172,22 @@ function CommentFieldInner(
       // 3. Open the comments inspector
       onCommentsOpen?.()
 
-      // 4. Find the latest comment thread ID for the current field
-      const scrollToThreadId = comments.data.open.find(
-        (c) => c.fieldPath === PathUtils.toString(props.path),
-      )?.threadId
+      // 4. Find the latest comment thread for the current field
+      const latestThread = comments.data.open.find((c) => belongsToField(c.fieldPath, props.path))
 
       // 5. Set the latest thread ID as the selected thread ID
-      //    and scroll to the it.
-      if (scrollToThreadId) {
-        // handleSetThreadToScrollTo(scrollToThreadId)
+      //    and scroll to the it. The selected path carries the thread's own
+      //    `fieldPath`: the inspector marks a thread selected by comparing
+      //    against the stored path, which for nested threads is deeper than
+      //    this field's path.
+      if (latestThread) {
         setSelectedPath({
-          threadId: scrollToThreadId,
+          threadId: latestThread.threadId,
           origin: 'form',
-          fieldPath: PathUtils.toString(props.path),
+          fieldPath: latestThread.fieldPath,
         })
 
-        scrollToGroup(scrollToThreadId)
+        scrollToGroup(latestThread.threadId)
       }
 
       return
@@ -344,4 +346,12 @@ function CommentFieldInner(
       </AnimatePresence>
     </FieldStack>
   )
+}
+
+/**
+ * Whether a comment's stored `fieldPath` sits at or below the field's path.
+ */
+function belongsToField(fieldPath: string | null | undefined, path: Path): boolean {
+  const commentFieldPath = parseCommentFieldPath(fieldPath)
+  return commentFieldPath ? PathUtils.startsWith(path, commentFieldPath) : false
 }
