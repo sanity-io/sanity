@@ -3,30 +3,21 @@ import {getVersionFromId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {
-  catchError,
-  combineLatest,
-  finalize,
-  map,
-  type Observable,
-  of,
-  shareReplay,
-  startWith,
-  switchMap,
-} from 'rxjs'
+import {catchError, finalize, map, type Observable, of, shareReplay} from 'rxjs'
 
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
 import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
+import {type DocumentSetObserverState} from '../../preview/liveDocumentSet'
 import {useDocumentPreviewStore} from '../../store'
 import {isDraftId} from '../../util'
 import {getPublishedId} from '../../util/draftUtils'
-import {isRecord} from '../../util/isRecord'
 import {createSWR} from '../../util/rxSwr'
 import {type VersionInfoDocumentStub} from '../store/types'
 import {useActiveReleases} from '../store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
 
 export interface DocumentPerspectiveProps {
   documentId: string
@@ -48,7 +39,7 @@ const INITIAL_VALUE: DocumentPerspectiveState = {
 
 // Create a singleton cache for observables
 export const observableCache = new Map<string, Observable<DocumentPerspectiveState>>()
-const swr = createSWR<string[]>({maxSize: 100})
+const swr = createSWR<DocumentSetObserverState<VersionInfoDocumentStub>>({maxSize: 100})
 
 /**
  * Fetches the document versions for a given document
@@ -145,10 +136,10 @@ const temporarilyBuildDocumentSystem = (
 const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system']
 
 /**
- * Retrieves an observable that emits document IDs matching the document versions that exist for a specific id
+ * Retrieves an observable that emits the document versions that exist for a specific id
  *
  * @param options - The options for creating or retrieving the observable.
- * options.documentPreviewStore - The store used to observe document IDs.
+ * options.documentPreviewStore - The store used to observe the document set.
  * options.publishedId - The ID of the published document.
  * options.projectId - The project ID.
  * options.dataset - The dataset name.
@@ -171,60 +162,37 @@ export function getOrCreateDocumentVersionsObservable(options: {
     return cachedObservable
   }
 
-  const newObservable = documentPreviewStore.unstable_observeVersionDocumentIds(publishedId).pipe(
-    swr(cacheKey),
-    map(({value}) => value),
-    switchMap((documentIds): Observable<DocumentPerspectiveState> => {
-      if (documentIds.length === 0) {
-        return of({data: [], versions: [], error: null, loading: false})
-      }
-
-      const loadingState: DocumentPerspectiveState = {
-        data: documentIds,
-        versions: [],
-        error: null,
-        loading: true,
-      }
-
-      return combineLatest(
-        documentIds.map((id) =>
-          documentPreviewStore.observePaths({_id: id}, DOCUMENT_STUB_PATHS).pipe(
-            map((versionInfo) => (isRecord(versionInfo) ? versionInfo : undefined)),
-            map(
-              (versionInfo) =>
-                ({
-                  _id: id,
-                  _rev: versionInfo?._rev ?? '',
-                  _createdAt: versionInfo?._createdAt ?? '',
-                  _updatedAt: versionInfo?._updatedAt ?? '',
-                  [DOCUMENT_SYSTEM_FIELD]: versionInfo?.[DOCUMENT_SYSTEM_FIELD] as DocumentSystem,
-                }) satisfies VersionInfoDocumentStub,
-            ),
-          ),
-        ),
-      ).pipe(
-        map((versions) => ({
-          data: documentIds,
+  const newObservable = documentPreviewStore
+    .unstable_observeDocumentSet<VersionInfoDocumentStub>(
+      `sanity::versionOf("${publishedId}")`,
+      DOCUMENT_STUB_PATHS,
+      {apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion},
+    )
+    .pipe(
+      swr(cacheKey),
+      map(({value}): DocumentPerspectiveState => {
+        // Sort ascending by id so consumers get a stable order
+        const versions = value.documents.toSorted((a, b) => a._id.localeCompare(b._id))
+        return {
+          data: versions.map((version) => version._id),
           versions,
           error: null,
           loading: false,
-        })),
-        startWith(loadingState),
-      )
-    }),
-    catchError((error) => {
-      return of({
-        error,
-        data: [] as string[],
-        versions: [] as VersionInfoDocumentStub[],
-        loading: false,
-      })
-    }),
-    finalize(() => {
-      observableCache.delete(cacheKey)
-    }),
-    shareReplay({refCount: true, bufferSize: 1}),
-  )
+        }
+      }),
+      catchError((error) => {
+        return of({
+          error,
+          data: [] as string[],
+          versions: [] as VersionInfoDocumentStub[],
+          loading: false,
+        })
+      }),
+      finalize(() => {
+        observableCache.delete(cacheKey)
+      }),
+      shareReplay({refCount: true, bufferSize: 1}),
+    )
 
   observableCache.set(cacheKey, newObservable)
   return newObservable
