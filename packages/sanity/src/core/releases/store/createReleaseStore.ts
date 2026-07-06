@@ -22,9 +22,16 @@ import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../preview'
 import {listenQuery} from '../../store'
+import {sortReleases} from '../hooks/utils'
+import {ARCHIVED_RELEASE_STATES} from '../util/const'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
-import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
+import {
+  releasesAreEqual,
+  releasesReducer,
+  type ReleasesReducerAction,
+  type ReleasesReducerState,
+} from './reducer'
 import {type ReleaseStore} from './types'
 
 type ActionWrapper = {action: ReleasesReducerAction}
@@ -148,14 +155,42 @@ export function createReleaseStore(context: {
 
   const errorCount$ = state$.pipe(releaseStoreErrorCount(), shareReplay(1))
 
+  const sortedReleases$ = state$.pipe(releaseStoreSortedReleases(), shareReplay(1))
+
   const getMetadataStateForSlugs$ = createReleaseMetadataAggregator(client)
 
   return {
     state$,
     errorCount$,
+    sortedReleases$,
     getMetadataStateForSlugs$,
     dispatch,
   }
+}
+
+/**
+ * Derives the sorted array of active (non-archived) releases from the reducer state.
+ *
+ * The releases are compared by content (each release's `_rev`), so the emitted array reference is
+ * stable across unrelated state updates (e.g. loading state changes or refetches yielding
+ * identical data), allowing consumers to safely memoize on it.
+ *
+ * @internal
+ */
+export function releaseStoreSortedReleases(): OperatorFunction<
+  ReleasesReducerState,
+  ReleaseDocument[]
+> {
+  return pipe(
+    distinctUntilChanged((previous, next) => releasesAreEqual(previous.releases, next.releases)),
+    map(({releases}) =>
+      sortReleases(
+        Array.from(releases.values()).filter(
+          (release) => !ARCHIVED_RELEASE_STATES.includes(release.state),
+        ),
+      ).reverse(),
+    ),
+  )
 }
 
 /**

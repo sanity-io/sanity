@@ -40,6 +40,12 @@ export interface ReleaseStore {
    * This is determined by the presence of the `error` field in the release document.
    */
   errorCount$: Observable<number>
+  /**
+   * Sorted array of releases, excluding archived releases. Emits a new array only when the
+   * underlying release data changes, keeping the array reference stable across unrelated store
+   * updates so consumers can safely memoize on it.
+   */
+  sortedReleases$: Observable<ReleaseDocument[]>
   getMetadataStateForSlugs$: (slugs: string[]) => Observable<MetadataWrapper>
   dispatch: Dispatch<ReleasesReducerAction>
 }

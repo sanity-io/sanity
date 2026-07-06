@@ -72,7 +72,13 @@ export function releasesReducer(
   }
 }
 
-function releasesAreEqual(
+/**
+ * Compares two release maps by content, using each release's `_rev` as the
+ * change signal.
+ *
+ * @internal
+ */
+export function releasesAreEqual(
   previous: Map<string, ReleaseDocument>,
   next: Map<string, ReleaseDocument>,
 ): boolean {
