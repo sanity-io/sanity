@@ -33,7 +33,15 @@ export async function measureFpsForPte({
   const contentEditable = pteField.locator('[contenteditable="true"]')
   await contentEditable.waitFor({state: 'visible', timeout})
 
-  const rendersPromise = contentEditable.evaluate(
+  // The recorder is attached to the stable field wrapper rather than the
+  // contenteditable itself, and it runs until the harness dispatches the
+  // `__finish` event rather than until blur. Both matter for resilience to a
+  // transient read-only flip mid-run (see `typeCharacterReliably`): a flip
+  // remounts/blurs the editable, which would detach a MutationObserver bound to
+  // it and end a blur-based recording early — leaving no render events for the
+  // characters typed after the flip ("No matching event" failures). `childList`
+  // is also observed so text landing in freshly created DOM nodes isn't missed.
+  const rendersPromise = pteField.evaluate(
     // Had to add this so we can run the tests
     new Function(
       'el',
@@ -53,16 +61,13 @@ export async function measureFpsForPte({
         })
       })
 
-      mutationObserver.observe(el, {subtree: true, characterData: true})
+      mutationObserver.observe(el, {subtree: true, characterData: true, childList: true})
 
       await new Promise((resolve) => {
-        const handler = () => {
-          el.removeEventListener('blur', handler)
-          resolve()
-        }
-
-        el.addEventListener('blur', handler)
+        document.addEventListener('__finish', resolve, {once: true})
       })
+
+      mutationObserver.disconnect()
 
       return updates
     })()
@@ -75,10 +80,10 @@ export async function measureFpsForPte({
       }[]
     >,
   )
-  // This evaluate runs until the field blurs and is only awaited later. If the
-  // context is torn down first — the A/B harness closes both browsers once one
-  // side settles — this promise would reject with no handler attached, an
-  // *unhandled rejection* that crashes the process and bypasses retries.
+  // This evaluate runs until the `__finish` event and is only awaited later.
+  // If the context is torn down first — the A/B harness closes both browsers
+  // once one side settles — this promise would reject with no handler attached,
+  // an *unhandled rejection* that crashes the process and bypasses retries.
   // Swallow that here so a failing run stays catchable.
   const safeRendersPromise = rendersPromise.catch(
     (): {value: string; timestamp: number; textContentProcessingTime: number}[] => [],
@@ -119,6 +124,8 @@ export async function measureFpsForPte({
   }
 
   await contentEditable.blur()
+
+  await page.evaluate(() => window.document.dispatchEvent(new CustomEvent('__finish')))
 
   const blockingTime = await getBlockingTime()
   const renderEvents = await safeRendersPromise

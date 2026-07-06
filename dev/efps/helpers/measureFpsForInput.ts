@@ -63,13 +63,12 @@ export async function measureFpsForInput({
         })
       }
 
+      // End on the explicit __finish signal from the harness rather than on
+      // blur — a transient read-only flip can blur the field mid-run, which
+      // would end the recording early and leave the characters typed after the
+      // flip without matching render events.
       await new Promise((resolve) => {
-        const handler = () => {
-          el.removeEventListener('blur', handler)
-          resolve()
-        }
-
-        el.addEventListener('blur', handler)
+        document.addEventListener('__finish', resolve, {once: true})
       })
 
       return updates
@@ -79,10 +78,10 @@ export async function measureFpsForInput({
       el: HTMLInputElement | HTMLTextAreaElement,
     ) => Promise<{value: string; timestamp: number}[]>,
   )
-  // This evaluate runs until the field blurs and is only awaited later. If the
-  // context is torn down first — the A/B harness closes both browsers once one
-  // side settles — this promise would reject with no handler attached, an
-  // *unhandled rejection* that crashes the process and bypasses retries.
+  // This evaluate runs until the `__finish` event and is only awaited later.
+  // If the context is torn down first — the A/B harness closes both browsers
+  // once one side settles — this promise would reject with no handler attached,
+  // an *unhandled rejection* that crashes the process and bypasses retries.
   // Swallow that here so a failing run stays catchable.
   const safeRendersPromise = rendersPromise.catch((): {value: string; timestamp: number}[] => [])
   await new Promise((resolve) => setTimeout(resolve, 500))
