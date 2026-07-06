@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {firstValueFrom, lastValueFrom} from 'rxjs'
+import {firstValueFrom, from, lastValueFrom} from 'rxjs'
 import {first} from 'rxjs/operators'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -87,10 +87,10 @@ describe('checkDocumentPermission', () => {
     const delegated: unknown[] = []
     const errorHandler: StoreRequestErrorHandler = {
       attempt: (thunk, options) =>
-        thunk().catch((err) => {
+        lastValueFrom(from(thunk())).catch((err) => {
           if (!options?.retryable) throw err
           delegated.push(err)
-          return thunk()
+          return lastValueFrom(from(thunk()))
         }),
     }
 

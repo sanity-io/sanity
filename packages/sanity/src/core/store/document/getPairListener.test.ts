@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {of, Subject, throwError} from 'rxjs'
+import {from, lastValueFrom, of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
@@ -425,10 +425,10 @@ describe('getPairListener', () => {
       const delegated: unknown[] = []
       const errorHandler: StoreRequestErrorHandler = {
         attempt: (thunk, options) =>
-          thunk().catch((err) => {
+          lastValueFrom(from(thunk())).catch((err) => {
             if (!options?.retryable) throw err
             delegated.push(err)
-            return thunk()
+            return lastValueFrom(from(thunk()))
           }),
       }
 
