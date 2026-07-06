@@ -139,8 +139,8 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2(eslint-import-resolver-typescript@4.4.5)(eslint@10.5.0)
       eslint-plugin-i18next:
-        specifier: ^6.1.4
-        version: 6.1.4
+        specifier: ^6.1.5
+        version: 6.1.5
       eslint-plugin-testing-library:
         specifier: ^7.16.2
         version: 7.16.2(eslint@10.5.0)(typescript@6.0.3)
@@ -7674,8 +7674,8 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-plugin-i18next@6.1.4:
-    resolution: {integrity: sha512-BekXQu1VaVFkREepQGsntBYoKuPsf89V16n/s2xpKMtsw0/lDseds1wBhj3RtO1dKnHsfTPaG+xul1vF0R7LEQ==}
+  eslint-plugin-i18next@6.1.5:
+    resolution: {integrity: sha512-xCTfstbK9ZpQ6UFT5S1s6zbZMhKn2o2jRSQYiU2UkV7wt8y1m3WjkUYGkGlipgRdFInYI9+LAqE+JQU/L73HmA==}
     engines: {node: '>=18.10.0'}
 
   eslint-plugin-testing-library@7.16.2:
@@ -17468,9 +17468,8 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-i18next@6.1.4:
+  eslint-plugin-i18next@6.1.5:
     dependencies:
-      lodash: 4.18.1
       requireindex: 1.1.0
 
   eslint-plugin-testing-library@7.16.2(eslint@10.5.0)(typescript@6.0.3):
