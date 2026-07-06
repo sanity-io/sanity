@@ -60,7 +60,10 @@ export function VariantDocumentPreview({
 
   const LinkComponent = useMemo(
     () =>
-      forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
+      forwardRef(function LinkComponent(
+        linkProps: React.ComponentPropsWithoutRef<'a'>,
+        ref: ForwardedRef<HTMLAnchorElement>,
+      ) {
         return (
           <IntentLink
             {...linkProps}
