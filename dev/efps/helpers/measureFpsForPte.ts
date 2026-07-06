@@ -134,7 +134,13 @@ export async function measureFpsForPte({
     const matchingEvent = renderEvents.find(({value}) =>
       containsBetweenMarkers(value, inputEvent.character, startingMarker, endingMarker),
     )
-    if (!matchingEvent) throw new Error(`No matching event for ${inputEvent.character}`)
+    if (!matchingEvent) {
+      throw new Error(
+        `No matching event for ${JSON.stringify(inputEvent.character)} ` +
+          `(${renderEvents.length} render events recorded; ` +
+          `last recorded value: ${JSON.stringify(tail(renderEvents.at(-1)?.value))})`,
+      )
+    }
 
     return matchingEvent.timestamp - inputEvent.timestamp - matchingEvent.textContentProcessingTime
   })
@@ -145,4 +151,10 @@ export async function measureFpsForPte({
     label: label || fieldName,
     runDuration: Date.now() - start,
   }
+}
+
+/** The last part of a (potentially huge) recorded value — the markers live at the end. */
+function tail(value: string | undefined): string {
+  if (value === undefined) return '(no events recorded)'
+  return value.length > 200 ? `…${value.slice(-200)}` : value
 }
