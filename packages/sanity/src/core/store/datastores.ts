@@ -235,6 +235,7 @@ export function useDocumentStore(): DocumentStore {
           i18n,
           workspace,
           currentUser,
+          errorHandler,
         ],
       }) ||
       createDocumentStore({
@@ -266,6 +267,7 @@ export function useDocumentStore(): DocumentStore {
         i18n,
         workspace,
         currentUser,
+        errorHandler,
       ],
       value: documentStore,
     })
