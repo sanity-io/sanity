@@ -4,27 +4,26 @@ import {
   type DocumentInRelease,
   useBundleDocuments,
 } from '../../releases/tool/detail/useBundleDocuments'
+import {getVariantId} from '../tool/util'
 
 /**
  * Hook to fetch the documents that belong to a variant.
  *
- * Reuses the generic {@link useBundleDocuments} machinery. Currently filters by
- * `_system.variant._ref` until `sanity::partOfVariant($variantId)` is supported
- * in content lake.
+ * Reuses the generic {@link useBundleDocuments} machinery with
+ * `sanity::partOfVariant($variantId)`.
  *
  * @internal
  */
-export function useVariantDocuments(variantId: string): {
+export function useVariantDocuments(variantDocumentId: string): {
   loading: boolean
   results: DocumentInRelease[]
   error: null | Error
 } {
+  const variantId = getVariantId(variantDocumentId)
   const params = useMemo(() => ({variantId}), [variantId])
 
   return useBundleDocuments({
-    // TODO: Switch to `sanity::partOfVariant` when content lake supports it.
-    // groqFilter: `sanity::partOfVariant($variantId)`,
-    groqFilter: `_system.variant._ref == $variantId`,
+    groqFilter: `sanity::partOfVariant($variantId)`,
     params,
     cacheKey: `variant-${variantId}`,
   })
