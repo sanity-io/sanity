@@ -163,6 +163,25 @@ describe('legacyDateFormat', () => {
       // In our mocked Oslo timezone (UTC+1 in winter)
       expect(result).toBe('2024-11-17 16:30')
     })
+
+    describe('Z/ZZ timezone offset tokens', () => {
+      // A winter date pins each zone to standard time, avoiding DST ambiguity.
+      const winter = new Date('2025-01-15T12:00:00.000Z')
+
+      test('renders a negative offset with its sign', () => {
+        expect(format(winter, 'Z', {timeZone: 'America/New_York'})).toBe('-05:00')
+        expect(format(winter, 'ZZ', {timeZone: 'America/New_York'})).toBe('-0500')
+      })
+
+      test('renders a fractional (30-minute) offset', () => {
+        expect(format(winter, 'Z', {timeZone: 'Asia/Kolkata'})).toBe('+05:30')
+      })
+
+      test('renders a zero offset as +00:00, never "Z"', () => {
+        expect(format(winter, 'Z', {useUTC: true})).toBe('+00:00')
+        expect(format(winter, 'ZZ', {useUTC: true})).toBe('+0000')
+      })
+    })
   })
 
   describe('round-trip: parse and format', () => {
