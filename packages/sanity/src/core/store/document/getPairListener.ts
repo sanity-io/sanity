@@ -286,6 +286,12 @@ export function getPairListener(
     // recovery if the fetch fails — delegate failures to the error handler
     // when one is provided. Retryable: it's an idempotent GET, safe to
     // re-run.
+    //
+    // While the handler holds a failed fetch for re-run, `pairEvents$`
+    // buffers subsequent listener events behind this observable (concatMap)
+    // on purpose: they must chain onto the snapshot once it arrives.
+    // The buffer stays small — the listener only carries events for this
+    // pair's documents — and tearing down the pair drops it.
     return defer(() =>
       options.snapshotFetchErrorHandler
         ? options.snapshotFetchErrorHandler.attempt(fetchDocuments, {retryable: true})
