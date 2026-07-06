@@ -4,7 +4,7 @@ import {first} from 'rxjs/operators'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {viewer} from '../debug/exampleGrants'
-import {createGrantsStore} from '../grantsStore'
+import {createGrantsStore, type GrantsStoreErrorHandler} from '../grantsStore'
 
 function createMockClient(data: {requests?: Record<string, any>} = {}): SanityClient {
   const mockConfig = {
@@ -68,5 +68,42 @@ describe('checkDocumentPermission', () => {
         },
       ],
     ])
+  })
+
+  it('delegates request failures to the error handler and recovers when it re-runs the request', async () => {
+    const client = createMockClient({
+      requests: {
+        '/acl': viewer,
+      },
+    })
+    // First attempt fails with a network error; the re-run falls back to
+    // the default mock and succeeds.
+    const networkError = new Error('Request error while attempting to reach host')
+    ;(client.request as Mock).mockRejectedValueOnce(networkError)
+
+    // Ad-hoc handler implementing the recovery contract: re-run a failed
+    // retryable request and resolve off the successful attempt.
+    const delegated: unknown[] = []
+    const errorHandler: GrantsStoreErrorHandler = {
+      attempt: (thunk, options) =>
+        thunk().catch((err) => {
+          if (!options?.retryable) throw err
+          delegated.push(err)
+          return thunk()
+        }),
+    }
+
+    const {checkDocumentPermission} = createGrantsStore({client, userId: null, errorHandler})
+
+    // The failure is handed to the handler instead of erroring the
+    // permission stream; the stream resolves off the re-run request.
+    await expect(
+      firstValueFrom(checkDocumentPermission('read', {_id: 'example-id', _type: 'book'})),
+    ).resolves.toEqual({
+      granted: true,
+      reason: 'Matching grant',
+    })
+    expect(delegated).toEqual([networkError])
+    expect(client.request).toHaveBeenCalledTimes(2)
   })
 })
