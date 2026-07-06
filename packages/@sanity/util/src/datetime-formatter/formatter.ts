@@ -1,5 +1,3 @@
-import {format} from 'date-fns/format'
-
 import sanitizeLocale from './sanitizeLocale'
 
 function getMonthName(
@@ -103,6 +101,20 @@ function getTimeZoneAbbreviation(date: Date) {
   }).formatToParts(date)
   const tz = parts.find((part) => part.type === 'timeZoneName')
   return tz ? tz.value : ''
+}
+
+/**
+ * ISO 8601 numeric offset like "+02:00" (withColon) or "+0200".
+ * `getTimezoneOffset()` reports minutes *behind* UTC, so it's negated; a zero
+ * offset renders as "+00:00"/"+0000", never "Z".
+ */
+function formatOffset(date: Date, withColon: boolean): string {
+  const offsetMinutes = -date.getTimezoneOffset()
+  const sign = offsetMinutes >= 0 ? '+' : '-'
+  const abs = Math.abs(offsetMinutes)
+  const hours = zeroPad(Math.floor(abs / 60), 2)
+  const minutes = zeroPad(abs % 60, 2)
+  return withColon ? `${sign}${hours}:${minutes}` : `${sign}${hours}${minutes}`
 }
 
 /**
@@ -254,8 +266,8 @@ function formatMomentLike(date: Date, formatStr: string): string {
     // Time zone offset
     {key: 'z', getValue: () => getTimeZoneAbbreviation(date)},
     {key: 'zz', getValue: () => getTimeZoneAbbreviation(date)},
-    {key: 'Z', getValue: () => format(date, 'xxx')},
-    {key: 'ZZ', getValue: () => format(date, 'xx')},
+    {key: 'Z', getValue: () => formatOffset(date, true)},
+    {key: 'ZZ', getValue: () => formatOffset(date, false)},
 
     // Time
     {key: 'LTS', getValue: () => getLocalizedDate(date, {timeStyle: 'medium'})},

@@ -1264,9 +1264,6 @@ importers:
       '@sanity/types':
         specifier: workspace:*
         version: link:../types
-      date-fns:
-        specifier: ^4.4.0
-        version: 4.4.0
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -1289,6 +1286,9 @@ importers:
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
+      date-fns:
+        specifier: ^4.4.0
+        version: 4.4.0
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
