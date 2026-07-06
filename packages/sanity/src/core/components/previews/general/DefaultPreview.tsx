@@ -1,5 +1,5 @@
 import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
-import classNames from 'classnames'
+import {clsx} from 'clsx'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
@@ -56,7 +56,7 @@ const SKELETON_DELAY = 300
 export function DefaultPreview(props: DefaultPreviewProps) {
   const {title, subtitle, media, status, isPlaceholder, children, styles, progress} = props
   const {t} = useTranslation()
-  const rootClassName = classNames(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)
+  const rootClassName = clsx(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)
   const isUploading = typeof progress === 'number' && progress > -1
 
   const statusNode = status && (

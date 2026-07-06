@@ -189,7 +189,6 @@
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.4",
     "@xstate/react": "^6.1.0",
-    "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "color2k": "^2.0.3",
     "dataloader": "^2.2.3",
