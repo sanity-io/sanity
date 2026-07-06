@@ -1,10 +1,11 @@
 import {type SanityClient} from '@sanity/client'
-import {firstValueFrom, lastValueFrom} from 'rxjs'
+import {firstValueFrom, from, lastValueFrom} from 'rxjs'
 import {first} from 'rxjs/operators'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
+import {type StoreRequestErrorHandler} from '../../requestErrorHandler'
 import {viewer} from '../debug/exampleGrants'
-import {createGrantsStore, type GrantsStoreErrorHandler} from '../grantsStore'
+import {createGrantsStore} from '../grantsStore'
 
 function createMockClient(data: {requests?: Record<string, any>} = {}): SanityClient {
   const mockConfig = {
@@ -84,12 +85,12 @@ describe('checkDocumentPermission', () => {
     // Ad-hoc handler implementing the recovery contract: re-run a failed
     // retryable request and resolve off the successful attempt.
     const delegated: unknown[] = []
-    const errorHandler: GrantsStoreErrorHandler = {
+    const errorHandler: StoreRequestErrorHandler = {
       attempt: (thunk, options) =>
-        thunk().catch((err) => {
+        lastValueFrom(from(thunk())).catch((err) => {
           if (!options?.retryable) throw err
           delegated.push(err)
-          return thunk()
+          return lastValueFrom(from(thunk()))
         }),
     }
 

@@ -334,10 +334,15 @@ export function checkoutPair(
     onSlowCommit,
     onReportMutationPerformance,
     onDocumentRebase,
+    snapshotFetchErrorHandler,
     tag,
   } = options
 
-  const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
+  const listenerEvents$ = getPairListener(client, idPair, {
+    onSyncErrorRecovery,
+    tag,
+    snapshotFetchErrorHandler,
+  }).pipe(share())
 
   const connectionChangeEvents$ = listenerEvents$.pipe(
     filter((ev) => ev.type === 'reconnect' || ev.type === 'welcome' || ev.type === 'welcomeback'),

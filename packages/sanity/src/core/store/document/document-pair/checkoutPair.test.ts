@@ -11,11 +11,7 @@ const mockedActionRequest = vi.fn(() => of({}))
 const client = {
   observable: {
     listen: () => of({type: 'welcome'}).pipe(delay(0)),
-    getDocuments: (ids: string[]) =>
-      of([
-        {_id: ids[0], _type: 'any', _rev: 'any'},
-        {_id: ids[1], _type: 'any', _rev: 'any'},
-      ]),
+    getDocuments: (ids: string[]) => of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
     action: mockedActionRequest,
   },
   dataRequest: mockedDataRequest,
@@ -2491,8 +2487,6 @@ describe('checkoutPair -- document rebase telemetry', () => {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
         action: vi.fn(() => commitSubject),
-        getDocuments: (ids: string[]) =>
-          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
       },
     }
     testClient.withConfig = vi.fn(() => testClient)
@@ -2540,8 +2534,6 @@ describe('checkoutPair -- version documents', () => {
       ...client,
       observable: {
         ...client.observable,
-        getDocuments: (ids: string[]) =>
-          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
         action: mockedActionRequest,
       },
       withConfig: vi.fn(() => versionClient),
@@ -2602,8 +2594,6 @@ describe('checkoutPair -- version documents', () => {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
         action: vi.fn(() => commitSubject),
-        getDocuments: (ids: string[]) =>
-          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -2668,8 +2658,6 @@ describe('checkoutPair -- version documents', () => {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
         action: vi.fn(() => commitSubject),
-        getDocuments: (ids: string[]) =>
-          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,

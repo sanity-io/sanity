@@ -6,6 +6,7 @@ import {refCountDelay} from 'rxjs-etc/operators'
 import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
+import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debugGrants$} from './debug'
 import {
   type DocumentValuePermission,
@@ -15,32 +16,11 @@ import {
   type PermissionCheckResult,
 } from './types'
 
-/**
- * Handles failures of requests made by the grants store. The store has no
- * way to recover when the grants request fails — every permission check
- * depends on it — so it hands the failed request to this handler instead
- * of erroring its permission streams.
- *
- * @internal
- */
-export interface GrantsStoreErrorHandler {
-  /**
-   * Runs `thunk` and takes responsibility for its failures. An
-   * implementation may recover by re-invoking the thunk — the returned
-   * promise resolves with the first successful attempt. Failures the
-   * handler cannot take responsibility for reject the returned promise.
-   *
-   * `retryable: true` is the store's assertion that the request is
-   * idempotent and safe to re-run.
-   */
-  attempt<T>(thunk: () => Promise<T>, options?: {retryable?: boolean}): Promise<T>
-}
-
 async function getDatasetGrants(
   client: SanityClient,
   projectId: string,
   dataset: string,
-  errorHandler: GrantsStoreErrorHandler | undefined,
+  errorHandler: StoreRequestErrorHandler | undefined,
 ): Promise<Grant[]> {
   // `acl` stands for access control list and returns a list of grants
   const fetchGrants = () =>
@@ -89,7 +69,7 @@ interface GrantsStoreOptionsCurrentUser {
    * Optional handler for failures of requests made by the store. When
    * omitted, request failures propagate to the permission streams.
    */
-  errorHandler?: GrantsStoreErrorHandler
+  errorHandler?: StoreRequestErrorHandler
   /**
    * @deprecated The `currentUser` option is deprecated. Use `userId` instead.
    */
@@ -102,7 +82,7 @@ interface GrantsStoreOptionsUserId {
    * Optional handler for failures of requests made by the store. When
    * omitted, request failures propagate to the permission streams.
    */
-  errorHandler?: GrantsStoreErrorHandler
+  errorHandler?: StoreRequestErrorHandler
   userId: string | null
 }
 
