@@ -3,7 +3,7 @@ import {type Page} from 'playwright'
 import {type EfpsResult} from '../types'
 import {aggregateLatencies} from './aggregateLatencies'
 import {measureBlockingTime} from './measureBlockingTime'
-import {setUpMarkers, typeCharacterReliably} from './typeCharacterReliably'
+import {containsBetweenMarkers, setUpMarkers, typeCharacterReliably} from './typeCharacterReliably'
 
 interface MeasureFpsForInputOptions {
   label?: string
@@ -132,13 +132,9 @@ export async function measureFpsForInput({
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const latencies = inputEvents.map((inputEvent) => {
-    const matchingEvent = renderEvents.find(({value}) => {
-      if (!value.includes(startingMarker) || !value.includes(endingMarker)) return false
-
-      const [, afterStartingMarker] = value.split(startingMarker)
-      const [beforeEndingMarker] = afterStartingMarker.split(endingMarker)
-      return beforeEndingMarker.includes(inputEvent.character)
-    })
+    const matchingEvent = renderEvents.find(({value}) =>
+      containsBetweenMarkers(value, inputEvent.character, startingMarker, endingMarker),
+    )
     if (!matchingEvent) throw new Error(`No matching event for ${inputEvent.character}`)
 
     return matchingEvent.timestamp - inputEvent.timestamp
