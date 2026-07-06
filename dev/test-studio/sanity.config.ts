@@ -8,14 +8,7 @@ import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
-import {
-  defineArrayMember,
-  defineConfig,
-  defineField,
-  definePlugin,
-  defineType,
-  type WorkspaceOptions,
-} from 'sanity'
+import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {media} from 'sanity-plugin-media'
@@ -63,71 +56,6 @@ import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
-
-defineConfig({
-  name: 'default',
-  title: 'Book store',
-  projectId: 'xxxxxxxx',
-  dataset: 'production',
-  schema: {
-    types: [
-      defineType({
-        name: 'author',
-        title: 'Author',
-        type: 'document',
-        fields: [
-          defineField({
-            name: 'name',
-            title: 'Name',
-            type: 'string',
-          }),
-          defineField({
-            name: 'biography',
-            title: 'Biography',
-            type: 'array',
-            of: [
-              defineArrayMember({
-                type: 'block',
-              }),
-            ],
-          }),
-        ],
-      }),
-      defineType({
-        name: 'book',
-        title: 'Book',
-        type: 'document',
-        fields: [
-          defineField({
-            name: 'name',
-            title: 'Name',
-            type: 'string',
-            options: {
-              search: {
-                weight: 3,
-              },
-            },
-          }),
-          defineField({
-            name: 'synopsis',
-            title: 'Synopsis',
-            type: 'array',
-            of: [
-              defineArrayMember({
-                type: 'block',
-              }),
-            ],
-            options: {
-              search: {
-                weight: 2,
-              },
-            },
-          }),
-        ],
-      }),
-    ],
-  },
-})
 
 // Set by `pnpm dev:proxy` / `pnpm dev:proxy:http1`: routes production-workspace requests through @repo/debug-proxy
 // to exercise the studio under adverse network conditions (see packages/@repo/debug-proxy).
