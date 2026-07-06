@@ -45,7 +45,7 @@ export const getVariantDocumentTableColumnDefs = (
   {
     id: 'bundle',
     width: null,
-    style: {minWidth: 100},
+    style: {minWidth: 100, maxWidth: 220},
     sorting: false,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
@@ -53,8 +53,8 @@ export const getVariantDocumentTableColumnDefs = (
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
-      <Flex align="center" {...cellProps}>
-        <Box paddingX={2}>
+      <Flex align="center" {...cellProps} style={{...cellProps.style, minWidth: 0}}>
+        <Box paddingX={2} style={{minWidth: 0, overflow: 'hidden'}}>
           {!datum.isLoading && <VariantDocumentBundleChips versions={datum.versions} />}
         </Box>
       </Flex>

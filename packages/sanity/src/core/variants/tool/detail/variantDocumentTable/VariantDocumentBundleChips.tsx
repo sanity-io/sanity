@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Badge, Flex} from '@sanity/ui'
+import {Badge, Box, Flex} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
@@ -83,42 +83,47 @@ export function VariantDocumentBundleChips({
   )
 
   return (
-    <Flex align="center" gap={1} wrap="wrap">
-      {versions.map((version) => {
-        if (isPublishedBundleId(version.bundleId)) {
-          return (
-            <StaticBundleChip
-              key={version.documentId}
-              label={t('release.chip.published')}
-              tone="positive"
-            />
-          )
-        }
+    // The column has a bounded width, but the number of chips is unbounded, so the chips are
+    // laid out on a single, non-wrapping line that scrolls horizontally when it overflows the
+    // column width, rather than wrapping or stretching the column and breaking the table layout.
+    <Box overflow="auto" style={{minWidth: 0, maxWidth: '100%'}}>
+      <Flex align="center" gap={1} wrap="nowrap" style={{width: 'max-content'}}>
+        {versions.map((version) => {
+          if (isPublishedBundleId(version.bundleId)) {
+            return (
+              <StaticBundleChip
+                key={version.documentId}
+                label={t('release.chip.published')}
+                tone="positive"
+              />
+            )
+          }
 
-        if (version.bundleId === 'drafts') {
+          if (version.bundleId === 'drafts') {
+            return (
+              <StaticBundleChip
+                key={version.documentId}
+                label={t('release.chip.draft')}
+                tone="default"
+              />
+            )
+          }
+
+          const release = getReleaseDocumentForVersion(version, releasesById)
+
+          if (release) {
+            return <ReleaseBundleChip key={version.documentId} release={release} />
+          }
+
           return (
             <StaticBundleChip
               key={version.documentId}
-              label={t('release.chip.draft')}
+              label={t('release.placeholder-untitled-release')}
               tone="default"
             />
           )
-        }
-
-        const release = getReleaseDocumentForVersion(version, releasesById)
-
-        if (release) {
-          return <ReleaseBundleChip key={version.documentId} release={release} />
-        }
-
-        return (
-          <StaticBundleChip
-            key={version.documentId}
-            label={t('release.placeholder-untitled-release')}
-            tone="default"
-          />
-        )
-      })}
-    </Flex>
+        })}
+      </Flex>
+    </Box>
   )
 }
