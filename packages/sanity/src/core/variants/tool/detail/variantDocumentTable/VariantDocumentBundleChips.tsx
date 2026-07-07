@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Badge, Flex} from '@sanity/ui'
+import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
@@ -70,42 +70,44 @@ export function VariantDocumentBundleChips({
   )
 
   return (
-    <Flex align="center" gap={1} wrap="nowrap" style={{width: 'max-content'}}>
-      {versions.map((version) => {
-        if (isPublishedBundleId(version.bundleId)) {
-          return (
-            <StaticBundleChip
-              key={version.documentId}
-              label={t('release.chip.published')}
-              tone="positive"
-            />
-          )
-        }
+    <Box style={{minWidth: 0, width: '100%', overflowX: 'auto', overflowY: 'hidden'}}>
+      <Flex align="center" gap={1} wrap="nowrap" style={{width: 'max-content'}}>
+        {versions.map((version) => {
+          if (isPublishedBundleId(version.bundleId)) {
+            return (
+              <StaticBundleChip
+                key={version.documentId}
+                label={t('release.chip.published')}
+                tone="positive"
+              />
+            )
+          }
 
-        if (version.bundleId === 'drafts') {
+          if (version.bundleId === 'drafts') {
+            return (
+              <StaticBundleChip
+                key={version.documentId}
+                label={t('release.chip.draft')}
+                tone="default"
+              />
+            )
+          }
+
+          const release = getReleaseDocumentForVersion(version, releasesById)
+
+          if (release) {
+            return <ReleaseBundleChip key={version.documentId} release={release} />
+          }
+
           return (
             <StaticBundleChip
               key={version.documentId}
-              label={t('release.chip.draft')}
+              label={t('release.placeholder-untitled-release')}
               tone="default"
             />
           )
-        }
-
-        const release = getReleaseDocumentForVersion(version, releasesById)
-
-        if (release) {
-          return <ReleaseBundleChip key={version.documentId} release={release} />
-        }
-
-        return (
-          <StaticBundleChip
-            key={version.documentId}
-            label={t('release.placeholder-untitled-release')}
-            tone="default"
-          />
-        )
-      })}
-    </Flex>
+        })}
+      </Flex>
+    </Box>
   )
 }
