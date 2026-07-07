@@ -138,7 +138,7 @@ describe('VariantDocumentsTable', () => {
     expect(screen.getByText('Bundle')).toBeInTheDocument()
   })
 
-  it('filters documents when searching by title, id, or type', async () => {
+  it('filters documents when searching by title or name', async () => {
     const user = userEvent.setup()
 
     await renderTable()
@@ -190,24 +190,24 @@ describe('VariantDocumentsTable', () => {
     expect(renderedTitles).toEqual(['Alpha article', 'Zulu article'])
   })
 
-  it('finds whitespace-only titles by document id when searching', async () => {
+  it('finds documents by name when title is missing', async () => {
     const user = userEvent.setup()
     const rows: DocumentInVariantGroup[] = [
       {
         ...mockRows[0]!,
-        groupId: 'article-whitespace',
-        memoKey: 'group-whitespace',
+        groupId: 'article-named',
+        memoKey: 'group-named',
         document: {
           ...mockRows[0]!.document,
-          _id: 'drafts.scope.article-whitespace',
-          title: '   ',
+          title: undefined,
+          name: 'Named article',
         },
       },
     ]
 
     await renderTable(rows)
 
-    await user.type(screen.getByPlaceholderText('Search documents'), 'article-whitespace')
+    await user.type(screen.getByPlaceholderText('Search documents'), 'Named')
 
     await waitFor(() => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(1)

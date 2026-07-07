@@ -4,9 +4,9 @@ import {type CSSProperties, useMemo, useState} from 'react'
 import {useTranslation} from '../../../i18n'
 import {Table} from '../../../releases/tool/components/Table/Table'
 import {type Column} from '../../../releases/tool/components/Table/types'
+import {searchDocumentRelease} from '../../../releases/tool/detail/documentTable/searchDocumentRelease'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type DocumentInVariantGroup} from './types'
-import {getDocumentPreviewTitle} from './variantDocumentTable/getDocumentPreviewTitle'
 import {getVariantDocumentTableColumnDefs} from './variantDocumentTable/VariantDocumentTableColumnDefs'
 
 const TABLE_CARD_STYLE: CSSProperties = {
@@ -18,17 +18,11 @@ function filterDocuments(
   rows: DocumentInVariantGroup[],
   searchTerm: string,
 ): DocumentInVariantGroup[] {
-  const normalizedSearchTerm = searchTerm.trim().toLowerCase()
-
-  if (!normalizedSearchTerm) {
+  if (!searchTerm.trim()) {
     return rows
   }
 
-  return rows.filter(({document}) =>
-    [getDocumentPreviewTitle(document), document._id, document._type].some((value) =>
-      value.toLowerCase().includes(normalizedSearchTerm),
-    ),
-  )
+  return rows.filter(({document}) => searchDocumentRelease(document, searchTerm))
 }
 
 export function VariantDocumentsTable({
