@@ -151,13 +151,11 @@ The detail actions menu is separate from the overview row menu. This is intentio
 
 Data flow:
 
-- `useVariantDocuments(variantId)` fetches a flat list of variant-scoped document versions via `_system.variant._ref == $variantId`
+- `useVariantDocuments(variantId)` fetches a flat list of variant-scoped document versions.
 - `groupVariantDocumentsByGroup()` optionally groups that flat list into one row per document group
 - the table renders bundle chips, type, preview, and edited columns using the shared releases table component
 
 To revert to one row per document version, pass the flat `useVariantDocuments()` results directly to the table and switch `rowId` from `groupId` to `document._id`.
-
-There is a tracked TODO to replace the fallback GROQ filter with `sanity::partOfVariant($variantId)` when the native function ships.
 
 ## Footer
 
@@ -223,7 +221,6 @@ Local browser execution has previously hit `EMFILE: too many open files, watch` 
 ## Pending Work
 
 - Drop the local `SanityClientWithVariantsActions` typing wrapper once `@sanity/client` exports the variant definition action types.
-- Replace `_system.variant._ref` document membership queries with `sanity::partOfVariant($variantId)`.
 - Decide how document counts affect deleting variants.
 - Add a delete confirmation or disabled state once variants can have documents.
 - Expand the detail-specific actions menu independently from the overview row menu.
