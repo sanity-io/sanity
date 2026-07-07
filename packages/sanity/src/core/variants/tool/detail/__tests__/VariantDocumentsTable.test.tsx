@@ -156,4 +156,61 @@ describe('VariantDocumentsTable', () => {
     expect(screen.getByText('Second article')).toBeInTheDocument()
     expect(screen.queryByText('First article')).not.toBeInTheDocument()
   })
+
+  it('sorts grouped rows by document group id on first load', async () => {
+    const rows: DocumentInVariantGroup[] = [
+      {
+        ...mockRows[1]!,
+        groupId: 'z-group',
+        memoKey: 'group-z',
+        document: {
+          ...mockRows[1]!.document,
+          title: 'Zulu article',
+        },
+      },
+      {
+        ...mockRows[0]!,
+        groupId: 'a-group',
+        memoKey: 'group-a',
+        document: {
+          ...mockRows[0]!.document,
+          title: 'Alpha article',
+        },
+      },
+    ]
+
+    await renderTable(rows)
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    const renderedTitles = screen.getAllByTestId('preview').map((node) => node.textContent)
+
+    expect(renderedTitles).toEqual(['Alpha article', 'Zulu article'])
+  })
+
+  it('finds whitespace-only titles by document id when searching', async () => {
+    const user = userEvent.setup()
+    const rows: DocumentInVariantGroup[] = [
+      {
+        ...mockRows[0]!,
+        groupId: 'article-whitespace',
+        memoKey: 'group-whitespace',
+        document: {
+          ...mockRows[0]!.document,
+          _id: 'drafts.scope.article-whitespace',
+          title: '   ',
+        },
+      },
+    ]
+
+    await renderTable(rows)
+
+    await user.type(screen.getByPlaceholderText('Search documents'), 'article-whitespace')
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+  })
 })

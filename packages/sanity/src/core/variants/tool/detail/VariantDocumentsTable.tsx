@@ -6,17 +6,12 @@ import {Table} from '../../../releases/tool/components/Table/Table'
 import {type Column} from '../../../releases/tool/components/Table/types'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type DocumentInVariantGroup} from './types'
+import {getDocumentPreviewTitle} from './variantDocumentTable/getDocumentPreviewTitle'
 import {getVariantDocumentTableColumnDefs} from './variantDocumentTable/VariantDocumentTableColumnDefs'
 
 const TABLE_CARD_STYLE: CSSProperties = {
   height: '100%',
   overflow: 'auto',
-}
-
-function getDocumentPreviewTitle(document: DocumentInVariantGroup['document']): string {
-  const title = document.title || document.name
-
-  return typeof title === 'string' && title.trim() ? title : document._id
 }
 
 function filterDocuments(
@@ -57,6 +52,7 @@ export function VariantDocumentsTable({
       <Table<DocumentInVariantGroup>
         columnDefs={columnDefs}
         data={rows}
+        defaultSort={{column: 'documentGroup', direction: 'asc'}}
         emptyState={t('detail.documents.no-documents')}
         loading={loading}
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals

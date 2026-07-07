@@ -33,30 +33,17 @@ function ReleaseBundleChip({release}: {release: ReleaseDocument}) {
   const {t} = useTranslation()
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
-  const ReleaseIntentLink = useMemo(
-    () =>
-      forwardRef(function ReleaseIntentLink(
-        linkProps: React.ComponentProps<'a'>,
-        ref: ForwardedRef<HTMLAnchorElement>,
-      ) {
-        return (
-          <IntentLink {...linkProps} ref={ref} intent={RELEASES_INTENT} params={{id: releaseId}} />
-        )
-      }),
-    [releaseId],
-  )
-
   return (
     <ReleaseTitle
       title={release.metadata?.title}
       fallback={t('release.placeholder-untitled-release')}
     >
       {({displayTitle}) => (
-        <ReleaseIntentLink>
+        <IntentLink intent="edit" params={{id: releaseId}}>
           <Badge radius={2} tone="primary">
             {displayTitle}
           </Badge>
-        </ReleaseIntentLink>
+        </IntentLink>
       )}
     </ReleaseTitle>
   )
@@ -83,47 +70,42 @@ export function VariantDocumentBundleChips({
   )
 
   return (
-    // The column has a bounded width, but the number of chips is unbounded, so the chips are
-    // laid out on a single, non-wrapping line that scrolls horizontally when it overflows the
-    // column width, rather than wrapping or stretching the column and breaking the table layout.
-    <Box overflow="auto" style={{minWidth: 0, maxWidth: '100%'}}>
-      <Flex align="center" gap={1} wrap="nowrap" style={{width: 'max-content'}}>
-        {versions.map((version) => {
-          if (isPublishedBundleId(version.bundleId)) {
-            return (
-              <StaticBundleChip
-                key={version.documentId}
-                label={t('release.chip.published')}
-                tone="positive"
-              />
-            )
-          }
-
-          if (version.bundleId === 'drafts') {
-            return (
-              <StaticBundleChip
-                key={version.documentId}
-                label={t('release.chip.draft')}
-                tone="default"
-              />
-            )
-          }
-
-          const release = getReleaseDocumentForVersion(version, releasesById)
-
-          if (release) {
-            return <ReleaseBundleChip key={version.documentId} release={release} />
-          }
-
+    <Flex align="center" gap={1} wrap="nowrap" style={{width: 'max-content'}}>
+      {versions.map((version) => {
+        if (isPublishedBundleId(version.bundleId)) {
           return (
             <StaticBundleChip
               key={version.documentId}
-              label={t('release.placeholder-untitled-release')}
+              label={t('release.chip.published')}
+              tone="positive"
+            />
+          )
+        }
+
+        if (version.bundleId === 'drafts') {
+          return (
+            <StaticBundleChip
+              key={version.documentId}
+              label={t('release.chip.draft')}
               tone="default"
             />
           )
-        })}
-      </Flex>
-    </Box>
+        }
+
+        const release = getReleaseDocumentForVersion(version, releasesById)
+
+        if (release) {
+          return <ReleaseBundleChip key={version.documentId} release={release} />
+        }
+
+        return (
+          <StaticBundleChip
+            key={version.documentId}
+            label={t('release.placeholder-untitled-release')}
+            tone="default"
+          />
+        )
+      })}
+    </Flex>
   )
 }

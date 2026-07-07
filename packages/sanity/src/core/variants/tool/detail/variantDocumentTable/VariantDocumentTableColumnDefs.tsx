@@ -12,6 +12,7 @@ import {SanityDefaultPreview} from '../../../../preview/components/SanityDefault
 import {Headers} from '../../../../releases/tool/components/Table/TableHeader'
 import {type Column} from '../../../../releases/tool/components/Table/types'
 import {type DocumentInVariantGroup} from '../types'
+import {getDocumentPreviewTitle} from './getDocumentPreviewTitle'
 import {VariantDocumentBundleChips} from './VariantDocumentBundleChips'
 import {VariantDocumentPreview} from './VariantDocumentPreview'
 
@@ -42,6 +43,13 @@ export const getVariantDocumentTableColumnDefs = (
   t: TFunction<'variants'>,
   variantId?: string,
 ): Column<DocumentInVariantGroup>[] => [
+  {
+    id: 'documentGroup',
+    hidden: true,
+    width: null,
+    sorting: true,
+    sortTransform: (row) => row.groupId,
+  },
   {
     id: 'bundle',
     width: null,
@@ -82,13 +90,7 @@ export const getVariantDocumentTableColumnDefs = (
     id: 'search',
     width: null,
     style: {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
-    sortTransform(value) {
-      return (
-        String(
-          value.document?.title || value.document?.name || value.document?._id,
-        ).toLowerCase() || 0
-      )
-    },
+    sortTransform: ({document}) => getDocumentPreviewTitle(document).toLowerCase(),
     header: (props) => (
       <Headers.TableHeaderSearch
         {...props}
