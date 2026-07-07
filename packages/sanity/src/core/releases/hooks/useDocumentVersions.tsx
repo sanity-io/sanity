@@ -10,9 +10,11 @@ import {
   map,
   type Observable,
   of,
-  shareReplay,
+  ReplaySubject,
+  share,
   startWith,
   switchMap,
+  timer,
 } from 'rxjs'
 
 import {useDataset} from '../../hooks/useDataset'
@@ -49,6 +51,17 @@ const INITIAL_VALUE: DocumentPerspectiveState = {
 // Create a singleton cache for observables
 export const observableCache = new Map<string, Observable<DocumentPerspectiveState>>()
 const swr = createSWR<string[]>({maxSize: 100})
+
+// How long to keep the pipeline alive after the last subscriber unsubscribes.
+// Subscriber churn (components re-rendering/remounting around commits) can
+// momentarily drop the refcount to zero. A bare teardown deletes the cache
+// entry, and the re-created pipeline synchronously re-enters the
+// `startWith(loadingState)` path (the version id set is non-empty for any
+// document with a draft or published variant), so `loading: true` reaches
+// `useDocumentForm`'s `ready` gate and flips the form read-only until the
+// `observePaths` round trip settles — silently swallowing keystrokes typed in
+// that window.
+const TEARDOWN_GRACE_PERIOD = 1_000
 
 /**
  * Fetches the document versions for a given document
@@ -223,7 +236,10 @@ export function getOrCreateDocumentVersionsObservable(options: {
     finalize(() => {
       observableCache.delete(cacheKey)
     }),
-    shareReplay({refCount: true, bufferSize: 1}),
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD),
+    }),
   )
 
   observableCache.set(cacheKey, newObservable)
