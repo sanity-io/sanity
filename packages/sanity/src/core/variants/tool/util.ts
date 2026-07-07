@@ -1,9 +1,27 @@
 import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
 
+import {type PerspectiveBundle} from '../../perspective/types'
 import {VARIANT_DOCUMENTS_PATH} from '../store/constants'
 import {type SystemVariant} from '../types'
 
 const VARIANT_ID_PREFIX = `${VARIANT_DOCUMENTS_PATH}.`
+
+/**
+ * Published documents omit `bundleId` on `_system`, but `PerspectiveBundle` also includes the
+ * `'published'` literal. Call sites should treat both as published without rewriting the value.
+ *
+ * @internal
+ */
+export function isPublishedBundleId(bundleId: PerspectiveBundle | undefined): boolean {
+  return bundleId === undefined || bundleId === 'published'
+}
+
+/**
+ * @internal
+ */
+export function isReleaseBundle(bundleId: PerspectiveBundle | undefined): boolean {
+  return !isPublishedBundleId(bundleId) && bundleId !== 'drafts'
+}
 
 /**
  * @internal

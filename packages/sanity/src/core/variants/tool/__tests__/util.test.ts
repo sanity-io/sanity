@@ -9,6 +9,8 @@ import {
   getVariantDescription,
   getVariantId,
   getVariantTitle,
+  isPublishedBundleId,
+  isReleaseBundle,
 } from '../util'
 
 describe('variants tool utilities', () => {
@@ -87,5 +89,19 @@ describe('variants tool utilities', () => {
     expect(filterVariantsForSearch([developerVariant, localeVariant], 'nb-no')).toEqual([
       localeVariant,
     ])
+  })
+
+  it('treats undefined and published bundle ids as published', () => {
+    expect(isPublishedBundleId(undefined)).toBe(true)
+    expect(isPublishedBundleId('published')).toBe(true)
+    expect(isPublishedBundleId('drafts')).toBe(false)
+    expect(isPublishedBundleId('rASAP')).toBe(false)
+  })
+
+  it('identifies release bundle ids', () => {
+    expect(isReleaseBundle(undefined)).toBe(false)
+    expect(isReleaseBundle('published')).toBe(false)
+    expect(isReleaseBundle('drafts')).toBe(false)
+    expect(isReleaseBundle('rASAP')).toBe(true)
   })
 })
