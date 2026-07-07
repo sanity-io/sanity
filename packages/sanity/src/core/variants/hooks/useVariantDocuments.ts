@@ -10,9 +10,8 @@ import {toVariantDocumentVersion} from '../tool/detail/variantDocumentVersion'
 /**
  * Hook to fetch the documents that belong to a variant.
  *
- * Reuses the generic {@link useBundleDocuments} machinery. Currently filters by
- * `_system.variant._ref` until `sanity::partOfVariant($variantId)` is supported
- * in content lake.
+ * Reuses the generic {@link useBundleDocuments} machinery with
+ * `sanity::partOfVariant($variantId)`.
  *
  * @internal
  */

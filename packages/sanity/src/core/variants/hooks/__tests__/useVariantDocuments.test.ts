@@ -60,13 +60,13 @@ describe('useVariantDocuments', () => {
     expect(documentPreviewStoreMock.unstable_observeDocumentIdSet).not.toHaveBeenCalled()
   })
 
-  it('queries variant membership with the fallback _system.variant filter', async () => {
+  it('queries variant membership with sanity::partOfVariant', async () => {
     const wrapper = await createTestProvider()
 
     renderHook(() => useVariantDocuments(variantAlphaAudience._id), {wrapper})
 
     expect(documentPreviewStoreMock.unstable_observeDocumentIdSet).toHaveBeenCalledWith(
-      '_system.variant._ref == $variantId',
+      'sanity::partOfVariant($variantId)',
       {variantId: variantAlphaAudience._id},
       {apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion},
     )

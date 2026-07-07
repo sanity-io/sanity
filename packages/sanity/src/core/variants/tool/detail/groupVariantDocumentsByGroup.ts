@@ -19,10 +19,7 @@ function getBundleSortOrder(bundleId: PerspectiveBundle | undefined): number {
   return 2
 }
 
-/**
- * @internal
- */
-export function compareVariantDocumentVersions(
+function compareVariantDocumentVersions(
   left: VariantDocumentVersion,
   right: VariantDocumentVersion,
 ): number {
