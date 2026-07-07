@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Badge, Box, Flex} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useMemo} from 'react'
+import {Badge, Flex} from '@sanity/ui'
+import {useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {useTranslation} from '../../../../i18n'
