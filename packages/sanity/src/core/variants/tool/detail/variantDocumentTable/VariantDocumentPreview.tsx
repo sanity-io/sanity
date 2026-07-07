@@ -17,6 +17,30 @@ interface VariantDocumentPreviewProps {
   variantId?: string
 }
 
+interface VariantDocumentPreviewLinkProps extends React.ComponentPropsWithoutRef<'a'> {
+  publishedId: string
+  documentType: string
+  searchParams: Array<[string, string]> | undefined
+}
+
+const VariantDocumentPreviewLink = forwardRef(function VariantDocumentPreviewLink(
+  {publishedId, documentType, searchParams, ...linkProps}: VariantDocumentPreviewLinkProps,
+  ref: ForwardedRef<HTMLAnchorElement>,
+) {
+  return (
+    <IntentLink
+      {...linkProps}
+      intent="edit"
+      params={{
+        id: publishedId,
+        type: documentType,
+      }}
+      searchParams={searchParams}
+      ref={ref}
+    />
+  )
+})
+
 function getVersionPerspectiveNavigation(
   bundleId: DocumentInVariantGroup['version']['bundleId'],
   variantId?: string,
@@ -53,31 +77,9 @@ export function VariantDocumentPreview({
 }: VariantDocumentPreviewProps): React.JSX.Element {
   const publishedId = getPublishedId(row.groupId)
   const documentPresence = useDocumentPresence(row.document._id)
-  const {perspectiveStack, searchParams} = getVersionPerspectiveNavigation(
-    row.version.bundleId,
-    variantId,
-  )
-
-  const LinkComponent = useMemo(
-    () =>
-      forwardRef(function LinkComponent(
-        linkProps: React.ComponentPropsWithoutRef<'a'>,
-        ref: ForwardedRef<HTMLAnchorElement>,
-      ) {
-        return (
-          <IntentLink
-            {...linkProps}
-            intent="edit"
-            params={{
-              id: publishedId,
-              type: row.document._type,
-            }}
-            searchParams={searchParams}
-            ref={ref}
-          />
-        )
-      }),
-    [publishedId, row.document._type, searchParams],
+  const {perspectiveStack, searchParams} = useMemo(
+    () => getVersionPerspectiveNavigation(row.version.bundleId, variantId),
+    [row.version.bundleId, variantId],
   )
 
   const previewPresence = useMemo(
@@ -92,7 +94,15 @@ export function VariantDocumentPreview({
   })
 
   return (
-    <Card tone="inherit" as={LinkComponent} radius={2} data-as="a">
+    <Card
+      tone="inherit"
+      as={VariantDocumentPreviewLink}
+      publishedId={publishedId}
+      documentType={row.document._type}
+      searchParams={searchParams}
+      radius={2}
+      data-as="a"
+    >
       <SanityDefaultPreview
         {...(resolvedPreview || {})}
         status={previewPresence}
