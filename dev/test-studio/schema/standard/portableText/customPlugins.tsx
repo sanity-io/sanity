@@ -12,33 +12,6 @@ import {
 
 const CONTAINER_NODES = [
   defineContainer({
-    type: 'table',
-    arrayField: 'rows',
-    render: ({children, attributes}) => (
-      <table {...attributes} style={{borderCollapse: 'collapse'}}>
-        <tbody>{children}</tbody>
-      </table>
-    ),
-    of: [
-      defineContainer({
-        type: 'row',
-        arrayField: 'cells',
-        render: ({children, attributes}) => <tr {...attributes}>{children}</tr>,
-        of: [
-          defineContainer({
-            type: 'cell',
-            arrayField: 'content',
-            render: ({children, attributes}) => (
-              <td {...attributes} style={{border: '1px solid #ccc', padding: '4px 8px'}}>
-                {children}
-              </td>
-            ),
-          }),
-        ],
-      }),
-    ],
-  }),
-  defineContainer({
     type: 'codeBlock',
     arrayField: 'code',
     render: ({children, attributes}) => (
@@ -71,54 +44,9 @@ function emptyTextBlock(keyGenerator: () => string) {
   }
 }
 
-function emptyTableCell(keyGenerator: () => string) {
-  return {
-    _key: keyGenerator(),
-    _type: 'cell',
-    content: [emptyTextBlock(keyGenerator)],
-  }
-}
-
-function emptyTableRow(keyGenerator: () => string) {
-  return {
-    _key: keyGenerator(),
-    _type: 'row',
-    cells: [
-      emptyTableCell(keyGenerator),
-      emptyTableCell(keyGenerator),
-      emptyTableCell(keyGenerator),
-    ],
-  }
-}
-
 // The guard skips containers that already have content, which also stops the
 // raise below from re-triggering.
 const containerScaffoldBehaviors = [
-  defineBehavior({
-    on: 'insert.block',
-    guard: ({event}) => {
-      if (event.block._type !== 'table') {
-        return false
-      }
-      const rows = 'rows' in event.block ? event.block.rows : undefined
-      return !(Array.isArray(rows) && rows.length > 0)
-    },
-    actions: [
-      ({event, snapshot}) => [
-        raise({
-          ...event,
-          block: {
-            ...event.block,
-            rows: [
-              emptyTableRow(snapshot.context.keyGenerator),
-              emptyTableRow(snapshot.context.keyGenerator),
-              emptyTableRow(snapshot.context.keyGenerator),
-            ],
-          },
-        }),
-      ],
-    ],
-  }),
   defineBehavior({
     on: 'insert.block',
     guard: ({event}) => {
@@ -149,7 +77,13 @@ function ContainerPlugins(props: PortableTextPluginsProps) {
 
   return (
     <>
-      {props.renderDefault(props)}
+      {props.renderDefault({
+        ...props,
+        plugins: {
+          ...props.plugins,
+          table: {enabled: containersEnabled},
+        },
+      })}
       {containersEnabled ? (
         <>
           <NodePlugin nodes={CONTAINER_NODES} />
@@ -201,6 +135,7 @@ export const customPlugins = defineType({
           type: 'object',
           name: 'table',
           fields: [
+            defineField({type: 'number', name: 'headerRows'}),
             defineField({
               type: 'array',
               name: 'rows',
@@ -219,7 +154,7 @@ export const customPlugins = defineType({
                           fields: [
                             defineField({
                               type: 'array',
-                              name: 'content',
+                              name: 'value',
                               of: [
                                 defineArrayMember({
                                   type: 'block',
