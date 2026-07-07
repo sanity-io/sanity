@@ -481,6 +481,22 @@ export interface PortableTextPluginsProps {
        */
       enabled?: boolean
     } & TypographyPluginProps
+    /**
+     * Table editing for a table-shaped block object (`table` > `rows` >
+     * `row` > `cells` > `cell` > `value`). Unlike the other built-in
+     * plugins, tables are opt-in: the field's schema must include the table
+     * member type, and the plugin must be enabled explicitly.
+     *
+     * For the header-row toggle in the table menu to persist, the table
+     * type must also declare a `headerRows` number field; without it the
+     * toggled value is stripped from the document.
+     */
+    table?: {
+      /**
+       * @defaultValue false
+       */
+      enabled?: boolean
+    }
   }
 }
 
