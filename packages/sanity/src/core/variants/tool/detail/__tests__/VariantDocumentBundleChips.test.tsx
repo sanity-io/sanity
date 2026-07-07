@@ -38,6 +38,7 @@ const groupedRow: DocumentInVariantGroup = {
     _rev: 'rev-1',
     _createdAt: '2025-06-01T00:00:00Z',
     _updatedAt: '2025-06-03T00:00:00Z',
+    publishedDocumentExists: true,
   },
   version: {
     documentId: 'published.scope.article-1',

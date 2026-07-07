@@ -1,5 +1,3 @@
-import {type SanityDocument} from '@sanity/client'
-
 import {type PerspectiveBundle} from '../../../perspective/types'
 import {
   type BundleDocument,
@@ -24,13 +22,11 @@ export interface VariantDocumentVersion {
 /**
  * A single variant-scoped document version returned by {@link useVariantDocuments}.
  *
- * Builds on the shared {@link BundleDocument}, narrowing `document` to a plain document (variants
- * do not surface `publishedDocumentExists`) and adding the resolved `version` metadata.
+ * Extends the shared {@link BundleDocument} with the resolved `version` metadata.
  *
  * @internal
  */
-export interface DocumentInVariant extends Omit<BundleDocument, 'document'> {
-  document: SanityDocument
+export interface DocumentInVariant extends BundleDocument {
   version: VariantDocumentVersion
 }
 
