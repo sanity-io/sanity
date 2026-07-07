@@ -10,7 +10,7 @@ import {ReleaseUnscheduleButton} from '../components/releaseCTAButtons/ReleaseUn
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {type ReleaseEvent} from './events/types'
 import {ReleaseStatusItems} from './ReleaseStatusItems'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInRelease} from './types'
 
 export function ReleaseDashboardFooter(props: {
   documents: DocumentInRelease[]

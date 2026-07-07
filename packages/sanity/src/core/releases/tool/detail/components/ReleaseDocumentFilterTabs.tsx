@@ -11,7 +11,7 @@ import {
   FILTER_TAB_CONFIGS,
   type FilterTabConfig,
 } from '../releaseDocumentActions'
-import {type DocumentInRelease} from '../useBundleDocuments'
+import {type DocumentInRelease} from '../types'
 
 interface ReleaseDocumentFilterTabsProps {
   documents: DocumentInRelease[]

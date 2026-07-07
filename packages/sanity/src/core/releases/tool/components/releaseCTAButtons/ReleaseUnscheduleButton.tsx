@@ -9,7 +9,7 @@ import {Translate, useTranslation} from '../../../../i18n'
 import {UnscheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../detail/types'
 
 interface ReleaseScheduleButtonProps {
   release: ReleaseDocument

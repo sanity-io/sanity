@@ -20,7 +20,7 @@ import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
 import {type DocumentFilterType, documentMatchesFilter} from './releaseDocumentActions'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInRelease} from './types'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
   // TODO: Get this value from the document, it can be calculated by checking if there is a corresponding document with no version attached

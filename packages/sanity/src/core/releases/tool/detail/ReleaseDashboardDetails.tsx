@@ -22,7 +22,7 @@ import {isNotArchivedRelease} from '../../util/util'
 import {ArchivedReleaseBanner} from './ArchivedReleaseBanner'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInRelease} from './types'
 import {ValidationProgressIndicator} from './ValidationProgressIndicator'
 
 export function ReleaseDashboardDetails({

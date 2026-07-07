@@ -8,7 +8,7 @@ import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getDocumentValidationLoading} from '../../util/getDocumentValidationLoading'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInRelease} from './types'
 
 export function ValidationProgressIndicator({
   documents,
