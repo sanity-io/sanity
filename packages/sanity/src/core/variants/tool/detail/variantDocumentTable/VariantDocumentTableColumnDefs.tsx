@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Box, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
@@ -41,7 +42,8 @@ const MemoDocumentType = memo(
 
 export const getVariantDocumentTableColumnDefs = (
   t: TFunction<'variants'>,
-  variantId?: string,
+  variantId: string | undefined,
+  releasesById: Map<string, ReleaseDocument>,
 ): Column<DocumentInVariantGroup>[] => [
   {
     id: 'documentGroup',
@@ -67,7 +69,9 @@ export const getVariantDocumentTableColumnDefs = (
         style={{...cellProps.style, flex: '0 1 auto', minWidth: 0, overflow: 'hidden'}}
       >
         <Box flex={1} paddingX={2} style={{minWidth: 0, overflow: 'hidden'}}>
-          {!datum.isLoading && <VariantDocumentBundleChips versions={datum.versions} />}
+          {!datum.isLoading && (
+            <VariantDocumentBundleChips versions={datum.versions} releasesById={releasesById} />
+          )}
         </Box>
       </Flex>
     ),

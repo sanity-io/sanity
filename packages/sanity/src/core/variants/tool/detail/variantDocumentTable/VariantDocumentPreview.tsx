@@ -52,7 +52,7 @@ function getVersionPerspectiveNavigation(
 
   if (isPublishedBundleId(bundleId)) {
     return {
-      perspectiveStack: [],
+      perspectiveStack: ['published'],
       searchParams: [...searchParams, ['perspective', 'published']],
     }
   }
@@ -65,7 +65,7 @@ function getVersionPerspectiveNavigation(
   }
 
   return {
-    perspectiveStack: [bundleId ?? ''],
+    perspectiveStack: [bundleId ?? '', 'drafts'],
     searchParams: [...searchParams, ['perspective', bundleId ?? '']],
   }
 }

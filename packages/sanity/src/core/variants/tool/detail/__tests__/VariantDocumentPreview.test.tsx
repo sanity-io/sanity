@@ -11,6 +11,8 @@ const intentLinkMock = vi.fn(({children, intent, searchParams, params, ...props}
   </a>
 ))
 
+const useDocumentPreviewValuesMock = vi.fn(() => ({isLoading: false, value: {title: 'Article'}}))
+
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   IntentLink: (props: React.ComponentProps<'a'>) => intentLinkMock(props),
@@ -21,7 +23,7 @@ vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
 }))
 
 vi.mock('../../../../tasks/hooks/useDocumentPreviewValues', () => ({
-  useDocumentPreviewValues: vi.fn(() => ({isLoading: false, value: {title: 'Article'}})),
+  useDocumentPreviewValues: (...args: unknown[]) => useDocumentPreviewValuesMock(...args),
 }))
 
 vi.mock('../../../../store/presence/useDocumentPresence', () => ({
@@ -54,6 +56,7 @@ const VARIANT_ID = 'alpha-audience'
 describe('VariantDocumentPreview', () => {
   beforeEach(() => {
     intentLinkMock.mockClear()
+    useDocumentPreviewValuesMock.mockClear()
   })
 
   it('omits perspective search params for drafts', async () => {
@@ -97,6 +100,42 @@ describe('VariantDocumentPreview', () => {
           ['variant', VARIANT_ID],
           ['perspective', 'rASAP'],
         ],
+      }),
+    )
+  })
+
+  it('resolves previews in the published perspective stack', async () => {
+    const wrapper = await createTestProvider()
+
+    render(<VariantDocumentPreview row={createRow(undefined)} variantId={VARIANT_ID} />, {wrapper})
+
+    expect(useDocumentPreviewValuesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        perspectiveStack: ['published'],
+      }),
+    )
+  })
+
+  it('resolves previews in the drafts perspective stack', async () => {
+    const wrapper = await createTestProvider()
+
+    render(<VariantDocumentPreview row={createRow('drafts')} variantId={VARIANT_ID} />, {wrapper})
+
+    expect(useDocumentPreviewValuesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        perspectiveStack: ['drafts'],
+      }),
+    )
+  })
+
+  it('resolves previews in the release perspective stack with drafts fallback', async () => {
+    const wrapper = await createTestProvider()
+
+    render(<VariantDocumentPreview row={createRow('rASAP')} variantId={VARIANT_ID} />, {wrapper})
+
+    expect(useDocumentPreviewValuesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        perspectiveStack: ['rASAP', 'drafts'],
       }),
     )
   })

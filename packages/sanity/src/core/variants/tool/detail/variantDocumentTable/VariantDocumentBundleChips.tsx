@@ -1,12 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Badge, Box, Flex} from '@sanity/ui'
-import {useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {useTranslation} from '../../../../i18n'
 import {ReleaseTitle} from '../../../../releases/components/ReleaseTitle'
 import {RELEASES_INTENT} from '../../../../releases/plugin'
-import {useActiveReleases} from '../../../../releases/store/useActiveReleases'
 import {getReleaseDocumentIdFromReleaseId} from '../../../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isPublishedBundleId, isReleaseBundle} from '../../util'
@@ -59,15 +57,12 @@ function StaticBundleChip({label, tone}: {label: string; tone: 'positive' | 'def
 
 export function VariantDocumentBundleChips({
   versions,
+  releasesById,
 }: {
   versions: VariantDocumentVersion[]
+  releasesById: Map<string, ReleaseDocument>
 }): React.JSX.Element {
   const {t} = useTranslation()
-  const {data: releases} = useActiveReleases()
-  const releasesById = useMemo(
-    () => new Map(releases.map((release) => [release._id, release])),
-    [releases],
-  )
 
   return (
     <Box style={{minWidth: 0, width: '100%', overflowX: 'auto', overflowY: 'hidden'}}>

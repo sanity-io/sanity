@@ -31,6 +31,14 @@ vi.mock('../variantDocumentTable/VariantDocumentBundleChips', () => ({
   )),
 }))
 
+vi.mock('../../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => ({
+    data: [],
+    loading: false,
+    error: null,
+  })),
+}))
+
 setupVirtualListEnv()
 
 const defaultValidation = {

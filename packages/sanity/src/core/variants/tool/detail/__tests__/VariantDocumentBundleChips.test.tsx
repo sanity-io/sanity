@@ -27,13 +27,7 @@ const activeRelease = {
   },
 } as const
 
-vi.mock('../../../../releases/store/useActiveReleases', () => ({
-  useActiveReleases: vi.fn(() => ({
-    data: [activeRelease],
-    loading: false,
-    error: null,
-  })),
-}))
+const releasesById = new Map([[activeRelease._id, activeRelease]])
 
 const groupedRow: DocumentInVariantGroup = {
   memoKey: 'group-1',
@@ -75,7 +69,10 @@ describe('VariantDocumentBundleChips', () => {
   it('renders published, draft, and linked release chips', async () => {
     const wrapper = await createTestProvider()
 
-    render(<VariantDocumentBundleChips versions={groupedRow.versions} />, {wrapper})
+    render(
+      <VariantDocumentBundleChips versions={groupedRow.versions} releasesById={releasesById} />,
+      {wrapper},
+    )
 
     expect(screen.getByText('Published')).toBeInTheDocument()
     expect(screen.getByText('Draft')).toBeInTheDocument()

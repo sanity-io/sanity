@@ -7,13 +7,13 @@ import {type SystemVariant} from '../types'
 const VARIANT_ID_PREFIX = `${VARIANT_DOCUMENTS_PATH}.`
 
 /**
- * Published documents omit `bundleId` on `_system`. Call sites should treat `undefined` as
- * published without rewriting the value.
+ * Published documents omit `bundleId` on `_system`, but `PerspectiveBundle` also includes the
+ * `'published'` literal. Call sites should treat both as published without rewriting the value.
  *
  * @internal
  */
 export function isPublishedBundleId(bundleId: PerspectiveBundle | undefined): boolean {
-  return bundleId === undefined
+  return bundleId === undefined || bundleId === 'published'
 }
 
 /**

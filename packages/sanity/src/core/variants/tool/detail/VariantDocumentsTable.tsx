@@ -2,6 +2,7 @@ import {Card} from '@sanity/ui'
 import {type CSSProperties, useMemo, useState} from 'react'
 
 import {useTranslation} from '../../../i18n'
+import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {Table} from '../../../releases/tool/components/Table/Table'
 import {type Column} from '../../../releases/tool/components/Table/types'
 import {searchDocumentRelease} from '../../../releases/tool/detail/documentTable/searchDocumentRelease'
@@ -36,9 +37,14 @@ export function VariantDocumentsTable({
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
+  const {data: releases} = useActiveReleases()
+  const releasesById = useMemo(
+    () => new Map(releases.map((release) => [release._id, release])),
+    [releases],
+  )
   const columnDefs = useMemo<Column<DocumentInVariantGroup>[]>(
-    () => getVariantDocumentTableColumnDefs(t, variantId),
-    [t, variantId],
+    () => getVariantDocumentTableColumnDefs(t, variantId, releasesById),
+    [t, variantId, releasesById],
   )
 
   return (
