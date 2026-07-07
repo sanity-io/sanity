@@ -1,6 +1,6 @@
 {
   "name": "@repo/debug-proxy",
-  "version": "6.3.0",
+  "version": "6.4.0",
   "private": true,
   "description": "Local debugging proxy for the Sanity API — simulate latency, SSE faults, and error responses",
   "license": "MIT",
