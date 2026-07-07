@@ -39,7 +39,7 @@ function ReleaseBundleChip({release}: {release: ReleaseDocument}) {
       fallback={t('release.placeholder-untitled-release')}
     >
       {({displayTitle}) => (
-        <IntentLink intent="edit" params={{id: releaseId}}>
+        <IntentLink intent={RELEASES_INTENT} params={{id: releaseId}}>
           <Badge radius={2} tone="primary">
             {displayTitle}
           </Badge>
