@@ -98,6 +98,7 @@ import recursivePopover from './debug/recursivePopover'
 import removeRestoreAction from './debug/removeRestoreAction'
 import reservedFieldNames from './debug/reservedFieldNames'
 import review from './debug/review'
+import {sapp3980ReferenceCreateNewRepro} from './debug/sapp3980ReferenceCreateNewRepro'
 import * as scrollBugTypes from './debug/scrollBug'
 import select from './debug/select'
 import {navbarSettingsDialogRepro} from './debug/settingsV2DialogRepro'
@@ -312,6 +313,7 @@ export function createSchemaTypes(projectId: string) {
     simpleReferences,
     reservedFieldNames,
     review,
+    sapp3980ReferenceCreateNewRepro,
     navbarSettingsDialogRepro,
     select,
     typeWithNoToplevelStrings,

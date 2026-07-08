@@ -84,6 +84,7 @@ export const DEBUG_INPUT_TYPES = [
   'previewMediaTest',
   'previewSelectBugRepro',
   'ptReference',
+  'sapp3980ReferenceCreateNewRepro',
   'radio',
   'readOnlyTest',
   'recursiveArraysTest',
