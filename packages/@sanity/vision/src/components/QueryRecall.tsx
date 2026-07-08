@@ -29,7 +29,7 @@ import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from '
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
-import {fixedHeader, scrollContainer} from './QueryRecall.css'
+import {fixedHeader, queryList, scrollContainer} from './QueryRecall.css'
 import {type ParsedUrlState} from './VisionGui'
 import {StyledLabel} from './VisionGui.styled'
 
@@ -37,8 +37,14 @@ function FixedHeader(props: ComponentProps<typeof Stack>) {
   return <Stack {...props} className={fixedHeader} />
 }
 
-function ScrollContainer(props: ComponentProps<typeof Box>) {
-  return <Box {...props} className={scrollContainer} />
+function ScrollContainer(props: ComponentProps<typeof Flex>) {
+  return (
+    <Flex {...props} direction="column" flex={1} overflow="hidden" className={scrollContainer} />
+  )
+}
+
+function QueryList(props: ComponentProps<typeof Box>) {
+  return <Box {...props} flex={1} overflow="auto" className={queryList} />
 }
 
 export function QueryRecall({
@@ -407,180 +413,229 @@ export function QueryRecall({
           </TabList>
         </Box>
       </FixedHeader>
-      <Stack id="vision-query-recall-list" paddingY={3}>
-        {filteredQueries?.map((q, index) => {
-          const queryObj = getStateFromUrl(q.url)
-          const fullQueryPreview = queryObj?.query || ''
-          const shortQueryPreview = fullQueryPreview.split('{')[0]
-          const isSelected = selectedUrl === q.url
-          const canMutateQuery = !q.shared || q.isOwnedByCurrentUser
+      <QueryList id="vision-query-recall-list">
+        <Stack paddingY={3}>
+          {filteredQueries?.map((q, index) => {
+            const queryObj = getStateFromUrl(q.url)
+            const fullQueryPreview = queryObj?.query || ''
+            const shortQueryPreview = fullQueryPreview.split('{')[0]
+            const isSelected = selectedUrl === q.url
+            const canMutateQuery = !q.shared || q.isOwnedByCurrentUser
 
-          // Compare against current live state
-          const areQueriesEqual =
-            queryObj && currentQuery === queryObj.query && isEqual(currentParams, queryObj.params)
+            // Compare against current live state
+            const areQueriesEqual =
+              queryObj && currentQuery === queryObj.query && isEqual(currentParams, queryObj.params)
 
-          const isEdited = isSelected && !areQueriesEqual && canMutateQuery
-          return (
-            <Card
-              key={q._key}
-              paddingX={compactMode ? 3 : 4}
-              paddingY={compactMode ? 3 : 4}
-              tone="default"
-              onClick={(event) => {
-                const target = event.target as HTMLElement | null
-                if (target?.closest('[data-query-actions="true"]')) {
-                  return
-                }
-                setSelectedUrl(q.url) // Update the selected query immediately
-                const parsedUrl = getStateFromUrl(q.url)
-                if (parsedUrl) {
-                  setStateFromParsedUrl(parsedUrl)
-                }
-              }}
-              style={{
-                borderTop: index === 0 ? '1px solid var(--card-border-color)' : undefined,
-                position: 'relative',
-                borderBottom: '1px solid var(--card-border-color)',
-                borderLeft: isSelected
-                  ? '2px solid var(--card-muted-fg-color)'
-                  : '2px solid transparent',
-                cursor: 'pointer',
-              }}
-            >
-              <Stack space={compactMode ? 2 : 3}>
-                <Flex justify="space-between" align={'center'} style={{minHeight: '25px'}}>
-                  <Flex align="center" gap={2} paddingRight={1} style={{minWidth: 0, flex: 1}}>
-                    {editingKey === q._key ? (
-                      <TextInput
-                        value={editingTitle}
-                        onChange={(event) => setEditingTitle(event.currentTarget.value)}
-                        onKeyDown={(event) => {
-                          if (event.key === 'Enter') {
-                            void handleTitleSave(q, editingTitle)
-                          } else if (event.key === 'Escape') {
-                            setEditingKey(null)
+            const isEdited = isSelected && !areQueriesEqual && canMutateQuery
+            return (
+              <Card
+                key={q._key}
+                paddingX={compactMode ? 3 : 4}
+                paddingY={compactMode ? 3 : 4}
+                tone="default"
+                onClick={(event) => {
+                  const target = event.target as HTMLElement | null
+                  if (target?.closest('[data-query-actions="true"]')) {
+                    return
+                  }
+                  setSelectedUrl(q.url) // Update the selected query immediately
+                  const parsedUrl = getStateFromUrl(q.url)
+                  if (parsedUrl) {
+                    setStateFromParsedUrl(parsedUrl)
+                  }
+                }}
+                style={{
+                  borderTop: index === 0 ? '1px solid var(--card-border-color)' : undefined,
+                  position: 'relative',
+                  borderBottom: '1px solid var(--card-border-color)',
+                  borderLeft: isSelected
+                    ? '2px solid var(--card-muted-fg-color)'
+                    : '2px solid transparent',
+                  cursor: 'pointer',
+                }}
+              >
+                <Stack space={compactMode ? 2 : 3}>
+                  <Flex justify="space-between" align={'center'} style={{minHeight: '25px'}}>
+                    <Flex align="center" gap={2} paddingRight={1} style={{minWidth: 0, flex: 1}}>
+                      {editingKey === q._key ? (
+                        <TextInput
+                          value={editingTitle}
+                          onChange={(event) => setEditingTitle(event.currentTarget.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                              void handleTitleSave(q, editingTitle)
+                            } else if (event.key === 'Escape') {
+                              setEditingKey(null)
+                            }
+                          }}
+                          onBlur={() => handleTitleSave(q, editingTitle)}
+                          autoFocus
+                          style={{maxWidth: '170px', height: '24px'}}
+                        />
+                      ) : (
+                        <Text
+                          weight="bold"
+                          size={compactMode ? 2 : 3}
+                          textOverflow="ellipsis"
+                          style={{
+                            maxWidth: compactMode ? '180px' : '220px',
+                            cursor: canMutateQuery ? 'pointer' : 'default',
+                            padding: '2px 0',
+                          }}
+                          title={
+                            optimisticTitles[q._key] ||
+                            q.title ||
+                            q._key.slice(q._key.length - 5, q._key.length)
                           }
-                        }}
-                        onBlur={() => handleTitleSave(q, editingTitle)}
-                        autoFocus
-                        style={{maxWidth: '170px', height: '24px'}}
-                      />
-                    ) : (
-                      <Text
-                        weight="bold"
-                        size={compactMode ? 2 : 3}
-                        textOverflow="ellipsis"
-                        style={{
-                          maxWidth: compactMode ? '180px' : '220px',
-                          cursor: canMutateQuery ? 'pointer' : 'default',
-                          padding: '2px 0',
-                        }}
-                        title={
-                          optimisticTitles[q._key] ||
-                          q.title ||
-                          q._key.slice(q._key.length - 5, q._key.length)
-                        }
-                        onClick={
-                          canMutateQuery
-                            ? () => {
-                                setEditingKey(q._key)
-                                setEditingTitle(q.title || q._key.slice(0, 5))
-                              }
-                            : undefined
-                        }
-                      >
-                        {optimisticTitles[q._key] ||
-                          q.title ||
-                          q._key.slice(q._key.length - 5, q._key.length)}
-                      </Text>
-                    )}
-                    {isEdited && (
-                      <Box
-                        style={{
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          backgroundColor: 'var(--card-focus-ring-color)',
-                        }}
-                      />
-                    )}
-                  </Flex>
-                  <Flex align="center" gap={2}>
-                    <Box
-                      data-query-actions="true"
-                      style={{width: '25px', height: '25px', display: 'flex', alignItems: 'center'}}
-                    >
-                      {(!q.shared || canMutateQuery) && (
-                        <MenuButton
-                          button={<ContextMenuButton />}
-                          id={`${q._key}-menu`}
-                          menu={
-                            <Menu>
-                              {!q.shared && (
-                                <MenuItem
-                                  icon={UsersIcon}
-                                  padding={3}
-                                  text={t('label.share')}
-                                  onClick={(event) => {
-                                    event.stopPropagation()
-                                    handleShareQuery(q)
-                                  }}
-                                />
-                              )}
-                              {q.shared && canMutateQuery && (
-                                <MenuItem
-                                  icon={UnpublishIcon}
-                                  padding={3}
-                                  text={t('action.unshare')}
-                                  onClick={(event) => {
-                                    event.stopPropagation()
-                                    void handleUnshareQuery(q)
-                                  }}
-                                />
-                              )}
-                              {canMutateQuery && (
-                                <MenuItem
-                                  tone="critical"
-                                  padding={3}
-                                  icon={TrashIcon}
-                                  text={t('action.delete')}
-                                  onClick={(event) => {
-                                    event.stopPropagation()
-                                    void deleteQuery(q._key)
-                                  }}
-                                />
-                              )}
-                            </Menu>
+                          onClick={
+                            canMutateQuery
+                              ? () => {
+                                  setEditingKey(q._key)
+                                  setEditingTitle(q.title || q._key.slice(0, 5))
+                                }
+                              : undefined
                           }
-                          popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
+                        >
+                          {optimisticTitles[q._key] ||
+                            q.title ||
+                            q._key.slice(q._key.length - 5, q._key.length)}
+                        </Text>
+                      )}
+                      {isEdited && (
+                        <Box
+                          style={{
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            backgroundColor: 'var(--card-focus-ring-color)',
+                          }}
                         />
                       )}
-                    </Box>
-                  </Flex>
-                </Flex>
-
-                {fullQueryPreview ? (
-                  <Tooltip
-                    content={
+                    </Flex>
+                    <Flex align="center" gap={2}>
                       <Box
-                        padding={2}
-                        style={{maxWidth: '420px', maxHeight: '220px', overflow: 'auto'}}
+                        data-query-actions="true"
+                        style={{
+                          width: '25px',
+                          height: '25px',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
                       >
-                        <Code size={1}>{fullQueryPreview}</Code>
+                        {(!q.shared || canMutateQuery) && (
+                          <MenuButton
+                            button={<ContextMenuButton />}
+                            id={`${q._key}-menu`}
+                            menu={
+                              <Menu>
+                                {!q.shared && (
+                                  <MenuItem
+                                    icon={UsersIcon}
+                                    padding={3}
+                                    text={t('label.share')}
+                                    onClick={(event) => {
+                                      event.stopPropagation()
+                                      handleShareQuery(q)
+                                    }}
+                                  />
+                                )}
+                                {q.shared && canMutateQuery && (
+                                  <MenuItem
+                                    icon={UnpublishIcon}
+                                    padding={3}
+                                    text={t('action.unshare')}
+                                    onClick={(event) => {
+                                      event.stopPropagation()
+                                      void handleUnshareQuery(q)
+                                    }}
+                                  />
+                                )}
+                                {canMutateQuery && (
+                                  <MenuItem
+                                    tone="critical"
+                                    padding={3}
+                                    icon={TrashIcon}
+                                    text={t('action.delete')}
+                                    onClick={(event) => {
+                                      event.stopPropagation()
+                                      void deleteQuery(q._key)
+                                    }}
+                                  />
+                                )}
+                              </Menu>
+                            }
+                            popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
+                          />
+                        )}
                       </Box>
-                    }
-                    placement="top"
-                    portal
-                  >
-                    <Code size={1}>{shortQueryPreview}</Code>
-                  </Tooltip>
-                ) : (
-                  <Code />
-                )}
+                    </Flex>
+                  </Flex>
 
-                {compactMode ? (
-                  <Stack space={1} style={{paddingTop: 0, minHeight: '30px'}}>
-                    <Flex align="center" gap={2} style={{minHeight: '18px'}}>
+                  {fullQueryPreview ? (
+                    <Tooltip
+                      content={
+                        <Box
+                          padding={2}
+                          style={{maxWidth: '420px', maxHeight: '220px', overflow: 'auto'}}
+                        >
+                          <Code size={1}>{fullQueryPreview}</Code>
+                        </Box>
+                      }
+                      placement="top"
+                      portal
+                    >
+                      <Code size={1}>{shortQueryPreview}</Code>
+                    </Tooltip>
+                  ) : (
+                    <Code />
+                  )}
+
+                  {compactMode ? (
+                    <Stack space={1} style={{paddingTop: 0, minHeight: '30px'}}>
+                      <Flex align="center" gap={2} style={{minHeight: '18px'}}>
+                        <Box
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '17px',
+                            height: '17px',
+                          }}
+                        >
+                          {q.shared ? (
+                            <UserAvatar size={0} user={q.authorId || ''} withTooltip />
+                          ) : (
+                            <Box
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                lineHeight: 0,
+                                color: 'var(--card-muted-fg-color)',
+                              }}
+                            >
+                              <LockIcon />
+                            </Box>
+                          )}
+                        </Box>
+                        <Badge
+                          mode="outline"
+                          tone={q.shared ? 'primary' : 'default'}
+                          style={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {q.shared ? t('label.shared') : t('label.personal')}
+                        </Badge>
+                      </Flex>
+                      <Text size={1} muted>
+                        {formatDate.format(new Date(q.savedAt || ''))}
+                      </Text>
+                    </Stack>
+                  ) : (
+                    <Flex align="center" gap={2} style={{paddingTop: '2px', minHeight: '20px'}}>
                       <Box
                         style={{
                           display: 'flex',
@@ -617,82 +672,40 @@ export function QueryRecall({
                       >
                         {q.shared ? t('label.shared') : t('label.personal')}
                       </Badge>
+                      <Text size={1} muted>
+                        •
+                      </Text>
+                      <Text size={1} muted>
+                        {formatDate.format(new Date(q.savedAt || ''))}
+                      </Text>
                     </Flex>
-                    <Text size={1} muted>
-                      {formatDate.format(new Date(q.savedAt || ''))}
-                    </Text>
-                  </Stack>
-                ) : (
-                  <Flex align="center" gap={2} style={{paddingTop: '2px', minHeight: '20px'}}>
-                    <Box
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '17px',
-                        height: '17px',
-                      }}
-                    >
-                      {q.shared ? (
-                        <UserAvatar size={0} user={q.authorId || ''} withTooltip />
-                      ) : (
-                        <Box
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            lineHeight: 0,
-                            color: 'var(--card-muted-fg-color)',
-                          }}
-                        >
-                          <LockIcon />
-                        </Box>
-                      )}
-                    </Box>
-                    <Badge
-                      mode="outline"
-                      tone={q.shared ? 'primary' : 'default'}
-                      style={{
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {q.shared ? t('label.shared') : t('label.personal')}
-                    </Badge>
-                    <Text size={1} muted>
-                      •
-                    </Text>
-                    <Text size={1} muted>
-                      {formatDate.format(new Date(q.savedAt || ''))}
-                    </Text>
-                  </Flex>
-                )}
+                  )}
 
-                {isEdited && (
-                  <Button
-                    mode="ghost"
-                    tone="default"
-                    padding={2}
-                    style={{
-                      height: '24px',
-                      position: 'absolute',
-                      right: '16px',
-                      bottom: '16px',
-                      fontSize: '12px',
-                    }}
-                    text={t('action.update')}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      void handleUpdate(q)
-                    }}
-                  />
-                )}
-              </Stack>
-            </Card>
-          )
-        })}
-      </Stack>
+                  {isEdited && (
+                    <Button
+                      mode="ghost"
+                      tone="default"
+                      padding={2}
+                      style={{
+                        height: '24px',
+                        position: 'absolute',
+                        right: '16px',
+                        bottom: '16px',
+                        fontSize: '12px',
+                      }}
+                      text={t('action.update')}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        void handleUpdate(q)
+                      }}
+                    />
+                  )}
+                </Stack>
+              </Card>
+            )
+          })}
+        </Stack>
+      </QueryList>
       {shareDialogQuery && (
         <Dialog
           id="vision-query-recall-share-dialog"
