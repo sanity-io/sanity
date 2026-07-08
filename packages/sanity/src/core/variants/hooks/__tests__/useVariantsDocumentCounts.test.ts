@@ -37,24 +37,20 @@ function createMockClient() {
 
 describe('buildVariantsDocumentCountsQuery', () => {
   it('builds one aggregate fetch query and one listen filter covering all variants', () => {
-    const {fetch, listen, keyToVariantId} = buildVariantsDocumentCountsQuery([
+    const {fetch, listen} = buildVariantsDocumentCountsQuery([
       variantAlphaAudience._id,
       variantNorwegianMarket._id,
     ])
 
     expect(fetch).toBe(
       '{' +
-        '"v0": count(array::unique(*[sanity::partOfVariant("alpha-audience")]._system.group._ref)),' +
-        '"v1": count(array::unique(*[sanity::partOfVariant("norwegian-market")]._system.group._ref))' +
+        '"_.variants.alpha-audience": count(array::unique(*[sanity::partOfVariant("alpha-audience")]._system.group._ref)),' +
+        '"_.variants.norwegian-market": count(array::unique(*[sanity::partOfVariant("norwegian-market")]._system.group._ref))' +
         '}',
     )
     expect(listen).toBe(
       '*[sanity::partOfVariant("alpha-audience") || sanity::partOfVariant("norwegian-market")]',
     )
-    expect(keyToVariantId).toEqual({
-      v0: variantAlphaAudience._id,
-      v1: variantNorwegianMarket._id,
-    })
   })
 })
 
@@ -75,7 +71,7 @@ describe('getVariantsDocumentCounts', () => {
 
   it('opens a single listener and maps the aggregate response to counts per variant id', async () => {
     const {client, fetch, listen, listener$} = createMockClient()
-    fetch.mockReturnValue(of({v0: 2, v1: 0}))
+    fetch.mockReturnValue(of({[variantAlphaAudience._id]: 2, [variantNorwegianMarket._id]: 0}))
 
     const valuesPromise = firstValueFrom(
       getVariantsDocumentCounts(client, [
@@ -120,7 +116,9 @@ describe('getVariantsDocumentCounts', () => {
     vi.useFakeTimers()
 
     const {client, fetch, listener$} = createMockClient()
-    fetch.mockReturnValueOnce(of({v0: 1})).mockReturnValueOnce(of({v0: 2}))
+    fetch
+      .mockReturnValueOnce(of({[variantAlphaAudience._id]: 1}))
+      .mockReturnValueOnce(of({[variantAlphaAudience._id]: 2}))
 
     const valuesPromise = firstValueFrom(
       getVariantsDocumentCounts(client, [variantAlphaAudience._id]).pipe(take(3), toArray()),
@@ -169,7 +167,7 @@ describe('useVariantsDocumentCounts', () => {
   it('returns live counts and stops loading after the first fetch', async () => {
     const {client, fetch, listener$} = createMockClient()
     useClientMock.mockReturnValue(client)
-    fetch.mockReturnValue(of({v0: 3}))
+    fetch.mockReturnValue(of({[variantAlphaAudience._id]: 3}))
 
     const wrapper = await createTestProvider()
     const {result} = renderHook(() => useVariantsDocumentCounts([variantAlphaAudience._id]), {

@@ -10,18 +10,18 @@ import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../store/constants'
 import {getVariantId} from '../tool/util'
 
 /**
- * The fetch and listen GROQ queries used to keep per-variant document counts fresh,
- * plus the mapping from projection keys back to variant definition document ids.
+ * The fetch and listen GROQ queries used to keep per-variant document counts fresh.
  *
  * @internal
  */
 export interface VariantsDocumentCountsQuery {
-  /** Aggregate object query returning one count per variant, keyed by `keyToVariantId` keys. */
+  /**
+   * Aggregate object query returning one count per variant, keyed by variant definition
+   * document id (`_.variants.*`).
+   */
   fetch: string
   /** Filter matching every document in any of the variants, used for the single listener. */
   listen: string
-  /** Maps projection keys (`v0`, `v1`, ...) back to variant definition document ids. */
-  keyToVariantId: Record<string, string>
 }
 
 /**
@@ -39,23 +39,21 @@ export interface VariantsDocumentCountsQuery {
 export function buildVariantsDocumentCountsQuery(
   variantDocumentIds: string[],
 ): VariantsDocumentCountsQuery {
-  const keyToVariantId: Record<string, string> = {}
   const projections: string[] = []
   const filters: string[] = []
 
-  variantDocumentIds.forEach((variantDocumentId, index) => {
-    const key = `v${index}`
+  for (const variantDocumentId of variantDocumentIds) {
     const membership = `sanity::partOfVariant(${JSON.stringify(getVariantId(variantDocumentId))})`
 
-    keyToVariantId[key] = variantDocumentId
-    projections.push(`"${key}": count(array::unique(*[${membership}]._system.group._ref))`)
+    projections.push(
+      `${JSON.stringify(variantDocumentId)}: count(array::unique(*[${membership}]._system.group._ref))`,
+    )
     filters.push(membership)
-  })
+  }
 
   return {
     fetch: `{${projections.join(',')}}`,
     listen: `*[${filters.join(' || ')}]`,
-    keyToVariantId,
   }
 }
 
@@ -91,7 +89,7 @@ export function getVariantsDocumentCounts(
     return of(EMPTY_STATE)
   }
 
-  const {fetch, listen, keyToVariantId} = buildVariantsDocumentCountsQuery(variantDocumentIds)
+  const {fetch, listen} = buildVariantsDocumentCountsQuery(variantDocumentIds)
 
   return listenQuery(
     client,
@@ -104,9 +102,9 @@ export function getVariantsDocumentCounts(
     map(
       (response: Record<string, number>): VariantsDocumentCountsState => ({
         data: Object.fromEntries(
-          Object.entries(keyToVariantId).map(([key, variantDocumentId]) => [
+          variantDocumentIds.map((variantDocumentId) => [
             variantDocumentId,
-            response?.[key] ?? 0,
+            response?.[variantDocumentId] ?? 0,
           ]),
         ),
         loading: false,
