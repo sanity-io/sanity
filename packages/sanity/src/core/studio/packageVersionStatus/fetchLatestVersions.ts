@@ -67,10 +67,14 @@ export const fetchLatestAutoUpdatingVersion = async (options: {
       resolvedVersion: data.resolvedVersion as string | undefined,
     }
   } catch (err) {
-    console.error(
-      new Error(`Failed to fetch version for package "${packageName}" (using appId=${appId})`, {
-        cause: err,
-      }),
+    // Best-effort check — the caller keeps previously known versions and retries on the next poll
+    console.warn(
+      new Error(
+        `[sanity] Failed to fetch version for package "${packageName}" (using appId=${appId})`,
+        {
+          cause: err,
+        },
+      ),
     )
     return undefined
   }
@@ -105,8 +109,9 @@ export const fetchLatestAvailableVersionForPackage = async (options: {
       resolvedVersion: data.resolvedVersion as string | undefined,
     }
   } catch (err) {
-    console.error(
-      `Failed to fetch version for package (using tag=${tag})`,
+    // Best-effort check — the caller keeps previously known versions and retries on the next poll
+    console.warn(
+      `[sanity] Failed to fetch version for package (using tag=${tag})`,
       packageName,
       'Error:',
       err,
