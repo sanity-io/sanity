@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {parseImportMapModuleCdnUrl} from './utils'
+import {isReloadableVersion, parseImportMapModuleCdnUrl} from './utils'
 
 describe('parseImportMapModuleCdnUrl for legacy urls', () => {
   it('returns undefined but warns if an invalid module url is given', () => {
@@ -94,5 +94,24 @@ describe('parseImportMapModuleCdnUrl for app-id urls', () => {
         "valid": false,
       }
     `)
+  })
+})
+
+describe('isReloadableVersion', () => {
+  it('accepts versions within the import map range', () => {
+    expect(isReloadableVersion('5.32.0', '^5.31.1')).toBe(true)
+    expect(isReloadableVersion('5.31.1', '^5.31.1')).toBe(true)
+    // downgrades within the range (e.g. a version pinned via manage) are still reachable
+    expect(isReloadableVersion('5.25.0', '^5.20.0')).toBe(true)
+  })
+  it('rejects versions outside the import map range', () => {
+    // a new major will never be served on reload
+    expect(isReloadableVersion('6.4.0', '^5.31.1')).toBe(false)
+    expect(isReloadableVersion('4.9.0', '^5.31.1')).toBe(false)
+  })
+  it('accepts prerelease versions within the range', () => {
+    expect(isReloadableVersion('5.32.0-next.5', '^5.31.1')).toBe(true)
+    // but not prereleases of the next major
+    expect(isReloadableVersion('6.0.0-next.1', '^5.31.1')).toBe(false)
   })
 })

@@ -1,5 +1,6 @@
 import {CogIcon} from '@sanity/icons/Cog'
 import {GithubIcon} from '@sanity/icons/Github'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
@@ -147,6 +148,42 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
       </Card>
     ) : null
 
+  // A newer major version exists, but auto-update can't reach it (a reload only serves versions
+  // within the import map's version range unless the major jump has been explicitly allowed) —
+  // updating requires upgrading the studio's dependencies and redeploying
+  const majorUpgradeNote =
+    isAutoUpdating &&
+    latestTaggedVersion &&
+    latestTaggedVersion.major > currentVersion.major &&
+    (!autoUpdatingVersion || autoUpdatingVersion.major < latestTaggedVersion.major) ? (
+      <Card padding={4} tone="primary">
+        <Flex align="flex-start" gap={3}>
+          <TextWithTone tone="primary">
+            <InfoOutlineIcon />
+          </TextWithTone>
+          <Stack space={4}>
+            <TextWithTone size={1} tone="primary" weight="medium">
+              {t('about-dialog.version-info.major-upgrade.header')}
+            </TextWithTone>
+            <TextWithTone size={1} tone="primary">
+              {t('about-dialog.version-info.major-upgrade.description', {
+                latestVersion: latestTaggedVersion.version,
+              })}
+            </TextWithTone>
+            <Text muted size={1}>
+              <a
+                href="https://www.sanity.io/docs/upgrade"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t('about-dialog.version-info.major-upgrade.view-documentation')} &rarr;
+              </a>
+            </Text>
+          </Stack>
+        </Flex>
+      </Card>
+    ) : null
+
   const versionBadgeTone =
     currentVersionType === 'development'
       ? 'caution'
@@ -242,7 +279,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 />
               </Flex>
             </>
-          ) : !isUpToDate || currentVersionType ? (
+          ) : isUpToDate ? null : (
             <>
               <Flex justify="flex-end" align="center">
                 <Text size={1} weight="semibold">
@@ -273,7 +310,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 }
               </Flex>
             </>
-          ) : null}
+          )}
         </Grid>
         <Stack space={2} paddingY={3}>
           {isAutoUpdating ? (
@@ -313,6 +350,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               </Flex>
             </Card>
           ) : null}
+          {majorUpgradeNote}
           {importMapWarning}
         </Stack>
         <Stack paddingX={3}>
