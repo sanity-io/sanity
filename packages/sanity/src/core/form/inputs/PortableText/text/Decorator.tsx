@@ -25,12 +25,8 @@ export function Decorator(props: DecoratorRenderProps) {
   const {decorator, focused, selected, children} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const sanitySchemaType = schemaTypes.decorators.find((type) => type.value === decorator)
-  if (!sanitySchemaType) {
-    // This should never happen
-    throw new Error(`Could not find Sanity schema type for decorator: ${decorator}`)
-  }
   const tag = TEXT_DECORATOR_TAGS[decorator]
-  const CustomComponent = sanitySchemaType.component
+  const CustomComponent = sanitySchemaType?.component
   const DefaultComponent = useCallback(
     (defaultComponentProps: BlockDecoratorProps) => {
       return (
@@ -42,6 +38,13 @@ export function Decorator(props: DecoratorRenderProps) {
     [tag, decorator],
   )
   return useMemo(() => {
+    if (!sanitySchemaType) {
+      // The value predates a schema change (for example a decorator that was
+      // removed). Render the children without the mark styling instead of
+      // crashing.
+      console.warn(`Could not find Sanity schema type for decorator: ${decorator}`)
+      return <>{children}</>
+    }
     const componentProps = {
       focused,
       renderDefault: DefaultComponent,
