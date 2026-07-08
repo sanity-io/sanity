@@ -1,7 +1,8 @@
-import {type SanityDocument} from '@sanity/client'
-
 import {type PerspectiveBundle} from '../../../perspective/types'
-import {type DocumentValidationStatus} from '../../../releases/tool/detail/useBundleDocuments'
+import {
+  type BundleDocument,
+  type DocumentValidationStatus,
+} from '../../../releases/tool/detail/useBundleDocuments'
 
 export type {DocumentValidationStatus}
 
@@ -21,13 +22,12 @@ export interface VariantDocumentVersion {
 /**
  * A single variant-scoped document version returned by {@link useVariantDocuments}.
  *
+ * Extends the shared {@link BundleDocument} with the resolved `version` metadata.
+ *
  * @internal
  */
-export interface DocumentInVariant {
-  memoKey: string
-  document: SanityDocument
+export interface DocumentInVariant extends BundleDocument {
   version: VariantDocumentVersion
-  validation: DocumentValidationStatus
 }
 
 /**

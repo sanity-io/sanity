@@ -6,7 +6,7 @@ import {
   type ReleaseActionComponent,
   type ReleaseActionDescription,
 } from '../../config/releases/actions'
-import {type DocumentInRelease} from '../tool/detail/useBundleDocuments'
+import {type DocumentInRelease} from '../tool/detail/types'
 
 export interface ReleaseActionsResolverProps {
   actions: ReleaseActionComponent[]

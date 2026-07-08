@@ -41,6 +41,7 @@ const createRow = (
     _rev: 'rev-1',
     _createdAt: '2025-06-01T00:00:00Z',
     _updatedAt: '2025-06-01T00:00:00Z',
+    publishedDocumentExists: false,
   },
   version: {
     documentId: 'drafts.scope.article-1',

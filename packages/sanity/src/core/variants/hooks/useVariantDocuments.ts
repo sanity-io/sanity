@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 
 import {
-  type DocumentInRelease,
+  type BundleDocument,
   useBundleDocuments,
 } from '../../releases/tool/detail/useBundleDocuments'
 import {type DocumentInVariant} from '../tool/detail/types'
@@ -43,7 +43,7 @@ export function useVariantDocuments(variantId: string | undefined): {
   }
 }
 
-function toDocumentInVariants(results: DocumentInRelease[]): DocumentInVariant[] {
+function toDocumentInVariants(results: BundleDocument[]): DocumentInVariant[] {
   return results.flatMap((result) => {
     const version = toVariantDocumentVersion(result.document)
 

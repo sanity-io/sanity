@@ -1,4 +1,7 @@
+import {type DocumentSystem} from '@sanity/types'
+
 import {type PerspectiveBundle} from '../../../perspective/types'
+import {DOCUMENT_SYSTEM_FIELD} from '../../../preview/constants'
 import {isPublishedBundleId} from '../util'
 import {
   type DocumentInVariant,
@@ -64,7 +67,8 @@ export function groupVariantDocumentsByGroup(
   const groups = new Map<string, DocumentInVariant[]>()
 
   for (const document of documents) {
-    const groupId = document.document._system?.group?._ref
+    const system = document.document[DOCUMENT_SYSTEM_FIELD] as DocumentSystem | undefined
+    const groupId = system?.group?._ref
 
     if (!groupId) {
       continue

@@ -27,7 +27,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../detail/types'
 
 interface ReleaseScheduleButtonProps {
   release: ReleaseDocument

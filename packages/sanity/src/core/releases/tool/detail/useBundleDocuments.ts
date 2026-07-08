@@ -34,9 +34,12 @@ export interface DocumentValidationStatus extends ValidationStatus {
 }
 
 /**
- * TODO: Rename this fo DocumentInBundle, adapt in releases and variants to it's own specific types.
+ * A document in a bundle (a set of documents resolved by a GROQ filter, e.g. a release or a
+ * variant), along with its validation status. Shared by the release- and variant-specific types.
+ *
+ * @public
  */
-export interface DocumentInRelease {
+export interface BundleDocument {
   memoKey: string
   isPending?: boolean
   document: SanityDocument & {publishedDocumentExists: boolean}
@@ -45,7 +48,7 @@ export interface DocumentInRelease {
 
 export type BundleDocumentsObservableResult = Observable<{
   loading: boolean
-  results: DocumentInRelease[]
+  results: BundleDocument[]
   error: Error | null
 }>
 
@@ -253,7 +256,7 @@ export function useBundleDocuments(options: {
   enabled?: boolean
 }): {
   loading: boolean
-  results: DocumentInRelease[]
+  results: BundleDocument[]
   error: null | Error
 } {
   const {groqFilter, params, cacheKey, skipValidation, enabled = true} = options

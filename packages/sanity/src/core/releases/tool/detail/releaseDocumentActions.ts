@@ -1,6 +1,6 @@
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 import {type BundleDocumentRow} from './ReleaseSummary'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInRelease} from './types'
 
 export type DocumentFilterType = 'all' | 'added' | 'changed' | 'unpublished' | 'errors'
 

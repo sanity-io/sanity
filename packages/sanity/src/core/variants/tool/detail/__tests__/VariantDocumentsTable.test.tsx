@@ -58,6 +58,7 @@ const mockRows: DocumentInVariantGroup[] = [
       _rev: 'rev-1',
       _createdAt: '2025-01-01T00:00:00Z',
       _updatedAt: '2025-06-01T00:00:00Z',
+      publishedDocumentExists: true,
       title: 'First article',
     },
     version: {
@@ -89,6 +90,7 @@ const mockRows: DocumentInVariantGroup[] = [
       _rev: 'rev-2',
       _createdAt: '2025-01-02T00:00:00Z',
       _updatedAt: '2025-06-02T00:00:00Z',
+      publishedDocumentExists: false,
       title: 'Second article',
     },
     version: {

@@ -17,7 +17,7 @@ import {useReleasePermissions} from '../../../../store/useReleasePermissions'
 import {createReleaseId} from '../../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../../../util/util'
-import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../../detail/types'
 import {useDocumentRevertStates} from './useDocumentRevertStates'
 import {usePostPublishTransactions} from './usePostPublishTransactions'
 

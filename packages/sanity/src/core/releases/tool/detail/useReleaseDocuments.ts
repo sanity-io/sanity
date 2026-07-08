@@ -12,9 +12,9 @@ import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 import {getPublishedArchivedReleaseDocumentsObservable} from './getPublishedArchivedReleaseDocumentsObservable'
+import {type DocumentInRelease} from './types'
 import {
   type BundleDocumentsObservableResult,
-  type DocumentInRelease,
   getBundleDocumentsObservable,
 } from './useBundleDocuments'
 

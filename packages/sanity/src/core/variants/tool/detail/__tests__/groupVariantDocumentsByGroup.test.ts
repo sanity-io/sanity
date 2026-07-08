@@ -32,6 +32,7 @@ const createDocumentInVariant = ({
     _rev: `${documentId}-rev`,
     _createdAt: updatedAt,
     _updatedAt: updatedAt,
+    publishedDocumentExists: false,
     _system: {
       bundleId: bundleId ?? null,
       release: releaseRef ? {_ref: releaseRef, _weak: true} : null,
