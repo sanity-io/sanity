@@ -6,6 +6,7 @@ import {
 } from '../../releases/tool/detail/useBundleDocuments'
 import {type DocumentInVariant} from '../tool/detail/types'
 import {toVariantDocumentVersion} from '../tool/detail/variantDocumentVersion'
+import {getVariantId} from '../tool/util'
 
 /**
  * Hook to fetch the documents that belong to a variant.
@@ -21,7 +22,7 @@ export function useVariantDocuments(variantId: string | undefined): {
   error: null | Error
 } {
   const enabled = Boolean(variantId)
-  const params = useMemo(() => ({variantId: variantId ?? ''}), [variantId])
+  const params = useMemo(() => ({variantId: variantId ? getVariantId(variantId) : ''}), [variantId])
 
   const {loading, results, error} = useBundleDocuments({
     groqFilter: `sanity::partOfVariant($variantId)`,
