@@ -89,7 +89,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     const {resolvedVersion, packageVersion} = autoUpdatingVersionRaw
     // Prefer the version resolved by the module CDN — the exact version a reload will serve
     if (resolvedVersion) {
-      return semver.parse(resolvedVersion)!
+      return semver.parse(resolvedVersion) ?? undefined
     }
     if (!packageVersion) {
       return undefined
@@ -101,10 +101,11 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     if (importMapInfo?.valid && !isReloadableVersion(packageVersion, importMapInfo.versionRange)) {
       return undefined
     }
-    return semver.parse(packageVersion)!
+    return semver.parse(packageVersion) ?? undefined
   }, [autoUpdatingVersionRaw, importMapInfo])
   const latestTaggedVersion = useMemo(
-    () => (latestTaggedVersionRaw ? semver.parse(latestTaggedVersionRaw)! : undefined),
+    () =>
+      latestTaggedVersionRaw ? (semver.parse(latestTaggedVersionRaw) ?? undefined) : undefined,
     [latestTaggedVersionRaw],
   )
 
