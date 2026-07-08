@@ -3,7 +3,7 @@ import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
-// A deliberately tight schema: no lists, one style, one decorator, no
+// A deliberately tight schema: one list, one style, one decorator, no
 // annotations. The seeded document below references types outside all four
 // sets, simulating a schema that was tightened after content was written.
 const SCHEMA_TYPES = [
@@ -18,7 +18,7 @@ const SCHEMA_TYPES = [
         of: [
           defineArrayMember({
             type: 'block',
-            lists: [],
+            lists: [{title: 'Supported list', value: 'supported-list'}],
             styles: [{title: 'Normal', value: 'normal'}],
             marks: {
               decorators: [{title: 'Strong', value: 'strong'}],
@@ -67,6 +67,38 @@ const document = {
       style: 'normal',
       markDefs: [{_type: 'link', _key: 'd0', href: 'https://example.com'}],
       children: [{_type: 'span', _key: 'd1', text: 'schema-less annotation', marks: ['d0']}],
+    },
+    {
+      _type: 'block',
+      _key: 'e',
+      style: 'h2',
+      listItem: 'number',
+      level: 1,
+      markDefs: [],
+      children: [{_type: 'span', _key: 'e1', text: 'schema-less style and list', marks: []}],
+    },
+    {
+      _type: 'block',
+      _key: 'f',
+      style: 'normal',
+      markDefs: [{_type: 'link', _key: 'f0', href: 'https://example.com'}],
+      children: [
+        {
+          _type: 'span',
+          _key: 'f1',
+          text: 'schema-less mark and annotation',
+          marks: ['em', 'f0'],
+        },
+      ],
+    },
+    {
+      _type: 'block',
+      _key: 'g',
+      style: 'normal',
+      listItem: 'supported-list',
+      level: 1,
+      markDefs: [],
+      children: [{_type: 'span', _key: 'g1', text: 'schema-defined list item', marks: []}],
     },
   ],
 }
