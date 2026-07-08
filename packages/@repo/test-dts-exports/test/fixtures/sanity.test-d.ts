@@ -877,6 +877,7 @@ import type {
   isImageSchemaType,
   isIndexSegment,
   isIndexTuple,
+  isInvalidSessionError,
   isKeyedObject,
   isKeySegment,
   IsLastPaneProvider,
@@ -913,7 +914,6 @@ import type {
   isSanityDocument,
   isScheduleDocumentVersionEvent,
   isSearchStrategy,
-  isSessionExpiredError,
   isSlug,
   isSpanSchemaType,
   isString,
@@ -4436,6 +4436,9 @@ describe('sanity', () => {
   test('isIndexTuple', () => {
     expectTypeOf<typeof isIndexTuple>().toBeFunction()
   })
+  test('isInvalidSessionError', () => {
+    expectTypeOf<typeof isInvalidSessionError>().toBeFunction()
+  })
   test('isKeyedObject', () => {
     expectTypeOf<typeof isKeyedObject>().toBeFunction()
   })
@@ -4543,9 +4546,6 @@ describe('sanity', () => {
   })
   test('isSearchStrategy', () => {
     expectTypeOf<typeof isSearchStrategy>().toBeFunction()
-  })
-  test('isSessionExpiredError', () => {
-    expectTypeOf<typeof isSessionExpiredError>().toBeFunction()
   })
   test('isSlug', () => {
     expectTypeOf<typeof isSlug>().toBeFunction()
