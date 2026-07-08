@@ -1405,6 +1405,7 @@ import type {
   Status,
   StatusButton,
   StatusButtonProps,
+  StoreRequestErrorHandler,
   StrictDefinition,
   StrictVersionLayeringOptions,
   StringComponents,
@@ -6024,6 +6025,9 @@ describe('sanity', () => {
   })
   test('StatusButtonProps', () => {
     expectTypeOf<StatusButtonProps>().not.toBeNever()
+  })
+  test('StoreRequestErrorHandler', () => {
+    expectTypeOf<StoreRequestErrorHandler>().toBeObject()
   })
   test('StrictDefinition', () => {
     expectTypeOf<StrictDefinition>().not.toBeNever()
