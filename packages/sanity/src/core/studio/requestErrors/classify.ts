@@ -4,7 +4,7 @@ import isNativeNetworkError from 'is-network-error'
 // These live in `util` so that non-studio code (e.g. the document store) can
 // depend on them without importing from `studio`; re-exported here to keep
 // the public API surface and existing import sites unchanged.
-export {getApiErrorCode, isSessionExpiredError, isUnauthorizedError} from '../../util/apiErrors'
+export {getApiErrorCode, isInvalidSessionError, isUnauthorizedError} from '../../util/apiErrors'
 
 /** @internal */
 export function isTimeoutError(
@@ -76,9 +76,9 @@ export type RequestErrorClassification =
  * denials, conflicts, 404s, ...) and should stay with the caller.
  *
  * Note: 401 is intentionally NOT classified here — whether a 401 means
- * "session expired" (studio concern) or "this resource refuses you"
+ * "invalid session" (studio concern) or "this resource refuses you"
  * (caller concern) is decided by the API's explicit error code, which the
- * channel checks separately (see {@link isSessionExpiredError}).
+ * channel checks separately (see {@link isInvalidSessionError}).
  *
  * @internal
  */

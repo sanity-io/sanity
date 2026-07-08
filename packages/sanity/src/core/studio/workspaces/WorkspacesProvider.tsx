@@ -22,7 +22,7 @@ import {
 } from 'sanity/_singletons'
 
 import {type Config, prepareConfig} from '../../config'
-import {isSessionExpiredError} from '../requestErrors/classify'
+import {getApiErrorCode, isInvalidSessionError} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {
   createRequestFailureProbe,
@@ -155,12 +155,12 @@ export function WorkspacesProvider({
   //     project/dataset makes the studio unusable and no plugin can recover
   //     from it — the studio claims this UX, replacing the workspace render
   //     with a guided full-screen view.
-  //  2. expired-session 401 → forced logout: only 401s the API explicitly
-  //     tags as session expiry (`SIO-401-AEX`, sent by every endpoint) are
-  //     handled globally. Untagged 401s are resource-level denials (some
-  //     endpoints answer 401, not 403, for authenticated users lacking a
-  //     grant) and re-surface to the caller like any other caller-domain
-  //     error.
+  //  2. invalid-session 401 → forced logout: only 401s the API explicitly
+  //     tags as an invalid session (`SIO-401-AEX` expired, `SIO-401-ANF` not
+  //     found — both sent by every endpoint) are handled globally.
+  //     Untagged 401s are resource-level denials (some endpoints answer
+  //     401, not 403, for authenticated users lacking a grant) and
+  //     re-surface to the caller like any other caller-domain error.
   //
   // Everything else — network errors, 5xx, 429 — propagates to the caller
   // unchanged. Callers that cannot recover locally delegate explicitly via
@@ -169,11 +169,11 @@ export function WorkspacesProvider({
     (requestOptions, originalRequest, client) => {
       return defer(() => originalRequest(requestOptions)).pipe(
         catchError((requestError: unknown, caught) => {
-          // An expired-session 401 means the session is no longer
+          // An invalid-session 401 means the session is no longer
           // authenticated. Hand it to the channel — it claims the
           // `unauthorized` state once, driving the forced logout below —
           // and park this request, since the session is being torn down.
-          if (isSessionExpiredError(requestError)) {
+          if (isInvalidSessionError(requestError)) {
             void requestErrorChannel.handle(requestError)
             return NEVER
           }
@@ -253,9 +253,14 @@ export function WorkspacesProvider({
   // Why we logged the user out, consumed by the login screen to surface a
   // toast. Derived from the live `unauthorized` claim, so it's present exactly
   // while the forced-logout state is — and clears on re-login (no persistence).
-  // The channel only claims `SIO-401-AEX` 401s, so the reason is always an
-  // expired session.
-  const loggedOutReason = claim?.type === 'unauthorized' ? 'session-expired' : undefined
+  // The reason mirrors the API's invalid-session code so the toast copy can
+  // be accurate: "expired" only when the API actually said expired.
+  const loggedOutReason =
+    claim?.type === 'unauthorized'
+      ? getApiErrorCode(claim.error) === 'SIO-401-AEX'
+        ? 'session-expired'
+        : 'session-not-found'
+      : undefined
 
   // Fire forced logout on a verified `unauthorized` claim. Done in an
   // effect so the logout call doesn't run during a render commit.

@@ -22,7 +22,7 @@ import {
   withLatestFrom,
 } from 'rxjs/operators'
 
-import {isSessionExpiredError} from '../../../util/apiErrors'
+import {isInvalidSessionError} from '../../../util/apiErrors'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 import {
   type BufferedDocumentEvent,
@@ -234,11 +234,12 @@ function commitMutations(
  * haven't classified — take the conservative retry path.
  *
  * 401 is terminal only for resource-level denials (e.g. a missing grant —
- * some endpoints answer those with 401, not 403). A 401 tagged as session
- * expiry (`SIO-401-AEX`) is carved out below: it says nothing about the
- * mutation itself, and re-authenticating can make the retry succeed, so the
- * buffered edits must be preserved rather than wiped mid-edit. The session
- * itself is handled separately by the force-logout flow.
+ * some endpoints answer those with 401, not 403). A 401 tagged as an invalid
+ * session (`SIO-401-AEX` expired, `SIO-401-ANF` not found) is carved out
+ * below: it says nothing about the mutation itself, and re-authenticating
+ * can make the retry succeed, so the buffered edits must be preserved
+ * rather than wiped mid-edit. The session itself is handled separately by
+ * the force-logout flow.
  */
 const TERMINAL_COMMIT_STATUSES = new Set([400, 401, 402, 403, 404, 409, 410, 412, 413, 422])
 
@@ -279,7 +280,7 @@ function submitCommitRequest(
       if (
         statusCode !== undefined &&
         TERMINAL_COMMIT_STATUSES.has(statusCode) &&
-        !isSessionExpiredError(error)
+        !isInvalidSessionError(error)
       ) {
         request.cancel(error)
       } else {

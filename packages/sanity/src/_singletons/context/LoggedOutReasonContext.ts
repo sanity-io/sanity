@@ -5,12 +5,13 @@ import {createContext} from 'sanity/_createContext'
  * banner above the login form. `undefined` when the logged-out state isn't the
  * result of a forced logout (e.g. a normal cold load with no session).
  *
- * Currently a single-member union: forced logout only happens on API-tagged
- * session expiry (`SIO-401-AEX`). Kept as a union so future reasons slot in.
+ * Mirrors the API's invalid-session 401 codes: `session-expired` for
+ * `SIO-401-AEX`, `session-not-found` for `SIO-401-ANF` (session revoked,
+ * purged, or the stored token is stale).
  *
  * @internal
  */
-export type LoggedOutReason = 'session-expired'
+export type LoggedOutReason = 'session-expired' | 'session-not-found'
 
 /** @internal */
 export const LoggedOutReasonContext = createContext<LoggedOutReason | undefined>(
