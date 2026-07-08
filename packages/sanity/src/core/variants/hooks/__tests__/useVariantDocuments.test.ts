@@ -67,7 +67,7 @@ describe('useVariantDocuments', () => {
 
     expect(documentPreviewStoreMock.unstable_observeDocumentIdSet).toHaveBeenCalledWith(
       'sanity::partOfVariant($variantId)',
-      {variantId: variantAlphaAudience._id},
+      {variantId: 'alpha-audience'},
       {apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion},
     )
   })
