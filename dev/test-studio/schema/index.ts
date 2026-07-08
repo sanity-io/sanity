@@ -133,6 +133,11 @@ import numbers from './standard/numbers'
 import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
 import blocks from './standard/portableText/blocks'
+import {
+  containerExamples,
+  structuredList,
+  structuredListItem,
+} from './standard/portableText/containerExamples'
 import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
 import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
 import {customPlugins} from './standard/portableText/customPlugins'
@@ -210,6 +215,9 @@ export function createSchemaTypes(projectId: string) {
     richTextObject,
     ...Object.values(scrollBugTypes),
     customPlugins,
+    containerExamples,
+    structuredList,
+    structuredListItem,
     simpleBlock,
     manyEditors,
     simpleBlockNote,
