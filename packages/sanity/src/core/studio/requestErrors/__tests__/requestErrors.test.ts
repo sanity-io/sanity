@@ -382,7 +382,7 @@ describe('createRequestErrorChannel', () => {
       })
     })
 
-    it('re-throws 401s without the session-expired code (resource-level denials)', async () => {
+    it('re-throws 401s without an invalid-session code (resource-level denials)', async () => {
       // Some endpoints answer 401 (not 403) for authenticated users lacking
       // a grant — those must stay caller-domain, not force a logout.
       const channel = createRequestErrorChannel()
