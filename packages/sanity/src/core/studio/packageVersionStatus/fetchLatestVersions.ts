@@ -37,11 +37,18 @@ function getModuleUrl({
   return `${MODULES_URL}/${packageName}/${tag}/^${minVersion.version}/t${timestamp}`
 }
 
+export interface AutoUpdatingVersionInfo {
+  /** The version the app is configured to update to (may not be servable for the import map's version range) */
+  packageVersion?: string
+  /** The exact version the module CDN will serve for the studio's import map URL, if provided by the server */
+  resolvedVersion?: string
+}
+
 export const fetchLatestAutoUpdatingVersion = async (options: {
   packageName: string
   minVersion: SemVer
   appId: string
-}) => {
+}): Promise<AutoUpdatingVersionInfo | undefined> => {
   const {packageName, minVersion, appId} = options
 
   try {
@@ -54,10 +61,11 @@ export const fetchLatestAutoUpdatingVersion = async (options: {
     if (!res.ok) {
       throw new Error(`HTTP ${res.status} ${res.statusText}`)
     }
-    // `return await` (not bare `return`) so a JSON parse rejection is
-    // caught by this try/catch instead of escaping to the caller.
     const data = await res.json()
-    return data.packageVersion as string
+    return {
+      packageVersion: data.packageVersion as string,
+      resolvedVersion: data.resolvedVersion as string | undefined,
+    }
   } catch (err) {
     console.error(
       new Error(`Failed to fetch version for package "${packageName}" (using appId=${appId})`, {
@@ -68,11 +76,18 @@ export const fetchLatestAutoUpdatingVersion = async (options: {
   }
 }
 
+export interface LatestVersionInfo {
+  /** The latest version published to the tag (may not be servable for the import map's version range) */
+  latest?: string
+  /** The exact version the module CDN will serve for the studio's import map URL, if provided by the server */
+  resolvedVersion?: string
+}
+
 export const fetchLatestAvailableVersionForPackage = async (options: {
   packageName: string
   minVersion: SemVer
   tag?: string
-}) => {
+}): Promise<LatestVersionInfo | undefined> => {
   const {packageName, minVersion, tag = 'latest'} = options
   try {
     // On every request it should be a new timestamp, so we can actually get a new version notification
@@ -84,10 +99,11 @@ export const fetchLatestAvailableVersionForPackage = async (options: {
     if (!res.ok) {
       throw new Error(`HTTP ${res.status} ${res.statusText}`)
     }
-    // `return await` (not bare `return`) so a JSON parse rejection is
-    // caught by this try/catch instead of escaping to the caller.
     const data = await res.json()
-    return data.latest as string
+    return {
+      latest: data.latest as string,
+      resolvedVersion: data.resolvedVersion as string | undefined,
+    }
   } catch (err) {
     console.error(
       `Failed to fetch version for package (using tag=${tag})`,
