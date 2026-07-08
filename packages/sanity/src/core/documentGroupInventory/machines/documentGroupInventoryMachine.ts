@@ -8,6 +8,7 @@ import {type ReleasesReducerState} from '../../releases/store/reducer'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {isAgentBundleName, type AgentBundlesState} from '../../store/agent/createAgentBundlesStore'
 import {getVersionFromId, isDraftId, isPublishedId} from '../../util/draftUtils'
+import {type VariantStoreState} from '../../variants/store/reducer'
 import {type deletionMachine} from './deletionMachine'
 import {type selectionMachine, type Variant} from './selectionMachine'
 
@@ -17,6 +18,7 @@ type DeletionLogic = typeof deletionMachine
 export interface Meta {
   versionState: DocumentPerspectiveState
   releases: ReleasesReducerState
+  variants: VariantStoreState
   agentBundles: AgentBundlesState
 }
 
