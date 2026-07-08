@@ -134,7 +134,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
 
     // fetch the current version based on manage/brett configuration for appid
     const resolveAutoUpdatingVersion = DEBUG_AUTO_UPDATE_VERSION
-      ? Promise.resolve({packageVersion: DEBUG_VALUES.autoUpdateVersion})
+      ? Promise.resolve<AutoUpdatingVersionInfo>({packageVersion: DEBUG_VALUES.autoUpdateVersion})
       : importMapInfo?.valid
         ? importMapInfo.appId
           ? fetchLatestAutoUpdatingVersion({
@@ -155,7 +155,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         // than rejecting), so only overwrite state when we actually got a value.
         // This keeps the previously known versions on a transient failure and
         // we try again on the next tick.
-        if (nextAutoUpdatingVersion) {
+        if (nextAutoUpdatingVersion?.resolvedVersion || nextAutoUpdatingVersion?.packageVersion) {
           setAutoUpdatingVersionRaw(nextAutoUpdatingVersion)
         }
         if (nextLatestVersion?.latest) {
