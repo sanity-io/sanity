@@ -30,6 +30,12 @@ const variantOperationsMock = vi.hoisted(() => ({
   deleteVariant: vi.fn(),
 }))
 
+const documentCountsMock = vi.hoisted(() => ({
+  data: null as Record<string, number> | null,
+  loading: true,
+  error: null as Error | null,
+}))
+
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: vi.fn(() => ({
@@ -72,6 +78,14 @@ vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../../hooks/useVariantsDocumentCounts', () => ({
+  useVariantsDocumentCounts: vi.fn(() => ({
+    data: documentCountsMock.data,
+    loading: documentCountsMock.loading,
+    error: documentCountsMock.error,
+  })),
+}))
+
 setupVirtualListEnv()
 
 describe('VariantsOverview', () => {
@@ -81,6 +95,9 @@ describe('VariantsOverview', () => {
     variantsMock.loading = false
     variantsMock.error = undefined
     routerState.variantId = undefined
+    documentCountsMock.data = null
+    documentCountsMock.loading = true
+    documentCountsMock.error = null
     mockNavigate.mockClear()
     variantOperationsMock.createVariant.mockReset()
     variantOperationsMock.deleteVariant.mockReset()
@@ -139,6 +156,45 @@ describe('VariantsOverview', () => {
 
     expect(screen.getByText('Alpha audience')).toBeInTheDocument()
     expect(screen.getByText('Norwegian market')).toBeInTheDocument()
+  })
+
+  it('renders live document counts for each variant', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    documentCountsMock.data = {
+      [variantAlphaAudience._id]: 2,
+      [variantNorwegianMarket._id]: 0,
+    }
+    documentCountsMock.loading = false
+
+    await renderOverview()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    const rows = screen.getAllByTestId('table-row')
+    const alphaRow = rows.find((row) => within(row).queryByText('Alpha audience'))
+    const norwegianRow = rows.find((row) => within(row).queryByText('Norwegian market'))
+
+    expect(alphaRow).toBeDefined()
+    expect(norwegianRow).toBeDefined()
+    expect(within(alphaRow!).getByText('2')).toBeInTheDocument()
+    expect(within(norwegianRow!).getByText('0')).toBeInTheDocument()
+  })
+
+  it('renders a fallback in the documents column when counts fail to load', async () => {
+    setVariants([variantAlphaAudience])
+    documentCountsMock.data = null
+    documentCountsMock.loading = false
+    documentCountsMock.error = new Error('network')
+
+    await renderOverview()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(within(screen.getAllByTestId('table-row')[0]!).getByText('-')).toBeInTheDocument()
   })
 
   it('filters variants when searching by title or condition', async () => {
