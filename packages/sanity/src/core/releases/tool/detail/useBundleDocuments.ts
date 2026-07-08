@@ -37,7 +37,7 @@ export interface DocumentValidationStatus extends ValidationStatus {
  * A document in a bundle (a set of documents resolved by a GROQ filter, e.g. a release or a
  * variant), along with its validation status. Shared by the release- and variant-specific types.
  *
- * @internal
+ * @public
  */
 export interface BundleDocument {
   memoKey: string
