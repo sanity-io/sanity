@@ -1,4 +1,4 @@
-import {type ReleaseDocument} from '@sanity/client'
+import {type MultipleMutationResult, type ReleaseDocument} from '@sanity/client'
 import {BehaviorSubject, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 import {createActor, fromObservable, fromPromise} from 'xstate'
@@ -69,10 +69,15 @@ function withCrossDatasetReferences(
   return {crossDatasetReferences: {totalCount: references.length, references}}
 }
 
+// Loaded variants store state with no variants, the way the component wires
+// it up when the variants feature is disabled.
+const loadedVariants: Meta['variants'] = {variants: new Map(), state: 'loaded'}
+
 // Minimal meta that drives the selection machine straight to `ready`.
 const loadedMeta = {
   versionState: {data: ['drafts.foo', 'foo'], loading: false, error: null},
   releases: {releases: new Map(), state: 'loaded' as const},
+  variants: loadedVariants,
   agentBundles: {bundles: [], loading: false},
 } as unknown as Meta
 
@@ -100,14 +105,19 @@ function createTestActor(
       input: {
         selectionMachine,
         t,
+        // These tests exercise the flat variant list; grouped variant sets are
+        // gated behind the variants feature flag.
+        variantsEnabled: false,
         deletionMachine: deletionMachine.provide({
           actors: {
-            referringDocuments: fromObservable(() => references$),
-            deleteVariants: fromPromise(async () => {
-              // Defaults to a resolving no-op; tests override to exercise outcomes.
-              if (deleteVariants) return deleteVariants()
-              return undefined
+            deleteVariants: fromPromise<MultipleMutationResult, {ids: string[]}>(async () => {
+              // Defaults to a resolving no-op; tests override to exercise
+              // outcomes. The mutation result is never inspected by the
+              // machine, so a stub suffices.
+              if (deleteVariants) await deleteVariants()
+              return {transactionId: 'stub', documentIds: [], results: []}
             }),
+            referringDocuments: fromObservable(() => references$),
           },
           actions: requestDeletionConfirmation ? {requestDeletionConfirmation} : {},
         }),
@@ -440,6 +450,7 @@ describe('documentGroupInventoryMachine', () => {
         error: null,
       },
       releases: {releases, state: 'loaded' as const},
+      variants: loadedVariants,
       agentBundles: {bundles: [], loading: false},
     } as unknown as Meta
 
@@ -472,6 +483,7 @@ describe('documentGroupInventoryMachine', () => {
         error: null,
       },
       releases: {releases: new Map(), state: 'loaded' as const},
+      variants: loadedVariants,
       agentBundles: {
         bundles: [
           {id: 'agent-abc', applicationKey: 'app-1'},
@@ -501,6 +513,7 @@ describe('documentGroupInventoryMachine', () => {
     const meta = {
       versionState: {data: [], loading: false, error: new Error('meta failed')},
       releases: {releases: new Map(), state: 'loaded' as const},
+      variants: loadedVariants,
       agentBundles: {bundles: [], loading: false},
     } as unknown as Meta
 

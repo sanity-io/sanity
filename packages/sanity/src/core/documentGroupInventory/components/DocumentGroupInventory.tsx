@@ -8,7 +8,7 @@ import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {useActorRef, useSelector} from '@xstate/react'
 import {type ComponentType, useMemo, type ChangeEvent, useState, useEffect} from 'react'
 import {useObservable} from 'react-rx'
-import {combineLatest, debounceTime, map, type Observable, startWith, Subject} from 'rxjs'
+import {combineLatest, debounceTime, map, type Observable, of, startWith, Subject} from 'rxjs'
 import {styled, css} from 'styled-components'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
@@ -41,6 +41,8 @@ import {
   isPublishedId,
   isVersionId,
 } from '../../util/draftUtils'
+import {type VariantStoreState} from '../../variants/store/reducer'
+import {useVariantsStore} from '../../variants/store/useVariantsStore'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
 import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
 import {selectionMachine} from '../machines/selectionMachine'
@@ -113,6 +115,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const versionState = useDocumentVersionsObservable({documentId})
   const {state$: releases} = useReleasesStore()
   const {state$: agentBundles} = useAgentBundlesStore()
+  const {state$: variants} = useVariantsStore()
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
   const [menuPortalElement, setMenuPortalElement] = useState<HTMLDivElement | null>(null)
@@ -134,13 +137,15 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
     () =>
       documentGroupInventoryMachine.provide({
         actors: {
-          meta: fromObservable(() => combineLatest({versionState, releases, agentBundles})),
+          meta: fromObservable(() =>
+            combineLatest({versionState, releases, variants, agentBundles}),
+          ),
         },
         actions: {
           onFeedbackBegin: feedbackDialogOpened,
         },
       }),
-    [versionState, releases, agentBundles, feedbackDialogOpened],
+    [versionState, releases, variants, agentBundles, feedbackDialogOpened],
   )
 
   const inventoryRef = useActorRef(inventoryMachine, {
