@@ -405,8 +405,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         annotationPath,
       ).annotations.find((t) => t.name === aSchemaType.name)
       if (!sanitySchemaType) {
-        // This should never happen
-        throw new Error(`Could not find Sanity schema type for annotation: ${aSchemaType.name}`)
+        // The value predates a schema change (for example an annotation type
+        // that was removed). Render the annotated text plainly instead of
+        // crashing.
+        console.warn(`Could not find Sanity schema type for annotation: ${aSchemaType.name}`)
+        return <>{children}</>
       }
       return (
         <Annotation

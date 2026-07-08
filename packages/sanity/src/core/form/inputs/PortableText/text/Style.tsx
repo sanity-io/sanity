@@ -11,10 +11,6 @@ export const Style = (props: StyleProps) => {
   const {block, focused, children, selected} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const sanitySchemaType = schemaTypes.styles.find((type) => type.value === block.style)
-  if (!sanitySchemaType) {
-    // This should never happen
-    throw new Error(`Could not find Sanity schema type for style: ${block.style}`)
-  }
   const DefaultComponentWithFallback = useMemo(
     () =>
       (block.style && TEXT_STYLES[block.style] ? TEXT_STYLES[block.style] : TEXT_STYLES[0]) ||
@@ -36,6 +32,16 @@ export const Style = (props: StyleProps) => {
   )
 
   return useMemo(() => {
+    if (!sanitySchemaType) {
+      // The value predates a schema change (for example a style that was
+      // removed). Render as normal text instead of crashing.
+      console.warn(`Could not find Sanity schema type for style: ${block.style}`)
+      return (
+        <FallbackComponent>
+          <TextContainer>{children}</TextContainer>
+        </FallbackComponent>
+      )
+    }
     const CustomComponent = sanitySchemaType.component
     const {title, value} = sanitySchemaType
     const componentProps = {
