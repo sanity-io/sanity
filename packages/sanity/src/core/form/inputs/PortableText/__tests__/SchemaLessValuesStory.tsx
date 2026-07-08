@@ -68,6 +68,29 @@ const document = {
       markDefs: [{_type: 'link', _key: 'd0', href: 'https://example.com'}],
       children: [{_type: 'span', _key: 'd1', text: 'schema-less annotation', marks: ['d0']}],
     },
+    {
+      _type: 'block',
+      _key: 'e',
+      style: 'h2',
+      listItem: 'number',
+      level: 1,
+      markDefs: [],
+      children: [{_type: 'span', _key: 'e1', text: 'schema-less style and list', marks: []}],
+    },
+    {
+      _type: 'block',
+      _key: 'f',
+      style: 'normal',
+      markDefs: [{_type: 'link', _key: 'f0', href: 'https://example.com'}],
+      children: [
+        {
+          _type: 'span',
+          _key: 'f1',
+          text: 'schema-less mark and annotation',
+          marks: ['em', 'f0'],
+        },
+      ],
+    },
   ],
 }
 

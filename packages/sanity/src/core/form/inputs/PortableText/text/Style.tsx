@@ -1,16 +1,20 @@
 import {type BlockStyleRenderProps} from '@portabletext/editor'
+import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {useCallback, useMemo} from 'react'
 
 import {type BlockStyleProps} from '../../../types'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 
-type StyleProps = Pick<BlockStyleRenderProps, 'block' | 'children' | 'focused' | 'selected'>
+type StyleProps = Pick<BlockStyleRenderProps, 'block' | 'children' | 'focused' | 'selected'> & {
+  /**
+   * The style's schema type, resolved by the caller against the position's
+   * sub-schema. `undefined` when the schema doesn't define the style.
+   */
+  sanitySchemaType: PortableTextMemberSchemaTypes['styles'][number] | undefined
+}
 
 export const Style = (props: StyleProps) => {
-  const {block, focused, children, selected} = props
-  const schemaTypes = usePortableTextMemberSchemaTypes()
-  const sanitySchemaType = schemaTypes.styles.find((type) => type.value === block.style)
+  const {block, focused, children, sanitySchemaType, selected} = props
   const DefaultComponentWithFallback = useMemo(
     () =>
       (block.style && TEXT_STYLES[block.style] ? TEXT_STYLES[block.style] : TEXT_STYLES[0]) ||
@@ -35,7 +39,6 @@ export const Style = (props: StyleProps) => {
     if (!sanitySchemaType) {
       // The value predates a schema change (for example a style that was
       // removed). Render as normal text instead of crashing.
-      console.warn(`Could not find Sanity schema type for style: ${block.style}`)
       return (
         <FallbackComponent>
           <TextContainer>{children}</TextContainer>

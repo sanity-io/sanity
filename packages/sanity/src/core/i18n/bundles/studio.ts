@@ -1211,6 +1211,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.style.normal': 'Normal',
   /** Title of the "quote" block style */
   'inputs.portable-text.style.quote': 'Quote',
+  /** Tooltip on text whose annotation type is not defined in the schema */
+  'inputs.portable-text.unknown-value.annotation': 'Annotation not defined in the schema: {{name}}',
+  /** Tooltip on a block whose list type is not defined in the schema */
+  'inputs.portable-text.unknown-value.list-item': 'List type not defined in the schema: {{name}}',
+  /** Tooltip on text carrying a mark that is not defined in the schema */
+  'inputs.portable-text.unknown-value.mark': 'Mark not defined in the schema: {{name}}',
+  /** Tooltip on a block whose style is not defined in the schema */
+  'inputs.portable-text.unknown-value.style': 'Style not defined in the schema: {{name}}',
   /** Label for action to clear the current value of the reference field */
   'inputs.reference.action.clear': 'Clear',
   /** Label for action to copy the current item (used within arrays) */

@@ -1,25 +1,31 @@
 import {type BlockListItemRenderProps} from '@portabletext/editor'
+import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {useMemo} from 'react'
 
 import {type BlockListItemProps} from '../../../types'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 
 const DefaultComponent = (dProps: BlockListItemProps) => {
   return <>{dProps.children}</>
 }
 
-type ListItemProps = Pick<BlockListItemRenderProps, 'block' | 'children' | 'focused' | 'selected'>
+type ListItemProps = Pick<
+  BlockListItemRenderProps,
+  'block' | 'children' | 'focused' | 'selected'
+> & {
+  /**
+   * The list type's schema type, resolved by the caller against the
+   * position's sub-schema. `undefined` when the schema doesn't define it.
+   */
+  sanitySchemaType: PortableTextMemberSchemaTypes['lists'][number] | undefined
+}
 
 export const ListItem = (props: ListItemProps) => {
-  const {block, children, selected, focused} = props
-  const schemaTypes = usePortableTextMemberSchemaTypes()
-  const sanitySchemaType = schemaTypes.lists.find((type) => type.value === block.listItem)
+  const {block, children, sanitySchemaType, selected, focused} = props
   return useMemo(() => {
     if (!sanitySchemaType) {
       // The value predates a schema change (for example a list type that was
       // removed). Render the block without list decoration instead of
       // crashing, matching the editor's own fallback for unknown list items.
-      console.warn(`Could not find Sanity schema type for list item: ${block.listItem}`)
       return <>{children}</>
     }
     const {title, value, component: CustomComponent} = sanitySchemaType
