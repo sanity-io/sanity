@@ -42,7 +42,7 @@
   },
   "scripts": {
     "build": "pkg-utils build --strict --check --clean && rimraf lib/groq.d.cts",
-    "check:types": "(cd ../.. && tsgo --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../.. && tsc --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "pretest": "run-s build",
@@ -54,7 +54,6 @@
     "@repo/tsconfig": "workspace:*",
     "@sanity/pkg-utils": "catalog:",
     "@types/node": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "rimraf": "catalog:"
   },
   "browserslist": [

@@ -59,7 +59,7 @@
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/vision/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/vision/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "test": "vitest",
@@ -102,7 +102,6 @@
     "@testing-library/react": "^16.3.2",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "@vanilla-extract/css": "catalog:",
     "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/plugin-react": "catalog:",

@@ -44,7 +44,7 @@
   },
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/diff/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/diff/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib coverage",
     "prepublishOnly": "turbo run build",
     "watch": "pkg-utils watch"
@@ -56,7 +56,6 @@
     "@repo/package.config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/pkg-utils": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "rimraf": "catalog:"
   },
   "browserslist": [

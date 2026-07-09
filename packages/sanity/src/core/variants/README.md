@@ -207,7 +207,7 @@ Covered areas include:
 Useful e2e type check:
 
 ```sh
-pnpm exec tsgo --project e2e/tsconfig.json --noEmit
+pnpm exec tsc --project e2e/tsconfig.json --noEmit
 ```
 
 The focused browser e2e command is:

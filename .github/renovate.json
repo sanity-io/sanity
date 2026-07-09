@@ -126,7 +126,7 @@
     {
       "description": "Group TypeScript related deps in a single PR, as they often have to update together",
       "groupName": "typescript-tooling",
-      "matchPackageNames": ["@sanity/pkg-utils", "typescript"]
+      "matchPackageNames": ["@sanity/pkg-utils", "typescript", "@typescript/typescript6"]
     },
     {
       "description": "Always upgrade oxlint together",

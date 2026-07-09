@@ -115,7 +115,7 @@
   },
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
@@ -135,7 +135,6 @@
     "@repo/tsconfig": "workspace:*",
     "@sanity/pkg-utils": "catalog:",
     "@types/node": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "rimraf": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
