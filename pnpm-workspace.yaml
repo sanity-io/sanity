@@ -37,7 +37,6 @@ catalog:
   '@vitest/browser-playwright': ^4.1.9
   babel-plugin-react-compiler: ^1.0.0
   babel-plugin-styled-components: ^2.3.0
-  esbuild-register: ^3.6.0
   jsdom: ^29.1.1
   playwright: 1.61.1
   react: ^19.2.7

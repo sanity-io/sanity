@@ -70,9 +70,6 @@ catalogs:
     babel-plugin-styled-components:
       specifier: ^2.3.0
       version: 2.3.0
-    esbuild-register:
-      specifier: ^3.6.0
-      version: 3.6.0
     jsdom:
       specifier: ^29.1.1
       version: 29.1.1
@@ -135,9 +132,6 @@ importers:
       dotenv-flow:
         specifier: ^4.1.0
         version: 4.1.0
-      esbuild-register:
-        specifier: 'catalog:'
-        version: 3.6.0(esbuild@0.28.1)
       eslint-import-resolver-typescript:
         specifier: ^4.4.5
         version: 4.4.5(eslint@10.5.0)
@@ -2052,9 +2046,6 @@ importers:
       semver:
         specifier: ^7.8.5
         version: 7.8.5
-      tinyglobby:
-        specifier: ^0.2.17
-        version: 0.2.17
 
 packages:
 
@@ -7624,11 +7615,6 @@ packages:
 
   es-toolkit@1.49.0:
     resolution: {integrity: sha512-G5iZ6Pc/FNRY/soKZHC+TxGDD83rHUDXxzaWhGCX44vAv/tMs56WMusnm/KMNK+luUPsgA9U28cGr4RDlSzL2g==}
-
-  esbuild-register@3.6.0:
-    resolution: {integrity: sha512-H2/S7Pm8a9CL1uhp9OvjwrBh5Pvx0H8qVOxNu8Wed9Y7qv56MPtq+GGM8RJpq6glYJn9Wspr8uw7l55uyinNeg==}
-    peerDependencies:
-      esbuild: '>=0.12 <1'
 
   esbuild@0.27.0:
     resolution: {integrity: sha512-jd0f4NHbD6cALCyGElNpGAOtWxSq46l9X/sWB0Nzd5er4Kz2YTm+Vl0qKFT9KUJvD8+fiO8AvoHhFvEatfVixA==}
@@ -17436,13 +17422,6 @@ snapshots:
       hasown: 2.0.4
 
   es-toolkit@1.49.0: {}
-
-  esbuild-register@3.6.0(esbuild@0.28.1):
-    dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
-      esbuild: 0.28.1
-    transitivePeerDependencies:
-      - supports-color
 
   esbuild@0.27.0:
     optionalDependencies:
