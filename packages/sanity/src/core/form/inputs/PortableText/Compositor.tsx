@@ -3,6 +3,7 @@ import {
   type BlockObjectRenderProps,
   defineBlockObject,
   defineInlineObject,
+  defineSpan,
   defineTextBlock,
   type EditorSelection,
   type HotkeyOptions,
@@ -12,6 +13,7 @@ import {
   type PasteData as EditorPasteData,
   type RangeDecoration,
   type RegistrableNode,
+  type SpanRenderProps,
   type TextBlockRenderProps,
   useEditor,
 } from '@portabletext/editor'
@@ -28,9 +30,12 @@ import {
   useBoundaryElement,
   usePortal,
 } from '@sanity/ui'
+import {toString as pathToString} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
+import {useListFormat} from '../../../hooks'
+import {useTranslation} from '../../../i18n'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
@@ -53,6 +58,8 @@ import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditMod
 import {TextBlock} from './text'
 import {ListItem} from './text/ListItem'
 import {Style} from './text/Style'
+import {UnknownMarks, UnknownValue} from './text/UnknownValue'
+import {warnOnce} from './warnOnce'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement | null>
@@ -112,6 +119,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const setElementRef = useSetPortableTextMemberItemElementRef()
   const editor = useEditor()
+  const {t} = useTranslation()
+  const listFormat = useListFormat()
 
   // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with
   // Sanity-specific PortableTextMemberSchemaTypes instead of the editor's
@@ -161,19 +170,74 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       const {attributes, focused: blockFocused, node, path: blockPath, selected} = textBlockProps
       const block = node
       const fullyQualifiedPath = path.concat(blockPath)
+      // The position's sub-schema is the single source for resolving the
+      // block's vocabulary: `Style` and `ListItem` receive the resolved
+      // types instead of looking them up themselves, so the affordance and
+      // the rendering can never disagree (a merged-schema lookup could
+      // resolve a style the block's own sub-schema doesn't declare).
+      const subSchema = getSanitySubSchema(
+        schemaTypes.portableText,
+        editor.getSnapshot().context.value,
+        blockPath,
+      )
+      const styleSchemaType =
+        block.style !== undefined
+          ? subSchema.styles.find((style) => style.value === block.style)
+          : undefined
+      const listSchemaType =
+        block.listItem !== undefined
+          ? subSchema.lists.find((list) => list.value === block.listItem)
+          : undefined
+
       let inner = textBlockProps.children
       if (block.style !== undefined) {
         inner = (
-          <Style block={block} focused={blockFocused} selected={selected}>
+          <Style
+            block={block}
+            focused={blockFocused}
+            sanitySchemaType={styleSchemaType}
+            selected={selected}
+          >
             {inner}
           </Style>
         )
       }
       if (block.listItem !== undefined) {
         inner = (
-          <ListItem block={block} focused={blockFocused} selected={selected}>
+          <ListItem
+            block={block}
+            focused={blockFocused}
+            sanitySchemaType={listSchemaType}
+            selected={selected}
+          >
             {inner}
           </ListItem>
+        )
+      }
+
+      // One affordance per block, with the labels joined, so an
+      // unknown style and an unknown list type on the same block don't nest
+      // two bordered wrappers with two competing tooltips.
+      const unknownValueLabels: string[] = []
+      if (block.style !== undefined && styleSchemaType === undefined) {
+        warnOnce(
+          `Could not find schema type for style: ${block.style} at ${pathToString(fullyQualifiedPath)}`,
+        )
+        unknownValueLabels.push(t('inputs.portable-text.unknown-value.style', {name: block.style}))
+      }
+      if (block.listItem !== undefined && listSchemaType === undefined) {
+        warnOnce(
+          `Could not find schema type for list item: ${block.listItem} at ${pathToString(fullyQualifiedPath)}`,
+        )
+        unknownValueLabels.push(
+          t('inputs.portable-text.unknown-value.list-item', {name: block.listItem}),
+        )
+      }
+      if (unknownValueLabels.length > 0) {
+        inner = (
+          <UnknownValue block label={listFormat.format(unknownValueLabels)}>
+            {inner}
+          </UnknownValue>
         )
       }
 
@@ -184,6 +248,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             floatingBoundary={floatingBoundary}
             focused={blockFocused}
             isFullscreen={isFullscreen}
+            listItem={listSchemaType !== undefined ? block.listItem : undefined}
             onItemClose={onItemClose}
             onItemOpen={onItemOpen}
             onItemRemove={onItemRemove}
@@ -216,6 +281,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       _renderBlockActions,
       _renderCustomMarkers,
+      editor,
       floatingBoundary,
       isFullscreen,
       onItemClose,
@@ -231,9 +297,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
+      listFormat,
       schemaTypes.block,
+      schemaTypes.portableText,
       scrollElement,
       setElementRef,
+      t,
     ],
   )
 
@@ -244,7 +313,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaTypes.portableText,
         editor.getSnapshot().context.value,
         blockPath,
-      ).blockObjects.find((t) => t.name === node._type)
+      ).blockObjects.find((memberType) => memberType.name === node._type)
       if (!sanitySchemaType) {
         // `getSanitySubSchema` returned the sub-schema at this path, but no
         // block-object type in it matches `node._type`.
@@ -318,7 +387,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaTypes.portableText,
         editor.getSnapshot().context.value,
         childPath,
-      ).inlineObjects.find((t) => t.name === node._type)
+      ).inlineObjects.find((memberType) => memberType.name === node._type)
       if (!sanitySchemaType) {
         // `getSanitySubSchema` returned the sub-schema at this path, but no
         // inline-object type in it matches `node._type`.
@@ -377,6 +446,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     ],
   )
 
+  const renderSpan = useCallback(
+    (spanProps: SpanRenderProps) => <UnknownMarks {...spanProps} />,
+    [],
+  )
+
   // Stable reference: `NodePlugin` re-runs its registration effect when
   // `nodes` changes by reference.
   const catchAllNodes = useMemo<RegistrableNode[]>(
@@ -384,8 +458,9 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       defineTextBlock({type: '*', render: renderTextBlock}),
       defineBlockObject({type: '*', render: renderBlockObject}),
       defineInlineObject({type: '*', render: renderInlineObject}),
+      defineSpan({type: '*', render: renderSpan}),
     ],
-    [renderTextBlock, renderBlockObject, renderInlineObject],
+    [renderTextBlock, renderBlockObject, renderInlineObject, renderSpan],
   )
 
   const editorRenderAnnotation = useCallback(
@@ -403,10 +478,18 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaTypes.portableText,
         editor.getSnapshot().context.value,
         annotationPath,
-      ).annotations.find((t) => t.name === aSchemaType.name)
+      ).annotations.find((memberType) => memberType.name === aSchemaType.name)
       if (!sanitySchemaType) {
-        // This should never happen
-        throw new Error(`Could not find Sanity schema type for annotation: ${aSchemaType.name}`)
+        // The value predates a schema change (for example an annotation type
+        // that was removed). Render the annotated text plainly instead of
+        // crashing.
+        warnOnce(
+          `Could not find schema type for annotation: ${aSchemaType.name} at ${pathToString(path.concat(aPath))}`,
+        )
+        // No affordance here: the span render (`UnknownMarks`) resolves the
+        // annotation type against the same sub-schema and already wraps the
+        // text, so wrapping again would nest two affordances.
+        return <>{children}</>
       }
       return (
         <Annotation

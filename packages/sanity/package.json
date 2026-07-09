@@ -141,7 +141,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@isaacs/ttlcache": "^1.4.1",
     "@mux/mux-player-react": "^3.13.0",
-    "@portabletext/editor": "^7.10.1",
+    "@portabletext/editor": "^7.10.5",
     "@portabletext/html": "^1.1.0",
     "@portabletext/patches": "^2.0.5",
     "@portabletext/plugin-dnd": "^1.0.13",
