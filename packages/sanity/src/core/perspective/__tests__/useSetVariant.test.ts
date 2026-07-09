@@ -52,6 +52,7 @@ describe('useSetVariant', () => {
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
         variant: 'alpha-audience',
+        excludedPerspectives: null,
         perspective: 'published',
       },
     })
@@ -65,6 +66,7 @@ describe('useSetVariant', () => {
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
         variant: 'alpha-audience',
+        excludedPerspectives: null,
         perspective: '',
       },
     })
@@ -78,6 +80,7 @@ describe('useSetVariant', () => {
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
         variant: 'alpha-audience',
+        excludedPerspectives: null,
         perspective: 'rSomeRelease',
       },
     })

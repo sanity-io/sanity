@@ -27,7 +27,10 @@ export function useSetVariant() {
         stickyParams: {
           variant: variant ? getVariantId(variant._id) : null,
           ...(perspective
-            ? {perspective: getPerspectiveParam(perspective, defaultPerspective)}
+            ? {
+                excludedPerspectives: null,
+                perspective: getPerspectiveParam(perspective, defaultPerspective),
+              }
             : {}),
         },
       })
