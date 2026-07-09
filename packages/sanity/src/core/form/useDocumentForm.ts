@@ -39,15 +39,14 @@ import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {type DocumentSyncState, useDocumentSyncState} from '../hooks/useDocumentSyncState'
 import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
+import {useTargetDocument} from '../hooks/useTargetDocument'
 import {useValidationStatus} from '../hooks/useValidationStatus'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
-import {type PerspectiveBundle, type ReleaseId} from '../perspective/types'
+import {type ReleaseId} from '../perspective/types'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
-import {useDocumentVersionTypeSortedList} from '../releases/hooks/useDocumentVersionTypeSortedList'
 import {useOnlyHasVersions} from '../releases/hooks/useOnlyHasVersions'
 import {isReleaseDocument} from '../releases/store/types'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
-import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../releases/util/util'
 import {
@@ -60,18 +59,15 @@ import {
   usePresenceStore,
 } from '../store'
 import {isNewDocument} from '../store/document/isNewDocument'
-import {useWorkspace} from '../studio/workspace'
 import {
   EMPTY_ARRAY,
   getDraftId,
   getPublishedId,
-  getTargetDocument,
   getVersionFromId,
   getVersionId,
   isSystemBundle,
   useUnique,
 } from '../util'
-import {type SystemVariant} from '../variants/types'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
 
@@ -92,16 +88,6 @@ interface DocumentFormOptions {
     | ((editState: EditStateFor) => Partial<SanityDocument>)
     | null
   onFocusPath?: (path: Path) => void
-  /**
-   * The currently selected variant, if any. When set, the form resolves the variant-scoped
-   * version document for the current `bundle` and makes it editable.
-   */
-  selectedVariant?: SystemVariant
-  /**
-   * The canonical bundle id (`published`, `drafts` or release id) of the current perspective.
-   * Used together with `selectedVariant` to resolve the variant-scoped version document.
-   */
-  bundle?: PerspectiveBundle
   changesOpen?: boolean
   /**
    * Callback that allows to transform the value before it's passed to the form
@@ -173,8 +159,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     releaseId,
     initialFocusPath,
     selectedPerspectiveName,
-    selectedVariant,
-    bundle,
     readOnly: readOnlyProp,
     onFocusPath,
     displayInlineChanges,
@@ -183,29 +167,14 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
-  const {
-    data: documentVersions,
-    versions: documentVersionStubs,
-    loading: documentVersionsLoading,
-  } = useDocumentVersions({
+  const {loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
-  const workspace = useWorkspace()
-  const isVariantsEnabled = Boolean(workspace.beta?.variants?.enabled)
-
+  const targetDocument = useTargetDocument(documentId)
   // When a variant is selected and a variant-scoped version exists for the current bundle, resolve
   // its (non-deterministic) `scopeId` so it can be threaded through the version-editing pipeline.
-  const variantScopeId = useMemo(() => {
-    if (!isVariantsEnabled || !selectedVariant || typeof bundle === 'undefined') {
-      return undefined
-    }
-    const targetVariantDocument = getTargetDocument({
-      bundle,
-      variant: selectedVariant._id,
-      documentVersions: documentVersionStubs,
-    })
-    return targetVariantDocument?._system.scopeId ?? undefined
-  }, [selectedVariant, bundle, documentVersionStubs, isVariantsEnabled])
+  // ScopeId only exists in version documents.
+  const variantScopeId = targetDocument?._system.scopeId
 
   const enhancedObjectDialogEnabled = true
 
@@ -214,55 +183,23 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     throw new Error(`Schema type for '${documentType}' not found`)
   }
   const liveEdit = Boolean(schemaType.liveEdit)
-  const publishedId = getPublishedId(documentId)
 
   const telemetry = useTelemetry()
 
   // if it only has versions then we need to make sure that whatever the first document that is allowed
   // is a version document, but also that it has the right order
   // this will make sure that then the right document appears and so does the right chip within the document header
-  const {sortedDocumentList} = useDocumentVersionTypeSortedList({documentId})
   const onlyHasVersions = useOnlyHasVersions({documentId})
-  const firstVersion =
-    sortedDocumentList.length > 0
-      ? documentVersions.find(
-          (id) =>
-            getVersionFromId(id) === getReleaseIdFromReleaseDocumentId(sortedDocumentList[0]._id),
-        )
-      : undefined
 
-  const activeDocumentReleaseId = useMemo(() => {
-    // When editing a variant-scoped document, the resolved scopeId identifies the version document
-    // (`versions.<scopeId>.<publishedId>`) regardless of which bundle is selected.
-    if (variantScopeId) {
-      return variantScopeId
-    }
-    if (isSystemBundle(selectedPerspectiveName)) {
-      return undefined
-    }
-    // if a document version exists with the selected release id, then it should use that
-    if (documentVersions.some((id) => getVersionFromId(id) === selectedPerspectiveName)) {
-      return selectedPerspectiveName
-    }
+  const editState = useEditState(documentId, documentType, 'default', variantScopeId)
 
-    // check if the selected version is the only version, if it isn't and it doesn't exist in the release
-    // then it needs to use the documentVersions
-    if (selectedPerspectiveName && (!documentVersions.length || !onlyHasVersions)) {
-      return selectedPerspectiveName
-    }
-
-    return getVersionFromId(firstVersion ?? '')
-  }, [variantScopeId, documentVersions, onlyHasVersions, selectedPerspectiveName, firstVersion])
-
-  const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
-
-  const connectionState = useConnectionState(documentId, documentType, activeDocumentReleaseId)
+  const connectionState = useConnectionState(documentId, documentType, variantScopeId)
   useReconnectingToast(connectionState === 'reconnecting')
 
   // Staged signal for "the document's edits aren't reaching the server".
   // `stalled` means it's been unsynced long enough that we lock editing to
   // stop the user piling more changes onto a document that isn't syncing.
-  const syncState = useDocumentSyncState(documentId, documentType, activeDocumentReleaseId)
+  const syncState = useDocumentSyncState(documentId, documentType, variantScopeId)
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
@@ -391,19 +328,12 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName))
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const targetDocumentId = activeDocumentReleaseId
-    ? getVersionId(publishedId, activeDocumentReleaseId)
-    : // in cases where there is a draft in a live edit, we need to use it so that it can be published
-      // in case if the user has permissions to do so otherwise just use the published id
-      liveEdit
-      ? editState?.draft?._id || publishedId
-      : getDraftId(documentId)
   const docPermissionsInput = useMemo(() => {
     return {
       ...value,
-      _id: targetDocumentId,
+      _id: targetDocument?._id,
     }
-  }, [value, targetDocumentId])
+  }, [value, targetDocument?._id])
 
   const [permissions, isPermissionsLoading] = useDocumentValuePermissions({
     document: docPermissionsInput,
@@ -519,7 +449,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     syncState,
   ])
 
-  const {patch} = useDocumentOperation(documentId, documentType, activeDocumentReleaseId)
+  const {patch} = useDocumentOperation(documentId, documentType, variantScopeId)
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error(
