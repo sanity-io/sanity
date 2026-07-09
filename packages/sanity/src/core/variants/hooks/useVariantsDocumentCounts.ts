@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {useEffect, useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, startWith} from 'rxjs/operators'
@@ -121,9 +121,7 @@ export function getVariantsDocumentCounts(
  * and a single aggregate count query (see {@link getVariantsDocumentCounts}).
  *
  * When the set of variant ids changes, the previous listener is closed and a new one is
- * opened — there is never more than one active listener. Previously fetched counts are
- * retained while the queries are rebuilt, so existing rows don't flash back to a loading
- * state when a variant is added or removed.
+ * opened — there is never more than one active listener — and the counts reload.
  *
  * @internal
  */
@@ -141,28 +139,5 @@ export function useVariantsDocumentCounts(
     [client, idsKey],
   )
 
-  const state = useObservable(observable, INITIAL_STATE)
-
-  // Patch counts into local state so previously fetched counts survive query rebuilds
-  // (same approach as `ReleasesMetadataProvider`).
-  const [mergedData, setMergedData] = useState<Record<string, number> | null>(null)
-
-  useEffect(
-    () =>
-      // oxlint-disable-next-line react/react-compiler
-      setMergedData((previous) => {
-        if (!state.data) return previous
-        return {...previous, ...state.data}
-      }),
-    [state.data],
-  )
-
-  return useMemo(
-    () => ({
-      data: mergedData,
-      loading: state.loading && mergedData === null,
-      error: state.error,
-    }),
-    [mergedData, state.loading, state.error],
-  )
+  return useObservable(observable, INITIAL_STATE)
 }
