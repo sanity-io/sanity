@@ -24,6 +24,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@optique/core": "catalog:",
+    "@optique/run": "catalog:",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
     "es-toolkit": "^1.49.0",
     "eventsource-parser": "^3.1.0",

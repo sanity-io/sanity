@@ -1,39 +1,66 @@
 #!/usr/bin/env node
 /**
- * **************************************************************
- * This script needs to stay as a CommonJS/JavaScript file
- * (it's executed in node by the `CLI unit tests`, and possibly other places)
- * **************************************************************
- **/
-'use strict'
+ * Symlinks this monorepo's packages into a target studio's node_modules.
+ *
+ * Runs directly in node (22.18+ strips types and detects ESM syntax
+ * natively): `node scripts/symlinkDependencies.ts <targetDir>`
+ */
+import fs from 'node:fs'
+import path from 'node:path'
 
-const fs = require('node:fs')
-const path = require('node:path')
-const minimist = require('minimist')
-const {rimrafSync} = require('rimraf')
+import {object} from '@optique/core/constructs'
+import {message} from '@optique/core/message'
+import {withDefault} from '@optique/core/modifiers'
+import {argument, negatableFlag} from '@optique/core/primitives'
+import {string} from '@optique/core/valueparser'
+import {run} from '@optique/run'
+import {rimrafSync} from 'rimraf'
 
-const argv = minimist(process.argv.slice(2), {boolean: ['all']})
+const flags = run(
+  object(
+    {
+      all: withDefault(
+        negatableFlag(
+          {positive: '--all', negative: '--no-all'},
+          {
+            description: message`symlink every monorepo package, not just the ones declared in the target's package.json`,
+          },
+        ),
+        false,
+      ),
+      targetDir: argument(string({metavar: 'DIR'}), {
+        description: message`the studio directory to symlink into ("." for the current dir)`,
+      }),
+    },
+    {
+      errors: {
+        endOfInput: message`Target directory must be specified ("." for the current dir).`,
+      },
+    },
+  ),
+  {
+    programName: 'symlinkDependencies',
+    brief: message`Symlink this monorepo's packages into a target studio's node_modules`,
+    help: {option: {names: ['-h', '--help']}},
+    aboveError: 'usage',
+  },
+)
 
-const targetDir = argv._[0]
-if (!targetDir) {
-  throw new Error('Target directory must be specified (`.` for current dir)')
-}
+const notSanity = (dir: string) => dir !== '@sanity'
+const prefix = (name: string) => `@sanity/${name}`
+const normalize = (dir: string) => dir.replace(/@sanity\//g, `@sanity${path.sep}`)
 
-const notSanity = (dir) => dir !== '@sanity'
-const prefix = (name) => `@sanity/${name}`
-const normalize = (dir) => dir.replace(/@sanity\//g, `@sanity${path.sep}`)
-
-const pkgPath = path.join(__dirname, '..', 'packages')
+const pkgPath = path.join(import.meta.dirname, '..', 'packages')
 const rootPackages = fs.readdirSync(pkgPath).filter(notSanity)
 const sanityPackages = fs.readdirSync(path.join(pkgPath, '@sanity')).map(prefix)
 const packages = [...rootPackages, ...sanityPackages]
 
-const targetPath = path.resolve(path.relative(process.cwd(), targetDir))
+const targetPath = path.resolve(path.relative(process.cwd(), flags.targetDir))
 const targetDepsPath = path.join(targetPath, 'node_modules')
 
 let targetDeps = packages
-if (!argv.all) {
-  const targetPkg = require(path.join(targetPath, 'package.json'))
+if (!flags.all) {
+  const targetPkg = JSON.parse(fs.readFileSync(path.join(targetPath, 'package.json'), 'utf8'))
   const targetDeclared = Object.assign({}, targetPkg.dependencies, targetPkg.devDependencies)
   targetDeps = Object.keys(targetDeclared)
 }
@@ -52,11 +79,11 @@ if (targetDeps.includes('sanity')) {
 
 // All the dependencies in the root of node_modules and node_modules/@sanity
 const targetPackages = [...targetRootPackages, ...targetSanityPackages, ...targetDeps]
-const sharedPackages = argv.all
+const sharedPackages = flags.all
   ? packages
   : packages.filter((pkgName) => targetPackages.indexOf(pkgName) > -1)
 
-const sharedDeclared = argv.all
+const sharedDeclared = flags.all
   ? packages
   : packages.filter((pkgName) => targetDeps.indexOf(pkgName) > -1)
 
