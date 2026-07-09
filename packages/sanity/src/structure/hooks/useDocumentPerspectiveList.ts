@@ -260,7 +260,11 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     (version: VersionInfoDocumentStub) => {
       const variantId = version._system.variant?._ref
       const variant = variantId ? variants.get(variantId) : undefined
-      setVariant(variant ?? undefined)
+      // Published version documents omit `bundleId`, so treat a missing bundle as published.
+      // Passing the perspective alongside the variant updates both sticky params atomically.
+      const versionBundle = version._system.bundleId
+      const perspective = !versionBundle ? 'published' : versionBundle
+      setVariant(variant ?? undefined, {perspective})
     },
     [setVariant, variants],
   )
