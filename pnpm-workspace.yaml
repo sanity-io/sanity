@@ -16,6 +16,8 @@ allowBuilds:
   unrs-resolver: false
 
 catalog:
+  '@optique/core': ^1.1.1
+  '@optique/run': ^1.1.1
   '@playwright/test': 1.61.1
   '@rolldown/plugin-babel': ^0.2.3
   '@sanity/client': ^7.23.0
