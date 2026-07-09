@@ -41,6 +41,11 @@ export const IntentResolver = memo(function IntentResolver() {
 
       let cancelled = false
       async function effect() {
+        // The request-error dialog's "Try again" can re-run this thunk after
+        // the effect has been cleaned up (intent changed or unmounted) —
+        // resolve immediately instead of re-fetching for a stale intent.
+        if (cancelled) return
+
         const {id, type} = await ensureDocumentIdAndType(
           documentStore,
           typeof params.id === 'string' ? params.id : undefined,

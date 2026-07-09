@@ -72,7 +72,7 @@ describe('IntentResolver', () => {
 
   function renderResolver(channel = createRequestErrorChannel()) {
     const boundary = {current: null as Boundary | null}
-    render(
+    const {unmount} = render(
       <StudioErrorHandlerContext.Provider value={channel}>
         <Boundary
           ref={(instance) => {
@@ -83,7 +83,7 @@ describe('IntentResolver', () => {
         </Boundary>
       </StudioErrorHandlerContext.Provider>,
     )
-    return {channel, boundary}
+    return {channel, boundary, unmount}
   }
 
   it('delegates infrastructure failures to the request-error channel instead of crashing', async () => {
@@ -111,6 +111,23 @@ describe('IntentResolver', () => {
       expect(mockNavigate).toHaveBeenCalledWith({panes: []}, {replace: true})
     })
     expect(mockResolveTypeForDocument).toHaveBeenCalledTimes(2)
+  })
+
+  it('does not re-fetch when the claimed error is retried after unmount', async () => {
+    mockResolveTypeForDocument.mockReturnValue(throwError(socketTimeoutError))
+
+    const {channel, unmount} = renderResolver()
+
+    await firstValueFrom(channel.claim$.pipe(filter(Boolean)))
+    unmount()
+    channel.retry()
+
+    expect(await firstValueFrom(channel.claim$)).toBeUndefined()
+    // let the re-run of the (now cancelled) thunk settle before asserting
+    // that it didn't issue another request
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(mockResolveTypeForDocument).toHaveBeenCalledTimes(1)
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 
   it('re-throws caller-domain errors into the error boundary', async () => {
