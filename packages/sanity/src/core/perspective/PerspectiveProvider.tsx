@@ -28,7 +28,7 @@ export function PerspectiveProvider({
   excludedPerspectives?: string[]
 }) {
   const {data: releases} = useActiveReleases()
-  const {byId: variantsById} = useAllVariants()
+  const {byId: variantsById, loading: variantsLoading} = useAllVariants()
 
   const {
     document: {
@@ -69,7 +69,9 @@ export function PerspectiveProvider({
             .find((releaseName) => releaseName === selectedPerspectiveName),
       perspectiveStack,
       excludedPerspectives,
+      selectedVariantName,
       selectedVariant,
+      variantsLoading,
       bundle: getBundleIdFromPerspective(selectedPerspective),
     }
   }, [
@@ -78,7 +80,9 @@ export function PerspectiveProvider({
     selectedPerspective,
     perspectiveStack,
     excludedPerspectives,
+    selectedVariantName,
     selectedVariant,
+    variantsLoading,
   ])
 
   return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>

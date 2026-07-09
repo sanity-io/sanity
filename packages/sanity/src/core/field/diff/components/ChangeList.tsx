@@ -7,7 +7,7 @@ import {DiffContext} from 'sanity/_singletons'
 
 import {Button} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
-import {useTargetDocument} from '../../../hooks/useTargetDocument'
+import {getTargetScopeId, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store'
 import {useConditionalProperty} from '../../conditional-property'
@@ -30,10 +30,12 @@ export interface ChangeListProps {
 /** @internal */
 export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.JSX.Element | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
-  const targetDocument = useTargetDocument(documentId)
-  // The scope of the document targeted by the selected perspective (undefined when the document
-  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
-  const scopeId = targetDocument?._system.scopeId
+  const targetDocumentState = useTargetDocumentState(documentId)
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, reverting is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
   const docOperations = useDocumentOperation(documentId, schemaType.name, scopeId)
   const {path} = useContext(DiffContext)
   const isRoot = path.length === 0
@@ -138,7 +140,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
               onClick={handleRevertAllChangesClick}
               onMouseEnter={handleRevertAllChangesMouseEnter}
               onMouseLeave={handleRevertAllChangesMouseLeave}
-              disabled={isReadOnly}
+              disabled={isReadOnly || !isTargetReady}
               size="large"
               ref={setButtonElement}
             />

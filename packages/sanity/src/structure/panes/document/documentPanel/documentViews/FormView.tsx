@@ -18,13 +18,13 @@ import {
   type FormDocumentValue,
   FormRow,
   fromMutationPatches,
+  getTargetScopeId,
   type PatchMsg,
   PresenceOverlay,
   useConditionalToast,
   useDocumentPresence,
   useDocumentStore,
   usePerspective,
-  useTargetDocument,
   useTranslation,
 } from 'sanity'
 
@@ -69,13 +69,13 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
     hasUpstreamVersion,
     focusPath,
     syncState,
+    targetDocumentState,
   } = useDocumentPane()
   const {selectedPerspective} = usePerspective()
   const documentStore = useDocumentStore()
-  const targetDocument = useTargetDocument(documentId)
-  // The scope of the document targeted by the selected perspective (undefined when the document
-  // doesn't exist yet, in which case the pair falls back to the draft/published documents).
-  const scopeId = targetDocument?._system.scopeId
+  // The scope of the document targeted by the selected perspective (undefined while the target is
+  // resolving or when the draft/published pair applies).
+  const scopeId = getTargetScopeId(targetDocumentState)
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder

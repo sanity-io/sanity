@@ -12,7 +12,7 @@ import {
 import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
-import {useTargetDocument} from '../../../hooks/useTargetDocument'
+import {getTargetScopeId, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
 import {useDocumentPairPermissions} from '../../../store'
 import {pathsAreEqual} from '../../paths'
 import {type GroupChangeNode} from '../../types'
@@ -61,10 +61,12 @@ export function GroupChange(
   }
   const isRevertButtonHovered = useHover<HTMLButtonElement>(revertButtonElement)
 
-  const targetDocument = useTargetDocument(documentId)
-  // The scope of the document targeted by the selected perspective (undefined when the document
-  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
-  const scopeId = targetDocument?._system.scopeId
+  const targetDocumentState = useTargetDocumentState(documentId)
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, reverting is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
   const docOperations = useDocumentOperation(documentId, schemaType.name, scopeId)
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
 
@@ -120,7 +122,7 @@ export function GroupChange(
                   // oxlint-disable-next-line react/react-compiler
                   ref={setRevertButtonElement}
                   selected={confirmRevertOpen}
-                  disabled={readOnly}
+                  disabled={readOnly || !isTargetReady}
                   data-testid={`group-change-revert-button-${group.key}`}
                 />
               </Box>
@@ -146,6 +148,7 @@ export function GroupChange(
       isPermissionsLoading,
       isPortableText,
       isRevertButtonHovered,
+      isTargetReady,
       permissions?.granted,
       readOnly,
       handleRevertChanges,

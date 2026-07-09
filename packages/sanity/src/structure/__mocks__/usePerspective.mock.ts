@@ -7,7 +7,9 @@ export const perspectiveContextValueMock: Mocked<PerspectiveContextValue> = {
   selectedPerspective: 'drafts',
   perspectiveStack: ['drafts'],
   excludedPerspectives: [],
+  selectedVariantName: undefined,
   selectedVariant: undefined,
+  variantsLoading: false,
   bundle: 'drafts',
 }
 export const usePerspectiveMockReturn = perspectiveContextValueMock

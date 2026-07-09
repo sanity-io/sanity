@@ -189,7 +189,7 @@ export function PaneItem(props: PaneItemProps) {
 function PreloadDocumentPane(props: {documentId: string; documentType: string}) {
   const {documentId, documentType} = props
   // Preload the edit state for the document, and keep it alive until mouse leave.
-  // No `useTargetDocument().scopeId` here: this is a best-effort preload of the draft/published
+  // No `getTargetScopeId(useTargetDocumentState())` here: this is a best-effort preload of the draft/published
   // pair, so no version scope applies.
   useEditState(getPublishedId(documentId), documentType)
 

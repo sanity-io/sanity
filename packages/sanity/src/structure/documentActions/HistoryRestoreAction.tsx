@@ -3,9 +3,9 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDialogProps,
+  getTargetScopeId,
   useDocumentOperation,
   useDocumentOperationEvent,
-  useTargetDocument,
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -16,12 +16,13 @@ import {useDocumentPane} from '../panes/document/useDocumentPane'
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
 export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision}) => {
-  const targetDocument = useTargetDocument(id)
-  // The scope of the document targeted by the selected perspective (undefined when the document
-  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
-  const scopeId = targetDocument?._system.scopeId
+  const {revisionNotFound, targetDocumentState} = useDocumentPane()
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, the action is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
   const {restore} = useDocumentOperation(id, type, scopeId)
-  const {revisionNotFound} = useDocumentPane()
   const event = useDocumentOperationEvent(id, type)
   const {navigateIntent} = useRouter()
   const prevEvent = useRef(event)
@@ -87,9 +88,9 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
       ),
       icon: RevertIcon,
       dialog,
-      disabled: isRevisionInitial,
+      disabled: isRevisionInitial || !isTargetReady,
     }
-  }, [dialog, handle, isRevisionInitial, isRevisionLatest, revisionNotFound, t])
+  }, [dialog, handle, isRevisionInitial, isRevisionLatest, isTargetReady, revisionNotFound, t])
 }
 
 useHistoryRestoreAction.action = 'restore'

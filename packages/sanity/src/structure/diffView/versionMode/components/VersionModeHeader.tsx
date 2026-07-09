@@ -184,7 +184,7 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
   documentId,
   document,
 }) => {
-  // No `useTargetDocument().scopeId` here: this menu inspects the draft/published pair of the
+  // No `getTargetScopeId(useTargetDocumentState())` here: this menu inspects the draft/published pair of the
   // specific document selected for the diff pane, independent of the selected perspective.
   const {published, draft} = useEditState(getPublishedId(document.id), document.type)
   const selected = useMemo(() => findRelease(document.id, releases), [document.id, releases])

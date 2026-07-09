@@ -39,10 +39,11 @@ import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {type DocumentSyncState, useDocumentSyncState} from '../hooks/useDocumentSyncState'
 import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
-import {useTargetDocument} from '../hooks/useTargetDocument'
+import {getTargetScopeId, useTargetDocumentState} from '../hooks/useTargetDocumentState'
 import {useValidationStatus} from '../hooks/useValidationStatus'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
+import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {useOnlyHasVersions} from '../releases/hooks/useOnlyHasVersions'
 import {isReleaseDocument} from '../releases/store/types'
@@ -170,11 +171,16 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
-  const targetDocument = useTargetDocument(documentId)
-  // When a variant is selected and a variant-scoped version exists for the current bundle, resolve
-  // its (non-deterministic) `scopeId` so it can be threaded through the version-editing pipeline.
-  // ScopeId only exists in version documents.
-  const variantScopeId = targetDocument?._system.scopeId
+  const {selectedVariantName} = usePerspective()
+  const targetDocumentState = useTargetDocumentState(documentId)
+  // The scope of the resolved target document (release id for release targets, opaque scope hash
+  // for variant targets), threaded through the version-editing pipeline. Undefined while the
+  // target is resolving or when the base draft/published pair applies.
+  const targetScopeId = getTargetScopeId(targetDocumentState)
+  // Whether the resolved target is a variant-scoped version. Plain release targets must keep the
+  // release code paths below (value selection, perspective/bundle-mismatch guards).
+  const isVariantTarget =
+    targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
 
   const enhancedObjectDialogEnabled = true
 
@@ -191,15 +197,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   // this will make sure that then the right document appears and so does the right chip within the document header
   const onlyHasVersions = useOnlyHasVersions({documentId})
 
-  const editState = useEditState(documentId, documentType, 'default', variantScopeId)
+  const editState = useEditState(documentId, documentType, 'default', targetScopeId)
 
-  const connectionState = useConnectionState(documentId, documentType, variantScopeId)
+  const connectionState = useConnectionState(documentId, documentType, targetScopeId)
   useReconnectingToast(connectionState === 'reconnecting')
 
   // Staged signal for "the document's edits aren't reaching the server".
   // `stalled` means it's been unsynced long enough that we lock editing to
   // stop the user piling more changes onto a document that isn't syncing.
-  const syncState = useDocumentSyncState(documentId, documentType, variantScopeId)
+  const syncState = useDocumentSyncState(documentId, documentType, targetScopeId)
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
@@ -207,7 +213,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
     // When a variant-scoped version was resolved, the editable document is always the version
     // document, regardless of which bundle (published/drafts/release) the variant belongs to.
-    if (variantScopeId) {
+    if (isVariantTarget) {
       return editState.version || baseValue
     }
     // Only treat releaseId as an actual release/anonymous bundle if it's not a system bundle ('published' or 'drafts')
@@ -238,7 +244,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
     return editState?.draft || editState?.published || baseValue
   }, [
-    variantScopeId,
+    isVariantTarget,
     documentId,
     documentType,
     editState.draft,
@@ -272,7 +278,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     editState,
   })
 
-  // No `useTargetDocument().scopeId` here: this targets the upstream document in the document id
+  // No `getTargetScopeId(useTargetDocumentState())` here: this targets the upstream document in the document id
   // stack (derived from `upstreamId`), not the document targeted by the selected perspective.
   const upstreamEditState = useEditState(
     documentId,
@@ -330,12 +336,14 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName))
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
+  const targetDocumentId =
+    targetDocumentState.status === 'ready' ? targetDocumentState.targetDocument?._id : undefined
   const docPermissionsInput = useMemo(() => {
     return {
       ...value,
-      _id: targetDocument?._id,
+      _id: targetDocumentId,
     }
-  }, [value, targetDocument?._id])
+  }, [value, targetDocumentId])
 
   const [permissions, isPermissionsLoading] = useDocumentValuePermissions({
     document: docPermissionsInput,
@@ -374,10 +382,18 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const syncBlocked = syncState === 'stalled' || syncState === 'recovering'
     const willBeUnpublished = value ? isGoingToUnpublish(value) : false
 
+    // When a variant is requested but its target has not resolved (still resolving, missing, or
+    // an invalid selection), editing must be blocked so patches can never fall back to the base
+    // draft/published pair. The document pane additionally gates mounting on resolution, but this
+    // hook is also used outside the gated pane (e.g. DiffViewPane).
+    if (selectedVariantName && targetDocumentState.status !== 'ready') {
+      return true
+    }
+
     // When editing a resolved variant-scoped version, the document id intentionally doesn't match
     // the selected bundle/perspective (variant docs live under `versions.<scopeId>.<publishedId>`),
     // so the perspective/bundle-mismatch guards below must be skipped.
-    if (!variantScopeId) {
+    if (!isVariantTarget) {
       // in cases where the document has no draft or published, but has a version,
       // and that version doesn't match current pinned version
       // we disable editing
@@ -444,14 +460,16 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     selectedPerspectiveName,
     liveEdit,
     releaseId,
-    variantScopeId,
+    selectedVariantName,
+    targetDocumentState.status,
+    isVariantTarget,
     ready,
     isReleaseLocked,
     readOnlyProp,
     syncState,
   ])
 
-  const {patch} = useDocumentOperation(documentId, documentType, variantScopeId)
+  const {patch} = useDocumentOperation(documentId, documentType, targetScopeId)
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error(

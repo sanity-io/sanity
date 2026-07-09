@@ -234,6 +234,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Showing the current <strong>published</strong> version:',
   /** The text that appears for the action button to add the current document to the selected variant */
   'banners.variant.action.add-to-variant': 'Add to variant',
+  /** The text for the banner that appears when the selected variant matches no variant definition */
+  'banners.variant.definition-not-found':
+    'The selected variant <VariantName>{{name}}</VariantName> could not be found.',
   /** Toast description in case an error occurs when adding a document to a variant */
   'banners.variant.error.description':
     'An error occurred when adding document to the variant: {{message}}',
@@ -671,6 +674,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-operation-results.operation-undefined-title': 'Untitled',
   /** The loading message for the document not found pane */
   'panes.document-pane.document-not-found.loading': 'Loading document…',
+  /** The loading message shown while the document targeted by the selected variant is resolving */
+  'panes.document-pane.variant-target.loading': 'Loading document…',
   /** The text of the document not found pane if the schema is known */
   'panes.document-pane.document-not-found.text':
     'The document type is not defined, and a document with the <Code>{{id}}</Code> identifier could not be found.',

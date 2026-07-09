@@ -3,17 +3,18 @@ import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionModalDialogProps,
+  getTargetScopeId,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
   usePerspective,
-  useTargetDocument,
   useTranslation,
 } from 'sanity'
 
 import {ConfirmDeleteDialog} from '../components'
 import {structureLocaleNamespace} from '../i18n'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_KEY = {
   NOT_PUBLISHED: 'action.unpublish.disabled.not-published',
@@ -30,11 +31,13 @@ export const useUnpublishAction: DocumentActionComponent = ({
   liveEdit,
   release,
 }) => {
-  const targetDocument = useTargetDocument(id)
+  const {targetDocumentState} = useDocumentPane()
   // The scope of the document targeted by the selected perspective, so that published variant
-  // documents can be unpublished (undefined when the document doesn't exist yet, in which case
-  // the hooks fall back to the draft/published pair).
-  const scopeId = targetDocument?._system.scopeId
+  // documents can be unpublished (undefined when the target is still resolving or the
+  // draft/published pair applies). While resolving, the action is disabled below instead of
+  // silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
   const {unpublish} = useDocumentOperation(id, type, scopeId)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -103,7 +106,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
     return {
       tone: 'critical',
       icon: UnpublishIcon,
-      disabled: Boolean(unpublish.disabled) || isPermissionsLoading,
+      disabled: Boolean(unpublish.disabled) || isPermissionsLoading || !isTargetReady,
       label: t('action.unpublish.label'),
       title: unpublish.disabled ? t(DISABLED_REASON_KEY[unpublish.disabled]) : '',
       onHandle: () => setConfirmDialogOpen(true),
@@ -114,6 +117,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
     isDraft,
     liveEdit,
     isPermissionsLoading,
+    isTargetReady,
     permissions?.granted,
     unpublish.disabled,
     t,

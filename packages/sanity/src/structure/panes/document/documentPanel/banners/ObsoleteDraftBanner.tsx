@@ -41,7 +41,7 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   const [isDiscarding, setDiscarding] = useState(false)
   const telemetry = useTelemetry()
 
-  // No `useTargetDocument().scopeId` here: resolving an obsolete draft deliberately operates on
+  // No `getTargetScopeId(useTargetDocumentState())` here: resolving an obsolete draft deliberately operates on
   // the draft/published pair, so no version scope applies.
   const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '')
 
