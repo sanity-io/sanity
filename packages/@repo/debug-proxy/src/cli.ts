@@ -7,9 +7,9 @@ import * as tls from 'node:tls'
 import {fileURLToPath} from 'node:url'
 import {promisify} from 'node:util'
 
-import {object} from '@optique/core/constructs'
-import {message} from '@optique/core/message'
-import {optional, withDefault} from '@optique/core/modifiers'
+import {object, or} from '@optique/core/constructs'
+import {message, type Message} from '@optique/core/message'
+import {map as mapValue, multiple, optional, withDefault} from '@optique/core/modifiers'
 import {option} from '@optique/core/primitives'
 import {float, integer, string, type ValueParser} from '@optique/core/valueparser'
 import {run} from '@optique/run'
@@ -86,6 +86,15 @@ const latencyRange: ValueParser<'sync', {minMs: number; maxMs: number}> = {
 
 const probability = () => float({min: 0, max: 1, metavar: '0..1'})
 
+/**
+ * A boolean flag that tolerates repetition. Script runners bake flags into
+ * commands and forward user-appended args after them (e.g.
+ * `pnpm dev:proxy:http1 -- --http1` doubles the baked-in --http1), which a
+ * plain option() would reject as "cannot be used multiple times".
+ */
+const repeatableFlag = (name: `--${string}`, options: {description: Message}) =>
+  mapValue(multiple(option(name, options)), (seen) => seen.length > 0)
+
 const flags = run(
   object({
     port: withDefault(
@@ -94,10 +103,10 @@ const flags = run(
       }),
       3051,
     ),
-    forceHttp1: option('--force-http1', {
+    forceHttp1: repeatableFlag('--force-http1', {
       description: message`don't offer h2 in the TLS handshake, forcing clients down to HTTP/1.1 over TLS — useful for testing legacy-protocol handling`,
     }),
-    http1: option('--http1', {
+    http1: repeatableFlag('--http1', {
       description: message`also serve a plain (cleartext) HTTP/1.1 listener`,
     }),
     http1Port: withDefault(
@@ -134,7 +143,7 @@ const flags = run(
       }),
       0,
     ),
-    sseFaults: option('--sse-faults', {
+    sseFaults: repeatableFlag('--sse-faults', {
       description: message`apply the SSE fault scenarios (shuffle, duplicate, latency, reset, drop) to the listener endpoint`,
     }),
     dropProbability: withDefault(
@@ -149,18 +158,25 @@ const flags = run(
       }),
       0,
     ),
-    org401: option('--org-401', {
+    org401: repeatableFlag('--org-401', {
       description: message`make the get-org-id endpoint return 401`,
     }),
-    expireToken: optional(
-      option('--expire-token', integer({min: 0, metavar: 'SECONDS'}), {
-        description: message`after SECONDS, answer every API request with the API's expired-session 401 (without forwarding upstream), simulating a token that expires mid-session. Use 0 to expire immediately`,
-      }),
-    ),
-    revokeToken: optional(
-      option('--revoke-token', integer({min: 0, metavar: 'SECONDS'}), {
-        description: message`like --expire-token, but answer with the API's session-not-found 401 (SIO-401-ANF) — as when the session was revoked on another device, purged, or the stored token is stale. Mutually exclusive with --expire-token; use 0 to start revoked`,
-      }),
+    // or() makes the parser itself reject passing both flags
+    tokenFault: optional(
+      or(
+        mapValue(
+          option('--expire-token', integer({min: 0, metavar: 'SECONDS'}), {
+            description: message`after SECONDS, answer every API request with the API's expired-session 401 (without forwarding upstream), simulating a token that expires mid-session. Use 0 to expire immediately`,
+          }),
+          (seconds) => ({kind: 'expire' as const, afterMs: seconds * 1000}),
+        ),
+        mapValue(
+          option('--revoke-token', integer({min: 0, metavar: 'SECONDS'}), {
+            description: message`like --expire-token, but answer with the API's session-not-found 401 (SIO-401-ANF) — as when the session was revoked on another device, purged, or the stored token is stale. Mutually exclusive with --expire-token; use 0 to start revoked`,
+          }),
+          (seconds) => ({kind: 'revoke' as const, afterMs: seconds * 1000}),
+        ),
+      ),
     ),
   }),
   {
@@ -188,13 +204,10 @@ const ENABLE_SSE_FAULTS = flags.sseFaults
 const DROPPED_MUTATION_PROBABILITY = flags.dropProbability
 const RESET_PROBABILITY = flags.resetProbability
 const FORCE_ORG_401 = flags.org401
-const EXPIRE_TOKEN_AFTER_MS = flags.expireToken === undefined ? undefined : flags.expireToken * 1000
-const REVOKE_TOKEN_AFTER_MS = flags.revokeToken === undefined ? undefined : flags.revokeToken * 1000
-
-if (EXPIRE_TOKEN_AFTER_MS !== undefined && REVOKE_TOKEN_AFTER_MS !== undefined) {
-  console.error('--expire-token and --revoke-token are mutually exclusive — pick one')
-  process.exit(1)
-}
+const EXPIRE_TOKEN_AFTER_MS =
+  flags.tokenFault?.kind === 'expire' ? flags.tokenFault.afterMs : undefined
+const REVOKE_TOKEN_AFTER_MS =
+  flags.tokenFault?.kind === 'revoke' ? flags.tokenFault.afterMs : undefined
 
 const SANITY_TOKEN = process.env.SANITY_TOKEN
 

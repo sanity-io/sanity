@@ -41,6 +41,13 @@ export function parseArgs(argv: string[]): CliArgs {
   }
 
   const {url, dryRun, verbose} = result.value
+  // URLs never start with "-" — a flag-like token that fell through to the
+  // positional (e.g. `--dry-run=true`, or a flag placed after `--`) is a
+  // mistyped flag, not a URL. Without this, `-- --dry-run <url>` would treat
+  // `--dry-run` as the URL and silently run live instead of dry.
+  if (url?.startsWith('-')) {
+    throw new Error(`Unknown flag: ${url}. Run with --help for usage.`)
+  }
   return {url: url ?? null, dryRun, verbose, help: false}
 }
 
