@@ -19,7 +19,7 @@ import {isGetOrgIdEndpoint, isListenEndpoint} from './routes'
 import {
   dropMutations,
   duplicateMutations,
-  expiredToken,
+  invalidSession,
   randomLatency,
   sendReset,
   shuffleEventDelivery,
@@ -65,6 +65,11 @@ Options:
                               upstream), simulating a token that expires
                               mid-session. Use 0 to expire immediately, e.g.
                               --expire-token 30 or --expire-token 0
+  --revoke-token <seconds>    like --expire-token, but answer with the API's
+                              session-not-found 401 (SIO-401-ANF) — as when the
+                              session was revoked on another device, purged, or
+                              the stored token is stale. Mutually exclusive
+                              with --expire-token; use 0 to start revoked
   -h, --help                  show this help
 
 Environment:
@@ -93,6 +98,7 @@ function parseFlags() {
         'reset-probability': {type: 'string', default: '0'},
         'org-401': {type: 'boolean', default: false},
         'expire-token': {type: 'string'},
+        'revoke-token': {type: 'string'},
         'help': {type: 'boolean', short: 'h', default: false},
       },
     }).values
@@ -186,6 +192,16 @@ const EXPIRE_TOKEN_AFTER_MS =
   flags['expire-token'] === undefined
     ? undefined
     : intFlag('expire-token', flags['expire-token']) * 1000
+const REVOKE_TOKEN_AFTER_MS =
+  flags['revoke-token'] === undefined
+    ? undefined
+    : intFlag('revoke-token', flags['revoke-token']) * 1000
+
+if (EXPIRE_TOKEN_AFTER_MS !== undefined && REVOKE_TOKEN_AFTER_MS !== undefined) {
+  console.error('--expire-token and --revoke-token are mutually exclusive — pick one')
+  process.exit(1)
+}
+
 const SANITY_TOKEN = process.env.SANITY_TOKEN
 
 if (!SANITY_TOKEN) {
@@ -413,31 +429,39 @@ const flapper = FLAP
 // so a faulted request returns its 5xx immediately rather than after the delay.
 const faultRequests = intermittentServiceErrors(ERROR_PROBABILITY)
 
-// Session-expiry deadline: requests after this wall-clock time get the 401.
-// Armed at startup; a 0s delay means "already past", i.e. expire now. Re-armed
-// whenever the studio re-authenticates (a `/auth/fetch` token exchange), so you
-// can log back in and watch the simulated session lapse again — see below.
-let sessionExpiresAt =
-  EXPIRE_TOKEN_AFTER_MS === undefined ? undefined : Date.now() + EXPIRE_TOKEN_AFTER_MS
-const isSessionExpired = () => sessionExpiresAt !== undefined && Date.now() >= sessionExpiresAt
-const rearmSessionExpiry = () => {
-  if (EXPIRE_TOKEN_AFTER_MS !== undefined) {
-    sessionExpiresAt = Date.now() + EXPIRE_TOKEN_AFTER_MS
+// Invalid-session deadline: requests after this wall-clock time get the 401.
+// --expire-token answers with SIO-401-AEX (expired), --revoke-token with
+// SIO-401-ANF (session not found). Armed at startup; a 0s delay means
+// "already past", i.e. invalidate now. Re-armed whenever the studio
+// re-authenticates (a `/auth/fetch` token exchange), so you can log back in
+// and watch the simulated session lapse again — see below.
+const INVALIDATE_SESSION_AFTER_MS = EXPIRE_TOKEN_AFTER_MS ?? REVOKE_TOKEN_AFTER_MS
+const INVALID_SESSION_CODE = REVOKE_TOKEN_AFTER_MS === undefined ? 'SIO-401-AEX' : 'SIO-401-ANF'
+let sessionInvalidAt =
+  INVALIDATE_SESSION_AFTER_MS === undefined ? undefined : Date.now() + INVALIDATE_SESSION_AFTER_MS
+const isSessionInvalid = () => sessionInvalidAt !== undefined && Date.now() >= sessionInvalidAt
+const rearmSessionInvalidation = () => {
+  if (INVALIDATE_SESSION_AFTER_MS !== undefined) {
+    sessionInvalidAt = Date.now() + INVALIDATE_SESSION_AFTER_MS
   }
 }
 
-// Network-level scenarios applied to every handler: --expire-token replaces the
-// response with the API's expired-session 401 once the deadline passes,
-// --error-probability faults requests with a random 5xx, --latency delays each
-// request, --flap sits outside it so offline resets stay immediate.
+// Network-level scenarios applied to every handler: --expire-token /
+// --revoke-token replace the response with the matching invalid-session 401
+// once the deadline passes, --error-probability faults requests with a random
+// 5xx, --latency delays each request, --flap sits outside it so offline
+// resets stay immediate.
 const withNetworkScenarios = (handler: ProxyHandler): ProxyHandler => {
-  // An expired session would fail at the API for any request, so this wraps the
-  // real handler rather than being scoped to a route.
-  const maybeExpired =
-    EXPIRE_TOKEN_AFTER_MS === undefined
+  // An invalid session would fail at the API for any request, so this wraps
+  // the real handler rather than being scoped to a route.
+  const maybeInvalid =
+    INVALIDATE_SESSION_AFTER_MS === undefined
       ? handler
-      : expiredToken(handler, isSessionExpired, {onReauthenticated: rearmSessionExpiry})
-  const faulted = faultRequests(maybeExpired)
+      : invalidSession(handler, isSessionInvalid, {
+          errorCode: INVALID_SESSION_CODE,
+          onReauthenticated: rearmSessionInvalidation,
+        })
+  const faulted = faultRequests(maybeInvalid)
   const delayed = LATENCY ? withLatency(faulted, LATENCY) : faulted
   return flapper ? flapper.wrap(delayed) : delayed
 }
@@ -504,10 +528,14 @@ if (ERROR_PROBABILITY > 0) {
   )
 }
 
-if (EXPIRE_TOKEN_AFTER_MS !== undefined) {
+if (INVALIDATE_SESSION_AFTER_MS !== undefined) {
+  const what =
+    INVALID_SESSION_CODE === 'SIO-401-AEX'
+      ? 'the expired-session 401 (SIO-401-AEX)'
+      : 'the session-not-found 401 (SIO-401-ANF)'
   console.info(
-    EXPIRE_TOKEN_AFTER_MS === 0
-      ? 'Session expiry: every API request returns the expired-session 401'
-      : `Session expiry: API requests return the expired-session 401 after ${EXPIRE_TOKEN_AFTER_MS / 1000}s`,
+    INVALIDATE_SESSION_AFTER_MS === 0
+      ? `Invalid session: every API request returns ${what}`
+      : `Invalid session: API requests return ${what} after ${INVALIDATE_SESSION_AFTER_MS / 1000}s`,
   )
 }

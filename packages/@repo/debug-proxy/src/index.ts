@@ -38,6 +38,8 @@ export {
   dropMutations,
   duplicateMutations,
   expiredToken,
+  invalidSession,
+  type InvalidSessionCode,
   randomLatency,
   sendReset,
   shuffleEventDelivery,
