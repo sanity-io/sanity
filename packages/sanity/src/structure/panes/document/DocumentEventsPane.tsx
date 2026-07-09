@@ -13,6 +13,7 @@ import {
   useEventsStore,
   usePerspective,
   useSchema,
+  useTargetDocument,
 } from 'sanity'
 
 import {usePaneRouter} from '../../components'
@@ -29,14 +30,13 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const schemaType = schema.get(options.type) as ObjectSchemaType | undefined
   const liveEdit = Boolean(schemaType?.liveEdit)
 
-  const {selectedPerspectiveName, selectedReleaseId, selectedPerspective} = usePerspective()
+  const {selectedPerspectiveName, selectedPerspective} = usePerspective()
   const {data: archivedReleases} = useArchivedReleases()
-  const editState = useEditState(
-    getPublishedId(options.id),
-    documentType,
-    'default',
-    selectedReleaseId,
-  )
+  const targetDocument = useTargetDocument(getPublishedId(options.id))
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
+  const editState = useEditState(getPublishedId(options.id), documentType, 'default', scopeId)
 
   const showingPublishedOnDraft = liveEdit && selectedPerspective === 'drafts' && !editState?.draft
   const {rev, since} = params

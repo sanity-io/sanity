@@ -5,7 +5,6 @@ import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
-  getVersionFromId,
   InsufficientPermissionsMessage,
   isPublishedPerspective,
   type TFunction,
@@ -16,6 +15,7 @@ import {
   usePerspective,
   useRelativeTime,
   useSyncState,
+  useTargetDocument,
   useTranslation,
   useValidationStatus,
 } from 'sanity'
@@ -64,13 +64,16 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
 
-  const bundleId = version?._id && getVersionFromId(version._id)
+  const targetDocument = useTargetDocument(id)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
 
-  const {publish} = useDocumentOperation(id, type, bundleId)
+  const {publish} = useDocumentOperation(id, type, scopeId)
   const {changesOpen, documentId, documentType, value} = useDocumentPane()
   const validationStatus = useValidationStatus(value._id, type, !release)
-  const syncState = useSyncState(id, type)
-  const editState = useEditState(documentId, documentType, 'default', bundleId)
+  const syncState = useSyncState(id, type, scopeId)
+  const editState = useEditState(documentId, documentType, 'default', scopeId)
   const {t} = useTranslation(structureLocaleNamespace)
 
   const revision = (editState?.version || editState?.draft || editState?.published || {})._rev
@@ -84,6 +87,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
+    version: scopeId,
     permission: 'publish',
   })
 

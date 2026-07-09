@@ -90,6 +90,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
   const publishedId = getPublishedId(documentId)
 
+  // No `useTargetDocument().scopeId` here: `releaseId` is supplied by the caller via props, and
+  // this provider may be rendered outside the perspective provider.
   const editState = useEditState(publishedId, documentType, 'low', releaseId)
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()

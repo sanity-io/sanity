@@ -4,12 +4,12 @@ import {useCallback, useMemo, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   type DuplicateDocumentActionComponent,
-  getVersionFromId,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
   useDocumentStore,
+  useTargetDocument,
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -23,24 +23,21 @@ const DISABLED_REASON_KEY = {
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const useDuplicateAction: DuplicateDocumentActionComponent = ({
-  id,
-  type,
-  release,
-  mapDocument,
-  version,
-}) => {
+export const useDuplicateAction: DuplicateDocumentActionComponent = ({id, type, mapDocument}) => {
   const documentStore = useDocumentStore()
-  const bundleId = version?._id && getVersionFromId(version._id)
+  const targetDocument = useTargetDocument(id)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
 
-  const {duplicate} = useDocumentOperation(id, type, bundleId)
+  const {duplicate} = useDocumentOperation(id, type, scopeId)
   const {navigateIntent} = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
+    version: scopeId,
     permission: 'duplicate',
   })
 

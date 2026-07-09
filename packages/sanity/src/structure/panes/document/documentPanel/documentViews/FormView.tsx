@@ -24,6 +24,7 @@ import {
   useDocumentPresence,
   useDocumentStore,
   usePerspective,
+  useTargetDocument,
   useTranslation,
 } from 'sanity'
 
@@ -69,8 +70,12 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
     focusPath,
     syncState,
   } = useDocumentPane()
-  const {selectedReleaseId, selectedPerspective} = usePerspective()
+  const {selectedPerspective} = usePerspective()
   const documentStore = useDocumentStore()
+  const targetDocument = useTargetDocument(documentId)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the pair falls back to the draft/published documents).
+  const scopeId = targetDocument?._system.scopeId
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
@@ -137,7 +142,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
 
   useEffect(() => {
     const sub = documentStore.pair
-      .documentEvents(documentId, documentType, selectedReleaseId)
+      .documentEvents(documentId, documentType, scopeId)
       .pipe(
         tap((event) => {
           if (event.type === 'mutation') {
@@ -154,7 +159,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
     return () => {
       sub.unsubscribe()
     }
-  }, [documentId, documentStore, documentType, patchChannel, selectedReleaseId])
+  }, [documentId, documentStore, documentType, patchChannel, scopeId])
 
   const hasRev = Boolean(value?._rev)
   const handleInitialValue = useEffectEvent(() => {

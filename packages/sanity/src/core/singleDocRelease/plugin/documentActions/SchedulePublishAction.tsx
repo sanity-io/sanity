@@ -34,7 +34,10 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   const toast = useToast()
   const {enabled: singleDocReleaseEnabled, mode} = useSingleDocReleaseEnabled()
   const {handleOpenDialog: handleOpenUpsellDialog} = useSingleDocReleaseUpsell()
-  // Check validation status
+  // Check validation status.
+  // No `useTargetDocument().scopeId` here: scheduling a draft publish deliberately validates the
+  // explicit draft of the document, independent of the selected perspective.
+  // TODO: this will be supported in the future, look for SAPP-3986 and SAPP-3987.
   const validationStatus = useValidationStatus(getDraftId(id), type, true)
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
 

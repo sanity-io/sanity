@@ -4,7 +4,6 @@ import {useCallback, useMemo, useState} from 'react'
 import {catchError, filter, firstValueFrom, map, of, timeout} from 'rxjs'
 import {
   type DocumentActionComponent,
-  getVersionFromId,
   InsufficientPermissionsMessage,
   isAgentBundleName,
   isReleaseScheduledOrScheduling,
@@ -13,6 +12,7 @@ import {
   useDocumentPairPermissions,
   useDocumentStore,
   useDocumentVersionTypeSortedList,
+  useTargetDocument,
   useTranslation,
 } from 'sanity'
 
@@ -32,10 +32,13 @@ const DELETE_OUTCOME_TIMEOUT = 30000
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const useDeleteAction: DocumentActionComponent = ({id, type, draft, version}) => {
-  const bundleId = version?._id && getVersionFromId(version._id)
-  const isAgentBundle = isAgentBundleName(bundleId)
-  const {delete: deleteOp} = useDocumentOperation(id, type, bundleId)
+export const useDeleteAction: DocumentActionComponent = ({id, type, draft}) => {
+  const targetDocument = useTargetDocument(id)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
+  const isAgentBundle = isAgentBundleName(scopeId)
+  const {delete: deleteOp} = useDocumentOperation(id, type, scopeId)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const documentStore = useDocumentStore()
@@ -100,7 +103,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: bundleId,
+    version: scopeId,
     permission: 'delete',
   })
 

@@ -5,6 +5,7 @@ import {
   type DocumentActionDialogProps,
   useDocumentOperation,
   useDocumentOperationEvent,
+  useTargetDocument,
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -14,8 +15,12 @@ import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision, release}) => {
-  const {restore} = useDocumentOperation(id, type, release)
+export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision}) => {
+  const targetDocument = useTargetDocument(id)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
+  const {restore} = useDocumentOperation(id, type, scopeId)
   const {revisionNotFound} = useDocumentPane()
   const event = useDocumentOperationEvent(id, type)
   const {navigateIntent} = useRouter()

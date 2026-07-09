@@ -10,6 +10,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {useTargetDocument} from '../../../hooks/useTargetDocument'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
@@ -32,10 +33,15 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
   const toast = useToast()
   const {t: coreT} = useTranslation()
 
+  const targetDocument = useTargetDocument(id)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the permissions check falls back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
+
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
+    version: scopeId,
     permission: 'unpublish',
   })
 

@@ -18,6 +18,7 @@ import {
   useRelativeTime,
   useSource,
   useSyncState,
+  useTargetDocument,
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
@@ -186,13 +187,17 @@ const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
 
 export function DocumentStatusLine() {
-  const {editState, value} = useDocumentPane()
+  const {value} = useDocumentPane()
   const {documentId, documentType} = useDocumentPaneInfo()
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
   const source = useSource()
   const eventsEnabled = source.beta?.eventsAPI?.documents
 
-  const syncState = useSyncState(documentId, documentType, editState?.release)
+  const targetDocument = useTargetDocument(documentId)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the hook falls back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
+  const syncState = useSyncState(documentId, documentType, scopeId)
 
   const lastUpdated = value?._updatedAt
 

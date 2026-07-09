@@ -7,6 +7,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {useTargetDocument} from '../../../hooks/useTargetDocument'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
@@ -19,16 +20,20 @@ import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 export const useDiscardVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
-  const {id, type, release, version} = props
+  const {id, type, version} = props
   const currentUser = useCurrentUser()
   const {t} = useTranslation()
   const {selectedPerspective} = usePerspective()
   const willUnpublish = version ? isGoingToUnpublish(version) : false
+  const targetDocument = useTargetDocument(id)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the permissions check falls back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
+    version: scopeId,
     permission: 'discardVersion',
   })
 
