@@ -5,8 +5,14 @@ import {X509Certificate} from 'node:crypto'
 import {mkdir, readFile} from 'node:fs/promises'
 import * as tls from 'node:tls'
 import {fileURLToPath} from 'node:url'
-import {parseArgs, promisify} from 'node:util'
+import {promisify} from 'node:util'
 
+import {object} from '@optique/core/constructs'
+import {message} from '@optique/core/message'
+import {optional, withDefault} from '@optique/core/modifiers'
+import {option} from '@optique/core/primitives'
+import {float, integer, string, type ValueParser} from '@optique/core/valueparser'
+import {run} from '@optique/run'
 import {getCertificate} from '@vitejs/plugin-basic-ssl'
 import {map, pipe, takeUntil, tap, timer} from 'rxjs'
 
@@ -25,177 +31,165 @@ import {
   shuffleEventDelivery,
 } from './scenarios'
 
-const HELP = `A local debugging proxy for the Sanity API
-
-Usage: debug-proxy [options]
-
-Options:
-  --port <port>               HTTP/2 (TLS) listener port (default: 3051)
-  --force-http1               don't offer h2 in the TLS handshake, forcing
-                              clients down to HTTP/1.1 over TLS — useful for
-                              testing legacy-protocol handling
-  --http1                     also serve a plain (cleartext) HTTP/1.1 listener
-  --http1-port <port>         port for the plain listener (default: 3050)
-  --api-host <host>           upstream Sanity API host (default: api.sanity.io;
-                              use api.sanity.work for staging)
-  --listener-ttl <seconds>    disconnect SSE listeners after this many seconds
-                              to simulate flaky connections (default: never)
-  --flap <on>[:<off>]         simulate flapping connectivity: proxy normally
-                              for <on> seconds, then go "offline" for <off>
-                              seconds (new requests reset, live streams cut),
-                              repeating. A single number means equal phases,
-                              e.g. --flap 30:15 or --flap 20
-  --latency <ms>[:<maxMs>]    delay each request by this many milliseconds
-                              before forwarding it upstream; a range applies
-                              random jitter per request, e.g. --latency 800
-                              or --latency 200:1500
-  --error-probability <0..1>  simulate an incident: each request independently
-                              fails with a random 5xx (500/502/503/504) instead
-                              of being forwarded upstream, at this probability
-                              (default: 0)
-  --sse-faults                apply the SSE fault scenarios (shuffle, duplicate,
-                              latency, reset, drop) to the listener endpoint
-  --drop-probability <0..1>   probability a mutation event is dropped
-                              (requires --sse-faults; default: 0)
-  --reset-probability <0..1>  probability a reset is sent instead of a mutation
-                              (requires --sse-faults; default: 0)
-  --org-401                   make the get-org-id endpoint return 401
-  --expire-token <seconds>    after <seconds>, answer every API request with the
-                              API's expired-session 401 (without forwarding
-                              upstream), simulating a token that expires
-                              mid-session. Use 0 to expire immediately, e.g.
-                              --expire-token 30 or --expire-token 0
-  --revoke-token <seconds>    like --expire-token, but answer with the API's
-                              session-not-found 401 (SIO-401-ANF) — as when the
-                              session was revoked on another device, purged, or
-                              the stored token is stale. Mutually exclusive
-                              with --expire-token; use 0 to start revoked
-  -h, --help                  show this help
-
-Environment:
-  SANITY_TOKEN  Sanity API token, injected as "Authorization: Bearer <token>"
-                on proxied requests. Kept out of argv since it's a secret —
-                set it in the shell or in a .env file next to this package.
-`
-
-function parseFlags() {
-  try {
-    return parseArgs({
-      // Flags forwarded through script runners
-      args: process.argv.slice(2).filter((arg) => arg !== '--'),
-      options: {
-        'port': {type: 'string', default: '3051'},
-        'force-http1': {type: 'boolean', default: false},
-        'http1': {type: 'boolean', default: false},
-        'http1-port': {type: 'string', default: '3050'},
-        'api-host': {type: 'string', default: 'api.sanity.io'},
-        'listener-ttl': {type: 'string', default: '0'},
-        'flap': {type: 'string'},
-        'latency': {type: 'string'},
-        'error-probability': {type: 'string', default: '0'},
-        'sse-faults': {type: 'boolean', default: false},
-        'drop-probability': {type: 'string', default: '0'},
-        'reset-probability': {type: 'string', default: '0'},
-        'org-401': {type: 'boolean', default: false},
-        'expire-token': {type: 'string'},
-        'revoke-token': {type: 'string'},
-        'help': {type: 'boolean', short: 'h', default: false},
-      },
-    }).values
-  } catch (error) {
-    console.error(error instanceof Error ? error.message : error)
-    console.error('Run with --help for usage')
-    return process.exit(1)
-  }
+/** Parses the --flap value (`<on>[:<off>]` in seconds) into phase durations. */
+const flapPhases: ValueParser<'sync', {onlineMs: number; offlineMs: number}> = {
+  mode: 'sync',
+  metavar: 'ON[:OFF]',
+  placeholder: {onlineMs: 1000, offlineMs: 1000},
+  parse(input) {
+    const [on, off = on, ...rest] = input.split(':')
+    const onlineSec = Number(on)
+    const offlineSec = Number(off)
+    if (
+      rest.length > 0 ||
+      !Number.isFinite(onlineSec) ||
+      !Number.isFinite(offlineSec) ||
+      onlineSec <= 0 ||
+      offlineSec <= 0
+    ) {
+      return {
+        success: false,
+        error: message`Expected "<onlineSeconds>:<offlineSeconds>" (or a single number for equal phases), got ${input}.`,
+      }
+    }
+    return {success: true, value: {onlineMs: onlineSec * 1000, offlineMs: offlineSec * 1000}}
+  },
+  format: (value) => `${value.onlineMs / 1000}:${value.offlineMs / 1000}`,
 }
 
-const flags = parseFlags()
-
-if (flags.help) {
-  console.info(HELP)
-  process.exit(0)
+/** Parses the --latency value (`<ms>[:<maxMs>]`) into a delay range. */
+const latencyRange: ValueParser<'sync', {minMs: number; maxMs: number}> = {
+  mode: 'sync',
+  metavar: 'MS[:MAXMS]',
+  placeholder: {minMs: 0, maxMs: 0},
+  parse(input) {
+    const [min, max = min, ...rest] = input.split(':')
+    const minMs = Number(min)
+    const maxMs = Number(max)
+    if (
+      rest.length > 0 ||
+      !Number.isInteger(minMs) ||
+      !Number.isInteger(maxMs) ||
+      minMs < 0 ||
+      maxMs < minMs
+    ) {
+      return {
+        success: false,
+        error: message`Expected "<ms>" or "<minMs>:<maxMs>" (non-negative, max >= min), got ${input}.`,
+      }
+    }
+    return {success: true, value: {minMs, maxMs}}
+  },
+  format: (value) =>
+    value.minMs === value.maxMs ? `${value.minMs}` : `${value.minMs}:${value.maxMs}`,
 }
 
-/** Parse a flag as a non-negative integer, exiting with a clear error if not. */
-function intFlag(name: string, value: string): number {
-  if (!/^\d+$/.test(value)) {
-    console.error(`Invalid --${name}: expected a non-negative integer, got "${value}"`)
-    process.exit(1)
-  }
-  return Number(value)
-}
+const probability = () => float({min: 0, max: 1, metavar: '0..1'})
 
-/** Parse the --flap value (`<on>[:<off>]` in seconds) into phase durations. */
-function flapFlag(value: string): {onlineMs: number; offlineMs: number} {
-  const [on, off = on, ...rest] = value.split(':')
-  const onlineSec = Number(on)
-  const offlineSec = Number(off)
-  if (
-    rest.length > 0 ||
-    !Number.isFinite(onlineSec) ||
-    !Number.isFinite(offlineSec) ||
-    onlineSec <= 0 ||
-    offlineSec <= 0
-  ) {
-    console.error(
-      `Invalid --flap: expected "<onlineSeconds>:<offlineSeconds>" (or a single number for equal phases), got "${value}"`,
-    )
-    process.exit(1)
-  }
-  return {onlineMs: onlineSec * 1000, offlineMs: offlineSec * 1000}
-}
+const flags = run(
+  object({
+    port: withDefault(
+      option('--port', integer({min: 0, max: 65535, metavar: 'PORT'}), {
+        description: message`HTTP/2 (TLS) listener port`,
+      }),
+      3051,
+    ),
+    forceHttp1: option('--force-http1', {
+      description: message`don't offer h2 in the TLS handshake, forcing clients down to HTTP/1.1 over TLS — useful for testing legacy-protocol handling`,
+    }),
+    http1: option('--http1', {
+      description: message`also serve a plain (cleartext) HTTP/1.1 listener`,
+    }),
+    http1Port: withDefault(
+      option('--http1-port', integer({min: 0, max: 65535, metavar: 'PORT'}), {
+        description: message`port for the plain listener`,
+      }),
+      3050,
+    ),
+    apiHost: withDefault(
+      option('--api-host', string({metavar: 'HOST'}), {
+        description: message`upstream Sanity API host (use api.sanity.work for staging)`,
+      }),
+      'api.sanity.io',
+    ),
+    listenerTtl: withDefault(
+      option('--listener-ttl', integer({min: 0, metavar: 'SECONDS'}), {
+        description: message`disconnect SSE listeners after this many seconds to simulate flaky connections (0 = never)`,
+      }),
+      0,
+    ),
+    flap: optional(
+      option('--flap', flapPhases, {
+        description: message`simulate flapping connectivity: proxy normally for <on> seconds, then go "offline" for <off> seconds (new requests reset, live streams cut), repeating. A single number means equal phases, e.g. --flap 30:15 or --flap 20`,
+      }),
+    ),
+    latency: optional(
+      option('--latency', latencyRange, {
+        description: message`delay each request by this many milliseconds before forwarding it upstream; a range applies random jitter per request, e.g. --latency 800 or --latency 200:1500`,
+      }),
+    ),
+    errorProbability: withDefault(
+      option('--error-probability', probability(), {
+        description: message`simulate an incident: each request independently fails with a random 5xx (500/502/503/504) instead of being forwarded upstream, at this probability`,
+      }),
+      0,
+    ),
+    sseFaults: option('--sse-faults', {
+      description: message`apply the SSE fault scenarios (shuffle, duplicate, latency, reset, drop) to the listener endpoint`,
+    }),
+    dropProbability: withDefault(
+      option('--drop-probability', probability(), {
+        description: message`probability a mutation event is dropped (requires --sse-faults)`,
+      }),
+      0,
+    ),
+    resetProbability: withDefault(
+      option('--reset-probability', probability(), {
+        description: message`probability a reset is sent instead of a mutation (requires --sse-faults)`,
+      }),
+      0,
+    ),
+    org401: option('--org-401', {
+      description: message`make the get-org-id endpoint return 401`,
+    }),
+    expireToken: optional(
+      option('--expire-token', integer({min: 0, metavar: 'SECONDS'}), {
+        description: message`after SECONDS, answer every API request with the API's expired-session 401 (without forwarding upstream), simulating a token that expires mid-session. Use 0 to expire immediately`,
+      }),
+    ),
+    revokeToken: optional(
+      option('--revoke-token', integer({min: 0, metavar: 'SECONDS'}), {
+        description: message`like --expire-token, but answer with the API's session-not-found 401 (SIO-401-ANF) — as when the session was revoked on another device, purged, or the stored token is stale. Mutually exclusive with --expire-token; use 0 to start revoked`,
+      }),
+    ),
+  }),
+  {
+    programName: 'debug-proxy',
+    // Flags forwarded through script runners
+    args: process.argv.slice(2).filter((arg) => arg !== '--'),
+    brief: message`A local debugging proxy for the Sanity API`,
+    footer: message`Environment: SANITY_TOKEN — Sanity API token, injected as "Authorization: Bearer <token>" on proxied requests. Kept out of argv since it's a secret — set it in the shell or in a .env file next to this package.`,
+    help: {option: {names: ['-h', '--help']}},
+    aboveError: 'usage',
+    showDefault: true,
+  },
+)
 
-/** Parse the --latency value (`<ms>[:<maxMs>]`) into a delay range. */
-function latencyFlag(value: string): {minMs: number; maxMs: number} {
-  const [min, max = min, ...rest] = value.split(':')
-  const minMs = Number(min)
-  const maxMs = Number(max)
-  if (
-    rest.length > 0 ||
-    !Number.isInteger(minMs) ||
-    !Number.isInteger(maxMs) ||
-    minMs < 0 ||
-    maxMs < minMs
-  ) {
-    console.error(
-      `Invalid --latency: expected "<ms>" or "<minMs>:<maxMs>" (non-negative, max >= min), got "${value}"`,
-    )
-    process.exit(1)
-  }
-  return {minMs, maxMs}
-}
-
-/** Parse a flag as a probability in [0, 1], exiting with a clear error if not. */
-function probabilityFlag(name: string, value: string): number {
-  const parsed = value.trim() === '' ? NaN : Number(value)
-  if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1) {
-    console.error(`Invalid --${name}: expected a number between 0 and 1, got "${value}"`)
-    process.exit(1)
-  }
-  return parsed
-}
-
-const TLS_PORT = intFlag('port', flags.port)
-const FORCE_HTTP1 = flags['force-http1']
+const TLS_PORT = flags.port
+const FORCE_HTTP1 = flags.forceHttp1
 const ENABLE_HTTP1 = flags.http1
-const HTTP1_PORT = intFlag('http1-port', flags['http1-port'])
-const API_HOST = flags['api-host']
-const LISTENER_TTL_MS = intFlag('listener-ttl', flags['listener-ttl']) * 1000
-const FLAP = flags.flap === undefined ? undefined : flapFlag(flags.flap)
-const LATENCY = flags.latency === undefined ? undefined : latencyFlag(flags.latency)
-const ERROR_PROBABILITY = probabilityFlag('error-probability', flags['error-probability'])
-const ENABLE_SSE_FAULTS = flags['sse-faults']
-const DROPPED_MUTATION_PROBABILITY = probabilityFlag('drop-probability', flags['drop-probability'])
-const RESET_PROBABILITY = probabilityFlag('reset-probability', flags['reset-probability'])
-const FORCE_ORG_401 = flags['org-401']
-const EXPIRE_TOKEN_AFTER_MS =
-  flags['expire-token'] === undefined
-    ? undefined
-    : intFlag('expire-token', flags['expire-token']) * 1000
-const REVOKE_TOKEN_AFTER_MS =
-  flags['revoke-token'] === undefined
-    ? undefined
-    : intFlag('revoke-token', flags['revoke-token']) * 1000
+const HTTP1_PORT = flags.http1Port
+const API_HOST = flags.apiHost
+const LISTENER_TTL_MS = flags.listenerTtl * 1000
+const FLAP = flags.flap
+const LATENCY = flags.latency
+const ERROR_PROBABILITY = flags.errorProbability
+const ENABLE_SSE_FAULTS = flags.sseFaults
+const DROPPED_MUTATION_PROBABILITY = flags.dropProbability
+const RESET_PROBABILITY = flags.resetProbability
+const FORCE_ORG_401 = flags.org401
+const EXPIRE_TOKEN_AFTER_MS = flags.expireToken === undefined ? undefined : flags.expireToken * 1000
+const REVOKE_TOKEN_AFTER_MS = flags.revokeToken === undefined ? undefined : flags.revokeToken * 1000
 
 if (EXPIRE_TOKEN_AFTER_MS !== undefined && REVOKE_TOKEN_AFTER_MS !== undefined) {
   console.error('--expire-token and --revoke-token are mutually exclusive — pick one')

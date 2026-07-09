@@ -9,12 +9,15 @@
 
 const fs = require('node:fs')
 const path = require('node:path')
-const minimist = require('minimist')
+const {parseArgs} = require('node:util')
 const {rimrafSync} = require('rimraf')
 
-const argv = minimist(process.argv.slice(2), {boolean: ['all']})
+const {values: flags, positionals} = parseArgs({
+  options: {all: {type: 'boolean', default: false}},
+  allowPositionals: true,
+})
 
-const targetDir = argv._[0]
+const targetDir = positionals[0]
 if (!targetDir) {
   throw new Error('Target directory must be specified (`.` for current dir)')
 }
@@ -32,7 +35,7 @@ const targetPath = path.resolve(path.relative(process.cwd(), targetDir))
 const targetDepsPath = path.join(targetPath, 'node_modules')
 
 let targetDeps = packages
-if (!argv.all) {
+if (!flags.all) {
   const targetPkg = require(path.join(targetPath, 'package.json'))
   const targetDeclared = Object.assign({}, targetPkg.dependencies, targetPkg.devDependencies)
   targetDeps = Object.keys(targetDeclared)
@@ -52,11 +55,11 @@ if (targetDeps.includes('sanity')) {
 
 // All the dependencies in the root of node_modules and node_modules/@sanity
 const targetPackages = [...targetRootPackages, ...targetSanityPackages, ...targetDeps]
-const sharedPackages = argv.all
+const sharedPackages = flags.all
   ? packages
   : packages.filter((pkgName) => targetPackages.indexOf(pkgName) > -1)
 
-const sharedDeclared = argv.all
+const sharedDeclared = flags.all
   ? packages
   : packages.filter((pkgName) => targetDeps.indexOf(pkgName) > -1)
 
