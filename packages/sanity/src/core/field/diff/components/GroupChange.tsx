@@ -12,7 +12,7 @@ import {
 import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
-import {usePerspective} from '../../../perspective/usePerspective'
+import {useTargetDocument} from '../../../hooks/useTargetDocument'
 import {useDocumentPairPermissions} from '../../../store'
 import {pathsAreEqual} from '../../paths'
 import {type GroupChangeNode} from '../../types'
@@ -61,13 +61,17 @@ export function GroupChange(
   }
   const isRevertButtonHovered = useHover<HTMLButtonElement>(revertButtonElement)
 
-  const {selectedReleaseId} = usePerspective()
-  const docOperations = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
+  const targetDocument = useTargetDocument(documentId)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
+  const docOperations = useDocumentOperation(documentId, schemaType.name, scopeId)
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
     type: schemaType.name,
+    version: scopeId,
     permission: 'update',
   })
 

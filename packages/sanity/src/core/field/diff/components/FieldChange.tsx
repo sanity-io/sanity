@@ -4,8 +4,8 @@ import {Fragment, type HTMLAttributes, startTransition, useCallback, useMemo, us
 import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
+import {useTargetDocument} from '../../../hooks/useTargetDocument'
 import {useTranslation} from '../../../i18n'
-import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store'
 import {type FieldChangeNode} from '../../types'
 import {undoChange} from '../changes/undoChange'
@@ -67,8 +67,11 @@ export function FieldChange(
     isComparingCurrent,
     FieldWrapper = Fragment,
   } = useDocumentChange()
-  const {selectedReleaseId} = usePerspective()
-  const ops = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
+  const targetDocument = useTargetDocument(documentId)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
+  const ops = useDocumentOperation(documentId, schemaType.name, scopeId)
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
   const [buttonElement, _setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -85,6 +88,7 @@ export function FieldChange(
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
     type: schemaType.name,
+    version: scopeId,
     permission: 'update',
   })
 

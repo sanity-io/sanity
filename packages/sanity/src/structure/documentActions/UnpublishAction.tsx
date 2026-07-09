@@ -8,6 +8,7 @@ import {
   useDocumentOperation,
   useDocumentPairPermissions,
   usePerspective,
+  useTargetDocument,
   useTranslation,
 } from 'sanity'
 
@@ -29,11 +30,17 @@ export const useUnpublishAction: DocumentActionComponent = ({
   liveEdit,
   release,
 }) => {
-  const {unpublish} = useDocumentOperation(id, type)
+  const targetDocument = useTargetDocument(id)
+  // The scope of the document targeted by the selected perspective, so that published variant
+  // documents can be unpublished (undefined when the document doesn't exist yet, in which case
+  // the hooks fall back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
+  const {unpublish} = useDocumentOperation(id, type, scopeId)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
+    version: scopeId,
     permission: 'unpublish',
   })
   const currentUser = useCurrentUser()

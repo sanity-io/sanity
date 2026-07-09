@@ -272,6 +272,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     editState,
   })
 
+  // No `useTargetDocument().scopeId` here: this targets the upstream document in the document id
+  // stack (derived from `upstreamId`), not the document targeted by the selected perspective.
   const upstreamEditState = useEditState(
     documentId,
     documentType,

@@ -6,6 +6,7 @@ import {useCallback, useState} from 'react'
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useDocumentOperation, useSchema} from '../../../hooks'
+import {useTargetDocument} from '../../../hooks/useTargetDocument'
 import {Translate, useTranslation} from '../../../i18n'
 import {type TargetPerspective} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
@@ -28,7 +29,12 @@ export function DiscardVersionDialog(props: {
   const {onClose, documentId, documentType, fromPerspective, isGoingToUnpublish} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: coreT} = useTranslation()
-  const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
+  const targetDocument = useTargetDocument(getPublishedId(documentId))
+  // The scope of the document targeted by the selected perspective, so that discarding a draft
+  // targets the variant-scoped version when a variant is selected (undefined when the document
+  // doesn't exist yet, in which case the operation falls back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
+  const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType, scopeId)
   const {selectedPerspective} = usePerspective()
   const {discardVersion} = useVersionOperations()
   const schema = useSchema()

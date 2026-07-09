@@ -2,12 +2,12 @@ import {ResetIcon} from '@sanity/icons/Reset'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
-  getVersionFromId,
   InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
+  useTargetDocument,
   useTranslation,
 } from 'sanity'
 
@@ -31,13 +31,16 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   version,
   draft,
 }) => {
-  const bundleId = version?._id && getVersionFromId(version._id)
-  const {discardChanges} = useDocumentOperation(id, type, bundleId)
+  const targetDocument = useTargetDocument(id)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
+  const {discardChanges} = useDocumentOperation(id, type, scopeId)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: bundleId,
+    version: scopeId,
     permission: 'discardDraft',
   })
   const currentUser = useCurrentUser()

@@ -128,6 +128,8 @@ export function useDivergenceController(
     }),
   )
 
+  // No `useTargetDocument().scopeId` here: the version is derived from the divergence's own
+  // document id, independent of the selected perspective.
   const readUpstreamHead: Observable<HydratedSnapshot> = documentStore.pair
     .editState(getPublishedId(documentId), documentType, getVersionFromId(documentId))
     .pipe(
@@ -162,6 +164,8 @@ export function useDivergenceController(
   const isLoading = upstreamBase.isLoading || upstreamHead.isLoading
   const isReadOnly = contextReadOnly || isLoading || isActionPending
 
+  // No `useTargetDocument().scopeId` here: the version is derived from the divergence's subject
+  // id, independent of the selected perspective.
   const {patch} = useDocumentOperation(
     getPublishedId(subjectId),
     documentType,

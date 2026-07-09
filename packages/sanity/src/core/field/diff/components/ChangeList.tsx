@@ -7,8 +7,8 @@ import {DiffContext} from 'sanity/_singletons'
 
 import {Button} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
+import {useTargetDocument} from '../../../hooks/useTargetDocument'
 import {useTranslation} from '../../../i18n'
-import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store'
 import {useConditionalProperty} from '../../conditional-property'
 import {type ChangeNode, type ObjectDiff} from '../../types'
@@ -30,8 +30,11 @@ export interface ChangeListProps {
 /** @internal */
 export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.JSX.Element | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
-  const {selectedReleaseId} = usePerspective()
-  const docOperations = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
+  const targetDocument = useTargetDocument(documentId)
+  // The scope of the document targeted by the selected perspective (undefined when the document
+  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
+  const scopeId = targetDocument?._system.scopeId
+  const docOperations = useDocumentOperation(documentId, schemaType.name, scopeId)
   const {path} = useContext(DiffContext)
   const isRoot = path.length === 0
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = useState(false)
@@ -62,6 +65,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
     type: schemaType.name,
+    version: scopeId,
     permission: 'update',
   })
 

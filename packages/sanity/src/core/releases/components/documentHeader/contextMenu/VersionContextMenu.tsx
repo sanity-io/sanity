@@ -62,6 +62,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
   const {createRelease} = useReleaseOperations()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
 
+  // No `useTargetDocument().scopeId` here: this menu acts on the specific version identified by
+  // the `fromRelease` prop (the chip it was opened from), regardless of the selected perspective.
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: getPublishedId(documentId),
     type,
