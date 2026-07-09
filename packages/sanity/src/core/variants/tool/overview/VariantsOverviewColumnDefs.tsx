@@ -9,8 +9,20 @@ import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
 import {getVariantId, getVariantConditionsText, getVariantTitle} from '../util'
 
-const VariantDocumentsCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, datum}) => {
-  if (datum.isLoading) {
+/**
+ * A variant row in the overview table, with its live document count attached.
+ *
+ * `documentCount` is `undefined` while the count is being fetched and `null` when it could
+ * not be fetched.
+ *
+ * @internal
+ */
+export interface TableVariant extends SystemVariant {
+  documentCount?: number | null
+}
+
+const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum}) => {
+  if (datum.isLoading || datum.documentCount === undefined) {
     return (
       <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
         <Text size={1}>
@@ -23,13 +35,13 @@ const VariantDocumentsCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, 
   return (
     <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
       <Text muted size={1}>
-        0
+        {datum.documentCount === null ? '-' : datum.documentCount}
       </Text>
     </Flex>
   )
 }
 
-const VariantTitleCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, datum: variant}) => {
+const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum: variant}) => {
   const {t} = useTranslation(variantsLocaleNamespace)
 
   const encodedVariantId = getVariantId(variant._id)
@@ -82,7 +94,7 @@ const VariantTitleCell: VisibleColumn<SystemVariant>['cell'] = ({cellProps, datu
 
 export function variantsOverviewColumnDefs(
   t: UseTranslationResponse<'variants', undefined>['t'],
-): Column<SystemVariant>[] {
+): Column<TableVariant>[] {
   return [
     {
       id: 'metadata.title',

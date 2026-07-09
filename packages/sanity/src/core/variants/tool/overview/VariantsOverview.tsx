@@ -8,13 +8,14 @@ import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n'
 import {Table, type TableProps} from '../../../releases/tool/components/Table/Table'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
+import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant} from '../../types'
 import {filterVariantsForSearch, getVariantId} from '../util'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
-import {variantsOverviewColumnDefs} from './VariantsOverviewColumnDefs'
+import {type TableVariant, variantsOverviewColumnDefs} from './VariantsOverviewColumnDefs'
 
 const VARIANT_TABLE_ROW_ID = '_id'
 
@@ -40,14 +41,22 @@ export function VariantsOverview() {
 
   const columnDefs = useMemo(() => variantsOverviewColumnDefs(t), [t])
   const renderRowActions = useCallback<
-    NonNullable<TableProps<SystemVariant, undefined>['rowActions']>
+    NonNullable<TableProps<TableVariant, undefined>['rowActions']>
   >(({datum}) => <VariantMenuButton variant={datum as SystemVariant} />, [])
 
   const variantsList = useMemo(() => variants ?? [], [variants])
 
+  const {data: documentCounts, error: documentCountsError} = useVariantsDocumentCounts()
+
   const filteredVariants = useMemo(
-    () => filterVariantsForSearch(variantsList, searchQuery),
-    [variantsList, searchQuery],
+    () =>
+      filterVariantsForSearch(variantsList, searchQuery).map(
+        (variant): TableVariant => ({
+          ...variant,
+          documentCount: documentCounts?.[variant._id] ?? (documentCountsError ? null : undefined),
+        }),
+      ),
+    [variantsList, searchQuery, documentCounts, documentCountsError],
   )
 
   const hasVariants = variantsList.length > 0
@@ -120,7 +129,7 @@ export function VariantsOverview() {
 
       {/* Full-width scroll region so table borders span the tool pane (same pattern as release detail summary). */}
       <Box flex={1} overflow="auto" ref={setScrollContainerRef}>
-        <Table<SystemVariant>
+        <Table<TableVariant>
           columnDefs={columnDefs}
           data={filteredVariants}
           emptyState={tableEmptyState}
