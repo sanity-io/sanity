@@ -2013,6 +2013,12 @@ importers:
 
   scripts:
     devDependencies:
+      '@optique/core':
+        specifier: 'catalog:'
+        version: 1.1.1
+      '@optique/run':
+        specifier: 'catalog:'
+        version: 1.1.1
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../packages/@repo/tsconfig

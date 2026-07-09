@@ -1,7 +1,9 @@
-import path, {dirname} from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {parseArgs} from 'node:util'
-
+import {object} from '@optique/core/constructs'
+import {message} from '@optique/core/message'
+import {optional, withDefault} from '@optique/core/modifiers'
+import {negatableFlag, option} from '@optique/core/primitives'
+import {choice, integer, string} from '@optique/core/valueparser'
+import {run as runCli} from '@optique/run'
 import {readEnv} from '@repo/utils'
 import {createClient} from '@sanity/client'
 import {tap} from 'rxjs'
@@ -12,97 +14,75 @@ import {liveEdit} from './templates/liveEdit'
 import {species} from './templates/species'
 import {validation} from './templates/validation'
 
-const {values: args} = parseArgs({
-  args: process.argv.slice(2),
-  allowNegative: true,
-  options: {
-    number: {
-      type: 'string',
-      short: 'n',
-      default: '1',
-    },
-    dataset: {
-      type: 'string',
-    },
-    bundle: {
-      type: 'string',
-    },
-    bundles: {
-      type: 'string',
-    },
-    draft: {
-      type: 'boolean',
-      default: true,
-    },
-    published: {
-      type: 'boolean',
-    },
-    size: {
-      type: 'string',
-    },
-    concurrency: {
-      type: 'string',
-      short: 'c',
-    },
-    template: {
-      type: 'string',
-      short: 't',
-    },
-    help: {
-      type: 'boolean',
-      short: 'h',
-    },
-  },
-})
-
 const templates = {
   validation,
   book,
   species,
   liveEdit,
 }
+const templateNames = Object.keys(templates) as (keyof typeof templates)[]
 
-const HELP_TEXT = `Usage: tsx --env-file=.env.local ./${path.relative(process.cwd(), process.argv[1])} --template <template> [arguments]
+const args = runCli(
+  object({
+    template: option('-t', '--template', choice(templateNames), {
+      description: message`Template to use`,
+    }),
+    dataset: withDefault(
+      option('--dataset', string({metavar: 'DATASET'}), {
+        description: message`Dataset to generate documents in`,
+      }),
+      'test',
+    ),
+    number: withDefault(
+      option('-n', '--number', integer({min: 1, metavar: 'COUNT'}), {
+        description: message`Number of documents to generate`,
+      }),
+      1,
+    ),
+    draft: withDefault(
+      negatableFlag(
+        {positive: '--draft', negative: '--no-draft'},
+        {description: message`Generate draft documents`},
+      ),
+      true,
+    ),
+    published: option('--published', {
+      description: message`Generate published documents`,
+    }),
+    bundle: optional(
+      option('--bundle', string({metavar: 'BUNDLE[,BUNDLE...]'}), {
+        description: message`Bundle(s) to generate documents in (comma-separated)`,
+      }),
+    ),
+    size: optional(
+      option('--size', integer({min: 1, metavar: 'BYTES'}), {
+        description: message`Size (in bytes) of the generated document (will be approximated)`,
+      }),
+    ),
+    concurrency: optional(
+      option('-c', '--concurrency', integer({min: 1, metavar: 'COUNT'}), {
+        description: message`Number of concurrent requests`,
+      }),
+    ),
+  }),
+  {
+    programName: 'generate-documents',
+    brief: message`Generate test documents in a Sanity dataset from a template`,
+    footer: message`Requires the TEST_STUDIO_WRITE_TOKEN environment variable (run via "pnpm generate:docs", which loads .env files). Add more templates in scripts/generate-documents/templates/.`,
+    help: {option: {names: ['-h', '--help']}},
+    aboveError: 'usage',
+    showDefault: true,
+    showChoices: true,
+  },
+)
 
-     Arguments:
-      --template, -t <template>: Template to use (required). Possible values: ${Object.keys(templates).join(', ')}
-
-      --dataset: Dataset to generate documents in (defaults to 'test')
-      --amount, -n <int>: Number of documents to generate
-      --draft: Generate draft documents
-      --published: Generate published documents
-      --bundle <string>[,<string>,...<stringN>]: Bundle(s) to generate documents in
-      --size <bytes>: Size (in bytes) of the generated document (will be approximated)
-      --concurrency, -c <int>: Number of concurrent requests
-      --help, -h: Show this help message
-
-  Add more templates by adding them to the "./${path.relative(process.cwd(), path.join(dirname(fileURLToPath(import.meta.url)), './templates'))}" directory.
-    `
-
-if (args.help) {
-  console.log(HELP_TEXT)
-  process.exit(0)
-}
-
-if (!args.template) {
-  console.error('Error: Missing required `--template` argument\n')
-  console.error(HELP_TEXT)
-  process.exit(1)
-}
-if (!(args.template in templates)) {
-  console.error(`Error: Template "${args.template}" does not exist. Available templates: ${Object.keys(templates).join(', ')}
-`)
-  console.error(HELP_TEXT)
-  process.exit(1)
-}
-
-const template = templates[args.template as keyof typeof templates]
+const template = templates[args.template]
 
 type KnownEnvVar = 'TEST_STUDIO_WRITE_TOKEN'
 
 const client = createClient({
   projectId: 'ppsg7ml5',
-  dataset: args.dataset || 'test',
+  dataset: args.dataset,
   token: readEnv<KnownEnvVar>('TEST_STUDIO_WRITE_TOKEN'),
   apiVersion: '2024-07-31',
   useCdn: false,
@@ -115,9 +95,9 @@ run({
     .filter(Boolean),
   draft: args.draft,
   published: args.published,
-  concurrency: args.concurrency ? Number(args.concurrency) : undefined,
-  number: args.number ? Number(args.number) : undefined,
-  size: args.size ? Number(args.size) : undefined,
+  concurrency: args.concurrency,
+  number: args.number,
+  size: args.size,
   template,
   client,
 })

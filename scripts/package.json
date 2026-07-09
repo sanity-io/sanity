@@ -10,6 +10,8 @@
     "test": "vitest run"
   },
   "devDependencies": {
+    "@optique/core": "catalog:",
+    "@optique/run": "catalog:",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",

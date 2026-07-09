@@ -1,3 +1,10 @@
+import {object} from '@optique/core/constructs'
+import {formatMessage} from '@optique/core/message'
+import {optional} from '@optique/core/modifiers'
+import {parseSync} from '@optique/core/parser'
+import {argument, option} from '@optique/core/primitives'
+import {string} from '@optique/core/valueparser'
+
 export interface CliArgs {
   url: string | null
   dryRun: boolean
@@ -15,25 +22,26 @@ const isTTY = process.stdout.isTTY
 const color = (code: string, value: string): string =>
   isTTY ? `\x1b[${code}m${value}\x1b[0m` : value
 
+const parser = object({
+  dryRun: option('--dry-run'),
+  verbose: option('-v', '--verbose'),
+  url: optional(argument(string({metavar: 'URL'}))),
+})
+
 export function parseArgs(argv: string[]): CliArgs {
-  const args: CliArgs = {url: null, dryRun: false, verbose: false, help: false}
-
+  // --help anywhere wins, so callers can render their own help text even when
+  // the rest of the invocation wouldn't parse
   if (argv.includes('--help') || argv.includes('-h')) {
-    return {...args, help: true}
+    return {url: null, dryRun: false, verbose: false, help: true}
   }
 
-  for (const arg of argv) {
-    if (arg === '--dry-run') args.dryRun = true
-    else if (arg === '--verbose' || arg === '-v') args.verbose = true
-    else if (arg.startsWith('-'))
-      throw new Error(`Unknown flag: ${arg}. Run with --help for usage.`)
-    else {
-      if (args.url) throw new Error(`Unexpected extra argument: ${arg}`)
-      args.url = arg
-    }
+  const result = parseSync(parser, argv)
+  if (!result.success) {
+    throw new Error(`${formatMessage(result.error)} Run with --help for usage.`)
   }
 
-  return args
+  const {url, dryRun, verbose} = result.value
+  return {url: url ?? null, dryRun, verbose, help: false}
 }
 
 export function createLog(args: CliArgs, stderr: string[]): (msg: string) => void {
