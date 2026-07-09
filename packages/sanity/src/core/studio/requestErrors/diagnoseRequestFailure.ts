@@ -1,7 +1,36 @@
-import {type SanityClient} from '@sanity/client'
+import {ClientError, type SanityClient} from '@sanity/client'
 
 import {checkCors, type CorsCheckCache} from '../workspaces/corsCheck'
 import {classifyConfigError, isNetworkError, isTimeoutError} from './classify'
+
+/**
+ * Whether `err` is the API gateway's CORS-rejection 403 — a body of
+ * `{error: 'Forbidden', message: 'CORS Origin not allowed'}` — arriving as
+ * a *readable* response.
+ *
+ * In a regular browser this rejection is never readable — it carries no
+ * `Access-Control-Allow-Origin` header, so it surfaces as an opaque network
+ * error and takes the {@link isNetworkError} path below. But environments
+ * that mangle response headers (CORS-"unblock" extensions, permissive
+ * webviews, intercepting proxies) expose it as a plain 403 `ClientError`.
+ * Recognize that shape so those users still get the CORS screen — their
+ * origin genuinely isn't allowed; only the failure's shape differs.
+ *
+ * This is a cheap prefilter, matched on the body's discrete `message` code
+ * (same approach as the config-error discriminators in `classify.ts`) so
+ * ordinary permission-denial 403s never trigger a network probe. The
+ * `/check/cors` verdict remains the authority on whether CORS is actually
+ * the cause.
+ */
+function isCorsRejectionError(err: unknown): boolean {
+  if (!(err instanceof ClientError) || err.statusCode !== 403) return false
+  const body: unknown = err.response?.body
+  return (
+    typeof body === 'object' &&
+    body !== null &&
+    (body as {message?: unknown}).message === 'CORS Origin not allowed'
+  )
+}
 
 /**
  * A diagnosed request failure — the reason a request the studio can't recover
@@ -50,6 +79,8 @@ export type RequestFailureProbe = (err: unknown) => Promise<RequestFailureResult
  *  2. An opaque network failure (not a timeout) is probed via `/check/cors`,
  *     which can still answer where the data API can't: a missing project
  *     (`SIO-404-PNF`) or the origin's allow/credentials verdict.
+ *  3. A readable CORS-rejection 403 (header-mangling environments — see
+ *     {@link isCorsRejectionError}) is probed the same way.
  * Everything else is `unknown`.
  *
  * @internal
@@ -68,8 +99,10 @@ export function createRequestFailureProbe(
     }
 
     // Opaque network/CORS failure — probe `/check/cors` to learn why. Skip
-    // timeouts (the probe itself would just time out).
-    if (!isNetworkError(err) || isTimeoutError(err)) {
+    // timeouts (the probe itself would just time out). A readable
+    // CORS-rejection 403 (see `isCorsRejectionError`) is probed too.
+    const opaqueNetworkFailure = isNetworkError(err) && !isTimeoutError(err)
+    if (!opaqueNetworkFailure && !isCorsRejectionError(err)) {
       return {type: 'unknown'}
     }
 

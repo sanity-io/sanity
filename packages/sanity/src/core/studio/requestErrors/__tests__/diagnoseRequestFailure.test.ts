@@ -86,4 +86,40 @@ describe('createRequestFailureProbe', () => {
     expect(await probe(clientError(500, {error: 'boom'}))).toEqual({type: 'unknown'})
     expect(await probe(new Error('nope'))).toEqual({type: 'unknown'})
   })
+
+  it('probes /check/cors on a readable CORS-rejection 403 and reports a CORS misconfig', async () => {
+    // Header-mangling environments (CORS-"unblock" extensions, permissive
+    // webviews) expose the gateway's CORS rejection as a readable 403
+    // instead of an opaque network error.
+    mockCorsFetch(200, {result: {allowed: false, withCredentials: false}})
+    const probe = createRequestFailureProbe(fakeClient(), makeCache())
+    const err = clientError(403, {
+      statusCode: 403,
+      error: 'Forbidden',
+      message: 'CORS Origin not allowed',
+    })
+    expect(await probe(err)).toEqual({type: 'cors', allowed: false, withCredentials: false})
+  })
+
+  it('returns unknown for a CORS-rejection 403 when the probe says the origin is satisfied', async () => {
+    // The probe verdict is the authority: a CORS-shaped body from an origin
+    // that checks out means CORS wasn't actually the cause.
+    mockCorsFetch(200, {result: {allowed: true, withCredentials: true}})
+    const probe = createRequestFailureProbe(fakeClient(), makeCache())
+    const err = clientError(403, {
+      statusCode: 403,
+      error: 'Forbidden',
+      message: 'CORS Origin not allowed',
+    })
+    expect(await probe(err)).toEqual({type: 'unknown'})
+  })
+
+  it('does not probe on an ordinary permission-denial 403', async () => {
+    const fetchSpy = vi.fn()
+    globalThis.fetch = fetchSpy as never
+    const probe = createRequestFailureProbe(fakeClient(), makeCache())
+    const err = clientError(403, {error: 'Forbidden', message: 'Insufficient permissions'})
+    expect(await probe(err)).toEqual({type: 'unknown'})
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
 })
