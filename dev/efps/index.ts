@@ -85,7 +85,7 @@ const argv = run(
       }),
     ),
   }),
-  {programName: 'efps', help: 'option'},
+  {programName: 'efps', help: 'both', aboveError: 'usage'},
 )
 
 // Function to parse shard argument

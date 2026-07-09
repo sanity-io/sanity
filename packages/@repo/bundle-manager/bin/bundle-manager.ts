@@ -44,7 +44,11 @@ const parser = or(
   }),
 )
 
-const args = run(parser, {programName: 'bundle-manager', help: 'both', aboveError: 'usage'})
+const args = run(parser, {
+  programName: 'bundle-manager',
+  help: {command: true, option: {names: ['-h', '--help']}},
+  aboveError: 'usage',
+})
 
 switch (args.action) {
   case 'publish':

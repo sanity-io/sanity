@@ -1,8 +1,8 @@
 #!/usr/bin/env -S pnpm tsx
 import {object, or} from '@optique/core/constructs'
-import {message} from '@optique/core/message'
-import {map, optional, withDefault} from '@optique/core/modifiers'
-import {command, constant, option} from '@optique/core/primitives'
+import {message, type Message} from '@optique/core/message'
+import {optional, withDefault} from '@optique/core/modifiers'
+import {command, constant, negatableFlag, option} from '@optique/core/primitives'
 import {choice, integer, string} from '@optique/core/valueparser'
 import {run} from '@optique/run'
 import {readEnv} from '@repo/utils'
@@ -26,8 +26,9 @@ function getAdminStudioUrl(): string {
   return readEnv<KnownEnvVar>('RELEASE_NOTES_ADMIN_STUDIO_URL')
 }
 
-const dryRun = option('--dryRun', {
-  description: message`Dry run`,
+const dryRun = (description: Message) => option('--dry-run', {description})
+const currentBaseVersion = option('--base-version', string(), {
+  description: message`Current base version. E.g. the current version in package.json`,
 })
 
 const parser = or(
@@ -41,20 +42,19 @@ const parser = or(
         }),
       ),
       suffixType: withDefault(
-        option('--suffixType', choice(['timestamp', 'commits-ahead']), {
-          description: message`Prerelease suffix strategy: timestamp (default) or commit count`,
+        option('--suffix-type', choice(['timestamp', 'commits-ahead']), {
+          description: message`Prerelease suffix strategy`,
         }),
         'timestamp' as const,
       ),
-      buildMetadata: map(
-        option('--no-buildMetadata', {
-          description: message`Skip appending +<commitHash> build metadata to the version`,
-        }),
-        (noBuildMetadata) => !noBuildMetadata,
+      buildMetadata: withDefault(
+        negatableFlag(
+          {positive: '--build-metadata', negative: '--no-build-metadata'},
+          {description: message`Append +<commitHash> build metadata to the version`},
+        ),
+        true,
       ),
-      dryRun: option('--dryRun', {
-        description: message`Print the new version without writing files`,
-      }),
+      dryRun: dryRun(message`Print the new version without writing files`),
     }),
     {description: message`Bump version for all monorepo packages based on conventional commits`},
   ),
@@ -65,9 +65,7 @@ const parser = or(
       version: option('--version', string(), {
         description: message`The version to generate the changelog entry for, e.g. 5.19.0`,
       }),
-      dryRun: option('--dryRun', {
-        description: message`Print changelog to stdout without writing files`,
-      }),
+      dryRun: dryRun(message`Print changelog to stdout without writing files`),
     }),
     {description: message`Write CHANGELOG.md entries to root and all public packages`},
   ),
@@ -76,17 +74,17 @@ const parser = or(
     object({
       action: constant('generate-changelog'),
       outputFormat: optional(
-        option('--outputFormat', choice(['pr-description']), {
-          description: message`Output format for changelog generation. Currently only pr-description supported.`,
+        option('--output-format', choice(['pr-description']), {
+          description: message`Output format for changelog generation`,
         }),
       ),
-      baseVersion: option('--baseVersion', string(), {
+      baseVersion: option('--base-version', string(), {
         description: message`Base version for changelog generation. Should be the previous version.`,
       }),
-      tentativeVersion: option('--tentativeVersion', string(), {
+      tentativeVersion: option('--tentative-version', string(), {
         description: message`Tentative next version`,
       }),
-      dryRun,
+      dryRun: dryRun(message`Run without creating or updating release note documents`),
     }),
     {description: message`Generate release note documents for release PR`},
   ),
@@ -94,10 +92,10 @@ const parser = or(
     'publish-releases',
     object({
       action: constant('publish-releases'),
-      targetVersion: option('--targetVersion', string(), {
-        description: message`Version`,
+      targetVersion: option('--target-version', string(), {
+        description: message`Target version to publish releases for`,
       }),
-      dryRun,
+      dryRun: dryRun(message`Run without publishing the changelog or GitHub release`),
     }),
     {
       description: message`Publish pending sanity.io Changelog & github release from the given target version`,
@@ -108,11 +106,9 @@ const parser = or(
     object({
       action: constant('comment-pr-after-merge'),
       commit: option('--commit', string(), {
-        description: message`Version`,
+        description: message`Commit SHA to find the associated PR(s) for`,
       }),
-      baseVersion: option('--baseVersion', string(), {
-        description: message`Current base version. E.g. the current version in package.json`,
-      }),
+      baseVersion: currentBaseVersion,
     }),
     {description: message`Create a comment on the PR(s) associated with a commit`},
   ),
@@ -123,9 +119,7 @@ const parser = or(
     'draft-release-notes',
     object({
       action: constant('draft-release-notes'),
-      baseVersion: option('--baseVersion', string(), {
-        description: message`Current base version. E.g. the current version in package.json`,
-      }),
+      baseVersion: currentBaseVersion,
     }),
     {description: message`Draft release notes`},
   ),
@@ -144,7 +138,13 @@ const parser = or(
   ),
 )
 
-const args = run(parser, {programName: 'release-notes', help: 'both', aboveError: 'usage'})
+const args = run(parser, {
+  programName: 'release-notes',
+  help: {command: true, option: {names: ['-h', '--help']}},
+  aboveError: 'usage',
+  showDefault: true,
+  showChoices: true,
+})
 
 switch (args.action) {
   case 'bump':
@@ -184,7 +184,9 @@ switch (args.action) {
       targetVersion: args.targetVersion,
       dryRun: args.dryRun,
     })
-    console.info('ℹ️ This was a dry run. Nothing has been released.')
+    if (args.dryRun) {
+      console.info('ℹ️ This was a dry run. Nothing has been released.')
+    }
     break
   case 'comment-pr-after-merge':
     await commentPrAfterMerge({
