@@ -7,13 +7,17 @@ import path from 'node:path'
 import process from 'node:process'
 import {fileURLToPath} from 'node:url'
 
+import {object} from '@optique/core/constructs'
+import {message} from '@optique/core/message'
+import {optional} from '@optique/core/modifiers'
+import {option} from '@optique/core/primitives'
+import {string} from '@optique/core/valueparser'
+import {run} from '@optique/run'
 import {readEnv} from '@repo/utils'
 import {createClient} from '@sanity/client'
 import chalk from 'chalk'
 import Table from 'cli-table3'
 import Ora from 'ora'
-import yargs from 'yargs'
-import {hideBin} from 'yargs/helpers'
 
 import {exec} from './helpers/exec'
 import {readEnvVar} from './readEnvVar'
@@ -73,11 +77,16 @@ const resultsDir = path.join(
     .toLowerCase()}`,
 )
 
-const argv = await yargs(hideBin(process.argv)).option('shard', {
-  describe:
-    'Shard number in the format "1/3" where 1 is the current shard and 3 is the total shards',
-  type: 'string',
-}).argv
+const argv = run(
+  object({
+    shard: optional(
+      option('--shard', string({metavar: 'CURRENT/TOTAL'}), {
+        description: message`Shard number in the format "1/3" where 1 is the current shard and 3 is the total shards`,
+      }),
+    ),
+  }),
+  {programName: 'efps', help: 'option'},
+)
 
 // Function to parse shard argument
 function parseShard(shard: string) {
@@ -183,7 +192,7 @@ async function runAbTest(test: EfpsTest) {
       // Run attempts sequentially to get stable measurements, but both branches run in parallel
       for (let attempt = 0; attempt < TEST_ATTEMPTS; attempt++) {
         const attemptMessage = TEST_ATTEMPTS > 1 ? ` [${attempt + 1}/${TEST_ATTEMPTS}]` : ''
-        const message = `Running test '${test.name}' on ${branchLabel}${attemptMessage}`
+        const progressMessage = `Running test '${test.name}' on ${branchLabel}${attemptMessage}`
 
         try {
           // Note: We can't use spinner here since both branches run in parallel
@@ -205,10 +214,12 @@ async function runAbTest(test: EfpsTest) {
               },
             }),
           )
-          spinner.succeed(`${message}`)
+          spinner.succeed(`${progressMessage}`)
         } catch (error) {
           lastError = error
-          spinner.fail(`${message} - failed, ${TEST_ATTEMPTS - attempt - 1} attempts remaining`)
+          spinner.fail(
+            `${progressMessage} - failed, ${TEST_ATTEMPTS - attempt - 1} attempts remaining`,
+          )
         }
       }
 
