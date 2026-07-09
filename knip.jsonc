@@ -126,7 +126,7 @@
         "updateLicenses.ts",
         // Hard to find
         "listPublishedPackages.ts",
-        "symlinkDependencies.cjs",
+        "symlinkDependencies.ts",
       ],
     },
   },
