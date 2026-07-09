@@ -65,15 +65,15 @@ Operations must be disabled by the document store itself when a target (release 
 
 Replaces the current pattern of threading `useTargetDocument()` into ~12 files where each call site decides what `undefined` means.
 
-- [ ] Discriminate variant-definition loading in the perspective machinery (`perspective/PerspectiveProvider.tsx`, `perspective/getSelectedVariant.ts`, `perspective/types.ts`): expose a loading flag or make `selectedVariant` a tri-state.
-- [ ] Evolve `hooks/useTargetDocument.ts` into `useTargetDocumentState(documentGroupId)` returning a discriminated union:
-  - `{status: 'none'}` — no variant param; base/release semantics.
-  - `{status: 'resolving'}` — variant param present; definitions or version stubs still loading.
-  - `{status: 'resolved', stub, scopeId, variantId}` — target exists.
-  - `{status: 'missing', variantId, bundle}` — resolution finished, no matching stub. Also used (with an error surface) when the sticky param names a nonexistent variant definition — never fall back to base silently.
-- [ ] Mount gate in `structure/panes/document/DocumentPane.tsx` (`DocumentPaneInner`): render `LoadingPane` while `resolving` (same pattern as the existing `options.type === '*' && !isLoaded` gate). Append target identity to the `DocumentPaneProviderWrapper` key.
-- [ ] Provide the resolved state through the document pane context (`DocumentPaneProvider.tsx`) and convert in-pane `useTargetDocument` call sites (`FormView`, `DocumentEventsPane`, `DocumentStatusLine`, document actions, diff components) to context reads. Keep direct `useTargetDocument` only for genuinely out-of-pane consumers.
-- [ ] Derive `readOnly` centrally from target state (`missing` → read-only + `DocumentNotInVariantBanner`), replacing per-site guard-skipping in `useDocumentForm.ts`.
+- [x] Discriminate variant-definition loading in the perspective machinery (`perspective/PerspectiveProvider.tsx`, `perspective/types.ts`): `PerspectiveContextValue` exposes `selectedVariantName` (the raw requested variant, available synchronously) and `variantsLoading`.
+- [x] Evolve `hooks/useTargetDocument.ts` into `useTargetDocumentState(documentGroupId)` returning a discriminated union (final shape):
+  - `{status: 'resolving'}` — a lookup (variant definitions or version stubs) is in flight; never fall back to the base pair.
+  - `{status: 'ready', targetDocument, scopeId, variant}` — resolution finished; covers both variant targets and base/release targeting (`targetDocument` undefined only when no variant is selected and the base pair legitimately applies).
+  - `{status: 'variant-missing', variant, bundle}` — variant selected, no variant-scoped version for the bundle.
+  - `{status: 'variant-definition-document-not-found', requestedVariantName}` — the sticky param names no definition; surfaced as an error banner, never treated as "no variant".
+- [x] Mount gate in `structure/panes/document/DocumentPane.tsx` (`DocumentPaneInner`): renders `LoadingPane` while a variant is requested and the target is `resolving`; the target identity (variant name + target document id or status) is appended to the `DocumentPaneProviderWrapper` key so target transitions remount through the gate.
+- [x] Resolved state provided through the document pane context (`DocumentPaneProvider.tsx` → `targetDocumentState` on `DocumentPaneContextValue`); in-pane call sites read the context, out-of-pane/prop-driven consumers (`DocumentEventsPane`, `DiscardVersionDialog`, diff components, release-plugin actions in core) call the hook directly. Actions disable while the target is `resolving` instead of silently operating on the base pair.
+- [x] `readOnly` derived centrally from target state (`variant-missing`/`variant-definition-document-not-found`/`resolving`-with-variant → read-only) in `DocumentPaneProvider.tsx`, with a belt-and-braces guard inside `useDocumentForm.ts` for consumers outside the gated pane. Side effect: the variant-only `value`/guard branches in `useDocumentForm` now key off `isVariantTarget` instead of a truthy scopeId, so plain release targets keep the release code paths.
 
 ### WS2 — Store-level guard and an honest `EditStateFor`
 
@@ -122,8 +122,8 @@ Each workstream carries its own unit tests (operation payload tests like the exi
 
 ## Immediate fixes on this branch
 
-- [ ] `DocumentPaneProviderWrapper` key does not include the variant → form state is reused across variant switches.
-- [ ] Anywhere the branch infers loading from stub presence: use `useDocumentVersions().loading`, never `versions.length`.
+- [x] `DocumentPaneProviderWrapper` key does not include the variant → form state is reused across variant switches. (Fixed as part of WS1: target identity is part of the key.)
+- [x] Anywhere the branch infers loading from stub presence: use `useDocumentVersions().loading`, never `versions.length`. (Fixed as part of WS1: consumers converge on `useTargetDocumentState`, which consumes the loading flags; `DocumentStatusBar` no longer recomputes from stubs.)
 
 ## Open decisions
 
