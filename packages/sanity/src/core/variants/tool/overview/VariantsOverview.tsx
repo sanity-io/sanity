@@ -46,8 +46,7 @@ export function VariantsOverview() {
 
   const variantsList = useMemo(() => variants ?? [], [variants])
 
-  const variantIds = useMemo(() => variantsList.map((variant) => variant._id), [variantsList])
-  const {data: documentCounts, error: documentCountsError} = useVariantsDocumentCounts(variantIds)
+  const {data: documentCounts, error: documentCountsError} = useVariantsDocumentCounts()
 
   const filteredVariants = useMemo(
     () =>

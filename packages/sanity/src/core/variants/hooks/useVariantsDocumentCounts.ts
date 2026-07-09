@@ -2,11 +2,13 @@ import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
-import {catchError, map, startWith} from 'rxjs/operators'
+import {catchError, distinctUntilChanged, map, scan, startWith, switchMap} from 'rxjs/operators'
 
 import {useClient} from '../../hooks'
 import {listenQuery} from '../../store'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../store/constants'
+import {type VariantStoreState} from '../store/reducer'
+import {useVariantsStore} from '../store/useVariantsStore'
 import {getVariantId} from '../tool/util'
 
 /**
@@ -72,16 +74,11 @@ const INITIAL_STATE: VariantsDocumentCountsState = {data: null, loading: true, e
 const EMPTY_STATE: VariantsDocumentCountsState = {data: {}, loading: false, error: null}
 
 /**
- * Creates an observable that keeps a live count of the documents in each of the given
- * variants.
- *
- * Uses a single listener (one OR-chained `sanity::partOfVariant()` filter covering all
- * variants) that triggers a throttled refetch of one aggregate count query, via
- * {@link listenQuery}.
- *
- * @internal
+ * Fetches the document counts for one set of variants and keeps them fresh: a single listener
+ * (one OR-chained `sanity::partOfVariant()` filter covering all the variants) triggers a
+ * throttled refetch of one aggregate count query, via {@link listenQuery}.
  */
-export function getVariantsDocumentCounts(
+function listenVariantsDocumentCounts(
   client: SanityClient,
   variantDocumentIds: string[],
 ): Observable<VariantsDocumentCountsState> {
@@ -112,32 +109,59 @@ export function getVariantsDocumentCounts(
       }),
     ),
     startWith(INITIAL_STATE),
+    // catchError stays on this inner observable so the outer stream in
+    // `getVariantsDocumentCounts` keeps reacting to variant list changes after a failure.
     catchError((error) => of({data: null, loading: false, error})),
   )
 }
 
 /**
- * Keeps a live count of the documents in each of the given variants, using a single listener
- * and a single aggregate count query (see {@link getVariantsDocumentCounts}).
+ * Creates an observable that keeps a live count of the documents in each variant held by the
+ * variants store.
  *
- * When the set of variant ids changes, the previous listener is closed and a new one is
- * opened — there is never more than one active listener — and the counts reload.
+ * The variant ids are derived from the store's `state$`, so the returned observable never
+ * needs to be recreated: when the set of variants changes, the current listener is closed
+ * and a new fetch + listener is started inside the same stream (`switchMap`) — there is
+ * never more than one active listener. Previously fetched counts are carried across the
+ * switch (`scan`), so existing rows don't flash back to a loading state.
  *
  * @internal
  */
-export function useVariantsDocumentCounts(
-  variantDocumentIds: string[],
-): VariantsDocumentCountsState {
-  const client = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
-
-  // Document ids cannot contain commas, so a sorted joined string is a stable identity key
-  // that ignores array identity and ordering.
-  const idsKey = useMemo(() => variantDocumentIds.toSorted().join(','), [variantDocumentIds])
-
-  const observable = useMemo(
-    () => getVariantsDocumentCounts(client, idsKey ? idsKey.split(',') : []),
-    [client, idsKey],
+export function getVariantsDocumentCounts(
+  client: SanityClient,
+  variantsState$: Observable<VariantStoreState>,
+): Observable<VariantsDocumentCountsState> {
+  return variantsState$.pipe(
+    // Document ids cannot contain commas, so a sorted joined string is a stable identity
+    // key that lets `distinctUntilChanged` ignore store emissions (e.g. variant metadata
+    // edits) that don't change the set of variants.
+    map((state) => Array.from(state.variants.keys()).toSorted().join(',')),
+    distinctUntilChanged(),
+    switchMap((idsKey) => listenVariantsDocumentCounts(client, idsKey ? idsKey.split(',') : [])),
+    scan(
+      (previous, next): VariantsDocumentCountsState => ({
+        // Keep the previous counts while the next fetch is loading (or errored), so counts
+        // for unchanged variants remain visible across variant list changes.
+        data: next.data ? {...previous.data, ...next.data} : previous.data,
+        loading: next.loading && previous.data === null,
+        error: next.error,
+      }),
+      INITIAL_STATE,
+    ),
   )
+}
+
+/**
+ * Keeps a live count of the documents in each variant, using a single listener and a single
+ * aggregate count query (see {@link getVariantsDocumentCounts}).
+ *
+ * @internal
+ */
+export function useVariantsDocumentCounts(): VariantsDocumentCountsState {
+  const client = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
+  const {state$} = useVariantsStore()
+
+  const observable = useMemo(() => getVariantsDocumentCounts(client, state$), [client, state$])
 
   return useObservable(observable, INITIAL_STATE)
 }
