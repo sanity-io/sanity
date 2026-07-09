@@ -3,7 +3,7 @@ import {type SanityDocument, type Schema} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
 
-import {getVersionFromId} from '../../../util'
+import {getPublishedId, getVersionFromId} from '../../../util'
 import {measureFirstEmission} from '../../../util/measureFirstEmission'
 import {createSWR} from '../../../util/rxSwr'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
@@ -26,6 +26,7 @@ const swr = createSWR<
  * @beta */
 export interface EditStateFor {
   id: string
+  groupId: string
   type: string
   transactionSyncLock: TransactionSyncLockState | null
   draft: SanityDocument | null
@@ -66,6 +67,7 @@ export const editState = memoize(
     },
     idPair: IdPair,
     typeName: string,
+    groupId: string,
   ): Observable<EditStateFor> => {
     const liveEditSchemaType = isLiveEditEnabled(ctx.schema, typeName)
     const liveEdit = typeof idPair.versionId !== 'undefined' || liveEditSchemaType
@@ -105,8 +107,9 @@ export const editState = memoize(
         ({
           value: [draftSnapshot, publishedSnapshot, transactionSyncLock, versionSnapshot],
           fromCache,
-        }) => ({
-          id: idPair.publishedId,
+        }): EditStateFor => ({
+          id: groupId,
+          groupId,
           type: typeName,
           draft: draftSnapshot,
           published: publishedSnapshot,
@@ -118,21 +121,47 @@ export const editState = memoize(
           release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
         }),
       ),
-      startWith({
-        id: idPair.publishedId,
-        type: typeName,
-        draft: null,
-        published: null,
-        version: null,
-        liveEdit,
-        liveEditSchemaType,
-        ready: false,
-        transactionSyncLock: null,
-        release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
-      }),
+      startWith(
+        getInitialEditState({
+          schema: ctx.schema,
+          publishedId: idPair.publishedId,
+          groupId,
+          typeName,
+          version: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
+        }),
+      ),
       publishReplay(1),
       refCount(),
     )
   },
   (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName),
 )
+
+export function getInitialEditState({
+  schema,
+  publishedId,
+  typeName,
+  version,
+}: {
+  schema: Schema
+  publishedId: string
+  typeName: string
+  version?: string
+}): EditStateFor {
+  const liveEditSchemaType = isLiveEditEnabled(schema, typeName)
+  const liveEdit = typeof version !== 'undefined' || liveEditSchemaType
+
+  return {
+    id: publishedId,
+    groupId: getPublishedId(publishedId),
+    type: typeName,
+    draft: null,
+    published: null,
+    version: null,
+    liveEdit,
+    liveEditSchemaType,
+    ready: false,
+    transactionSyncLock: null,
+    release: version,
+  }
+}

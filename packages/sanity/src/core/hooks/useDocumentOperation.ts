@@ -9,12 +9,13 @@ export function useDocumentOperation(
   publishedDocId: string,
   docTypeName: string,
   version?: string,
+  variant?: string,
 ): OperationsAPI {
   const documentStore = useDocumentStore()
 
   const observable = useMemo(
-    () => documentStore.pair.editOperations(publishedDocId, docTypeName, version),
-    [docTypeName, documentStore.pair, publishedDocId, version],
+    () => documentStore.pair.editOperations(publishedDocId, docTypeName, version, variant),
+    [docTypeName, documentStore.pair, publishedDocId, version, variant],
   )
 
   /**

@@ -80,6 +80,10 @@ interface DocumentFormOptions {
   initialValue?: InitialValueState
   initialFocusPath?: Path
   selectedPerspectiveName?: ReleaseId | 'published'
+  /**
+   * The short id for the variant that it's currently selected
+   */
+  selectedVariantName?: string
   readOnly?: boolean | ((editState: EditStateFor) => boolean)
   /**
    * Usually the historical _rev value selected, if not defined, it will use the current document value
@@ -161,6 +165,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     releaseId,
     initialFocusPath,
     selectedPerspectiveName,
+    selectedVariantName,
     readOnly: readOnlyProp,
     onFocusPath,
     displayInlineChanges,
@@ -172,7 +177,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
-  const workspace = useWorkspace()
 
   const enhancedObjectDialogEnabled = true
 
@@ -216,7 +220,13 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return getVersionFromId(firstVersion ?? '')
   }, [documentVersions, onlyHasVersions, selectedPerspectiveName, firstVersion])
 
-  const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
+  const editState = useEditState(
+    documentId,
+    documentType,
+    'default',
+    activeDocumentReleaseId,
+    selectedVariantName,
+  )
 
   const connectionState = useConnectionState(documentId, documentType, activeDocumentReleaseId)
   useReconnectingToast(connectionState === 'reconnecting')
@@ -468,7 +478,12 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     syncState,
   ])
 
-  const {patch} = useDocumentOperation(documentId, documentType, activeDocumentReleaseId)
+  const {patch} = useDocumentOperation(
+    documentId,
+    documentType,
+    activeDocumentReleaseId,
+    selectedVariantName,
+  )
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error(

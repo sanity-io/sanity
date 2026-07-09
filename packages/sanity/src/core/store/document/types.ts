@@ -26,8 +26,8 @@ export interface PendingMutationsEvent {
 
 /** @internal */
 export interface IdPair {
-  draftId: string
-  publishedId: string
+  draftId: string | undefined
+  publishedId: string | undefined
   versionId?: string
 }
 

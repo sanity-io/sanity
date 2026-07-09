@@ -4,6 +4,7 @@ import {
   type SanityClient,
   type SingleMutationResult,
 } from '@sanity/client'
+import {getPublishedId} from '@sanity/id-utils'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
@@ -160,7 +161,7 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
       requireId(mutations.create)
       return {
         actionType: 'sanity.action.document.create',
-        publishedId: idPair.publishedId,
+        publishedId: getPublishedId(idPair.publishedId),
         attributes: mutations.create,
         ifExists: 'fail',
       }
@@ -169,7 +170,7 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
       return {
         actionType: 'sanity.action.document.edit',
         draftId: idPair.versionId ?? idPair.draftId,
-        publishedId: idPair.publishedId,
+        publishedId: getPublishedId(idPair.publishedId),
         patch: omit(mutations.patch, 'id'),
       }
     }
@@ -184,7 +185,7 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
       {
         actionType: 'sanity.action.document.edit',
         draftId: idPair.draftId,
-        publishedId: idPair.publishedId,
+        publishedId: getPublishedId(idPair.publishedId),
         patch: {
           unset: ['_empty_action_guard_pseudo_field_'],
         },
@@ -327,7 +328,6 @@ export function checkoutPair(
   options: DocumentStoreExtraOptions = {},
 ): Pair {
   const {publishedId, draftId, versionId} = idPair
-
   const {
     onReportLatency,
     onSyncErrorRecovery,

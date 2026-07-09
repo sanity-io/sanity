@@ -20,6 +20,7 @@ export function useEditState(
   docTypeName: string,
   priority: 'default' | 'low' = 'default',
   version?: string,
+  variant?: string,
 ): EditStateFor {
   if (version === 'published' || version === 'draft') {
     throw new Error('Version cannot be published or draft')
@@ -27,7 +28,7 @@ export function useEditState(
   const documentStore = useDocumentStore()
 
   const observable = useMemo(() => {
-    const source = documentStore.pair.editState(publishedDocId, docTypeName, version)
+    const source = documentStore.pair.editState(publishedDocId, docTypeName, version, variant)
 
     if (priority === 'low') {
       const base = source.pipe(share())
@@ -45,7 +46,7 @@ export function useEditState(
       distinctUntilChanged(isSameEditState),
       shareReplay({bufferSize: 1, refCount: true}),
     )
-  }, [docTypeName, documentStore.pair, priority, publishedDocId, version])
+  }, [docTypeName, documentStore.pair, priority, publishedDocId, version, variant])
   /**
    * We know that since the observable has a startWith operator, it will always emit a value
    * and that's why the non-null assertion is used here
