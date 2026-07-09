@@ -123,7 +123,11 @@ export function VariantDetail() {
           )}
         </Flex>
       </Flex>
-      <VariantDetailFooter variant={variant} />
+      <VariantDetailFooter
+        documentCount={tableRows.length}
+        documentsLoading={documentsLoading}
+        variant={variant}
+      />
       {editDialogOpen && (
         <EditVariantDialog
           onCancel={() => setEditDialogOpen(false)}

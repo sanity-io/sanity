@@ -24,6 +24,12 @@ const variantsLocaleStrings = {
   'overview.action.create-variant': 'Create variant',
   /** Label for the Variants overview delete action. */
   'overview.action.delete-variant': 'Delete variant',
+  /** Tooltip when delete is disabled because the variant contains one document. */
+  'overview.action.delete-variant.disabled-hint_one':
+    "This variant contains {{count}} document in it, it can't be removed until the documents have been removed.",
+  /** Tooltip when delete is disabled because the variant contains multiple documents. */
+  'overview.action.delete-variant.disabled-hint_other':
+    "This variant contains {{count}} documents in it, it can't be removed until the documents have been removed.",
   /** Error toast title when variant deletion fails. */
   'overview.action.delete-variant.error.title': 'Unable to delete variant',
   /** Link label for Variants overview documentation (empty state). */

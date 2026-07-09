@@ -42,7 +42,15 @@ export function VariantsOverview() {
   const columnDefs = useMemo(() => variantsOverviewColumnDefs(t), [t])
   const renderRowActions = useCallback<
     NonNullable<TableProps<TableVariant, undefined>['rowActions']>
-  >(({datum}) => <VariantMenuButton variant={datum as SystemVariant} />, [])
+  >(
+    ({datum}) => (
+      <VariantMenuButton
+        documentCount={(datum as TableVariant).documentCount}
+        variant={datum as SystemVariant}
+      />
+    ),
+    [],
+  )
 
   const variantsList = useMemo(() => variants ?? [], [variants])
 

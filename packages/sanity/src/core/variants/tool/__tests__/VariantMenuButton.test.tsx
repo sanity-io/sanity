@@ -34,11 +34,14 @@ describe('VariantMenuButton', () => {
     variantOperationsMock.deleteVariant.mockResolvedValue(undefined)
   })
 
-  const renderMenuButton = async () => {
+  const renderMenuButton = async (options?: {documentCount?: number | null}) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<VariantMenuButton variant={variantAlphaAudience} />, {wrapper})
+    const result = render(
+      <VariantMenuButton documentCount={options?.documentCount} variant={variantAlphaAudience} />,
+      {wrapper},
+    )
     await screen.findByRole('button')
     return result
   }
@@ -46,7 +49,7 @@ describe('VariantMenuButton', () => {
   it('deletes the variant when delete is selected', async () => {
     const user = userEvent.setup()
 
-    await renderMenuButton()
+    await renderMenuButton({documentCount: 0})
 
     await user.click(screen.getByRole('button'))
     await user.click(await screen.findByText('Delete variant'))
@@ -61,7 +64,7 @@ describe('VariantMenuButton', () => {
     const deleteDeferred = createDeferred()
     variantOperationsMock.deleteVariant.mockReturnValue(deleteDeferred.promise)
 
-    await renderMenuButton()
+    await renderMenuButton({documentCount: 0})
 
     const menuButton = screen.getByRole('button')
 
@@ -77,5 +80,27 @@ describe('VariantMenuButton', () => {
     await waitFor(() => {
       expect(menuButton).toBeEnabled()
     })
+  })
+
+  it('disables delete when the variant has documents', async () => {
+    const user = userEvent.setup()
+
+    await renderMenuButton({documentCount: 1})
+
+    await user.click(screen.getByRole('button'))
+    await user.click(await screen.findByText('Delete variant'))
+
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
+  })
+
+  it('disables delete while the document count is loading', async () => {
+    const user = userEvent.setup()
+
+    await renderMenuButton()
+
+    await user.click(screen.getByRole('button'))
+    await user.click(await screen.findByText('Delete variant'))
+
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
   })
 })
