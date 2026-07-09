@@ -345,7 +345,7 @@ function RequestErrorsDemo() {
   // `window.location.origin`, which is localhost here and hides the "Register
   // Studio" option — passing a custom domain shows both that option and "Add
   // CORS origin".
-  const [showCustomDomainPreview, setShowCustomDomainPreview] = useState(false)
+  const [screenPreview, setScreenPreview] = useState<'custom-domain' | 'readable-rejection'>()
 
   // The CORS demo synthesizes the studio's bare `/check/cors` fetch via a
   // global window.fetch patch. Scope it to this view so it isn't routing
@@ -611,7 +611,19 @@ function RequestErrorsDemo() {
             origin&quot; options — unlike a localhost dev origin, which only shows the latter.
           </>
         ),
-        onClick: () => setShowCustomDomainPreview(true),
+        onClick: () => setScreenPreview('custom-domain'),
+      },
+      {
+        label: 'Readable CORS rejection · rewrite warning (UI preview)',
+        description: (
+          <>
+            Renders the CORS screen with the response-rewrite warning. Shown when the CORS rejection
+            arrives as a <InlineCode>readable</InlineCode> 403 — proof the environment rewrites
+            response headers (e.g. a CORS-unblocking extension), since a regular browser can never
+            read the API&apos;s rejection.
+          </>
+        ),
+        onClick: () => setScreenPreview('readable-rejection'),
       },
     ],
     [
@@ -622,22 +634,24 @@ function RequestErrorsDemo() {
       triggerUnauthorized,
       triggerSessionNotFound,
       results,
-      setShowCustomDomainPreview,
+      setScreenPreview,
     ],
   )
 
-  if (showCustomDomainPreview) {
+  if (screenPreview) {
     return (
       <Card height="fill" style={{position: 'fixed', inset: 0, zIndex: 1000}}>
         <Flex direction="column" height="fill">
           <Card padding={3} shadow={1} tone="transparent">
             <Flex align="center" justify="space-between" gap={3}>
               <Text size={1} weight="medium">
-                CORS preview · custom domain, unregistered Studio
+                {screenPreview === 'custom-domain'
+                  ? 'CORS preview · custom domain, unregistered Studio'
+                  : 'CORS preview · readable rejection, rewrite warning'}
               </Text>
               <Button
                 mode="ghost"
-                onClick={() => setShowCustomDomainPreview(false)}
+                onClick={() => setScreenPreview(undefined)}
                 text="Close preview"
               />
             </Flex>
@@ -646,6 +660,7 @@ function RequestErrorsDemo() {
             <CorsOriginErrorScreen
               allowed={false}
               withCredentials={false}
+              readableRejection={screenPreview === 'readable-rejection'}
               isStaging={false}
               projectId={projectId}
               primaryProjectId={projectId}

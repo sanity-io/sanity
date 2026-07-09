@@ -35,6 +35,15 @@ interface CorsOriginErrorScreenProps {
    * credentials" branch.
    */
   withCredentials?: boolean
+  /**
+   * Whether the failure arrived as a *readable* CORS-rejection 403. The
+   * API's rejection carries no `Access-Control-Allow-Origin` header, so a
+   * regular browser can never read it — a readable one is proof that
+   * something in the user's environment rewrites response headers, most
+   * commonly an unsafe CORS-unblocking browser extension. Shows a warning
+   * encouraging the user to remove the rewriting and fix CORS properly.
+   */
+  readableRejection?: boolean
 }
 
 const CenteredContainer = styled(Flex)`
@@ -78,9 +87,37 @@ function canRegisterStudioForOrigin(origin: string): boolean {
   return STUDIO_HOST_PATTERN.test(origin)
 }
 
+/**
+ * Warning shown when the CORS rejection arrived as a readable 403 — see
+ * `readableRejection` on {@link CorsOriginErrorScreenProps}. The fix the
+ * rest of the screen offers (allowlisting the origin) is still the right
+ * one, but the user should also know their environment is rewriting
+ * responses — and if that's a CORS-unblocking extension, that they should
+ * remove it rather than keep browsing with it.
+ */
+function ResponseRewriteWarning() {
+  return (
+    <Card border padding={4} radius={4} tone="caution" data-testid="response-rewrite-warning">
+      <Stack space={4}>
+        <Text size={1} weight="medium">
+          Your browser environment is rewriting API responses
+        </Text>
+        <Text size={1} muted>
+          This error is normally unreadable to a web browser, so something between this Studio and
+          the Sanity API — most likely a CORS-unblocking browser extension, or an intercepting proxy
+          — is modifying responses. CORS-unblocking extensions give every website you visit access
+          to cross-origin data and should be removed. Connecting this Studio&apos;s origin to the
+          project (below) makes such workarounds unnecessary.
+        </Text>
+      </Stack>
+    </Card>
+  )
+}
+
 /** @internal */
 export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   const {projectId, isStaging, primaryProjectId, allowed, withCredentials, origin} = props
+  const readableRejection = Boolean(props.readableRejection)
 
   // Show register option only if:
   //   1. the first workspace's projectId matches the CORS error's projectId
@@ -138,6 +175,8 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                 this origin, then re-add it with credentials.
               </Text>
 
+              {readableRejection && <ResponseRewriteWarning />}
+
               <Flex>
                 <Button
                   as="a"
@@ -182,6 +221,8 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               This Studio isn&apos;t connected to your project yet. Pick an option below to connect
               it.
             </Text>
+
+            {readableRejection && <ResponseRewriteWarning />}
 
             <Grid columns={showRegisterOption ? [1, 1, 2] : 1} gapX={4} gapY={3}>
               {/* Register Studio Option */}

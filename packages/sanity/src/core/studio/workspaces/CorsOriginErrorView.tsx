@@ -23,6 +23,13 @@ export interface CorsErrorEvent {
    */
   withCredentials: boolean
   /**
+   * Whether the failure arrived as a *readable* CORS-rejection 403 — proof
+   * the environment rewrites response headers (a regular browser can never
+   * read the gateway's rejection), most commonly an unsafe CORS-unblocking
+   * extension. The screen adds a warning about the rewriting.
+   */
+  readableRejection: boolean
+  /**
    * Re-runs the CORS probe with a fresh result (cache invalidated).
    * Resolves with `true` while still misconfigured, `false` when both
    * `allowed` and `withCredentials` are satisfied. Used by the screen's
@@ -128,6 +135,7 @@ export function CorsOriginErrorView(props: CorsOriginErrorViewProps): React.Reac
       primaryProjectId={primaryProjectId}
       allowed={event.allowed}
       withCredentials={event.withCredentials}
+      readableRejection={event.readableRejection}
       origin={window.location.origin}
     />
   )

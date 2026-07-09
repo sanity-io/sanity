@@ -84,6 +84,7 @@ interface CorsErrorState {
   projectId?: string
   allowed: boolean
   withCredentials: boolean
+  readableRejection: boolean
 }
 
 /** @internal */
@@ -131,6 +132,7 @@ export function WorkspacesProvider({
           projectId: clientConfig.projectId,
           allowed: result.allowed,
           withCredentials: result.withCredentials,
+          readableRejection: result.readableRejection,
         })
         return
       }
@@ -306,6 +308,7 @@ export function WorkspacesProvider({
           projectId: corsError.projectId,
           allowed: corsError.allowed,
           withCredentials: corsError.withCredentials,
+          readableRejection: corsError.readableRejection,
           // Recheck against the first matching workspace's client. If we
           // can't find one, the polling loop keeps showing the screen.
           // Returns `true` while still misconfigured. Resolved when the

@@ -72,6 +72,7 @@ describe('createRequestFailureProbe', () => {
       type: 'cors',
       allowed: false,
       withCredentials: false,
+      readableRejection: false,
     })
   })
 
@@ -98,7 +99,12 @@ describe('createRequestFailureProbe', () => {
       error: 'Forbidden',
       message: 'CORS Origin not allowed',
     })
-    expect(await probe(err)).toEqual({type: 'cors', allowed: false, withCredentials: false})
+    expect(await probe(err)).toEqual({
+      type: 'cors',
+      allowed: false,
+      withCredentials: false,
+      readableRejection: true,
+    })
   })
 
   it('returns unknown for a CORS-rejection 403 when the probe says the origin is satisfied', async () => {

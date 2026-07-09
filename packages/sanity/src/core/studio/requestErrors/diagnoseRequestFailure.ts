@@ -43,7 +43,11 @@ function isCorsRejectionError(err: unknown): boolean {
  *  - `cors` — the origin isn't allowed (or can't send credentials) by the
  *    project's CORS allowlist. The studio shows the CORS-origin screen. This
  *    can begin at any time (e.g. an admin editing the allowlist in Manage),
- *    not only at boot.
+ *    not only at boot. `readableRejection` is `true` when the failure
+ *    arrived as a *readable* CORS-rejection 403 — proof the environment is
+ *    rewriting response headers (see {@link isCorsRejectionError}) — so the
+ *    screen can additionally warn about the rewriting (e.g. an unsafe
+ *    CORS-unblocking extension).
  *  - `unknown` — couldn't be diagnosed (a transient network error, a timeout,
  *    a CORS-allowed origin, …). The caller falls back to its normal handling
  *    (e.g. the generic network-error dialog).
@@ -53,7 +57,7 @@ function isCorsRejectionError(err: unknown): boolean {
 export type RequestFailureResult =
   | {type: 'project-not-found'}
   | {type: 'dataset-not-found'}
-  | {type: 'cors'; allowed: boolean; withCredentials: boolean}
+  | {type: 'cors'; allowed: boolean; withCredentials: boolean; readableRejection: boolean}
   | {type: 'unknown'}
 
 /**
@@ -102,7 +106,8 @@ export function createRequestFailureProbe(
     // timeouts (the probe itself would just time out). A readable
     // CORS-rejection 403 (see `isCorsRejectionError`) is probed too.
     const opaqueNetworkFailure = isNetworkError(err) && !isTimeoutError(err)
-    if (!opaqueNetworkFailure && !isCorsRejectionError(err)) {
+    const readableRejection = isCorsRejectionError(err)
+    if (!opaqueNetworkFailure && !readableRejection) {
       return {type: 'unknown'}
     }
 
@@ -115,6 +120,11 @@ export function createRequestFailureProbe(
     if (cors === null || (cors.allowed && cors.withCredentials)) {
       return {type: 'unknown'}
     }
-    return {type: 'cors', allowed: cors.allowed, withCredentials: cors.withCredentials}
+    return {
+      type: 'cors',
+      allowed: cors.allowed,
+      withCredentials: cors.withCredentials,
+      readableRejection,
+    }
   }
 }
