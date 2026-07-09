@@ -38,13 +38,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.how-to-upgrade': 'Update now',
   /** "Latest version" header in version info dialog */
   'about-dialog.version-info.latest-version.header': 'Latest version',
-  /** Explanation shown when a new major version exists but can't be applied by auto-update */
-  'about-dialog.version-info.major-upgrade.description':
-    'Sanity Studio v{{latestVersion}} is available, but auto-update can’t install it because it’s a new major version. To update, upgrade the studio’s dependencies and redeploy it.',
-  /** Header for the note shown when a new major version exists but can't be applied by auto-update */
-  'about-dialog.version-info.major-upgrade.header': 'New major version available',
-  /** "Learn how to upgrade" link for the major version upgrade note */
-  'about-dialog.version-info.major-upgrade.view-documentation': 'Learn how to upgrade',
   /** Info text when auto updates is enabled and a new version is available */
   'about-dialog.version-info.new-auto-update-version-available': 'New version available',
   /** "New version" header in version info dialog - Note that this is not necessary a *higher* version compared to current:
