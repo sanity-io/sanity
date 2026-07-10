@@ -126,7 +126,13 @@ export const editState = memoize(
           liveEditSchemaType,
           ready: !fromCache,
           transactionSyncLock: fromCache ? null : transactionSyncLock,
-          release: versionSnapshot?._system?.release?._ref,
+          release: versionSnapshot
+            ? // If i has the system group it's a document with the whole `_system` field, so we can use the release from the _system.
+              versionSnapshot._system?.group
+              ? versionSnapshot._system?.release?._ref
+              : // Fallback to scopeId because it will be a release version. Variant versions have the `_system.group` field.
+                scopeId
+            : scopeId,
           scopeId,
         }),
       ),
