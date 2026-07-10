@@ -74,6 +74,13 @@ export interface PaneResizeCache {
   right: {element: HTMLElement; flex: number; width: number}
 }
 
+/**
+ * The rank of a resolved menu node, deciding where it surfaces: `primary`
+ * renders inline (as a button), `secondary` in the overflow menu, and
+ * `destructive` in the overflow menu below a divider.
+ */
+export type _PaneMenuNodeRank = 'primary' | 'secondary' | 'destructive'
+
 export interface _PaneMenuItem {
   type: 'item'
   key: string
@@ -86,7 +93,9 @@ export interface _PaneMenuItem {
   iconRight?: ComponentType | ReactNode
   intent?: Intent
   onAction: () => void
+  /** Derived from `rank` by the resolver; kept for back-compat reads. */
   renderAsButton: boolean
+  rank: _PaneMenuNodeRank
   selected?: boolean
   title?: string
   i18n?: I18nTextRecord<'title'>
@@ -103,7 +112,9 @@ export interface _PaneMenuGroup {
   title?: string
   i18n?: I18nTextRecord<'title'>
   children: _PaneMenuNode[]
+  /** Derived from `rank` by the resolver; kept for back-compat reads. */
   renderAsButton: boolean
+  rank: _PaneMenuNodeRank
 }
 
 export interface _PaneMenuDivider {

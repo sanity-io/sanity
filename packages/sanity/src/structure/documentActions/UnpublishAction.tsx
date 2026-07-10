@@ -85,7 +85,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
       return {
         tone: 'critical',
         icon: UnpublishIcon,
-        label: 'Unpublish',
+        label: t('action.unpublish.label'),
         title: (
           <InsufficientPermissionsMessage context="unpublish-document" currentUser={currentUser} />
         ),

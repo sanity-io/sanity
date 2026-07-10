@@ -596,6 +596,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.error.unhandled-runtime-error.error-message': 'Error: {{message}}',
   /** The title for the error card rendered inside a field in place of a crashing input */
   'form.error.unhandled-runtime-error.title': 'Unhandled Runtime Error',
+  /** The title of the field actions overflow menu (and its trigger's accessible name) */
+  'form.field.actions-menu.title': 'Field actions',
   /** Form field deprecated label */
   'form.field.deprecated-label': 'deprecated',
   /** Fallback title shown above field if it has no defined title */

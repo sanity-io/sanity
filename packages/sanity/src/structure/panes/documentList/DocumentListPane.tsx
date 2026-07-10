@@ -7,8 +7,12 @@ import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   EMPTY_ARRAY,
   type GeneralPreviewLayoutKey,
+  getAnyPendingProposal,
+  getPublishedId,
+  type ObjectSchemaType,
   useActiveReleases,
   useClient,
+  useConfidenceStoreVersion,
   useI18nText,
   usePerspective,
   useReconnectingToast,
@@ -22,6 +26,7 @@ import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
+import {DocumentListPaneControls, type ListStatusFilter} from './DocumentListPaneControls'
 import {
   DocumentListPaneSearchOrdering,
   getSearchOrderingId,
@@ -29,8 +34,14 @@ import {
   RELEVANCE_ORDERING_ID,
 } from './DocumentListPaneSearchOrdering'
 import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
+import {buildFieldFacets, type FacetValuesById, getFacetCandidateFields} from './listFacets'
 import {isOrderByIdsParam, reorderItemsByIdsParam} from './orderByIdsParam'
 import {useShallowUnique} from './PaneContainer'
+import {
+  DocumentListBulkActionBar,
+  DocumentListSelectionProvider,
+  PaneItemContextMenu,
+} from './selection'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
 
@@ -39,6 +50,7 @@ import {useDocumentList} from './useDocumentList'
  */
 export type DocumentListPaneProps = BaseStructureToolPaneProps<'documentList'> & {
   sortOrder?: SortOrder
+  onSetSortOrder?: (sortOrder: SortOrder) => void
   layout?: GeneralPreviewLayoutKey
 }
 
@@ -84,7 +96,15 @@ const DelayedSubtleSpinnerIcon = styled(SpinnerIcon)`
  */
 
 export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
-  const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
+  const {
+    childItemId,
+    isActive,
+    pane,
+    paneKey,
+    sortOrder: sortOrderRaw,
+    onSetSortOrder,
+    layout,
+  } = props
   const schema = useSchema()
   const releases = useActiveReleases()
   const {perspectiveStack} = usePerspective()
@@ -192,6 +212,142 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     return reorderItemsByIdsParam(items, idsParam)
   }, [orderByIdsParam, trimmedSearchQuery, items, params.ids])
 
+  // Structured per-pane filter (status facet + type facet). Applied
+  // client-side over the loaded set for the prototype; the production path
+  // is injecting these constraints into the list query itself.
+  const [statusFilter, setStatusFilter] = useState<ListStatusFilter>('any')
+  const [typeFilter, setTypeFilter] = useState<string[]>([])
+  // Schema-driven facet selections: field name -> selected values (OR within
+  // a field, AND across fields).
+  const [fieldFilters, setFieldFilters] = useState<Record<string, Array<string | boolean>>>({})
+  // Confidence prototype: filter by the pending agent proposal's risk tier.
+  const [tierFilter, setTierFilter] = useState<string[]>([])
+
+  useEffect(() => {
+    // Filters are pane-scoped: reset when switching panes.
+    // oxlint-disable-next-line react/react-compiler
+    setStatusFilter('any')
+    setTypeFilter([])
+    setFieldFilters({})
+    setTierFilter([])
+  }, [paneKey])
+
+  // Mock risk tier per document (from its pending agent proposal, if any).
+  // The store version invalidates the memo when proposals resolve.
+  const confidenceVersion = useConfidenceStoreVersion()
+  const docTiers = useMemo(() => {
+    const map: Record<string, string> = {}
+    for (const item of orderedItems) {
+      const publishedId = getPublishedId(item._id)
+      const proposal = getAnyPendingProposal(publishedId, item._type)
+      if (proposal) map[publishedId] = proposal.tier
+    }
+    return map
+    // oxlint-disable-next-line react/react-compiler, react-hooks/exhaustive-deps -- confidenceVersion intentionally invalidates
+  }, [orderedItems, confidenceVersion])
+  const availableTiers = useMemo(
+    () => Array.from(new Set(Object.values(docTiers))).sort(),
+    [docTiers],
+  )
+
+  const availableTypes = useMemo(
+    () => Array.from(new Set(orderedItems.map((item) => item._type))).sort(),
+    [orderedItems],
+  )
+
+  // Tier-2 filtering: the pane's schema type declares (or its data implies)
+  // the facets. Only available when the list resolves to a single type.
+  const paneSchemaType = typeName
+    ? (schema.get(typeName) as ObjectSchemaType | undefined)
+    : undefined
+  const facetCandidates = useMemo(() => getFacetCandidateFields(paneSchemaType), [paneSchemaType])
+
+  // The list query projects identifiers only, so facet values come from a
+  // separate lightweight fetch. Prototype: client-side matching over these;
+  // the production path injects the constraints into the list query itself.
+  const [facetValues, setFacetValues] = useState<FacetValuesById>({})
+  const facetFieldNames = useMemo(
+    () => facetCandidates.map((candidate) => candidate.name),
+    [facetCandidates],
+  )
+  useEffect(() => {
+    if (!typeName || facetFieldNames.length === 0) {
+      // oxlint-disable-next-line react/react-compiler
+      setFacetValues({})
+      return undefined
+    }
+    const subscription = client.observable
+      .fetch(
+        `*[_type == $type]{_id, ${facetFieldNames.join(', ')}}`,
+        {type: typeName},
+        {perspective: perspectiveStack, tag: 'structure.list-facets'},
+      )
+      .subscribe({
+        next: (rows: Array<Record<string, unknown>>) => {
+          const next: FacetValuesById = {}
+          for (const row of rows) {
+            const {_id, ...fields} = row
+            const values: Record<string, string | boolean> = {}
+            for (const [key, value] of Object.entries(fields)) {
+              if (typeof value === 'string' || typeof value === 'boolean') values[key] = value
+            }
+            next[getPublishedId(String(_id))] = values
+          }
+          setFacetValues(next)
+        },
+        // facets degrade gracefully when the values fetch fails
+        error: () => setFacetValues({}),
+      })
+    return () => subscription.unsubscribe()
+    // items.length (not identity) so edits refresh without a fetch storm
+  }, [client, typeName, facetFieldNames, perspectiveStack, orderedItems.length])
+
+  const fieldFacets = useMemo(
+    () => buildFieldFacets(facetCandidates, facetValues),
+    [facetCandidates, facetValues],
+  )
+
+  const activeFieldFilters = useMemo(
+    () => Object.entries(fieldFilters).filter(([, values]) => values.length > 0),
+    [fieldFilters],
+  )
+
+  const filteredItems = useMemo(() => {
+    if (
+      statusFilter === 'any' &&
+      typeFilter.length === 0 &&
+      activeFieldFilters.length === 0 &&
+      tierFilter.length === 0
+    ) {
+      return orderedItems
+    }
+    return orderedItems.filter((item) => {
+      // Perspective queries normalize `_id` to the published form; the
+      // version actually loaded (e.g. the draft) is in `_originalId`.
+      const versionId = (item as {_originalId?: string})._originalId ?? item._id
+      const hasDraft = versionId.startsWith('drafts.')
+      if (statusFilter === 'edited' && !hasDraft) return false
+      if (statusFilter === 'published' && hasDraft) return false
+      if (tierFilter.length > 0 && !tierFilter.includes(docTiers[getPublishedId(item._id)] ?? ''))
+        return false
+      if (typeFilter.length > 0 && !typeFilter.includes(item._type)) return false
+      const itemValues = facetValues[getPublishedId(item._id)]
+      for (const [fieldName, values] of activeFieldFilters) {
+        const value = itemValues?.[fieldName]
+        if (value === undefined || !values.includes(value)) return false
+      }
+      return true
+    })
+  }, [
+    orderedItems,
+    statusFilter,
+    typeFilter,
+    activeFieldFilters,
+    facetValues,
+    tierFilter,
+    docTiers,
+  ])
+
   const isLoading = documentListIsLoading || releases.loading
 
   const handleQueryChange = useObservableEvent(
@@ -271,7 +427,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   useReconnectingToast(!connected)
 
   return (
-    <>
+    <DocumentListSelectionProvider items={filteredItems} paneKey={paneKey}>
       <Box paddingX={3} paddingBottom={3}>
         <Stack space={3}>
           <TextInput
@@ -303,6 +459,23 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
               onChange={setSearchOrderingId}
             />
           )}
+          <DocumentListPaneControls
+            availableTiers={availableTiers}
+            availableTypes={availableTypes}
+            fieldFacets={fieldFacets}
+            fieldFilters={fieldFilters}
+            onFieldFiltersChange={setFieldFilters}
+            onTierFilterChange={setTierFilter}
+            tierFilter={tierFilter}
+            onSetSortOrder={onSetSortOrder}
+            onStatusFilterChange={setStatusFilter}
+            onTypeFilterChange={setTypeFilter}
+            orderings={searchOrderings}
+            showSort={!trimmedSearchQuery}
+            sortOrder={sortOrderRaw}
+            statusFilter={statusFilter}
+            typeFilter={typeFilter}
+          />
         </Stack>
       </Box>
       <DocumentListPaneContent
@@ -320,7 +493,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         retryCount={retryCount}
         isRetrying={isRetrying}
         isConnected={connected}
-        items={orderedItems}
+        items={filteredItems}
         layout={layout}
         muted={loadingVariant === 'subtle'}
         loadingVariant={loadingVariant}
@@ -331,6 +504,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         showIcons={showIcons}
         sortOrder={orderByIdsParam ? DEFAULT_ORDERING : sortOrder}
       />
-    </>
+      <PaneItemContextMenu />
+      <DocumentListBulkActionBar />
+    </DocumentListSelectionProvider>
   )
 })

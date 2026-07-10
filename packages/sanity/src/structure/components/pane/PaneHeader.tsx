@@ -1,5 +1,12 @@
 import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
+import {
+  type ForwardedRef,
+  forwardRef,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useMemo,
+} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
 import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
@@ -62,6 +69,20 @@ export const PaneHeader = forwardRef(function PaneHeader(
     expand()
   }, [collapsed, expand])
 
+  // Right-click and the `...` are the same menu: a context-click anywhere on
+  // the header opens the header's own overflow trigger (when it has one).
+  const handleContextMenu = useCallback((event: MouseEvent<HTMLElement>) => {
+    const header = event.currentTarget
+    const trigger = header.querySelector<HTMLButtonElement>(
+      '[data-testid="pane-context-menu-button"]',
+    )
+    if (!trigger) return
+    // don't hijack right-clicks on interactive children (inputs, other menus)
+    if ((event.target as HTMLElement).closest('input, textarea')) return
+    event.preventDefault()
+    if (trigger.getAttribute('aria-expanded') !== 'true') trigger.click()
+  }, [])
+
   const showTabsOrSubActions = Boolean(!collapsed && (tabs || subActions))
 
   return (
@@ -70,6 +91,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
         $border={border}
         data-collapsed={collapsed ? '' : undefined}
         data-testid="pane-header"
+        onContextMenu={handleContextMenu}
         ref={ref}
       >
         <LegacyLayerProvider zOffset="paneHeader">

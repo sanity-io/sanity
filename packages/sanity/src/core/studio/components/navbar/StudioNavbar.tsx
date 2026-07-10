@@ -17,6 +17,7 @@ import {styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {CapabilityGate} from '../../../components/CapabilityGate'
+import {NeedsYouButton} from '../../../confidence/NeedsYouButton'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
@@ -272,6 +273,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
                 {!beta?.variants?.enabled && <ReleasesNav withReleasesToolButton />}
                 {actionNodes}
+                {/* overhaul prototype: agent-activity indicator + needs-you inbox */}
+                <NeedsYouButton />
                 {shouldRender.tools && <FreeTrial type="topbar" />}
                 <PresenceMenu />
                 {shouldRender.configIssues && <ConfigIssuesButton />}

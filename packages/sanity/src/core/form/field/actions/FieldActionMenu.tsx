@@ -62,6 +62,7 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
               children: menuNodes,
               icon: EllipsisHorizontalIcon,
               title: 'Field actions',
+              i18n: {title: {key: 'form.field.actions-menu.title', ns: 'studio'}},
             },
           ] satisfies DocumentFieldActionNode[])
         : []),
@@ -151,7 +152,7 @@ function RootFieldActionMenuGroup(props: {
           tabIndex={0}
           tooltipProps={{
             ...STATUS_BUTTON_TOOLTIP_PROPS,
-            content: node.title,
+            content: title,
           }}
         />
       }

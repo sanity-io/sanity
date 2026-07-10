@@ -3,6 +3,8 @@ export * from './comments'
 export * from './components'
 export * from './components/collapseMenu'
 export * from './components/scroll'
+// overhaul-branch prototype: confidence surface (not for upstream)
+export * from './confidence'
 export * from './config'
 export * from './environment'
 export * from './feedback'

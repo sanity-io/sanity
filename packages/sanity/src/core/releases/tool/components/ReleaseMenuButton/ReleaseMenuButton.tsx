@@ -1,11 +1,11 @@
 import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
-import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, MenuDivider, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Menu, MenuDivider, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext, useRouter} from 'sanity/router'
 
-import {Button, Dialog, MenuItem, Popover} from '../../../../../ui-components'
+import {Dialog, MenuItem, Popover} from '../../../../../ui-components'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {type ReleaseActionDescription} from '../../../../config/releases/actions'
 import {Translate, type TranslateComponentMap, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
@@ -361,10 +361,9 @@ export const ReleaseMenuButton = ({
         tone="default"
         placement="bottom"
       >
-        <Button
+        <ContextMenuButton
           disabled={releaseMenuDisabled || isPerformingOperation}
-          icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
-          mode="bleed"
+          loading={isPerformingOperation}
           tooltipProps={{content: t('menu.tooltip')}}
           aria-label={t('menu.label')}
           data-testid="release-menu-button"

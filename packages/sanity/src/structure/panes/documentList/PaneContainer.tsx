@@ -326,7 +326,12 @@ export const PaneContainer = memo(function PaneContainer(
           restoreDefaultSortOrder={handleRestoreDefaultSortOrder}
           title={title}
         />
-        <DocumentListPane {...props} sortOrder={validatedSortOrder} layout={layout} />
+        <DocumentListPane
+          {...props}
+          sortOrder={validatedSortOrder}
+          onSetSortOrder={handleSetSortOrder}
+          layout={layout}
+        />
       </Pane>
     </SourceProvider>
   )

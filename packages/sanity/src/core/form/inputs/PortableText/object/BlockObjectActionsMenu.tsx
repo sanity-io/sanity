@@ -1,4 +1,4 @@
-import {EditIcon, EllipsisHorizontalIcon, EyeOpenIcon, LinkIcon, TrashIcon} from '@sanity/icons'
+import {EditIcon, EyeOpenIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {isReference, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Menu, useGlobalKeyDown} from '@sanity/ui'
 import {
@@ -14,7 +14,8 @@ import {
 } from 'react'
 import {IntentLink} from 'sanity/router'
 
-import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
+import {MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
 
 interface BlockObjectActionsMenuProps extends PropsWithChildren {
@@ -91,13 +92,9 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
       <Box>
         <MenuButton
           button={
-            <Button
+            <ContextMenuButton
               aria-label={t('inputs.portable-text.block.open-menu-aria-label')}
-              icon={EllipsisHorizontalIcon}
-              mode="bleed"
-              paddingY={3}
               tabIndex={focused ? 0 : 1}
-              tooltipProps={{content: 'Open menu'}}
             />
           }
           ref={menuButton}

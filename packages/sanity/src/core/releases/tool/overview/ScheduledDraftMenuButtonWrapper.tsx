@@ -1,10 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {EllipsisHorizontalIcon} from '@sanity/icons'
-import {Menu, Spinner, useClickOutsideEvent} from '@sanity/ui'
+import {Menu, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Button, MenuItem, Popover} from '../../../../ui-components'
+import {MenuItem, Popover} from '../../../../ui-components'
+import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {useTranslation} from '../../../i18n'
 import {useScheduledDraftDocument} from '../../../singleDocRelease/hooks/useScheduledDraftDocument'
 import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
@@ -86,10 +86,9 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
         tone="default"
         placement="bottom"
       >
-        <Button
+        <ContextMenuButton
           disabled={!canPerformActions || isPerformingOperation}
-          icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
-          mode="bleed"
+          loading={isPerformingOperation}
           tooltipProps={{content: t('release.menu.tooltip')}}
           aria-label={t('release.menu.label')}
           data-testid="scheduled-draft-menu-button"

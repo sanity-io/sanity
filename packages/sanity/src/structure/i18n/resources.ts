@@ -569,6 +569,94 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-header-title.new.text': 'New {{schemaType}}',
   /** The text used in the document header title if no other title can be determined */
   'panes.document-header-title.untitled.text': 'Untitled',
+  /** The label of the bulk add-to-release submenu */
+  'panes.document-list-pane.bulk-bar.add-to-release': 'Add to release',
+  /** The disabled placeholder shown when there are no active releases */
+  'panes.document-list-pane.bulk-bar.add-to-release.empty': 'No active releases',
+  /** The result toast after bulk add-to-release */
+  'panes.document-list-pane.bulk-bar.add-to-release.result_one':
+    'Added {{count}} document to {{release}}',
+  'panes.document-list-pane.bulk-bar.add-to-release.result_other':
+    'Added {{count}} documents to {{release}}',
+  /** The label for the bulk clear-selection button */
+  'panes.document-list-pane.bulk-bar.clear': 'Clear selection',
+  /** The result toast after bulk copy document IDs */
+  'panes.document-list-pane.bulk-bar.copy-ids.result_one': 'Copied {{count}} document ID',
+  'panes.document-list-pane.bulk-bar.copy-ids.result_other': 'Copied {{count}} document IDs',
+  /** The label of the bulk copy-document-IDs action */
+  'panes.document-list-pane.bulk-bar.copy-ids': 'Copy document IDs',
+  /** The label of the bulk discard-drafts action */
+  'panes.document-list-pane.bulk-bar.discard': 'Discard drafts',
+  /** The description of the bulk discard confirmation dialog */
+  'panes.document-list-pane.bulk-bar.discard.confirm.description_one':
+    'Are you sure you want to discard the unpublished edits on the selected document?',
+  'panes.document-list-pane.bulk-bar.discard.confirm.description_other':
+    'Are you sure you want to discard the unpublished edits on the {{count}} selected documents?',
+  /** The title of the bulk discard confirmation dialog */
+  'panes.document-list-pane.bulk-bar.discard.confirm.title_one': 'Discard draft?',
+  'panes.document-list-pane.bulk-bar.discard.confirm.title_other': 'Discard {{count}} drafts?',
+  /** The result toast after bulk discard */
+  'panes.document-list-pane.bulk-bar.discard.result_one': 'Discarded drafts on {{count}} document',
+  'panes.document-list-pane.bulk-bar.discard.result_other':
+    'Discarded drafts on {{count}} documents',
+  /** The label of the bulk duplicate action */
+  'panes.document-list-pane.bulk-bar.duplicate': 'Duplicate',
+  /** The result toast after bulk duplicate */
+  'panes.document-list-pane.bulk-bar.duplicate.result_one': 'Duplicated {{count}} document',
+  'panes.document-list-pane.bulk-bar.duplicate.result_other': 'Duplicated {{count}} documents',
+  /** The label for the bulk delete action */
+  'panes.document-list-pane.bulk-bar.delete': 'Delete',
+  /** The description of the bulk delete confirmation dialog */
+  'panes.document-list-pane.bulk-bar.delete.confirm.description_one':
+    'Are you sure you want to delete the selected document?',
+  'panes.document-list-pane.bulk-bar.delete.confirm.description_other':
+    'Are you sure you want to delete the {{count}} selected documents?',
+  /** The title of the bulk delete confirmation dialog */
+  'panes.document-list-pane.bulk-bar.delete.confirm.title_one': 'Delete document?',
+  'panes.document-list-pane.bulk-bar.delete.confirm.title_other': 'Delete {{count}} documents?',
+  /** The result toast after a bulk delete */
+  'panes.document-list-pane.bulk-bar.delete.result_one': 'Deleted {{count}} document',
+  'panes.document-list-pane.bulk-bar.delete.result_other': 'Deleted {{count}} documents',
+  /** The label for the bulk publish action */
+  'panes.document-list-pane.bulk-bar.publish': 'Publish',
+  /** The result toast after a bulk publish */
+  'panes.document-list-pane.bulk-bar.publish.result_one': 'Published {{count}} document',
+  'panes.document-list-pane.bulk-bar.publish.result_other': 'Published {{count}} documents',
+  /** The toast description when some documents were skipped during a bulk action */
+  'panes.document-list-pane.bulk-bar.result.skipped_one':
+    'Skipped {{count}} document (action not applicable)',
+  'panes.document-list-pane.bulk-bar.result.skipped_other':
+    'Skipped {{count}} documents (action not applicable)',
+  /** The label of the review-agent-proposals entry in the bulk bar (confidence prototype) */
+  'panes.document-list-pane.bulk-bar.review-proposals_one': 'Review {{count}} agent proposal',
+  'panes.document-list-pane.bulk-bar.review-proposals_other': 'Review {{count}} agent proposals',
+  /** The label of the button extending the selection to every loaded document */
+  'panes.document-list-pane.bulk-bar.select-all': 'Select all ({{count}})',
+  /** The count of currently selected documents in the bulk action bar */
+  'panes.document-list-pane.bulk-bar.selected_one': '{{count}} selected',
+  'panes.document-list-pane.bulk-bar.selected_other': '{{count}} selected',
+  /** The label for the bulk unpublish action */
+  'panes.document-list-pane.bulk-bar.unpublish': 'Unpublish',
+  /** The result toast after a bulk unpublish */
+  'panes.document-list-pane.bulk-bar.unpublish.result_one': 'Unpublished {{count}} document',
+  'panes.document-list-pane.bulk-bar.unpublish.result_other': 'Unpublished {{count}} documents',
+  /** The aria-label of the per-pane filter control */
+  'panes.document-list-pane.filter.aria-label': 'Filter list',
+  /** The label of the clear-filters item in the per-pane filter menu */
+  'panes.document-list-pane.filter.clear': 'Clear filters',
+  /** The label of the per-pane filter control when no filter is applied */
+  'panes.document-list-pane.filter.label': 'Filter',
+  /** The label of the per-pane filter control when filters are applied */
+  'panes.document-list-pane.filter.label-active_one': 'Filter ({{count}})',
+  'panes.document-list-pane.filter.label-active_other': 'Filter ({{count}})',
+  /** The status facet option matching every document */
+  'panes.document-list-pane.filter.status.any': 'Any status',
+  /** The status facet option matching documents with unpublished edits */
+  'panes.document-list-pane.filter.status.edited': 'Has unpublished edits',
+  /** The status facet option matching documents without unpublished edits */
+  'panes.document-list-pane.filter.status.published': 'Published, no edits',
+  /** The heading of the risk-tier facet section (confidence prototype) */
+  'panes.document-list-pane.filter.tier.heading': 'Agent risk tier',
   /** The help text saying that we have given up on automatic retry */
   'panes.document-list-pane.error.max-retries-attempted':
     'Not automatically retrying after {{count}} unsuccessful attempts.',
@@ -585,6 +673,57 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The help text saying that we'll retry fetching the document list */
   'panes.document-list-pane.error.will-retry-automatically_one': 'Retrying…',
   'panes.document-list-pane.error.will-retry-automatically_other': 'Retrying… (#{{count}}).',
+  /** The aria-label of the row selection checkbox */
+  'panes.document-list-pane.item.select.aria-label': 'Select document',
+  /** The tooltip of the row overflow-menu trigger */
+  'panes.document-list-pane.item.menu.tooltip': 'Show document actions',
+  /** The label of the copy-document-ID action in the row context menu */
+  'panes.document-list-pane.item-menu.copy-id': 'Copy document ID',
+  /** The toast shown after the document ID was copied to the clipboard */
+  'panes.document-list-pane.item-menu.copy-id.success': 'Document ID copied to clipboard',
+  /** The label of the delete action in the row context menu */
+  'panes.document-list-pane.item-menu.delete': 'Delete',
+  /** The confirm button of the delete confirmation dialog */
+  'panes.document-list-pane.item-menu.delete.confirm.button': 'Delete',
+  /** The description of the delete confirmation dialog */
+  'panes.document-list-pane.item-menu.delete.confirm.description':
+    'Are you sure you want to delete this document?',
+  /** The title of the delete confirmation dialog */
+  'panes.document-list-pane.item-menu.delete.confirm.title': 'Delete document?',
+  /** The label of the deselect action in the row context menu */
+  'panes.document-list-pane.item-menu.deselect': 'Deselect',
+  /** The fallback tooltip for row context menu actions that are unavailable */
+  'panes.document-list-pane.item-menu.disabled.DEFAULT': 'Not available for this document',
+  /** The tooltip for row actions unavailable on live edit documents */
+  'panes.document-list-pane.item-menu.disabled.LIVE_EDIT_ENABLED':
+    'Not available for live edit documents',
+  /** The tooltip for delete when the document does not exist */
+  'panes.document-list-pane.item-menu.disabled.NOTHING_TO_DELETE':
+    'This document doesn’t exist yet',
+  /** The tooltip for duplicate when the document does not exist */
+  'panes.document-list-pane.item-menu.disabled.NOTHING_TO_DUPLICATE':
+    'This document doesn’t exist yet',
+  /** The tooltip for unpublish when the document is not published */
+  'panes.document-list-pane.item-menu.disabled.NOT_PUBLISHED': 'This document is not published',
+  /** The tooltip for row actions while the document is still loading */
+  'panes.document-list-pane.item-menu.disabled.NOT_READY': 'Loading document…',
+  /** The label of the duplicate action in the row context menu */
+  'panes.document-list-pane.item-menu.duplicate': 'Duplicate',
+  /** The label of the open action in the row context menu */
+  'panes.document-list-pane.item-menu.open': 'Open',
+  /** The toast shown when a row context menu action fails */
+  'panes.document-list-pane.item-menu.operation-failed': '{{operation}} failed',
+  /** The label of the select action in the row context menu */
+  'panes.document-list-pane.item-menu.select': 'Select',
+  /** The label of the unpublish action in the row context menu */
+  'panes.document-list-pane.item-menu.unpublish': 'Unpublish',
+  /** The confirm button of the unpublish confirmation dialog */
+  'panes.document-list-pane.item-menu.unpublish.confirm.button': 'Unpublish',
+  /** The description of the unpublish confirmation dialog */
+  'panes.document-list-pane.item-menu.unpublish.confirm.description':
+    'Are you sure you want to unpublish this document?',
+  /** The title of the unpublish confirmation dialog */
+  'panes.document-list-pane.item-menu.unpublish.confirm.title': 'Unpublish document?',
   /** The text of the document list pane if more than a maximum number of documents are returned */
   'panes.document-list-pane.max-items.text': 'Displaying a maximum of {{limit}} documents',
   /** The text of the document list pane if no documents are found for a specified type */
@@ -595,6 +734,12 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-list-pane.no-matching-documents.text': 'No matching documents',
   /** The search input for the search input on the document list pane */
   'panes.document-list-pane.reconnecting': 'Trying to connect…',
+  /** The aria-label of the always-on per-pane sort control */
+  'panes.document-list-pane.sort.aria-label': 'Change list ordering',
+  /** The label of the always-on per-pane sort control, summarizing the applied ordering */
+  'panes.document-list-pane.sort.label': '{{order}}',
+  /** The label of the per-pane sort control when the applied ordering matches no configured ordering */
+  'panes.document-list-pane.sort.label-unordered': 'Sort',
   /** The aria-label for the search input on the document list pane */
   'panes.document-list-pane.search-input.aria-label': 'Search list',
   /** The search input for the search input on the document list pane */

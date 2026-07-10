@@ -6,7 +6,7 @@ import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon, EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
+import {ConfidenceDashboard, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
@@ -321,6 +321,26 @@ const defaultWorkspace = defineConfig({
 })
 
 export default defineConfig([
+  // --- UX OVERHAUL CANVAS (fork-local prototype, not for upstream) ---
+  // Inherits the same project/dataset as `defaultWorkspace` (the shared test-studio
+  // dataset) rather than a personal sandbox project, so anyone with test-studio
+  // access can run this fork. First entry => `/` lands here by default.
+  {
+    ...defaultWorkspace,
+    name: 'atlas',
+    title: 'Atlas (UX overhaul)',
+    subtitle: 'UX overhaul canvas — shared test-studio dataset',
+    basePath: '/atlas',
+    tools: (prev) => [
+      ...prev,
+      // confidence-surface prototype (mock dashboard — addendum P7)
+      {
+        name: 'confidence',
+        title: 'Confidence',
+        component: ConfidenceDashboard,
+      },
+    ],
+  },
   {
     ...defaultWorkspace,
     name: 'default-hidden',

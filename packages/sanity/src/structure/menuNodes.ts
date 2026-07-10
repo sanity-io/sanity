@@ -1,13 +1,58 @@
 import negate from 'lodash-es/negate.js'
 
-import {type _PaneMenuGroup, type _PaneMenuItem, type _PaneMenuNode} from './components/pane/types'
+import {
+  type _PaneMenuGroup,
+  type _PaneMenuItem,
+  type _PaneMenuNode,
+  type _PaneMenuNodeRank,
+} from './components/pane/types'
 import {type DocumentFieldMenuActionNode, type PaneMenuItem, type PaneMenuItemGroup} from './types'
 
+/**
+ * Resolves the effective rank of a menu entry from its declared `rank`,
+ * falling back to the legacy contract: `showAsAction`/`renderAsButton` mean
+ * `primary`, a `critical` tone means `destructive`, everything else is
+ * `secondary`. This is the back-compat shim that keeps every existing
+ * plugin's action placement stable.
+ */
+export function resolveMenuNodeRank(entry: {
+  rank?: _PaneMenuNodeRank
+  renderAsButton?: boolean
+  tone?: string
+}): _PaneMenuNodeRank {
+  if (entry.rank) return entry.rank
+  if (entry.renderAsButton) return 'primary'
+  if (entry.tone === 'critical') return 'destructive'
+  return 'secondary'
+}
+
 export function isMenuNodeButton(node: _PaneMenuNode): node is _PaneMenuItem | _PaneMenuGroup {
-  return (node.type === 'item' || node.type === 'group') && node.renderAsButton
+  return (node.type === 'item' || node.type === 'group') && node.rank === 'primary'
 }
 
 export const isNotMenuNodeButton = negate(isMenuNodeButton)
+
+/**
+ * Partitions overflow menu nodes by rank for rendering: secondary nodes
+ * first (in registry order), then destructive nodes — the caller renders a
+ * divider between the two sections. Dividers declared inside the node list
+ * stay with the section they precede.
+ */
+export function partitionMenuNodesByRank(nodes: _PaneMenuNode[]): {
+  secondary: _PaneMenuNode[]
+  destructive: _PaneMenuNode[]
+} {
+  const secondary: _PaneMenuNode[] = []
+  const destructive: _PaneMenuNode[] = []
+  for (const node of nodes) {
+    if (node.type !== 'divider' && node.rank === 'destructive') {
+      destructive.push(node)
+    } else {
+      secondary.push(node)
+    }
+  }
+  return {secondary, destructive}
+}
 
 export function resolveMenuNodes(params: {
   actionHandler: (item: PaneMenuItem) => void
@@ -42,6 +87,7 @@ export function resolveMenuNodes(params: {
         children: [],
         expanded: true,
         renderAsButton: false,
+        rank: 'secondary',
         title: itemGroup.title,
         i18n: itemGroup.i18n,
       })
@@ -66,44 +112,39 @@ export function resolveMenuNodes(params: {
         title: item.group,
         children: [],
         renderAsButton: false,
+        rank: 'secondary',
       }
       groups.push(group)
     }
 
+    const rank = resolveMenuNodeRank({
+      rank: item.rank,
+      renderAsButton: item.showAsAction ?? false,
+      tone: item.tone,
+    })
+
+    const node: _PaneMenuItem = {
+      type: 'item',
+      key: `${keyOffset + i}-item`,
+
+      hideSelectionIndicator: item.params?.hideSelectionIndicator === true,
+      hotkey: item.shortcut,
+      icon: item.icon,
+      intent: item.intent,
+      disabled,
+      onAction: () => params.actionHandler(item),
+      renderAsButton: rank === 'primary',
+      rank,
+      selected: item.selected,
+      title: item.title,
+      i18n: item.i18n,
+      tone: item.tone,
+    }
+
     if (group) {
-      group.children.push({
-        type: 'item',
-        key: `${keyOffset + i}-item`,
-
-        hideSelectionIndicator: item.params?.hideSelectionIndicator === true,
-        hotkey: item.shortcut,
-        icon: item.icon,
-        intent: item.intent,
-        disabled,
-        onAction: () => params.actionHandler(item),
-        renderAsButton: item.showAsAction ?? false,
-        selected: item.selected,
-        title: item.title,
-        i18n: item.i18n,
-        tone: item.tone,
-      })
+      group.children.push(node)
     } else {
-      ungroupedItems.push({
-        type: 'item',
-        key: `${keyOffset + i}-item`,
-
-        hideSelectionIndicator: item.params?.hideSelectionIndicator === true,
-        hotkey: item.shortcut,
-        icon: item.icon,
-        intent: item.intent,
-        disabled,
-        onAction: () => params.actionHandler(item),
-        renderAsButton: item.showAsAction ?? false,
-        selected: item.selected,
-        title: item.title,
-        i18n: item.i18n,
-        tone: item.tone,
-      })
+      ungroupedItems.push(node)
     }
   }
 
@@ -119,6 +160,8 @@ function mapFieldActionToPaneMenuNode(a: DocumentFieldMenuActionNode, key: strin
   }
 
   if (a.type === 'group') {
+    const rank = resolveMenuNodeRank({renderAsButton: a.renderAsButton ?? false})
+
     return {
       type: 'group',
       key,
@@ -131,9 +174,15 @@ function mapFieldActionToPaneMenuNode(a: DocumentFieldMenuActionNode, key: strin
       icon: a.icon,
       title: a.title,
       i18n: a.i18n,
-      renderAsButton: a.renderAsButton ?? false,
+      renderAsButton: rank === 'primary',
+      rank,
     }
   }
+
+  const rank = resolveMenuNodeRank({
+    renderAsButton: a.renderAsButton ?? false,
+    tone: a.tone,
+  })
 
   return {
     type: 'item',
@@ -143,7 +192,8 @@ function mapFieldActionToPaneMenuNode(a: DocumentFieldMenuActionNode, key: strin
     icon: a.icon,
     iconRight: a.iconRight,
     onAction: a.onAction,
-    renderAsButton: a.renderAsButton ?? false,
+    renderAsButton: rank === 'primary',
+    rank,
     selected: a.selected,
     title: a.title,
     i18n: a.i18n,

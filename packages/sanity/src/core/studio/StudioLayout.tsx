@@ -8,6 +8,8 @@ import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../components/loadingBlock'
+import {ConfirmationQueueHost} from '../confidence/ConfirmationQueue'
+import {TrustCardHost} from '../confidence/TrustCard'
 import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
 import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
 import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
@@ -263,6 +265,9 @@ export function StudioLayoutComponent() {
           )}
         </Card>
       </StudioErrorBoundary>
+      {/* overhaul-branch prototype: the confidence-surface hosts */}
+      <TrustCardHost />
+      <ConfirmationQueueHost />
     </Flex>
   )
 }

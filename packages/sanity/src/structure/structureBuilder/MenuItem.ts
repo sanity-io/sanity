@@ -102,6 +102,14 @@ export interface MenuItem {
   params?: MenuItemParamsType
   /** Determine if it will show the MenuItem as action */
   showAsAction?: boolean
+  /**
+   * The action's rank, deciding where it surfaces: `primary` renders inline
+   * (as a button), `secondary` in the overflow menu, and `destructive` in the
+   * overflow menu below a divider with critical tone. When not set,
+   * `showAsAction: true` is treated as a legacy alias for `rank: 'primary'`,
+   * and items with `tone: 'critical'` resolve as `destructive`.
+   */
+  rank?: 'primary' | 'secondary' | 'destructive'
 }
 
 /**

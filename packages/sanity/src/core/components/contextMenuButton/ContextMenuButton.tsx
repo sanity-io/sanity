@@ -7,7 +7,9 @@ import {Button, type ButtonProps} from '../../../ui-components'
 type ContextMenuButtonProps = Pick<
   ButtonProps,
   'mode' | 'selected' | 'size' | 'tone' | 'tooltipProps' | 'loading'
->
+> & {
+  'data-testid'?: string
+}
 
 /**
  * Simple context menu button (with horizontal ellipsis icon) with shared localization.
@@ -16,7 +18,10 @@ type ContextMenuButtonProps = Pick<
  */
 export const ContextMenuButton = forwardRef(function ContextMenuButton(
   props: ContextMenuButtonProps &
-    Pick<HTMLProps<HTMLButtonElement>, 'disabled' | 'hidden' | 'onClick'>,
+    Pick<
+      HTMLProps<HTMLButtonElement>,
+      'aria-label' | 'disabled' | 'hidden' | 'onClick' | 'onPointerDown' | 'tabIndex'
+    >,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const {mode = 'bleed', tooltipProps, tone, ...rest} = props
