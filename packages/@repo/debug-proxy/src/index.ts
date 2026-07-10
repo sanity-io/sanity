@@ -1,4 +1,10 @@
 export {
+  type ConnectionFlapper,
+  type ConnectionFlapperOptions,
+  createConnectionFlapper,
+} from './connectivity'
+export {type LatencyOptions, withLatency} from './latency'
+export {
   createDebugProxy,
   type DebugProxyConfig,
   type DebugProxyServer,
@@ -18,10 +24,22 @@ export {
   type Retry,
   type SSEEvent,
 } from './proxy'
-export {allOf, anyOf, isGetOrgIdEndpoint, isListenEndpoint, urlIncludes} from './routes'
+export {intermittentServiceErrors} from './requestScenarios'
+export {
+  allOf,
+  anyOf,
+  isAuthEndpoint,
+  isGetOrgIdEndpoint,
+  isListenEndpoint,
+  isLogoutEndpoint,
+  urlIncludes,
+} from './routes'
 export {
   dropMutations,
   duplicateMutations,
+  expiredToken,
+  invalidSession,
+  type InvalidSessionCode,
   randomLatency,
   sendReset,
   shuffleEventDelivery,

@@ -1,12 +1,20 @@
+import {lazy} from 'react'
 import {route} from 'sanity/router'
 
 import {type DefaultPluginsWorkspaceOptions} from '../../config'
 import {definePlugin} from '../../config/definePlugin'
 import {releasesUsEnglishLocaleBundle} from '../../releases/i18n'
 import {RELEASES_INTENT} from '../../releases/plugin'
-import {ReleasesStudioLayout} from '../../releases/plugin/ReleasesStudioLayout'
-import {ReleasesTool} from '../../releases/tool/ReleasesTool'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
+
+const ReleasesStudioLayout = lazy(() =>
+  import('../../releases/plugin/ReleasesStudioLayout').then((module) => ({
+    default: module.ReleasesStudioLayout,
+  })),
+)
+const ReleasesTool = lazy(() =>
+  import('../../releases/tool/ReleasesTool').then((module) => ({default: module.ReleasesTool})),
+)
 
 /**
  * @internal

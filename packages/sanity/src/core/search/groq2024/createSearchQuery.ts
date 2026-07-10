@@ -51,6 +51,17 @@ function isSchemaType(
 
 /**
  * @internal
+ *
+ * Published ids resolved in phase one of the reference search, surfaced via
+ * `references()` rather than a `->` dereference (which `score()` rejects).
+ */
+export interface ReferenceSearchOptions {
+  referenceIds?: string[]
+  referenceWeight?: number
+}
+
+/**
+ * @internal
  */
 export function createSearchQuery(
   searchTerms: SearchTerms<SchemaType | CrossDatasetType | GlobalDocumentReferenceType>,
@@ -67,7 +78,9 @@ export function createSearchQuery(
     comments,
     filter,
   }: SearchOptions & SearchFactoryOptions = {},
+  {referenceIds, referenceWeight = 5}: ReferenceSearchOptions = {},
 ): SearchQuery {
+  const hasReferenceIds = Array.isArray(referenceIds) && referenceIds.length > 0
   const specs = searchTerms.types
     .map((schemaType) =>
       deriveSearchWeightsFromType2024({
@@ -89,6 +102,9 @@ export function createSearchQuery(
 
   const baseMatch = '([@, _id] match text::query($__query) || references($__rawQuery))'
 
+  // `references()` is index-accelerated and accepted by `score()`, unlike `->`.
+  const referenceBoost = hasReferenceIds ? [`boost(references($__refIds), ${referenceWeight})`] : []
+
   // Note: Computing this is unnecessary when `!isScored`.
   const score = Object.entries(groupedSpecs)
     .flatMap(([, entries]) => {
@@ -97,6 +113,7 @@ export function createSearchQuery(
       }
       return `boost(_type in ${JSON.stringify(entries.map((entry) => entry.typeName))} && ${entries[0].path} match text::query($__query), ${entries[0].weight})`
     })
+    .concat(referenceBoost)
     .concat(baseMatch)
 
   const inputSortOrder = sort ?? [{field: '_score', direction: 'desc'}]
@@ -114,10 +131,14 @@ export function createSearchQuery(
     projectionIndex: compiledSortEntries[index].projectionIndex,
   }))
 
+  // Unscored has no `[_score > 0]` gate, so the reference match must live in the
+  // filter for documents found only through a referenced leaf to surface.
+  const unscoredMatch = hasReferenceIds ? `(${baseMatch} || references($__refIds))` : baseMatch
+
   const filters: string[] = [
     '_type in $__types',
     // If the search request doesn't use scoring, directly filter documents.
-    isScored ? [] : baseMatch,
+    isScored ? [] : unscoredMatch,
     filter ? `(${filter})` : [],
     searchTerms.filter ? `(${searchTerms.filter})` : [],
     cursor ?? [],
@@ -146,6 +167,7 @@ export function createSearchQuery(
     __limit: (limit ?? DEFAULT_LIMIT) + 1,
     __query: prefixLast(rawQuery),
     __rawQuery: rawQuery,
+    ...(hasReferenceIds ? {__refIds: referenceIds} : {}),
     ...params,
   }
 

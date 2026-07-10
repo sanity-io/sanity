@@ -1,4 +1,4 @@
-import {TrashIcon} from '@sanity/icons'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useEffectEvent, useState} from 'react'

@@ -1,4 +1,4 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {Card, type CardTone, Text} from '@sanity/ui'
 import {isWeekend} from 'date-fns/isWeekend'
 import {useCallback} from 'react'

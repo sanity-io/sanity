@@ -4,9 +4,13 @@ import {useTranslation} from 'sanity'
 
 import {Dialog, ErrorBoundary} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
-import {ConfirmDeleteDialog, type ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
+import {
+  ConfirmDeleteDialog,
+  type ConfirmDeleteDialogProps,
+  type DeleteReferenceCounts,
+} from './ConfirmDeleteDialog'
 
-export type {ConfirmDeleteDialogProps}
+export type {ConfirmDeleteDialogProps, DeleteReferenceCounts}
 
 type ArgType<T> = T extends (arg: infer U) => unknown ? U : never
 type ErrorInfo = ArgType<ComponentProps<typeof ErrorBoundary>['onCatch']>

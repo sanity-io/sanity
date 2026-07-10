@@ -657,7 +657,7 @@ const CommandListItemComponent = forwardRef(function CommandListItem(
     virtualIndex: number
     virtualRowStart: number
   },
-  forwardedRef: React.ForwardedRef<HTMLDivElement>,
+  forwardedRef: React.ForwardedRef<HTMLLIElement>,
 ) {
   const {
     children,

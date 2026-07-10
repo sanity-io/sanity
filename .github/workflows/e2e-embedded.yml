@@ -17,7 +17,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -36,7 +36,7 @@ jobs:
       - name: Cache Playwright Browsers for Playwright's Version
         if: steps.changes.outputs.has_changes == 'true'
         id: cache-playwright-browsers
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
@@ -61,7 +61,7 @@ jobs:
       matrix:
         project: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Store Playwright's Version
@@ -73,7 +73,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox

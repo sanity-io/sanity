@@ -1,4 +1,4 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {type HTMLProps, useCallback, useMemo} from 'react'
 import {
@@ -31,6 +31,7 @@ export function ContentEditor(props: {
   onFocusPath: (state: Required<PresentationStateParams>) => void
   onStructureParams: (params: StructureDocumentPaneParams) => void
   refs: {_id: string; _type: string}[]
+  visualOrderPublishedIds: string[]
   structureParams: StructureDocumentPaneParams
   searchParams: PresentationSearchParams
 }): React.JSX.Element {
@@ -42,6 +43,7 @@ export function ContentEditor(props: {
     onFocusPath,
     onStructureParams,
     refs,
+    visualOrderPublishedIds,
     searchParams,
     structureParams,
   } = props
@@ -114,8 +116,7 @@ export function ContentEditor(props: {
           {mainDocumentState.document ? (
             <PreviewCard
               __unstable_focusRing
-              // oxlint-disable-next-line no-explicit-any
-              as={MainDocumentLink as any}
+              as={MainDocumentLink}
               data-as="a"
               radius={2}
               sizing="border"
@@ -153,6 +154,7 @@ export function ContentEditor(props: {
         onStructureParams={onStructureParams}
         searchParams={searchParams}
         refs={refs}
+        visualOrderPublishedIds={visualOrderPublishedIds}
       />
     </Flex>
   )

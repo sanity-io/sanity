@@ -261,6 +261,7 @@ function applyRuleSpec(rule: IRule, ruleSpec: unknown): IRule {
             return s
           })
         }
+        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
         return rule.uri(uriOptions as UriValidationOptions)
       }
       break
@@ -314,6 +315,7 @@ function isRegexPattern(val: unknown): val is {type: 'regex'; pattern: string} {
     typeof val === 'object' &&
     val !== null &&
     'type' in val &&
+    // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
     (val as {type: unknown}).type === 'regex' &&
     'pattern' in val &&
     typeof (val as {pattern: unknown}).pattern === 'string'

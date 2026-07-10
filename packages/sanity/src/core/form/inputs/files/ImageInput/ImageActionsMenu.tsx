@@ -1,4 +1,4 @@
-import {CropIcon} from '@sanity/icons'
+import {CropIcon} from '@sanity/icons/Crop'
 import {Skeleton} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, type RefObject} from 'react'
 

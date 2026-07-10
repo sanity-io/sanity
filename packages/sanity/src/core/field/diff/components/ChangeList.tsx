@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
-import {RevertIcon} from '@sanity/icons'
+import {RevertIcon} from '@sanity/icons/Revert'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {startTransition, useCallback, useContext, useMemo, useState} from 'react'

@@ -1,4 +1,4 @@
-import {AsteriskIcon} from '@sanity/icons'
+import {AsteriskIcon} from '@sanity/icons/Asterisk'
 import {Button, Card, Dialog, TextInput, Stack, Text, Flex} from '@sanity/ui'
 import {useState} from 'react'
 import {

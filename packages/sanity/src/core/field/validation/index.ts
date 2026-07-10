@@ -46,6 +46,7 @@ export function getValueError(value: unknown, schemaType: SchemaType): FieldValu
 
   if (isObjectType(schemaType) && isObjectValue(value)) {
     for (const field of schemaType.fields) {
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       const fieldError = getValueError(value[field.name], field.type as SchemaType)
       if (fieldError) {
         return fieldError

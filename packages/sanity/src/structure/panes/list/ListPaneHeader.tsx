@@ -1,4 +1,4 @@
-import {ArrowLeftIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 
 import {Button} from '../../../ui-components'
 import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'

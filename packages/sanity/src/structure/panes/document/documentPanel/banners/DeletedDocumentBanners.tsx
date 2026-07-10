@@ -1,4 +1,5 @@
-import {DocumentRemoveIcon, ReadOnlyIcon} from '@sanity/icons'
+import {DocumentRemoveIcon} from '@sanity/icons/DocumentRemove'
+import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {

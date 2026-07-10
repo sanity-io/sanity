@@ -174,6 +174,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive] = useState(false)
   const {lastRevisionDocument} = useDeletedDocumentLastRevision()
 
   /**
@@ -291,6 +292,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     upstreamEditState,
     hasUpstreamVersion,
     connectionState,
+    syncState,
     focusPath,
     onChange,
     validation,
@@ -324,6 +326,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     onFocusPath,
     getFormDocumentValue: getDisplayed,
     displayInlineChanges: router.stickyParams.displayInlineChanges === 'true',
+    isOlderRevision: onOlderRevision,
   })
 
   const actionsVersionType = useMemo(
@@ -539,6 +542,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         collapsedPaths,
         compareValue,
         connectionState,
+        syncState,
         displayed: currentDisplayed,
         documentId,
         documentIdRaw,
@@ -580,6 +584,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         setTimelineRange,
         setIsDeleting,
         isDeleting,
+        isDocumentGroupInventoryActive,
+        setIsDocumentGroupInventoryActive,
         isDeleted,
         timelineError,
         timelineStore,
@@ -604,6 +610,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       collapsedPaths,
       compareValue,
       connectionState,
+      syncState,
       currentDisplayed,
       documentId,
       documentIdRaw,
@@ -644,6 +651,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       permissions,
       setTimelineRange,
       isDeleting,
+      isDocumentGroupInventoryActive,
       isDeleted,
       timelineError,
       timelineStore,

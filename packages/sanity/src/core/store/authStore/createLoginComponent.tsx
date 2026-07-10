@@ -1,6 +1,7 @@
 /* oxlint-disable i18next/no-literal-string */
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
-import {ArrowLeftIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Badge, Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {useObservable} from 'react-rx'

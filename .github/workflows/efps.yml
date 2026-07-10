@@ -32,7 +32,7 @@ jobs:
       preview_url: ${{ steps.deploy-preview.outputs.DEPLOY_URL }}
       has_code_changes: ${{ steps.changes.outputs.has_changes }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -144,7 +144,7 @@ jobs:
         shardIndex: [1, 2, 3]
         shardTotal: [3]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Add PR comment placeholder
@@ -166,7 +166,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
@@ -224,7 +224,7 @@ jobs:
       contents: read
       pull-requests: write # for PR comment
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts

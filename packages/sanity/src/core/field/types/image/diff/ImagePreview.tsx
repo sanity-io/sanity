@@ -1,6 +1,6 @@
 import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
 import {hues} from '@sanity/color'
-import {ImageIcon} from '@sanity/icons'
+import {ImageIcon} from '@sanity/icons/Image'
 import {createImageUrlBuilder} from '@sanity/image-url'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {type SyntheticEvent, useMemo, useState} from 'react'

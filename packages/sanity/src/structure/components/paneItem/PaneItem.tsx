@@ -1,4 +1,6 @@
-import {ChevronRightIcon, DocumentIcon, FolderIcon} from '@sanity/icons'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {FolderIcon} from '@sanity/icons/Folder'
 import {
   isSanityDocument,
   type PreviewValue,
@@ -161,7 +163,6 @@ export function PaneItem(props: PaneItemProps) {
       data-testid={`pane-item-${title}`}
       __unstable_focusRing
       as={ChildLink as FIXME}
-      // @ts-expect-error - `childId` is a valid prop on `ChildLink`
       childId={id}
       data-as="a"
       margin={margin}

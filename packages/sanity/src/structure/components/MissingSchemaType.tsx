@@ -1,4 +1,4 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SanityDocument} from '@sanity/types'
 import {type GeneralPreviewLayoutKey, SanityDefaultPreview, Translate, useTranslation} from 'sanity'
 

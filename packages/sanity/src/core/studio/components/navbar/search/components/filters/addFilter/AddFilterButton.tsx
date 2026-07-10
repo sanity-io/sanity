@@ -1,4 +1,4 @@
-import {AddIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
 import {useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useRef, useState} from 'react'
 

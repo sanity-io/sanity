@@ -1,4 +1,4 @@
-import {ArrowLeftIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {memo, type ReactNode, useMemo} from 'react'
 import {type GeneralPreviewLayoutKey, type InitialValueTemplateItem} from 'sanity'
 

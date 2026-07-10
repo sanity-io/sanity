@@ -1,6 +1,8 @@
 import {Code} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {type ComponentProps} from 'react'
 
-export const ErrorCode = styled(Code)`
-  color: ${({theme}) => theme.sanity.color.muted.critical.enabled.fg};
-`
+import {errorCode} from './QueryErrorDialog.css'
+
+export function ErrorCode(props: ComponentProps<typeof Code>) {
+  return <Code {...props} className={errorCode} />
+}

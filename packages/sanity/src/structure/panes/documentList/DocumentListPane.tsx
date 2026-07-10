@@ -1,10 +1,12 @@
-import {SearchIcon, SpinnerIcon} from '@sanity/icons'
+import {SearchIcon} from '@sanity/icons/Search'
+import {SpinnerIcon} from '@sanity/icons/Spinner'
 import {Box, Stack, TextInput} from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  EMPTY_ARRAY,
   type GeneralPreviewLayoutKey,
   useActiveReleases,
   useClient,
@@ -19,7 +21,7 @@ import {keyframes, styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
-import {EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
+import {DEFAULT_ORDERING, EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {
   DocumentListPaneSearchOrdering,
@@ -28,6 +30,7 @@ import {
   RELEVANCE_ORDERING_ID,
 } from './DocumentListPaneSearchOrdering'
 import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
+import {isOrderByIdsParam, reorderItemsByIdsParam} from './orderByIdsParam'
 import {useShallowUnique} from './PaneContainer'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
@@ -111,6 +114,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   // empty, so the search-scoped UI must key off the trimmed value too.
   const trimmedSearchQuery = searchQuery.trim()
 
+  const orderByIdsParam = isOrderByIdsParam(sortOrderRaw)
+
   const sortWithOrderingFn =
     typeName && sortOrderRaw
       ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName) as any)
@@ -118,10 +123,18 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const sortOrder = useUnique(sortWithOrderingFn)
 
+  // The sentinel ordering has no server-side meaning, so the fetch falls back to
+  // the default ordering and the items are reordered client-side afterwards.
+  const fetchSortOrder = orderByIdsParam ? DEFAULT_ORDERING : sortOrder
+
   // The list's configured orderings, surfaced as choices in the search sort
-  // control (relevance plus these).
+  // control (relevance plus these). The sentinel ordering is excluded; it isn't
+  // a real sort choice the editor can apply while searching.
   const searchOrderings = useMemo(
-    () => (pane.menuItems || []).filter(isSortOrderingMenuItem),
+    () =>
+      (pane.menuItems || []).filter(
+        (item) => isSortOrderingMenuItem(item) && !isOrderByIdsParam({by: item.params!.by}),
+      ),
     [pane.menuItems],
   )
 
@@ -143,7 +156,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         searchSchemaType
         ? applyOrderingFunctions({by: selectedSearchOrdering.params.by}, searchSchemaType as any)
         : {by: selectedSearchOrdering.params.by}
-      : sortOrder,
+      : fetchSortOrder,
   )
 
   const client = useClient({
@@ -173,6 +186,12 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     sortOrder: effectiveSortOrder,
     searchSortByRelevance: useRelevance,
   })
+
+  const orderedItems = useMemo(() => {
+    if (!orderByIdsParam || trimmedSearchQuery) return items
+    const idsParam = Array.isArray(params.ids) ? (params.ids as string[]) : EMPTY_ARRAY
+    return reorderItemsByIdsParam(items, idsParam)
+  }, [orderByIdsParam, trimmedSearchQuery, items, params.ids])
 
   const isLoading = documentListIsLoading || releases.loading
 
@@ -302,7 +321,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         retryCount={retryCount}
         isRetrying={isRetrying}
         isConnected={connected}
-        items={items}
+        items={orderedItems}
         layout={layout}
         muted={loadingVariant === 'subtle'}
         loadingVariant={loadingVariant}
@@ -311,7 +330,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         paneTitle={title}
         searchInputElement={searchInputElement}
         showIcons={showIcons}
-        sortOrder={sortOrder}
+        sortOrder={orderByIdsParam ? DEFAULT_ORDERING : sortOrder}
       />
     </>
   )

@@ -1,4 +1,5 @@
-import {AddCommentIcon, CommentIcon} from '@sanity/icons'
+import {AddCommentIcon} from '@sanity/icons/AddComment'
+import {CommentIcon} from '@sanity/icons/Comment'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {
   // oxlint-disable-next-line no-restricted-imports

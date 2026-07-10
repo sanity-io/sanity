@@ -1,9 +1,11 @@
 import {
   PortableTextEditor,
+  useEditor,
+  useEditorSelector,
   usePortableTextEditor,
-  usePortableTextEditorSelection,
 } from '@portabletext/editor'
-import {isKeySegment} from '@sanity/types'
+import {getSelectionEndBlock, getSelectionStartBlock} from '@portabletext/editor/selectors'
+import {isEqual} from '@sanity/util/paths'
 import {memo, useCallback, useMemo} from 'react'
 
 import {type PopoverProps} from '../../../../../ui-components'
@@ -30,17 +32,17 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const {disabled: disabledProp, groups, isFullscreen, collapsed} = props
   const focusBlock = useFocusBlock()
 
-  const editor = usePortableTextEditor()
+  const legacyEditor = usePortableTextEditor()
+  const editor = useEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
-  const selection = usePortableTextEditorSelection()
   const {t} = useTranslation()
-  const isSelectingMultipleBlocks =
-    // Path at 0 is the block level, by comparing those we can detect if the user is selecting multiple blocks
-    selection && isKeySegment(selection.anchor.path[0]) && isKeySegment(selection.focus.path[0])
-      ? // In case of keyed segments
-        selection.anchor.path[0]._key !== selection?.focus.path[0]._key
-      : // In case of non-keyed segments
-        selection?.anchor.path[0] !== selection?.focus.path[0]
+  // Compare the enclosing block at each end by path (keys aren't unique across
+  // containers).
+  const isSelectingMultipleBlocks = useEditorSelector(editor, (snapshot) => {
+    const startBlock = getSelectionStartBlock(snapshot)
+    const endBlock = getSelectionEndBlock(snapshot)
+    return !!startBlock && !!endBlock && !isEqual(startBlock.path, endBlock.path)
+  })
 
   const isVoidBlock = focusBlock?._type !== schemaTypes.block.name
   const isEmptyTextBlock =
@@ -67,8 +69,8 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const activeKeys = useActiveActionKeys({actions})
 
   const handleMenuClose = useCallback(() => {
-    PortableTextEditor.focus(editor)
-  }, [editor])
+    PortableTextEditor.focus(legacyEditor)
+  }, [legacyEditor])
 
   const tooltipPlacement = isFullscreen ? 'bottom' : 'top'
 

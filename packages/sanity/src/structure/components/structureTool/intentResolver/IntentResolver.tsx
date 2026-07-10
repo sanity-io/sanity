@@ -1,5 +1,5 @@
 import {memo, useCallback, useEffect, useState} from 'react'
-import {isRecord, useDocumentStore} from 'sanity'
+import {isRecord, useDocumentStore, useStudioErrorHandler} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 
 import {resolveIntent} from '../../../structureResolvers'
@@ -28,6 +28,7 @@ export const IntentResolver = memo(function IntentResolver() {
   )
   const {rootPaneNode, structureContext} = useStructureTool()
   const documentStore = useDocumentStore()
+  const errorHandler = useStudioErrorHandler()
   const [error, setError] = useState<unknown>(null)
 
   // this re-throws errors so that parent ErrorBoundary's can handle them properly
@@ -40,6 +41,11 @@ export const IntentResolver = memo(function IntentResolver() {
 
       let cancelled = false
       async function effect() {
+        // The request-error dialog's "Try again" can re-run this thunk after
+        // the effect has been cleaned up (intent changed or unmounted) —
+        // resolve immediately instead of re-fetching for a stale intent.
+        if (cancelled) return
+
         const {id, type} = await ensureDocumentIdAndType(
           documentStore,
           typeof params.id === 'string' ? params.id : undefined,
@@ -61,13 +67,15 @@ export const IntentResolver = memo(function IntentResolver() {
         navigate({panes}, {replace: true})
       }
 
-      effect().catch(setError)
+      // Delegate infrastructure failures (network, 5xx, 429) to the studio's request-error
+      // dialog, whose "Try again" re-runs the resolution.
+      errorHandler.attempt(effect, {retryable: true}).catch(setError)
 
       return () => {
         cancelled = true
       }
     }
-  }, [documentStore, maybeIntent, navigate, rootPaneNode, structureContext])
+  }, [documentStore, errorHandler, maybeIntent, navigate, rootPaneNode, structureContext])
 
   return null
 })

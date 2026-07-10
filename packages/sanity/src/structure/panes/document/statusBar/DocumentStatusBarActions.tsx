@@ -1,8 +1,14 @@
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useMemo, useState} from 'react'
 import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  DocumentGroupInventory,
+  DocumentGroupInventoryAction,
+  type DocumentGroupInventoryProps,
   Hotkeys,
   isSanityDefinedAction,
+  useClient,
+  useDocumentStore,
   usePausedScheduledDraft,
   usePerspective,
   useSource,
@@ -10,11 +16,24 @@ import {
 
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState, type ResolvedAction, usePaneRouter} from '../../../components'
+import {ReferencePreviewLink} from '../../../components/confirmDeleteDialog/ReferencePreviewLink'
+import {referringDocuments} from '../../../components/confirmDeleteDialog/useReferringDocuments'
+import {VersionsPreviewList} from '../../../components/confirmDeleteDialog/VersionsPreviewList'
+import {DocTitle} from '../../../components/DocTitle'
+import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {useHistoryRestoreAction} from '../../../documentActions'
+import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
+import {usePerspectiveNavigator} from '../../../hooks/usePerspectiveNavigator'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
+
+const documentGroupInventoryComponents: DocumentGroupInventoryProps['components'] = {
+  DocTitle,
+  ReferencePreviewLink,
+  VersionsPreviewList,
+}
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
@@ -25,15 +44,27 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, states} = props
-  const {__internal_tasks} = useSource()
-  const {editState} = useDocumentPane()
+  const {__internal_tasks, beta} = useSource()
+  const {displayed, editState, isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive} =
+    useDocumentPane()
   const {params} = usePaneRouter()
+  const {documentId, documentType} = useDocumentPane()
   const showingRevision = Boolean(params?.rev)
+
+  const {navigate: navigatePerspective} = usePerspectiveNavigator()
+  const perspectiveList = useDocumentPerspectiveList()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const documentStore = useDocumentStore()
+  const referringDocuments$ = useMemo(
+    () => referringDocuments({documentId, versionedClient: client, documentStore}),
+    [documentId, client, documentStore],
+  )
 
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const {isPaused} = usePausedScheduledDraft()
+  const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
@@ -74,8 +105,26 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   }, [showFirstActionButton, firstActionState, menuActionStates])
 
   return (
-    <Flex align="center" gap={1}>
+    <Flex align="center" gap={3}>
       {__internal_tasks && __internal_tasks.footerAction}
+      {hasDocumentGroupInventory && typeof displayed?._id !== 'undefined' && (
+        <DocumentGroupInventoryAction
+          documentId={displayed._id}
+          portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
+          isDocumentGroupInventoryActive={isDocumentGroupInventoryActive}
+          setIsDocumentGroupInventoryActive={setIsDocumentGroupInventoryActive}
+        >
+          <DocumentGroupInventory
+            documentId={displayed._id}
+            documentType={documentType}
+            portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
+            navigatePerspective={navigatePerspective}
+            perspectiveList={perspectiveList}
+            referringDocuments$={referringDocuments$}
+            components={documentGroupInventoryComponents}
+          />
+        </DocumentGroupInventoryAction>
+      )}
       {showFirstActionButton && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">

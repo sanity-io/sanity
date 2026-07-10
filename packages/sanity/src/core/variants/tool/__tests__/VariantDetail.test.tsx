@@ -10,6 +10,18 @@ import {type SystemVariant} from '../../types'
 import {VariantDetail} from '../detail/VariantDetail'
 import {getVariantId} from '../util'
 
+const mockedSetVariant = vi.fn()
+
+vi.mock('../../../perspective/useSetVariant', () => ({
+  useSetVariant: vi.fn(() => mockedSetVariant),
+}))
+
+vi.mock('../../../perspective/usePerspective', () => ({
+  usePerspective: vi.fn(() => ({
+    selectedVariant: undefined,
+  })),
+}))
+
 const mockNavigate = vi.fn()
 
 const routerState = vi.hoisted(() => ({
@@ -60,9 +72,26 @@ vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../../hooks/useVariantDocuments', () => ({
+  useVariantDocuments: vi.fn(() => ({
+    loading: false,
+    results: [],
+    error: null,
+  })),
+}))
+
+vi.mock('../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => ({
+    data: [],
+    loading: false,
+    error: null,
+  })),
+}))
+
 describe('VariantDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockedSetVariant.mockClear()
     variantsMock.data = []
     variantsMock.byId = new Map()
     variantsMock.loading = false
@@ -138,14 +167,27 @@ describe('VariantDetail', () => {
     expect(screen.getByText('Developer audience')).toBeInTheDocument()
     expect(screen.getByText('audience: "alpha", locale: "en-US"')).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Edit variant'})).toBeInTheDocument()
+    expect(screen.getByTestId('pin-variant-button')).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Back to variants'})).toBeInTheDocument()
-    expect(screen.getByText('Version')).toBeInTheDocument()
+    expect(screen.getByText('Bundle')).toBeInTheDocument()
     expect(screen.getByText('Type')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search documents')).toBeInTheDocument()
     expect(screen.getByText('Edited')).toBeInTheDocument()
     expect(screen.getByText('No documents in this variant')).toBeInTheDocument()
     expect(screen.getByText(/^Created/)).toBeInTheDocument()
     expect(screen.getByTestId('variant-detail-footer-actions')).toBeInTheDocument()
+  })
+
+  it('pins a variant from the detail page', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    await user.click(screen.getByTestId('pin-variant-button'))
+
+    expect(mockedSetVariant).toHaveBeenCalledWith(variantAlphaAudience)
   })
 
   it('opens the edit dialog with existing variant values', async () => {

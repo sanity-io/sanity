@@ -1,4 +1,4 @@
-import {UserIcon} from '@sanity/icons'
+import {UserIcon} from '@sanity/icons/User'
 import {
   Badge,
   Box,

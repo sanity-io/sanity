@@ -13,11 +13,14 @@ import {
 import {
   isPortableTextSpan,
   isPortableTextTextBlock,
+  type Path,
   type PortableTextBlock,
   type PortableTextTextBlock,
 } from '@sanity/types'
+import * as PathUtils from '@sanity/util/paths'
 
-import {isTextSelectionComment} from '../../helpers'
+import {getValueAtPath} from '../../../field'
+import {isTextSelectionComment, parseCommentFieldPath} from '../../helpers'
 import {type CommentDocument, type CommentsTextSelectionItem} from '../../types'
 
 // This must be set high to avoid false positives
@@ -57,6 +60,13 @@ const EMPTY_ARRAY: [] = []
 export interface BuildCommentsRangeDecorationsProps {
   value: PortableTextBlock[] | undefined
   comments: CommentDocument[]
+  /**
+   * Document value the stored `field` paths resolve against. Falls back to a
+   * top-level `value.find` on the editor slice when absent.
+   */
+  documentValue?: unknown
+  /** The editor's own document path. */
+  basePath?: Path
 }
 
 /**
@@ -75,7 +85,7 @@ export interface BuildCommentsRangeDecorationsResultItem {
 export function buildRangeDecorationSelectionsFromComments(
   props: BuildCommentsRangeDecorationsProps,
 ): BuildCommentsRangeDecorationsResultItem[] {
-  const {value, comments} = props
+  const {value, comments, documentValue, basePath} = props
 
   if (!value || value.length === 0) return EMPTY_ARRAY
 
@@ -83,8 +93,26 @@ export function buildRangeDecorationSelectionsFromComments(
   const decorators: BuildCommentsRangeDecorationsResultItem[] = []
 
   textSelections.forEach((comment) => {
+    let relative: Path = []
+    if (documentValue !== undefined && basePath) {
+      const fieldPath = parseCommentFieldPath(comment.target.path?.field)
+      if (!fieldPath) {
+        // A comment without a parseable `field` cannot resolve to a block.
+        return
+      }
+      if (!PathUtils.startsWith(basePath, fieldPath)) return
+      relative = fieldPath.slice(basePath.length)
+    }
+
     comment.target.path?.selection?.value.forEach((selectionMember) => {
-      const matchedBlock = value.find((block) => block._key === selectionMember._key)
+      const matchedBlock =
+        documentValue !== undefined && basePath
+          ? (getValueAtPath(documentValue, [
+              ...basePath,
+              ...relative,
+              {_key: selectionMember._key},
+            ]) as PortableTextBlock | undefined)
+          : value.find((block) => block._key === selectionMember._key)
       if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
         return
       }
@@ -149,6 +177,7 @@ export function buildRangeDecorationSelectionsFromComments(
           selection: {
             anchor: {
               path: [
+                ...relative,
                 {_key: matchedBlock._key},
                 'children',
                 {_key: matchedBlock.children[childIndexAnchor]._key},
@@ -157,6 +186,7 @@ export function buildRangeDecorationSelectionsFromComments(
             },
             focus: {
               path: [
+                ...relative,
                 {_key: matchedBlock._key},
                 'children',
                 {_key: matchedBlock.children[childIndexFocus]._key},

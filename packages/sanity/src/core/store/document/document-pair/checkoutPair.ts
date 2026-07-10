@@ -9,6 +9,7 @@ import {type SanityDocument} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
 import {defer, EMPTY, from, merge, type Observable, timer} from 'rxjs'
 import {
+  catchError,
   filter,
   map,
   mergeMap,
@@ -21,6 +22,7 @@ import {
   withLatestFrom,
 } from 'rxjs/operators'
 
+import {isInvalidSessionError} from '../../../util/apiErrors'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 import {
   type BufferedDocumentEvent,
@@ -220,6 +222,27 @@ function commitMutations(
   })
 }
 
+/**
+ * The 4xx statuses we positively know are terminal for a commit: resubmitting
+ * the same mutation can never succeed, so the buffered edits are cancelled
+ * (rejected + reset to server HEAD) instead of retried. Opt-in by explicit
+ * status rather than a blanket 4xx rule, because the buckets have opposite
+ * failure modes: wrongly retrying a terminal error leaves the document
+ * visibly stalled with the edits preserved (recoverable), while wrongly
+ * cancelling a transient error silently destroys the user's work. Statuses
+ * not listed here — including transient 4xx like 408/429 and any 4xx we
+ * haven't classified — take the conservative retry path.
+ *
+ * 401 is terminal only for resource-level denials (e.g. a missing grant —
+ * some endpoints answer those with 401, not 403). A 401 tagged as an invalid
+ * session (`SIO-401-AEX` expired, `SIO-401-ANF` not found) is carved out
+ * below: it says nothing about the mutation itself, and re-authenticating
+ * can make the retry succeed, so the buffered edits must be preserved
+ * rather than wiped mid-edit. The session itself is handled separately by
+ * the force-logout flow.
+ */
+const TERMINAL_COMMIT_STATUSES = new Set([400, 401, 402, 403, 404, 409, 410, 412, 413, 422])
+
 function submitCommitRequest(
   client: SanityClient,
   idPair: IdPair,
@@ -227,19 +250,43 @@ function submitCommitRequest(
 ): Observable<MultipleActionResult | MutationResult> {
   return from(commitActions(client, idPair, request.mutation.params)).pipe(
     tap({
-      error: (error) => {
-        const isBadRequest =
-          'statusCode' in error &&
-          typeof error.statusCode === 'number' &&
-          error.statusCode >= 400 &&
-          error.statusCode <= 500
-        if (isBadRequest) {
-          request.cancel(error)
-        } else {
-          request.failure(error)
-        }
-      },
       next: () => request.success(),
+    }),
+    // A failed commit is reported to the mutator via `request.cancel` /
+    // `request.failure` (which rejects the corresponding commit promise so
+    // the buffered document can retry/rebase on reconnect). After that, we
+    // must NOT let the error propagate down this observable: it feeds
+    // `commits$` → `combinedEvents` → the document `events` stream, and an
+    // errored events stream is rethrown by `useObservable` (react-rx) when
+    // `useEditState` reads it during render, crashing the document pane.
+    // Complete instead — the failure has already been routed through its
+    // proper channel.
+    catchError((error) => {
+      // A known-terminal client error cancels: the buffered mutations can't
+      // succeed by retrying, so the commit is rejected and the buffer reset
+      // to server HEAD (see TERMINAL_COMMIT_STATUSES for the rationale).
+      // Everything else — 5xx, transient 4xx (408/429), unclassified 4xx,
+      // session-expiry 401s, network errors — fails, so the mutator keeps
+      // the buffer and retries with backoff.
+      // `error` can be any thrown value — guard before using `in`, which
+      // throws on primitives.
+      const statusCode =
+        typeof error === 'object' &&
+        error !== null &&
+        'statusCode' in error &&
+        typeof error.statusCode === 'number'
+          ? error.statusCode
+          : undefined
+      if (
+        statusCode !== undefined &&
+        TERMINAL_COMMIT_STATUSES.has(statusCode) &&
+        !isInvalidSessionError(error)
+      ) {
+        request.cancel(error)
+      } else {
+        request.failure(error)
+      }
+      return EMPTY
     }),
   )
 }
@@ -288,10 +335,15 @@ export function checkoutPair(
     onSlowCommit,
     onReportMutationPerformance,
     onDocumentRebase,
+    snapshotFetchErrorHandler,
     tag,
   } = options
 
-  const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
+  const listenerEvents$ = getPairListener(client, idPair, {
+    onSyncErrorRecovery,
+    tag,
+    snapshotFetchErrorHandler,
+  }).pipe(share())
 
   const connectionChangeEvents$ = listenerEvents$.pipe(
     filter((ev) => ev.type === 'reconnect' || ev.type === 'welcome' || ev.type === 'welcomeback'),
@@ -348,6 +400,10 @@ export function checkoutPair(
 
   // Each new commit request restarts the timer via switchMap.
   // The timer is cancelled when the commit succeeds or pending mutations resolve.
+  // Note: a *failed* commit no longer emits on `commits$` (it completes via
+  // `catchError` in `submitCommitRequest`), so `commitResolved$` does not fire
+  // for it — a commit that fails after SLOW_COMMIT_TIMEOUT_MS still triggers
+  // `onSlowCommit`. That's intentional: it was slow, and it's now failing.
   const slowCommitWarning$ = onSlowCommit
     ? commitRequests$.pipe(
         switchMap(() => timer(SLOW_COMMIT_TIMEOUT_MS).pipe(takeUntil(commitResolved$))),

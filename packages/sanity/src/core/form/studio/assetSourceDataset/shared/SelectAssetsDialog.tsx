@@ -1,6 +1,7 @@
-import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
+import {DownloadIcon} from '@sanity/icons/Download'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import uniqueId from 'lodash-es/uniqueId.js'
 import {
   type ForwardedRef,
@@ -108,6 +109,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
   const [_elementId] = useState(() => `default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
   const {t} = useTranslation()
+  const toast = useToast()
   const fetch$ = useRef<Subscription>(undefined)
   const [assets, setAssets] = useState<Asset[]>([])
   const [isLastPage, setIsLastPage] = useState(false)
@@ -129,14 +131,29 @@ const SelectAssetsComponent = function SelectAssetsComponent(
       if (typeof accept !== 'undefined') {
         fetch$.current = versionedClient.observable
           .fetch(buildQuery(start, end, assetTypeParam, accept), {}, {tag})
-          .subscribe((result) => {
-            setIsLastPage(result.length < PER_PAGE)
-            setAssets((prevState) => prevState.concat(result))
-            setIsLoading(false)
+          .subscribe({
+            next: (result) => {
+              setIsLastPage(result.length < PER_PAGE)
+              setAssets((prevState) => prevState.concat(result))
+              setIsLoading(false)
+            },
+            error: (err) => {
+              // Without this the dialog would spin forever (and the error
+              // would surface as an unhandled rxjs error).
+              console.error(err)
+              setIsLoading(false)
+              // Roll back the page that failed to load so the next "Load more"
+              // retries it instead of skipping ahead and leaving a gap.
+              currentPageNumber.current = pageNumber > 0 ? pageNumber - 1 : 0
+              toast.push({
+                status: 'error',
+                title: t('asset-source.dialog.load-error'),
+              })
+            },
           })
       }
     },
-    [assetType, accept, versionedClient],
+    [assetType, accept, versionedClient, toast, t],
   )
 
   const handleDeleteFinished = useCallback(

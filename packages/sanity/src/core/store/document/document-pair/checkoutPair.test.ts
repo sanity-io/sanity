@@ -1,5 +1,5 @@
-import {type SanityClient} from '@sanity/client'
-import {merge, NEVER, of, Subject} from 'rxjs'
+import {ClientError, type SanityClient} from '@sanity/client'
+import {merge, NEVER, of, type Observable, Subject, throwError} from 'rxjs'
 import {delay} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
@@ -11,11 +11,7 @@ const mockedActionRequest = vi.fn(() => of({}))
 const client = {
   observable: {
     listen: () => of({type: 'welcome'}).pipe(delay(0)),
-    getDocuments: (ids: string[]) =>
-      of([
-        {_id: ids[0], _type: 'any', _rev: 'any'},
-        {_id: ids[1], _type: 'any', _rev: 'any'},
-      ]),
+    getDocuments: (ids: string[]) => of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
     action: mockedActionRequest,
   },
   dataRequest: mockedDataRequest,
@@ -164,6 +160,444 @@ describe('checkoutPair -- server actions', () => {
       },
     )
 
+    sub.unsubscribe()
+  })
+
+  test('a failed commit does not error the events stream', async () => {
+    // Regression: a network error committing edits used to propagate
+    // through `commits$` → the document `events` stream, which
+    // `useEditState` rethrows during render — crashing the document pane.
+    // The failure must instead be reported to the mutator (so it can
+    // retry/rebase) while the events stream stays alive.
+    const networkError = Object.assign(
+      new Error('Request error while attempting to reach https://example.api.sanity.io'),
+      {isNetworkError: true},
+    )
+    // The commit's action request errors (simulating a network failure).
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => networkError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+
+    let streamErrored = false
+    const sub = combined.subscribe({error: () => (streamErrored = true)})
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    draft.mutate(draft.patch([{set: {title: 'new title'}}]))
+    draft.commit()
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    // The events stream must survive the failed commit.
+    expect(streamErrored).toBe(false)
+
+    sub.unsubscribe()
+  })
+})
+
+describe('checkoutPair -- failed commit routing', () => {
+  // These tests assert that a failed commit is ROUTED to the correct mutator
+  // channel (`request.failure` → retry, or `request.cancel` → terminal reset),
+  // not merely that the events stream survives. The routing is asserted via
+  // black-box, observable behavior of the public `checkoutPair` return:
+  //
+  //  - failure/retry path: the BufferedDocument re-stages the commit and, after
+  //    a backoff, invokes the commit handler AGAIN with the SAME mutation. We
+  //    observe this as a second call to the action/dataRequest mock, which
+  //    proves the buffered mutation was retained (not silently dropped).
+  //    Consistency also stays `false` (still unsynced).
+  //  - cancel/terminal path: the BufferedDocument rejects the commit, clears the
+  //    buffer, and resets to server HEAD, which flips `consistency$` back to
+  //    `true`. It does NOT retry, so the action mock is never called a second
+  //    time.
+  //
+  // Regression guard: if a future refactor returned EMPTY without routing (or
+  // inverted the 4xx/5xx branch), the retry test would see no second action
+  // call and the cancel test would see consistency stuck at `false` / a spurious
+  // retry — both would fail. The first retry backoff is `commit.tries * 1000`ms
+  // = 1000ms (see BufferedDocument._cycleCommitter).
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  function collectConsistency(consistency$: Observable<boolean>) {
+    const values: boolean[] = []
+    const sub = consistency$.subscribe((v) => values.push(v))
+    return {values, sub}
+  }
+
+  test('a 500 (server error) commit failure is retried, not cancelled — the mutation is retained and re-attempted', async () => {
+    const serverError = Object.assign(new Error('Internal Server Error'), {statusCode: 500})
+
+    // Only the FIRST commit attempt fails; the retry uses the default mock
+    // (`of({})`) so the second attempt succeeds. This proves the mutation was
+    // re-attempted (the mock is invoked a second time with the same payload).
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => serverError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+
+    let streamErrored = false
+    const sub = combined.subscribe({error: () => (streamErrored = true)})
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'new title'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // First attempt happened and failed.
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    // Failure path: still unsynced (no reset back to consistent).
+    expect(consistency.values.at(-1)).toBe(false)
+
+    // Advance past the first retry backoff (1000ms). The mutator re-stages the
+    // commit and calls the commit handler again with the SAME mutation.
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    // The retried commit carries the same patch payload — proving the buffered
+    // mutation was retained and re-attempted, not dropped.
+    expect(mockedActionRequest.mock.calls[1][0]).toEqual([
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'draftId',
+        publishedId: 'publishedId',
+        patch: {set: {title: 'new title'}},
+      },
+    ])
+
+    // The events stream must survive the failed commit.
+    expect(streamErrored).toBe(false)
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
+  test('a network commit failure is retried, not cancelled', async () => {
+    // Network errors have no statusCode → transient → failure/retry path.
+    const networkError = Object.assign(new Error('Request error'), {isNetworkError: true})
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => networkError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'network retry'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    // Still unsynced — the failure path does not reset to consistent.
+    expect(consistency.values.at(-1)).toBe(false)
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    // Re-attempted with the same mutation → routed to failure, not cancel.
+    expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    expect(mockedActionRequest.mock.calls[1][0]).toEqual([
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'draftId',
+        publishedId: 'publishedId',
+        patch: {set: {title: 'network retry'}},
+      },
+    ])
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
+  test('a 400 (client error) commit failure is cancelled, not retried — buffer resets to server HEAD', async () => {
+    // A 400 is a terminal client error: the buffered mutation can never succeed,
+    // so it is cancelled (rejects the commit, resets to HEAD → consistent again)
+    // rather than retried indefinitely.
+    const clientError = Object.assign(new Error('Bad Request'), {statusCode: 400})
+    // Every attempt would fail — but if routing is correct, there is only ONE.
+    mockedActionRequest.mockImplementation(() => throwError(() => clientError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+
+    let streamErrored = false
+    const sub = combined.subscribe({error: () => (streamErrored = true)})
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'bad request'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+
+    // Cancel path: the mutator resets to server HEAD, flipping consistency back
+    // to `true`. (Contrast with the failure path, where it stays `false`.)
+    expect(consistency.values.at(-1)).toBe(true)
+
+    // Advance well past any retry backoff — a cancelled commit must NOT be
+    // retried, so the action mock is never called a second time.
+    await vi.advanceTimersByTimeAsync(60_000)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+
+    // The events stream must survive the failed commit.
+    expect(streamErrored).toBe(false)
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
+  test('a 409 (conflict) commit failure is cancelled, not retried', async () => {
+    // 409 is in the terminal allowlist → cancel.
+    const conflictError = Object.assign(new Error('Conflict'), {statusCode: 409})
+    mockedActionRequest.mockImplementation(() => throwError(() => conflictError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'conflict'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    // Reset to HEAD → consistent again.
+    expect(consistency.values.at(-1)).toBe(true)
+
+    await vi.advanceTimersByTimeAsync(60_000)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
+  test('a 413 (payload too large) commit failure is cancelled, not retried', async () => {
+    // 413 is terminal: resubmitting the same oversized payload can never
+    // succeed, so retrying would stall the document forever. Cancel instead.
+    const tooLargeError = Object.assign(new Error('Payload Too Large'), {statusCode: 413})
+    mockedActionRequest.mockImplementation(() => throwError(() => tooLargeError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'way too big'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    // Cancel path: reset to server HEAD → consistent again.
+    expect(consistency.values.at(-1)).toBe(true)
+
+    // Terminal: never retried.
+    await vi.advanceTimersByTimeAsync(60_000)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
+  test('a 401 tagged as session expiry (SIO-401-AEX) is retried, not cancelled', async () => {
+    // A session-expiry 401 says nothing about the mutation itself — after
+    // re-authentication the same commit can succeed. The buffered edits must
+    // therefore be preserved and retried, not wiped to server HEAD mid-edit.
+    // (The session itself is handled by the force-logout flow, not here.)
+    const sessionExpiredError = new ClientError({
+      statusCode: 401,
+      headers: {},
+      body: {error: 'Unauthorized', errorCode: 'SIO-401-AEX'},
+      url: 'https://abc123.api.sanity.io/v1/data/actions/production',
+      method: 'POST',
+    } as never)
+    // Only the first attempt fails; the retry succeeds via the default mock —
+    // as it would after the user re-authenticates.
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => sessionExpiredError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'session expired'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    // Failure path: still unsynced, buffer retained.
+    expect(consistency.values.at(-1)).toBe(false)
+
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    expect(mockedActionRequest.mock.calls[1][0]).toEqual([
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'draftId',
+        publishedId: 'publishedId',
+        patch: {set: {title: 'session expired'}},
+      },
+    ])
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
+  test('a 401 without the session-expiry tag is cancelled, not retried', async () => {
+    // A plain 401 is a resource-level denial (e.g. missing grant — some
+    // endpoints answer those with 401, not 403): terminal for this user, so
+    // retrying can never succeed. Guards the session-expiry carve-out against
+    // widening into "all 401s retry".
+    const deniedError = new ClientError({
+      statusCode: 401,
+      headers: {},
+      body: {error: 'Unauthorized'},
+      url: 'https://abc123.api.sanity.io/v1/data/actions/production',
+      method: 'POST',
+    } as never)
+    mockedActionRequest.mockImplementation(() => throwError(() => deniedError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'denied'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    // Cancel path: reset to server HEAD → consistent again.
+    expect(consistency.values.at(-1)).toBe(true)
+
+    // Terminal: never retried.
+    await vi.advanceTimersByTimeAsync(60_000)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
+  test('a 408 (request timeout) commit failure is retried, not cancelled', async () => {
+    // 408 is a 4xx but transient — a timeout says nothing about the mutation
+    // itself, so the buffered edits must be retained and re-attempted. Guards
+    // the opt-in terminal set against regressing to a blanket 4xx rule.
+    const timeoutError = Object.assign(new Error('Request Timeout'), {statusCode: 408})
+    // Only the first attempt fails; the retry succeeds via the default mock.
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => timeoutError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'timed out'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    // Failure path: still unsynced, buffer retained.
+    expect(consistency.values.at(-1)).toBe(false)
+
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    expect(mockedActionRequest.mock.calls[1][0]).toEqual([
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'draftId',
+        publishedId: 'publishedId',
+        patch: {set: {title: 'timed out'}},
+      },
+    ])
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
+  test('an unclassified 4xx (418) commit failure is retried, not cancelled — unknown codes take the conservative path', async () => {
+    // A 4xx we haven't explicitly classified as terminal must NOT discard the
+    // user's edits: wrongly retrying leaves a visibly stalled document with
+    // the buffer intact (recoverable), wrongly cancelling silently destroys
+    // work. Unknown codes therefore default to retry.
+    const teapotError = Object.assign(new Error("I'm a teapot"), {statusCode: 418})
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => teapotError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'unknown 4xx'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    expect(consistency.values.at(-1)).toBe(false)
+
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
+  test('a 429 (too many requests) commit failure is retried, not cancelled — transient 4xx stays out of the terminal allowlist', async () => {
+    // 429 is in the 4xx range but not in the terminal allowlist: it is
+    // transient (rate limiting) and must retry.
+    const rateLimitError = Object.assign(new Error('Too Many Requests'), {statusCode: 429})
+    // Only the first attempt fails; the retry succeeds via the default mock.
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => rateLimitError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'rate limited'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    // Failure path: not reset to consistent.
+    expect(consistency.values.at(-1)).toBe(false)
+
+    // If 429 were (incorrectly) treated as terminal, it would cancel and never
+    // retry. Correct behavior: retry after backoff.
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    expect(mockedActionRequest.mock.calls[1][0]).toEqual([
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'draftId',
+        publishedId: 'publishedId',
+        patch: {set: {title: 'rate limited'}},
+      },
+    ])
+
+    consistency.sub.unsubscribe()
     sub.unsubscribe()
   })
 })
@@ -2053,8 +2487,6 @@ describe('checkoutPair -- document rebase telemetry', () => {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
         action: vi.fn(() => commitSubject),
-        getDocuments: (ids: string[]) =>
-          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
       },
     }
     testClient.withConfig = vi.fn(() => testClient)
@@ -2102,8 +2534,6 @@ describe('checkoutPair -- version documents', () => {
       ...client,
       observable: {
         ...client.observable,
-        getDocuments: (ids: string[]) =>
-          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
         action: mockedActionRequest,
       },
       withConfig: vi.fn(() => versionClient),
@@ -2164,8 +2594,6 @@ describe('checkoutPair -- version documents', () => {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
         action: vi.fn(() => commitSubject),
-        getDocuments: (ids: string[]) =>
-          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,
@@ -2230,8 +2658,6 @@ describe('checkoutPair -- version documents', () => {
         ...client.observable,
         listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
         action: vi.fn(() => commitSubject),
-        getDocuments: (ids: string[]) =>
-          of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),
       },
       getUrl: (url: string) => url,
       getDataUrl: (path: string) => `/data/${path}`,

@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.4.0](https://github.com/sanity-io/sanity/compare/v6.3.0...v6.4.0) (2026-07-07)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^3.7.6 ([#13384](https://github.com/sanity-io/sanity/issues/13384)) ([260a282](https://github.com/sanity-io/sanity/commit/260a282c2dc38d88e8d03e1f89b677aca765f173))
+* **deps:** update dependency @sanity/icons to v5 ([#13409](https://github.com/sanity-io/sanity/issues/13409)) ([f788296](https://github.com/sanity-io/sanity/commit/f78829648671e05a48c0329ff47abe7dbc457d64))
+* **deps:** update dependency react-rx to ^4.2.3 ([#13405](https://github.com/sanity-io/sanity/issues/13405)) ([10d1a5a](https://github.com/sanity-io/sanity/commit/10d1a5a49647421567b49c7a7bcf2c7813674bfc))
+
+### Performance Improvements
+
+* **sanity:** debarrel @sanity/icons imports ([#13393](https://github.com/sanity-io/sanity/issues/13393)) ([2e250dc](https://github.com/sanity-io/sanity/commit/2e250dc720aa3d49312c79a03bb5697ef4e08fe8))
+## [6.3.0](https://github.com/sanity-io/sanity/compare/v6.2.0...v6.3.0) (2026-06-30)
+
+### Features
+
+* **core:** re-add bundle.css export via conditional exports ([#13322](https://github.com/sanity-io/sanity/issues/13322)) ([d0ce99f](https://github.com/sanity-io/sanity/commit/d0ce99f46b715c0cd6173046a1e3a3f730657128))
+## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#13250](https://github.com/sanity-io/sanity/issues/13250)) ([e11d6ae](https://github.com/sanity-io/sanity/commit/e11d6ae64ceeba8bd176bbdb3169db7bc8634185))
+* **deps:** Update CodeMirror to ^6.43.1 ([#13184](https://github.com/sanity-io/sanity/issues/13184)) ([4f5443d](https://github.com/sanity-io/sanity/commit/4f5443d1ed5b3d84c7fdf8f28afad966e63e00cc))
 ## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
 
 ### ⚠ BREAKING CHANGES

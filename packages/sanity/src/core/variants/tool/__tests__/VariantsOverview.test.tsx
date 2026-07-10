@@ -11,6 +11,18 @@ import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {VariantsOverview} from '../overview/VariantsOverview'
 import {getVariantId} from '../util'
 
+const mockedSetVariant = vi.fn()
+
+vi.mock('../../../perspective/useSetVariant', () => ({
+  useSetVariant: vi.fn(() => mockedSetVariant),
+}))
+
+vi.mock('../../../perspective/usePerspective', () => ({
+  usePerspective: vi.fn(() => ({
+    selectedVariant: undefined,
+  })),
+}))
+
 const mockNavigate = vi.fn()
 
 const routerState = vi.hoisted(() => ({
@@ -28,6 +40,12 @@ const variantOperationsMock = vi.hoisted(() => ({
   createVariant: vi.fn(),
   updateVariant: vi.fn(),
   deleteVariant: vi.fn(),
+}))
+
+const documentCountsMock = vi.hoisted(() => ({
+  data: null as Record<string, number> | null,
+  loading: true,
+  error: null as Error | null,
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -72,6 +90,14 @@ vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../../hooks/useVariantsDocumentCounts', () => ({
+  useVariantsDocumentCounts: vi.fn(() => ({
+    data: documentCountsMock.data,
+    loading: documentCountsMock.loading,
+    error: documentCountsMock.error,
+  })),
+}))
+
 setupVirtualListEnv()
 
 describe('VariantsOverview', () => {
@@ -81,7 +107,11 @@ describe('VariantsOverview', () => {
     variantsMock.loading = false
     variantsMock.error = undefined
     routerState.variantId = undefined
+    documentCountsMock.data = null
+    documentCountsMock.loading = true
+    documentCountsMock.error = null
     mockNavigate.mockClear()
+    mockedSetVariant.mockClear()
     variantOperationsMock.createVariant.mockReset()
     variantOperationsMock.deleteVariant.mockReset()
     variantOperationsMock.createVariant.mockImplementation(
@@ -139,7 +169,45 @@ describe('VariantsOverview', () => {
 
     expect(screen.getByText('Alpha audience')).toBeInTheDocument()
     expect(screen.getByText('Norwegian market')).toBeInTheDocument()
-    expect(screen.getAllByText('0')).toHaveLength(2)
+  })
+
+  it('renders live document counts for each variant', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    documentCountsMock.data = {
+      [variantAlphaAudience._id]: 2,
+      [variantNorwegianMarket._id]: 0,
+    }
+    documentCountsMock.loading = false
+
+    await renderOverview()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    const rows = screen.getAllByTestId('table-row')
+    const alphaRow = rows.find((row) => within(row).queryByText('Alpha audience'))
+    const norwegianRow = rows.find((row) => within(row).queryByText('Norwegian market'))
+
+    expect(alphaRow).toBeDefined()
+    expect(norwegianRow).toBeDefined()
+    expect(within(alphaRow!).getByText('2')).toBeInTheDocument()
+    expect(within(norwegianRow!).getByText('0')).toBeInTheDocument()
+  })
+
+  it('renders a fallback in the documents column when counts fail to load', async () => {
+    setVariants([variantAlphaAudience])
+    documentCountsMock.data = null
+    documentCountsMock.loading = false
+    documentCountsMock.error = new Error('network')
+
+    await renderOverview()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(within(screen.getAllByTestId('table-row')[0]!).getByText('-')).toBeInTheDocument()
   })
 
   it('filters variants when searching by title or condition', async () => {
@@ -185,8 +253,25 @@ describe('VariantsOverview', () => {
     })
   })
 
+  it('pins a variant from the overview table', async () => {
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
+
+    await user.click(screen.getByTestId('pin-variant-button'))
+
+    expect(mockedSetVariant).toHaveBeenCalledWith(
+      expect.objectContaining({_id: variantAlphaAudience._id}),
+    )
+  })
+
   it('deletes a variant from the row actions menu', async () => {
     setVariants([variantAlphaAudience])
+    documentCountsMock.data = {[variantAlphaAudience._id]: 0}
+    documentCountsMock.loading = false
     const user = userEvent.setup()
 
     await renderOverview()
@@ -201,6 +286,32 @@ describe('VariantsOverview', () => {
 
     await user.click(menuButton)
     await user.click(await screen.findByText('Delete variant'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
+    })
+  })
+
+  it('does not delete a variant from the row actions menu when it has documents', async () => {
+    setVariants([variantAlphaAudience])
+    documentCountsMock.data = {[variantAlphaAudience._id]: 2}
+    documentCountsMock.loading = false
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
+
+    const menuButton = screen
+      .getAllByRole('button')
+      .find((button) => button.id === 'variant-actions-alpha-audience')
+
+    if (!menuButton) throw new Error('Variant actions menu button not found')
+
+    await user.click(menuButton)
+    await user.click(await screen.findByText('Delete variant'))
+
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
   })
 
   it('shows empty state when there are no variants', async () => {

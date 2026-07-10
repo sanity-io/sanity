@@ -29,5 +29,6 @@ export function isCookielessCompatibleLoginMethod(
   loginMethod: LoginMethod,
 ): loginMethod is CookielessCompatibleLoginMethod {
   const cookielessCompatibleLoginMethods = ['dual', 'token']
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   return cookielessCompatibleLoginMethods.includes(loginMethod as CookielessCompatibleLoginMethod)
 }

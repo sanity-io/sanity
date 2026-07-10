@@ -1,4 +1,3 @@
-// oxlint-disable react-hooks/rules-of-hooks
 import {Schema} from '@sanity/schema'
 import {type ObjectSchemaType, defineArrayMember, defineField, defineType} from '@sanity/types'
 import {toString} from '@sanity/util/paths'
@@ -185,8 +184,8 @@ const it = baseIt.extend<{
   schema: ReturnType<typeof Schema.compile>
 }>({
   // oxlint-disable-next-line no-empty-pattern
-  prepareFormState: async ({}, use) => {
-    await use(
+  prepareFormState: async ({}, _use) => {
+    await _use(
       createPrepareFormState({
         decorators: {
           prepareArrayOfObjectsInputState: vi.fn,
@@ -201,8 +200,8 @@ const it = baseIt.extend<{
     )
   },
   // oxlint-disable-next-line no-empty-pattern
-  schema: async ({}, use) => {
-    await use(Schema.compile(schemaDefinition))
+  schema: async ({}, _use) => {
+    await _use(Schema.compile(schemaDefinition))
   },
 })
 

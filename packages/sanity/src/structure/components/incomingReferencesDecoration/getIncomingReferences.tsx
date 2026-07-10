@@ -1,4 +1,13 @@
-import {distinctUntilChanged, filter, map, type Observable, of, startWith, switchMap} from 'rxjs'
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  map,
+  type Observable,
+  of,
+  startWith,
+  switchMap,
+} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
   type DocumentPreviewStore,
@@ -111,6 +120,16 @@ export function getIncomingReferences({
 
           map((documents) => ({documents, loading: false})),
           startWith(INITIAL_STATE),
+          // Catch inside the `switchMap` so a failure of this inner stream
+          // degrades to an empty list without completing the outer observable.
+          // Consumers render this via `useObservable`, which rethrows stream
+          // errors during render and would crash the document pane. Keeping the
+          // outer stream alive means a later `filterResolver` emission can
+          // re-subscribe and recover from a transient error.
+          catchError((err) => {
+            console.error(new Error('Failed to load incoming references', {cause: err}))
+            return of({documents: [], loading: false})
+          }),
         )
     }),
   )

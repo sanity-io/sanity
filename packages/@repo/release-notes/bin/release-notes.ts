@@ -1,9 +1,14 @@
 #!/usr/bin/env -S pnpm tsx
+import {object, or} from '@optique/core/constructs'
+import {message, type Message} from '@optique/core/message'
+import {optional, withDefault} from '@optique/core/modifiers'
+import {command, constant, negatableFlag, option} from '@optique/core/primitives'
+import {choice, integer, string} from '@optique/core/valueparser'
+import {run} from '@optique/run'
 import {readEnv} from '@repo/utils'
 import {type DraftId, type PublishedId, type VersionId} from '@sanity/id-utils'
 import {type Commit, type CommitBase, type CommitMeta} from 'conventional-commits-parser'
 import {type pMapSkip} from 'p-map'
-import yargs from 'yargs'
 
 import {bump} from '../src/commands/bump'
 import {commentPrAfterMerge} from '../src/commands/commentPrAfterMerge'
@@ -14,232 +19,192 @@ import {writeChangelogFiles} from '../src/commands/writeChangelogFiles'
 import {writeCommitCheck} from '../src/commands/writeCommitCheck'
 import {writePrChecks} from '../src/commands/writePrChecks'
 import {type CommitAuthor, type KnownEnvVar, type PullRequest} from '../src/types'
+import {isBreakingChange} from '../src/utils/isBreakingChange'
 import {stripPr} from '../src/utils/stripPrNumber'
 
 function getAdminStudioUrl(): string {
   return readEnv<KnownEnvVar>('RELEASE_NOTES_ADMIN_STUDIO_URL')
 }
 
-await yargs(process.argv.slice(2))
-  .strict()
-  .usage('$0 <command>')
-  .command({
-    command: 'bump',
-    describe: 'Bump version for all monorepo packages based on conventional commits',
-    builder: (cmd) =>
-      cmd.options({
-        preid: {
-          description: 'Prerelease identifier (e.g. next, canary, next-major)',
-          type: 'string',
-        },
-        suffixType: {
-          description: 'Prerelease suffix strategy: timestamp (default) or commit count',
-          type: 'string',
-          choices: ['timestamp', 'commits-ahead'] as const,
-          default: 'timestamp' as const,
-        },
-        buildMetadata: {
-          description: 'Append +<commitHash> build metadata to the version (default: true)',
-          type: 'boolean',
-          default: true,
-        },
-        dryRun: {
-          description: 'Print the new version without writing files',
-          type: 'boolean',
-        },
-      }),
-    handler: async (args) => {
-      try {
-        await bump({
-          preid: args.preid,
-          suffixType: args.suffixType,
-          buildMetadata: args.buildMetadata,
-          dryRun: args.dryRun,
-        })
-      } catch (error) {
-        console.error(error)
-        process.exit(1)
-      }
-    },
-  })
-  .command({
-    command: 'write-changelog-files',
-    describe: 'Write CHANGELOG.md entries to root and all public packages',
-    builder: (cmd) =>
-      cmd.version(false).options({
-        version: {
-          description: 'The version to generate the changelog entry for, e.g. 5.19.0',
-          type: 'string',
-          demandOption: true,
-        },
-        dryRun: {
-          description: 'Print changelog to stdout without writing files',
-          type: 'boolean',
-        },
-      }),
-    handler: async (args) => {
-      try {
-        await writeChangelogFiles({
-          version: args.version,
-          dryRun: args.dryRun,
-        })
-      } catch (error) {
-        console.error(error)
-        process.exit(1)
-      }
-    },
-  })
-  .command({
-    command: 'generate-changelog',
-    describe: 'Generate release note documents for release PR',
-    builder: (cmd) =>
-      cmd.options({
-        outputFormat: {
-          type: 'string',
-          demandOption: false,
-          description:
-            'Output format for changelog generation. Currently only `pr-description` supported.',
-          enum: [
-            // outputs PR summary description
-            'pr-description',
-          ],
-        },
-        baseVersion: {
-          description: 'Base version for changelog generation. Should be the previous version.',
-          type: 'string',
-          demandOption: true,
-        },
-        tentativeVersion: {
-          description: 'Tentative next version',
-          type: 'string',
-          demandOption: true,
-        },
-        dryRun: {
-          description: 'Dry run',
-          type: 'boolean',
-        },
-      }),
-    handler: async (args) => {
-      try {
-        const result = await createOrUpdateChangelogDocs({
-          baseVersion: args.baseVersion,
-          tentativeVersion: args.tentativeVersion,
-          dryRun: args.dryRun,
-        })
-        if (args.outputFormat === 'pr-description') {
-          console.log(
-            generateChangeLogSummary(
-              {tentativeVersion: args.tentativeVersion, baseVersion: args.baseVersion},
-              result,
-            ),
-          )
-        } else {
-          console.log(result)
-        }
-      } catch (error) {
-        console.error(error)
-        process.exit(1)
-      }
-    },
-  })
-  .command({
-    command: 'publish-releases',
-    describe: 'Publish pending sanity.io Changelog & github release from the given target version',
-    builder: (cmd) =>
-      cmd.options({
-        targetVersion: {
-          description: 'Version',
-          type: 'string',
-          demandOption: true,
-        },
-        dryRun: {
-          description: 'Dry run',
-          type: 'boolean',
-        },
-      }),
-    handler: async (args) => {
-      try {
-        await publishReleases({
-          targetVersion: args.targetVersion,
-          dryRun: Boolean(args.dryRun),
-        })
-        console.info('ℹ️ This was a dry run. Nothing has been released.')
-      } catch (error) {
-        console.error(error)
-        process.exit(1)
-      }
-    },
-  })
-  .command({
-    command: 'comment-pr-after-merge',
-    describe: 'Create a comment on the PR(s) associated with a commit',
-    builder: (cmd) =>
-      cmd.options({
-        commit: {
-          description: 'Version',
-          type: 'string',
-          demandOption: true,
-        },
-        baseVersion: {
-          description: 'Current base version. E.g. the current version in package.json',
-          type: 'string',
-          demandOption: true,
-        },
-      }),
-    handler: async (args) => {
-      try {
-        await commentPrAfterMerge({
-          baseVersion: args.baseVersion,
-          commit: args.commit,
-          adminStudioBaseUrl: getAdminStudioUrl(),
-        })
-      } catch (error) {
-        console.error(error)
-        process.exit(1)
-      }
-    },
-  })
-  .command({
-    command: 'status-check-prs',
-    describe: 'Update in-flight release status checks for all open PRs',
-    handler: () => writePrChecks().then(() => void 0),
-  })
-  .command({
-    command: 'draft-release-notes',
+const dryRun = (description: Message) => option('--dry-run', {description})
+const currentBaseVersion = option('--base-version', string(), {
+  description: message`Current base version. E.g. the current version in package.json`,
+})
 
-    describe: 'Draft release notes',
-    builder: (cmd) =>
-      cmd.options({
-        baseVersion: {
-          description: 'Current base version. E.g. the current version in package.json',
-          type: 'string',
-          demandOption: true,
-        },
+const parser = or(
+  command(
+    'bump',
+    object({
+      action: constant('bump'),
+      preid: optional(
+        option('--preid', string(), {
+          description: message`Prerelease identifier (e.g. next, canary, next-major)`,
+        }),
+      ),
+      suffixType: withDefault(
+        option('--suffix-type', choice(['timestamp', 'commits-ahead']), {
+          description: message`Prerelease suffix strategy`,
+        }),
+        'timestamp' as const,
+      ),
+      buildMetadata: withDefault(
+        negatableFlag(
+          {positive: '--build-metadata', negative: '--no-build-metadata'},
+          {description: message`Append +<commitHash> build metadata to the version`},
+        ),
+        true,
+      ),
+      dryRun: dryRun(message`Print the new version without writing files`),
+    }),
+    {description: message`Bump version for all monorepo packages based on conventional commits`},
+  ),
+  command(
+    'write-changelog-files',
+    object({
+      action: constant('write-changelog-files'),
+      version: option('--version', string(), {
+        description: message`The version to generate the changelog entry for, e.g. 5.19.0`,
       }),
-    handler: (args) => draftReleaseNotes({baseVersion: args.baseVersion}).then(() => void 0),
-  })
-  .command({
-    command: 'status-check-commit',
-    describe: 'Update in-flight release status checks for a single commit',
-    builder: (cmd) =>
-      cmd.options({
-        commit: {
-          description: 'Head commit to run check on',
-          type: 'string',
-          demandOption: true,
-        },
-        pr: {
-          description: 'Current pull request',
-          type: 'number',
-          demandOption: true,
-        },
+      dryRun: dryRun(message`Print changelog to stdout without writing files`),
+    }),
+    {description: message`Write CHANGELOG.md entries to root and all public packages`},
+  ),
+  command(
+    'generate-changelog',
+    object({
+      action: constant('generate-changelog'),
+      outputFormat: optional(
+        option('--output-format', choice(['pr-description']), {
+          description: message`Output format for changelog generation`,
+        }),
+      ),
+      baseVersion: option('--base-version', string(), {
+        description: message`Base version for changelog generation. Should be the previous version.`,
       }),
-    handler: (args) =>
-      writeCommitCheck({commit: args.commit, currentPrNumber: args.pr}).then(() => void 0),
-  })
-  .demandCommand(1, 'must provide a valid command')
-  .help('h')
-  .alias('h', 'help').argv
+      tentativeVersion: option('--tentative-version', string(), {
+        description: message`Tentative next version`,
+      }),
+      dryRun: dryRun(message`Run without creating or updating release note documents`),
+    }),
+    {description: message`Generate release note documents for release PR`},
+  ),
+  command(
+    'publish-releases',
+    object({
+      action: constant('publish-releases'),
+      targetVersion: option('--target-version', string(), {
+        description: message`Target version to publish releases for`,
+      }),
+      dryRun: dryRun(message`Run without publishing the changelog or GitHub release`),
+    }),
+    {
+      description: message`Publish pending sanity.io Changelog & github release from the given target version`,
+    },
+  ),
+  command(
+    'comment-pr-after-merge',
+    object({
+      action: constant('comment-pr-after-merge'),
+      commit: option('--commit', string(), {
+        description: message`Commit SHA to find the associated PR(s) for`,
+      }),
+      baseVersion: currentBaseVersion,
+    }),
+    {description: message`Create a comment on the PR(s) associated with a commit`},
+  ),
+  command('status-check-prs', object({action: constant('status-check-prs')}), {
+    description: message`Update in-flight release status checks for all open PRs`,
+  }),
+  command(
+    'draft-release-notes',
+    object({
+      action: constant('draft-release-notes'),
+      baseVersion: currentBaseVersion,
+    }),
+    {description: message`Draft release notes`},
+  ),
+  command(
+    'status-check-commit',
+    object({
+      action: constant('status-check-commit'),
+      commit: option('--commit', string(), {
+        description: message`Head commit to run check on`,
+      }),
+      pr: option('--pr', integer(), {
+        description: message`Current pull request`,
+      }),
+    }),
+    {description: message`Update in-flight release status checks for a single commit`},
+  ),
+)
+
+const args = run(parser, {
+  programName: 'release-notes',
+  help: {command: true, option: {names: ['-h', '--help']}},
+  aboveError: 'usage',
+  showDefault: true,
+  showChoices: true,
+})
+
+switch (args.action) {
+  case 'bump':
+    await bump({
+      preid: args.preid,
+      suffixType: args.suffixType,
+      buildMetadata: args.buildMetadata,
+      dryRun: args.dryRun,
+    })
+    break
+  case 'write-changelog-files':
+    await writeChangelogFiles({
+      version: args.version,
+      dryRun: args.dryRun,
+    })
+    break
+  case 'generate-changelog': {
+    const result = await createOrUpdateChangelogDocs({
+      baseVersion: args.baseVersion,
+      tentativeVersion: args.tentativeVersion,
+      dryRun: args.dryRun,
+    })
+    if (args.outputFormat === 'pr-description') {
+      console.log(
+        generateChangeLogSummary(
+          {tentativeVersion: args.tentativeVersion, baseVersion: args.baseVersion},
+          result,
+        ),
+      )
+    } else {
+      console.log(result)
+    }
+    break
+  }
+  case 'publish-releases':
+    await publishReleases({
+      targetVersion: args.targetVersion,
+      dryRun: args.dryRun,
+    })
+    if (args.dryRun) {
+      console.info('ℹ️ This was a dry run. Nothing has been released.')
+    }
+    break
+  case 'comment-pr-after-merge':
+    await commentPrAfterMerge({
+      baseVersion: args.baseVersion,
+      commit: args.commit,
+      adminStudioBaseUrl: getAdminStudioUrl(),
+    })
+    break
+  case 'status-check-prs':
+    await writePrChecks()
+    break
+  case 'draft-release-notes':
+    await draftReleaseNotes({baseVersion: args.baseVersion})
+    break
+  case 'status-check-commit':
+    await writeCommitCheck({commit: args.commit, currentPrNumber: args.pr})
+    break
+}
 
 type GenerateChangeLogResult = {
   success?: boolean
@@ -327,7 +292,9 @@ function formatEntry({
   releaseId: GenerateChangeLogResult['releaseId']
 }) {
   const entryKey = conventionalCommit.hash!.slice(0, 8)
-  const originalCommitMessage = stripPr(conventionalCommit.header || '', pr?.number)
+  const breakingMarker = isBreakingChange(conventionalCommit) ? '⚠️ ' : ''
+  const originalCommitMessage =
+    breakingMarker + stripPr(conventionalCommit.header || '', pr?.number)
   const entryPath = encodeURIComponent(`changelog[_key=="${entryKey}"]`)
   const changelogEntryUrl = `${getAdminStudioUrl()}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
 

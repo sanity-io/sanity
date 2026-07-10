@@ -1,9 +1,7 @@
-import {
-  ErrorOutlineIcon,
-  type IconComponent,
-  InfoOutlineIcon,
-  WarningOutlineIcon,
-} from '@sanity/icons'
+import {type IconComponent} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {
   type ObjectSchemaType,
   type Path,

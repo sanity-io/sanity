@@ -1,7 +1,7 @@
 /* oxlint-disable  no-restricted-imports */
 // The design of the Studio version menu item doesn't align with the limitations of the
 // 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
-import {LaunchIcon} from '@sanity/icons'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {
   Badge,
   Card,

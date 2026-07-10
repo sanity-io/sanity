@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
-import {DocumentsIcon, ImageIcon} from '@sanity/icons'
+import {DocumentsIcon} from '@sanity/icons/Documents'
+import {ImageIcon} from '@sanity/icons/Image'
 import {type AssetSource} from '@sanity/types'
 
 import {DatasetAssetSource} from './shared/DatasetAssetSource'

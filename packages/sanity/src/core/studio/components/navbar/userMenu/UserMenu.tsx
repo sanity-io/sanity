@@ -1,4 +1,4 @@
-import {LeaveIcon} from '@sanity/icons'
+import {LeaveIcon} from '@sanity/icons/Leave'
 import {
   Box,
   // oxlint-disable-next-line no-restricted-imports

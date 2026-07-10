@@ -37,6 +37,10 @@ function getModuleUrl({
   return `${MODULES_URL}/${packageName}/${tag}/^${minVersion.version}/t${timestamp}`
 }
 
+/**
+ * Resolves the version the module CDN will serve for the studio's import map URL on reload
+ * (the `packageVersion` of the app's module metadata)
+ */
 export const fetchLatestAutoUpdatingVersion = async (options: {
   packageName: string
   minVersion: SemVer
@@ -51,7 +55,13 @@ export const fetchLatestAutoUpdatingVersion = async (options: {
         accept: 'application/json',
       },
     })
-    return res.json().then((data): string => data.packageVersion)
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} ${res.statusText}`)
+    }
+    // `return await` (not bare `return`) so a JSON parse rejection is
+    // caught by this try/catch instead of escaping to the caller.
+    const data = await res.json()
+    return data.packageVersion as string
   } catch (err) {
     console.error(
       new Error(`Failed to fetch version for package "${packageName}" (using appId=${appId})`, {
@@ -60,6 +70,13 @@ export const fetchLatestAutoUpdatingVersion = async (options: {
     )
     return undefined
   }
+}
+
+export interface LatestVersionInfo {
+  /** The latest version published to the tag, ignoring the version range — for messaging only, a reload may not serve it */
+  latest?: string
+  /** The version the module CDN will serve for this URL (resolved within the version range) */
+  packageVersion: string
 }
 
 export const fetchLatestAvailableVersionForPackage = async (options: {
@@ -75,7 +92,16 @@ export const fetchLatestAvailableVersionForPackage = async (options: {
         accept: 'application/json',
       },
     })
-    return res.json().then((data): string => data.latest)
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} ${res.statusText}`)
+    }
+    // `return await` (not bare `return`) so a JSON parse rejection is
+    // caught by this try/catch instead of escaping to the caller.
+    const data = await res.json()
+    return {
+      latest: data.latest as string,
+      packageVersion: data.packageVersion as string,
+    }
   } catch (err) {
     console.error(
       `Failed to fetch version for package (using tag=${tag})`,

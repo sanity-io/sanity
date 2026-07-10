@@ -1,4 +1,4 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {Box, Flex, Heading} from '@sanity/ui'
 import {styled} from 'styled-components'
 

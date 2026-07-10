@@ -1,8 +1,15 @@
 import {firstValueFrom, from, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
-import {type Message} from './proxy'
-import {dropMutations, duplicateMutations, randomLatency, sendReset} from './scenarios'
+import {type Message, type ProxyRequest, type ProxyResponse} from './proxy'
+import {
+  dropMutations,
+  duplicateMutations,
+  expiredToken,
+  invalidSession,
+  randomLatency,
+  sendReset,
+} from './scenarios'
 
 function mutation(id: string): Message {
   return {type: 'message', message: {event: 'mutation', id, data: '{}'}}
@@ -42,6 +49,200 @@ describe('sendReset', () => {
     expect(out[1]?.message.event).toBe('reset')
     // preserves the original event id
     expect(out[1]?.message.id).toBe('a')
+  })
+})
+
+type FakeRes = {head?: {status: number; headers: Record<string, unknown>}; body?: string}
+
+function fakeReq(method: string, url = '/v1/users/me', origin?: string): ProxyRequest {
+  return {method, url, headers: origin ? {origin} : {}} as unknown as ProxyRequest
+}
+
+function fakeRes(): {res: ProxyResponse; captured: FakeRes} {
+  const captured: FakeRes = {}
+  const res = {
+    writeHead: (status: number, _statusText: string, headers: Record<string, unknown>) => {
+      captured.head = {status, headers}
+    },
+    end: (body?: string) => {
+      captured.body = body
+    },
+  }
+  return {res: res as unknown as ProxyResponse, captured}
+}
+
+describe('invalidSession', () => {
+  const target = {url: new URL('https://example.localhost/v1/users/me')}
+
+  test('answers with the session-not-found 401 (SIO-401-ANF) when so configured', () => {
+    let forwarded = false
+    const handler = invalidSession(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+      {errorCode: 'SIO-401-ANF'},
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('GET'), res, target)
+
+    expect(forwarded).toBe(false)
+    expect(captured.head?.status).toBe(401)
+    // The exact body the API returns for a token resolving to no session
+    expect(JSON.parse(captured.body ?? '{}')).toEqual({
+      error: 'Unauthorized',
+      statusCode: 401,
+      message: 'Session not found',
+      errorCode: 'SIO-401-ANF',
+    })
+  })
+
+  test('defaults to the expired-session 401 (SIO-401-AEX)', () => {
+    const handler = invalidSession(
+      () => ({unsubscribe: () => {}}) as never,
+      () => true,
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('GET'), res, target)
+
+    expect(captured.head?.status).toBe(401)
+    expect(JSON.parse(captured.body ?? '{}')).toMatchObject({errorCode: 'SIO-401-AEX'})
+  })
+})
+
+describe('expiredToken', () => {
+  const target = {url: new URL('https://example.localhost/v1/users/me')}
+
+  test('returns the expired-session 401 once expired, without calling upstream', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('GET'), res, target)
+
+    expect(forwarded).toBe(false)
+    expect(captured.head?.status).toBe(401)
+    expect(JSON.parse(captured.body ?? '{}')).toMatchObject({
+      statusCode: 401,
+      errorCode: 'SIO-401-AEX',
+    })
+  })
+
+  test('forwards to the wrapped handler while not yet expired', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => false,
+    )
+
+    handler(fakeReq('GET'), fakeRes().res, target)
+    expect(forwarded).toBe(true)
+  })
+
+  test('always forwards CORS preflights so the browser can read the 401', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    handler(fakeReq('OPTIONS', '/v1/users/me', 'https://app.localhost'), fakeRes().res, target)
+    expect(forwarded).toBe(true)
+  })
+
+  test('answers logout with a 204 so the session can still be torn down', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('POST', '/vX/auth/logout'), res, target)
+
+    expect(forwarded).toBe(false)
+    expect(captured.head?.status).toBe(204)
+    expect(captured.body).toBeUndefined()
+  })
+
+  test('never forwards logout upstream, even before expiry, so real credentials survive', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => false,
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('POST', '/vX/auth/logout'), res, target)
+
+    expect(forwarded).toBe(false)
+    expect(captured.head?.status).toBe(204)
+    expect(captured.body).toBeUndefined()
+  })
+
+  test('forwards /auth/fetch upstream even while expired, so re-login can succeed', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    handler(fakeReq('GET', '/v1/auth/fetch?sid=abc'), fakeRes().res, target)
+    expect(forwarded).toBe(true)
+  })
+
+  test('invokes onReauthenticated on a /auth/fetch token exchange', () => {
+    let reauthenticated = 0
+    const handler = expiredToken(
+      () => ({unsubscribe: () => {}}) as never,
+      () => true,
+      {onReauthenticated: () => (reauthenticated += 1)},
+    )
+
+    handler(fakeReq('GET', '/v1/auth/fetch?sid=abc'), fakeRes().res, target)
+    expect(reauthenticated).toBe(1)
+
+    // a non-auth-fetch request must not re-arm the timer
+    handler(fakeReq('GET', '/v1/users/me'), fakeRes().res, target)
+    expect(reauthenticated).toBe(1)
+  })
+
+  test('forwards public auth endpoints (e.g. /auth/providers) instead of 401-ing', () => {
+    let forwarded = false
+    const handler = expiredToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    handler(fakeReq('GET', '/v1/auth/providers'), fakeRes().res, target)
+    expect(forwarded).toBe(true)
   })
 })
 

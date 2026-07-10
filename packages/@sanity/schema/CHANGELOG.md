@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.4.0](https://github.com/sanity-io/sanity/compare/v6.3.0...v6.4.0) (2026-07-07)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^3.7.6 ([#13384](https://github.com/sanity-io/sanity/issues/13384)) ([260a282](https://github.com/sanity-io/sanity/commit/260a282c2dc38d88e8d03e1f89b677aca765f173))
+* **deps:** update dependency @sanity/icons to v5 ([#13409](https://github.com/sanity-io/sanity/issues/13409)) ([f788296](https://github.com/sanity-io/sanity/commit/f78829648671e05a48c0329ff47abe7dbc457d64))
+
+### Performance Improvements
+
+* **sanity:** debarrel @sanity/icons imports ([#13393](https://github.com/sanity-io/sanity/issues/13393)) ([2e250dc](https://github.com/sanity-io/sanity/commit/2e250dc720aa3d49312c79a03bb5697ef4e08fe8))
+## [6.3.0](https://github.com/sanity-io/sanity/compare/v6.2.0...v6.3.0) (2026-06-30)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.30.3 ([#13354](https://github.com/sanity-io/sanity/issues/13354)) ([49db0b0](https://github.com/sanity-io/sanity/commit/49db0b0d4c3e499040d8eb0154ec7cb6ab350ae5))
+## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
+
+### Bug Fixes
+
+* **CLDX-5683:** preserve an explicit empty block decorator set ([#13291](https://github.com/sanity-io/sanity/issues/13291)) ([234029c](https://github.com/sanity-io/sanity/commit/234029c74f57dd1250b9dff173fdbdf43d4207fa))
+* **CLDX-5683:** preserve portable text block decorators in schema descriptor ([#13288](https://github.com/sanity-io/sanity/issues/13288)) ([fa8b84c](https://github.com/sanity-io/sanity/commit/fa8b84cb0734ca75b74719a3b26858aef2cf99d0))
 ## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
 
 ### ⚠ BREAKING CHANGES

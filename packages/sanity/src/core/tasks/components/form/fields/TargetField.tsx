@@ -1,4 +1,5 @@
-import {CloseIcon, DocumentIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {DocumentIcon} from '@sanity/icons/Document'
 import {Box, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
@@ -97,7 +98,10 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const {t} = useTranslation(tasksLocaleNamespace)
   const CardLink = useMemo(
     () =>
-      forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
+      forwardRef(function LinkComponent(
+        linkProps: React.ComponentPropsWithoutRef<'a'>,
+        ref: ForwardedRef<HTMLAnchorElement>,
+      ) {
         const versionId = getVersionFromId(documentId)
 
         return (

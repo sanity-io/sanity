@@ -28,7 +28,7 @@ jobs:
     outputs:
       version: ${{ steps.release-as.outputs.version }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -60,7 +60,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Get version
         id: release-as
         run: |
@@ -102,7 +102,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       EXPECTED_NPM_USER: sanity-svc.npm
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Build
@@ -133,7 +133,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - uses: actions/create-github-app-token@v3
@@ -145,7 +145,7 @@ jobs:
       - name: Generate GitHub release
         id: generate-github-release
         run: |
-          pnpm --silent release-notes publish-releases --targetVersion="${{needs.build-and-validate.outputs.version}}"
+          pnpm --silent release-notes publish-releases --target-version="${{needs.build-and-validate.outputs.version}}"
 
         env:
           RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
@@ -163,7 +163,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup

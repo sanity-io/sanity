@@ -1,11 +1,12 @@
 import {type ReleaseState} from '@sanity/client'
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Badge, Box, Flex, Text} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {memo} from 'react'
+import {memo, useCallback, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
+import {styled} from 'styled-components'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip'
@@ -21,7 +22,7 @@ import {Headers} from '../../components/Table/TableHeader'
 import {type Column, type InjectedTableProps} from '../../components/Table/types'
 import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
-import {type DocumentInRelease} from '../useBundleDocuments'
+import {type DocumentInRelease} from '../types'
 import {useReleaseHistory} from './useReleaseHistory'
 
 const MemoReleaseDocumentPreview = memo(
@@ -52,14 +53,78 @@ const MemoReleaseDocumentPreview = memo(
   (prev, next) => prev.item.memoKey === next.item.memoKey && prev.releaseId === next.releaseId,
 )
 
-const MemoDocumentType = memo(
-  function DocumentType({type}: {type: string}) {
-    const schema = useSchema()
-    const schemaType = schema.get(type)
-    return <Text size={1}>{schemaType?.title || 'Not found'}</Text>
-  },
-  (prev, next) => prev.type === next.type,
-)
+// Carries its own overflow CSS because @sanity/ui's `textOverflow` prop is inert here.
+const TruncatedSpan = styled.span`
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+/** @internal - exported for unit testing only */
+export function DocumentType({type}: {type: string}) {
+  const schema = useSchema()
+  const title = schema.get(type)?.title || 'Not found'
+
+  const elementRef = useRef<HTMLSpanElement | null>(null)
+  const [isTruncated, setIsTruncated] = useState(false)
+
+  const checkTruncation = useCallback(() => {
+    const element = elementRef.current
+    if (element) setIsTruncated(element.scrollWidth > element.clientWidth)
+  }, [])
+
+  // A callback ref measures on attach, avoiding the race where a useEffect fires before the
+  // ref is populated. The returned cleanup runs when the node detaches.
+  const measureRef = useCallback(
+    (element: HTMLSpanElement | null) => {
+      elementRef.current = element
+      if (!element) return undefined
+
+      checkTruncation()
+
+      const observer = new ResizeObserver(checkTruncation)
+      observer.observe(element)
+
+      // The late font swap widens the text but not the column-locked box, so the
+      // ResizeObserver never fires - re-measure once fonts settle.
+      let cancelled = false
+      void document.fonts?.ready?.then(() => {
+        if (!cancelled) checkTruncation()
+      })
+
+      return () => {
+        cancelled = true
+        observer.disconnect()
+        elementRef.current = null
+      }
+    },
+    [checkTruncation],
+  )
+
+  // A title change rewrites the text without resizing the box, so re-measure on title change.
+  useEffect(() => {
+    checkTruncation()
+  }, [title, checkTruncation])
+
+  const textElement = (
+    <Text size={1}>
+      <TruncatedSpan ref={measureRef}>{title}</TruncatedSpan>
+    </Text>
+  )
+
+  if (isTruncated) {
+    return (
+      <Tooltip portal content={<Text size={1}>{title}</Text>}>
+        {textElement}
+      </Tooltip>
+    )
+  }
+
+  return textElement
+}
+
+const MemoDocumentType = memo(DocumentType, (prev, next) => prev.type === next.type)
 
 const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentRow> = (t) => ({
   id: 'action',
@@ -109,8 +174,9 @@ export const getDocumentTableColumnDefs: (
   ...(releaseState === 'archived' || releaseState === 'published' ? [] : [documentActionColumn(t)]),
   {
     id: 'document._type',
-    width: null,
-    style: {minWidth: 100},
+    // Header and body rows are independent flexboxes, so a content-sized column (width: null)
+    // settles at different widths in each and misaligns. A fixed width keeps them in sync.
+    width: 150,
     sorting: true,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
@@ -119,7 +185,7 @@ export const getDocumentTableColumnDefs: (
     ),
     cell: ({cellProps, datum}) => (
       <Flex align="center" {...cellProps}>
-        <Box paddingX={2}>
+        <Box paddingX={2} style={{minWidth: 0}}>
           {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
         </Box>
       </Flex>

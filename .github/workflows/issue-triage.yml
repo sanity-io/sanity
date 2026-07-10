@@ -4,8 +4,6 @@ on:
   issues:
     types:
       - closed
-      - opened
-      - labeled
   workflow_dispatch:
     inputs:
       issue_url:
@@ -34,7 +32,7 @@ jobs:
       MIRIAD_TOKEN: ${{ secrets.MIRIAD_TOKEN }}
       MIRIAD_URL: ${{ secrets.MIRIAD_URL }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: pnpm/setup@v1
         with:

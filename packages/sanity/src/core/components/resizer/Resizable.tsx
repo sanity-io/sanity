@@ -1,5 +1,5 @@
 import {Box, type BoxProps} from '@sanity/ui'
-import {type HTMLProps, useCallback, useMemo, useRef, useState} from 'react'
+import {type ElementType, type HTMLProps, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Resizer} from './Resizer'
@@ -22,7 +22,7 @@ const Root = styled(Box)`
  * Provides a resizable container with a resizer handle.
  */
 export function Resizable(
-  props: ResizableProps & BoxProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
+  props: ResizableProps & BoxProps<ElementType> & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
   const {
     as: forwardedAs,

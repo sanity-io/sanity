@@ -1,4 +1,6 @@
-import {CopyIcon, LinkIcon, TrashIcon} from '@sanity/icons'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {LinkIcon} from '@sanity/icons/Link'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'

@@ -13,11 +13,6 @@ test(`liveEdited document can be created, edited, and deleted`, async ({
   const name = 'Test Name'
 
   await createDraftDocument('/content/playlist')
-  // Navigate to the published perspective
-  const publishedButton = page.getByRole('button', {name: 'Published'})
-  await expect(publishedButton).toBeVisible()
-  await expect(publishedButton).toBeEnabled()
-  await publishedButton.click()
 
   // Wait for the form field to be ready
   const nameField = page.getByTestId('field-name').getByTestId('string-input')

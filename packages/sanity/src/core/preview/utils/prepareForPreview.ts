@@ -213,7 +213,8 @@ export function invokePrepare(
   try {
     return {
       returnValue: prepare
-        ? (prepare(value, viewOptions) as Record<string, unknown>)
+        ? // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
+          (prepare(value, viewOptions) as Record<string, unknown>)
         : defaultPrepare(value),
       errors: EMPTY,
     }

@@ -33,7 +33,7 @@ import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
-import {VisibleWorkspacesProvider, WorkspacesProvider} from './workspaces'
+import {ConfigErrorGate, VisibleWorkspacesProvider, WorkspacesProvider} from './workspaces'
 
 /**
  * @hidden
@@ -61,10 +61,12 @@ export function StudioProvider({
     ensureRefractorLanguages()
   }, [])
 
-  // Extract the first workspace's projectId for use in error screens
+  // First workspace's projectId — used by CorsOriginErrorScreen to decide
+  // whether to surface the "Register studio" option (only valid when the
+  // failing project matches the studio's primary project).
   const primaryProjectId = useMemo(() => {
-    const workspace = Array.isArray(config) ? config[0] : config
-    return workspace?.projectId
+    const first = Array.isArray(config) ? config[0] : config
+    return first?.projectId
   }, [config])
 
   const _children = useMemo(
@@ -105,12 +107,13 @@ export function StudioProvider({
     <DeferredTelemetryProvider>
       <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
         <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-          <StudioErrorBoundary primaryProjectId={primaryProjectId}>
-            <StudioRootErrorHandler primaryProjectId={primaryProjectId}>
+          <StudioErrorBoundary>
+            <StudioRootErrorHandler>
               <WorkspacesProvider
                 config={config}
                 basePath={basePath}
                 LoadingComponent={LoadingBlock}
+                primaryProjectId={primaryProjectId}
               >
                 <VisibleWorkspacesProvider>
                   <ActiveWorkspaceMatcher
@@ -120,17 +123,19 @@ export function StudioProvider({
                   >
                     <StudioThemeProvider>
                       <UserColorManagerProvider>
-                        {noAuthBoundary ? (
-                          _children
-                        ) : (
-                          <AuthBoundary
-                            LoadingComponent={LoadingBlock}
-                            AuthenticateComponent={AuthenticateScreen}
-                            NotAuthenticatedComponent={NotAuthenticatedScreen}
-                          >
-                            {_children}
-                          </AuthBoundary>
-                        )}
+                        <ConfigErrorGate>
+                          {noAuthBoundary ? (
+                            _children
+                          ) : (
+                            <AuthBoundary
+                              LoadingComponent={LoadingBlock}
+                              AuthenticateComponent={AuthenticateScreen}
+                              NotAuthenticatedComponent={NotAuthenticatedScreen}
+                            >
+                              {_children}
+                            </AuthBoundary>
+                          )}
+                        </ConfigErrorGate>
                       </UserColorManagerProvider>
                     </StudioThemeProvider>
                   </ActiveWorkspaceMatcher>

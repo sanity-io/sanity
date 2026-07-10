@@ -1,4 +1,4 @@
-import {CogIcon} from '@sanity/icons'
+import {CogIcon} from '@sanity/icons/Cog'
 import {type DefaultDocumentNodeResolver, type StructureResolver} from 'sanity/structure'
 
 import {CustomPane} from './components/CustomPane'

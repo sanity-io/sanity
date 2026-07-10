@@ -16,33 +16,35 @@ allowBuilds:
   unrs-resolver: false
 
 catalog:
-  '@playwright/test': 1.61.0
+  '@optique/core': ^1.1.1
+  '@optique/run': ^1.1.1
+  '@playwright/test': 1.61.1
   '@rolldown/plugin-babel': ^0.2.3
   '@sanity/client': ^7.23.0
   '@sanity/migrate': ^7.0.3
-  '@sanity/pkg-utils': ^10.5.7
+  '@sanity/pkg-utils': ^10.9.0
   '@sanity/telemetry': ^1.1.0
-  '@sanity/ui': ^3.2.0
+  '@sanity/ui': ^3.3.0
   '@types/node': ^24.13.2
   '@types/react': ^19.2.17
   '@types/react-dom': ^19.2.3
   '@types/react-is': ^19.2.0
   '@typescript/native-preview': beta
-  '@vanilla-extract/css': ^1.20.1
-  '@vanilla-extract/vite-plugin': ^5.2.2
-  '@vitejs/plugin-react': ^6.0.2
+  '@vanilla-extract/css': ^1.21.1
+  '@vanilla-extract/dynamic': ^2.1.5
+  '@vanilla-extract/vite-plugin': ^5.2.3
+  '@vitejs/plugin-react': ^6.0.3
   '@vitest/browser-playwright': ^4.1.9
   babel-plugin-react-compiler: ^1.0.0
   babel-plugin-styled-components: ^2.3.0
-  esbuild-register: ^3.6.0
   jsdom: ^29.1.1
-  playwright: 1.61.0
+  playwright: 1.61.1
   react: ^19.2.7
   react-dom: ^19.2.7
   react-is: ^19.2.7
   rimraf: ^6.1.3
   styled-components: npm:@sanity/styled-components@^6.1.24
-  vite: ^8.0.16
+  vite: ^8.1.0
   vitest: ^4.1.9
   vitest-browser-react: ^2.2.0
 
@@ -56,10 +58,12 @@ minimumReleaseAgeExclude:
   - '@oxlint-tsgolint/*'
   - '@vitest/*'
   - '@vite/*'
+  - '@vitejs/plugin-react'
   - '@portabletext/*'
   - '@sanity/*'
   - '@types/*'
   - '@typescript/*'
+  - '@vanilla-extract/*'
   - '@vercel/stega'
   - 'csstype'
   - 'data-uri-to-buffer@7.0.0'
@@ -74,18 +78,14 @@ minimumReleaseAgeExclude:
   - 'react-is'
   - 'react-rx'
   - 'sanity-plugin-internationalized-array'
-  - 'sanity-plugin-hotspot-array'
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'
-  - 'sanity-plugin-mux-input'
   - 'sanity-plugin-utils'
   - 'vitest'
   - 'vite'
 
 overrides:
-  # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
-  '@sanity/ui@3': '$@sanity/ui'
-  vitest: $vitest
+  vitest: 'catalog:'
 
 preferWorkspacePackages: true
 
@@ -104,7 +104,6 @@ trustPolicyExclude:
   # 3.88.1-typegen-experimental.0 is a dependency of @sanity/sdk
   - groq@5.24.0 || 3.88.1-typegen-experimental.0
   - sanity-plugin-internationalized-array@4.0.8
-  - sanity-plugin-mux-input@3.0.0
   - react-redux@9.2.0
   - reselect@5.1.1
   - rxjs@7.8.2

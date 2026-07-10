@@ -1,177 +1,149 @@
-import {Box, Card, Flex, Label, rem, Text} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {Box, Card, Flex, Label, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {type ComponentProps, type ComponentPropsWithoutRef, forwardRef} from 'react'
 
-export const Root = styled(Flex)`
-  .sidebarPanes .Pane {
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+import {
+  controlsContainer,
+  downloadsCard,
+  header,
+  inputBackgroundContainer,
+  inputBackgroundContainerLeft,
+  inputContainer,
+  queryCopyLink,
+  queryRecallPaneContainer,
+  queryRecallPaneWrapper,
+  result,
+  resultContainer,
+  resultContainerInvalid,
+  resultFooter,
+  resultInnerContainer,
+  resultOuterContainer,
+  root,
+  saveResultLabel,
+  saveResultSpanGapVar,
+  splitpaneContainer,
+  styledLabel,
+  timingsCard,
+  timingsTextContainer,
+  timingsTextMinHeightVar,
+} from './VisionGui.css'
 
-  & .Resizer {
-    background: var(--card-border-color);
-    opacity: 1;
-    z-index: 1;
-    box-sizing: border-box;
-    background-clip: padding-box;
-    border: solid transparent;
-  }
+export const Root = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<typeof Flex>>(
+  function Root(props, ref) {
+    return <Flex {...props} ref={ref} className={root} />
+  },
+)
 
-  & .Resizer:hover {
-    border-color: var(--card-shadow-ambient-color);
-  }
+export function Header(props: ComponentProps<typeof Card>) {
+  return <Card {...props} className={header} />
+}
 
-  & .Resizer.horizontal {
-    height: 11px;
-    margin: -5px 0;
-    border-width: 5px 0;
-    cursor: row-resize;
-    width: 100%;
-    z-index: 4;
-  }
+export function StyledLabel(props: ComponentProps<typeof Label>) {
+  return <Label {...props} className={styledLabel} />
+}
 
-  & .Resizer.vertical {
-    width: 11px;
-    margin: 0 -5px;
-    border-width: 0 5px;
-    cursor: col-resize;
-    z-index: 2; /* To prevent the resizer from being hidden behind CodeMirror scroll area */
-  }
+export function SplitpaneContainer(props: ComponentProps<typeof Box>) {
+  return <Box {...props} className={splitpaneContainer} />
+}
 
-  .Resizer.disabled {
-    cursor: not-allowed;
-  }
+export function QueryRecallPaneContainer(props: ComponentProps<typeof Flex>) {
+  return <Flex {...props} direction="column" className={queryRecallPaneContainer} />
+}
 
-  .Resizer.disabled:hover {
-    border-color: transparent;
-  }
-`
+export function QueryRecallPaneWrapper(props: ComponentProps<typeof Flex>) {
+  return (
+    <Flex
+      {...props}
+      direction="column"
+      flex={1}
+      overflow="hidden"
+      className={queryRecallPaneWrapper}
+    />
+  )
+}
 
-Root.displayName = 'Root'
+export function QueryCopyLink(props: ComponentProps<'a'>) {
+  return <a {...props} className={queryCopyLink} />
+}
 
-export const Header = styled(Card)`
-  position: relative;
-  flex-shrink: 0;
-  z-index: 6;
-  background: var(--card-bg-color);
-  overflow: visible;
-  border-bottom: 1px solid var(--card-border-color);
-`
+export function InputBackgroundContainer(props: ComponentProps<typeof Box>) {
+  return <Box {...props} className={inputBackgroundContainer} />
+}
 
-export const StyledLabel = styled(Label)`
-  flex: 1;
-`
+export function InputBackgroundContainerLeft(props: ComponentProps<typeof Box>) {
+  return (
+    <Box {...props} className={`${inputBackgroundContainer} ${inputBackgroundContainerLeft}`} />
+  )
+}
 
-export const SplitpaneContainer = styled(Box)`
-  position: relative;
-  min-height: 0;
-  z-index: 1;
-`
+export function InputContainer(props: ComponentProps<typeof Card>) {
+  return <Card {...props} className={inputContainer} />
+}
 
-export const QueryCopyLink = styled.a`
-  cursor: pointer;
-  margin-right: auto;
-`
+export function ResultOuterContainer(props: ComponentProps<typeof Flex>) {
+  return <Flex {...props} className={resultOuterContainer} />
+}
 
-export const InputBackgroundContainer = styled(Box)`
-  position: absolute;
-  top: 1rem;
-  left: 0;
-  padding: 0;
-  margin: 0;
-  z-index: 10;
-  right: 0;
+export function ResultInnerContainer(props: ComponentProps<typeof Box>) {
+  return <Box {...props} className={resultInnerContainer} />
+}
 
-  ${StyledLabel} {
-    user-select: none;
-  }
-`
+export function ResultContainer({
+  isInvalid,
+  ...props
+}: ComponentProps<typeof Card> & {isInvalid: boolean}) {
+  return (
+    <Card
+      {...props}
+      className={isInvalid ? `${resultContainer} ${resultContainerInvalid}` : resultContainer}
+    />
+  )
+}
 
-export const InputBackgroundContainerLeft = styled(InputBackgroundContainer)`
-  // This is so its aligned with the gutters of CodeMirror
-  left: 33px;
-`
+export function Result(props: ComponentProps<typeof Box>) {
+  return <Box {...props} className={result} />
+}
 
-export const InputContainer = styled(Card)`
-  width: 100%;
-  height: 100%;
-  position: relative;
-  flex-direction: column;
-`
+export function ResultFooter(props: ComponentProps<typeof Flex>) {
+  return <Flex {...props} className={resultFooter} />
+}
 
-export const ResultOuterContainer = styled(Flex)`
-  height: 100%;
-`
+export function TimingsCard(props: ComponentProps<typeof Card>) {
+  return <Card {...props} className={timingsCard} />
+}
 
-export const ResultInnerContainer = styled(Box)`
-  position: relative;
-`
+export function TimingsTextContainer(props: ComponentProps<typeof Flex>) {
+  const {space, font} = useThemeV2()
+  const textSize = font.text.sizes[2]
+  const minHeight = rem(
+    space[3] * 2 + textSize.lineHeight - textSize.ascenderHeight - textSize.descenderHeight,
+  )
 
-export const ResultContainer = styled(Card)<{$isInvalid: boolean}>`
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  max-width: 100%;
+  return (
+    <Flex
+      {...props}
+      className={timingsTextContainer}
+      style={assignInlineVars({[timingsTextMinHeightVar]: `${minHeight}`})}
+    />
+  )
+}
 
-  ${({$isInvalid}) =>
-    $isInvalid &&
-    css`
-      &:after {
-        background-color: var(--card-bg-color);
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-      }
-    `}
-`
+export function DownloadsCard(props: ComponentProps<typeof Card>) {
+  return <Card {...props} className={downloadsCard} />
+}
 
-export const Result = styled(Box)`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  z-index: 20;
-`
+export function SaveResultLabel(props: ComponentProps<typeof Text>) {
+  const {space} = useThemeV2()
 
-export const ResultFooter = styled(Flex)`
-  border-top: 1px solid var(--card-border-color);
-  flex-wrap: wrap;
-`
+  return (
+    <Text
+      {...props}
+      className={saveResultLabel}
+      style={assignInlineVars({[saveResultSpanGapVar]: `${rem(space[3])}`})}
+    />
+  )
+}
 
-export const TimingsCard = styled(Card)`
-  position: relative;
-`
-
-export const TimingsTextContainer = styled(Flex)`
-  height: 100%;
-  min-height: ${({theme}) =>
-    rem(
-      theme.sanity.space[3] * 2 +
-        theme.sanity.fonts.text.sizes[2].lineHeight -
-        theme.sanity.fonts.text.sizes[2].ascenderHeight -
-        theme.sanity.fonts.text.sizes[2].descenderHeight,
-    )};
-`
-
-export const DownloadsCard = styled(Card)`
-  position: relative;
-`
-
-export const SaveResultLabel = styled(Text)`
-  transform: initial;
-  &:before,
-  &:after {
-    content: none;
-  }
-  > span {
-    display: flex !important;
-    flex-wrap: wrap;
-    gap: ${({theme}) => rem(theme.sanity.space[3])};
-    align-items: center;
-  }
-`
-
-export const ControlsContainer = styled(Box)`
-  border-top: 1px solid var(--card-border-color);
-`
+export function ControlsContainer(props: ComponentProps<typeof Box>) {
+  return <Box {...props} className={controlsContainer} />
+}

@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ChevronDownIcon, ChevronUpIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
 import {Container, Flex, useClickOutsideEvent} from '@sanity/ui'
 import {useMemo, useRef, useState} from 'react'
 import {
@@ -128,7 +129,7 @@ export function NonReleaseVersionsSelect(props: {
         zOffset={10}
         content={
           <Container width={1}>
-            <Flex width={1} padding={3} gap={2} wrap="wrap">
+            <Flex padding={3} gap={2} wrap="wrap">
               {otherNonReleaseVersions.map((nonReleaseVersion) => {
                 const scopeId = nonReleaseVersion._system.scopeId!
                 const selected = selectedPerspective === scopeId

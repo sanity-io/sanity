@@ -1,4 +1,4 @@
-import {AddIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
 import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {

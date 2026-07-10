@@ -72,6 +72,7 @@ export function createMockSanityClient(
         },
       ],
       provider: 'google',
+      attributes: [{key: 'department', type: 'string', value: 'engineering'}],
     },
 
     ...data.requests,

@@ -1,4 +1,6 @@
-import {ArrowRightIcon, ComposeSparklesIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
+import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SanityDocument} from '@sanity/types'
 import {type BadgeTone, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'

@@ -1,4 +1,4 @@
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 // oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
 import {Box, Button, Menu, MenuDivider, Text, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
@@ -71,7 +71,7 @@ export function VariantsMenu(): React.JSX.Element {
 
   const handleSelectVariant = useCallback(
     (variant: SystemVariant) => {
-      setVariant(variant)
+      setVariant(variant._id)
       setFilterQuery('')
     },
     [setVariant],

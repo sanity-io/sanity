@@ -1,4 +1,8 @@
-import {CheckmarkCircleIcon, EditIcon, LinkIcon, TrashIcon, UndoIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {EditIcon} from '@sanity/icons/Edit'
+import {LinkIcon} from '@sanity/icons/Link'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {UndoIcon} from '@sanity/icons/Undo'
 import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
 import {styled} from 'styled-components'
 

@@ -1,6 +1,6 @@
 {
   "name": "@repo/release-notes",
-  "version": "6.1.0",
+  "version": "6.4.0",
   "private": true,
   "description": "Internal tool for updating release-notes",
   "license": "MIT",
@@ -26,15 +26,17 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.104.2",
+    "@anthropic-ai/sdk": "^0.105.0",
     "@conventional-changelog/git-client": "^2.7.0",
     "@octokit/rest": "^22.0.1",
+    "@optique/core": "catalog:",
+    "@optique/run": "catalog:",
     "@portabletext/toolkit": "^5.0.2",
     "@sanity/client": "catalog:",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/mutate": "^0.18.1",
     "@sanity/types": "workspace:*",
-    "conventional-changelog": "^7.2.0",
+    "conventional-changelog": "^7.2.1",
     "conventional-changelog-conventionalcommits": "^9.3.1",
     "conventional-commits-parser": "^6.4.0",
     "conventional-recommended-bump": "^11.2.0",
@@ -42,19 +44,17 @@
     "description-to-co-authors": "^0.3.0",
     "lodash-es": "^4.18.1",
     "p-map": "^7.0.4",
-    "semver": "^7.8.4",
-    "turndown": "^7.2.4",
-    "yargs": "^18.0.0"
+    "semver": "^7.8.5",
+    "turndown": "^7.2.4"
   },
   "devDependencies": {
-    "@portabletext/markdown": "^1.4.1",
+    "@portabletext/markdown": "^1.4.3",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@types/lodash-es": "^4.17.12",
     "@types/semver": "^7.7.1",
     "@types/turndown": "^5.0.6",
-    "@types/yargs": "^17.0.35",
     "@typescript/native-preview": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

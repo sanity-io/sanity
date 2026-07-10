@@ -1,18 +1,17 @@
 import {assist} from '@sanity/assist'
-import {colorInput} from '@sanity/color-input'
 import {debugSecrets} from '@sanity/debug-preview-url-secret-plugin'
 import {documentInternationalization} from '@sanity/document-internationalization'
 import {googleMapsInput} from '@sanity/google-maps-input'
-import {BookIcon, EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanity/icons'
+import {BookIcon} from '@sanity/icons/Book'
+import {EnvelopeIcon} from '@sanity/icons/Envelope'
+import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
+import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
-import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
-import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
-import {muxInput} from 'sanity-plugin-mux-input'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
@@ -231,18 +230,14 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
           lng: -74.1180863,
         },
       }),
-      colorInput(),
       visionTool({
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
       }),
-      muxInput({mp4_support: 'standard'}),
-      imageHotspotArrayPlugin(),
       routerDebugTool(),
       formBuilderReproTool(),
       errorReportingTestPlugin(),
       media(),
-      markdownSchema(),
       wave(),
       autoCloseBrackets(),
       internationalizedArray({
@@ -330,6 +325,22 @@ export default defineConfig([
     hidden: true,
   },
   defaultWorkspace,
+  {
+    ...defaultWorkspace,
+    projectId: 'nonexistent',
+    name: 'nonexistent-project',
+    title: 'Nonexistent project',
+    subtitle: 'Workspace with a nonexistent project id',
+    basePath: '/nonexistent-project',
+  },
+  {
+    ...defaultWorkspace,
+    dataset: 'nonexistent',
+    name: 'nonexistent-dataset',
+    title: 'Nonexistent dataset',
+    subtitle: 'Workspace with a nonexistent dataset',
+    basePath: '/nonexistent-dataset',
+  },
   {
     ...defaultWorkspace,
     name: 'admin-only',

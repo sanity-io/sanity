@@ -1,4 +1,4 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useEffect} from 'react'
 

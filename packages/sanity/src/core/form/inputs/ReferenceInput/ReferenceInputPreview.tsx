@@ -1,4 +1,6 @@
-import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
+import {LaunchIcon as OpenInNewTabIcon} from '@sanity/icons/Launch'
+import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {type Reference} from '@sanity/types'
 import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 import {
@@ -56,6 +58,7 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
   const {readOnly, focused, renderPreview, onChange, onPathFocus, id: inputId} = props
 
   const handleClear = useCallback(() => onChange(unset()), [onChange])
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   const value: Reference | undefined = props.value as any
 
   const {EditReferenceLink, getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} =

@@ -1,4 +1,4 @@
-import {RevertIcon} from '@sanity/icons'
+import {RevertIcon} from '@sanity/icons/Revert'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,

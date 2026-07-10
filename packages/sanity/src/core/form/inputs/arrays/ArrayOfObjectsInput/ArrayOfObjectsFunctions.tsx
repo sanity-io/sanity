@@ -1,4 +1,4 @@
-import {AddIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ArraySchemaType} from '@sanity/types'
 import {Grid} from '@sanity/ui'

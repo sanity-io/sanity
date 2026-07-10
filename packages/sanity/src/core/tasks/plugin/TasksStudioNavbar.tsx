@@ -1,4 +1,4 @@
-import {CheckmarkCircleIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../ui-components'

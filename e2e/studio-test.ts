@@ -1,6 +1,5 @@
-/* oxlint-disable react-hooks/rules-of-hooks */
 // oxlint-disable-next-line no-restricted-imports
-import {test as baseTest} from '@playwright/test'
+import {expect, test as baseTest} from '@playwright/test'
 import {createClient, type SanityClient, type SanityDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 
@@ -68,7 +67,7 @@ interface SanityFixtures {
 export const test = baseTest.extend<SanityFixtures>({
   // Extends the goto function to preserve the base pathname if it exists in the baseURL
   // This is used to ensure the navigation goes to the correct workspace.
-  async page({page, context, baseURL}, use) {
+  async page({page, context, baseURL}, _use) {
     watchForStudioErrors(context)
 
     const originalGoto = page.goto.bind(page)
@@ -102,36 +101,49 @@ export const test = baseTest.extend<SanityFixtures>({
       route.fulfill({status: 200, contentType: 'application/json', body: 'null'}),
     )
 
-    await use(page)
+    await _use(page)
   },
-  async createDraftDocument({page, _testContext}, use) {
+  async createDraftDocument({page, _testContext}, _use) {
     async function createDraftDocument(navigationPath: string) {
       const id = _testContext.getUniqueDocumentId()
 
       await page.goto(`${navigationPath};${id}`)
-      await page.locator('[data-testid="form-view"]').waitFor({state: 'visible', timeout: 30_000})
+      const formView = page.locator('[data-testid="form-view"]')
+      await formView.waitFor({state: 'visible', timeout: 30_000})
 
-      await page
-        .locator('[data-testid="form-view"]:not([data-read-only="true"])')
-        .waitFor({state: 'visible', timeout: 30_000})
+      // Require the form to stay editable across consecutive polls: a brand-new
+      // draft can briefly flip editable on a cached snapshot before reverting to
+      // read-only while it finishes connecting, and a plain `waitFor` would latch
+      // onto that transient render and return while controls are still disabled.
+      let consecutiveEditableReads = 0
+      await expect
+        .poll(
+          async () => {
+            const readOnly = await formView.getAttribute('data-read-only')
+            consecutiveEditableReads = readOnly === null ? consecutiveEditableReads + 1 : 0
+            return consecutiveEditableReads
+          },
+          {timeout: 30_000, intervals: [100]},
+        )
+        .toBeGreaterThanOrEqual(3)
 
       return id
     }
 
-    await use(createDraftDocument)
+    await _use(createDraftDocument)
   },
 
-  async _testContext({sanityClient}, use) {
+  async _testContext({sanityClient}, _use) {
     const _testContext = new _TestSanityContext()
 
-    await use(_testContext)
+    await _use(_testContext)
 
     // Cleanup
     await _testContext.teardown(sanityClient)
   },
 
   // oxlint-disable-next-line no-empty-pattern
-  async sanityClient({}, use) {
+  async sanityClient({}, _use) {
     const client = createClient({
       projectId: process.env.SANITY_E2E_PROJECT_ID,
       dataset: process.env.SANITY_E2E_DATASET,
@@ -141,6 +153,6 @@ export const test = baseTest.extend<SanityFixtures>({
       apiHost: 'https://api.sanity.work',
     })
 
-    await use(client)
+    await _use(client)
   },
 })

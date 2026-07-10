@@ -23,10 +23,12 @@ function isVideoSource(source: unknown): source is {asset: {_ref: string}} {
   if (typeof source !== 'object' || source === null || !('asset' in source)) {
     return false
   }
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   const asset = (source as {asset: unknown}).asset
   if (typeof asset !== 'object' || asset === null || !('_ref' in asset)) {
     return false
   }
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   const ref = (asset as {_ref: unknown})._ref
   return typeof ref === 'string' && ref.startsWith('media-library:')
 }

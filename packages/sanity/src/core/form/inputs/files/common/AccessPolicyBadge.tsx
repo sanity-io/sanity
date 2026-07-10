@@ -1,4 +1,4 @@
-import {LockIcon} from '@sanity/icons'
+import {LockIcon} from '@sanity/icons/Lock'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 
 import {Tooltip} from '../../../../../ui-components'

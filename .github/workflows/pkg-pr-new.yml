@@ -19,13 +19,16 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - id: pre-flight
         run: |
           PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          PACKAGES=$(pnpm tsx scripts/listPublishedPackages.ts)
+          # --silent keeps pnpm's own notices (e.g. the deprecated "$" overrides
+          # warning) off stdout, so $PACKAGES is the single package list line and
+          # the $GITHUB_OUTPUT write stays a valid key=value.
+          PACKAGES=$(pnpm --silent tsx scripts/listPublishedPackages.ts)
           echo "packages=${PACKAGES}" >> "$GITHUB_OUTPUT"
           VERSION="$(jq -r .version package.json)-pr.$PR_NUMBER+$(git rev-parse --short HEAD)"
           echo "process.env.PKG_VERSION will be set to ${VERSION} when building"

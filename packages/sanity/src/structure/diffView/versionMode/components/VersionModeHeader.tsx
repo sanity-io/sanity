@@ -1,9 +1,13 @@
-import {CloseIcon, LockIcon, TransferIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {LockIcon} from '@sanity/icons/Lock'
+import {TransferIcon} from '@sanity/icons/Transfer'
 import {
   Badge,
   Box,
   // oxlint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
   Button,
+  // oxlint-disable-next-line no-restricted-imports -- the resolved menu button props are spread onto the `@sanity/ui` Button above
+  type ButtonProps,
   type ButtonTone,
   Flex,
   Menu,
@@ -14,7 +18,7 @@ import {
 } from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {type ComponentProps, type ComponentType, useMemo} from 'react'
+import {type ComponentType, useMemo} from 'react'
 import {
   type DocumentLayoutProps,
   getDraftId,
@@ -350,7 +354,7 @@ function getMenuButtonProps({
   selected?: TargetPerspective
   tCore: TFunction
   tStructure: TFunction
-}): Pick<ComponentProps<typeof Button>, 'text' | 'tone' | 'icon' | 'iconRight' | 'disabled'> {
+}): Pick<ButtonProps, 'text' | 'tone' | 'icon' | 'iconRight' | 'disabled'> {
   if (releasesState === 'pending') {
     return {
       text: tCore('common.loading'),

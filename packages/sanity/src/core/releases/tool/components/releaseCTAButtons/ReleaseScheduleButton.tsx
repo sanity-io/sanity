@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
+import {ClockIcon} from '@sanity/icons/Clock'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {format} from 'date-fns/format'
@@ -26,7 +27,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../detail/types'
 
 interface ReleaseScheduleButtonProps {
   release: ReleaseDocument
@@ -371,6 +372,7 @@ export const ReleaseScheduleButton = ({
       disabled: isScheduleButtonDisabled || status === 'scheduling' || documents.length === 0,
       text: t('action.schedule'),
       handleOnClick: handleOnInitialSchedule,
+      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       tooltipProps: {
         disabled: !tooltipText,
         content: scheduleTooltipContent,

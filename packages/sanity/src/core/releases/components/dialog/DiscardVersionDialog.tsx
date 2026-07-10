@@ -104,7 +104,15 @@ export function DiscardVersionDialog(props: {
           <Preview
             value={{_id: isGoingToUnpublish ? getPublishedId(documentId) : documentId}}
             schemaType={schemaType}
-            perspectiveStack={isGoingToUnpublish ? [] : [currentRelease]}
+            // Resolve the preview under the perspective of what's being discarded:
+            // the published doc when unpublishing, the drafts perspective when
+            // discarding a draft, otherwise the release version. Without the
+            // explicit 'drafts' stack a draft falls back to its published value
+            // (or "Untitled" when none exists), so it wouldn't show the draft
+            // being discarded.
+            perspectiveStack={
+              isGoingToUnpublish ? [] : discardType === 'draft' ? ['drafts'] : [currentRelease]
+            }
           />
         ) : (
           <LoadingBlock />

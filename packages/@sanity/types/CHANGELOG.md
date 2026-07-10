@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.4.0](https://github.com/sanity-io/sanity/compare/v6.3.0...v6.4.0) (2026-07-07)
+
+### Features
+
+* **types:** add user attribute types to CurrentUser ([#13395](https://github.com/sanity-io/sanity/issues/13395)) ([b7b7fc1](https://github.com/sanity-io/sanity/commit/b7b7fc1fcbeee63fc211abff0cbaa67e0ce5d68c))
+## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
+
+### Features
+
+* **core:** add document `_system` to useDocumentVersions ([#13094](https://github.com/sanity-io/sanity/issues/13094)) ([d4acef0](https://github.com/sanity-io/sanity/commit/d4acef01712a803588033ae68d94b92fcfda514b))
+
+### Bug Fixes
+
+* **releases:** return undefined for empty values in temporarilyBuildDocumentSystem ([#13121](https://github.com/sanity-io/sanity/issues/13121)) ([46aaaf0](https://github.com/sanity-io/sanity/commit/46aaaf02d86f6f69b69ed5681fb4c9d3c83cd4f2))
 ## [6.1.0](https://github.com/sanity-io/sanity/compare/v6.0.0...v6.1.0) (2026-06-16)
 
 ### Bug Fixes

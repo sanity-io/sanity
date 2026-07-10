@@ -1,4 +1,8 @@
-import {EditIcon, EllipsisHorizontalIcon, EyeOpenIcon, LinkIcon, TrashIcon} from '@sanity/icons'
+import {EditIcon} from '@sanity/icons/Edit'
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
+import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
+import {LinkIcon} from '@sanity/icons/Link'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {isReference, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Menu, useGlobalKeyDown} from '@sanity/ui'
 import {

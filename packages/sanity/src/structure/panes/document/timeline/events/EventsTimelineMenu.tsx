@@ -1,4 +1,4 @@
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
   Flex,
   type Placement,
@@ -203,7 +203,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
         portal
         ref={setPopoverRef}
       >
-        <Flex width={'fill'}>
+        <Flex>
           <Button
             data-testid={open ? 'timeline-menu-close-button' : 'timeline-menu-open-button'}
             disabled={loading || !events.length}

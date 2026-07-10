@@ -1,4 +1,6 @@
-import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'

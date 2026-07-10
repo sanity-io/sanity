@@ -1,4 +1,4 @@
-import {CopyIcon} from '@sanity/icons'
+import {CopyIcon} from '@sanity/icons/Copy'
 import {Box, Button, Card, Flex, Grid, Inline, Select, Stack, TextInput, Tooltip} from '@sanity/ui'
 import {
   type ChangeEvent,
@@ -201,7 +201,14 @@ export function VisionGuiHeader({
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel>
                   {t('query.url')}&nbsp;
-                  <QueryCopyLink onClick={handleCopyUrl}>
+                  <QueryCopyLink
+                    href={url}
+                    onClick={(event) => {
+                      // This is a copy-to-clipboard action, not a navigation
+                      event.preventDefault()
+                      handleCopyUrl()
+                    }}
+                  >
                     [{t('action.copy-url-to-clipboard')}]
                   </QueryCopyLink>
                 </StyledLabel>

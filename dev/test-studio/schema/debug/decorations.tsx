@@ -1,4 +1,4 @@
-import {ConfettiIcon} from '@sanity/icons'
+import {ConfettiIcon} from '@sanity/icons/Confetti'
 import {Card, Text} from '@sanity/ui'
 import {defineField, defineType} from 'sanity'
 

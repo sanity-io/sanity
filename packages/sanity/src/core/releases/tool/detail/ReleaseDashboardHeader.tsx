@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ChevronRightIcon, RestoreIcon} from '@sanity/icons'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {RestoreIcon} from '@sanity/icons/Restore'
 import {
   Box,
   // oxlint-disable-next-line no-restricted-imports

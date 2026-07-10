@@ -1,4 +1,4 @@
-import {EditIcon} from '@sanity/icons'
+import {EditIcon} from '@sanity/icons/Edit'
 import {type Path} from '@sanity/types'
 import {motion} from 'motion/react'
 import {type ComponentType} from 'react'

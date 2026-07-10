@@ -1,4 +1,4 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 

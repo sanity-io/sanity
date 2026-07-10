@@ -50,6 +50,7 @@ export const previewUrlSecretDocument = {
 }
 
 export const previewUrlMachine = setup({
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   types: {} as {
     context: Context
     events: Event

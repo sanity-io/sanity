@@ -1,4 +1,4 @@
-import {AddIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
 import {type ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {Grid, Menu} from '@sanity/ui'
 import {useCallback, useId, useMemo} from 'react'

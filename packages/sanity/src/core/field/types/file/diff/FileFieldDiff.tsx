@@ -1,4 +1,4 @@
-import {DocumentIcon} from '@sanity/icons'
+import {DocumentIcon} from '@sanity/icons/Document'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'

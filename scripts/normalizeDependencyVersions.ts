@@ -85,6 +85,10 @@ Object.keys(versionRanges).forEach((depName) => {
     .sort(semver.rcompare)
 
   const greatestVersion = plain[0]
+  if (greatestVersion === undefined) {
+    // no concrete versions to compare (e.g. only catalog:/workspace: ranges)
+    return
+  }
   const greatestMajor = `${semver.major(greatestVersion)}.0.0`
   const greatestRange = `^${greatestVersion}`
 
@@ -141,7 +145,7 @@ fixablePackages.forEach((pkg) => {
 
   let manifest: {dependencies: Record<string, string>; devDependencies: Record<string, string>}
   try {
-    manifest = require(manifestPath)
+    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
   } catch {
     return
   }

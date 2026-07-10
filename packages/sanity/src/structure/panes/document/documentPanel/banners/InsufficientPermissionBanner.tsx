@@ -1,4 +1,4 @@
-import {ReadOnlyIcon} from '@sanity/icons'
+import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'

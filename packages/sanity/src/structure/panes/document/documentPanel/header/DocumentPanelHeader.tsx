@@ -1,4 +1,8 @@
-import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {CloseIcon} from '@sanity/icons/Close'
+import {CollapseIcon} from '@sanity/icons/Collapse'
+import {ExpandIcon} from '@sanity/icons/Expand'
+import {SplitVerticalIcon} from '@sanity/icons/SplitVertical'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
@@ -19,6 +23,7 @@ import {
   useFieldActions,
   useTranslation,
   useZIndex,
+  useWorkspace,
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
@@ -43,6 +48,7 @@ import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMen
 import {useDocumentPane} from '../../useDocumentPane'
 import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetry__/focus.telemetry'
 import {CopyDocumentActions} from './CopyDocumentActions'
+import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
@@ -104,6 +110,7 @@ export const DocumentPanelHeader = memo(
       documentId,
     } = useDocumentPane()
     const {features} = useStructureTool()
+    const {beta} = useWorkspace()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const {maximizedPane} = useResolvedPanesList()
     const {actions: fieldActions} = useFieldActions()
@@ -124,6 +131,7 @@ export const DocumentPanelHeader = memo(
 
     const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
     const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
+    const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
     const {collapsed, isLast} = usePane()
     // Prevent focus if this is the last (non-collapsed) pane.
@@ -212,19 +220,26 @@ export const DocumentPanelHeader = memo(
             style={{lineHeight: 0, position: 'relative', zIndex: paneHeaderZIndex}}
             borderBottom
           >
-            <Flex gap={3} paddingY={3}>
-              <HorizontalScroller $showGradient={showGradient}>
-                <Flex
-                  flex={1}
-                  gap={1}
-                  overflow="auto"
-                  paddingX={3}
-                  data-testid="document-perspective-list"
-                  ref={scrollContainerRef}
-                >
-                  <DocumentPerspectiveList />
-                </Flex>
-              </HorizontalScroller>
+            <Flex gap={3} paddingY={3} justify="space-between" align="center">
+              {!hasDocumentGroupInventory && (
+                <HorizontalScroller $showGradient={showGradient}>
+                  <Flex
+                    flex={1}
+                    gap={1}
+                    overflow="auto"
+                    paddingX={3}
+                    data-testid="document-perspective-list"
+                    ref={scrollContainerRef}
+                  >
+                    <DocumentPerspectiveList />
+                  </Flex>
+                </HorizontalScroller>
+              )}
+              {hasDocumentGroupInventory && (
+                <Box paddingX={3}>
+                  <DocumentGroupInventoryHint />
+                </Box>
+              )}
 
               <Box flex="none" paddingRight={3}>
                 <Flex align="center" gap={1}>

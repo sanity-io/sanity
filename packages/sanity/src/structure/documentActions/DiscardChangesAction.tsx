@@ -1,4 +1,4 @@
-import {ResetIcon} from '@sanity/icons'
+import {ResetIcon} from '@sanity/icons/Reset'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,

@@ -46,6 +46,41 @@ const document: SanityDocument = {
       _key: 'k',
       text: 'Hello world',
     },
+    {
+      _type: 'table',
+      _key: 't',
+      rows: [
+        {
+          _type: 'row',
+          _key: 'r',
+          cells: [
+            {
+              _type: 'cell',
+              _key: 'c',
+              content: [
+                {
+                  _type: 'block',
+                  _key: 'm',
+                  children: [{_type: 'span', _key: 'n', text: 'Nested Foo'}],
+                  markDefs: [],
+                },
+                {
+                  _type: 'block',
+                  _key: 'o',
+                  children: [{_type: 'span', _key: 'p', text: 'Nested Bar'}],
+                  markDefs: [],
+                },
+                {
+                  _type: 'cellObjectBlock',
+                  _key: 'q',
+                  text: 'Nested object',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ],
 }
 
@@ -149,6 +184,88 @@ describe('Portable Text Input', () => {
       // Focus moved away from the block object, so its input unmounts entirely.
       await expect.element(blockObjectInput).not.toBeInTheDocument()
     })
+    it(`for span paths inside a container`, async () => {
+      const {waitForFocusedNodeText} = testHelpers()
+      const {rerender} = await render(
+        <FocusTrackingStory
+          document={document}
+          focusPath={[
+            'body',
+            {_key: 't'},
+            'rows',
+            {_key: 'r'},
+            'cells',
+            {_key: 'c'},
+            'content',
+            {_key: 'm'},
+            'children',
+            {_key: 'n'},
+            'text',
+          ]}
+        />,
+      )
+      await waitForFocusedNodeText('Nested Foo')
+      await rerender(
+        <FocusTrackingStory
+          document={document}
+          focusPath={[
+            'body',
+            {_key: 't'},
+            'rows',
+            {_key: 'r'},
+            'cells',
+            {_key: 'c'},
+            'content',
+            {_key: 'o'},
+            'children',
+            {_key: 'p'},
+            'text',
+          ]}
+        />,
+      )
+      await waitForFocusedNodeText('Nested Bar')
+    })
+    it(`for block paths inside a container`, async () => {
+      const {rerender} = await render(
+        <FocusTrackingStory
+          document={document}
+          focusPath={[
+            'body',
+            {_key: 't'},
+            'rows',
+            {_key: 'r'},
+            'cells',
+            {_key: 'c'},
+            'content',
+            {_key: 'q'},
+          ]}
+        />,
+      )
+      const $portableTextInput = page.getByTestId('field-body')
+      const $pteTextbox = $portableTextInput.getByRole('textbox')
+      await expect.element($pteTextbox).not.toHaveFocus()
+      const cellObjectBlockInput = page
+        .getByTestId('cellObjectBlockInputField')
+        .getByRole('textbox')
+      await expect.element(cellObjectBlockInput).toBeVisible()
+      await rerender(
+        <FocusTrackingStory
+          document={document}
+          focusPath={[
+            'body',
+            {_key: 't'},
+            'rows',
+            {_key: 'r'},
+            'cells',
+            {_key: 'c'},
+            'content',
+            {_key: 'm'},
+          ]}
+        />,
+      )
+      await expect.element($pteTextbox).toHaveFocus()
+      await expect.element(cellObjectBlockInput).not.toBeInTheDocument()
+    })
   })
   it(`reports focus on spans with with .text prop, and everything else without`, async () => {
     const paths: Path[] = []
@@ -163,7 +280,7 @@ describe('Portable Text Input', () => {
     const $inlineObject = page.getByTestId('inline-preview')
     await $inlineObject.click()
     await expect.poll(lastPath).toEqual(['body', {_key: 'g'}, 'children', {_key: 'i'}])
-    const $blockObject = page.getByTestId('pte-block-object')
+    const $blockObject = page.getByTestId('pte-block-object').first()
     await $blockObject.click()
     await expect.poll(lastPath).toEqual(['body', {_key: 'k'}])
   })

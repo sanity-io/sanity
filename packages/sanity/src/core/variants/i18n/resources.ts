@@ -24,6 +24,12 @@ const variantsLocaleStrings = {
   'overview.action.create-variant': 'Create variant',
   /** Label for the Variants overview delete action. */
   'overview.action.delete-variant': 'Delete variant',
+  /** Tooltip when delete is disabled because the variant contains one document. */
+  'overview.action.delete-variant.disabled-hint_one':
+    "This variant contains {{count}} document in it, it can't be removed until the documents have been removed.",
+  /** Tooltip when delete is disabled because the variant contains multiple documents. */
+  'overview.action.delete-variant.disabled-hint_other':
+    "This variant contains {{count}} documents in it, it can't be removed until the documents have been removed.",
   /** Error toast title when variant deletion fails. */
   'overview.action.delete-variant.error.title': 'Unable to delete variant',
   /** Link label for Variants overview documentation (empty state). */
@@ -40,7 +46,7 @@ const variantsLocaleStrings = {
   'overview.search.placeholder': 'Search variant definitions…',
   /** Column header for the variant title column in the overview table. */
   'overview.table.variant': 'Variant',
-  /** Column header for document count in the overview table. */
+  /** Column header for the documents count column in the overview table. */
   'overview.table.documents': 'Documents',
   /** Fallback text when a variant has no conditions. */
   'overview.table.no-conditions': 'No conditions',
@@ -48,6 +54,10 @@ const variantsLocaleStrings = {
   'overview.title': 'Variants',
   /** Edit action on the Variant detail page. */
   'detail.action.edit-variant': 'Edit variant',
+  /** Tooltip for pinning a variant to the studio. */
+  'detail.pin-variant': 'Pin variant to studio',
+  /** Tooltip for unpinning a variant from the studio. */
+  'detail.unpin-variant': 'Unpin variant from studio',
   /** Back action on the Variant detail page. */
   'detail.back': 'Back to variants',
   /** Created status label in the Variant detail footer. */
@@ -64,12 +74,14 @@ const variantsLocaleStrings = {
   'detail.documents.table.search-placeholder': 'Search documents',
   /** Type column header for variant document table. */
   'detail.documents.table.type': 'Type',
-  /** Version column header for variant document table. */
-  'detail.documents.table.version': 'Version',
-  /** Version chip label for a document that belongs to the published bundle. */
-  'detail.documents.table.version.published': 'Published',
-  /** Version chip label for a document that belongs to the drafts bundle. */
-  'detail.documents.table.version.drafts': 'Drafts',
+  /** Bundle column header for variant document table. */
+  'detail.documents.table.bundle': 'Bundle',
+  /** Validation error tooltip for a single error in the variant document table. */
+  'detail.documents.table.validation.error_one': '{{count}} validation error',
+  /** Validation error tooltip for multiple errors in the variant document table. */
+  'detail.documents.table.validation.error_other': '{{count}} validation errors',
+  /** Error message when variant documents fail to load. */
+  'detail.documents.error': 'Unable to load documents for this variant',
   /** Description for the missing Variant detail page. */
   'detail.not-found.description': 'The requested variant could not be found.',
   /** Title for the missing Variant detail page. */

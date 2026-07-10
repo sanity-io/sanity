@@ -1,4 +1,5 @@
-import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
+import {ResetIcon as ClearIcon} from '@sanity/icons/Reset'
+import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {
   type GlobalDocumentReferenceSchemaType,
   type GlobalDocumentReferenceValue,
@@ -146,6 +147,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
     return {_id}
   }, [value])
 
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   const loadableReferenceInfo = useReferenceInfo(refDoc as FIXME, getReferenceInfoMemo)
 
   const [autocompletePopoverReferenceElement, setAutocompletePopoverReferenceElement] =

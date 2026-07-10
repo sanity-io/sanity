@@ -1,5 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ComposeSparklesIcon, LockIcon, UnlockIcon} from '@sanity/icons'
+import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
+import {LockIcon} from '@sanity/icons/Lock'
+import {UnlockIcon} from '@sanity/icons/Unlock'
 import {type BadgeTone} from '@sanity/ui'
 import {memo, type ReactNode, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'

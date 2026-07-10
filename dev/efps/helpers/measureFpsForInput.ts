@@ -3,6 +3,7 @@ import {type Page} from 'playwright'
 import {type EfpsResult} from '../types'
 import {aggregateLatencies} from './aggregateLatencies'
 import {measureBlockingTime} from './measureBlockingTime'
+import {containsBetweenMarkers, setUpMarkers, typeCharacterReliably} from './typeCharacterReliably'
 
 interface MeasureFpsForInputOptions {
   label?: string
@@ -27,23 +28,25 @@ export async function measureFpsForInput({
   const formView = page.locator('[data-testid="form-view"]')
   await formView.waitFor({state: 'visible', timeout})
 
-  const input = page
-    .locator(
-      `[data-testid="field-${fieldName}"] input[type="text"], ` +
-        `[data-testid="field-${fieldName}"] textarea`,
-    )
-    .first()
+  const field = page.locator(`[data-testid="field-${fieldName}"]`)
+  const input = field.locator('input[type="text"], textarea').first()
   await input.waitFor({state: 'visible', timeout})
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   await input.click()
   await new Promise((resolve) => setTimeout(resolve, 500))
 
-  const rendersPromise = input.evaluate(
+  // The recorder is attached to the stable field wrapper (with a delegated,
+  // capture-phase 'input' listener on the document) rather than to the input
+  // element itself: a transient read-only flip can remount the element
+  // mid-run, which would silently kill element-bound listeners/observers and
+  // leave the characters typed after the remount without matching render
+  // events ("No matching event" failures).
+  const rendersPromise = field.evaluate(
     // Had to add this so we can run the tests
     // oxlint-disable-next-line no-implied-eval
     new Function(
-      'el',
+      'field',
       `
     return (async function() {
       const updates = []
@@ -51,33 +54,48 @@ export async function measureFpsForInput({
       // For textarea, use MutationObserver on text content
       // For input, use 'input' event because MutationObserver on 'value' attribute
       // doesn't work - React/Sanity updates the value property, not the attribute
-      if (el instanceof HTMLTextAreaElement) {
-        const mutationObserver = new MutationObserver(() => {
-          updates.push({value: el.value, timestamp: Date.now()})
+      const isTextArea = field.querySelector('textarea') !== null
+      let mutationObserver
+      let onInput
+
+      if (isTextArea) {
+        mutationObserver = new MutationObserver(() => {
+          const textarea = field.querySelector('textarea')
+          if (textarea) updates.push({value: textarea.value, timestamp: Date.now()})
         })
-        mutationObserver.observe(el, {childList: true, characterData: true, subtree: true})
+        mutationObserver.observe(field, {childList: true, characterData: true, subtree: true})
       } else {
-        el.addEventListener('input', () => {
-          updates.push({value: el.value, timestamp: Date.now()})
-        })
+        onInput = (event) => {
+          const target = event.target
+          if (!target || !field.contains(target)) return
+          if (typeof target.value !== 'string') return
+          updates.push({value: target.value, timestamp: Date.now()})
+        }
+        document.addEventListener('input', onInput, true)
       }
 
+      // End on the explicit __finish signal from the harness rather than on
+      // blur — a transient read-only flip can blur the field mid-run, which
+      // would end the recording early and leave the characters typed after the
+      // flip without matching render events.
       await new Promise((resolve) => {
-        const handler = () => {
-          el.removeEventListener('blur', handler)
-          resolve()
-        }
-
-        el.addEventListener('blur', handler)
+        document.addEventListener('__finish', resolve, {once: true})
       })
+
+      if (mutationObserver) mutationObserver.disconnect()
+      if (onInput) document.removeEventListener('input', onInput, true)
 
       return updates
     })()
   `,
-    ) as (
-      el: HTMLInputElement | HTMLTextAreaElement,
-    ) => Promise<{value: string; timestamp: number}[]>,
+    ) as (el: HTMLElement) => Promise<{value: string; timestamp: number}[]>,
   )
+  // This evaluate runs until the `__finish` event and is only awaited later.
+  // If the context is torn down first — the A/B harness closes both browsers
+  // once one side settles — this promise would reject with no handler attached,
+  // an *unhandled rejection* that crashes the process and bypasses retries.
+  // Swallow that here so a failing run stays catchable.
+  const safeRendersPromise = rendersPromise.catch((): {value: string; timestamp: number}[] => [])
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const inputEvents: {character: string; timestamp: number}[] = []
@@ -85,20 +103,34 @@ export async function measureFpsForInput({
   const startingMarker = '__START__|'
   const endingMarker = '__END__'
 
-  await input.pressSequentially(endingMarker)
-  await new Promise((resolve) => setTimeout(resolve, 500))
-  for (let i = 0; i < endingMarker.length; i++) {
-    await input.press('ArrowLeft')
-  }
-  await input.pressSequentially(startingMarker)
+  await setUpMarkers({
+    page,
+    input,
+    startingMarker,
+    endingMarker,
+    getValue: () => input.inputValue(),
+    timeout,
+    clearFirst: true,
+  })
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const getBlockingTime = measureBlockingTime(page)
 
   for (const character of characters) {
-    inputEvents.push({character, timestamp: Date.now()})
-    await input.pressSequentially(character)
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    // Type the character and confirm it registered before moving on, retrying
+    // if it was swallowed by a transient read-only flip. The returned timestamp
+    // is the moment the landing keystroke was dispatched, so a retried
+    // character's latency isn't inflated. See `typeCharacterReliably`.
+    const timestamp = await typeCharacterReliably({
+      page,
+      input,
+      character,
+      startingMarker,
+      endingMarker,
+      getValue: () => input.inputValue(),
+      timeout,
+    })
+    inputEvents.push({character, timestamp})
   }
 
   await input.blur()
@@ -106,19 +138,21 @@ export async function measureFpsForInput({
   await page.evaluate(() => window.document.dispatchEvent(new CustomEvent('__finish')))
 
   const blockingTime = await getBlockingTime()
-  const renderEvents = await rendersPromise
+  const renderEvents = await safeRendersPromise
 
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const latencies = inputEvents.map((inputEvent) => {
-    const matchingEvent = renderEvents.find(({value}) => {
-      if (!value.includes(startingMarker) || !value.includes(endingMarker)) return false
-
-      const [, afterStartingMarker] = value.split(startingMarker)
-      const [beforeEndingMarker] = afterStartingMarker.split(endingMarker)
-      return beforeEndingMarker.includes(inputEvent.character)
-    })
-    if (!matchingEvent) throw new Error(`No matching event for ${inputEvent.character}`)
+    const matchingEvent = renderEvents.find(({value}) =>
+      containsBetweenMarkers(value, inputEvent.character, startingMarker, endingMarker),
+    )
+    if (!matchingEvent) {
+      throw new Error(
+        `No matching event for ${JSON.stringify(inputEvent.character)} ` +
+          `(${renderEvents.length} render events recorded; ` +
+          `last recorded value: ${JSON.stringify(tail(renderEvents.at(-1)?.value))})`,
+      )
+    }
 
     return matchingEvent.timestamp - inputEvent.timestamp
   })
@@ -129,4 +163,10 @@ export async function measureFpsForInput({
     label: label || fieldName,
     runDuration: Date.now() - start,
   }
+}
+
+/** The last part of a (potentially huge) recorded value — the markers live at the end. */
+function tail(value: string | undefined): string {
+  if (value === undefined) return '(no events recorded)'
+  return value.length > 200 ? `…${value.slice(-200)}` : value
 }

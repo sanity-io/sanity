@@ -1,13 +1,13 @@
 /* oxlint-disable no-restricted-imports */
 
 import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '..'
 
 type BaseButtonProps = Pick<
-  UIButtonProps,
+  UIButtonProps<ElementType>,
   | 'as'
   | 'icon'
   | 'iconRight'

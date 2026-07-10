@@ -1,4 +1,8 @@
-import {ChevronDownIcon, ChevronUpIcon, DocumentIcon, LinkIcon, TrashIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {LinkIcon} from '@sanity/icons/Link'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {type Asset as AssetType} from '@sanity/types'
 import {
   Box,

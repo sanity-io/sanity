@@ -3,6 +3,7 @@ import {type Page} from 'playwright'
 import {type EfpsResult} from '../types'
 import {aggregateLatencies} from './aggregateLatencies'
 import {measureBlockingTime} from './measureBlockingTime'
+import {containsBetweenMarkers, setUpMarkers, typeCharacterReliably} from './typeCharacterReliably'
 
 interface MeasureFpsForPteOptions {
   fieldName: string
@@ -32,7 +33,15 @@ export async function measureFpsForPte({
   const contentEditable = pteField.locator('[contenteditable="true"]')
   await contentEditable.waitFor({state: 'visible', timeout})
 
-  const rendersPromise = contentEditable.evaluate(
+  // The recorder is attached to the stable field wrapper rather than the
+  // contenteditable itself, and it runs until the harness dispatches the
+  // `__finish` event rather than until blur. Both matter for resilience to a
+  // transient read-only flip mid-run (see `typeCharacterReliably`): a flip
+  // remounts/blurs the editable, which would detach a MutationObserver bound to
+  // it and end a blur-based recording early — leaving no render events for the
+  // characters typed after the flip ("No matching event" failures). `childList`
+  // is also observed so text landing in freshly created DOM nodes isn't missed.
+  const rendersPromise = pteField.evaluate(
     // Had to add this so we can run the tests
     new Function(
       'el',
@@ -52,16 +61,13 @@ export async function measureFpsForPte({
         })
       })
 
-      mutationObserver.observe(el, {subtree: true, characterData: true})
+      mutationObserver.observe(el, {subtree: true, characterData: true, childList: true})
 
       await new Promise((resolve) => {
-        const handler = () => {
-          el.removeEventListener('blur', handler)
-          resolve()
-        }
-
-        el.addEventListener('blur', handler)
+        document.addEventListener('__finish', resolve, {once: true})
       })
+
+      mutationObserver.disconnect()
 
       return updates
     })()
@@ -74,6 +80,14 @@ export async function measureFpsForPte({
       }[]
     >,
   )
+  // This evaluate runs until the `__finish` event and is only awaited later.
+  // If the context is torn down first — the A/B harness closes both browsers
+  // once one side settles — this promise would reject with no handler attached,
+  // an *unhandled rejection* that crashes the process and bypasses retries.
+  // Swallow that here so a failing run stays catchable.
+  const safeRendersPromise = rendersPromise.catch(
+    (): {value: string; timestamp: number; textContentProcessingTime: number}[] => [],
+  )
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const inputEvents: {character: string; timestamp: number}[] = []
@@ -81,35 +95,52 @@ export async function measureFpsForPte({
   const startingMarker = '___START___|'
   const endingMarker = '___END___'
 
-  await contentEditable.pressSequentially(endingMarker)
-  await new Promise((resolve) => setTimeout(resolve, 500))
-  for (let i = 0; i < endingMarker.length; i++) {
-    await contentEditable.press('ArrowLeft')
-  }
-  await contentEditable.pressSequentially(startingMarker)
+  await setUpMarkers({
+    page,
+    input: contentEditable,
+    startingMarker,
+    endingMarker,
+    getValue: async () => (await contentEditable.textContent()) ?? '',
+    timeout,
+  })
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const getBlockingTime = measureBlockingTime(page)
   for (const character of characters) {
-    inputEvents.push({character, timestamp: Date.now()})
-    await contentEditable.pressSequentially(character)
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    // Type the character and confirm it registered before moving on, retrying
+    // if it was swallowed by a transient read-only flip. The returned timestamp
+    // is the moment the landing keystroke was dispatched, so a retried
+    // character's latency isn't inflated. See `typeCharacterReliably`.
+    const timestamp = await typeCharacterReliably({
+      page,
+      input: contentEditable,
+      character,
+      startingMarker,
+      endingMarker,
+      getValue: async () => (await contentEditable.textContent()) ?? '',
+      timeout,
+    })
+    inputEvents.push({character, timestamp})
   }
 
   await contentEditable.blur()
 
+  await page.evaluate(() => window.document.dispatchEvent(new CustomEvent('__finish')))
+
   const blockingTime = await getBlockingTime()
-  const renderEvents = await rendersPromise
+  const renderEvents = await safeRendersPromise
 
   const latencies = inputEvents.map((inputEvent) => {
-    const matchingEvent = renderEvents.find(({value}) => {
-      if (!value.includes(startingMarker) || !value.includes(endingMarker)) return false
-
-      const [, afterStartingMarker] = value.split(startingMarker)
-      const [beforeEndingMarker] = afterStartingMarker.split(endingMarker)
-      return beforeEndingMarker.includes(inputEvent.character)
-    })
-    if (!matchingEvent) throw new Error(`No matching event for ${inputEvent.character}`)
+    const matchingEvent = renderEvents.find(({value}) =>
+      containsBetweenMarkers(value, inputEvent.character, startingMarker, endingMarker),
+    )
+    if (!matchingEvent) {
+      throw new Error(
+        `No matching event for ${JSON.stringify(inputEvent.character)} ` +
+          `(${renderEvents.length} render events recorded; ` +
+          `last recorded value: ${JSON.stringify(tail(renderEvents.at(-1)?.value))})`,
+      )
+    }
 
     return matchingEvent.timestamp - inputEvent.timestamp - matchingEvent.textContentProcessingTime
   })
@@ -120,4 +151,10 @@ export async function measureFpsForPte({
     label: label || fieldName,
     runDuration: Date.now() - start,
   }
+}
+
+/** The last part of a (potentially huge) recorded value — the markers live at the end. */
+function tail(value: string | undefined): string {
+  if (value === undefined) return '(no events recorded)'
+  return value.length > 200 ? `…${value.slice(-200)}` : value
 }

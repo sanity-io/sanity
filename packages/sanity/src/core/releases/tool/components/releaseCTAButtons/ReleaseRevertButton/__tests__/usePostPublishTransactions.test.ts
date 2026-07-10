@@ -4,7 +4,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {useClient} from '../../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../../store/translog/getTransactionsLogs'
-import {type DocumentInRelease} from '../../../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../../../detail/types'
 import {usePostPublishTransactions} from '../usePostPublishTransactions'
 
 vi.mock('../../../../../../hooks/useClient', () => ({

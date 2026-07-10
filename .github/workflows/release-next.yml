@@ -31,14 +31,14 @@ jobs:
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
 
       # Publish packages to npm under the `next` tag on new commits to main.
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - uses: ./.github/actions/setup
 
       - name: Bump next versions
-        run: pnpm --silent release-notes bump --preid=next --suffixType=commits-ahead
+        run: pnpm --silent release-notes bump --preid=next --suffix-type=commits-ahead
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped

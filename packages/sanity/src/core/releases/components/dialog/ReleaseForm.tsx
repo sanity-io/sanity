@@ -1,5 +1,6 @@
 import {type EditableReleaseDocument, type ReleaseType} from '@sanity/client'
-import {ChevronDownIcon, InfoOutlineIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {
   // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
@@ -79,7 +80,7 @@ export function ReleaseForm(props: {
     [handleOnChangeAndStorage, value],
   )
 
-  const handleReleaseTypeChange = useCallback<MouseEventHandler<HTMLDivElement>>(
+  const handleReleaseTypeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     (event) => {
       const pickedReleaseType = event.currentTarget.dataset.value
 

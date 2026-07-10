@@ -40,6 +40,13 @@ const templates = prepareTemplates(schema, [
     schemaType: 'author',
     value: {role: 'developer', locked: false},
   },
+  {
+    id: 'author-resolver-throws',
+    title: 'Throws',
+    schemaType: 'author',
+    // A resolver that rejects (e.g. its `client.fetch` network-errored).
+    value: () => Promise.reject(new Error('resolver boom')),
+  },
 ])
 
 describe('getTemplatePermissions', () => {
@@ -58,7 +65,7 @@ describe('getTemplatePermissions', () => {
       getClient: () => client as unknown as SanityClient,
     }
 
-    const permissions = firstValueFrom(
+    const permissions = await firstValueFrom(
       getTemplatePermissions({
         grantsStore,
         schema,
@@ -83,7 +90,10 @@ describe('getTemplatePermissions', () => {
       }),
     )
 
-    await expect(permissions).resolves.toEqual([
+    // Resolution is concurrent, so sort by id for a stable comparison.
+    const sorted = [...permissions].sort((a, b) => a.id.localeCompare(b.id))
+
+    expect(sorted).toEqual([
       {
         description: undefined,
         granted: false,
@@ -127,5 +137,96 @@ describe('getTemplatePermissions', () => {
         parameters: {},
       },
     ])
+  })
+
+  it('keeps templates whose initial value fails to resolve, with an empty resolved value, instead of erroring or dropping', async () => {
+    const client = createMockSanityClient({requests: {'/acl': requiresApproval}})
+    const grantsStore = createGrantsStore({
+      client: client as unknown as SanityClient,
+      userId: null,
+    })
+
+    const context: InitialValueResolverContext = {
+      projectId: 'test-project',
+      dataset: 'test-dataset',
+      schema: schema as Schema,
+      currentUser: null,
+      getClient: () => client as unknown as SanityClient,
+    }
+
+    const permissions = await firstValueFrom(
+      getTemplatePermissions({
+        grantsStore,
+        schema,
+        templates,
+        templateItems: [
+          {
+            id: 'author-resolver-throws',
+            templateId: 'author-resolver-throws',
+            type: 'initialValueTemplateItem',
+            schemaType: 'author',
+            parameters: {},
+          },
+          {
+            id: 'author-developer-unlocked',
+            templateId: 'author-developer-unlocked',
+            type: 'initialValueTemplateItem',
+            schemaType: 'author',
+            parameters: {},
+          },
+        ],
+        context,
+      }),
+    )
+
+    // Both templates are present (rather than the stream erroring / never
+    // emitting, which would leave the create menu stuck loading). The failing
+    // one falls back to an empty resolved initial value so it stays
+    // clickable; the editor surfaces the real error on navigate.
+    const byId = Object.fromEntries(permissions.map((permission) => [permission.id, permission]))
+    expect(Object.keys(byId).sort()).toEqual([
+      'author-developer-unlocked',
+      'author-resolver-throws',
+    ])
+    expect(byId['author-resolver-throws'].resolvedInitialValue).toEqual({})
+  })
+
+  it('does not get stuck (emits) when every template fails to resolve', async () => {
+    const client = createMockSanityClient({requests: {'/acl': requiresApproval}})
+    const grantsStore = createGrantsStore({
+      client: client as unknown as SanityClient,
+      userId: null,
+    })
+
+    const context: InitialValueResolverContext = {
+      projectId: 'test-project',
+      dataset: 'test-dataset',
+      schema: schema as Schema,
+      currentUser: null,
+      getClient: () => client as unknown as SanityClient,
+    }
+
+    const permissions = await firstValueFrom(
+      getTemplatePermissions({
+        grantsStore,
+        schema,
+        templates,
+        templateItems: [
+          {
+            id: 'author-resolver-throws',
+            templateId: 'author-resolver-throws',
+            type: 'initialValueTemplateItem',
+            schemaType: 'author',
+            parameters: {},
+          },
+        ],
+        context,
+      }),
+    )
+
+    // It emits (doesn't hang): the single failing template is kept with an
+    // empty resolved value rather than dropped.
+    expect(permissions.map((permission) => permission.id)).toEqual(['author-resolver-throws'])
+    expect(permissions[0].resolvedInitialValue).toEqual({})
   })
 })
