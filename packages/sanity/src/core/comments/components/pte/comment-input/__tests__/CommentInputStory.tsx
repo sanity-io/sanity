@@ -1,6 +1,5 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
-import {useState} from 'react'
 import {CommentInput} from 'sanity'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
@@ -42,7 +41,6 @@ export function CommentsInputStory({
   onSubmit?: () => void
   value?: PortableTextBlock[] | null
 }) {
-  const [valueState, setValueState] = useState<PortableTextBlock[] | null>(value)
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <CommentInput
@@ -50,8 +48,7 @@ export function CommentsInputStory({
         placeholder="Your comment..."
         focusLock
         currentUser={currentUser}
-        onChange={setValueState}
-        value={valueState}
+        value={value}
         mentionOptions={MENTION_DATA}
         onDiscardConfirm={onDiscardConfirm}
         onDiscardCancel={onDiscardCancel}

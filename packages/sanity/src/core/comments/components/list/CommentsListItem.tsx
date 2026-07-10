@@ -142,13 +142,10 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
     replies = EMPTY_ARRAY,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
-  const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const replyInputRef = useRef<CommentInputHandle>(null)
 
   const {isTopLayer} = useLayer()
-
-  const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
 
   const [mouseOver, setMouseOver] = useState<boolean>(false)
 
@@ -171,17 +168,15 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
     }
 
     onReply?.(nextComment)
-    setValue(EMPTY_ARRAY)
   }
 
   const startDiscard = useCallback(() => {
-    if (!hasValue) {
-      setValue(EMPTY_ARRAY)
+    if (!hasCommentMessageValue(replyInputRef.current?.getValue() ?? null)) {
       return
     }
 
     replyInputRef.current?.discardDialogController.open()
-  }, [hasValue])
+  }, [])
 
   const handleInputKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -204,7 +199,6 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   }, [])
 
   const confirmDiscard = useCallback(() => {
-    setValue(EMPTY_ARRAY)
     replyInputRef.current?.discardDialogController.close()
     replyInputRef.current?.focus()
   }, [])
@@ -338,7 +332,6 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
             currentUser={currentUser}
             expandOnFocus
             mentionOptions={mentionOptions}
-            onChange={setValue}
             onDiscardCancel={cancelDiscard}
             onDiscardConfirm={confirmDiscard}
             onKeyDown={handleInputKeyDown}
@@ -350,7 +343,6 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
             }
             readOnly={readOnly || mode === 'upsell'}
             ref={replyInputRef}
-            value={value}
             withAvatar={avatarConfig.replyAvatar}
           />
         )}

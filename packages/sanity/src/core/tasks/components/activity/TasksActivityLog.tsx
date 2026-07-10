@@ -1,4 +1,4 @@
-import {type Path} from '@sanity/types'
+import {type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
@@ -95,7 +95,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
     }
   }
 
-  const handleCommentCreate = async (message: CommentInputProps['value']) => {
+  const handleCommentCreate = async (message: PortableTextBlock[]) => {
     const commentId = uuid()
     const notification = handleGetNotificationValue(message, commentId)
 

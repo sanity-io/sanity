@@ -1,5 +1,6 @@
+import {type PortableTextBlock} from '@sanity/types'
 import {Card} from '@sanity/ui'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useRef} from 'react'
 
 import {
   CommentInput,
@@ -15,27 +16,22 @@ import {ActivityItem} from './TasksActivityItem'
 interface TasksCommentActivityInputProps {
   currentUser: CommentInputProps['currentUser']
   mentionOptions: CommentInputProps['mentionOptions']
-  onSubmit: (message: CommentInputProps['value']) => void
+  onSubmit: (message: PortableTextBlock[]) => void
 }
 
 export function TasksActivityCommentInput(props: TasksCommentActivityInputProps) {
   const {mentionOptions, currentUser, onSubmit} = props
   const {mode} = useTasksEnabled()
-  const [value, setValue] = useState<CommentInputProps['value']>(null)
   const editorRef = useRef<CommentInputHandle>(null)
 
-  const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
-
-  const handleChange = useCallback((nextValue: CommentInputProps['value']) => {
-    setValue(nextValue)
-  }, [])
-
-  const handleSubmit = useCallback(() => {
-    if (hasValue) {
-      onSubmit(value)
-      setValue(null)
-    }
-  }, [hasValue, onSubmit, value])
+  const handleSubmit = useCallback(
+    (nextValue: PortableTextBlock[]) => {
+      if (hasCommentMessageValue(nextValue)) {
+        onSubmit(nextValue)
+      }
+    },
+    [onSubmit],
+  )
 
   const handleDiscardCancel = useCallback(() => {
     editorRef.current?.discardDialogController.close()
@@ -43,25 +39,20 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
 
   const handleDiscardConfirm = useCallback(() => {
     editorRef.current?.discardDialogController.close()
-    setValue(null)
   }, [])
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        e.stopPropagation()
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      e.stopPropagation()
 
-        if (hasValue) {
-          editorRef.current?.discardDialogController.open()
-        } else {
-          editorRef.current?.discardDialogController.close()
-          setValue(null)
-        }
+      if (hasCommentMessageValue(editorRef.current?.getValue() ?? null)) {
+        editorRef.current?.discardDialogController.open()
+      } else {
+        editorRef.current?.discardDialogController.close()
       }
-    },
-    [hasValue],
-  )
+    }
+  }, [])
   const {t} = useTranslation(tasksLocaleNamespace)
 
   return (
@@ -72,7 +63,6 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
           currentUser={currentUser}
           expandOnFocus
           mentionOptions={mentionOptions}
-          onChange={handleChange}
           onDiscardConfirm={handleDiscardConfirm}
           onDiscardCancel={handleDiscardCancel}
           onKeyDown={handleKeyDown}
@@ -84,7 +74,6 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
               : t('panel.comment.placeholder')
           }
           ref={editorRef}
-          value={value}
         />
       </Card>
     </ActivityItem>

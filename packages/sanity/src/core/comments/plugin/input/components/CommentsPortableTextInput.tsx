@@ -91,7 +91,6 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const [authoringDecorationElement, setAuthoringDecorationElement] =
     useState<HTMLSpanElement | null>(null)
 
-  const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
   const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
 
   const [currentSelection, setCurrentSelection] = useState<EditorSelection | null>(null)
@@ -123,7 +122,6 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     setCurrentSelection(null)
     setCurrenSelectionRect(null)
     setNextCommentSelection(null)
-    setNextCommentValue(null)
     setCanSubmit(false)
     setAuthoringDecorationElement(null)
     setFragment(null)
@@ -555,12 +553,10 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
           <InlineCommentInputPopover
             currentUser={currentUser}
             mentionOptions={mentionOptions}
-            onChange={setNextCommentValue}
             onClickOutside={resetStates}
             onDiscardConfirm={handleCommentDiscardConfirm}
             onSubmit={handleSubmit}
             referenceElement={popoverAuthoringReferenceElement}
-            value={nextCommentValue}
           />
         )}
         <AnimatePresence>
