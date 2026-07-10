@@ -54,6 +54,10 @@ const variantsLocaleStrings = {
   'overview.title': 'Variants',
   /** Edit action on the Variant detail page. */
   'detail.action.edit-variant': 'Edit variant',
+  /** Tooltip for pinning a variant to the studio. */
+  'detail.pin-variant': 'Pin variant to studio',
+  /** Tooltip for unpinning a variant from the studio. */
+  'detail.unpin-variant': 'Unpin variant from studio',
   /** Back action on the Variant detail page. */
   'detail.back': 'Back to variants',
   /** Created status label in the Variant detail footer. */

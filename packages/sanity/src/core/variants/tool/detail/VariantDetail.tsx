@@ -9,6 +9,7 @@ import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
+import {VariantPinButton} from '../components/VariantPinButton'
 import {
   decodeVariantIdFromRoute,
   getVariantConditionsText,
@@ -81,9 +82,12 @@ export function VariantDetail() {
             <Card paddingY={5}>
               <Flex align="flex-start" gap={4} justify="space-between">
                 <Stack space={3}>
-                  <Text as="h1" size={4} weight="bold">
-                    {getVariantTitle(variant)}
-                  </Text>
+                  <Flex align="center" gap={1}>
+                    <VariantPinButton variant={variant} />
+                    <Text as="h1" size={4} weight="bold">
+                      {getVariantTitle(variant)}
+                    </Text>
+                  </Flex>
                   <Text muted size={1}>
                     {description || t('detail.no-description')}
                   </Text>
