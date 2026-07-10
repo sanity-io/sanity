@@ -30,7 +30,6 @@ vi.mock('sanity', async (importOriginal) => ({
       selectedReleaseId: undefined,
       selectedVariantName: undefined,
       selectedVariant: undefined,
-      variantsLoading: false,
       bundle: 'drafts',
     }),
   ),

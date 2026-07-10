@@ -63,17 +63,12 @@ export interface PerspectiveContextValue {
   selectedVariantName: string | undefined
   /**
    * Resolved variant definition; undefined when no variant is requested, while definitions are
-   * still loading (see `variantsLoading`), or when `selectedVariantName` matches no definition.
+   * still loading (see `useAllVariants().loading`), or when `selectedVariantName` matches no
+   * definition.
    * @beta
    * @internal
    */
   selectedVariant: SystemVariant | undefined
-  /**
-   * True while variant definitions are loading and `selectedVariant` cannot be resolved yet.
-   * @beta
-   * @internal
-   */
-  variantsLoading: boolean
   /**
    * The selected bundle, either `published`, `drafts` or a release id or the bundle id for anonymous bundles like agent documents.
    */

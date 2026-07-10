@@ -5,6 +5,7 @@ import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../releases/store/types'
 import {getTargetDocument} from '../util/getTargetDocument'
+import {useAllVariants} from '../variants/store/useAllVariants'
 import {type SystemVariant} from '../variants/types'
 
 /**
@@ -137,7 +138,8 @@ export function getTargetDocumentState(options: {
  */
 export function useTargetDocumentState(documentGroupId: string): TargetDocumentState {
   const {versions, loading: versionsLoading} = useDocumentVersions({documentId: documentGroupId})
-  const {bundle, selectedVariant, selectedVariantName, variantsLoading} = usePerspective()
+  const {bundle, selectedVariant, selectedVariantName} = usePerspective()
+  const {loading: variantsLoading} = useAllVariants()
 
   return useMemo(
     () =>

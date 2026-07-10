@@ -65,7 +65,7 @@ Operations must be disabled by the document store itself when a target (release 
 
 Replaces the current pattern of threading `useTargetDocument()` into ~12 files where each call site decides what `undefined` means.
 
-- [x] Discriminate variant-definition loading in the perspective machinery (`perspective/PerspectiveProvider.tsx`, `perspective/types.ts`): `PerspectiveContextValue` exposes `selectedVariantName` (the raw requested variant, available synchronously) and `variantsLoading`.
+- [x] Discriminate variant-definition loading: `PerspectiveContextValue` exposes `selectedVariantName` (the raw requested variant, available synchronously); definition loading is read from `useAllVariants().loading` directly by `useTargetDocumentState` (the perspective context stays perspective-only).
 - [x] Evolve `hooks/useTargetDocument.ts` into `useTargetDocumentState(documentGroupId)` returning a discriminated union (final shape):
   - `{status: 'resolving'}` — a lookup (variant definitions or version stubs) is in flight; never fall back to the base pair.
   - `{status: 'ready', targetDocument, scopeId, variant}` — resolution finished; covers both variant targets and base/release targeting (`targetDocument` undefined only when no variant is selected and the base pair legitimately applies).
