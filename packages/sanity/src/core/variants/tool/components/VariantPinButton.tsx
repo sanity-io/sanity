@@ -26,9 +26,13 @@ export function VariantPinButton({
 
   const handlePinVariant = useCallback(() => {
     if (isPinned) {
-      setVariant(undefined)
+      setVariant({
+        variantId: undefined,
+      })
     } else {
-      setVariant(variant._id)
+      setVariant({
+        variantId: variant._id,
+      })
     }
   }, [isPinned, setVariant, variant])
 

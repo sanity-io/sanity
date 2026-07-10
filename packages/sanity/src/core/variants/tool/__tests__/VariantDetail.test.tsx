@@ -187,7 +187,7 @@ describe('VariantDetail', () => {
 
     await user.click(screen.getByTestId('pin-variant-button'))
 
-    expect(mockedSetVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
+    expect(mockedSetVariant).toHaveBeenCalledWith({variantId: variantAlphaAudience._id})
   })
 
   it('opens the edit dialog with existing variant values', async () => {
