@@ -2,12 +2,12 @@ import {ResetIcon} from '@sanity/icons/Reset'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getTargetScopeId,
   InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
-  useTargetDocument,
   useTranslation,
 } from 'sanity'
 
@@ -31,10 +31,12 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   version,
   draft,
 }) => {
-  const targetDocument = useTargetDocument(id)
-  // The scope of the document targeted by the selected perspective (undefined when the document
-  // doesn't exist yet, in which case the hooks fall back to the draft/published pair).
-  const scopeId = targetDocument?._system.scopeId
+  const {displayed, targetDocumentState} = useDocumentPane()
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, the action is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
   const {discardChanges} = useDocumentOperation(id, type, scopeId)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -44,7 +46,6 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     permission: 'discardDraft',
   })
   const currentUser = useCurrentUser()
-  const {displayed} = useDocumentPane()
 
   const {t} = useTranslation(structureLocaleNamespace)
   const isPublished = displayed?._id && isPublishedId(displayed?._id)
@@ -87,7 +88,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     return {
       tone: 'critical',
       icon: ResetIcon,
-      disabled: Boolean(discardChanges.disabled) || isPermissionsLoading,
+      disabled: Boolean(discardChanges.disabled) || isPermissionsLoading || !isTargetReady,
       title: t((discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || ''),
       label: t('action.discard-changes.label'),
       onHandle: handle,
@@ -114,6 +115,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     handle,
     isPermissionsLoading,
     isPublished,
+    isTargetReady,
     permissions?.granted,
     t,
   ])

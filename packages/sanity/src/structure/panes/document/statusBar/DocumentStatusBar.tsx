@@ -1,13 +1,7 @@
 import {Card, Flex} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
-import {
-  isDocumentInSelectedVariant,
-  isPublishedPerspective,
-  isReleaseDocument,
-  useDocumentVersions,
-  usePerspective,
-} from 'sanity'
+import {isPublishedPerspective, isReleaseDocument, usePerspective} from 'sanity'
 
 import {usePaneRouter} from '../../../components'
 import {SpacerButton} from '../../../components/spacerButton'
@@ -30,10 +24,9 @@ const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {documentId, editState, revisionNotFound} = useDocumentPane()
+  const {editState, revisionNotFound, targetDocumentState} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
-  const {selectedPerspective, selectedVariant, bundle} = usePerspective()
-  const documentVersions = useDocumentVersions({documentId})
+  const {selectedPerspective, selectedVariantName} = usePerspective()
   const isEditingVariantDocument = useIsEditingVariantDocument()
 
   const showingRevision = Boolean(params.rev)
@@ -49,16 +42,10 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const shouldRender = useMemo(() => {
     const isReady = Boolean(editState?.ready && typeof collapsed === 'boolean')
 
-    // Hide the footer (status + actions) when the document has no variant-scoped version for the
-    // selected variant. Mirrors the not-in-variant banner and read-only form state.
-    if (
-      selectedVariant &&
-      !isDocumentInSelectedVariant({
-        selectedVariant,
-        bundle,
-        documentVersions: documentVersions.versions,
-      })
-    ) {
+    // Hide the footer (status + actions) when a variant is requested but its target document has
+    // not resolved to an editable version (missing, invalid selection, or mid-transition).
+    // Mirrors the not-in-variant banner and read-only form state.
+    if (selectedVariantName && targetDocumentState.status !== 'ready') {
       return false
     }
 
@@ -71,7 +58,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
       }
     }
     return isReady
-  }, [collapsed, editState, selectedPerspective, selectedVariant, bundle, documentVersions])
+  }, [collapsed, editState, selectedPerspective, selectedVariantName, targetDocumentState])
 
   let actions: React.JSX.Element | null = null
   if (showingRevision) {

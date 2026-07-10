@@ -22,9 +22,16 @@ vi.mock('../../../../hooks/useDocumentOperation', () => ({
 }))
 
 // The target document lookup needs the document preview store (mocked away above); these tests
-// only assert the preview perspective, so no target document (and thus no scopeId) is resolved.
-vi.mock('../../../../hooks/useTargetDocument', () => ({
-  useTargetDocument: vi.fn(() => undefined),
+// only assert the preview perspective, so the target resolves to a ready state with no document
+// (base draft/published pair semantics, no scopeId).
+vi.mock('../../../../hooks/useTargetDocumentState', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useTargetDocumentState: vi.fn(() => ({
+    status: 'ready',
+    targetDocument: undefined,
+    scopeId: undefined,
+    variant: undefined,
+  })),
 }))
 
 vi.mock('../../../hooks/useVersionOperations', () => ({

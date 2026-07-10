@@ -10,7 +10,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
-import {useTargetDocument} from '../../../hooks/useTargetDocument'
+import {getTargetScopeId, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
@@ -33,10 +33,12 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
   const toast = useToast()
   const {t: coreT} = useTranslation()
 
-  const targetDocument = useTargetDocument(id)
-  // The scope of the document targeted by the selected perspective (undefined when the document
-  // doesn't exist yet, in which case the permissions check falls back to the draft/published pair).
-  const scopeId = targetDocument?._system.scopeId
+  const targetDocumentState = useTargetDocumentState(id)
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, the action is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -98,7 +100,7 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
       : t('action.unpublish-doc-actions'),
     icon: isAlreadyUnpublished ? RevertIcon : UnpublishIcon,
     onHandle: handleOnClick,
-    disabled: !isPublished,
+    disabled: !isPublished || !isTargetReady,
     /** @todo should be switched once we have the document actions updated */
     title: isAlreadyUnpublished
       ? t('action.revert-unpublish-actions')

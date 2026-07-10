@@ -116,4 +116,8 @@ export {useSetVariant} from './perspective/useSetVariant'
 export {ReleaseAvatarIcon} from './releases/components/ReleaseAvatar'
 export {useAllVariants} from './variants/store/useAllVariants'
 export {DEFAULT_ANNOTATIONS, DEFAULT_DECORATORS} from '@sanity/schema'
-export {useTargetDocument} from './hooks/useTargetDocument'
+export {
+  getTargetScopeId,
+  type TargetDocumentState,
+  useTargetDocumentState,
+} from './hooks/useTargetDocumentState'

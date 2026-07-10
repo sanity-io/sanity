@@ -2,6 +2,8 @@
 
 This document describes the current architecture of the Variants Studio tool, what functionality is already covered, and the main work that is still pending.
 
+For the plan covering variant _document editing_ through the document pair (store guards, target resolution, operation routing), see [`EDITING_PLAN.md`](./EDITING_PLAN.md).
+
 ## Scope
 
 The Variants tool is registered by `plugin/index.tsx` under the `sanity/variants` plugin name and is gated by `beta.variants.enabled`. The tool route is `/variants`, with detail pages mounted at `/variants/:variantId`.
