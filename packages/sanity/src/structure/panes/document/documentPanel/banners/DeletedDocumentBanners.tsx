@@ -35,7 +35,7 @@ export function DeletedDocumentBanners() {
 
 function DeletedDocumentBanner() {
   const {documentId, documentType} = useDocumentPane()
-  // No `useTargetDocument().scopeId` here: restoring a deleted document deliberately operates on
+  // No `getTargetScopeId(useTargetDocumentState())` here: restoring a deleted document deliberately operates on
   // the draft/published pair, so no version scope applies.
   const {restore} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()

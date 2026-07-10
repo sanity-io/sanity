@@ -39,6 +39,7 @@ vi.mock('sanity', async (importOriginal) => ({
       selectedPerspective: 'drafts',
       selectedPerspectiveName: undefined,
       selectedReleaseId: undefined,
+      selectedVariantName: undefined,
       selectedVariant: undefined,
       bundle: 'drafts',
     }),

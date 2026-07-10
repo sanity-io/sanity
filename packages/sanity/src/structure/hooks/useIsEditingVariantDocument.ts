@@ -1,26 +1,14 @@
-import {isDocumentInSelectedVariant, useDocumentVersions, usePerspective} from 'sanity'
-
-import {useDocumentPaneInfo} from '../panes/document/useDocumentPaneInfo'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 /**
- * Returns true when a variant is selected and the open document has a variant-scoped
- * version for that variant in the current bundle (i.e. the user is editing a variant document).
+ * Returns true when a variant is selected and the open document's variant-scoped version for the
+ * current bundle has resolved (i.e. the user is editing a variant document).
  *
  * Temporary hook used by the document pane UI to hide actions while editing variant documents.
  * Intended for internal use and can be removed once actions are supported on variant documents.
  */
 export function useIsEditingVariantDocument(): boolean {
-  const {selectedVariant, bundle} = usePerspective()
-  const {documentId} = useDocumentPaneInfo()
-  const {versions, loading} = useDocumentVersions({documentId})
+  const {targetDocumentState} = useDocumentPane()
 
-  if (!selectedVariant || loading) {
-    return false
-  }
-
-  return isDocumentInSelectedVariant({
-    selectedVariant,
-    bundle,
-    documentVersions: versions,
-  })
+  return targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
 }
