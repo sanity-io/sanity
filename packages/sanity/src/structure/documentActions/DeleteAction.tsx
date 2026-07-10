@@ -4,6 +4,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {catchError, filter, firstValueFrom, map, of, timeout} from 'rxjs'
 import {
   type DocumentActionComponent,
+  getPairTarget,
   getTargetScopeId,
   InsufficientPermissionsMessage,
   isAgentBundleName,
@@ -24,6 +25,7 @@ import {DocumentDeleted} from './__telemetry__/documentActions.telemetry'
 const DISABLED_REASON_TITLE_KEY = {
   NOTHING_TO_DELETE: 'action.delete.disabled.nothing-to-delete',
   NOT_READY: 'action.delete.disabled.not-ready',
+  TARGET_NOT_FOUND: 'action.delete.disabled.target-not-found',
 }
 
 // operationEvents switchMaps per document, so a superseding operation drops the
@@ -41,7 +43,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft}) => {
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
   const isAgentBundle = isAgentBundleName(scopeId)
-  const {delete: deleteOp} = useDocumentOperation(id, type, scopeId)
+  const {delete: deleteOp} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const documentStore = useDocumentStore()

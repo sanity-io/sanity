@@ -3,7 +3,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDialogProps,
-  getTargetScopeId,
+  getPairTarget,
   useDocumentOperation,
   useDocumentOperationEvent,
   useTranslation,
@@ -21,8 +21,7 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
   // still resolving or the draft/published pair applies). While resolving, the action is disabled
   // below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
-  const scopeId = getTargetScopeId(targetDocumentState)
-  const {restore} = useDocumentOperation(id, type, scopeId)
+  const {restore} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const event = useDocumentOperationEvent(id, type)
   const {navigateIntent} = useRouter()
   const prevEvent = useRef(event)

@@ -5,6 +5,7 @@ import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getPairTarget,
   getTargetScopeId,
   InsufficientPermissionsMessage,
   isPublishedPerspective,
@@ -34,6 +35,7 @@ const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   ALREADY_PUBLISHED: 'action.publish.already-published.no-time-ago.tooltip',
   NO_CHANGES: 'action.publish.no-changes.tooltip',
   NOT_READY: 'action.publish.disabled.not-ready',
+  TARGET_NOT_FOUND: 'action.publish.disabled.target-not-found',
 } as const
 
 const PUBLISHED_STATE = {status: 'published'} as const
@@ -71,7 +73,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
 
-  const {publish} = useDocumentOperation(id, type, scopeId)
+  const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const validationStatus = useValidationStatus(value._id, type, !release)
   const syncState = useSyncState(id, type, scopeId)
   const editState = useEditState(documentId, documentType, 'default', scopeId)

@@ -4,7 +4,11 @@ import {Fragment, type HTMLAttributes, startTransition, useCallback, useMemo, us
 import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
-import {getTargetScopeId, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  useTargetDocumentState,
+} from '../../../hooks/useTargetDocumentState'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store'
 import {type FieldChangeNode} from '../../types'
@@ -73,7 +77,7 @@ export function FieldChange(
   // below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
-  const ops = useDocumentOperation(documentId, schemaType.name, scopeId)
+  const ops = useDocumentOperation(documentId, schemaType.name, getPairTarget(targetDocumentState))
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
   const [buttonElement, _setButtonElement] = useState<HTMLButtonElement | null>(null)

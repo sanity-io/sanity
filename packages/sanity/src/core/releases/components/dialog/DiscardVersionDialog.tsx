@@ -6,7 +6,7 @@ import {useCallback, useState} from 'react'
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useDocumentOperation, useSchema} from '../../../hooks'
-import {getTargetScopeId, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
+import {getPairTarget, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
 import {Translate, useTranslation} from '../../../i18n'
 import {type TargetPerspective} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
@@ -35,8 +35,11 @@ export function DiscardVersionDialog(props: {
   // still resolving or the draft/published pair applies). While resolving, confirming is
   // disabled below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
-  const scopeId = getTargetScopeId(targetDocumentState)
-  const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType, scopeId)
+  const {discardChanges} = useDocumentOperation(
+    getPublishedId(documentId),
+    documentType,
+    getPairTarget(targetDocumentState),
+  )
   const {selectedPerspective} = usePerspective()
   const {discardVersion} = useVersionOperations()
   const schema = useSchema()

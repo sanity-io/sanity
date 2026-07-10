@@ -44,9 +44,19 @@ export interface EditStateFor {
   liveEditSchemaType: boolean
   ready: boolean
   /**
-   * When editing a version, the name of the release the document belongs to.
+   * When editing a version that is NOT variant-scoped, the name of the release (or agent /
+   * anonymous bundle) the document belongs to. `undefined` for variant-scoped versions — a
+   * variant scope hash is not a release name and must never be matched against, rendered as, or
+   * routed like one. Classified from the version snapshot's `_system.variant`; until the first
+   * snapshot arrives, the bundle segment is reported as-is.
    */
   release: string | undefined
+  /**
+   * When editing a version, the bundle segment of the version document id
+   * (`versions.<scopeId>.<groupId>`): a release id, an agent/anonymous bundle name, or an opaque
+   * variant scope hash. `undefined` when editing the base draft/published pair.
+   */
+  scopeId: string | undefined
 }
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
@@ -79,6 +89,7 @@ export const editState = memoize(
   ): Observable<EditStateFor> => {
     const liveEditSchemaType = isLiveEditEnabled(ctx.schema, typeName)
     const liveEdit = typeof idPair.versionId !== 'undefined' || liveEditSchemaType
+    const scopeId = idPair.versionId ? getVersionFromId(idPair.versionId) : undefined
 
     return snapshotPair(ctx.client, idPair, typeName, undefined, ctx.extraOptions).pipe(
       switchMap((versions) =>
@@ -125,7 +136,14 @@ export const editState = memoize(
           liveEditSchemaType,
           ready: !fromCache,
           transactionSyncLock: fromCache ? null : transactionSyncLock,
-          release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
+          release: versionSnapshot
+            ? // If i has the system group it's a document with the whole `_system` field, so we can use the release from the _system.
+              versionSnapshot._system?.group
+              ? versionSnapshot._system?.release?._ref
+              : // Fallback to scopeId because it will be a release version. Variant versions have the `_system.group` field.
+                scopeId
+            : scopeId,
+          scopeId,
         }),
       ),
       startWith({
@@ -138,7 +156,8 @@ export const editState = memoize(
         liveEditSchemaType,
         ready: false,
         transactionSyncLock: null,
-        release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
+        release: scopeId,
+        scopeId,
       }),
       // Unlike `publishReplay(1) + refCount()`, this resets the replay subject
       // when the pipeline is torn down, so a later cold subscriber won't get a
