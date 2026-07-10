@@ -20,12 +20,15 @@ export function useSetVariant() {
   const router = useRouter()
   const defaultPerspective = useGetDefaultPerspective()
   const setVariant = useCallback(
-    (variant: SystemVariant | undefined, options?: {perspective?: SystemBundle | ReleaseId}) => {
+    (
+      variantId: SystemVariant['_id'] | undefined,
+      options?: {perspective?: SystemBundle | ReleaseId},
+    ) => {
       const {perspective} = options ?? {}
 
       router.navigate({
         stickyParams: {
-          variant: variant ? getVariantId(variant._id) : null,
+          variant: variantId ? getVariantId(variantId) : null,
           ...(perspective
             ? {
                 excludedPerspectives: null,
