@@ -122,6 +122,34 @@ describe('getDocumentPairPermissions (Pattern-B memoization)', () => {
     expect(versionA).not.toBe(versionB)
   })
 
+  it('returns DISTINCT observables for different userId', () => {
+    createSnapshotPairMock()
+    const grantsStore = createGrantsStore()
+    const id = `book-${Math.random().toString(36).slice(2)}`
+
+    const shared = {client, schema, grantsStore, id, type: 'book', permission: 'publish'} as const
+
+    const userA = getDocumentPairPermissions({...shared, userId: 'user-a'})
+    const userB = getDocumentPairPermissions({...shared, userId: 'user-b'})
+
+    // Distinct memo entries per user stop an in-place user switch from replaying
+    // the previous user's grants out of the never-cleared module-level cache.
+    expect(userA).not.toBe(userB)
+  })
+
+  it('returns DISTINCT observables for undefined vs defined userId', () => {
+    createSnapshotPairMock()
+    const grantsStore = createGrantsStore()
+    const id = `book-${Math.random().toString(36).slice(2)}`
+
+    const shared = {client, schema, grantsStore, id, type: 'book', permission: 'publish'} as const
+
+    const anonymous = getDocumentPairPermissions(shared)
+    const identified = getDocumentPairPermissions({...shared, userId: 'user-a'})
+
+    expect(anonymous).not.toBe(identified)
+  })
+
   it('builds the underlying chain only once for N subscribers', () => {
     const {draft$, published$, version$} = createSnapshotPairMock()
     const grantsStore = createGrantsStore()
