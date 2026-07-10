@@ -357,6 +357,7 @@ exports[`exports snapshot 1`] = `
     "getItemKeySegment": "function",
     "getNamelessWorkspaceIdentifier": "function",
     "getPairListener": "function",
+    "getPairTarget": "function",
     "getPreviewPaths": "function",
     "getPreviewStateObservable": "function",
     "getPreviewValueWithFallback": "function",

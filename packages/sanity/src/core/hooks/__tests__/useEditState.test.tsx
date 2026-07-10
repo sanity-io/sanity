@@ -16,6 +16,7 @@ const initialState: EditStateFor = {
   liveEditSchemaType: false,
   ready: false,
   release: undefined,
+  scopeId: undefined,
 }
 
 const mockEditState$ = new BehaviorSubject<EditStateFor>(initialState)
