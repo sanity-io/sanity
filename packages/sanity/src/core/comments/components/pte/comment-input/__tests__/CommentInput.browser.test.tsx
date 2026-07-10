@@ -61,5 +61,28 @@ describe('Comments', () => {
       await userEvent.keyboard('{Enter}')
       await submitted
     })
+
+    it('Should start the next comment empty after submitting the previous one', async () => {
+      const {insertPortableText} = testHelpers()
+      let resolve!: () => void
+      const submitted = Object.assign(new Promise<void>((r) => (resolve = r)), {resolve})
+
+      void render(<CommentsInputStory onSubmit={submitted.resolve} />)
+      const $editable = page.getByTestId('comment-input-editable')
+      await expect.element($editable).toBeVisible()
+      await insertPortableText('First comment', $editable)
+      await expect.element(page.getByTestId('comment-input-send-button')).toBeEnabled()
+      // Type more text and submit immediately, without waiting for any
+      // editor-to-consumer sync: the editor owns the draft, so the submit
+      // must carry the full text and the next comment must start empty.
+      await userEvent.keyboard(' typed')
+      await userEvent.keyboard('{Enter}')
+      await submitted
+
+      await expect.element($editable).not.toHaveTextContent('First comment')
+
+      await insertPortableText('Second comment', $editable)
+      await expect.element($editable).toHaveTextContent(/^Second comment$/)
+    })
   })
 })

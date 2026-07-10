@@ -11,6 +11,7 @@ import {
   useClickOutsideEvent,
 } from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
+import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
@@ -24,7 +25,7 @@ import {
 } from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
 import {useUser} from '../../../store'
-import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'
+import {hasCommentMessageValue, isTextSelectionComment} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
   type CommentContext,
@@ -196,16 +197,19 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const [user] = useUser(authorId)
   const {t} = useTranslation(commentsLocaleNamespace)
 
-  const [value, setValue] = useState<CommentMessage>(message)
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
-  const startMessage = useRef<CommentMessage>(message)
+  // The message as it was when editing started: the editor's initial value,
+  // and the reference `readEditorHasChanges` compares against. Frozen so a
+  // remote update to the comment cannot clobber the draft mid-edit.
+  const [editStartMessage, setEditStartMessage] = useState<CommentMessage>(message)
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
 
   const commentInputRef = useRef<CommentInputHandle>(null)
 
-  const hasChanges = useCommentHasChanged(value)
-  const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
+  const readEditorHasChanges = useCallback(() => {
+    return !isEqual(editStartMessage, commentInputRef.current?.getValue() ?? null)
+  }, [editStartMessage])
 
   // Filter out reactions that's been optimistically removed from the comment.
   const reactions = (
@@ -225,17 +229,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const formattedLastEditAt = editedDate ? dateTimeFormat.format(editedDate) : null
   const displayError = hasError || isRetrying
 
-  // If the message has changed we need to update the value in the state
-  // so that, when the user starts editing, the input is populated with the
-  // latest message value.
-  useEffect(() => {
-    if (isEditing) return
-
-    startMessage.current = message
-    // oxlint-disable-next-line react/react-compiler
-    setValue(message)
-  }, [isEditing, message])
-
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
   const handleCopyLink = useCallback(() => onCopyLink?.(_id), [_id, onCopyLink])
@@ -250,16 +243,16 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const cancelEdit = useCallback(() => {
     setIsEditing(false)
-    setValue(startMessage.current)
   }, [])
 
   const startDiscard = useCallback(() => {
-    if (!hasValue || !hasChanges) {
+    const currentValue = commentInputRef.current?.getValue() ?? null
+    if (!hasCommentMessageValue(currentValue) || !readEditorHasChanges()) {
       cancelEdit()
       return
     }
     commentInputRef.current?.discardDialogController.open()
-  }, [cancelEdit, hasChanges, hasValue])
+  }, [cancelEdit, readEditorHasChanges])
 
   const handleInputKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -308,23 +301,32 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   }, [_id, comment.status, onStatusChange])
 
   const toggleEdit = useCallback(() => {
+    setEditStartMessage(message)
     setIsEditing((v) => !v)
-  }, [])
+  }, [message])
 
   const handleCloseMenu = useCallback(() => setMenuOpen(false), [])
 
   const handleRootKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === 'Escape' && !hasChanges) {
+      if (event.key === 'Escape' && !readEditorHasChanges()) {
         cancelEdit()
       }
     },
-    [cancelEdit, hasChanges],
+    [cancelEdit, readEditorHasChanges],
   )
 
   useDidUpdate(isEditing, handleCloseMenu)
 
-  useClickOutsideEvent(!hasChanges && cancelEdit, () => [rootElementRef.current])
+  const handleClickOutside = useCallback(() => {
+    if (readEditorHasChanges()) {
+      // An edit with changes only closes through the discard dialog.
+      return
+    }
+    cancelEdit()
+  }, [cancelEdit, readEditorHasChanges])
+
+  useClickOutsideEvent(handleClickOutside, () => [rootElementRef.current])
 
   const name = user?.displayName ? (
     <Text size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>
@@ -438,14 +440,13 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 currentUser={currentUser}
                 focusOnMount
                 mentionOptions={mentionOptions}
-                onChange={setValue}
                 onDiscardCancel={cancelDiscard}
                 onDiscardConfirm={confirmDiscard}
                 onKeyDown={handleInputKeyDown}
                 onSubmit={handleEditSubmit}
                 readOnly={readOnly}
                 ref={commentInputRef}
-                value={value}
+                value={editStartMessage}
                 withAvatar={false}
               />
             </Stack>

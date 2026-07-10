@@ -5,6 +5,7 @@ import {
   keyGenerator,
   type RenderBlockFunction,
   useEditor,
+  useEditorSelector,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {getValue} from '@portabletext/editor/selectors'
@@ -64,17 +65,29 @@ export interface CommentInputProps {
   focusOnMount?: boolean
   mentionOptions: UserListWithPermissionsHookValue
   onBlur?: (e: FormEvent<HTMLDivElement>) => void
-  onChange: (value: PortableTextBlock[]) => void
+  onChange?: (value: PortableTextBlock[]) => void
   onDiscardCancel?: () => void
   onDiscardConfirm: () => void
   onFocus?: (e: FormEvent<HTMLDivElement>) => void
   onKeyDown?: (e: KeyboardEvent) => void
   onMentionMenuOpenChange?: (open: boolean) => void
+  /**
+   * Reports the editor's value whenever it changes. The editor owns the
+   * draft; consumers only need this to persist the value continuously (a
+   * controlled form input, a draft cache). Composers read at their decision
+   * points via `onSubmit`'s argument and the handle's `getValue` instead.
+   */
   onSubmit?: (value: PortableTextBlock[]) => void
   placeholder?: ReactNode
   readOnly?: boolean
   renderBlock?: RenderBlockFunction
-  value: PortableTextBlock[] | null
+  /**
+   * The initial editor value, and (through `UpdateValuePlugin`) external
+   * updates for controlled usages. The editor does not report its own value
+   * back through this prop; read it via `onSubmit`, `onChange`, or the
+   * handle's `getValue`.
+   */
+  value?: PortableTextBlock[] | null
   withAvatar?: boolean
   avatarSize?: AvatarSize
 }
@@ -91,6 +104,7 @@ export interface CommentInputHandle {
   blur: () => void
   discardDialogController: CommentDiscardDialogController
   focus: () => void
+  getValue: () => PortableTextBlock[]
   scrollTo: () => void
   reset: () => void
 }
@@ -159,32 +173,24 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
         if (event.type === 'blurred') {
           setFocused(false)
         }
-
-        // Update the comment value whenever the comment is edited by the user.
-        if (event.type === 'mutation') {
-          onChange(event.value || EMPTY_ARRAY)
-        }
       },
-      [focusOnMount, onChange, requestFocus],
+      [focusOnMount, requestFocus],
     )
 
     const scrollToEditor = useCallback(() => {
       editorContainerRef.current?.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
     }, [])
 
+    const readCurrentValue = useCallback(() => {
+      return editorRef.current ? getValue(editorRef.current.getSnapshot()) : EMPTY_ARRAY
+    }, [])
+
     const handleSubmit = useCallback(() => {
-      // Read the editor's live value directly rather than the value mirrored
-      // through the debounced `mutation` event, which can lag the latest
-      // keystrokes by up to the flush interval and truncate the comment when
-      // the user submits without pausing.
-      const currentValue = editorRef.current
-        ? getValue(editorRef.current.getSnapshot())
-        : EMPTY_ARRAY
-      onSubmit?.(currentValue)
+      onSubmit?.(readCurrentValue())
       resetEditorInstance()
       requestFocus()
       scrollToEditor()
-    }, [onSubmit, requestFocus, resetEditorInstance, scrollToEditor])
+    }, [onSubmit, readCurrentValue, requestFocus, resetEditorInstance, scrollToEditor])
 
     const handleDiscardConfirm = useCallback(() => {
       onDiscardConfirm()
@@ -212,12 +218,19 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
         blur() {
           editorRef.current?.send({type: 'blur'})
         },
+        getValue: readCurrentValue,
         scrollTo: scrollToEditor,
         reset: resetEditorInstance,
 
         discardDialogController,
       }
-    }, [discardDialogController, requestFocus, resetEditorInstance, scrollToEditor])
+    }, [
+      discardDialogController,
+      readCurrentValue,
+      requestFocus,
+      resetEditorInstance,
+      scrollToEditor,
+    ])
 
     const handleFocus = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {
@@ -255,6 +268,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
           >
             <EditorRefPlugin ref={editorRef} />
             <EventListenerPlugin on={handleEvent} />
+            {onChange ? <ValueChangePlugin onChange={onChange} /> : null}
             <OneLinePlugin />
             <UpdateReadOnlyPlugin readOnly={readOnly ?? false} />
             <UpdateValuePlugin value={value ?? undefined} />
@@ -262,10 +276,10 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
               expandOnFocus={expandOnFocus}
               focused={focused}
               focusOnMount={focusOnMount}
+              initialMessage={value}
               mentionOptions={mentionOptions}
               onMentionMenuOpenChange={onMentionMenuOpenChange}
               readOnly={readOnly}
-              value={value}
             >
               {focusLock && <div ref={preDivRef} tabIndex={0} />}
 
@@ -314,6 +328,26 @@ function UpdateReadOnlyPlugin(props: {readOnly: boolean}) {
  * `EditorProvider` doesn't have a `value` prop. This plugin listens for the
  * prop change and sends an `update value` event to the editor.
  */
+/**
+ * Reports the editor's value to the consumer whenever it changes.
+ *
+ * The subscription is synchronous with the editor's value (no debounce, so a
+ * submit never reads a lagging draft) and lives inside the editor instance's
+ * React tree (so it dies with the instance and cannot fire during teardown,
+ * which used to resurrect a just-submitted draft into the consumer's state).
+ */
+function ValueChangePlugin(props: {onChange: (value: PortableTextBlock[]) => void}) {
+  const {onChange} = props
+  const editor = useEditor()
+  const value = useEditorSelector(editor, getValue)
+
+  useEffect(() => {
+    onChange(value || EMPTY_ARRAY)
+  }, [onChange, value])
+
+  return null
+}
+
 function UpdateValuePlugin(props: {value: Array<PortableTextBlock> | undefined}) {
   const editor = useEditor()
 

@@ -1,11 +1,19 @@
-import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
+import {
+  type EditorSelection,
+  PortableTextEditor,
+  useEditor,
+  useEditorSelector,
+  usePortableTextEditor,
+} from '@portabletext/editor'
+import {getValue} from '@portabletext/editor/selectors'
 import {isPortableTextSpan, type Path} from '@sanity/types'
+import isEqual from 'lodash-es/isEqual.js'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {CommentInputContext} from 'sanity/_singletons'
 
 import {useDidUpdate} from '../../../../form'
 import {type UserListWithPermissionsHookValue} from '../../../../hooks'
-import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
+import {hasCommentMessageValue} from '../../../helpers'
 import {type CommentMessage} from '../../../types'
 
 export interface CommentInputContextValue {
@@ -33,10 +41,11 @@ interface CommentInputProviderProps {
   expandOnFocus?: boolean
   focused: boolean
   focusOnMount?: boolean
+  /** The message the editor was initialized with; `hasChanges` compares against it. */
+  initialMessage?: CommentMessage
   mentionOptions: UserListWithPermissionsHookValue
   onMentionMenuOpenChange?: (open: boolean) => void
   readOnly?: boolean
-  value: CommentMessage
 }
 
 export function CommentInputProvider(props: CommentInputProviderProps) {
@@ -45,13 +54,18 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
     expandOnFocus = false,
     focused,
     focusOnMount = false,
+    initialMessage,
     mentionOptions,
     onMentionMenuOpenChange,
-    value,
     readOnly,
   } = props
 
   const editor = usePortableTextEditor()
+
+  // The editor owns the draft: derive the value directly instead of routing
+  // it through the consumer's state and back down as a prop.
+  const editorInstance = useEditor()
+  const value = useEditorSelector(editorInstance, getValue)
 
   const [mentionsMenuOpen, setMentionsMenuOpen] = useState<boolean>(false)
   const [mentionsSearchTerm, setMentionsSearchTerm] = useState<string>('')
@@ -59,7 +73,13 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
 
   const canSubmit = useMemo(() => hasCommentMessageValue(value), [value])
 
-  const hasChanges = useCommentHasChanged(value)
+  // Normalize "no message" to `null` on both sides so an empty editor equals
+  // an absent initial message.
+  const hasChanges = useMemo(() => {
+    const currentMessage = hasCommentMessageValue(value) ? value : null
+    const startMessage = hasCommentMessageValue(initialMessage ?? null) ? initialMessage : null
+    return !isEqual(startMessage ?? null, currentMessage)
+  }, [initialMessage, value])
 
   const focusEditor = useCallback(() => {
     if (readOnly) return

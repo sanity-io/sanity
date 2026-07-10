@@ -16,24 +16,20 @@ const RootStack = styled(Stack)`
 interface InlineCommentInputPopoverProps {
   currentUser: CurrentUser
   mentionOptions: CommentInputProps['mentionOptions']
-  onChange: CommentInputProps['onChange']
   onClickOutside: () => void
   onDiscardConfirm: CommentInputProps['onDiscardConfirm']
   onSubmit: CommentInputProps['onSubmit']
   referenceElement?: HTMLElement | null
-  value: CommentInputProps['value']
 }
 
 export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps) {
   const {
     currentUser,
     mentionOptions,
-    onChange,
     onClickOutside,
     onDiscardConfirm,
     onSubmit,
     referenceElement,
-    value,
   } = props
 
   const commentInputRef = useRef<CommentInputHandle | null>(null)
@@ -50,7 +46,7 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
 
   useClickOutsideEvent(
     () => {
-      const hasValue = hasCommentMessageValue(value)
+      const hasValue = hasCommentMessageValue(commentInputRef.current?.getValue() ?? null)
 
       if (hasValue) {
         commentInputRef.current?.discardDialogController.open()
@@ -69,12 +65,10 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
         focusLock
         focusOnMount
         mentionOptions={mentionOptions}
-        onChange={onChange}
         onDiscardCancel={handleDiscardCancel}
         onDiscardConfirm={handleDiscardConfirm}
         onSubmit={onSubmit}
         ref={commentInputRef}
-        value={value}
       />
     </RootStack>
   )

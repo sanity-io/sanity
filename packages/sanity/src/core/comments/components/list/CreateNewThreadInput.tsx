@@ -1,5 +1,5 @@
-import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {type CurrentUser} from '@sanity/types'
+import {useCallback, useRef} from 'react'
 
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
@@ -7,8 +7,6 @@ import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentMessage, type CommentsUIMode} from '../../types'
 import {CommentInput, type CommentInputHandle, type CommentInputProps} from '../pte'
-
-const EMPTY_PT_ARRAY: PortableTextBlock[] = []
 
 interface CreateNewThreadInputProps {
   currentUser: CurrentUser
@@ -36,25 +34,21 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
 
-  const [value, setValue] = useState<CommentMessage>(EMPTY_PT_ARRAY)
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
 
   const handleSubmit = useCallback(
     (nextValue: CommentMessage) => {
       onNewThreadCreate?.(nextValue)
-      setValue(EMPTY_PT_ARRAY)
     },
     [onNewThreadCreate],
   )
 
-  const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
-
   const startDiscard = useCallback(() => {
-    if (!hasValue) {
+    if (!hasCommentMessageValue(commentInputHandle.current?.getValue() ?? null)) {
       return
     }
     commentInputHandle.current?.discardDialogController.open()
-  }, [hasValue])
+  }, [])
 
   const handleInputKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -75,7 +69,6 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   )
 
   const confirmDiscard = useCallback(() => {
-    setValue(EMPTY_PT_ARRAY)
     commentInputHandle.current?.discardDialogController.close()
     commentInputHandle.current?.focus()
   }, [])
@@ -101,7 +94,6 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
       expandOnFocus
       mentionOptions={mentionOptions}
       onBlur={onBlur}
-      onChange={setValue}
       onDiscardCancel={cancelDiscard}
       onDiscardConfirm={confirmDiscard}
       onKeyDown={handleInputKeyDown}
@@ -110,7 +102,6 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
       placeholder={placeholder}
       readOnly={readOnly || mode === 'upsell'}
       ref={commentInputHandle}
-      value={value}
     />
   )
 }
