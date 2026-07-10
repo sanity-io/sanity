@@ -61,5 +61,32 @@ describe('Comments', () => {
       await userEvent.keyboard('{Enter}')
       await submitted
     })
+
+    it('Should start the next comment empty after submitting the previous one', async () => {
+      const {insertPortableText} = testHelpers()
+      let resolve!: () => void
+      const submitted = Object.assign(new Promise<void>((r) => (resolve = r)), {resolve})
+
+      void render(<CommentsInputStory onSubmit={submitted.resolve} />)
+      const $editable = page.getByTestId('comment-input-editable')
+      await expect.element($editable).toBeVisible()
+      await insertPortableText('First comment', $editable)
+      // `canSubmit` derives from the debounced `mutation` mirror, so wait for
+      // the send button before submitting.
+      await expect.element(page.getByTestId('comment-input-send-button')).toBeEnabled()
+      // Type more text and submit within the editor's flush window, so
+      // unflushed `mutation`s are pending when the editor tears down.
+      await userEvent.keyboard(' typed')
+      await userEvent.keyboard('{Enter}')
+      await submitted
+
+      // The outgoing editor instance flushes those pending `mutation`s during
+      // teardown. Without suppression, the flush resurrects the submitted
+      // draft and pre-fills the next comment with it.
+      await expect.element($editable).not.toHaveTextContent('First comment')
+
+      await insertPortableText('Second comment', $editable)
+      await expect.element($editable).toHaveTextContent(/^Second comment$/)
+    })
   })
 })

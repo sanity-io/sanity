@@ -5,6 +5,7 @@ import {
   keyGenerator,
   type RenderBlockFunction,
   useEditor,
+  useEditorSelector,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {getValue} from '@portabletext/editor/selectors'
@@ -159,13 +160,8 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
         if (event.type === 'blurred') {
           setFocused(false)
         }
-
-        // Update the comment value whenever the comment is edited by the user.
-        if (event.type === 'mutation') {
-          onChange(event.value || EMPTY_ARRAY)
-        }
       },
-      [focusOnMount, onChange, requestFocus],
+      [focusOnMount, requestFocus],
     )
 
     const scrollToEditor = useCallback(() => {
@@ -255,6 +251,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
           >
             <EditorRefPlugin ref={editorRef} />
             <EventListenerPlugin on={handleEvent} />
+            <ValueChangePlugin onChange={onChange} />
             <OneLinePlugin />
             <UpdateReadOnlyPlugin readOnly={readOnly ?? false} />
             <UpdateValuePlugin value={value ?? undefined} />
@@ -314,6 +311,26 @@ function UpdateReadOnlyPlugin(props: {readOnly: boolean}) {
  * `EditorProvider` doesn't have a `value` prop. This plugin listens for the
  * prop change and sends an `update value` event to the editor.
  */
+/**
+ * Reports the editor's value to the consumer whenever it changes.
+ *
+ * The subscription is synchronous with the editor's value (no debounce, so a
+ * submit never reads a lagging draft) and lives inside the editor instance's
+ * React tree (so it dies with the instance and cannot fire during teardown,
+ * which used to resurrect a just-submitted draft into the consumer's state).
+ */
+function ValueChangePlugin(props: {onChange: (value: PortableTextBlock[]) => void}) {
+  const {onChange} = props
+  const editor = useEditor()
+  const value = useEditorSelector(editor, getValue)
+
+  useEffect(() => {
+    onChange(value || EMPTY_ARRAY)
+  }, [onChange, value])
+
+  return null
+}
+
 function UpdateValuePlugin(props: {value: Array<PortableTextBlock> | undefined}) {
   const editor = useEditor()
 

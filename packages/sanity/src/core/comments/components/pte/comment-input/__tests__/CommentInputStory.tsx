@@ -43,6 +43,13 @@ export function CommentsInputStory({
   value?: PortableTextBlock[] | null
 }) {
   const [valueState, setValueState] = useState<PortableTextBlock[] | null>(value)
+
+  // Real consumers clear their draft state when a comment is submitted.
+  const handleSubmit = () => {
+    setValueState(null)
+    onSubmit()
+  }
+
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <CommentInput
@@ -55,7 +62,7 @@ export function CommentsInputStory({
         mentionOptions={MENTION_DATA}
         onDiscardConfirm={onDiscardConfirm}
         onDiscardCancel={onDiscardCancel}
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
       />
     </TestWrapper>
   )
