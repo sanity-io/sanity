@@ -242,6 +242,8 @@ describe('VariantsOverview', () => {
 
   it('deletes a variant from the row actions menu', async () => {
     setVariants([variantAlphaAudience])
+    documentCountsMock.data = {[variantAlphaAudience._id]: 0}
+    documentCountsMock.loading = false
     const user = userEvent.setup()
 
     await renderOverview()
@@ -256,6 +258,32 @@ describe('VariantsOverview', () => {
 
     await user.click(menuButton)
     await user.click(await screen.findByText('Delete variant'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
+    })
+  })
+
+  it('does not delete a variant from the row actions menu when it has documents', async () => {
+    setVariants([variantAlphaAudience])
+    documentCountsMock.data = {[variantAlphaAudience._id]: 2}
+    documentCountsMock.loading = false
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
+
+    const menuButton = screen
+      .getAllByRole('button')
+      .find((button) => button.id === 'variant-actions-alpha-audience')
+
+    if (!menuButton) throw new Error('Variant actions menu button not found')
+
+    await user.click(menuButton)
+    await user.click(await screen.findByText('Delete variant'))
+
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
   })
 
   it('shows empty state when there are no variants', async () => {
