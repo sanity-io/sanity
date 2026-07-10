@@ -2,6 +2,7 @@ import {ResetIcon} from '@sanity/icons/Reset'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getPairTarget,
   getTargetScopeId,
   InsufficientPermissionsMessage,
   isPublishedId,
@@ -19,6 +20,7 @@ const DISABLED_REASON_KEY = {
   NO_CHANGES: 'action.discard-changes.disabled.no-change',
   NOT_PUBLISHED: 'action.discard-changes.disabled.not-published',
   NOT_READY: 'action.discard-changes.disabled.not-ready',
+  TARGET_NOT_FOUND: 'action.discard-changes.disabled.target-not-found',
 } as const
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
@@ -37,7 +39,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   // below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
-  const {discardChanges} = useDocumentOperation(id, type, scopeId)
+  const {discardChanges} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,

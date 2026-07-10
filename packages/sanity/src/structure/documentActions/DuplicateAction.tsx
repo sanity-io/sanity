@@ -4,6 +4,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   type DuplicateDocumentActionComponent,
+  getPairTarget,
   getTargetScopeId,
   InsufficientPermissionsMessage,
   useCurrentUser,
@@ -20,6 +21,7 @@ import {useDocumentPane} from '../panes/document/useDocumentPane'
 const DISABLED_REASON_KEY = {
   NOTHING_TO_DUPLICATE: 'action.duplicate.disabled.nothing-to-duplicate',
   NOT_READY: 'action.duplicate.disabled.not-ready',
+  TARGET_NOT_FOUND: 'action.duplicate.disabled.target-not-found',
 }
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
@@ -33,7 +35,7 @@ export const useDuplicateAction: DuplicateDocumentActionComponent = ({id, type, 
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
 
-  const {duplicate} = useDocumentOperation(id, type, scopeId)
+  const {duplicate} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const {navigateIntent} = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
 

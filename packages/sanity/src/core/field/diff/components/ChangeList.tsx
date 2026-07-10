@@ -7,7 +7,11 @@ import {DiffContext} from 'sanity/_singletons'
 
 import {Button} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
-import {getTargetScopeId, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  useTargetDocumentState,
+} from '../../../hooks/useTargetDocumentState'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store'
 import {useConditionalProperty} from '../../conditional-property'
@@ -36,7 +40,11 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
   // below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
-  const docOperations = useDocumentOperation(documentId, schemaType.name, scopeId)
+  const docOperations = useDocumentOperation(
+    documentId,
+    schemaType.name,
+    getPairTarget(targetDocumentState),
+  )
   const {path} = useContext(DiffContext)
   const isRoot = path.length === 0
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = useState(false)

@@ -4,6 +4,7 @@ import {type PerspectiveBundle} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../releases/store/types'
+import {type DocumentPairTarget} from '../store/document/types'
 import {getTargetDocument} from '../util/getTargetDocument'
 import {useAllVariants} from '../variants/store/useAllVariants'
 import {type SystemVariant} from '../variants/types'
@@ -54,6 +55,38 @@ const RESOLVING: TargetDocumentState = {status: 'resolving'}
  */
 export function getTargetScopeId(state: TargetDocumentState): string | undefined {
   return state.status === 'ready' ? state.scopeId : undefined
+}
+
+/**
+ * Maps a {@link TargetDocumentState} to the `target` parameter of `useDocumentOperation` /
+ * `pair.editOperations`, preserving the guarded states: `resolving` yields `unresolved`
+ * (operations stay `NOT_READY`), and `variant-missing` / `variant-definition-document-not-found`
+ * yield `target-missing` (operations disabled with `TARGET_NOT_FOUND`). Both throw if executed,
+ * so operations can never silently fall back to the base draft/published pair.
+ *
+ * @internal
+ * @beta
+ */
+export function getPairTarget(state: TargetDocumentState): DocumentPairTarget | string | undefined {
+  switch (state.status) {
+    case 'resolving':
+      return {kind: 'unresolved'}
+    case 'variant-missing':
+      return {kind: 'target-missing', variantId: state.variant._id}
+    case 'variant-definition-document-not-found':
+      return {kind: 'target-missing'}
+    case 'ready':
+      if (state.variant) {
+        // A resolved variant target always carries its scope id; treat a malformed stub without
+        // one as missing rather than falling back to the base pair.
+        return state.scopeId
+          ? {kind: 'variant', scopeId: state.scopeId, variantId: state.variant._id}
+          : {kind: 'target-missing', variantId: state.variant._id}
+      }
+      return state.scopeId
+    default:
+      return undefined
+  }
 }
 
 /**

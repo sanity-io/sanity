@@ -12,7 +12,11 @@ import {
 import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
-import {getTargetScopeId, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  useTargetDocumentState,
+} from '../../../hooks/useTargetDocumentState'
 import {useDocumentPairPermissions} from '../../../store'
 import {pathsAreEqual} from '../../paths'
 import {type GroupChangeNode} from '../../types'
@@ -67,7 +71,11 @@ export function GroupChange(
   // below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
-  const docOperations = useDocumentOperation(documentId, schemaType.name, scopeId)
+  const docOperations = useDocumentOperation(
+    documentId,
+    schemaType.name,
+    getPairTarget(targetDocumentState),
+  )
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({

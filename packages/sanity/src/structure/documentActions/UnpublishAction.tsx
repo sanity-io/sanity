@@ -3,6 +3,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionModalDialogProps,
+  getPairTarget,
   getTargetScopeId,
   InsufficientPermissionsMessage,
   useCurrentUser,
@@ -20,6 +21,7 @@ const DISABLED_REASON_KEY = {
   NOT_PUBLISHED: 'action.unpublish.disabled.not-published',
   NOT_READY: 'action.unpublish.disabled.not-ready',
   LIVE_EDIT_ENABLED: 'action.unpublish.disabled.live-edit-enabled',
+  TARGET_NOT_FOUND: 'action.unpublish.disabled.target-not-found',
 }
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
@@ -38,7 +40,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
   // silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
-  const {unpublish} = useDocumentOperation(id, type, scopeId)
+  const {unpublish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,

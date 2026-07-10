@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
-import {type Observable} from 'rxjs'
+import {type Observable, of} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../config'
@@ -29,12 +29,13 @@ import {
   type OperationSuccess,
 } from './document-pair/operationEvents'
 import {type OperationsAPI} from './document-pair/operations'
+import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
 import {validation} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
-import {type IdPair} from './types'
+import {type DocumentPairTarget, type IdPair} from './types'
 
 /**
  * @hidden
@@ -53,6 +54,31 @@ function getIdPairFromPublished(publishedId: string, version?: string): IdPair {
   }
 
   return getIdPair(publishedId, {version})
+}
+
+/**
+ * Normalizes the back-compat `version` parameter of the pair APIs (a bare version name string)
+ * to a {@link DocumentPairTarget}.
+ */
+function normalizeDocumentPairTarget(
+  version: string | DocumentPairTarget | undefined,
+): DocumentPairTarget | undefined {
+  if (typeof version === 'string') {
+    return {kind: 'version', name: version}
+  }
+  return version
+}
+
+/**
+ * The version name (bundle segment) the pair should check out for a target, or `undefined` when
+ * the base draft/published pair applies. Guarded kinds (`target-missing`, `unresolved`) never
+ * reach pair checkout and yield `undefined`.
+ */
+function getPairTargetVersionName(target: DocumentPairTarget | undefined): string | undefined {
+  if (!target) return undefined
+  if (target.kind === 'version') return target.name
+  if (target.kind === 'variant') return target.scopeId
+  return undefined
 }
 
 /**
@@ -86,11 +112,17 @@ export interface DocumentStore {
       type: string,
       version?: string,
     ) => Observable<DocumentVersionEvent>
-    /** @internal */
+    /**
+     * @internal
+     * `version` accepts either a plain version name (release/bundle) or a
+     * {@link DocumentPairTarget}. The guarded target kinds (`unresolved`, `target-missing`) emit
+     * a disabled operations API without checking out a pair, so operations can never reach the
+     * base draft/published pair while a selected target is unresolved or has no document.
+     */
     editOperations: (
       publishedId: string,
       type: string,
-      version?: string,
+      version?: string | DocumentPairTarget,
     ) => Observable<OperationsAPI>
     editState: (publishedId: string, type: string, version?: string) => Observable<EditStateFor>
     operationEvents: (
@@ -207,7 +239,23 @@ export function createDocumentStore({
         )
       },
       editOperations(publishedId, type, version) {
-        return editOperations(ctx, getIdPairFromPublished(publishedId, version), type)
+        const target = normalizeDocumentPairTarget(version)
+
+        // Guarded targets never check out a pair. Branching here (before the memoized
+        // `editOperations`) also keeps them out of `memoizeKeyGen`, which only keys on
+        // `publishedId + versionId` and would collide these with the base pair.
+        if (target?.kind === 'unresolved') {
+          return of(GUARDED)
+        }
+        if (target?.kind === 'target-missing') {
+          return of(TARGET_NOT_FOUND_OPERATIONS)
+        }
+
+        return editOperations(
+          ctx,
+          getIdPairFromPublished(publishedId, getPairTargetVersionName(target)),
+          type,
+        )
       },
       editState(publishedId, type, version) {
         const idPair = getIdPairFromPublished(publishedId, version)

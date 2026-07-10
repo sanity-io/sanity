@@ -2,7 +2,7 @@ import {describe, expect, it} from 'vitest'
 
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {variantAlphaAudience} from '../../variants/__fixtures__/variants.fixture'
-import {getTargetDocumentState, getTargetScopeId} from '../useTargetDocumentState'
+import {getPairTarget, getTargetDocumentState, getTargetScopeId} from '../useTargetDocumentState'
 
 const PUBLISHED_ID = 'article-1'
 const RELEASE_ID = 'rSummer'
@@ -153,5 +153,43 @@ describe('getTargetScopeId', () => {
     expect(
       getTargetScopeId(getTargetDocumentState({...variantOptions, bundle: 'published'})),
     ).toBeUndefined()
+  })
+})
+
+describe('getPairTarget', () => {
+  it('maps resolving to the unresolved guarded target', () => {
+    expect(
+      getPairTarget(getTargetDocumentState({...variantOptions, versionsLoading: true})),
+    ).toEqual({kind: 'unresolved'})
+    expect(getPairTarget(getTargetDocumentState({...baseOptions, versionsLoading: true}))).toEqual({
+      kind: 'unresolved',
+    })
+  })
+
+  it('maps a missing variant target to target-missing with the variant id', () => {
+    expect(getPairTarget(getTargetDocumentState({...variantOptions, bundle: 'published'}))).toEqual(
+      {kind: 'target-missing', variantId: variantAlphaAudience._id},
+    )
+  })
+
+  it('maps an invalid variant selection to target-missing', () => {
+    expect(
+      getPairTarget(getTargetDocumentState({...variantOptions, selectedVariant: undefined})),
+    ).toEqual({kind: 'target-missing'})
+  })
+
+  it('maps a resolved variant target to the variant kind', () => {
+    expect(getPairTarget(getTargetDocumentState(variantOptions))).toEqual({
+      kind: 'variant',
+      scopeId: 'varscope',
+      variantId: variantAlphaAudience._id,
+    })
+  })
+
+  it('maps non-variant ready states to the plain scope id', () => {
+    expect(getPairTarget(getTargetDocumentState(baseOptions))).toBeUndefined()
+    expect(getPairTarget(getTargetDocumentState({...baseOptions, bundle: RELEASE_ID}))).toBe(
+      RELEASE_ID,
+    )
   })
 })

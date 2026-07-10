@@ -39,7 +39,11 @@ import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {type DocumentSyncState, useDocumentSyncState} from '../hooks/useDocumentSyncState'
 import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
-import {getTargetScopeId, useTargetDocumentState} from '../hooks/useTargetDocumentState'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  useTargetDocumentState,
+} from '../hooks/useTargetDocumentState'
 import {useValidationStatus} from '../hooks/useValidationStatus'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
@@ -469,7 +473,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     syncState,
   ])
 
-  const {patch} = useDocumentOperation(documentId, documentType, targetScopeId)
+  // The full target (not just the scope id) so the store can keep the operations guarded while
+  // the target is unresolved or missing, instead of falling back to the base pair.
+  const {patch} = useDocumentOperation(documentId, documentType, getPairTarget(targetDocumentState))
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error(
@@ -483,6 +489,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     if (readOnly) {
       patchRef.current = () => {
         throw new Error('Attempted to patch a read-only document')
+      }
+    } else if (patch.disabled) {
+      // The store disabled the patch operation (target unresolved or missing, transient pair
+      // setup). Surfacing it here mirrors the read-only guard: never let a patch silently reach
+      // the wrong document.
+      patchRef.current = () => {
+        throw new Error(
+          `Attempted to patch a document with a disabled patch operation (${patch.disabled})`,
+        )
       }
     } else {
       // note: this needs to happen in an insertion effect to make sure we're ready to receive patches from child components when they run their effects initially
