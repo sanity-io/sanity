@@ -27,3 +27,14 @@ export type EditableSystemVariant = Pick<
   SystemVariant,
   '_id' | '_type' | 'conditions' | 'priority' | 'metadata'
 >
+
+/**
+ * @internal
+ */
+export function isVariantId(maybeVariantId: unknown): maybeVariantId is VariantId {
+  if (typeof maybeVariantId !== 'string') {
+    return false
+  }
+
+  return maybeVariantId.match(/^_\.variants\.['a-zA-Z0-9._-]+$/) !== null
+}
