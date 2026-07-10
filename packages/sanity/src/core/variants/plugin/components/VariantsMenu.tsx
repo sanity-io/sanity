@@ -71,7 +71,7 @@ export function VariantsMenu(): React.JSX.Element {
 
   const handleSelectVariant = useCallback(
     (variant: SystemVariant) => {
-      setVariant(variant)
+      setVariant(variant._id)
       setFilterQuery('')
     },
     [setVariant],
