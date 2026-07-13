@@ -38,6 +38,7 @@ import {
   type TrendSeries,
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
+import {DriftFeed} from './DriftFeed'
 import {MAX_COMPARE_BRANCHES} from './palette'
 import {TrendChart} from './TrendChart'
 import {useUrlState} from './useUrlState'
@@ -346,6 +347,9 @@ export function TrendsTool() {
                 </Text>
               </Card>
             )}
+
+            {/* Surfaces drifted metrics first; silent when all steady */}
+            <DriftFeed series={series} />
 
             {calibration.lines[0].points.length > 0 && (
               <Stack space={3}>
