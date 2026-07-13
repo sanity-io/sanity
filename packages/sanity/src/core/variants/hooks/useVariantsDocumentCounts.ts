@@ -142,7 +142,7 @@ export function getVariantsDocumentCounts(
       (previous, next): VariantsDocumentCountsState => ({
         // Keep the previous counts while the next fetch is loading (or errored), so counts
         // for unchanged variants remain visible across variant list changes.
-        data: next.data ? {...(previous.data ?? {}), ...next.data} : previous.data,
+        data: next.data ? {...previous.data, ...next.data} : previous.data,
         loading: next.loading && previous.data === null,
         error: next.error,
       }),
