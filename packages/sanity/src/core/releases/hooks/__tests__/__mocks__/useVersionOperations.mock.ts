@@ -4,8 +4,7 @@ import {useVersionOperations, type VersionOperationsValue} from '../../useVersio
 
 export const useVersionOperationsReturn: Mocked<VersionOperationsValue> = {
   createVersion: vi.fn(),
-  discardVersion: vi.fn(),
-  unpublishVersion: vi.fn(),
+  revertUnpublishVersion: vi.fn(),
 }
 
 export const mockUseVersionOperations = useVersionOperations as Mock<typeof useVersionOperations>

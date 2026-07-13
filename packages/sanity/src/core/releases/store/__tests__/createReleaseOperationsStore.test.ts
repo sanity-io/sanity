@@ -33,8 +33,6 @@ describe('createReleaseOperationsStore', () => {
       },
       getDocument: vi.fn(),
       createVersion: vi.fn().mockResolvedValue(undefined),
-      discardVersion: vi.fn().mockResolvedValue(undefined),
-      unpublishVersion: vi.fn().mockResolvedValue(undefined),
     }
   })
 
@@ -379,31 +377,6 @@ describe('createReleaseOperationsStore', () => {
         ifBaseRevisionId: 'doc-rev-id',
         publishedId: 'doc-id',
         releaseId: 'release-id',
-      },
-      undefined,
-    )
-  })
-
-  it('should discard a version of a document', async () => {
-    const store = createStore()
-    await store.discardVersion('release-id', 'doc-id')
-    expect(mockClient.discardVersion).toHaveBeenCalledWith(
-      {
-        releaseId: 'release-id',
-        publishedId: 'doc-id',
-      },
-      false,
-      undefined,
-    )
-  })
-
-  it('should unpublish a version of a document', async () => {
-    const store = createStore()
-    await store.unpublishVersion('versions.release-id.doc-id')
-    expect(mockClient.unpublishVersion).toHaveBeenCalledWith(
-      {
-        releaseId: 'release-id',
-        publishedId: 'doc-id',
       },
       undefined,
     )

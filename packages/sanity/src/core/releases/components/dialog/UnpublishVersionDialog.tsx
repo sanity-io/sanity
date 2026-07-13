@@ -1,16 +1,15 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Stack, Text, useToast} from '@sanity/ui'
-import {type CSSProperties, useCallback, useState} from 'react'
+import {type CSSProperties, useCallback, useEffect, useRef, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
-import {useSchema} from '../../../hooks/useSchema'
+import {useDocumentOperation, useDocumentOperationEvent, useSchema} from '../../../hooks'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {useValuePreview} from '../../../preview'
 import {Preview} from '../../../preview/components/Preview'
-import {getVersionFromId} from '../../../util/draftUtils'
-import {useVersionOperations} from '../../hooks/useVersionOperations'
+import {getPublishedId, getVersionFromId} from '../../../util/draftUtils'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
@@ -27,7 +26,12 @@ export function UnpublishVersionDialog(props: {
   const {t: coreT} = useTranslation()
 
   const schema = useSchema()
-  const {unpublishVersion} = useVersionOperations()
+  const publishedId = getPublishedId(documentVersionId)
+  const releaseId = getVersionFromId(documentVersionId)
+  const {unpublish} = useDocumentOperation(publishedId, documentType, releaseId)
+  const event = useDocumentOperationEvent(publishedId, documentType)
+  const prevEvent = useRef(event)
+  const awaitingUnpublishRef = useRef(false)
   const [isUnpublishing, setIsUnpublishing] = useState(false)
   const toast = useToast()
   const {data} = useActiveReleases()
@@ -45,12 +49,11 @@ export function UnpublishVersionDialog(props: {
 
   const preview = useValuePreview({schemaType, value: {_id: documentVersionId}})
 
-  const handleUnpublish = useCallback(async () => {
-    setIsUnpublishing(true)
+  useEffect(() => {
+    if (!event || event === prevEvent.current || !awaitingUnpublishRef.current) return
 
-    // The run() wrapper instead of doing it inline in try/catch is because of the React Compiler not fully supporting the syntax yet
-    const run = async () => {
-      await unpublishVersion(documentVersionId)
+    if (event.type === 'success' && event.op === 'unpublish') {
+      awaitingUnpublishRef.current = false
       toast.push({
         closable: true,
         status: 'success',
@@ -62,22 +65,28 @@ export function UnpublishVersionDialog(props: {
           />
         ),
       })
+      onClose()
     }
-    try {
-      await run()
-    } catch (err) {
+
+    if (event.type === 'error' && event.op === 'unpublish') {
+      awaitingUnpublishRef.current = false
       toast.push({
         closable: true,
         status: 'error',
         title: coreT('release.action.unpublish-version.failure'),
-        description: err.message,
+        description: event.error.message,
       })
+      setTimeout(() => setIsUnpublishing(false), 0)
     }
 
-    setIsUnpublishing(false)
+    prevEvent.current = event
+  }, [coreT, documentVersionId, event, onClose, preview?.value?.title, toast])
 
-    onClose()
-  }, [coreT, documentVersionId, onClose, preview?.value?.title, toast, unpublishVersion])
+  const handleUnpublish = useCallback(() => {
+    setIsUnpublishing(true)
+    awaitingUnpublishRef.current = true
+    unpublish.execute()
+  }, [unpublish])
 
   return (
     <Dialog

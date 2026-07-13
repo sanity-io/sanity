@@ -1,6 +1,5 @@
-import {type ReleaseDocument} from '@sanity/client'
 import {getVersionNameFromId, type VersionId} from '@sanity/id-utils'
-import {Box, Stack, Text, useToast} from '@sanity/ui'
+import {Box, Stack, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components'
@@ -9,12 +8,9 @@ import {useDocumentOperation, useSchema} from '../../../hooks'
 import {getPairTarget, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
 import {Translate, useTranslation} from '../../../i18n'
 import {type TargetPerspective} from '../../../perspective/types'
-import {usePerspective} from '../../../perspective/usePerspective'
 import {Preview} from '../../../preview'
-import {getPublishedId, getVersionFromId, isDraftId, isVersionId} from '../../../util/draftUtils'
-import {useVersionOperations} from '../../hooks'
+import {getPublishedId, isDraftId} from '../../../util/draftUtils'
 import {releasesLocaleNamespace} from '../../i18n'
-import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
 /**
  * @internal
@@ -40,10 +36,7 @@ export function DiscardVersionDialog(props: {
     documentType,
     getPairTarget(targetDocumentState),
   )
-  const {selectedPerspective} = usePerspective()
-  const {discardVersion} = useVersionOperations()
   const schema = useSchema()
-  const toast = useToast()
   const [isDiscarding, setIsDiscarding] = useState(false)
   const discardType = isDraftId(documentId) ? 'draft' : 'release'
   const rawReleaseName =
@@ -53,37 +46,15 @@ export function DiscardVersionDialog(props: {
 
   const schemaType = schema.get(documentType)
 
-  const handleDiscardVersion = useCallback(async () => {
-    setIsDiscarding(true)
-
-    if (isVersionId(documentId)) {
-      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
-      const run = async () => {
-        await discardVersion(
-          getVersionFromId(documentId) ||
-            getReleaseIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
-          documentId,
-        )
-      }
-      try {
-        await run()
-      } catch (err) {
-        toast.push({
-          closable: true,
-          status: 'error',
-          title: coreT('release.action.discard-version.failure'),
-          description: err.message,
-        })
-      }
-    } else {
-      // on the document header you can also discard the draft
-      discardChanges.execute()
+  const handleDiscardVersion = useCallback(() => {
+    if (discardChanges.disabled) {
+      return
     }
-
+    setIsDiscarding(true)
+    discardChanges.execute()
     setIsDiscarding(false)
-
     onClose()
-  }, [documentId, onClose, discardVersion, selectedPerspective, toast, coreT, discardChanges])
+  }, [onClose, discardChanges])
 
   return (
     <Dialog
@@ -106,7 +77,7 @@ export function DiscardVersionDialog(props: {
         confirmButton: {
           text: t(`discard-version-dialog.title-${discardType}`),
           onClick: handleDiscardVersion,
-          disabled: isDiscarding || !isTargetReady,
+          disabled: isDiscarding || !isTargetReady || Boolean(discardChanges.disabled),
         },
       }}
     >
