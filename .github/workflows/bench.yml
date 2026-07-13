@@ -135,7 +135,9 @@ jobs:
     needs: [build, build-reference]
     if: needs.build.outputs.has_code_changes == 'true'
     runs-on: ubuntu-8core
-    timeout-minutes: 20
+    # Headroom for a/b runs of the heavy scenarios (synthetic sessions cost
+    # ~90s each and run on both sides)
+    timeout-minutes: 30
     permissions:
       contents: read
     env:
@@ -175,7 +177,7 @@ jobs:
       # (breaking warm-load measurements) - so import the bench cert properly
       - name: Trust the bench TLS certificate
         run: |
-          sudo apt-get install -y -qq libnss3-tools >/dev/null
+          command -v certutil >/dev/null || sudo apt-get install -y -qq libnss3-tools >/dev/null
           CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
           mkdir -p "$HOME/.pki/nssdb"
           certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
@@ -225,6 +227,12 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # One shard per scenario (mirrors bench-interaction): wall-clock =
+        # one scenario's samples instead of both sequentially
+        scenario: [singleString, syntheticLarge]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -254,7 +262,7 @@ jobs:
       # (breaking warm-load measurements) - so import the bench cert properly
       - name: Trust the bench TLS certificate
         run: |
-          sudo apt-get install -y -qq libnss3-tools >/dev/null
+          command -v certutil >/dev/null || sudo apt-get install -y -qq libnss3-tools >/dev/null
           CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
           mkdir -p "$HOME/.pki/nssdb"
           certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
@@ -273,6 +281,7 @@ jobs:
 
       - name: Run pageLoad benchmark
         env:
+          SCENARIO: ${{ matrix.scenario }}
           COMPARISON: ${{ needs.build-reference.outputs.comparison }}
           BENCH_MERGE_BASE: ${{ needs.build-reference.outputs.merge_base }}
         run: |
@@ -281,15 +290,15 @@ jobs:
             REFERENCE_ARGS="--reference-dist $GITHUB_WORKSPACE/perf/bench/.reference/dist"
           fi
           # shellcheck disable=SC2086
-          pnpm bench run --mode pageload --scenario singleString --scenario syntheticLarge \
+          pnpm bench run --mode pageload --scenario "$SCENARIO" \
             --sessions 8 \
-            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__pageload.json" \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__pageload-$SCENARIO.json" \
             $REFERENCE_ARGS
 
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: bench-results-pageload
+          name: bench-results-pageload-${{ matrix.scenario }}
           path: perf/bench/results/
           overwrite: true
           retention-days: 30
@@ -382,7 +391,7 @@ jobs:
       # (breaking warm-load measurements) - so import the bench cert properly
       - name: Trust the bench TLS certificate
         run: |
-          sudo apt-get install -y -qq libnss3-tools >/dev/null
+          command -v certutil >/dev/null || sudo apt-get install -y -qq libnss3-tools >/dev/null
           CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
           mkdir -p "$HOME/.pki/nssdb"
           certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
@@ -453,7 +462,7 @@ jobs:
       # (breaking warm-load measurements) - so import the bench cert properly
       - name: Trust the bench TLS certificate
         run: |
-          sudo apt-get install -y -qq libnss3-tools >/dev/null
+          command -v certutil >/dev/null || sudo apt-get install -y -qq libnss3-tools >/dev/null
           CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
           mkdir -p "$HOME/.pki/nssdb"
           certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
