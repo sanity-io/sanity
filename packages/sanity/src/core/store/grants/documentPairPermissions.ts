@@ -282,8 +282,20 @@ function getDocumentPairPermissionsUncached({
 export const getDocumentPairPermissions = memoize(
   (options: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> =>
     getDocumentPairPermissionsUncached(options).pipe(shareLatestWithRefCount()),
-  ({client, id, type, version, permission, userId}: DocumentPairPermissionsOptions): string => {
+  ({
+    client,
+    schema,
+    id,
+    type,
+    version,
+    permission,
+    userId,
+  }: DocumentPairPermissionsOptions): string => {
     const {dataset = '', projectId = ''} = client.config()
+    // `liveEdit` is derived from the schema and branches the resulting permission
+    // observable, so it must be part of the key: workspaces sharing a
+    // project/dataset can define the same `type` with a different `liveEdit`.
+    const liveEdit = type === '*' ? false : Boolean(schema.get(type)?.liveEdit)
     // `id` is normalized to its published id because the underlying chain reduces
     // (id, version) to `getIdPair(id, {version})`, a pure function of
     // (getPublishedId(id), version). The raw `version` string is kept as-is;
@@ -296,6 +308,7 @@ export const getDocumentPairPermissions = memoize(
       userId ?? '',
       type,
       permission,
+      liveEdit,
     ].join('-')
   },
 )
