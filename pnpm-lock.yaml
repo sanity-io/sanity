@@ -1672,8 +1672,8 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       i18next:
-        specifier: ^26.3.3
-        version: 26.3.3(typescript@6.0.3)
+        specifier: ^26.3.6
+        version: 26.3.6(typescript@6.0.3)
       is-hotkey-esm:
         specifier: ^1.0.0
         version: 1.0.0
@@ -1730,7 +1730,7 @@ importers:
         version: 2.13.7(@types/react@19.2.17)(react@19.2.7)
       react-i18next:
         specifier: ^17.0.8
-        version: 17.0.8(i18next@26.3.3)(react-dom@19.2.7)(react@19.2.7)(typescript@6.0.3)
+        version: 17.0.8(i18next@26.3.6)(react-dom@19.2.7)(react@19.2.7)(typescript@6.0.3)
       react-is:
         specifier: 'catalog:'
         version: 19.2.7
@@ -8350,10 +8350,10 @@ packages:
   humanize-list@1.0.1:
     resolution: {integrity: sha512-4+p3fCRF21oUqxhK0yZ6yaSP/H5/wZumc7q1fH99RkW7Q13aAxDeP78BKjoR+6y+kaHqKF/JWuQhsNuuI2NKtA==}
 
-  i18next@26.3.3:
-    resolution: {integrity: sha512-aYVegyBdXSO93CMMihvr47jI7GHSOcIahMpJX+qzUXDzW4xDJf2uenIA+45vDU+YhiVdcfsql70AC9RVdMNrHg==}
+  i18next@26.3.6:
+    resolution: {integrity: sha512-Bu5Z2nAXgfVyM8xvW3jk9EKRIuX37PudsrBViThNFx7CR7aaYTpP01cxNB/E4c4UUzTDiAZRstEhsRfPOL/8xA==}
     peerDependencies:
-      typescript: ^5 || ^6
+      typescript: ^5 || ^6 || ^7
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -18306,7 +18306,7 @@ snapshots:
 
   humanize-list@1.0.1: {}
 
-  i18next@26.3.3(typescript@6.0.3):
+  i18next@26.3.6(typescript@6.0.3):
     optionalDependencies:
       typescript: 6.0.3
 
@@ -19723,11 +19723,11 @@ snapshots:
     dependencies:
       react: 19.2.7
 
-  react-i18next@17.0.8(i18next@26.3.3)(react-dom@19.2.7)(react@19.2.7)(typescript@6.0.3):
+  react-i18next@17.0.8(i18next@26.3.6)(react-dom@19.2.7)(react@19.2.7)(typescript@6.0.3):
     dependencies:
       '@babel/runtime': 7.29.7
       html-parse-stringify: 3.0.1
-      i18next: 26.3.3(typescript@6.0.3)
+      i18next: 26.3.6(typescript@6.0.3)
       react: 19.2.7
       use-sync-external-store: 1.6.0(react@19.2.7)
     optionalDependencies:
