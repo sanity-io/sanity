@@ -18,6 +18,9 @@ export const driftAck = defineType({
   title: 'Drift acknowledgement',
   type: 'document',
   icon: CheckmarkCircleIcon,
+  // Written by the dashboard's Acknowledge buttons via createOrReplace — no
+  // draft workflow; the feed's realtime listenQuery expects immediate effect.
+  liveEdit: true,
   fields: [
     defineField({
       name: 'metricKey',

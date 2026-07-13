@@ -216,6 +216,21 @@ export interface MissingScenario {
   kind: ScenarioReport['kind']
 }
 
+/** Deployed metrics studio; the Trends tool reads branches/range from the URL. */
+const DASHBOARD_BASE_URL = 'https://studio-perf.sanity.dev'
+
+/**
+ * Deep link to the Trends dashboard with this run's branch preselected
+ * alongside main, so the reviewer lands on the comparison. Only meaningful
+ * once the branch's run is stored (labeled PRs; see store-pr in bench.yml).
+ */
+function dashboardLink(run: BenchRunDocument): string | null {
+  const branch = run.git.branch
+  if (!branch || branch === 'main') return null
+  const branches = encodeURIComponent(['main', branch].join(','))
+  return `[📊 View on the trends dashboard](${DASHBOARD_BASE_URL}/trends?branches=${branches})`
+}
+
 /** Render the PR comment (always posted — all-neutral is information). */
 export function renderMarkdownReport(
   run: BenchRunDocument,
@@ -241,10 +256,13 @@ export function renderMarkdownReport(
             ? `no regressions — ${improvements} improvement(s)`
             : 'no significant changes'
 
+  const link = dashboardLink(run)
+
   return [
     '### ⚡ Studio performance benchmark',
     '',
     headline,
+    ...(link ? ['', link] : []),
     // A failed shard uploads no results — say so loudly instead of
     // rendering a clean table with a scenario silently absent
     ...(missing.length > 0

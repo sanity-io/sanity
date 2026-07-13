@@ -248,6 +248,9 @@ const benchRun = defineType({
   type: 'document',
   icon: BarChartIcon,
   readOnly: true,
+  // Machine-written by CI via createOrReplace — no draft/publish workflow, so
+  // edit the published document directly (matches how `bench store` writes).
+  liveEdit: true,
   fields: [
     defineField({name: 'schemaVersion', type: 'number'}),
     defineField({name: 'mode', type: 'string', options: {list: ['ab', 'absolute']}}),
