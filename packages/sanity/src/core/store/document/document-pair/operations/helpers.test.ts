@@ -101,7 +101,7 @@ describe('createOperationsAPI — self-derived target guard', () => {
     }
   })
 
-  it('does not guard the new-document flow (no snapshots at all)', () => {
+  it('guards the new-document flow too (no snapshots at all)', () => {
     const operations = createOperationsAPI(
       createArgs({
         idPair: PAIR_WITH_VERSION,
@@ -109,9 +109,11 @@ describe('createOperationsAPI — self-derived target guard', () => {
       }),
     )
 
-    // Typing must still be able to create the version locally via its deterministic id.
-    expect(operations.patch.disabled).toBe(false)
-    expect(operations.commit.disabled).toBe(false)
+    // Any requested-but-missing version disables mutations, including for documents that don't
+    // exist at all (new documents are created through the initial-value/create flows, not by
+    // patching a missing version into existence).
+    expect(operations.patch.disabled).toBe('TARGET_NOT_FOUND')
+    expect(operations.commit.disabled).toBe('TARGET_NOT_FOUND')
   })
 
   it('does not guard when the version document exists', () => {
