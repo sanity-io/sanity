@@ -15,11 +15,11 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
 
     const variantVersion = getVariantVersionInfo(snapshots.version)
     if (variantVersion) {
-      // Unpublishing a variant requires the variant-of-published document, which is only in the
-      // pair when the published perspective is selected (the version snapshot carries no
-      // bundleId). From other bundles the sibling's existence is unknown (no pair slot holds
-      // it), so the operation stays disabled. (Sibling-stub gating is planned as a follow-up.)
-      return variantVersion.bundleId === 'published' ? false : 'NOT_PUBLISHED'
+      // Unpublishable variant versions:
+      // - the variant-of-published document itself (no bundleId), which is hard-unpublished
+      // - a release-scoped variant, which is soft-unpublished as part of its release
+      // A drafts-scoped variant has nothing published in its slot to unpublish.
+      return variantVersion.bundleId !== 'drafts' ? false : 'NOT_PUBLISHED'
     }
 
     return snapshots.published ? false : 'NOT_PUBLISHED'
@@ -27,14 +27,21 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
   execute: ({client, idPair, snapshots}) => {
     const variantVersion = getVariantVersionInfo(snapshots.version)
     if (variantVersion) {
-      // Deletes the variant-of-published document and moves its content into the target bundle
-      // (the variant's draft). The base published and draft documents are never touched.
+      if (variantVersion.bundleId === 'drafts') {
+        throw new Error('Cannot unpublish a draft variant')
+      }
+      // `bundleId` is the version snapshot's own bundle:
+      // - `undefined` (variant-of-published): hard unpublish — the backend deletes the published
+      //   variant and creates the variant draft from its content (mirror of base unpublish)
+      // - a release id: soft unpublish — the backend marks the release-scoped variant with
+      //   `_system.delete: true`, completed when the release is published
+      // The base published and draft documents are never touched either way.
       return variantActionsApiClient(client).observable.action(
         {
           actionType: 'sanity.action.document.variant.unpublish',
           publishedId: idPair.publishedId,
           variantId: variantVersion.variantId,
-          bundleId: 'drafts',
+          bundleId: snapshots.version?._system?.bundleId,
         },
         {
           tag: 'document.unpublish',

@@ -97,14 +97,22 @@ export interface VariantDocumentPublishAction {
 }
 
 /**
- * Unpublishes the variant-of-published document, moving its content into the target bundle
- * (`'drafts'` or a release name; `'published'` is rejected).
+ * Unpublishes a variant document. `bundleId` addresses the variant version being unpublished:
+ *
+ * - `undefined` — the variant-of-published document: hard unpublish (the published variant is
+ *   deleted and its content recreated as the variant draft), mirroring base unpublish.
+ * - a release name — a release-scoped variant: soft unpublish (`_system.delete: true` marker),
+ *   completed when the release is published.
+ *
+ * `'drafts'` is not a valid target: a drafts-scoped variant has nothing published to unpublish.
+ * The explicit `undefined` (rather than an optional field) forces callers to consciously choose
+ * the published variant. See CLDX-5781 / SAPP-4012.
  */
 export interface VariantDocumentUnpublishAction {
   actionType: 'sanity.action.document.variant.unpublish'
   publishedId: string
   variantId: string
-  bundleId: 'drafts' | (string & {})
+  bundleId: undefined | (string & {})
 }
 
 /**

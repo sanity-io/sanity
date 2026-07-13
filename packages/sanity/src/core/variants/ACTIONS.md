@@ -178,20 +178,26 @@ Behavior:
 
 ## `sanity.action.document.variant.unpublish`
 
-Marks the variant for unpublishing (deferred, mirroring release unpublish).
+Unpublishes a variant document. The behavior depends on which variant version `bundleId`
+addresses (see CLDX-5781 / SAPP-4012).
 
 Required fields:
 
 - `actionType: 'sanity.action.document.variant.unpublish'`
 - `publishedId`: the group (base published) document id
 - `variantId`: the short variant name
-- `bundleId`: the TARGET bundle that receives the draft copy — `'drafts'` or a release name. `'published'` is rejected.
+- `bundleId`: the bundle of the variant version being unpublished — omitted/`undefined` for the
+  variant-of-published document, or a release name for a release-scoped variant. `'drafts'` is
+  not a valid target (a drafts-scoped variant has nothing published to unpublish).
 
-Behavior (verified against the deployed action):
+Behavior:
 
-- Creates a variant version in the target bundle with the variant-of-published content and `_system.delete: true` — the same "going to unpublish" marker release versions use (`isGoingToUnpublish`).
-- The variant-of-published document remains until that marked version is published; publishing it completes the unpublish.
-- The base published and draft documents are never touched.
+- `bundleId` omitted (variant-of-published): hard unpublish — deletes the published variant and
+  recreates its content as the variant draft, mirroring base unpublish.
+- `bundleId` = release name: soft unpublish — marks the release-scoped variant with
+  `_system.delete: true` (the same "going to unpublish" marker release versions use); publishing
+  the release completes the unpublish.
+- The base published and draft documents are never touched either way.
 
 ## `sanity.action.document.variant.delete`
 
@@ -211,4 +217,4 @@ Optional fields:
 Behavior:
 
 - Deletes only the addressed variant version document; other bundles' variant documents and the base pair are unaffected.
-- The Studio uses this action to implement "discard changes" for variant drafts (discarding a variant draft is deleting the variant-over-drafts document; the generic `sanity.action.document.discard` addresses drafts by raw id and is kept for base/release paths).
+- The Studio uses this action to implement "discard changes" for drafts- and release-scoped variant versions (discarding a variant version is deleting the variant document in that bundle; the generic `sanity.action.document.discard` addresses drafts by raw id and is kept for base/release paths). Discarding the variant-of-published document is not allowed — removing it is unpublish's job.

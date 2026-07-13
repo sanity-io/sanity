@@ -12,8 +12,12 @@ beforeEach(() => {
   ;(isLiveEditEnabled as Mock).mockClear()
 })
 
-/** A variant-scoped version snapshot: `_system.variant` set, bundle per `bundleId`. */
+/**
+ * A variant-scoped version snapshot: `_system.variant` set, bundle per `bundleId`. Release
+ * bundles carry the `_system.release` reference, matching real release-scoped variant documents.
+ */
 function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocument {
+  const isReleaseBundle = Boolean(bundleId) && bundleId !== 'drafts'
   return {
     _id: 'versions.varscope.my-id',
     _type: 'example',
@@ -22,6 +26,7 @@ function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocum
     _updatedAt: '2021-09-14T22:48:02.303Z',
     _system: {
       ...(bundleId ? {bundleId} : {}),
+      ...(isReleaseBundle ? {release: {_ref: `_.releases.${bundleId}`, _weak: true}} : {}),
       variant: {_ref: '_.variants.french', _weak: true},
       group: {_ref: 'my-id', _weak: true},
       scopeId: 'varscope',
