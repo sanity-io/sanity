@@ -5,7 +5,7 @@ import {
   getVersionFromId,
   isCardinalityOneRelease,
   isDocumentInSelectedVariant,
-  isDocumentNotInSelectedRelease,
+  getTargetDocument,
   isDraftId,
   isGoingToUnpublish,
   isNewDocument,
@@ -197,6 +197,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     usePerspective()
 
   const documentVersions = useDocumentVersions({documentId})
+  const targetDocument = getTargetDocument({
+    variant: selectedVariant?._id,
+    bundle: bundle,
+    documentVersions: documentVersions.versions,
+  })
+  const hasDocumentInRelease = selectedPerspectiveName && Boolean(targetDocument)
 
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
@@ -307,10 +313,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       !isSystemBundle(selectedPerspective) &&
       displayed?._id &&
       selectedPerspectiveName &&
-      isDocumentNotInSelectedRelease(
-        {_id: displayed._id, _system: displayed._system},
-        selectedPerspectiveName,
-      ) &&
+      !hasDocumentInRelease &&
       ready &&
       !isPinnedDraftOrPublish &&
       isNewDocument(editState) === false &&
@@ -390,6 +393,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedReleaseId,
     selectedPerspectiveName,
     editState,
+    hasDocumentInRelease,
     ready,
     activeView.type,
     isPermissionsLoading,

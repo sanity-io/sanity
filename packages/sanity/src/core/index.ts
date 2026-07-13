@@ -40,7 +40,6 @@ export {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionInlineBadge,
-  isDocumentNotInSelectedRelease,
   isDraftPerspective,
   isGoingToUnpublish,
   isPublishedPerspective,

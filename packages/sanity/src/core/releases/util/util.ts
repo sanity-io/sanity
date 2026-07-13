@@ -40,30 +40,6 @@ export function getDocumentIsInPerspective(
   return releaseId === perspective
 }
 
-/**
- * Returns true when the displayed document is not in the selected release perspective.
- * Variant-scoped release documents may use scope-based ids, so `_system.release._ref` is
- * checked in addition to parsing the document id.
- *
- * @internal
- */
-export function isDocumentNotInSelectedRelease(
-  document: {_id: string; _system?: unknown},
-  selectedPerspectiveName: string,
-): boolean {
-  if (getVersionFromId(document._id) === selectedPerspectiveName) {
-    return false
-  }
-
-  const system = document._system as DocumentSystem | undefined
-  const releaseRef = system?.release?._ref
-  if (releaseRef) {
-    return getReleaseIdFromReleaseDocumentId(releaseRef) !== selectedPerspectiveName
-  }
-
-  return true
-}
-
 /** @internal */
 export function getPublishDateFromRelease(release: ReleaseDocument): Date | null {
   const dateString = release.publishedAt || release.publishAt || release.metadata.intendedPublishAt
