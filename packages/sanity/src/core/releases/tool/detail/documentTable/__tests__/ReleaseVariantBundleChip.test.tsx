@@ -1,9 +1,10 @@
-import {render, screen} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {DOCUMENT_SYSTEM_FIELD} from '../../../../../preview/constants'
 import {variantAlphaAudience} from '../../../../../variants/__fixtures__/variants.fixture'
+import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {ReleaseVariantBundleChip} from '../ReleaseVariantBundleChip'
 
 const useAllVariantsMock = vi.fn()
@@ -29,9 +30,9 @@ vi.mock('sanity/router', async (importOriginal) => ({
 const groupRef = {_type: 'reference' as const, _ref: 'article-1', _weak: true as const}
 
 describe('ReleaseVariantBundleChip', () => {
-  it('renders nothing when the document has no variant ref', async () => {
+  it('renders muted Default text when the document has no variant ref', async () => {
     useAllVariantsMock.mockReturnValue({byId: new Map()})
-    const wrapper = await createTestProvider()
+    const wrapper = await createTestProvider({resources: [releasesUsEnglishLocaleBundle]})
 
     render(
       <ReleaseVariantBundleChip
@@ -41,14 +42,18 @@ describe('ReleaseVariantBundleChip', () => {
           _rev: 'rev-1',
           _createdAt: '2025-01-01T00:00:00Z',
           _updatedAt: '2025-01-01T00:00:00Z',
+          publishedDocumentExists: true,
         }}
       />,
       {wrapper},
     )
 
-    expect(
-      screen.queryByTestId('release-variant-bundle-chip-versions.rASAP.article-1'),
-    ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('release-variant-bundle-default-versions.rASAP.article-1'),
+      ).toHaveTextContent('Default')
+    })
+    expect(screen.queryByTestId('variant-intent-link')).not.toBeInTheDocument()
   })
 
   it('renders a chip with the variant title and links to the variant detail page', async () => {

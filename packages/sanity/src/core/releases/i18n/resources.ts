@@ -444,6 +444,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'table-header.type': 'Type',
   /** Header for the document table in the release tool - bundle */
   'table-header.bundle': 'Bundle',
+  /** Default bundle label for non-variant documents in the release detail table */
+  'table-cell.bundle.default': 'Default',
   /** Header for the document table in the release tool - action */
   'table-header.action': 'Action',
 

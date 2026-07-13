@@ -7,6 +7,9 @@ import {
 import {type SystemVariant} from '../../../../variants/types'
 import {type BundleDocument} from '../useBundleDocuments'
 
+/** Sort key for non-variant documents in the bundle column. */
+const DEFAULT_BUNDLE_SORT_KEY = 'default'
+
 /** @internal - exported for unit testing only */
 export function getVariantDefinitionRef(document: BundleDocument['document']): string | undefined {
   const shortVariantId = getVariantIdFromDocument(document)
@@ -21,7 +24,7 @@ export function getVariantBundleSortKey(
   variantsById: Map<string, SystemVariant>,
 ): string {
   const variantRef = getVariantDefinitionRef(row.document)
-  if (!variantRef) return ''
+  if (!variantRef) return DEFAULT_BUNDLE_SORT_KEY
 
   const variant = variantsById.get(variantRef)
   const label = variant ? getVariantTitle(variant) : getVariantId(variantRef)

@@ -69,7 +69,7 @@ describe('getVariantDefinitionRef', () => {
 })
 
 describe('getVariantBundleSortKey', () => {
-  it('returns an empty string for documents without a variant ref', () => {
+  it('returns "default" for documents without a variant ref', () => {
     const row = createRow({
       _id: 'versions.rASAP.article-1',
       _type: 'article',
@@ -79,7 +79,7 @@ describe('getVariantBundleSortKey', () => {
       publishedDocumentExists: true,
     })
 
-    expect(getVariantBundleSortKey(row, variantsById)).toBe('')
+    expect(getVariantBundleSortKey(row, variantsById)).toBe('default')
   })
 
   it('returns the lowercase variant title when the definition exists', () => {
@@ -169,8 +169,8 @@ describe('getVariantBundleSortKey', () => {
     )
 
     expect(sorted.map((row) => row.document._id)).toEqual([
-      'versions.rASAP.article-3',
       'versions.rASAP.scope.article-1',
+      'versions.rASAP.article-3',
       'versions.rASAP.scope.article-2',
     ])
   })
