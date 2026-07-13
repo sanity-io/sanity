@@ -49,6 +49,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-refractor": "^4.0.0",
+    "react-rx": "^4.2.3",
     "refractor": "^5.0.0",
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
