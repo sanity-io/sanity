@@ -1,6 +1,7 @@
 import {type BaseActionOptions, type SanityClient, type SingleActionResult} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
 
+import {type PerspectiveBundle} from '../../perspective/types'
 import {type EditableSystemVariant} from '../types'
 
 /**
@@ -11,8 +12,8 @@ export interface VariantDefinitionActionResult {
   transactionId: string
 }
 
-/** Supported bundle targets for variant document creation. Release names are not yet supported. */
-export type VariantDocumentBundleId = undefined | 'drafts'
+/** Supported bundle targets for variant document creation. */
+export type VariantDocumentBundleId = undefined | Exclude<PerspectiveBundle, 'published'>
 
 /**
  * Variant definition action payloads. See ../ACTIONS.md.

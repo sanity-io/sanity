@@ -21,13 +21,7 @@ function getSupportedBundleId(
     return undefined
   }
 
-  if (bundleId === 'drafts') {
-    return 'drafts'
-  }
-
-  throw new Error(
-    `Variant document creation is not supported for bundle "${bundleId}". Only "published" and "drafts" bundles are supported.`,
-  )
+  return bundleId
 }
 
 /**

@@ -14,6 +14,7 @@ import {AvatarSkeleton, UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
+import {getVariantIdFromDocument} from '../../../../variants/tool/util'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {getReleaseDocumentIntent} from '../../components/getReleaseDocumentIntent'
@@ -38,6 +39,7 @@ const MemoReleaseDocumentPreview = memo(
     documentRevision?: string
   }) {
     const isGoingToBePublished = isGoingToUnpublish(item.document)
+    const variantId = getVariantIdFromDocument(item.document)
 
     return (
       <ReleaseDocumentPreview
@@ -47,6 +49,7 @@ const MemoReleaseDocumentPreview = memo(
         releaseState={releaseState}
         documentRevision={documentRevision}
         isGoingToBePublished={isGoingToBePublished}
+        variantId={variantId}
       />
     )
   },
@@ -260,6 +263,7 @@ export const getDocumentTableColumnDefs: (
         releaseId,
         releaseState,
         documentRevision: datum.document._rev,
+        variantId: getVariantIdFromDocument(datum.document),
         path: focusPath,
       })
       const errorLabel = t(

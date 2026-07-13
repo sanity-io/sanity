@@ -22,6 +22,7 @@ interface ReleaseDocumentPreviewProps {
   layout?: PreviewLayoutKey
   isGoingToBePublished?: boolean
   isCardinalityOneRelease?: boolean
+  variantId?: string
 }
 
 export function ReleaseDocumentPreview({
@@ -33,6 +34,7 @@ export function ReleaseDocumentPreview({
   documentRevision,
   layout,
   isGoingToBePublished = false,
+  variantId,
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
 
@@ -45,6 +47,7 @@ export function ReleaseDocumentPreview({
         releaseState,
         documentRevision,
         isCardinalityOneRelease,
+        variantId,
       }),
     [
       documentId,
@@ -53,6 +56,7 @@ export function ReleaseDocumentPreview({
       releaseState,
       documentRevision,
       isCardinalityOneRelease,
+      variantId,
     ],
   )
 

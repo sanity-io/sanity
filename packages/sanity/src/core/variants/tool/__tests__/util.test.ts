@@ -8,6 +8,7 @@ import {
   getVariantConditionsText,
   getVariantDescription,
   getVariantId,
+  getVariantIdFromDocument,
   getVariantTitle,
   isPublishedBundleId,
   isReleaseBundle,
@@ -17,6 +18,17 @@ describe('variants tool utilities', () => {
   it('derives a display id from a variant document id', () => {
     expect(getVariantId(`${VARIANT_DOCUMENTS_PATH}.audience-a`)).toBe('audience-a')
     expect(getVariantId('audience-a')).toBe('audience-a')
+  })
+
+  it('derives the sticky variant id from a document _system variant ref', () => {
+    expect(
+      getVariantIdFromDocument({
+        _system: {
+          variant: {_ref: `${VARIANT_DOCUMENTS_PATH}.alpha-audience`, _weak: true},
+        },
+      }),
+    ).toBe('alpha-audience')
+    expect(getVariantIdFromDocument({})).toBeUndefined()
   })
 
   it('uses metadata title before falling back to the id suffix', () => {
