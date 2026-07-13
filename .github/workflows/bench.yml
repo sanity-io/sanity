@@ -348,6 +348,18 @@ jobs:
           comment-tag: "bench-report"
           file-path: ${{ github.workspace }}/perf/bench/results/report.md
 
+      # A shard that produced no results must fail the run. Job timeouts
+      # conclude as "cancelled" (not "failure"), so without this the whole
+      # workflow shows a shrug-grey "cancelled" and nothing goes red. Runs
+      # after the comment step so the missing scenarios are already named
+      # in the PR comment.
+      - name: Fail on missing scenario results
+        run: |
+          if [ -f perf/bench/results/missing-scenarios.json ]; then
+            echo "::error::Benchmark shard(s) delivered no results: $(cat perf/bench/results/missing-scenarios.json | tr -d '\n')"
+            exit 1
+          fi
+
   self-test:
     # Same source on both sides - every metric must gate neutral; anything
     # else is harness drift and fails this job loudly

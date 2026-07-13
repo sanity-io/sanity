@@ -53,10 +53,18 @@ export function writeMergedReport(resultsDirArg?: string): void {
         (scenario) => scenario.scenario === expected.scenario && scenario.kind === expected.kind,
       ),
   )
+  // Marker for CI: a shard that dies without results (a job timeout
+  // surfaces as "cancelled", which never turns the run red) must still fail
+  // the check — but only AFTER the comment is posted, so the report job
+  // writes this file and a later workflow step exits on it
+  const missingMarker = path.join(resultsDir, 'missing-scenarios.json')
   if (missingScenarios.length > 0) {
     console.warn(
       `Missing results for ${missingScenarios.map((item) => `${item.scenario} (${item.kind})`).join(', ')} — shard(s) failed or were skipped`,
     )
+    fs.writeFileSync(missingMarker, JSON.stringify(missingScenarios, null, 2))
+  } else {
+    fs.rmSync(missingMarker, {force: true})
   }
 
   fs.writeFileSync(path.join(resultsDir, 'merged.json'), JSON.stringify(merged, null, 2))
