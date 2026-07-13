@@ -70,6 +70,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** Tooltip when action is disabled because the studio is not ready.*/
   'action.publish.disabled.not-ready': 'Operation not ready',
+  /** Tooltip when action is disabled because the version is published as part of its release */
+  'action.publish.disabled.not-publishable': 'This version is published as part of its release',
   /** Tooltip when action is disabled because the selected release or variant does not contain this document */
   'action.publish.disabled.target-not-found':
     'The selected release or variant does not contain this document',

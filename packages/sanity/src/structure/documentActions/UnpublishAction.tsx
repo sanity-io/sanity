@@ -31,6 +31,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
   type,
   draft,
   liveEdit,
+  liveEditSchemaType,
   release,
 }) => {
   const {targetDocumentState} = useDocumentPane()
@@ -39,6 +40,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
   // draft/published pair applies). While resolving, the action is disabled below instead of
   // silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
+  const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
   const scopeId = getTargetScopeId(targetDocumentState)
   const {unpublish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
@@ -89,7 +91,10 @@ export const useUnpublishAction: DocumentActionComponent = ({
       // Draft documents can't either
       return null
     }
-    if (liveEdit) {
+    // `liveEdit` is forced to true whenever a version is checked out, which includes variant
+    // targets — for those, only the schema-level live edit setting should hide the action
+    // (the variant-of-published document is unpublishable).
+    if (isVariantTarget ? liveEditSchemaType : liveEdit) {
       return null
     }
 
@@ -118,6 +123,8 @@ export const useUnpublishAction: DocumentActionComponent = ({
     release,
     isDraft,
     liveEdit,
+    liveEditSchemaType,
+    isVariantTarget,
     isPermissionsLoading,
     isTargetReady,
     permissions?.granted,

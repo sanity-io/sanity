@@ -1,5 +1,11 @@
-import {type BaseActionOptions, type SanityClient, type SingleActionResult} from '@sanity/client'
+import {
+  type BaseActionOptions,
+  type ObservableSanityClient,
+  type SanityClient,
+  type SingleActionResult,
+} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
+import {type Observable} from 'rxjs'
 
 import {type EditableSystemVariant} from '../types'
 
@@ -68,31 +74,100 @@ export type VariantDocumentCreateAction =
   | VariantDocumentCreateFromDocumentAction
   | VariantDocumentCreateFromBaseAction
 
-export type VariantAction = VariantDefinitionAction | VariantDocumentCreateAction
+/**
+ * Publishes a variant-scoped version into the variant-of-published document.
+ * `bundleId` is the SOURCE bundle being published (`'drafts'` or a release name);
+ * `'published'` is rejected by the API (target equals source).
+ */
+export interface VariantDocumentPublishAction {
+  actionType: 'sanity.action.document.variant.publish'
+  publishedId: string
+  variantId: string
+  bundleId: 'drafts' | (string & {})
+  /**
+   * Optimistic lock on the source variant document's revision.
+   * Note: specced but not accepted by the deployed action yet (`json: unknown field`).
+   */
+  ifSourceRevisionId?: string
+  /**
+   * Optimistic lock on the variant-of-published target's revision.
+   * Note: specced but not accepted by the deployed action yet.
+   */
+  ifPublishedRevisionId?: string
+}
+
+/**
+ * Unpublishes the variant-of-published document, moving its content into the target bundle
+ * (`'drafts'` or a release name; `'published'` is rejected).
+ */
+export interface VariantDocumentUnpublishAction {
+  actionType: 'sanity.action.document.variant.unpublish'
+  publishedId: string
+  variantId: string
+  bundleId: 'drafts' | (string & {})
+}
+
+/**
+ * Deletes a variant-scoped version document in the given bundle
+ * (omitted `bundleId` targets the variant-of-published document).
+ */
+export interface VariantDocumentDeleteAction {
+  actionType: 'sanity.action.document.variant.delete'
+  publishedId: string
+  variantId: string
+  bundleId?: 'drafts' | (string & {})
+  /** Also removes history from the translog. Defaults to false. */
+  purge?: boolean
+}
+
+export type VariantDocumentAction =
+  | VariantDocumentCreateAction
+  | VariantDocumentPublishAction
+  | VariantDocumentUnpublishAction
+  | VariantDocumentDeleteAction
+
+export type VariantAction = VariantDefinitionAction | VariantDocumentAction
+
+/**
+ * Temporary observable client typing until sanity/client exports variant actions.
+ */
+export interface ObservableSanityClientWithVariantsActions extends Omit<
+  ObservableSanityClient,
+  'action'
+> {
+  action(
+    action: VariantDefinitionAction,
+    options?: BaseActionOptions,
+  ): Observable<VariantDefinitionActionResult>
+  action(action: VariantDocumentAction, options?: BaseActionOptions): Observable<SingleActionResult>
+  action(
+    action: VariantAction,
+    options?: BaseActionOptions,
+  ): Observable<VariantDefinitionActionResult | SingleActionResult>
+}
 
 /**
  * Temporary client typing until sanity/client exports variant actions.
- *
  */
-export interface SanityClientWithVariantsActions extends Omit<SanityClient, 'action'> {
+export interface SanityClientWithVariantsActions extends Omit<
+  SanityClient,
+  'action' | 'observable'
+> {
   action(
     action: VariantDefinitionAction,
     options?: BaseActionOptions,
   ): Promise<VariantDefinitionActionResult>
-  action(
-    action: VariantDocumentCreateAction,
-    options?: BaseActionOptions,
-  ): Promise<SingleActionResult>
+  action(action: VariantDocumentAction, options?: BaseActionOptions): Promise<SingleActionResult>
   action(
     action: VariantAction,
     options?: BaseActionOptions,
   ): Promise<VariantDefinitionActionResult | SingleActionResult>
+  observable: ObservableSanityClientWithVariantsActions
 }
 
 /**
- * Returns a client whose `action` method accepts variant actions.
+ * Returns a client whose `action` and `observable.action` methods accept variant actions.
  * Remove once sanity/client exports these action types.
- *
  */
 export function variantsClient(client: SanityClient): SanityClientWithVariantsActions {
   return client as unknown as SanityClientWithVariantsActions
