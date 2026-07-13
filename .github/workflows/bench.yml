@@ -496,7 +496,7 @@ jobs:
             --sessions 8 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__pageload.json"
 
-      - name: Run memory soak
+      - name: Run soak check
         run: |
           pnpm bench run --mode soak --scenario singleString --minutes 10 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__soak.json"

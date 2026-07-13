@@ -52,8 +52,26 @@ const RUN: BenchRunDocument = {
       soak: {
         minutes: 2,
         samples: [
-          {minute: 0, heapMb: 80, domNodes: 100, listeners: 10},
-          {minute: 1, heapMb: 81, domNodes: 100, listeners: 10},
+          {
+            minute: 0,
+            heapMb: 80,
+            domNodes: 100,
+            listeners: 10,
+            latencyP50Ms: null,
+            cpuTaskMs: null,
+            connections: 2,
+            requests: 40,
+          },
+          {
+            minute: 1,
+            heapMb: 81,
+            domNodes: 100,
+            listeners: 10,
+            latencyP50Ms: 24,
+            cpuTaskMs: 5100,
+            connections: 2,
+            requests: 3,
+          },
         ],
       },
     },

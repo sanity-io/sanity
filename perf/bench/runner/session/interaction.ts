@@ -4,6 +4,7 @@ import {type Browser, type Locator, type Page} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
 import {type BenchScenario, type InteractionTarget} from '../../scenarios/types'
+import {median} from '../../stats/quantiles'
 import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 
@@ -637,13 +638,24 @@ export interface SoakSample {
   heapMb: number
   domNodes: number
   listeners: number
+  /** Median keystroke latency over the past interval (null before typing). */
+  latencyP50Ms: number | null
+  /** Main-thread task time spent during the past interval (null at minute 0). */
+  cpuTaskMs: number | null
+  /** Open listener connections on the mock — socket leaks across reconnects. */
+  connections: number
+  /** Requests the mock served during the past interval (minute 0 = boot). */
+  requests: number
 }
 
 /**
- * Memory soak: one long session typing continuously (bounded content — each
- * cycle types a burst then select-all-deletes), sampling post-GC memory
- * every minute. A rising heap/listener slope across a stable workload is a
- * retention regression. Runs in the daily cron, not on PRs.
+ * Soak check: one long session typing continuously (bounded content —
+ * each cycle types a burst then select-all-deletes), sampling every minute.
+ * The workload is constant and self-erasing, so every series should be
+ * flat: a rising heap/listener/DOM slope is a retention regression (a
+ * leak), a rising latency/CPU slope is degradation under sustained use,
+ * and a rising connection or request rate is a resubscribe loop. Runs in
+ * the daily cron, not on PRs.
  */
 export async function runSoakSession(options: {
   browser: Browser
@@ -680,16 +692,42 @@ export async function runSoakSession(options: {
 
     const target = scenario.interactions[0]
     await focusField(page, target, config.readinessTimeoutMs)
+    // Flush boot + focus-click interaction entries so the first interval's
+    // latency accounting starts clean
+    await drainEntries(page)
 
     const samples: SoakSample[] = []
+    // Per-interval accumulators, reset at every sample
+    let intervalLatencies: number[] = []
+    let lastCpu = await readCpuMetrics(session.cdp)
+    let lastRequestCount = running.mock.ledger.snapshot().entries.length
+
     const takeSample = async (minute: number) => {
       const memory = await readMemorySnapshot(session.cdp)
-      if (memory) {
-        samples.push({minute, ...memory})
-        log(
-          `  minute ${minute}: heap ${memory.heapMb.toFixed(1)} MB, ${memory.domNodes} nodes, ${memory.listeners} listeners`,
-        )
-      }
+      if (!memory) return
+      const cpu = await readCpuMetrics(session.cdp)
+      const cpuTaskMs =
+        cpu && lastCpu ? Math.round((cpu.taskDuration - lastCpu.taskDuration) * 1000) : null
+      lastCpu = cpu
+      const requestCount = running.mock.ledger.snapshot().entries.length
+      const requests = requestCount - lastRequestCount
+      lastRequestCount = requestCount
+      const latencyP50Ms = intervalLatencies.length > 0 ? median(intervalLatencies) : null
+      intervalLatencies = []
+      const connections = running.mock.hub.connectionCount
+      samples.push({
+        minute,
+        ...memory,
+        latencyP50Ms,
+        cpuTaskMs,
+        connections,
+        requests,
+      })
+      log(
+        `  minute ${minute}: heap ${memory.heapMb.toFixed(1)} MB, ${memory.domNodes} nodes, ` +
+          `${memory.listeners} listeners, p50 ${latencyP50Ms === null ? '—' : `${latencyP50Ms.toFixed(0)}ms`}, ` +
+          `cpu ${cpuTaskMs === null ? '—' : `${cpuTaskMs}ms`}, ${connections} connection(s), ${requests} request(s)`,
+      )
     }
 
     await takeSample(0)
@@ -702,16 +740,24 @@ export async function runSoakSession(options: {
       // Bounded workload: type a burst, then clear it
       await typeKeystrokes(page, 40, config.burstCadenceMs, offset, interruptions)
       offset += 40
+      const entries = await drainEntries(page)
+      intervalLatencies.push(...toLatencies(entries, 40).samples)
       await page.keyboard.press(process.platform === 'darwin' ? 'Meta+a' : 'Control+a')
       await page.keyboard.press('Backspace')
-      await page.waitForTimeout(500)
+      // The clear is interaction traffic too — drain and discard so it never
+      // pollutes the next interval's latency accounting
+      await drainEntries(page)
+      await page.waitForTimeout(300)
 
       if (Date.now() >= nextSampleAt) {
         await takeSample(Math.round((Date.now() - (deadline - minutes * 60_000)) / 60_000))
         nextSampleAt += 60_000
       }
     }
-    await takeSample(minutes)
+    // Final sample, unless the loop's last iteration already took it
+    if (samples.at(-1)?.minute !== minutes) {
+      await takeSample(minutes)
+    }
 
     if (session.violations.length > 0) {
       throw new SessionError(

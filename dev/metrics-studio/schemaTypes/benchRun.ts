@@ -199,7 +199,7 @@ const benchScenario = defineType({
     }),
     defineField({
       name: 'soak',
-      description: 'Memory-soak series (soak mode only)',
+      description: 'Soak series (soak mode only)',
       type: 'object',
       fields: [
         defineField({name: 'minutes', type: 'number'}),
@@ -215,6 +215,10 @@ const benchScenario = defineType({
                 defineField({name: 'heapMb', type: 'number'}),
                 defineField({name: 'domNodes', type: 'number'}),
                 defineField({name: 'listeners', type: 'number'}),
+                defineField({name: 'latencyP50Ms', type: 'number'}),
+                defineField({name: 'cpuTaskMs', type: 'number'}),
+                defineField({name: 'connections', type: 'number'}),
+                defineField({name: 'requests', type: 'number'}),
               ],
             }),
           ],

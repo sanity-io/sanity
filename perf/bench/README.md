@@ -67,7 +67,7 @@ pnpm bench run --scenario singleString --reference-dist perf/bench/.reference/di
 # load vitals + bundle size
 pnpm bench run --mode pageload --scenario singleString
 
-# memory soak (leak slope)
+# soak check (degradation + leak slope over a long session)
 pnpm bench run --mode soak --scenario singleString --minutes 5
 
 # interactive debugging: mock + `sanity dev`, type into a seeded doc yourself

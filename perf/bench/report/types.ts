@@ -71,10 +71,23 @@ export interface ScenarioReport {
     experiment: ResourceSide
     reference?: ResourceSide
   }
-  /** Memory-soak series (soak mode only). */
+  /** Soak series (soak mode only) — every value should stay flat over time. */
   soak?: {
     minutes: number
-    samples: {minute: number; heapMb: number; domNodes: number; listeners: number}[]
+    samples: {
+      minute: number
+      heapMb: number
+      domNodes: number
+      listeners: number
+      /** Median keystroke latency over the past interval (null before typing). */
+      latencyP50Ms: number | null
+      /** Main-thread task time during the past interval (null at minute 0). */
+      cpuTaskMs: number | null
+      /** Open listener connections on the mock at sample time. */
+      connections: number
+      /** Requests the mock served during the past interval (minute 0 = boot). */
+      requests: number
+    }[]
   }
 }
 

@@ -41,7 +41,7 @@ export const runCommand = command(
     ),
     minutes: withDefault(
       option('--minutes', integer({min: 1}), {
-        description: message`Soak duration in minutes (soak mode)`,
+        description: message`Soak duration in minutes (soak mode: sustained editing, every series should stay flat)`,
       }),
       10,
     ),
