@@ -5,6 +5,7 @@ import {
   getVersionFromId,
   isCardinalityOneRelease,
   isDocumentInSelectedVariant,
+  isDocumentNotInSelectedRelease,
   isDraftId,
   isGoingToUnpublish,
   isNewDocument,
@@ -305,7 +306,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     if (
       !isSystemBundle(selectedPerspective) &&
       displayed?._id &&
-      getVersionFromId(displayed._id) !== selectedPerspectiveName &&
+      selectedPerspectiveName &&
+      isDocumentNotInSelectedRelease(
+        {_id: displayed._id, _system: displayed._system},
+        selectedPerspectiveName,
+      ) &&
       ready &&
       !isPinnedDraftOrPublish &&
       isNewDocument(editState) === false &&

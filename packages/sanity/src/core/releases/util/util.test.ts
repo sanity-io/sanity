@@ -9,6 +9,7 @@ import {
 import {
   filterReleasesForOverview,
   getDocumentIsInPerspective,
+  isDocumentNotInSelectedRelease,
   shouldShowReleaseInView,
 } from './util'
 
@@ -47,6 +48,50 @@ describe('getDocumentIsInPerspective', () => {
     expect(
       getDocumentIsInPerspective('versions.rcomplex-summer.my-document-id', 'rcomplex-summer'),
     ).toBe(true)
+  })
+})
+
+describe('isDocumentNotInSelectedRelease', () => {
+  it('returns false when the document id matches the selected release', () => {
+    expect(
+      isDocumentNotInSelectedRelease({_id: 'versions.rsummer.my-document-id'}, 'rsummer'),
+    ).toBe(false)
+  })
+
+  it('returns false for variant release documents matched via _system.release._ref', () => {
+    expect(
+      isDocumentNotInSelectedRelease(
+        {
+          _id: 'versions.buz.article-1',
+          _system: {
+            bundleId: 'rASAP',
+            release: {_ref: '_.releases.rASAP', _weak: true},
+            group: {_ref: 'article-1', _weak: true},
+          },
+        },
+        'rASAP',
+      ),
+    ).toBe(false)
+  })
+
+  it('returns true when neither the document id nor release ref matches the selected release', () => {
+    expect(
+      isDocumentNotInSelectedRelease(
+        {
+          _id: 'versions.buz.article-1',
+          _system: {
+            bundleId: 'rWinter',
+            release: {_ref: '_.releases.rWinter', _weak: true},
+            group: {_ref: 'article-1', _weak: true},
+          },
+        },
+        'rASAP',
+      ),
+    ).toBe(true)
+  })
+
+  it('returns true when the document id does not match and no release ref is present', () => {
+    expect(isDocumentNotInSelectedRelease({_id: 'versions.buz.article-1'}, 'rASAP')).toBe(true)
   })
 })
 
