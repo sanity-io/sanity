@@ -236,6 +236,7 @@ import type {
   CommentThreadItem,
   CommentUpdateOperationOptions,
   CommentUpdatePayload,
+  CommitError,
   CommitFunction,
   CommitRequest,
   CommittedEvent,
@@ -2500,6 +2501,9 @@ describe('sanity', () => {
   })
   test('CommentUpdatePayload', () => {
     expectTypeOf<CommentUpdatePayload>().not.toBeNever()
+  })
+  test('CommitError', () => {
+    expectTypeOf<CommitError>().not.toBeNever()
   })
   test('CommitFunction', () => {
     expectTypeOf<CommitFunction>().not.toBeNever()
