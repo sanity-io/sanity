@@ -70,6 +70,11 @@ export const synthetic = defineScenario({
     {fieldPath: 'title', kind: 'string'},
     {fieldPath: 'syntheticObject.name', kind: 'string', label: 'string inside object'},
   ],
+  // Keystrokes here run ~10x slower than the other scenarios (~320ms on a
+  // throttled CI host) — the default counts would cost >2 minutes per
+  // session without adding power: 16 measured x 6 sessions is still ~100
+  // samples for a very stable median
+  keystrokes: {warmup: 4, measured: 16, burst: 12},
 })
 
 /**

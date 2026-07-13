@@ -320,7 +320,21 @@ export async function runInteractionSession(options: {
   config?: Partial<SessionConfig>
 }): Promise<InteractionSessionResult> {
   const {browser, running, scenario, instrumentation} = options
-  const config = {...DEFAULT_SESSION_CONFIG, ...options.config}
+  const config = {
+    ...DEFAULT_SESSION_CONFIG,
+    ...options.config,
+    // Scenario keystroke overrides (see BenchScenario.keystrokes) — applied
+    // after caller config so a scenario's counts always win on both sides
+    ...(scenario.keystrokes?.warmup !== undefined && {
+      warmupKeystrokes: scenario.keystrokes.warmup,
+    }),
+    ...(scenario.keystrokes?.measured !== undefined && {
+      measuredKeystrokes: scenario.keystrokes.measured,
+    }),
+    ...(scenario.keystrokes?.burst !== undefined && {
+      burstKeystrokes: scenario.keystrokes.burst,
+    }),
+  }
   const draftId = `drafts.${scenario.documentId}`
 
   // Fresh state, in-process — no HTTP round-trips to our own mock

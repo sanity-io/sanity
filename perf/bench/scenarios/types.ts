@@ -36,6 +36,15 @@ export interface BenchScenario {
   fixture: () => BenchDocument[]
   /** Fields measured by interaction mode, in fixed execution order. */
   interactions: InteractionTarget[]
+  /**
+   * Per-scenario keystroke counts, overriding the session defaults. For
+   * scenarios with pathologically slow keystrokes (synthetic: ~10× the
+   * others), the default counts make each session cost minutes without
+   * adding statistical power — the median needs samples, not marathons.
+   * Applied identically to both A/B sides (the scenario file comes from
+   * HEAD on both).
+   */
+  keystrokes?: {warmup?: number; measured?: number; burst?: number}
 }
 
 export function defineScenario(scenario: BenchScenario): BenchScenario {
