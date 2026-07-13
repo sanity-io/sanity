@@ -9,15 +9,23 @@ import {formatValue, type TrendPoint, type TrendSeries} from './data'
 const MARGIN = {top: 8, right: 8, bottom: 22, left: 44}
 
 /** Theme-aware colors via the studio's CSS custom properties. */
-const COLOR = {
+export const COLOR = {
   line: 'var(--card-accent-fg-color, #556bfc)',
   band: 'var(--card-badge-primary-bg-color, rgba(85, 107, 252, 0.15))',
   axis: 'var(--card-muted-fg-color, #727892)',
+  /** Context charts (host calibration) recede — reference, not measurement. */
+  context: 'var(--card-muted-fg-color, #727892)',
 }
 
 /** A dot linking to the run document behind the sample. */
-function RunDot(props: {point: TrendPoint; cx: number; cy: number}) {
-  const {point, cx, cy} = props
+function RunDot(props: {
+  point: TrendPoint
+  cx: number
+  cy: number
+  unit: TrendSeries['unit']
+  color: string
+}) {
+  const {point, cx, cy, unit, color} = props
   const intent = useIntentLink({
     intent: 'edit',
     params: {id: point.runId, type: 'benchRun'},
@@ -28,8 +36,10 @@ function RunDot(props: {point: TrendPoint; cx: number; cy: number}) {
       onClick={intent.onClick}
       aria-label={`open run ${point.sha.slice(0, 10)}`}
     >
-      <circle cx={cx} cy={cy} r={3} fill={COLOR.line}>
-        <title>{`${point.date.toISOString().slice(0, 10)} @ ${point.sha.slice(0, 10)} — ${formatValue(point.value, 'ms')}`}</title>
+      {/* invisible halo: a comfortable hover/click target around the 3px dot */}
+      <circle cx={cx} cy={cy} r={9} fill="transparent" />
+      <circle cx={cx} cy={cy} r={3} fill={color}>
+        <title>{`${point.date.toISOString().slice(0, 10)} @ ${point.sha.slice(0, 10)} — ${formatValue(point.value, unit)} (click to open the run)`}</title>
       </circle>
     </a>
   )
@@ -38,6 +48,7 @@ function RunDot(props: {point: TrendPoint; cx: number; cy: number}) {
 export function TrendChart(props: {series: TrendSeries; width: number; height: number}) {
   const {series, width, height} = props
   const {points, unit} = series
+  const lineColor = series.goal === 'context' ? COLOR.context : COLOR.line
   if (width < 10 || points.length === 0) return null
 
   const innerWidth = width - MARGIN.left - MARGIN.right
@@ -78,12 +89,19 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
             data={points}
             x={x}
             y={(point) => yScale(point.value)}
-            stroke={COLOR.line}
+            stroke={lineColor}
             strokeWidth={1.5}
           />
         )}
         {points.map((point) => (
-          <RunDot key={point.runId} point={point} cx={x(point)} cy={yScale(point.value)} />
+          <RunDot
+            key={point.runId}
+            point={point}
+            cx={x(point)}
+            cy={yScale(point.value)}
+            unit={unit}
+            color={lineColor}
+          />
         ))}
         <AxisBottom
           top={innerHeight}
