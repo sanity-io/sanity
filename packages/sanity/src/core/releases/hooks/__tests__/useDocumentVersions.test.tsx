@@ -40,40 +40,41 @@ async function setupMocks({
    * falls back to `temporarilyBuildDocumentSystem`.
    */
   observeSystem?: boolean
-  /** When `true`, the version document ids observable never emits (initial loading state). */
+  /** When `true`, the document set observable never emits (initial loading state). */
   pendingIdSet?: boolean
 }) {
   const mockDocumentPreviewStore = useDocumentPreviewStore as Mock<typeof useDocumentPreviewStore>
 
   mockDocumentPreviewStore.mockReturnValue({
-    unstable_observeVersionDocumentIds: vi
-      .fn<DocumentPreviewStore['unstable_observeVersionDocumentIds']>()
-      .mockReturnValue(pendingIdSet ? NEVER : of(versionIds)),
-    observePaths: vi
-      .fn<DocumentPreviewStore['observePaths']>()
-      .mockImplementation((value: {_id: string}) => {
-        const id = value._id
-        return of(
-          observeSystem
-            ? {
-                _id: id,
-                _rev: '',
-                _createdAt: '',
-                _updatedAt: '',
-                _system: {
-                  bundleId: 'drafts',
-                  group: {_ref: getPublishedId(id), _weak: true},
-                  scopeId: getPublishedId(id),
-                } satisfies DocumentSystem,
-              }
-            : {
-                _id: id,
-                _rev: '',
-                _createdAt: '',
-                _updatedAt: '',
-              },
-        )
-      }),
+    unstable_observeDocumentSet: vi
+      .fn<DocumentPreviewStore['unstable_observeDocumentSet']>()
+      .mockReturnValue(
+        pendingIdSet
+          ? NEVER
+          : of({
+              status: 'connected' as const,
+              documents: versionIds.map((id) =>
+                observeSystem
+                  ? {
+                      _id: id,
+                      _rev: '',
+                      _createdAt: '',
+                      _updatedAt: '',
+                      _system: {
+                        bundleId: 'drafts',
+                        group: {_ref: getPublishedId(id), _weak: true},
+                        scopeId: getPublishedId(id),
+                      } satisfies DocumentSystem,
+                    }
+                  : {
+                      _id: id,
+                      _rev: '',
+                      _createdAt: '',
+                      _updatedAt: '',
+                    },
+              ),
+            }),
+      ),
   } as unknown as DocumentPreviewStore)
 
   const {useActiveReleases} = await import('../../store/useActiveReleases')
