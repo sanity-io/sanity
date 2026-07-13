@@ -79,7 +79,7 @@ function classify(
   return delta > 0 ? 'regression' : 'improvement'
 }
 
-function baseline(
+function makeBaseline(
   kind: DriftBaseline['kind'],
   recent: number,
   baselineValue: number,
@@ -109,7 +109,7 @@ function trailingBaseline(
   const recent = median(values.slice(-7))
   const prior = median(values.slice(-28, -7))
   if (recent === null || prior === null) return null
-  return baseline('trailing', recent, prior, threshold, goal)
+  return makeBaseline('trailing', recent, prior, threshold, goal)
 }
 
 function stepBaseline(
@@ -127,7 +127,7 @@ function stepBaseline(
   if (sameWeekday.length < 2) return null
   const priorMedian = median(sameWeekday.map((point) => point.value))
   if (priorMedian === null) return null
-  return baseline('step', latest.value, priorMedian, threshold, goal)
+  return makeBaseline('step', latest.value, priorMedian, threshold, goal)
 }
 
 /** Flag every series whose recent runs drifted past the gate thresholds. */

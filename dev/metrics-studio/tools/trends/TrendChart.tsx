@@ -44,10 +44,10 @@ function RunDot(props: {
     <circle
       cx={cx}
       cy={cy}
-      r={emphasized ? 4.5 : 3}
-      fill={color}
-      stroke={emphasized ? 'var(--card-bg-color, #fff)' : undefined}
-      strokeWidth={emphasized ? 1.5 : 0}
+      // Smaller resting dot; the hovered one grows and switches to the accent
+      // color (a color change reads far better than the old subtle white ring)
+      r={emphasized ? 4 : 2}
+      fill={emphasized ? 'var(--card-focus-ring-color, #556bfc)' : color}
       pointerEvents="none"
     />
   )
