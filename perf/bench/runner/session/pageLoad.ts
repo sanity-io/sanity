@@ -32,6 +32,12 @@ export interface PageLoadSample {
   /** Total LoAF blocking during load. */
   blockingMs: number
   /**
+   * Top blocking scripts (LoAF attribution) during the load — names the
+   * functions that own `blockingMs`, so a slow time-to-editable is
+   * diagnosable from the stored run instead of just observable.
+   */
+  loafAttribution: {sourceUrl: string; functionName: string; totalMs: number}[]
+  /**
    * Auth boot-path milestones (report-only). Splits the auth cost into the
    * part we control (how late the first request is issued, how many
    * serialized trips sit on the path) and the part we don't (time an auth
@@ -65,6 +71,27 @@ export function unionDurationMs(windows: {start: number; end: number}[]): number
     cursor = end
   }
   return total
+}
+
+/** Fold LoAF script entries into per-script blocking totals, largest first. */
+export function foldLoafAttribution(
+  loafs: {scripts: {sourceUrl: string; functionName: string; duration: number}[]}[],
+  top = 10,
+): PageLoadSample['loafAttribution'] {
+  const byScript = new Map<string, {sourceUrl: string; functionName: string; totalMs: number}>()
+  for (const loaf of loafs) {
+    for (const script of loaf.scripts) {
+      const key = `${script.sourceUrl}#${script.functionName}`
+      const existing = byScript.get(key) ?? {
+        sourceUrl: script.sourceUrl,
+        functionName: script.functionName,
+        totalMs: 0,
+      }
+      existing.totalMs += script.duration
+      byScript.set(key, existing)
+    }
+  }
+  return [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, top)
 }
 
 /** Derive the auth milestones from resource timing (see PageLoadSample.auth). */
@@ -189,6 +216,7 @@ async function measureLoad(options: {
       .filter((shift) => !shift.hadRecentInput)
       .reduce((sum, shift) => sum + shift.value, 0),
     blockingMs: entries.loafs.reduce((sum, loaf) => sum + loaf.blockingDuration, 0),
+    loafAttribution: foldLoafAttribution(entries.loafs),
     auth: deriveAuthMilestones(entries.resources, timeToEditable.duration),
   }
 }

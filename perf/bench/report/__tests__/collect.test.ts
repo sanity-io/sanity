@@ -78,6 +78,13 @@ function sample(
     lcpMs: 2000,
     cls: 0,
     blockingMs: 50,
+    loafAttribution: [
+      {
+        sourceUrl: 'https://localhost/static/sanity-abc.js',
+        functionName: 'commitWork',
+        totalMs: 30,
+      },
+    ],
     auth: {trips: 1, firstRequestMs: 2000, inFlightMs: 40, ...auth},
   }
 }
@@ -103,9 +110,19 @@ describe('collectPageLoad', () => {
     const labels = report.metrics.map((metric) => `${metric.label} (${metric.unit})`)
     expect(labels).toEqual([
       'boot-cold · time to editable (ms)',
+      'boot-cold · main-thread blocking (ms)',
       'boot-cold · auth round trips (count)',
       'boot-cold · auth first request (ms)',
       'boot-cold · auth in flight (ms)',
+    ])
+
+    // Attribution aggregates across experiment samples into the shared slot
+    expect(report.loafAttribution).toEqual([
+      {
+        sourceUrl: 'https://localhost/static/sanity-abc.js',
+        functionName: 'commitWork',
+        totalMs: 60,
+      },
     ])
 
     const editable = report.metrics[0]
@@ -113,7 +130,7 @@ describe('collectPageLoad', () => {
     expect(editable.reference?.summary.median).toBe(4000)
 
     // Auth rows carry both sides but never a comparison (report-only)
-    const trips = report.metrics[1]
+    const trips = report.metrics[2]
     expect(trips.comparison).toBeUndefined()
     expect(trips.experiment.summary.median).toBe(1)
     expect(trips.reference?.summary.median).toBe(2)
@@ -127,6 +144,7 @@ describe('collectPageLoad', () => {
     )
     expect(report.metrics.map((metric) => metric.label)).toEqual([
       'boot-cold · time to editable',
+      'boot-cold · main-thread blocking',
       'boot-cold · auth round trips',
       'boot-cold · auth in flight',
     ])

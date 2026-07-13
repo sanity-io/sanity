@@ -278,6 +278,10 @@ export function collectPageLoad(
               }
             : {}),
         },
+        // Main-thread blocking during load (report-only) — for heavy
+        // documents this IS the time-to-editable story; the per-script
+        // breakdown lands in the scenario's loafAttribution
+        ...reportOnly(condition, 'main-thread blocking', 'ms', (sample) => sample.blockingMs),
         // Auth boot-path milestones (see PageLoadSample.auth) — report-only:
         // the trip count is the actionable signal (a removed server round
         // trip shows as an exact -1), the in-flight window is the share that
@@ -294,12 +298,25 @@ export function collectPageLoad(
     },
   )
 
+  // Top blockers across all experiment-side samples (both conditions) —
+  // same shape and slot the interaction sessions use, so the PR comment's
+  // "Top main-thread blockers" table and the stored document get it for free
+  const byScript = new Map<string, {sourceUrl: string; functionName: string; totalMs: number}>()
+  for (const sample of experiment) {
+    for (const script of sample.loafAttribution) {
+      const key = `${script.sourceUrl}#${script.functionName}`
+      const existing = byScript.get(key) ?? {...script, totalMs: 0}
+      existing.totalMs += script.totalMs
+      byScript.set(key, existing)
+    }
+  }
+
   return {
     scenario,
     kind: 'pageload',
     metrics,
     failures: [],
     interruptions: {experiment: {count: 0, totalMs: 0}},
-    loafAttribution: [],
+    loafAttribution: [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, 5),
   }
 }

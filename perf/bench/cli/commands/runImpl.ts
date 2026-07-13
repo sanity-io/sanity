@@ -28,6 +28,7 @@ import {
 } from '../../runner/session/interaction'
 import {
   type LoadCondition,
+  foldLoafAttribution,
   type PageLoadSample,
   runPageLoadSample,
 } from '../../runner/session/pageLoad'
@@ -241,6 +242,23 @@ export async function runBench(argv: RunArgs): Promise<void> {
               `first request p50 ${summarize(experimentSamples.map((s) => s.auth.firstRequestMs ?? 0)).median.toFixed(0)}ms, ` +
               `in flight p50 ${summarize(experimentSamples.map((s) => s.auth.inFlightMs)).median.toFixed(0)}ms`,
           )
+          const blockers = foldLoafAttribution(
+            experimentSamples.map((s) => ({
+              scripts: s.loafAttribution.map((script) => ({...script, duration: script.totalMs})),
+            })),
+            3,
+          )
+          if (blockers.length > 0) {
+            console.log(
+              `  ${chalk.bold(condition)} top blockers: ` +
+                blockers
+                  .map(
+                    (script) =>
+                      `${script.sourceUrl.split('/').at(-1) || '(inline)'}#${script.functionName || '(anonymous)'} ${(script.totalMs / experimentSamples.length).toFixed(0)}ms/sample`,
+                  )
+                  .join(', '),
+            )
+          }
           const referenceSamples = (bySide.get('reference') ?? []).filter(
             (sample) => sample.condition === condition,
           )
