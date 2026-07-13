@@ -8,29 +8,36 @@ import {type ConnectionState, connectionState} from './useConnectionState'
 
 /**
  * Staged "is this document syncing?" signal, derived from the document's
- * consistency state combined with the realtime connection state.
+ * consistency state combined with the realtime connection state and whether
+ * the latest commit attempt actually failed.
  *
  * - `synced`: no pending local mutations, or they're committing normally.
+ *   This includes a slow-draining backlog: while the connection is live and
+ *   no commit has failed, a document that stays unsynced for a while (e.g.
+ *   sustained typing while the request pipeline is saturated) is not an
+ *   error condition, and nothing is shown.
  * - `pending`: local mutations have been unsynced for a short while
- *   (`PENDING_AFTER_MS`) and we still don't have a live connection —
- *   a commit is failing/retrying. Non-blocking; the editor stays usable.
+ *   (`PENDING_AFTER_MS`) and we don't have a live connection. Non-blocking;
+ *   the editor stays usable.
  * - `stalled`: still unsynced and disconnected past `STALLED_AFTER_MS` —
  *   the editor goes read-only to stop the user piling more edits onto a
  *   document that isn't reaching the server.
- * - `recovering`: still unsynced, but the connection is back — we're
- *   flushing the buffered backlog. Editing stays locked (we're not in
- *   sync yet), but the message reassures the user that submissions have
- *   resumed rather than telling them they're stuck. Clears to `synced`
- *   the moment the backlog drains.
+ * - `recovering`: unsynced past the pending floor, the connection is live,
+ *   and the latest commit attempt *failed* — the mutator is retrying it on
+ *   backoff. This covers both the flush right after a reconnect and a
+ *   document-specific 5xx that retries while the listener stays perfectly
+ *   connected. Editing stays locked (we're not in sync yet), but the
+ *   message reassures the user that we're saving rather than telling them
+ *   they're stuck. Entry is debounced by `RECOVERING_DEBOUNCE_MS`, so a
+ *   failure whose retry promptly succeeds never shows at all; once shown,
+ *   it clears the moment a retry succeeds or the backlog drains.
  *
- *   `recovering` is time-boxed: a live realtime connection does not
- *   guarantee that *commits* are succeeding (a document-specific 5xx
- *   retries on backoff while the listener stays perfectly connected, and
- *   the mutator eventually stops retrying after ~200 attempts — see
- *   `BufferedDocument._cycleCommitter`). If we stay unsynced for
- *   `RECOVERING_GRACE_MS` after the connection returns, the backlog clearly
- *   isn't draining, so we fall back to `stalled` rather than reassure the
- *   user indefinitely while nothing reaches the server.
+ *   `recovering` is time-boxed: if we stay unsynced-and-failing for
+ *   `RECOVERING_GRACE_MS`, the backlog clearly isn't draining (the mutator
+ *   eventually stops retrying after ~200 attempts — see
+ *   `BufferedDocument._cycleCommitter`), so we fall back to `stalled`
+ *   rather than reassure the user indefinitely while nothing reaches the
+ *   server.
  *
  * @internal
  */
@@ -41,12 +48,20 @@ const PENDING_AFTER_MS = 10_000
 /** How long before we escalate to a read-only lock. */
 const STALLED_AFTER_MS = 30_000
 /**
- * How long we trust "connection is back" to mean "the backlog is flushing"
- * before concluding commits aren't actually getting through and showing
- * `stalled` instead. Kept short: a healthy backlog drains in well under a
- * second once the connection is live.
+ * How long we keep reassuring (`recovering`) while connected and retrying a
+ * failed commit, before concluding commits aren't getting through and
+ * showing `stalled` instead.
  */
 const RECOVERING_GRACE_MS = 10_000
+/**
+ * How long a commit failure must persist (while connected and past the
+ * pending floor) before we show `recovering`. The mutator's retry backoff
+ * is `commit.tries * 1000` (see `BufferedDocument._cycleCommitter`), so the
+ * first two retries land at ~1s and ~3s after the failure — this gives both
+ * a chance to succeed without the toast ever flashing for a transient
+ * failure.
+ */
+const RECOVERING_DEBOUNCE_MS = 5_500
 
 const INITIAL: DocumentSyncState = 'synced'
 
@@ -55,7 +70,8 @@ type UnsyncedStage = 'synced' | 'pending' | 'stalled'
 
 /**
  * Maps the consistency stream (`true` = synced, `false` = unsynced local
- * mutations) and the connection state to the staged
+ * mutations), the connection state, and the commit-failure stream (`true` =
+ * the latest commit attempt failed and is being retried) to the staged
  * {@link DocumentSyncState}. Pure — extracted so the timing/combination
  * behavior can be unit-tested without the document store.
  *
@@ -64,6 +80,7 @@ type UnsyncedStage = 'synced' | 'pending' | 'stalled'
 export function deriveDocumentSyncState(
   consistency$: Observable<boolean>,
   connectionState$: Observable<ConnectionState>,
+  commitFailed$: Observable<boolean>,
 ): Observable<DocumentSyncState> {
   const stage$: Observable<UnsyncedStage> = consistency$.pipe(
     switchMap((isConsistent) => {
@@ -81,44 +98,64 @@ export function deriveDocumentSyncState(
     distinctUntilChanged(),
   )
 
-  // Whether the connection is live, collapsed to a boolean. We only care
-  // about connected-vs-not here, and we must NOT let `stage` ticks
-  // (pending → stalled) feed the connected branch's switchMap below, or its
-  // grace timer would restart on every tick and flap recovering ↔ stalled.
+  // Whether the connection is live, collapsed to a boolean — we only care
+  // about connected-vs-not here.
   const isConnected$ = connectionState$.pipe(
     map((connection) => connection === 'connected'),
     distinctUntilChanged(),
   )
 
-  return combineLatest([stage$, isConnected$]).pipe(
-    // Collapse inputs that the branch logic treats identically, so the
-    // switchMap below doesn't re-fire (and restart its grace timer) on a
-    // change it would map to the same behavior. While connected, the
-    // pending → stalled tick is such a no-op: the connected branch ignores
-    // which stage we're in, so without this it would flap recovering ↔
-    // stalled every time the stage timer ticks underneath.
-    distinctUntilChanged(([prevStage, prevConn], [stage, conn]) => {
-      if (prevConn !== conn) return false
-      if (conn) return (prevStage === 'synced') === (stage === 'synced')
-      return prevStage === stage
+  return combineLatest([stage$, isConnected$, commitFailed$.pipe(distinctUntilChanged())]).pipe(
+    // Collapse the inputs to the underlying sync situation they describe —
+    // the timing policy below (debounce, grace window) then maps it to the
+    // presented DocumentSyncState.
+    map(([stage, isConnected, commitFailed]) => {
+      // Consistent, or a fresh unsynced period under the pending floor —
+      // nothing to show.
+      if (stage === 'synced') return 'synced'
+
+      // Unsynced and not connected: the staged warning/lock. Disconnection
+      // is a problem in itself — buffered edits can't reach the server —
+      // so no commit-failure evidence is required here.
+      if (!isConnected) return stage === 'pending' ? 'disconnected-pending' : 'disconnected-stalled'
+
+      // Unsynced but connected. Only escalate when a commit actually
+      // failed: a backlog that is merely slow to drain (commits succeeding
+      // while the user keeps editing, or a saturated request pipeline)
+      // must not warn — and certainly must not lock the editor.
+      return commitFailed ? 'retrying' : 'synced'
     }),
-    // switchMap (not map) because the connected branch is time-boxed.
-    switchMap(([stage, isConnected]): Observable<DocumentSyncState> => {
-      // Still synced (or recovered) — nothing to show.
-      if (stage === 'synced') return of<DocumentSyncState>('synced')
+    // Dropping identical consecutive values here is what keeps the
+    // switchMap below from re-firing (and restarting its timers) on an
+    // input change that maps to the same underlying state. While retrying,
+    // the pending → stalled stage tick is such a no-op: without this it
+    // would flap recovering ↔ stalled every time the stage timer ticks
+    // underneath.
+    distinctUntilChanged(),
+    // switchMap (not map) because the retrying state is time-boxed.
+    switchMap((state): Observable<DocumentSyncState> => {
+      if (state === 'synced') return of<DocumentSyncState>('synced')
 
-      // Unsynced and not connected: the staged warning/lock.
-      if (!isConnected) return of<DocumentSyncState>(stage)
+      if (state === 'disconnected-pending') return of<DocumentSyncState>('pending')
 
-      // Unsynced AND the connection is back. For a short grace window we
-      // assume the backlog is flushing and reassure (`recovering`). If it
-      // hasn't drained by then, commits aren't getting through after all —
-      // fall back to `stalled` so we don't reassure indefinitely. (When the
-      // backlog *does* drain, consistency$ flips to `true`, stage becomes
-      // 'synced', and switchMap tears this timer down before it fires.)
-      return timer(RECOVERING_GRACE_MS).pipe(
-        map((): DocumentSyncState => 'stalled'),
-        startWith<DocumentSyncState>('recovering'),
+      if (state === 'disconnected-stalled') return of<DocumentSyncState>('stalled')
+
+      // Connected, unsynced, and the latest commit failed. Hold the
+      // previous state for a short debounce first — if the retry gets
+      // through within it, nothing is ever shown. Then reassure
+      // (`recovering`) for a grace window; if we're still
+      // unsynced-and-failing when it fires, commits aren't landing — fall
+      // back to `stalled` so we don't reassure indefinitely. (A successful
+      // retry flips `commitFailed` off and a drained backlog flips the
+      // stage to 'synced' — either tears these timers down via switchMap
+      // before they fire.)
+      return timer(RECOVERING_DEBOUNCE_MS).pipe(
+        switchMap(() =>
+          timer(RECOVERING_GRACE_MS).pipe(
+            map((): DocumentSyncState => 'stalled'),
+            startWith<DocumentSyncState>('recovering'),
+          ),
+        ),
       )
     }),
     startWith(INITIAL),
@@ -139,6 +176,9 @@ export function useDocumentSyncState(
       deriveDocumentSyncState(
         documentStore.pair.consistencyStatus(publishedDocId, docTypeName, version),
         connectionState(documentStore, publishedDocId, docTypeName, version),
+        documentStore.pair
+          .commitErrorStatus(publishedDocId, docTypeName, version)
+          .pipe(map((commitError) => commitError !== undefined)),
       ),
     [docTypeName, documentStore, publishedDocId, version],
   )
