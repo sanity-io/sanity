@@ -2,6 +2,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock'
+import {type AuthStore} from '../store'
 import {
   AuthBoundaryResolved,
   SessionTokenExchangeCompleted,
@@ -36,6 +37,17 @@ export function AuthBoundary({
   )
   const [loginProvider, setLoginProvider] = useState<string | undefined>()
   const {activeWorkspace} = useActiveWorkspace()
+
+  // The auth store whose callback flow (sid → credential exchange) has
+  // settled. Until the ACTIVE workspace's store has, a logged-out state is
+  // ambiguous — it may be the stale pre-exchange probe result — so the
+  // render below holds the loading screen instead of flashing the login
+  // screen. Store identity rather than a boolean, so a workspace switch
+  // mid-exchange keeps the gate closed for the new workspace and a
+  // superseded exchange settling late can't open it.
+  const [callbackSettledFor, setCallbackSettledFor] = useState<AuthStore | undefined>(undefined)
+  const callbackSettled =
+    !activeWorkspace.auth.handleCallbackUrl || callbackSettledFor === activeWorkspace.auth
   const telemetry = useTelemetry()
   const [mountTime] = useState(() => performance.now())
 
@@ -66,12 +78,16 @@ export function AuthBoundary({
   }, [loggedIn, telemetry])
 
   useEffect(() => {
-    activeWorkspace.auth
+    const auth = activeWorkspace.auth
+    auth
       .handleCallbackUrl?.()
       .then((result) => {
         telemetry.log(SessionTokenExchangeCompleted, result)
       })
       .catch(handleError)
+      // Marks THIS store's flow settled; harmless if a workspace switch
+      // superseded this run (the identity check above keeps the gate closed).
+      .finally(() => setCallbackSettledFor(auth))
   }, [activeWorkspace.auth, telemetry])
 
   useEffect(() => {
@@ -113,9 +129,12 @@ export function AuthBoundary({
     return <RequestAccessScreen />
   }
 
-  // NOTE: there is currently a bug where the `AuthenticateComponent` will
-  // flash after the first login with cookieless mode. See `createAuthStore`
-  // for details
+  // While the callback exchange is unsettled, logged-out may be the stale
+  // pre-exchange state — rendering the login screen on it is the flash this
+  // gate prevents. handleCallbackUrl resolves only after the state reflects
+  // the exchange, so once the gate opens, `loggedIn` can be trusted.
+  if (loggedIn === 'logged-out' && !callbackSettled) return <LoadingComponent />
+
   if (loggedIn === 'logged-out') return <AuthenticateComponent />
 
   return <>{children}</>

@@ -10,7 +10,13 @@ export const AuthBoundaryResolved = defineEvent<{
   description: 'Time from AuthBoundary mount until auth state is resolved',
 })
 
-/** Fired when handleCallbackUrl completes in the auth store. */
+/**
+ * Fired when handleCallbackUrl completes in the auth store.
+ *
+ * Since v3, successful exchange flows resolve only after the post-exchange
+ * auth state has been probed (with the exchanged credential) and emitted —
+ * `durationMs` includes that, itemized in `stateSettleDurationMs`.
+ */
 export const SessionTokenExchangeCompleted = defineEvent<{
   loginMethod: 'dual' | 'cookie' | 'token'
   flow: 'already-authenticated' | 'exchange'
@@ -20,8 +26,10 @@ export const SessionTokenExchangeCompleted = defineEvent<{
   probeDurationMs?: number
   authMethod?: 'cookie' | 'token'
   failureReason?: string
+  stateSettleDurationMs?: number
+  stateSettleTimedOut?: boolean
 }>({
   name: 'Session Token Exchange Completed',
-  version: 2,
+  version: 3,
   description: 'Result of the auth exchange flow in handleCallbackUrl',
 })

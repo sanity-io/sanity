@@ -7,7 +7,7 @@ import {
 import {type CurrentUser} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import memoize from 'lodash-es/memoize.js'
-import {concat, EMPTY, firstValueFrom, fromEvent, merge, of, ReplaySubject, skip, timer} from 'rxjs'
+import {concat, defer, EMPTY, fromEvent, merge, ReplaySubject, skip, timer} from 'rxjs'
 import {
   distinctUntilChanged,
   filter,
@@ -16,6 +16,7 @@ import {
   share,
   shareReplay,
   switchMap,
+  take,
   tap,
 } from 'rxjs/operators'
 
@@ -30,6 +31,7 @@ import {type StudioErrorHandler} from '../../studio/requestErrors/types'
 import {canonicalHash} from '../../util/canonicalHash'
 import {
   AUTH_CLIENT_OPTIONS,
+  AUTH_STATE_SETTLE_TIMEOUT_MS,
   getAuthTokenStorageKey,
   getCookieAuthStateKey,
   UNAUTHENTICATED,
@@ -351,31 +353,63 @@ export function _createAuthStore({
         ? cookieClient
         : initialTokenClient
 
-  const initial$ = of(initialWorkspaceClient).pipe(
-    mergeMap(async (client): Promise<AuthState> => {
-      const currentUser = await getCurrentUser(
-        client,
-        'initial',
-        getRequestErrorHandler,
-        getRequestFailureDiagnostics?.(),
-      )
-      const authenticated = Boolean(currentUser?.id)
-      // Seed cookieAuthState once from the initial probe result. This moves
-      // the channel out of 'pending' so cookieAuthChanged$ starts emitting
-      // and downstream operators (skip(1) in authState$, etc.) behave.
-      // Only cookie/dual workspaces should touch this — token-only workspaces
-      // have no signal about cookie validity and broadcasting from them
-      // would poison sibling cookie workspaces for the same project.
-      if (loginMethod === 'cookie' || loginMethod === 'dual') {
-        cookieAuthState.update({authenticated})
+  // Set by initial$; read by cookieRecheck$, which is only subscribed after
+  // initial$ completes, so it's always set by then.
+  let initialProbeAuthenticated: boolean | undefined
+
+  // The post-exchange auth state, probed by the callback and handed to the
+  // chain here (see applyCredentialUpdate). One-shot: the chain's reaction to
+  // the credential update consumes it instead of probing again. Cleared on
+  // logout.
+  let pendingCallbackState: {state: Promise<AuthState>; expiresAt: number} | undefined
+
+  /**
+   * The pending callback state, if one exists and is still fresh. The chain's
+   * reaction to a credential update normally consumes the one-shot within the
+   * settle window — but when the update is a no-op for the chain (e.g. a
+   * cookie-mode login while the channel already reads authenticated) nothing
+   * consumes it, and without the expiry an unrelated emission hours later
+   * (say, a cross-tab login) would emit this stale snapshot instead of
+   * probing fresh. Expired entries are dropped here.
+   */
+  function freshPendingCallbackState(): Promise<AuthState> | undefined {
+    if (pendingCallbackState && performance.now() > pendingCallbackState.expiresAt) {
+      pendingCallbackState = undefined
+    }
+    return pendingCallbackState?.state
+  }
+
+  /**
+   * Computes the auth state for a client — one `/users/me` round trip. Every
+   * auth state this store emits is built here.
+   */
+  async function probeAuthState(client: SanityClient, tag: string): Promise<AuthState> {
+    const currentUser = await getCurrentUser(
+      client,
+      tag,
+      getRequestErrorHandler,
+      getRequestFailureDiagnostics?.(),
+    )
+    return {client, authenticated: Boolean(currentUser?.id), currentUser: currentUser || null}
+  }
+
+  const initial$ = defer(async (): Promise<AuthState> => {
+    const state = await probeAuthState(initialWorkspaceClient, 'initial')
+    // Seed cookieAuthState from this probe so the channel leaves 'pending' —
+    // but only for cookie/dual workspaces (token-only ones know nothing about
+    // cookie validity), and only if nothing wrote a real value first: a value
+    // written while this probe was in flight (post-login callback, another
+    // tab) is fresher and must not be overwritten.
+    if (loginMethod === 'cookie' || loginMethod === 'dual') {
+      initialProbeAuthenticated = state.authenticated
+      if (cookieAuthState.get()?.authenticated === 'pending') {
+        cookieAuthState.update({authenticated: state.authenticated})
       }
-      return {
-        client,
-        authenticated,
-        currentUser: currentUser || null,
-      }
-    }),
-  )
+    }
+    // A callback exchange that completed mid-probe has fresher state than
+    // this result. Not consumed: the chain's reaction still needs it.
+    return freshPendingCallbackState() ?? state
+  })
 
   // Listen for hash changes and consume any token found in the hash.
   // The tap triggers tokenStorage.update() which pushes to the BehaviorSubject
@@ -396,23 +430,23 @@ export function _createAuthStore({
           switchMap(() => EMPTY),
         )
 
-  const tokenClient$ = concat(
-    of(initialTokenClient),
-    merge(hashTokenChange, tokenStorage.value.pipe(skip(1)))
-      .pipe(
-        map((nextTokenState) => {
-          return clientFactory({
-            ...AUTH_CLIENT_OPTIONS,
-            ...hostOptions,
-            projectId,
-            dataset,
-            ...(nextTokenState?.token
-              ? {token: nextTokenState.token, ignoreBrowserTokenWarning: true}
-              : {}),
-          })
-        }),
-      )
-      .pipe(shareReplay({bufferSize: 1, refCount: true})),
+  // Derived from the live token state, not concat'ed with a pre-built
+  // initial client: a positional skip would drop a token applied while the
+  // initial probe is in flight (fast sid exchange), leaving the store stuck
+  // on the credential-less client. Same shape as dualClient$ below.
+  const tokenClient$ = merge(hashTokenChange, tokenStorage.value).pipe(
+    map((nextTokenState) => {
+      return clientFactory({
+        ...AUTH_CLIENT_OPTIONS,
+        ...hostOptions,
+        projectId,
+        dataset,
+        ...(nextTokenState?.token
+          ? {token: nextTokenState.token, ignoreBrowserTokenWarning: true}
+          : {}),
+      })
+    }),
+    shareReplay({bufferSize: 1, refCount: true}),
   )
 
   // Derive the dual client from the current token state
@@ -460,37 +494,54 @@ export function _createAuthStore({
         )
       : EMPTY
 
-  // For dual mode, re-probe when the token changes from what the initial probe
-  // already used
+  // Dual/token modes: re-probe once, at subscribe time, if the token changed
+  // while the initial probe was in flight — workspaceClient$'s skip(1) below
+  // assumes its first emission is the client the initial probe used, which
+  // no longer holds after such an early update. Later token changes flow
+  // through workspaceClient$ itself; re-emitting them here would duplicate
+  // the probe, hence take(1) on both the outer and the never-completing
+  // inner stream.
   const initialToken = currentTokenState?.token ?? null
-  const dualTokenRecheck$ =
-    loginMethod === 'dual'
-      ? tokenStorage.value.pipe(
-          map((state) => state?.token ?? null),
-          distinctUntilChanged(),
-          filter((token): token is string => typeof token === 'string' && token !== initialToken),
-          switchMap(() => dualClient$),
+  const tokenRecheck$ = isCookielessCompatibleLoginMethod(loginMethod)
+    ? tokenStorage.value.pipe(
+        take(1),
+        map((state) => state?.token ?? null),
+        filter((token): token is string => typeof token === 'string' && token !== initialToken),
+        switchMap(() => (loginMethod === 'dual' ? dualClient$ : tokenClient$).pipe(take(1))),
+      )
+    : EMPTY
+
+  // Cookie-mode analogue of tokenRecheck$: a callback can write
+  // cookieAuthState while the initial probe is in flight, and since the
+  // channel replays only its latest value, skip(1) would eat that update and
+  // no re-probe would ever run. Compare the first non-pending value against
+  // the initial probe's own result; later changes flow through
+  // workspaceClient$.
+  const cookieRecheck$ =
+    loginMethod === 'cookie'
+      ? cookieAuthChanged$.pipe(
+          take(1),
+          filter(({authenticated}) => authenticated !== initialProbeAuthenticated),
+          map(({authenticated}) => (authenticated ? cookieClient : undefined)),
         )
       : EMPTY
 
   const authState$ = concat(
     initial$,
-    merge(workspaceClient$.pipe(skip(1)), dualCookieRecheck$, dualTokenRecheck$).pipe(
+    merge(workspaceClient$.pipe(skip(1)), dualCookieRecheck$, tokenRecheck$, cookieRecheck$).pipe(
       mergeMap(async (client): Promise<AuthState> => {
         if (!client) {
           return {client: cookieClient, authenticated: false, currentUser: null}
         }
-        const currentUser = await getCurrentUser(
-          client,
-          'update',
-          getRequestErrorHandler,
-          getRequestFailureDiagnostics?.(),
-        )
-        return {
-          client,
-          authenticated: Boolean(currentUser?.id),
-          currentUser: currentUser || null,
+        // This emission is the chain's reaction to a callback's credential
+        // update: consume the pre-probed state instead of repeating the
+        // /users/me request.
+        const callbackState = freshPendingCallbackState()
+        if (callbackState) {
+          pendingCallbackState = undefined
+          return callbackState
         }
+        return probeAuthState(client, 'update')
       }),
     ),
   ).pipe(
@@ -504,9 +555,65 @@ export function _createAuthStore({
     share({connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(1000)}),
   )
 
+  /**
+   * Applies a credential update and reports when the auth state reflects it:
+   * the resulting state is probed with `client` (which already carries the
+   * new credential) and handed to the chain, so that — unless flagged
+   * `stateSettleTimedOut` — any authState$ emission delivered after the
+   * returned promise resolves reflects the exchange. (When the chain is hot,
+   * the emission itself also lands before resolution; when nothing is
+   * subscribed yet, the first subscriber picks the state up via initial$.)
+   *
+   * The probe is handed to the chain BEFORE `update()` runs, because the
+   * chain reacts to the update synchronously and must find it there. The
+   * timeout bounds only how long the caller waits on a hung probe; the
+   * probe keeps running and still updates the state if it completes. A
+   * failed probe rejects, like the chain's own probes.
+   */
+  function applyCredentialUpdate(
+    update: () => void,
+    client: SanityClient,
+  ): Promise<{stateSettleDurationMs: number; stateSettleTimedOut: boolean}> {
+    const start = performance.now()
+
+    const callbackState = probeAuthState(client, 'callback')
+    pendingCallbackState = {
+      state: callbackState,
+      expiresAt: start + AUTH_STATE_SETTLE_TIMEOUT_MS,
+    }
+    update()
+
+    let timeoutId: ReturnType<typeof setTimeout>
+    const timeout = new Promise<undefined>((resolve) => {
+      timeoutId = setTimeout(() => resolve(undefined), AUTH_STATE_SETTLE_TIMEOUT_MS)
+    })
+    // Ordering note: because `update()` already ran, a hot chain has adopted
+    // `callbackState` by the time this race settles, and its emission is
+    // delivered a microtask before an awaiter of this promise resumes —
+    // that's what makes "the state reflects the exchange before the callback
+    // resolves" hold. This is scheduling-sensitive: don't insert awaits
+    // between `update()` and this race. The "resolves only after the state
+    // reflects…" tests in createAuthStore.test.ts pin the ordering.
+    return Promise.race([callbackState, timeout])
+      .finally(() => clearTimeout(timeoutId))
+      .then((state) => ({
+        stateSettleDurationMs: Math.round(performance.now() - start),
+        stateSettleTimedOut: state === undefined,
+      }))
+  }
+
   // Set while a post-login callback exchange is in flight (sid exchange).
   // LoginComponent reads this to suppress redirectOnSingle during the exchange to avoid redirecting back to the provider
   let _isHandlingCallback = false
+
+  // The in-flight sid exchange, shared with concurrent callers (StrictMode
+  // runs the callback effect twice): the sid is a one-shot, so a second call
+  // must join the exchange rather than resolve 'already-authenticated'
+  // mid-flight and reopen AuthBoundary's loading gate. Cleared once settled,
+  // so later calls are ordinary loads again — no replayed results
+  // double-logging telemetry, and no cached rejection blocking recovery
+  // until a page reload.
+  let _inflightCallback: Promise<HandleCallbackResult> | undefined
 
   async function handleCallbackUrl(): Promise<HandleCallbackResult> {
     const startTime = performance.now()
@@ -515,6 +622,9 @@ export function _createAuthStore({
     clearHashSessionId()
 
     if (!sessionId) {
+      if (_inflightCallback) {
+        return _inflightCallback
+      }
       // No session ID means this is a normal cold load, not a post-login redirect.
 
       return {
@@ -528,11 +638,16 @@ export function _createAuthStore({
     // A sid is present: we're processing a post-login callback. Hold off the
     // redirectOnSingle redirect until this resolves.
     _isHandlingCallback = true
-    try {
-      return await processCallback(sessionId, startTime)
-    } finally {
+    const callbackProcessed = processCallback(sessionId, startTime).finally(() => {
       _isHandlingCallback = false
-    }
+      // Guarded so a newer exchange (fresh sid) isn't clobbered by an older
+      // one settling late.
+      if (_inflightCallback === callbackProcessed) {
+        _inflightCallback = undefined
+      }
+    })
+    _inflightCallback = callbackProcessed
+    return callbackProcessed
   }
 
   async function processCallback(
@@ -570,25 +685,47 @@ export function _createAuthStore({
     const exchangeDurationMs = Math.round(performance.now() - exchangeStart)
 
     if (loginMethod === 'dual') {
-      // Dual mode: always retain the exchanged token so the dual client can
-      // authenticate via the Authorization header.
-      tokenStorage.update({token})
+      // Retain the exchanged token (the dual client authenticates via the
+      // Authorization header) and probe the resulting state so it's emitted
+      // before this callback resolves — AuthBoundary holds the loading
+      // screen until then. Skipped for an empty token: no client is ever
+      // built with a falsy token, and the caller should see the failure
+      // promptly.
+      const settle = token
+        ? applyCredentialUpdate(
+            () => tokenStorage.update({token}),
+            clientFactory({
+              ...AUTH_CLIENT_OPTIONS,
+              ...hostOptions,
+              projectId,
+              dataset,
+              token,
+              ignoreBrowserTokenWarning: true,
+            }),
+          )
+        : undefined
+      if (!token) tokenStorage.update({token})
+      // The probe below can reject before `settle` is awaited — keep its
+      // eventual rejection observed (doesn't affect the await further down).
+      settle?.catch(() => {})
 
       const probeStart = performance.now()
       const authProbe = await probeCurrentUser(exchangeClient)
       const probeDurationMs = Math.round(performance.now() - probeStart)
-      const durationMs = Math.round(performance.now() - startTime)
 
       // sync with other tabs
       cookieAuthState.update({authenticated: authProbe.authenticated})
+
+      const settleResult = settle ? await settle : undefined
 
       return {
         flow: 'exchange',
         loginMethod,
         success: !!token,
-        durationMs,
+        durationMs: Math.round(performance.now() - startTime),
         exchangeDurationMs,
         probeDurationMs,
+        ...settleResult,
         // Report cookie as the transport when the probe passed, otherwise token —
         // either way the token is stored and available as a fallback.
         authMethod: authProbe.authenticated ? 'cookie' : 'token',
@@ -602,28 +739,35 @@ export function _createAuthStore({
       const probeStart = performance.now()
       const authProbe = await probeCurrentUser(exchangeClient)
       const probeDurationMs = Math.round(performance.now() - probeStart)
-      const durationMs = Math.round(performance.now() - startTime)
-
-      // sync with other tabs
-      cookieAuthState.update({authenticated: authProbe.authenticated})
 
       if (authProbe.authenticated) {
+        // As in dual mode: probe the post-exchange state so it's emitted
+        // before this callback resolves. The channel write doubles as the
+        // cross-tab sync broadcast.
+        const settle = applyCredentialUpdate(
+          () => cookieAuthState.update({authenticated: true}),
+          cookieClient,
+        )
+
         return {
           flow: 'exchange',
           loginMethod,
           success: true,
-          durationMs,
+          durationMs: Math.round(performance.now() - startTime),
           exchangeDurationMs,
           probeDurationMs,
+          ...(await settle),
           authMethod: 'cookie',
         }
       }
-      // We failed to set cookie and can't fallback to token
+      // The cookie couldn't be established and there is no token to fall
+      // back on. Nothing to wait for — the state is and stays unauthenticated.
+      cookieAuthState.update({authenticated: false})
       return {
         loginMethod,
         flow: 'exchange',
         success: false,
-        durationMs,
+        durationMs: Math.round(performance.now() - startTime),
         exchangeDurationMs,
         probeDurationMs,
         failureReason: 'cookie probe failed in cookie-only mode',
@@ -640,7 +784,22 @@ export function _createAuthStore({
 
     // loginMethod === 'token': store the token so subscribers re-init clients with it.
     // (dual already stored it above; cookie returned above.)
-    tokenStorage.update({token})
+    // Same contract as dual mode — see the comment there.
+    const settle = token
+      ? applyCredentialUpdate(
+          () => tokenStorage.update({token}),
+          clientFactory({
+            ...AUTH_CLIENT_OPTIONS,
+            ...hostOptions,
+            projectId,
+            dataset,
+            token,
+            ignoreBrowserTokenWarning: true,
+          }),
+        )
+      : undefined
+    if (!token) tokenStorage.update({token})
+    const settleResult = settle ? await settle : undefined
 
     return {
       loginMethod,
@@ -648,6 +807,7 @@ export function _createAuthStore({
       success: !!token,
       durationMs: Math.round(performance.now() - startTime),
       exchangeDurationMs,
+      ...settleResult,
       authMethod: 'token',
       failureReason: token ? undefined : 'token exchange returned empty token',
     }
@@ -660,7 +820,16 @@ export function _createAuthStore({
 
   async function logout() {
     _didLogOut = true
-    const tokenClient = await firstValueFrom(tokenClient$)
+    // An unconsumed state from a callback exchange is stale the moment
+    // credentials are torn down — the chain must not emit it later.
+    pendingCallbackState = undefined
+    // Behavior parity: logout has always hit /auth/logout with the client
+    // built from the boot-time token (`firstValueFrom` on the old
+    // concat-based tokenClient$ replayed exactly that). Now that tokenClient$
+    // tracks live token state, keep using the boot-time client here — moving
+    // to the live token changes which session gets invalidated and belongs in
+    // its own change.
+    const tokenClient = initialTokenClient
 
     // Tell the server to invalidate the session. Best-effort: if it fails
     // (network, or the session is already gone — e.g. a forced logout
