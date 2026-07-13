@@ -89,6 +89,15 @@ export interface DebugProxyConfig {
    * pass-through proxy created with {@link createRequestProxy}.
    */
   defaultHandler?: ProxyHandler | undefined
+  /**
+   * Handler for WebSocket upgrade requests (e.g. the bifur client's
+   * `wss://…/socket/…`). Defaults to transparently tunneling the connection
+   * to the upstream. Override to answer upgrades locally — e.g. a mock server
+   * with no upstream accepting the handshake so clients don't error-loop.
+   */
+  upgradeHandler?:
+    | ((req: http.IncomingMessage, socket: net.Socket, head: Buffer) => void)
+    | undefined
 }
 
 export interface DebugProxyServer {
@@ -263,6 +272,10 @@ export function createDebugProxy(config: DebugProxyConfig = {}): DebugProxyServe
   // (Browsers send WebSocket upgrades over HTTP/1.1, which the h2 listener
   // accepts via its ALPN fallback.)
   server.on('upgrade', (req: http.IncomingMessage, clientSocket: net.Socket, head: Buffer) => {
+    if (config.upgradeHandler) {
+      config.upgradeHandler(req, clientSocket, head)
+      return
+    }
     const requestHost = req.headers.host
     const derived = requestHost ? deriveProjectId(requestHost) : {error: 'missing host'}
     let upstreamUrl: URL | undefined
