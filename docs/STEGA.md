@@ -75,7 +75,7 @@ Use the [migration tooling](https://www.sanity.io/docs/schema-and-content-migrat
 ```ts
 // migrations/strip-stega/index.ts
 import {stegaClean} from '@sanity/client/stega'
-import {at, defineMigration, set} from 'sanity/migrate'
+import {defineMigration, set} from 'sanity/migrate'
 
 export default defineMigration({
   title: 'Strip stega metadata from all string values',
@@ -83,10 +83,11 @@ export default defineMigration({
   // documentTypes: ['post', 'page'],
 
   migrate: {
-    string(node, path) {
+    string(node) {
       const cleaned = stegaClean(node)
       if (cleaned !== node) {
-        return at(path, set(cleaned))
+        // Operations returned from a node visitor are applied at the visited node's path
+        return set(cleaned)
       }
       return undefined
     },
@@ -97,8 +98,8 @@ export default defineMigration({
 Run it with a dry run first (dry run is the default), then apply:
 
 ```sh
-npx sanity migration run strip-stega
-npx sanity migration run strip-stega --no-dry-run
+npx sanity migrations run strip-stega
+npx sanity migrations run strip-stega --no-dry-run
 ```
 
 Notes:
