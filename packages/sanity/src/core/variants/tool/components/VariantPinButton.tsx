@@ -28,7 +28,7 @@ export function VariantPinButton({
     if (isPinned) {
       setVariant(undefined)
     } else {
-      setVariant(variant)
+      setVariant(variant._id)
     }
   }, [isPinned, setVariant, variant])
 

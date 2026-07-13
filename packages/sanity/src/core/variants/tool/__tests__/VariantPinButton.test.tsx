@@ -44,7 +44,7 @@ describe('VariantPinButton', () => {
 
     await userEvent.click(screen.getByTestId('pin-variant-button'))
 
-    expect(mockedSetVariant).toHaveBeenCalledWith(variantAlphaAudience)
+    expect(mockedSetVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
   })
 
   it('unpins a variant when it is selected', async () => {
