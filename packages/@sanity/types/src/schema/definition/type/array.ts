@@ -18,7 +18,20 @@ import {
   type TitledListValue,
 } from './common'
 
-/** @alpha This API may change */
+/**
+ * Options for the "insert menu" shown when adding items to an array with multiple member types.
+ *
+ * These options are rendered by two separate implementations that integrate with one another:
+ * the Studio form input (`packages/sanity/src/insert-menu` in this repo, used by arrays in
+ * `sanity/structure`), and the app frontend via `@sanity/visual-editing` when previewing
+ * through `sanity/presentation`.
+ *
+ * Keep this interface in sync with `InsertMenuOptions` in `@sanity/visual-editing-types`
+ * (https://github.com/sanity-io/visual-editing/blob/main/packages/visual-editing-types/src/index.ts),
+ * which defines how these options are serialized to the app frontend.
+ *
+ * @alpha This API may change
+ */
 export interface InsertMenuOptions {
   /**
    * @defaultValue `'auto'`
