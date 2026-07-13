@@ -27,6 +27,8 @@ export interface BenchRunDocument {
     nodeVersion: string
     ci: boolean
     runId?: string
+    /** CI run attempt (re-runs increment it) — for the exact Actions URL. */
+    runAttempt?: number
     /**
      * Host-speed score (ms for a fixed workload; higher = slower host). CPU
      * throttling is relative to host speed, so absolute numbers are only

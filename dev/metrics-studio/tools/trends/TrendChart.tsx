@@ -4,10 +4,10 @@ import {Group} from '@visx/group'
 import {scaleLinear, scaleTime} from '@visx/scale'
 import {Area, LinePath} from '@visx/shape'
 import {useState} from 'react'
-import {useIntentLink} from 'sanity/router'
 
-import {formatValue, type TrendLine, type TrendPoint, type TrendSeries} from './data'
+import {formatValue, isSignedUnit, type TrendLine, type TrendPoint, type TrendSeries} from './data'
 import {categoricalColor} from './palette'
+import {RunDetailDialog} from './RunDetailDialog'
 
 const MARGIN = {top: 8, right: 8, bottom: 22, left: 44}
 
@@ -27,36 +27,29 @@ function lineColorFor(series: TrendSeries, index: number): string {
   return categoricalColor(index)
 }
 
-/** A dot linking to the run document behind the sample. */
+/**
+ * A run marker. Not interactive itself — the plot-wide capture rect handles
+ * clicks (it sits above the dots) and opens the nearest run. The `emphasized`
+ * dot tracks the crosshair; pointerEvents none so it never intercepts.
+ */
 function RunDot(props: {
   point: TrendPoint
   cx: number
   cy: number
-  unit: TrendSeries['unit']
   color: string
   emphasized?: boolean
 }) {
-  const {point, cx, cy, unit, color, emphasized} = props
-  const intent = useIntentLink({intent: 'edit', params: {id: point.runId, type: 'benchRun'}})
+  const {cx, cy, color, emphasized} = props
   return (
-    <a
-      href={intent.href}
-      onClick={intent.onClick}
-      aria-label={`open run ${point.sha.slice(0, 10)}`}
-    >
-      {/* invisible halo: a comfortable hover/click target around the 3px dot */}
-      <circle cx={cx} cy={cy} r={9} fill="transparent" />
-      <circle
-        cx={cx}
-        cy={cy}
-        r={emphasized ? 4.5 : 3}
-        fill={color}
-        stroke={emphasized ? 'var(--card-bg-color, #fff)' : undefined}
-        strokeWidth={emphasized ? 1.5 : 0}
-      >
-        <title>{`${point.date.toISOString().slice(0, 10)} @ ${point.sha.slice(0, 10)} — ${formatValue(point.value, unit)} (click to open the run)`}</title>
-      </circle>
-    </a>
+    <circle
+      cx={cx}
+      cy={cy}
+      r={emphasized ? 4.5 : 3}
+      fill={color}
+      stroke={emphasized ? 'var(--card-bg-color, #fff)' : undefined}
+      strokeWidth={emphasized ? 1.5 : 0}
+      pointerEvents="none"
+    />
   )
 }
 
@@ -78,6 +71,7 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
   const {series, width, height} = props
   const {lines, unit} = series
   const [hoverMs, setHoverMs] = useState<number | null>(null)
+  const [selected, setSelected] = useState<TrendPoint | null>(null)
   const allPoints = lines.flatMap((line) => line.points)
   if (width < 10 || allPoints.length === 0) return null
 
@@ -92,9 +86,19 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
     maxDate += 24 * 60 * 60 * 1000
   }
   const xScale = scaleTime({domain: [new Date(minDate), new Date(maxDate)], range: [0, innerWidth]})
-  const maxValue = Math.max(...allPoints.map((point) => point.p90 ?? point.value))
+
+  // Signed units (slopes) center on zero with a symmetric domain, so a
+  // near-flat metric reads as a calm line through the middle rather than
+  // magnified jitter. Unsigned metrics keep the 0→max framing.
+  const values = allPoints.map((point) => point.value)
+  const highs = allPoints.map((point) => point.p90 ?? point.value)
   const yScale = scaleLinear({
-    domain: [0, maxValue > 0 ? maxValue * 1.1 : 1],
+    domain: isSignedUnit(unit)
+      ? (() => {
+          const extent = Math.max(0.5, ...values.map((value) => Math.abs(value))) * 1.2
+          return [-extent, extent]
+        })()
+      : [0, Math.max(...highs) > 0 ? Math.max(...highs) * 1.1 : 1],
     range: [innerHeight, 0],
     nice: true,
   })
@@ -128,6 +132,18 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
     <div style={{position: 'relative', width, height}}>
       <svg width={width} height={height} role="img" aria-label={series.title}>
         <Group left={MARGIN.left} top={MARGIN.top}>
+          {/* Zero reference for signed slope charts — the "flat is good" line */}
+          {isSignedUnit(unit) && (
+            <line
+              x1={0}
+              x2={innerWidth}
+              y1={yScale(0)}
+              y2={yScale(0)}
+              stroke={COLOR.axis}
+              strokeWidth={1}
+              opacity={0.4}
+            />
+          )}
           {showBand && (
             <Area<TrendPoint>
               data={lines[0].points}
@@ -158,15 +174,27 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
                     (entry) => entry.branch === line.branch && entry.point === point,
                   )
                   return (
-                    <RunDot
-                      key={point.runId}
-                      point={point}
-                      cx={x(point)}
-                      cy={yScale(point.value)}
-                      unit={unit}
-                      color={color}
-                      emphasized={isHovered}
-                    />
+                    <g key={point.runId}>
+                      {/* Soft halo behind the hovered point — reads clearly as
+                          "this run is targeted / clickable" */}
+                      {isHovered && (
+                        <circle
+                          cx={x(point)}
+                          cy={yScale(point.value)}
+                          r={9}
+                          fill={color}
+                          opacity={0.18}
+                          pointerEvents="none"
+                        />
+                      )}
+                      <RunDot
+                        point={point}
+                        cx={x(point)}
+                        cy={yScale(point.value)}
+                        color={color}
+                        emphasized={isHovered}
+                      />
+                    </g>
                   )
                 })}
               </g>
@@ -207,13 +235,34 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
             tickFormat={(value) => formatValue(Number(value), unit)}
             tickLabelProps={{fill: COLOR.axis, fontSize: 10, textAnchor: 'end', dx: -2, dy: 3}}
           />
-          {/* Transparent capture rect over the plot area drives the crosshair */}
+          {/* Transparent capture rect over the plot area drives the crosshair
+              AND the click — it sits above the dots in paint order, so a click
+              here (anywhere in the plot) opens the run nearest the pointer,
+              which is a bigger target than a 3px dot */}
           <rect
             width={Math.max(0, innerWidth)}
             height={Math.max(0, innerHeight)}
             fill="transparent"
+            style={{cursor: 'pointer'}}
             onPointerMove={handleMove}
             onPointerLeave={() => setHoverMs(null)}
+            onClick={(event) => {
+              const rect = event.currentTarget.getBoundingClientRect()
+              const targetMs = xScale.invert(event.clientX - rect.left).getTime()
+              // Nearest point across all lines (comparison picks the closest branch)
+              let best: TrendPoint | null = null
+              let bestDelta = Infinity
+              for (const line of lines) {
+                const candidate = nearestPoint(line, targetMs)
+                if (!candidate) continue
+                const delta = Math.abs(candidate.date.getTime() - targetMs)
+                if (delta < bestDelta) {
+                  best = candidate
+                  bestDelta = delta
+                }
+              }
+              if (best) setSelected(best)
+            }}
           />
         </Group>
       </svg>
@@ -254,12 +303,23 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
                       : series.xKind === 'minute'
                         ? `minute ${Math.round(entry.point.date.getTime() / 60_000)}`
                         : entry.point.date.toISOString().slice(0, 10)}
+                    {/* Provenance as text — the dot itself is the click target
+                        (opens the run); GitHub backlinks live in the drift feed */}
+                    {series.xKind !== 'minute' &&
+                      (entry.point.prNumber
+                        ? ` · PR #${entry.point.prNumber}`
+                        : entry.point.sha !== 'unknown'
+                          ? ` · ${entry.point.sha.slice(0, 7)}`
+                          : '')}
                   </Text>
                 </Flex>
               ))}
             </Stack>
           </Card>
         </div>
+      )}
+      {selected && (
+        <RunDetailDialog series={series} point={selected} onClose={() => setSelected(null)} />
       )}
     </div>
   )

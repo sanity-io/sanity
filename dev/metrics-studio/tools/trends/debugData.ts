@@ -109,17 +109,20 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
           scenario: 'singleString',
           kind: 'interaction',
           metrics: [],
-          // Soak: a slow heap leak that got worse after day 40 (slope-over-time
-          // shows the regression; the latest run's minute curve shows the climb)
+          // Soak: main leaks heap slowly (worse after day 40); perf-bench
+          // instead grows listeners a little each minute (a subscription that
+          // isn't torn down) while heap stays flat — so each branch demos a
+          // different leak shape, and no series is pure noise
           soak: {
             minutes: 10,
             samples: Array.from({length: 11}, (_, minute) => {
-              const leakPerMin = day < 40 ? 0.4 : 1.6
+              const heapPerMin = branch === 'main' ? (day < 40 ? 0.4 : 1.6) : 0.2
+              const listenerPerMin = branch === 'main' ? 0 : 3
               return {
                 minute,
-                heapMb: 80 + minute * leakPerMin + (rng() - 0.5),
+                heapMb: 80 + minute * heapPerMin + (rng() - 0.5),
                 domNodes: Math.round(4200 + minute * (day < 40 ? 2 : 12) + (rng() - 0.5) * 4),
-                listeners: Math.round(910 + (rng() - 0.5) * 3),
+                listeners: Math.round(910 + minute * listenerPerMin + (rng() - 0.5) * 2),
                 latencyP50Ms: 24 + minute * (day < 40 ? 0 : 0.6) + (rng() - 0.5),
                 cpuTaskMs: minute === 0 ? null : Math.round(34000 + (rng() - 0.5) * 2000),
                 connections: 9,

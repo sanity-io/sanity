@@ -60,6 +60,9 @@ export function collectRunMetadata(options: {
       nodeVersion: process.version,
       ci: process.env.CI === 'true',
       ...(process.env.GITHUB_RUN_ID ? {runId: process.env.GITHUB_RUN_ID} : {}),
+      ...(process.env.GITHUB_RUN_ATTEMPT
+        ? {runAttempt: Number(process.env.GITHUB_RUN_ATTEMPT)}
+        : {}),
       calibrationMs: options.calibrationMs,
     },
     config: {cpuThrottleRate: options.cpuThrottleRate, seed: options.seed},

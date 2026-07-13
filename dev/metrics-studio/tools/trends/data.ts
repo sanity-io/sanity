@@ -7,8 +7,8 @@ export interface TrendRun {
   _id: string
   startedAt: string
   mode: 'ab' | 'absolute'
-  git: {sha: string; branch: string} | null
-  runner: {calibrationMs: number} | null
+  git: {sha: string; branch: string; prNumber?: number; mergeBaseSha?: string} | null
+  runner: {calibrationMs: number; runId?: string; runAttempt?: number} | null
   bundle: {experiment: {initialJsBytes: number} | null} | null
   scenarios:
     | {
@@ -44,8 +44,8 @@ export const TREND_QUERY = `*[_type == "benchRun"] | order(startedAt asc) {
   _id,
   startedAt,
   mode,
-  git{sha, branch},
-  runner{calibrationMs},
+  git{sha, branch, prNumber, mergeBaseSha},
+  runner{calibrationMs, runId, runAttempt},
   bundle{experiment{initialJsBytes}},
   scenarios[]{
     scenario,
@@ -55,7 +55,7 @@ export const TREND_QUERY = `*[_type == "benchRun"] | order(startedAt asc) {
   }
 }`
 
-export type TrendUnit = 'ms' | 'count' | 'bytes' | 'megabytes'
+export type TrendUnit = 'ms' | 'count' | 'bytes' | 'megabytes' | 'mb-per-min' | 'count-per-min'
 
 export interface TrendPoint {
   date: Date
@@ -64,7 +64,12 @@ export interface TrendPoint {
   p75?: number
   p90?: number
   sha: string
+  /** benchRun document id — opens the run in the studio. */
   runId: string
+  /** Backlink metadata (GitHub PR / commit / CI run). */
+  prNumber?: number
+  ciRunId?: string
+  ciRunAttempt?: number
 }
 
 /** One line within a chart — a single branch's run history for the metric. */
@@ -267,7 +272,16 @@ export function formatValue(value: number, unit: TrendUnit): string {
   if (unit === 'count') return value.toFixed(0)
   if (unit === 'bytes') return `${(value / 1024).toFixed(1)} KB`
   if (unit === 'megabytes') return `${value.toFixed(1)} MB`
+  // Slope units are signed and typically fractional — keep the sign and
+  // enough precision that a near-zero rate reads as "~0", not a rounded 0
+  if (unit === 'mb-per-min') return `${value >= 0 ? '+' : ''}${value.toFixed(2)} MB/min`
+  if (unit === 'count-per-min') return `${value >= 0 ? '+' : ''}${value.toFixed(2)}/min`
   return `${value.toFixed(0)}ms`
+}
+
+/** Slope/rate units are signed and centered on zero (flat = good). */
+export function isSignedUnit(unit: TrendUnit): boolean {
+  return unit === 'mb-per-min' || unit === 'count-per-min'
 }
 
 export function filterByRange(runs: TrendRun[], days: number | null): TrendRun[] {
@@ -281,6 +295,19 @@ export function filterByRange(runs: TrendRun[], days: number | null): TrendRun[]
  * series holds one line per git branch present in the runs — a single branch
  * renders as one line, several overlay for comparison.
  */
+/** Backlink + identity fields every TrendPoint carries, derived from a run. */
+function pointMeta(
+  run: TrendRun,
+): Pick<TrendPoint, 'sha' | 'runId' | 'prNumber' | 'ciRunId' | 'ciRunAttempt'> {
+  return {
+    sha: run.git?.sha ?? 'unknown',
+    runId: run._id,
+    prNumber: run.git?.prNumber,
+    ciRunId: run.runner?.runId,
+    ciRunAttempt: run.runner?.runAttempt,
+  }
+}
+
 export function buildSeries(runs: TrendRun[]): TrendSeries[] {
   const series = new Map<string, TrendSeries>()
   const push = (
@@ -289,7 +316,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
     unit: TrendUnit,
     meta: Pick<TrendSeries, 'description' | 'goal' | 'group'>,
     run: TrendRun,
-    point: Omit<TrendPoint, 'date' | 'sha' | 'runId'>,
+    point: Pick<TrendPoint, 'value' | 'p75' | 'p90'>,
   ) => {
     const existing = series.get(key) ?? {key, title, unit, ...meta, lines: []}
     const branch = run.git?.branch ?? 'unknown'
@@ -298,12 +325,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       line = {branch, points: []}
       existing.lines.push(line)
     }
-    line.points.push({
-      date: new Date(run.startedAt),
-      sha: run.git?.sha ?? 'unknown',
-      runId: run._id,
-      ...point,
-    })
+    line.points.push({date: new Date(run.startedAt), ...pointMeta(run), ...point})
     series.set(key, existing)
   }
 
@@ -360,8 +382,7 @@ export function calibrationSeries(runs: TrendRun[]): TrendSeries {
           .map((run) => ({
             date: new Date(run.startedAt),
             value: run.runner!.calibrationMs,
-            sha: run.git?.sha ?? 'unknown',
-            runId: run._id,
+            ...pointMeta(run),
           })),
       },
     ],
@@ -401,8 +422,7 @@ export function latestSoakCharts(runs: TrendRun[]): {run: TrendRun; charts: Tren
         // Encode the minute as a Date so the time scale renders it unchanged
         date: new Date(sample.minute * 60_000),
         value,
-        sha: latest.run.git?.sha ?? 'unknown',
-        runId: latest.run._id,
+        ...pointMeta(latest.run),
       }))
     return {
       key: `soak:latest:${metric.key}`,
@@ -451,15 +471,15 @@ export function soakSlopeSeries(runs: TrendRun[]): TrendSeries[] {
     {
       key: 'heapMb',
       title: 'heap growth',
-      unit: 'megabytes',
+      unit: 'mb-per-min',
       description:
         'Heap MB gained per soak minute (linear fit). Above ~0 across runs means a worsening leak.',
     },
     {
       key: 'listeners',
       title: 'listener growth',
-      unit: 'count',
-      description: 'Event listeners added per soak minute (linear fit). Should sit at 0.',
+      unit: 'count-per-min',
+      description: 'Event listeners added per soak minute (linear fit). Should sit at ~0.',
     },
   ]
 
@@ -471,8 +491,7 @@ export function soakSlopeSeries(runs: TrendRun[]): TrendSeries[] {
       line.points.push({
         date: new Date(run.startedAt),
         value: slopePerMinute(soak.samples ?? [], metric.key),
-        sha: run.git?.sha ?? 'unknown',
-        runId: run._id,
+        ...pointMeta(run),
       })
       lineByBranch.set(branch, line)
     }

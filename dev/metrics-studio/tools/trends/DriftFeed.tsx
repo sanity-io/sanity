@@ -1,7 +1,9 @@
-import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
+import {LaunchIcon} from '@sanity/icons/Launch'
+import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 
 import {formatValue, type TrendSeries} from './data'
 import {computeDrift, type DriftBaseline} from './drift'
+import {backlinksFor} from './links'
 
 const BASELINE_LABEL: Record<DriftBaseline['kind'], string> = {
   trailing: 'vs prior 3 weeks',
@@ -62,6 +64,16 @@ export function DriftFeed(props: {series: TrendSeries[]}) {
                   {' · '}
                   {entry.fired.map((f) => BASELINE_LABEL[f.kind]).join(', ')}
                 </Text>
+                {backlinksFor(entry.latest).map((link) => (
+                  <Box key={link.href} as="a" href={link.href} target="_blank" rel="noreferrer">
+                    <Badge fontSize={0} mode="outline" tone="primary">
+                      <Flex align="center" gap={1}>
+                        <LaunchIcon />
+                        {link.label}
+                      </Flex>
+                    </Badge>
+                  </Box>
+                ))}
               </Flex>
             )
           })}

@@ -273,6 +273,7 @@ const benchRun = defineType({
         defineField({name: 'nodeVersion', type: 'string'}),
         defineField({name: 'ci', type: 'boolean'}),
         defineField({name: 'runId', type: 'string'}),
+        defineField({name: 'runAttempt', type: 'number'}),
         defineField({
           name: 'calibrationMs',
           description: 'Host-speed score (ms for a fixed workload; higher = slower host)',

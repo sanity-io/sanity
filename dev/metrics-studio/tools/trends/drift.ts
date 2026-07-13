@@ -59,6 +59,8 @@ export interface DriftResult {
   fired: DriftBaseline[]
   /** Worst direction across fired baselines, for sorting/coloring. */
   direction: DriftDirection
+  /** The most recent run in this line — for backlinks to the likely culprit. */
+  latest: Pick<TrendPoint, 'runId' | 'sha' | 'prNumber' | 'ciRunId' | 'ciRunAttempt'>
 }
 
 function classify(
@@ -144,6 +146,7 @@ export function computeDrift(seriesList: TrendSeries[]): DriftResult[] {
       const direction: DriftDirection = fired.some((entry) => entry.direction === 'regression')
         ? 'regression'
         : 'improvement'
+      const newest = points.at(-1)!
       results.push({
         seriesKey: series.key,
         title: series.title,
@@ -151,6 +154,13 @@ export function computeDrift(seriesList: TrendSeries[]): DriftResult[] {
         branch: line.branch,
         fired,
         direction,
+        latest: {
+          runId: newest.runId,
+          sha: newest.sha,
+          prNumber: newest.prNumber,
+          ciRunId: newest.ciRunId,
+          ciRunAttempt: newest.ciRunAttempt,
+        },
       })
     }
   }
