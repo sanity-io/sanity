@@ -814,7 +814,6 @@ export function createPrepareFormState({
         ...parent,
         comparisonValue: fieldComparisonValue,
         value: fieldValue,
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
         schemaType: field.type as PrimitiveSchemaType,
         path: fieldPath,
         readOnly: scopedReadOnly,

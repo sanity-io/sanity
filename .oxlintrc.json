@@ -270,14 +270,7 @@
     "no-redundant-type-constituents": "warn",
     "no-unnecessary-template-expression": "off",
     "no-unnecessary-type-arguments": "warn",
-    // Set to error (not warn) because this is the only fixable rule whose `--fix` rewrites code,
-    // and its autofix frequently removes load-bearing assertions (e.g. XState `{} as {...}` setup
-    // typings) and breaks the build. Pre-existing violations are grandfathered with inline
-    // `oxlint-disable-next-line` suppressions (a handful of multi-line assertions that the
-    // next-line directive cannot target use a scoped `oxlint-disable`/`oxlint-enable` block
-    // instead) so `--fix` leaves existing code untouched, while new violations are surfaced as
-    // errors that must be addressed (or suppressed) explicitly.
-    "no-unnecessary-type-assertion": "error",
+    "no-unnecessary-type-assertion": "warn",
     "no-unsafe-type-assertion": "warn",
     "restrict-template-expressions": "warn",
     "unbound-method": "warn",

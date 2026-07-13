@@ -62,7 +62,6 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     return EMPTY_TREE_STATE
   }
 
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   const rootTitle = getSchemaTypeTitle(rootField.type as ObjectSchemaType)
 
   if (!isArrayOfObjectsSchemaType(rootField.type)) {

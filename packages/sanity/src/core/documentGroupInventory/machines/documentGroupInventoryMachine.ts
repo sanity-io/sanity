@@ -44,7 +44,6 @@ type DocumentGroupInventoryEvents =
   | {type: 'feedback.end'}
 
 export const documentGroupInventoryMachine = setup({
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   types: {} as {
     input: {
       selectionMachine: SelectionLogic

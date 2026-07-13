@@ -46,7 +46,6 @@ export function getIntentState(
       _searchParams.preview || new URLSearchParams(window.location.search).get('preview') || '/'
 
     if (payload && typeof payload === 'object') {
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       _searchParams.templateParams = encodeJsonParams(payload as Record<string, unknown>)
     }
 

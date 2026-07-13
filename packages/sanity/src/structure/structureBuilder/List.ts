@@ -71,7 +71,6 @@ function maybeSerializeListItem(
 
   const listItem = item as ListItem
   if (listItem && listItem.type === 'divider') {
-    // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
     return item as Divider
   }
 

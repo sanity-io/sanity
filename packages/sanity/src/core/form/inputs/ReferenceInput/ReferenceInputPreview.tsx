@@ -58,7 +58,6 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
   const {readOnly, focused, renderPreview, onChange, onPathFocus, id: inputId} = props
 
   const handleClear = useCallback(() => onChange(unset()), [onChange])
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   const value: Reference | undefined = props.value as any
 
   const {EditReferenceLink, getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} =

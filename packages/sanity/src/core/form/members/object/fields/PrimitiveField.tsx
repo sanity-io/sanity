@@ -140,12 +140,10 @@ export function PrimitiveField(props: {
         .map((item) => item.message)
         .join('\n') || undefined
     return {
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       value: member.field.value as any,
       compareValue: member.field.compareValue,
       __unstable_computeDiff: member.field.__unstable_computeDiff,
       readOnly: member.field.readOnly,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       schemaType: member.field.schemaType as any,
       changed: member.field.changed,
       hasUpstreamVersion: member.field.hasUpstreamVersion,
@@ -191,11 +189,9 @@ export function PrimitiveField(props: {
       name={member.name}
       path={member.field.path}
       presence={member.field.presence}
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       schemaType={member.field.schemaType as any}
       title={member.field.schemaType.title}
       validation={validation}
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       value={member.field.value as any}
       render={renderField}
     >

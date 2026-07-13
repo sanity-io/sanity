@@ -372,7 +372,6 @@ export const ReleaseScheduleButton = ({
       disabled: isScheduleButtonDisabled || status === 'scheduling' || documents.length === 0,
       text: t('action.schedule'),
       handleOnClick: handleOnInitialSchedule,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       tooltipProps: {
         disabled: !tooltipText,
         content: scheduleTooltipContent,

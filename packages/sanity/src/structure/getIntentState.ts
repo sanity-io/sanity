@@ -50,7 +50,6 @@ export function getIntentState(
       return {
         panes: panes
           .slice(0, i)
-          // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
           .concat([[{id: editDocumentId, params: paneParams, payload}]]) as RouterPanes,
       }
     }
