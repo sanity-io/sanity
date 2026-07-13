@@ -154,21 +154,39 @@ describe('renderMarkdownReport', () => {
     expect(renderMarkdownReport(RUN)).toMatchSnapshot()
   })
 
-  it('puts regressions before neutral rows', () => {
-    const report = renderMarkdownReport(RUN)
-    const regressionIndex = report.indexOf('🔴')
-    const neutralIndex = report.indexOf('✅')
-    expect(regressionIndex).toBeGreaterThan(-1)
-    expect(regressionIndex).toBeLessThan(neutralIndex)
-  })
-
   it('summarizes the headline from verdicts', () => {
     expect(renderMarkdownReport(RUN)).toContain('**1 regression(s)** detected')
   })
 
-  it('renders count-unit metrics without a ms suffix', () => {
+  it('lists only the regressed metrics, with their delta', () => {
     const report = renderMarkdownReport(RUN)
-    expect(report).toContain('| singleString · boot-cold · auth round trips | 3 | 2 | — |')
+    // The one regression is named...
+    expect(report).toContain('`singleString · stringField` +8.0ms')
+    // ...and the neutral/inconclusive/improvement metrics are NOT listed
+    expect(report).not.toContain('article · title')
+    expect(report).not.toContain('article · body')
+  })
+
+  it('includes a mermaid chart of the regression deltas', () => {
+    const report = renderMarkdownReport(RUN)
+    expect(report).toContain('```mermaid')
+    expect(report).toContain('xychart-beta')
+    expect(report).toContain('bar [8.0]')
+  })
+
+  it('omits the regression list and chart when nothing regressed', () => {
+    const clean: BenchRunDocument = {
+      ...RUN,
+      scenarios: [
+        {
+          ...RUN.scenarios[0],
+          metrics: [metric('stringField', {experiment: 32, reference: 32}, 'neutral')],
+        },
+      ],
+    }
+    const report = renderMarkdownReport(clean)
+    expect(report).toContain('✅ no regressions')
+    expect(report).not.toContain('```mermaid')
   })
 
   it('deep-links to the dashboard with the PR branch and main preselected', () => {

@@ -3,68 +3,18 @@
 exports[`renderMarkdownReport > renders the full A/B report 1`] = `
 "### ⚡ Studio performance benchmark
 
-**1 regression(s)** detected
+🔴 **1 regression(s)** detected
 
-[📊 View on the trends dashboard](https://studio-metrics.sanity.dev/trends?branches=main%2Cperf-bench)
+- \`singleString · stringField\` +8.0ms [+6.0ms, +10.0ms]
 
-#### Editing responsiveness
-| Benchmark | Reference | Experiment | Δ median [95% confidence interval] |
-| :-- | :-- | :-- | :-- |
-| singleString · stringField | 31.3 eFPS (32ms) | 25.0 eFPS (40ms) | +8.0ms [+6.0ms, +10.0ms] 🔴 |
-| article · body | 24.4 eFPS (41ms) | 22.7 eFPS (44ms) | +3.0ms [+1.0ms, +5.0ms] ⚪ |
-| article · title | 31.3 eFPS (32ms) | 31.3 eFPS (32ms) | +0.0ms [-2.0ms, +2.0ms] ✅ |
+\`\`\`mermaid
+xychart-beta
+  title "Regression Δ (ms slower than reference)"
+  x-axis ["…eString · stringField"]
+  y-axis "ms" 0 --> 10
+  bar [8.0]
+\`\`\`
 
-_eFPS = editor frames per second (1000 ÷ median keystroke latency; higher is better)._
-
-#### Load
-| Benchmark | Reference | Experiment | Δ median [95% confidence interval] |
-| :-- | :-- | :-- | :-- |
-| singleString · boot-cold · time to editable | 4000ms | 4100ms | +100.0ms [+98.0ms, +102.0ms] ✅ |
-| singleString · boot-cold · auth round trips | 3 | 2 | — |
-
-_Time to editable = navigation start until the form accepts a keystroke._
-
-**Bundle** (gzip): initial JS 1406.3 KB → 1418.0 KB (Δ +11.7 KB) ⚠️, total 2109.4 KB → 2119.1 KB (Δ +9.8 KB)
-
-#### Resources (report-only)
-| Scenario | Requests (ref → exp) | Bytes (ref → exp) | CPU task ms | CPU script ms | Heap | DOM nodes | Listeners |
-| :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
-| singleString | 44 → 52 ⚠️ | 117.2 KB → 205.1 KB ⚠️ | 1840 | 1210 | 88.4 MB | 4211 | 923 |
-
-<details>
-<summary>Details: percentiles, interruptions, flake telemetry, run metadata</summary>
-
-#### Experiment percentiles
-| Benchmark | p50 | p75 | p90 | p99 | sessions |
-| :-- | :-- | :-- | :-- | :-- | :-- |
-| singleString · stringField | 40ms | 42ms | 45ms | 49ms | 2 |
-| article · title | 32ms | 34ms | 37ms | 41ms | 2 |
-| article · body | 44ms | 46ms | 49ms | 53ms | 2 |
-| singleString · boot-cold · time to editable | 4100ms | 4102ms | 4105ms | 4109ms | 2 |
-| singleString · boot-cold · auth round trips | 2 | 2 | 2 | 2 | 2 |
-
-#### Read-only interruptions (count / total time paused)
-| Scenario | Experiment | Reference |
-| :-- | :-- | :-- |
-| singleString | 2 (2600ms) | 1 (1300ms) |
-| article | 0 (0ms) | — |
-| singleString | 0 (0ms) | — |
-
-#### Retried session failures (flake telemetry)
-| Scenario | Side | Reason |
-| :-- | :-- | :-- |
-| singleString | reference | console-error |
-
-#### Top main-thread blockers (long animation frames)
-| Script | Function | Total |
-| :-- | :-- | :-- |
-| sanity-abc.js | commitWork | 812ms |
-
-#### Run metadata
-- mode: ab, seed 1, CPU throttle 4x
-- git: \`abcdef1234\` on \`perf-bench\` vs merge-base \`1234567890\`
-- runner: linux/x64, 8 cpus, node v24.0.0, calibration 11ms (higher = slower host)
-- ⚠️ article: sampling stopped by budget
-</details>
+[📊 View on the trends dashboard](https://studio-metrics.sanity.dev/trends?branches=main%2Cperf-bench) for the full tables, percentiles, and history.
 "
 `;
