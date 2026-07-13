@@ -43,12 +43,10 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
   const invalid = getIsVariantInvalid(variant) || conditionsInvalid
 
   const handleVariantChange = useCallback<VariantFormChangeHandler>((path, nextValue) => {
-    /* oxlint-disable typescript/no-unnecessary-type-assertion */
     setVariant(
       (currentVariant) =>
         applyPatches([at(path, set(nextValue))], currentVariant) as EditableSystemVariant,
     )
-    /* oxlint-enable typescript/no-unnecessary-type-assertion */
   }, [])
 
   const handleSubmit = useCallback(

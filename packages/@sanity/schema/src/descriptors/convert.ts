@@ -368,7 +368,6 @@ function maybeBlockMarks(schemaType: SchemaType): BlockMarks | undefined {
     return undefined
   }
 
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   const childrenField = (schemaType as ObjectSchemaType).fields?.find(
     (field) => field.name === 'children',
   )

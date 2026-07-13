@@ -45,7 +45,6 @@ function buildChangeList(
 
   if (!diffComponent) {
     if (schemaType.jsonType === 'object' && diff.type === 'object') {
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       return buildObjectChangeList(schemaType as ObjectSchemaType, diff, path, titlePath, context)
     }
 
@@ -149,7 +148,6 @@ function buildFieldChange(
 
   const fieldPath = path.concat([field.name])
   const fieldTitlePath = titlePath.concat([field.type.title || field.name])
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   return buildChangeList(field.type as any, fieldDiff, fieldPath, fieldTitlePath, context)
 }
 
@@ -177,7 +175,6 @@ function buildFieldsetChangeList(
 
     const fieldPath = path.concat([field.name])
     const fieldTitlePath = fieldSetTitlePath.concat([field.type.title || field.name])
-    /* oxlint-disable typescript/no-unnecessary-type-assertion */
     changes.push(
       ...buildChangeList(
         {
@@ -185,7 +182,6 @@ function buildFieldsetChangeList(
           hidden: fieldSetHidden,
           ...field.type,
         } as any,
-        /* oxlint-enable typescript/no-unnecessary-type-assertion */
         fieldDiff,
         fieldPath,
         fieldTitlePath,

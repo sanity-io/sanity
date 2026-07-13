@@ -116,7 +116,6 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
 
       // Check is value is a valid date
       if (!isValid(parsed)) {
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
         return {
           isValid: false,
           error: `Invalid date. Must be in the format "${inputDateTimeFormat}"`,
@@ -125,14 +124,12 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
 
       // Check if value adheres to custom validation rules
       if (!customValidation(parsed)) {
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
         return {
           isValid: false,
           error: customValidationMessage,
         } as ParseResult
       }
 
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       return {
         isValid: true,
         date: parsed,

@@ -152,7 +152,6 @@ export function FieldChange(
                   <DiffContext.Provider value={value}>
                     <DiffComponent
                       diff={change.diff}
-                      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
                       schemaType={change.schemaType as ObjectSchemaType}
                     />
                   </DiffContext.Provider>

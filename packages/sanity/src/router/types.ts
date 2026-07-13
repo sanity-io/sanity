@@ -360,7 +360,6 @@ export const isNavigateOptions = (
 
   // if state exists then it should be of RouterState type
   if ('state' in maybeNavigateOptions) {
-    // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
     const {state} = maybeNavigateOptions as {state: unknown}
     // allow null or undefined or RouterState (including empty object)
     return state === null || state === undefined || typeof state === 'object'

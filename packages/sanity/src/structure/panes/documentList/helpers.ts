@@ -71,7 +71,6 @@ export function fromStaticSortOrder(
 }
 
 export function removePublishedWithDrafts(documents: SanityDocumentLike[]): DocumentListPaneItem[] {
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   return collate(documents).map((entry) => {
     const doc = entry.draft || entry.published || entry.versions[0]
     const hasDraft = Boolean(entry.draft)

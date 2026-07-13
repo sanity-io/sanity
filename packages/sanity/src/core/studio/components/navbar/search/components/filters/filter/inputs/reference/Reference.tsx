@@ -56,7 +56,6 @@ export function SearchFilterReferenceInput({
       })
       .reduce<SchemaType[]>((acc, val) => {
         if (acc.findIndex((v) => v.name === val?.name) < 0) {
-          // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
           acc.push(val as SchemaType)
         }
         return acc

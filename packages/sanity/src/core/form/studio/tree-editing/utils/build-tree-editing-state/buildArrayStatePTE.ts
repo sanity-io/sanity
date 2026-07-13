@@ -125,7 +125,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     if (openPathStartsWithBlock && shouldBeInBreadcrumb(blockPath, openPath, documentValue)) {
       const blockBreadcrumb: DialogItem = {
         children: EMPTY_ARRAY,
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
         parentSchemaType: childField.type as ArraySchemaType,
         path: blockPath,
         schemaType: blockSchemaType,
@@ -169,8 +168,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
             )
 
             const itemSchemaType = targetItem
-              ? // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
-                getItemType(blockField.type as ArraySchemaType, targetItem)
+              ? getItemType(blockField.type as ArraySchemaType, targetItem)
               : null
 
             // Skip setting relativePath for references
@@ -186,7 +184,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
           if (shouldBeInBreadcrumb(blockFieldPath, openPath, documentValue)) {
             const breadcrumbsResult = buildBreadcrumbsState({
-              // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
               arraySchemaType: blockField.type as ArraySchemaType,
               arrayValue: arrayFieldValue as Record<string, unknown>[],
               itemPath: blockFieldPath,
@@ -207,7 +204,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
           // If it's an inline custom object/object array/span, skip siblings
           const skipChildren = shouldSkipSiblingCount({
-            // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
             arraySchemaType: childField.type as ArraySchemaType,
             fieldPath: blockFieldPath,
           })
@@ -232,7 +228,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
       // Add this block as a menu item (similar to how buildArrayState adds array items)
       childrenMenuItems.push({
         children: blockChildrenMenuItems,
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
         parentSchemaType: childField.type as ArraySchemaType,
         path: blockPath,
         schemaType: blockSchemaType,

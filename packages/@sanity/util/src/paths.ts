@@ -49,8 +49,7 @@ export function get(obj: unknown, path: Path | string, defaultVal?: unknown): un
     if (typeof segment === 'string') {
       acc =
         typeof acc === 'object' && acc !== null
-          ? // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
-            ((acc as Record<string, unknown>)[segment] as Record<string, unknown>)
+          ? ((acc as Record<string, unknown>)[segment] as Record<string, unknown>)
           : undefined
     }
 

@@ -25,7 +25,6 @@ type SelectionEvents =
   | {type: 'filterString.set'; value: string}
 
 export const selectionMachine = setup({
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   types: {} as {
     context: SelectionContext
     events: SelectionEvents
