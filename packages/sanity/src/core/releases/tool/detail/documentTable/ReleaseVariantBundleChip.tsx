@@ -1,4 +1,3 @@
-import {type SanityDocument} from '@sanity/client'
 import {Box} from '@sanity/ui'
 import {IntentLink} from 'sanity/router'
 
@@ -6,6 +5,7 @@ import {VARIANTS_INTENT} from '../../../../variants/plugin'
 import {useAllVariants} from '../../../../variants/store/useAllVariants'
 import {getVariantId, getVariantTitle} from '../../../../variants/tool/util'
 import {Chip} from '../../../components/Chip'
+import {type BundleDocument} from '../useBundleDocuments'
 import {getVariantDefinitionRef} from './getVariantBundleSortKey'
 
 function getVariantBundleLabel(
@@ -19,7 +19,7 @@ function getVariantBundleLabel(
 export function ReleaseVariantBundleChip({
   document,
 }: {
-  document: SanityDocument
+  document: BundleDocument['document']
 }): React.JSX.Element | null {
   const {byId: variantsById} = useAllVariants()
   const variantRef = getVariantDefinitionRef(document)
