@@ -1,0 +1,497 @@
+name: Studio Bench
+permissions: {}
+
+# Initial rollout is label-gated: PR jobs only run when the PR carries the
+# `perf-bench` label. Flipping to all code-change PRs later = replacing the
+# label condition with the detect-code-changes gate (already wired below).
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  schedule:
+    # Daily main-branch tracking: absolute-mode run stored to the
+    # studio-metrics project (time series / drift detection)
+    - cron: "0 5 * * *"
+    # Weekly self-test: compare a build against itself - every metric must
+    # report neutral, anything else is a harness bug (flake resistance rule 6)
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      self_test:
+        description: "Compare the build against itself (harness self-test)"
+        required: false
+        type: boolean
+        default: false
+
+# One run per PR at a time so an older run finishing late can never
+# overwrite the PR comment with stale results; scheduled/dispatched runs get
+# a unique group (no cancellation)
+concurrency:
+  group: bench-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # The labeled-event guard keeps unrelated label additions from re-running
+    # the whole suite (the label set still gates via contains())
+    if: >-
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'perf-bench') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'perf-bench')) ||
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule'
+    runs-on: ubuntu-8core
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      # detect-code-changes (dorny/paths-filter) lists the PR's changed files
+      # via the API, which requires pull-requests read on pull_request events
+      pull-requests: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    outputs:
+      has_code_changes: ${{ steps.changes.outputs.has_changes }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/detect-code-changes
+        id: changes
+
+      # paths-filter only has a PR diff to inspect on pull_request events -
+      # on schedule/workflow_dispatch it reflects whatever happened to land
+      # last on main, so those events always build
+      - uses: ./.github/actions/setup
+        if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
+
+      - name: Build packages and experiment studio
+        if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
+        run: pnpm build:bench
+
+      - uses: actions/upload-artifact@v7
+        if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
+        with:
+          name: bench-dist-experiment
+          path: perf/bench/dist
+          retention-days: 7
+
+  build-reference:
+    if: >-
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'perf-bench') &&
+      (github.event.action != 'labeled' || github.event.label.name == 'perf-bench')
+    runs-on: ubuntu-8core
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    outputs:
+      comparison: ${{ steps.reference.outputs.comparison }}
+      merge_base: ${{ steps.reference.outputs.merge_base }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      # Re-pushes to a PR usually share the merge-base: reuse the built
+      # reference outright (keyed on merge-base sha + harness sources)
+      - name: Restore reference dist cache
+        id: reference-cache
+        uses: actions/cache@v6
+        with:
+          path: perf/bench/.reference/dist
+          key: bench-reference-dist-v1-${{ github.event.pull_request.base.sha }}-${{ hashFiles('perf/bench/**', '!perf/bench/dist/**', '!perf/bench/node_modules/**') }}
+
+      # Worktree/overlay/build/fallback logic lives in the CLI
+      # (perf/bench/cli/commands/prepareReference.ts) - it writes the
+      # merge_base and comparison outputs, and falls back to absolute mode
+      # (comparison=skipped) when the merge-base predates perf/bench or the
+      # reference build fails
+      - name: Build reference studio at merge-base
+        id: reference
+        env:
+          CACHE_HIT: ${{ steps.reference-cache.outputs.cache-hit }}
+          # The reference build is the same harness + scenarios (checked out
+          # from HEAD) against merge-base packages - only product code differs
+          SANITY_STUDIO_BENCH_API_HOST: https://localhost:4312
+          SANITY_STUDIO_BENCH_PROJECT_ID: benchref
+          BASE_REF: ${{ github.base_ref }}
+        run: pnpm bench prepare-reference --base-ref "$BASE_REF"
+
+      - uses: actions/upload-artifact@v7
+        if: steps.reference.outputs.comparison == 'ab'
+        with:
+          name: bench-dist-reference
+          path: perf/bench/.reference/dist
+          retention-days: 7
+
+  bench-interaction:
+    needs: [build, build-reference]
+    if: needs.build.outputs.has_code_changes == 'true'
+    runs-on: ubuntu-8core
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # One shard per scenario: wall-clock = slowest single scenario
+        scenario: [singleString, arrayI18n, article, recipe, synthetic]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps
+
+      # Chromium on Linux validates TLS against the NSS store; the SPKI
+      # allowlist launch flag used locally is not reliably honored here, and
+      # a bypassed-instead-of-valid cert disables the browser HTTP cache
+      # (breaking warm-load measurements) - so import the bench cert properly
+      - name: Trust the bench TLS certificate
+        run: |
+          sudo apt-get install -y -qq libnss3-tools >/dev/null
+          CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
+          mkdir -p "$HOME/.pki/nssdb"
+          certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
+          certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: bench-dist-experiment
+          path: perf/bench/dist
+
+      - uses: actions/download-artifact@v8
+        if: needs.build-reference.outputs.comparison == 'ab'
+        with:
+          name: bench-dist-reference
+          path: perf/bench/.reference/dist
+
+      - name: Run interaction benchmark
+        env:
+          SCENARIO: ${{ matrix.scenario }}
+          COMPARISON: ${{ needs.build-reference.outputs.comparison }}
+          BENCH_MERGE_BASE: ${{ needs.build-reference.outputs.merge_base }}
+        run: |
+          REFERENCE_ARGS=""
+          if [ "$COMPARISON" = "ab" ]; then
+            REFERENCE_ARGS="--reference-dist $GITHUB_WORKSPACE/perf/bench/.reference/dist"
+          fi
+          # shellcheck disable=SC2086
+          pnpm bench run --mode interaction --scenario "$SCENARIO" \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__interaction-$SCENARIO.json" \
+            $REFERENCE_ARGS
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-results-interaction-${{ matrix.scenario }}
+          path: perf/bench/results/
+          overwrite: true
+          retention-days: 30
+
+  bench-pageload:
+    needs: [build, build-reference]
+    if: needs.build.outputs.has_code_changes == 'true'
+    runs-on: ubuntu-8core
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps
+
+      # Chromium on Linux validates TLS against the NSS store; the SPKI
+      # allowlist launch flag used locally is not reliably honored here, and
+      # a bypassed-instead-of-valid cert disables the browser HTTP cache
+      # (breaking warm-load measurements) - so import the bench cert properly
+      - name: Trust the bench TLS certificate
+        run: |
+          sudo apt-get install -y -qq libnss3-tools >/dev/null
+          CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
+          mkdir -p "$HOME/.pki/nssdb"
+          certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
+          certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: bench-dist-experiment
+          path: perf/bench/dist
+
+      - uses: actions/download-artifact@v8
+        if: needs.build-reference.outputs.comparison == 'ab'
+        with:
+          name: bench-dist-reference
+          path: perf/bench/.reference/dist
+
+      - name: Run pageLoad benchmark
+        env:
+          COMPARISON: ${{ needs.build-reference.outputs.comparison }}
+          BENCH_MERGE_BASE: ${{ needs.build-reference.outputs.merge_base }}
+        run: |
+          REFERENCE_ARGS=""
+          if [ "$COMPARISON" = "ab" ]; then
+            REFERENCE_ARGS="--reference-dist $GITHUB_WORKSPACE/perf/bench/.reference/dist"
+          fi
+          # shellcheck disable=SC2086
+          pnpm bench run --mode pageload --scenario singleString --scenario syntheticLarge \
+            --sessions 8 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__pageload.json" \
+            $REFERENCE_ARGS
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-results-pageload
+          path: perf/bench/results/
+          overwrite: true
+          retention-days: 30
+
+  report:
+    needs: [build-reference, bench-interaction, bench-pageload]
+    if: >-
+      !cancelled() &&
+      github.event_name == 'pull_request' &&
+      needs.bench-interaction.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write # for the PR comment
+    steps:
+      # This is the only job with a write scope and it runs PR-authored code
+      # (bench:report) - never leave the token in .git/config here
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Download shard results
+        uses: actions/download-artifact@v8
+        with:
+          pattern: bench-results-*
+          merge-multiple: true
+          path: perf/bench/results
+
+      - name: Write merged report
+        env:
+          # A failed shard uploads no result JSON; the report must say so
+          # instead of rendering a clean table with a scenario silently
+          # missing. Keep in sync with the bench-interaction matrix and the
+          # bench-pageload --scenario flags above.
+          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
+          BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge
+        run: pnpm bench report
+
+      # Always posted/updated in place - all-neutral is information, silence
+      # is ambiguity. Non-gating during burn-in: this job never fails the
+      # check for perf verdicts.
+      - name: PR comment with report
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        with:
+          comment-tag: "bench-report"
+          file-path: ${{ github.workspace }}/perf/bench/results/report.md
+
+  self-test:
+    # Same source on both sides - every metric must gate neutral; anything
+    # else is harness drift and fails this job loudly
+    if: >-
+      (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 1') ||
+      (github.event_name == 'workflow_dispatch' && inputs.self_test)
+    needs: [build]
+    runs-on: ubuntu-8core
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps
+
+      # Chromium on Linux validates TLS against the NSS store; the SPKI
+      # allowlist launch flag used locally is not reliably honored here, and
+      # a bypassed-instead-of-valid cert disables the browser HTTP cache
+      # (breaking warm-load measurements) - so import the bench cert properly
+      - name: Trust the bench TLS certificate
+        run: |
+          sudo apt-get install -y -qq libnss3-tools >/dev/null
+          CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
+          mkdir -p "$HOME/.pki/nssdb"
+          certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
+          certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: bench-dist-experiment
+          path: perf/bench/dist
+
+      - name: Build reference-config studio from the same source
+        run: pnpm --filter bench build:reference-config
+
+      - name: Compare the build against itself
+        run: |
+          pnpm bench run --mode interaction \
+            --reference-dist "$GITHUB_WORKSPACE/perf/bench/.reference/dist" \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__self-test.json" \
+            --fail-on-verdict
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-results-self-test
+          path: perf/bench/results/
+          overwrite: true
+          retention-days: 30
+
+  track-main:
+    # Daily absolute-mode run against main HEAD, stored to the studio-metrics
+    # project for time-series/drift tracking. Fixed session counts -
+    # comparability over speed (no dynamic stopping shortcut across days).
+    if: github.event_name == 'schedule' && github.event.schedule == '0 5 * * *'
+    needs: [build]
+    runs-on: ubuntu-8core
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps
+
+      # Chromium on Linux validates TLS against the NSS store; the SPKI
+      # allowlist launch flag used locally is not reliably honored here, and
+      # a bypassed-instead-of-valid cert disables the browser HTTP cache
+      # (breaking warm-load measurements) - so import the bench cert properly
+      - name: Trust the bench TLS certificate
+        run: |
+          sudo apt-get install -y -qq libnss3-tools >/dev/null
+          CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
+          mkdir -p "$HOME/.pki/nssdb"
+          certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
+          certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: bench-dist-experiment
+          path: perf/bench/dist
+
+      - name: Run interaction benchmarks (fixed sessions)
+        run: |
+          pnpm bench run --mode interaction --sessions 8 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__interaction.json"
+
+      - name: Run pageLoad benchmarks
+        run: |
+          pnpm bench run --mode pageload --scenario singleString --scenario syntheticLarge \
+            --sessions 8 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__pageload.json"
+
+      - name: Run memory soak
+        run: |
+          pnpm bench run --mode soak --scenario singleString --minutes 10 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__soak.json"
+
+      - name: Merge report
+        run: pnpm bench report
+
+      - name: Store benchRun document
+        env:
+          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+        run: pnpm bench store
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-results-track-main
+          path: perf/bench/results/
+          overwrite: true
+          retention-days: 30
