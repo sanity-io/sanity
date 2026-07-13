@@ -270,7 +270,9 @@
     "no-redundant-type-constituents": "warn",
     "no-unnecessary-template-expression": "off",
     "no-unnecessary-type-arguments": "warn",
-    "no-unnecessary-type-assertion": "warn",
+    // Kept off: the auto-fix strips `types: {} as {...}` declarations that xstate's `setup()`
+    // requires for typing input/context/events, so `--fix` breaks type checking
+    "no-unnecessary-type-assertion": "off",
     "no-unsafe-type-assertion": "warn",
     "restrict-template-expressions": "warn",
     "unbound-method": "warn",
@@ -306,7 +308,6 @@
         "no-base-to-string": "off",
         "no-unnecessary-boolean-literal-compare": "off",
         "no-unnecessary-template-expression": "off",
-        "no-unnecessary-type-assertion": "off",
         "no-unsafe-type-assertion": "off",
         "unbound-method": "off"
       }
