@@ -5,12 +5,12 @@ import {
   variantAlphaAudience,
   variantNorwegianMarket,
 } from '../../../../../variants/__fixtures__/variants.fixture'
+import {type BundleDocument} from '../../useBundleDocuments'
 import {getVariantBundleSortKey, getVariantDefinitionRef} from '../getVariantBundleSortKey'
-import {type BundleDocumentRow} from '../ReleaseSummary'
 
 const groupRef = {_type: 'reference' as const, _ref: 'article-1', _weak: true as const}
 
-function createRow(document: BundleDocumentRow['document']): BundleDocumentRow {
+function createRow(document: BundleDocument['document']): BundleDocument {
   return {
     memoKey: document._id,
     document,
