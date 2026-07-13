@@ -7,6 +7,8 @@ import {type CurrentUser} from '@sanity/types'
 import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {promiseWithResolvers} from '../../../util/promiseWithResolvers'
+import {AUTH_STATE_SETTLE_TIMEOUT_MS} from '../constants'
 import {_createAuthStore} from '../createAuthStore'
 import {type AuthStore} from '../types'
 
@@ -106,11 +108,13 @@ function createCredentialAwareClientFactory(opts: {
   cookieValid: boolean
 }): (options: SanityClientConfig) => SanityClient {
   return (options: SanityClientConfig): SanityClient => {
-    const usesToken = options.token === opts.token
-    const usesCookie = options.withCredentials === true
     // A request is authenticated if it carries the valid token, or rides a valid
     // cookie. /auth/id and /users/me both follow this — they never disagree.
-    const authed = usesToken || (usesCookie && opts.cookieValid)
+    // Evaluated per request (not at client creation) so tests can flip
+    // `opts.cookieValid` mid-flight, e.g. to model a login establishing the
+    // session cookie.
+    const authed = () =>
+      options.token === opts.token || (options.withCredentials === true && opts.cookieValid)
 
     return {
       request: vi.fn(({uri}: {uri: string}) => {
@@ -118,13 +122,13 @@ function createCredentialAwareClientFactory(opts: {
         if (uri === '/auth/logout') return Promise.resolve({ok: true})
 
         if (uri === '/auth/id') {
-          return authed
+          return authed()
             ? Promise.resolve({id: 'mock-auth-id', expiry: Math.floor(Date.now() / 1000) + 3600})
             : Promise.reject(create401Error())
         }
 
         if (uri === '/users/me') {
-          return authed ? Promise.resolve(MOCK_USER) : Promise.reject(create401Error())
+          return authed() ? Promise.resolve(MOCK_USER) : Promise.reject(create401Error())
         }
 
         return Promise.resolve({})
@@ -1008,6 +1012,523 @@ describe('createAuthStore: cross-tab sync', () => {
       expect(diagnose).toHaveBeenCalled()
       expect(onRequestFailure).toHaveBeenCalledWith({type: 'project-not-found'}, expect.anything())
     })
+  })
+})
+
+describe('createAuthStore: handleCallbackUrl settle contract', () => {
+  // handleCallbackUrl must not resolve until authState$ has emitted a state
+  // computed with the exchanged credential. AuthBoundary holds its loading
+  // screen until the promise settles; resolving while the stale pre-exchange
+  // "logged out" probe result is still current re-opens the gate onto the
+  // login screen — the flash these tests guard against.
+
+  beforeEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+    vi.restoreAllMocks()
+  })
+
+  function oneShotSessionId(): () => string | undefined {
+    let consumed = false
+    return () => {
+      if (consumed) return undefined
+      consumed = true
+      return 'mock-session-id-12345678'
+    }
+  }
+
+  it.each(['dual', 'token'] as const)(
+    'resolves only after the state reflects the exchanged token (%s mode)',
+    async (loginMethod) => {
+      const TOKEN = 'valid-exchanged-token'
+      const factory = createCredentialAwareClientFactory({token: TOKEN, cookieValid: false})
+
+      const store = _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod,
+        clientFactory: factory,
+        getSessionId: oneShotSessionId(),
+        consumeHashToken: () => undefined,
+      })
+
+      const emissions: boolean[] = []
+      const sub = store.state.subscribe((s) => emissions.push(s.authenticated))
+
+      // The stale pre-exchange probe result lands first (no credential).
+      await waitForState(store, (s) => !s.authenticated)
+
+      const result = await store.handleCallbackUrl!()
+      expect(result.success).toBe(true)
+      expect(result.stateSettleTimedOut).toBe(false)
+
+      // The ordering assertion: at the moment the promise resolved, a
+      // subscriber attached beforehand had already observed the
+      // authenticated state — not just "will eventually".
+      expect(emissions[emissions.length - 1]).toBe(true)
+
+      sub.unsubscribe()
+    },
+  )
+
+  it('resolves only after the state reflects the exchanged token applied mid-initial-probe (token mode)', async () => {
+    // The exchange can complete while the initial /users/me probe is still in
+    // flight. The token client stream must not positionally skip that update
+    // (regression: concat(of(initialClient), storage.skip(1)) dropped it and
+    // the store never left the credential-less client).
+    const TOKEN = 'valid-exchanged-token'
+    const factory = createCredentialAwareClientFactory({token: TOKEN, cookieValid: false})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'token',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    // No waiting for the initial probe — fire the callback immediately so the
+    // token update races it.
+    const result = await store.handleCallbackUrl!()
+    expect(result.success).toBe(true)
+    expect(result.stateSettleTimedOut).toBe(false)
+
+    const state = await waitForState(store, (s) => s.authenticated, 2000)
+    expect(state.currentUser).toEqual(MOCK_USER)
+  })
+
+  it('resolves only after the state reflects the established cookie session (cookie mode)', async () => {
+    const opts = {token: 'token-unused-in-cookie-mode', cookieValid: false}
+    const factory = createCredentialAwareClientFactory(opts)
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    const emissions: boolean[] = []
+    const sub = store.state.subscribe((s) => emissions.push(s.authenticated))
+
+    await waitForState(store, (s) => !s.authenticated)
+
+    // The login that produced the sid also established the session cookie.
+    opts.cookieValid = true
+
+    const result = await store.handleCallbackUrl!()
+    expect(result.success).toBe(true)
+    expect(result.authMethod).toBe('cookie')
+    expect(result.stateSettleTimedOut).toBe(false)
+    expect(emissions[emissions.length - 1]).toBe(true)
+
+    sub.unsubscribe()
+  })
+
+  it('resolves promptly with success: false when the exchange fails, without waiting for state', async () => {
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/auth/fetch') {
+            return Promise.reject(new Error('sid expired'))
+          }
+          if (uri === '/users/me') return Promise.reject(create401Error())
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'dual',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    const result = await store.handleCallbackUrl!()
+    expect(result.success).toBe(false)
+    expect(result.error?.type).toBe('auth-failed')
+    // The failure path has no settle wait — nothing to wait for, and the
+    // caller should show login guidance promptly.
+    expect(result.stateSettleDurationMs).toBeUndefined()
+  })
+
+  it('resolves with stateSettleTimedOut when the state never reflects the exchange', async () => {
+    // A wedged state chain (here: /users/me never settles) must not hang the
+    // callback forever — the timeout resolves it and flags the condition.
+    vi.useFakeTimers()
+    try {
+      const factory = (_options: SanityClientConfig): SanityClient =>
+        ({
+          request: vi.fn(({uri}: {uri: string}) => {
+            if (uri === '/auth/fetch') return Promise.resolve({token: 'exchanged-token'})
+            if (uri === '/auth/id') {
+              return Promise.resolve({id: 'x', expiry: Math.floor(Date.now() / 1000) + 3600})
+            }
+            // /users/me hangs: authState$ never emits a post-exchange state.
+            return new Promise(() => {})
+          }),
+        }) as unknown as SanityClient
+
+      const store = _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod: 'dual',
+        clientFactory: factory,
+        getSessionId: oneShotSessionId(),
+        consumeHashToken: () => undefined,
+      })
+
+      const resultPromise = store.handleCallbackUrl!()
+      await vi.advanceTimersByTimeAsync(AUTH_STATE_SETTLE_TIMEOUT_MS + 1000)
+
+      const result = await resultPromise
+      expect(result.success).toBe(true)
+      expect(result.stateSettleTimedOut).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('shares the in-flight exchange with concurrent callers instead of resolving already-authenticated', async () => {
+    // StrictMode mounts AuthBoundary's callback effect twice in dev. The sid
+    // is a one-shot, so the second call finds none — it must piggyback on the
+    // in-flight exchange (same result, single /auth/fetch), not resolve
+    // 'already-authenticated' early and reopen the loading gate mid-exchange.
+    let exchangeCount = 0
+    const TOKEN = 'valid-exchanged-token'
+    const factory = (options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/auth/fetch') {
+            exchangeCount += 1
+            return Promise.resolve({token: TOKEN})
+          }
+          if (uri === '/auth/id') {
+            return Promise.resolve({id: 'x', expiry: Math.floor(Date.now() / 1000) + 3600})
+          }
+          if (uri === '/users/me') {
+            return options.token === TOKEN
+              ? Promise.resolve(MOCK_USER)
+              : Promise.reject(create401Error())
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'dual',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    const [first, second] = await Promise.all([
+      store.handleCallbackUrl!(),
+      store.handleCallbackUrl!(),
+    ])
+
+    expect(exchangeCount).toBe(1)
+    expect(first.flow).toBe('exchange')
+    expect(second.flow).toBe('exchange')
+    expect(second).toBe(first)
+  })
+
+  it('returns a fresh already-authenticated result once the exchange has settled', async () => {
+    // Repeat calls after settlement (workspace switch and back, effect
+    // re-runs) are ordinary no-sid loads: replaying the historical exchange
+    // result would make AuthBoundary re-log its telemetry with stale
+    // durations on every remount.
+    const TOKEN = 'valid-exchanged-token'
+    const factory = createCredentialAwareClientFactory({token: TOKEN, cookieValid: false})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'dual',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    const first = await store.handleCallbackUrl!()
+    expect(first.flow).toBe('exchange')
+
+    const second = await store.handleCallbackUrl!()
+    expect(second.flow).toBe('already-authenticated')
+    expect(second).not.toBe(first)
+  })
+
+  it('does not cache a rejected exchange — a later call recovers as already-authenticated', async () => {
+    // A transient non-401 error during the post-exchange probe rejects the
+    // callback. The sid is spent, so a retry (e.g. an error-boundary
+    // remount) must fall through to the normal no-sid path instead of
+    // replaying the rejection until a full page reload.
+    const TOKEN = 'valid-exchanged-token'
+    const factory = (options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/auth/fetch') return Promise.resolve({token: TOKEN})
+          if (uri === '/auth/id') return Promise.reject(new Error('transient server error'))
+          if (uri === '/users/me') {
+            return options.token === TOKEN
+              ? Promise.resolve(MOCK_USER)
+              : Promise.reject(create401Error())
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'dual',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    await expect(store.handleCallbackUrl!()).rejects.toThrow('transient server error')
+
+    const retry = await store.handleCallbackUrl!()
+    expect(retry.flow).toBe('already-authenticated')
+    expect(retry.success).toBe(true)
+  })
+
+  it('resolves promptly with success: false when the exchange returns an empty token (dual mode)', async () => {
+    // An empty token never appears on a client (falsy tokens are dropped
+    // from the client config), so waiting for the state to reflect it would
+    // just burn the settle timeout before reporting the failure. This test
+    // times out if that wait regresses.
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/auth/fetch') return Promise.resolve({token: ''})
+          if (uri === '/auth/id') return Promise.reject(create401Error())
+          if (uri === '/users/me') return Promise.reject(create401Error())
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'dual',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    const result = await store.handleCallbackUrl!()
+    expect(result.success).toBe(false)
+    expect(result.failureReason).toBe('token exchange returned empty token')
+    expect(result.stateSettleDurationMs).toBeUndefined()
+  })
+
+  it('probes /users/me exactly once for a token applied after the initial probe (token mode)', async () => {
+    // The token recheck stream exists to catch a token applied while the
+    // initial probe was in flight; for tokens applied after it,
+    // workspaceClient$ already re-probes — the recheck re-emitting too would
+    // duplicate the request.
+    const TOKEN = 'valid-exchanged-token'
+    let probesWithToken = 0
+    const factory = (options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/auth/fetch') return Promise.resolve({token: TOKEN})
+          if (uri === '/users/me') {
+            if (options.token === TOKEN) {
+              probesWithToken += 1
+              return Promise.resolve(MOCK_USER)
+            }
+            return Promise.reject(create401Error())
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'token',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    const sub = store.state.subscribe(() => {})
+
+    // Let the initial probe finish so the token lands strictly after it.
+    await waitForState(store, (s) => !s.authenticated)
+
+    const result = await store.handleCallbackUrl!()
+    expect(result.success).toBe(true)
+
+    await waitForState(store, (s) => s.authenticated)
+    // Give a would-be duplicate probe a chance to fire before counting.
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(probesWithToken).toBe(1)
+
+    sub.unsubscribe()
+  })
+
+  it('delivers the post-exchange state to a subscriber that connects only after the exchange completed', async () => {
+    // The callback probes the post-exchange state itself, so it must
+    // complete even when nothing is subscribed to the state chain yet — and
+    // the first subscriber to connect afterwards must land on the
+    // authenticated state instead of the stale credential-less initial probe.
+    const TOKEN = 'valid-exchanged-token'
+    const factory = createCredentialAwareClientFactory({token: TOKEN, cookieValid: false})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'dual',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    // No subscription anywhere: the exchange runs with the state chain cold.
+    const result = await store.handleCallbackUrl!()
+    expect(result.success).toBe(true)
+    expect(result.stateSettleTimedOut).toBe(false)
+
+    const state = await waitForState(store, (s) => s.authenticated, 2000)
+    expect(state.currentUser).toEqual(MOCK_USER)
+  })
+
+  it('converges without timing out when the exchange completes while the initial probe is in flight (cookie mode)', async () => {
+    // The initial /users/me goes out before the login cookie exists and
+    // resolves 401 only *after* the callback has written cookieAuthState.
+    // That stale result must neither stomp the fresher channel value nor
+    // leave the store without a re-probe (regression: the settle wait burned
+    // its full timeout and the login screen showed despite a valid session).
+    const initialProbe = promiseWithResolvers<never>()
+    let cookieValid = false
+    let usersMeCalls = 0
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/auth/fetch') {
+            return Promise.resolve({token: 'token-unused-in-cookie-mode'})
+          }
+          if (uri === '/auth/id') {
+            return cookieValid
+              ? Promise.resolve({id: 'mock-auth-id', expiry: Math.floor(Date.now() / 1000) + 3600})
+              : Promise.reject(create401Error())
+          }
+          if (uri === '/users/me') {
+            usersMeCalls += 1
+            // The first call is the initial probe: held pending until the
+            // test releases it, after the callback has settled the channel.
+            if (usersMeCalls === 1) return initialProbe.promise
+            return cookieValid ? Promise.resolve(MOCK_USER) : Promise.reject(create401Error())
+          }
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    const sub = store.state.subscribe(() => {})
+
+    // The login that produced the sid also established the session cookie.
+    cookieValid = true
+    const callback = store.handleCallbackUrl!()
+    // Let the exchange + /auth/id probe + cookieAuthState write complete
+    // while the initial probe is still pending.
+    await new Promise((resolve) => setTimeout(resolve, 10))
+    // Now the stale pre-cookie 401 lands.
+    initialProbe.reject(create401Error())
+
+    const result = await callback
+    expect(result.success).toBe(true)
+    expect(result.stateSettleTimedOut).toBe(false)
+
+    const state = await waitForState(store, (s) => s.authenticated)
+    expect(state.currentUser).toEqual(MOCK_USER)
+
+    sub.unsubscribe()
+  })
+
+  it('expires an unconsumed callback state instead of emitting it long after the exchange (cookie mode)', async () => {
+    // A cookie-mode login that lands while the channel already reads
+    // authenticated is a no-op for the state chain (distinctUntilChanged
+    // suppresses the write), so nothing consumes the pre-probed one-shot.
+    // A chain emission long after the settle window — here a cross-tab
+    // logout/login cycle — must probe fresh instead of emitting the stale
+    // exchange-time snapshot.
+    let now = 1000
+    vi.spyOn(performance, 'now').mockImplementation(() => now)
+
+    let currentUser: CurrentUser = MOCK_USER
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/auth/fetch') return Promise.resolve({token: 'exchanged-token'})
+          if (uri === '/auth/id') {
+            return Promise.resolve({
+              id: 'mock-auth-id',
+              expiry: Math.floor(Date.now() / 1000) + 3600,
+            })
+          }
+          if (uri === '/users/me') return Promise.resolve(currentUser)
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    const sub = store.state.subscribe(() => {})
+
+    // Already authenticated at boot: the callback's channel write changes
+    // nothing, so the one-shot lingers unconsumed.
+    await waitForState(store, (s) => s.authenticated)
+    const result = await store.handleCallbackUrl!()
+    expect(result.success).toBe(true)
+
+    // Long after the settle window, another tab logs out and a different
+    // user logs in.
+    now += AUTH_STATE_SETTLE_TIMEOUT_MS + 1
+    currentUser = {...MOCK_USER, id: 'fresh-user-456'}
+
+    const channel = new BroadcastChannel(`__studio_auth_cookie_state_${PROJECT_ID}`)
+    channel.postMessage(JSON.stringify({authenticated: false}))
+    await waitForState(store, (s) => !s.authenticated)
+    channel.postMessage(JSON.stringify({authenticated: true}))
+    channel.close()
+
+    // Fresh probe, not the stale exchange-time snapshot.
+    const state = await waitForState(store, (s) => s.authenticated)
+    expect(state.currentUser?.id).toBe('fresh-user-456')
+
+    sub.unsubscribe()
   })
 })
 
