@@ -18,7 +18,13 @@ import {
 } from '../../util'
 import {type ValidationStatus} from '../../validation'
 import {type HistoryStore} from '../history'
-import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pair/checkoutPair'
+import {
+  checkoutPair,
+  type CommitError,
+  type DocumentVersionEvent,
+  type Pair,
+} from './document-pair/checkoutPair'
+import {commitErrorStatus} from './document-pair/commitErrorStatus'
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
 import {editOperations} from './document-pair/editOperations'
@@ -79,6 +85,12 @@ export interface DocumentStore {
   resolveTypeForDocument: (id: string, specifiedType?: string) => Observable<string>
 
   pair: {
+    /** @internal */
+    commitErrorStatus: (
+      publishedId: string,
+      type: string,
+      version?: string,
+    ) => Observable<CommitError | undefined>
     consistencyStatus: (publishedId: string, type: string, version?: string) => Observable<boolean>
     /** @internal */
     documentEvents: (
@@ -190,6 +202,14 @@ export function createDocumentStore({
       return resolveTypeForDocument(client, id, specifiedType)
     },
     pair: {
+      commitErrorStatus(publishedId, type, version) {
+        return commitErrorStatus(
+          ctx.client,
+          getIdPairFromPublished(publishedId, version),
+          type,
+          extraOptions,
+        )
+      },
       consistencyStatus(publishedId, type, version) {
         return consistencyStatus(
           ctx.client,

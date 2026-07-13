@@ -99,7 +99,8 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
   // Staged "changes aren't syncing" toast. Three non-synced states:
   //  - pending:    unsynced + disconnected, warning (editing still open)
   //  - stalled:    unsynced + disconnected for longer, editing locked
-  //  - recovering: connection back, flushing the backlog (still locked,
+  //  - recovering: connected but a commit failed and is being retried, e.g.
+  //                flushing the backlog after a reconnect (still locked,
   //                but reassure rather than alarm)
   // One toast id so the states replace each other rather than stack, and
   // it auto-dismisses when the document syncs again.
