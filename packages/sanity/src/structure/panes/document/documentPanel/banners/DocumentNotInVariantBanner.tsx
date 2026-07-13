@@ -7,6 +7,7 @@ import {
   usePerspective,
   useTranslation,
   useVariantDocumentOperations,
+  useGetDefaultPerspective,
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -22,10 +23,11 @@ type VariantDocumentCreateStatus = 'idle' | 'in-progress' | 'success' | 'failed'
 export function DocumentNotInVariantBanner() {
   const {t} = useTranslation(structureLocaleNamespace)
   const {value} = useDocumentPane()
-  const {selectedPerspective, selectedVariant} = usePerspective()
+  const {selectedPerspective, selectedVariant, selectedReleaseId} = usePerspective()
   const {createVariantDocument} = useVariantDocumentOperations()
   const [status, setStatus] = useState<VariantDocumentCreateStatus>('idle')
   const toast = useToast()
+  const defaultPerspective = useGetDefaultPerspective()
 
   const variantTitle = selectedVariant ? getVariantTitle(selectedVariant) : ''
 
@@ -65,6 +67,7 @@ export function DocumentNotInVariantBanner() {
     description: t('banners.variant.waiting.description'),
   })
 
+  const isActionAllowed = selectedPerspective === defaultPerspective || selectedReleaseId
   return (
     <Banner
       tone="suggest"
@@ -82,13 +85,17 @@ export function DocumentNotInVariantBanner() {
           />
         </Text>
       }
-      action={{
-        text: t('banners.variant.action.add-to-variant'),
-        tone: 'suggest',
-        disabled: status === 'in-progress' || status === 'success',
-        onClick: handleAddToVariant,
-        mode: 'default',
-      }}
+      action={
+        isActionAllowed
+          ? {
+              text: t('banners.variant.action.add-to-variant'),
+              tone: 'suggest',
+              disabled: status === 'in-progress' || status === 'success',
+              onClick: handleAddToVariant,
+              mode: 'default',
+            }
+          : undefined
+      }
     />
   )
 }

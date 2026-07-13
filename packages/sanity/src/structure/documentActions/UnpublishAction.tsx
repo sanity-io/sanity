@@ -30,7 +30,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
   id,
   type,
   draft,
-  liveEdit,
+  liveEditSchemaType,
   release,
 }) => {
   const {targetDocumentState} = useDocumentPane()
@@ -89,7 +89,10 @@ export const useUnpublishAction: DocumentActionComponent = ({
       // Draft documents can't either
       return null
     }
-    if (liveEdit) {
+    // `liveEdit` is forced to true whenever a version is checked out, which includes variant
+    // targets — for those, only the schema-level live edit setting should hide the action
+    // (the variant-of-published document is unpublishable).
+    if (liveEditSchemaType) {
       return null
     }
 
@@ -117,7 +120,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
   }, [
     release,
     isDraft,
-    liveEdit,
+    liveEditSchemaType,
     isPermissionsLoading,
     isTargetReady,
     permissions?.granted,

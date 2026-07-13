@@ -67,6 +67,33 @@ describe('publish', () => {
         } as unknown as OperationArgs),
       ).toBe(false)
     })
+
+    it('returns VARIANT_VERSION for a variant-scoped version snapshot', () => {
+      ;(isLiveEditEnabled as Mock).mockImplementation(() => false)
+
+      expect(
+        publish.disabled({
+          typeName: 'blah',
+          snapshots: {
+            draft: {} as SanityDocument,
+            published: {} as SanityDocument,
+            version: {
+              _id: 'versions.varscope.article-1',
+              _type: 'article',
+              _rev: 'r1',
+              _createdAt: '2024-01-01T00:00:00Z',
+              _updatedAt: '2024-01-01T00:00:00Z',
+              _system: {
+                bundleId: 'drafts',
+                variant: {_ref: '_.variants.french', _weak: true},
+                group: {_ref: 'article-1', _weak: true},
+                scopeId: 'varscope',
+              },
+            },
+          },
+        } as unknown as OperationArgs),
+      ).toBe('VARIANT_VERSION')
+    })
   })
 
   describe('execute', () => {

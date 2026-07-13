@@ -5,7 +5,6 @@ import {isPublishedPerspective, isReleaseDocument, usePerspective} from 'sanity'
 
 import {usePaneRouter} from '../../../components'
 import {SpacerButton} from '../../../components/spacerButton'
-import {useIsEditingVariantDocument} from '../../../hooks/useIsEditingVariantDocument'
 import {EMPTY_PARAMS} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
@@ -27,7 +26,6 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {editState, revisionNotFound, targetDocumentState} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const {selectedPerspective, selectedVariantName} = usePerspective()
-  const isEditingVariantDocument = useIsEditingVariantDocument()
 
   const showingRevision = Boolean(params.rev)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
@@ -105,8 +103,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
             style={{flexShrink: 0, marginLeft: 'auto'}}
           >
             <SpacerButton />
-            {/* Temporarily hide the actions when editing a variant document, until actions are supported on variant documents. */}
-            {!isEditingVariantDocument && actions}
+            {actions}
           </Flex>
         </Flex>
       )}
