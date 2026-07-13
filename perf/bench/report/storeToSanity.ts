@@ -1,11 +1,17 @@
 // oxlint-disable no-console
 /**
  * `bench store` — write a merged BenchRunDocument to the metrics-studio
- * Sanity project as a `benchRun` document (main-branch time-series tracking;
- * precedent: perf/tests stored `performanceTestRun` docs the same way).
+ * Sanity project as a `benchRun` document for the trends dashboard.
  *
- * Requires BENCH_METRICS_WRITE_TOKEN — the only real secret in the suite,
- * used exclusively by the daily track-main cron.
+ * Two writers:
+ * - the daily `track-main` cron stores main HEAD, one doc per run (sha id),
+ *   building the absolute time series;
+ * - a labeled PR stores its experiment-side build under the PR branch, one
+ *   doc per PR (overwritten each push) so branch comparison has real data.
+ *   Only absolute-mode runs are stored — an A/B verdict isn't comparable to
+ *   the absolute series (see the id logic below).
+ *
+ * Requires BENCH_METRICS_WRITE_TOKEN — the only real secret in the suite.
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -43,9 +49,22 @@ export async function storeRun(inputPathArg?: string): Promise<void> {
     useCdn: false,
   })
 
-  const documentId = `benchRun-${run.git.sha}-${run.runner.runId ?? 'local'}`
+  if (run.mode !== 'absolute') {
+    console.error(
+      `Refusing to store a ${run.mode}-mode run: only absolute-mode runs are comparable to the ` +
+        `dashboard's time series. (A labeled PR must run absolute mode to be stored.)`,
+    )
+    process.exit(1)
+  }
+
+  // A PR overwrites one doc per PR number (latest push wins); main/cron keeps
+  // one doc per run so the time series accumulates.
+  const documentId =
+    typeof run.git.prNumber === 'number'
+      ? `benchRun-pr-${run.git.prNumber}`
+      : `benchRun-${run.git.sha}-${run.runner.runId ?? 'local'}`
   const stored = await client.createOrReplace({...toStorableRun(run), _id: documentId})
   console.log(
-    `Stored ${stored._id} (${run.scenarios.length} scenario report(s), sha ${run.git.sha.slice(0, 10)}) in ${METRICS_PROJECT_ID}/${METRICS_DATASET}`,
+    `Stored ${stored._id} (${run.scenarios.length} scenario report(s), ${run.git.branch} @ ${run.git.sha.slice(0, 10)}) in ${METRICS_PROJECT_ID}/${METRICS_DATASET}`,
   )
 }

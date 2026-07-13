@@ -353,12 +353,57 @@ jobs:
       # workflow shows a shrug-grey "cancelled" and nothing goes red. Runs
       # after the comment step so the missing scenarios are already named
       # in the PR comment.
+      # Hand the absolute-mode variant to the store job as an artifact, so the
+      # token-bearing write never runs in this PR-code + write-scope job
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-merged-absolute
+          path: perf/bench/results/merged-absolute.json
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Fail on missing scenario results
         run: |
           if [ -f perf/bench/results/missing-scenarios.json ]; then
             echo "::error::Benchmark shard(s) delivered no results: $(cat perf/bench/results/missing-scenarios.json | tr -d '\n')"
             exit 1
           fi
+
+  # Store the PR's experiment-side (absolute) result under its branch so the
+  # trends dashboard's branch comparison has real data. Separate from `report`
+  # so the metrics write token is never present in the write-scoped job that
+  # runs PR-authored report code. Same-repo PRs only: fork PRs receive no
+  # secrets, and the `perf-bench` label is maintainer-applied (triage-gated).
+  store-pr:
+    needs: [build-reference, report]
+    if: >-
+      !cancelled() &&
+      needs.report.result == 'success' &&
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - uses: actions/download-artifact@v8
+        id: absolute
+        with:
+          name: bench-merged-absolute
+          path: perf/bench/results
+        continue-on-error: true # no artifact when the comparison was skipped
+
+      - name: Store PR run
+        if: steps.absolute.outcome == 'success'
+        env:
+          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+        run: pnpm bench store "$GITHUB_WORKSPACE/perf/bench/results/merged-absolute.json"
 
   self-test:
     # Same source on both sides - every metric must gate neutral; anything

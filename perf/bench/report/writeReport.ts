@@ -14,6 +14,31 @@ import {mergeShards} from './mergeShards'
 import {type BenchRunDocument, type ScenarioReport} from './types'
 
 /**
+ * Reduce an A/B run to an absolute-mode document holding only the experiment
+ * side: drop the reference side and the comparison verdict from every metric,
+ * and flip `mode`. The result is comparable to the main-branch absolute series
+ * and safe to store under the PR branch.
+ */
+function toAbsolute(run: BenchRunDocument): BenchRunDocument {
+  return {
+    ...run,
+    mode: 'absolute',
+    scenarios: run.scenarios.map((scenario) => ({
+      ...scenario,
+      metrics: scenario.metrics.map((metric) => {
+        const {reference, comparison, ...rest} = metric
+        return rest
+      }),
+      // Reference-side interruptions/resources drop with the reference side
+      interruptions: {experiment: scenario.interruptions.experiment},
+      ...(scenario.resources ? {resources: {experiment: scenario.resources.experiment}} : {}),
+    })),
+    // A/B bundle carries both sides; keep only experiment
+    ...(run.bundle ? {bundle: {experiment: run.bundle.experiment}} : {}),
+  }
+}
+
+/**
  * CI passes the scenario sets it scheduled (comma-separated env vars, set in
  * bench.yml next to the shard matrix) so a shard that failed and uploaded no
  * result JSON is called out in the report instead of silently missing.
@@ -68,6 +93,18 @@ export function writeMergedReport(resultsDirArg?: string): void {
   }
 
   fs.writeFileSync(path.join(resultsDir, 'merged.json'), JSON.stringify(merged, null, 2))
+
+  // An A/B run also emits an absolute-mode variant for storage: the trends
+  // dashboard series is absolute, so a labeled PR is stored as its own
+  // (experiment-side) absolute numbers under the PR branch — comparable to
+  // main and across PRs. Written alongside; the store step picks it up.
+  if (merged.mode === 'ab') {
+    fs.writeFileSync(
+      path.join(resultsDir, 'merged-absolute.json'),
+      JSON.stringify(toAbsolute(merged), null, 2),
+    )
+  }
+
   fs.writeFileSync(
     path.join(resultsDir, 'report.md'),
     renderMarkdownReport(merged, {missingScenarios}),
