@@ -1,12 +1,14 @@
 import {VARIANT_DOCUMENTS_PATH} from '../../../../variants/store/constants'
-import {getVariantId, getVariantIdFromDocument, getVariantTitle} from '../../../../variants/tool/util'
+import {
+  getVariantId,
+  getVariantIdFromDocument,
+  getVariantTitle,
+} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
 import {type BundleDocument} from '../useBundleDocuments'
 
 /** @internal - exported for unit testing only */
-export function getVariantDefinitionRef(
-  document: BundleDocument['document'],
-): string | undefined {
+export function getVariantDefinitionRef(document: BundleDocument['document']): string | undefined {
   const shortVariantId = getVariantIdFromDocument(document)
   if (!shortVariantId) return undefined
 
