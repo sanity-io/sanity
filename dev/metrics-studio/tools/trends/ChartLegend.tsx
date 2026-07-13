@@ -54,10 +54,18 @@ export function ChartLegend(props: {series: TrendSeries}) {
       {hasLine && (
         <Flex gap={1} align="center">
           <Swatch>
-            <line x1={0} y1={5} x2={16} y2={5} stroke={color} strokeWidth={2} />
+            <line
+              x1={0}
+              y1={5}
+              x2={16}
+              y2={5}
+              stroke={color}
+              strokeWidth={2}
+              strokeDasharray={series.goal === 'context' ? '3 2' : undefined}
+            />
           </Swatch>
           <Text size={0} muted>
-            median (p50)
+            {series.goal === 'context' ? 'reference' : 'median (p50)'}
           </Text>
         </Flex>
       )}

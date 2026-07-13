@@ -105,6 +105,29 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
             metric(rng, 'boot-cold · auth in flight', day < 50 ? 84 : 42),
           ],
         },
+        {
+          scenario: 'singleString',
+          kind: 'interaction',
+          metrics: [],
+          // Soak: a slow heap leak that got worse after day 40 (slope-over-time
+          // shows the regression; the latest run's minute curve shows the climb)
+          soak: {
+            minutes: 10,
+            samples: Array.from({length: 11}, (_, minute) => {
+              const leakPerMin = day < 40 ? 0.4 : 1.6
+              return {
+                minute,
+                heapMb: 80 + minute * leakPerMin + (rng() - 0.5),
+                domNodes: Math.round(4200 + minute * (day < 40 ? 2 : 12) + (rng() - 0.5) * 4),
+                listeners: Math.round(910 + (rng() - 0.5) * 3),
+                latencyP50Ms: 24 + minute * (day < 40 ? 0 : 0.6) + (rng() - 0.5),
+                cpuTaskMs: minute === 0 ? null : Math.round(34000 + (rng() - 0.5) * 2000),
+                connections: 9,
+                requests: minute === 0 ? 0 : Math.round(230 + (rng() - 0.5) * 20),
+              }
+            }),
+          },
+        },
       ],
     })
   }

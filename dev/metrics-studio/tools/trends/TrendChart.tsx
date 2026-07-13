@@ -148,6 +148,9 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
                     y={(point) => yScale(point.value)}
                     stroke={color}
                     strokeWidth={1.5}
+                    // Context lines (host calibration) are dashed so they read
+                    // as reference, not as a measured metric line
+                    strokeDasharray={series.goal === 'context' ? '4 3' : undefined}
                   />
                 )}
                 {line.points.map((point) => {
@@ -187,6 +190,13 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
             numTicks={Math.min(4, allPoints.length)}
             stroke={COLOR.axis}
             tickStroke={COLOR.axis}
+            // In-run soak charts encode elapsed minutes in the date; label them
+            // as "Nm" rather than a calendar date
+            tickFormat={
+              series.xKind === 'minute'
+                ? (value) => `${Math.round(Number(value) / 60_000)}m`
+                : undefined
+            }
             tickLabelProps={{fill: COLOR.axis, fontSize: 10, textAnchor: 'middle'}}
           />
           <AxisLeft
@@ -239,7 +249,11 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
                     {formatValue(entry.point.value, unit)}
                   </Text>
                   <Text size={0} muted>
-                    {lines.length > 1 ? entry.branch : entry.point.date.toISOString().slice(0, 10)}
+                    {lines.length > 1
+                      ? entry.branch
+                      : series.xKind === 'minute'
+                        ? `minute ${Math.round(entry.point.date.getTime() / 60_000)}`
+                        : entry.point.date.toISOString().slice(0, 10)}
                   </Text>
                 </Flex>
               ))}

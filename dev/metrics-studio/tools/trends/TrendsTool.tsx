@@ -27,6 +27,8 @@ import {ChartLegend} from './ChartLegend'
 import {
   availableBranches,
   buildSeries,
+  latestSoakCharts,
+  soakSlopeSeries,
   calibrationSeries,
   filterByRange,
   formatValue,
@@ -219,6 +221,7 @@ export function TrendsTool() {
 
   const inRange = useMemo(() => (runs ? filterByRange(runs, rangeDays) : []), [runs, rangeDays])
   const branches = useMemo(() => availableBranches(inRange), [inRange])
+  const SOAK_GROUP = TREND_GROUPS.find((group) => group.id === 'soak')!
 
   // Branch selection persists in the URL (comma-separated) so a comparison
   // is shareable. Empty/absent = default: main if present, else all.
@@ -242,6 +245,10 @@ export function TrendsTool() {
     [inRange, selectedBranches],
   )
   const series = useMemo(() => buildSeries(filtered), [filtered])
+  const soakSlopes = useMemo(() => soakSlopeSeries(filtered), [filtered])
+  // In-run soak charts are a single latest run — branch-filtered, but not
+  // overlaid (each is one run's minute curve)
+  const latestSoak = useMemo(() => latestSoakCharts(filtered), [filtered])
   // Calibration is host-level, not per-branch — always the full in-range set
   const calibration = useMemo(() => calibrationSeries(inRange), [inRange])
 
@@ -346,27 +353,64 @@ export function TrendsTool() {
               </Stack>
             )}
 
-            {TREND_GROUPS.filter((group) => group.id !== 'environment').map((group) => {
-              const groupSeries = series.filter((entry) => entry.group === group.id)
-              if (groupSeries.length === 0) return null
-              return (
-                <Stack key={group.id} space={3}>
-                  <Stack space={2}>
-                    <Text size={1} weight="semibold">
-                      {group.title}
-                    </Text>
-                    <Text size={1} muted>
-                      {group.description}
-                    </Text>
+            {TREND_GROUPS.filter((group) => group.id !== 'environment' && group.id !== 'soak').map(
+              (group) => {
+                const groupSeries = series.filter((entry) => entry.group === group.id)
+                if (groupSeries.length === 0) return null
+                return (
+                  <Stack key={group.id} space={3}>
+                    <Stack space={2}>
+                      <Text size={1} weight="semibold">
+                        {group.title}
+                      </Text>
+                      <Text size={1} muted>
+                        {group.description}
+                      </Text>
+                    </Stack>
+                    <Grid columns={[1, 1, 2, 3]} gap={3}>
+                      {groupSeries.map((entry) => (
+                        <SeriesCard key={entry.key} series={entry} height={128} />
+                      ))}
+                    </Grid>
                   </Stack>
+                )
+              },
+            )}
+
+            {(soakSlopes.length > 0 || latestSoak) && (
+              <Stack space={4}>
+                <Stack space={2}>
+                  <Text size={1} weight="semibold">
+                    {SOAK_GROUP.title}
+                  </Text>
+                  <Text size={1} muted>
+                    {SOAK_GROUP.description}
+                  </Text>
+                </Stack>
+
+                {soakSlopes.length > 0 && (
                   <Grid columns={[1, 1, 2, 3]} gap={3}>
-                    {groupSeries.map((entry) => (
+                    {soakSlopes.map((entry) => (
                       <SeriesCard key={entry.key} series={entry} height={128} />
                     ))}
                   </Grid>
-                </Stack>
-              )
-            })}
+                )}
+
+                {latestSoak && latestSoak.charts.length > 0 && (
+                  <Stack space={3}>
+                    <Text size={1} muted>
+                      Latest soak run — {latestSoak.run.git?.branch ?? 'unknown'} @{' '}
+                      {latestSoak.run.git?.sha?.slice(0, 10) ?? '?'} · minute-by-minute
+                    </Text>
+                    <Grid columns={[1, 1, 2, 3]} gap={3}>
+                      {latestSoak.charts.map((entry) => (
+                        <SeriesCard key={entry.key} series={entry} height={128} />
+                      ))}
+                    </Grid>
+                  </Stack>
+                )}
+              </Stack>
+            )}
           </Stack>
         </Container>
       </Card>
