@@ -426,6 +426,7 @@ exports[`exports snapshot 1`] = `
     "isDev": "boolean",
     "isDocumentInSelectedVariant": "function",
     "isDocumentLimitError": "function",
+    "isDocumentNotInSelectedRelease": "function",
     "isDocumentSchemaType": "function",
     "isDraft": "function",
     "isDraftId": "function",
