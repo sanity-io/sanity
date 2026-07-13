@@ -8,6 +8,7 @@ export const useReleaseOperationsMockReturn: Mocked<ReleaseOperationsStore> = {
   unarchive: vi.fn(),
   createRelease: vi.fn(),
   createVersion: vi.fn(),
+  discardVersion: vi.fn(),
   publishRelease: vi.fn(),
   schedule: vi.fn(),
   unschedule: vi.fn(),
@@ -15,6 +16,7 @@ export const useReleaseOperationsMockReturn: Mocked<ReleaseOperationsStore> = {
   deleteRelease: vi.fn(),
   revertRelease: vi.fn(),
   duplicateRelease: vi.fn(),
+  unpublishVersion: vi.fn(),
   revertUnpublishVersion: vi.fn(),
 }
 

@@ -8,7 +8,7 @@ import {
   type SingleActionResult,
 } from '@sanity/client'
 
-import {getPublishedId, getVersionId} from '../../util'
+import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -45,6 +45,18 @@ export interface ReleaseOperationsStore {
     documentId: string,
     opts?: BaseActionOptions,
   ) => Promise<SingleActionResult>
+  /**
+   * @deprecated Use `useDocumentOperation(publishedId, type, releaseId).discardChanges` instead.
+   */
+  discardVersion: (
+    releaseId: string,
+    documentId: string,
+    opts?: BaseActionOptions,
+  ) => Promise<SingleActionResult>
+  /**
+   * @deprecated Use `useDocumentOperation(publishedId, type, releaseId).unpublish` instead.
+   */
+  unpublishVersion: (documentId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
   revertUnpublishVersion: (
     documentId: string,
     opts?: BaseActionOptions,
@@ -165,6 +177,21 @@ export function createReleaseOperationsStore(options: {
     )
   }
 
+  const handleDiscardVersion = (releaseId: string, documentId: string, opts?: BaseActionOptions) =>
+    client.discardVersion({releaseId, publishedId: getPublishedId(documentId)}, false, opts)
+
+  const handleUnpublishVersion = (documentId: string, opts?: BaseActionOptions) => {
+    const releaseId = getVersionFromId(documentId)
+    // in cases where the document is not part of a release, or document is `drafts.`
+    // the releaseId will be undefined
+    // cannot unpublish in this case
+    if (!releaseId) {
+      throw new Error(`Release ID not found for document ${documentId}`)
+    }
+
+    return client.unpublishVersion({releaseId, publishedId: getPublishedId(documentId)}, opts)
+  }
+
   const handleRevertRelease = async (
     revertReleaseId: string,
     releaseDocuments: RevertDocument[],
@@ -247,6 +274,8 @@ export function createReleaseOperationsStore(options: {
     revertRelease: handleRevertRelease,
     duplicateRelease: handleDuplicateRelease,
     createVersion: handleCreateVersion,
+    discardVersion: handleDiscardVersion,
+    unpublishVersion: handleUnpublishVersion,
     revertUnpublishVersion: handleRevertUnpublishVersion,
   }
 }
