@@ -131,9 +131,13 @@ function collectResourceSide(sessions: InteractionSessionResult[]): ResourceSide
 }
 
 /** Interaction A/B result → scenario report. */
-export function collectAbInteraction(result: AbScenarioResult): ScenarioReport {
+export function collectAbInteraction(
+  result: AbScenarioResult,
+  sourceFile?: string,
+): ScenarioReport {
   return {
     scenario: result.scenario,
+    ...(sourceFile ? {sourceFile} : {}),
     kind: 'interaction',
     metrics: result.comparisons.map((comparison): MetricReport => {
       const experimentSessions = fieldSessions(result.experiment.sessions, comparison.label)
@@ -182,10 +186,12 @@ export function collectAbInteraction(result: AbScenarioResult): ScenarioReport {
 export function collectAbsoluteInteraction(
   scenario: string,
   sessions: InteractionSessionResult[],
+  sourceFile?: string,
 ): ScenarioReport {
   const labels = sessions[0]?.fields.map((field) => field.label) ?? []
   return {
     scenario,
+    ...(sourceFile ? {sourceFile} : {}),
     kind: 'interaction',
     metrics: labels.map((label): MetricReport => {
       const sessionSamples = fieldSessions(sessions, label)
@@ -210,6 +216,7 @@ export function collectPageLoad(
   scenario: string,
   samplesBySide: Map<string, PageLoadSample[]>,
   comparisons: Map<LoadCondition, {interval: DiffInterval; verdict: Verdict}>,
+  sourceFile?: string,
 ): ScenarioReport {
   const experiment = samplesBySide.get('experiment') ?? []
   const reference = samplesBySide.get('reference')
@@ -316,6 +323,7 @@ export function collectPageLoad(
 
   return {
     scenario,
+    ...(sourceFile ? {sourceFile} : {}),
     kind: 'pageload',
     metrics,
     failures: [],

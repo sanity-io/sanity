@@ -69,6 +69,7 @@ function buildRecipe(): BenchDocument[] {
 // Ported from dev/efps/tests/recipe/recipe.ts
 export const recipe = defineScenario({
   name: 'recipe',
+  sourceFile: 'perf/bench/scenarios/recipe.ts',
   documentType: 'recipe',
   documentId: DOCUMENT_ID,
   fixture: buildRecipe,

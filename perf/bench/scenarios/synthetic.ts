@@ -63,6 +63,7 @@ function buildSynthetic(documentId: string, arrayLength: number): BenchDocument[
 // Ported from dev/efps/tests/synthetic/synthetic.ts (100 array items)
 export const synthetic = defineScenario({
   name: 'synthetic',
+  sourceFile: 'perf/bench/scenarios/synthetic.ts',
   documentType: 'synthetic',
   documentId: DOCUMENT_ID,
   fixture: () => buildSynthetic(DOCUMENT_ID, 100),
@@ -84,6 +85,7 @@ export const synthetic = defineScenario({
  */
 export const syntheticLarge = defineScenario({
   name: 'syntheticLarge',
+  sourceFile: 'perf/bench/scenarios/synthetic.ts',
   workspace: 'synthetic',
   documentType: 'synthetic',
   documentId: LARGE_DOCUMENT_ID,

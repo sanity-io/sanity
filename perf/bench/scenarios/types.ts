@@ -21,6 +21,12 @@ export interface BenchScenario {
   /** Scenario id (unique across the suite). */
   name: string
   /**
+   * Source file, repo-root-relative (e.g. `perf/bench/scenarios/article.ts`)
+   * — recorded in the report so the dashboard can link to the definition.
+   * Can't be derived from `name`: syntheticLarge lives in synthetic.ts.
+   */
+  sourceFile: string
+  /**
    * Studio workspace basePath segment to open. Defaults to `name` — set it
    * when several scenarios share one workspace (e.g. syntheticLarge).
    */

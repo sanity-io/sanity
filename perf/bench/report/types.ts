@@ -55,6 +55,8 @@ export interface BundleSizes {
 
 export interface ScenarioReport {
   scenario: string
+  /** Repo-root-relative scenario source file, for a dashboard backlink. */
+  sourceFile?: string
   kind: 'interaction' | 'pageload'
   metrics: MetricReport[]
   /** Why A/B sampling stopped (absent in absolute mode). */

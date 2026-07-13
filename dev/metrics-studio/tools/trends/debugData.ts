@@ -73,11 +73,13 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
       scenarios: [
         {
           scenario: 'singleString',
+          sourceFile: 'perf/bench/scenarios/singleString.ts',
           kind: 'interaction',
           metrics: [metric(rng, 'stringField', 32 + shift)], // steady (branch offset)
         },
         {
           scenario: 'article',
+          sourceFile: 'perf/bench/scenarios/article.ts',
           kind: 'interaction',
           metrics: [
             metric(rng, 'title', 30 + day * 0.09), // slow drift up
@@ -86,17 +88,20 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
         },
         {
           scenario: 'recipe',
+          sourceFile: 'perf/bench/scenarios/recipe.ts',
           kind: 'interaction',
           metrics: [metric(rng, 'name', day < 45 ? 40 : 33)], // improvement at day 45
         },
         {
           scenario: 'synthetic',
+          sourceFile: 'perf/bench/scenarios/synthetic.ts',
           kind: 'interaction',
           // Tracks host speed — read against the calibration strip
           metrics: [metric(rng, 'title', 34 * hostFactor)],
         },
         {
           scenario: 'singleString',
+          sourceFile: 'perf/bench/scenarios/singleString.ts',
           kind: 'pageload',
           metrics: [
             metric(rng, 'boot-cold · time to editable', day < 70 ? 4200 : 4600),
@@ -107,6 +112,7 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
         },
         {
           scenario: 'singleString',
+          sourceFile: 'perf/bench/scenarios/singleString.ts',
           kind: 'interaction',
           metrics: [],
           // Soak: main leaks heap slowly (worse after day 40); perf-bench

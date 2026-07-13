@@ -13,6 +13,7 @@ export interface TrendRun {
   scenarios:
     | {
         scenario: string
+        sourceFile?: string
         kind: 'interaction' | 'pageload'
         metrics:
           | {
@@ -49,6 +50,7 @@ export const TREND_QUERY = `*[_type == "benchRun"] | order(startedAt asc) {
   bundle{experiment{initialJsBytes}},
   scenarios[]{
     scenario,
+    sourceFile,
     kind,
     metrics[]{label, unit, experiment{summary{median, p75, p90}}},
     soak{minutes, samples[]{minute, heapMb, domNodes, listeners, latencyP50Ms, cpuTaskMs, connections, requests}}
@@ -88,6 +90,8 @@ export interface TrendSeries {
   goal: 'lower' | 'context'
   /** Section the chart is grouped under in the dashboard. */
   group: TrendGroup
+  /** Repo-root-relative scenario source file, for a "view source" backlink. */
+  sourceFile?: string
   /**
    * What the x-axis represents. 'date' (default) plots run history over time;
    * 'minute' plots one run's samples over its elapsed minutes — the point
@@ -314,7 +318,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
     key: string,
     title: string,
     unit: TrendUnit,
-    meta: Pick<TrendSeries, 'description' | 'goal' | 'group'>,
+    meta: Pick<TrendSeries, 'description' | 'goal' | 'group' | 'sourceFile'>,
     run: TrendRun,
     point: Pick<TrendPoint, 'value' | 'p75' | 'p90'>,
   ) => {
@@ -338,7 +342,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
           `${scenario.kind}:${scenario.scenario}:${metric.label}`,
           `${scenario.scenario} · ${metric.label}`,
           metric.unit,
-          describeSeries(scenario.kind, metric.label),
+          {...describeSeries(scenario.kind, metric.label), sourceFile: scenario.sourceFile},
           run,
           {value: summary.median, p75: summary.p75, p90: summary.p90},
         )
@@ -393,13 +397,17 @@ type SoakScenario = NonNullable<NonNullable<TrendRun['scenarios']>[number]['soak
 type SoakSample = NonNullable<SoakScenario['samples']>[number]
 
 /** Find each run's soak scenario (there's at most one), newest run first. */
-function runsWithSoak(runs: TrendRun[]): {run: TrendRun; soak: SoakScenario}[] {
+function runsWithSoak(
+  runs: TrendRun[],
+): {run: TrendRun; soak: SoakScenario; sourceFile?: string}[] {
   return runs
     .map((run) => {
-      const soak = run.scenarios?.find((scenario) => scenario.soak?.samples?.length)?.soak
-      return soak ? {run, soak} : null
+      const scenario = run.scenarios?.find((s) => s.soak?.samples?.length)
+      return scenario?.soak ? {run, soak: scenario.soak, sourceFile: scenario.sourceFile} : null
     })
-    .filter((entry): entry is {run: TrendRun; soak: SoakScenario} => entry !== null)
+    .filter(
+      (entry): entry is {run: TrendRun; soak: SoakScenario; sourceFile?: string} => entry !== null,
+    )
 }
 
 /**
@@ -431,6 +439,7 @@ export function latestSoakCharts(runs: TrendRun[]): {run: TrendRun; charts: Tren
       description: metric.description,
       goal: 'lower',
       group: 'soak',
+      sourceFile: latest.sourceFile,
       xKind: 'minute',
       lines: [{branch: latest.run.git?.branch ?? 'unknown', points}],
     }
@@ -485,7 +494,9 @@ export function soakSlopeSeries(runs: TrendRun[]): TrendSeries[] {
 
   const byMetric = slopeMetrics.map((metric): TrendSeries => {
     const lineByBranch = new Map<string, TrendLine>()
-    for (const {run, soak} of runsWithSoak(runs)) {
+    let sourceFile: string | undefined
+    for (const {run, soak, sourceFile: file} of runsWithSoak(runs)) {
+      sourceFile ??= file
       const branch = run.git?.branch ?? 'unknown'
       const line = lineByBranch.get(branch) ?? {branch, points: []}
       line.points.push({
@@ -502,6 +513,7 @@ export function soakSlopeSeries(runs: TrendRun[]): TrendSeries[] {
       description: metric.description,
       goal: 'lower',
       group: 'soak',
+      sourceFile,
       lines: [...lineByBranch.values()],
     }
   })

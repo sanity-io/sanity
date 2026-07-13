@@ -25,6 +25,11 @@ export function ciRunUrl(runId: string, attempt?: number): string {
   return attempt && attempt > 1 ? `${base}/attempts/${attempt}` : base
 }
 
+/** Link a scenario's source file on the branch it was measured on (or main). */
+export function sourceFileUrl(path: string, branch = 'main'): string {
+  return `https://github.com/${REPO}/blob/${branch}/${path}`
+}
+
 /** All backlinks that a point actually has data for, in usefulness order. */
 export function backlinksFor(point: {
   sha?: string

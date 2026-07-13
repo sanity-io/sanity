@@ -135,6 +135,7 @@ const benchScenario = defineType({
   icon: StackCompactIcon,
   fields: [
     defineField({name: 'scenario', type: 'string'}),
+    defineField({name: 'sourceFile', type: 'string'}),
     defineField({name: 'kind', type: 'string', options: {list: ['interaction', 'pageload']}}),
     defineField({name: 'metrics', type: 'array', of: [defineArrayMember({type: 'benchMetric'})]}),
     defineField({

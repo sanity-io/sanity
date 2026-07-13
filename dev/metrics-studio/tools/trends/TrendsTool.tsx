@@ -3,6 +3,7 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {
   Box,
   Button,
@@ -39,6 +40,7 @@ import {
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
 import {DriftFeed} from './DriftFeed'
+import {sourceFileUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
 import {TrendChart} from './TrendChart'
 import {useUrlState} from './useUrlState'
@@ -56,7 +58,7 @@ interface LiveState {
   error: string | null
 }
 
-function InfoButton(props: {text: string; label: string}) {
+function InfoButton(props: {text: string; label: string; sourceFile?: string}) {
   const [open, setOpen] = useState(false)
   return (
     <Popover
@@ -66,9 +68,19 @@ function InfoButton(props: {text: string; label: string}) {
       constrainSize
       content={
         <Box padding={3} style={{maxWidth: 260}}>
-          <Text size={1} muted>
-            {props.text}
-          </Text>
+          <Stack space={3}>
+            <Text size={1} muted>
+              {props.text}
+            </Text>
+            {props.sourceFile && (
+              <Box as="a" href={sourceFileUrl(props.sourceFile)} target="_blank" rel="noreferrer">
+                <Flex align="center" gap={1}>
+                  <LaunchIcon />
+                  <Text size={1}>View scenario source</Text>
+                </Flex>
+              </Box>
+            )}
+          </Stack>
         </Box>
       }
     >
@@ -167,7 +179,11 @@ function SeriesCard(props: {series: TrendSeries; height: number}) {
             )}
             {/* Context hidden behind the info button so the grid stays
                 scannable — one click, not a paragraph per card */}
-            <InfoButton text={series.description} label={`About ${series.title}`} />
+            <InfoButton
+              text={series.description}
+              label={`About ${series.title}`}
+              sourceFile={series.sourceFile}
+            />
           </Flex>
         </Flex>
         {/* Explicit height: ParentSize's default height:100% collapses to 0

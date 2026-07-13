@@ -154,6 +154,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
         }
         scenarioReports.push({
           scenario: scenario.name,
+          sourceFile: scenario.sourceFile,
           kind: 'interaction',
           metrics: [],
           failures: [],
@@ -279,7 +280,9 @@ export async function runBench(argv: RunArgs): Promise<void> {
             )
           }
         }
-        scenarioReports.push(collectPageLoad(scenario.name, bySide, conditionComparisons))
+        scenarioReports.push(
+          collectPageLoad(scenario.name, bySide, conditionComparisons, scenario.sourceFile),
+        )
       }
     } else {
       for (const scenario of scenarios) {
@@ -309,7 +312,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
           console.log(
             `  stopped by: ${result.stoppedBy} (${result.reference.sessions.length}+${result.experiment.sessions.length} sessions, ${result.failures.length} retried failure(s))`,
           )
-          scenarioReports.push(collectAbInteraction(result))
+          scenarioReports.push(collectAbInteraction(result, scenario.sourceFile))
           continue
         }
         console.log(`\n${chalk.cyan(scenario.name)} — ${argv.sessions} sessions`)
@@ -369,7 +372,9 @@ export async function runBench(argv: RunArgs): Promise<void> {
               `blocking p50 ${summarize(results.map((r) => r.blockingMs)).median.toFixed(0)}ms`,
           )
         }
-        scenarioReports.push(collectAbsoluteInteraction(scenario.name, results))
+        scenarioReports.push(
+          collectAbsoluteInteraction(scenario.name, results, scenario.sourceFile),
+        )
       }
     }
 

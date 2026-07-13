@@ -79,17 +79,9 @@ export function ChartLegend(props: {series: TrendSeries}) {
           </Text>
         </Flex>
       )}
-      <Flex gap={1} align="center">
-        <Swatch>
-          <circle cx={8} cy={5} r={3} fill={color} />
-        </Swatch>
-        <Text size={0} muted>
-          one run — click to open
-        </Text>
-      </Flex>
       {series.goal === 'lower' && (
         <Text size={0} muted>
-          · lower is better
+          lower is better
         </Text>
       )}
     </Flex>

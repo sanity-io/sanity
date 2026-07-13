@@ -6,6 +6,7 @@ const DOCUMENT_ID = 'bench-array-i18n'
 // Ported from dev/efps/tests/arrayI18n/arrayI18n.ts
 export const arrayI18n = defineScenario({
   name: 'arrayI18n',
+  sourceFile: 'perf/bench/scenarios/arrayI18n.ts',
   documentType: 'arrayI18n',
   documentId: DOCUMENT_ID,
   fixture: () => [

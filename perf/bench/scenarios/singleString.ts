@@ -4,6 +4,7 @@ const DOCUMENT_ID = 'bench-single-string'
 
 export const singleString = defineScenario({
   name: 'singleString',
+  sourceFile: 'perf/bench/scenarios/singleString.ts',
   documentType: 'singleString',
   documentId: DOCUMENT_ID,
   fixture: () => [

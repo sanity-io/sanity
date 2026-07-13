@@ -98,6 +98,7 @@ function buildArticle(): BenchDocument[] {
 // Ported from dev/efps/tests/article/article.ts
 export const article = defineScenario({
   name: 'article',
+  sourceFile: 'perf/bench/scenarios/article.ts',
   documentType: 'article',
   documentId: DOCUMENT_ID,
   fixture: buildArticle,
