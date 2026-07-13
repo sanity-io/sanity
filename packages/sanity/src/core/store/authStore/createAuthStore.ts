@@ -712,6 +712,10 @@ export function _createAuthStore({
       const probeStart = performance.now()
       const authProbe = await probeCurrentUser(exchangeClient)
       const probeDurationMs = Math.round(performance.now() - probeStart)
+      // Snapshot before the settle wait: `durationMs` keeps its version-2
+      // meaning (exchange + probe) so aggregations stay comparable across
+      // releases. The settle wait is reported in `stateSettleDurationMs`.
+      const durationMs = Math.round(performance.now() - startTime)
 
       // sync with other tabs
       cookieAuthState.update({authenticated: authProbe.authenticated})
@@ -722,7 +726,7 @@ export function _createAuthStore({
         flow: 'exchange',
         loginMethod,
         success: !!token,
-        durationMs: Math.round(performance.now() - startTime),
+        durationMs,
         exchangeDurationMs,
         probeDurationMs,
         ...settleResult,
@@ -739,6 +743,8 @@ export function _createAuthStore({
       const probeStart = performance.now()
       const authProbe = await probeCurrentUser(exchangeClient)
       const probeDurationMs = Math.round(performance.now() - probeStart)
+      // Same durationMs snapshot rationale as in dual mode above.
+      const durationMs = Math.round(performance.now() - startTime)
 
       if (authProbe.authenticated) {
         // As in dual mode: probe the post-exchange state so it's emitted
@@ -753,7 +759,7 @@ export function _createAuthStore({
           flow: 'exchange',
           loginMethod,
           success: true,
-          durationMs: Math.round(performance.now() - startTime),
+          durationMs,
           exchangeDurationMs,
           probeDurationMs,
           ...(await settle),
@@ -767,7 +773,7 @@ export function _createAuthStore({
         loginMethod,
         flow: 'exchange',
         success: false,
-        durationMs: Math.round(performance.now() - startTime),
+        durationMs,
         exchangeDurationMs,
         probeDurationMs,
         failureReason: 'cookie probe failed in cookie-only mode',
@@ -799,13 +805,15 @@ export function _createAuthStore({
         )
       : undefined
     if (!token) tokenStorage.update({token})
+    // Same durationMs snapshot rationale as in dual mode above.
+    const durationMs = Math.round(performance.now() - startTime)
     const settleResult = settle ? await settle : undefined
 
     return {
       loginMethod,
       flow: 'exchange',
       success: !!token,
-      durationMs: Math.round(performance.now() - startTime),
+      durationMs,
       exchangeDurationMs,
       ...settleResult,
       authMethod: 'token',

@@ -145,6 +145,8 @@ export interface HandleCallbackResult {
    * Time from applying the exchanged credential until the post-exchange
    * state was probed and emitted. Only set for the successful `'exchange'`
    * flow, whose resolution is deferred until the state reflects the exchange.
+   * Not included in `durationMs`, which keeps its original meaning
+   * (exchange + probe) for cross-release comparability.
    */
   stateSettleDurationMs?: number
   /**
