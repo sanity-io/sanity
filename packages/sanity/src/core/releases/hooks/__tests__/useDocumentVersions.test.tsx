@@ -2,14 +2,19 @@ import {type ReleaseDocument} from '@sanity/client'
 import {getPublishedId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {renderHook, waitFor} from '@testing-library/react'
-import {NEVER, of} from 'rxjs'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+import {concat, NEVER, of} from 'rxjs'
+import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
 import {useActiveReleasesMockReturn} from '../../store/__tests__/__mocks/useActiveReleases.mock'
-import {observableCache, useDocumentVersions} from '../useDocumentVersions'
+import {
+  type DocumentPerspectiveState,
+  getOrCreateDocumentVersionsObservable,
+  observableCache,
+  useDocumentVersions,
+} from '../useDocumentVersions'
 
 vi.mock('../../../hooks/useDataset', () => ({
   useDataset: vi.fn().mockReturnValue('test'),
@@ -186,5 +191,93 @@ describe('useDocumentVersions', () => {
         },
       },
     ])
+  })
+})
+
+/**
+ * Regression tests for the read-only flip: subscriber churn (components
+ * re-rendering/remounting around commits) momentarily drops the shared
+ * pipeline's refcount to zero. With a bare teardown the cache entry is
+ * deleted, and the re-created pipeline synchronously re-enters the
+ * `startWith(loadingState)` path (the version id set is non-empty for any
+ * document with a draft), so `loading: true` reaches `useDocumentForm`'s
+ * `ready` gate and flips the form read-only mid-typing — silently swallowing
+ * keystrokes.
+ */
+describe('getOrCreateDocumentVersionsObservable — subscriber churn', () => {
+  beforeEach(() => {
+    observableCache.clear()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  function createPreviewStore() {
+    // The production sources never complete (they follow the invalidation
+    // channel), so keep the mocks open-ended — a completing source would
+    // reset the share and mask the behavior under test.
+    const unstable_observeVersionDocumentIds = vi.fn(() => concat(of(['drafts.document-1']), NEVER))
+    const observePaths = vi.fn((value: unknown) =>
+      concat(
+        of({
+          _id: (value as {_id: string})._id,
+          _rev: '',
+          _createdAt: '',
+          _updatedAt: '',
+        }),
+        NEVER,
+      ),
+    )
+    return {
+      unstable_observeVersionDocumentIds,
+      observePaths,
+    } as unknown as DocumentPreviewStore
+  }
+
+  const options = (documentPreviewStore: DocumentPreviewStore) => ({
+    documentPreviewStore,
+    publishedId: 'document-1',
+    projectId: 'test-project',
+    dataset: 'test',
+  })
+
+  it('does not re-emit loading: true to a subscriber arriving right after a zero-subscriber gap', () => {
+    vi.useFakeTimers()
+    const previewStore = createPreviewStore()
+    const state$ = getOrCreateDocumentVersionsObservable(options(previewStore))
+
+    const first: DocumentPerspectiveState[] = []
+    const firstSub = state$.subscribe((value) => first.push(value))
+    expect(first.at(-1)?.loading).toBe(false)
+
+    // Churn: refcount drops to zero, then a new subscriber arrives before the
+    // teardown grace period has elapsed.
+    firstSub.unsubscribe()
+    vi.advanceTimersByTime(100)
+
+    const second: DocumentPerspectiveState[] = []
+    const secondSub = state$.subscribe((value) => second.push(value))
+
+    // The pipeline must still be warm: the new subscriber synchronously gets
+    // the loaded state, never a loading replay, and the cache entry survives.
+    expect(second).toHaveLength(1)
+    expect(second[0].loading).toBe(false)
+    expect(observableCache.size).toBe(1)
+    expect(previewStore.unstable_observeVersionDocumentIds).toHaveBeenCalledTimes(1)
+
+    secondSub.unsubscribe()
+  })
+
+  it('tears down and evicts the cache entry after the grace period', () => {
+    vi.useFakeTimers()
+    const previewStore = createPreviewStore()
+    const state$ = getOrCreateDocumentVersionsObservable(options(previewStore))
+
+    const sub = state$.subscribe()
+    sub.unsubscribe()
+    vi.advanceTimersByTime(2_000)
+
+    expect(observableCache.size).toBe(0)
   })
 })

@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema} from '@sanity/types'
-import {combineLatest, type Observable, of} from 'rxjs'
-import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
+import {combineLatest, type Observable, of, ReplaySubject, timer} from 'rxjs'
+import {map, share, startWith, switchMap} from 'rxjs/operators'
 
 import {getVersionFromId} from '../../../util'
 import {measureFirstEmission} from '../../../util/measureFirstEmission'
@@ -50,6 +50,16 @@ export interface EditStateFor {
 }
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
+
+// How long to keep the pipeline alive after the last subscriber unsubscribes.
+// Subscriber churn (e.g. a React commit that unsubscribes every consumer before
+// the replacements subscribe) can momentarily drop the refcount to zero. A bare
+// teardown would make the next subscriber re-enter the cold-start path: the SWR
+// cache replays with `fromCache: true`, which emits `ready: false` and flips the
+// form read-only until fresh snapshots arrive — silently swallowing keystrokes
+// typed in that window. The invariant: a momentary zero-subscriber gap on a
+// warm, healthy document pair must never surface as `ready: false`.
+const TEARDOWN_GRACE_PERIOD = 1_000
 
 /** @internal */
 export const editState = memoize(
@@ -130,8 +140,14 @@ export const editState = memoize(
         transactionSyncLock: null,
         release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
       }),
-      publishReplay(1),
-      refCount(),
+      // Unlike `publishReplay(1) + refCount()`, this resets the replay subject
+      // when the pipeline is torn down, so a later cold subscriber won't get a
+      // stale `ready: true` replayed before the cold-start emissions (and an
+      // error won't be replayed forever).
+      share({
+        connector: () => new ReplaySubject(1),
+        resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD),
+      }),
     )
   },
   (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName),

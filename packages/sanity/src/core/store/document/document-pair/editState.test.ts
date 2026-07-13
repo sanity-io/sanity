@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {of, Subject} from 'rxjs'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {createSchema} from '../../../schema'
@@ -160,5 +160,109 @@ describe('editState — snapshot identity preservation', () => {
     expect(realEmissions).toHaveLength(2)
     expect(realEmissions[0].draft).toBe(draftA)
     expect(realEmissions[1].draft).toBe(draftB)
+  })
+})
+
+/**
+ * Regression tests for the read-only flip: subscriber churn (e.g. a React
+ * commit unsubscribing every consumer before the replacements subscribe)
+ * momentarily drops the shared pipeline's refcount to zero. With a bare
+ * teardown, the next subscriber re-enters the cold-start path — the SWR cache
+ * replays with `fromCache: true` → `ready: false` — flipping the form
+ * read-only mid-typing and silently swallowing keystrokes.
+ */
+describe('editState — subscriber churn', () => {
+  beforeEach(() => {
+    mockedSnapshotPair.mockReset()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  function setup() {
+    const draft$ = new Subject<SanityDocument | null>()
+    const published$ = new Subject<SanityDocument | null>()
+    const transactionsPendingEvents$ = new Subject<PendingMutationsEvent>()
+
+    mockedSnapshotPair.mockReturnValue(
+      of({
+        draft: {snapshots$: draft$.asObservable()},
+        published: {snapshots$: published$.asObservable()},
+        transactionsPendingEvents$,
+      }) as any,
+    )
+
+    // Unique id per test run avoids the editState/swr memoize caches.
+    const publishedId = `book-${Math.random().toString(36).slice(2)}`
+    const idPair = {publishedId, draftId: `drafts.${publishedId}`}
+    const state$ = editState(createCtx(), idPair, 'book')
+
+    const draftDoc: SanityDocument = {
+      _id: idPair.draftId,
+      _type: 'book',
+      _rev: 'r1',
+      _createdAt: '2024-01-01T00:00:00Z',
+      _updatedAt: '2024-01-01T00:00:00Z',
+    }
+
+    return {state$, draft$, published$, draftDoc}
+  }
+
+  it('does not emit ready: false to a subscriber arriving right after a zero-subscriber gap', () => {
+    vi.useFakeTimers()
+    const {state$, draft$, published$, draftDoc} = setup()
+
+    const first: EditStateFor[] = []
+    const firstSub = state$.subscribe((value) => first.push(value))
+    draft$.next(draftDoc)
+    published$.next(null)
+    expect(first.at(-1)?.ready).toBe(true)
+
+    // Churn: refcount drops to zero, then a new subscriber arrives before the
+    // teardown grace period has elapsed.
+    firstSub.unsubscribe()
+    vi.advanceTimersByTime(100)
+
+    const second: EditStateFor[] = []
+    const secondSub = state$.subscribe((value) => second.push(value))
+
+    // The pipeline must still be warm: the new subscriber synchronously gets
+    // the latest known state and never sees a ready: false / cache replay.
+    expect(second).toHaveLength(1)
+    expect(second[0].ready).toBe(true)
+    expect(second[0].draft).toBe(draftDoc)
+
+    secondSub.unsubscribe()
+  })
+
+  it('tears down and re-enters the cold-start path after the grace period', () => {
+    vi.useFakeTimers()
+    const {state$, draft$, published$, draftDoc} = setup()
+
+    const first: EditStateFor[] = []
+    const firstSub = state$.subscribe((value) => first.push(value))
+    draft$.next(draftDoc)
+    published$.next(null)
+    expect(first.at(-1)?.ready).toBe(true)
+
+    firstSub.unsubscribe()
+    vi.advanceTimersByTime(2_000)
+
+    const second: EditStateFor[] = []
+    const secondSub = state$.subscribe((value) => second.push(value))
+
+    // Cold start: the `startWith` placeholder, then the SWR cache replay —
+    // both with ready: false, and no stale ready: true replayed before them.
+    expect(second[0]).toMatchObject({ready: false, draft: null})
+    expect(second.at(-1)).toMatchObject({ready: false, draft: draftDoc})
+    expect(second.every((value) => !value.ready)).toBe(true)
+
+    // Fresh snapshots restore readiness.
+    draft$.next(draftDoc)
+    published$.next(null)
+    expect(second.at(-1)).toMatchObject({ready: true, draft: draftDoc})
+
+    secondSub.unsubscribe()
   })
 })
