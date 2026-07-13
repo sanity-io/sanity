@@ -101,7 +101,7 @@ describe('createOperationsAPI — self-derived target guard', () => {
     }
   })
 
-  it('guards the new-document flow too (no snapshots at all)', () => {
+  it('guards the new-document flow when a version is requested (no snapshots at all)', () => {
     const operations = createOperationsAPI(
       createArgs({
         idPair: PAIR_WITH_VERSION,
@@ -109,11 +109,25 @@ describe('createOperationsAPI — self-derived target guard', () => {
       }),
     )
 
-    // Any requested-but-missing version disables mutations, including for documents that don't
+    // A requested-but-missing version disables mutations, including for documents that don't
     // exist at all (new documents are created through the initial-value/create flows, not by
-    // patching a missing version into existence).
+    // patching a missing version into existence). This only applies when `idPair.versionId` is
+    // set — new base drafts are still created as you type (see the no-version test below).
     expect(operations.patch.disabled).toBe('TARGET_NOT_FOUND')
     expect(operations.commit.disabled).toBe('TARGET_NOT_FOUND')
+  })
+
+  it('does not guard the new-document flow without a version (no snapshots at all)', () => {
+    const operations = createOperationsAPI(
+      createArgs({
+        idPair: PAIR_WITHOUT_VERSION,
+        snapshots: {draft: null, published: null, version: null},
+      }),
+    )
+
+    // Typing into a brand-new base document must create the draft/published document.
+    expect(operations.patch.disabled).toBe(false)
+    expect(operations.commit.disabled).toBe(false)
   })
 
   it('does not guard when the version document exists', () => {
