@@ -288,6 +288,13 @@ export function collectPageLoad(
               }
             : {}),
         },
+        // Core Web Vitals (report-only) — captured per sample but previously
+        // only logged; surface them so the dashboard tracks load quality, not
+        // just time-to-editable
+        ...reportOnly(condition, 'TTFB', 'ms', (sample) => sample.ttfbMs),
+        ...reportOnly(condition, 'FCP', 'ms', (sample) => sample.fcpMs),
+        ...reportOnly(condition, 'LCP', 'ms', (sample) => sample.lcpMs),
+        ...reportOnly(condition, 'CLS', 'cls', (sample) => sample.cls),
         // Main-thread blocking during load (report-only) — for heavy
         // documents this IS the time-to-editable story; the per-script
         // breakdown lands in the scenario's loafAttribution

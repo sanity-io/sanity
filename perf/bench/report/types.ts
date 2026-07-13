@@ -111,7 +111,8 @@ export interface ResourceSide {
 export interface MetricReport {
   /** e.g. "title", "body", "boot-cold · time to editable" */
   label: string
-  unit: 'ms' | 'count'
+  /** 'cls' is the unitless layout-shift score (~0–0.25), shown to 3 decimals. */
+  unit: 'ms' | 'count' | 'cls'
   /** Present the median as eFPS (1000/ms) in reports. */
   presentAsEfps: boolean
   experiment: SideMetric

@@ -110,6 +110,10 @@ describe('collectPageLoad', () => {
     const labels = report.metrics.map((metric) => `${metric.label} (${metric.unit})`)
     expect(labels).toEqual([
       'boot-cold · time to editable (ms)',
+      'boot-cold · TTFB (ms)',
+      'boot-cold · FCP (ms)',
+      'boot-cold · LCP (ms)',
+      'boot-cold · CLS (cls)',
       'boot-cold · main-thread blocking (ms)',
       'boot-cold · auth round trips (count)',
       'boot-cold · auth first request (ms)',
@@ -130,7 +134,7 @@ describe('collectPageLoad', () => {
     expect(editable.reference?.summary.median).toBe(4000)
 
     // Auth rows carry both sides but never a comparison (report-only)
-    const trips = report.metrics[2]
+    const trips = report.metrics.find((m) => m.label === 'boot-cold · auth round trips')!
     expect(trips.comparison).toBeUndefined()
     expect(trips.experiment.summary.median).toBe(1)
     expect(trips.reference?.summary.median).toBe(2)
@@ -144,7 +148,12 @@ describe('collectPageLoad', () => {
     )
     expect(report.metrics.map((metric) => metric.label)).toEqual([
       'boot-cold · time to editable',
+      'boot-cold · TTFB',
+      'boot-cold · FCP',
+      'boot-cold · LCP',
+      'boot-cold · CLS',
       'boot-cold · main-thread blocking',
+      // auth first request is skipped (firstRequestMs is null in this fixture)
       'boot-cold · auth round trips',
       'boot-cold · auth in flight',
     ])

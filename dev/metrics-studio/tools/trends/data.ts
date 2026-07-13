@@ -18,7 +18,7 @@ export interface TrendRun {
         metrics:
           | {
               label: string
-              unit: 'ms' | 'count'
+              unit: 'ms' | 'count' | 'cls'
               experiment: {summary: {median: number; p75: number; p90: number} | null} | null
             }[]
           | null
@@ -57,7 +57,14 @@ export const TREND_QUERY = `*[_type == "benchRun"] | order(startedAt asc) {
   }
 }`
 
-export type TrendUnit = 'ms' | 'count' | 'bytes' | 'megabytes' | 'mb-per-min' | 'count-per-min'
+export type TrendUnit =
+  | 'ms'
+  | 'count'
+  | 'cls'
+  | 'bytes'
+  | 'megabytes'
+  | 'mb-per-min'
+  | 'count-per-min'
 
 export interface TrendPoint {
   date: Date
@@ -239,6 +246,35 @@ function describeSeries(
       goal: 'lower',
     }
   }
+  if (label.endsWith('TTFB')) {
+    return {
+      group: 'load',
+      description: 'Time to first byte of the document response.',
+      goal: 'lower',
+    }
+  }
+  if (label.endsWith('FCP')) {
+    return {
+      group: 'load',
+      description: 'First Contentful Paint — first pixels drawn.',
+      goal: 'lower',
+    }
+  }
+  if (label.endsWith('LCP')) {
+    return {
+      group: 'load',
+      description: 'Largest Contentful Paint — the main content is visible (Core Web Vital).',
+      goal: 'lower',
+    }
+  }
+  if (label.endsWith('CLS')) {
+    return {
+      group: 'load',
+      description:
+        'Cumulative Layout Shift — how much the layout jumps during load (Core Web Vital; lower is steadier).',
+      goal: 'lower',
+    }
+  }
   if (label.includes('auth round trips')) {
     return {
       group: 'load',
@@ -274,6 +310,7 @@ function describeSeries(
 
 export function formatValue(value: number, unit: TrendUnit): string {
   if (unit === 'count') return value.toFixed(0)
+  if (unit === 'cls') return value.toFixed(3) // unitless layout-shift score
   if (unit === 'bytes') return `${(value / 1024).toFixed(1)} KB`
   if (unit === 'megabytes') return `${value.toFixed(1)} MB`
   // Slope units are signed and typically fractional — keep the sign and

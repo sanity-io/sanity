@@ -37,13 +37,14 @@ function metric(
   rng: () => number,
   label: string,
   median: number,
-  unit: 'ms' | 'count' = 'ms',
+  unit: 'ms' | 'count' | 'cls' = 'ms',
 ): NonNullable<NonNullable<TrendRun['scenarios']>[number]['metrics']>[number] {
   return {
     label,
     unit,
     experiment: {
-      summary: unit === 'count' ? {median, p75: median, p90: median} : summary(rng, median),
+      // count/cls: exact value (summary() clamps to >=1, wrong for a CLS ~0.05)
+      summary: unit === 'ms' ? summary(rng, median) : {median, p75: median, p90: median},
     },
   }
 }
@@ -105,6 +106,10 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
           kind: 'pageload',
           metrics: [
             metric(rng, 'boot-cold · time to editable', day < 70 ? 4200 : 4600),
+            metric(rng, 'boot-cold · TTFB', 90 + (rng() - 0.5) * 20),
+            metric(rng, 'boot-cold · FCP', 1200 + (rng() - 0.5) * 200),
+            metric(rng, 'boot-cold · LCP', 1800 + (rng() - 0.5) * 300),
+            metric(rng, 'boot-cold · CLS', 0.04 + rng() * 0.03, 'cls'),
             // The auth story: a serialized round trip removed at day 50
             metric(rng, 'boot-cold · auth round trips', day < 50 ? 2 : 1, 'count'),
             metric(rng, 'boot-cold · auth in flight', day < 50 ? 84 : 42),
