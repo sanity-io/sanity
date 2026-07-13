@@ -51,6 +51,12 @@ export interface TrendPoint {
   runId: string
 }
 
+/** One line within a chart — a single branch's run history for the metric. */
+export interface TrendLine {
+  branch: string
+  points: TrendPoint[]
+}
+
 export interface TrendSeries {
   key: string
   title: string
@@ -61,7 +67,21 @@ export interface TrendSeries {
   goal: 'lower' | 'context'
   /** Section the chart is grouped under in the dashboard. */
   group: TrendGroup
-  points: TrendPoint[]
+  /** One line per branch (usually just one — comparison overlays several). */
+  lines: TrendLine[]
+}
+
+/** All git branches present in the runs, `main` first, then alphabetical. */
+export function availableBranches(runs: TrendRun[]): string[] {
+  const branches = new Set<string>()
+  for (const run of runs) {
+    if (run.git?.branch) branches.add(run.git.branch)
+  }
+  return [...branches].sort((a, b) => {
+    if (a === 'main') return -1
+    if (b === 'main') return 1
+    return a.localeCompare(b)
+  })
 }
 
 export type TrendGroup = 'responsiveness' | 'load' | 'bundle' | 'environment'
@@ -158,19 +178,29 @@ export function filterByRange(runs: TrendRun[], days: number | null): TrendRun[]
   return runs.filter((run) => new Date(run.startedAt).getTime() >= cutoff)
 }
 
-/** One series per scenario·metric across all runs, plus the bundle size. */
+/**
+ * One series per scenario·metric across all runs, plus the bundle size. Each
+ * series holds one line per git branch present in the runs — a single branch
+ * renders as one line, several overlay for comparison.
+ */
 export function buildSeries(runs: TrendRun[]): TrendSeries[] {
   const series = new Map<string, TrendSeries>()
   const push = (
     key: string,
     title: string,
     unit: TrendUnit,
-    meta: Pick<TrendSeries, 'description' | 'goal'>,
+    meta: Pick<TrendSeries, 'description' | 'goal' | 'group'>,
     run: TrendRun,
     point: Omit<TrendPoint, 'date' | 'sha' | 'runId'>,
   ) => {
-    const existing = series.get(key) ?? {key, title, unit, ...meta, points: []}
-    existing.points.push({
+    const existing = series.get(key) ?? {key, title, unit, ...meta, lines: []}
+    const branch = run.git?.branch ?? 'unknown'
+    let line = existing.lines.find((candidate) => candidate.branch === branch)
+    if (!line) {
+      line = {branch, points: []}
+      existing.lines.push(line)
+    }
+    line.points.push({
       date: new Date(run.startedAt),
       sha: run.git?.sha ?? 'unknown',
       runId: run._id,
@@ -223,13 +253,19 @@ export function calibrationSeries(runs: TrendRun[]): TrendSeries {
       'A fixed CPU workload run on the CI machine before each benchmark. All numbers above are relative to host speed — when this line spikes where a metric spikes, suspect the runner, not the studio.',
     goal: 'context',
     group: 'environment',
-    points: runs
-      .filter((run) => run.runner)
-      .map((run) => ({
-        date: new Date(run.startedAt),
-        value: run.runner!.calibrationMs,
-        sha: run.git?.sha ?? 'unknown',
-        runId: run._id,
-      })),
+    // Calibration is per-run host speed, not per-branch — a single line
+    lines: [
+      {
+        branch: 'all',
+        points: runs
+          .filter((run) => run.runner)
+          .map((run) => ({
+            date: new Date(run.startedAt),
+            value: run.runner!.calibrationMs,
+            sha: run.git?.sha ?? 'unknown',
+            runId: run._id,
+          })),
+      },
+    ],
   }
 }

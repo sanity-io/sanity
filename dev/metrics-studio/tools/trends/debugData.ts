@@ -48,8 +48,8 @@ function metric(
   }
 }
 
-function generateDemo(): TrendRun[] {
-  const rng = mulberry32(42)
+function generateDemo(branch = 'main', shift = 0): TrendRun[] {
+  const rng = mulberry32(branch === 'main' ? 42 : 99)
   const start = Date.now() - DAYS * DAY_MS
   const runs: TrendRun[] = []
 
@@ -59,10 +59,10 @@ function generateDemo(): TrendRun[] {
     const hostFactor = calibration / 11
 
     runs.push({
-      _id: `debug-run-${day}`,
+      _id: `debug-run-${branch}-${day}`,
       startedAt: new Date(start + day * DAY_MS).toISOString(),
       mode: 'absolute',
-      git: {sha: fakeSha(rng), branch: 'main'},
+      git: {sha: fakeSha(rng), branch},
       runner: {calibrationMs: calibration},
       bundle: {
         experiment: {
@@ -74,7 +74,7 @@ function generateDemo(): TrendRun[] {
         {
           scenario: 'singleString',
           kind: 'interaction',
-          metrics: [metric(rng, 'stringField', 32)], // steady
+          metrics: [metric(rng, 'stringField', 32 + shift)], // steady (branch offset)
         },
         {
           scenario: 'article',
@@ -112,14 +112,16 @@ function generateDemo(): TrendRun[] {
 }
 
 export function generateDebugRuns(source: DebugSource): TrendRun[] {
-  const demo = generateDemo()
+  // Two branches so the branch filter / comparison is exercisable; perf-bench
+  // runs ~4ms faster on the steady metric
+  const demo = [...generateDemo('main', 0), ...generateDemo('perf-bench', -4)]
   switch (source) {
     case 'demo':
       return demo
     case 'sparse':
       return demo.filter((_, index) => index % 7 === 0)
     case 'single-run':
-      return demo.slice(-1)
+      return demo.filter((run) => run.git?.branch === 'main').slice(-1)
     case 'empty':
       return []
     default:

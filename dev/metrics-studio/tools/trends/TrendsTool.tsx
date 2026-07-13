@@ -1,4 +1,6 @@
 /// <reference types="vite/client" />
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {
@@ -23,6 +25,7 @@ import {useDocumentStore} from 'sanity'
 
 import {ChartLegend} from './ChartLegend'
 import {
+  availableBranches,
   buildSeries,
   calibrationSeries,
   filterByRange,
@@ -33,6 +36,7 @@ import {
   type TrendSeries,
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
+import {MAX_COMPARE_BRANCHES} from './palette'
 import {TrendChart} from './TrendChart'
 import {useUrlState} from './useUrlState'
 
@@ -79,9 +83,72 @@ function InfoButton(props: {text: string; label: string}) {
   )
 }
 
+function BranchPicker(props: {
+  branches: string[]
+  selected: string[]
+  onToggle: (branch: string) => void
+}) {
+  const {branches, selected, onToggle} = props
+  const [open, setOpen] = useState(false)
+  if (branches.length < 2) return null
+
+  const label =
+    selected.length === 1
+      ? selected[0]
+      : selected.length === branches.length
+        ? 'All branches'
+        : `${selected.length} branches`
+
+  return (
+    <Popover
+      open={open}
+      onClickOutside={() => setOpen(false)}
+      portal
+      constrainSize
+      content={
+        <Box padding={2} style={{maxWidth: 280}}>
+          <Stack space={1}>
+            <Box paddingX={2} paddingY={1}>
+              <Text size={0} muted>
+                Compare up to {MAX_COMPARE_BRANCHES} branches
+              </Text>
+            </Box>
+            {branches.map((branch) => {
+              const checked = selected.includes(branch)
+              const atCap = !checked && selected.length >= MAX_COMPARE_BRANCHES
+              return (
+                <Button
+                  key={branch}
+                  mode="bleed"
+                  justify="flex-start"
+                  disabled={atCap}
+                  selected={checked}
+                  onClick={() => onToggle(branch)}
+                  text={branch}
+                  icon={checked ? CheckmarkIcon : undefined}
+                />
+              )
+            })}
+          </Stack>
+        </Box>
+      }
+    >
+      <Button
+        mode="ghost"
+        text={label}
+        icon={ChevronDownIcon}
+        iconRight
+        onClick={() => setOpen((v) => !v)}
+        aria-label="Filter by branch"
+      />
+    </Popover>
+  )
+}
+
 function SeriesCard(props: {series: TrendSeries; height: number}) {
   const {series, height} = props
-  const latest = series.points.at(-1)
+  // Latest value of the first line — a headline number only when not comparing
+  const latest = series.lines.length === 1 ? series.lines[0].points.at(-1) : undefined
   return (
     <Card border padding={3} radius={2}>
       <Stack space={3}>
@@ -151,7 +218,31 @@ export function TrendsTool() {
   const loading = source === 'live' && live.runs === null && live.error === null
 
   const inRange = useMemo(() => (runs ? filterByRange(runs, rangeDays) : []), [runs, rangeDays])
-  const series = useMemo(() => buildSeries(inRange), [inRange])
+  const branches = useMemo(() => availableBranches(inRange), [inRange])
+
+  // Branch selection persists in the URL (comma-separated) so a comparison
+  // is shareable. Empty/absent = default: main if present, else all.
+  const [branchParam, setBranchParam] = useUrlState('branches', '')
+  const selectedBranches = useMemo(() => {
+    const requested = branchParam.split(',').filter(Boolean)
+    const valid = requested.filter((branch) => branches.includes(branch))
+    if (valid.length > 0) return valid.slice(0, MAX_COMPARE_BRANCHES)
+    return branches.includes('main') ? ['main'] : branches
+  }, [branchParam, branches])
+
+  const toggleBranch = (branch: string) => {
+    const next = selectedBranches.includes(branch)
+      ? selectedBranches.filter((b) => b !== branch)
+      : [...selectedBranches, branch].slice(0, MAX_COMPARE_BRANCHES)
+    setBranchParam(next.join(','))
+  }
+
+  const filtered = useMemo(
+    () => inRange.filter((run) => run.git && selectedBranches.includes(run.git.branch)),
+    [inRange, selectedBranches],
+  )
+  const series = useMemo(() => buildSeries(filtered), [filtered])
+  // Calibration is host-level, not per-branch — always the full in-range set
   const calibration = useMemo(() => calibrationSeries(inRange), [inRange])
 
   return (
@@ -190,6 +281,11 @@ export function TrendsTool() {
                     ))}
                   </Select>
                 )}
+                <BranchPicker
+                  branches={branches}
+                  selected={selectedBranches}
+                  onToggle={toggleBranch}
+                />
                 <Select
                   value={rangeParam}
                   onChange={(event) => setRangeParam(event.currentTarget.value)}
@@ -244,7 +340,7 @@ export function TrendsTool() {
               </Card>
             )}
 
-            {calibration.points.length > 0 && (
+            {calibration.lines[0].points.length > 0 && (
               <Stack space={3}>
                 <SeriesCard series={calibration} height={64} />
               </Stack>
