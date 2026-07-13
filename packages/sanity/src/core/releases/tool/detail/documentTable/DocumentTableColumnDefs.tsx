@@ -15,6 +15,7 @@ import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {getVariantIdFromDocument} from '../../../../variants/tool/util'
+import {type SystemVariant} from '../../../../variants/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {getReleaseDocumentIntent} from '../../components/getReleaseDocumentIntent'
@@ -24,6 +25,8 @@ import {type Column, type InjectedTableProps} from '../../components/Table/types
 import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../types'
+import {getVariantBundleSortKey} from './getVariantBundleSortKey'
+import {ReleaseVariantBundleChip} from './ReleaseVariantBundleChip'
 import {useReleaseHistory} from './useReleaseHistory'
 
 const MemoReleaseDocumentPreview = memo(
@@ -129,6 +132,33 @@ export function DocumentType({type}: {type: string}) {
 
 const MemoDocumentType = memo(DocumentType, (prev, next) => prev.type === next.type)
 
+const bundleColumn: (
+  t: TFunction<'releases'>,
+  variantsById: Map<string, SystemVariant>,
+) => Column<BundleDocumentRow> = (t, variantsById) => ({
+  id: 'bundle',
+  width: 140,
+  style: {minWidth: 100, maxWidth: 140},
+  sorting: true,
+  sortTransform: (row) => getVariantBundleSortKey(row, variantsById),
+  header: (props) => (
+    <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Headers.SortHeaderButton text={t('table-header.bundle')} {...props} />
+    </Flex>
+  ),
+  cell: ({cellProps, datum}) => (
+    <Flex
+      align="center"
+      {...cellProps}
+      style={{...cellProps.style, flex: '0 1 auto', minWidth: 0, overflow: 'hidden'}}
+    >
+      <Box flex={1} paddingX={2} style={{minWidth: 0, overflow: 'hidden'}}>
+        {!datum.isLoading && <ReleaseVariantBundleChip document={datum.document} />}
+      </Box>
+    </Flex>
+  ),
+})
+
 const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentRow> = (t) => ({
   id: 'action',
   width: null,
@@ -169,7 +199,9 @@ export const getDocumentTableColumnDefs: (
   releaseId: string,
   releaseState: ReleaseState,
   t: TFunction<'releases'>,
-) => Column<BundleDocumentRow>[] = (releaseId, releaseState, t) => [
+  variantsEnabled: boolean,
+  variantsById: Map<string, SystemVariant>,
+) => Column<BundleDocumentRow>[] = (releaseId, releaseState, t, variantsEnabled, variantsById) => [
   /**
    * Hiding action for archived and published releases of v1.0
    * This will be added once Events API has reverse order lookup supported
@@ -194,6 +226,7 @@ export const getDocumentTableColumnDefs: (
       </Flex>
     ),
   },
+  ...(variantsEnabled ? [bundleColumn(t, variantsById)] : []),
   {
     id: 'search',
     width: null,
