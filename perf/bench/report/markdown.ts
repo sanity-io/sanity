@@ -217,7 +217,7 @@ export interface MissingScenario {
 }
 
 /** Deployed metrics studio; the Trends tool reads branches/range from the URL. */
-const DASHBOARD_BASE_URL = 'https://studio-perf.sanity.dev'
+const DASHBOARD_BASE_URL = 'https://studio-metrics.sanity.dev'
 
 /**
  * Deep link to the Trends dashboard with this run's branch preselected

@@ -173,13 +173,13 @@ describe('renderMarkdownReport', () => {
 
   it('deep-links to the dashboard with the PR branch and main preselected', () => {
     expect(renderMarkdownReport(RUN)).toContain(
-      'https://studio-perf.sanity.dev/trends?branches=main%2Cperf-bench',
+      'https://studio-metrics.sanity.dev/trends?branches=main%2Cperf-bench',
     )
   })
 
   it('omits the dashboard link for main-branch runs (nothing to compare)', () => {
     const onMain: BenchRunDocument = {...RUN, git: {...RUN.git, branch: 'main'}}
-    expect(renderMarkdownReport(onMain)).not.toContain('studio-perf.sanity.dev')
+    expect(renderMarkdownReport(onMain)).not.toContain('studio-metrics.sanity.dev')
   })
 
   it('calls out scenarios whose shards delivered no results', () => {
