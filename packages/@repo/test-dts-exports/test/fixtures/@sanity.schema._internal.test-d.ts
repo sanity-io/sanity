@@ -12,6 +12,7 @@ import type {
   DEFAULT_MAX_FIELD_DEPTH,
   DefaultWorkspaceSchemaId,
   DescriptorConverter,
+  DescriptorRequester,
   extractCreateWorkspaceManifest,
   extractManifestSchemaTypes,
   extractSchema,
@@ -39,6 +40,9 @@ import type {
   SchemaSynchronizationResult,
   StoredWorkspaceSchema,
   TypeWithProblems,
+  uploadSchema,
+  UploadSchemaOptions,
+  UploadSchemaPhase,
   validateMediaLibraryAssetAspect,
   validateSchema,
   ValidationError,
@@ -76,6 +80,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('DescriptorConverter', () => {
     expectTypeOf<DescriptorConverter>().not.toBeNever()
+  })
+  test('DescriptorRequester', () => {
+    expectTypeOf<DescriptorRequester>().not.toBeNever()
   })
   test('extractCreateWorkspaceManifest', () => {
     expectTypeOf<typeof extractCreateWorkspaceManifest>().toBeFunction()
@@ -157,6 +164,15 @@ describe('@sanity/schema/_internal', () => {
   })
   test('TypeWithProblems', () => {
     expectTypeOf<TypeWithProblems>().toBeObject()
+  })
+  test('uploadSchema', () => {
+    expectTypeOf<typeof uploadSchema>().toBeFunction()
+  })
+  test('UploadSchemaOptions', () => {
+    expectTypeOf<UploadSchemaOptions>().not.toBeNever()
+  })
+  test('UploadSchemaPhase', () => {
+    expectTypeOf<UploadSchemaPhase>().toBeObject()
   })
   test('validateMediaLibraryAssetAspect', () => {
     expectTypeOf<typeof validateMediaLibraryAssetAspect>().toBeFunction()
