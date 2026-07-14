@@ -1,19 +1,27 @@
 /**
  * Interaction to Next Paint (INP), computed exactly like the web-vitals
- * library from a set of per-interaction latencies (each already the max
- * duration across the events that shared one interactionId).
+ * library from the observed per-interaction latencies (each already the max
+ * duration across the events that shared one interactionId) plus the total
+ * number of interactions driven.
  *
  * The rule: INP is a high percentile of the interactions, chosen by count so
  * a single slow outlier doesn't define the score on a long session. web-vitals
- * uses the (N/50)th-worst interaction — the 75th percentile at 50 interactions,
- * ~98th at fewer — after collapsing to the worst per interaction. Below 50
- * interactions the field metric is not officially reportable; we still return
- * the worst so short local runs get a number, and flag `reportable`.
+ * uses the (N/50)th-worst observed interaction where N is the *total*
+ * interaction count (performance.interactionCount), not the observed-entry
+ * count: interactions faster than the Event Timing observability floor
+ * produce no entry, so indexing by observed entries would shift the
+ * percentile — INP could drop when a regression pushes previously
+ * below-floor interactions over the floor. Below 50 total interactions the
+ * field metric is not officially reportable; we still return the worst
+ * observed so short local runs get a number, and flag `reportable`.
  */
 export interface InpResult {
   /** The INP value in ms (the selected high-percentile interaction). */
   inpMs: number
-  /** How many distinct interactions were observed. */
+  /**
+   * Total interactions driven, the web-vitals performance.interactionCount —
+   * not the observed-entry count, which excludes below-floor interactions.
+   */
   interactionCount: number
   /**
    * True once enough interactions accumulated for the percentile rule to be
@@ -26,18 +34,28 @@ export interface InpResult {
 /** web-vitals' threshold before the percentile rule kicks in. */
 export const INP_MIN_INTERACTIONS = 50
 
-export function computeInp(interactionLatencies: number[]): InpResult {
-  const count = interactionLatencies.length
-  if (count === 0) {
-    return {inpMs: 0, interactionCount: 0, reportable: false}
+export function computeInp(observedLatencies: number[], totalInteractionCount: number): InpResult {
+  if (observedLatencies.length > totalInteractionCount) {
+    // A caller counting bug, not a data condition — every observed entry
+    // corresponds to a driven interaction.
+    throw new Error(
+      `computeInp: ${observedLatencies.length} observed latencies exceed ${totalInteractionCount} driven interactions`,
+    )
   }
-  const sortedDesc = interactionLatencies.toSorted((a, b) => b - a)
-  // The (N/50)th-worst interaction, clamped to the array — index 0 (the worst)
-  // for anything under 50, then stepping in one interaction per 50.
-  const index = Math.min(Math.floor(count / INP_MIN_INTERACTIONS), sortedDesc.length - 1)
+  if (observedLatencies.length === 0) {
+    return {inpMs: 0, interactionCount: totalInteractionCount, reportable: false}
+  }
+  const sortedDesc = observedLatencies.toSorted((a, b) => b - a)
+  // The (total/50)th-worst observed entry, clamped to the observed list —
+  // index 0 (the worst) for anything under 50 total, then stepping in one
+  // interaction per 50, exactly web-vitals' estimateP98LongestInteraction.
+  const index = Math.min(
+    Math.floor(totalInteractionCount / INP_MIN_INTERACTIONS),
+    sortedDesc.length - 1,
+  )
   return {
     inpMs: sortedDesc[index],
-    interactionCount: count,
-    reportable: count >= INP_MIN_INTERACTIONS,
+    interactionCount: totalInteractionCount,
+    reportable: totalInteractionCount >= INP_MIN_INTERACTIONS,
   }
 }

@@ -219,13 +219,15 @@ function fieldInput(page: Page, target: InteractionTarget): Locator {
 /**
  * Focus a field for typing. PTE renders its contenteditable only after the
  * field is activated by clicking it (dev/efps measureFpsForPte did the same
- * dance), so click the field root first, then the editable itself.
+ * dance), so click the field root first, then the editable itself. Returns
+ * the focused input plus how many click interactions focusing dispatched —
+ * INP counts every driven interaction, clicks included.
  */
 export async function focusField(
   page: Page,
   target: InteractionTarget,
   timeout: number,
-): Promise<Locator> {
+): Promise<{input: Locator; clicks: number}> {
   if (target.kind === 'pte') {
     const fieldRoot = page.locator(`[data-testid="field-${target.fieldPath}"]`)
     await fieldRoot.waitFor({state: 'visible', timeout})
@@ -234,7 +236,7 @@ export async function focusField(
   const input = fieldInput(page, target)
   await input.waitFor({state: 'visible', timeout})
   await input.click()
-  return input
+  return {input, clicks: target.kind === 'pte' ? 2 : 1}
 }
 
 /**
@@ -282,6 +284,33 @@ function getAtPath(doc: Record<string, unknown> | null, dottedPath: string): unk
 const isFormReadOnly = () =>
   document.querySelector('[data-testid="form-view"]')?.getAttribute('data-read-only') === 'true'
 
+/**
+ * The form transiently flips read-only after commits and silently swallows
+ * keystrokes while it lasts (see ReadOnlyInterruptions). Pause rather than
+ * type into the void — the wait is not keystroke latency.
+ */
+async function waitUntilEditable(page: Page, interruptions: ReadOnlyInterruptions): Promise<void> {
+  if (!(await page.evaluate(isFormReadOnly))) return
+  const waitStart = Date.now()
+  await page.waitForFunction(
+    () =>
+      document.querySelector('[data-testid="form-view"]')?.getAttribute('data-read-only') !==
+      'true',
+    undefined,
+    {timeout: 30_000, polling: 50},
+  )
+  interruptions.count += 1
+  interruptions.totalMs += Date.now() - waitStart
+}
+
+/**
+ * Type with a per-keystroke read-only gate — the isolated-cadence paths only.
+ * The gate is an in-page round-trip, affordable solely because the isolated
+ * cadence already leaves the main thread idle between keystrokes: it happens
+ * before keydown so it never inflates the measured interaction, and it
+ * enforces the isolation the metric depends on (a keystroke swallowed by a
+ * read-only flip would otherwise be recorded as a bogus below-floor sample).
+ */
 export async function typeKeystrokes(
   page: Page,
   count: number,
@@ -291,23 +320,34 @@ export async function typeKeystrokes(
 ): Promise<string> {
   let typed = ''
   for (let i = 0; i < count; i++) {
-    // The form transiently flips read-only after commits and silently
-    // swallows keystrokes while it lasts (see ReadOnlyInterruptions). Pause
-    // rather than type into the void — the wait is not keystroke latency.
-    // (The pre-keystroke check happens before keydown, so it never inflates
-    // the measured interaction; its cost is symmetric on both sides.)
-    if (await page.evaluate(isFormReadOnly)) {
-      const waitStart = Date.now()
-      await page.waitForFunction(
-        () =>
-          document.querySelector('[data-testid="form-view"]')?.getAttribute('data-read-only') !==
-          'true',
-        undefined,
-        {timeout: 30_000, polling: 50},
-      )
-      interruptions.count += 1
-      interruptions.totalMs += Date.now() - waitStart
-    }
+    await waitUntilEditable(page, interruptions)
+    const character = CHARACTERS[(offset + i) % CHARACTERS.length]
+    await page.keyboard.press(character)
+    typed += character
+    await page.waitForTimeout(cadenceMs)
+  }
+  return typed
+}
+
+/**
+ * Type without per-keystroke gating — the fast-burst and INP paths. An
+ * in-page round-trip between keystrokes serializes dispatch behind the page
+ * main thread, so a regression that slows event handlers would silently
+ * stretch the intended cadence and no input-delay pressure could accumulate —
+ * the burst would degenerate into the isolated metric. Read-only is checked
+ * once up front; keystrokes swallowed by a mid-burst flip fail the session
+ * readback loudly instead of being waited out.
+ */
+export async function typeBurst(
+  page: Page,
+  count: number,
+  cadenceMs: number,
+  offset: number,
+  interruptions: ReadOnlyInterruptions,
+): Promise<string> {
+  await waitUntilEditable(page, interruptions)
+  let typed = ''
+  for (let i = 0; i < count; i++) {
     const character = CHARACTERS[(offset + i) % CHARACTERS.length]
     await page.keyboard.press(character)
     typed += character
@@ -397,7 +437,7 @@ export async function runInteractionSession(options: {
     // it's on the page clock with no polling slack. Fields may start with
     // content, so "landed" means the value grew past its initial length.
     const firstField = scenario.interactions[0]
-    const probeTarget = await focusField(page, firstField, config.readinessTimeoutMs)
+    const {input: probeTarget} = await focusField(page, firstField, config.readinessTimeoutMs)
     const initialLength = await probeTarget.evaluate(
       (el) =>
         (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement
@@ -501,7 +541,7 @@ export async function runInteractionSession(options: {
       const isolated = toLatencies(measuredEntries, config.measuredKeystrokes)
 
       // Fast burst (sustained-typing secondary metric)
-      const burstTyped = await typeKeystrokes(
+      const burstTyped = await typeBurst(
         page,
         config.burstKeystrokes,
         config.burstCadenceMs,

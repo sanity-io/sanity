@@ -14,11 +14,15 @@ import {
   type ReadOnlyInterruptions,
   type SessionConfig,
   SessionError,
-  typeKeystrokes,
+  typeBurst,
 } from './interaction'
 
 export interface InpSessionResult extends InpResult {
-  /** All per-interaction latencies collected, for reporting/percentiles. */
+  /**
+   * All observed per-interaction latencies, for reporting/percentiles. Can be
+   * shorter than `interactionCount`: interactions faster than the Event
+   * Timing observability floor produce no entry.
+   */
   latencies: number[]
   readOnlyInterruptions: ReadOnlyInterruptions
 }
@@ -46,9 +50,10 @@ export const DEFAULT_INP_CONFIG: InpConfig = {
  * cycling through every field of the scenario. INP is dominated by the worst
  * interaction, which in practice is a click that triggers layout/render work,
  * so the pointer interactions matter as much as the keystrokes. The loop keeps
- * going until enough distinct interactions accumulate for the percentile rule,
- * then computes INP from all of them (web-vitals' own algorithm — see
- * stats/inp.ts). One page load, one browser clock; the runner only orchestrates.
+ * going until enough interactions have been *driven* for the percentile rule,
+ * then computes INP from the observed entries plus the driven total
+ * (web-vitals' own algorithm — see stats/inp.ts). One page load, one browser
+ * clock; the runner only orchestrates.
  */
 export async function runInpSession(options: {
   browser: Browser
@@ -92,15 +97,19 @@ export async function runInpSession(options: {
 
     const interruptions: ReadOnlyInterruptions = {count: 0, totalMs: 0}
     const latencies: number[] = []
+    // Total interactions driven (clicks + keystrokes). Event Timing can't
+    // observe interactions faster than the ~16ms floor, so `latencies`
+    // undercounts — the percentile index must come from this total (the
+    // web-vitals performance.interactionCount), or INP would drop when a
+    // regression pushes below-floor interactions over the floor.
+    let driven = 0
+    const keystrokesPerField = 4
     let offset = 0
 
     // Cycle through the scenario's fields, one click + short burst per field,
     // draining after each so a single field's rendering can't be double-counted.
     // Fail fast on page/console errors instead of burning the whole budget.
-    for (
-      let round = 0;
-      round < config.maxRounds && latencies.length < config.targetInteractions;
-    ) {
+    for (let round = 0; round < config.maxRounds && driven < config.targetInteractions; ) {
       for (const target of scenario.interactions) {
         if (session.pageErrors.length > 0) {
           throw new SessionError('page-error', session.pageErrors.join('\n'))
@@ -114,21 +123,25 @@ export async function runInpSession(options: {
         }
         // The click is itself an interaction (pointerdown/up + click share an
         // interactionId); focusField clicks the field root and the input.
-        await focusField(page, target, 30_000)
+        const {clicks} = await focusField(page, target, 30_000)
         // A short burst, isolated cadence so each keystroke is its own
         // interaction (the Event Timing observer needs a paint between them).
-        await typeKeystrokes(
+        // typeBurst gates read-only once per field, not per keystroke — a
+        // per-keystroke in-page round-trip would serialize dispatch behind
+        // the main thread and suppress INP's input-delay component.
+        await typeBurst(
           page,
-          4,
+          keystrokesPerField,
           DEFAULT_SESSION_CONFIG.isolatedCadenceMs,
           offset,
           interruptions,
         )
-        offset += 4
+        offset += keystrokesPerField
+        driven += clicks + keystrokesPerField
         const entries: BenchEntries = await drainEntries(page)
         latencies.push(...interactionMaxDurations(entries))
         round += 1
-        if (latencies.length >= config.targetInteractions || round >= config.maxRounds) break
+        if (driven >= config.targetInteractions || round >= config.maxRounds) break
       }
     }
 
@@ -145,17 +158,25 @@ export async function runInpSession(options: {
     if (session.consoleErrors.length > 0) {
       throw new SessionError('console-error', session.consoleErrors.join('\n'), session.httpErrors)
     }
-    if (latencies.length < INP_MIN_INTERACTIONS) {
-      // Below the reportable threshold means the interaction mix produced too
-      // few observable entries (everything under the 16ms floor, or the field
-      // set is tiny) — a measurement failure, not a fast studio.
+    if (driven < INP_MIN_INTERACTIONS) {
+      // The session stopped (maxRounds) before driving enough interactions
+      // for the percentile rule — a configuration failure, not a fast studio.
       throw new SessionError(
         'sample-count-mismatch',
-        `only ${latencies.length} observable interactions (need >= ${INP_MIN_INTERACTIONS} for INP)`,
+        `only ${driven} interactions driven (need >= ${INP_MIN_INTERACTIONS} for INP)`,
+      )
+    }
+    if (latencies.length === 0) {
+      // Zero observable entries across >= 50 driven interactions means the
+      // Event Timing observer isn't reporting — studio clicks under CPU
+      // throttle never all finish below the observability floor.
+      throw new SessionError(
+        'sample-count-mismatch',
+        `no observable interactions across ${driven} driven`,
       )
     }
 
-    return {...computeInp(latencies), latencies, readOnlyInterruptions: interruptions}
+    return {...computeInp(latencies, driven), latencies, readOnlyInterruptions: interruptions}
   } finally {
     await context.close()
   }
