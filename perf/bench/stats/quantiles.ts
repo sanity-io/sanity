@@ -7,6 +7,12 @@ export function quantile(values: number[], p: number): number {
   if (values.length === 0) {
     throw new Error('Cannot compute quantile of empty sample')
   }
+  // An out-of-range or non-finite p indexes outside the sorted array and
+  // returns NaN/undefined, which then flows into gating — fail loudly instead
+  // of mis-gating a PR on a caller bug (p must be a probability in [0, 1])
+  if (!Number.isFinite(p) || p < 0 || p > 1) {
+    throw new Error(`quantile p must be a finite number in [0, 1], got ${p}`)
+  }
   // NaN poisons every `>` comparison downstream (gate() would silently
   // report `neutral` for a real regression) — a non-finite sample is a
   // collector bug and must fail loudly here, not gate a PR green
