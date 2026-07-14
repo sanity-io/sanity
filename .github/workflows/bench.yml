@@ -584,16 +584,24 @@ jobs:
           name: bench-dist-experiment
           path: perf/bench/dist
 
+      # Session counts match the PR shard jobs so track-main stays within its
+      # timeout: interaction uses the CLI default (6), and pageLoad runs the
+      # heavy syntheticLarge scenario at fewer sessions than singleString
+      # (~55s/sample × both conditions × 8 blows the budget). Two pageLoad
+      # commands (one per scenario) since a single invocation can't vary
+      # --sessions per scenario; separate --json-out files so neither clobbers
+      # the other (the report step globs bench-results__*.json).
       - name: Run interaction benchmarks (fixed sessions)
         run: |
-          pnpm bench run --mode interaction --sessions 8 \
+          pnpm bench run --mode interaction --sessions 6 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__interaction.json"
 
       - name: Run pageLoad benchmarks
         run: |
-          pnpm bench run --mode pageload --scenario singleString --scenario syntheticLarge \
-            --sessions 8 \
-            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__pageload.json"
+          pnpm bench run --mode pageload --scenario singleString --sessions 8 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__pageload-singleString.json"
+          pnpm bench run --mode pageload --scenario syntheticLarge --sessions 3 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__pageload-syntheticLarge.json"
 
       - name: Run soak check
         run: |
