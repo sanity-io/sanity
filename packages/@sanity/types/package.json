@@ -44,13 +44,13 @@
     }
   },
   "scripts": {
-    "build": "pkg-utils build --strict --check --clean",
+    "build": "tsdown",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/types/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "watch": "pkg-utils watch"
+    "watch": "tsdown --watch"
   },
   "dependencies": {
     "@sanity/client": "catalog:",
@@ -61,12 +61,12 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/insert-menu": "3.0.8",
-    "@sanity/pkg-utils": "catalog:",
     "@types/react": "catalog:",
     "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "react": "catalog:",
     "rimraf": "catalog:",
+    "tsdown": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },

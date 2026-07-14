@@ -114,12 +114,12 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && pkg-utils build --strict --check --clean",
+    "build": "pnpm clean && tsdown",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
-    "watch": "pkg-utils watch"
+    "watch": "tsdown --watch"
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",
@@ -133,10 +133,10 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/pkg-utils": "catalog:",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
     "rimraf": "catalog:",
+    "tsdown": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },

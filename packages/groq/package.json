@@ -41,21 +41,21 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "pkg-utils build --strict --check --clean && rimraf lib/groq.d.cts",
+    "build": "tsdown",
     "check:types": "(cd ../.. && tsgo --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "pretest": "run-s build",
     "test": "node --test",
-    "watch": "pkg-utils watch"
+    "watch": "tsdown --watch"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/pkg-utils": "catalog:",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
-    "rimraf": "catalog:"
+    "rimraf": "catalog:",
+    "tsdown": "catalog:"
   },
   "browserslist": [
     "node >=22.12",

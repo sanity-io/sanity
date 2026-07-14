@@ -22,8 +22,8 @@ catalog:
   '@rolldown/plugin-babel': ^0.2.3
   '@sanity/client': ^7.23.0
   '@sanity/migrate': ^7.0.3
-  '@sanity/pkg-utils': ^10.9.0
   '@sanity/telemetry': ^1.1.0
+  '@sanity/tsdown-config': ^0.14.0
   '@sanity/ui': ^3.3.0
   '@types/node': ^24.13.2
   '@types/react': ^19.2.17
@@ -36,7 +36,6 @@ catalog:
   '@vitejs/plugin-react': ^6.0.3
   '@vitest/browser-playwright': ^4.1.9
   babel-plugin-react-compiler: ^1.0.0
-  babel-plugin-styled-components: ^2.3.0
   jsdom: ^29.1.1
   playwright: 1.61.1
   react: ^19.2.7
@@ -44,6 +43,7 @@ catalog:
   react-is: ^19.2.7
   rimraf: ^6.1.3
   styled-components: npm:@sanity/styled-components@^6.1.24
+  tsdown: ^0.22.7
   vite: ^8.1.4
   vitest: ^4.1.9
   vitest-browser-react: ^2.2.0
@@ -65,6 +65,10 @@ minimumReleaseAgeExclude:
   - '@typescript/*'
   - '@vanilla-extract/*'
   - '@vercel/stega'
+  # Native binding packages of the yuku parser/codegen used by rolldown-plugin-dts, they release
+  # in lockstep with it (like the @oxlint/* bindings for oxlint)
+  - '@yuku-codegen/*'
+  - '@yuku-parser/*'
   - 'csstype'
   - 'data-uri-to-buffer@7.0.0'
   - 'get-it'
@@ -77,12 +81,19 @@ minimumReleaseAgeExclude:
   - 'react-dom'
   - 'react-is'
   - 'react-rx'
+  # tsdown@0.22.7, the rolldown-plugin-dts version its `^0.27.8` range needs, and the yuku
+  # parser/codegen that version depends on are newer than minimumReleaseAge (intentional
+  # adoption of the latest tsdown)
+  - 'rolldown-plugin-dts@0.27.9'
   - 'sanity-plugin-internationalized-array'
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
+  - 'tsdown@0.22.7'
   - 'vitest'
   - 'vite'
+  - 'yuku-codegen@0.6.1'
+  - 'yuku-parser@0.6.1'
 
 overrides:
   vitest: 'catalog:'

@@ -120,7 +120,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && pkg-utils build --strict --check --clean",
+    "build": "pnpm clean && tsdown",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.check.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
@@ -130,7 +130,7 @@
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:browser": "vitest run -c vitest.browser.config.mts",
-    "watch": "pkg-utils watch"
+    "watch": "tsdown --watch"
   },
   "dependencies": {
     "@algorithm.ts/lcs": "^4.0.6",
@@ -246,7 +246,6 @@
     "@repo/tsconfig": "workspace:*",
     "@rolldown/plugin-babel": "catalog:",
     "@sanity/generate-help-url": "^4.0.0",
-    "@sanity/pkg-utils": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.10",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -270,7 +269,6 @@
     "@vitest/browser-playwright": "catalog:",
     "@vitest/expect": "^4.1.9",
     "babel-plugin-react-compiler": "catalog:",
-    "babel-plugin-styled-components": "catalog:",
     "blob-polyfill": "^9.0.20240710",
     "jsdom": "catalog:",
     "react": "catalog:",
@@ -278,6 +276,7 @@
     "rimraf": "catalog:",
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
+    "tsdown": "catalog:",
     "tsx": "^4.22.4",
     "vite": "catalog:",
     "vitest": "catalog:",

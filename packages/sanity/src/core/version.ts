@@ -12,12 +12,12 @@ try {
 try {
   buildVersion =
     buildVersion ||
-    // This is replaced by `@sanity/pkg-utils` at build time
+    // This is replaced by `tsdown` at build time (see the `define` option in `tsdown.config.ts`)
     // and must always be references by its full static name, e.g. no optional chaining, no `if (process && process.env)` etc.
     process.env.PKG_VERSION
 } catch {
   // ignore, assuming process.env is not defined by the runtime
-  // note: this should normally not happen when running from a production build built by pkg-utils
+  // note: this should normally not happen when running from a production build built by tsdown
   // but could happen when using other build tools or running directly from source, e.g. in a dev or test environment
 }
 

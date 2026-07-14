@@ -57,6 +57,16 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
+  // quick-lru's own typings subclass Map with incompatible `keys`/`values`/`[Symbol.iterator]`
+  // signatures (TS2416). Its d.ts is only pulled into this program because rolldown-plugin-dts
+  // leaves an unused `import QuickLRU from 'quick-lru'` behind in sanity's bundled d.ts after
+  // tree-shaking the (internal, unexported) declarations that referenced it. The import is dead,
+  // so these errors can't affect consumers; drop the filter once rolldown-plugin-dts prunes
+  // unused external type imports or quick-lru fixes its Map compatibility.
+  if (code === 2416 && file.fileName.includes('/node_modules/quick-lru/')) {
+    return false
+  }
+
   return true
 })
 

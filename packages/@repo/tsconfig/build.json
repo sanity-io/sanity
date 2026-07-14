@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "description": "The shared configuration used by @sanity/pkg-utils to build workspaces and generate dts files",
+  "description": "The shared configuration used by tsdown to build workspaces and generate dts files",
   "extends": "./base.json",
   "compilerOptions": {
     "noEmitOnError": true,
