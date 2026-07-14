@@ -528,8 +528,12 @@ export function _createAuthStore({
   // current token (or `null` when the OS is signed out) and keeps emitting as
   // that changes, so `loginMethod` and the recheck streams are bypassed and a
   // later OS sign-out transitions the Studio to unauthenticated. The token is
-  // never persisted (so it can't go stale in storage).
-  const workbenchToken$ = observeWorkbenchToken()
+  // never persisted (so it can't go stale in storage), which is also why it
+  // feeds the `token` output below — consumers like Bifur (realtime) read that
+  // directly and would otherwise authenticate from empty/stale storage.
+  const workbenchToken$ = observeWorkbenchToken()?.pipe(
+    shareReplay({bufferSize: 1, refCount: true}),
+  )
 
   const authState$ = (
     workbenchToken$
@@ -776,7 +780,7 @@ export function _createAuthStore({
   return {
     handleCallbackUrl,
     state: authState$,
-    token: tokenStorage.value.pipe(map((t) => t?.token || null)),
+    token: workbenchToken$ ?? tokenStorage.value.pipe(map((t) => t?.token || null)),
     LoginComponent,
     logout,
   }

@@ -1077,6 +1077,26 @@ describe('createAuthStore: workbench OS token', () => {
     expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull()
   })
 
+  it('exposes the OS token on the token output (for Bifur/realtime), not the stored one', async () => {
+    // Bifur authenticates from `auth.token`, so it must carry the OS token —
+    // not the (unwritten/stale) storage token.
+    localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'stale-stored-token'}))
+    const OS_TOKEN = 'workbench-os-token'
+    const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+      observeWorkbenchToken: () => of(OS_TOKEN),
+    })
+
+    expect(await firstValueFrom(store.token)).toBe(OS_TOKEN)
+  })
+
   it('is unauthenticated when the OS is signed out, ignoring a stored token', async () => {
     // Even with a valid stored token, an OS-embedded studio must follow the OS:
     // a `null` emission means signed out, and the loginMethod flow is bypassed.
