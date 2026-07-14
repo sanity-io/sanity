@@ -2,9 +2,10 @@ import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 
 import {type Config} from '../config'
-import {Studio, type StudioProps} from './Studio'
+import {Studio} from './Studio'
 
-interface RenderStudioOptions extends Pick<StudioProps, 'basePath'> {
+interface RenderStudioOptions {
+  basePath?: string
   reactStrictMode?: boolean
 }
 
