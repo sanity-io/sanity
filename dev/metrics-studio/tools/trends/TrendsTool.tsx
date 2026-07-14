@@ -40,7 +40,7 @@ import {
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
 import {DriftFeed} from './DriftFeed'
-import {sourceFileUrl} from './links'
+import {efpsSourceUrl, sourceFileUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
 import {TrendChart} from './TrendChart'
 import {useUrlState} from './useUrlState'
@@ -73,18 +73,39 @@ function InfoButton(props: {text: string; label: string; sourceFile?: string}) {
               {props.text}
             </Text>
             {props.sourceFile && (
-              <Box
-                as="a"
-                href={sourceFileUrl(props.sourceFile)}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="View scenario source (opens in a new tab)"
-              >
-                <Flex align="center" gap={1}>
-                  <LaunchIcon />
-                  <Text size={1}>View scenario source</Text>
-                </Flex>
-              </Box>
+              <Stack space={2}>
+                <Box
+                  as="a"
+                  href={sourceFileUrl(props.sourceFile)}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="View scenario source (opens in a new tab)"
+                >
+                  <Flex align="center" gap={1}>
+                    <LaunchIcon />
+                    <Text size={1}>View scenario source</Text>
+                  </Flex>
+                </Box>
+                {/* Cross-reference the legacy eFPS scenario this was ported
+                    from, while dev/efps burns down (omitted for bench-only
+                    scenarios with no eFPS counterpart) */}
+                {efpsSourceUrl(props.sourceFile) && (
+                  <Box
+                    as="a"
+                    href={efpsSourceUrl(props.sourceFile)}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="View the legacy eFPS scenario (opens in a new tab)"
+                  >
+                    <Flex align="center" gap={1}>
+                      <LaunchIcon />
+                      <Text size={1} muted>
+                        Legacy eFPS scenario
+                      </Text>
+                    </Flex>
+                  </Box>
+                )}
+              </Stack>
             )}
           </Stack>
         </Box>
