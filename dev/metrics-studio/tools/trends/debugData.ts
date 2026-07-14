@@ -1,9 +1,11 @@
 /**
  * Dev-only synthetic data for the Trends tool: deterministic (seeded PRNG,
- * never Math.random) runs exhibiting the shapes the charts and the future
- * drift feed must handle — steady noise, slow drift, step changes in both
- * directions, host-speed-correlated noise (why the calibration strip
- * exists), an auth round-trip drop, and sparse/single/empty datasets.
+ * never Math.random) runs exhibiting the shapes the charts and the drift feed
+ * must handle — steady noise, slow drift, step changes in both directions,
+ * host-speed-correlated noise (why the calibration strip exists), an auth
+ * round-trip drop, and sparse/single/empty datasets. It mirrors every shape CI
+ * actually stores: both load conditions (boot-cold + open-doc-warm),
+ * main-thread blocking, INP, soak, and the PR/CI backlink fields.
  */
 import {type TrendRun} from './data'
 
@@ -63,8 +65,10 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
       _id: `debug-run-${branch}-${day}`,
       startedAt: new Date(start + day * DAY_MS).toISOString(),
       mode: 'absolute',
-      git: {sha: fakeSha(rng), branch},
-      runner: {calibrationMs: calibration},
+      // Every ~9th run is a labeled PR run (has a PR number) so the run-detail
+      // popover's PR backlink is exercised; all runs carry a CI run id/attempt.
+      git: {sha: fakeSha(rng), branch, ...(day % 9 === 0 ? {prNumber: 13000 + day} : {})},
+      runner: {calibrationMs: calibration, runId: `${900000 + day}`, runAttempt: 1},
       bundle: {
         experiment: {
           // Slow growth with an occasional dependency-bump jump
@@ -104,15 +108,24 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
           scenario: 'singleString',
           sourceFile: 'perf/bench/scenarios/singleString.ts',
           kind: 'pageload',
+          // CI measures two load conditions — boot-cold (first visit) and
+          // open-doc-warm (cached) — so demo both. Warm is faster (cache hits).
           metrics: [
             metric(rng, 'boot-cold · time to editable', day < 70 ? 4200 : 4600),
             metric(rng, 'boot-cold · TTFB', 90 + (rng() - 0.5) * 20),
             metric(rng, 'boot-cold · FCP', 1200 + (rng() - 0.5) * 200),
             metric(rng, 'boot-cold · LCP', 1800 + (rng() - 0.5) * 300),
             metric(rng, 'boot-cold · CLS', 0.04 + rng() * 0.03, 'cls'),
+            metric(rng, 'boot-cold · main-thread blocking', 620 + (rng() - 0.5) * 120),
             // The auth story: a serialized round trip removed at day 50
             metric(rng, 'boot-cold · auth round trips', day < 50 ? 2 : 1, 'count'),
             metric(rng, 'boot-cold · auth in flight', day < 50 ? 84 : 42),
+            metric(rng, 'open-doc-warm · time to editable', day < 70 ? 1900 : 2100),
+            metric(rng, 'open-doc-warm · TTFB', 40 + (rng() - 0.5) * 12),
+            metric(rng, 'open-doc-warm · FCP', 520 + (rng() - 0.5) * 90),
+            metric(rng, 'open-doc-warm · LCP', 780 + (rng() - 0.5) * 140),
+            metric(rng, 'open-doc-warm · CLS', 0.01 + rng() * 0.015, 'cls'),
+            metric(rng, 'open-doc-warm · main-thread blocking', 240 + (rng() - 0.5) * 60),
           ],
         },
         {
