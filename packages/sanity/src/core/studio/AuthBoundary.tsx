@@ -79,15 +79,23 @@ export function AuthBoundary({
 
   useEffect(() => {
     const auth = activeWorkspace.auth
+    // A superseded run (workspace switched away, or StrictMode's first
+    // invocation) must not write: a stale store settling late would
+    // overwrite the ACTIVE store's settled marker and re-close the gate,
+    // stranding a logged-out user on the loading screen.
+    let superseded = false
     auth
       .handleCallbackUrl?.()
       .then((result) => {
         telemetry.log(SessionTokenExchangeCompleted, result)
       })
       .catch(handleError)
-      // Marks THIS store's flow settled; harmless if a workspace switch
-      // superseded this run (the identity check above keeps the gate closed).
-      .finally(() => setCallbackSettledFor(auth))
+      .finally(() => {
+        if (!superseded) setCallbackSettledFor(auth)
+      })
+    return () => {
+      superseded = true
+    }
   }, [activeWorkspace.auth, telemetry])
 
   useEffect(() => {

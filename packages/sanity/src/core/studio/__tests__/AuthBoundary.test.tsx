@@ -197,6 +197,55 @@ describe('AuthBoundary login flash gate', () => {
     })
     await screen.findByTestId('authenticate-screen')
   })
+
+  it('does not re-close the gate when a superseded exchange settles after the active one', async () => {
+    // Reverse settle order of the test above: B (active) settles first and
+    // the login screen shows; A's stale exchange settling later must not
+    // overwrite the settled marker and strand B on the loading screen.
+    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher')
+
+    const callbackA = promiseWithResolvers<unknown>()
+    const callbackB = promiseWithResolvers<unknown>()
+    const stateB$ = new Subject<AuthState>()
+    const authA = {state: authState$, handleCallbackUrl: () => callbackA.promise}
+    const authB = {state: stateB$, handleCallbackUrl: () => callbackB.promise}
+
+    const workspaceMock = useActiveWorkspace as ReturnType<typeof vi.fn>
+    workspaceMock.mockReturnValue({activeWorkspace: {auth: authA}})
+
+    const {rerender} = render(
+      <AuthBoundary>
+        <div data-testid="content" />
+      </AuthBoundary>,
+    )
+
+    // Switch to workspace B while A's exchange is still in flight.
+    workspaceMock.mockReturnValue({activeWorkspace: {auth: authB}})
+    rerender(
+      <AuthBoundary>
+        <div data-testid="content" />
+      </AuthBoundary>,
+    )
+    act(() => stateB$.next({authenticated: false, currentUser: null}))
+
+    // B settles: the gate opens onto the login screen.
+    await act(async () => {
+      callbackB.resolve({
+        flow: 'already-authenticated',
+        success: true,
+        loginMethod: 'dual',
+        durationMs: 1,
+      })
+    })
+    await screen.findByTestId('authenticate-screen')
+
+    // A's superseded exchange settles late: the login screen must survive.
+    await act(async () => {
+      callbackA.resolve({flow: 'exchange', success: false, loginMethod: 'dual', durationMs: 1})
+    })
+    expect(screen.getByTestId('authenticate-screen')).toBeTruthy()
+    expect(screen.queryByTestId('loading-block')).toBeNull()
+  })
 })
 
 describe('AuthBoundary telemetry', () => {
