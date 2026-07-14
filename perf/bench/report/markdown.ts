@@ -71,18 +71,29 @@ export function renderMarkdownReport(
         comparison: metric.comparison!,
       })),
   )
+  // Inconclusive verdicts exist precisely so a too-noisy run never reads as a
+  // pass — count them into the headline instead of hiding them behind
+  // "no regressions"
+  const inconclusiveCount = run.scenarios.reduce(
+    (count, scenario) =>
+      count +
+      scenario.metrics.filter((metric) => metric.comparison?.verdict === 'inconclusive').length,
+    0,
+  )
+  const inconclusiveSuffix =
+    inconclusiveCount > 0 ? ` (${inconclusiveCount} inconclusive — CI too wide to decide)` : ''
 
   const headline =
     run.mode === 'absolute'
       ? '🔵 absolute run — see the dashboard for the trend'
       : regressed.length > 0
-        ? `🔴 **${regressed.length} regression(s)** detected`
-        : '✅ no regressions'
+        ? `🔴 **${regressed.length} regression(s)** detected${inconclusiveSuffix}`
+        : `✅ no regressions${inconclusiveSuffix}`
 
-  // Only regressions are called out here — everything else (improvements,
-  // inconclusive, the full tables and history) lives in the dashboard. One
-  // line per regression plus a chart of the deltas so the shape is visible
-  // without leaving the PR.
+  // Only regressions are called out in detail here — everything else
+  // (improvements, the inconclusive metrics themselves, the full tables and
+  // history) lives in the dashboard. One line per regression plus a chart of
+  // the deltas so the shape is visible without leaving the PR.
   const regressionLines = regressed.map((entry) => {
     const {diff, lo, hi} = entry.comparison
     return `- \`${entry.label}\` ${formatDiff(diff)} [${formatDiff(lo)}, ${formatDiff(hi)}]`

@@ -57,6 +57,14 @@ export interface ScenarioReport {
   scenario: string
   /** Repo-root-relative scenario source file, for a dashboard backlink. */
   sourceFile?: string
+  /**
+   * Host-speed calibration of the runner that produced THIS scenario.
+   * CI runs one shard per scenario on separate runners, so the document-level
+   * `runner.calibrationMs` (first shard's) doesn't apply to every scenario —
+   * mergeShards stamps each scenario with its own shard's score. Absent on
+   * single-shard/local documents (the document-level value applies).
+   */
+  runner?: {calibrationMs: number}
   kind: 'interaction' | 'pageload'
   metrics: MetricReport[]
   /** Why A/B sampling stopped (absent in absolute mode). */

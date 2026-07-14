@@ -14,6 +14,8 @@ export interface TrendRun {
     | {
         scenario: string
         sourceFile?: string
+        /** Per-scenario shard runner calibration (multi-shard CI runs only). */
+        runner?: {calibrationMs: number | null} | null
         kind: 'interaction' | 'pageload'
         metrics:
           | {
@@ -51,6 +53,7 @@ export const TREND_QUERY = `*[_type == "benchRun"] | order(startedAt asc) {
   scenarios[]{
     scenario,
     sourceFile,
+    runner{calibrationMs},
     kind,
     metrics[]{label, unit, experiment{summary{median, p75, p90}}},
     soak{minutes, samples[]{minute, heapMb, domNodes, listeners, latencyP50Ms, cpuTaskMs, connections, requests}}
@@ -444,18 +447,33 @@ export function calibrationSeries(runs: TrendRun[]): TrendSeries {
   // each is a clean, separately-coloured trail.
   const byBranch = new Map<string, TrendLine>()
   for (const run of runs) {
-    if (!run.runner) continue
+    // Multi-shard CI runs execute each scenario on a separate machine, so a
+    // single document carries several host-speed scores (stamped per scenario
+    // by mergeShards). Plot each distinct shard calibration as its own point —
+    // the vertical spread at one date IS the cross-shard host variance. Older
+    // documents (no per-scenario runner) fall back to the run-level score.
+    const shardScores = new Set<number>()
+    for (const scenario of run.scenarios ?? []) {
+      if (typeof scenario.runner?.calibrationMs === 'number') {
+        shardScores.add(scenario.runner.calibrationMs)
+      }
+    }
+    const values =
+      shardScores.size > 0 ? [...shardScores] : run.runner ? [run.runner.calibrationMs] : []
+    if (values.length === 0) continue
     const branch = run.git?.branch ?? 'unknown'
     let line = byBranch.get(branch)
     if (!line) {
       line = {branch, points: []}
       byBranch.set(branch, line)
     }
-    line.points.push({
-      date: new Date(run.startedAt),
-      value: run.runner.calibrationMs,
-      ...pointMeta(run),
-    })
+    for (const value of values) {
+      line.points.push({
+        date: new Date(run.startedAt),
+        value,
+        ...pointMeta(run),
+      })
+    }
   }
   return {
     key: 'runner:calibration',

@@ -136,6 +136,19 @@ const benchScenario = defineType({
   fields: [
     defineField({name: 'scenario', type: 'string'}),
     defineField({name: 'sourceFile', type: 'string'}),
+    defineField({
+      name: 'runner',
+      description:
+        'Host-speed calibration of the shard runner that produced this scenario (CI runs one shard per scenario on separate machines); absent on single-shard/local runs',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'calibrationMs',
+          description: 'Host-speed score (ms for a fixed workload; higher = slower host)',
+          type: 'number',
+        }),
+      ],
+    }),
     defineField({name: 'kind', type: 'string', options: {list: ['interaction', 'pageload']}}),
     defineField({name: 'metrics', type: 'array', of: [defineArrayMember({type: 'benchMetric'})]}),
     defineField({

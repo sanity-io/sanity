@@ -3,7 +3,7 @@
 exports[`renderMarkdownReport > renders the full A/B report 1`] = `
 "### ⚡ Studio performance benchmark
 
-🔴 **1 regression(s)** detected
+🔴 **1 regression(s)** detected (1 inconclusive — CI too wide to decide)
 
 - \`singleString · stringField\` +8.0ms [+6.0ms, +10.0ms]
 

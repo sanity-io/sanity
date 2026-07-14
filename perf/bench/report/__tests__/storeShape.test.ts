@@ -23,6 +23,8 @@ const RUN: BenchRunDocument = {
   scenarios: [
     {
       scenario: 'singleString',
+      // Per-scenario shard calibration (stamped by mergeShards)
+      runner: {calibrationMs: 17},
       kind: 'interaction',
       metrics: [
         {
@@ -123,6 +125,11 @@ describe('toStorableRun', () => {
       {_key: 'session-0', samples: [30, 32]},
       {_key: 'session-1', samples: [31, 33]},
     ])
+  })
+
+  it('preserves the per-scenario shard runner calibration', () => {
+    const stored = toStorableRun(RUN)
+    expect(stored.scenarios[0].runner).toEqual({calibrationMs: 17})
   })
 
   it('converts byClass records to keyed arrays', () => {

@@ -186,7 +186,34 @@ describe('renderMarkdownReport', () => {
     }
     const report = renderMarkdownReport(clean)
     expect(report).toContain('✅ no regressions')
+    expect(report).not.toContain('inconclusive')
     expect(report).not.toContain('```mermaid')
+  })
+
+  it('counts inconclusive verdicts in the headline instead of reading as a clean pass', () => {
+    const allInconclusive: BenchRunDocument = {
+      ...RUN,
+      scenarios: [
+        {
+          ...RUN.scenarios[0],
+          metrics: [
+            metric('stringField', {experiment: 40, reference: 32}, 'inconclusive'),
+            metric('body', {experiment: 44, reference: 41}, 'inconclusive'),
+          ],
+        },
+      ],
+    }
+    const report = renderMarkdownReport(allInconclusive)
+    expect(report).toContain('✅ no regressions (2 inconclusive — CI too wide to decide)')
+    // Inconclusive is not a regression: no per-metric list or chart
+    expect(report).not.toContain('```mermaid')
+  })
+
+  it('keeps the inconclusive count visible alongside regressions', () => {
+    // RUN has one regression and one inconclusive metric
+    expect(renderMarkdownReport(RUN)).toContain(
+      '🔴 **1 regression(s)** detected (1 inconclusive — CI too wide to decide)',
+    )
   })
 
   it('deep-links to the dashboard with the PR branch and main preselected', () => {
@@ -238,18 +265,41 @@ describe('renderMarkdownReport', () => {
 })
 
 describe('mergeShards', () => {
+  const shardTwo: BenchRunDocument = {
+    ...RUN,
+    startedAt: '2026-07-06T12:05:00.000Z',
+    completedAt: '2026-07-06T12:20:00.000Z',
+    runner: {...RUN.runner, calibrationMs: 19},
+    scenarios: [{...RUN.scenarios[1], scenario: 'recipe'}],
+    bundle: undefined,
+  }
+
   it('concatenates scenarios and spans the run window', () => {
-    const shardTwo: BenchRunDocument = {
-      ...RUN,
-      startedAt: '2026-07-06T12:05:00.000Z',
-      completedAt: '2026-07-06T12:20:00.000Z',
-      scenarios: [RUN.scenarios[1]],
-      bundle: undefined,
-    }
     const merged = mergeShards([RUN, shardTwo])
     expect(merged.scenarios).toHaveLength(RUN.scenarios.length + 1)
     expect(merged.startedAt).toBe('2026-07-06T12:00:00.000Z')
     expect(merged.completedAt).toBe('2026-07-06T12:20:00.000Z')
     expect(merged.bundle).toEqual(RUN.bundle)
+  })
+
+  it('stamps every scenario with its own shard runner calibration', () => {
+    // CI runs one shard per scenario on separate machines — keeping only the
+    // first shard's runner would store scenarios under another host's
+    // calibration score
+    const merged = mergeShards([RUN, shardTwo])
+    for (const scenario of merged.scenarios.slice(0, RUN.scenarios.length)) {
+      expect(scenario.runner).toEqual({calibrationMs: RUN.runner.calibrationMs})
+    }
+    expect(merged.scenarios.at(-1)?.runner).toEqual({calibrationMs: 19})
+    // The document-level runner block stays (first shard's) for compatibility
+    expect(merged.runner).toEqual(RUN.runner)
+  })
+
+  it('fails loudly on duplicate scenario reports (they would collide as stored _keys)', () => {
+    expect(() => mergeShards([RUN, {...shardTwo, scenarios: [RUN.scenarios[1]]}])).toThrow(
+      /duplicate scenario report\(s\): interaction-article/,
+    )
+    // The same shard artifact provided twice is the realistic trigger
+    expect(() => mergeShards([RUN, RUN])).toThrow(/duplicate scenario report/)
   })
 })
