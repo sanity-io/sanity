@@ -65,6 +65,7 @@ export type TrendUnit =
   | 'megabytes'
   | 'mb-per-min'
   | 'count-per-min'
+  | 'ms-per-min'
 
 export interface TrendPoint {
   date: Date
@@ -186,7 +187,7 @@ export const SOAK_METRICS: {
   },
   {
     key: 'requests',
-    title: 'Requests per minute',
+    title: 'Requests',
     unit: 'count',
     description:
       'Requests the studio made that minute. A rising rate is a polling or refetch loop.',
@@ -339,12 +340,20 @@ export function formatValue(value: number, unit: TrendUnit): string {
   // enough precision that a near-zero rate reads as "~0", not a rounded 0
   if (unit === 'mb-per-min') return `${value >= 0 ? '+' : ''}${value.toFixed(2)} MB/min`
   if (unit === 'count-per-min') return `${value >= 0 ? '+' : ''}${value.toFixed(2)}/min`
+  if (unit === 'ms-per-min') return `${value >= 0 ? '+' : ''}${value.toFixed(2)} ms/min`
   return `${value.toFixed(0)}ms`
 }
 
 /** Slope/rate units are signed and centered on zero (flat = good). */
 export function isSignedUnit(unit: TrendUnit): boolean {
-  return unit === 'mb-per-min' || unit === 'count-per-min'
+  return unit === 'mb-per-min' || unit === 'count-per-min' || unit === 'ms-per-min'
+}
+
+/** The per-minute slope unit for a soak metric's base unit. */
+function slopeUnitFor(baseUnit: TrendUnit): TrendUnit {
+  if (baseUnit === 'megabytes') return 'mb-per-min'
+  if (baseUnit === 'ms') return 'ms-per-min'
+  return 'count-per-min'
 }
 
 export function filterByRange(runs: TrendRun[], days: number | null): TrendRun[] {
@@ -530,59 +539,88 @@ function slopePerMinute(samples: SoakSample[], key: keyof SoakSample): number {
   return (n * sumXY - sumX * sumY) / denominator
 }
 
-/**
- * Slope-over-time trend: reduce each run's soak series to a per-minute slope
- * and plot that across runs (one dot per run, per branch) — "is the leak
- * getting worse release over release?" Heap and listeners are the load-bearing
- * ones; keep the set small.
- */
-export function soakSlopeSeries(runs: TrendRun[]): TrendSeries[] {
-  const slopeMetrics: {
-    key: keyof SoakSample
-    title: string
-    unit: TrendUnit
-    description: string
-  }[] = [
-    {
-      key: 'heapMb',
-      title: 'heap growth',
-      unit: 'mb-per-min',
-      description:
-        'Heap MB gained per soak minute (linear fit). Above ~0 across runs means a worsening leak.',
-    },
-    {
-      key: 'listeners',
-      title: 'listener growth',
-      unit: 'count-per-min',
-      description: 'Event listeners added per soak minute (linear fit). Should sit at ~0.',
-    },
-  ]
+/** The end-of-run (last-minute) value of a soak metric, or null if absent. */
+function lastSoakValue(samples: SoakSample[], key: keyof SoakSample): number | null {
+  for (let i = samples.length - 1; i >= 0; i--) {
+    const value = samples[i][key]
+    if (typeof value === 'number') return value
+  }
+  return null
+}
 
-  const byMetric = slopeMetrics.map((metric): TrendSeries => {
+/**
+ * Build a historical (one-dot-per-run) soak trend for every SOAK_METRIC, given
+ * a per-run reducer. Used for both the slope view ("is the leak worsening
+ * release over release?") and the end-of-run value view ("where did it land?").
+ * One line per branch; empty series (no run had the metric) are dropped.
+ */
+function soakHistory(
+  runs: TrendRun[],
+  variant: 'slope' | 'latest',
+  reduce: (samples: SoakSample[], key: keyof SoakSample) => number | null,
+  meta: (
+    metric: (typeof SOAK_METRICS)[number],
+  ) => Pick<TrendSeries, 'title' | 'unit' | 'description'>,
+): TrendSeries[] {
+  const withSoak = runsWithSoak(runs)
+  const byMetric = SOAK_METRICS.map((metric): TrendSeries => {
     const lineByBranch = new Map<string, TrendLine>()
     let sourceFile: string | undefined
-    for (const {run, soak, sourceFile: file} of runsWithSoak(runs)) {
+    for (const {run, soak, sourceFile: file} of withSoak) {
+      const value = reduce(soak.samples ?? [], metric.key)
+      if (value === null) continue
       sourceFile ??= file
       const branch = run.git?.branch ?? 'unknown'
       const line = lineByBranch.get(branch) ?? {branch, points: []}
-      line.points.push({
-        date: new Date(run.startedAt),
-        value: slopePerMinute(soak.samples ?? [], metric.key),
-        ...pointMeta(run),
-      })
+      line.points.push({date: new Date(run.startedAt), value, ...pointMeta(run)})
       lineByBranch.set(branch, line)
     }
     return {
-      key: `soak:slope:${metric.key}`,
-      title: `soak · ${metric.title} per minute`,
-      unit: metric.unit,
-      description: metric.description,
+      key: `soak:${variant}:${metric.key}`,
       goal: 'lower',
       group: 'soak',
       sourceFile,
       lines: [...lineByBranch.values()],
+      ...meta(metric),
     }
   })
-
   return byMetric.filter((series) => series.lines.some((line) => line.points.length > 0))
+}
+
+/**
+ * Slope-over-time trend for every soak metric: reduce each run's soak series to
+ * a per-minute slope and plot it across runs. "Is the leak / degradation
+ * getting worse release over release?" — a rising or non-zero slope is the
+ * signal for any of them.
+ */
+export function soakSlopeSeries(runs: TrendRun[]): TrendSeries[] {
+  return soakHistory(
+    runs,
+    'slope',
+    (samples, key) => slopePerMinute(samples, key),
+    (metric) => ({
+      title: `soak · ${metric.title} per minute`,
+      unit: slopeUnitFor(metric.unit),
+      description: `${metric.title} change per soak minute (linear fit), per run. Flat (~0) is healthy; a rising slope across runs is a worsening leak or degradation.`,
+    }),
+  )
+}
+
+/**
+ * End-of-run value for every soak metric, across runs — a more literal history
+ * than the slope: "where did each metric land by the end of the soak, release
+ * over release?" Complements the slope view (a flat slope can still drift up in
+ * absolute terms run to run).
+ */
+export function soakLatestValueSeries(runs: TrendRun[]): TrendSeries[] {
+  return soakHistory(
+    runs,
+    'latest',
+    (samples, key) => lastSoakValue(samples, key),
+    (metric) => ({
+      title: `soak · ${metric.title} at end`,
+      unit: metric.unit,
+      description: `${metric.title} at the end of the soak run, tracked across runs. ${metric.description}`,
+    }),
+  )
 }

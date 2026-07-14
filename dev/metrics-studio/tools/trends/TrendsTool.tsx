@@ -31,6 +31,7 @@ import {
   buildSeries,
   latestSoakCharts,
   soakSlopeSeries,
+  soakLatestValueSeries,
   calibrationSeries,
   filterByRange,
   formatValue,
@@ -312,6 +313,9 @@ export function TrendsTool() {
   )
   const series = useMemo(() => buildSeries(filtered), [filtered])
   const soakSlopes = useMemo(() => soakSlopeSeries(filtered), [filtered])
+  // End-of-run soak values across runs — the "where did it land" history that
+  // complements the slope view
+  const soakEndValues = useMemo(() => soakLatestValueSeries(filtered), [filtered])
   // In-run soak charts are a single latest run — branch-filtered, but not
   // overlaid (each is one run's minute curve)
   const latestSoak = useMemo(() => latestSoakCharts(filtered), [filtered])
@@ -446,7 +450,7 @@ export function TrendsTool() {
               },
             )}
 
-            {(soakSlopes.length > 0 || latestSoak) && (
+            {(soakSlopes.length > 0 || soakEndValues.length > 0 || latestSoak) && (
               <Stack space={4}>
                 <Stack space={2}>
                   <Text size={1} weight="semibold">
@@ -458,11 +462,31 @@ export function TrendsTool() {
                 </Stack>
 
                 {soakSlopes.length > 0 && (
-                  <Grid columns={[1, 1, 2, 3]} gap={3}>
-                    {soakSlopes.map((entry) => (
-                      <SeriesCard key={entry.key} series={entry} height={128} />
-                    ))}
-                  </Grid>
+                  <Stack space={3}>
+                    <Text size={1} muted>
+                      Per-minute slope, across runs — is a leak or degradation worsening release
+                      over release?
+                    </Text>
+                    <Grid columns={[1, 1, 2, 3]} gap={3}>
+                      {soakSlopes.map((entry) => (
+                        <SeriesCard key={entry.key} series={entry} height={128} />
+                      ))}
+                    </Grid>
+                  </Stack>
+                )}
+
+                {soakEndValues.length > 0 && (
+                  <Stack space={3}>
+                    <Text size={1} muted>
+                      End-of-run value, across runs — where each metric landed by the end of the
+                      soak
+                    </Text>
+                    <Grid columns={[1, 1, 2, 3]} gap={3}>
+                      {soakEndValues.map((entry) => (
+                        <SeriesCard key={entry.key} series={entry} height={128} />
+                      ))}
+                    </Grid>
+                  </Stack>
                 )}
 
                 {latestSoak && latestSoak.charts.length > 0 && (
