@@ -79,14 +79,11 @@ function useDeleteScheduledDraft(
 
   const handleDeleteSchedule = useCallback(async () => {
     setIsDeleting(true)
+    let didDelete = false
     // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
     const run = async () => {
       await deleteOperation()
-      try {
-        onDeleteComplete?.()
-      } catch (error) {
-        console.error('onDeleteComplete callback failed:', error)
-      }
+      didDelete = true
       toast.push({
         closable: true,
         status: 'success',
@@ -120,6 +117,13 @@ function useDeleteScheduledDraft(
       .finally(() => {
         setIsDeleting(false)
         onClose()
+        if (didDelete) {
+          try {
+            onDeleteComplete?.()
+          } catch (error) {
+            console.error('onDeleteComplete callback failed:', error)
+          }
+        }
       })
   }, [toast, t, firstDocumentPreview?.title, onClose, deleteOperation, onDeleteComplete])
 
