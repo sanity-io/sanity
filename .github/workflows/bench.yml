@@ -546,6 +546,11 @@ jobs:
           pnpm bench run --mode soak --scenario singleString --minutes 10 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__soak.json"
 
+      - name: Run INP benchmarks
+        run: |
+          pnpm bench run --mode inp --scenario singleString --scenario article --sessions 4 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__inp.json"
+
       - name: Merge report
         run: pnpm bench report
 

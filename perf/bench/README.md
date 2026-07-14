@@ -41,6 +41,7 @@ runner (tsx CLI, runs from HEAD)
 | Bucket                  | Metrics                                                                                                                                                                                                                                                                                         | Gated?           |
 | :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------- |
 | Editing responsiveness  | per-keystroke keydown→paint latency (median as eFPS; p75/p90/p99 reported), fast-burst secondary, LoAF blocking + attribution                                                                                                                                                                   | median, CI-based |
+| INP (Core Web Vital)    | Interaction to Next Paint under a realistic interaction mix (click a field → type a burst → move on), computed with web-vitals' own percentile-by-count rule over ≥50 interactions; the interaction count travels alongside as confidence context                                               | report-only      |
 | Load                    | time to editable (navigation start → the form accepts a keystroke, headline), TTFB/FCP/LCP/CLS web vitals, boot-cold and open-doc-warm conditions, bundle size (exact gzip deltas), auth boot-path milestones (round trips before editable, first-request time, in-flight window — report-only) | time to editable |
 | Resources (report-only) | request count/bytes per endpoint class (exact), main-thread CPU-ms (TaskDuration etc.), post-GC heap/DOM-nodes/listeners                                                                                                                                                                        | not yet          |
 | Read-only interruptions | count + duration of transient `data-read-only` flips mid-typing                                                                                                                                                                                                                                 | reported         |
@@ -69,6 +70,9 @@ pnpm bench run --mode pageload --scenario singleString
 
 # soak check (degradation + leak slope over a long session)
 pnpm bench run --mode soak --scenario singleString --minutes 5
+
+# INP (Core Web Vital) under a realistic interaction mix — needs >=50 interactions
+pnpm bench run --mode inp --scenario singleString --sessions 3
 
 # interactive debugging: mock + `sanity dev`, type into a seeded doc yourself
 pnpm bench dev

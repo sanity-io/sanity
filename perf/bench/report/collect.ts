@@ -3,6 +3,7 @@ import os from 'node:os'
 import process from 'node:process'
 
 import {type AbScenarioResult} from '../runner/orchestrator'
+import {type InpSessionResult} from '../runner/session/inp'
 import {type InteractionSessionResult} from '../runner/session/interaction'
 import {type LoadCondition, type PageLoadSample} from '../runner/session/pageLoad'
 import {type DiffInterval} from '../stats/bootstrap'
@@ -208,6 +209,56 @@ export function collectAbsoluteInteraction(
     ...(collectResourceSide(sessions)
       ? {resources: {experiment: collectResourceSide(sessions)!}}
       : {}),
+  }
+}
+
+/**
+ * INP sessions → scenario report. INP is a Core Web Vital, reported (not
+ * gated) during burn-in like the other vitals; each session contributes one
+ * INP value. Filed under `pageload` kind so the dashboard groups it with the
+ * load vitals (see the dashboard's describeSeries), and the interaction-count
+ * row travels alongside so a low-confidence INP (few interactions) is visible.
+ */
+export function collectInp(
+  scenario: string,
+  sessions: InpSessionResult[],
+  sourceFile?: string,
+): ScenarioReport {
+  const inpValues = sessions.map((session) => [session.inpMs])
+  const interactionCounts = sessions.map((session) => [session.interactionCount])
+  const metrics: MetricReport[] = [
+    {
+      label: 'INP',
+      unit: 'ms',
+      presentAsEfps: false,
+      experiment: {sessions: inpValues, summary: summarize(inpValues.flat())},
+    },
+    {
+      label: 'INP interactions',
+      unit: 'count',
+      presentAsEfps: false,
+      experiment: {
+        sessions: interactionCounts,
+        summary: summarize(interactionCounts.flat()),
+      },
+    },
+  ]
+  return {
+    scenario,
+    ...(sourceFile ? {sourceFile} : {}),
+    kind: 'pageload',
+    metrics,
+    failures: [],
+    interruptions: {
+      experiment: sessions.reduce(
+        (acc, session) => ({
+          count: acc.count + session.readOnlyInterruptions.count,
+          totalMs: acc.totalMs + session.readOnlyInterruptions.totalMs,
+        }),
+        {count: 0, totalMs: 0},
+      ),
+    },
+    loafAttribution: [],
   }
 }
 

@@ -9,7 +9,7 @@ import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 
 /** Characters cycled through while typing (letters + digits only). */
-const CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+export const CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
 /**
  * The Event Timing API cannot observe interactions faster than this (spec
@@ -143,7 +143,7 @@ export const HERMETICITY_HINT = [
   'Verify with: pnpm build:bench && pnpm bench:test -- --scenario singleString --sessions 2',
 ]
 
-async function drainEntries(page: Page): Promise<BenchEntries> {
+export async function drainEntries(page: Page): Promise<BenchEntries> {
   // Two rAFs so trailing presentation work is attributed, then drain
   await page.evaluate(
     () =>
@@ -160,15 +160,12 @@ async function drainEntries(page: Page): Promise<BenchEntries> {
 }
 
 /**
- * Map Event Timing entries to per-keystroke latencies: group by
- * interactionId (keydown/keyup of one press share an id), take the max
- * duration per interaction, and account for unobservably fast keystrokes at
- * the floor (see OBSERVABILITY_FLOOR_MS).
+ * Group Event Timing entries into per-interaction latencies: several entries
+ * (keydown/keyup, pointerdown/pointerup/click) share one interactionId, and
+ * the interaction's latency is the max duration across them — the same rule
+ * web-vitals INP uses. Entries with interactionId 0 aren't interactions.
  */
-function toLatencies(
-  entries: BenchEntries,
-  sentKeystrokes: number,
-): {samples: number[]; belowFloorCount: number} {
+export function interactionMaxDurations(entries: BenchEntries): number[] {
   const byInteraction = new Map<number, number>()
   for (const event of entries.events) {
     if (event.interactionId > 0) {
@@ -178,7 +175,20 @@ function toLatencies(
       )
     }
   }
-  const observed = [...byInteraction.values()]
+  return [...byInteraction.values()]
+}
+
+/**
+ * Map Event Timing entries to per-keystroke latencies: group by
+ * interactionId (keydown/keyup of one press share an id), take the max
+ * duration per interaction, and account for unobservably fast keystrokes at
+ * the floor (see OBSERVABILITY_FLOOR_MS).
+ */
+function toLatencies(
+  entries: BenchEntries,
+  sentKeystrokes: number,
+): {samples: number[]; belowFloorCount: number} {
+  const observed = interactionMaxDurations(entries)
   if (observed.length > sentKeystrokes) {
     throw new SessionError(
       'sample-count-mismatch',
@@ -211,7 +221,7 @@ function fieldInput(page: Page, target: InteractionTarget): Locator {
  * field is activated by clicking it (dev/efps measureFpsForPte did the same
  * dance), so click the field root first, then the editable itself.
  */
-async function focusField(
+export async function focusField(
   page: Page,
   target: InteractionTarget,
   timeout: number,
@@ -272,7 +282,7 @@ function getAtPath(doc: Record<string, unknown> | null, dottedPath: string): unk
 const isFormReadOnly = () =>
   document.querySelector('[data-testid="form-view"]')?.getAttribute('data-read-only') === 'true'
 
-async function typeKeystrokes(
+export async function typeKeystrokes(
   page: Page,
   count: number,
   cadenceMs: number,
@@ -787,7 +797,7 @@ interface CpuCounters {
 }
 
 /** Cumulative main-thread counters, in seconds (CDP Performance domain). */
-async function readCpuMetrics(cdp: SessionContext['cdp']): Promise<CpuCounters | null> {
+export async function readCpuMetrics(cdp: SessionContext['cdp']): Promise<CpuCounters | null> {
   try {
     await cdp.send('Performance.enable')
     const {metrics} = await cdp.send('Performance.getMetrics')
@@ -804,7 +814,9 @@ async function readCpuMetrics(cdp: SessionContext['cdp']): Promise<CpuCounters |
 }
 
 /** Post-GC heap/DOM snapshot — stable retention signal (report-only). */
-async function readMemorySnapshot(cdp: SessionContext['cdp']): Promise<SessionMemory | null> {
+export async function readMemorySnapshot(
+  cdp: SessionContext['cdp'],
+): Promise<SessionMemory | null> {
   try {
     await cdp.send('Performance.enable')
     await cdp.send('HeapProfiler.enable')

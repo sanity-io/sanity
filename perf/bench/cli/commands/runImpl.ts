@@ -11,6 +11,7 @@ import {getBenchTls} from '../../mock-api/tls'
 import {
   collectAbInteraction,
   collectAbsoluteInteraction,
+  collectInp,
   collectPageLoad,
   collectRunMetadata,
 } from '../../report/collect'
@@ -20,6 +21,7 @@ import {measureBundleSize} from '../../runner/bundleSize'
 import {bundleInstrumentation} from '../../runner/inject'
 import {runAbScenario} from '../../runner/orchestrator'
 import {startSide} from '../../runner/servers'
+import {type InpSessionResult, runInpSession} from '../../runner/session/inp'
 import {
   type InteractionSessionResult,
   runInteractionSession,
@@ -162,6 +164,34 @@ export async function runBench(argv: RunArgs): Promise<void> {
           loafAttribution: [],
           soak: {minutes: soak.minutes, samples: soak.samples},
         })
+      }
+    } else if (argv.mode === 'inp') {
+      for (const scenario of scenarios) {
+        console.log(`\n${chalk.cyan(scenario.name)} — INP, ${argv.sessions} session(s)`)
+        const results: InpSessionResult[] = []
+        for (let i = 0; i < argv.sessions; i++) {
+          const result = await withSessionRetries(scenario.name, () =>
+            runInpSession({
+              browser,
+              running,
+              scenario,
+              instrumentation,
+              config: {cpuThrottleRate: argv.throttle},
+            }),
+          )
+          results.push(result)
+          console.log(
+            `  session ${i + 1}/${argv.sessions}: INP ${result.inpMs.toFixed(0)}ms ` +
+              `across ${result.interactionCount} interactions` +
+              `${result.reportable ? '' : chalk.yellow(' (below reportable interaction count)')}`,
+          )
+        }
+        const inpValues = results.map((result) => result.inpMs)
+        console.log(
+          `  ${chalk.bold('INP')} (experiment): p50 ${summarize(inpValues).median.toFixed(0)}ms ` +
+            `across ${results.length} session(s)`,
+        )
+        scenarioReports.push(collectInp(scenario.name, results, scenario.sourceFile))
       }
     } else if (argv.mode === 'pageload') {
       const sizes = await measureBundleSize(dist)

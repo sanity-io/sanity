@@ -34,7 +34,7 @@ export const runCommand = command(
       }),
     ),
     mode: withDefault(
-      option('--mode', choice(['interaction', 'pageload', 'soak']), {
+      option('--mode', choice(['interaction', 'pageload', 'soak', 'inp']), {
         description: message`What to measure`,
       }),
       'interaction' as const,
@@ -102,7 +102,9 @@ export const runCommand = command(
       4,
     ),
   }),
-  {description: message`Run benchmarks against the built studio (interaction, pageload, or soak)`},
+  {
+    description: message`Run benchmarks against the built studio (interaction, pageload, soak, or inp)`,
+  },
 )
 
 export type RunArgs = InferValue<typeof runCommand>

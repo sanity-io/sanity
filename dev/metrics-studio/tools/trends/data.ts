@@ -275,6 +275,22 @@ function describeSeries(
       goal: 'lower',
     }
   }
+  if (label === 'INP interactions') {
+    return {
+      group: 'responsiveness',
+      description:
+        'How many distinct interactions the INP session observed — confidence context for the INP number (the percentile rule wants at least 50). Not a judged metric.',
+      goal: 'context',
+    }
+  }
+  if (label.endsWith('INP')) {
+    return {
+      group: 'responsiveness',
+      description:
+        'Interaction to Next Paint — a high percentile of interaction latencies (click/type → next paint) under a realistic interaction mix (Core Web Vital).',
+      goal: 'lower',
+    }
+  }
   if (label.includes('auth round trips')) {
     return {
       group: 'load',
