@@ -224,8 +224,9 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
   },
   {
     id: 'environment',
-    title: 'Environment',
-    description: 'CI host speed — context for reading every metric above.',
+    title: 'Calibration',
+    description:
+      'CI host speed per run — honesty context for every other tab, since absolute numbers are host-relative.',
   },
 ]
 

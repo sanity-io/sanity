@@ -28,7 +28,7 @@ import {
   useClickOutsideEvent,
 } from '@sanity/ui'
 import {ParentSize} from '@visx/responsive'
-import {useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
@@ -65,6 +65,27 @@ const RANGES = [
 ] as const
 
 type DataSource = 'live' | DebugSource
+
+/**
+ * Focus-pulse for a jumped-to / deep-linked chart: the ring fades in, holds,
+ * then eases out over ~2s so the eye is drawn to the right card without a
+ * jarring flash. Injected once at the tool root.
+ */
+const FOCUS_PULSE_CSS = `
+@keyframes chart-focus-pulse {
+  0%   { box-shadow: 0 0 0 0 var(--card-focus-ring-color, #556bfc); }
+  15%  { box-shadow: 0 0 0 3px var(--card-focus-ring-color, #556bfc); }
+  70%  { box-shadow: 0 0 0 3px var(--card-focus-ring-color, #556bfc); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+}
+.chart-focus-pulse {
+  animation: chart-focus-pulse 2s ease-in-out;
+  border-radius: 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chart-focus-pulse { animation: none; box-shadow: 0 0 0 2px var(--card-focus-ring-color, #556bfc); }
+}
+`
 
 interface LiveState {
   runs: TrendRun[] | null
@@ -234,12 +255,18 @@ function BranchPicker(props: {
   )
 }
 
-/** The silence / snooze / mark-fixed menu, shared by the feed and chart cards. */
+/**
+ * The chart-card acknowledgement menu behind a single ⋮. When the metric is
+ * active it offers silence / snooze / (mark-fixed for regressions); when it's
+ * already acknowledged it offers Un-ack — one control either way.
+ */
 function AckMenu(props: {
   seriesKey: string
   branch: string
   direction: 'regression' | 'improvement' | 'neutral'
+  acked: boolean
   onAck: (state: 'silenced' | 'snoozed' | 'fixed') => void
+  onUnack: () => void
 }) {
   return (
     <MenuButton
@@ -250,23 +277,47 @@ function AckMenu(props: {
           padding={2}
           fontSize={1}
           icon={EllipsisVerticalIcon}
-          aria-label="Acknowledge"
+          aria-label={props.acked ? 'Acknowledged' : 'Acknowledge'}
         />
       }
       menu={
         <Menu>
-          <MenuItem text="Silence" onClick={() => props.onAck('silenced')} />
-          <MenuItem text="Snooze 7d" onClick={() => props.onAck('snoozed')} />
-          {/* "Mark fixed" only makes sense for a regression — an improvement
-              has nothing to fix */}
-          {props.direction === 'regression' && (
-            <MenuItem text="Mark fixed" onClick={() => props.onAck('fixed')} />
+          {props.acked ? (
+            <MenuItem text="Un-ack" onClick={props.onUnack} />
+          ) : (
+            <>
+              <MenuItem text="Silence" onClick={() => props.onAck('silenced')} />
+              <MenuItem text="Snooze 7d" onClick={() => props.onAck('snoozed')} />
+              {/* "Mark fixed" only makes sense for a regression — an improvement
+                  has nothing to fix */}
+              {props.direction === 'regression' && (
+                <MenuItem text="Mark fixed" onClick={() => props.onAck('fixed')} />
+              )}
+            </>
           )}
         </Menu>
       }
       popover={{portal: true}}
     />
   )
+}
+
+/**
+ * Reduce drift results to one per series (the worst move), regressions winning
+ * over improvements. Module-scoped and pure so the memos that call it don't
+ * carry it as a dependency (react-compiler).
+ */
+function worstBySeries(entries: DriftResult[]): Map<string, DriftResult> {
+  const map = new Map<string, DriftResult>()
+  for (const entry of entries) {
+    const current = map.get(entry.seriesKey)
+    const better =
+      !current ||
+      (entry.direction === 'regression' && current.direction !== 'regression') ||
+      Math.abs(worstOf(entry).deltaFraction) > Math.abs(worstOf(current).deltaFraction)
+    if (better) map.set(entry.seriesKey, entry)
+  }
+  return map
 }
 
 function driftBadge(entry: DriftResult): {tone: 'caution' | 'positive'; label: string} {
@@ -283,26 +334,72 @@ function SeriesCard(props: {
   series: TrendSeries
   height: number
   drift?: DriftResult
+  silenced?: DriftResult
+  focused?: boolean
+  onFocus?: () => void
   onAck?: (state: 'silenced' | 'snoozed' | 'fixed') => void
+  onUnack?: () => void
 }) {
-  const {series, height, drift, onAck} = props
+  const {series, height, drift, silenced, focused, onFocus, onAck, onUnack} = props
   // Latest value of the first line — a headline number only when not comparing
   const latest = series.lines.length === 1 ? series.lines[0].points.at(-1) : undefined
   const badge = drift ? driftBadge(drift) : null
   return (
     // A drifted chart tints its card so it stands out in the grid; the badge
     // in the header carries the exact move and the ⋮ menu acknowledges it —
-    // the same silence/snooze/fix as the feed, right where you're looking.
-    <Card border padding={3} radius={2} tone={badge ? badge.tone : 'default'}>
+    // the same silence/snooze/fix as the feed, right where you're looking. A
+    // silenced chart drops the tint but keeps a muted marker + Un-ack, so it's
+    // reversible without opening the feed. `focused` flashes a ring when you
+    // deep-link / jump to this chart from the feed.
+    <Card
+      id={`chart-${series.key}`}
+      border
+      padding={3}
+      radius={2}
+      tone={badge ? badge.tone : 'default'}
+      // A short pulsing ring when jumped-to / deep-linked (see FOCUS_PULSE_CSS)
+      className={focused ? 'chart-focus-pulse' : undefined}
+    >
       <Stack space={3}>
-        <Flex align="center" justify="space-between" gap={2}>
-          <Flex align="center" gap={2} style={{minWidth: 0}}>
-            <Text size={1} weight="medium" textOverflow="ellipsis">
-              {series.title}
-            </Text>
+        {/* Center-aligned: the title + badge co-center with the value/menu/info
+            cluster on the common single-line case, and the title wraps (no
+            ellipsis) within its flex-1 box when it's too long to fit */}
+        <Flex align="center" justify="space-between" gap={3}>
+          <Flex align="center" gap={2} flex={1} style={{minWidth: 0, flexWrap: 'wrap'}}>
+            {/* Clicking the title deep-links to this chart (shareable focus) */}
+            {onFocus ? (
+              <Box
+                as="button"
+                onClick={onFocus}
+                title="Focus this chart"
+                style={{
+                  background: 'none',
+                  border: 0,
+                  padding: 0,
+                  margin: 0,
+                  cursor: 'pointer',
+                  font: 'inherit',
+                  color: 'inherit',
+                  textAlign: 'left',
+                }}
+              >
+                <Text size={1} weight="medium">
+                  {series.title}
+                </Text>
+              </Box>
+            ) : (
+              <Text size={1} weight="medium">
+                {series.title}
+              </Text>
+            )}
             {badge && (
               <Badge tone={badge.tone} fontSize={0} mode="default" style={{flexShrink: 0}}>
                 {badge.label}
+              </Badge>
+            )}
+            {!badge && silenced && (
+              <Badge tone="default" fontSize={0} mode="outline" style={{flexShrink: 0}}>
+                acknowledged
               </Badge>
             )}
           </Flex>
@@ -316,12 +413,14 @@ function SeriesCard(props: {
                 {formatValue(latest.value, series.unit)}
               </Text>
             )}
-            {drift && onAck && (
+            {(drift || silenced) && (onAck || onUnack) && (
               <AckMenu
-                seriesKey={drift.seriesKey}
-                branch={drift.branch}
-                direction={drift.direction}
-                onAck={onAck}
+                seriesKey={(drift ?? silenced)!.seriesKey}
+                branch={(drift ?? silenced)!.branch}
+                direction={(drift ?? silenced)!.direction}
+                acked={!drift && Boolean(silenced)}
+                onAck={onAck ?? (() => {})}
+                onUnack={onUnack ?? (() => {})}
               />
             )}
             {/* Context hidden behind the info button so the grid stays
@@ -350,20 +449,30 @@ function SeriesCard(props: {
 function ChartGrid(props: {
   series: TrendSeries[]
   driftBySeries?: Map<string, DriftResult>
+  silencedBySeries?: Map<string, DriftResult>
   drift?: DriftState
+  focusedKey?: string | null
+  onFocusMetric?: (seriesKey: string) => void
 }) {
   return (
     <Grid columns={[1, 1, 2, 3]} gap={3}>
       {props.series.map((entry) => {
         const entryDrift = props.driftBySeries?.get(entry.key)
+        const entrySilenced = props.silencedBySeries?.get(entry.key)
         return (
           <SeriesCard
             key={entry.key}
             series={entry}
             height={128}
             drift={entryDrift}
+            silenced={entrySilenced}
+            focused={props.focusedKey === entry.key}
+            onFocus={props.onFocusMetric ? () => props.onFocusMetric!(entry.key) : undefined}
             onAck={
               entryDrift && props.drift ? (state) => props.drift!.ack(entryDrift, state) : undefined
+            }
+            onUnack={
+              entrySilenced && props.drift ? () => props.drift!.clear(entrySilenced) : undefined
             }
           />
         )
@@ -529,18 +638,53 @@ export function TrendsTool() {
       }),
     [series, soakHasData, calibration],
   )
-  const [tabParam, setTabParam] = useUrlState('tab', tabs[0]?.id ?? 'vitals')
+  const groupById = useMemo(() => {
+    const map = new Map<string, TrendGroup>()
+    for (const entry of series) map.set(entry.key, entry.group)
+    return map
+  }, [series])
+
+  // Deep-linkable focused chart: the `chart` URL param names the series to
+  // jump to (shareable). Jumping from a drift-feed row or a chart header writes
+  // it (pushState, so Back returns) and flashes a focus ring; the URL param
+  // persists so the link stays shareable/reloadable.
+  const [chartParam, setChartParam] = useUrlState('chart', '')
+
+  // A deep-linked chart selects its own tab when no explicit tab is in the URL.
+  const [tabParam, setTabParam] = useUrlState(
+    'tab',
+    (chartParam && groupById.get(chartParam)) || tabs[0]?.id || 'vitals',
+  )
   const activeTab = tabs.find((tab) => tab.id === tabParam) ?? tabs[0]
 
   // Shared drift state (feeds both the pinned feed and the per-tab badges, so
   // they can't disagree). Badge = active regressions in that group.
   const drift = useDriftState(series)
   const showBranch = series.some((s) => s.lines.length > 1)
-  const groupById = useMemo(() => {
-    const map = new Map<string, TrendGroup>()
-    for (const entry of series) map.set(entry.key, entry.group)
-    return map
-  }, [series])
+  const [focusedKey, setFocusedKey] = useState<string | null>(chartParam || null)
+  const scrollToChart = useCallback((seriesKey: string) => {
+    requestAnimationFrame(() => {
+      document
+        .getElementById(`chart-${seriesKey}`)
+        ?.scrollIntoView({behavior: 'smooth', block: 'center'})
+    })
+  }, [])
+  const focusMetric = (seriesKey: string) => {
+    const group = groupById.get(seriesKey)
+    if (group) setTabParam(group, 'push')
+    setChartParam(seriesKey, 'push')
+    setFocusedKey(seriesKey)
+  }
+  // Side-effects of a focus (DOM scroll + auto-clearing the ring) live in an
+  // effect keyed on the focused chart. setState only happens in the timer
+  // callback, not synchronously in the effect body (react-compiler).
+  useEffect(() => {
+    if (!focusedKey) return
+    scrollToChart(focusedKey)
+    const timer = window.setTimeout(() => setFocusedKey((k) => (k === focusedKey ? null : k)), 2200)
+    return () => window.clearTimeout(timer)
+  }, [focusedKey, scrollToChart])
+
   const regressionsByGroup = useMemo(() => {
     const counts = new Map<TrendGroup, number>()
     for (const entry of drift.active) {
@@ -550,24 +694,22 @@ export function TrendsTool() {
     }
     return counts
   }, [drift.active, groupById])
-  // Active drift per series (for flagging the chart card itself). A series can
-  // drift on more than one branch; keep the worst so the card shows the biggest
-  // move, regressions winning over improvements.
-  const driftBySeries = useMemo(() => {
-    const map = new Map<string, DriftResult>()
-    for (const entry of drift.active) {
-      const current = map.get(entry.seriesKey)
-      const better =
-        !current ||
-        (entry.direction === 'regression' && current.direction !== 'regression') ||
-        Math.abs(worstOf(entry).deltaFraction) > Math.abs(worstOf(current).deltaFraction)
-      if (better) map.set(entry.seriesKey, entry)
-    }
+  // Drift per series (for flagging the chart card itself). A series can drift
+  // on more than one branch; keep the worst so the card shows the biggest move,
+  // regressions winning over improvements. (worstBySeries is module-scoped.)
+  const driftBySeries = useMemo(() => worstBySeries(drift.active), [drift.active])
+  // Silenced/snoozed per series — the card keeps a muted "acknowledged" marker
+  // with an Un-ack, so you can reverse it without opening the feed. Active
+  // drift takes precedence, so drop any series that's also active.
+  const silencedBySeries = useMemo(() => {
+    const map = worstBySeries(drift.silenced)
+    for (const key of driftBySeries.keys()) map.delete(key)
     return map
-  }, [drift.active])
+  }, [drift.silenced, driftBySeries])
 
   return (
     <PortalProvider element={portalElement}>
+      <style dangerouslySetInnerHTML={{__html: FOCUS_PULSE_CSS}} />
       <Card ref={setPortalElement} height="fill" overflow="auto">
         <Container width={3} padding={4}>
           <Stack space={4}>
@@ -634,7 +776,7 @@ export function TrendsTool() {
                   </Text>
                   <Text size={1} muted>
                     Because the CI machine varies day to day, absolute numbers are host-relative:
-                    before trusting a spike, check the host calibration in the Environment tab — if
+                    before trusting a spike, check the host calibration in the Calibration tab — if
                     it spikes on the same day, suspect the runner, not the studio. Flat lines are
                     the goal; the ⓘ on each chart explains what it measures.
                   </Text>
@@ -663,7 +805,7 @@ export function TrendsTool() {
 
             {/* The one always-pinned signal: what needs attention right now.
                 Silent when everything is steady and unacked. */}
-            <DriftFeed drift={drift} showBranch={showBranch} />
+            <DriftFeed drift={drift} showBranch={showBranch} onFocusMetric={focusMetric} />
 
             {/* Metric groups behind tabs so the page isn't one long scroll.
                 Each tab badges its count of active regressions (same drift
@@ -721,7 +863,10 @@ export function TrendsTool() {
                             : series.filter((entry) => entry.group === activeTab.id)
                         }
                         driftBySeries={driftBySeries}
+                        silencedBySeries={silencedBySeries}
                         drift={drift}
+                        focusedKey={focusedKey}
+                        onFocusMetric={focusMetric}
                       />
                     )}
                   </Stack>

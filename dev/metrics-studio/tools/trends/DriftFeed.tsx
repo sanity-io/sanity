@@ -27,8 +27,9 @@ function DriftRow(props: {
   acked: boolean
   onAck: (state: 'silenced' | 'snoozed' | 'fixed') => void
   onClear: () => void
+  onFocus: () => void
 }) {
-  const {entry, showBranch, acked, onAck, onClear} = props
+  const {entry, showBranch, acked, onAck, onClear, onFocus} = props
   const worst = worstOf(entry)
   return (
     <Flex align="center" gap={2} wrap="wrap">
@@ -39,9 +40,9 @@ function DriftRow(props: {
       >
         {entry.direction === 'regression' ? '↑ regression' : '↓ improvement'}
       </Badge>
-      <Text size={1} weight="medium">
-        {entry.title}
-      </Text>
+      {/* The metric name navigates to its chart (switches tab via pushState,
+          then scrolls to it) — looks like a button, behaves like a link */}
+      <Button mode="bleed" padding={1} onClick={onFocus} title="Go to chart" text={entry.title} />
       {showBranch && (
         <Text size={1} muted>
           ({entry.branch})
@@ -101,8 +102,12 @@ function DriftRow(props: {
  * (shared driftAck docs, realtime, half-lived). Acked entries collapse into
  * a reveal footer. Renders nothing when everything is steady and unacked.
  */
-export function DriftFeed(props: {drift: DriftState; showBranch: boolean}) {
-  const {drift, showBranch} = props
+export function DriftFeed(props: {
+  drift: DriftState
+  showBranch: boolean
+  onFocusMetric: (seriesKey: string) => void
+}) {
+  const {drift, showBranch, onFocusMetric} = props
   const {active, silenced, regressionCount} = drift
   // Collapsed by default now that each tab carries its own review-count badge —
   // this bar is the roll-up you expand for the details (which metric, how much,
@@ -153,6 +158,7 @@ export function DriftFeed(props: {drift: DriftState; showBranch: boolean}) {
                 acked={false}
                 onAck={(state) => drift.ack(entry, state)}
                 onClear={() => drift.clear(entry)}
+                onFocus={() => onFocusMetric(entry.seriesKey)}
               />
             ))}
           </Stack>
@@ -161,8 +167,8 @@ export function DriftFeed(props: {drift: DriftState; showBranch: boolean}) {
           <Stack space={2}>
             <Button
               mode="bleed"
-              fontSize={0}
-              padding={0}
+              fontSize={1}
+              padding={2}
               text={
                 showAcked
                   ? `Hide ${silenced.length} acknowledged`
@@ -179,6 +185,7 @@ export function DriftFeed(props: {drift: DriftState; showBranch: boolean}) {
                   acked
                   onAck={(state) => drift.ack(entry, state)}
                   onClear={() => drift.clear(entry)}
+                  onFocus={() => onFocusMetric(entry.seriesKey)}
                 />
               ))}
           </Stack>
