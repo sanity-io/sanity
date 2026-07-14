@@ -17,6 +17,7 @@
  */
 import {spawnSync} from 'node:child_process'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 
@@ -85,7 +86,12 @@ export function prepareReference(argv: PrepareReferenceArgs): void {
     return
   }
 
-  const worktree = path.resolve(REPO_ROOT, '..', 'reference')
+  // A unique temp dir, never a repo sibling: a fixed `../reference` could
+  // collide with an unrelated directory that the finally block would then
+  // `git worktree remove --force`. Not inside the repo either — the nested
+  // checkout would be picked up by test/build globs (e.g. vitest's
+  // `./**/__tests__/**`)
+  const worktree = fs.mkdtempSync(path.join(os.tmpdir(), 'bench-reference-'))
   try {
     const headSha = git(['rev-parse', 'HEAD'], REPO_ROOT)
     step('git', ['worktree', 'add', worktree, mergeBase], REPO_ROOT)
@@ -119,6 +125,8 @@ export function prepareReference(argv: PrepareReferenceArgs): void {
     // CI runners are ephemeral; locally, don't leave the worktree behind
     if (!process.env.CI) {
       spawnSync('git', ['worktree', 'remove', '--force', worktree], {cwd: REPO_ROOT})
+      // If `worktree add` never ran (or `remove` refused), the temp dir remains
+      fs.rmSync(worktree, {recursive: true, force: true})
     }
   }
 }
