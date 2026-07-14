@@ -187,6 +187,21 @@ How it works:
 - The flag is declared in `dev/test-studio/turbo.json` so turbo-cached builds are invalidated when it changes
 - Enabling devtools makes `sanity build` noticeably slower; that's why it's opt-in via the env flag
 
+### Studio performance benchmarks (perf/bench — No Auth Required)
+
+The `perf/bench` suite benchmarks a built studio against a **local mock** of the Sanity API — fully hermetic, no tokens, no network:
+
+```bash
+pnpm build:bench                                   # build packages + bench studio (required first)
+pnpm bench help                                    # list all bench CLI commands
+pnpm bench run --scenario singleString             # absolute interaction benchmark
+pnpm bench run --mode pageload --scenario singleString  # load vitals + bundle size
+pnpm bench:unit                                    # mock-contract + stats unit tests
+pnpm bench dev                                     # mock + `sanity dev` for interactive debugging
+```
+
+See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. `dev/efps` is the legacy perf suite, kept for reference while perf/bench burns in.
+
 ### E2E Tests (Token Required)
 
 E2E tests require authentication tokens. Add these to `.env.local` in the repo root:

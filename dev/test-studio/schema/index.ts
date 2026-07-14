@@ -95,6 +95,7 @@ import recursive from './debug/recursive'
 import recursiveArray from './debug/recursiveArray'
 import recursiveObjectTest, {recursiveObject} from './debug/recursiveObject'
 import recursivePopover from './debug/recursivePopover'
+import {pageDocRepro, sectionDocRepro} from './debug/referenceCreateButtonRepro'
 import removeRestoreAction from './debug/removeRestoreAction'
 import reservedFieldNames from './debug/reservedFieldNames'
 import review from './debug/review'
@@ -285,6 +286,8 @@ export function createSchemaTypes(projectId: string) {
     namedDeprecatedArray,
     notitle,
     objectsDebug,
+    pageDocRepro,
+    sectionDocRepro,
     longValidationTestType,
     poppers,
     presence,
