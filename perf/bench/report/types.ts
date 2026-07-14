@@ -65,7 +65,22 @@ export interface ScenarioReport {
    * single-shard/local documents (the document-level value applies).
    */
   runner?: {calibrationMs: number}
+  /**
+   * How the metrics are rendered/grouped (interaction vs pageload charts).
+   * Soak and INP reports reuse these kinds but are distinct measurement modes;
+   * see `mode` for the unique discriminator.
+   */
   kind: 'interaction' | 'pageload'
+  /**
+   * The measurement mode that produced this report. Defaults to `kind`, but
+   * soak and INP set it explicitly so they don't collide with the plain
+   * interaction/pageload reports in the same run — it's what makes the stored
+   * `_key` (mode+scenario) and the shard-merge dedup unique. Without it, a
+   * track-main run's soak report (kind `interaction`) and INP report (kind
+   * `pageload`) key-collide with the interaction/pageLoad reports and the
+   * merge throws.
+   */
+  mode?: 'interaction' | 'pageload' | 'soak' | 'inp'
   metrics: MetricReport[]
   /** Why A/B sampling stopped (absent in absolute mode). */
   stoppedBy?: 'converged' | 'budget' | 'max-sessions'

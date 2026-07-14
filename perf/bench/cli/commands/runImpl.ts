@@ -158,6 +158,9 @@ export async function runBench(argv: RunArgs): Promise<void> {
           scenario: scenario.name,
           sourceFile: scenario.sourceFile,
           kind: 'interaction',
+          // Distinct from the plain interaction report so the two don't
+          // collide on the stored _key / shard-merge dedup (see ScenarioReport.mode)
+          mode: 'soak',
           metrics: [],
           failures: [],
           interruptions: {experiment: soak.interruptions},

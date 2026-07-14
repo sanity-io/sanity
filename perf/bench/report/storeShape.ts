@@ -23,7 +23,7 @@ export function toStorableRun(document: BenchRunDocument) {
     ...document,
     scenarios: document.scenarios.map((scenario) => ({
       ...scenario,
-      _key: `${scenario.kind}-${scenario.scenario}`,
+      _key: `${scenario.mode ?? scenario.kind}-${scenario.scenario}`,
       metrics: scenario.metrics.map((metric, index) => ({
         ...metric,
         _key: `metric-${index}`,

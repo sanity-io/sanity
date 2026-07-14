@@ -23,13 +23,15 @@ export function mergeShards(shards: BenchRunDocument[]): BenchRunDocument {
     })),
   )
 
-  // kind+scenario is the stored document's array `_key` (see storeShape.ts) —
+  // mode+scenario is the stored document's array `_key` (see storeShape.ts) —
   // duplicate shard inputs (e.g. an artifact downloaded twice) would produce
-  // duplicate _keys and silently double every series, so fail loudly instead
+  // duplicate _keys and silently double every series, so fail loudly instead.
+  // `mode` (not `kind`) so soak/INP reports don't collide with the plain
+  // interaction/pageLoad reports in a track-main run.
   const seen = new Set<string>()
   const duplicates = new Set<string>()
   for (const scenario of scenarios) {
-    const key = `${scenario.kind}-${scenario.scenario}`
+    const key = `${scenario.mode ?? scenario.kind}-${scenario.scenario}`
     if (seen.has(key)) duplicates.add(key)
     seen.add(key)
   }

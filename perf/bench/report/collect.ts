@@ -247,6 +247,9 @@ export function collectInp(
     scenario,
     ...(sourceFile ? {sourceFile} : {}),
     kind: 'pageload',
+    // Distinct from the plain pageLoad report so the two don't collide on the
+    // stored _key / shard-merge dedup (see ScenarioReport.mode)
+    mode: 'inp',
     metrics,
     failures: [],
     interruptions: {

@@ -94,16 +94,17 @@ export function writeMergedReport(resultsDirArg?: string): void {
 
   fs.writeFileSync(path.join(resultsDir, 'merged.json'), JSON.stringify(merged, null, 2))
 
-  // An A/B run also emits an absolute-mode variant for storage: the trends
-  // dashboard series is absolute, so a labeled PR is stored as its own
-  // (experiment-side) absolute numbers under the PR branch — comparable to
-  // main and across PRs. Written alongside; the store step picks it up.
-  if (merged.mode === 'ab') {
-    fs.writeFileSync(
-      path.join(resultsDir, 'merged-absolute.json'),
-      JSON.stringify(toAbsolute(merged), null, 2),
-    )
-  }
+  // Always emit an absolute-mode variant for storage: the trends dashboard
+  // series is absolute, so a labeled PR is stored as its own (experiment-side)
+  // absolute numbers under the PR branch — comparable to main and across PRs.
+  // toAbsolute is a no-op on an already-absolute run (nothing to strip), which
+  // is exactly what a reference-skipped PR produces — without this the store
+  // step would find no artifact and never store the PR series. The store step
+  // picks this file up.
+  fs.writeFileSync(
+    path.join(resultsDir, 'merged-absolute.json'),
+    JSON.stringify(toAbsolute(merged), null, 2),
+  )
 
   fs.writeFileSync(
     path.join(resultsDir, 'report.md'),

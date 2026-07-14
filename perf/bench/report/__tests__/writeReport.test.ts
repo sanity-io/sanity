@@ -1,7 +1,8 @@
 import {describe, expect, it} from 'vitest'
 
+import {mergeShards} from '../mergeShards'
 import {documentIdForRun} from '../storeToSanity'
-import {type BenchRunDocument, type MetricReport} from '../types'
+import {type BenchRunDocument, type MetricReport, type ScenarioReport} from '../types'
 import {toAbsolute} from '../writeReport'
 
 const AB_METRIC: MetricReport = {
@@ -110,6 +111,70 @@ describe('toAbsolute', () => {
     expect(absolute.runner).toEqual(AB_RUN.runner)
     expect(absolute.startedAt).toBe(AB_RUN.startedAt)
     expect(absolute.completedAt).toBe(AB_RUN.completedAt)
+  })
+
+  it('is a safe no-op on an already-absolute run', () => {
+    // writeReport now always emits merged-absolute.json (a reference-skipped PR
+    // produces absolute shards); toAbsolute must pass those through cleanly so
+    // the PR series still gets stored.
+    const absoluteRun: BenchRunDocument = {
+      ...AB_RUN,
+      mode: 'absolute',
+      scenarios: [
+        {
+          ...AB_RUN.scenarios[0],
+          metrics: [{...AB_METRIC, reference: undefined, comparison: undefined}],
+          interruptions: {experiment: {count: 1, totalMs: 200}},
+          resources: {experiment: {requestCount: 10, requestBytes: 1000, byClass: {listen: 3}}},
+        },
+      ],
+      bundle: {experiment: {initialJsBytes: 100, totalJsBytes: 200, chunkCount: 3}},
+    }
+    expect(toAbsolute(absoluteRun)).toEqual(absoluteRun)
+  })
+})
+
+describe('mergeShards', () => {
+  const shard = (scenario: ScenarioReport): BenchRunDocument => ({
+    ...AB_RUN,
+    mode: 'absolute',
+    scenarios: [scenario],
+  })
+  const report = (
+    scenarioName: string,
+    kind: ScenarioReport['kind'],
+    mode?: ScenarioReport['mode'],
+  ): ScenarioReport => ({
+    scenario: scenarioName,
+    kind,
+    ...(mode ? {mode} : {}),
+    metrics: [],
+    failures: [],
+    interruptions: {experiment: {count: 0, totalMs: 0}},
+    loafAttribution: [],
+  })
+
+  it('merges a track-main set without colliding soak/inp against interaction/pageload', () => {
+    // The daily cron produces all four for the same scenario: interaction,
+    // pageload, soak (kind interaction), inp (kind pageload). Before `mode`
+    // disambiguated the key, soak collided with interaction and inp with
+    // pageload, and the merge threw — storing nothing.
+    const merged = mergeShards([
+      shard(report('singleString', 'interaction')),
+      shard(report('singleString', 'pageload')),
+      shard(report('singleString', 'interaction', 'soak')),
+      shard(report('singleString', 'pageload', 'inp')),
+    ])
+    expect(merged.scenarios).toHaveLength(4)
+  })
+
+  it('still rejects a genuinely duplicated shard (same mode + scenario)', () => {
+    expect(() =>
+      mergeShards([
+        shard(report('singleString', 'interaction')),
+        shard(report('singleString', 'interaction')),
+      ]),
+    ).toThrow(/duplicate/)
   })
 })
 

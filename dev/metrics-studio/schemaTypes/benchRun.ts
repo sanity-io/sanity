@@ -150,6 +150,13 @@ const benchScenario = defineType({
       ],
     }),
     defineField({name: 'kind', type: 'string', options: {list: ['interaction', 'pageload']}}),
+    // Measurement mode — soak/inp reuse the interaction/pageload kinds but are
+    // distinct modes; this is the per-scenario `_key` discriminator
+    defineField({
+      name: 'mode',
+      type: 'string',
+      options: {list: ['interaction', 'pageload', 'soak', 'inp']},
+    }),
     defineField({name: 'metrics', type: 'array', of: [defineArrayMember({type: 'benchMetric'})]}),
     defineField({
       name: 'stoppedBy',
