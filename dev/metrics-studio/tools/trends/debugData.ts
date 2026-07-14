@@ -118,6 +118,19 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
         {
           scenario: 'singleString',
           sourceFile: 'perf/bench/scenarios/singleString.ts',
+          kind: 'pageload',
+          // INP (Core Web Vital) from the dedicated interaction-mix run. It
+          // worsens on the same day the boot regression lands (day 70), and
+          // the interaction count sits above the 50-interaction reportable
+          // threshold so the "confidence context" row reads as healthy.
+          metrics: [
+            metric(rng, 'INP', day < 70 ? 180 : 260),
+            metric(rng, 'INP interactions', 60 + Math.round((rng() - 0.5) * 6), 'count'),
+          ],
+        },
+        {
+          scenario: 'singleString',
+          sourceFile: 'perf/bench/scenarios/singleString.ts',
           kind: 'interaction',
           metrics: [],
           // Soak: main leaks heap slowly (worse after day 40); perf-bench
