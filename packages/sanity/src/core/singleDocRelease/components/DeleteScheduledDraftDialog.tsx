@@ -1,25 +1,23 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {type PreviewValue} from '@sanity/types'
 import {Box, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
-import {type ChangeEvent, type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
-import {SingleDocReleaseContext} from 'sanity/_singletons'
+import {type ChangeEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
 import {LoadingBlock} from '../../components'
 import {useSchema} from '../../hooks'
 import {Translate, useTranslation} from '../../i18n'
-import {usePerspective} from '../../perspective/usePerspective'
 import {Preview} from '../../preview'
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {getDocumentVersionInfoFromVersions} from '../../releases/util/getDocumentVersionInfoFromVersions'
-import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getErrorMessage, getPublishedId} from '../../util'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../hooks/useScheduleDraftOperations'
 
 interface DeleteScheduledDraftDialogBaseProps {
   onClose: () => void
+  onDeleteComplete?: () => void
   release: ReleaseDocument
 }
 
@@ -73,30 +71,18 @@ function useDeleteScheduledDraft(
   firstDocumentPreview: PreviewValue | undefined,
   onClose: () => void,
   deleteOperation: () => Promise<void>,
-  release: ReleaseDocument,
+  onDeleteComplete?: () => void,
 ) {
   const {t} = useTranslation()
   const toast = useToast()
   const [isDeleting, setIsDeleting] = useState(false)
-
-  // Only provided within a document pane. The dialog can also be rendered outside
-  // one (e.g. from the scheduled drafts overview), where no cleanup is needed.
-  const singleDocRelease = useContext(SingleDocReleaseContext)
-  const {selectedPerspectiveName} = usePerspective()
-  const isViewingScheduledDraft =
-    selectedPerspectiveName === getReleaseIdFromReleaseDocumentId(release._id)
 
   const handleDeleteSchedule = useCallback(async () => {
     setIsDeleting(true)
     // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
     const run = async () => {
       await deleteOperation()
-      // The release backing the scheduled draft no longer exists. If the pane is
-      // currently viewing it, return to the default perspective so stale release
-      // UI (banners, read-only form) isn't left visible.
-      if (isViewingScheduledDraft) {
-        singleDocRelease?.onSetScheduledDraftPerspective('')
-      }
+      onDeleteComplete?.()
       toast.push({
         closable: true,
         status: 'success',
@@ -131,15 +117,7 @@ function useDeleteScheduledDraft(
         setIsDeleting(false)
         onClose()
       })
-  }, [
-    toast,
-    t,
-    firstDocumentPreview?.title,
-    onClose,
-    deleteOperation,
-    isViewingScheduledDraft,
-    singleDocRelease,
-  ])
+  }, [toast, t, firstDocumentPreview?.title, onClose, deleteOperation, onDeleteComplete])
 
   return {isDeleting, handleDeleteSchedule}
 }
@@ -192,6 +170,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
   documentId,
   documentType,
   onClose,
+  onDeleteComplete,
   release,
 }: DeleteScheduledDraftDialogWithCopyToDraftProps) {
   const {t} = useTranslation()
@@ -225,7 +204,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
     firstDocumentPreview,
     onClose,
     deleteOperation,
-    release,
+    onDeleteComplete,
   )
 
   const schemaType = schema.get(documentType)
@@ -277,6 +256,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
  */
 function DeleteScheduledDraftDialogWithEmptyRelease({
   onClose,
+  onDeleteComplete,
   release,
 }: DeleteScheduledDraftDialogBaseProps) {
   const {t} = useTranslation()
@@ -294,7 +274,7 @@ function DeleteScheduledDraftDialogWithEmptyRelease({
     firstDocumentPreview,
     onClose,
     deleteOperation,
-    release,
+    onDeleteComplete,
   )
 
   return (
@@ -316,10 +296,17 @@ export function DeleteScheduledDraftDialog({
   documentId,
   documentType,
   onClose,
+  onDeleteComplete,
   release,
 }: DeleteScheduledDraftDialogProps) {
   if (!documentId || !documentType) {
-    return <DeleteScheduledDraftDialogWithEmptyRelease onClose={onClose} release={release} />
+    return (
+      <DeleteScheduledDraftDialogWithEmptyRelease
+        onClose={onClose}
+        onDeleteComplete={onDeleteComplete}
+        release={release}
+      />
+    )
   }
 
   return (
@@ -327,6 +314,7 @@ export function DeleteScheduledDraftDialog({
       documentId={documentId}
       documentType={documentType}
       onClose={onClose}
+      onDeleteComplete={onDeleteComplete}
       release={release}
     />
   )
