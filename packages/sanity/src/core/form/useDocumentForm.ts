@@ -388,7 +388,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     if (targetDocumentState.status === 'ready' && targetDocumentState.targetDocument) {
       return targetDocumentState.targetDocument._id
     }
-    if (!bundle) {
+    if (bundle === 'published') {
       return getPublishedId(documentId)
     }
     if (bundle === 'drafts') {
