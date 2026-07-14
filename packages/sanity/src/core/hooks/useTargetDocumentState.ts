@@ -5,7 +5,7 @@ import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../releases/store/types'
 import {type DocumentPairTarget} from '../store/document/types'
-import {getTargetDocument} from '../util/getTargetDocument'
+import {getTargetDocument, getVariantPublishedSibling} from '../util/getTargetDocument'
 import {useAllVariants} from '../variants/store/useAllVariants'
 import {type SystemVariant} from '../variants/types'
 
@@ -39,8 +39,25 @@ export type TargetDocumentState =
       scopeId: string | undefined
       /** The selected variant when the resolved target is a variant-scoped version. */
       variant: SystemVariant | undefined
+      /**
+       * The variant-of-published sibling stub (same `_system.variant`, no `_system.bundleId`).
+       * Only set for variant targets; `undefined` means the variant has never been published.
+       * Publish-state gating (already-published, unpublishable, discard copy) must read this
+       * instead of the base `published` document.
+       */
+      publishedSibling: VersionInfoDocumentStub | undefined
     }
-  | {status: 'variant-missing'; variant: SystemVariant; bundle: PerspectiveBundle}
+  | {
+      status: 'variant-missing'
+      variant: SystemVariant
+      bundle: PerspectiveBundle
+      /**
+       * The variant-of-published sibling, when the variant is missing in the current bundle but
+       * published. Lets consumers distinguish "never existed" from "exists published, not in
+       * this bundle".
+       */
+      publishedSibling: VersionInfoDocumentStub | undefined
+    }
   | {status: 'variant-definition-document-not-found'; requestedVariantName: string}
 
 const RESOLVING: TargetDocumentState = {status: 'resolving'}
@@ -119,6 +136,7 @@ export function getTargetDocumentState(options: {
       targetDocument,
       scopeId: targetDocument?._system.scopeId ?? undefined,
       variant: undefined,
+      publishedSibling: undefined,
     }
   }
 
@@ -143,8 +161,13 @@ export function getTargetDocumentState(options: {
     documentVersions: versions,
   })
 
+  const publishedSibling = getVariantPublishedSibling({
+    variant: selectedVariant._id,
+    documentVersions: versions,
+  })
+
   if (!targetDocument) {
-    return {status: 'variant-missing', variant: selectedVariant, bundle}
+    return {status: 'variant-missing', variant: selectedVariant, bundle, publishedSibling}
   }
 
   return {
@@ -152,6 +175,7 @@ export function getTargetDocumentState(options: {
     targetDocument,
     scopeId: targetDocument._system.scopeId ?? undefined,
     variant: selectedVariant,
+    publishedSibling,
   }
 }
 

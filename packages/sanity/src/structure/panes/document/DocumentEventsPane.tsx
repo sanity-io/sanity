@@ -58,6 +58,17 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
       // Check if we have a release that matches with this historyVersion
       return getVersionId(options.id, historyVersion)
     }
+    // Variant targets: events must be fetched for the variant document itself. Its id cannot be
+    // derived from the perspective name — the bundle segment is an opaque scope hash — so it
+    // comes from the resolved target stub. (In `variant-missing`/`resolving` states the pane
+    // shows the base document, so the perspective-derived ids below correctly apply.)
+    if (
+      targetDocumentState.status === 'ready' &&
+      targetDocumentState.variant !== undefined &&
+      targetDocumentState.targetDocument
+    ) {
+      return targetDocumentState.targetDocument._id
+    }
     if (typeof selectedPerspectiveName === 'undefined') {
       return getDraftId(options.id)
     }
@@ -74,6 +85,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
     selectedPerspectiveName,
     options.id,
     showingPublishedOnDraft,
+    targetDocumentState,
   ])
 
   const eventsStore = useEventsStore({documentId, documentType: options.type, rev, since})

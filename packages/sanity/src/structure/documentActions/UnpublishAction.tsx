@@ -40,6 +40,12 @@ export const useUnpublishAction: DocumentActionComponent = ({
   // silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
+  const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
+  // A variant is unpublishable only when its variant-of-published sibling exists — the base
+  // `published` document says nothing about the variant's publish state.
+  const isVariantUnpublishable = isVariantTarget
+    ? targetDocumentState.publishedSibling !== undefined
+    : true
   const {unpublish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -108,6 +114,16 @@ export const useUnpublishAction: DocumentActionComponent = ({
       }
     }
 
+    if (!isVariantUnpublishable) {
+      return {
+        tone: 'critical',
+        icon: UnpublishIcon,
+        disabled: true,
+        label: t('action.unpublish.label'),
+        title: t(DISABLED_REASON_KEY.NOT_PUBLISHED),
+      }
+    }
+
     return {
       tone: 'critical',
       icon: UnpublishIcon,
@@ -123,6 +139,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
     liveEditSchemaType,
     isPermissionsLoading,
     isTargetReady,
+    isVariantUnpublishable,
     permissions?.granted,
     unpublish.disabled,
     t,

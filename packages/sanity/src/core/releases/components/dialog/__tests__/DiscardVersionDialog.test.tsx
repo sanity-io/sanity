@@ -31,6 +31,7 @@ vi.mock('../../../../hooks/useTargetDocumentState', async (importOriginal) => ({
     targetDocument: undefined,
     scopeId: undefined,
     variant: undefined,
+    publishedSibling: undefined,
   })),
 }))
 
