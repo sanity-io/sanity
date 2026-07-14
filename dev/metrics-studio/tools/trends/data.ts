@@ -123,7 +123,7 @@ export function availableBranches(runs: TrendRun[]): string[] {
   })
 }
 
-export type TrendGroup = 'responsiveness' | 'load' | 'bundle' | 'soak' | 'environment'
+export type TrendGroup = 'vitals' | 'responsiveness' | 'load' | 'bundle' | 'soak' | 'environment'
 
 /**
  * The soak sample fields we chart, with display metadata. A constant,
@@ -195,6 +195,12 @@ export const SOAK_METRICS: {
 
 export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[] = [
   {
+    id: 'vitals',
+    title: 'Web Vitals',
+    description:
+      'Google Core Web Vitals and supporting load metrics — LCP, INP, CLS, FCP, TTFB. The user-facing quality bar; lower is better on all of them.',
+  },
+  {
     id: 'responsiveness',
     title: 'Editing responsiveness',
     description: 'Per-keystroke latency (keydown → paint) while typing into each scenario.',
@@ -248,28 +254,28 @@ function describeSeries(
   }
   if (label.endsWith('TTFB')) {
     return {
-      group: 'load',
+      group: 'vitals',
       description: 'Time to first byte of the document response.',
       goal: 'lower',
     }
   }
   if (label.endsWith('FCP')) {
     return {
-      group: 'load',
+      group: 'vitals',
       description: 'First Contentful Paint — first pixels drawn.',
       goal: 'lower',
     }
   }
   if (label.endsWith('LCP')) {
     return {
-      group: 'load',
+      group: 'vitals',
       description: 'Largest Contentful Paint — the main content is visible (Core Web Vital).',
       goal: 'lower',
     }
   }
   if (label.endsWith('CLS')) {
     return {
-      group: 'load',
+      group: 'vitals',
       description:
         'Cumulative Layout Shift — how much the layout jumps during load (Core Web Vital; lower is steadier).',
       goal: 'lower',
@@ -277,7 +283,7 @@ function describeSeries(
   }
   if (label === 'INP interactions') {
     return {
-      group: 'responsiveness',
+      group: 'vitals',
       description:
         'How many distinct interactions the INP session observed — confidence context for the INP number (the percentile rule wants at least 50). Not a judged metric.',
       goal: 'context',
@@ -285,7 +291,7 @@ function describeSeries(
   }
   if (label.endsWith('INP')) {
     return {
-      group: 'responsiveness',
+      group: 'vitals',
       description:
         'Interaction to Next Paint — a high percentile of interaction latencies (click/type → next paint) under a realistic interaction mix (Core Web Vital).',
       goal: 'lower',
