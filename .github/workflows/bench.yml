@@ -24,10 +24,14 @@ on:
 
 # One run per PR at a time so an older run finishing late can never
 # overwrite the PR comment with stale results; scheduled/dispatched runs get
-# a unique group (no cancellation)
+# a unique group (no cancellation). Adding an unrelated label must not cancel
+# an in-flight bench run (the new run's jobs all skip via their label guards,
+# which would leave no comment and no red check), so only cancel when the
+# trigger is a real bench trigger: any non-label event, or the `perf-bench`
+# label itself.
 concurrency:
   group: bench-${{ github.event.pull_request.number || github.run_id }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event.action != 'labeled' || github.event.label.name == 'perf-bench' }}
 
 jobs:
   build:
@@ -352,12 +356,24 @@ jobs:
 
       # Always posted/updated in place - all-neutral is information, silence
       # is ambiguity. Non-gating during burn-in: this job never fails the
-      # check for perf verdicts.
+      # check for perf verdicts. Same-repo PRs only: on fork-originated
+      # pull_request events GITHUB_TOKEN is read-only regardless of the
+      # permissions block, so commenting would 403 and turn a successful
+      # bench run red - fork PRs get the report as an artifact instead.
       - name: PR comment with report
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         with:
           comment-tag: "bench-report"
           file-path: ${{ github.workspace }}/perf/bench/results/report.md
+
+      - name: Upload report for fork PRs (cannot comment)
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        uses: actions/upload-artifact@v7
+        with:
+          name: bench-report
+          path: perf/bench/results/report.md
+          retention-days: 30
 
       # A shard that produced no results must fail the run. Job timeouts
       # conclude as "cancelled" (not "failure"), so without this the whole
@@ -398,8 +414,17 @@ jobs:
     permissions:
       contents: read
     steps:
+      # Deliberately check out BASE-branch code, not the PR merge commit: this
+      # job holds BENCH_METRICS_WRITE_TOKEN, and the perf-bench label persists
+      # across pushes — checking out PR code would let any later push on a
+      # labeled PR run arbitrary code with the token. The PR's benchmark
+      # output is consumed purely as data via the artifact below. Do not
+      # "fix" this back to the default (merge) ref. Requires the bench CLI to
+      # exist on the base branch (true once perf/bench lands there); it runs
+      # from source via tsx, so no build step is needed here.
       - uses: actions/checkout@v7
         with:
+          ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false
       - uses: ./.github/actions/setup
 
