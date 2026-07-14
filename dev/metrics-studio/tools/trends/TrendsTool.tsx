@@ -16,6 +16,9 @@ import {
   Select,
   Spinner,
   Stack,
+  Tab,
+  TabList,
+  TabPanel,
   Text,
   useClickOutsideEvent,
 } from '@sanity/ui'
@@ -248,6 +251,80 @@ function SeriesCard(props: {series: TrendSeries; height: number}) {
   )
 }
 
+/** The responsive chart grid used by every group and soak sub-view. */
+function ChartGrid(props: {series: TrendSeries[]}) {
+  return (
+    <Grid columns={[1, 1, 2, 3]} gap={3}>
+      {props.series.map((entry) => (
+        <SeriesCard key={entry.key} series={entry} height={128} />
+      ))}
+    </Grid>
+  )
+}
+
+/**
+ * The soak section is heavy (3 views × up to 7 charts), so it gets its own
+ * sub-tabs rather than dumping every chart at once: slope-per-run,
+ * end-of-run value, and the latest run's minute-by-minute curves.
+ */
+function SoakPanel(props: {
+  slopes: TrendSeries[]
+  endValues: TrendSeries[]
+  latest: {run: TrendRun; charts: TrendSeries[]} | null
+}) {
+  const {slopes, endValues, latest} = props
+  const views = [
+    slopes.length > 0 && {
+      id: 'slope',
+      label: 'Slope over runs',
+      hint: 'Per-minute slope, across runs — is a leak or degradation worsening release over release?',
+      charts: slopes,
+    },
+    endValues.length > 0 && {
+      id: 'end',
+      label: 'End of run',
+      hint: 'End-of-run value, across runs — where each metric landed by the end of the soak.',
+      charts: endValues,
+    },
+    latest &&
+      latest.charts.length > 0 && {
+        id: 'latest',
+        label: 'Latest run',
+        hint: `Latest soak run — ${latest.run.git?.branch ?? 'unknown'} @ ${latest.run.git?.sha?.slice(0, 10) ?? '?'} · minute-by-minute.`,
+        charts: latest.charts,
+      },
+  ].filter(Boolean) as {id: string; label: string; hint: string; charts: TrendSeries[]}[]
+
+  const [view, setView] = useUrlState('soak', views[0]?.id ?? 'slope')
+  const active = views.find((v) => v.id === view) ?? views[0]
+  if (!active) return null
+
+  return (
+    <Stack space={3}>
+      <TabList space={1}>
+        {views.map((v) => (
+          <Tab
+            key={v.id}
+            id={`soak-tab-${v.id}`}
+            aria-controls={`soak-panel-${v.id}`}
+            label={v.label}
+            selected={v.id === active.id}
+            onClick={() => setView(v.id)}
+          />
+        ))}
+      </TabList>
+      <TabPanel id={`soak-panel-${active.id}`} aria-labelledby={`soak-tab-${active.id}`}>
+        <Stack space={3}>
+          <Text size={1} muted>
+            {active.hint}
+          </Text>
+          <ChartGrid series={active.charts} />
+        </Stack>
+      </TabPanel>
+    </Stack>
+  )
+}
+
 export function TrendsTool() {
   const documentStore = useDocumentStore()
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
@@ -288,7 +365,6 @@ export function TrendsTool() {
 
   const inRange = useMemo(() => (runs ? filterByRange(runs, rangeDays) : []), [runs, rangeDays])
   const branches = useMemo(() => availableBranches(inRange), [inRange])
-  const SOAK_GROUP = TREND_GROUPS.find((group) => group.id === 'soak')!
 
   // Branch selection persists in the URL (comma-separated) so a comparison
   // is shareable. Empty/absent = default: main if present, else all.
@@ -321,6 +397,20 @@ export function TrendsTool() {
   const latestSoak = useMemo(() => latestSoakCharts(filtered), [filtered])
   // Calibration is host-level, not per-branch — always the full in-range set
   const calibration = useMemo(() => calibrationSeries(inRange), [inRange])
+
+  // The metric groups that actually have data become tabs (environment lives
+  // in the pinned calibration strip, not a tab). Soak is a tab whenever any of
+  // its three views has data.
+  const soakHasData = soakSlopes.length > 0 || soakEndValues.length > 0 || Boolean(latestSoak)
+  const tabs = useMemo(
+    () =>
+      TREND_GROUPS.filter((group) => group.id !== 'environment').filter((group) =>
+        group.id === 'soak' ? soakHasData : series.some((entry) => entry.group === group.id),
+      ),
+    [series, soakHasData],
+  )
+  const [tabParam, setTabParam] = useUrlState('tab', tabs[0]?.id ?? 'vitals')
+  const activeTab = tabs.find((tab) => tab.id === tabParam) ?? tabs[0]
 
   return (
     <PortalProvider element={portalElement}>
@@ -426,82 +516,42 @@ export function TrendsTool() {
               </Stack>
             )}
 
-            {TREND_GROUPS.filter((group) => group.id !== 'environment' && group.id !== 'soak').map(
-              (group) => {
-                const groupSeries = series.filter((entry) => entry.group === group.id)
-                if (groupSeries.length === 0) return null
-                return (
-                  <Stack key={group.id} space={3}>
-                    <Stack space={2}>
-                      <Text size={1} weight="semibold">
-                        {group.title}
-                      </Text>
-                      <Text size={1} muted>
-                        {group.description}
-                      </Text>
-                    </Stack>
-                    <Grid columns={[1, 1, 2, 3]} gap={3}>
-                      {groupSeries.map((entry) => (
-                        <SeriesCard key={entry.key} series={entry} height={128} />
-                      ))}
-                    </Grid>
-                  </Stack>
-                )
-              },
-            )}
-
-            {(soakSlopes.length > 0 || soakEndValues.length > 0 || latestSoak) && (
-              <Stack space={4}>
-                <Stack space={2}>
-                  <Text size={1} weight="semibold">
-                    {SOAK_GROUP.title}
-                  </Text>
-                  <Text size={1} muted>
-                    {SOAK_GROUP.description}
-                  </Text>
-                </Stack>
-
-                {soakSlopes.length > 0 && (
+            {/* Metric groups behind tabs so the page isn't one long scroll;
+                the drift feed + calibration above stay pinned as the always-on
+                "what needs attention / how to read it" context */}
+            {activeTab && (
+              <Stack space={3}>
+                <TabList space={1}>
+                  {tabs.map((tab) => (
+                    <Tab
+                      key={tab.id}
+                      id={`group-tab-${tab.id}`}
+                      aria-controls={`group-panel-${tab.id}`}
+                      label={tab.title}
+                      selected={tab.id === activeTab.id}
+                      onClick={() => setTabParam(tab.id)}
+                    />
+                  ))}
+                </TabList>
+                <TabPanel
+                  id={`group-panel-${activeTab.id}`}
+                  aria-labelledby={`group-tab-${activeTab.id}`}
+                >
                   <Stack space={3}>
                     <Text size={1} muted>
-                      Per-minute slope, across runs — is a leak or degradation worsening release
-                      over release?
+                      {activeTab.description}
                     </Text>
-                    <Grid columns={[1, 1, 2, 3]} gap={3}>
-                      {soakSlopes.map((entry) => (
-                        <SeriesCard key={entry.key} series={entry} height={128} />
-                      ))}
-                    </Grid>
+                    {activeTab.id === 'soak' ? (
+                      <SoakPanel
+                        slopes={soakSlopes}
+                        endValues={soakEndValues}
+                        latest={latestSoak}
+                      />
+                    ) : (
+                      <ChartGrid series={series.filter((entry) => entry.group === activeTab.id)} />
+                    )}
                   </Stack>
-                )}
-
-                {soakEndValues.length > 0 && (
-                  <Stack space={3}>
-                    <Text size={1} muted>
-                      End-of-run value, across runs — where each metric landed by the end of the
-                      soak
-                    </Text>
-                    <Grid columns={[1, 1, 2, 3]} gap={3}>
-                      {soakEndValues.map((entry) => (
-                        <SeriesCard key={entry.key} series={entry} height={128} />
-                      ))}
-                    </Grid>
-                  </Stack>
-                )}
-
-                {latestSoak && latestSoak.charts.length > 0 && (
-                  <Stack space={3}>
-                    <Text size={1} muted>
-                      Latest soak run — {latestSoak.run.git?.branch ?? 'unknown'} @{' '}
-                      {latestSoak.run.git?.sha?.slice(0, 10) ?? '?'} · minute-by-minute
-                    </Text>
-                    <Grid columns={[1, 1, 2, 3]} gap={3}>
-                      {latestSoak.charts.map((entry) => (
-                        <SeriesCard key={entry.key} series={entry} height={128} />
-                      ))}
-                    </Grid>
-                  </Stack>
-                )}
+                </TabPanel>
               </Stack>
             )}
           </Stack>
