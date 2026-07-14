@@ -27,8 +27,6 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "./lib/index.js",
-  "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
@@ -44,22 +42,22 @@
     }
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown -d lib",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/types/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "watch": "tsdown --watch"
+    "watch": "tsdown --watch -d lib"
   },
   "dependencies": {
     "@sanity/client": "catalog:",
     "@sanity/media-library-types": "^1.5.0"
   },
   "devDependencies": {
-    "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@repo/tsdown.config": "workspace:*",
     "@sanity/insert-menu": "3.0.8",
     "@types/react": "catalog:",
     "@typescript/native-preview": "catalog:",
@@ -76,5 +74,8 @@
   "browserslist": [
     "node >=22.12",
     "baseline 2024"
-  ]
+  ],
+  "inlinedDependencies": {
+    "@sanity/insert-menu": "3.0.8"
+  }
 }

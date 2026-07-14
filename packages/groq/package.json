@@ -41,17 +41,17 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown -d lib",
     "check:types": "(cd ../.. && tsgo --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "pretest": "run-s build",
     "test": "node --test",
-    "watch": "tsdown --watch"
+    "watch": "tsdown --watch -d lib"
   },
   "devDependencies": {
-    "@repo/package.config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@repo/tsdown.config": "workspace:*",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
     "rimraf": "catalog:",

@@ -32,7 +32,7 @@ sanity/
 │       ├── eslint-config/     # Shared ESLint configuration
 │       ├── test-config/       # Shared test configuration
 │       ├── tsconfig/          # Shared TypeScript configuration
-│       ├── package.config/    # Build configuration utilities
+│       ├── tsdown.config/     # Build configuration utilities
 │       └── ...
 ├── dev/                        # Development studios for testing
 │   ├── test-studio/           # Primary development studio

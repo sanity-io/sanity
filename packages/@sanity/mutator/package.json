@@ -26,8 +26,6 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "./lib/index.js",
-  "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
@@ -43,13 +41,13 @@
     }
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown -d lib",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/mutator/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "perf": "node ./perf/run.cjs",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
-    "watch": "tsdown --watch"
+    "watch": "tsdown --watch -d lib"
   },
   "dependencies": {
     "@sanity/diff-match-patch": "^3.2.0",
@@ -59,9 +57,9 @@
     "lodash-es": "^4.18.1"
   },
   "devDependencies": {
-    "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@repo/tsdown.config": "workspace:*",
     "@types/debug": "^4.1.13",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "catalog:",

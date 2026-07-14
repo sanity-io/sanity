@@ -31,8 +31,6 @@
     "mock-browser-env-stub-loader.mjs"
   ],
   "type": "module",
-  "main": "./lib/index.js",
-  "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
@@ -110,7 +108,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && tsdown",
+    "build": "pnpm clean && tsdown -d lib",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.check.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
@@ -120,7 +118,7 @@
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:browser": "vitest run -c vitest.browser.config.mts",
-    "watch": "tsdown --watch"
+    "watch": "tsdown --watch -d lib"
   },
   "dependencies": {
     "@algorithm.ts/lcs": "^4.0.6",
@@ -231,9 +229,9 @@
   },
   "devDependencies": {
     "@repo/package.bundle": "workspace:*",
-    "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@repo/tsdown.config": "workspace:*",
     "@rolldown/plugin-babel": "catalog:",
     "@sanity/generate-help-url": "^4.0.0",
     "@sanity/visual-editing-csm": "^3.0.10",
@@ -284,5 +282,11 @@
   ],
   "engines": {
     "node": ">=22.12"
+  },
+  "inlinedDependencies": {
+    "@sanity/generate-help-url": "4.0.0",
+    "@sanity/visual-editing-csm": "3.0.10",
+    "rxjs-etc": "10.6.2",
+    "valibot": "1.4.1"
   }
 }

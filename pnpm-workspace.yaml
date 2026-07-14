@@ -23,7 +23,7 @@ catalog:
   '@sanity/client': ^7.23.0
   '@sanity/migrate': ^7.0.3
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.14.0
+  '@sanity/tsdown-config': ^0.14.2
   '@sanity/ui': ^3.3.0
   '@types/node': ^24.13.2
   '@types/react': ^19.2.17
@@ -81,19 +81,18 @@ minimumReleaseAgeExclude:
   - 'react-dom'
   - 'react-is'
   - 'react-rx'
-  # tsdown@0.22.7, the rolldown-plugin-dts version its `^0.27.8` range needs, and the yuku
-  # parser/codegen that version depends on are newer than minimumReleaseAge (intentional
-  # adoption of the latest tsdown)
-  - 'rolldown-plugin-dts@0.27.9'
+  # tsdown and its rolldown-plugin-dts/yuku toolchain release frequently and in lockstep, so new
+  # releases are often younger than minimumReleaseAge
+  - 'rolldown-plugin-dts'
   - 'sanity-plugin-internationalized-array'
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
-  - 'tsdown@0.22.7'
+  - 'tsdown'
   - 'vitest'
   - 'vite'
-  - 'yuku-codegen@0.6.1'
-  - 'yuku-parser@0.6.1'
+  - 'yuku-codegen'
+  - 'yuku-parser'
 
 overrides:
   vitest: 'catalog:'

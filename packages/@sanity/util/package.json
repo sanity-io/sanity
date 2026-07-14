@@ -26,8 +26,6 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "./lib/index.js",
-  "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
@@ -107,12 +105,12 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && tsdown",
+    "build": "pnpm clean && tsdown -d lib",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
-    "watch": "tsdown --watch"
+    "watch": "tsdown --watch -d lib"
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",
@@ -123,9 +121,9 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@repo/tsdown.config": "workspace:*",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
     "rimraf": "catalog:",

@@ -28,8 +28,6 @@
     "lib"
   ],
   "type": "module",
-  "main": "./lib/index.js",
-  "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
@@ -57,13 +55,13 @@
     }
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown -d lib",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/vision/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "test": "vitest",
-    "watch": "tsdown --watch"
+    "watch": "tsdown --watch -d lib"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.3",
@@ -93,9 +91,9 @@
   },
   "devDependencies": {
     "@repo/package.bundle": "workspace:*",
-    "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@repo/tsdown.config": "workspace:*",
     "@rolldown/plugin-babel": "catalog:",
     "@sanity/client": "catalog:",
     "@testing-library/react": "^16.3.2",
@@ -123,5 +121,8 @@
   "browserslist": [
     "node >=22.12",
     "baseline 2024"
-  ]
+  ],
+  "inlinedDependencies": {
+    "@sanity/client": "7.23.0"
+  }
 }

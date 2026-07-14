@@ -1,4 +1,4 @@
-import {defineConfig} from '@repo/package.config'
+import {defineConfig} from '@repo/tsdown.config'
 
 // The `exports` maps in `package.json` are maintained by hand for this package: generation would
 // need the ESM and CJS configs merged into one, and with the CJS build containing a single entry

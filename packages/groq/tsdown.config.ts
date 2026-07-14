@@ -1,4 +1,4 @@
-import {defineConfig} from '@repo/package.config'
+import {defineConfig} from '@repo/tsdown.config'
 
 // The `exports` map in `package.json` is maintained by hand for this package: the ESM and CJS
 // bundles are built from different source files, so generation can't express it (the `monorepo`
