@@ -175,7 +175,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
-  const {selectedVariantName} = usePerspective()
+  const {selectedVariantName, bundle} = usePerspective()
   const targetDocumentState = useTargetDocumentState(documentId)
   // The scope of the resolved target document (release id for release targets, opaque scope hash
   // for variant targets), threaded through the version-editing pipeline. Undefined while the
@@ -340,8 +340,21 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName))
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const targetDocumentId =
-    targetDocumentState.status === 'ready' ? targetDocumentState.targetDocument?._id : undefined
+  const targetDocumentId = useMemo(() => {
+    // If the document exists, use that target document id.
+    // This takes into account the variant ids where the id is opaque.
+    if (targetDocumentState.status === 'ready' && targetDocumentState.targetDocument) {
+      return targetDocumentState.targetDocument._id
+    }
+    if (!bundle) {
+      return getPublishedId(documentId)
+    }
+    if (bundle === 'drafts') {
+      return getDraftId(documentId)
+    }
+    return getVersionId(getPublishedId(documentId), bundle)
+  }, [targetDocumentState, bundle, documentId])
+
   const docPermissionsInput = useMemo(() => {
     return {
       ...value,
