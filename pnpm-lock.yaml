@@ -1687,6 +1687,9 @@ importers:
       '@sanity/uuid':
         specifier: ^3.0.3
         version: 3.0.3
+      '@sanity/workbench':
+        specifier: latest
+        version: 0.1.0-alpha.23(@sanity/sdk@2.15.0)(react@19.2.7)(xstate@5.32.2)
       '@sentry/react':
         specifier: ^10.62.0
         version: 10.62.0(react@19.2.7)
@@ -5287,12 +5290,6 @@ packages:
     cpu: [arm64]
     os: [openharmony]
 
-  '@rolldown/binding-openharmony-arm64@1.1.5':
-    resolution: {integrity: sha512-yc5WrLzXks6zCQfn9Oxr8pORKyl/pF+QjHmW/Qx3qu0oyrrNC+y2JLTU1E2rcWYAmzlnqngWXHQjy51VzW70Vw==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [openharmony]
-
   '@rolldown/binding-wasm32-wasi@1.0.0-rc.1':
     resolution: {integrity: sha512-2mOxY562ihHlz9lEXuaGEIDCZ1vI+zyFdtsoa3M62xsEunDXQE+DVPO4S4x5MPK9tKulG/aFcA/IH5eVN257Cw==}
     engines: {node: '>=14.0.0'}
@@ -5990,6 +5987,13 @@ packages:
   '@sanity/workbench-cli@1.3.0':
     resolution: {integrity: sha512-VypASfPMTFvqQ5beQ0zxQ0rByDk81UatmuPreIN8PAHSczCQI/B1KZPB2TLOCj0RJicZiHoz4k64GjyOIJkcFQ==}
     engines: {node: '>=22.12'}
+
+  '@sanity/workbench@0.1.0-alpha.23':
+    resolution: {integrity: sha512-MvGZa7fvnrT30NZu4WkSidpcGp+ekfn0yeRXaC2ib8bmA/ewEDKBm4mAh8Sb2sit/LFCOVbFR/v4HstB0xualA==}
+    engines: {node: '>=20.19.1 <22 || >=22.12'}
+    peerDependencies:
+      '@sanity/sdk': ^2.9.0
+      xstate: ^5.31.0
 
   '@sanity/worker-channels@2.0.0':
     resolution: {integrity: sha512-mC+8yPQuw2rHXdHigFPU9thNa6vTaPmh7jFR6RvloE8s+6dmnk9bHdPXRbrrUqafxzK3L9aH2E170ubXyxcAIA==}
@@ -14437,9 +14441,6 @@ snapshots:
   '@rolldown/binding-openharmony-arm64@1.1.3':
     optional: true
 
-  '@rolldown/binding-openharmony-arm64@1.1.5':
-    optional: true
-
   '@rolldown/binding-wasm32-wasi@1.0.0-rc.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
     dependencies:
       '@napi-rs/wasm-runtime': 1.1.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
@@ -15542,6 +15543,19 @@ snapshots:
       - utf-8-validate
       - vue-tsc
       - yaml
+
+  '@sanity/workbench@0.1.0-alpha.23(@sanity/sdk@2.15.0)(react@19.2.7)(xstate@5.32.2)':
+    dependencies:
+      '@module-federation/runtime': 2.7.0
+      '@sanity/message-protocol': 0.23.0
+      '@sanity/sdk': 2.15.0(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.2)
+      '@sanity/telemetry': 1.1.0(react@19.2.7)
+      rxjs: 7.8.2
+      semver: 7.8.5
+      xstate: 5.32.2
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - react
 
   '@sanity/worker-channels@2.0.0': {}
 
@@ -20395,7 +20409,6 @@ snapshots:
       '@rolldown/binding-linux-s390x-gnu': 1.1.5
       '@rolldown/binding-linux-x64-gnu': 1.1.5
       '@rolldown/binding-linux-x64-musl': 1.1.5
-      '@rolldown/binding-openharmony-arm64': 1.1.5
       '@rolldown/binding-wasm32-wasi': 1.1.5
       '@rolldown/binding-win32-arm64-msvc': 1.1.5
       '@rolldown/binding-win32-x64-msvc': 1.1.5
