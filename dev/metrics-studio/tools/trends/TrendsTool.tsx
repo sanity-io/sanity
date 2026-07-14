@@ -308,13 +308,18 @@ function AckMenu(props: {
  * carry it as a dependency (react-compiler).
  */
 function worstBySeries(entries: DriftResult[]): Map<string, DriftResult> {
+  const isRegression = (d: DriftResult) => d.direction === 'regression'
   const map = new Map<string, DriftResult>()
   for (const entry of entries) {
     const current = map.get(entry.seriesKey)
+    // A regression always outranks an improvement (the card should warn, not
+    // celebrate); only within the same direction does the larger move win —
+    // the magnitude check must NOT let a big improvement displace a regression.
     const better =
       !current ||
-      (entry.direction === 'regression' && current.direction !== 'regression') ||
-      Math.abs(worstOf(entry).deltaFraction) > Math.abs(worstOf(current).deltaFraction)
+      (isRegression(entry) && !isRegression(current)) ||
+      (isRegression(entry) === isRegression(current) &&
+        Math.abs(worstOf(entry).deltaFraction) > Math.abs(worstOf(current).deltaFraction))
     if (better) map.set(entry.seriesKey, entry)
   }
   return map
@@ -651,12 +656,16 @@ export function TrendsTool() {
   // persists so the link stays shareable/reloadable.
   const [chartParam, setChartParam] = useUrlState('chart', '')
 
-  // A deep-linked chart selects its own tab when no explicit tab is in the URL.
-  const [tabParam, setTabParam] = useUrlState(
-    'tab',
-    (chartParam && groupById.get(chartParam)) || tabs[0]?.id || 'vitals',
-  )
-  const activeTab = tabs.find((tab) => tab.id === tabParam) ?? tabs[0]
+  // Tab selection. The fallback is static ('' = "no explicit tab") — a dynamic
+  // fallback derived from series would be read only once by useState and never
+  // update after live runs load, stranding shared ?chart= links on the wrong
+  // tab. Instead resolve the active tab reactively: an explicit ?tab= wins,
+  // else a deep-linked chart's group, else the first tab.
+  const [tabParam, setTabParam] = useUrlState('tab', '')
+  const activeTab =
+    tabs.find((tab) => tab.id === tabParam) ??
+    (chartParam ? tabs.find((tab) => tab.id === groupById.get(chartParam)) : undefined) ??
+    tabs[0]
 
   // Shared drift state (feeds both the pinned feed and the per-tab badges, so
   // they can't disagree). Badge = active regressions in that group.
