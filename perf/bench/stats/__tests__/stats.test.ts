@@ -55,6 +55,16 @@ describe('quantile (type-7)', () => {
     expect(() => quantile([Infinity], 0.5)).toThrow(/non-finite/)
     expect(() => median([2, -Infinity])).toThrow(/non-finite/)
   })
+
+  it('throws on an out-of-range or non-finite p (a caller bug, not silent NaN)', () => {
+    expect(() => quantile([1, 2, 3], -0.1)).toThrow(/in \[0, 1\]/)
+    expect(() => quantile([1, 2, 3], 1.5)).toThrow(/in \[0, 1\]/)
+    expect(() => quantile([1, 2, 3], NaN)).toThrow(/in \[0, 1\]/)
+    expect(() => quantile([1, 2, 3], Infinity)).toThrow(/in \[0, 1\]/)
+    // The boundaries are valid (min/max)
+    expect(() => quantile([1, 2, 3], 0)).not.toThrow()
+    expect(() => quantile([1, 2, 3], 1)).not.toThrow()
+  })
 })
 
 describe('mulberry32', () => {
