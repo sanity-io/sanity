@@ -26,7 +26,6 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
 ): DocumentActionDescription | null => {
   const {id, type, release, published, version} = props
   const currentUser = useCurrentUser()
-  const isPublished = published !== null
   const {t} = useTranslation(releasesLocaleNamespace)
   const isAlreadyUnpublished = version ? isGoingToUnpublish(version) : false
   const {revertUnpublishVersion} = useVersionOperations()
@@ -39,6 +38,12 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
   // below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
+  const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
+  // For variant release versions, "is there something published to unpublish" is answered by the
+  // variant-of-published sibling — the base `published` document says nothing about the variant.
+  const isPublished = isVariantTarget
+    ? targetDocumentState.publishedSibling !== undefined
+    : published !== null
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,

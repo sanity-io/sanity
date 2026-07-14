@@ -39,6 +39,13 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   // below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
+  const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
+  // The discard confirmation copy depends on whether a published counterpart exists ("revert to
+  // published" vs "delete document"). For variant targets that counterpart is the
+  // variant-of-published sibling, not the base published document.
+  const publishedCounterpartExists = isVariantTarget
+    ? targetDocumentState.publishedSibling !== undefined
+    : Boolean(published)
   const {discardChanges} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -100,7 +107,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
           <ConfirmDiscardDialog
             onCancel={handleCancel}
             onConfirm={handleConfirm}
-            publishedExists={Boolean(published)}
+            publishedExists={publishedCounterpartExists}
           />
         ),
       },
@@ -111,7 +118,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     handleCancel,
     isConfirmDialogOpen,
     discardChanges.disabled,
-    published,
+    publishedCounterpartExists,
     version,
     draft,
     handle,
