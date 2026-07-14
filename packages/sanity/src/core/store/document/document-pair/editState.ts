@@ -3,6 +3,7 @@ import {type SanityDocument, type Schema} from '@sanity/types'
 import {combineLatest, type Observable, of, ReplaySubject, timer} from 'rxjs'
 import {map, share, startWith, switchMap} from 'rxjs/operators'
 
+import {RELEASE_DOCUMENTS_PATH} from '../../../releases/store/constants'
 import {getVersionFromId} from '../../../util'
 import {measureFirstEmission} from '../../../util/measureFirstEmission'
 import {createSWR} from '../../../util/rxSwr'
@@ -44,11 +45,12 @@ export interface EditStateFor {
   liveEditSchemaType: boolean
   ready: boolean
   /**
-   * When editing a version that is NOT variant-scoped, the name of the release (or agent /
-   * anonymous bundle) the document belongs to. `undefined` for variant-scoped versions — a
-   * variant scope hash is not a release name and must never be matched against, rendered as, or
-   * routed like one. Classified from the version snapshot's `_system.variant`; until the first
-   * snapshot arrives, the bundle segment is reported as-is.
+   * When editing a version, the short name of the release the document belongs to (or an agent /
+   * anonymous bundle name), matched by consumers against active release names. Never an opaque
+   * variant scope hash: documents carrying full `_system` metadata are classified from
+   * `_system.release` (normalized from the `_.releases.<name>` reference), so drafts- and
+   * published-scoped variants report `undefined` while release-scoped versions — variant or not —
+   * report their release. Until the first snapshot arrives, the bundle segment is reported as-is.
    */
   release: string | undefined
   /**
@@ -60,6 +62,36 @@ export interface EditStateFor {
 }
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
+
+const RELEASE_DOCUMENT_ID_PREFIX = `${RELEASE_DOCUMENTS_PATH}.`
+
+/**
+ * Classifies `EditStateFor.release` from a version snapshot.
+ *
+ * Documents carrying the full `_system` metadata (`_system.group` present) are classified from
+ * `_system.release`, which is authoritative: a reference to the release document
+ * (`_.releases.<name>`), normalized here to the short release name every consumer matches
+ * against. Version documents without a release reference (e.g. drafts- or published-scoped
+ * variants) report `undefined`.
+ *
+ * Unmigrated documents (no `_system.group`) can only be plain release versions, so the bundle
+ * segment of their id (`scopeId`) is the release name.
+ */
+function classifyRelease(
+  versionSnapshot: SanityDocument | null,
+  scopeId: string | undefined,
+): string | undefined {
+  if (!versionSnapshot || !versionSnapshot._system?.group) {
+    return scopeId
+  }
+  const releaseRef = versionSnapshot._system.release?._ref
+  if (!releaseRef) {
+    return undefined
+  }
+  return releaseRef.startsWith(RELEASE_DOCUMENT_ID_PREFIX)
+    ? releaseRef.slice(RELEASE_DOCUMENT_ID_PREFIX.length)
+    : releaseRef
+}
 
 // How long to keep the pipeline alive after the last subscriber unsubscribes.
 // Subscriber churn (e.g. a React commit that unsubscribes every consumer before
@@ -136,13 +168,7 @@ export const editState = memoize(
           liveEditSchemaType,
           ready: !fromCache,
           transactionSyncLock: fromCache ? null : transactionSyncLock,
-          release: versionSnapshot
-            ? // If i has the system group it's a document with the whole `_system` field, so we can use the release from the _system.
-              versionSnapshot._system?.group
-              ? versionSnapshot._system?.release?._ref
-              : // Fallback to scopeId because it will be a release version. Variant versions have the `_system.group` field.
-                scopeId
-            : scopeId,
+          release: classifyRelease(versionSnapshot, scopeId),
           scopeId,
         }),
       ),
