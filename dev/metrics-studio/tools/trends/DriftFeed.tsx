@@ -1,3 +1,5 @@
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Badge, Box, Button, Card, Flex, MenuButton, Menu, MenuItem, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
@@ -98,9 +100,20 @@ function DriftRow(props: {
 export function DriftFeed(props: {drift: DriftState; showBranch: boolean}) {
   const {drift, showBranch} = props
   const {active, silenced, regressionCount} = drift
+  // Collapsed by default now that each tab carries its own review-count badge —
+  // this bar is the roll-up you expand for the details (which metric, how much,
+  // and the ack controls).
+  const [expanded, setExpanded] = useState(false)
   const [showAcked, setShowAcked] = useState(false)
 
   if (active.length === 0 && silenced.length === 0) return null
+
+  const summary =
+    active.length === 0
+      ? 'No changes to review'
+      : regressionCount > 0
+        ? `${regressionCount} metric${regressionCount === 1 ? '' : 's'} to review`
+        : `${active.length} improvement${active.length === 1 ? '' : 's'}`
 
   return (
     <Card
@@ -109,15 +122,24 @@ export function DriftFeed(props: {drift: DriftState; showBranch: boolean}) {
       padding={3}
       radius={2}
     >
-      <Stack space={3}>
-        <Text size={1} weight="semibold">
-          {active.length === 0
-            ? 'No changes to review'
-            : regressionCount > 0
-              ? `${regressionCount} metric${regressionCount === 1 ? '' : 's'} to review`
-              : `${active.length} improvement${active.length === 1 ? '' : 's'}`}
-        </Text>
-        {active.length > 0 && (
+      <Stack space={expanded ? 3 : 0}>
+        {/* The whole header row is the expander */}
+        <Button
+          mode="bleed"
+          padding={0}
+          onClick={() => setExpanded((v) => !v)}
+          aria-expanded={expanded}
+          title={expanded ? 'Collapse' : 'Expand'}
+        >
+          <Flex align="center" gap={2} paddingY={1}>
+            {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
+            <Text size={1} weight="semibold">
+              {summary}
+            </Text>
+          </Flex>
+        </Button>
+
+        {expanded && active.length > 0 && (
           <Stack space={2}>
             {active.map((entry) => (
               <DriftRow
@@ -131,7 +153,7 @@ export function DriftFeed(props: {drift: DriftState; showBranch: boolean}) {
             ))}
           </Stack>
         )}
-        {silenced.length > 0 && (
+        {expanded && silenced.length > 0 && (
           <Stack space={2}>
             <Button
               mode="bleed"
