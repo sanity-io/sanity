@@ -1,9 +1,11 @@
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {PerspectiveContext, SingleDocReleaseContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {useSchema} from '../../hooks'
+import {perspectiveContextValueMock} from '../../perspective/__mocks__/usePerspective.mock'
 import {scheduledRelease} from '../../releases/__fixtures__/release.fixture'
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {
@@ -260,6 +262,70 @@ describe('DeleteScheduledDraftDialog', () => {
         false,
         undefined,
       )
+    })
+  })
+
+  describe('scheduled draft perspective cleanup', () => {
+    const mockOnSetScheduledDraftPerspective = vi.fn()
+    const singleDocReleaseContextValue = {
+      onSetScheduledDraftPerspective: mockOnSetScheduledDraftPerspective,
+    }
+
+    const renderWithPerspective = (selectedPerspectiveName: string | undefined) => {
+      mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocument))
+      const perspectiveContextValue = {...perspectiveContextValueMock, selectedPerspectiveName}
+
+      return render(
+        <TestProvider>
+          <PerspectiveContext.Provider value={perspectiveContextValue}>
+            <SingleDocReleaseContext.Provider value={singleDocReleaseContextValue}>
+              <DeleteScheduledDraftDialog
+                documentId="article-123"
+                documentType="article"
+                release={scheduledRelease}
+                onClose={mockOnClose}
+              />
+            </SingleDocReleaseContext.Provider>
+          </PerspectiveContext.Provider>
+        </TestProvider>,
+      )
+    }
+
+    it('clears the scheduled draft perspective after deleting while viewing the scheduled draft', async () => {
+      // `rScheduled` is the release id of the `scheduledRelease` fixture
+      renderWithPerspective('rScheduled')
+
+      await userEvent.click(screen.getByText('Yes, delete schedule'))
+
+      await waitFor(() => {
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalled()
+      })
+      expect(mockOnSetScheduledDraftPerspective).toHaveBeenCalledWith('')
+    })
+
+    it('does not clear the perspective when not viewing the scheduled draft', async () => {
+      renderWithPerspective(undefined)
+
+      await userEvent.click(screen.getByText('Yes, delete schedule'))
+
+      await waitFor(() => {
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalled()
+      })
+      expect(mockOnSetScheduledDraftPerspective).not.toHaveBeenCalled()
+    })
+
+    it('does not clear the perspective when the delete operation fails', async () => {
+      useScheduleDraftOperationsMockReturn.deleteScheduledDraft.mockRejectedValue(
+        new Error('delete failed'),
+      )
+      renderWithPerspective('rScheduled')
+
+      await userEvent.click(screen.getByText('Yes, delete schedule'))
+
+      await waitFor(() => {
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalled()
+      })
+      expect(mockOnSetScheduledDraftPerspective).not.toHaveBeenCalled()
     })
   })
 })
