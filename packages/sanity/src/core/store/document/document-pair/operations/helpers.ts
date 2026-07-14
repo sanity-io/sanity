@@ -91,12 +91,20 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     restore: wrap('restore', serverRestore, args),
   }
 
-  // Self-derived target guard: a version was requested, but the version
+  // Self-derived target guard: a version was requested for an existing document, but the version
   // document doesn't exist. Mutating in this state would silently manifest the version out of
   // thin air (`patch` creates the version document) or operate on the base pair (`publish` would
   // publish the draft), so the mutating operations are disabled regardless of what the caller
   // declared. Deliberately excluded:
-  const targetVersionMissing = Boolean(args.idPair.versionId && !args.snapshots.version)
+  // - New documents (no draft, published, or version snapshots): typing must still create the
+  //   release version locally via its deterministic id (create-on-first-edit).
+  // - `restore` (history restore into a release) legitimately creates missing versions.
+  // - `delete` / `duplicate` operate on the whole document group.
+  const targetVersionMissing = Boolean(
+    args.idPair.versionId &&
+    !args.snapshots.version &&
+    (args.snapshots.draft || args.snapshots.published),
+  )
 
   if (!targetVersionMissing) {
     return operations

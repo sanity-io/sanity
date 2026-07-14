@@ -49,9 +49,11 @@ import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
+import {useDocumentVersionTypeSortedList} from '../releases/hooks/useDocumentVersionTypeSortedList'
 import {useOnlyHasVersions} from '../releases/hooks/useOnlyHasVersions'
 import {isReleaseDocument} from '../releases/store/types'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../releases/util/util'
 import {
@@ -172,15 +174,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
-  const {loading: documentVersionsLoading} = useDocumentVersions({
+  const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
   const {selectedVariantName, bundle} = usePerspective()
   const targetDocumentState = useTargetDocumentState(documentId)
-  // The scope of the resolved target document (release id for release targets, opaque scope hash
-  // for variant targets), threaded through the version-editing pipeline. Undefined while the
-  // target is resolving or when the base draft/published pair applies.
-  const targetScopeId = getTargetScopeId(targetDocumentState)
+  // Whether a variant is requested via the router (synchronously available, regardless of whether
+  // it has resolved yet). While requested, the version-editing pipeline must only ever address the
+  // resolved variant scope — never fall back to the base pair or a release.
+  const isVariantRequested = Boolean(selectedVariantName)
   // Whether the resolved target is a variant-scoped version. Plain release targets must keep the
   // release code paths below (value selection, perspective/bundle-mismatch guards).
   const isVariantTarget =
@@ -199,7 +201,44 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   // if it only has versions then we need to make sure that whatever the first document that is allowed
   // is a version document, but also that it has the right order
   // this will make sure that then the right document appears and so does the right chip within the document header
+  const {sortedDocumentList} = useDocumentVersionTypeSortedList({documentId})
   const onlyHasVersions = useOnlyHasVersions({documentId})
+  const firstVersion =
+    sortedDocumentList.length > 0
+      ? documentVersions.find(
+          (id) =>
+            getVersionFromId(id) === getReleaseIdFromReleaseDocumentId(sortedDocumentList[0]._id),
+        )
+      : undefined
+
+  const activeDocumentReleaseId = useMemo(() => {
+    if (isSystemBundle(selectedPerspectiveName)) {
+      return undefined
+    }
+    // if a document version exists with the selected release id, then it should use that
+    if (documentVersions.some((id) => getVersionFromId(id) === selectedPerspectiveName)) {
+      return selectedPerspectiveName
+    }
+
+    // check if the selected version is the only version, if it isn't and it doesn't exist in the release
+    // then it needs to use the documentVersions
+    if (selectedPerspectiveName && (!documentVersions.length || !onlyHasVersions)) {
+      return selectedPerspectiveName
+    }
+
+    return getVersionFromId(firstVersion ?? '')
+  }, [documentVersions, onlyHasVersions, selectedPerspectiveName, firstVersion])
+
+  // The scope to thread through the version-editing pipeline:
+  // - Variant requested: only the resolved variant scope id (opaque hash), undefined while
+  //   resolving or when the variant document is missing — those states are guarded below.
+  // - Otherwise: the release fallback logic, which keeps addressing the version document even
+  //   when it does not exist. This is load-bearing: a new document typed under a pinned release
+  //   must create `versions.<releaseId>.<publishedId>` (deterministic id) rather than a base
+  //   draft, and a document that only exists as versions must display its first version.
+  const targetScopeId = isVariantRequested
+    ? getTargetScopeId(targetDocumentState)
+    : activeDocumentReleaseId
 
   const editState = useEditState(documentId, documentType, 'default', targetScopeId)
 
@@ -486,9 +525,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     syncState,
   ])
 
-  // The full target (not just the scope id) so the store can keep the operations guarded while
-  // the target is unresolved or missing, instead of falling back to the base pair.
-  const {patch} = useDocumentOperation(documentId, documentType, getPairTarget(targetDocumentState))
+  // For variant targets, the full target (not just the scope id) so the store can keep the
+  // operations guarded while the target is unresolved or missing, instead of falling back to the
+  // base pair. For release targets, the fallback version name so the pair keeps addressing the
+  // version document even when it does not exist (create-on-first-edit).
+  const {patch} = useDocumentOperation(
+    documentId,
+    documentType,
+    isVariantRequested ? getPairTarget(targetDocumentState) : activeDocumentReleaseId,
+  )
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error(
