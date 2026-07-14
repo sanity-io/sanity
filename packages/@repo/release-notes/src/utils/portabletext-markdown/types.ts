@@ -49,6 +49,16 @@ export type PortableTextHorizontalRule = {
   _key: string
 }
 
+// Produced by @portabletext/markdown from GitHub-style alerts (`> [!NOTE]`) via
+// @mdit/plugin-alert. `content` holds the alert's inner blocks (typically styled
+// as `blockquote`).
+export type PortableTextCallout = {
+  _type: 'callout'
+  _key: string
+  tone?: string
+  content: Exclude<PortableTextMarkdownBlock, PortableTextHtml>[]
+}
+
 export type PortableTextHtml = {
   _type: 'html'
   _key: string
@@ -67,5 +77,6 @@ export type PortableTextMarkdownBlock =
   | PortableTextCode
   | PortableTextImage
   | PortableTextHorizontalRule
+  | PortableTextCallout
   | PortableTextHtml
   | PortableTextTable
