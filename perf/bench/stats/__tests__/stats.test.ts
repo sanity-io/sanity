@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
-import {bootstrapDiffOfMedians} from '../bootstrap'
-import {gate, INTERACTION_THRESHOLDS, shouldStop} from '../gate'
+import {bootstrapDiffOfMedians, type DiffInterval} from '../bootstrap'
+import {gate, INTERACTION_THRESHOLDS, PAGELOAD_THRESHOLDS, shouldStop} from '../gate'
 import {median, quantile, summarize} from '../quantiles'
 import {mulberry32, type Rng} from '../rng'
 
@@ -11,6 +11,26 @@ describe('quantile (type-7)', () => {
     expect(quantile([1, 2, 3, 4, 5], 0.5)).toBe(3)
     expect(quantile([1, 2, 3, 4], 0.25)).toBe(1.75)
     expect(quantile([10], 0.9)).toBe(10)
+  })
+
+  it('computes the CI-bound quantiles (0.025/0.975) exactly on known arrays', () => {
+    // Type-7: index = p * (n - 1), linear interpolation between ranks.
+    // [1..5]: 0.025 * 4 = 0.1 → 1 + 0.1 * (2 - 1); 0.975 * 4 = 3.9 → 4 + 0.9
+    expect(quantile([1, 2, 3, 4, 5], 0.025)).toBeCloseTo(1.1, 12)
+    expect(quantile([1, 2, 3, 4, 5], 0.975)).toBeCloseTo(4.9, 12)
+    // The bounds must be symmetric ranks from each end — an off-by-half-rank
+    // (e.g. floor on one side, round on the other) breaks this equality
+    const values = Array.from({length: 41}, (_, i) => i) // 0..40
+    expect(quantile(values, 0.025)).toBeCloseTo(1, 12) // 0.025 * 40 = rank 1
+    expect(quantile(values, 0.975)).toBeCloseTo(39, 12) // symmetric from the top
+    expect(quantile(values, 0.025) + quantile(values, 0.975)).toBeCloseTo(40, 12)
+    // Order of input must not matter
+    expect(quantile([5, 3, 1, 4, 2], 0.975)).toBeCloseTo(4.9, 12)
+  })
+
+  it('is exact at p=0 and p=1 (min and max)', () => {
+    expect(quantile([7, 3, 9, 1], 0)).toBe(1)
+    expect(quantile([7, 3, 9, 1], 1)).toBe(9)
   })
 
   it('does not mutate its input', () => {
@@ -90,6 +110,40 @@ describe('bootstrapDiffOfMedians', () => {
     expect(interval.diff).toBeGreaterThan(5)
     expect(interval.lo).toBeGreaterThan(0)
   })
+
+  it('golden: fixed sessions + fixed seed produce these exact bounds', () => {
+    // These values were produced by running the current implementation once
+    // and hard-coding the output. They pin the exact resampling order and the
+    // type-7 percentile index arithmetic: a regression that shifts a bound by
+    // half a rank (the anti-conservative bug class the bootstrap comment
+    // warns about) changes lo/hi and fails here, while every distribution-
+    // level test would still pass.
+    const interval = bootstrapDiffOfMedians({
+      aSessions: [
+        [30, 32, 31],
+        [29, 33, 30],
+        [31, 31, 32],
+        [30, 34, 29],
+      ],
+      bSessions: [
+        [36, 38, 35],
+        [37, 39, 36],
+        [35, 40, 37],
+        [38, 36, 39],
+      ],
+      rng: mulberry32(1234),
+      iterations: 500,
+    })
+    expect(interval).toEqual({diff: 6, lo: 5.5, hi: 7.5, level: 0.95, iterations: 500})
+  })
+})
+
+const interval = (diff: number, lo: number, hi: number): DiffInterval => ({
+  diff,
+  lo,
+  hi,
+  level: 0.95,
+  iterations: 2000,
 })
 
 describe('gate', () => {
@@ -130,6 +184,59 @@ describe('gate', () => {
         INTERACTION_THRESHOLDS,
       ),
     ).toBe(false)
+  })
+
+  it('a diff exactly at the minimum effect IS a verdict (inclusive >= boundary)', () => {
+    // INTERACTION at referenceMedian 32: minimumEffect = max(3, 0.05·32) = 3
+    expect(gate(interval(3, 0.5, 5.5), 32, INTERACTION_THRESHOLDS)).toBe('regression')
+    expect(gate(interval(-3, -5.5, -0.5), 32, INTERACTION_THRESHOLDS)).toBe('improvement')
+    // A hair under the floor is not a verdict — with a tight CI it's neutral
+    expect(gate(interval(2.999, 0.5, 5.5), 32, INTERACTION_THRESHOLDS)).toBe('neutral')
+    expect(gate(interval(-2.999, -5.5, -0.5), 32, INTERACTION_THRESHOLDS)).toBe('neutral')
+  })
+
+  it('an improvement below the effect floor is neutral, not an improvement', () => {
+    // CI excludes zero, but the effect is too small to matter
+    expect(gate(interval(-1, -1.8, -0.2), 32, INTERACTION_THRESHOLDS)).toBe('neutral')
+  })
+
+  it('uses the relative floor when it dominates the absolute one', () => {
+    // referenceMedian 100: minimumEffect = max(3, 0.05·100) = 5, not absMs=3
+    expect(gate(interval(4, 1, 7), 100, INTERACTION_THRESHOLDS)).toBe('neutral')
+    expect(gate(interval(5, 1, 9), 100, INTERACTION_THRESHOLDS)).toBe('regression')
+    // Same for improvements
+    expect(gate(interval(-4, -7, -1), 100, INTERACTION_THRESHOLDS)).toBe('neutral')
+    expect(gate(interval(-5, -9, -1), 100, INTERACTION_THRESHOLDS)).toBe('improvement')
+  })
+
+  it('a half-width exactly at the stop bound is decidable (neutral), just past it is not', () => {
+    // Bound = max(targetHalfWidthMs, minimumEffect) = max(4, 3) = 4 at ref 32
+    expect(gate(interval(0, -4, 4), 32, INTERACTION_THRESHOLDS)).toBe('neutral')
+    expect(shouldStop(interval(0, -4, 4), 32, INTERACTION_THRESHOLDS)).toBe(true)
+    expect(gate(interval(0, -4.1, 4.1), 32, INTERACTION_THRESHOLDS)).toBe('inconclusive')
+    expect(shouldStop(interval(0, -4.1, 4.1), 32, INTERACTION_THRESHOLDS)).toBe(false)
+  })
+
+  it('property: shouldStop is the exact complement of gate() === inconclusive for zero-spanning intervals', () => {
+    // gate() documents shouldStop as "the exact complement of gate's
+    // inconclusive boundary" — a converged run must never gate inconclusive,
+    // and a run that would gate inconclusive must keep sampling. For
+    // intervals spanning zero neither verdict branch can fire, so the
+    // equivalence must hold everywhere.
+    const rng = mulberry32(77)
+    for (const thresholds of [INTERACTION_THRESHOLDS, PAGELOAD_THRESHOLDS]) {
+      for (const referenceMedian of [10, 32, 100, 1000, 4000]) {
+        for (let i = 0; i < 200; i++) {
+          const lo = -rng() * referenceMedian
+          const hi = rng() * referenceMedian
+          const diff = lo + rng() * (hi - lo)
+          const candidate = interval(diff, lo, hi)
+          expect(shouldStop(candidate, referenceMedian, thresholds)).toBe(
+            gate(candidate, referenceMedian, thresholds) !== 'inconclusive',
+          )
+        }
+      }
+    }
   })
 })
 

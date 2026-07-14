@@ -28,6 +28,18 @@ import {type BenchRunDocument} from './types'
 const METRICS_PROJECT_ID = 'mhfozd0z'
 const METRICS_DATASET = 'bench'
 
+/**
+ * The stored document id decides overwrite-vs-append: a PR run overwrites one
+ * doc per PR number (latest push wins — branch comparison wants the newest
+ * build, not a pile), while main/cron runs get one doc per run (sha + CI run
+ * id) so the time series accumulates.
+ */
+export function documentIdForRun(run: BenchRunDocument): string {
+  return typeof run.git.prNumber === 'number'
+    ? `benchRun-pr-${run.git.prNumber}`
+    : `benchRun-${run.git.sha}-${run.runner.runId ?? 'local'}`
+}
+
 export async function storeRun(inputPathArg?: string): Promise<void> {
   const inputPath = path.resolve(
     inputPathArg ??
@@ -57,13 +69,7 @@ export async function storeRun(inputPathArg?: string): Promise<void> {
     process.exit(1)
   }
 
-  // A PR overwrites one doc per PR number (latest push wins); main/cron keeps
-  // one doc per run so the time series accumulates.
-  const documentId =
-    typeof run.git.prNumber === 'number'
-      ? `benchRun-pr-${run.git.prNumber}`
-      : `benchRun-${run.git.sha}-${run.runner.runId ?? 'local'}`
-  const stored = await client.createOrReplace({...toStorableRun(run), _id: documentId})
+  const stored = await client.createOrReplace({...toStorableRun(run), _id: documentIdForRun(run)})
   console.log(
     `Stored ${stored._id} (${run.scenarios.length} scenario report(s), ${run.git.branch} @ ${run.git.sha.slice(0, 10)}) in ${METRICS_PROJECT_ID}/${METRICS_DATASET}`,
   )

@@ -19,7 +19,7 @@ import {type BenchRunDocument, type ScenarioReport} from './types'
  * and flip `mode`. The result is comparable to the main-branch absolute series
  * and safe to store under the PR branch.
  */
-function toAbsolute(run: BenchRunDocument): BenchRunDocument {
+export function toAbsolute(run: BenchRunDocument): BenchRunDocument {
   return {
     ...run,
     mode: 'absolute',
