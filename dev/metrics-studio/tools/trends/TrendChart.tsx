@@ -7,7 +7,7 @@ import {useState} from 'react'
 
 import {formatValue, isSignedUnit, type TrendLine, type TrendPoint, type TrendSeries} from './data'
 import {categoricalColor} from './palette'
-import {RunDetailDialog} from './RunDetailDialog'
+import {RunDetailPopover} from './RunDetailPopover'
 
 const MARGIN = {top: 8, right: 8, bottom: 22, left: 44}
 
@@ -71,7 +71,11 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
   const {series, width, height} = props
   const {lines, unit} = series
   const [hoverMs, setHoverMs] = useState<number | null>(null)
+  // The selected point only — its anchor coords are derived from the current
+  // scales on every render, so an open popover follows the dot across a resize
+  // or a domain change instead of pointing at a stale pixel position
   const [selected, setSelected] = useState<TrendPoint | null>(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const allPoints = lines.flatMap((line) => line.points)
   if (width < 10 || allPoints.length === 0) return null
 
@@ -169,12 +173,14 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
                     strokeDasharray={series.goal === 'context' ? '4 3' : undefined}
                   />
                 )}
-                {line.points.map((point) => {
+                {line.points.map((point, pointIndex) => {
                   const isHovered = hovered.some(
                     (entry) => entry.branch === line.branch && entry.point === point,
                   )
                   return (
-                    <g key={point.runId}>
+                    // Soak charts encode one run as many minute samples, so every
+                    // point shares the same runId — index keeps the key unique
+                    <g key={`${point.runId}:${pointIndex}`}>
                       {/* Soft halo behind the hovered point — reads clearly as
                           "this run is targeted / clickable" */}
                       {isHovered && (
@@ -319,7 +325,28 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
         </div>
       )}
       {selected && (
-        <RunDetailDialog series={series} point={selected} onClose={() => setSelected(null)} />
+        <>
+          {/* Invisible anchor at the selected dot — coords derived from the
+              current scales (MARGIN offsets the Group), so it tracks the dot
+              through resizes and domain changes. The popover positions against it. */}
+          <div
+            ref={setAnchorEl}
+            style={{
+              position: 'absolute',
+              left: MARGIN.left + x(selected),
+              top: MARGIN.top + yScale(selected.value),
+              width: 1,
+              height: 1,
+              pointerEvents: 'none',
+            }}
+          />
+          <RunDetailPopover
+            series={series}
+            point={selected}
+            referenceElement={anchorEl}
+            onClose={() => setSelected(null)}
+          />
+        </>
       )}
     </div>
   )

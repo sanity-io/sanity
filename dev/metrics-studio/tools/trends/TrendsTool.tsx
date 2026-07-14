@@ -333,7 +333,7 @@ export function TrendsTool() {
                     One benchmark run per day of the studio built from <code>main</code>, measured
                     against a local API mock (no network, no real project) — see{' '}
                     <code>perf/bench</code>. Each chart tracks one metric over time; each dot is one
-                    run and opens the full result document.
+                    run — click it for the run details and links to the PR, commit, and CI run.
                   </Text>
                   <Text size={1} muted>
                     Because the CI machine varies day to day, absolute numbers are host-relative:
