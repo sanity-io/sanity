@@ -549,12 +549,13 @@ export function TrendsTool() {
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [showHelp, setShowHelp] = useState(false)
   // Source and range persist in the URL so a debug view survives reload and
-  // is shareable; an unknown/dev-only source falls back to live
+  // is shareable; an unknown source falls back to live. Demo/debug data is
+  // available in every build (dropdown + `?source=` param) so a synthetic view
+  // is shareable and the tool is explorable before real runs exist.
   const [rangeParam, setRangeParam] = useUrlState('range', '90')
   const [sourceParam, setSourceParam] = useUrlState('source', 'live')
   const source: DataSource =
-    sourceParam === 'live' ||
-    (import.meta.env.DEV && DEBUG_SOURCES.includes(sourceParam as DebugSource))
+    sourceParam === 'live' || DEBUG_SOURCES.includes(sourceParam as DebugSource)
       ? (sourceParam as DataSource)
       : 'live'
   const rangeDays = rangeParam === 'all' ? null : Number(rangeParam)
@@ -729,21 +730,24 @@ export function TrendsTool() {
                   onClick={() => setShowHelp((v) => !v)}
                 />
               </Flex>
-              <Flex gap={2} style={{flexShrink: 0}}>
-                {import.meta.env.DEV && (
-                  <Select
-                    value={source}
-                    onChange={(event) => setSourceParam(event.currentTarget.value)}
-                    aria-label="Data source (dev only)"
-                  >
-                    <option value="live">Live data</option>
-                    {DEBUG_SOURCES.map((debugSource) => (
-                      <option key={debugSource} value={debugSource}>
-                        Debug: {debugSource}
-                      </option>
-                    ))}
-                  </Select>
-                )}
+              <Flex align="center" gap={2} style={{flexShrink: 0}}>
+                {/* Data source is a secondary/debug affordance — keep it small
+                    and quiet next to the primary branch/range controls */}
+                <Select
+                  value={source}
+                  onChange={(event) => setSourceParam(event.currentTarget.value)}
+                  aria-label="Data source"
+                  fontSize={1}
+                  padding={2}
+                  radius={2}
+                >
+                  <option value="live">Live data</option>
+                  {DEBUG_SOURCES.map((debugSource) => (
+                    <option key={debugSource} value={debugSource}>
+                      Debug: {debugSource}
+                    </option>
+                  ))}
+                </Select>
                 <BranchPicker
                   branches={branches}
                   selected={selectedBranches}
