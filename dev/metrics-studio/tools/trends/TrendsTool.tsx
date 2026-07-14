@@ -17,9 +17,10 @@ import {
   Spinner,
   Stack,
   Text,
+  useClickOutsideEvent,
 } from '@sanity/ui'
 import {ParentSize} from '@visx/responsive'
-import {useMemo, useState} from 'react'
+import {useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
@@ -60,14 +61,22 @@ interface LiveState {
 
 function InfoButton(props: {text: string; label: string; sourceFile?: string}) {
   const [open, setOpen] = useState(false)
+  // Popover has no onClickOutside prop (passing it logs an "unknown event
+  // handler" error and never closes); useClickOutsideEvent is the @sanity/ui
+  // idiom, treating the popover content and its trigger button as "inside".
+  const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  useClickOutsideEvent(
+    () => setOpen(false),
+    () => [contentEl, buttonRef.current],
+  )
   return (
     <Popover
       open={open}
-      onClickOutside={() => setOpen(false)}
       portal
       constrainSize
       content={
-        <Box padding={3} style={{maxWidth: 260}}>
+        <Box ref={setContentEl} padding={3} style={{maxWidth: 260}}>
           <Stack space={3}>
             <Text size={1} muted>
               {props.text}
@@ -112,6 +121,7 @@ function InfoButton(props: {text: string; label: string; sourceFile?: string}) {
       }
     >
       <Button
+        ref={buttonRef}
         mode="bleed"
         padding={2}
         fontSize={1}
@@ -132,6 +142,14 @@ function BranchPicker(props: {
 }) {
   const {branches, selected, onToggle} = props
   const [open, setOpen] = useState(false)
+  // See InfoButton: Popover has no onClickOutside; use the @sanity/ui hook.
+  // Hooks run before the early return below to satisfy rules-of-hooks.
+  const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  useClickOutsideEvent(
+    () => setOpen(false),
+    () => [contentEl, buttonRef.current],
+  )
   if (branches.length < 2) return null
 
   const label =
@@ -144,11 +162,10 @@ function BranchPicker(props: {
   return (
     <Popover
       open={open}
-      onClickOutside={() => setOpen(false)}
       portal
       constrainSize
       content={
-        <Box padding={2} style={{maxWidth: 280}}>
+        <Box ref={setContentEl} padding={2} style={{maxWidth: 280}}>
           <Stack space={1}>
             <Box paddingX={2} paddingY={1}>
               <Text size={0} muted>
@@ -176,6 +193,7 @@ function BranchPicker(props: {
       }
     >
       <Button
+        ref={buttonRef}
         mode="ghost"
         text={label}
         icon={ChevronDownIcon}
