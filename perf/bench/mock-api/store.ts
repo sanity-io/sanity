@@ -14,6 +14,9 @@ import {
 /** The identity attached to committed transactions and emitted events. */
 const IDENTITY = BENCH_USER.id
 
+/** Fixed created/updated stamp for seeded fixtures — keeps seeding deterministic. */
+const SEED_TIMESTAMP = '2020-01-01T00:00:00.000Z'
+
 function targetIdOf(mutation: MutationPayload): string {
   const id =
     mutation.patch?.id ??
@@ -53,8 +56,11 @@ export class DocumentStore {
   seed(documents: BenchDocument[]): void {
     for (const doc of documents) {
       this.documents.set(doc._id, {
-        _createdAt: new Date().toISOString(),
-        _updatedAt: new Date().toISOString(),
+        // Fixed timestamp, not new Date(): seeded fixtures must be byte-identical
+        // across sessions and A/B sides — a wall-clock value would drift between
+        // the reference and experiment runs and break hermeticity.
+        _createdAt: SEED_TIMESTAMP,
+        _updatedAt: SEED_TIMESTAMP,
         _rev: 'seed',
         ...doc,
       })

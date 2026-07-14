@@ -1,7 +1,9 @@
 // oxlint-disable no-console
 /**
  * `bench dev` — interactive debugging mode: starts the experiment-side
- * mock API (plain HTTP) plus `sanity dev`, and seeds a document to type into.
+ * mock API (HTTP/2 over self-signed TLS, like the benchmark run — the studio
+ * defaults to https://localhost:<port>) plus `sanity dev`, and seeds a
+ * document to type into.
  * No auth needed: the mock's /users/me answers with a signed-in user, so the
  * studio boots straight into the workspace.
  */

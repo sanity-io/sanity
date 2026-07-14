@@ -72,6 +72,10 @@ export async function serveStatic(options: {
         'cache-control': filePath.includes(`${path.sep}static${path.sep}`)
           ? 'public, max-age=31536000, immutable'
           : 'no-cache',
+        // The response body depends on accept-encoding (gzip vs identity), so
+        // the cache must key on it too — otherwise a cached variant can be
+        // served to a client that asked for the other, skewing warm loads
+        'vary': 'accept-encoding',
         ...(compress ? {'content-encoding': 'gzip'} : {}),
       },
     }

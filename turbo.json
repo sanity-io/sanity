@@ -38,8 +38,6 @@
   // Variables that should be passed through but not invalidate the cache
   "globalPassThroughEnv": [
     "APPDATA",
-    // Token used by the bench track-main cron to store benchRun docs
-    "BENCH_METRICS_WRITE_TOKEN",
     "BROWSER_ARGS",
     "BROWSER",
     "BUILD_NUMBER",
