@@ -31,4 +31,29 @@ export interface IdPair {
   versionId?: string
 }
 
+/**
+ * The document targeted by the selected perspective and variant, as declared by a caller of the
+ * document pair APIs. Callers resolve targets asynchronously (variant scope ids are opaque,
+ * server-generated hashes discoverable only by lookup), so the union carries the unresolved and
+ * missing states explicitly — the store must guard operations in those states instead of falling
+ * back to the base draft/published pair.
+ *
+ * - `version` — a plain version bundle (release, agent or anonymous bundle): the pair checks out
+ *   `versions.<name>.<publishedId>`. Passing a bare `string` is shorthand for this kind.
+ * - `variant` — a resolved variant-scoped version: the pair checks out
+ *   `versions.<scopeId>.<publishedId>`.
+ * - `target-missing` — a variant is selected but the document has no variant-scoped version for
+ *   the current bundle (or the variant selection is invalid). Operations are disabled with
+ *   `TARGET_NOT_FOUND` and throw if executed.
+ * - `unresolved` — target resolution is still in flight. Operations stay guarded (`NOT_READY`)
+ *   and throw if executed.
+ *
+ * @internal
+ */
+export type DocumentPairTarget =
+  | {kind: 'version'; name: string}
+  | {kind: 'variant'; scopeId: string; variantId: string}
+  | {kind: 'target-missing'; variantId?: string}
+  | {kind: 'unresolved'}
+
 export type {ReconnectEvent, ResetEvent, WelcomeBackEvent, WelcomeEvent} from '@sanity/client'

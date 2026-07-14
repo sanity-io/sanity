@@ -321,8 +321,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     getFormDocumentValue: getDisplayed,
     displayInlineChanges: router.stickyParams.displayInlineChanges === 'true',
     isOlderRevision: onOlderRevision,
-    selectedVariant: perspective.selectedVariant,
-    bundle: perspective.bundle,
   })
 
   const actionsVersionType = useMemo(

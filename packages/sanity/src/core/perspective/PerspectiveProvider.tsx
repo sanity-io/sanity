@@ -69,6 +69,7 @@ export function PerspectiveProvider({
             .find((releaseName) => releaseName === selectedPerspectiveName),
       perspectiveStack,
       excludedPerspectives,
+      selectedVariantName,
       selectedVariant,
       bundle: getBundleIdFromPerspective(selectedPerspective),
     }
@@ -78,6 +79,7 @@ export function PerspectiveProvider({
     selectedPerspective,
     perspectiveStack,
     excludedPerspectives,
+    selectedVariantName,
     selectedVariant,
   ])
 
