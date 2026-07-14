@@ -179,12 +179,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   })
   const {selectedVariantName, bundle} = usePerspective()
   const targetDocumentState = useTargetDocumentState(documentId)
-  // Whether a variant is requested via the router (synchronously available, regardless of whether
-  // it has resolved yet). While requested, the version-editing pipeline must only ever address the
-  // resolved variant scope — never fall back to the base pair or a release.
-  const isVariantRequested = Boolean(selectedVariantName)
-  // Whether the resolved target is a variant-scoped version. Plain release targets must keep the
-  // release code paths below (value selection, perspective/bundle-mismatch guards).
   const isVariantTarget =
     targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
 
@@ -211,7 +205,20 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         )
       : undefined
 
-  const activeDocumentReleaseId = useMemo(() => {
+  // The bundle segment for the pair checkout (`useEditState` & co.). Variant targets use the
+  // stub-resolved opaque scope id exclusively: a missing/unresolved variant target must never
+  // fall back to another document (ops stay guarded, the form stays read-only). Non-variant
+  // targets keep the deterministic release derivation with its fallbacks — a release version id
+  // is derivable, so new documents under a release must check out the version pair for typing to
+  // create the release version (not the base draft), and documents that only have versions must
+  // check out their first version to display it.
+  const targetScopeId = useMemo(() => {
+    if (selectedVariantName) {
+      // The scope of the resolved target document (release id for release targets, opaque scope hash
+      // for variant targets), threaded through the version-editing pipeline. Undefined while the
+      // target is resolving or when the base draft/published pair applies.
+      return getTargetScopeId(targetDocumentState)
+    }
     if (isSystemBundle(selectedPerspectiveName)) {
       return undefined
     }
@@ -227,18 +234,14 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
 
     return getVersionFromId(firstVersion ?? '')
-  }, [documentVersions, onlyHasVersions, selectedPerspectiveName, firstVersion])
-
-  // The scope to thread through the version-editing pipeline:
-  // - Variant requested: only the resolved variant scope id (opaque hash), undefined while
-  //   resolving or when the variant document is missing — those states are guarded below.
-  // - Otherwise: the release fallback logic, which keeps addressing the version document even
-  //   when it does not exist. This is load-bearing: a new document typed under a pinned release
-  //   must create `versions.<releaseId>.<publishedId>` (deterministic id) rather than a base
-  //   draft, and a document that only exists as versions must display its first version.
-  const targetScopeId = isVariantRequested
-    ? getTargetScopeId(targetDocumentState)
-    : activeDocumentReleaseId
+  }, [
+    selectedVariantName,
+    targetDocumentState,
+    documentVersions,
+    onlyHasVersions,
+    selectedPerspectiveName,
+    firstVersion,
+  ])
 
   const editState = useEditState(documentId, documentType, 'default', targetScopeId)
 
@@ -525,14 +528,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     syncState,
   ])
 
-  // For variant targets, the full target (not just the scope id) so the store can keep the
+  // For variant flows, pass the full target (not just the scope id) so the store keeps the
   // operations guarded while the target is unresolved or missing, instead of falling back to the
-  // base pair. For release targets, the fallback version name so the pair keeps addressing the
-  // version document even when it does not exist (create-on-first-edit).
+  // base pair. Non-variant flows keep the deterministic version name: their ids are derivable, so
+  // resolution never blocks them (and the store's self-derived guard still covers a requested
+  // version that doesn't exist).
   const {patch} = useDocumentOperation(
     documentId,
     documentType,
-    isVariantRequested ? getPairTarget(targetDocumentState) : activeDocumentReleaseId,
+    selectedVariantName ? getPairTarget(targetDocumentState) : targetScopeId,
   )
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
