@@ -257,7 +257,6 @@ exports[`exports snapshot 1`] = `
     "buildLegacyTheme": "function",
     "buildRangeDecorationSelectionsFromComments": "function",
     "buildTextSelectionFromFragment": "function",
-    "buildVariantIdStack": "function",
     "catchWithCount": "function",
     "checkoutPair": "function",
     "classifyConfigError": "function",
