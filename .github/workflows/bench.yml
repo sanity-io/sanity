@@ -609,10 +609,18 @@ jobs:
 
       # Gather the interaction + pageLoad shard results into the shared results
       # dir; soak and INP write their own JSON alongside, and `bench report`
-      # merges everything into one document (bench-results__*.json).
+      # merges everything into one document (bench-results__*.json). Two
+      # explicit patterns (not a broad bench-results-*) so nothing unrelated —
+      # e.g. bench-results-self-test from a dispatch with both run_suite and
+      # self_test — leaks into the stored daily doc.
       - uses: actions/download-artifact@v8
         with:
-          pattern: bench-results-*
+          pattern: bench-results-interaction-*
+          merge-multiple: true
+          path: perf/bench/results
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: bench-results-pageload-*
           merge-multiple: true
           path: perf/bench/results
 
