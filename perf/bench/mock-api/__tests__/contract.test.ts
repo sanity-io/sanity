@@ -101,6 +101,19 @@ describe('mock Content Lake contract (real @sanity/client)', () => {
     expect(draft).toMatchObject({_id: DRAFT_ID, stringField: 'hello', _rev: 'seed'})
   })
 
+  it('serves a document-at-revision in the shape getDocumentAtRevision expects', async () => {
+    // The divergence/changes machinery fetches GET /data/history/<ds>/documents/
+    // <id>?revision=<rev> and reads response.documents[0]; a soak run triggers it
+    // once enough edits accumulate. Without a handler the studio logs a console
+    // error and the session fails (mock-drift detector).
+    mock.store.seed([{_id: DRAFT_ID, _type: 'singleString', stringField: 'hello'}])
+    const response = await client.request<{documents: unknown[]}>({
+      url: `/data/history/bench/documents/${encodeURIComponent(DRAFT_ID)}?revision=seed`,
+      tag: 'get-document-revision',
+    })
+    expect(response.documents[0]).toMatchObject({_id: DRAFT_ID, stringField: 'hello'})
+  })
+
   it('echoes an action as a mutation event with the submitted transactionId, rev-chained from the snapshot', async () => {
     mock.store.seed([{_id: DRAFT_ID, _type: 'singleString', stringField: 'hello'}])
     const [, snapshot] = await client.getDocuments([PUBLISHED_ID, DRAFT_ID])
