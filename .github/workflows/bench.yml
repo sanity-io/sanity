@@ -153,17 +153,22 @@ jobs:
 
   bench-interaction:
     needs: [build, build-reference]
-    # Runs on the PR path (A/B vs the merge-base) and on the daily/dispatch
+    # Runs on the PR path (A/B vs the merge-base) and on the daily-tracking
     # path (absolute — build-reference is PR-only and gets skipped, so
     # COMPARISON is empty and the run step drops --reference-dist). Sharded per
     # scenario either way, so the daily run's wall-clock is the slowest single
-    # scenario, not the sum. The `!cancelled()` status function is required so
-    # the job still runs when build-reference is *skipped* (a plain custom if:
-    # would itself skip on a skipped need); guard on build succeeding.
+    # scenario, not the sum. Only on triggers whose results are consumed by
+    # track-main — NOT the weekly self-test cron or a self_test-only dispatch,
+    # which run their own job and would otherwise launch these shards for
+    # nothing. The `!cancelled()` status function is required so the job still
+    # runs when build-reference is *skipped* (a plain custom if: would itself
+    # skip on a skipped need); guard on build succeeding.
     if: >-
       !cancelled() && needs.build.result == 'success' &&
-      (needs.build.outputs.has_code_changes == 'true' ||
-       github.event_name != 'pull_request')
+      ((github.event_name == 'pull_request' &&
+        needs.build.outputs.has_code_changes == 'true') ||
+       (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
+       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
     runs-on: ubuntu-8core
     # Headroom for a/b runs of the heavy scenarios (synthetic sessions cost
     # ~90s each and run on both sides)
@@ -249,13 +254,16 @@ jobs:
 
   bench-pageload:
     needs: [build, build-reference]
-    # See bench-interaction: PR path is A/B, daily/dispatch is absolute
-    # (build-reference skipped). `!cancelled()` lets it run past the skipped
-    # build-reference need; guard on build succeeding.
+    # See bench-interaction: PR path is A/B, daily/run_suite is absolute
+    # (build-reference skipped). Gated to the triggers track-main consumes, so
+    # the self-test path doesn't launch these shards for nothing. `!cancelled()`
+    # lets it run past the skipped build-reference need; guard on build.
     if: >-
       !cancelled() && needs.build.result == 'success' &&
-      (needs.build.outputs.has_code_changes == 'true' ||
-       github.event_name != 'pull_request')
+      ((github.event_name == 'pull_request' &&
+        needs.build.outputs.has_code_changes == 'true') ||
+       (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
+       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
     runs-on: ubuntu-8core
     timeout-minutes: 20
     permissions:
