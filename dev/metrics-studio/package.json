@@ -1,6 +1,6 @@
 {
   "name": "metrics-studio",
-  "version": "6.4.0",
+  "version": "6.5.0",
   "private": true,
   "description": "Studio presenting repo health metrics (perf benchmark runs from perf/bench, and friends)",
   "license": "MIT",
