@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {EllipsisVerticalIcon} from '@sanity/icons/EllipsisVertical'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
@@ -12,6 +13,9 @@ import {
   Container,
   Flex,
   Grid,
+  Menu,
+  MenuButton,
+  MenuItem,
   Popover,
   PortalProvider,
   Select,
@@ -46,11 +50,12 @@ import {
   type TrendSeries,
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
+import {type DriftResult} from './drift'
 import {DriftFeed} from './DriftFeed'
 import {efpsSourceUrl, sourceFileUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
 import {TrendChart} from './TrendChart'
-import {useDriftState} from './useDriftState'
+import {type DriftState, useDriftState, worstOf} from './useDriftState'
 import {useUrlState} from './useUrlState'
 
 const RANGES = [
@@ -212,17 +217,73 @@ function BranchPicker(props: {
   )
 }
 
-function SeriesCard(props: {series: TrendSeries; height: number}) {
-  const {series, height} = props
+/** The silence / snooze / mark-fixed menu, shared by the feed and chart cards. */
+function AckMenu(props: {
+  seriesKey: string
+  branch: string
+  onAck: (state: 'silenced' | 'snoozed' | 'fixed') => void
+}) {
+  return (
+    <MenuButton
+      id={`ack-card-${props.seriesKey}-${props.branch}`}
+      button={
+        <Button
+          mode="bleed"
+          padding={2}
+          fontSize={1}
+          icon={EllipsisVerticalIcon}
+          aria-label="Acknowledge"
+        />
+      }
+      menu={
+        <Menu>
+          <MenuItem text="Silence" onClick={() => props.onAck('silenced')} />
+          <MenuItem text="Snooze 7d" onClick={() => props.onAck('snoozed')} />
+          <MenuItem text="Mark fixed" onClick={() => props.onAck('fixed')} />
+        </Menu>
+      }
+      popover={{portal: true}}
+    />
+  )
+}
+
+function driftBadge(entry: DriftResult): {tone: 'caution' | 'positive'; label: string} {
+  const worst = worstOf(entry)
+  const sign = worst.deltaFraction > 0 ? '+' : ''
+  const arrow = entry.direction === 'regression' ? '↑' : '↓'
+  return {
+    tone: entry.direction === 'regression' ? 'caution' : 'positive',
+    label: `${arrow} ${sign}${(worst.deltaFraction * 100).toFixed(0)}%`,
+  }
+}
+
+function SeriesCard(props: {
+  series: TrendSeries
+  height: number
+  drift?: DriftResult
+  onAck?: (state: 'silenced' | 'snoozed' | 'fixed') => void
+}) {
+  const {series, height, drift, onAck} = props
   // Latest value of the first line — a headline number only when not comparing
   const latest = series.lines.length === 1 ? series.lines[0].points.at(-1) : undefined
+  const badge = drift ? driftBadge(drift) : null
   return (
-    <Card border padding={3} radius={2}>
+    // A drifted chart tints its card so it stands out in the grid; the badge
+    // in the header carries the exact move and the ⋮ menu acknowledges it —
+    // the same silence/snooze/fix as the feed, right where you're looking.
+    <Card border padding={3} radius={2} tone={badge ? badge.tone : 'default'}>
       <Stack space={3}>
         <Flex align="center" justify="space-between" gap={2}>
-          <Text size={1} weight="medium" textOverflow="ellipsis">
-            {series.title}
-          </Text>
+          <Flex align="center" gap={2} style={{minWidth: 0}}>
+            <Text size={1} weight="medium" textOverflow="ellipsis">
+              {series.title}
+            </Text>
+            {badge && (
+              <Badge tone={badge.tone} fontSize={0} mode="default" style={{flexShrink: 0}}>
+                {badge.label}
+              </Badge>
+            )}
+          </Flex>
           <Flex align="center" gap={2} style={{flexShrink: 0}}>
             {latest && (
               <Text
@@ -232,6 +293,9 @@ function SeriesCard(props: {series: TrendSeries; height: number}) {
               >
                 {formatValue(latest.value, series.unit)}
               </Text>
+            )}
+            {drift && onAck && (
+              <AckMenu seriesKey={drift.seriesKey} branch={drift.branch} onAck={onAck} />
             )}
             {/* Context hidden behind the info button so the grid stays
                 scannable — one click, not a paragraph per card */}
@@ -255,12 +319,27 @@ function SeriesCard(props: {series: TrendSeries; height: number}) {
 }
 
 /** The responsive chart grid used by every group and soak sub-view. */
-function ChartGrid(props: {series: TrendSeries[]}) {
+function ChartGrid(props: {
+  series: TrendSeries[]
+  driftBySeries?: Map<string, DriftResult>
+  drift?: DriftState
+}) {
   return (
     <Grid columns={[1, 1, 2, 3]} gap={3}>
-      {props.series.map((entry) => (
-        <SeriesCard key={entry.key} series={entry} height={128} />
-      ))}
+      {props.series.map((entry) => {
+        const entryDrift = props.driftBySeries?.get(entry.key)
+        return (
+          <SeriesCard
+            key={entry.key}
+            series={entry}
+            height={128}
+            drift={entryDrift}
+            onAck={
+              entryDrift && props.drift ? (state) => props.drift!.ack(entryDrift, state) : undefined
+            }
+          />
+        )
+      })}
     </Grid>
   )
 }
@@ -443,6 +522,21 @@ export function TrendsTool() {
     }
     return counts
   }, [drift.active, groupById])
+  // Active drift per series (for flagging the chart card itself). A series can
+  // drift on more than one branch; keep the worst so the card shows the biggest
+  // move, regressions winning over improvements.
+  const driftBySeries = useMemo(() => {
+    const map = new Map<string, DriftResult>()
+    for (const entry of drift.active) {
+      const current = map.get(entry.seriesKey)
+      const better =
+        !current ||
+        (entry.direction === 'regression' && current.direction !== 'regression') ||
+        Math.abs(worstOf(entry).deltaFraction) > Math.abs(worstOf(current).deltaFraction)
+      if (better) map.set(entry.seriesKey, entry)
+    }
+    return map
+  }, [drift.active])
 
   return (
     <PortalProvider element={portalElement}>
@@ -598,6 +692,8 @@ export function TrendsTool() {
                             ? environmentSeries
                             : series.filter((entry) => entry.group === activeTab.id)
                         }
+                        driftBySeries={driftBySeries}
+                        drift={drift}
                       />
                     )}
                   </Stack>
