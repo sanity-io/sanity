@@ -2,6 +2,8 @@
 
 This document is the working plan for enabling variant document editing in the Studio through the existing document pair, and for hardening the approach started on this branch (`sapp-3810`). It is written for people who did not follow the original design discussion.
 
+For an architecture overview of the system as implemented (the onboarding reference), see [`EDITING.md`](./EDITING.md).
+
 ## Context and decision
 
 Three approaches were evaluated for wiring variant documents into the document store:
