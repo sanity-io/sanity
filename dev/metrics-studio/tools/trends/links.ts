@@ -31,6 +31,24 @@ export function sourceFileUrl(path: string, branch = 'main'): string {
 }
 
 /**
+ * web.dev reference article for a Core Web Vital / load metric, matched on the
+ * metric label suffix (labels look like "boot-cold · LCP" or "INP"). Returns
+ * undefined for non-vital metrics so no link is rendered.
+ */
+const WEB_VITAL_DOCS: Record<string, string> = {
+  LCP: 'https://web.dev/articles/lcp',
+  INP: 'https://web.dev/articles/inp',
+  CLS: 'https://web.dev/articles/cls',
+  FCP: 'https://web.dev/articles/fcp',
+  TTFB: 'https://web.dev/articles/ttfb',
+}
+
+export function webVitalDocUrl(label: string): string | undefined {
+  const key = Object.keys(WEB_VITAL_DOCS).find((vital) => label.endsWith(vital))
+  return key ? WEB_VITAL_DOCS[key] : undefined
+}
+
+/**
  * Bench scenarios were ported from the legacy eFPS suite (dev/efps), which
  * keeps running in CI while this suite burns in. The two are named 1:1 —
  * `perf/bench/scenarios/<name>.ts` mirrors `dev/efps/tests/<name>/<name>.ts` —

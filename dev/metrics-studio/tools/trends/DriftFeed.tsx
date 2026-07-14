@@ -81,7 +81,11 @@ function DriftRow(props: {
             <Menu>
               <MenuItem text="Silence" onClick={() => onAck('silenced')} />
               <MenuItem text={`Snooze ${SNOOZE_DAYS}d`} onClick={() => onAck('snoozed')} />
-              <MenuItem text="Mark fixed" onClick={() => onAck('fixed')} />
+              {/* "Mark fixed" only for regressions — an improvement has nothing
+                  to fix */}
+              {entry.direction === 'regression' && (
+                <MenuItem text="Mark fixed" onClick={() => onAck('fixed')} />
+              )}
             </Menu>
           }
           popover={{portal: true}}

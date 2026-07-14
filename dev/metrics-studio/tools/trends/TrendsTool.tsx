@@ -52,7 +52,7 @@ import {
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
 import {type DriftResult} from './drift'
 import {DriftFeed} from './DriftFeed'
-import {efpsSourceUrl, sourceFileUrl} from './links'
+import {efpsSourceUrl, sourceFileUrl, webVitalDocUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
 import {TrendChart} from './TrendChart'
 import {type DriftState, useDriftState, worstOf} from './useDriftState'
@@ -71,7 +71,7 @@ interface LiveState {
   error: string | null
 }
 
-function InfoButton(props: {text: string; label: string; sourceFile?: string}) {
+function InfoButton(props: {text: string; label: string; sourceFile?: string; vitalDoc?: string}) {
   const [open, setOpen] = useState(false)
   // Popover has no onClickOutside prop (passing it logs an "unknown event
   // handler" error and never closes); useClickOutsideEvent is the @sanity/ui
@@ -93,24 +93,41 @@ function InfoButton(props: {text: string; label: string; sourceFile?: string}) {
             <Text size={1} muted>
               {props.text}
             </Text>
-            {props.sourceFile && (
+            {(props.vitalDoc || props.sourceFile) && (
               <Stack space={2}>
-                <Box
-                  as="a"
-                  href={sourceFileUrl(props.sourceFile)}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="View scenario source (opens in a new tab)"
-                >
-                  <Flex align="center" gap={1}>
-                    <LaunchIcon />
-                    <Text size={1}>View scenario source</Text>
-                  </Flex>
-                </Box>
+                {/* Reference doc for the Web Vital itself (web.dev) */}
+                {props.vitalDoc && (
+                  <Box
+                    as="a"
+                    href={props.vitalDoc}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Learn about this metric on web.dev (opens in a new tab)"
+                  >
+                    <Flex align="center" gap={1}>
+                      <LaunchIcon />
+                      <Text size={1}>About this metric (web.dev)</Text>
+                    </Flex>
+                  </Box>
+                )}
+                {props.sourceFile && (
+                  <Box
+                    as="a"
+                    href={sourceFileUrl(props.sourceFile)}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="View scenario source (opens in a new tab)"
+                  >
+                    <Flex align="center" gap={1}>
+                      <LaunchIcon />
+                      <Text size={1}>View scenario source</Text>
+                    </Flex>
+                  </Box>
+                )}
                 {/* Cross-reference the legacy eFPS scenario this was ported
                     from, while dev/efps burns down (omitted for bench-only
                     scenarios with no eFPS counterpart) */}
-                {efpsSourceUrl(props.sourceFile) && (
+                {props.sourceFile && efpsSourceUrl(props.sourceFile) && (
                   <Box
                     as="a"
                     href={efpsSourceUrl(props.sourceFile)}
@@ -221,6 +238,7 @@ function BranchPicker(props: {
 function AckMenu(props: {
   seriesKey: string
   branch: string
+  direction: 'regression' | 'improvement' | 'neutral'
   onAck: (state: 'silenced' | 'snoozed' | 'fixed') => void
 }) {
   return (
@@ -239,7 +257,11 @@ function AckMenu(props: {
         <Menu>
           <MenuItem text="Silence" onClick={() => props.onAck('silenced')} />
           <MenuItem text="Snooze 7d" onClick={() => props.onAck('snoozed')} />
-          <MenuItem text="Mark fixed" onClick={() => props.onAck('fixed')} />
+          {/* "Mark fixed" only makes sense for a regression — an improvement
+              has nothing to fix */}
+          {props.direction === 'regression' && (
+            <MenuItem text="Mark fixed" onClick={() => props.onAck('fixed')} />
+          )}
         </Menu>
       }
       popover={{portal: true}}
@@ -295,7 +317,12 @@ function SeriesCard(props: {
               </Text>
             )}
             {drift && onAck && (
-              <AckMenu seriesKey={drift.seriesKey} branch={drift.branch} onAck={onAck} />
+              <AckMenu
+                seriesKey={drift.seriesKey}
+                branch={drift.branch}
+                direction={drift.direction}
+                onAck={onAck}
+              />
             )}
             {/* Context hidden behind the info button so the grid stays
                 scannable — one click, not a paragraph per card */}
@@ -303,6 +330,7 @@ function SeriesCard(props: {
               text={series.description}
               label={`About ${series.title}`}
               sourceFile={series.sourceFile}
+              vitalDoc={webVitalDocUrl(series.title)}
             />
           </Flex>
         </Flex>
