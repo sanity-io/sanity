@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.5.0](https://github.com/sanity-io/sanity/compare/v6.4.0...v6.5.0) (2026-07-14)
+
+### Features
+
+* **schema:** add descriptor upload client ([#13284](https://github.com/sanity-io/sanity/issues/13284)) ([4b4bf8a](https://github.com/sanity-io/sanity/commit/4b4bf8ae448d17c054ba5fc4a4136920d9b20a3b))
 ## [6.4.0](https://github.com/sanity-io/sanity/compare/v6.3.0...v6.4.0) (2026-07-07)
 
 ### Bug Fixes
