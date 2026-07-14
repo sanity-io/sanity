@@ -12,12 +12,26 @@ interface ListenerConnection {
 }
 
 /**
+ * True once the response is finished or its peer is gone. The h1 and h2
+ * response classes disagree on where liveness lives: `Http2ServerResponse`
+ * never implements `destroyed` (it is always undefined on the compat class)
+ * — the flag sits on its underlying `Http2Stream` instead.
+ */
+function isGone(res: ProxyResponse): boolean {
+  if (res.writableEnded || res.destroyed) return true
+  return 'stream' in res && res.stream.destroyed
+}
+
+/**
  * Write a raw chunk, dispatching across the h1/h2 response union — their
  * `write` overloads are incompatible when called through the union type
- * (same workaround as debug-proxy's internal writeChunk).
+ * (same workaround as debug-proxy's internal writeChunk). Gone streams are
+ * skipped: a broadcast or heartbeat can race an abrupt client disconnect,
+ * whose 'close' teardown only runs on a later tick, and writing to a
+ * destroyed response can surface as an 'error' event.
  */
 function writeRaw(res: ProxyResponse, chunk: string): void {
-  if (res.writableEnded) return
+  if (isGone(res)) return
   ;(res as {write: (chunk: string) => boolean}).write(chunk)
 }
 
@@ -55,15 +69,20 @@ export class ListenHub {
     }
     connection.heartbeat.unref?.()
 
-    this.welcomeCounter += 1
-    writeEvent(res, 'welcome', {listenerName: `bench-listener-${this.welcomeCounter}`})
-
     const teardown = () => {
       clearInterval(connection.heartbeat)
       this.connections.delete(connection)
     }
     res.on('close', teardown)
+    // A write racing an abrupt disconnect emits 'error' on the response (the
+    // h2 compat layer reports write-after-destroy this way, on the *next*
+    // tick) — without a listener that's an uncaught 'error' that kills the
+    // whole mock process mid-run. Treat it exactly like 'close'.
+    res.on('error', teardown)
     this.connections.add(connection)
+
+    this.welcomeCounter += 1
+    writeEvent(res, 'welcome', {listenerName: `bench-listener-${this.welcomeCounter}`})
   }
 
   broadcast(events: MutationEventPayload[]): void {
@@ -80,7 +99,7 @@ export class ListenHub {
   closeAll(): void {
     for (const connection of this.connections) {
       clearInterval(connection.heartbeat)
-      if (!connection.res.writableEnded) {
+      if (!isGone(connection.res)) {
         connection.res.end()
       }
     }

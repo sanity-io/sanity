@@ -31,7 +31,6 @@ export interface UnexpectedRequest {
  * failing the session.
  */
 const UNIMPLEMENTED_BUT_GRACEFUL = [
-  /^\/v[^/]+\/users\/me\/keyvalue/, // UI state persistence — .catch()ed in serverStorage.ts
   /^\/v[^/]+\/socket\//, // bifur websocket fallback probes — presence degrades
   /^\/v[^/]+\/comments\//, // comments addon setup — gated off via /features
   /^\/v[^/]+\/data\/history\//, // timeline — lazy, inspector-only
