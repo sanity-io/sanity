@@ -1143,6 +1143,33 @@ describe('createAuthStore: workbench OS token', () => {
     expect(state.authenticated).toBe(false)
   })
 
+  it('refreshes the OS token instead of tearing down on logout (forced 401)', async () => {
+    // In the workbench, a forced logout (rejected token) must ask the OS to
+    // reissue rather than clear local state or hit /auth/logout.
+    localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'stored-token'}))
+    const OS_TOKEN = 'workbench-os-token'
+    const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
+    const refreshWorkbenchToken = vi.fn()
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+      observeWorkbenchToken: () => of(OS_TOKEN),
+      refreshWorkbenchToken,
+    })
+
+    await waitForState(store, (s) => s.authenticated, 2000)
+    await store.logout!()
+
+    expect(refreshWorkbenchToken).toHaveBeenCalledTimes(1)
+    // Local state is left intact — the OS drives sign-out, not us.
+    expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toEqual(JSON.stringify({token: 'stored-token'}))
+  })
+
   it('falls through to the normal flow when not embedded in the workbench', async () => {
     localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'mock-token'}))
     const mock = createMockClientFactory()

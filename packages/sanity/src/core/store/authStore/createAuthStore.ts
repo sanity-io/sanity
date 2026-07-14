@@ -58,7 +58,10 @@ import {
   type HandleCallbackResult,
 } from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
-import {observeWorkbenchToken as defaultObserveWorkbenchToken} from './workbenchToken'
+import {
+  observeWorkbenchToken as defaultObserveWorkbenchToken,
+  refreshWorkbenchToken as defaultRefreshWorkbenchToken,
+} from './workbenchToken'
 
 /** @internal */
 export interface AuthStoreOptions extends AuthConfig {
@@ -107,6 +110,15 @@ export interface AuthStoreOptions extends AuthConfig {
    * @internal
    */
   observeWorkbenchToken?: () => Observable<string | null> | undefined
+  /**
+   * Asks the workbench "OS" to reissue its session token, called when the
+   * current one is rejected (a 401 surfaced as forced logout). In the workbench
+   * this replaces tearing down the session locally, since the OS owns it — the
+   * reissued token flows back through `observeWorkbenchToken`. Defaults to a
+   * no-op.
+   * @internal
+   */
+  refreshWorkbenchToken?: () => void
 }
 
 /**
@@ -286,6 +298,7 @@ export function _createAuthStore({
   getSessionId,
   consumeHashToken,
   observeWorkbenchToken = () => undefined,
+  refreshWorkbenchToken = () => {},
   getRequestErrorHandler,
   getRequestFailureDiagnostics,
   ...providerOptions
@@ -735,6 +748,15 @@ export function _createAuthStore({
   let _didLogOut = false
 
   async function logout() {
+    // In the workbench the OS owns the session, so a logout here is really a
+    // rejected/expired OS token (surfaced as a forced logout on a 401). Ask the
+    // OS to reissue rather than tearing the session down ourselves — the new
+    // token arrives via `observeWorkbenchToken` and re-drives `authState$`.
+    if (workbenchToken$) {
+      refreshWorkbenchToken()
+      return
+    }
+
     _didLogOut = true
     const tokenClient = await firstValueFrom(tokenClient$)
 
@@ -787,14 +809,14 @@ export function _createAuthStore({
 }
 
 /**
- * Public options for `createAuthStore`. The `getSessionId`, `consumeHashToken`
- * and `observeWorkbenchToken` dependencies are wired automatically using the
- * default implementations.
+ * Public options for `createAuthStore`. The `getSessionId`, `consumeHashToken`,
+ * `observeWorkbenchToken` and `refreshWorkbenchToken` dependencies are wired
+ * automatically using the default implementations.
  * @internal
  */
 export type CreateAuthStoreOptions = Omit<
   AuthStoreOptions,
-  'getSessionId' | 'consumeHashToken' | 'observeWorkbenchToken'
+  'getSessionId' | 'consumeHashToken' | 'observeWorkbenchToken' | 'refreshWorkbenchToken'
 >
 
 /**
@@ -807,6 +829,7 @@ export const createAuthStore: (options: CreateAuthStoreOptions) => AuthStore = m
       getSessionId: defaultGetSessionId,
       consumeHashToken: defaultConsumeHashToken,
       observeWorkbenchToken: defaultObserveWorkbenchToken,
+      refreshWorkbenchToken: defaultRefreshWorkbenchToken,
     }),
   // `getRequestErrorHandler` / `getRequestFailureDiagnostics` are functions
   // (not hashable, and not part of the store's identity — they just look up UI

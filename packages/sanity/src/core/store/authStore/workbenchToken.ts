@@ -42,3 +42,20 @@ export function observeWorkbenchToken(): Observable<string | null> | undefined {
     catchError(() => of(null)),
   )
 }
+
+/**
+ * Asks the workbench "OS" to reissue the session token, e.g. after its current
+ * one was rejected with a 401. Fire-and-forget: the reissued token arrives via
+ * the `auth.token` subscription in {@link observeWorkbenchToken}. No-op outside
+ * the workbench.
+ *
+ * @internal
+ */
+export function refreshWorkbenchToken(): void {
+  if (!isWorkbenchEnvironment()) return
+
+  void import('@sanity/workbench').then(
+    ({os}) => os.emit('auth.token.refresh', undefined),
+    () => {},
+  )
+}
