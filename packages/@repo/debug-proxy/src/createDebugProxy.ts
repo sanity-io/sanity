@@ -273,7 +273,20 @@ export function createDebugProxy(config: DebugProxyConfig = {}): DebugProxyServe
   // accepts via its ALPN fallback.)
   server.on('upgrade', (req: http.IncomingMessage, clientSocket: net.Socket, head: Buffer) => {
     if (config.upgradeHandler) {
-      config.upgradeHandler(req, clientSocket, head)
+      // A throwing handler must not become an uncaught exception that takes
+      // down the whole proxy mid-run. The signature returns void, but
+      // `=> void` also admits async functions - capture any returned thenable
+      // so a rejection can't crash the process either.
+      try {
+        const result = config.upgradeHandler(req, clientSocket, head) as unknown
+        Promise.resolve(result).catch((error: unknown) => {
+          console.error('[debug-proxy] upgrade handler error:', error)
+          clientSocket.destroy()
+        })
+      } catch (error) {
+        console.error('[debug-proxy] upgrade handler error:', error)
+        clientSocket.destroy()
+      }
       return
     }
     const requestHost = req.headers.host
