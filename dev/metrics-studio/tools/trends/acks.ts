@@ -23,13 +23,20 @@ export const DRIFT_ACK_QUERY = `*[_type == "driftAck"]{
   _id, metricKey, branch, baselineValue, state, until, note, ackedAt
 }`
 
-/** Half-life for non-snooze acks — a silenced/fixed metric re-surfaces after this. */
+/** Hard expiry for non-snooze acks — a silenced/fixed metric re-surfaces after this. */
 const ACK_DECAY_DAYS = 30
+
+/** How long a snoozed ack suppresses its entry. */
+export const SNOOZE_DAYS = 7
+
+/** Collapse to an id-safe slug (document ids, DOM ids — keys contain `·`/spaces). */
+export function idSlug(value: string): string {
+  return value.replace(/[^a-zA-Z0-9]+/g, '-')
+}
 
 /** Deterministic id so acking a metric/branch updates in place (idempotent). */
 export function ackId(metricKey: string, branch: string): string {
-  const slug = `${metricKey}:${branch}`.replace(/[^a-zA-Z0-9]+/g, '-')
-  return `driftAck-${slug}`
+  return `driftAck-${idSlug(`${metricKey}:${branch}`)}`
 }
 
 /**

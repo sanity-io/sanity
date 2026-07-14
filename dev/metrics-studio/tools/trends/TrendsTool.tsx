@@ -28,11 +28,12 @@ import {
   useClickOutsideEvent,
 } from '@sanity/ui'
 import {ParentSize} from '@visx/responsive'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
 
+import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
 import {
   availableBranches,
@@ -50,12 +51,12 @@ import {
   type TrendSeries,
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
-import {type DriftResult} from './drift'
+import {type DriftResult, worstBySeries, worstOf} from './drift'
 import {DriftFeed} from './DriftFeed'
 import {efpsSourceUrl, sourceFileUrl, webVitalDocUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
 import {TrendChart} from './TrendChart'
-import {type DriftState, useDriftState, worstOf} from './useDriftState'
+import {type DriftState, useDriftState} from './useDriftState'
 import {useUrlState} from './useUrlState'
 
 const RANGES = [
@@ -270,7 +271,9 @@ function AckMenu(props: {
 }) {
   return (
     <MenuButton
-      id={`ack-card-${props.seriesKey}-${props.branch}`}
+      // Slugged: series keys contain spaces/`·`, which are invalid in DOM ids
+      // and split the aria-labelledby reference list
+      id={`ack-card-${idSlug(`${props.seriesKey}-${props.branch}`)}`}
       button={
         <Button
           mode="bleed"
@@ -302,27 +305,9 @@ function AckMenu(props: {
   )
 }
 
-/**
- * Reduce drift results to one per series (the worst move), regressions winning
- * over improvements. Module-scoped and pure so the memos that call it don't
- * carry it as a dependency (react-compiler).
- */
-function worstBySeries(entries: DriftResult[]): Map<string, DriftResult> {
-  const isRegression = (d: DriftResult) => d.direction === 'regression'
-  const map = new Map<string, DriftResult>()
-  for (const entry of entries) {
-    const current = map.get(entry.seriesKey)
-    // A regression always outranks an improvement (the card should warn, not
-    // celebrate); only within the same direction does the larger move win —
-    // the magnitude check must NOT let a big improvement displace a regression.
-    const better =
-      !current ||
-      (isRegression(entry) && !isRegression(current)) ||
-      (isRegression(entry) === isRegression(current) &&
-        Math.abs(worstOf(entry).deltaFraction) > Math.abs(worstOf(current).deltaFraction))
-    if (better) map.set(entry.seriesKey, entry)
-  }
-  return map
+/** DOM id for a chart card — slugged, since series keys contain `·`/spaces. */
+function chartDomId(seriesKey: string): string {
+  return `chart-${idSlug(seriesKey)}`
 }
 
 function driftBadge(entry: DriftResult): {tone: 'caution' | 'positive'; label: string} {
@@ -357,7 +342,7 @@ function SeriesCard(props: {
     // reversible without opening the feed. `focused` flashes a ring when you
     // deep-link / jump to this chart from the feed.
     <Card
-      id={`chart-${series.key}`}
+      id={chartDomId(series.key)}
       border
       padding={3}
       radius={2}
@@ -644,11 +629,13 @@ export function TrendsTool() {
       }),
     [series, soakHasData, calibration],
   )
+  // Includes calibration, which lives outside `series` — a deep link to it
+  // must still resolve to the Calibration tab.
   const groupById = useMemo(() => {
     const map = new Map<string, TrendGroup>()
-    for (const entry of series) map.set(entry.key, entry.group)
+    for (const entry of [...series, calibration]) map.set(entry.key, entry.group)
     return map
-  }, [series])
+  }, [series, calibration])
 
   // Deep-linkable focused chart: the `chart` URL param names the series to
   // jump to (shareable). Jumping from a drift-feed row or a chart header writes
@@ -671,29 +658,45 @@ export function TrendsTool() {
   // they can't disagree). Badge = active regressions in that group.
   const drift = useDriftState(series)
   const showBranch = series.some((s) => s.lines.length > 1)
-  const [focusedKey, setFocusedKey] = useState<string | null>(chartParam || null)
-  const scrollToChart = useCallback((seriesKey: string) => {
-    requestAnimationFrame(() => {
-      document
-        .getElementById(`chart-${seriesKey}`)
-        ?.scrollIntoView({behavior: 'smooth', block: 'center'})
-    })
-  }, [])
+  const [focusedKey, setFocusedKey] = useState<string | null>(null)
+  // A deep-linked (?chart=) focus arms only once data is in: at mount the
+  // charts don't exist yet (listenQuery hasn't emitted), so an immediate
+  // scroll would silently no-op and the ring would expire unseen.
+  const pendingDeepLink = useRef(chartParam)
+  useEffect(() => {
+    if (!pendingDeepLink.current || series.length === 0) return
+    setFocusedKey(pendingDeepLink.current)
+    pendingDeepLink.current = ''
+  }, [series])
   const focusMetric = (seriesKey: string) => {
-    const group = groupById.get(seriesKey)
-    if (group) setTabParam(group, 'push')
+    // One history entry per jump: push the chart param, then clear any
+    // explicit tab on that same entry (replace) — the active tab derives from
+    // the chart's group, and a single Back returns to the pre-jump state.
     setChartParam(seriesKey, 'push')
+    setTabParam('', 'replace')
     setFocusedKey(seriesKey)
   }
   // Side-effects of a focus (DOM scroll + auto-clearing the ring) live in an
-  // effect keyed on the focused chart. setState only happens in the timer
-  // callback, not synchronously in the effect body (react-compiler).
+  // effect keyed on the focused chart. setState only happens in the rAF/timer
+  // callbacks, not synchronously in the effect body (react-compiler).
   useEffect(() => {
-    if (!focusedKey) return
-    scrollToChart(focusedKey)
-    const timer = window.setTimeout(() => setFocusedKey((k) => (k === focusedKey ? null : k)), 2200)
-    return () => window.clearTimeout(timer)
-  }, [focusedKey, scrollToChart])
+    if (!focusedKey) return undefined
+    let timer: number | undefined
+    const raf = requestAnimationFrame(() => {
+      const el = document.getElementById(chartDomId(focusedKey))
+      el?.scrollIntoView({behavior: 'smooth', block: 'center'})
+      // Let the ring play out only if the chart is actually on screen; when
+      // the element is missing (chart filtered out) drop the focus right away
+      timer = window.setTimeout(
+        () => setFocusedKey((k) => (k === focusedKey ? null : k)),
+        el ? 2200 : 0,
+      )
+    })
+    return () => {
+      cancelAnimationFrame(raf)
+      if (timer !== undefined) window.clearTimeout(timer)
+    }
+  }, [focusedKey])
 
   const regressionsByGroup = useMemo(() => {
     const counts = new Map<TrendGroup, number>()
@@ -706,7 +709,7 @@ export function TrendsTool() {
   }, [drift.active, groupById])
   // Drift per series (for flagging the chart card itself). A series can drift
   // on more than one branch; keep the worst so the card shows the biggest move,
-  // regressions winning over improvements. (worstBySeries is module-scoped.)
+  // regressions winning over improvements.
   const driftBySeries = useMemo(() => worstBySeries(drift.active), [drift.active])
   // Silenced/snoozed per series — the card keeps a muted "acknowledged" marker
   // with an Un-ack, so you can reverse it without opening the feed. Active
@@ -853,7 +856,12 @@ export function TrendsTool() {
                           </Flex>
                         }
                         selected={tab.id === activeTab.id}
-                        onClick={() => setTabParam(tab.id)}
+                        onClick={() => {
+                          setTabParam(tab.id)
+                          // Don't let a focused chart from another tab linger
+                          // in shareable URLs once the user navigates away
+                          if (chartParam && groupById.get(chartParam) !== tab.id) setChartParam('')
+                        }}
                       />
                     )
                   })}

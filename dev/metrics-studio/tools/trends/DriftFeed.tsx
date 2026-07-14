@@ -4,17 +4,16 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {Badge, Box, Button, Card, Flex, MenuButton, Menu, MenuItem, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 
+import {idSlug, SNOOZE_DAYS} from './acks'
 import {formatValue} from './data'
-import {type DriftBaseline, type DriftResult} from './drift'
+import {type DriftBaseline, type DriftResult, worstOf} from './drift'
 import {backlinksFor} from './links'
-import {type DriftState, worstOf} from './useDriftState'
+import {type DriftState} from './useDriftState'
 
 const BASELINE_LABEL: Record<DriftBaseline['kind'], string> = {
   trailing: 'vs prior 3 weeks',
   step: 'vs same weekday',
 }
-
-const SNOOZE_DAYS = 7
 
 function pct(fraction: number): string {
   const sign = fraction > 0 ? '+' : ''
@@ -40,8 +39,8 @@ function DriftRow(props: {
       >
         {entry.direction === 'regression' ? '↑ regression' : '↓ improvement'}
       </Badge>
-      {/* The metric name navigates to its chart (switches tab via pushState,
-          then scrolls to it) — looks like a button, behaves like a link */}
+      {/* The metric name navigates to its chart (one pushed history entry, so
+          Back returns) — looks like a button, behaves like a link */}
       <Button mode="bleed" padding={1} onClick={onFocus} title="Go to chart" text={entry.title} />
       {showBranch && (
         <Text size={1} muted>
@@ -76,7 +75,9 @@ function DriftRow(props: {
         <Button mode="bleed" fontSize={0} padding={2} text="Un-ack" onClick={onClear} />
       ) : (
         <MenuButton
-          id={`ack-${entry.seriesKey}-${entry.branch}`}
+          // Slugged: series keys contain spaces/`·`, which are invalid in DOM
+          // ids and split the aria-labelledby reference list
+          id={`ack-${idSlug(`${entry.seriesKey}-${entry.branch}`)}`}
           button={<Button mode="bleed" fontSize={0} padding={2} text="Acknowledge" />}
           menu={
             <Menu>

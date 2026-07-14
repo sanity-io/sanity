@@ -27,6 +27,9 @@ function thresholdFor(unit: TrendUnit): DriftThreshold {
   if (unit === 'ms') return {absolute: 3, relative: 0.05}
   if (unit === 'megabytes') return {absolute: 1, relative: 0.05}
   if (unit === 'bytes') return {absolute: 10 * 1024, relative: 0.05}
+  // CLS is unitless and small (good ≤ 0.1) — a whole-unit absolute floor would
+  // mean CLS drift could never fire; 0.02 mirrors the scale web.dev uses
+  if (unit === 'cls') return {absolute: 0.02, relative: 0.05}
   // count (auth trips, listeners, …): any whole-unit move ≥5%
   return {absolute: 1, relative: 0.05}
 }
@@ -128,6 +131,33 @@ function stepBaseline(
   const priorMedian = median(sameWeekday.map((point) => point.value))
   if (priorMedian === null) return null
   return makeBaseline('step', latest.value, priorMedian, threshold, goal)
+}
+
+/** Worst (largest-magnitude) fired baseline of a drift result. */
+export function worstOf(entry: DriftResult): DriftBaseline {
+  return entry.fired.reduce((a, b) =>
+    Math.abs(b.deltaFraction) > Math.abs(a.deltaFraction) ? b : a,
+  )
+}
+
+/**
+ * Reduce drift results to one per series, for flagging the chart card itself.
+ * A regression always beats an improvement (a green badge must never mask a
+ * live regression on another branch); within the same direction the larger
+ * move wins.
+ */
+export function worstBySeries(entries: DriftResult[]): Map<string, DriftResult> {
+  const map = new Map<string, DriftResult>()
+  for (const entry of entries) {
+    const current = map.get(entry.seriesKey)
+    const better =
+      !current ||
+      (entry.direction === 'regression' && current.direction !== 'regression') ||
+      (entry.direction === current.direction &&
+        Math.abs(worstOf(entry).deltaFraction) > Math.abs(worstOf(current).deltaFraction))
+    if (better) map.set(entry.seriesKey, entry)
+  }
+  return map
 }
 
 /** Flag every series whose recent runs drifted past the gate thresholds. */

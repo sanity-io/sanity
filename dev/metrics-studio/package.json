@@ -29,7 +29,9 @@
     "vite": "catalog:"
   },
   "devDependencies": {
+    "@repo/test-config": "workspace:*",
     "@vanilla-extract/vite-plugin": "catalog:",
-    "rimraf": "catalog:"
+    "rimraf": "catalog:",
+    "vitest": "catalog:"
   }
 }

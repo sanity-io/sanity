@@ -1,20 +1,12 @@
+import {useToast} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useDocumentStore} from 'sanity'
 
-import {ackIsActive, clearAck, type DriftAck, DRIFT_ACK_QUERY, writeAck} from './acks'
+import {ackIsActive, clearAck, type DriftAck, DRIFT_ACK_QUERY, SNOOZE_DAYS, writeAck} from './acks'
 import {type TrendSeries} from './data'
-import {computeDrift, type DriftBaseline, type DriftResult} from './drift'
-
-const SNOOZE_DAYS = 7
-
-/** Worst (largest-magnitude) fired baseline of a drift result. */
-export function worstOf(entry: DriftResult): DriftBaseline {
-  return entry.fired.reduce((a, b) =>
-    Math.abs(b.deltaFraction) > Math.abs(a.deltaFraction) ? b : a,
-  )
-}
+import {computeDrift, type DriftResult, worstOf} from './drift'
 
 export interface DriftState {
   /** Drifted metrics not currently silenced/snoozed — the "to review" set. */
@@ -36,6 +28,7 @@ export interface DriftState {
 export function useDriftState(series: TrendSeries[]): DriftState {
   const client = useClient({apiVersion: '2025-02-19'})
   const documentStore = useDocumentStore()
+  const toast = useToast()
 
   const acks$ = useMemo(
     () =>
@@ -75,8 +68,11 @@ export function useDriftState(series: TrendSeries[]): DriftState {
     silenced,
     regressionCount,
     now,
+    // The mutation is fire-and-forget for the UI (the listenQuery echoes the
+    // result back), but a failure (no write grant, offline) must not be silent
+    // — the menu closes and nothing changes otherwise.
     ack: (entry, state) =>
-      void writeAck(client, {
+      writeAck(client, {
         metricKey: entry.seriesKey,
         branch: entry.branch,
         baselineValue: worstOf(entry).recent,
@@ -85,7 +81,20 @@ export function useDriftState(series: TrendSeries[]): DriftState {
           state === 'snoozed'
             ? new Date(now + SNOOZE_DAYS * 24 * 60 * 60 * 1000).toISOString()
             : undefined,
-      }),
-    clear: (entry) => void clearAck(client, entry.seriesKey, entry.branch),
+      }).catch((err: unknown) =>
+        toast.push({
+          status: 'error',
+          title: 'Could not save acknowledgement',
+          description: err instanceof Error ? err.message : String(err),
+        }),
+      ),
+    clear: (entry) =>
+      clearAck(client, entry.seriesKey, entry.branch).catch((err: unknown) =>
+        toast.push({
+          status: 'error',
+          title: 'Could not remove acknowledgement',
+          description: err instanceof Error ? err.message : String(err),
+        }),
+      ),
   }
 }

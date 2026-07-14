@@ -41,6 +41,8 @@ export default defineConfig({
       // The mock-contract tests are the drift detector for the bench mock —
       // they must run on every PR, not only label-gated bench runs
       'perf/bench',
+      // The dashboard's drift/ack math — pure modules, plain node environment
+      'dev/metrics-studio',
       'packages/@repo/debug-proxy',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
