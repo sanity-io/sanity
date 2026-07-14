@@ -5,6 +5,7 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {
+  Badge,
   Box,
   Button,
   Card,
@@ -40,6 +41,7 @@ import {
   formatValue,
   TREND_QUERY,
   TREND_GROUPS,
+  type TrendGroup,
   type TrendRun,
   type TrendSeries,
 } from './data'
@@ -48,6 +50,7 @@ import {DriftFeed} from './DriftFeed'
 import {efpsSourceUrl, sourceFileUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
 import {TrendChart} from './TrendChart'
+import {useDriftState} from './useDriftState'
 import {useUrlState} from './useUrlState'
 
 const RANGES = [
@@ -398,19 +401,48 @@ export function TrendsTool() {
   // Calibration is host-level, not per-branch — always the full in-range set
   const calibration = useMemo(() => calibrationSeries(inRange), [inRange])
 
-  // The metric groups that actually have data become tabs (environment lives
-  // in the pinned calibration strip, not a tab). Soak is a tab whenever any of
-  // its three views has data.
+  // Calibration (the environment group) is its own tab now — it's honesty
+  // context, not something you check first, so it no longer sits pinned above
+  // everything. Its series carry group 'environment'.
+  const environmentSeries = useMemo(
+    () => [calibration, ...series.filter((entry) => entry.group === 'environment')],
+    [calibration, series],
+  )
+
+  // The metric groups that actually have data become tabs. Soak is a tab
+  // whenever any of its three views has data; environment whenever calibration
+  // has points.
   const soakHasData = soakSlopes.length > 0 || soakEndValues.length > 0 || Boolean(latestSoak)
   const tabs = useMemo(
     () =>
-      TREND_GROUPS.filter((group) => group.id !== 'environment').filter((group) =>
-        group.id === 'soak' ? soakHasData : series.some((entry) => entry.group === group.id),
-      ),
-    [series, soakHasData],
+      TREND_GROUPS.filter((group) => {
+        if (group.id === 'soak') return soakHasData
+        if (group.id === 'environment') return calibration.lines.some((l) => l.points.length > 0)
+        return series.some((entry) => entry.group === group.id)
+      }),
+    [series, soakHasData, calibration],
   )
   const [tabParam, setTabParam] = useUrlState('tab', tabs[0]?.id ?? 'vitals')
   const activeTab = tabs.find((tab) => tab.id === tabParam) ?? tabs[0]
+
+  // Shared drift state (feeds both the pinned feed and the per-tab badges, so
+  // they can't disagree). Badge = active regressions in that group.
+  const drift = useDriftState(series)
+  const showBranch = series.some((s) => s.lines.length > 1)
+  const groupById = useMemo(() => {
+    const map = new Map<string, TrendGroup>()
+    for (const entry of series) map.set(entry.key, entry.group)
+    return map
+  }, [series])
+  const regressionsByGroup = useMemo(() => {
+    const counts = new Map<TrendGroup, number>()
+    for (const entry of drift.active) {
+      if (entry.direction !== 'regression') continue
+      const group = groupById.get(entry.seriesKey)
+      if (group) counts.set(group, (counts.get(group) ?? 0) + 1)
+    }
+    return counts
+  }, [drift.active, groupById])
 
   return (
     <PortalProvider element={portalElement}>
@@ -480,9 +512,9 @@ export function TrendsTool() {
                   </Text>
                   <Text size={1} muted>
                     Because the CI machine varies day to day, absolute numbers are host-relative:
-                    before trusting a spike, check the host-calibration strip below — if it spikes
-                    on the same day, suspect the runner, not the studio. Flat lines are the goal;
-                    the ⓘ on each chart explains what it measures.
+                    before trusting a spike, check the host calibration in the Environment tab — if
+                    it spikes on the same day, suspect the runner, not the studio. Flat lines are
+                    the goal; the ⓘ on each chart explains what it measures.
                   </Text>
                 </Stack>
               </Card>
@@ -507,31 +539,43 @@ export function TrendsTool() {
               </Card>
             )}
 
-            {/* Surfaces drifted metrics first; silent when all steady */}
-            <DriftFeed series={series} />
+            {/* The one always-pinned signal: what needs attention right now.
+                Silent when everything is steady and unacked. */}
+            <DriftFeed drift={drift} showBranch={showBranch} />
 
-            {calibration.lines[0].points.length > 0 && (
-              <Stack space={3}>
-                <SeriesCard series={calibration} height={64} />
-              </Stack>
-            )}
-
-            {/* Metric groups behind tabs so the page isn't one long scroll;
-                the drift feed + calibration above stay pinned as the always-on
-                "what needs attention / how to read it" context */}
+            {/* Metric groups behind tabs so the page isn't one long scroll.
+                Each tab badges its count of active regressions (same drift
+                state as the feed, so they always agree). */}
             {activeTab && (
               <Stack space={3}>
                 <TabList space={1}>
-                  {tabs.map((tab) => (
-                    <Tab
-                      key={tab.id}
-                      id={`group-tab-${tab.id}`}
-                      aria-controls={`group-panel-${tab.id}`}
-                      label={tab.title}
-                      selected={tab.id === activeTab.id}
-                      onClick={() => setTabParam(tab.id)}
-                    />
-                  ))}
+                  {tabs.map((tab) => {
+                    const count = regressionsByGroup.get(tab.id) ?? 0
+                    return (
+                      <Tab
+                        key={tab.id}
+                        id={`group-tab-${tab.id}`}
+                        aria-controls={`group-panel-${tab.id}`}
+                        label={
+                          <Flex align="center" gap={2}>
+                            <span>{tab.title}</span>
+                            {count > 0 && (
+                              <Badge
+                                tone="caution"
+                                fontSize={0}
+                                mode="default"
+                                aria-label={`${count} metric${count === 1 ? '' : 's'} to review`}
+                              >
+                                {count}
+                              </Badge>
+                            )}
+                          </Flex>
+                        }
+                        selected={tab.id === activeTab.id}
+                        onClick={() => setTabParam(tab.id)}
+                      />
+                    )
+                  })}
                 </TabList>
                 <TabPanel
                   id={`group-panel-${activeTab.id}`}
@@ -548,7 +592,13 @@ export function TrendsTool() {
                         latest={latestSoak}
                       />
                     ) : (
-                      <ChartGrid series={series.filter((entry) => entry.group === activeTab.id)} />
+                      <ChartGrid
+                        series={
+                          activeTab.id === 'environment'
+                            ? environmentSeries
+                            : series.filter((entry) => entry.group === activeTab.id)
+                        }
+                      />
                     )}
                   </Stack>
                 </TabPanel>

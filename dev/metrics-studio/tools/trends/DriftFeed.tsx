@@ -1,14 +1,11 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Badge, Box, Button, Card, Flex, MenuButton, Menu, MenuItem, Stack, Text} from '@sanity/ui'
-import {useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {catchError, map, of} from 'rxjs'
-import {useClient, useDocumentStore} from 'sanity'
+import {useState} from 'react'
 
-import {ackIsActive, clearAck, type DriftAck, DRIFT_ACK_QUERY, writeAck} from './acks'
-import {formatValue, type TrendSeries} from './data'
-import {computeDrift, type DriftBaseline, type DriftResult} from './drift'
+import {formatValue} from './data'
+import {type DriftBaseline, type DriftResult} from './drift'
 import {backlinksFor} from './links'
+import {type DriftState, worstOf} from './useDriftState'
 
 const BASELINE_LABEL: Record<DriftBaseline['kind'], string> = {
   trailing: 'vs prior 3 weeks',
@@ -20,12 +17,6 @@ const SNOOZE_DAYS = 7
 function pct(fraction: number): string {
   const sign = fraction > 0 ? '+' : ''
   return `${sign}${(fraction * 100).toFixed(0)}%`
-}
-
-function worstOf(entry: DriftResult): DriftBaseline {
-  return entry.fired.reduce((a, b) =>
-    Math.abs(b.deltaFraction) > Math.abs(a.deltaFraction) ? b : a,
-  )
 }
 
 function DriftRow(props: {
@@ -104,64 +95,16 @@ function DriftRow(props: {
  * (shared driftAck docs, realtime, half-lived). Acked entries collapse into
  * a reveal footer. Renders nothing when everything is steady and unacked.
  */
-export function DriftFeed(props: {series: TrendSeries[]}) {
-  const client = useClient({apiVersion: '2025-02-19'})
-  const documentStore = useDocumentStore()
+export function DriftFeed(props: {drift: DriftState; showBranch: boolean}) {
+  const {drift, showBranch} = props
+  const {active, silenced, regressionCount} = drift
   const [showAcked, setShowAcked] = useState(false)
-
-  const acks$ = useMemo(
-    () =>
-      documentStore.listenQuery(DRIFT_ACK_QUERY, {}, {tag: 'metrics.driftAcks'}).pipe(
-        map((result) => result as DriftAck[]),
-        catchError(() => of<DriftAck[]>([])),
-      ),
-    [documentStore],
-  )
-  const acks = useObservable(acks$, [])
-
-  const drift = useMemo(() => computeDrift(props.series), [props.series])
-  // Lazy initializer reads the clock once (runs outside render commit, so it
-  // satisfies react-compiler purity); the interval refreshes it hourly, which
-  // is plenty for day-scale ack expiry
-  const [now, setNow] = useState(() => Date.now())
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), 60 * 60 * 1000)
-    return () => clearInterval(timer)
-  }, [])
-
-  const {active, silenced} = useMemo(() => {
-    const activeList: DriftResult[] = []
-    const silencedList: DriftResult[] = []
-    for (const entry of drift) {
-      const ack = acks.find((a) => a.metricKey === entry.seriesKey && a.branch === entry.branch)
-      const recent = worstOf(entry).recent
-      if (ack && ackIsActive(ack, recent, now)) silencedList.push(entry)
-      else activeList.push(entry)
-    }
-    return {active: activeList, silenced: silencedList}
-  }, [drift, acks, now])
 
   if (active.length === 0 && silenced.length === 0) return null
 
-  const regressions = active.filter((entry) => entry.direction === 'regression').length
-  const showBranch = props.series.some((s) => s.lines.length > 1)
-
-  const ackHandler = (entry: DriftResult, state: 'silenced' | 'snoozed' | 'fixed') => {
-    void writeAck(client, {
-      metricKey: entry.seriesKey,
-      branch: entry.branch,
-      baselineValue: worstOf(entry).recent,
-      state,
-      until:
-        state === 'snoozed'
-          ? new Date(now + SNOOZE_DAYS * 24 * 60 * 60 * 1000).toISOString()
-          : undefined,
-    })
-  }
-
   return (
     <Card
-      tone={active.length === 0 ? 'default' : regressions > 0 ? 'caution' : 'positive'}
+      tone={active.length === 0 ? 'default' : regressionCount > 0 ? 'caution' : 'positive'}
       border
       padding={3}
       radius={2}
@@ -170,8 +113,8 @@ export function DriftFeed(props: {series: TrendSeries[]}) {
         <Text size={1} weight="semibold">
           {active.length === 0
             ? 'No changes to review'
-            : regressions > 0
-              ? `${regressions} metric${regressions === 1 ? '' : 's'} to review`
+            : regressionCount > 0
+              ? `${regressionCount} metric${regressionCount === 1 ? '' : 's'} to review`
               : `${active.length} improvement${active.length === 1 ? '' : 's'}`}
         </Text>
         {active.length > 0 && (
@@ -182,8 +125,8 @@ export function DriftFeed(props: {series: TrendSeries[]}) {
                 entry={entry}
                 showBranch={showBranch}
                 acked={false}
-                onAck={(state) => ackHandler(entry, state)}
-                onClear={() => void clearAck(client, entry.seriesKey, entry.branch)}
+                onAck={(state) => drift.ack(entry, state)}
+                onClear={() => drift.clear(entry)}
               />
             ))}
           </Stack>
@@ -208,8 +151,8 @@ export function DriftFeed(props: {series: TrendSeries[]}) {
                   entry={entry}
                   showBranch={showBranch}
                   acked
-                  onAck={(state) => ackHandler(entry, state)}
-                  onClear={() => void clearAck(client, entry.seriesKey, entry.branch)}
+                  onAck={(state) => drift.ack(entry, state)}
+                  onClear={() => drift.clear(entry)}
                 />
               ))}
           </Stack>
