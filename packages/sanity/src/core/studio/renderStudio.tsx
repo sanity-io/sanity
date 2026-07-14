@@ -4,7 +4,7 @@ import {createRoot} from 'react-dom/client'
 import {type Config} from '../config'
 import {Studio, type StudioProps} from './Studio'
 
-interface RenderStudioOptions extends Pick<StudioProps, 'basePath' | 'unstable_temporaryToken'> {
+interface RenderStudioOptions extends Pick<StudioProps, 'basePath'> {
   reactStrictMode?: boolean
 }
 
@@ -39,19 +39,14 @@ export function renderStudio(
   }
 
   const opts = typeof options === 'boolean' ? {reactStrictMode: options} : options
-  const {reactStrictMode = true, basePath, unstable_temporaryToken} = opts
+  const {reactStrictMode = true, basePath} = opts
 
   const root = createRoot(rootElement)
 
   root.render(
     reactStrictMode ? (
       <StrictMode>
-        <Studio
-          config={config}
-          basePath={basePath}
-          unstable_globalStyles
-          unstable_temporaryToken={unstable_temporaryToken}
-        />
+        <Studio config={config} basePath={basePath} unstable_globalStyles />
       </StrictMode>
     ) : (
       <Studio config={config} basePath={basePath} unstable_globalStyles />

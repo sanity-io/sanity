@@ -53,7 +53,6 @@ export function StudioProvider({
   scheme,
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
-  unstable_temporaryToken: token,
 }: StudioProviderProps) {
   // Run in an effect to keep render pure; both calls are idempotent and buffer/guard
   // their own work, so StrictMode's double mount is safe.
@@ -115,7 +114,6 @@ export function StudioProvider({
                 basePath={basePath}
                 LoadingComponent={LoadingBlock}
                 primaryProjectId={primaryProjectId}
-                token={token}
               >
                 <VisibleWorkspacesProvider>
                   <ActiveWorkspaceMatcher
