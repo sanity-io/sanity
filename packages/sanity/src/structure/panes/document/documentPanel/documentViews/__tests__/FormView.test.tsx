@@ -83,6 +83,7 @@ function buildDocumentPaneValue(overrides: Partial<DocumentPaneValue> = {}): Doc
       targetDocument: undefined,
       scopeId: undefined,
       variant: undefined,
+      publishedSibling: undefined,
     },
     ...overrides,
   } as unknown as DocumentPaneValue
