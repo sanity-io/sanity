@@ -731,23 +731,27 @@ export function TrendsTool() {
                 />
               </Flex>
               <Flex align="center" gap={2} style={{flexShrink: 0}}>
-                {/* Data source is a secondary/debug affordance — keep it small
-                    and quiet next to the primary branch/range controls */}
-                <Select
-                  value={source}
-                  onChange={(event) => setSourceParam(event.currentTarget.value)}
-                  aria-label="Data source"
-                  fontSize={1}
-                  padding={2}
-                  radius={2}
-                >
-                  <option value="live">Live data</option>
-                  {DEBUG_SOURCES.map((debugSource) => (
-                    <option key={debugSource} value={debugSource}>
-                      Debug: {debugSource}
-                    </option>
-                  ))}
-                </Select>
+                {/* Data source is a debug affordance: always available in dev,
+                    but in prod it only appears once a demo is active (via the
+                    ?source= param) so it's a quiet way back to live, not chrome
+                    normal users ever see. Kept small and subtle either way. */}
+                {(import.meta.env.DEV || source !== 'live') && (
+                  <Select
+                    value={source}
+                    onChange={(event) => setSourceParam(event.currentTarget.value)}
+                    aria-label="Data source"
+                    fontSize={1}
+                    padding={2}
+                    radius={2}
+                  >
+                    <option value="live">Live data</option>
+                    {DEBUG_SOURCES.map((debugSource) => (
+                      <option key={debugSource} value={debugSource}>
+                        Debug: {debugSource}
+                      </option>
+                    ))}
+                  </Select>
+                )}
                 <BranchPicker
                   branches={branches}
                   selected={selectedBranches}
