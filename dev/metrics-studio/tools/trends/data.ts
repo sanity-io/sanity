@@ -428,6 +428,25 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
 
 /** The honesty overlay: host-speed score per run (higher = slower host). */
 export function calibrationSeries(runs: TrendRun[]): TrendSeries {
+  // One line per branch, like the metric charts. Collecting every branch's
+  // runs into a single line interleaves two host-speed curves into one path
+  // (and stacks two dot trails on top of each other) — group by branch so
+  // each is a clean, separately-coloured trail.
+  const byBranch = new Map<string, TrendLine>()
+  for (const run of runs) {
+    if (!run.runner) continue
+    const branch = run.git?.branch ?? 'unknown'
+    let line = byBranch.get(branch)
+    if (!line) {
+      line = {branch, points: []}
+      byBranch.set(branch, line)
+    }
+    line.points.push({
+      date: new Date(run.startedAt),
+      value: run.runner.calibrationMs,
+      ...pointMeta(run),
+    })
+  }
   return {
     key: 'runner:calibration',
     title: 'host calibration (higher = slower host)',
@@ -436,19 +455,7 @@ export function calibrationSeries(runs: TrendRun[]): TrendSeries {
       'A fixed CPU workload run on the CI machine before each benchmark. All numbers above are relative to host speed — when this line spikes where a metric spikes, suspect the runner, not the studio.',
     goal: 'context',
     group: 'environment',
-    // Calibration is per-run host speed, not per-branch — a single line
-    lines: [
-      {
-        branch: 'all',
-        points: runs
-          .filter((run) => run.runner)
-          .map((run) => ({
-            date: new Date(run.startedAt),
-            value: run.runner!.calibrationMs,
-            ...pointMeta(run),
-          })),
-      },
-    ],
+    lines: [...byBranch.values()],
   }
 }
 

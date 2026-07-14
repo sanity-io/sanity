@@ -16,15 +16,24 @@ export const COLOR = {
   line: 'var(--card-accent-fg-color, #556bfc)',
   band: 'var(--card-badge-primary-bg-color, rgba(85, 107, 252, 0.15))',
   axis: 'var(--card-muted-fg-color, #727892)',
-  /** Context charts (host calibration) recede — reference, not measurement. */
-  context: 'var(--card-muted-fg-color, #727892)',
+  /**
+   * Context lines (host calibration) recede — reference, not measurement — but
+   * must still separate from the axes, which are also muted gray. Use the
+   * darker primary foreground so it's a distinct neutral (no hue, so it never
+   * collides with a data-series color the way an accent/categorical would);
+   * the dashes keep it reading as reference rather than a measured line.
+   */
+  context: 'var(--card-fg-color, #101112)',
 }
 
 /** Per-line color: the studio accent for a lone line, categorical when comparing. */
 function lineColorFor(series: TrendSeries, index: number): string {
+  // Comparing branches always wins — each branch gets its own categorical
+  // color so two trails never collapse to one hue (even for context charts
+  // like host calibration, where each branch ran on its own host).
+  if (series.lines.length > 1) return categoricalColor(index)
   if (series.goal === 'context') return COLOR.context
-  if (series.lines.length <= 1) return COLOR.line
-  return categoricalColor(index)
+  return COLOR.line
 }
 
 /**
@@ -219,8 +228,11 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
                     stroke={color}
                     strokeWidth={1.5}
                     // Context lines (host calibration) are dashed so they read
-                    // as reference, not as a measured metric line
+                    // as reference, not as a measured metric line. The darker
+                    // context color separates them from the muted-gray axes;
+                    // reduced opacity keeps them recessive despite being darker.
                     strokeDasharray={series.goal === 'context' ? '4 3' : undefined}
+                    opacity={series.goal === 'context' ? 0.55 : 1}
                   />
                 )}
                 {line.points.map((point, pointIndex) => {
