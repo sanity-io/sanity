@@ -17,6 +17,7 @@ import {useScheduleDraftOperations} from '../hooks/useScheduleDraftOperations'
 
 interface DeleteScheduledDraftDialogBaseProps {
   onClose: () => void
+  onDeleteComplete?: () => void
   release: ReleaseDocument
 }
 
@@ -70,6 +71,7 @@ function useDeleteScheduledDraft(
   firstDocumentPreview: PreviewValue | undefined,
   onClose: () => void,
   deleteOperation: () => Promise<void>,
+  onDeleteComplete?: () => void,
 ) {
   const {t} = useTranslation()
   const toast = useToast()
@@ -80,6 +82,11 @@ function useDeleteScheduledDraft(
     // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
     const run = async () => {
       await deleteOperation()
+      try {
+        onDeleteComplete?.()
+      } catch (error) {
+        console.error('onDeleteComplete callback failed:', error)
+      }
       toast.push({
         closable: true,
         status: 'success',
@@ -114,7 +121,7 @@ function useDeleteScheduledDraft(
         setIsDeleting(false)
         onClose()
       })
-  }, [toast, t, firstDocumentPreview?.title, onClose, deleteOperation])
+  }, [toast, t, firstDocumentPreview?.title, onClose, deleteOperation, onDeleteComplete])
 
   return {isDeleting, handleDeleteSchedule}
 }
@@ -167,6 +174,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
   documentId,
   documentType,
   onClose,
+  onDeleteComplete,
   release,
 }: DeleteScheduledDraftDialogWithCopyToDraftProps) {
   const {t} = useTranslation()
@@ -200,6 +208,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
     firstDocumentPreview,
     onClose,
     deleteOperation,
+    onDeleteComplete,
   )
 
   const schemaType = schema.get(documentType)
@@ -251,6 +260,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
  */
 function DeleteScheduledDraftDialogWithEmptyRelease({
   onClose,
+  onDeleteComplete,
   release,
 }: DeleteScheduledDraftDialogBaseProps) {
   const {t} = useTranslation()
@@ -268,6 +278,7 @@ function DeleteScheduledDraftDialogWithEmptyRelease({
     firstDocumentPreview,
     onClose,
     deleteOperation,
+    onDeleteComplete,
   )
 
   return (
@@ -289,10 +300,17 @@ export function DeleteScheduledDraftDialog({
   documentId,
   documentType,
   onClose,
+  onDeleteComplete,
   release,
 }: DeleteScheduledDraftDialogProps) {
   if (!documentId || !documentType) {
-    return <DeleteScheduledDraftDialogWithEmptyRelease onClose={onClose} release={release} />
+    return (
+      <DeleteScheduledDraftDialogWithEmptyRelease
+        onClose={onClose}
+        onDeleteComplete={onDeleteComplete}
+        release={release}
+      />
+    )
   }
 
   return (
@@ -300,6 +318,7 @@ export function DeleteScheduledDraftDialog({
       documentId={documentId}
       documentType={documentType}
       onClose={onClose}
+      onDeleteComplete={onDeleteComplete}
       release={release}
     />
   )

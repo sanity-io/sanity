@@ -8,6 +8,7 @@ import {
 import {useAllReleases} from '../../../releases/store/useAllReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
+import {useClearScheduledDraftPerspectiveOnDelete} from '../../hooks/useClearScheduledDraftPerspectiveOnDelete'
 import {
   useScheduledDraftMenuActions,
   type UseScheduledDraftMenuActionsReturn,
@@ -32,10 +33,15 @@ const createScheduledDraftAction = (
       (r) => getReleaseIdFromReleaseDocumentId(r._id) === release,
     )
 
+    const onDeleteComplete = useClearScheduledDraftPerspectiveOnDelete(
+      actionKey === 'deleteSchedule' ? releaseDocument : undefined,
+    )
+
     const {actions, dialogs} = useScheduledDraftMenuActions({
       release: releaseDocument,
       documentType: type,
       documentId: id,
+      onDeleteComplete: actionKey === 'deleteSchedule' ? onDeleteComplete : undefined,
     })
 
     if (visibilityCheck && !visibilityCheck(releaseDocument)) {

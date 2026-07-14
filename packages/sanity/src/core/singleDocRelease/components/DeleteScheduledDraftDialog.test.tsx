@@ -262,4 +262,57 @@ describe('DeleteScheduledDraftDialog', () => {
       )
     })
   })
+
+  describe('onDeleteComplete callback', () => {
+    it('calls onDeleteComplete after a successful delete', async () => {
+      const mockOnDeleteComplete = vi.fn()
+      mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocument))
+
+      render(
+        <TestProvider>
+          <DeleteScheduledDraftDialog
+            documentId="article-123"
+            documentType="article"
+            release={scheduledRelease}
+            onClose={mockOnClose}
+            onDeleteComplete={mockOnDeleteComplete}
+          />
+        </TestProvider>,
+      )
+
+      await userEvent.click(screen.getByText('Yes, delete schedule'))
+
+      await waitFor(() => {
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalled()
+      })
+      expect(mockOnDeleteComplete).toHaveBeenCalledOnce()
+    })
+
+    it('does not call onDeleteComplete when the delete operation fails', async () => {
+      const mockOnDeleteComplete = vi.fn()
+      useScheduleDraftOperationsMockReturn.deleteScheduledDraft.mockRejectedValue(
+        new Error('delete failed'),
+      )
+      mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocument))
+
+      render(
+        <TestProvider>
+          <DeleteScheduledDraftDialog
+            documentId="article-123"
+            documentType="article"
+            release={scheduledRelease}
+            onClose={mockOnClose}
+            onDeleteComplete={mockOnDeleteComplete}
+          />
+        </TestProvider>,
+      )
+
+      await userEvent.click(screen.getByText('Yes, delete schedule'))
+
+      await waitFor(() => {
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalled()
+      })
+      expect(mockOnDeleteComplete).not.toHaveBeenCalled()
+    })
+  })
 })
