@@ -1530,6 +1530,62 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
 
     sub.unsubscribe()
   })
+
+  it('drops an unconsumed callback state on credential teardown within the settle window (cookie mode)', async () => {
+    // Same linger setup as the expiry test above, but the cross-tab
+    // logout/login cycle happens INSIDE the settle window, where the
+    // one-shot is still fresh. The unauthenticated emission (credential
+    // teardown) must clear it — same rule as logout() — so the login that
+    // follows probes fresh instead of emitting the stale snapshot.
+    let currentUser: CurrentUser = MOCK_USER
+    const factory = (_options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({uri}: {uri: string}) => {
+          if (uri === '/auth/fetch') return Promise.resolve({token: 'exchanged-token'})
+          if (uri === '/auth/id') {
+            return Promise.resolve({
+              id: 'mock-auth-id',
+              expiry: Math.floor(Date.now() / 1000) + 3600,
+            })
+          }
+          if (uri === '/users/me') return Promise.resolve(currentUser)
+          return Promise.resolve({})
+        }),
+      }) as unknown as SanityClient
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: oneShotSessionId(),
+      consumeHashToken: () => undefined,
+    })
+
+    const sub = store.state.subscribe(() => {})
+
+    // Already authenticated at boot: the callback's channel write changes
+    // nothing, so the one-shot lingers unconsumed.
+    await waitForState(store, (s) => s.authenticated)
+    const result = await store.handleCallbackUrl!()
+    expect(result.success).toBe(true)
+
+    // Immediately after — well within the settle window — another tab logs
+    // out and a different user logs in.
+    currentUser = {...MOCK_USER, id: 'fresh-user-456'}
+
+    const channel = new BroadcastChannel(`__studio_auth_cookie_state_${PROJECT_ID}`)
+    channel.postMessage(JSON.stringify({authenticated: false}))
+    await waitForState(store, (s) => !s.authenticated)
+    channel.postMessage(JSON.stringify({authenticated: true}))
+    channel.close()
+
+    // Fresh probe, not the stale exchange-time snapshot.
+    const state = await waitForState(store, (s) => s.authenticated)
+    expect(state.currentUser?.id).toBe('fresh-user-456')
+
+    sub.unsubscribe()
+  })
 })
 
 describe('createAuthStore: currentUser attributes', () => {

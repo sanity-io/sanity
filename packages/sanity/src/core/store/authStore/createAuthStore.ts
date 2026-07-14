@@ -531,6 +531,11 @@ export function _createAuthStore({
     merge(workspaceClient$.pipe(skip(1)), dualCookieRecheck$, tokenRecheck$, cookieRecheck$).pipe(
       mergeMap(async (client): Promise<AuthState> => {
         if (!client) {
+          // Credentials were torn down (e.g. a cross-tab logout broadcast).
+          // Same rule as logout(): an unconsumed callback snapshot is stale
+          // from this moment, and must not satisfy a later consumer that is
+          // still inside the settle window.
+          pendingCallbackState = undefined
           return {client: cookieClient, authenticated: false, currentUser: null}
         }
         // This emission is the chain's reaction to a callback's credential
