@@ -99,6 +99,17 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      # Compute the merge-base explicitly so the cache is keyed on the commit
+      # the reference is actually built against. Keying on the base *tip*
+      # (pull_request.base.sha) is wrong: two PRs sharing a base tip but
+      # branched at different commits would collide and reuse each other's
+      # reference dist, comparing against the wrong baseline.
+      - name: Compute merge-base
+        id: merge-base
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: echo "sha=$(git merge-base HEAD "origin/$BASE_REF")" >> "$GITHUB_OUTPUT"
+
       # Re-pushes to a PR usually share the merge-base: reuse the built
       # reference outright (keyed on merge-base sha + harness sources)
       - name: Restore reference dist cache
@@ -106,7 +117,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: perf/bench/.reference/dist
-          key: bench-reference-dist-v1-${{ github.event.pull_request.base.sha }}-${{ hashFiles('perf/bench/**', '!perf/bench/dist/**', '!perf/bench/node_modules/**') }}
+          key: bench-reference-dist-v1-${{ steps.merge-base.outputs.sha }}-${{ hashFiles('perf/bench/**', '!perf/bench/dist/**', '!perf/bench/node_modules/**') }}
 
       # Worktree/overlay/build/fallback logic lives in the CLI
       # (perf/bench/cli/commands/prepareReference.ts) - it writes the
