@@ -97,12 +97,12 @@ Useful `bench run` flags: `--headed`, `--throttle 1` (disable CPU throttle), `--
 
 ## CI (`.github/workflows/bench.yml`)
 
-- **Label-gated during burn-in**: PR jobs run only with the `perf-bench` label. The all-code-PRs gate is wired and one condition away.
+- **Label-gated during burn-in**: PR jobs run only with the `trigger:perf-bench` label. The all-code-PRs gate is wired and one condition away.
 - **Reference build**: `git worktree` at the merge-base with HEAD's committed `perf/bench/` tree checked out over it — harness and scenarios identical on both sides, only `packages/*` differs. Cached by merge-base sha; falls back to absolute mode (with a warning in the report) if the build fails or the merge-base predates the suite.
 - **Sharding**: one job per scenario + one pageLoad job; wall-clock = build + slowest scenario. Budgets are caps — the stopping rule exits early when the CI converges.
 - **PR comment**: always posted/updated in place (`bench-report` tag). Non-gating during burn-in.
 - **Self-test** (weekly cron / `workflow_dispatch` with `self_test`): compares a build against itself with `--fail-on-verdict` — any non-neutral metric is a harness bug, not a product change.
-- **track-main** (daily cron): absolute-mode run with fixed session counts + soak, stored as a `benchRun` document in the studio-metrics project (`c1zuxvqn`/`bench`) via `BENCH_METRICS_WRITE_TOKEN` — the only real secret in the suite.
+- **track-main** (daily cron, or `workflow_dispatch` with `run_suite`): absolute-mode run with fixed session counts + soak, stored as a `benchRun` document in the studio-metrics project (`c1zuxvqn`/`bench`) via `BENCH_METRICS_WRITE_TOKEN` — the only real secret in the suite. The dispatch path lets a maintainer run the full suite + store on demand (backfill a point, or verify the store path) without waiting for the 5am cron.
 
 ## Flake resistance rules
 

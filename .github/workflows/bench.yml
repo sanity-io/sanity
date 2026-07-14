@@ -2,7 +2,7 @@ name: Studio Bench
 permissions: {}
 
 # Initial rollout is label-gated: PR jobs only run when the PR carries the
-# `perf-bench` label. Flipping to all code-change PRs later = replacing the
+# `trigger:perf-bench` label. Flipping to all code-change PRs later = replacing the
 # label condition with the detect-code-changes gate (already wired below).
 on:
   pull_request:
@@ -16,6 +16,11 @@ on:
     - cron: "0 6 * * 1"
   workflow_dispatch:
     inputs:
+      run_suite:
+        description: "Run the full absolute-mode suite against main and store it (same as the daily cron)"
+        required: false
+        type: boolean
+        default: true
       self_test:
         description: "Compare the build against itself (harness self-test)"
         required: false
@@ -27,11 +32,11 @@ on:
 # a unique group (no cancellation). Adding an unrelated label must not cancel
 # an in-flight bench run (the new run's jobs all skip via their label guards,
 # which would leave no comment and no red check), so only cancel when the
-# trigger is a real bench trigger: any non-label event, or the `perf-bench`
-# label itself.
+# trigger is a real bench trigger: any non-label event, or the
+# `trigger:perf-bench` label itself.
 concurrency:
   group: bench-${{ github.event.pull_request.number || github.run_id }}
-  cancel-in-progress: ${{ github.event.action != 'labeled' || github.event.label.name == 'perf-bench' }}
+  cancel-in-progress: ${{ github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench' }}
 
 jobs:
   build:
@@ -39,8 +44,8 @@ jobs:
     # the whole suite (the label set still gates via contains())
     if: >-
       (github.event_name == 'pull_request' &&
-       contains(github.event.pull_request.labels.*.name, 'perf-bench') &&
-       (github.event.action != 'labeled' || github.event.label.name == 'perf-bench')) ||
+       contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')) ||
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'schedule'
     runs-on: ubuntu-8core
@@ -83,8 +88,8 @@ jobs:
   build-reference:
     if: >-
       github.event_name == 'pull_request' &&
-      contains(github.event.pull_request.labels.*.name, 'perf-bench') &&
-      (github.event.action != 'labeled' || github.event.label.name == 'perf-bench')
+      contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
+      (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')
     runs-on: ubuntu-8core
     timeout-minutes: 25
     permissions:
@@ -401,7 +406,7 @@ jobs:
   # trends dashboard's branch comparison has real data. Separate from `report`
   # so the metrics write token is never present in the write-scoped job that
   # runs PR-authored report code. Same-repo PRs only: fork PRs receive no
-  # secrets, and the `perf-bench` label is maintainer-applied (triage-gated).
+  # secrets, and the `trigger:perf-bench` label is maintainer-applied (triage-gated).
   store-pr:
     needs: [build-reference, report]
     if: >-
@@ -415,7 +420,7 @@ jobs:
       contents: read
     steps:
       # Deliberately check out BASE-branch code, not the PR merge commit: this
-      # job holds BENCH_METRICS_WRITE_TOKEN, and the perf-bench label persists
+      # job holds BENCH_METRICS_WRITE_TOKEN, and the trigger:perf-bench label persists
       # across pushes — checking out PR code would let any later push on a
       # labeled PR run arbitrary code with the token. The PR's benchmark
       # output is consumed purely as data via the artifact below. Do not
@@ -517,7 +522,12 @@ jobs:
     # Daily absolute-mode run against main HEAD, stored to the studio-metrics
     # project for time-series/drift tracking. Fixed session counts -
     # comparability over speed (no dynamic stopping shortcut across days).
-    if: github.event_name == 'schedule' && github.event.schedule == '0 5 * * *'
+    # Also the on-demand "run the suite" path: a workflow_dispatch with
+    # run_suite triggers the same full run + store (e.g. to backfill a point or
+    # verify the store path without waiting for the 5am cron).
+    if: >-
+      (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_suite)
     needs: [build]
     runs-on: ubuntu-8core
     timeout-minutes: 90
