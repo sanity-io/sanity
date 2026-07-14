@@ -73,7 +73,13 @@ function InfoButton(props: {text: string; label: string; sourceFile?: string}) {
               {props.text}
             </Text>
             {props.sourceFile && (
-              <Box as="a" href={sourceFileUrl(props.sourceFile)} target="_blank" rel="noreferrer">
+              <Box
+                as="a"
+                href={sourceFileUrl(props.sourceFile)}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="View scenario source (opens in a new tab)"
+              >
                 <Flex align="center" gap={1}>
                   <LaunchIcon />
                   <Text size={1}>View scenario source</Text>
@@ -173,7 +179,11 @@ function SeriesCard(props: {series: TrendSeries; height: number}) {
           </Text>
           <Flex align="center" gap={2} style={{flexShrink: 0}}>
             {latest && (
-              <Text size={1} muted title="latest run">
+              <Text
+                size={1}
+                muted
+                aria-label={`Latest run: ${formatValue(latest.value, series.unit)}`}
+              >
                 {formatValue(latest.value, series.unit)}
               </Text>
             )}

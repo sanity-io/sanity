@@ -61,7 +61,14 @@ function DriftRow(props: {
         {entry.fired.map((f) => BASELINE_LABEL[f.kind]).join(', ')}
       </Text>
       {backlinksFor(entry.latest).map((link) => (
-        <Box key={link.href} as="a" href={link.href} target="_blank" rel="noreferrer">
+        <Box
+          key={link.href}
+          as="a"
+          href={link.href}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`${link.label} (opens in a new tab)`}
+        >
           <Badge fontSize={0} mode="outline" tone="primary">
             <Flex align="center" gap={1}>
               <LaunchIcon />

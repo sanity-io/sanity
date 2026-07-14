@@ -3,7 +3,7 @@ import {AxisBottom, AxisLeft} from '@visx/axis'
 import {Group} from '@visx/group'
 import {scaleLinear, scaleTime} from '@visx/scale'
 import {Area, LinePath} from '@visx/shape'
-import {useState} from 'react'
+import {useRef, useState} from 'react'
 
 import {formatValue, isSignedUnit, type TrendLine, type TrendPoint, type TrendSeries} from './data'
 import {categoricalColor} from './palette'
@@ -67,6 +67,22 @@ function nearestPoint(line: TrendLine, targetMs: number): TrendPoint | null {
   return best
 }
 
+/** Nearest point across every line to a target time (comparison picks the closest branch). */
+function nearestPointAcrossLines(lines: TrendLine[], targetMs: number): TrendPoint | null {
+  let best: TrendPoint | null = null
+  let bestDelta = Infinity
+  for (const line of lines) {
+    const candidate = nearestPoint(line, targetMs)
+    if (!candidate) continue
+    const delta = Math.abs(candidate.date.getTime() - targetMs)
+    if (delta < bestDelta) {
+      best = candidate
+      bestDelta = delta
+    }
+  }
+  return best
+}
+
 export function TrendChart(props: {series: TrendSeries; width: number; height: number}) {
   const {series, width, height} = props
   const {lines, unit} = series
@@ -76,6 +92,7 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
   // or a domain change instead of pointing at a stale pixel position
   const [selected, setSelected] = useState<TrendPoint | null>(null)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const captureRef = useRef<SVGRectElement>(null)
   const allPoints = lines.flatMap((line) => line.points)
   if (width < 10 || allPoints.length === 0) return null
 
@@ -117,6 +134,37 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
     setHoverMs(xScale.invert(event.clientX - rect.left).getTime())
   }
 
+  // Keyboard access: arrow keys step the crosshair across runs (driving the
+  // same hover state pointer motion uses), Enter/Space opens the run at the
+  // crosshair, Escape clears it. Sorted unique run times are the step stops.
+  const stepTimes = [...new Set(dates)].sort((a, b) => a - b)
+  const handleKeyDown = (event: React.KeyboardEvent<SVGRectElement>) => {
+    if (stepTimes.length === 0) return
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault()
+      const current =
+        hoverMs === null
+          ? stepTimes.length - 1
+          : stepTimes.reduce(
+              (nearest, time, index) =>
+                Math.abs(time - hoverMs) < Math.abs(stepTimes[nearest] - hoverMs) ? index : nearest,
+              0,
+            )
+      const next = Math.max(
+        0,
+        Math.min(stepTimes.length - 1, current + (event.key === 'ArrowRight' ? 1 : -1)),
+      )
+      setHoverMs(stepTimes[next])
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      const targetMs = hoverMs ?? stepTimes.at(-1)!
+      const best = nearestPointAcrossLines(lines, targetMs)
+      if (best) setSelected(best)
+    } else if (event.key === 'Escape') {
+      setHoverMs(null)
+    }
+  }
+
   const anchor = hoverMs === null ? null : xScale(new Date(hoverMs))
   // Each line's nearest point to the hovered time, for the crosshair readout
   const hovered =
@@ -134,7 +182,9 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
 
   return (
     <div style={{position: 'relative', width, height}}>
-      <svg width={width} height={height} role="img" aria-label={series.title}>
+      {/* No role="img": the plot is interactive (see the focusable capture
+          rect below), not a static image — claiming "img" would hide that */}
+      <svg width={width} height={height}>
         <Group left={MARGIN.left} top={MARGIN.top}>
           {/* Zero reference for signed slope charts — the "flat is good" line */}
           {isSignedUnit(unit) && (
@@ -244,29 +294,28 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
           {/* Transparent capture rect over the plot area drives the crosshair
               AND the click — it sits above the dots in paint order, so a click
               here (anywhere in the plot) opens the run nearest the pointer,
-              which is a bigger target than a 3px dot */}
+              which is a bigger target than a 3px dot. It's also the keyboard
+              entry point: focusable, arrow keys step the crosshair, Enter opens
+              the run, so the whole chart is operable without a pointer. */}
           <rect
+            ref={captureRef}
             width={Math.max(0, innerWidth)}
             height={Math.max(0, innerHeight)}
             fill="transparent"
-            style={{cursor: 'pointer'}}
+            style={{cursor: 'pointer', outline: 'none'}}
+            tabIndex={0}
+            role="application"
+            aria-label={`${series.title} — ${stepTimes.length} run(s). Arrow keys inspect runs, Enter opens details.`}
             onPointerMove={handleMove}
             onPointerLeave={() => setHoverMs(null)}
+            // Seed the crosshair on keyboard focus so there's an immediate
+            // visible focus indicator (the crosshair) before any arrow press
+            onFocus={() => setHoverMs((current) => current ?? stepTimes.at(-1) ?? null)}
+            onKeyDown={handleKeyDown}
             onClick={(event) => {
               const rect = event.currentTarget.getBoundingClientRect()
               const targetMs = xScale.invert(event.clientX - rect.left).getTime()
-              // Nearest point across all lines (comparison picks the closest branch)
-              let best: TrendPoint | null = null
-              let bestDelta = Infinity
-              for (const line of lines) {
-                const candidate = nearestPoint(line, targetMs)
-                if (!candidate) continue
-                const delta = Math.abs(candidate.date.getTime() - targetMs)
-                if (delta < bestDelta) {
-                  best = candidate
-                  bestDelta = delta
-                }
-              }
+              const best = nearestPointAcrossLines(lines, targetMs)
               if (best) setSelected(best)
             }}
           />
@@ -344,7 +393,12 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
             series={series}
             point={selected}
             referenceElement={anchorEl}
-            onClose={() => setSelected(null)}
+            onClose={() => {
+              setSelected(null)
+              // Restore focus to the chart so keyboard users continue where
+              // they were, rather than being dropped at the top of the page
+              captureRef.current?.focus()
+            }}
           />
         </>
       )}

@@ -11,7 +11,7 @@ import {
   useClickOutsideEvent,
   useGlobalKeyDown,
 } from '@sanity/ui'
-import {useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
 
 import {formatValue, type TrendPoint, type TrendSeries} from './data'
@@ -33,6 +33,7 @@ export function RunDetailPopover(props: {
 }) {
   const {series, point, referenceElement, onClose} = props
   const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
   const documentLink = useIntentLink({
     intent: 'edit',
     params: {id: point.runId, type: 'benchRun'},
@@ -53,6 +54,13 @@ export function RunDetailPopover(props: {
   })
   useClickOutsideEvent(onClose, () => [contentEl, referenceElement])
 
+  // Move focus into the popover once it mounts so keyboard users land inside
+  // it (not stranded on the chart behind it); focus is restored to the chart
+  // by the caller on close. Waits for the content element so the button exists.
+  useEffect(() => {
+    if (contentEl) closeButtonRef.current?.focus()
+  }, [contentEl])
+
   return (
     <Popover
       open
@@ -71,6 +79,7 @@ export function RunDetailPopover(props: {
                   </Text>
                 </Box>
                 <Button
+                  ref={closeButtonRef}
                   mode="bleed"
                   padding={1}
                   fontSize={1}
@@ -104,6 +113,7 @@ export function RunDetailPopover(props: {
                     href={link.href}
                     target="_blank"
                     rel="noreferrer"
+                    aria-label={`${link.label} (opens in a new tab)`}
                     mode="ghost"
                     fontSize={1}
                     icon={LaunchIcon}
