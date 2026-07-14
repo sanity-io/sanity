@@ -11,9 +11,12 @@ import {mergeConfig, type UserConfig} from 'tsdown'
  * - `tsconfig: 'tsconfig.lib.json'` - the same tsconfig the `check:types` scripts use
  * - `dts: {tsgo: true}` - generate `.d.ts` files with tsgo (`@typescript/native-preview`),
  *   matching the repo's tsgo-based type checking (no `typescript` dependency needed)
- * - `exports: false` - the `exports`/`publishConfig.exports` maps in each `package.json` are
- *   maintained by hand (they carry the monorepo-specific `source`/`monorepo` conditions), so
- *   tsdown must not rewrite them
+ * - `exports.devExports: 'monorepo'` - local builds regenerate the `exports` map in
+ *   `package.json` with the `monorepo` condition pointing at the sources (resolved by the
+ *   monorepo tsconfigs and the dev studios) while `publishConfig.exports` receives the built
+ *   files, keeping the published shape pkg-utils produced. Generation is skipped in CI
+ *   (`enabled: 'local-only'`, the tsdown-config default), where the committed `package.json`
+ *   is already up to date.
  * - `define: {__DEV__: 'false'}` - the same build-time constant `@sanity/pkg-utils` used to inject
  *
  * Anything not exposed through `@sanity/tsdown-config` (e.g. `deps`, `hash`) can be passed via
@@ -26,7 +29,17 @@ export async function defineConfig(
   const base = await defineTsdownConfig({
     tsconfig: 'tsconfig.lib.json',
     dts: {tsgo: true},
-    exports: false,
+    exports: {
+      devExports: 'monorepo',
+      // Keep the legacy `main`/`module`/`types` fields, the packages still declare
+      // `typesVersions` for "node10"-resolution consumers
+      legacy: true,
+      // `sanity` ships a hand-written `bin/sanity` wrapper, never let generation touch `bin`
+      bin: false,
+      // Don't write the `inlinedDependencies` metadata field to `package.json` (changing the
+      // published metadata is a deliberate follow-up, not part of the build-tool swap)
+      inlinedDependencies: false,
+    },
     ...options,
     define: {__DEV__: 'false', ...options.define},
   })

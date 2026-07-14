@@ -1,5 +1,9 @@
 import {defineConfig} from '@repo/package.config'
 
+// The `exports` maps in `package.json` are maintained by hand for this package: generation would
+// need the ESM and CJS configs merged into one, and with the CJS build containing a single entry
+// tsdown treats that entry as the root `.` export (its per-format single-entry heuristic), which
+// would wire `require` for `.` to `createSafeJsonParser.cjs`.
 export default await Promise.all([
   defineConfig({
     entry: {
@@ -12,11 +16,13 @@ export default await Promise.all([
       'legacyDateFormat': './src/_exports/legacyDateFormat.ts',
       'paths': './src/_exports/paths.ts',
     },
+    exports: false,
   }),
   // `./createSafeJsonParser` is also published as CJS (see the `require` condition in
   // `package.json`) for `require()` consumers
   defineConfig({
     entry: {createSafeJsonParser: './src/_exports/createSafeJsonParser.ts'},
     format: 'cjs',
+    exports: false,
   }),
 ])

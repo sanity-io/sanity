@@ -27,6 +27,7 @@
   "type": "module",
   "sideEffects": false,
   "main": "./lib/index.js",
+  "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
@@ -37,12 +38,10 @@
   },
   "exports": {
     ".": {
-      "source": "./src/_exports/index.ts",
       "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./_internal": {
-      "source": "./src/_exports/_internal.ts",
       "monorepo": "./src/_exports/_internal.ts",
       "default": "./lib/_internal.js"
     },

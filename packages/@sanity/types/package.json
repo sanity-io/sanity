@@ -28,10 +28,10 @@
   "type": "module",
   "sideEffects": false,
   "main": "./lib/index.js",
+  "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "source": "./src/index.ts",
       "monorepo": "./src/index.ts",
       "default": "./lib/index.js"
     },
