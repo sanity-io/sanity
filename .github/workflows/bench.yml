@@ -251,8 +251,15 @@ jobs:
       fail-fast: false
       matrix:
         # One shard per scenario (mirrors bench-interaction): wall-clock =
-        # one scenario's samples instead of both sequentially
-        scenario: [singleString, syntheticLarge]
+        # one scenario's samples instead of both sequentially. Sessions are
+        # per-scenario: syntheticLarge takes ~55s per sample to become editable
+        # and runs both load conditions on both sides, so 8 sessions blows the
+        # 20-minute timeout — give it fewer (still enough for a p50).
+        include:
+          - scenario: singleString
+            sessions: 8
+          - scenario: syntheticLarge
+            sessions: 3
     steps:
       - uses: actions/checkout@v7
         with:
@@ -302,6 +309,7 @@ jobs:
       - name: Run pageLoad benchmark
         env:
           SCENARIO: ${{ matrix.scenario }}
+          SESSIONS: ${{ matrix.sessions }}
           COMPARISON: ${{ needs.build-reference.outputs.comparison }}
           BENCH_MERGE_BASE: ${{ needs.build-reference.outputs.merge_base }}
         run: |
@@ -311,7 +319,7 @@ jobs:
           fi
           # shellcheck disable=SC2086
           pnpm bench run --mode pageload --scenario "$SCENARIO" \
-            --sessions 8 \
+            --sessions "$SESSIONS" \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__pageload-$SCENARIO.json" \
             $REFERENCE_ARGS
 
