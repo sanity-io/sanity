@@ -29,6 +29,12 @@ export interface Component extends StructureNode {
   component: UserComponent
   /** Component child of type {@link Child} */
   child?: Child
+  /** Minimum width of the component pane in pixels */
+  minWidth?: number
+  /** Maximum width of the component pane before it is manually resized, in pixels */
+  currentMaxWidth?: number
+  /** Maximum width of the component pane in pixels */
+  maxWidth?: number
   /** Component menu items, array of type {@link MenuItem} */
   menuItems: MenuItem[]
   /** Component menu item group, array of type {@link MenuItemGroup} */
@@ -48,6 +54,12 @@ export interface ComponentInput extends StructureNode {
   component: UserComponent
   /** Component child of type {@link Child} */
   child?: Child
+  /** Minimum width of the component pane in pixels */
+  minWidth?: number
+  /** Maximum width of the component pane before it is manually resized, in pixels */
+  currentMaxWidth?: number
+  /** Maximum width of the component pane in pixels */
+  maxWidth?: number
   /** Component options */
   options?: {[key: string]: unknown}
   /** Component menu items. See {@link MenuItem} and {@link MenuItemBuilder}  */
@@ -66,6 +78,12 @@ export interface BuildableComponent extends Partial<StructureNode> {
   component?: UserComponent
   /** Component child of type {@link Child} */
   child?: Child
+  /** Minimum width of the component pane in pixels */
+  minWidth?: number
+  /** Maximum width of the component pane before it is manually resized, in pixels */
+  currentMaxWidth?: number
+  /** Maximum width of the component pane in pixels */
+  maxWidth?: number
   /** Component options */
   options?: {[key: string]: unknown}
   /** Component menu items. See {@link MenuItem} and {@link MenuItemBuilder}  */
@@ -148,6 +166,51 @@ export class ComponentBuilder implements Serializable<Component> {
     return this.spec.child
   }
 
+  /** Set the minimum width of the component pane
+   * @param minWidth - Minimum width in pixels
+   * @returns component builder with the minimum width applied
+   */
+  minWidth(minWidth: number): ComponentBuilder {
+    return this.clone({minWidth})
+  }
+
+  /** Get the minimum width of the component pane
+   * @returns minimum width in pixels
+   */
+  getMinWidth(): BuildableComponent['minWidth'] {
+    return this.spec.minWidth
+  }
+
+  /** Set the maximum width of the component pane before it is manually resized
+   * @param currentMaxWidth - Maximum width in pixels before manual resizing
+   * @returns component builder with the current maximum width applied
+   */
+  currentMaxWidth(currentMaxWidth: number): ComponentBuilder {
+    return this.clone({currentMaxWidth})
+  }
+
+  /** Get the maximum width of the component pane before it is manually resized
+   * @returns current maximum width in pixels
+   */
+  getCurrentMaxWidth(): BuildableComponent['currentMaxWidth'] {
+    return this.spec.currentMaxWidth
+  }
+
+  /** Set the maximum width of the component pane
+   * @param maxWidth - Maximum width in pixels
+   * @returns component builder with the maximum width applied
+   */
+  maxWidth(maxWidth: number): ComponentBuilder {
+    return this.clone({maxWidth})
+  }
+
+  /** Get the maximum width of the component pane
+   * @returns maximum width in pixels
+   */
+  getMaxWidth(): BuildableComponent['maxWidth'] {
+    return this.spec.maxWidth
+  }
+
   /** Set component
    * @param component - user built component
    * @returns component builder based on component provided
@@ -218,7 +281,16 @@ export class ComponentBuilder implements Serializable<Component> {
    *
    */
   serialize(options: SerializeOptions = {path: []}): Component {
-    const {id, title, child, options: componentOptions, component} = this.spec
+    const {
+      id,
+      title,
+      child,
+      minWidth,
+      currentMaxWidth,
+      maxWidth,
+      options: componentOptions,
+      component,
+    } = this.spec
     if (!id) {
       throw new SerializeError(
         '`id` is required for `component` structure item',
@@ -240,6 +312,9 @@ export class ComponentBuilder implements Serializable<Component> {
       title,
       type: 'component',
       child,
+      minWidth,
+      currentMaxWidth,
+      maxWidth,
       component,
       canHandleIntent: this.spec.canHandleIntent,
       options: componentOptions || {},
