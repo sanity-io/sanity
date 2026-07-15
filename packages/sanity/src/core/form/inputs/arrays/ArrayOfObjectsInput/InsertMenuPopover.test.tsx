@@ -76,7 +76,7 @@ describe('useInsertMenuPopover floating boundary', () => {
     })
   })
 
-  test('falls back to the document root inside an edit dialog without an ambient boundary', async () => {
+  test('uses the ambient boundary when the edit dialog captured no outer boundary', async () => {
     render(
       <EditDialogOuterBoundaryContext.Provider value={{element: null}}>
         <Harness />
@@ -84,8 +84,9 @@ describe('useInsertMenuPopover floating boundary', () => {
     )
 
     await waitFor(() => {
-      expect(lastPopoverProps?.floatingBoundary).toBe(document.documentElement)
+      expect(lastPopoverProps).not.toBeNull()
     })
+    expect(lastPopoverProps?.floatingBoundary).toBeUndefined()
   })
 
   test('stacked edit dialogs inherit the outermost captured boundary', async () => {

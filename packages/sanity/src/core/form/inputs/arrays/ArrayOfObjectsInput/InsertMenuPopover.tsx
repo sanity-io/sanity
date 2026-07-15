@@ -10,13 +10,6 @@ import {
 import {Popover, type PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
-/**
- * Fallback floating boundary for insert menus inside an edit dialog that itself had no ambient
- * boundary: constrain to the viewport via the document root.
- */
-const FALLBACK_BOUNDARY: HTMLElement | undefined =
-  typeof document === 'undefined' ? undefined : document.documentElement
-
 type PopoverState = {open: boolean}
 
 type PopoverEvent = {type: 'toggle'} | {type: 'close'}
@@ -71,11 +64,10 @@ export function useInsertMenuPopover(props: {
   // Edit dialogs constrain their descendant popovers to the dialog's scroll container. The
   // insert menu is allowed to overflow the dialog, so inside a dialog it uses the boundary the
   // dialog itself sits in (typically the document pane's scroll container, keeping the menu
-  // below the sticky pane header). Outside a dialog the ambient boundary applies as usual.
+  // below the sticky pane header). Outside a dialog — or when the dialog captured no boundary —
+  // this is undefined and the ambient boundary applies as usual.
   const editDialogOuterBoundary = useContext(EditDialogOuterBoundaryContext)
-  const floatingBoundary = editDialogOuterBoundary
-    ? (editDialogOuterBoundary.element ?? FALLBACK_BOUNDARY)
-    : undefined
+  const floatingBoundary = editDialogOuterBoundary?.element ?? undefined
 
   const popover = useMemo(
     () => (
