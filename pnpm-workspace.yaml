@@ -34,7 +34,7 @@ catalog:
   '@vanilla-extract/dynamic': ^2.1.5
   '@vanilla-extract/vite-plugin': ^5.2.3
   '@vitejs/plugin-react': ^6.0.3
-  '@vitest/browser-playwright': ^4.1.9
+  '@vitest/browser-playwright': ^4.1.10
   babel-plugin-react-compiler: ^1.0.0
   babel-plugin-styled-components: ^2.3.0
   jsdom: ^29.1.1
@@ -45,7 +45,7 @@ catalog:
   rimraf: ^6.1.3
   styled-components: npm:@sanity/styled-components@^6.1.24
   vite: ^8.1.4
-  vitest: ^4.1.9
+  vitest: ^4.1.10
   vitest-browser-react: ^2.2.0
 
 dedupePeers: true
