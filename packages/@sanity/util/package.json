@@ -105,12 +105,12 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && tsdown -d lib",
+    "build": "pnpm clean && tsdown",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
-    "watch": "tsdown --watch -d lib"
+    "watch": "tsdown --watch"
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",

@@ -29,8 +29,8 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     '@sanity/tsdown-config':
-      specifier: ^0.15.0
-      version: 0.15.0
+      specifier: ^0.16.0
+      version: 0.16.0
     '@sanity/ui':
       specifier: ^3.3.0
       version: 3.3.0
@@ -1103,7 +1103,7 @@ importers:
         version: link:../tsconfig
       '@sanity/tsdown-config':
         specifier: 'catalog:'
-        version: 0.15.0(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.1.5)(tsdown@0.22.8)(typescript@6.0.3)(vite@8.1.4)
+        version: 0.16.0(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.1.5)(tsdown@0.22.8)(typescript@6.0.3)(vite@8.1.4)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.2
@@ -5680,8 +5680,8 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  '@sanity/tsdown-config@0.15.0':
-    resolution: {integrity: sha512-Up1tk4VXoGvgWYBKRZjdbnxxrwGjnljMLECWt0Cr6BjzyVDPil7ylFVWjOprNSHa66ksl4Ek2dB3JDq4CsGsGw==}
+  '@sanity/tsdown-config@0.16.0':
+    resolution: {integrity: sha512-KyODluqXeiXLXEzEUGNDACDp2KIbQDD7XvtlSq1hKAcL6+uZYCrD+GDm3c22Pr+pSZIfivDHWbumm8EIGKnPbQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       babel-plugin-react-compiler: '*'
@@ -7167,11 +7167,6 @@ packages:
 
   browserify-zlib@0.1.4:
     resolution: {integrity: sha512-19OEpq7vWgsH6WkvkBJQDFvJS1uPcbFOQ4v9CU839dO+ZZXUZO6XpE6hNCqvlIIj+4fZvRiJ6DsAQ382GwiyTQ==}
-
-  browserslist@4.28.5:
-    resolution: {integrity: sha512-Cu2E6QejHWzuDMTkuwgpABFgDfZrXLQq5V13YOACZx4mFAG4IwGTbTfHPMr4WtxlHoXSM8FIuRwYYCz5XiabaQ==}
-    engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
-    hasBin: true
 
   browserslist@4.28.6:
     resolution: {integrity: sha512-FQBYNK15VMslhLHpA7+n+n1GOlF1kId2xcCg7/j95f24AOF6VDYMNH4mFxF7KuaTdv627faazpOAjFzMrfJOUw==}
@@ -11521,7 +11516,7 @@ snapshots:
     dependencies:
       '@babel/compat-data': 7.29.7
       '@babel/helper-validator-option': 7.29.7
-      browserslist: 4.28.5
+      browserslist: 4.28.6
       lru-cache: 5.1.1
       semver: 6.3.1
 
@@ -14904,7 +14899,7 @@ snapshots:
       '@actions/github': 9.1.1
       yaml: 2.9.0
 
-  '@sanity/tsdown-config@0.15.0(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.1.5)(tsdown@0.22.8)(typescript@6.0.3)(vite@8.1.4)':
+  '@sanity/tsdown-config@0.16.0(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.1.5)(tsdown@0.22.8)(typescript@6.0.3)(vite@8.1.4)':
     dependencies:
       '@babel/core': 7.29.7
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.1.5)(vite@8.1.4)
@@ -16764,14 +16759,6 @@ snapshots:
     dependencies:
       pako: 0.2.9
 
-  browserslist@4.28.5:
-    dependencies:
-      baseline-browser-mapping: 2.10.42
-      caniuse-lite: 1.0.30001803
-      electron-to-chromium: 1.5.389
-      node-releases: 2.0.51
-      update-browserslist-db: 1.2.3(browserslist@4.28.5)
-
   browserslist@4.28.6:
     dependencies:
       baseline-browser-mapping: 2.10.42
@@ -17023,7 +17010,7 @@ snapshots:
 
   core-js-compat@3.49.0:
     dependencies:
-      browserslist: 4.28.5
+      browserslist: 4.28.6
 
   core-util-is@1.0.3: {}
 
@@ -20654,12 +20641,6 @@ snapshots:
       ufo: 1.6.4
     optionalDependencies:
       '@vercel/blob': 2.4.0
-
-  update-browserslist-db@1.2.3(browserslist@4.28.5):
-    dependencies:
-      browserslist: 4.28.5
-      escalade: 3.2.0
-      picocolors: 1.1.1
 
   update-browserslist-db@1.2.3(browserslist@4.28.6):
     dependencies:

@@ -15,12 +15,14 @@ import {type UserConfig} from 'tsdown'
  *   where the committed `package.json` is already up to date. `bin` generation is disabled,
  *   `sanity` ships a hand-written `bin/sanity` wrapper.
  * - `define: {__DEV__: 'false'}` - the same build-time constant `@sanity/pkg-utils` used to inject
+ * - `outDir: 'lib'` - the packages publish `lib`, not tsdown's default `dist`
  */
 export function defineConfig(options: PackageOptions = {}): Promise<UserConfig> {
   return defineTsdownConfig({
     tsconfig: 'tsconfig.lib.json',
     dts: {tsgo: true},
     exports: {devExports: 'monorepo', bin: false},
+    outDir: 'lib',
     ...options,
     define: {__DEV__: 'false', ...options.define},
   })

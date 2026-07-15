@@ -55,13 +55,13 @@
     }
   },
   "scripts": {
-    "build": "tsdown -d lib",
+    "build": "tsdown",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/vision/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "test": "vitest",
-    "watch": "tsdown --watch -d lib"
+    "watch": "tsdown --watch"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.3",

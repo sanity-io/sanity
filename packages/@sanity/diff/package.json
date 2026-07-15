@@ -41,11 +41,11 @@
     }
   },
   "scripts": {
-    "build": "tsdown -d lib",
+    "build": "tsdown",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/diff/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib coverage",
     "prepublishOnly": "turbo run build",
-    "watch": "tsdown --watch -d lib"
+    "watch": "tsdown --watch"
   },
   "dependencies": {
     "@sanity/diff-match-patch": "^3.2.0"

@@ -108,7 +108,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && tsdown -d lib",
+    "build": "pnpm clean && tsdown",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.check.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
@@ -118,7 +118,7 @@
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:browser": "vitest run -c vitest.browser.config.mts",
-    "watch": "tsdown --watch -d lib"
+    "watch": "tsdown --watch"
   },
   "dependencies": {
     "@algorithm.ts/lcs": "^4.0.6",

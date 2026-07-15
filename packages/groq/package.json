@@ -41,13 +41,13 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsdown -d lib",
+    "build": "tsdown",
     "check:types": "(cd ../.. && tsgo --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "pretest": "run-s build",
     "test": "node --test",
-    "watch": "tsdown --watch -d lib"
+    "watch": "tsdown --watch"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
