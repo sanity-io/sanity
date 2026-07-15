@@ -1197,6 +1197,7 @@ import type {
   PublishedId,
   QueryParams,
   ReactHook,
+  readVersionType,
   RebasePatchMsg,
   ReconnectEvent,
   Rect,
@@ -1768,6 +1769,7 @@ import type {
   VersionChip,
   VersionInfoDocumentStub,
   VersionInlineBadge,
+  VersionType,
   VirtualizerScrollInstance,
   VirtualizerScrollInstanceProvider,
   VisibleWorkspacesContextValue,
@@ -5405,6 +5407,9 @@ describe('sanity', () => {
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
   })
+  test('readVersionType', () => {
+    expectTypeOf<typeof readVersionType>().toBeFunction()
+  })
   test('RebasePatchMsg', () => {
     expectTypeOf<RebasePatchMsg>().toBeObject()
   })
@@ -7126,6 +7131,9 @@ describe('sanity', () => {
   })
   test('VersionInlineBadge', () => {
     expectTypeOf<typeof VersionInlineBadge>().not.toBeNever()
+  })
+  test('VersionType', () => {
+    expectTypeOf<VersionType>().not.toBeNever()
   })
   test('VirtualizerScrollInstance', () => {
     expectTypeOf<VirtualizerScrollInstance>().toBeObject()
