@@ -1389,6 +1389,9 @@ importers:
       '@rexxars/react-split-pane':
         specifier: ^1.0.0
         version: 1.0.0(react-dom@19.2.7)(react@19.2.7)
+      '@sanity/client':
+        specifier: 'catalog:'
+        version: 7.23.2
       '@sanity/color':
         specifier: ^3.0.6
         version: 3.0.6
@@ -1447,9 +1450,6 @@ importers:
       '@rolldown/plugin-babel':
         specifier: 'catalog:'
         version: 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.1.5)(vite@8.1.4)
-      '@sanity/client':
-        specifier: 'catalog:'
-        version: 7.23.2
       '@testing-library/react':
         specifier: ^16.3.2
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.7)(react@19.2.7)
