@@ -38,10 +38,14 @@ export interface IdPair {
  * missing states explicitly — the store must guard operations in those states instead of falling
  * back to the base draft/published pair.
  *
- * - `version` — a plain version bundle (release, agent or anonymous bundle): the pair checks out
- *   `versions.<name>.<publishedId>`. Passing a bare `string` is shorthand for this kind.
+ * `scopeId` is the second segment of a version document id (`versions.<scopeId>.<groupId>`),
+ * matching `_system.scopeId` on the document itself: a release name (or agent/anonymous bundle
+ * name) for plain versions today, an opaque server-generated hash for variant-scoped versions.
+ *
+ * - `version` — a plain version (release, agent or anonymous bundle): the pair checks out
+ *   `versions.<scopeId>.<groupId>`. Passing a bare `string` is shorthand for this kind.
  * - `variant` — a resolved variant-scoped version: the pair checks out
- *   `versions.<scopeId>.<publishedId>`.
+ *   `versions.<scopeId>.<groupId>` via the variant's scope id.
  * - `target-missing` — a variant is selected but the document has no variant-scoped version for
  *   the current bundle (or the variant selection is invalid). Operations are disabled with
  *   `TARGET_NOT_FOUND` and throw if executed.
@@ -51,7 +55,7 @@ export interface IdPair {
  * @internal
  */
 export type DocumentPairTarget =
-  | {kind: 'version'; name: string}
+  | {kind: 'version'; scopeId: string}
   | {kind: 'variant'; scopeId: string; variantId: string}
   | {kind: 'target-missing'; variantId?: string}
   | {kind: 'unresolved'}

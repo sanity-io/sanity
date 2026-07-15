@@ -40,6 +40,7 @@ import {validation} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
+import {getPairTargetScopeId, normalizeDocumentPairTarget} from './normalizeDocumentPairTarget'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
 import {type DocumentPairTarget, type IdPair} from './types'
 
@@ -60,31 +61,6 @@ function getIdPairFromPublished(publishedId: string, version?: string): IdPair {
   }
 
   return getIdPair(publishedId, {version})
-}
-
-/**
- * Normalizes the back-compat `version` parameter of the pair APIs (a bare version name string)
- * to a {@link DocumentPairTarget}.
- */
-function normalizeDocumentPairTarget(
-  version: string | DocumentPairTarget | undefined,
-): DocumentPairTarget | undefined {
-  if (typeof version === 'string') {
-    return {kind: 'version', name: version}
-  }
-  return version
-}
-
-/**
- * The version name (bundle segment) the pair should check out for a target, or `undefined` when
- * the base draft/published pair applies. Guarded kinds (`target-missing`, `unresolved`) never
- * reach pair checkout and yield `undefined`.
- */
-function getPairTargetVersionName(target: DocumentPairTarget | undefined): string | undefined {
-  if (!target) return undefined
-  if (target.kind === 'version') return target.name
-  if (target.kind === 'variant') return target.scopeId
-  return undefined
 }
 
 /**
@@ -273,7 +249,7 @@ export function createDocumentStore({
 
         return editOperations(
           ctx,
-          getIdPairFromPublished(publishedId, getPairTargetVersionName(target)),
+          getIdPairFromPublished(publishedId, getPairTargetScopeId(target)),
           type,
         )
       },
