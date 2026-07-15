@@ -6,6 +6,7 @@ import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {usePaneRouter} from '../../../../../components'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
+import {useDocumentPane} from '../../../useDocumentPane'
 import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'
 import {CopyDocumentActions} from '../CopyDocumentActions'
 
@@ -51,12 +52,7 @@ vi.mock('../../../../../components', () => ({
   })),
 }))
 
-vi.mock('../../../useDocumentPane', () => ({
-  useDocumentPane: vi.fn(() => ({
-    documentId: 'doc-123',
-    documentType: 'article',
-  })),
-}))
+vi.mock('../../../useDocumentPane')
 
 vi.mock('../../../useDocumentPaneInfo')
 
@@ -67,6 +63,17 @@ vi.mock('@sanity/telemetry/react', () => ({
 const mockUsePerspective = usePerspective as Mock
 const mockUsePaneRouter = usePaneRouter as Mock
 const mockUseDocumentPaneInfo = useDocumentPaneInfo as Mock
+const mockUseDocumentPane = useDocumentPane as Mock
+
+// An edit state where every representation of the document exists, so the share button is enabled
+// regardless of the selected perspective.
+const EXISTING_EDIT_STATE = {
+  ready: true,
+  draft: {_id: 'drafts.doc-123'},
+  published: {_id: 'doc-123'},
+  version: {_id: 'versions.rMyRelease.doc-123'},
+}
+
 let wrapper: React.ComponentType<{children: React.ReactNode}>
 
 beforeAll(async () => {
@@ -88,6 +95,11 @@ describe('CopyDocumentActions', () => {
       documentType: 'article',
       documentId: 'doc-123',
       schemaType: {liveEdit: false},
+    })
+    mockUseDocumentPane.mockReturnValue({
+      documentId: 'doc-123',
+      documentType: 'article',
+      editState: EXISTING_EDIT_STATE,
     })
   })
 
@@ -266,6 +278,88 @@ describe('CopyDocumentActions', () => {
       expect(mockTelemetryLog).toHaveBeenCalledWith(
         expect.objectContaining({name: 'Document ID Copied'}),
       )
+    })
+  })
+
+  describe('Disabled state', () => {
+    it('disables the button when a release is pinned but the version does not exist', () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedPerspectiveName: 'rMyRelease',
+        selectedReleaseId: 'rMyRelease',
+        selectedPerspective: 'rMyRelease',
+        perspectiveStack: ['rMyRelease', 'drafts'],
+      })
+      mockUseDocumentPane.mockReturnValue({
+        documentId: 'doc-123',
+        documentType: 'article',
+        editState: {ready: true, draft: null, published: {_id: 'doc-123'}, version: null},
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.getByTestId('copy-document-actions-button')).toBeDisabled()
+    })
+
+    it('enables the button when the pinned release contains the version', () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedPerspectiveName: 'rMyRelease',
+        selectedReleaseId: 'rMyRelease',
+        selectedPerspective: 'rMyRelease',
+        perspectiveStack: ['rMyRelease', 'drafts'],
+      })
+      mockUseDocumentPane.mockReturnValue({
+        documentId: 'doc-123',
+        documentType: 'article',
+        editState: {
+          ready: true,
+          draft: null,
+          published: null,
+          version: {_id: 'versions.rMyRelease.doc-123'},
+        },
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
+    })
+
+    it('disables the button on the published perspective when no published document exists', () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedPerspectiveName: 'published',
+        selectedPerspective: 'published',
+        perspectiveStack: ['published'],
+      })
+      mockUseDocumentPane.mockReturnValue({
+        documentId: 'doc-123',
+        documentType: 'article',
+        editState: {ready: true, draft: {_id: 'drafts.doc-123'}, published: null, version: null},
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.getByTestId('copy-document-actions-button')).toBeDisabled()
+    })
+
+    it('stays enabled while the edit state is not yet ready', () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedPerspectiveName: 'rMyRelease',
+        selectedReleaseId: 'rMyRelease',
+        selectedPerspective: 'rMyRelease',
+        perspectiveStack: ['rMyRelease', 'drafts'],
+      })
+      mockUseDocumentPane.mockReturnValue({
+        documentId: 'doc-123',
+        documentType: 'article',
+        editState: {ready: false, draft: null, published: null, version: null},
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
     })
   })
 })
