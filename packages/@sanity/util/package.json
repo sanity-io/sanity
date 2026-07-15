@@ -57,10 +57,6 @@
       "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
-    "./fs": {
-      "monorepo": "./src/_exports/fs.ts",
-      "default": "./lib/fs.js"
-    },
     "./client": {
       "monorepo": "./src/_exports/client.ts",
       "default": "./lib/client.js"
@@ -75,8 +71,11 @@
     },
     "./createSafeJsonParser": {
       "monorepo": "./src/_exports/createSafeJsonParser.ts",
-      "require": "./lib/createSafeJsonParser.cjs",
       "default": "./lib/createSafeJsonParser.js"
+    },
+    "./fs": {
+      "monorepo": "./src/_exports/fs.ts",
+      "default": "./lib/fs.js"
     },
     "./legacyDateFormat": {
       "monorepo": "./src/_exports/legacyDateFormat.ts",
@@ -91,14 +90,11 @@
   "publishConfig": {
     "exports": {
       ".": "./lib/index.js",
-      "./fs": "./lib/fs.js",
       "./client": "./lib/client.js",
       "./concurrency-limiter": "./lib/concurrency-limiter.js",
       "./content": "./lib/content.js",
-      "./createSafeJsonParser": {
-        "require": "./lib/createSafeJsonParser.cjs",
-        "default": "./lib/createSafeJsonParser.js"
-      },
+      "./createSafeJsonParser": "./lib/createSafeJsonParser.js",
+      "./fs": "./lib/fs.js",
       "./legacyDateFormat": "./lib/legacyDateFormat.js",
       "./paths": "./lib/paths.js",
       "./package.json": "./package.json"
