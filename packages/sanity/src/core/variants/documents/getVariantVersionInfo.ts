@@ -1,13 +1,10 @@
 import {type SanityDocument} from '@sanity/types'
 
-import {VARIANT_DOCUMENTS_PATH} from '../store/constants'
-
-const VARIANT_ID_PREFIX = `${VARIANT_DOCUMENTS_PATH}.`
+import {getVariantId} from '../tool/util'
 
 /**
  * The routing information of a variant-scoped version document, derived from its `_system`.
  *
- * @internal
  */
 export interface VariantVersionInfo {
   /** The short variant name (the `_.variants.` prefix stripped from `_system.variant._ref`). */
@@ -28,7 +25,6 @@ export interface VariantVersionInfo {
  * documents — only pre-migration non-variant documents may lack it, and those can never be
  * variant-scoped.
  *
- * @internal
  */
 export function getVariantVersionInfo(
   version: SanityDocument | null | undefined,
@@ -42,9 +38,7 @@ export function getVariantVersionInfo(
     // Strip the `_.variants.` document path prefix to the short variant id. Kept local (instead
     // of `getVariantId` from `variants/tool/util`) to avoid pulling tool-level modules — and
     // their import cycles — into the document store's operations graph.
-    variantId: variantRef.startsWith(VARIANT_ID_PREFIX)
-      ? variantRef.slice(VARIANT_ID_PREFIX.length)
-      : variantRef,
+    variantId: getVariantId(variantRef),
     bundleId: version._system?.bundleId ?? 'published',
   }
 }
