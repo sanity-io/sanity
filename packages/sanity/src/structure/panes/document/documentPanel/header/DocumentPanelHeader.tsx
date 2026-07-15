@@ -131,9 +131,7 @@ export const DocumentPanelHeader = memo(
 
     const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
     const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
-    // TODO: Disabled for now in this branch until inventory supports variants
-    // DO NOT MERGE THIS CHANGE TO MAIN
-    const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true && false
+    const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
     const {collapsed, isLast} = usePane()
     // Prevent focus if this is the last (non-collapsed) pane.
