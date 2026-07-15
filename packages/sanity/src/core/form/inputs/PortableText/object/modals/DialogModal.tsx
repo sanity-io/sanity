@@ -1,9 +1,9 @@
-import {Box} from '@sanity/ui'
+import {BoundaryElementProvider, Box} from '@sanity/ui'
 import {type ReactNode, useId, useRef, useState} from 'react'
-import {EditDialogBoundaryContext} from 'sanity/_singletons'
 
 import {Dialog} from '../../../../../../ui-components'
 import {PresenceOverlay} from '../../../../../presence'
+import {EditDialogOuterBoundaryProvider} from '../../../../components/EditDialogOuterBoundaryProvider'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {type ModalWidth} from './types'
 
@@ -39,9 +39,11 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
           scrollElement={contentElement}
           containerElement={containerElement}
         >
-          <EditDialogBoundaryContext.Provider value={contentElement}>
-            <Box ref={containerElement}>{children}</Box>
-          </EditDialogBoundaryContext.Provider>
+          <EditDialogOuterBoundaryProvider>
+            <BoundaryElementProvider element={contentElement}>
+              <Box ref={containerElement}>{children}</Box>
+            </BoundaryElementProvider>
+          </EditDialogOuterBoundaryProvider>
         </VirtualizerScrollInstanceProvider>
       </PresenceOverlay>
     </Dialog>
