@@ -1628,8 +1628,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       '@sanity/eventsource':
-        specifier: ^5.0.2
-        version: 5.0.2
+        specifier: ^5.0.4
+        version: 5.0.4
       '@sanity/icons':
         specifier: ^5.1.0
         version: 5.1.0(react@19.2.7)
@@ -5747,9 +5747,6 @@ packages:
 
   '@sanity/eslint-plugin-i18n@1.1.0':
     resolution: {integrity: sha512-EpoqPVqaP2NSmG8vGa4zsD6BuyBTVHwmD3VigOya7roHB8GZXuJjDg6+SXzhb+cTVuZtWaAjt8NMYVYx4uWCIQ==}
-
-  '@sanity/eventsource@5.0.2':
-    resolution: {integrity: sha512-/B9PMkUvAlUrpRq0y+NzXgRv5lYCLxZNsBJD2WXVnqZYOfByL9oQBV7KiTaARuObp5hcQYuPfOAVjgXe3hrixA==}
 
   '@sanity/eventsource@5.0.4':
     resolution: {integrity: sha512-NT6XrTJePJd7q1ZdTqB3NsTyNNOe9R2zMkg4Hlkqwb0LL6UmekVamAD46yjSJ+HbRyXAKLl1Rb65xZBdzC1f8Q==}
@@ -14693,7 +14690,7 @@ snapshots:
   '@sanity/assist@6.1.5(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)':
     dependencies:
       '@portabletext/types': 4.0.2
-      '@sanity/client': 7.23.0
+      '@sanity/client': 7.23.2
       '@sanity/color': 3.0.6
       '@sanity/icons': 4.1.0(react@19.2.7)
       '@sanity/mutator': link:packages/@sanity/mutator
@@ -14780,7 +14777,7 @@ snapshots:
     dependencies:
       '@inquirer/prompts': 8.5.2(@types/node@24.13.2)
       '@oclif/core': 4.11.7
-      '@sanity/client': 7.23.0
+      '@sanity/client': 7.23.2
       boxen: 8.0.1
       debug: 4.4.3(supports-color@8.1.1)
       empathic: 2.0.1
@@ -14915,7 +14912,7 @@ snapshots:
 
   '@sanity/client@7.23.0':
     dependencies:
-      '@sanity/eventsource': 5.0.2
+      '@sanity/eventsource': 5.0.4
       get-it: 8.8.0
       nanoid: 3.3.13
       rxjs: 7.8.2
@@ -15051,13 +15048,6 @@ snapshots:
       - styled-components
 
   '@sanity/eslint-plugin-i18n@1.1.0': {}
-
-  '@sanity/eventsource@5.0.2':
-    dependencies:
-      '@types/event-source-polyfill': 1.0.5
-      '@types/eventsource': 1.1.15
-      event-source-polyfill: 1.0.31
-      eventsource: 2.0.2
 
   '@sanity/eventsource@5.0.4':
     dependencies:
