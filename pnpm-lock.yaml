@@ -1293,8 +1293,8 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/tsconfig
       '@sanity/insert-menu':
-        specifier: 3.0.8
-        version: 3.0.8(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)(styled-components@6.4.2)
+        specifier: 3.0.9
+        version: 3.0.9(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)(styled-components@6.4.2)
       '@sanity/pkg-utils':
         specifier: 'catalog:'
         version: 10.9.0(@types/node@24.13.2)(@typescript/native-preview@7.0.0-dev.20260421.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(oxc-resolver@11.21.3)(typescript@6.0.3)
@@ -1643,8 +1643,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       '@sanity/insert-menu':
-        specifier: ^3.0.8
-        version: 3.0.8(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)
+        specifier: ^3.0.9
+        version: 3.0.9(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)
       '@sanity/logos':
         specifier: ^2.2.2
         version: 2.2.2(react@19.2.7)
@@ -5801,8 +5801,8 @@ packages:
     peerDependencies:
       '@sanity/client': ^5.0.0 || ^6.0.0 || ^7.0.0
 
-  '@sanity/insert-menu@3.0.8':
-    resolution: {integrity: sha512-O3g3ZpvRYLw4VBly4fKUzEK+2Mze8iBZfLpRjh8BgjLWSZ/9XCwrRUMJvKZ6z9qQI8zHRqwZQNslgEjETTTZ6w==}
+  '@sanity/insert-menu@3.0.9':
+    resolution: {integrity: sha512-U5mdrXvfbBdm3MxRJm9gLmZs55wT3nmEdn5aRA4KFVz780qK5nKuf3ztRUbj6XzzzbGmI+PMND0zYjEWP91LIg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/types': '*'
@@ -15130,9 +15130,9 @@ snapshots:
       - react-native-b4a
       - supports-color
 
-  '@sanity/insert-menu@3.0.8(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)':
+  '@sanity/insert-menu@3.0.9(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)':
     dependencies:
-      '@sanity/icons': 3.7.6(react@19.2.7)
+      '@sanity/icons': 5.0.0(react@19.2.7)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       lodash-es: 4.18.1
@@ -15143,9 +15143,9 @@ snapshots:
       - react-dom
       - styled-components
 
-  '@sanity/insert-menu@3.0.8(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)(styled-components@6.4.2)':
+  '@sanity/insert-menu@3.0.9(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)(styled-components@6.4.2)':
     dependencies:
-      '@sanity/icons': 3.7.6(react@19.2.7)
+      '@sanity/icons': 5.0.0(react@19.2.7)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 3.3.0(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.2)
       lodash-es: 4.18.1
@@ -15496,7 +15496,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.1
       '@sanity/icons': 3.7.6(react@19.2.7)
-      '@sanity/insert-menu': 3.0.8(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)
+      '@sanity/insert-menu': 3.0.9(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react@19.2.7)
       '@sanity/mutate': 0.18.1(xstate@5.32.2)
       '@sanity/presentation-comlink': 2.1.0(@sanity/client@7.23.0)(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret': 4.0.8(@sanity/client@7.23.0)

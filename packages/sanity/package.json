@@ -168,7 +168,7 @@
     "@sanity/icons": "^5.0.0",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/image-url": "^2.1.1",
-    "@sanity/insert-menu": "^3.0.8",
+    "@sanity/insert-menu": "^3.0.9",
     "@sanity/logos": "^2.2.2",
     "@sanity/media-library-types": "^1.5.0",
     "@sanity/message-protocol": "^0.23.0",
