@@ -284,7 +284,7 @@
   },
   "inlinedDependencies": {
     "@sanity/generate-help-url": "4.0.0",
-    "@sanity/visual-editing-csm": "3.0.10",
+    "@sanity/visual-editing-csm": "3.0.11",
     "rxjs-etc": "10.6.2",
     "valibot": "1.4.1"
   }
