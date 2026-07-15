@@ -22,7 +22,7 @@ describe('useSetVariant', () => {
   it('sets the variant sticky param without touching the perspective', () => {
     const {result} = renderHook(() => useSetVariant())
 
-    result.current(variantAlphaAudience._id)
+    result.current({variantId: variantAlphaAudience._id})
 
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
@@ -34,7 +34,7 @@ describe('useSetVariant', () => {
   it('clears the variant sticky param when no variant is provided', () => {
     const {result} = renderHook(() => useSetVariant())
 
-    result.current(undefined)
+    result.current({variantId: undefined})
 
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
@@ -46,7 +46,7 @@ describe('useSetVariant', () => {
   it('sets the variant and perspective sticky params in a single navigation', () => {
     const {result} = renderHook(() => useSetVariant())
 
-    result.current(variantAlphaAudience._id, {perspective: 'published'})
+    result.current({variantId: variantAlphaAudience._id, perspective: 'published'})
 
     expect(mockNavigate).toHaveBeenCalledTimes(1)
     expect(mockNavigate).toHaveBeenCalledWith({
@@ -61,7 +61,7 @@ describe('useSetVariant', () => {
   it('clears the perspective sticky param when the perspective is the default perspective', () => {
     const {result} = renderHook(() => useSetVariant())
 
-    result.current(variantAlphaAudience._id, {perspective: 'drafts'})
+    result.current({variantId: variantAlphaAudience._id, perspective: 'drafts'})
 
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
@@ -75,7 +75,7 @@ describe('useSetVariant', () => {
   it('sets a release id as the perspective sticky param', () => {
     const {result} = renderHook(() => useSetVariant())
 
-    result.current(variantAlphaAudience._id, {perspective: 'rSomeRelease'})
+    result.current({variantId: variantAlphaAudience._id, perspective: 'rSomeRelease'})
 
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {

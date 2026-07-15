@@ -13,6 +13,7 @@ import {type PortableTextEditorElement} from 'sanity/_singletons'
 
 import {Button, type PopoverProps} from '../../../../../../ui-components'
 import {PresenceOverlay} from '../../../../../presence'
+import {EditDialogOuterBoundaryProvider} from '../../../../components/EditDialogOuterBoundaryProvider'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
 import {type ModalWidth} from './types'
@@ -142,35 +143,37 @@ function Content(props: PopoverEditDialogProps) {
       scrollElement={contentElement}
       containerElement={containerElement}
     >
-      <BoundaryElementProvider element={boundaryElement}>
-        <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
-          <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
-            <ContentHeaderBox flex="none" padding={1}>
-              <Flex align="center">
-                <Box flex={1} padding={2}>
-                  <Text weight="medium">{title}</Text>
-                </Box>
+      <EditDialogOuterBoundaryProvider>
+        <BoundaryElementProvider element={boundaryElement}>
+          <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
+            <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
+              <ContentHeaderBox flex="none" padding={1}>
+                <Flex align="center">
+                  <Box flex={1} padding={2}>
+                    <Text weight="medium">{title}</Text>
+                  </Box>
 
-                <Button
-                  autoFocus
-                  icon={CloseIcon}
-                  mode="bleed"
-                  onClick={handleClose}
-                  tooltipProps={{content: 'Close'}}
-                  data-testid="close-popover-edit-dialog-button"
-                />
-              </Flex>
-            </ContentHeaderBox>
-            <ContentScrollerBox flex={1}>
-              <PresenceOverlay margins={[0, 0, 1, 0]}>
-                <Box padding={3} ref={setContentElement}>
-                  {props.children}
-                </Box>
-              </PresenceOverlay>
-            </ContentScrollerBox>
-          </Flex>
-        </FocusLock>
-      </BoundaryElementProvider>
+                  <Button
+                    autoFocus
+                    icon={CloseIcon}
+                    mode="bleed"
+                    onClick={handleClose}
+                    tooltipProps={{content: 'Close'}}
+                    data-testid="close-popover-edit-dialog-button"
+                  />
+                </Flex>
+              </ContentHeaderBox>
+              <ContentScrollerBox flex={1}>
+                <PresenceOverlay margins={[0, 0, 1, 0]}>
+                  <Box padding={3} ref={setContentElement}>
+                    {props.children}
+                  </Box>
+                </PresenceOverlay>
+              </ContentScrollerBox>
+            </Flex>
+          </FocusLock>
+        </BoundaryElementProvider>
+      </EditDialogOuterBoundaryProvider>
     </VirtualizerScrollInstanceProvider>
   )
 }

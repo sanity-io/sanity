@@ -18,6 +18,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when action button is disabled because the document does not exist */
   'action.delete.disabled.nothing-to-delete':
     "This document doesn't yet exist or is already deleted",
+  /** Tooltip when action button is disabled because the selected release or variant does not contain this document */
+  'action.delete.disabled.target-not-found':
+    'The selected release or variant does not contain this document',
   /** Tooltip when action button is disabled because the document exists in scheduled releases */
   'action.delete.disabled.scheduled-release':
     'This document cannot be deleted as it exists within scheduled releases',
@@ -42,6 +45,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.discard-changes.disabled.not-published': 'This document is not published',
   /** Tooltip when action button is disabled because the operation is not ready   */
   'action.discard-changes.disabled.not-ready': 'Operation not ready',
+  /** Tooltip when action is disabled because the selected release or variant does not contain this document */
+  'action.discard-changes.disabled.target-not-found':
+    'The selected release or variant does not contain this document',
   /** Label for the "Discard changes" document action */
   'action.discard-changes.label': 'Discard changes',
 
@@ -50,6 +56,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when action is disabled because the document doesn't exist */
   'action.duplicate.disabled.nothing-to-duplicate':
     "This document doesn't yet exist so there's nothing to duplicate",
+  /** Tooltip when action is disabled because the selected release or variant does not contain this document */
+  'action.duplicate.disabled.target-not-found':
+    'The selected release or variant does not contain this document',
   /** Label for the "Duplicate" document action */
   'action.duplicate.label': 'Duplicate',
   /** Label for the "Duplicate" document action while the document is being duplicated */
@@ -61,6 +70,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** Tooltip when action is disabled because the studio is not ready.*/
   'action.publish.disabled.not-ready': 'Operation not ready',
+  /** Tooltip when action is disabled because the selected release or variant does not contain this document */
+  'action.publish.disabled.target-not-found':
+    'The selected release or variant does not contain this document',
   /** Label for action when there are pending changes.*/
   'action.publish.draft.label': 'Publish',
   /** Label for the "Publish" document action */
@@ -106,6 +118,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.unpublish.disabled.not-published': 'This document is not published',
   /** Tooltip when action is disabled because the operation is not ready   */
   'action.unpublish.disabled.not-ready': 'Operation not ready',
+  /** Tooltip when action is disabled because the selected release or variant does not contain this document */
+  'action.unpublish.disabled.target-not-found':
+    'The selected release or variant does not contain this document',
   /** Label for the "Unpublish" document action */
   'action.unpublish.label': 'Unpublish',
   /** Fallback tooltip for the Unpublish document action when publish is invoked for a document with live edit enabled.*/

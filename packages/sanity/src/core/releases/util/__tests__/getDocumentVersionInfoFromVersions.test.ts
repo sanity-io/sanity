@@ -11,11 +11,7 @@ const publishedVersion: VersionInfoDocumentStub = {
   _createdAt: '2024-01-01T00:00:00Z',
   _updatedAt: '2024-01-02T00:00:00Z',
   _system: {
-    bundleId: null,
-    release: null,
-    variant: null,
     group: {_ref: publishedId, _weak: true},
-    scopeId: null,
   },
 }
 
@@ -26,10 +22,7 @@ const draftVersion: VersionInfoDocumentStub = {
   _updatedAt: '2024-01-03T00:00:00Z',
   _system: {
     bundleId: 'drafts',
-    release: null,
-    variant: null,
     group: {_ref: publishedId, _weak: true},
-    scopeId: null,
   },
 }
 
@@ -41,7 +34,6 @@ const releaseVersion: VersionInfoDocumentStub = {
   _system: {
     bundleId: 'release1',
     release: {_ref: '_.releases.release1', _weak: true},
-    variant: null,
     group: {_ref: publishedId, _weak: true},
     scopeId: 'release1',
   },
@@ -54,7 +46,6 @@ const variantVersion: VersionInfoDocumentStub = {
   _updatedAt: '2024-01-05T00:00:00Z',
   _system: {
     bundleId: 'drafts',
-    release: null,
     variant: {_ref: '_.variants.test', _weak: true},
     group: {_ref: publishedId, _weak: true},
     scopeId: 'scope1',

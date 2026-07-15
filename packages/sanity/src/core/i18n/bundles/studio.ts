@@ -308,6 +308,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Short weekday name for Wednesday */
   'calendar.weekday-names.short.wednesday': 'Wed',
 
+  /** The name of Content Agent, the product. */
+  'content-agent': 'Content Agent',
+
   /** Label for the close button label in Review Changes pane */
   'changes.action.close-label': 'Close history',
   /** Cancel label for revert button prompt action */
@@ -527,6 +530,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** --- Document group --- */
 
+  /** The label given to a document group's base variant */
+  'document-group.base-variant': 'All users (Default)',
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
   'document-group.delete.cancel-button.text': 'Cancel',
   /** Used in `document-group.delete.cdr-summary.title` */

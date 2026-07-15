@@ -18,6 +18,7 @@ const DISABLED_REASON_KEY = {
   NOT_PUBLISHED: 'action.unpublish.disabled.not-published',
   NOT_READY: 'action.unpublish.disabled.not-ready',
   LIVE_EDIT_ENABLED: 'action.unpublish.disabled.live-edit-enabled',
+  TARGET_NOT_FOUND: 'action.unpublish.disabled.target-not-found',
 }
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
