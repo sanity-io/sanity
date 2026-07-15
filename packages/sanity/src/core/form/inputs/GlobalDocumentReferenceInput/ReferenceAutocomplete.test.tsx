@@ -1,6 +1,11 @@
 /**
  * Ensures reference autocomplete popovers pick the correct Floating UI boundary so that:
  *
+ *  - In edit dialogs / modals (`EditPortal`, `EnhancedObjectDialog`, PTE object modals — which
+ *    expose their content element via `EditDialogBoundaryContext`) the popover is constrained to
+ *    the dialog, so the list doesn't extend under other studio UI. This context is dedicated to
+ *    the reference autocomplete on purpose: other popovers inside dialogs (e.g. the array insert
+ *    menu) are allowed to overflow the dialog and keep using the ambient boundary.
  *  - In the document pane (where `BoundaryElementProvider` wraps the scroll container) the
  *    popover is constrained to that scroll container. This prevents the popover from overlapping
  *    the sticky pane header, the version chips / document actions bar, or clipping into the pane
@@ -24,6 +29,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {EditDialogBoundaryContext} from 'sanity/_singletons'
 import {describe, expect, test, vi, beforeEach} from 'vitest'
 
 import type * as UIComponentsModule from '../../../../ui-components'
@@ -278,6 +284,63 @@ describe('ReferenceAutocomplete popover boundaries', () => {
           searchString=""
           id="same-dataset-ref-ac-test-with-boundary"
         />,
+      )
+
+      await waitFor(() => {
+        expect(lastPopoverProps?.floatingBoundary).toBe(boundary)
+      })
+      expect(lastPopoverProps?.referenceBoundary).toBe(boundary)
+    })
+  })
+
+  describe('prefers the edit dialog boundary from EditDialogBoundaryContext', () => {
+    test('uses the dialog boundary over the generic boundary when the reference is inside the dialog', async () => {
+      // Generic (pane) boundary containing everything, with a dialog boundary nested inside it —
+      // mirrors a reference input rendered inside an edit dialog within the document pane.
+      const {boundary: paneBoundary} = setupContainedBoundary()
+
+      const dialogBoundary = document.createElement('div')
+      dialogBoundary.dataset.testid = 'dialog-boundary'
+      const referenceElement = document.createElement('div')
+      dialogBoundary.append(referenceElement)
+      paneBoundary.append(dialogBoundary)
+
+      render(
+        <EditDialogBoundaryContext.Provider value={dialogBoundary}>
+          <ReferenceAutocomplete
+            loading={false}
+            options={[]}
+            onQueryChange={() => undefined}
+            referenceElement={referenceElement}
+            searchString=""
+            id="ref-ac-test-dialog-boundary"
+          />
+        </EditDialogBoundaryContext.Provider>,
+      )
+
+      await waitFor(() => {
+        expect(lastPopoverProps?.floatingBoundary).toBe(dialogBoundary)
+      })
+      expect(lastPopoverProps?.referenceBoundary).toBe(dialogBoundary)
+    })
+
+    test('ignores the dialog boundary when it does not contain the reference', async () => {
+      const {boundary, referenceElement} = setupContainedBoundary()
+
+      const detachedDialogBoundary = document.createElement('div')
+      document.body.append(detachedDialogBoundary)
+
+      render(
+        <EditDialogBoundaryContext.Provider value={detachedDialogBoundary}>
+          <ReferenceAutocomplete
+            loading={false}
+            options={[]}
+            onQueryChange={() => undefined}
+            referenceElement={referenceElement}
+            searchString=""
+            id="ref-ac-test-detached-dialog-boundary"
+          />
+        </EditDialogBoundaryContext.Provider>,
       )
 
       await waitFor(() => {

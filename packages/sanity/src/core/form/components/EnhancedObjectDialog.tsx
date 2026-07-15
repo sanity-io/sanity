@@ -1,7 +1,8 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
-import {BoundaryElementProvider, Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
+import {Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {EditDialogBoundaryContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
@@ -209,9 +210,9 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           animate={!shouldDisableAnimation}
           onClickOutside={handleCompleteDialogClose}
         >
-          <BoundaryElementProvider element={documentScrollElement}>
+          <EditDialogBoundaryContext.Provider value={documentScrollElement}>
             {contents}
-          </BoundaryElementProvider>
+          </EditDialogBoundaryContext.Provider>
         </StyledDialog>
       </VirtualizerScrollInstanceProvider>
     )
@@ -229,9 +230,9 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         containerRef={setDocumentScrollElement}
         referenceElement={props.legacy_referenceElement}
       >
-        <BoundaryElementProvider element={documentScrollElement}>
+        <EditDialogBoundaryContext.Provider value={documentScrollElement}>
           {contents}
-        </BoundaryElementProvider>
+        </EditDialogBoundaryContext.Provider>
       </PopoverDialog>
     </VirtualizerScrollInstanceProvider>
   )
