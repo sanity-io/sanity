@@ -52,6 +52,11 @@ export function UnpublishVersionDialog(props: {
   useEffect(() => {
     if (!event || event === prevEvent.current || !awaitingUnpublishRef.current) return
 
+    if (event.op === 'unpublish' && event.idPair.versionId !== documentVersionId) {
+      prevEvent.current = event
+      return
+    }
+
     if (event.type === 'success' && event.op === 'unpublish') {
       awaitingUnpublishRef.current = false
       toast.push({
