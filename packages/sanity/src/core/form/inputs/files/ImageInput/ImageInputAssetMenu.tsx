@@ -1,5 +1,6 @@
 import {isImageSource} from '@sanity/asset-utils'
-import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {ImageIcon} from '@sanity/icons/Image'
+import {SearchIcon} from '@sanity/icons/Search'
 import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
 import get from 'lodash-es/get.js'
 import {memo, type ReactNode, type RefObject, useCallback, useMemo} from 'react'

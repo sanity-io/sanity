@@ -1,4 +1,4 @@
-import {DocumentIcon} from '@sanity/icons'
+import {DocumentIcon} from '@sanity/icons/Document'
 import {type PreviewValue} from '@sanity/types'
 import {catchError, map, type Observable, of, startWith, switchMap} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
@@ -100,7 +100,6 @@ export function getCrossDatasetIncomingReferences({
               type: document.documentType,
               id: document.documentId,
               preview: {
-                // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
                 published: {
                   _id: document.documentId,
                   title: `Document Id: ${document.documentId}`,

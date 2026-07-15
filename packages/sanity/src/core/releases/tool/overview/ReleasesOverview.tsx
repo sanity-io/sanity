@@ -1,5 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
 import {Box, type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {AnimatePresence, motion} from 'motion/react'

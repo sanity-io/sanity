@@ -1,4 +1,7 @@
-import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ImageIcon} from '@sanity/icons/Image'
+import {SearchIcon} from '@sanity/icons/Search'
+import {UndoIcon} from '@sanity/icons/Undo'
 import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sanity/types'
 import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
 import get from 'lodash-es/get.js'

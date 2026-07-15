@@ -7,6 +7,7 @@ import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/op
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases'
 import {getVersionFromId} from '../../util'
+import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debug} from './debug'
 import {
   type IdPair,
@@ -69,6 +70,15 @@ export interface DocumentRebaseTelemetryEvent {
 /** @internal */
 export interface DocumentStoreExtraOptions {
   tag?: string
+
+  /**
+   * Optional handler for failures of the initial document snapshot fetch —
+   * the only request delegated here. Commit failures are routed through the
+   * commit request's own failure/cancel channels, and listener drops
+   * recover via reconnects. When omitted, fetch failures propagate to the
+   * document event streams.
+   */
+  snapshotFetchErrorHandler?: StoreRequestErrorHandler
 
   /**
    * Called when we recover from sync error
@@ -266,18 +276,33 @@ export function getPairListener(
   )
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
-    return client.observable
-      .getDocuments<SanityDocument>(
+    const fetchDocuments = () =>
+      client.observable.getDocuments<SanityDocument>(
         [publishedId, draftId, versionId].filter((id): id is string => typeof id === 'string'),
         {tag: 'document.pair.fetch'},
       )
-      .pipe(
-        map(([published, draft, version]) => ({
-          draft,
-          published,
-          version,
-        })),
-      )
+
+    // The pair cannot load without these snapshots, and there is no local
+    // recovery if the fetch fails — delegate failures to the error handler
+    // when one is provided. Retryable: it's an idempotent GET, safe to
+    // re-run.
+    //
+    // While the handler holds a failed fetch for re-run, `pairEvents$`
+    // buffers subsequent listener events behind this observable (concatMap)
+    // on purpose: they must chain onto the snapshot once it arrives.
+    // The buffer stays small — the listener only carries events for this
+    // pair's documents — and tearing down the pair drops it.
+    return defer(() =>
+      options.snapshotFetchErrorHandler
+        ? options.snapshotFetchErrorHandler.attempt(fetchDocuments, {retryable: true})
+        : fetchDocuments(),
+    ).pipe(
+      map(([published, draft, version]) => ({
+        draft,
+        published,
+        version,
+      })),
+    )
   }
 }
 

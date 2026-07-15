@@ -1,6 +1,6 @@
 {
   "name": "efps-tests",
-  "version": "6.3.0",
+  "version": "6.5.0",
   "private": true,
   "description": "Sanity Studio eFPS perf suite",
   "keywords": [],
@@ -23,11 +23,12 @@
     "tsx": "^4.22.4"
   },
   "devDependencies": {
+    "@optique/core": "catalog:",
+    "@optique/run": "catalog:",
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@types/yargs": "^17.0.35",
     "babel-plugin-react-compiler": "catalog:",
     "chalk": "^5.6.2",
     "cli-table3": "^0.6.5",
@@ -38,7 +39,6 @@
     "react-dom": "catalog:",
     "sanity": "workspace:*",
     "source-map": "^0.7.6",
-    "tinyglobby": "^0.2.17",
-    "yargs": "^18.0.0"
+    "tinyglobby": "^0.2.17"
   }
 }

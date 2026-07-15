@@ -1,4 +1,4 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card, Flex, Grid, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 

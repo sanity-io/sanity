@@ -1,4 +1,7 @@
-import {CopyIcon, DownloadIcon, LaunchIcon, ResetIcon} from '@sanity/icons'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {DownloadIcon} from '@sanity/icons/Download'
+import {LaunchIcon} from '@sanity/icons/Launch'
+import {ResetIcon} from '@sanity/icons/Reset'
 import {MenuDivider, useToast} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, useCallback} from 'react'
 

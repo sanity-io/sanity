@@ -23,6 +23,7 @@ export {
   type ProxyTarget,
   type Retry,
   type SSEEvent,
+  writeResponseHead,
 } from './proxy'
 export {intermittentServiceErrors} from './requestScenarios'
 export {
@@ -38,6 +39,8 @@ export {
   dropMutations,
   duplicateMutations,
   expiredToken,
+  invalidSession,
+  type InvalidSessionCode,
   randomLatency,
   sendReset,
   shuffleEventDelivery,

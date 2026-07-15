@@ -1,4 +1,5 @@
-import {CloseIcon, WarningOutlineIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 
 import {Button} from '../../../../ui-components'

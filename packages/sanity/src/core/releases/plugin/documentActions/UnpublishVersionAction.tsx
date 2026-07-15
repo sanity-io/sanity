@@ -1,4 +1,6 @@
-import {RevertIcon, TrashIcon, UnpublishIcon} from '@sanity/icons'
+import {RevertIcon} from '@sanity/icons/Revert'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 

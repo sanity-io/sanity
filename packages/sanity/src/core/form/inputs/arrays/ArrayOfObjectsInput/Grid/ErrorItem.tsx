@@ -1,4 +1,4 @@
-import {TrashIcon} from '@sanity/icons'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {Menu} from '@sanity/ui'
 import {useCallback, useId} from 'react'
 

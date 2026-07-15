@@ -2,7 +2,10 @@ import {assist} from '@sanity/assist'
 import {debugSecrets} from '@sanity/debug-preview-url-secret-plugin'
 import {documentInternationalization} from '@sanity/document-internationalization'
 import {googleMapsInput} from '@sanity/google-maps-input'
-import {BookIcon, EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanity/icons'
+import {BookIcon} from '@sanity/icons/Book'
+import {EnvelopeIcon} from '@sanity/icons/Envelope'
+import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
+import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
@@ -474,7 +477,7 @@ export default defineConfig([
     name: 'staging',
     title: 'Staging',
     subtitle: 'Staging dataset',
-    projectId: 'deadbeef',
+    projectId: 'exx11uqh',
     dataset: 'playground',
     ...envConfig.staging,
     plugins: [sharedSettings({projectId: 'exx11uqh'})],

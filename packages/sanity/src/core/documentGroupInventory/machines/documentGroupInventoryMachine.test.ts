@@ -1,11 +1,14 @@
-import {type ReleaseDocument} from '@sanity/client'
+import {type MultipleMutationResult, type ReleaseDocument} from '@sanity/client'
 import {BehaviorSubject, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 import {createActor, fromObservable, fromPromise} from 'xstate'
 
+import {type TFunction} from '../../i18n/types'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
+import {getPublishedId, getVersionFromId, isDraftId, isVersionId} from '../../util/draftUtils'
 import {deletionMachine} from './deletionMachine'
-import {documentGroupInventoryMachine, type SelectionMeta} from './documentGroupInventoryMachine'
+import {documentGroupInventoryMachine, type Meta} from './documentGroupInventoryMachine'
 import {selectionMachine} from './selectionMachine'
 
 interface IncomingReference {
@@ -68,11 +71,47 @@ function withCrossDatasetReferences(
   return {crossDatasetReferences: {totalCount: references.length, references}}
 }
 
+// Loaded variants store state with no variants, the way the component wires
+// it up when the variants feature is disabled.
+const loadedVariants: Meta['variants'] = {variants: new Map(), state: 'loaded'}
+
+// Builds the version document stub the way `useDocumentVersions` emits it,
+// deriving `_system` from the document id.
+function versionStub(id: string): VersionInfoDocumentStub {
+  const bundleId = getVersionFromId(id)
+  const group = {_ref: getPublishedId(id), _weak: true} as const
+
+  return {
+    _id: id,
+    _rev: 'rev',
+    _createdAt: '2024-01-01T00:00:00.000Z',
+    _updatedAt: '2024-01-01T00:00:00.000Z',
+    _system: isDraftId(id)
+      ? {bundleId: 'drafts', group}
+      : isVersionId(id) && typeof bundleId === 'string'
+        ? {
+            bundleId,
+            release: {_ref: getReleaseDocumentIdFromReleaseId(bundleId), _weak: true},
+            group,
+          }
+        : {group},
+  }
+}
+
 // Minimal meta that drives the selection machine straight to `ready`.
 const loadedMeta = {
-  versionState: {data: ['drafts.foo', 'foo'], loading: false, error: null},
+  versionState: {
+    data: ['drafts.foo', 'foo'],
+    versions: [versionStub('drafts.foo'), versionStub('foo')],
+    loading: false,
+    error: null,
+  },
   releases: {releases: new Map(), state: 'loaded' as const},
-} as unknown as SelectionMeta
+  variants: loadedVariants,
+  agentBundles: {bundles: [], loading: false},
+} as unknown as Meta
+
+const t = ((key: string) => key) as unknown as TFunction
 
 function createTestActor(
   initial: ReferringDocuments,
@@ -83,7 +122,7 @@ function createTestActor(
   }: {
     requestDeletionConfirmation?: () => void
     deleteVariants?: () => Promise<unknown>
-    meta?: SelectionMeta
+    meta?: Meta
   } = {},
 ) {
   const references$ = new BehaviorSubject<ReferringDocuments>(initial)
@@ -95,14 +134,20 @@ function createTestActor(
     {
       input: {
         selectionMachine,
+        t,
+        // These tests exercise the flat variant list; grouped variant sets are
+        // gated behind the variants feature flag.
+        variantsEnabled: false,
         deletionMachine: deletionMachine.provide({
           actors: {
-            referringDocuments: fromObservable(() => references$),
-            deleteVariants: fromPromise(async () => {
-              // Defaults to a resolving no-op; tests override to exercise outcomes.
-              if (deleteVariants) return deleteVariants()
-              return undefined
+            deleteVariants: fromPromise<MultipleMutationResult, {ids: string[]}>(async () => {
+              // Defaults to a resolving no-op; tests override to exercise
+              // outcomes. The mutation result is never inspected by the
+              // machine, so a stub suffices.
+              if (deleteVariants) await deleteVariants()
+              return {transactionId: 'stub', documentIds: [], results: []}
             }),
+            referringDocuments: fromObservable(() => references$),
           },
           actions: requestDeletionConfirmation ? {requestDeletionConfirmation} : {},
         }),
@@ -428,21 +473,29 @@ describe('documentGroupInventoryMachine', () => {
     const releases = new Map<string, ReleaseDocument>([
       [getReleaseDocumentIdFromReleaseId('rABC'), release],
     ])
+    const data = ['drafts.foo', 'foo', 'versions.rABC.foo', 'versions.rXYZ.foo']
     const meta = {
       versionState: {
-        data: ['drafts.foo', 'foo', 'versions.rABC.foo', 'versions.rXYZ.foo'],
+        data,
+        versions: data.map(versionStub),
         loading: false,
         error: null,
       },
       releases: {releases, state: 'loaded' as const},
-    } as unknown as SelectionMeta
+      variants: loadedVariants,
+      agentBundles: {bundles: [], loading: false},
+    } as unknown as Meta
 
     const expectedVariants = [
-      {id: 'drafts.foo', name: 'Draft'},
-      {id: 'foo', name: 'Published'},
-      {id: 'versions.rABC.foo', name: 'My Release'},
-      // Falls back to the raw id when the release metadata is unknown.
-      {id: 'versions.rXYZ.foo', name: 'versions.rXYZ.foo'},
+      {id: 'drafts.foo', name: 'release.chip.draft', document: versionStub('drafts.foo')},
+      {id: 'foo', name: 'release.chip.published', document: versionStub('foo')},
+      {id: 'versions.rABC.foo', name: 'My Release', document: versionStub('versions.rABC.foo')},
+      // Falls back to the release ref when the release metadata is unknown.
+      {
+        id: 'versions.rXYZ.foo',
+        name: getReleaseDocumentIdFromReleaseId('rXYZ'),
+        document: versionStub('versions.rXYZ.foo'),
+      },
     ]
 
     const {inventoryRef, selectionRef} = createTestActor(loading, {meta})
@@ -458,11 +511,49 @@ describe('documentGroupInventoryMachine', () => {
     expect(selectionRef.getSnapshot().context.variants).toEqual(expectedVariants)
   })
 
+  it('surfaces the most recent agent bundle and hides agent bundle versions from the version state', () => {
+    const data = ['drafts.foo', 'foo', 'versions.agent-abc.foo']
+    const meta = {
+      versionState: {
+        data,
+        versions: data.map(versionStub),
+        loading: false,
+        error: null,
+      },
+      releases: {releases: new Map(), state: 'loaded' as const},
+      variants: loadedVariants,
+      agentBundles: {
+        bundles: [
+          {id: 'agent-abc', applicationKey: 'app-1'},
+          {id: 'agent-def', applicationKey: 'app-2'},
+        ],
+        loading: false,
+      },
+    } as unknown as Meta
+
+    const expectedVariants = [
+      // Agent bundle versions are dropped from the version state and only the
+      // most recent bundle is prepended, labelled through the translator.
+      {id: 'versions.agent-abc.foo', name: 'version.agent-bundle.proposed-changes'},
+      {id: 'drafts.foo', name: 'release.chip.draft', document: versionStub('drafts.foo')},
+      {id: 'foo', name: 'release.chip.published', document: versionStub('foo')},
+    ]
+
+    const {inventoryRef, selectionRef} = createTestActor(loading, {meta})
+
+    const {sets} = inventoryRef.getSnapshot().context
+    expect(sets).toHaveLength(1)
+    expect(sets[0].variants).toEqual(expectedVariants)
+    expect(selectionRef.getSnapshot().context.variants).toEqual(expectedVariants)
+  })
+
   it('drives the selection machine into the error state when meta reports an error', () => {
     const meta = {
-      versionState: {data: [], loading: false, error: new Error('meta failed')},
+      versionState: {data: [], versions: [], loading: false, error: new Error('meta failed')},
       releases: {releases: new Map(), state: 'loaded' as const},
-    } as unknown as SelectionMeta
+      variants: loadedVariants,
+      agentBundles: {bundles: [], loading: false},
+    } as unknown as Meta
 
     const {selectionRef} = createTestActor(loading, {meta})
     expect(selectionRef.getSnapshot().matches('error')).toBe(true)

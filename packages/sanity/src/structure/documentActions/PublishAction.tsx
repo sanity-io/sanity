@@ -1,4 +1,4 @@
-import {PublishIcon} from '@sanity/icons'
+import {PublishIcon} from '@sanity/icons/Publish'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {Text, useToast} from '@sanity/ui'
@@ -34,6 +34,7 @@ const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   ALREADY_PUBLISHED: 'action.publish.already-published.no-time-ago.tooltip',
   NO_CHANGES: 'action.publish.no-changes.tooltip',
   NOT_READY: 'action.publish.disabled.not-ready',
+  TARGET_NOT_FOUND: 'action.publish.disabled.target-not-found',
 } as const
 
 const PUBLISHED_STATE = {status: 'published'} as const

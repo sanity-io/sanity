@@ -1,4 +1,4 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type PreviewValue} from '@sanity/types'
 
 export const INCLUDE_FIELDS_QUERY = ['_id', '_rev', '_type']

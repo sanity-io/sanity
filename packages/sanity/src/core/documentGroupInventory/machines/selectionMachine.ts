@@ -1,9 +1,14 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {EMPTY} from 'rxjs'
 import {and, assign, fromObservable, sendParent, setup, stateIn} from 'xstate'
+
+import {type VersionInfoDocumentStub} from '../../releases'
 
 export interface Variant {
   id: string
   name: string
+  document?: VersionInfoDocumentStub
+  releaseDocument?: ReleaseDocument
 }
 
 interface SelectionContext {
@@ -25,7 +30,6 @@ type SelectionEvents =
   | {type: 'filterString.set'; value: string}
 
 export const selectionMachine = setup({
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   types: {} as {
     context: SelectionContext
     events: SelectionEvents

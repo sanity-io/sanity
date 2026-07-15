@@ -83,44 +83,67 @@ export function shuffleEventDelivery<T extends SSEEvent>(
   )
 }
 
-/** The body the API returns when a session token has expired. */
-const EXPIRED_SESSION_BODY = JSON.stringify({
-  error: 'Unauthorized',
-  statusCode: 401,
-  message: 'Session is expired, please re-authenticate',
-  errorCode: 'SIO-401-AEX',
-})
+/**
+ * The bodies the API returns for its two invalid-session 401 variants,
+ * byte-for-byte (verified against the live API):
+ *  - `SIO-401-AEX` — the session has expired
+ *  - `SIO-401-ANF` — the session was not found (revoked on another device,
+ *    purged after expiry, or a stale/bogus stored token)
+ */
+const INVALID_SESSION_BODIES = {
+  'SIO-401-AEX': JSON.stringify({
+    error: 'Unauthorized',
+    statusCode: 401,
+    message: 'Session is expired, please re-authenticate',
+    errorCode: 'SIO-401-AEX',
+  }),
+  'SIO-401-ANF': JSON.stringify({
+    error: 'Unauthorized',
+    statusCode: 401,
+    message: 'Session not found',
+    errorCode: 'SIO-401-ANF',
+  }),
+}
+
+/** One of the API's invalid-session 401 error codes. */
+export type InvalidSessionCode = keyof typeof INVALID_SESSION_BODIES
 
 /**
- * Wrap a handler so that, once the session is considered expired, every request
- * is answered with the API's expired-session 401 instead of being forwarded
- * upstream — the real token is still valid, so there is no upstream response to
- * rewrite. This simulates a token that expires mid-session: the studio keeps
- * working until `isExpired()` flips, then sees its session lapse and should
- * enter its re-authentication flow.
+ * Wrap a handler so that, once the session is considered invalid, every request
+ * is answered with one of the API's invalid-session 401s instead of being
+ * forwarded upstream — the real token is still valid, so there is no upstream
+ * response to rewrite. `errorCode` picks the variant: `SIO-401-AEX` simulates a
+ * token that expires mid-session, `SIO-401-ANF` a session that stops resolving
+ * (revoked on another device, purged, or a stale stored token — "Session not
+ * found"). Either way the studio keeps working until `isInvalid()` flips, then
+ * sees its session lapse and should enter its forced-logout /
+ * re-authentication flow.
  *
- * `isExpired` is evaluated per request, so a time-based deadline expires the
- * session live without restarting the proxy (pass `() => true` to start
- * expired). CORS preflights (OPTIONS) always pass through so the browser can
+ * `isInvalid` is evaluated per request, so a time-based deadline invalidates
+ * the session live without restarting the proxy (pass `() => true` to start
+ * invalid). CORS preflights (OPTIONS) always pass through so the browser can
  * actually read the 401 once it fires. Logout (`/auth/logout`) is always
  * answered with a synthetic 204 and never forwarded upstream — the studio can
  * still tear the session down, but the developer's real credentials are never
- * invalidated (regardless of whether the session is expired yet). Public
- * endpoints that don't require auth (e.g. `/auth/providers`, which the login
- * screen needs) are forwarded upstream — the real API only 401s endpoints that
- * require a session.
+ * invalidated (regardless of whether the simulated session is invalid yet).
+ * Public endpoints that don't require auth (e.g. `/auth/providers`, which the
+ * login screen needs) are forwarded upstream — the real API only 401s
+ * endpoints that require a session.
  *
- * Re-login is supported even while expired: the token-exchange endpoint
+ * Re-login is supported even while invalid: the token-exchange endpoint
  * (`/auth/fetch`, which the studio hits with a fresh session ID right after a
  * login callback) is forwarded upstream rather than 401'd, and `onReauthenticated`
- * is invoked so the caller can re-arm the expiry deadline — letting you log back
- * in and have the simulated session lapse again later, all without restarting
+ * is invoked so the caller can re-arm the deadline — letting you log back in
+ * and have the simulated session lapse again later, all without restarting
  * the proxy.
  */
-export function expiredToken(
+export function invalidSession(
   handler: ProxyHandler,
-  isExpired: () => boolean = () => true,
-  {onReauthenticated}: {onReauthenticated?: () => void} = {},
+  isInvalid: () => boolean = () => true,
+  {
+    errorCode = 'SIO-401-AEX',
+    onReauthenticated,
+  }: {errorCode?: InvalidSessionCode; onReauthenticated?: () => void} = {},
 ): ProxyHandler {
   const isLogout = isLogoutEndpoint()
   const isPublic = isPublicEndpoint()
@@ -147,14 +170,26 @@ export function expiredToken(
       onReauthenticated?.()
       return handler(req, res, target)
     }
-    if (req.method === 'OPTIONS' || isPublic(req) || !isExpired()) {
+    if (req.method === 'OPTIONS' || isPublic(req) || !isInvalid()) {
       return handler(req, res, target)
     }
     writeResponseHead(res, 401, 'Unauthorized', {
       'content-type': 'application/json',
       ...corsHeaders,
     })
-    res.end(EXPIRED_SESSION_BODY)
+    res.end(INVALID_SESSION_BODIES[errorCode])
     return new Subscription()
   }
+}
+
+/**
+ * {@link invalidSession} preconfigured for the expired-session variant
+ * (`SIO-401-AEX`) — kept as the named scenario for the common case.
+ */
+export function expiredToken(
+  handler: ProxyHandler,
+  isExpired: () => boolean = () => true,
+  {onReauthenticated}: {onReauthenticated?: () => void} = {},
+): ProxyHandler {
+  return invalidSession(handler, isExpired, {errorCode: 'SIO-401-AEX', onReauthenticated})
 }

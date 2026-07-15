@@ -1,4 +1,5 @@
-import {ChevronDownIcon, UploadIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {UploadIcon} from '@sanity/icons/Upload'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
 import uniqueId from 'lodash-es/uniqueId.js'

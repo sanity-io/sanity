@@ -71,6 +71,10 @@ describe('StudioTelemetryProvider', () => {
     getUrl: vi.fn((path: string) => `https://api.sanity.io${path}`),
   }
 
+  // Mirrors a fully resolved workspace: the config resolver has already applied
+  // every default, so each feature field carries its effective value. The
+  // telemetry reads these straight through, so the values here are what the
+  // event reports.
   const mockWorkspace = {
     name: 'test-workspace',
     projectId: 'test-project',
@@ -87,6 +91,21 @@ describe('StudioTelemetryProvider', () => {
       },
     },
     advancedVersionControl: {enabled: true},
+    releases: {enabled: true},
+    tasks: {enabled: true},
+    scheduledDrafts: {enabled: true},
+    scheduledPublishing: {enabled: true, __internal__workspaceEnabled: false},
+    mediaLibrary: {enabled: false},
+    apps: {canvas: {enabled: true}},
+    beta: {
+      variants: {enabled: false},
+      documentGroupInventory: {enabled: false},
+      eventsAPI: {documents: true, releases: false},
+    },
+    announcements: {enabled: true},
+    document: {drafts: {enabled: true}},
+    form: {file: {directUploads: true}, image: {directUploads: true}},
+    search: {strategy: 'groq2024', unstable_partialIndexing: {enabled: false}},
   }
 
   const mockWorkspaces = [
@@ -439,7 +458,7 @@ describe('StudioTelemetryProvider', () => {
     vi.unstubAllGlobals()
   })
 
-  it('emits WorkspaceFeaturesObserved with the advancedVersionControl flag enabled', () => {
+  it('reads the resolved advancedVersionControl flag when enabled', () => {
     render(
       <DeferredTelemetryProvider>
         <StudioTelemetryProvider>
@@ -448,18 +467,16 @@ describe('StudioTelemetryProvider', () => {
       </DeferredTelemetryProvider>,
     )
 
-    expect(mockLog).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
-      advancedVersionControlEnabled: true,
-    })
+    expect(mockLog).toHaveBeenCalledWith(
+      WorkspaceFeaturesObserved,
+      expect.objectContaining({advancedVersionControlEnabled: true}),
+    )
   })
 
-  it('emits WorkspaceFeaturesObserved with the flag disabled when advancedVersionControl is undefined', () => {
+  it('reads the resolved advancedVersionControl flag when disabled', () => {
     vi.mocked(useWorkspace).mockReturnValue({
       ...mockWorkspace,
-      name: 'test-workspace',
-      projectId: 'test-project',
-      dataset: 'test-dataset',
-      advancedVersionControl: undefined,
+      advancedVersionControl: {enabled: false},
     } as never)
 
     render(
@@ -470,9 +487,112 @@ describe('StudioTelemetryProvider', () => {
       </DeferredTelemetryProvider>,
     )
 
-    expect(mockLog).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
-      advancedVersionControlEnabled: false,
-    })
+    expect(mockLog).toHaveBeenCalledWith(
+      WorkspaceFeaturesObserved,
+      expect.objectContaining({advancedVersionControlEnabled: false}),
+    )
+  })
+
+  it('reports undefined for optional features the resolved workspace omits', () => {
+    vi.mocked(useWorkspace).mockReturnValue({
+      ...mockWorkspace,
+      releases: undefined,
+      tasks: undefined,
+      scheduledDrafts: undefined,
+      scheduledPublishing: {enabled: true},
+      mediaLibrary: undefined,
+      apps: undefined,
+      beta: undefined,
+      announcements: undefined,
+      search: {},
+    } as never)
+
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    // No default is synthesised here: an absent option reads as `undefined`, and
+    // the effective default it stands in for is resolved (and asserted) upstream.
+    expect(mockLog).toHaveBeenCalledWith(
+      WorkspaceFeaturesObserved,
+      expect.objectContaining({
+        releasesEnabled: undefined,
+        releasesLimit: undefined,
+        tasksEnabled: undefined,
+        scheduledDraftsEnabled: undefined,
+        scheduledPublishingExplicitlyEnabled: undefined,
+        mediaLibraryEnabled: undefined,
+        canvasEnabled: undefined,
+        variantsEnabled: undefined,
+        documentGroupInventoryEnabled: undefined,
+        eventsApiDocumentsEnabled: undefined,
+        eventsApiReleasesEnabled: undefined,
+        announcementsEnabled: undefined,
+        partialIndexingEnabled: undefined,
+        searchStrategy: undefined,
+      }),
+    )
+  })
+
+  it('reads explicitly configured feature flags through unchanged', () => {
+    vi.mocked(useWorkspace).mockReturnValue({
+      ...mockWorkspace,
+      mediaLibrary: {enabled: true},
+      releases: {enabled: false, limit: 5},
+      scheduledPublishing: {enabled: true, __internal__workspaceEnabled: true},
+      search: {strategy: 'groqLegacy', unstable_partialIndexing: {enabled: true}},
+      form: {file: {directUploads: false}, image: {directUploads: false}},
+    } as never)
+
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    expect(mockLog).toHaveBeenCalledWith(
+      WorkspaceFeaturesObserved,
+      expect.objectContaining({
+        mediaLibraryEnabled: true,
+        releasesEnabled: false,
+        releasesLimit: 5,
+        scheduledPublishingExplicitlyEnabled: true,
+        searchStrategy: 'groqLegacy',
+        partialIndexingEnabled: true,
+        fileDirectUploadsEnabled: false,
+        imageDirectUploadsEnabled: false,
+      }),
+    )
+  })
+
+  it('reads the resolved documentGroupInventory flag when explicitly enabled', () => {
+    vi.mocked(useWorkspace).mockReturnValue({
+      ...mockWorkspace,
+      beta: {
+        variants: {enabled: false},
+        documentGroupInventory: {enabled: true},
+        eventsAPI: {documents: true, releases: false},
+      },
+    } as never)
+
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    expect(mockLog).toHaveBeenCalledWith(
+      WorkspaceFeaturesObserved,
+      expect.objectContaining({documentGroupInventoryEnabled: true, variantsEnabled: false}),
+    )
   })
 
   it('emits StudioLoaded once on mount with studio version and environment metadata', () => {
@@ -516,5 +636,79 @@ describe('StudioTelemetryProvider', () => {
 
     const studioLoadedCalls = mockLog.mock.calls.filter(([event]) => event === StudioLoaded)
     expect(studioLoadedCalls).toHaveLength(1)
+  })
+
+  it('emits WorkspaceFeaturesObserved only once when mounted in StrictMode', () => {
+    render(
+      <StrictMode>
+        <DeferredTelemetryProvider>
+          <StudioTelemetryProvider>
+            <div>Test Child</div>
+          </StudioTelemetryProvider>
+        </DeferredTelemetryProvider>
+      </StrictMode>,
+    )
+
+    const featureCalls = mockLog.mock.calls.filter(([event]) => event === WorkspaceFeaturesObserved)
+    expect(featureCalls).toHaveLength(1)
+  })
+
+  it('re-emits WorkspaceFeaturesObserved when the active workspace changes', () => {
+    const {rerender} = render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    vi.mocked(useWorkspace).mockReturnValue({
+      ...mockWorkspace,
+      name: 'other-workspace',
+      projectId: 'other-project',
+    } as never)
+
+    rerender(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    const featureCalls = mockLog.mock.calls.filter(([event]) => event === WorkspaceFeaturesObserved)
+    expect(featureCalls).toHaveLength(2)
+  })
+
+  it('emits the complete WorkspaceFeaturesObserved payload shape', () => {
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    expect(mockLog).toHaveBeenCalledWith(WorkspaceFeaturesObserved, {
+      advancedVersionControlEnabled: true,
+      releasesEnabled: true,
+      releasesLimit: undefined,
+      tasksEnabled: true,
+      scheduledDraftsEnabled: true,
+      scheduledPublishingEnabled: true,
+      scheduledPublishingExplicitlyEnabled: false,
+      mediaLibraryEnabled: false,
+      canvasEnabled: true,
+      variantsEnabled: false,
+      documentGroupInventoryEnabled: false,
+      eventsApiDocumentsEnabled: true,
+      eventsApiReleasesEnabled: false,
+      announcementsEnabled: true,
+      draftsEnabled: true,
+      partialIndexingEnabled: false,
+      fileDirectUploadsEnabled: true,
+      imageDirectUploadsEnabled: true,
+      searchStrategy: 'groq2024',
+    })
   })
 })

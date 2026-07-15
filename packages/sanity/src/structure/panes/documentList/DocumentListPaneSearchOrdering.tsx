@@ -1,4 +1,4 @@
-import {SortIcon} from '@sanity/icons'
+import {SortIcon} from '@sanity/icons/Sort'
 import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
 import {memo, useId} from 'react'
 import {useGetI18nText, useTranslation} from 'sanity'

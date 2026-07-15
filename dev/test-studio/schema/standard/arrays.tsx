@@ -1,4 +1,5 @@
-import {ImageIcon, OlistIcon} from '@sanity/icons'
+import {ImageIcon} from '@sanity/icons/Image'
+import {OlistIcon} from '@sanity/icons/Olist'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const topLevelArrayType = defineType({

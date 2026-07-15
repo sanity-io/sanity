@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "6.3.0",
+  "version": "6.5.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "admin",
@@ -77,7 +77,7 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.6",
-    "@sanity/icons": "^3.7.6",
+    "@sanity/icons": "^5.1.0",
     "@sanity/lezer-groq": "^1.0.4",
     "@sanity/ui": "catalog:",
     "@sanity/uuid": "^3.0.3",
@@ -88,7 +88,7 @@
     "json5": "^2.2.3",
     "lodash-es": "^4.18.1",
     "quick-lru": "^7.3.0",
-    "react-rx": "^4.2.2",
+    "react-rx": "^4.2.3",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {

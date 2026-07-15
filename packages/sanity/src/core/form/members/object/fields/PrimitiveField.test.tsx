@@ -19,7 +19,65 @@ import {PrimitiveField} from './PrimitiveField'
 
 const EMPTY_ARRAY: never[] = []
 
+/**
+ * Appends a fake stega sequence to the given text, mimicking text copied from a preview that uses
+ * `@sanity/client/stega` for visual editing.
+ */
+function stega(text: string): string {
+  return `${text}\u200b\u200b\u200b\u200b${'\u200c\u200d\ufeff\u200b'.repeat(4)}`
+}
+
 describe('PrimitiveField', () => {
+  describe('string', () => {
+    it('strips stega characters from pasted text', async () => {
+      // Given
+      const {member, formCallbacks, TestWrapper} = await setupTest('string', undefined)
+
+      render(
+        <PrimitiveField
+          member={member}
+          renderInput={defaultRenderInput}
+          renderField={defaultRenderField}
+        />,
+        {wrapper: TestWrapper},
+      )
+
+      // When
+      const input = screen.getByTestId('string-input') as HTMLInputElement
+      input.focus()
+      await userEvent.paste(stega('Hello world'))
+
+      // Then
+      expect(formCallbacks.onChange).toHaveBeenCalledWith(
+        PatchEvent.from(set('Hello world')).prefixAll(member.name),
+      )
+    })
+
+    it('leaves pasted text without stega characters untouched', async () => {
+      // Given
+      const {member, formCallbacks, TestWrapper} = await setupTest('string', undefined)
+
+      render(
+        <PrimitiveField
+          member={member}
+          renderInput={defaultRenderInput}
+          renderField={defaultRenderField}
+        />,
+        {wrapper: TestWrapper},
+      )
+
+      // When
+      const input = screen.getByTestId('string-input') as HTMLInputElement
+      input.focus()
+      await userEvent.paste('Hello world')
+
+      // Then
+      expect(formCallbacks.onChange).toHaveBeenCalledWith(
+        PatchEvent.from(set('Hello world')).prefixAll(member.name),
+      )
+    })
+  })
+
   describe('number', () => {
     it('renders empty input when given no value', async () => {
       // Given
@@ -203,6 +261,30 @@ describe('PrimitiveField', () => {
       const input = screen.getByTestId('number-input') as HTMLInputElement
       expect(input).toBeInstanceOf(HTMLInputElement)
       await waitFor(() => expect(input.value).toEqual('1.00'))
+    })
+
+    it('strips stega characters from pasted numbers', async () => {
+      // Given
+      const {member, formCallbacks, TestWrapper} = await setupTest('number', undefined)
+
+      render(
+        <PrimitiveField
+          member={member}
+          renderInput={defaultRenderInput}
+          renderField={defaultRenderField}
+        />,
+        {wrapper: TestWrapper},
+      )
+
+      // When
+      const input = screen.getByTestId('number-input') as HTMLInputElement
+      input.focus()
+      await userEvent.paste(stega('42'))
+
+      // Then
+      expect(formCallbacks.onChange).toHaveBeenCalledWith(
+        PatchEvent.from(set(42)).prefixAll(member.name),
+      )
     })
 
     it('wont trigger `onChange` callbacks when number input values are out of range', async () => {

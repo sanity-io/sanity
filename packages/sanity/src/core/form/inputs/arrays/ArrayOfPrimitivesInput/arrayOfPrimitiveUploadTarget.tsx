@@ -1,6 +1,7 @@
 // This upload target is similar to the one in files/input, but uses resolveUploader instead of resolveUploadAssetSources
 // in order to keep backwards compatibility with existing uploaders and custom upload implementations.
-import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'
+import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
+import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, Flex, Inline, Layer, Text, useToast} from '@sanity/ui'
 import sortBy from 'lodash-es/sortBy.js'

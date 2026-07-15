@@ -1,4 +1,4 @@
-import {TrashIcon} from '@sanity/icons'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo, useState} from 'react'
 import {catchError, filter, firstValueFrom, map, of, timeout} from 'rxjs'
@@ -23,6 +23,7 @@ import {DocumentDeleted} from './__telemetry__/documentActions.telemetry'
 const DISABLED_REASON_TITLE_KEY = {
   NOTHING_TO_DELETE: 'action.delete.disabled.nothing-to-delete',
   NOT_READY: 'action.delete.disabled.not-ready',
+  TARGET_NOT_FOUND: 'action.delete.disabled.target-not-found',
 }
 
 // operationEvents switchMaps per document, so a superseding operation drops the

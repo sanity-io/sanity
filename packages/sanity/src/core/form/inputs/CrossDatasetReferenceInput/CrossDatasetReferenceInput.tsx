@@ -1,4 +1,5 @@
-import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
+import {ResetIcon as ClearIcon} from '@sanity/icons/Reset'
+import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
 import {Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {
@@ -27,6 +28,7 @@ import {getPublishedId, isNonNullable} from '../../../util'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch'
 import {type ObjectInputProps} from '../../types'
+import {useArrayItemRootElementRef} from '../arrays/common/useArrayItemRootElementRef'
 import {ReferenceMetadataLoadErrorAlertStrip} from '../ReferenceInput/ReferenceMetadataLoadFailure'
 import {ReferenceStrengthMismatchAlertStrip} from '../ReferenceInput/ReferenceStrengthMismatchAlertStrip'
 import {DisabledFeatureWarning} from './DisabledFeatureWarning'
@@ -270,11 +272,15 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const isEditing = hasFocusAtRef || !value?._ref
 
   // --- click outside handling
+  const arrayItemRootElementRef = useArrayItemRootElementRef()
   const clickOutsideBoundaryRef = useRef<HTMLDivElement | null>(null)
   const autocompletePortalRef = useRef<HTMLDivElement | null>(null)
   useClickOutsideEvent(hasFocusAtRef && (() => onPathFocus([])), () => [
     clickOutsideBoundaryRef.current,
     autocompletePortalRef.current,
+    // The enclosing array item (when inside one), so UI rendered by custom
+    // item/input components around the default input doesn't count as outside.
+    arrayItemRootElementRef?.current ?? null,
   ])
 
   return (

@@ -1,4 +1,4 @@
-import {InfoFilledIcon} from '@sanity/icons'
+import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
 import {Card, Stack, Text} from '@sanity/ui'
 import {forwardRef} from 'react'
 import {Translate, useTranslation} from 'sanity'

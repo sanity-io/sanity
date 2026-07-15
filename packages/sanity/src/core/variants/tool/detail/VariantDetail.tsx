@@ -9,12 +9,15 @@ import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
+import {VariantPinButton} from '../components/VariantPinButton'
 import {
   decodeVariantIdFromRoute,
   getVariantConditionsText,
   getVariantDescription,
+  getVariantId,
   getVariantTitle,
 } from '../util'
+import {groupVariantDocumentsByGroup} from './groupVariantDocumentsByGroup'
 import {VariantDetailFooter} from './VariantDetailFooter'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
 
@@ -28,12 +31,14 @@ export function VariantDetail() {
   const {byId, loading} = useAllVariants()
 
   const variant = variantId ? byId.get(variantId) : undefined
+  const {
+    loading: documentsLoading,
+    results: variantDocuments,
+    error: variantDocumentsError,
+  } = useVariantDocuments(variant?._id)
 
-  const {results: variantDocuments, loading: documentsLoading} = useVariantDocuments(
-    variantId ?? '',
-  )
-  const documents = useMemo(
-    () => variantDocuments.map((result) => result.document),
+  const tableRows = useMemo(
+    () => groupVariantDocumentsByGroup(variantDocuments),
     [variantDocuments],
   )
 
@@ -77,9 +82,12 @@ export function VariantDetail() {
             <Card paddingY={5}>
               <Flex align="flex-start" gap={4} justify="space-between">
                 <Stack space={3}>
-                  <Text as="h1" size={4} weight="bold">
-                    {getVariantTitle(variant)}
-                  </Text>
+                  <Flex align="center" gap={1}>
+                    <VariantPinButton variant={variant} />
+                    <Text as="h1" size={4} weight="bold">
+                      {getVariantTitle(variant)}
+                    </Text>
+                  </Flex>
                   <Text muted size={1}>
                     {description || t('detail.no-description')}
                   </Text>
@@ -104,10 +112,26 @@ export function VariantDetail() {
           </Flex>
         </Container>
         <Flex direction="column" flex={1} overflow="hidden" style={{minHeight: 0}}>
-          <VariantDocumentsTable documents={documents} loading={documentsLoading} />
+          {variantDocumentsError ? (
+            <Box padding={4}>
+              <Text muted size={1}>
+                {t('detail.documents.error')}
+              </Text>
+            </Box>
+          ) : (
+            <VariantDocumentsTable
+              loading={documentsLoading}
+              rows={tableRows}
+              variantId={getVariantId(variant._id)}
+            />
+          )}
         </Flex>
       </Flex>
-      <VariantDetailFooter variant={variant} />
+      <VariantDetailFooter
+        documentCount={tableRows.length}
+        documentsLoading={documentsLoading}
+        variant={variant}
+      />
       {editDialogOpen && (
         <EditVariantDialog
           onCancel={() => setEditDialogOpen(false)}

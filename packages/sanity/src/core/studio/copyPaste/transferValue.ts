@@ -39,7 +39,7 @@ import {type FIXME} from '../../FIXME'
 import {resolveConditionalProperty} from '../../form/store/conditional-property/resolveConditionalProperty'
 import {accepts} from '../../form/studio/uploads/accepts'
 import {randomKey} from '../../form/utils/randomKey'
-import {getIdPair} from '../../util/draftUtils'
+import {getPublishedId} from '../../util/draftUtils'
 import {isRecord} from '../../util/isRecord'
 import {documentMatchesGroqFilter} from './documentMatchesGroqFilter'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
@@ -339,7 +339,6 @@ export async function transferValue({
     }
   }
 
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   const sourceValueAtPath = getValueAtPath(sourceValue as TypedObject, sourcePath)
 
   // Objects
@@ -349,9 +348,7 @@ export async function transferValue({
   ) {
     const isDocumentLevelPaste = targetRootPath.length === 0
     return collateObjectValue({
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       sourceValue: sourceValueAtPath as TypedObject,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       targetSchemaType: targetSchemaTypeAtPath as ObjectSchemaType,
       targetRootValue,
       targetRootPath,
@@ -376,7 +373,6 @@ export async function transferValue({
 
     return collateArrayValue({
       sourceValue: wrappedSourceValueAtPath,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
       targetRootValue,
       targetRootPath,
@@ -421,7 +417,6 @@ export async function transferValue({
 
     return collateArrayValue({
       sourceValue: Array.isArray(sourceValueAtPath) ? sourceValueAtPath : wrappedSourceValue,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
       targetRootValue,
       targetRootPath,
@@ -592,13 +587,15 @@ async function collateObjectValue({
     // Validate the actual reference value
     if (options?.validateReferences && options.client && isReference(sourceValue)) {
       try {
+        // `sanity::versionOf` matches the published document as well as any draft or release
+        // version of it, so references to documents that only exist within a release (e.g.
+        // created while a release was the selected perspective) validate correctly.
         // We need to fetch the whole reference document if a filter is defined
         const query = targetSchemaType.options?.filter
-          ? `*[_id in $ids]|order(_updatedAt)[0]`
-          : `*[_id in $ids]|order(_updatedAt)[0]{_id, _type}`
-        const {publishedId, draftId} = getIdPair(sourceValue._ref)
+          ? `*[sanity::versionOf($publishedId)]|order(_updatedAt)[0]`
+          : `*[sanity::versionOf($publishedId)]|order(_updatedAt)[0]{_id, _type}`
         const reference = await (options.client as SanityClient).fetch(query, {
-          ids: [publishedId, draftId],
+          publishedId: getPublishedId(sourceValue._ref),
         })
 
         // Test that we have an actual referenced object if this is not a weak reference
@@ -648,7 +645,6 @@ async function collateObjectValue({
           const getClient = (clientOptions: {apiVersion: string}) =>
             (options.client as SanityClient).withConfig(clientOptions)
           const isMatch = await documentMatchesGroqFilter({
-            // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
             rootDocumentValue: (targetRootValue || {}) as SanityDocument,
             referencedDocument: reference,
             schemaTypeOptions: targetSchemaType.options,
@@ -767,12 +763,10 @@ async function collateObjectValue({
       // Object field
     } else if (memberIsObject) {
       const collated = await collateObjectValue({
-        /* oxlint-disable typescript/no-unnecessary-type-assertion */
         sourceValue: getValueAtPath(
           sourceValue as TypedObject,
           targetPath.concat(member.name),
         ) as TypedObject,
-        /* oxlint-enable typescript/no-unnecessary-type-assertion */
         targetPath: [],
         targetSchemaType: memberSchemaType,
         targetRootValue,
@@ -791,7 +785,6 @@ async function collateObjectValue({
       const genericValue = sourceValue ? (sourceValue as TypedObject)[member.name] : undefined
       const collated = await collateArrayValue({
         sourceValue: genericValue,
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
         targetSchemaType: memberSchemaType as ArraySchemaType,
         targetRootValue,
         targetRootPath,

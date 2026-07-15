@@ -62,7 +62,6 @@ export function resolveSchemaTypeForPath(
       const item = getItemType(arraySchemaType, itemValue)
 
       if (item) {
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
         currentField = item as ObjectSchemaType
 
         return
@@ -75,7 +74,6 @@ export function resolveSchemaTypeForPath(
     ) as ObjectSchemaType
 
     if (nextField?.type) {
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       currentField = nextField.type as ObjectSchemaType
     }
   })

@@ -1,4 +1,4 @@
-import {CopyIcon} from '@sanity/icons'
+import {CopyIcon} from '@sanity/icons/Copy'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
@@ -19,6 +19,7 @@ import {structureLocaleNamespace} from '../i18n'
 const DISABLED_REASON_KEY = {
   NOTHING_TO_DUPLICATE: 'action.duplicate.disabled.nothing-to-duplicate',
   NOT_READY: 'action.duplicate.disabled.not-ready',
+  TARGET_NOT_FOUND: 'action.duplicate.disabled.target-not-found',
 }
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`

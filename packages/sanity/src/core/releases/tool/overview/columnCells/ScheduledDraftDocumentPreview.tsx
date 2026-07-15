@@ -1,4 +1,4 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Box, Card, Flex, Skeleton, Text} from '@sanity/ui'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'

@@ -1,4 +1,4 @@
-import {AddCommentIcon} from '@sanity/icons'
+import {AddCommentIcon} from '@sanity/icons/AddComment'
 import {useClickOutsideEvent} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useRef} from 'react'

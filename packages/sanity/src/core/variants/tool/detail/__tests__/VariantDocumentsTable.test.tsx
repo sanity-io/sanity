@@ -1,5 +1,3 @@
-import {type SanityDocument} from '@sanity/client'
-import {type DocumentSystem} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
@@ -7,6 +5,7 @@ import {describe, expect, it, vi} from 'vitest'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
+import {type DocumentInVariantGroup} from '../types'
 import {VariantDocumentsTable} from '../VariantDocumentsTable'
 
 vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
@@ -18,35 +17,105 @@ vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
   )),
 }))
 
+vi.mock('../variantDocumentTable/VariantDocumentPreview', () => ({
+  VariantDocumentPreview: vi.fn(({row}) => (
+    <div data-testid="preview">{row.document.title || row.document._id}</div>
+  )),
+}))
+
+vi.mock('../variantDocumentTable/VariantDocumentBundleChips', () => ({
+  VariantDocumentBundleChips: vi.fn(({versions}) => (
+    <div data-testid="bundle-chips">
+      {versions.map((version) => version.bundleId ?? 'published').join(',')}
+    </div>
+  )),
+}))
+
+vi.mock('../../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => ({
+    data: [],
+    loading: false,
+    error: null,
+  })),
+}))
+
 setupVirtualListEnv()
 
-const mockDocuments: SanityDocument[] = [
+const defaultValidation = {
+  hasError: false,
+  isValidating: false,
+  validation: [],
+} as const
+
+const mockRows: DocumentInVariantGroup[] = [
   {
-    _id: 'drafts.article-first',
-    _type: 'article',
-    _rev: 'rev-1',
-    _createdAt: '2025-01-01T00:00:00Z',
-    _updatedAt: '2025-06-01T00:00:00Z',
-    title: 'First article',
+    memoKey: 'group-1',
+    groupId: 'article-1',
+    validation: defaultValidation,
+    document: {
+      _id: 'published.scope.article-1',
+      _type: 'article',
+      _rev: 'rev-1',
+      _createdAt: '2025-01-01T00:00:00Z',
+      _updatedAt: '2025-06-01T00:00:00Z',
+      publishedDocumentExists: true,
+      title: 'First article',
+    },
+    version: {
+      documentId: 'published.scope.article-1',
+      releaseRef: null,
+      updatedAt: '2025-06-01T00:00:00Z',
+    },
+    versions: [
+      {
+        documentId: 'published.scope.article-1',
+        releaseRef: null,
+        updatedAt: '2025-06-01T00:00:00Z',
+      },
+      {
+        documentId: 'drafts.scope.article-1',
+        bundleId: 'drafts',
+        releaseRef: null,
+        updatedAt: '2025-05-01T00:00:00Z',
+      },
+    ],
   },
   {
-    _id: 'drafts.article-second',
-    _type: 'article',
-    _rev: 'rev-2',
-    _createdAt: '2025-01-02T00:00:00Z',
-    _updatedAt: '2025-06-02T00:00:00Z',
-    title: 'Second article',
+    memoKey: 'group-2',
+    groupId: 'article-2',
+    validation: defaultValidation,
+    document: {
+      _id: 'drafts.scope.article-2',
+      _type: 'article',
+      _rev: 'rev-2',
+      _createdAt: '2025-01-02T00:00:00Z',
+      _updatedAt: '2025-06-02T00:00:00Z',
+      publishedDocumentExists: false,
+      title: 'Second article',
+    },
+    version: {
+      documentId: 'drafts.scope.article-2',
+      bundleId: 'drafts',
+      releaseRef: null,
+      updatedAt: '2025-06-02T00:00:00Z',
+    },
+    versions: [
+      {
+        documentId: 'drafts.scope.article-2',
+        bundleId: 'drafts',
+        releaseRef: null,
+        updatedAt: '2025-06-02T00:00:00Z',
+      },
+    ],
   },
 ]
 
 describe('VariantDocumentsTable', () => {
-  const renderTable = async (documents: SanityDocument[] = mockDocuments, loading = false) => {
+  const renderTable = async (rows: DocumentInVariantGroup[] = mockRows, loading = false) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<VariantDocumentsTable documents={documents} loading={loading} />, {
-      wrapper,
-    })
+    const result = render(<VariantDocumentsTable rows={rows} loading={loading} />, {wrapper})
     await screen.findByPlaceholderText('Search documents')
     return result
   }
@@ -64,7 +133,7 @@ describe('VariantDocumentsTable', () => {
     expect(screen.queryByText('No documents in this variant')).not.toBeInTheDocument()
   })
 
-  it('renders document rows with title, type, and edited columns', async () => {
+  it('renders document rows with bundle, title, type, and edited columns', async () => {
     await renderTable()
 
     await waitFor(() => {
@@ -73,11 +142,13 @@ describe('VariantDocumentsTable', () => {
 
     expect(screen.getByText('First article')).toBeInTheDocument()
     expect(screen.getByText('Second article')).toBeInTheDocument()
-    expect(screen.getByText('drafts.article-first')).toBeInTheDocument()
     expect(screen.getAllByText('article')).toHaveLength(2)
+    expect(screen.getByText('published,drafts')).toBeInTheDocument()
+    expect(screen.getByText('drafts')).toBeInTheDocument()
+    expect(screen.getByText('Bundle')).toBeInTheDocument()
   })
 
-  it('filters documents when searching by title, id, or type', async () => {
+  it('filters documents when searching by title or name', async () => {
     const user = userEvent.setup()
 
     await renderTable()
@@ -96,56 +167,60 @@ describe('VariantDocumentsTable', () => {
     expect(screen.queryByText('First article')).not.toBeInTheDocument()
   })
 
-  it('groups documents by their document group ref', async () => {
-    const sharedGroupRef = 'article-group'
-    const groupedDocuments: SanityDocument[] = [
+  it('sorts grouped rows by document group id on first load', async () => {
+    const rows: DocumentInVariantGroup[] = [
       {
-        _id: 'versions.summer.article-a',
-        _type: 'article',
-        _rev: 'rev-1',
-        _createdAt: '2025-01-01T00:00:00Z',
-        _updatedAt: '2025-06-01T00:00:00Z',
-        title: 'Summer article',
-        _system: {
-          group: {_ref: sharedGroupRef, _weak: true},
-          bundleId: 'drafts',
-        } satisfies DocumentSystem,
+        ...mockRows[1]!,
+        groupId: 'z-group',
+        memoKey: 'group-z',
+        document: {
+          ...mockRows[1]!.document,
+          title: 'Zulu article',
+        },
       },
       {
-        _id: 'article-other',
-        _type: 'article',
-        _rev: 'rev-2',
-        _createdAt: '2025-01-02T00:00:00Z',
-        _updatedAt: '2025-06-02T00:00:00Z',
-        title: 'Other article',
-        _system: {
-          group: {_ref: 'other-group', _weak: true},
-          bundleId: 'drafts',
-        } satisfies DocumentSystem,
-      },
-      {
-        _id: 'versions.published.article-a',
-        _type: 'article',
-        _rev: 'rev-3',
-        _createdAt: '2025-01-03T00:00:00Z',
-        _updatedAt: '2025-06-03T00:00:00Z',
-        title: 'Published article',
-        _system: {
-          group: {_ref: sharedGroupRef, _weak: true},
-        } satisfies DocumentSystem,
+        ...mockRows[0]!,
+        groupId: 'a-group',
+        memoKey: 'group-a',
+        document: {
+          ...mockRows[0]!.document,
+          title: 'Alpha article',
+        },
       },
     ]
 
-    await renderTable(groupedDocuments)
+    await renderTable(rows)
 
     await waitFor(() => {
-      expect(screen.getAllByTestId('table-row')).toHaveLength(3)
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
     })
 
-    const rowTitles = screen.getAllByTestId('table-row').map((row) => row.textContent)
+    const renderedTitles = screen.getAllByTestId('preview').map((node) => node.textContent)
 
-    expect(rowTitles[0]).toContain('Published article')
-    expect(rowTitles[1]).toContain('Summer article')
-    expect(rowTitles[2]).toContain('Other article')
+    expect(renderedTitles).toEqual(['Alpha article', 'Zulu article'])
+  })
+
+  it('finds documents by name when title is missing', async () => {
+    const user = userEvent.setup()
+    const rows: DocumentInVariantGroup[] = [
+      {
+        ...mockRows[0]!,
+        groupId: 'article-named',
+        memoKey: 'group-named',
+        document: {
+          ...mockRows[0]!.document,
+          title: undefined,
+          name: 'Named article',
+        },
+      },
+    ]
+
+    await renderTable(rows)
+
+    await user.type(screen.getByPlaceholderText('Search documents'), 'Named')
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
   })
 })

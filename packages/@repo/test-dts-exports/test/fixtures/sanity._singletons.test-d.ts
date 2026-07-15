@@ -7,6 +7,7 @@ import type {
   AddonDatasetContext,
   AnnotationEntry,
   AppIdCacheContext,
+  ArrayItemRootElementContext,
   ArrayValidationContext,
   AssetLimitUpsellContext,
   AssetLimitUpsellContextValue,
@@ -153,6 +154,9 @@ describe('sanity/_singletons', () => {
   })
   test('AppIdCacheContext', () => {
     expectTypeOf<typeof AppIdCacheContext>().not.toBeNever()
+  })
+  test('ArrayItemRootElementContext', () => {
+    expectTypeOf<typeof ArrayItemRootElementContext>().not.toBeNever()
   })
   test('ArrayValidationContext', () => {
     expectTypeOf<typeof ArrayValidationContext>().not.toBeNever()

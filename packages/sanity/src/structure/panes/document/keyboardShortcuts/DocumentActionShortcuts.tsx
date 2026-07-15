@@ -3,6 +3,7 @@ import {type ElementType, type HTMLProps, memo, type Ref, useCallback, useState}
 import {type DocumentActionDescription, LegacyLayerProvider} from 'sanity'
 
 import {RenderActionCollectionState} from '../../../components'
+import {useIsEditingVariantDocument} from '../../../hooks/useIsEditingVariantDocument'
 import {ActionStateDialog} from '../statusBar'
 
 export interface KeyboardShortcutResponderProps {
@@ -91,6 +92,7 @@ export const DocumentActionShortcuts = memo(
   (props: DocumentActionShortcutsProps & Omit<HTMLProps<HTMLDivElement>, 'as'>) => {
     const {actionsBoxElement, as = 'div', children, ...rest} = props
     const [activeIndex, setActiveIndex] = useState(-1)
+    const isEditingVariantDocument = useIsEditingVariantDocument()
 
     const onActionStart = useCallback((idx: number) => {
       setActiveIndex(idx)
@@ -105,7 +107,9 @@ export const DocumentActionShortcuts = memo(
             actionsBoxElement={actionsBoxElement}
             as={as}
             onActionStart={onActionStart}
-            states={states}
+            // Temporary: hide actions when editing a variant document until actions are supported on variant documents
+            // See PR https://github.com/sanity-io/sanity/pull/13156
+            states={isEditingVariantDocument ? [] : states}
           >
             {children}
           </KeyboardShortcutResponder>

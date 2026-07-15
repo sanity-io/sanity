@@ -1,4 +1,4 @@
-import {ResetIcon} from '@sanity/icons'
+import {ResetIcon} from '@sanity/icons/Reset'
 import {Flex, Skeleton, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../core/i18n'

@@ -1,4 +1,4 @@
-import {ImagesIcon} from '@sanity/icons'
+import {ImagesIcon} from '@sanity/icons/Images'
 import {defineField, defineType} from 'sanity'
 // import petsAssetSource from '../../parts/assetSources/pets'
 // import noopAssetSource from '../../parts/assetSources/noop'

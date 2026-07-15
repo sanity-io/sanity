@@ -10,16 +10,16 @@ Run from the repo root with the package binary:
 
 ```bash
 pnpm release-notes generate-changelog \
-  --baseVersion 5.7.0 \
-  --tentativeVersion 5.7.1 \
-  --outputFormat pr-description
+  --base-version 5.7.0 \
+  --tentative-version 5.7.1 \
+  --output-format pr-description
 ```
 
 Arguments:
 
-- `--baseVersion` (required): previous released version, used to select commits.
-- `--tentativeVersion` (required): upcoming version string.
-- `--outputFormat` (optional): set to `pr-description` to print a PR-ready summary.
+- `--base-version` (required): previous released version, used to select commits.
+- `--tentative-version` (required): upcoming version string.
+- `--output-format` (optional): set to `pr-description` to print a PR-ready summary.
 
 ## Environment Variables
 
@@ -39,7 +39,7 @@ The command creates or updates:
 - An API version document referencing the changelog.
 - A content release for the upcoming version.
 
-When `--outputFormat pr-description` is provided, it prints a Markdown summary with a link to edit the draft
+When `--output-format pr-description` is provided, it prints a Markdown summary with a link to edit the draft
 changelog in the admin studio.
 
 ## Development

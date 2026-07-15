@@ -62,7 +62,6 @@ export async function renderFileInput(options: {
       directUploads: true,
       observeAsset,
       resolveUploader,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       schemaType: schemaType as FileSchemaType,
       value: value as Record<string, any>,
     }

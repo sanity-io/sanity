@@ -1,5 +1,5 @@
-import {CheckmarkIcon} from '@sanity/icons'
-import {MenuDivider, Text} from '@sanity/ui'
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {Box, Label, MenuDivider, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {TooltipOfDisabled, useGetI18nText, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'
@@ -38,6 +38,11 @@ export function PaneMenuButtonItem(props: {
       return (
         <>
           {isAfterGroup && <MenuDivider />}
+          {title && (
+            <Box padding={3} paddingBottom={2}>
+              <Label size={1}>{title}</Label>
+            </Box>
+          )}
           {node.children.map((child, childIndex) => (
             <PaneMenuButtonItem
               key={child.key}

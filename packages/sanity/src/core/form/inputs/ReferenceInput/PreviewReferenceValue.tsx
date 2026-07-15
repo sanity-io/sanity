@@ -1,4 +1,5 @@
-import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
+import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
+import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {type ComponentType, Fragment, type ReactNode} from 'react'

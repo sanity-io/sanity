@@ -380,7 +380,6 @@ export function extractSchema(workspace: Workspace): SchemaType[] {
     if (options.insertMenu) {
       opts.insertMenu = {
         ...options.insertMenu,
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
         views: (options.insertMenu as InsertMenuOptions).views?.map((view) =>
           view.name === 'grid'
             ? {

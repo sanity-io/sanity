@@ -8,7 +8,7 @@ import {getTransactionsLogs} from '../../../../../store/translog/getTransactions
 import {getPublishedId} from '../../../../../util/draftUtils'
 import {promiseWithResolvers} from '../../../../../util/promiseWithResolvers'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
-import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../../detail/types'
 
 export type RevertDocument = SanityDocument & {
   _system?: {

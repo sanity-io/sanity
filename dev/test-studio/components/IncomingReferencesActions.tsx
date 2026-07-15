@@ -1,4 +1,4 @@
-import {TrashIcon} from '@sanity/icons'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {useState} from 'react'
 import {getDraftId} from 'sanity'
 import {type IncomingReferenceAction} from 'sanity/structure'

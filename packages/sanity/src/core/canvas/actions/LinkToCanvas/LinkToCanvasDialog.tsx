@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
-import {ComposeSparklesIcon} from '@sanity/icons'
+import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 import {Box, Card, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback, useId} from 'react'

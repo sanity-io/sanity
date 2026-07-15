@@ -1,0 +1,37 @@
+{
+  "name": "metrics-studio",
+  "version": "6.5.0",
+  "private": true,
+  "description": "Studio presenting repo health metrics (perf benchmark runs from perf/bench, and friends)",
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "scripts": {
+    "build": "sanity build",
+    "clean": "rimraf .sanity dist",
+    "dev": "sanity dev --port 3399",
+    "start": "sanity preview --port 3399"
+  },
+  "dependencies": {
+    "@sanity/icons": "^5.0.0",
+    "@sanity/ui": "catalog:",
+    "@visx/axis": "^4.0.0",
+    "@visx/group": "^4.0.0",
+    "@visx/responsive": "^4.0.0",
+    "@visx/scale": "^4.0.0",
+    "@visx/shape": "^4.0.0",
+    "babel-plugin-react-compiler": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-rx": "^4.2.3",
+    "rxjs": "^7.8.2",
+    "sanity": "workspace:*",
+    "styled-components": "catalog:",
+    "vite": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/test-config": "workspace:*",
+    "@vanilla-extract/vite-plugin": "catalog:",
+    "rimraf": "catalog:",
+    "vitest": "catalog:"
+  }
+}

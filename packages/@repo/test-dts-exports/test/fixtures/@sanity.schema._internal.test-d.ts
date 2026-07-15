@@ -12,6 +12,7 @@ import type {
   DEFAULT_MAX_FIELD_DEPTH,
   DefaultWorkspaceSchemaId,
   DescriptorConverter,
+  DescriptorRequester,
   extractCreateWorkspaceManifest,
   extractManifestSchemaTypes,
   extractSchema,
@@ -24,6 +25,9 @@ import type {
   ManifestWorkspaceFile,
   ParsedWorkspaceSchemaId,
   parseWorkspaceSchemaId,
+  PreparedSchemaUpload,
+  prepareSchemaUpload,
+  PrepareSchemaUploadOptions,
   Problem,
   ProblemPath,
   ProblemPathPropertySegment,
@@ -36,6 +40,9 @@ import type {
   SchemaSynchronizationResult,
   StoredWorkspaceSchema,
   TypeWithProblems,
+  uploadSchema,
+  UploadSchemaOptions,
+  UploadSchemaPhase,
   validateMediaLibraryAssetAspect,
   validateSchema,
   ValidationError,
@@ -74,6 +81,9 @@ describe('@sanity/schema/_internal', () => {
   test('DescriptorConverter', () => {
     expectTypeOf<DescriptorConverter>().not.toBeNever()
   })
+  test('DescriptorRequester', () => {
+    expectTypeOf<DescriptorRequester>().not.toBeNever()
+  })
   test('extractCreateWorkspaceManifest', () => {
     expectTypeOf<typeof extractCreateWorkspaceManifest>().toBeFunction()
   })
@@ -110,6 +120,15 @@ describe('@sanity/schema/_internal', () => {
   test('parseWorkspaceSchemaId', () => {
     expectTypeOf<typeof parseWorkspaceSchemaId>().toBeFunction()
   })
+  test('PreparedSchemaUpload', () => {
+    expectTypeOf<PreparedSchemaUpload>().toBeObject()
+  })
+  test('prepareSchemaUpload', () => {
+    expectTypeOf<typeof prepareSchemaUpload>().toBeFunction()
+  })
+  test('PrepareSchemaUploadOptions', () => {
+    expectTypeOf<PrepareSchemaUploadOptions>().not.toBeNever()
+  })
   test('Problem', () => {
     expectTypeOf<Problem>().toBeObject()
   })
@@ -145,6 +164,15 @@ describe('@sanity/schema/_internal', () => {
   })
   test('TypeWithProblems', () => {
     expectTypeOf<TypeWithProblems>().toBeObject()
+  })
+  test('uploadSchema', () => {
+    expectTypeOf<typeof uploadSchema>().toBeFunction()
+  })
+  test('UploadSchemaOptions', () => {
+    expectTypeOf<UploadSchemaOptions>().not.toBeNever()
+  })
+  test('UploadSchemaPhase', () => {
+    expectTypeOf<UploadSchemaPhase>().toBeObject()
   })
   test('validateMediaLibraryAssetAspect', () => {
     expectTypeOf<typeof validateMediaLibraryAssetAspect>().toBeFunction()

@@ -1,4 +1,4 @@
-import {InfoOutlineIcon} from '@sanity/icons'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Box, Flex, Inline, rem, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 

@@ -38,7 +38,6 @@ export function isDocumentSchemaType(type: unknown): type is ObjectSchemaType {
     return false
   }
 
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   let current: SchemaType | undefined = type as SchemaType
   while (current) {
     if (current.name === 'document') {

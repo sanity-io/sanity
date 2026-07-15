@@ -1,4 +1,4 @@
-import {EllipsisHorizontalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {beforeAll, describe, expect, it, vi} from 'vitest'

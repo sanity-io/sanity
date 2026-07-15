@@ -1,4 +1,8 @@
-import {ArchiveIcon, CloseCircleIcon, CopyIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
+import {ArchiveIcon} from '@sanity/icons/Archive'
+import {CloseCircleIcon} from '@sanity/icons/CloseCircle'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {UnarchiveIcon} from '@sanity/icons/Unarchive'
 import {
   type Dispatch,
   type MouseEventHandler,
@@ -16,7 +20,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {getReleaseDefaults} from '../../../util/util'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../detail/types'
 import {ReleasePublishAllButton} from '../releaseCTAButtons/ReleasePublishAllButton'
 import {ReleaseScheduleButton} from '../releaseCTAButtons/ReleaseScheduleButton'
 import {type ReleaseAction} from './releaseActions'

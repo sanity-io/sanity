@@ -1,4 +1,4 @@
-import {ClipboardIcon} from '@sanity/icons'
+import {ClipboardIcon} from '@sanity/icons/Clipboard'
 import {useCallback} from 'react'
 
 import {defineDocumentFieldAction} from '../../../config/document/fieldActions/define'

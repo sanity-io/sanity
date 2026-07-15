@@ -1,4 +1,4 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback} from 'react'

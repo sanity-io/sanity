@@ -1,4 +1,4 @@
-import {EllipsisHorizontalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {Card, Menu} from '@sanity/ui'
 import {memo, type PointerEvent, useCallback, useId, useMemo, useState} from 'react'
 

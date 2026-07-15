@@ -1,4 +1,4 @@
-import {EarthGlobeIcon} from '@sanity/icons'
+import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
 import {defineType} from 'sanity'
 // import config from 'config:@sanity/google-maps-input'
 

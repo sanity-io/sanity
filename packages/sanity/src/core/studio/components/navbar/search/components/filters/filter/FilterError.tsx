@@ -1,4 +1,4 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Box, Flex, type ResponsivePaddingProps, Stack} from '@sanity/ui'
 
 import {TextWithTone} from '../../../../../../../components'

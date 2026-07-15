@@ -37,6 +37,10 @@ function getModuleUrl({
   return `${MODULES_URL}/${packageName}/${tag}/^${minVersion.version}/t${timestamp}`
 }
 
+/**
+ * Resolves the version the module CDN will serve for the studio's import map URL on reload
+ * (the `packageVersion` of the app's module metadata)
+ */
 export const fetchLatestAutoUpdatingVersion = async (options: {
   packageName: string
   minVersion: SemVer
@@ -68,6 +72,13 @@ export const fetchLatestAutoUpdatingVersion = async (options: {
   }
 }
 
+export interface LatestVersionInfo {
+  /** The latest version published to the tag, ignoring the version range — for messaging only, a reload may not serve it */
+  latest?: string
+  /** The version the module CDN will serve for this URL (resolved within the version range) */
+  packageVersion: string
+}
+
 export const fetchLatestAvailableVersionForPackage = async (options: {
   packageName: string
   minVersion: SemVer
@@ -87,7 +98,10 @@ export const fetchLatestAvailableVersionForPackage = async (options: {
     // `return await` (not bare `return`) so a JSON parse rejection is
     // caught by this try/catch instead of escaping to the caller.
     const data = await res.json()
-    return data.latest as string
+    return {
+      latest: data.latest as string,
+      packageVersion: data.packageVersion as string,
+    }
   } catch (err) {
     console.error(
       `Failed to fetch version for package (using tag=${tag})`,

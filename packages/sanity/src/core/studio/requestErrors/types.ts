@@ -61,9 +61,10 @@ export type RequestErrorClaim =
  *
  * Unclaimable errors (4xx other than 429, parse errors, ...) are
  * re-thrown unchanged, so downstream `.catch` / `catchError` handlers
- * still see them. 401s are claimed only after the studio verifies the
- * session is actually gone (probe), in which case a forced logout
- * follows; resource-level 401s are re-thrown to the caller.
+ * still see them. 401s are claimed only when the API explicitly tags them
+ * as an invalid session (`SIO-401-AEX` expired, `SIO-401-ANF` not found), in
+ * which case a forced logout follows; untagged resource-level 401s are
+ * re-thrown to the caller.
  *
  * @beta
  */

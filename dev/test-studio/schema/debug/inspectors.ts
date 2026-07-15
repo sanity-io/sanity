@@ -1,4 +1,4 @@
-import {SearchIcon} from '@sanity/icons'
+import {SearchIcon} from '@sanity/icons/Search'
 import {defineField, defineType} from 'sanity'
 
 export const inspectorsTestType = defineType({

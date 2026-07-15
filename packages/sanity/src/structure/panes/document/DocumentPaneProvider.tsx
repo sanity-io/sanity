@@ -235,11 +235,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       )
       const isPaused = isPausedCardinalityOneRelease(currentRelease)
 
-      // Temporary disable read-only for variant documents
-      // Variant documents cannot be edited yet in the studio. Coming soon.
-      if (perspective.selectedVariant) {
-        return true
-      }
       return (
         seeingHistoryDocument ||
         isDeleting ||
@@ -263,7 +258,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       schemaType,
       releases,
       selectedReleaseId,
-      perspective.selectedVariant,
     ],
   )
 

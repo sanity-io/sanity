@@ -1,4 +1,5 @@
-import {CloseIcon, InfoOutlineIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Box, Card, Flex, TabList, TabPanel, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {

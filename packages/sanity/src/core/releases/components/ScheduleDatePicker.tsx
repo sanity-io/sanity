@@ -1,4 +1,4 @@
-import {EarthGlobeIcon} from '@sanity/icons'
+import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
 import {Flex} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {isValid} from 'date-fns/isValid'

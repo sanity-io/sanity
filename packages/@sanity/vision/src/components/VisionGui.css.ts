@@ -7,6 +7,18 @@ globalStyle(`${root} .sidebarPanes .Pane`, {
   overflowX: 'hidden',
 })
 
+export const queryRecallPaneContainer = style({
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+})
+
+export const queryRecallPaneWrapper = style({
+  minHeight: 0,
+})
+
 globalStyle(`${root} .Resizer`, {
   background: 'var(--card-border-color)',
   opacity: 1,

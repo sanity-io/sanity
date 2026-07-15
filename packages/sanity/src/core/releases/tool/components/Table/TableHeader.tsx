@@ -1,4 +1,5 @@
-import {ArrowUpIcon, SearchIcon} from '@sanity/icons'
+import {ArrowUpIcon} from '@sanity/icons/ArrowUp'
+import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type CSSProperties, useMemo} from 'react'

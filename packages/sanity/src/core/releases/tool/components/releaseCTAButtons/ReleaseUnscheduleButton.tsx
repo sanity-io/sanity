@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CloseCircleIcon} from '@sanity/icons'
+import {CloseCircleIcon} from '@sanity/icons/CloseCircle'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
@@ -9,7 +9,7 @@ import {Translate, useTranslation} from '../../../../i18n'
 import {UnscheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../detail/types'
 
 interface ReleaseScheduleButtonProps {
   release: ReleaseDocument

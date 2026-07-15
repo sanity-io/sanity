@@ -1,4 +1,4 @@
-import {SearchIcon} from '@sanity/icons'
+import {SearchIcon} from '@sanity/icons/Search'
 import {type ForwardedRef, forwardRef} from 'react'
 
 import {Button} from '../../../../../ui-components'

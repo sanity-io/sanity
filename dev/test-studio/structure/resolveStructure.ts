@@ -1,20 +1,18 @@
-import {
-  BinaryDocumentIcon,
-  CheckmarkCircleIcon,
-  CogIcon,
-  DocumentIcon,
-  EarthGlobeIcon,
-  EditIcon,
-  EmptyIcon,
-  FilterIcon,
-  ImagesIcon,
-  PlugIcon,
-  RocketIcon,
-  SyncIcon,
-  TerminalIcon,
-  UsersIcon,
-  WarningFilledIcon,
-} from '@sanity/icons'
+import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {CogIcon} from '@sanity/icons/Cog'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
+import {EditIcon} from '@sanity/icons/Edit'
+import {EmptyIcon} from '@sanity/icons/Empty'
+import {FilterIcon} from '@sanity/icons/Filter'
+import {ImagesIcon} from '@sanity/icons/Images'
+import {PlugIcon} from '@sanity/icons/Plug'
+import {RocketIcon} from '@sanity/icons/Rocket'
+import {SyncIcon} from '@sanity/icons/Sync'
+import {TerminalIcon} from '@sanity/icons/Terminal'
+import {UsersIcon} from '@sanity/icons/Users'
+import {WarningFilledIcon} from '@sanity/icons/WarningFilled'
 import {uuid} from '@sanity/uuid'
 import {type Observable, timer} from 'rxjs'
 import {map} from 'rxjs/operators'

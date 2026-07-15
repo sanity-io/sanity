@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {PublishIcon} from '@sanity/icons/Publish'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -16,7 +17,7 @@ import {isReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../detail/types'
 
 interface ReleasePublishAllButtonProps {
   release: ReleaseDocument
@@ -283,7 +284,6 @@ export const ReleasePublishAllButton = ({
         isPublishButtonDisabled || publishBundleStatus === 'publishing' || documents.length === 0,
       text: t('action.publish-all-documents'),
       handleOnClick: handleInitialPublish,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       tooltipProps: {
         disabled: !isPublishButtonDisabled,
         content: publishTooltipContent,

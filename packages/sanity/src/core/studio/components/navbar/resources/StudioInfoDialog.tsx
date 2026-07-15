@@ -1,4 +1,8 @@
-import {CogIcon, GithubIcon, LaunchIcon, RefreshIcon, WarningOutlineIcon} from '@sanity/icons'
+import {CogIcon} from '@sanity/icons/Cog'
+import {GithubIcon} from '@sanity/icons/Github'
+import {LaunchIcon} from '@sanity/icons/Launch'
+import {RefreshIcon} from '@sanity/icons/Refresh'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {SanityMonogram} from '@sanity/logos'
 import {Badge, Card, Flex, Grid, Inline, Spinner, Stack, Text} from '@sanity/ui'
 import {useEffect, useId} from 'react'
@@ -238,7 +242,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 />
               </Flex>
             </>
-          ) : !isUpToDate || currentVersionType ? (
+          ) : isUpToDate ? null : (
             <>
               <Flex justify="flex-end" align="center">
                 <Text size={1} weight="semibold">
@@ -253,8 +257,9 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 </Badge>
 
                 {
-                  // save some space by not showing "how to update"-button
-                  currentVersionType ? null : (
+                  // this row only renders when a reload won't deliver the latest version, so
+                  // link to how to upgrade manually (hidden on dev/prerelease builds to save space)
+                  currentVersionType !== 'default' ? null : (
                     <Button
                       as="a"
                       href="https://www.sanity.io/docs/upgrade"
@@ -269,7 +274,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 }
               </Flex>
             </>
-          ) : null}
+          )}
         </Grid>
         <Stack space={2} paddingY={3}>
           {isAutoUpdating ? (

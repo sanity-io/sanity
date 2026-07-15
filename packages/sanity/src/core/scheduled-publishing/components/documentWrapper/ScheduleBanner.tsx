@@ -1,4 +1,5 @@
-import {CalendarIcon, WarningOutlineIcon} from '@sanity/icons'
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ValidationMarker} from '@sanity/types'
 import {Badge, Box, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns/format'

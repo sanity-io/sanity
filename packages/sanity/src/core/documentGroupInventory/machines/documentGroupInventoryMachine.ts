@@ -2,23 +2,28 @@ import {type ReleaseDocument} from '@sanity/client'
 import {EMPTY} from 'rxjs'
 import {assign, forwardTo, fromObservable, sendTo, setup, type ActorRefFromLogic} from 'xstate'
 
+import {type TFunction} from '../../i18n/types'
 import {type DocumentPerspectiveState} from '../../releases/hooks/useDocumentVersions'
 import {type ReleasesReducerState} from '../../releases/store/reducer'
-import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
-import {getVersionFromId, isDraftId, isPublishedId} from '../../util/draftUtils'
+import {type AgentBundlesState} from '../../store/agent/createAgentBundlesStore'
+import {type VariantStoreState} from '../../variants/store/reducer'
+import {computeSets} from '../utils/computeSets'
 import {type deletionMachine} from './deletionMachine'
 import {type selectionMachine, type Variant} from './selectionMachine'
 
 type SelectionLogic = typeof selectionMachine
 type DeletionLogic = typeof deletionMachine
 
-export interface SelectionMeta {
+export interface Meta {
   versionState: DocumentPerspectiveState
   releases: ReleasesReducerState
+  variants: VariantStoreState
+  agentBundles: AgentBundlesState
 }
 
 export interface VariantSet {
   key: string
+  name: string
   variants: Variant[]
 }
 
@@ -27,6 +32,8 @@ interface DocumentGroupInventoryContext {
   deletionRef: ActorRefFromLogic<DeletionLogic>
   sets: VariantSet[]
   releases: Map<string, ReleaseDocument>
+  t: TFunction
+  variantsEnabled: boolean | undefined
 }
 
 type DocumentGroupInventoryEvents =
@@ -37,14 +44,18 @@ type DocumentGroupInventoryEvents =
   | {type: 'feedback.end'}
 
 export const documentGroupInventoryMachine = setup({
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   types: {} as {
-    input: {selectionMachine: SelectionLogic; deletionMachine: DeletionLogic}
+    input: {
+      selectionMachine: SelectionLogic
+      deletionMachine: DeletionLogic
+      t: TFunction
+      variantsEnabled: boolean | undefined
+    }
     context: DocumentGroupInventoryContext
     events: DocumentGroupInventoryEvents
   },
   actors: {
-    meta: fromObservable<SelectionMeta, unknown>(() => EMPTY),
+    meta: fromObservable<Meta, unknown>(() => EMPTY),
   },
   actions: {
     onFeedbackBegin: () => {},
@@ -62,13 +73,21 @@ export const documentGroupInventoryMachine = setup({
     }),
     sets: [],
     releases: new Map(),
+    t: input.t,
+    variantsEnabled: input.variantsEnabled,
   }),
   invoke: {
     src: 'meta',
     onSnapshot: {
       actions: [
         assign({
-          sets: ({context, event}) => computeSets(event.snapshot.context, context.sets),
+          sets: ({context, event}) =>
+            computeSets({
+              meta: event.snapshot.context,
+              current: context.sets,
+              t: context.t,
+              variantsEnabled: context.variantsEnabled,
+            }),
           releases: ({event}) => event.snapshot.context?.releases.releases ?? new Map(),
         }),
         sendTo(
@@ -118,7 +137,7 @@ export const documentGroupInventoryMachine = setup({
   },
 })
 
-function metaHasError(meta: SelectionMeta | undefined): boolean {
+function metaHasError(meta: Meta | undefined): boolean {
   if (!meta) {
     return false
   }
@@ -126,35 +145,6 @@ function metaHasError(meta: SelectionMeta | undefined): boolean {
   return Boolean(meta.versionState.error) || meta.releases.state === 'error'
 }
 
-function metaIsLoaded(meta: SelectionMeta | undefined): boolean {
+function metaIsLoaded(meta: Meta | undefined): boolean {
   return meta?.versionState.loading === false && meta.releases.state === 'loaded'
-}
-
-function computeSets(meta: SelectionMeta | undefined, current: VariantSet[]): VariantSet[] {
-  if (!meta) {
-    return current
-  }
-
-  const {releases} = meta.releases
-
-  return [
-    {
-      key: 'studio:all',
-      variants: meta.versionState.data.map((id) => ({id, name: getVariantName(id, releases)})),
-    },
-  ]
-}
-
-function getVariantName(documentId: string, releases: Map<string, ReleaseDocument>): string {
-  if (isDraftId(documentId)) {
-    return 'Draft'
-  }
-
-  if (isPublishedId(documentId)) {
-    return 'Published'
-  }
-
-  const version = getVersionFromId(documentId)
-  const release = version ? releases.get(getReleaseDocumentIdFromReleaseId(version)) : undefined
-  return release?.metadata.title ?? documentId
 }

@@ -1,4 +1,4 @@
-import {EllipsisHorizontalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
 import {useTranslation} from '../..'
