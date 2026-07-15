@@ -48,28 +48,25 @@ export function CopyDocumentActions() {
   }, [documentId, scheduledDraft, schemaType?.liveEdit, selectedPerspectiveName, selectedReleaseId])
 
   /**
-   * Whether the document referenced by `contextAwareDocumentId` actually exists in the current
-   * perspective. When a release perspective is pinned but the document isn't part of that release
-   * (or when viewing a published/draft that doesn't exist yet), copying the id/URL would hand out a
-   * reference to a document that doesn't exist. In that case we disable the button.
+   * Whether the document the copy actions would reference actually exists.
+   *
+   * This only matters when the pane is checked out on a *version* — a release bundle or a variant —
+   * which `editState.scopeId` identifies (it's `undefined` for the base draft/published pair). If a
+   * release perspective is pinned (or a variant is selected) but that version doesn't exist, copying
+   * the id/URL would hand out a `versions.<scopeId>.<id>` reference to a document that isn't there,
+   * so we disable the button.
+   *
+   * The base draft/published pair always allows sharing: a missing draft is represented by a
+   * pseudo-draft, so there's still a meaningful document to share.
    *
    * Gated on `editState.ready` so we don't flash the disabled state while the initial snapshots are
    * still loading (all snapshots are `null` until then).
    */
   const documentExists = useMemo(() => {
     if (!editState?.ready) return true
-
-    const versionReleaseId = scheduledDraft || selectedReleaseId
-    if (versionReleaseId) {
-      return Boolean(editState.version)
-    }
-
-    if (selectedPerspectiveName === 'published' || schemaType?.liveEdit) {
-      return Boolean(editState.published)
-    }
-
-    return Boolean(editState.draft || editState.published)
-  }, [editState, scheduledDraft, selectedReleaseId, selectedPerspectiveName, schemaType?.liveEdit])
+    if (!editState.scopeId) return true
+    return Boolean(editState.version)
+  }, [editState])
 
   const handleCopyLink = useCallback(async () => {
     telemetry.log(DocumentURLCopied)

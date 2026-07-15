@@ -65,13 +65,14 @@ const mockUsePaneRouter = usePaneRouter as Mock
 const mockUseDocumentPaneInfo = useDocumentPaneInfo as Mock
 const mockUseDocumentPane = useDocumentPane as Mock
 
-// An edit state where every representation of the document exists, so the share button is enabled
-// regardless of the selected perspective.
+// An edit state for the base draft/published pair (no version checked out), so the share button is
+// enabled regardless of the selected perspective.
 const EXISTING_EDIT_STATE = {
   ready: true,
+  scopeId: undefined,
   draft: {_id: 'drafts.doc-123'},
   published: {_id: 'doc-123'},
-  version: {_id: 'versions.rMyRelease.doc-123'},
+  version: null,
 }
 
 let wrapper: React.ComponentType<{children: React.ReactNode}>
@@ -293,7 +294,13 @@ describe('CopyDocumentActions', () => {
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
         documentType: 'article',
-        editState: {ready: true, draft: null, published: {_id: 'doc-123'}, version: null},
+        editState: {
+          ready: true,
+          scopeId: 'rMyRelease',
+          draft: null,
+          published: {_id: 'doc-123'},
+          version: null,
+        },
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -314,6 +321,7 @@ describe('CopyDocumentActions', () => {
         documentType: 'article',
         editState: {
           ready: true,
+          scopeId: 'rMyRelease',
           draft: null,
           published: null,
           version: {_id: 'versions.rMyRelease.doc-123'},
@@ -325,22 +333,58 @@ describe('CopyDocumentActions', () => {
       expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
     })
 
-    it('disables the button on the published perspective when no published document exists', () => {
-      mockUsePerspective.mockReturnValue({
-        ...DEFAULT_PERSPECTIVE,
-        selectedPerspectiveName: 'published',
-        selectedPerspective: 'published',
-        perspectiveStack: ['published'],
-      })
+    it('disables the button when the selected variant does not exist', () => {
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
         documentType: 'article',
-        editState: {ready: true, draft: {_id: 'drafts.doc-123'}, published: null, version: null},
+        editState: {
+          ready: true,
+          scopeId: 'v1a2b3c4',
+          draft: null,
+          published: {_id: 'doc-123'},
+          version: null,
+        },
       })
 
       render(<CopyDocumentActions />, {wrapper})
 
       expect(screen.getByTestId('copy-document-actions-button')).toBeDisabled()
+    })
+
+    it('enables the button when the selected variant exists', () => {
+      mockUseDocumentPane.mockReturnValue({
+        documentId: 'doc-123',
+        documentType: 'article',
+        editState: {
+          ready: true,
+          scopeId: 'v1a2b3c4',
+          draft: null,
+          published: null,
+          version: {_id: 'versions.v1a2b3c4.doc-123'},
+        },
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
+    })
+
+    it('stays enabled on the drafts perspective when no draft exists (pseudo-draft)', () => {
+      mockUseDocumentPane.mockReturnValue({
+        documentId: 'doc-123',
+        documentType: 'article',
+        editState: {
+          ready: true,
+          scopeId: undefined,
+          draft: null,
+          published: {_id: 'doc-123'},
+          version: null,
+        },
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
     })
 
     it('stays enabled while the edit state is not yet ready', () => {
@@ -354,7 +398,13 @@ describe('CopyDocumentActions', () => {
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
         documentType: 'article',
-        editState: {ready: false, draft: null, published: null, version: null},
+        editState: {
+          ready: false,
+          scopeId: 'rMyRelease',
+          draft: null,
+          published: null,
+          version: null,
+        },
       })
 
       render(<CopyDocumentActions />, {wrapper})
