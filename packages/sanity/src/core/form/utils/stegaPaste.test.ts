@@ -1,3 +1,4 @@
+import {type ClipboardEvent} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {stripStegaFromPasteEvent} from './stegaPaste'
@@ -16,7 +17,7 @@ function createPasteEvent(target: Element, text: string) {
     currentTarget: target,
     clipboardData: {getData: (type: string) => (type === 'text/plain' ? text : '')},
     preventDefault: vi.fn(),
-  } as unknown as React.ClipboardEvent & {preventDefault: ReturnType<typeof vi.fn>}
+  } as unknown as ClipboardEvent & {preventDefault: ReturnType<typeof vi.fn>}
 }
 
 function createInput(props: {type?: string; value?: string} = {}): HTMLInputElement {
