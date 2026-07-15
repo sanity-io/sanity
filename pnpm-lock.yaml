@@ -1628,7 +1628,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       '@sanity/eventsource':
-        specifier: ^5.0.2
+        specifier: ^5.0.4
         version: 5.0.4
       '@sanity/icons':
         specifier: ^5.1.0
