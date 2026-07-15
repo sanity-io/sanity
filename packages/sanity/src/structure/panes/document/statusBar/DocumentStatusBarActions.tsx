@@ -23,6 +23,7 @@ import {DocTitle} from '../../../components/DocTitle'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {useHistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
+import {useIsEditingVariantDocument} from '../../../hooks/useIsEditingVariantDocument'
 import {usePerspectiveNavigator} from '../../../hooks/usePerspectiveNavigator'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
@@ -163,6 +164,8 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
   const {connectionState, documentId} = useDocumentPane()
 
+  const isEditingVariantDocument = useIsEditingVariantDocument()
+
   // The restore action has a dedicated place in the UI; it's only visible when the user is viewing
   // a different document revision. It must be omitted from this collection.
   const states = props.states.filter((state) =>
@@ -176,7 +179,9 @@ function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
       // Use document ID as key to make sure that the actions state is reset when the document changes
       key={documentId}
       disabled={connectionState !== 'connected'}
-      states={states}
+      // Temporary: hide actions when editing a variant document until actions are supported on variant documents
+      // See PR https://github.com/sanity-io/sanity/pull/13156
+      states={isEditingVariantDocument ? [] : states}
     />
   )
 }

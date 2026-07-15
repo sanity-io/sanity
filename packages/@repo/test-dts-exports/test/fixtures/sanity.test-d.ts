@@ -476,6 +476,7 @@ import type {
   DocumentOptions,
   DocumentPairLoadedEvent,
   DocumentPairPermissionsOptions,
+  DocumentPairTarget,
   DocumentPermission,
   DocumentPluginOptions,
   DocumentPresence,
@@ -702,6 +703,7 @@ import type {
   getItemKeySegment,
   getNamelessWorkspaceIdentifier,
   getPairListener,
+  getPairTarget,
   getPreviewPaths,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
@@ -715,6 +717,7 @@ import type {
   getSearchableTypes,
   getSelectedVariant,
   getTargetDocument,
+  getTargetScopeId,
   getTemplatePermissions,
   getValueAtPath,
   getValueError,
@@ -1455,6 +1458,7 @@ import type {
   TagsArrayInput,
   TagsArrayInputProps,
   TagValue,
+  TargetDocumentState,
   TargetPerspective,
   TelephoneInput,
   TelephoneInputProps,
@@ -1705,6 +1709,7 @@ import type {
   useStudioFeedbackTags,
   useStudioUrl,
   useSyncState,
+  useTargetDocumentState,
   useTelemetryConsent,
   useTemplatePermissions,
   useTemplatePermissionsFromHookFactory,
@@ -3227,6 +3232,9 @@ describe('sanity', () => {
   test('DocumentPairPermissionsOptions', () => {
     expectTypeOf<DocumentPairPermissionsOptions>().toBeObject()
   })
+  test('DocumentPairTarget', () => {
+    expectTypeOf<DocumentPairTarget>().not.toBeNever()
+  })
   test('DocumentPermission', () => {
     expectTypeOf<DocumentPermission>().not.toBeNever()
   })
@@ -3911,6 +3919,9 @@ describe('sanity', () => {
   test('getPairListener', () => {
     expectTypeOf<typeof getPairListener>().toBeFunction()
   })
+  test('getPairTarget', () => {
+    expectTypeOf<typeof getPairTarget>().toBeFunction()
+  })
   test('getPreviewPaths', () => {
     expectTypeOf<typeof getPreviewPaths>().toBeFunction()
   })
@@ -3949,6 +3960,9 @@ describe('sanity', () => {
   })
   test('getTargetDocument', () => {
     expectTypeOf<typeof getTargetDocument>().toBeFunction()
+  })
+  test('getTargetScopeId', () => {
+    expectTypeOf<typeof getTargetScopeId>().toBeFunction()
   })
   test('getTemplatePermissions', () => {
     expectTypeOf<typeof getTemplatePermissions>().toBeFunction()
@@ -6178,6 +6192,9 @@ describe('sanity', () => {
   test('TagValue', () => {
     expectTypeOf<TagValue>().not.toBeNever()
   })
+  test('TargetDocumentState', () => {
+    expectTypeOf<TargetDocumentState>().not.toBeNever()
+  })
   test('TargetPerspective', () => {
     expectTypeOf<TargetPerspective>().not.toBeNever()
   })
@@ -6931,6 +6948,9 @@ describe('sanity', () => {
   })
   test('useSyncState', () => {
     expectTypeOf<typeof useSyncState>().toBeFunction()
+  })
+  test('useTargetDocumentState', () => {
+    expectTypeOf<typeof useTargetDocumentState>().toBeFunction()
   })
   test('useTelemetryConsent', () => {
     expectTypeOf<typeof useTelemetryConsent>().toBeFunction()
