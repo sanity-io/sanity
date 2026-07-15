@@ -56,8 +56,8 @@ catalogs:
       specifier: ^2.1.5
       version: 2.1.5
     '@vanilla-extract/vite-plugin':
-      specifier: ^5.2.3
-      version: 5.2.3
+      specifier: ^5.2.4
+      version: 5.2.5
     '@vitejs/plugin-react':
       specifier: ^6.0.3
       version: 6.0.3
@@ -216,7 +216,7 @@ importers:
     devDependencies:
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.3(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
+        version: 5.2.5(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
@@ -265,7 +265,7 @@ importers:
     devDependencies:
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.3(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
+        version: 5.2.5(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
@@ -461,7 +461,7 @@ importers:
         version: link:../../packages/@repo/test-config
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.3(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
+        version: 5.2.5(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
@@ -748,7 +748,7 @@ importers:
         version: 1.21.1(babel-plugin-macros@3.1.0)
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.3(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
+        version: 5.2.5(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
       '@vitejs/devtools':
         specifier: ^0.3.3
         version: 0.3.3(@vercel/blob@2.4.0)(typescript@6.0.3)(vite@8.1.4)
@@ -891,7 +891,7 @@ importers:
         version: 4.17.12
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.3(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
+        version: 5.2.5(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 6.0.3(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.1.4)
@@ -1479,7 +1479,7 @@ importers:
         version: 1.21.1(babel-plugin-macros@3.1.0)
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.3(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
+        version: 5.2.5(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 6.0.3(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.1.4)
@@ -1924,7 +1924,7 @@ importers:
         version: 1.21.1(babel-plugin-macros@3.1.0)
       '@vanilla-extract/vite-plugin':
         specifier: 'catalog:'
-        version: 5.2.3(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
+        version: 5.2.5(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 6.0.3(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.1.4)
@@ -6656,8 +6656,8 @@ packages:
   '@vanilla-extract/babel-plugin-debug-ids@1.2.2':
     resolution: {integrity: sha512-MeDWGICAF9zA/OZLOKwhoRlsUW+fiMwnfuOAqFVohL31Agj7Q/RBWAYweqjHLgFBCsdnr6XIfwjJnmb2znEWxw==}
 
-  '@vanilla-extract/compiler@0.7.0':
-    resolution: {integrity: sha512-rZQ40HVmsxfGLjoflwwsaUBLfpbpKDoZC19oiDA0FHq4LdrYtyVbFkc0MfqkNo/qBCvaZfsRezCqk0QQxCqZ8w==}
+  '@vanilla-extract/compiler@0.7.2':
+    resolution: {integrity: sha512-VslwMJ01taDhJmMo0+A0SWn2dloMnYi0+BbvLuXXlqK4ufVRwXsq/U/Fp8ANkw3jevmQXy+JL7VtIQdjEtylDQ==}
 
   '@vanilla-extract/css@1.21.1':
     resolution: {integrity: sha512-T6z6oeT+o0OwqukE6kLs9w5ooB75b8NPRadyU9pPTml83l40TPN+mscPt2OQ9P9cYfwEBMfsfivwiJujs2mzmg==}
@@ -6676,8 +6676,8 @@ packages:
     peerDependencies:
       rollup: ^2.0.0 || ^3.0.0 || ^4.0.0
 
-  '@vanilla-extract/vite-plugin@5.2.3':
-    resolution: {integrity: sha512-OwkW0DVNrDBIOpxexE83Y7lpjRsTsu+87xGzo2JXy6qUEJuM+b8/iEqt+ZUbvCNLs6bnC9+QNISZOG33rPMBlg==}
+  '@vanilla-extract/vite-plugin@5.2.5':
+    resolution: {integrity: sha512-V397a7qKqQskExW6TkjGnp5czp7sFd8cGTsnf44jsfyCXNcdJLWAKqJnSaFrW0bemp1W1OLg/cVkfl8qc0FLRw==}
     peerDependencies:
       vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
 
@@ -16143,7 +16143,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vanilla-extract/compiler@0.7.0(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)':
+  '@vanilla-extract/compiler@0.7.2(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)':
     dependencies:
       '@vanilla-extract/css': 1.21.1(babel-plugin-macros@3.1.0)
       '@vanilla-extract/integration': 8.0.10(babel-plugin-macros@3.1.0)
@@ -16212,9 +16212,9 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@vanilla-extract/vite-plugin@5.2.3(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)':
+  '@vanilla-extract/vite-plugin@5.2.5(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(vite@8.1.4)(yaml@2.9.0)':
     dependencies:
-      '@vanilla-extract/compiler': 0.7.0(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
+      '@vanilla-extract/compiler': 0.7.2(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       '@vanilla-extract/integration': 8.0.10(babel-plugin-macros@3.1.0)
       vite: 8.1.4(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     transitivePeerDependencies:
