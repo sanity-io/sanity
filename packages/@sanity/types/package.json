@@ -73,8 +73,5 @@
   "browserslist": [
     "node >=22.12",
     "baseline 2024"
-  ],
-  "inlinedDependencies": {
-    "@sanity/insert-menu": "3.0.8"
-  }
+  ]
 }
