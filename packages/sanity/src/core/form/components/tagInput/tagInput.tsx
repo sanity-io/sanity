@@ -315,7 +315,7 @@ function Tag(props: {
   return (
     <Card data-ui="Tag" radius={2} tone="transparent">
       <Flex align="center" gap={1}>
-        <Box flex={1} paddingY={2} paddingLeft={2}>
+        <Box flex={1} paddingY={2} paddingLeft={2} paddingRight={enabled ? undefined : 2}>
           <Text muted={muted} textOverflow="ellipsis">
             {tag.value}
           </Text>
