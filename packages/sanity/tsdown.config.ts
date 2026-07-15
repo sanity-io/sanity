@@ -16,6 +16,20 @@ export default defineConfig({
     'media-library': './src/_exports/media-library.ts',
     'migrate': './src/_exports/migrate.ts',
   },
+  // Also wipe legacy root-level entry artifacts from older pkg-utils layouts (a string[] replaces
+  // the shared `clean: ['lib']` default, so `lib` must be listed explicitly)
+  clean: [
+    'lib',
+    '_internal.js',
+    '_singletons.js',
+    '_createContext.js',
+    'cli.js',
+    'desk.js',
+    'migrate.js',
+    'presentation.js',
+    'router.js',
+    'structure.js',
+  ],
   reactCompiler: {target: '19'},
   styledComponents: true,
   // Extracts the CSS from vanilla-extract `.css.ts` files into `lib/bundle.css` and wires up the

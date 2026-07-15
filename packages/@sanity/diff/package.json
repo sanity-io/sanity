@@ -43,7 +43,6 @@
   "scripts": {
     "build": "tsdown",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/diff/tsconfig.lib.json --erasableSyntaxOnly)",
-    "clean": "rimraf lib coverage",
     "prepublishOnly": "turbo run build",
     "watch": "tsdown --watch"
   },
@@ -54,7 +53,6 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
     "@typescript/native-preview": "catalog:",
-    "rimraf": "catalog:",
     "tsdown": "catalog:"
   },
   "browserslist": [

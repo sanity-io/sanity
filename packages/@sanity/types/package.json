@@ -44,7 +44,6 @@
   "scripts": {
     "build": "tsdown",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/types/tsconfig.lib.json --erasableSyntaxOnly)",
-    "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:watch": "vitest watch",
@@ -62,7 +61,6 @@
     "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "react": "catalog:",
-    "rimraf": "catalog:",
     "tsdown": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

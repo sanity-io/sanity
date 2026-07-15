@@ -105,9 +105,8 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && tsdown",
+    "build": "tsdown",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
-    "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "watch": "tsdown --watch"
@@ -126,7 +125,6 @@
     "@repo/tsdown.config": "workspace:*",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
-    "rimraf": "catalog:",
     "tsdown": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

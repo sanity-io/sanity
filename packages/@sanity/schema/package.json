@@ -53,9 +53,8 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && tsdown",
+    "build": "tsdown",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/schema/tsconfig.lib.json --erasableSyntaxOnly)",
-    "clean": "rimraf _internal.js lib",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:watch": "vitest watch",
@@ -82,7 +81,6 @@
     "@types/object-inspect": "^1.13.0",
     "@types/react": "catalog:",
     "@typescript/native-preview": "catalog:",
-    "rimraf": "catalog:",
     "tsdown": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

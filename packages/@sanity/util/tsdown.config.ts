@@ -4,6 +4,20 @@ import {defineConfig} from '@repo/tsdown.config'
 // need the ESM and CJS configs merged into one, and with the CJS build containing a single entry
 // tsdown treats that entry as the root `.` export (its per-format single-entry heuristic), which
 // would wire `require` for `.` to `createSafeJsonParser.cjs`.
+//
+// Also wipe legacy root-level entry artifacts from older pkg-utils layouts (a string[] replaces
+// the shared `clean: ['lib']` default, so `lib` must be listed explicitly)
+const clean = [
+  'lib',
+  'client.js',
+  'concurrency-limiter.js',
+  'content.js',
+  'createSafeJsonParser.js',
+  'fs.js',
+  'legacyDateFormat.js',
+  'paths.js',
+]
+
 export default await Promise.all([
   defineConfig({
     entry: {
@@ -16,6 +30,7 @@ export default await Promise.all([
       'legacyDateFormat': './src/_exports/legacyDateFormat.ts',
       'paths': './src/_exports/paths.ts',
     },
+    clean,
     exports: false,
   }),
   // `./createSafeJsonParser` is also published as CJS (see the `require` condition in
@@ -23,6 +38,7 @@ export default await Promise.all([
   defineConfig({
     entry: {createSafeJsonParser: './src/_exports/createSafeJsonParser.ts'},
     format: 'cjs',
+    clean,
     exports: false,
   }),
 ])

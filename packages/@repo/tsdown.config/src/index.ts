@@ -16,6 +16,8 @@ import {type UserConfig} from 'tsdown'
  *   `sanity` ships a hand-written `bin/sanity` wrapper.
  * - `define: {__DEV__: 'false'}` - the same build-time constant `@sanity/pkg-utils` used to inject
  * - `outDir: 'lib'` - the packages publish `lib`, not tsdown's default `dist`
+ * - `clean: ['lib']` - remove `lib` before each build (include `outDir` when overriding with
+ *   a package-specific array; a `string[]` replaces tsdown's default of cleaning only `outDir`)
  */
 export function defineConfig(options: PackageOptions = {}): Promise<UserConfig> {
   return defineTsdownConfig({
@@ -23,6 +25,7 @@ export function defineConfig(options: PackageOptions = {}): Promise<UserConfig> 
     dts: {tsgo: true},
     exports: {devExports: 'monorepo', bin: false},
     outDir: 'lib',
+    clean: ['lib'],
     ...options,
     define: {__DEV__: 'false', ...options.define},
   })

@@ -29,8 +29,8 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     '@sanity/tsdown-config':
-      specifier: ^0.16.0
-      version: 0.16.0
+      specifier: ^0.18.0
+      version: 0.18.0
     '@sanity/ui':
       specifier: ^3.3.0
       version: 3.3.0
@@ -1103,7 +1103,7 @@ importers:
         version: link:../tsconfig
       '@sanity/tsdown-config':
         specifier: 'catalog:'
-        version: 0.16.0(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.1.5)(tsdown@0.22.8)(typescript@6.0.3)(vite@8.1.4)
+        version: 0.18.0(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.1.5)(tsdown@0.22.8)(typescript@6.0.3)(vite@8.1.4)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.2
@@ -1151,9 +1151,6 @@ importers:
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.1.3
       tsdown:
         specifier: 'catalog:'
         version: 0.22.8(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.3.3)(oxc-resolver@11.21.3)(publint@0.3.21)(tsx@4.22.4)(typescript@6.0.3)
@@ -1197,9 +1194,6 @@ importers:
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.1.3
       tsdown:
         specifier: 'catalog:'
         version: 0.22.8(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.3.3)(oxc-resolver@11.21.3)(publint@0.3.21)(tsx@4.22.4)(typescript@6.0.3)
@@ -1267,9 +1261,6 @@ importers:
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.1.3
       tsdown:
         specifier: 'catalog:'
         version: 0.22.8(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.3.3)(oxc-resolver@11.21.3)(publint@0.3.21)(tsx@4.22.4)(typescript@6.0.3)
@@ -1310,9 +1301,6 @@ importers:
       react:
         specifier: 'catalog:'
         version: 19.2.7
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.1.3
       tsdown:
         specifier: 'catalog:'
         version: 0.22.8(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.3.3)(oxc-resolver@11.21.3)(publint@0.3.21)(tsx@4.22.4)(typescript@6.0.3)
@@ -1359,9 +1347,6 @@ importers:
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.1.3
       tsdown:
         specifier: 'catalog:'
         version: 0.22.8(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.3.3)(oxc-resolver@11.21.3)(publint@0.3.21)(tsx@4.22.4)(typescript@6.0.3)
@@ -1498,9 +1483,6 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.7(react@19.2.7)
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.1.3
       sanity:
         specifier: workspace:*
         version: link:../../sanity
@@ -1531,9 +1513,6 @@ importers:
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.1.3
       tsdown:
         specifier: 'catalog:'
         version: 0.22.8(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.3.3)(oxc-resolver@11.21.3)(publint@0.3.21)(tsx@4.22.4)(typescript@6.0.3)
@@ -5680,8 +5659,8 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  '@sanity/tsdown-config@0.16.0':
-    resolution: {integrity: sha512-KyODluqXeiXLXEzEUGNDACDp2KIbQDD7XvtlSq1hKAcL6+uZYCrD+GDm3c22Pr+pSZIfivDHWbumm8EIGKnPbQ==}
+  '@sanity/tsdown-config@0.18.0':
+    resolution: {integrity: sha512-WzAhLvQdXjVUAqbTEICoArKCgKiURU3HlWk4Ub4Q0gZAWoceMNlcJdW7ix4qqWMTaWXt+G9/uFYmSf3JZv7/hA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       babel-plugin-react-compiler: '*'
@@ -5706,8 +5685,17 @@ packages:
   '@sanity/uuid@3.0.3':
     resolution: {integrity: sha512-aJvKuFwzcZKRwuIjrRPfXfXKpSdnLF4CnedV5WcX1n5SzhufvRNHIot5lkx1+Y1DwiMVQOZ5gDSPJH+P6Ao70A==}
 
-  '@sanity/vanilla-extract-tsdown-plugin@0.1.2':
-    resolution: {integrity: sha512-l2M+P99hALSLIRiBIhn8BpegWDNsVni6LZg1ZRhtdv+8XG1SCi8FM4budqOHLRpwPR1OnnnCcrrTgYzHqgX8Lw==}
+  '@sanity/vanilla-extract-rolldown-plugin@0.1.2':
+    resolution: {integrity: sha512-fFg4+v2raVqXBy7zaca5ixut581sgXpAVAF2W6iXnvpb+mi3rs/+KiDG+8l5OoyHvhqMj4YNNRLtBpi7SC2E8Q==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      rolldown: ^1.0.0
+    peerDependenciesMeta:
+      rolldown:
+        optional: true
+
+  '@sanity/vanilla-extract-tsdown-plugin@0.2.2':
+    resolution: {integrity: sha512-V4pC8r++L0zYBF1DOxN+N3tC+BFfmIPtIi91UlkK2rgQ3BiyXxXcqeijt5pYApuLHklz4U8VMOqTna4YQu9b7g==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       tsdown: ^0.22.5
@@ -14915,12 +14903,15 @@ snapshots:
       '@actions/github': 9.1.1
       yaml: 2.9.0
 
-  '@sanity/tsdown-config@0.16.0(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.1.5)(tsdown@0.22.8)(typescript@6.0.3)(vite@8.1.4)':
+  '@sanity/tsdown-config@0.18.0(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.1.5)(tsdown@0.22.8)(typescript@6.0.3)(vite@8.1.4)':
     dependencies:
       '@babel/core': 7.29.7
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.1.5)(vite@8.1.4)
-      '@sanity/vanilla-extract-tsdown-plugin': 0.1.2(tsdown@0.22.8)
+      '@sanity/browserslist-config': 1.0.5
+      '@sanity/vanilla-extract-tsdown-plugin': 0.2.2(rolldown@1.1.5)(tsdown@0.22.8)
       '@vitejs/plugin-react': 6.0.3(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.1.4)
+      browserslist: 4.28.6
+      lightningcss: 1.32.0
       package-manager-detector: 1.7.0
       publint: 0.3.21
       tsdown: 0.22.8(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.3.3)(oxc-resolver@11.21.3)(publint@0.3.21)(tsx@4.22.4)(typescript@6.0.3)
@@ -14962,15 +14953,23 @@ snapshots:
     dependencies:
       uuid: 11.1.1
 
-  '@sanity/vanilla-extract-tsdown-plugin@0.1.2(tsdown@0.22.8)':
+  '@sanity/vanilla-extract-rolldown-plugin@0.1.2(rolldown@1.1.5)':
     dependencies:
-      '@sanity/browserslist-config': 1.0.5
       '@vanilla-extract/integration': 8.0.10(babel-plugin-macros@3.1.0)
-      browserslist: 4.28.6
       lightningcss: 1.32.0
+    optionalDependencies:
+      rolldown: 1.1.5
+    transitivePeerDependencies:
+      - babel-plugin-macros
+      - supports-color
+
+  '@sanity/vanilla-extract-tsdown-plugin@0.2.2(rolldown@1.1.5)(tsdown@0.22.8)':
+    dependencies:
+      '@sanity/vanilla-extract-rolldown-plugin': 0.1.2(rolldown@1.1.5)
       tsdown: 0.22.8(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.3.3)(oxc-resolver@11.21.3)(publint@0.3.21)(tsx@4.22.4)(typescript@6.0.3)
     transitivePeerDependencies:
       - babel-plugin-macros
+      - rolldown
       - supports-color
 
   '@sanity/visual-editing-csm@3.0.10(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)':

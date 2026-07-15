@@ -58,7 +58,6 @@
     "build": "tsdown",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/vision/tsconfig.lib.json --erasableSyntaxOnly)",
-    "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "test": "vitest",
     "watch": "tsdown --watch"
@@ -107,7 +106,6 @@
     "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "rimraf": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:",
     "tsdown": "catalog:",
