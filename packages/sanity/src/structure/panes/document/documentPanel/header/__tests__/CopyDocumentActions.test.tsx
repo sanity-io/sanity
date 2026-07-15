@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {usePerspective} from 'sanity'
+import {usePerspective, useTargetDocumentState} from 'sanity'
 import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -25,9 +25,17 @@ const DEFAULT_PERSPECTIVE = {
   excludedPerspectives: [],
 }
 
+const READY_TARGET_STATE = {
+  status: 'ready' as const,
+  targetDocument: undefined,
+  scopeId: undefined,
+  variant: undefined,
+}
+
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   usePerspective: vi.fn(() => DEFAULT_PERSPECTIVE),
+  useTargetDocumentState: vi.fn(() => READY_TARGET_STATE),
   useStudioUrl: vi.fn(() => ({
     studioUrl: 'http://localhost:3333',
     buildIntentUrl: mockBuildIntentUrl,
@@ -64,9 +72,8 @@ const mockUsePerspective = usePerspective as Mock
 const mockUsePaneRouter = usePaneRouter as Mock
 const mockUseDocumentPaneInfo = useDocumentPaneInfo as Mock
 const mockUseDocumentPane = useDocumentPane as Mock
+const mockUseTargetDocumentState = useTargetDocumentState as Mock
 
-// An edit state for the base draft/published pair (no version checked out), so the share button is
-// enabled regardless of the selected perspective.
 const EXISTING_EDIT_STATE = {
   ready: true,
   scopeId: undefined,
@@ -102,6 +109,7 @@ describe('CopyDocumentActions', () => {
       documentType: 'article',
       editState: EXISTING_EDIT_STATE,
     })
+    mockUseTargetDocumentState.mockReturnValue(READY_TARGET_STATE)
   })
 
   async function clickMenuItem(testId: string) {
@@ -334,12 +342,39 @@ describe('CopyDocumentActions', () => {
     })
 
     it('disables the button when the selected variant does not exist', () => {
+      mockUseTargetDocumentState.mockReturnValue({
+        status: 'variant-missing',
+        variant: {_id: 'variant-1'},
+        bundle: 'published',
+      })
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
         documentType: 'article',
         editState: {
           ready: true,
-          scopeId: 'v1a2b3c4',
+          scopeId: undefined,
+          draft: null,
+          published: {_id: 'doc-123'},
+          version: null,
+        },
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.getByTestId('copy-document-actions-button')).toBeDisabled()
+    })
+
+    it('disables the button when the selected variant definition is not found', () => {
+      mockUseTargetDocumentState.mockReturnValue({
+        status: 'variant-definition-document-not-found',
+        requestedVariantName: 'unknown-variant',
+      })
+      mockUseDocumentPane.mockReturnValue({
+        documentId: 'doc-123',
+        documentType: 'article',
+        editState: {
+          ready: true,
+          scopeId: undefined,
           draft: null,
           published: {_id: 'doc-123'},
           version: null,
@@ -352,6 +387,12 @@ describe('CopyDocumentActions', () => {
     })
 
     it('enables the button when the selected variant exists', () => {
+      mockUseTargetDocumentState.mockReturnValue({
+        status: 'ready',
+        targetDocument: {_id: 'versions.v1a2b3c4.doc-123'},
+        scopeId: 'v1a2b3c4',
+        variant: {_id: 'variant-1'},
+      })
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
         documentType: 'article',

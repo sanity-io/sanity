@@ -4,7 +4,14 @@ import {TargetIcon} from '@sanity/icons/Target'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, useToast} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {getDraftId, getVersionId, usePerspective, useStudioUrl, useTranslation} from 'sanity'
+import {
+  getDraftId,
+  getVersionId,
+  usePerspective,
+  useStudioUrl,
+  useTargetDocumentState,
+  useTranslation,
+} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
@@ -24,6 +31,7 @@ import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 export function CopyDocumentActions() {
   const {documentId, documentType, schemaType} = useDocumentPaneInfo()
   const {editState} = useDocumentPane()
+  const targetDocumentState = useTargetDocumentState(documentId)
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
@@ -47,26 +55,13 @@ export function CopyDocumentActions() {
     return getDraftId(documentId)
   }, [documentId, scheduledDraft, schemaType?.liveEdit, selectedPerspectiveName, selectedReleaseId])
 
-  /**
-   * Whether the document the copy actions would reference actually exists.
-   *
-   * This only matters when the pane is checked out on a *version* — a release bundle or a variant —
-   * which `editState.scopeId` identifies (it's `undefined` for the base draft/published pair). If a
-   * release perspective is pinned (or a variant is selected) but that version doesn't exist, copying
-   * the id/URL would hand out a `versions.<scopeId>.<id>` reference to a document that isn't there,
-   * so we disable the button.
-   *
-   * The base draft/published pair always allows sharing: a missing draft is represented by a
-   * pseudo-draft, so there's still a meaningful document to share.
-   *
-   * Gated on `editState.ready` so we don't flash the disabled state while the initial snapshots are
-   * still loading (all snapshots are `null` until then).
-   */
-  const documentExists = useMemo(() => {
-    if (!editState?.ready) return true
-    if (!editState.scopeId) return true
-    return Boolean(editState.version)
-  }, [editState])
+  const selectedVariantMissing =
+    targetDocumentState.status === 'variant-missing' ||
+    targetDocumentState.status === 'variant-definition-document-not-found'
+
+  const pinnedVersionMissing = Boolean(editState?.ready && editState.scopeId && !editState.version)
+
+  const documentExists = !selectedVariantMissing && !pinnedVersionMissing
 
   const handleCopyLink = useCallback(async () => {
     telemetry.log(DocumentURLCopied)
