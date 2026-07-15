@@ -107,7 +107,8 @@ export const DocumentActionShortcuts = memo(
             actionsBoxElement={actionsBoxElement}
             as={as}
             onActionStart={onActionStart}
-            // Temporarily hide the actions when editing a variant document, until actions are supported on variant documents.
+            // Temporary: hide actions when editing a variant document until actions are supported on variant documents
+            // See PR https://github.com/sanity-io/sanity/pull/13156
             states={isEditingVariantDocument ? [] : states}
           >
             {children}
