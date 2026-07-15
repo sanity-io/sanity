@@ -153,7 +153,22 @@ jobs:
 
   bench-interaction:
     needs: [build, build-reference]
-    if: needs.build.outputs.has_code_changes == 'true'
+    # Runs on the PR path (A/B vs the merge-base) and on the daily-tracking
+    # path (absolute — build-reference is PR-only and gets skipped, so
+    # COMPARISON is empty and the run step drops --reference-dist). Sharded per
+    # scenario either way, so the daily run's wall-clock is the slowest single
+    # scenario, not the sum. Only on triggers whose results are consumed by
+    # track-main — NOT the weekly self-test cron or a self_test-only dispatch,
+    # which run their own job and would otherwise launch these shards for
+    # nothing. The `!cancelled()` status function is required so the job still
+    # runs when build-reference is *skipped* (a plain custom if: would itself
+    # skip on a skipped need); guard on build succeeding.
+    if: >-
+      !cancelled() && needs.build.result == 'success' &&
+      ((github.event_name == 'pull_request' &&
+        needs.build.outputs.has_code_changes == 'true') ||
+       (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
+       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
     runs-on: ubuntu-8core
     # Headroom for a/b runs of the heavy scenarios (synthetic sessions cost
     # ~90s each and run on both sides)
@@ -239,7 +254,16 @@ jobs:
 
   bench-pageload:
     needs: [build, build-reference]
-    if: needs.build.outputs.has_code_changes == 'true'
+    # See bench-interaction: PR path is A/B, daily/run_suite is absolute
+    # (build-reference skipped). Gated to the triggers track-main consumes, so
+    # the self-test path doesn't launch these shards for nothing. `!cancelled()`
+    # lets it run past the skipped build-reference need; guard on build.
+    if: >-
+      !cancelled() && needs.build.result == 'success' &&
+      ((github.event_name == 'pull_request' &&
+        needs.build.outputs.has_code_changes == 'true') ||
+       (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
+       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
     runs-on: ubuntu-8core
     timeout-minutes: 20
     permissions:
@@ -527,18 +551,25 @@ jobs:
           retention-days: 30
 
   track-main:
-    # Daily absolute-mode run against main HEAD, stored to the studio-metrics
-    # project for time-series/drift tracking. Fixed session counts -
-    # comparability over speed (no dynamic stopping shortcut across days).
-    # Also the on-demand "run the suite" path: a workflow_dispatch with
-    # run_suite triggers the same full run + store (e.g. to backfill a point or
-    # verify the store path without waiting for the 5am cron).
+    # Daily absolute-mode tracking (and the on-demand run_suite dispatch): soak
+    # and INP run here (daily-only modes), then this job gathers the interaction
+    # and pageLoad shard results (bench-interaction / bench-pageload, which run
+    # absolute on this trigger) and stores one merged benchRun doc to the
+    # studio-metrics project. Interaction/pageLoad moved to the sharded jobs so
+    # the daily run is parallel (was a single ~90-minute sequential job); soak
+    # (~10m) + INP (~10m) are cheap and stay together here.
+    #
+    # Fixed session counts across the board — comparability over speed, no
+    # dynamic-stopping shortcut across days.
     if: >-
-      (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
-      (github.event_name == 'workflow_dispatch' && inputs.run_suite)
-    needs: [build]
+      !cancelled() &&
+      needs.bench-interaction.result == 'success' &&
+      needs.bench-pageload.result == 'success' &&
+      ((github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
+       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
+    needs: [build, bench-interaction, bench-pageload]
     runs-on: ubuntu-8core
-    timeout-minutes: 90
+    timeout-minutes: 45
     permissions:
       contents: read
     env:
@@ -584,16 +615,22 @@ jobs:
           name: bench-dist-experiment
           path: perf/bench/dist
 
-      - name: Run interaction benchmarks (fixed sessions)
-        run: |
-          pnpm bench run --mode interaction --sessions 8 \
-            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__interaction.json"
-
-      - name: Run pageLoad benchmarks
-        run: |
-          pnpm bench run --mode pageload --scenario singleString --scenario syntheticLarge \
-            --sessions 8 \
-            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__pageload.json"
+      # Gather the interaction + pageLoad shard results into the shared results
+      # dir; soak and INP write their own JSON alongside, and `bench report`
+      # merges everything into one document (bench-results__*.json). Two
+      # explicit patterns (not a broad bench-results-*) so nothing unrelated —
+      # e.g. bench-results-self-test from a dispatch with both run_suite and
+      # self_test — leaks into the stored daily doc.
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: bench-results-interaction-*
+          merge-multiple: true
+          path: perf/bench/results
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: bench-results-pageload-*
+          merge-multiple: true
+          path: perf/bench/results
 
       - name: Run soak check
         run: |

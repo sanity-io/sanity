@@ -8,7 +8,7 @@ import {
 import {Subscription} from 'rxjs'
 
 import {BENCH_USER} from '../constants'
-import {handleActions, handleDoc, handleMutate, handleQuery} from './data'
+import {handleActions, handleDoc, handleDocRevision, handleMutate, handleQuery} from './data'
 import {RequestLedger} from './ledger'
 import {AUTH_PROBE, AUTH_PROVIDERS, DATASET_ACL, DATASETS, projectData} from './project'
 import {corsHeaders, handlePreflight, json, readBody} from './respond'
@@ -213,6 +213,13 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       // a console error on failure — answer with an empty event list
       // (shape: getInitialFetchEvents.ts)
       record('history', json(req, res, 200, {events: {}, nextCursor: ''}))
+      return
+    }
+    // A document at a specific revision (divergence/changes machinery). Must
+    // come before the general history routes; distinct from /events/documents/.
+    const docRevisionMatch = path.match(/^\/data\/history\/([^/]+)\/documents\/([^/?]+)/)
+    if (docRevisionMatch && method === 'GET') {
+      record('history', handleDocRevision(req, res, store, docRevisionMatch[2]))
       return
     }
     const translogMatch = path.match(/^\/data\/history\/([^/]+)\/transactions\//)

@@ -9,6 +9,7 @@ import {
 import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
+import {stegaClean} from '@sanity/client/stega'
 import {type Path} from '@sanity/types'
 import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
 import {type MutableRefObject, useCallback, useEffect, useState} from 'react'
@@ -248,6 +249,11 @@ function FocusBridgePlugin(props: {focusRef: MutableRefObject<{focus: () => void
  *
  * This is essential to allow pasting of data copied from Portable Text based fields. If pasting
  * Portable Text data was permitted, it would cause a conflict with the expected data structure.
+ *
+ * The pasted text is also cleaned of stega metadata (invisible unicode characters embedded by
+ * e.g. `@sanity/client/stega`). This mirrors what the editor's own converters do when pasting
+ * into regular Portable Text fields, but must be done explicitly here since raising `insert.text`
+ * bypasses those converters.
  */
 const plainTextPasteBehaviour = defineBehavior({
   on: 'clipboard.paste',
@@ -255,7 +261,7 @@ const plainTextPasteBehaviour = defineBehavior({
     (event) => [
       raise({
         type: 'insert.text',
-        text: event.event.originEvent.dataTransfer.getData('text'),
+        text: stegaClean(event.event.originEvent.dataTransfer.getData('text')),
       }),
     ],
   ],

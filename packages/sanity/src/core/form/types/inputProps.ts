@@ -28,6 +28,7 @@ import {
   type StringSchemaType,
 } from '@sanity/types'
 import {
+  type ClipboardEventHandler,
   type ComponentType,
   type FocusEvent as ReactFocusEvent,
   type FocusEventHandler,
@@ -442,6 +443,7 @@ export interface PrimitiveInputElementProps {
   'onChange': FormEventHandler
   'onFocus': FocusEventHandler
   'onBlur': FocusEventHandler
+  'onPaste'?: ClipboardEventHandler
   'ref': MutableRefObject<any>
   'aria-describedby': string | undefined
   'style': Pick<CSSProperties, 'anchorName'>

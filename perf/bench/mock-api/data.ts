@@ -26,6 +26,25 @@ export function handleDoc(
   return json(req, res, 200, {documents, omitted: []})
 }
 
+/**
+ * GET /data/history/<ds>/documents/<id>?revision=<rev> — the document at a
+ * past revision, used by the divergence/changes machinery
+ * (getDocumentAtRevision.ts) which reads `response.documents[0]`. The soak
+ * session triggers it after enough edits accumulate; without a handler the
+ * studio logs a console error per call and the session fails (mock-drift
+ * detector). The mock keeps no per-revision snapshots, so return the current
+ * document — the shape is what matters here, not historical diff fidelity.
+ */
+export function handleDocRevision(
+  req: ProxyRequest,
+  res: ProxyResponse,
+  store: DocumentStore,
+  idSegment: string,
+): number {
+  const doc = store.get(decodeURIComponent(idSegment))
+  return json(req, res, 200, {documents: doc ? [doc] : []})
+}
+
 /** GET|POST /data/query/<ds> — GROQ over the in-memory store via groq-js. */
 export async function handleQuery(
   req: ProxyRequest,

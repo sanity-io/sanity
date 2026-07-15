@@ -58,7 +58,6 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
-    "@sanity/insert-menu": "3.0.8",
     "@types/react": "catalog:",
     "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
