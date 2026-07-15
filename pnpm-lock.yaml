@@ -5937,12 +5937,6 @@ packages:
   '@sanity/uuid@3.0.3':
     resolution: {integrity: sha512-aJvKuFwzcZKRwuIjrRPfXfXKpSdnLF4CnedV5WcX1n5SzhufvRNHIot5lkx1+Y1DwiMVQOZ5gDSPJH+P6Ao70A==}
 
-  '@sanity/visual-editing-csm@3.0.10':
-    resolution: {integrity: sha512-BXTfS5qlkViJfxqJD5EIhn7PsFn92Z9HPQoKnzdhT+taOhR9mRsjsDdq6WO+Mf6vsTznulwcJV/3cilYj2sAqw==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    peerDependencies:
-      '@sanity/client': ^7.23.0
-
   '@sanity/visual-editing-csm@3.0.11':
     resolution: {integrity: sha512-biaPXe9Qqc7ybqTVEzsUFlL3aOZci+bUu+/TMTf05diz1Np1ZnFJXdLl1dhPjwmzzPVyycsu7aymNYg5ep6sWw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -5961,16 +5955,6 @@ packages:
 
   '@sanity/visual-editing-types@2.0.10':
     resolution: {integrity: sha512-Vk82RsODvAoHfHJsvRp/RUI27WczkG+LhvSjxV5G4exBmJL9ZW9gsXetP38Zaof8NKq2VIqaNWcgBSZijowFRQ==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    peerDependencies:
-      '@sanity/client': ^7.23.0
-      '@sanity/types': '*'
-    peerDependenciesMeta:
-      '@sanity/types':
-        optional: true
-
-  '@sanity/visual-editing-types@2.0.9':
-    resolution: {integrity: sha512-2s8GMiwN3ZNavDP0DgL4lhjnIi+4VPrl7U6udhRI++QvvQBQYwtA6znG2RippUGhVWqz9x/x8dnfDR94eGRzew==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/client': ^7.23.0
@@ -15000,7 +14984,7 @@ snapshots:
       '@sanity/client': 7.23.2
       '@sanity/comlink': 4.0.1
       '@sanity/presentation-comlink': 2.1.0(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)
-      '@sanity/visual-editing-csm': 3.0.10(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
+      '@sanity/visual-editing-csm': 3.0.11(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
     transitivePeerDependencies:
       - '@sanity/types'
       - typescript
@@ -15283,7 +15267,7 @@ snapshots:
     dependencies:
       '@sanity/client': 7.23.2
       '@sanity/core-loader': 2.0.12(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
-      '@sanity/visual-editing-csm': 3.0.10(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
+      '@sanity/visual-editing-csm': 3.0.11(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
       react: 19.2.7
     transitivePeerDependencies:
       - '@sanity/types'
@@ -15434,15 +15418,6 @@ snapshots:
     dependencies:
       uuid: 11.1.1
 
-  '@sanity/visual-editing-csm@3.0.10(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)':
-    dependencies:
-      '@sanity/client': 7.23.2
-      '@sanity/visual-editing-types': 2.0.9(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)
-      valibot: 1.4.1(typescript@6.0.3)
-    transitivePeerDependencies:
-      - '@sanity/types'
-      - typescript
-
   '@sanity/visual-editing-csm@3.0.11(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)':
     dependencies:
       '@sanity/client': 7.23.2
@@ -15464,12 +15439,6 @@ snapshots:
     optionalDependencies:
       '@sanity/types': link:packages/@sanity/types
 
-  '@sanity/visual-editing-types@2.0.9(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)':
-    dependencies:
-      '@sanity/client': 7.23.2
-    optionalDependencies:
-      '@sanity/types': link:packages/@sanity/types
-
   '@sanity/visual-editing@5.4.4(@emotion/is-prop-valid@1.4.0)(@sanity/client@7.23.2)(@sanity/styled-components@6.1.24)(@sanity/types@packages+@sanity+types)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(typescript@6.0.3)':
     dependencies:
       '@sanity/comlink': 4.0.1
@@ -15479,7 +15448,7 @@ snapshots:
       '@sanity/presentation-comlink': 2.1.0(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret': 4.0.8(@sanity/client@7.23.2)
       '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
-      '@sanity/visual-editing-csm': 3.0.10(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
+      '@sanity/visual-editing-csm': 3.0.11(@sanity/client@7.23.2)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
       '@vercel/stega': 1.1.0
       dequal: 2.0.3
       react: 19.2.7
