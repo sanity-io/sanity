@@ -30,7 +30,7 @@ import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
  */
 export function CopyDocumentActions() {
   const {documentId, documentType, schemaType} = useDocumentPaneInfo()
-  const {editState} = useDocumentPane()
+  const {editState, displayed} = useDocumentPane()
   const targetDocumentState = useTargetDocumentState(documentId)
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {params} = usePaneRouter()
@@ -55,11 +55,15 @@ export function CopyDocumentActions() {
     return getDraftId(documentId)
   }, [documentId, scheduledDraft, schemaType?.liveEdit, selectedPerspectiveName, selectedReleaseId])
 
+  const isCreatingDocument = Boolean(displayed && !displayed._createdAt)
+
   const selectedVariantMissing =
     targetDocumentState.status === 'variant-missing' ||
     targetDocumentState.status === 'variant-definition-document-not-found'
 
-  const pinnedVersionMissing = Boolean(editState?.ready && editState.scopeId && !editState.version)
+  const pinnedVersionMissing = Boolean(
+    editState?.ready && editState.scopeId && !editState.version && !isCreatingDocument,
+  )
 
   const documentExists = !selectedVariantMissing && !pinnedVersionMissing
 

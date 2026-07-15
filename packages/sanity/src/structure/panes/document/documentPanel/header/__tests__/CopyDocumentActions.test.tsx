@@ -82,6 +82,12 @@ const EXISTING_EDIT_STATE = {
   version: null,
 }
 
+const EXISTING_DISPLAYED = {
+  _id: 'drafts.doc-123',
+  _type: 'article',
+  _createdAt: '2026-01-01T00:00:00Z',
+}
+
 let wrapper: React.ComponentType<{children: React.ReactNode}>
 
 beforeAll(async () => {
@@ -108,6 +114,7 @@ describe('CopyDocumentActions', () => {
       documentId: 'doc-123',
       documentType: 'article',
       editState: EXISTING_EDIT_STATE,
+      displayed: EXISTING_DISPLAYED,
     })
     mockUseTargetDocumentState.mockReturnValue(READY_TARGET_STATE)
   })
@@ -309,11 +316,38 @@ describe('CopyDocumentActions', () => {
           published: {_id: 'doc-123'},
           version: null,
         },
+        displayed: EXISTING_DISPLAYED,
       })
 
       render(<CopyDocumentActions />, {wrapper})
 
       expect(screen.getByTestId('copy-document-actions-button')).toBeDisabled()
+    })
+
+    it('stays enabled when creating a new document inside a release', () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedPerspectiveName: 'rMyRelease',
+        selectedReleaseId: 'rMyRelease',
+        selectedPerspective: 'rMyRelease',
+        perspectiveStack: ['rMyRelease', 'drafts'],
+      })
+      mockUseDocumentPane.mockReturnValue({
+        documentId: 'doc-123',
+        documentType: 'article',
+        editState: {
+          ready: true,
+          scopeId: 'rMyRelease',
+          draft: null,
+          published: null,
+          version: null,
+        },
+        displayed: {_id: 'versions.rMyRelease.doc-123', _type: 'article'},
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
     })
 
     it('enables the button when the pinned release contains the version', () => {
@@ -357,6 +391,7 @@ describe('CopyDocumentActions', () => {
           published: {_id: 'doc-123'},
           version: null,
         },
+        displayed: {_id: 'doc-123', _type: 'article'},
       })
 
       render(<CopyDocumentActions />, {wrapper})
