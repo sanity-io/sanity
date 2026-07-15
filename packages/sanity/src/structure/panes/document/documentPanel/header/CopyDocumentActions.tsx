@@ -7,6 +7,9 @@ import {useCallback, useMemo} from 'react'
 import {
   getDraftId,
   getVersionId,
+  isNewDocument,
+  isVersionId,
+  useDocumentVersions,
   usePerspective,
   useStudioUrl,
   useTargetDocumentState,
@@ -30,8 +33,11 @@ import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
  */
 export function CopyDocumentActions() {
   const {documentId, documentType, schemaType} = useDocumentPaneInfo()
-  const {editState, displayed} = useDocumentPane()
+  const {editState} = useDocumentPane()
   const targetDocumentState = useTargetDocumentState(documentId)
+  const {data: existingDocumentIds, loading: documentVersionsLoading} = useDocumentVersions({
+    documentId,
+  })
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
@@ -55,17 +61,19 @@ export function CopyDocumentActions() {
     return getDraftId(documentId)
   }, [documentId, scheduledDraft, schemaType?.liveEdit, selectedPerspectiveName, selectedReleaseId])
 
-  const isCreatingDocument = Boolean(displayed && !displayed._createdAt)
-
   const selectedVariantMissing =
     targetDocumentState.status === 'variant-missing' ||
     targetDocumentState.status === 'variant-definition-document-not-found'
 
-  const pinnedVersionMissing = Boolean(
-    editState?.ready && editState.scopeId && !editState.version && !isCreatingDocument,
-  )
+  const documentReady = Boolean(editState?.ready) && !documentVersionsLoading
 
-  const documentExists = !selectedVariantMissing && !pinnedVersionMissing
+  const copiedVersionMissing =
+    documentReady &&
+    isVersionId(contextAwareDocumentId) &&
+    !isNewDocument(editState) &&
+    !existingDocumentIds.includes(contextAwareDocumentId)
+
+  const documentExists = !selectedVariantMissing && !copiedVersionMissing
 
   const handleCopyLink = useCallback(async () => {
     telemetry.log(DocumentURLCopied)

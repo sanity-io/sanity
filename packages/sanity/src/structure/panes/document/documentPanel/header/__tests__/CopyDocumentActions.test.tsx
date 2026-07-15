@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {usePerspective, useTargetDocumentState} from 'sanity'
+import {useDocumentVersions, usePerspective, useTargetDocumentState} from 'sanity'
 import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -32,10 +32,18 @@ const READY_TARGET_STATE = {
   variant: undefined,
 }
 
+const EXISTING_DOCUMENT_VERSIONS = {
+  data: ['drafts.doc-123', 'doc-123', 'versions.rMyRelease.doc-123', 'versions.rScheduled.doc-123'],
+  versions: [],
+  loading: false,
+  error: null,
+}
+
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   usePerspective: vi.fn(() => DEFAULT_PERSPECTIVE),
   useTargetDocumentState: vi.fn(() => READY_TARGET_STATE),
+  useDocumentVersions: vi.fn(() => EXISTING_DOCUMENT_VERSIONS),
   useStudioUrl: vi.fn(() => ({
     studioUrl: 'http://localhost:3333',
     buildIntentUrl: mockBuildIntentUrl,
@@ -73,19 +81,13 @@ const mockUsePaneRouter = usePaneRouter as Mock
 const mockUseDocumentPaneInfo = useDocumentPaneInfo as Mock
 const mockUseDocumentPane = useDocumentPane as Mock
 const mockUseTargetDocumentState = useTargetDocumentState as Mock
+const mockUseDocumentVersions = useDocumentVersions as Mock
 
 const EXISTING_EDIT_STATE = {
   ready: true,
-  scopeId: undefined,
   draft: {_id: 'drafts.doc-123'},
   published: {_id: 'doc-123'},
   version: null,
-}
-
-const EXISTING_DISPLAYED = {
-  _id: 'drafts.doc-123',
-  _type: 'article',
-  _createdAt: '2026-01-01T00:00:00Z',
 }
 
 let wrapper: React.ComponentType<{children: React.ReactNode}>
@@ -114,9 +116,9 @@ describe('CopyDocumentActions', () => {
       documentId: 'doc-123',
       documentType: 'article',
       editState: EXISTING_EDIT_STATE,
-      displayed: EXISTING_DISPLAYED,
     })
     mockUseTargetDocumentState.mockReturnValue(READY_TARGET_STATE)
+    mockUseDocumentVersions.mockReturnValue(EXISTING_DOCUMENT_VERSIONS)
   })
 
   async function clickMenuItem(testId: string) {
@@ -298,25 +300,44 @@ describe('CopyDocumentActions', () => {
   })
 
   describe('Disabled state', () => {
-    it('disables the button when a release is pinned but the version does not exist', () => {
+    const pinRelease = (releaseId: string) =>
       mockUsePerspective.mockReturnValue({
         ...DEFAULT_PERSPECTIVE,
-        selectedPerspectiveName: 'rMyRelease',
-        selectedReleaseId: 'rMyRelease',
-        selectedPerspective: 'rMyRelease',
-        perspectiveStack: ['rMyRelease', 'drafts'],
+        selectedPerspectiveName: releaseId,
+        selectedReleaseId: releaseId,
+        selectedPerspective: releaseId,
+        perspectiveStack: [releaseId, 'drafts'],
       })
+
+    it('disables the button when a release is pinned but the version does not exist', () => {
+      pinRelease('rMyRelease')
+      mockUseDocumentPane.mockReturnValue({
+        documentId: 'doc-123',
+        documentType: 'article',
+        editState: {ready: true, draft: null, published: {_id: 'doc-123'}, version: null},
+      })
+      mockUseDocumentVersions.mockReturnValue({...EXISTING_DOCUMENT_VERSIONS, data: ['doc-123']})
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.getByTestId('copy-document-actions-button')).toBeDisabled()
+    })
+
+    it('disables the button when the pinned release differs from the only existing version', () => {
+      pinRelease('rMyRelease')
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
         documentType: 'article',
         editState: {
           ready: true,
-          scopeId: 'rMyRelease',
           draft: null,
-          published: {_id: 'doc-123'},
-          version: null,
+          published: null,
+          version: {_id: 'versions.rOther.doc-123'},
         },
-        displayed: EXISTING_DISPLAYED,
+      })
+      mockUseDocumentVersions.mockReturnValue({
+        ...EXISTING_DOCUMENT_VERSIONS,
+        data: ['versions.rOther.doc-123'],
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -325,25 +346,13 @@ describe('CopyDocumentActions', () => {
     })
 
     it('stays enabled when creating a new document inside a release', () => {
-      mockUsePerspective.mockReturnValue({
-        ...DEFAULT_PERSPECTIVE,
-        selectedPerspectiveName: 'rMyRelease',
-        selectedReleaseId: 'rMyRelease',
-        selectedPerspective: 'rMyRelease',
-        perspectiveStack: ['rMyRelease', 'drafts'],
-      })
+      pinRelease('rMyRelease')
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
         documentType: 'article',
-        editState: {
-          ready: true,
-          scopeId: 'rMyRelease',
-          draft: null,
-          published: null,
-          version: null,
-        },
-        displayed: {_id: 'versions.rMyRelease.doc-123', _type: 'article'},
+        editState: {ready: true, draft: null, published: null, version: null},
       })
+      mockUseDocumentVersions.mockReturnValue({...EXISTING_DOCUMENT_VERSIONS, data: []})
 
       render(<CopyDocumentActions />, {wrapper})
 
@@ -351,23 +360,20 @@ describe('CopyDocumentActions', () => {
     })
 
     it('enables the button when the pinned release contains the version', () => {
-      mockUsePerspective.mockReturnValue({
-        ...DEFAULT_PERSPECTIVE,
-        selectedPerspectiveName: 'rMyRelease',
-        selectedReleaseId: 'rMyRelease',
-        selectedPerspective: 'rMyRelease',
-        perspectiveStack: ['rMyRelease', 'drafts'],
-      })
+      pinRelease('rMyRelease')
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
         documentType: 'article',
         editState: {
           ready: true,
-          scopeId: 'rMyRelease',
           draft: null,
           published: null,
           version: {_id: 'versions.rMyRelease.doc-123'},
         },
+      })
+      mockUseDocumentVersions.mockReturnValue({
+        ...EXISTING_DOCUMENT_VERSIONS,
+        data: ['versions.rMyRelease.doc-123'],
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -381,18 +387,6 @@ describe('CopyDocumentActions', () => {
         variant: {_id: 'variant-1'},
         bundle: 'published',
       })
-      mockUseDocumentPane.mockReturnValue({
-        documentId: 'doc-123',
-        documentType: 'article',
-        editState: {
-          ready: true,
-          scopeId: undefined,
-          draft: null,
-          published: {_id: 'doc-123'},
-          version: null,
-        },
-        displayed: {_id: 'doc-123', _type: 'article'},
-      })
 
       render(<CopyDocumentActions />, {wrapper})
 
@@ -403,17 +397,6 @@ describe('CopyDocumentActions', () => {
       mockUseTargetDocumentState.mockReturnValue({
         status: 'variant-definition-document-not-found',
         requestedVariantName: 'unknown-variant',
-      })
-      mockUseDocumentPane.mockReturnValue({
-        documentId: 'doc-123',
-        documentType: 'article',
-        editState: {
-          ready: true,
-          scopeId: undefined,
-          draft: null,
-          published: {_id: 'doc-123'},
-          version: null,
-        },
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -428,17 +411,6 @@ describe('CopyDocumentActions', () => {
         scopeId: 'v1a2b3c4',
         variant: {_id: 'variant-1'},
       })
-      mockUseDocumentPane.mockReturnValue({
-        documentId: 'doc-123',
-        documentType: 'article',
-        editState: {
-          ready: true,
-          scopeId: 'v1a2b3c4',
-          draft: null,
-          published: null,
-          version: {_id: 'versions.v1a2b3c4.doc-123'},
-        },
-      })
 
       render(<CopyDocumentActions />, {wrapper})
 
@@ -449,13 +421,27 @@ describe('CopyDocumentActions', () => {
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
         documentType: 'article',
-        editState: {
-          ready: true,
-          scopeId: undefined,
-          draft: null,
-          published: {_id: 'doc-123'},
-          version: null,
-        },
+        editState: {ready: true, draft: null, published: {_id: 'doc-123'}, version: null},
+      })
+      mockUseDocumentVersions.mockReturnValue({...EXISTING_DOCUMENT_VERSIONS, data: ['doc-123']})
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
+    })
+
+    it('stays enabled while the document versions are still loading', () => {
+      pinRelease('rMyRelease')
+      mockUseDocumentPane.mockReturnValue({
+        documentId: 'doc-123',
+        documentType: 'article',
+        editState: {ready: true, draft: null, published: {_id: 'doc-123'}, version: null},
+      })
+      mockUseDocumentVersions.mockReturnValue({
+        data: [],
+        versions: [],
+        loading: true,
+        error: null,
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -464,23 +450,11 @@ describe('CopyDocumentActions', () => {
     })
 
     it('stays enabled while the edit state is not yet ready', () => {
-      mockUsePerspective.mockReturnValue({
-        ...DEFAULT_PERSPECTIVE,
-        selectedPerspectiveName: 'rMyRelease',
-        selectedReleaseId: 'rMyRelease',
-        selectedPerspective: 'rMyRelease',
-        perspectiveStack: ['rMyRelease', 'drafts'],
-      })
+      pinRelease('rMyRelease')
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
         documentType: 'article',
-        editState: {
-          ready: false,
-          scopeId: 'rMyRelease',
-          draft: null,
-          published: null,
-          version: null,
-        },
+        editState: {ready: false, draft: null, published: null, version: null},
       })
 
       render(<CopyDocumentActions />, {wrapper})
