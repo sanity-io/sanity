@@ -57,6 +57,13 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
+  // TODO: Remove once quick-lru updates its declaration return types for Map iterator helpers.
+  // TypeScript's MapIterator now includes helper methods (map/filter/take/etc), while quick-lru
+  // still returns IterableIterator in its d.ts signatures.
+  if (code === 2416 && file.fileName.includes('/node_modules/.pnpm/quick-lru@')) {
+    return false
+  }
+
   return true
 })
 

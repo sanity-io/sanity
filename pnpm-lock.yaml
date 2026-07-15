@@ -1419,6 +1419,9 @@ importers:
       '@vanilla-extract/dynamic':
         specifier: 'catalog:'
         version: 2.1.5
+      get-it:
+        specifier: ^8.8.0
+        version: 8.8.0
       is-hotkey-esm:
         specifier: ^1.0.0
         version: 1.0.0
