@@ -392,10 +392,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       return getPublishedId(documentId)
     }
     if (bundle === 'drafts') {
+      // in cases where there is a draft in a live edit, we need to use it so that it can be published
+      // in case if the user has permissions to do so otherwise just use the published id
+      if (liveEdit) {
+        return editState.draft?._id || getPublishedId(documentId)
+      }
       return getDraftId(documentId)
     }
     return getVersionId(getPublishedId(documentId), bundle)
-  }, [targetDocumentState, bundle, documentId])
+  }, [targetDocumentState, bundle, documentId, liveEdit, editState.draft?._id])
 
   const docPermissionsInput = useMemo(() => {
     return {

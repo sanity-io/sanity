@@ -101,7 +101,7 @@ describe('createOperationsAPI — self-derived target guard', () => {
     }
   })
 
-  it('guards the new-document flow when a version is requested (no snapshots at all)', () => {
+  it('does not guard the new-document flow when a version is requested (no snapshots at all)', () => {
     const operations = createOperationsAPI(
       createArgs({
         idPair: PAIR_WITH_VERSION,
@@ -109,12 +109,11 @@ describe('createOperationsAPI — self-derived target guard', () => {
       }),
     )
 
-    // A requested-but-missing version disables mutations, including for documents that don't
-    // exist at all (new documents are created through the initial-value/create flows, not by
-    // patching a missing version into existence). This only applies when `idPair.versionId` is
-    // set — new base drafts are still created as you type (see the no-version test below).
-    expect(operations.patch.disabled).toBe('TARGET_NOT_FOUND')
-    expect(operations.commit.disabled).toBe('TARGET_NOT_FOUND')
+    // Typing into a brand-new document with a pinned release must still create the version
+    // locally via its deterministic id (create-on-first-edit). The guard only applies when the
+    // document already exists (draft or published snapshot present).
+    expect(operations.patch.disabled).toBe(false)
+    expect(operations.commit.disabled).toBe(false)
   })
 
   it('does not guard the new-document flow without a version (no snapshots at all)', () => {

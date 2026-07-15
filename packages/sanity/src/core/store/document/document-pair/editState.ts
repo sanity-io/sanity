@@ -3,7 +3,7 @@ import {type SanityDocument, type Schema} from '@sanity/types'
 import {combineLatest, type Observable, of, ReplaySubject, timer} from 'rxjs'
 import {map, share, startWith, switchMap} from 'rxjs/operators'
 
-import {RELEASE_DOCUMENTS_PATH} from '../../../releases/store/constants'
+import {getReleaseIdFromReleaseDocumentId} from '../../../releases'
 import {getVersionFromId} from '../../../util'
 import {measureFirstEmission} from '../../../util/measureFirstEmission'
 import {createSWR} from '../../../util/rxSwr'
@@ -63,8 +63,6 @@ export interface EditStateFor {
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
 
-const RELEASE_DOCUMENT_ID_PREFIX = `${RELEASE_DOCUMENTS_PATH}.`
-
 /**
  * Classifies `EditStateFor.release` from a version snapshot.
  *
@@ -88,9 +86,7 @@ function classifyRelease(
   if (!releaseRef) {
     return undefined
   }
-  return releaseRef.startsWith(RELEASE_DOCUMENT_ID_PREFIX)
-    ? releaseRef.slice(RELEASE_DOCUMENT_ID_PREFIX.length)
-    : releaseRef
+  return getReleaseIdFromReleaseDocumentId(releaseRef)
 }
 
 // How long to keep the pipeline alive after the last subscriber unsubscribes.

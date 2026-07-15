@@ -31,8 +31,16 @@ test.describe.configure({mode: 'serial'})
  * It lists the document's existing variants (Published, Draft, releases) in a popover, with the
  * currently selected perspective marked via a `data-selected` attribute on the variant row.
  */
-function getInventoryVariant(page: Page, variantName: string) {
-  return page.getByTestId(`document-group-inventory-variant-${variantName.replaceAll(' ', '-')}`)
+function getInventoryVariant(
+  page: Page,
+  variantSet: string = 'Published',
+  variantName: string = 'All users (Default)',
+) {
+  const inventory = page.getByTestId('document-group-inventory')
+
+  return inventory.locator(
+    `[data-variant-set="${variantSet}"] [data-variant-name="${variantName}"]`,
+  )
 }
 
 async function openDocumentGroupInventory(page: Page) {

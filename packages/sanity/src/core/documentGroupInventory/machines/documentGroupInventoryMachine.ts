@@ -5,10 +5,9 @@ import {assign, forwardTo, fromObservable, sendTo, setup, type ActorRefFromLogic
 import {type TFunction} from '../../i18n/types'
 import {type DocumentPerspectiveState} from '../../releases/hooks/useDocumentVersions'
 import {type ReleasesReducerState} from '../../releases/store/reducer'
-import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
-import {isAgentBundleName, type AgentBundlesState} from '../../store/agent/createAgentBundlesStore'
-import {getVersionFromId, isDraftId, isPublishedId} from '../../util/draftUtils'
+import {type AgentBundlesState} from '../../store/agent/createAgentBundlesStore'
 import {type VariantStoreState} from '../../variants/store/reducer'
+import {computeSets} from '../utils/computeSets'
 import {type deletionMachine} from './deletionMachine'
 import {type selectionMachine, type Variant} from './selectionMachine'
 
@@ -24,6 +23,7 @@ export interface Meta {
 
 export interface VariantSet {
   key: string
+  name: string
   variants: Variant[]
 }
 
@@ -147,61 +147,4 @@ function metaHasError(meta: Meta | undefined): boolean {
 
 function metaIsLoaded(meta: Meta | undefined): boolean {
   return meta?.versionState.loading === false && meta.releases.state === 'loaded'
-}
-
-function computeSets({
-  meta,
-  current,
-  t,
-  variantsEnabled,
-}: {
-  meta: Meta | undefined
-  current: VariantSet[]
-  t: TFunction
-  variantsEnabled: boolean | undefined
-}): VariantSet[] {
-  if (!meta) {
-    return current
-  }
-
-  const {releases} = meta.releases
-  const userBundleIds = new Set(meta.agentBundles.bundles.map(({id}) => id))
-  const proposedChangesId = meta.versionState.data.find((id) => {
-    const bundleId = getVersionFromId(id)
-    return typeof bundleId === 'string' && userBundleIds.has(bundleId)
-  })
-
-  return [
-    {
-      key: 'studio:all',
-      variants: meta.versionState.data
-        .filter((id) => !isAgentBundleName(getVersionFromId(id)))
-        .map((id) => ({
-          id,
-          name: getVariantName(id, releases),
-        }))
-        .concat(
-          typeof proposedChangesId === 'undefined'
-            ? []
-            : {
-                id: proposedChangesId,
-                name: t('version.agent-bundle.proposed-changes'),
-              },
-        ),
-    },
-  ]
-}
-
-function getVariantName(documentId: string, releases: Map<string, ReleaseDocument>): string {
-  if (isDraftId(documentId)) {
-    return 'Draft'
-  }
-
-  if (isPublishedId(documentId)) {
-    return 'Published'
-  }
-
-  const version = getVersionFromId(documentId)
-  const release = version ? releases.get(getReleaseDocumentIdFromReleaseId(version)) : undefined
-  return release?.metadata.title ?? documentId
 }

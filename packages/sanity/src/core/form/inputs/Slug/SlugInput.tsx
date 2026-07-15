@@ -17,6 +17,7 @@ import {useGetFormValue} from '../../contexts/GetFormValue'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {type ObjectInputProps} from '../../types'
+import {stripStegaFromPasteEvent} from '../../utils/stegaPaste'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 import {type SlugContext, useSlugContext} from './utils/useSlugContext'
@@ -148,6 +149,7 @@ export function SlugInput(props: SlugInputProps) {
             customValidity={errors.length > 0 ? errors[0].message : ''}
             disabled={isUpdating}
             onChange={handleChange}
+            onPaste={stripStegaFromPasteEvent}
             value={value?.current || ''}
             readOnly={readOnly}
             {...elementProps}

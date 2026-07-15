@@ -13,6 +13,7 @@ import {getPublishedId, isNonNullable} from '../../../util'
 import {Alert} from '../../components/Alert'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, setIfMissing, unset} from '../../patch'
+import {useArrayItemRootElementRef} from '../arrays/common/useArrayItemRootElementRef'
 import {AutocompleteContainer} from './AutocompleteContainer'
 import {CreateButton} from './CreateButton'
 import {OptionPreview} from './OptionPreview'
@@ -285,6 +286,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   // --- click outside handling
   const {menuRef, menuButtonRef, containerRef} = useReferenceItemRef()
+  const arrayItemRootElementRef = useArrayItemRootElementRef()
   const clickOutsideBoundaryRef = useRef<HTMLDivElement>(null)
   const autoCompletePortalRef = useRef<HTMLDivElement>(null)
   const createButtonMenuPortalRef = useRef<HTMLDivElement>(null)
@@ -314,6 +316,12 @@ export function ReferenceInput(props: ReferenceInputProps) {
       clickOutsideBoundaryRef.current,
       autoCompletePortalRef.current,
       createButtonMenuPortalRef.current,
+      // The enclosing array item (when inside one). Custom item/input
+      // components may render their own UI (e.g. a "Create new" button) around
+      // the default input, and clicking it must not clear the empty item —
+      // clearing on mousedown unmounts such elements before their click
+      // handlers get a chance to run.
+      arrayItemRootElementRef?.current ?? null,
     ],
   )
 

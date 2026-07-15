@@ -264,7 +264,7 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
       // Passing the perspective alongside the variant updates both sticky params atomically.
       const versionBundle = version._system.bundleId
       const perspective = !versionBundle ? 'published' : versionBundle
-      setVariant(variant?._id, {perspective})
+      setVariant({variantId: variant?._id, perspective})
     },
     [setVariant, variants],
   )

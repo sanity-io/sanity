@@ -1,7 +1,6 @@
 import {InsertAboveIcon} from '@sanity/icons/InsertAbove'
 import {InsertBelowIcon} from '@sanity/icons/InsertBelow'
-import {type InsertMenuOptions} from '@sanity/insert-menu'
-import {type SchemaType} from '@sanity/types'
+import {type InsertMenuOptions, type SchemaType} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
 
 import {MenuItem} from '../../../../../ui-components'

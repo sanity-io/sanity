@@ -27,6 +27,7 @@ export interface UseScheduledDraftMenuActionsOptions {
   documentId?: string
   disabled?: boolean
   onActionComplete?: () => void
+  onDeleteComplete?: () => void
 }
 
 interface ScheduledDraftActionProps {
@@ -56,7 +57,14 @@ export interface UseScheduledDraftMenuActionsReturn {
 export function useScheduledDraftMenuActions(
   options: UseScheduledDraftMenuActionsOptions,
 ): UseScheduledDraftMenuActionsReturn {
-  const {release, documentType, documentId, disabled = false, onActionComplete} = options
+  const {
+    release,
+    documentType,
+    documentId,
+    disabled = false,
+    onActionComplete,
+    onDeleteComplete,
+  } = options
 
   const {t} = useTranslation()
   const toast = useToast()
@@ -202,6 +210,7 @@ export function useScheduledDraftMenuActions(
             documentType={documentType}
             documentId={documentId}
             onClose={handleDialogClose}
+            onDeleteComplete={onDeleteComplete}
           />
         )
 
@@ -227,6 +236,7 @@ export function useScheduledDraftMenuActions(
     handleDialogClose,
     handleSchedulePublish,
     isScheduling,
+    onDeleteComplete,
   ])
 
   return {
