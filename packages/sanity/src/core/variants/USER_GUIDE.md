@@ -8,16 +8,16 @@ It is written for content editors and studio developers. For the internal archit
 
 ## What are variants?
 
-Variants let a single document have **alternative versions of its content for different conditions** — for example a French translation, a version for loyal customers, or a version for a specific region.
+Variants let a single document have **alternative versions of its content for different conditions** — for example a personalized version for loyal customers, an experiment arm of an A/B test, or a version tailored to a marketing campaign.
 
 Two ideas to keep apart:
 
-- A **variant** (or variant definition) describes _when_ alternative content applies. It has a title and one or more conditions as key/value pairs — for example `locale: fr` or `audience: loyal-customers`. Variants are defined once and apply across your whole dataset.
+- A **variant** (or variant definition) describes _when_ alternative content applies. It has a title and one or more conditions as key/value pairs — for example `audience: loyal-customers` or `experiment: checkout-cta-b`. Variants are defined once and apply across your whole dataset.
 - A **variant document** is the alternative content of _one_ document for _one_ variant. A document only has content for a variant after you explicitly add it (see below). Documents without a variant document simply don't vary under that condition.
 
 Your **base document** — the regular draft and published version you've always worked with — is never changed by any of this. Variant content lives alongside it, and everything you do to a variant (edit, publish, unpublish, discard) affects only that variant.
 
-When your frontend requests content, it can ask the API for a specific set of conditions (for example `locale: fr`), and documents that have a matching published variant are returned with the variant's content in place of the base content. Documents without a matching variant return their base content as usual. If several variants match, the variant's **priority** decides which one wins.
+When your frontend requests content, it can ask the API for a specific set of conditions (for example `audience: loyal-customers`, or the experiment arm a visitor was assigned to), and documents that have a matching published variant are returned with the variant's content in place of the base content. Documents without a matching variant return their base content as usual. If several variants match, the variant's **priority** decides which one wins.
 
 ## Managing variants
 
@@ -35,14 +35,14 @@ Variants are managed in the **Variants tool** (the `/variants` route in the stud
 
 In the document editor, pick a variant from the **variant picker** in the navbar (next to the perspective picker). The variant selection works _together_ with the perspective:
 
-| Perspective | Variant selected | You are looking at                     |
-| ----------- | ---------------- | -------------------------------------- |
-| Drafts      | None             | The base draft                         |
-| Drafts      | e.g. "French"    | The French **draft** variant           |
-| Published   | e.g. "French"    | The French **published** variant       |
-| A release   | e.g. "French"    | The French variant **in that release** |
+| Perspective | Variant selected       | The document you are looking at                 |
+| ----------- | ---------------------- | ----------------------------------------------- |
+| Drafts      | None                   | The base draft                                  |
+| Drafts      | e.g. "Loyal customers" | The Loyal customers **draft** variant           |
+| Published   | e.g. "Loyal customers" | The Loyal customers **published** variant       |
+| A release   | e.g. "Loyal customers" | The Loyal customers variant **in that release** |
 
-The selection is sticky: it stays active while you navigate between documents, so you can review or edit a whole set of documents "as French".
+The selection is sticky: it stays active while you navigate between documents, so you can review or edit a whole set of documents as a specific audience or experiment arm would see it.
 
 While the studio is figuring out whether the current document has content for the selected variant, the pane shows a loading state rather than the base document. This is deliberate — you'll never accidentally type into the base draft while a variant is selected.
 
