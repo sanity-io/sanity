@@ -37,8 +37,21 @@ export function getDocumentVersionInfoFromVersions(versions: VersionInfoDocument
 
   const nonVariantVersions = versions.filter((version) => !isVariantVersion(version))
 
-  const published = nonVariantVersions.find(isPublishedVersion)
-  const draft = nonVariantVersions.find(isDraftVersion)
+  const published = nonVariantVersions.find((version) =>
+    isPublishedVersion(version, {
+      constraint: {
+        baseVariant: true,
+      },
+    }),
+  )
+
+  const draft = nonVariantVersions.find((version) =>
+    isDraftVersion(version, {
+      constraint: {
+        baseVariant: true,
+      },
+    }),
+  )
 
   const releaseVersions: Record<string, VersionInfoDocumentStub | undefined> = {}
 

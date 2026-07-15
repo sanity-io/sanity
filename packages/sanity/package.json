@@ -233,7 +233,7 @@
     "@repo/tsdown.config": "workspace:*",
     "@rolldown/plugin-babel": "catalog:",
     "@sanity/generate-help-url": "^4.0.0",
-    "@sanity/visual-editing-csm": "^3.0.10",
+    "@sanity/visual-editing-csm": "^3.0.11",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",

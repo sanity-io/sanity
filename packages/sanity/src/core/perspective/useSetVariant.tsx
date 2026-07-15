@@ -9,6 +9,21 @@ import {useGetDefaultPerspective} from './useGetDefaultPerspective'
 import {getPerspectiveParam} from './useSetPerspective'
 
 /**
+ * @internal
+ */
+export type SetVariant = (
+  options:
+    | {
+        variantId: SystemVariant['_id'] | undefined
+        perspective?: SystemBundle | ReleaseId
+      }
+    | {
+        variantId?: SystemVariant['_id']
+        perspective: SystemBundle | ReleaseId
+      },
+) => void
+
+/**
  * React hook to set the variant in the router.
  * Optionally sets the perspective in the same navigation, so both sticky params
  * are updated atomically (a single history entry, no intermediate render).
@@ -16,16 +31,12 @@ import {getPerspectiveParam} from './useSetPerspective'
  * @internal
  * @beta
  */
-export function useSetVariant() {
+export function useSetVariant(): SetVariant {
   const router = useRouter()
   const defaultPerspective = useGetDefaultPerspective()
-  const setVariant = useCallback(
-    (
-      variantId: SystemVariant['_id'] | undefined,
-      options?: {perspective?: SystemBundle | ReleaseId},
-    ) => {
-      const {perspective} = options ?? {}
 
+  return useCallback<SetVariant>(
+    ({variantId, perspective}) => {
       router.navigate({
         stickyParams: {
           variant: variantId ? getVariantId(variantId) : null,
@@ -40,5 +51,4 @@ export function useSetVariant() {
     },
     [router, defaultPerspective],
   )
-  return setVariant
 }

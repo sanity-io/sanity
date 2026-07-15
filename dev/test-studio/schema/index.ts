@@ -80,6 +80,7 @@ import {locationResolverTest} from './debug/locationResolverTest'
 import {longValidationTestType} from './debug/longValidation'
 import manyFieldsTest from './debug/manyFieldsTest'
 import {manyViewsType} from './debug/manyViews'
+import {nestedArrayInsertMenuRepro} from './debug/nestedArrayInsertMenuRepro'
 import notitle from './debug/notitle'
 import {objectsDebug} from './debug/objectsDebug'
 import {patchOnMountDebug} from './debug/patchOnMount'
@@ -232,6 +233,7 @@ export function createSchemaTypes(projectId: string) {
     ctaType,
     tooltipAnnotationType,
     arrayModalWidthRepro,
+    nestedArrayInsertMenuRepro,
     arrayOfStringsGridCustomInput,
     button,
     collapsibleColumnsBug,

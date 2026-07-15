@@ -19,6 +19,7 @@ import {
 } from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useFormBuilder} from '../useFormBuilder'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
+import {EditDialogOuterBoundaryProvider} from './EditDialogOuterBoundaryProvider'
 
 /**
  * Styled Dialog component that conditionally hides the dialog card and backdrop.
@@ -209,9 +210,11 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           animate={!shouldDisableAnimation}
           onClickOutside={handleCompleteDialogClose}
         >
-          <BoundaryElementProvider element={documentScrollElement}>
-            {contents}
-          </BoundaryElementProvider>
+          <EditDialogOuterBoundaryProvider>
+            <BoundaryElementProvider element={documentScrollElement}>
+              {contents}
+            </BoundaryElementProvider>
+          </EditDialogOuterBoundaryProvider>
         </StyledDialog>
       </VirtualizerScrollInstanceProvider>
     )
@@ -229,9 +232,11 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         containerRef={setDocumentScrollElement}
         referenceElement={props.legacy_referenceElement}
       >
-        <BoundaryElementProvider element={documentScrollElement}>
-          {contents}
-        </BoundaryElementProvider>
+        <EditDialogOuterBoundaryProvider>
+          <BoundaryElementProvider element={documentScrollElement}>
+            {contents}
+          </BoundaryElementProvider>
+        </EditDialogOuterBoundaryProvider>
       </PopoverDialog>
     </VirtualizerScrollInstanceProvider>
   )

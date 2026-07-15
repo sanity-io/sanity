@@ -263,7 +263,7 @@ describe('VariantsOverview', () => {
 
     await user.click(screen.getByTestId('pin-variant-button'))
 
-    expect(mockedSetVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
+    expect(mockedSetVariant).toHaveBeenCalledWith({variantId: variantAlphaAudience._id})
   })
 
   it('deletes a variant from the row actions menu', async () => {
