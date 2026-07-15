@@ -44,6 +44,7 @@ import type {
   DocumentLimitUpsellContextValue,
   DocumentPaneContext,
   DocumentPaneInfoContext,
+  EditDialogOuterBoundaryContext,
   EnhancedObjectDialogContext,
   EventsContext,
   FeedbackContext,
@@ -265,6 +266,9 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentPaneInfoContext', () => {
     expectTypeOf<typeof DocumentPaneInfoContext>().not.toBeNever()
+  })
+  test('EditDialogOuterBoundaryContext', () => {
+    expectTypeOf<typeof EditDialogOuterBoundaryContext>().not.toBeNever()
   })
   test('EnhancedObjectDialogContext', () => {
     expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()
