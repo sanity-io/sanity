@@ -83,6 +83,9 @@ export function UnpublishVersionDialog(props: {
   }, [coreT, documentVersionId, event, onClose, preview?.value?.title, toast])
 
   const handleUnpublish = useCallback(() => {
+    if (unpublish.disabled) {
+      return
+    }
     setIsUnpublishing(true)
     awaitingUnpublishRef.current = true
     unpublish.execute()
@@ -105,7 +108,7 @@ export function UnpublishVersionDialog(props: {
           text: t('unpublish-dialog.action.unpublish'),
           onClick: handleUnpublish,
           tone: 'critical',
-          disabled: isUnpublishing,
+          disabled: isUnpublishing || Boolean(unpublish.disabled),
           loading: isUnpublishing,
         },
       }}

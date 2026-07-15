@@ -1,5 +1,5 @@
 import {defineType} from '@sanity/types'
-import {render, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -63,6 +63,28 @@ describe('UnpublishVersionDialog', () => {
 
     await waitFor(() =>
       expect(useDocumentOperation).toHaveBeenCalledWith('my-doc', 'testDoc', 'rSummer'),
+    )
+  })
+
+  it('disables confirm when unpublish operation is disabled', async () => {
+    vi.mocked(useDocumentOperation).mockReturnValue({
+      unpublish: {disabled: 'ALREADY_UNPUBLISHED', execute: vi.fn()},
+    } as ReturnType<typeof useDocumentOperation>)
+
+    const wrapper = await createTestProvider({config})
+    render(
+      <UnpublishVersionDialog
+        onClose={vi.fn()}
+        documentVersionId="versions.rSummer.my-doc"
+        documentType="testDoc"
+      />,
+      {wrapper},
+    )
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', {name: 'unpublish-dialog.action.unpublish'}),
+      ).toBeDisabled(),
     )
   })
 })
