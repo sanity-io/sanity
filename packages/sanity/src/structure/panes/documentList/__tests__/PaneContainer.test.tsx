@@ -1,5 +1,6 @@
 import {render, screen} from '@testing-library/react'
-import {defineConfig, type PerspectiveContextValue, useSearchState} from 'sanity'
+import {userEvent} from '@testing-library/user-event'
+import {defineConfig, type PerspectiveContextValue} from 'sanity'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -28,6 +29,15 @@ vi.mock('../../../components/pane/usePaneLayout', () => ({
   usePaneLayout: vi.fn().mockReturnValue({panes: [], mount: vi.fn()}),
 }))
 
+// Stub the list body so tests render the pane header (and its menu) without the
+// heavy preview subtree, while preserving the testid the render test asserts on.
+vi.mock('../DocumentListPane', async () => {
+  const {createElement} = await import('react')
+  return {
+    DocumentListPane: () => createElement('div', {'data-testid': 'document-list-pane'}),
+  }
+})
+
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useSearchState: vi.fn(),
@@ -52,8 +62,6 @@ vi.mock('sanity/router', async (importOriginal) => ({
     navigate: vi.fn(),
   }),
 }))
-
-const mockUseSearchState = useSearchState as Mock
 
 const mockUseStructureToolSetting = useStructureToolSetting as Mock<typeof useStructureToolSetting>
 
@@ -81,6 +89,65 @@ describe('PaneContainer', () => {
 
     await screen.findByTestId('document-list-pane')
   })
+
+  // Restoring must clear the shared per-type key, not write a concrete default
+  // that would leak onto sibling lists. See issue #12835.
+  it('restoring the default clears the persisted sort order instead of writing the configured default', async () => {
+    const config = defineConfig({projectId: 'test', dataset: 'test'})
+    const wrapper = await createTestProvider({
+      config,
+      resources: [structureUsEnglishLocaleBundle],
+    })
+
+    const setSortOrder = vi.fn()
+    const setLayout = vi.fn()
+
+    // The user has manually picked a non-default sort, so "Default sort" is
+    // enabled (the persisted value differs from the configured defaultOrdering).
+    const storedSortOrder = {by: [{field: '_updatedAt', direction: 'desc'}]}
+
+    mockUseStructureToolSetting.mockImplementation(
+      (namespace: string) =>
+        (namespace === 'layout'
+          ? ['default', setLayout]
+          : [storedSortOrder, setSortOrder]) as ReturnType<typeof useStructureToolSetting>,
+    )
+
+    render(
+      <PaneContainer
+        paneKey="paneKey"
+        index={1}
+        itemId="123"
+        pane={
+          {
+            id: 'books-by-title',
+            options: {
+              filter: '_type == $type',
+              params: {type: 'book'},
+              defaultOrdering: [{field: 'title', direction: 'asc'}],
+            },
+            menuItems: [
+              {
+                group: 'sorting',
+                action: 'setSortOrder',
+                title: 'Name',
+                params: {by: [{field: 'name', direction: 'asc'}]},
+              },
+            ],
+          } as unknown as DocumentListPaneNode
+        }
+      />,
+      {wrapper},
+    )
+
+    await userEvent.click(await screen.findByTestId('pane-context-menu-button'))
+    await userEvent.click(await screen.findByText('Default sort'))
+
+    expect(setSortOrder).toHaveBeenCalledTimes(1)
+    // A concrete sort order here leaks into every sibling list of the same type;
+    // clearing (null) lets each list fall back to its own configured default.
+    expect(setSortOrder).toHaveBeenCalledWith(null)
+  })
 })
 
 describe('appendRestoreDefaultItems', () => {
@@ -102,17 +169,52 @@ describe('appendRestoreDefaultItems', () => {
   })
 
   it('appends restore-default items when not suppressed', () => {
+    const sortAndLayout: PaneMenuItem[] = [
+      {group: 'sorting', action: 'setSortOrder', title: 'Last edited'},
+      {group: 'layout', action: 'setLayout', title: 'Detailed view'},
+    ]
+
     const result = appendRestoreDefaultItems({
-      menuItems,
+      menuItems: sortAndLayout,
       isSortDefault: false,
       isLayoutDefault: false,
       restoreSortDisabledReason: 'sort',
       restoreLayoutDisabledReason: 'layout',
     })
 
-    expect(result).toHaveLength(menuItems.length + 2)
+    expect(result).toHaveLength(sortAndLayout.length + 2)
     expect(result.map((item) => item.action)).toContain('restoreDefaultSortOrder')
     expect(result.map((item) => item.action)).toContain('restoreDefaultLayout')
+  })
+
+  it('does not inject restore-default items when there are no menu items to attach to', () => {
+    const result = appendRestoreDefaultItems({
+      menuItems: [],
+      isSortDefault: false,
+      isLayoutDefault: false,
+      restoreSortDisabledReason: 'sort',
+      restoreLayoutDisabledReason: 'layout',
+    })
+
+    expect(result).toEqual([])
+  })
+
+  it('only appends the sort restore item when a sorting item is present', () => {
+    const sortingOnly: PaneMenuItem[] = [
+      {group: 'sorting', action: 'setSortOrder', title: 'Last edited'},
+    ]
+
+    const result = appendRestoreDefaultItems({
+      menuItems: sortingOnly,
+      isSortDefault: false,
+      isLayoutDefault: false,
+      restoreSortDisabledReason: 'sort',
+      restoreLayoutDisabledReason: 'layout',
+    })
+
+    const actions = result.map((item) => item.action)
+    expect(actions).toContain('restoreDefaultSortOrder')
+    expect(actions).not.toContain('restoreDefaultLayout')
   })
 })
 
