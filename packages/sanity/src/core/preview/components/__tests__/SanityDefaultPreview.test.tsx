@@ -6,8 +6,10 @@ import {
 } from '@sanity/asset-utils'
 import {createImageUrlBuilder} from '@sanity/image-url'
 import {render} from '@testing-library/react'
+import {type ComponentType} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {VideoThumbnail} from '../../../../media-library/plugin/preview/VideoThumbnail'
 import {type PreviewMediaDimensions, type PreviewProps} from '../../../components/previews'
 import {useImageUrl} from '../../../form/inputs/files/ImageInput/useImageUrl'
 import {useClient} from '../../../hooks'
@@ -18,6 +20,9 @@ vi.mock('@sanity/asset-utils')
 vi.mock('../../../hooks')
 vi.mock('../../../form/inputs/files/ImageInput/useImageUrl')
 vi.mock('@sanity/image-url')
+vi.mock('../../../../media-library/plugin/preview/VideoThumbnail', () => ({
+  VideoThumbnail: vi.fn(() => null),
+}))
 
 let capturedMedia: unknown
 let capturedMediaDimensions: PreviewMediaDimensions | undefined
@@ -119,6 +124,43 @@ describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
 
     expect(typeof capturedMedia).toBe('function')
     expect(parseImageAssetUrl).toHaveBeenCalledTimes(0)
+  })
+})
+
+describe('SanityDefaultPreview - video media', () => {
+  const asset = {
+    _type: 'globalDocumentReference' as const,
+    _ref: 'media-library:library-id:video-asset-instance-id',
+    _resource: {type: 'media-library' as const, id: 'library-id'},
+  }
+  const media = {
+    _type: 'globalDocumentReference' as const,
+    _ref: 'media-library:library-id:asset-container-id',
+    _resource: {type: 'media-library' as const, id: 'library-id'},
+  }
+
+  it('renders a thumbnail for a normalized sanity.video media value', () => {
+    const video = {_type: 'sanity.video' as const, asset, media}
+    const dimensions = {width: 160, height: 90, fit: 'crop' as const, dpr: 2}
+
+    renderPreview(video)
+
+    expect(typeof capturedMedia).toBe('function')
+    const VideoMediaPreview = capturedMedia as ComponentType<{
+      dimensions: PreviewMediaDimensions
+    }>
+    render(<VideoMediaPreview dimensions={dimensions} />)
+    expect(VideoThumbnail).toHaveBeenCalledOnce()
+    expect(vi.mocked(VideoThumbnail).mock.calls[0]?.[0]).toEqual({value: video, dimensions})
+  })
+
+  it('does not treat a bare media library reference as a video', () => {
+    renderPreview(asset)
+
+    expect(typeof capturedMedia).toBe('function')
+    const FallbackMedia = capturedMedia as ComponentType
+    render(<FallbackMedia />)
+    expect(VideoThumbnail).not.toHaveBeenCalled()
   })
 })
 

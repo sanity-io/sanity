@@ -1,66 +1,92 @@
-import {PlayIcon} from '@sanity/icons'
+import {PlayIcon} from '@sanity/icons/Play'
 import {Flex, Skeleton} from '@sanity/ui'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 
 import {type PreviewMediaDimensions} from '../../../core/components/previews'
-import {isSignedPlayback} from '../VideoInput/types'
 import {
   useVideoPlaybackInfo,
   type UseVideoPlaybackInfoParams,
+  type VideoPlaybackInfoLoadable,
 } from '../VideoInput/useVideoPlaybackInfo'
+import {parseVideoAssetSource, type VideoAssetSource} from './isVideoAssetSource'
 
-interface VideoThumbnailProps {
-  value: {asset: {_ref: string}}
+export interface VideoThumbnailProps {
+  value: VideoAssetSource
   dimensions: PreviewMediaDimensions
 }
 
-function parseVideoGDR(ref: string): UseVideoPlaybackInfoParams | null {
-  const parts = ref.split(':')
-  if (parts.length !== 3 || parts[0] !== 'media-library') return null
+export function getVideoThumbnailParams(
+  value: VideoAssetSource,
+  dimensions: PreviewMediaDimensions,
+): UseVideoPlaybackInfoParams | null {
+  const parsed = parseVideoAssetSource(value)
+  if (!parsed) return null
+
+  const dpr = dimensions.dpr ?? 1
   return {
-    mediaLibraryId: parts[1],
-    assetRef: {_type: 'globalDocumentReference', _ref: ref},
+    ...parsed,
+    thumbnail: {
+      width: Math.ceil((dimensions.width ?? 100) * dpr),
+      height: Math.ceil((dimensions.height ?? 100) * dpr),
+      fit: 'smartcrop',
+    },
   }
 }
 
-export function VideoThumbnail({value, dimensions}: VideoThumbnailProps) {
-  const params = useMemo(() => {
-    if (!value?.asset?._ref) return null
-    return parseVideoGDR(value.asset._ref)
-  }, [value])
+function ThumbnailFallback() {
+  return (
+    <Flex
+      align="center"
+      data-testid="video-thumbnail-fallback"
+      justify="center"
+      style={{width: '100%', height: '100%'}}
+    >
+      <PlayIcon />
+    </Flex>
+  )
+}
 
-  const playbackInfo = useVideoPlaybackInfo(params)
-
-  if (playbackInfo.isLoading) {
-    return <Skeleton animated style={{width: '100%', height: '100%'}} />
+function getThumbnailUrl(thumbnail: {url: string; token?: string}): string | null {
+  try {
+    const url = new URL(thumbnail.url)
+    if (thumbnail.token) url.searchParams.set('token', thumbnail.token)
+    return url.toString()
+  } catch {
+    return null
   }
+}
 
-  if (!playbackInfo.result) {
+export function VideoThumbnailContent({state}: {state: VideoPlaybackInfoLoadable}) {
+  const thumbnailUrl = state.result ? getThumbnailUrl(state.result.thumbnail) : null
+  const [failedUrl, setFailedUrl] = useState<string | null>(null)
+
+  if (state.isLoading) {
     return (
-      <Flex align="center" justify="center" style={{width: '100%', height: '100%'}}>
-        <PlayIcon />
-      </Flex>
+      <Skeleton
+        animated
+        data-testid="video-thumbnail-loading"
+        style={{width: '100%', height: '100%'}}
+      />
     )
   }
 
-  const {thumbnail} = playbackInfo.result
-  const baseUrl = thumbnail.url
-  const tokenParam = isSignedPlayback(thumbnail) ? `token=${thumbnail.token}` : ''
-
-  const width = dimensions.width ?? 100
-  const height = dimensions.height ?? 100
-  const dpr = dimensions.dpr ?? 1
-
-  const sizeParams = `width=${width * dpr}&height=${height * dpr}&fit_mode=smartcrop`
-  const separator = baseUrl.includes('?') ? '&' : '?'
-  const thumbUrl = `${baseUrl}${separator}${[sizeParams, tokenParam].filter(Boolean).join('&')}`
+  if (!thumbnailUrl || failedUrl === thumbnailUrl) return <ThumbnailFallback />
 
   return (
     <img
-      src={thumbUrl}
+      src={thumbnailUrl}
       alt=""
+      data-testid="video-thumbnail-image"
+      onError={() => setFailedUrl(thumbnailUrl)}
       referrerPolicy="strict-origin-when-cross-origin"
       style={{width: '100%', height: '100%', objectFit: 'cover'}}
     />
   )
+}
+
+export function VideoThumbnail({value, dimensions}: VideoThumbnailProps) {
+  const params = useMemo(() => getVideoThumbnailParams(value, dimensions), [dimensions, value])
+  const playbackInfo = useVideoPlaybackInfo(params)
+
+  return <VideoThumbnailContent state={playbackInfo} />
 }

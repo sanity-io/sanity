@@ -1,14 +1,45 @@
+import {type Reference} from '@sanity/types'
+
+import {parseMediaLibraryReference} from '../VideoInput/parseMediaLibraryReference'
+
+export interface VideoAssetSource {
+  _type: 'sanity.video'
+  asset: {
+    _type: 'globalDocumentReference'
+    _ref: string
+  }
+}
+
+export interface ParsedVideoAssetSource {
+  mediaLibraryId: string
+  assetRef: Reference
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
 /**
- * Checks if a value looks like a video asset source from the Media Library.
- * Video assets use Global Document References with the format:
- * `media-library:{libraryId}:{assetInstanceId}`
+ * Parses a normalized video value backed by a pinned Media Library video instance.
  */
-export function isVideoAssetSource(value: unknown): value is {asset: {_ref: string}} {
-  if (!value || typeof value !== 'object') return false
-  const obj = value as Record<string, unknown>
-  const asset = obj.asset
-  if (!asset || typeof asset !== 'object') return false
-  const ref = (asset as Record<string, unknown>)._ref
-  if (typeof ref !== 'string') return false
-  return ref.startsWith('media-library:')
+export function parseVideoAssetSource(value: unknown): ParsedVideoAssetSource | null {
+  if (!isRecord(value) || value._type !== 'sanity.video') return null
+
+  const asset = value.asset
+  if (!isRecord(asset) || asset._type !== 'globalDocumentReference') return null
+
+  const ref = asset._ref
+  if (typeof ref !== 'string') return null
+
+  const parsed = parseMediaLibraryReference(ref)
+  if (!parsed) return null
+
+  return {
+    mediaLibraryId: parsed.mediaLibraryId,
+    assetRef: {_type: 'globalDocumentReference', _ref: ref},
+  }
+}
+
+export function isVideoAssetSource(value: unknown): value is VideoAssetSource {
+  return parseVideoAssetSource(value) !== null
 }
