@@ -1,7 +1,9 @@
 import {Card, Layer, Spinner, Text} from '@sanity/ui'
 import {css, styled} from 'styled-components'
 
-import {useTranslation} from '../..'
+// Import directly from i18n, not the core barrel: routing through core/index
+// reintroduces a cycle that pulls the barrel into the lazy-input split chunks.
+import {useTranslation} from '../../i18n'
 
 // Enable to force debug background
 const DEBUG_MODE = false
