@@ -123,6 +123,6 @@
     "baseline 2024"
   ],
   "inlinedDependencies": {
-    "@sanity/client": "7.23.0"
+    "@sanity/client": "7.23.2"
   }
 }
