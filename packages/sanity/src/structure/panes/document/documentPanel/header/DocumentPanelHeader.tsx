@@ -50,6 +50,7 @@ import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetr
 import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
+import {DocumentTargetBadges} from './DocumentTargetBadges'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
@@ -236,9 +237,10 @@ export const DocumentPanelHeader = memo(
                 </HorizontalScroller>
               )}
               {hasDocumentGroupInventory && (
-                <Box paddingX={3}>
+                <Flex paddingX={3} gap={2} align={'center'}>
+                  <DocumentTargetBadges />
                   <DocumentGroupInventoryHint />
-                </Box>
+                </Flex>
               )}
 
               <Box flex="none" paddingRight={3}>
