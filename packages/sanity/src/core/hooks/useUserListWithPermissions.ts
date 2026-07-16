@@ -6,6 +6,7 @@ import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switc
 
 import {
   type DocumentValuePermission,
+  grantFilterUsesUserAttributes,
   grantsPermissionOn,
   type ProjectData,
   useProjectStore,
@@ -118,6 +119,25 @@ export function useUserListWithPermissions(
             permission,
             documentValue,
           )
+
+          // Other users' attributes are not available client-side, and groq-js
+          // cannot evaluate `user::attributes()`. Without this fallback, any
+          // member with an attribute-based grant used to throw and empty the
+          // entire mention list. Prefer showing those users as mentionable.
+          if (
+            !granted &&
+            flattenedGrants.some(
+              (grant) =>
+                grant?.permissions?.includes(permission) &&
+                typeof grant.filter === 'string' &&
+                grantFilterUsesUserAttributes(grant.filter),
+            )
+          ) {
+            return {
+              ...user,
+              granted: true,
+            }
+          }
 
           return {
             ...user,

@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {type CurrentUser, type SanityDocument} from '@sanity/types'
+import {type CurrentUser, type CurrentUserAttribute, type SanityDocument} from '@sanity/types'
 import {evaluate, parse} from 'groq-js'
 import {defer, of} from 'rxjs'
 import {refCountDelay} from 'rxjs-etc/operators'
@@ -15,6 +15,9 @@ import {
   type GrantsStore,
   type PermissionCheckResult,
 } from './types'
+
+/** Matches `user::attributes()` in role grant filters (attribute-based RBAC). */
+const USER_ATTRIBUTES_FN = 'user::attributes()'
 
 async function getDatasetGrants(
   client: SanityClient,
@@ -45,23 +48,77 @@ function getParams(userId: string | null): EvaluationParams {
   return params
 }
 
+/**
+ * Convert `CurrentUser.attributes` into a plain object for GROQ evaluation.
+ * @internal
+ */
+export function userAttributesToObject(
+  attributes: CurrentUserAttribute[] | undefined,
+): Record<string, unknown> {
+  if (!attributes?.length) {
+    return {}
+  }
+
+  return Object.fromEntries(attributes.map((attribute) => [attribute.key, attribute.value]))
+}
+
+/**
+ * groq-js does not implement `user::attributes()`. When we have attribute
+ * values, rewrite the function call to a GROQ object literal so filters can
+ * be evaluated client-side.
+ * @internal
+ */
+export function applyUserAttributesToFilter(
+  filter: string,
+  userAttributes: Record<string, unknown>,
+): string {
+  if (!grantFilterUsesUserAttributes(filter)) {
+    return filter
+  }
+
+  return filter.replaceAll(USER_ATTRIBUTES_FN, JSON.stringify(userAttributes))
+}
+
+/** @internal */
+export function grantFilterUsesUserAttributes(filter: string): boolean {
+  return filter.includes(USER_ATTRIBUTES_FN)
+}
+
 const PARSED_FILTERS_MEMO = new Map()
-async function matchesFilter(userId: string | null, filter: string, document: SanityDocument) {
-  if (!PARSED_FILTERS_MEMO.has(filter)) {
+async function matchesFilter(
+  userId: string | null,
+  filter: string,
+  document: SanityDocument,
+  userAttributes?: Record<string, unknown>,
+) {
+  const effectiveFilter =
+    userAttributes && grantFilterUsesUserAttributes(filter)
+      ? applyUserAttributesToFilter(filter, userAttributes)
+      : filter
+
+  if (!PARSED_FILTERS_MEMO.has(effectiveFilter)) {
     // note: it might be tempting to also memoize the result of the evaluation here,
     // Currently these filters are typically evaluated whenever a document change, which means they will be evaluated
     // quite frequently with different versions of the document. There might be some gains in finding out which subset of document
     // properties to use as key (e.g. by looking at the parsed filter and see what properties the filter cares about)
     // But as always, it's worth considering if the complexity/memory usage is worth the potential perf gain…
-    PARSED_FILTERS_MEMO.set(filter, parse(`*[${filter}]`))
+    PARSED_FILTERS_MEMO.set(effectiveFilter, parse(`*[${effectiveFilter}]`))
   }
-  const parsed = PARSED_FILTERS_MEMO.get(filter)
+  const parsed = PARSED_FILTERS_MEMO.get(effectiveFilter)
 
   const evalParams = getParams(userId)
   const {identity} = evalParams
   const params: Record<string, unknown> = {...evalParams}
-  const data = await (await evaluate(parsed, {dataset: [document], identity, params})).get()
-  return data?.length === 1
+
+  try {
+    const data = await (await evaluate(parsed, {dataset: [document], identity, params})).get()
+    return data?.length === 1
+  } catch {
+    // groq-js throws for unimplemented functions (e.g. user::attributes() when
+    // we have no attribute values to rewrite). Fail closed for this filter so
+    // a single unevaluable grant cannot abort the entire permission check.
+    return false
+  }
 }
 interface GrantsStoreOptionsCurrentUser {
   client: SanityClient
@@ -84,6 +141,11 @@ interface GrantsStoreOptionsUserId {
    */
   errorHandler?: StoreRequestErrorHandler
   userId: string | null
+  /**
+   * Organization-scoped user attributes for the authenticated user.
+   * Used to evaluate grant filters that reference `user::attributes()`.
+   */
+  userAttributes?: CurrentUserAttribute[]
 }
 
 /** @internal */
@@ -94,6 +156,9 @@ export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
   const {client, errorHandler} = opts
   const versionedClient = client.withConfig({apiVersion: '2021-06-07'})
   const userId = 'userId' in opts ? opts.userId : opts?.currentUser?.id || null
+  const userAttributes = userAttributesToObject(
+    'userAttributes' in opts ? opts.userAttributes : opts.currentUser?.attributes,
+  )
 
   const datasetGrants$ = defer(() => of(versionedClient.config())).pipe(
     switchMap(({projectId, dataset}) => {
@@ -113,7 +178,9 @@ export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
   return {
     checkDocumentPermission(permission: DocumentValuePermission, document: SanityDocument) {
       return currentUserDatasetGrants.pipe(
-        switchMap((grants) => grantsPermissionOn(userId, grants, permission, document)),
+        switchMap((grants) =>
+          grantsPermissionOn(userId, grants, permission, document, userAttributes),
+        ),
         distinctUntilChanged(shallowEquals),
       )
     },
@@ -130,6 +197,7 @@ export async function grantsPermissionOn(
   grants: Grant[],
   permission: DocumentValuePermission,
   document: SanityDocument | null,
+  userAttributes?: Record<string, unknown>,
 ): Promise<PermissionCheckResult> {
   if (!document) {
     // we say it's granted if null due to initial states
@@ -143,7 +211,7 @@ export async function grantsPermissionOn(
   const matchingGrants: Grant[] = []
 
   for (const grant of grants) {
-    if (await matchesFilter(userId, grant.filter, document)) {
+    if (await matchesFilter(userId, grant.filter, document, userAttributes)) {
       matchingGrants.push(grant)
     }
   }
