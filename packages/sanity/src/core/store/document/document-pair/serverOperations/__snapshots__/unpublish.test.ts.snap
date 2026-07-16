@@ -1,33 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`unpublish > execute > uses sanity.action.document.unpublish for published context 1`] = `
-{
-  "listen": [],
-  "observable": {
-    "action": [
-      {
-        "actions": {
-          "actionType": "sanity.action.document.unpublish",
-          "draftId": "drafts.my-id",
-          "publishedId": "my-id",
-        },
-        "options": {
-          "skipCrossDatasetReferenceValidation": true,
-          "tag": "document.unpublish",
-        },
-      },
-    ],
-    "create": [],
-    "fetch": [],
-    "getDocuments": [],
-    "listen": [],
-    "request": [],
-  },
-  "request": [],
-  "transaction": [],
-}
-`;
-
 exports[`unpublish > execute > uses sanity.action.document.version.unpublish for version context 1`] = `
 {
   "listen": [],

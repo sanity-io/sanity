@@ -24,7 +24,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
       return variantVersion.bundleId !== 'drafts' ? false : 'NOT_PUBLISHED'
     }
 
-    if (idPair.versionId) {
+    if (idPair?.versionId) {
       if (!snapshots.published) {
         return 'NOT_PUBLISHED'
       }
@@ -37,7 +37,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
     return snapshots.published ? false : 'NOT_PUBLISHED'
   },
   execute: ({client, idPair, snapshots}) => {
-    const variantVersion = getVariantVersionInfo(snapshots.version)
+    const variantVersion = getVariantVersionInfo(snapshots?.version)
     if (variantVersion) {
       if (variantVersion.bundleId === 'drafts') {
         throw new Error('Cannot unpublish a draft variant')
@@ -53,7 +53,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
           actionType: 'sanity.action.document.variant.unpublish',
           publishedId: idPair.publishedId,
           variantId: variantVersion.variantId,
-          bundleId: snapshots.version?._system?.bundleId,
+          bundleId: snapshots?.version?._system?.bundleId,
         },
         {
           tag: 'document.unpublish',
@@ -62,7 +62,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
       )
     }
 
-    if (idPair.versionId) {
+    if (idPair?.versionId) {
       return actionsApiClient(client, idPair).observable.action(
         {
           actionType: 'sanity.action.document.version.unpublish',
@@ -76,7 +76,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
       )
     }
 
-    assertNotVariantVersion(snapshots.version, 'unpublish')
+    assertNotVariantVersion(snapshots?.version, 'unpublish')
 
     return actionsApiClient(client, idPair).observable.action(
       {
