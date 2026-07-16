@@ -187,7 +187,6 @@ import type {
   ColorSchemeLocalStorageProvider,
   ColorSchemeProvider,
   ColorSchemeProviderProps,
-  CombinedDocument,
   CommandList,
   CommandListElementType,
   CommandListGetItemDisabledCallback,
@@ -487,7 +486,6 @@ import type {
   DocumentRebaseEvent,
   DocumentRebaseTelemetryEvent,
   DocumentRemoteMutationEvent,
-  DocumentRemoteMutationVersionEvent,
   DocumentRevision,
   DocumentRule,
   DocumentStackAvailability,
@@ -1108,7 +1106,6 @@ import type {
   operatorDefinitions,
   OperatorInputComponentProps,
   Pair,
-  ParsedTimeRef,
   ParseError,
   ParseErrorsProvider,
   parseRetryAfter,
@@ -1357,7 +1354,6 @@ import type {
   SelectedPerspective,
   SelectInput,
   Selection,
-  SelectionState,
   selectUpstreamVersion,
   SendFeedbackOptions,
   Sentiment,
@@ -1486,13 +1482,7 @@ import type {
   TextWithToneProps,
   TFunction,
   TimeAgoOpts,
-  Timeline,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
-  TimelineController,
-  TimelineControllerOptions,
-  TimelineOptions,
-  TimelineState,
-  TimelineStore,
   TitledListValue,
   ToastParams,
   toMutationPatches,
@@ -1505,7 +1495,6 @@ import type {
   TrackedChange,
   TrackerContextGetSnapshot,
   TrackerContextStore,
-  Transaction,
   TransactionLogEvent,
   TransactionLogEventWithEffects,
   TransactionLogEventWithMutations,
@@ -1717,8 +1706,6 @@ import type {
   useTemplates,
   useThrottledCallback,
   useTimeAgo,
-  useTimelineSelector,
-  useTimelineStore,
   useTools,
   useTrackerStore,
   useTrackerStoreReporter,
@@ -2361,9 +2348,6 @@ describe('sanity', () => {
   })
   test('ColorSchemeProviderProps', () => {
     expectTypeOf<ColorSchemeProviderProps>().toBeObject()
-  })
-  test('CombinedDocument', () => {
-    expectTypeOf<CombinedDocument>().toBeObject()
   })
   test('CommandList', () => {
     expectTypeOf<typeof CommandList>().not.toBeNever()
@@ -3266,9 +3250,6 @@ describe('sanity', () => {
   })
   test('DocumentRemoteMutationEvent', () => {
     expectTypeOf<DocumentRemoteMutationEvent>().toBeObject()
-  })
-  test('DocumentRemoteMutationVersionEvent', () => {
-    expectTypeOf<DocumentRemoteMutationVersionEvent>().not.toBeNever()
   })
   test('DocumentRevision', () => {
     expectTypeOf<DocumentRevision>().not.toBeNever()
@@ -5140,9 +5121,6 @@ describe('sanity', () => {
   test('Pair', () => {
     expectTypeOf<Pair>().not.toBeNever()
   })
-  test('ParsedTimeRef', () => {
-    expectTypeOf<ParsedTimeRef>().not.toBeNever()
-  })
   test('ParseError', () => {
     expectTypeOf<ParseError>().toBeObject()
   })
@@ -5889,9 +5867,6 @@ describe('sanity', () => {
   test('Selection', () => {
     expectTypeOf<Selection>().not.toBeNever()
   })
-  test('SelectionState', () => {
-    expectTypeOf<SelectionState>().not.toBeNever()
-  })
   test('selectUpstreamVersion', () => {
     expectTypeOf<typeof selectUpstreamVersion>().toBeFunction()
   })
@@ -6279,26 +6254,8 @@ describe('sanity', () => {
   test('TimeAgoOpts', () => {
     expectTypeOf<TimeAgoOpts>().toBeObject()
   })
-  test('Timeline', () => {
-    expectTypeOf<Timeline>().not.toBeNever()
-  })
   test('TIMELINE_ITEM_I18N_KEY_MAPPING', () => {
     expectTypeOf<typeof TIMELINE_ITEM_I18N_KEY_MAPPING>().not.toBeNever()
-  })
-  test('TimelineController', () => {
-    expectTypeOf<TimelineController>().not.toBeNever()
-  })
-  test('TimelineControllerOptions', () => {
-    expectTypeOf<TimelineControllerOptions>().not.toBeNever()
-  })
-  test('TimelineOptions', () => {
-    expectTypeOf<TimelineOptions>().toBeObject()
-  })
-  test('TimelineState', () => {
-    expectTypeOf<TimelineState>().toBeObject()
-  })
-  test('TimelineStore', () => {
-    expectTypeOf<TimelineStore>().toBeObject()
   })
   test('TitledListValue', () => {
     expectTypeOf<TitledListValue<any>>().toBeObject()
@@ -6335,9 +6292,6 @@ describe('sanity', () => {
   })
   test('TrackerContextStore', () => {
     expectTypeOf<TrackerContextStore<any>>().toBeObject()
-  })
-  test('Transaction', () => {
-    expectTypeOf<Transaction>().toBeObject()
   })
   test('TransactionLogEvent', () => {
     expectTypeOf<TransactionLogEvent>().toBeObject()
@@ -6974,12 +6928,6 @@ describe('sanity', () => {
   })
   test('useTimeAgo', () => {
     expectTypeOf<typeof useTimeAgo>().toBeFunction()
-  })
-  test('useTimelineSelector', () => {
-    expectTypeOf<typeof useTimelineSelector>().toBeFunction()
-  })
-  test('useTimelineStore', () => {
-    expectTypeOf<typeof useTimelineStore>().toBeFunction()
   })
   test('useTools', () => {
     expectTypeOf<typeof useTools>().toBeFunction()

@@ -1,10 +1,4 @@
-import {
-  type ArrayInput,
-  type Input,
-  type ObjectInput,
-  type StringInput,
-  wrap,
-} from '@sanity/diff'
+import {type ArrayInput, type Input, type ObjectInput, type StringInput, wrap} from '@sanity/diff'
 import {type incremental} from 'mendoza'
 
 import {type Annotation} from '../../../field'

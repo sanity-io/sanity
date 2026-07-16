@@ -14,7 +14,10 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ExpandableTimelineItemButton, TIMELINE_LIST_WRAPPER_ID} from '../expandableTimelineItemButton'
+import {
+  ExpandableTimelineItemButton,
+  TIMELINE_LIST_WRAPPER_ID,
+} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
 import {EventTimelineItem} from './EventTimelineItem'
 import {PublishedEventMenu} from './PublishedEventMenu'
