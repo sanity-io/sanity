@@ -53,10 +53,24 @@ describe('VariantMenuButton', () => {
 
     await user.click(screen.getByRole('button'))
     await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
     })
+  })
+
+  it('does not delete the variant when the confirmation dialog is cancelled', async () => {
+    const user = userEvent.setup()
+
+    await renderMenuButton({documentCount: 0})
+
+    await user.click(screen.getByRole('button'))
+    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByTestId('cancel-button'))
+
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
+    expect(screen.queryByTestId('delete-variant-dialog')).not.toBeInTheDocument()
   })
 
   it('shows a loading state on the menu button while deleting', async () => {
@@ -70,6 +84,7 @@ describe('VariantMenuButton', () => {
 
     await user.click(menuButton)
     await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(menuButton).toBeDisabled()

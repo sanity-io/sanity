@@ -9,6 +9,7 @@ interface UseVariantDeleteActionOptions {
   documentCount?: number | null
   documentsLoading?: boolean
   onDeleted?: () => void
+  variantTitle?: string
 }
 
 /**
@@ -22,14 +23,19 @@ export function useVariantDeleteAction(
 ): {
   deleteDisabled: boolean
   deleteDisabledTooltip: string | undefined
-  handleDelete: () => Promise<void>
+  handleCloseDeleteDialog: () => void
+  handleConfirmDelete: () => Promise<void>
+  handleDelete: () => void
+  isDeleteDialogOpen: boolean
   isDeleting: boolean
+  variantTitle: string
 } {
-  const {documentCount, documentsLoading = false, onDeleted} = options ?? {}
+  const {documentCount, documentsLoading = false, onDeleted, variantTitle = ''} = options ?? {}
   const {t} = useTranslation(variantsLocaleNamespace)
   const toast = useToast()
   const {deleteVariant} = useVariantOperations()
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const hasDocuments = typeof documentCount === 'number' && documentCount > 0
   const countUnknown = documentsLoading || documentCount === undefined || documentCount === null
@@ -49,7 +55,23 @@ export function useVariantDeleteAction(
     )
   }, [documentCount, hasDocuments, t])
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = useCallback(() => {
+    if (countUnknown || hasDocuments) {
+      return
+    }
+
+    setIsDeleteDialogOpen(true)
+  }, [countUnknown, hasDocuments])
+
+  const handleCloseDeleteDialog = useCallback(() => {
+    if (isDeleting) {
+      return
+    }
+
+    setIsDeleteDialogOpen(false)
+  }, [isDeleting])
+
+  const handleConfirmDelete = useCallback(async () => {
     if (countUnknown || hasDocuments) {
       return
     }
@@ -59,6 +81,7 @@ export function useVariantDeleteAction(
     try {
       await deleteVariant(variantId)
       setIsDeleting(false)
+      setIsDeleteDialogOpen(false)
       onDeleted?.()
     } catch (error) {
       console.error(error)
@@ -74,7 +97,11 @@ export function useVariantDeleteAction(
   return {
     deleteDisabled,
     deleteDisabledTooltip,
+    handleCloseDeleteDialog,
+    handleConfirmDelete,
     handleDelete,
+    isDeleteDialogOpen,
     isDeleting,
+    variantTitle,
   }
 }

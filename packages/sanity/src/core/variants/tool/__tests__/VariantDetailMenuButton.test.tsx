@@ -81,6 +81,7 @@ describe('VariantDetailMenuButton', () => {
 
     await user.click(screen.getByRole('button'))
     await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
@@ -99,6 +100,7 @@ describe('VariantDetailMenuButton', () => {
 
     await user.click(menuButton)
     await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(menuButton).toBeDisabled()
@@ -121,6 +123,7 @@ describe('VariantDetailMenuButton', () => {
 
     await user.click(screen.getByRole('button'))
     await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(toastMock.push).toHaveBeenCalledWith(

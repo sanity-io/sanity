@@ -41,19 +41,31 @@ describe('useVariantDeleteAction', () => {
 
   it('deletes the variant when it has no documents', async () => {
     const onDeleted = vi.fn()
-    const {result} = await renderDeleteAction({documentCount: 0, onDeleted})
+    const {result} = await renderDeleteAction({
+      documentCount: 0,
+      onDeleted,
+      variantTitle: 'Alpha audience',
+    })
 
     await waitFor(() => {
       expect(result.current).not.toBeNull()
     })
 
+    act(() => {
+      result.current.handleDelete()
+    })
+
+    expect(result.current.isDeleteDialogOpen).toBe(true)
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
+
     await act(async () => {
-      await result.current.handleDelete()
+      await result.current.handleConfirmDelete()
     })
 
     await waitFor(() => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
       expect(onDeleted).toHaveBeenCalledTimes(1)
+      expect(result.current.isDeleteDialogOpen).toBe(false)
     })
   })
 
@@ -80,7 +92,7 @@ describe('useVariantDeleteAction', () => {
     )
 
     await act(async () => {
-      await result.current.handleDelete()
+      await result.current.handleConfirmDelete()
     })
 
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
@@ -102,8 +114,12 @@ describe('useVariantDeleteAction', () => {
 
     const {result} = await renderDeleteAction({documentCount: 0})
 
+    act(() => {
+      result.current.handleDelete()
+    })
+
     await act(async () => {
-      await result.current.handleDelete()
+      await result.current.handleConfirmDelete()
     })
 
     await waitFor(() => {
