@@ -411,6 +411,7 @@ function CommentsInspectorInner(
       )}
 
       <Flex
+        data-testid="comments-inspector"
         direction="column"
         flex={1}
         height="fill"

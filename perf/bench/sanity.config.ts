@@ -3,6 +3,7 @@ import {defineConfig} from 'sanity'
 import {apiConfig} from './studio/apiConfig'
 import {arrayI18nWorkspace} from './studio/schemas/arrayI18n'
 import {articleWorkspace} from './studio/schemas/article'
+import {commentsFieldWorkspace} from './studio/schemas/commentsField'
 import {recipeWorkspace} from './studio/schemas/recipe'
 import {singleStringWorkspace} from './studio/schemas/singleString'
 import {syntheticWorkspace} from './studio/schemas/synthetic'
@@ -44,5 +45,10 @@ export default defineConfig([
     basePath: '/synthetic',
     ...common,
     ...syntheticWorkspace,
+  },
+  {
+    basePath: '/commentsField',
+    ...common,
+    ...commentsFieldWorkspace,
   },
 ])

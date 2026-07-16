@@ -202,7 +202,7 @@ function toLatencies(
   }
 }
 
-function fieldInput(page: Page, target: InteractionTarget): Locator {
+export function fieldInput(page: Page, target: InteractionTarget): Locator {
   if (target.kind === 'pte') {
     return page
       .locator(`[data-testid="field-${target.fieldPath}"] [contenteditable="true"]`)
