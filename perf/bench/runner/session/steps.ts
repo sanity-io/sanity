@@ -23,6 +23,10 @@ export function resolveLocator(page: Page, selector: StepSelector): Locator {
     const scope = selector.within ? page.locator(`[data-testid="${selector.within}"]`) : page
     return scope.locator(`[data-testid="${selector.testId}"]`).first()
   }
+  if ('label' in selector) {
+    const scope = selector.within ? page.locator(`[data-testid="${selector.within}"]`) : page
+    return scope.getByLabel(selector.label, {exact: true}).first()
+  }
   return page.locator(selector.css).first()
 }
 

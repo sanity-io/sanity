@@ -8,6 +8,7 @@ interface FakeLocator {
   scope?: string
   first: () => FakeLocator
   locator: (inner: string) => FakeLocator
+  getByLabel: (label: string, options?: {exact?: boolean}) => FakeLocator
   waitFor: () => Promise<void>
   hover: () => Promise<void>
   click: () => Promise<void>
@@ -19,6 +20,7 @@ function makeLocator(selector: string, scope?: string): FakeLocator {
     scope,
     first: () => locator,
     locator: (inner) => makeLocator(inner, selector),
+    getByLabel: (label) => makeLocator(label, selector),
     waitFor: async () => {},
     hover: async () => {},
     click: async () => {},
@@ -27,7 +29,10 @@ function makeLocator(selector: string, scope?: string): FakeLocator {
 }
 
 function createFakePage() {
-  return {locator: (selector: string) => makeLocator(selector)}
+  return {
+    locator: (selector: string) => makeLocator(selector),
+    getByLabel: (label: string) => makeLocator(label),
+  }
 }
 
 function fakeContext(): StepContext {
@@ -64,6 +69,15 @@ describe('resolveLocator', () => {
       within: 'field-stringField',
     }) as unknown as FakeLocator
     expect(locator.selector).toBe('[data-testid="add-comment-button"]')
+    expect(locator.scope).toBe('[data-testid="field-stringField"]')
+  })
+
+  it('resolves a label selector via getByLabel scoped under within', () => {
+    const locator = resolveLocator(createFakePage() as never, {
+      label: 'Add comment',
+      within: 'field-stringField',
+    }) as unknown as FakeLocator
+    expect(locator.selector).toBe('Add comment')
     expect(locator.scope).toBe('[data-testid="field-stringField"]')
   })
 

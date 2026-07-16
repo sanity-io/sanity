@@ -170,7 +170,6 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         <div>
           <Button
             aria-label={t('field-button.aria-label-add')}
-            data-testid="add-comment-button"
             disabled={isCreatingDataset || Boolean(addonDatasetError)}
             icon={AddCommentIcon}
             mode="bleed"
@@ -191,7 +190,6 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     <Tooltip portal placement="top" content={t('field-button.content', {count})}>
       <SanityUIButton
         aria-label={t('field-button.aria-label-open')}
-        data-testid="open-comments-button"
         mode="bleed"
         onClick={onClick}
         padding={2}

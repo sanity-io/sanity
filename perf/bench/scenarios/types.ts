@@ -66,6 +66,7 @@ export interface BenchScenario {
 export type StepSelector =
   | {field: string; kind: 'string' | 'pte'}
   | {testId: string; within?: string}
+  | {label: string; within?: string}
   | {css: string}
 
 export interface StepContext {
