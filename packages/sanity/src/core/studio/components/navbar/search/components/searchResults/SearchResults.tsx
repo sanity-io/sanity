@@ -48,14 +48,13 @@ export function SearchResults({
   const {t} = useTranslation()
   const recentSearchesStore = useRecentSearchesStore()
 
-  // useDeferredValue doesn't have an effect unless it's used to delay rendering a component that has React.memo
+  // deferral only pays off because CommandList is memo()'d, so the urgent render skips the heavy row subtree
   const deferredHits = useDeferredValue(result.hits)
   const isPending = deferredHits !== result.hits
 
-  const hasSearchResults = deferredHits.length > 0
-  // gated on the deferred value having caught up, else "no results" flashes on the settle frame
-  const hasNoSearchResults =
-    deferredHits.length === 0 && result.loaded && deferredHits === result.hits
+  // requiring result.hits too hides the stale list the instant an empty result settles
+  const hasSearchResults = deferredHits.length > 0 && result.hits.length > 0
+  const hasNoSearchResults = result.hits.length === 0 && result.loaded
   const hasError = result.error
 
   /**
