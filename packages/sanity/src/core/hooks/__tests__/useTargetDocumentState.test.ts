@@ -45,6 +45,15 @@ const draftAlphaVariant = versionStub({
     scopeId: 'varscope',
   },
 })
+// The variant-of-published sibling: same variant, no bundleId.
+const publishedAlphaVariant = versionStub({
+  _id: `versions.varscopePub.${PUBLISHED_ID}`,
+  _system: {
+    variant: variantRef(variantAlphaAudience._id),
+    group: groupRef,
+    scopeId: 'varscopePub',
+  },
+})
 
 const baseOptions = {
   bundle: 'drafts' as const,
@@ -75,6 +84,7 @@ describe('getTargetDocumentState', () => {
         targetDocument: draftBase,
         scopeId: undefined,
         variant: undefined,
+        publishedSibling: undefined,
       })
     })
 
@@ -84,6 +94,7 @@ describe('getTargetDocumentState', () => {
         targetDocument: releaseVersion,
         scopeId: RELEASE_ID,
         variant: undefined,
+        publishedSibling: undefined,
       })
     })
 
@@ -95,6 +106,7 @@ describe('getTargetDocumentState', () => {
         targetDocument: undefined,
         scopeId: undefined,
         variant: undefined,
+        publishedSibling: undefined,
       })
     })
   })
@@ -129,6 +141,7 @@ describe('getTargetDocumentState', () => {
         targetDocument: draftAlphaVariant,
         scopeId: 'varscope',
         variant: variantAlphaAudience,
+        publishedSibling: undefined,
       })
     })
 
@@ -138,6 +151,41 @@ describe('getTargetDocumentState', () => {
         status: 'variant-missing',
         variant: variantAlphaAudience,
         bundle: 'published',
+        publishedSibling: undefined,
+      })
+    })
+
+    it('exposes the variant-of-published sibling when the variant is published', () => {
+      const versions = [...variantOptions.versions, publishedAlphaVariant]
+
+      // Drafts-scoped target: the sibling rides along for publish-state gating.
+      expect(getTargetDocumentState({...variantOptions, versions})).toEqual({
+        status: 'ready',
+        targetDocument: draftAlphaVariant,
+        scopeId: 'varscope',
+        variant: variantAlphaAudience,
+        publishedSibling: publishedAlphaVariant,
+      })
+
+      // Published bundle: the target IS the sibling.
+      expect(getTargetDocumentState({...variantOptions, versions, bundle: 'published'})).toEqual({
+        status: 'ready',
+        targetDocument: publishedAlphaVariant,
+        scopeId: 'varscopePub',
+        variant: variantAlphaAudience,
+        publishedSibling: publishedAlphaVariant,
+      })
+    })
+
+    it('exposes the sibling on variant-missing so consumers can tell published-elsewhere from never-existed', () => {
+      // No drafts-scoped variant, but the published variant exists.
+      const versions = [publishedBase, draftBase, publishedAlphaVariant]
+
+      expect(getTargetDocumentState({...variantOptions, versions})).toEqual({
+        status: 'variant-missing',
+        variant: variantAlphaAudience,
+        bundle: 'drafts',
+        publishedSibling: publishedAlphaVariant,
       })
     })
   })

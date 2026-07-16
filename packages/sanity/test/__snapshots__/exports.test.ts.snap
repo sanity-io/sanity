@@ -375,6 +375,7 @@ exports[`exports snapshot 1`] = `
     "getTemplatePermissions": "function",
     "getValueAtPath": "function",
     "getValueError": "function",
+    "getVariantPublishedSibling": "function",
     "getVariantTitle": "function",
     "getVersionFromId": "function",
     "getVersionId": "function",

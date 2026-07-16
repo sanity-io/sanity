@@ -10,6 +10,7 @@ import {AnimatePresence, motion} from 'motion/react'
 import {useEffect, useLayoutEffect, useState} from 'react'
 import {
   AvatarSkeleton,
+  getTargetScopeId,
   isPublishedPerspective,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
   useEvents,
@@ -186,13 +187,16 @@ const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
 
 export function DocumentStatusLine() {
-  const {editState, value} = useDocumentPane()
+  const {value, targetDocumentState} = useDocumentPane()
   const {documentId, documentType} = useDocumentPaneInfo()
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
   const source = useSource()
   const eventsEnabled = source.beta?.eventsAPI?.documents
 
-  const syncState = useSyncState(documentId, documentType, editState?.release)
+  // The scope of the document targeted by the selected perspective (undefined while the target is
+  // resolving or when the draft/published pair applies).
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const syncState = useSyncState(documentId, documentType, scopeId)
 
   const lastUpdated = value?._updatedAt
 
