@@ -92,10 +92,6 @@ export function VariantDetail() {
                     {description || t('detail.no-description')}
                   </Text>
                 </Stack>
-                <Button
-                  onClick={() => setEditDialogOpen(true)}
-                  text={t('detail.action.edit-variant')}
-                />
               </Flex>
 
               <Box paddingTop={4}>
@@ -128,6 +124,7 @@ export function VariantDetail() {
         </Flex>
       </Flex>
       <VariantDetailFooter
+        openEditDialog={() => setEditDialogOpen(true)}
         documentCount={tableRows.length}
         documentsLoading={documentsLoading}
         variant={variant}
