@@ -44,6 +44,9 @@ export interface CommentsProviderProps {
   children: ReactNode
   documentId: string
   documentType: string
+  /**
+   * This acts as the scopeId for the document.
+   */
   releaseId?: ReleaseId
   type: CommentsType
   sortOrder: 'asc' | 'desc'
@@ -82,7 +85,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     selectedCommentId,
     isConnecting,
     onPathOpen,
-    releaseId,
+    releaseId: scopeId,
     mentionsDisabled,
   } = props
   const commentsEnabled = useCommentsEnabled()
@@ -90,18 +93,16 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
   const publishedId = getPublishedId(documentId)
 
-  // No `getTargetScopeId(useTargetDocumentState())` here: `releaseId` is supplied by the caller via props, and
-  // this provider may be rendered outside the perspective provider.
-  const editState = useEditState(publishedId, documentType, 'low', releaseId)
+  const editState = useEditState(publishedId, documentType, 'low', scopeId)
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
 
   const {name: workspaceName, dataset, projectId} = useWorkspace()
 
   const documentValue = useMemo(() => {
-    if (releaseId) return editState.version
+    if (scopeId) return editState.version
     return editState.draft || editState.published
-  }, [editState.version, editState.draft, editState.published, releaseId])
+  }, [editState.version, editState.draft, editState.published, scopeId])
 
   const documentRevisionId = useMemo(() => documentValue?._rev, [documentValue])
 
@@ -123,7 +124,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     loading,
   } = useCommentsStore({
     documentId,
-    releaseId,
+    releaseId: scopeId,
     client,
     transactionsIdMap,
     onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
@@ -250,7 +251,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         dataset,
         documentId: publishedId,
         // use the current release id as document version id of the target
-        documentVersionId: releaseId,
+        documentVersionId: scopeId,
         documentRevisionId,
         documentType,
         getComment,
@@ -279,7 +280,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         currentUser,
         dataset,
         publishedId,
-        releaseId,
+        scopeId,
         documentRevisionId,
         documentType,
         getComment,
