@@ -1,9 +1,8 @@
 import {memo, useCallback} from 'react'
-import {SingleDocReleaseProvider, useSource} from 'sanity'
+import {SingleDocReleaseProvider} from 'sanity'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentEventsPane} from './DocumentEventsPane'
-import {DocumentPaneWithLegacyTimelineStore} from './DocumentPaneLegacyTimeline'
 import {DocumentPerspectiveProvider} from './DocumentPerspectiveProvider'
 import {type DocumentPaneProviderProps} from './types'
 
@@ -11,7 +10,6 @@ import {type DocumentPaneProviderProps} from './types'
  * @internal
  */
 export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProps) => {
-  const source = useSource()
   const {setParams, params} = usePaneRouter()
   const handleSetScheduledDraftPerspective = useCallback(
     (releaseId: string) => {
@@ -30,11 +28,7 @@ export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProp
   return (
     <DocumentPerspectiveProvider>
       <SingleDocReleaseProvider onSetScheduledDraftPerspective={handleSetScheduledDraftPerspective}>
-        {source.beta?.eventsAPI?.documents ? (
-          <DocumentEventsPane {...props} />
-        ) : (
-          <DocumentPaneWithLegacyTimelineStore {...props} />
-        )}
+        <DocumentEventsPane {...props} />
       </SingleDocReleaseProvider>
     </DocumentPerspectiveProvider>
   )

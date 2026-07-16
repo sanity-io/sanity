@@ -910,7 +910,9 @@ function resolveSource({
 
     beta: {
       eventsAPI: {
-        documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
+        // The events API is now always used for document history, the `documents` option is
+        // deprecated and no longer read.
+        documents: true,
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
       variants: {

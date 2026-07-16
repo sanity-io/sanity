@@ -14,7 +14,10 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
+import {
+  ExpandableTimelineItemButton,
+  TIMELINE_LIST_WRAPPER_ID,
+} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
 import {EventTimelineItem} from './EventTimelineItem'
 import {PublishedEventMenu} from './PublishedEventMenu'
@@ -46,8 +49,6 @@ const CHILDREN_ITEMS_VARIANTS: Variants = {
 }
 
 const ITEM_HEIGHT = 57
-
-const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
 
 export const EventsTimeline = ({
   events: allEvents,

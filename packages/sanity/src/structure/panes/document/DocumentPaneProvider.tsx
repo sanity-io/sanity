@@ -91,7 +91,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     historyStore,
   } = props
   const {
-    store: timelineStore,
     error: timelineError,
     ready: timelineReady,
     revisionDocument,
@@ -399,7 +398,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
    * Previously, visiting studio URLs with timeline params would display the 'current' document and then
    * 'snap' in the older revision, which was disorienting and could happen mid-edit.
    *
-   * In the event that the timeline cannot be loaded due to TimelineController errors or blocked requests,
+   * In the event that the timeline cannot be loaded due to events store errors or blocked requests,
    * we skip this readiness check to ensure that users aren't locked out of editing. Trying to select
    * a timeline revision in this instance will display an error localized to the popover itself.
    */
@@ -582,7 +581,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         setIsDocumentGroupInventoryActive,
         isDeleted,
         timelineError,
-        timelineStore,
         title,
         value,
         selectedReleaseId,
@@ -648,7 +646,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isDocumentGroupInventoryActive,
       isDeleted,
       timelineError,
-      timelineStore,
       title,
       value,
       selectedReleaseId,

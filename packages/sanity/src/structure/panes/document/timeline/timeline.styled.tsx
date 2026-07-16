@@ -1,9 +1,5 @@
-import {Box, Flex, Stack} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui'
 import {css, styled} from 'styled-components'
-
-export const StackWrapper = styled(Stack)`
-  max-width: 200px;
-`
 
 export const ListWrapper = styled(Flex)<{$maxHeight: string}>`
   max-height: ${(props) => props.$maxHeight};
