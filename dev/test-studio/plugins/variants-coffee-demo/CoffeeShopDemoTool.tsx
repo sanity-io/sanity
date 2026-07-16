@@ -1,6 +1,7 @@
 import {PortableText} from '@portabletext/react'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {BoltIcon} from '@sanity/icons/Bolt'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {EditIcon} from '@sanity/icons/Edit'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {
@@ -14,12 +15,14 @@ import {
   Grid,
   Heading,
   Inline,
+  Popover,
   Spinner,
   Stack,
   Text,
+  useClickOutsideEvent,
   useMediaIndex,
 } from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import {getSelectedVariant, useAllVariants, useClient, usePerspective} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
@@ -29,12 +32,16 @@ import {
   type CoffeeProductListItem,
   type CoffeePromo,
   DEMO_API_VERSION,
+  getVariantConditionEntries,
   LATEST_PRODUCTS_QUERY,
   PRODUCT_DETAIL_QUERY,
+  VARIANT_CONDITION_QUERY_PARAM,
   VARIANT_QUERY_PARAM,
+  type VariantQueryMode,
 } from './constants'
 import {seedDemoContent} from './seedContent'
-import {useCoffeeQuery} from './useCoffeeQuery'
+import {type CoffeeQueryOptions, useCoffeeQuery} from './useCoffeeQuery'
+import {VariantConditionsPicker} from './VariantConditionsPicker'
 
 /**
  * A tiny "frontend" rendered as a studio tool: a coffee shop with a product listing and detail
@@ -45,28 +52,38 @@ import {useCoffeeQuery} from './useCoffeeQuery'
 export function CoffeeShopDemoTool() {
   const {selectedVariantName, perspectiveStack} = usePerspective()
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
+  const [queryMode, setQueryMode] = useState<VariantQueryMode>('variant-id')
+  const [variantConditions, setVariantConditions] = useState<Record<string, string>>({})
 
   const perspective = perspectiveStack.length > 0 ? perspectiveStack.join(',') : 'published'
 
+  const queryOptions: Omit<CoffeeQueryOptions, 'query' | 'params'> = {
+    queryMode,
+    perspective,
+    variantName: queryMode === 'variant-id' ? selectedVariantName : undefined,
+    variantConditions: queryMode === 'variant-conditions' ? variantConditions : undefined,
+  }
+
   return (
     <Flex direction="column" height="fill" overflow="hidden">
-      <SiteHeader />
+      <SiteHeader
+        queryMode={queryMode}
+        onQueryModeChange={setQueryMode}
+        queryOptions={queryOptions}
+        variantConditions={variantConditions}
+        onVariantConditionsChange={setVariantConditions}
+      />
       <Card flex={1} overflow="auto" tone="transparent" style={{overflowX: 'hidden'}}>
         <Container width={[1, 1, 2, 3]} paddingX={[3, 4, 5]} paddingY={[4, 5]}>
           {selectedProductId ? (
             <ProductDetailPage
               productId={selectedProductId}
-              variantName={selectedVariantName}
-              perspective={perspective}
+              queryOptions={queryOptions}
               onBack={() => setSelectedProductId(null)}
               onOpenProduct={setSelectedProductId}
             />
           ) : (
-            <ProductListPage
-              variantName={selectedVariantName}
-              perspective={perspective}
-              onOpenProduct={setSelectedProductId}
-            />
+            <ProductListPage queryOptions={queryOptions} onOpenProduct={setSelectedProductId} />
           )}
         </Container>
       </Card>
@@ -74,10 +91,106 @@ export function CoffeeShopDemoTool() {
   )
 }
 
-function SiteHeader() {
+function QueryTargetingPopoverContent(props: {
+  queryMode: VariantQueryMode
+  onQueryModeChange: (mode: VariantQueryMode) => void
+  variantConditions: Record<string, string>
+  onVariantConditionsChange: (conditions: Record<string, string>) => void
+}) {
+  const {queryMode, onQueryModeChange, variantConditions, onVariantConditionsChange} = props
+
+  return (
+    <Container width={1} padding={4}>
+      <Stack space={4}>
+        <Stack space={2}>
+          <Text size={1} weight="medium">
+            How should this page resolve variants?
+          </Text>
+          <Text size={1} muted>
+            Use the studio navbar for variant id targeting, or build condition params here to mimic
+            a frontend that only knows the visitor context.
+          </Text>
+        </Stack>
+
+        <Flex gap={2} wrap="wrap">
+          <Button
+            text="Variant id"
+            mode={queryMode === 'variant-id' ? 'default' : 'ghost'}
+            tone={queryMode === 'variant-id' ? 'primary' : 'default'}
+            onClick={() => onQueryModeChange('variant-id')}
+          />
+          <Button
+            text="Variant conditions"
+            mode={queryMode === 'variant-conditions' ? 'default' : 'ghost'}
+            tone={queryMode === 'variant-conditions' ? 'primary' : 'default'}
+            onClick={() => onQueryModeChange('variant-conditions')}
+          />
+        </Flex>
+
+        {queryMode === 'variant-id' ? (
+          <Text size={1} muted>
+            Follows the variant selected in the studio navbar. Pin a variant there to send{' '}
+            <code>{VARIANT_QUERY_PARAM}=&lt;id&gt;</code> with the query.
+          </Text>
+        ) : (
+          <VariantConditionsPicker value={variantConditions} onChange={onVariantConditionsChange} />
+        )}
+      </Stack>
+    </Container>
+  )
+}
+
+function SiteHeader(props: {
+  queryMode: VariantQueryMode
+  onQueryModeChange: (mode: VariantQueryMode) => void
+  queryOptions: Omit<CoffeeQueryOptions, 'query' | 'params'>
+  variantConditions: Record<string, string>
+  onVariantConditionsChange: (conditions: Record<string, string>) => void
+}) {
+  const {queryMode, onQueryModeChange, queryOptions, variantConditions, onVariantConditionsChange} =
+    props
   const {selectedVariantName, selectedVariant} = usePerspective()
   const mediaIndex = useMediaIndex()
   const isCompact = mediaIndex < 1
+  const conditionEntries = getVariantConditionEntries(queryOptions.variantConditions)
+  const [popoverOpen, setPopoverOpen] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
+
+  useClickOutsideEvent(
+    () => setPopoverOpen(false),
+    () => [triggerRef.current, popoverRef.current],
+  )
+
+  const triggerLabel = useMemo(() => {
+    if (queryMode === 'variant-id') {
+      if (selectedVariantName) {
+        const variantLabel = selectedVariant?.name || selectedVariantName
+        return isCompact ? `Variant: ${variantLabel}` : `Returning visitor — ${variantLabel}`
+      }
+
+      return isCompact ? 'Base content' : 'New visitor — base content'
+    }
+
+    if (conditionEntries.length > 0) {
+      return isCompact
+        ? `${conditionEntries.length} condition${conditionEntries.length === 1 ? '' : 's'}`
+        : conditionEntries.map(({param}) => param).join(', ')
+    }
+
+    return isCompact ? 'Set conditions' : 'Configure variant conditions'
+  }, [conditionEntries, isCompact, queryMode, selectedVariant?.name, selectedVariantName])
+
+  const chipTone =
+    queryMode === 'variant-id'
+      ? selectedVariantName
+        ? 'positive'
+        : 'default'
+      : conditionEntries.length > 0
+        ? 'positive'
+        : 'default'
+
+  const triggerTone = chipTone === 'positive' ? 'positive' : 'default'
 
   return (
     <Card padding={[2, 3]} borderBottom>
@@ -91,34 +204,49 @@ function SiteHeader() {
           </Inline>
         </Box>
 
-        <Flex align="center" gap={2} wrap="wrap" style={{maxWidth: '100%'}}>
-          {selectedVariantName ? (
-            <Badge tone="positive" padding={2}>
-              {isCompact
-                ? `Variant: ${selectedVariant?.name || selectedVariantName}`
-                : `Returning visitor — variant: ${selectedVariant?.name || selectedVariantName}`}
-            </Badge>
-          ) : (
-            <Badge mode="outline" padding={2}>
-              {isCompact ? 'Base content' : 'New visitor — base content'}
-            </Badge>
-          )}
-        </Flex>
+        <Popover
+          animate={false}
+          arrow
+          open={popoverOpen}
+          placement="bottom-end"
+          portal
+          ref={popoverRef}
+          content={
+            <QueryTargetingPopoverContent
+              queryMode={queryMode}
+              onQueryModeChange={onQueryModeChange}
+              variantConditions={variantConditions}
+              onVariantConditionsChange={onVariantConditionsChange}
+            />
+          }
+        >
+          <Button
+            ref={triggerRef}
+            fontSize={1}
+            iconRight={ChevronDownIcon}
+            mode="bleed"
+            onClick={() => setPopoverOpen((open) => !open)}
+            padding={2}
+            radius="full"
+            selected={popoverOpen}
+            style={{maxWidth: '100%'}}
+            text={triggerLabel}
+            tone={triggerTone}
+          />
+        </Popover>
       </Flex>
     </Card>
   )
 }
 
 function ProductListPage(props: {
-  variantName?: string
-  perspective: string
+  queryOptions: Omit<CoffeeQueryOptions, 'query' | 'params'>
   onOpenProduct: (id: string) => void
 }) {
-  const {variantName, perspective, onOpenProduct} = props
+  const {queryOptions, onOpenProduct} = props
   const {data, loading, error, requestUrl, refetch} = useCoffeeQuery<CoffeeProductListItem[]>({
     query: LATEST_PRODUCTS_QUERY,
-    variantName,
-    perspective,
+    ...queryOptions,
   })
 
   return (
@@ -153,11 +281,7 @@ function ProductListPage(props: {
         </Grid>
       )}
 
-      <RequestInspector
-        requestUrl={requestUrl}
-        variantName={variantName}
-        perspective={perspective}
-      />
+      <RequestInspector requestUrl={requestUrl} queryOptions={queryOptions} />
     </Stack>
   )
 }
@@ -203,19 +327,17 @@ function ProductCard(props: {product: CoffeeProductListItem; onOpen: () => void}
 
 function ProductDetailPage(props: {
   productId: string
-  variantName?: string
-  perspective: string
+  queryOptions: Omit<CoffeeQueryOptions, 'query' | 'params'>
   onBack: () => void
   onOpenProduct: (id: string) => void
 }) {
-  const {productId, variantName, perspective, onBack, onOpenProduct} = props
+  const {productId, queryOptions, onBack, onOpenProduct} = props
   const mediaIndex = useMediaIndex()
   const isWide = mediaIndex >= 2
   const {data, loading, error, requestUrl, refetch} = useCoffeeQuery<CoffeeProductDetail | null>({
     query: PRODUCT_DETAIL_QUERY,
     params: {id: productId},
-    variantName,
-    perspective,
+    ...queryOptions,
   })
 
   return (
@@ -290,11 +412,7 @@ function ProductDetailPage(props: {
         </Stack>
       )}
 
-      <RequestInspector
-        requestUrl={requestUrl}
-        variantName={variantName}
-        perspective={perspective}
-      />
+      <RequestInspector requestUrl={requestUrl} queryOptions={queryOptions} />
     </Stack>
   )
 }
@@ -447,8 +565,12 @@ function CoverImage(props: {imageUrl?: string; title?: string; variant: CoverIma
   )
 }
 
-function RequestInspector(props: {requestUrl: string; perspective: string; variantName?: string}) {
-  const {requestUrl, perspective, variantName} = props
+function RequestInspector(props: {
+  requestUrl: string
+  queryOptions: Omit<CoffeeQueryOptions, 'query' | 'params'>
+}) {
+  const {requestUrl, queryOptions} = props
+  const {queryMode, perspective, variantName, variantConditions} = queryOptions
   const [open, setOpen] = useState(false)
   const {byId: variantsById} = useAllVariants()
 
@@ -458,6 +580,7 @@ function RequestInspector(props: {requestUrl: string; perspective: string; varia
   )
 
   const variantLabel = selectedVariant?.name || variantName
+  const conditionEntries = getVariantConditionEntries(variantConditions)
 
   return (
     <Card radius={3} border tone="transparent" style={{minWidth: 0, maxWidth: '100%'}}>
@@ -490,13 +613,25 @@ function RequestInspector(props: {requestUrl: string; perspective: string; varia
             <Badge mode="outline" style={{overflowWrap: 'anywhere'}}>
               perspective={perspective}
             </Badge>
-            {variantName ? (
-              <Badge tone="positive" style={{overflowWrap: 'anywhere'}}>
-                variant: {variantLabel}
-              </Badge>
+            {queryMode === 'variant-id' ? (
+              variantName ? (
+                <Badge tone="positive" style={{overflowWrap: 'anywhere'}}>
+                  variant: {variantLabel}
+                </Badge>
+              ) : (
+                <Badge tone="default" mode="outline">
+                  no variant — base content
+                </Badge>
+              )
+            ) : conditionEntries.length > 0 ? (
+              conditionEntries.map(({param}) => (
+                <Badge key={param} tone="positive" style={{overflowWrap: 'anywhere'}}>
+                  {VARIANT_CONDITION_QUERY_PARAM}={param}
+                </Badge>
+              ))
             ) : (
               <Badge tone="default" mode="outline">
-                no variant — base content
+                no {VARIANT_CONDITION_QUERY_PARAM}
               </Badge>
             )}
           </Inline>
@@ -505,10 +640,10 @@ function RequestInspector(props: {requestUrl: string; perspective: string; varia
           <Box padding={[2, 3]}>
             <Stack space={3}>
               <Text size={1} muted>
-                The page fetches content like any frontend would. The query carries a perspective
-                (published, drafts, or a release stack) and, when the visitor is recognized, a
-                variant parameter — the API returns variant content where it exists (product
-                discounts, referenced promos, etc.) and base content everywhere else.
+                The page fetches content like any frontend would. The query always carries a
+                perspective (published, drafts, or a release stack). Variant content is requested
+                either by variant id or by one or more <code>variantCondition</code> parameters —
+                the API returns variant content where it matches and base content everywhere else.
               </Text>
               <Stack space={2}>
                 <Text size={1} weight="medium">
@@ -516,13 +651,23 @@ function RequestInspector(props: {requestUrl: string; perspective: string; varia
                 </Text>
                 <Inline space={2} style={{flexWrap: 'wrap'}}>
                   <Badge mode="outline">perspective={perspective}</Badge>
-                  {variantName ? (
-                    <Badge tone="positive">
-                      {VARIANT_QUERY_PARAM}={variantName}
-                      {variantLabel && variantLabel !== variantName ? ` (${variantLabel})` : ''}
-                    </Badge>
+                  {queryMode === 'variant-id' ? (
+                    variantName ? (
+                      <Badge tone="positive">
+                        {VARIANT_QUERY_PARAM}={variantName}
+                        {variantLabel && variantLabel !== variantName ? ` (${variantLabel})` : ''}
+                      </Badge>
+                    ) : (
+                      <Badge mode="outline">no {VARIANT_QUERY_PARAM}</Badge>
+                    )
+                  ) : conditionEntries.length > 0 ? (
+                    conditionEntries.map(({param}) => (
+                      <Badge key={param} tone="positive">
+                        {VARIANT_CONDITION_QUERY_PARAM}={param}
+                      </Badge>
+                    ))
                   ) : (
-                    <Badge mode="outline">no {VARIANT_QUERY_PARAM}</Badge>
+                    <Badge mode="outline">no {VARIANT_CONDITION_QUERY_PARAM}</Badge>
                   )}
                 </Inline>
               </Stack>

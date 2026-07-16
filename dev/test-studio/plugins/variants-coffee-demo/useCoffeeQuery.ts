@@ -1,7 +1,13 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient} from 'sanity'
 
-import {DEMO_API_VERSION, VARIANT_QUERY_PARAM} from './constants'
+import {
+  DEMO_API_VERSION,
+  getVariantConditionEntries,
+  VARIANT_CONDITION_QUERY_PARAM,
+  VARIANT_QUERY_PARAM,
+  type VariantQueryMode,
+} from './constants'
 
 interface CoffeeQueryState<T> {
   data: T | undefined
@@ -10,6 +16,19 @@ interface CoffeeQueryState<T> {
   /** The full request URL, shown in the demo's request inspector. */
   requestUrl: string
   refetch: () => void
+}
+
+export interface CoffeeQueryOptions {
+  query: string
+  params?: Record<string, unknown>
+  /** How the page targets variant content. */
+  queryMode: VariantQueryMode
+  /** Variant id mode — sticky param from the studio navbar. */
+  variantName?: string
+  /** Conditions mode — repeated `variantCondition=key:value` params. */
+  variantConditions?: Record<string, string>
+  /** The query perspective (follows the studio's pinned perspective; `published` by default). */
+  perspective?: string
 }
 
 /**
@@ -21,24 +40,23 @@ interface CoffeeQueryState<T> {
  * would fight the `perspective=published` + variant combination this demo is about. The client
  * is only used to read connection config (project id, dataset, api host, token).
  */
-export function useCoffeeQuery<T>(options: {
-  query: string
-  params?: Record<string, unknown>
-  /** When set, the request carries the variant — the "logged-in returning visitor" case. */
-  variantName?: string
-  /** The query perspective (follows the studio's pinned perspective; `published` by default). */
-  perspective?: string
-}): CoffeeQueryState<T> {
-  const {query, params, variantName, perspective = 'published'} = options
+export function useCoffeeQuery<T>(options: CoffeeQueryOptions): CoffeeQueryState<T> {
+  const {
+    query,
+    params,
+    queryMode,
+    variantName,
+    variantConditions,
+    perspective = 'published',
+  } = options
   const client = useClient({apiVersion: DEMO_API_VERSION})
   const {projectId, dataset, apiHost = 'https://api.sanity.io', token} = client.config()
 
-  // The latest settled response, keyed by the url it was fetched for. `loading` is derived by
-  // comparing it against the current url (no synchronous setState in the effect).
   const [settled, setSettled] = useState<{url: string; data?: T; error?: string} | null>(null)
   const [refreshCount, setRefreshCount] = useState(0)
 
   const paramsKey = JSON.stringify(params ?? {})
+  const conditionsKey = JSON.stringify(variantConditions ?? {})
 
   const requestUrl = useMemo(() => {
     const parsedParams: Record<string, unknown> = JSON.parse(paramsKey)
@@ -48,13 +66,30 @@ export function useCoffeeQuery<T>(options: {
       searchParams.set(`$${key}`, JSON.stringify(value))
     }
     searchParams.set('perspective', perspective)
-    if (variantName) {
+
+    if (queryMode === 'variant-id' && variantName) {
       searchParams.set(VARIANT_QUERY_PARAM, variantName)
     }
-    // `https://<projectId>.<api host>/v<version>/data/query/<dataset>?...`
+
+    if (queryMode === 'variant-conditions') {
+      for (const {param} of getVariantConditionEntries(JSON.parse(conditionsKey))) {
+        searchParams.append(VARIANT_CONDITION_QUERY_PARAM, param)
+      }
+    }
+
     const host = apiHost.replace(/^https?:\/\//, '')
     return `https://${projectId}.${host}/v${DEMO_API_VERSION}/data/query/${dataset}?${searchParams}`
-  }, [apiHost, dataset, paramsKey, perspective, projectId, query, variantName])
+  }, [
+    apiHost,
+    conditionsKey,
+    dataset,
+    paramsKey,
+    perspective,
+    projectId,
+    query,
+    queryMode,
+    variantName,
+  ])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -63,8 +98,6 @@ export function useCoffeeQuery<T>(options: {
       try {
         const response = await fetch(requestUrl, {
           signal: controller.signal,
-          // Cookie-based auth, like the studio itself uses in the browser. The token fallback
-          // covers workspaces configured with token auth.
           credentials: 'include',
           headers: token ? {Authorization: `Bearer ${token}`} : undefined,
         })
