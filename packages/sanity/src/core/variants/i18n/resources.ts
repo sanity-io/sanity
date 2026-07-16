@@ -143,6 +143,13 @@ const variantsLocaleStrings = {
   'dialog.edit.action.cancel': 'Cancel',
   /** Error toast title when variant editing fails. */
   'dialog.edit.error.title': 'Unable to update variant',
+  /** Title for the delete variant confirmation dialog. */
+  'dialog.delete.title': 'Are you sure you want to delete this variant?',
+  /** Description for the delete variant confirmation dialog. */
+  'dialog.delete.description':
+    'This will permanently delete "{{title}}". This action cannot be undone.',
+  /** Confirm action for the delete variant confirmation dialog. */
+  'dialog.delete.action.confirm': 'Yes, delete variant',
 }
 
 /**

@@ -476,7 +476,7 @@ test.describe('Variants create flow', () => {
     // which would break if the row gains more buttons. `variantId` is the short id.
     await page.locator(`#variant-actions-${variantId}`).click()
     await page.getByRole('menuitem', {name: 'Delete variant'}).click()
-    await expect(page.getByRole('menuitem', {name: 'Delete variant'})).toBeHidden()
+    await page.getByTestId('confirm-button').click()
 
     await expect(row).toBeHidden()
     await expect.poll(async () => sanityClient.getDocument(documentId)).toBeUndefined()
@@ -501,7 +501,7 @@ test.describe('Variants create flow', () => {
 
     await page.locator(`#variant-detail-actions-${shortVariantId}`).click()
     await page.getByRole('menuitem', {name: 'Delete variant'}).click()
-    await expect(page.getByRole('menuitem', {name: 'Delete variant'})).toBeHidden()
+    await page.getByTestId('confirm-button').click()
 
     await expect(page.getByRole('heading', {name: 'Variants'}).first()).toBeVisible()
     await expect(getVariantRow(page, title)).toBeHidden()

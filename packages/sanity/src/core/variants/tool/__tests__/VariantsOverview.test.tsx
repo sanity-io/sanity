@@ -284,6 +284,7 @@ describe('VariantsOverview', () => {
 
     await user.click(menuButton)
     await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
