@@ -389,7 +389,7 @@ const Variant: ComponentType<{
   const versionName = getVersionFromId(variant.id)
   const bundleId = isPublishedVersion ? 'published' : isDraftVersion ? 'draft' : (versionName ?? '')
 
-  const isReadOnly = useSelector(machine, (s) => s.matches('readonly'))
+  const isReadOnly = useSelector(machine, (snapshot) => snapshot.matches('readonly'))
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
 
