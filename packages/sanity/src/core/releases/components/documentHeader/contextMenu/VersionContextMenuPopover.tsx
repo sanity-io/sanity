@@ -4,6 +4,7 @@ import {memo, type RefObject} from 'react'
 import {Popover} from '../../../../../ui-components'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {type VersionContextMenuState} from '../../../hooks/useVersionContextMenu'
+import {type VersionInfoDocumentStub} from '../../../store/types'
 import {VersionContextMenu} from './VersionContextMenu'
 
 /**
@@ -16,11 +17,8 @@ export interface VersionContextMenuPopoverProps {
   popoverRef: RefObject<HTMLDivElement | null>
   /** The element the menu popover is positioned relative to. */
   referenceElement: HTMLElement | null
-  documentId: string
+  versionDocument: VersionInfoDocumentStub
   documentType: string
-  /** The perspective the menu acts on: 'published', 'draft', or a release ID. */
-  bundleId: string
-  isVersion: boolean
   releases: ReleaseDocument[]
   releasesLoading: boolean
   onDiscard: () => void
@@ -61,10 +59,8 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
     contextMenu,
     popoverRef,
     referenceElement,
-    documentId,
+    versionDocument,
     documentType,
-    bundleId,
-    isVersion,
     releases,
     releasesLoading,
     onDiscard,
@@ -87,11 +83,10 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
       animate={false}
       content={
         <VersionContextMenu
-          documentId={documentId}
+          versionDocument={versionDocument}
+          documentType={documentType}
           releases={releases}
           releasesLoading={releasesLoading}
-          fromRelease={bundleId}
-          isVersion={isVersion}
           onDiscard={onDiscard}
           onCreateRelease={onCreateRelease}
           onCopyToDrafts={onCopyToDrafts}
@@ -99,7 +94,6 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
           disabled={disabled}
           onCreateVersion={onCreateVersion}
           locked={locked}
-          type={documentType}
           isGoingToUnpublish={isGoingToUnpublish}
           release={release}
           isScheduledDraft={isScheduledDraft}

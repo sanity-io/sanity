@@ -10,10 +10,11 @@ import {
   useScheduledDraftMenuActions,
   type UseScheduledDraftMenuActionsReturn,
 } from '../../singleDocRelease/hooks/useScheduledDraftMenuActions'
-import {getVersionId} from '../../util/draftUtils'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
+import {type VersionInfoDocumentStub} from '../store/types'
 import {LATEST, PUBLISHED} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {getVersionContextMenuParams} from '../util/getVersionContextMenuParams'
 import {useVersionOperations} from './useVersionOperations'
 
 const CONTEXT_MENU_CLOSED = {open: false as const}
@@ -43,11 +44,8 @@ export type VersionContextMenuState =
  * @internal
  */
 export interface UseVersionContextMenuOptions {
-  documentId: string
+  versionDocument: VersionInfoDocumentStub
   documentType: string
-  /** The perspective the menu acts on: 'published', 'draft', or a release ID. */
-  bundleId: string
-  isVersion: boolean
   /** Disables the menu actions (the menu can still be opened). */
   disabled?: boolean
   release?: ReleaseDocument
@@ -93,14 +91,15 @@ export interface UseVersionContextMenuReturn {
 export function useVersionContextMenu(
   options: UseVersionContextMenuOptions,
 ): UseVersionContextMenuReturn {
-  const {documentId, documentType, bundleId, isVersion, disabled = false, release} = options
+  const {versionDocument, documentType, disabled = false, release} = options
+  const {documentId, bundleId, isVersion} = getVersionContextMenuParams(versionDocument)
 
   const [contextMenu, setContextMenu] = useState<VersionContextMenuState>({open: false})
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [dialogState, setDialogState] = useState<VersionContextMenuDialogState>('idle')
 
-  const docId = isVersion ? getVersionId(documentId, bundleId) : documentId // operations recognises publish and draft as empty
+  const docId = isVersion ? versionDocument._id : documentId
 
   const {createVersion} = useVersionOperations()
   const toast = useToast()

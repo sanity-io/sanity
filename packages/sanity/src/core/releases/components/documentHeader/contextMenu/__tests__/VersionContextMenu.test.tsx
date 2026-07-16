@@ -61,18 +61,29 @@ describe('VersionContextMenu', () => {
     },
   ]
 
+  const releaseVersionDocument = {
+    _id: 'versions.release1.doc1',
+    _rev: 'rev',
+    _createdAt: '',
+    _updatedAt: '',
+    _system: {
+      bundleId: 'release1',
+      release: {_ref: '_.releases.release1', _weak: true},
+      group: {_ref: 'doc1', _weak: true},
+      scopeId: 'release1',
+    },
+  } as const
+
   const defaultProps = {
-    documentId: 'versions.bundle.doc1',
+    versionDocument: releaseVersionDocument,
     releases: mockReleases,
     releasesLoading: false,
-    fromRelease: 'release1',
-    isVersion: true,
     onDiscard: vi.fn(),
     onCreateRelease: vi.fn(),
     onCopyToDrafts: vi.fn(),
     onCreateVersion: vi.fn(),
     disabled: false,
-    type: 'document',
+    documentType: 'document',
   }
 
   it('renders the menu items correctly', async () => {
@@ -124,8 +135,13 @@ describe('VersionContextMenu', () => {
     const wrapper = await createTestProvider()
     const publishedProps = {
       ...defaultProps,
-      documentId: 'testid',
-      isVersion: false,
+      versionDocument: {
+        _id: 'testid',
+        _rev: 'rev',
+        _createdAt: '',
+        _updatedAt: '',
+        _system: {group: {_ref: 'testid', _weak: true}},
+      },
     }
 
     render(<VersionContextMenu {...publishedProps} />, {wrapper})

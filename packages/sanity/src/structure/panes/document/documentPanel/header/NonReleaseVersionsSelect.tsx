@@ -6,7 +6,6 @@ import {useMemo, useRef, useState} from 'react'
 import {
   type VersionInfoDocumentStub,
   Chip,
-  getPublishedId,
   getVersionFromId,
   type AgentVersionDisplay,
   useTranslation,
@@ -86,12 +85,10 @@ export function NonReleaseVersionsSelect(props: {
               onClick={() => onSelectBundle(selectedNonReleaseVersion)}
               onCopyToDraftsNavigate={onCopyToDraftsNavigate}
               contextValues={{
-                documentId: getPublishedId(selectedNonReleaseVersion._id),
+                versionDocument: selectedNonReleaseVersion,
                 releases,
                 releasesLoading: releasesLoading,
                 documentType: documentType,
-                bundleId: bundleId,
-                isVersion: true,
               }}
             />
           )
@@ -146,12 +143,10 @@ export function NonReleaseVersionsSelect(props: {
                     onClick={() => onSelectBundle(nonReleaseVersion)}
                     onCopyToDraftsNavigate={onCopyToDraftsNavigate}
                     contextValues={{
-                      documentId: getPublishedId(nonReleaseVersion._id),
+                      versionDocument: nonReleaseVersion,
                       releases,
                       releasesLoading: releasesLoading,
                       documentType: documentType,
-                      bundleId: scopeId,
-                      isVersion: true,
                     }}
                   />
                 )

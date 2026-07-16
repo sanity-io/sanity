@@ -57,6 +57,8 @@ interface DocumentPerspectiveList {
   nonReleaseVersions: VersionInfoDocumentStub[]
   /** Versions that belong to a variant. */
   variantVersions: VersionInfoDocumentStub[]
+  /** All version document stubs for the document group. */
+  documentVersions: VersionInfoDocumentStub[]
   /** Handles the selection of a variant. */
   handleVariantSelectionChange: (version: VersionInfoDocumentStub) => void
   /** Display props for the currently selected variant in the active bundle, if any. */
@@ -304,6 +306,7 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     isPublishSelected,
     nonReleaseVersions,
     variantVersions,
+    documentVersions,
     handleVariantSelectionChange,
     selectedVariantDisplay,
   }

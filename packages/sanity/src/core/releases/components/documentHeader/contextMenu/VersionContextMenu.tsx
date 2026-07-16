@@ -3,19 +3,19 @@ import {memo, useEffect, useRef, useState} from 'react'
 
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
-import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
+import {type VersionInfoDocumentStub} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {getVersionContextMenuParams} from '../../../util/getVersionContextMenuParams'
 import {getReleaseDefaults} from '../../../util/util'
 import {CanonicalReleaseContextMenu} from './CanonicalReleaseContextMenu'
 import {ScheduledDraftContextMenu} from './ScheduledDraftContextMenu'
 
 interface VersionContextMenuProps {
-  documentId: string
+  versionDocument: VersionInfoDocumentStub
+  documentType: string
   releases: ReleaseDocument[]
   releasesLoading: boolean
-  fromRelease: string
-  isVersion: boolean
   onDiscard: () => void
   onCreateRelease: () => void
   onCopyToDrafts: () => void
@@ -23,7 +23,6 @@ interface VersionContextMenuProps {
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
-  type: string
   isGoingToUnpublish?: boolean
   release?: ReleaseDocument
   isScheduledDraft?: boolean
@@ -37,11 +36,10 @@ interface VersionContextMenuProps {
 
 export const VersionContextMenu = memo(function VersionContextMenu(props: VersionContextMenuProps) {
   const {
-    documentId,
+    versionDocument,
+    documentType,
     releases,
     releasesLoading,
-    fromRelease,
-    isVersion,
     onDiscard,
     onCreateRelease,
     onCopyToDrafts,
@@ -49,29 +47,28 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     onCreateVersion,
     disabled,
     locked,
-    type,
     isGoingToUnpublish = false,
     release,
     isScheduledDraft,
     scheduledDraftMenuActions,
     isDiscardable = true,
   } = props
-  const isPublished = isPublishedId(documentId) && !isVersion
+
+  const {documentId, bundleId, isVersion, isPublished, permissionVersion, permission} =
+    getVersionContextMenuParams(versionDocument)
 
   const {checkWithPermissionGuard} = useReleasePermissions()
   const {createRelease} = useReleaseOperations()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
 
-  // TODO: SAPP-4023: update this component to receive the `VersionInfoDocumentStub` instead of a plain id, and use that
-  // stub to verify permissions and run the actions on the specific version.
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
-    id: getPublishedId(documentId),
-    type,
-    version: isVersion ? fromRelease : undefined,
+    id: documentId,
+    type: documentType,
+    version: permissionVersion,
     // Note: the result of this discard permission check is disregarded for the published document
     // version. Discarding is never available for the published document version. Therefore, the
     // parameters provided here are not configured to handle published document versions.
-    permission: fromRelease === 'draft' ? 'discardDraft' : 'discardVersion',
+    permission,
   })
   const hasDiscardPermission = !isPermissionsLoading && permissions?.granted
 
@@ -93,7 +90,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     return (
       <ScheduledDraftContextMenu
         releases={releases}
-        bundleId={fromRelease}
+        bundleId={bundleId}
         release={release}
         onCreateRelease={onCreateRelease}
         onCopyToDrafts={onCopyToDrafts}
@@ -104,7 +101,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
         hasCreatePermission={hasCreatePermission}
         scheduledDraftMenuActions={scheduledDraftMenuActions}
         documentId={documentId}
-        documentType={type}
+        documentType={documentType}
       />
     )
   }
@@ -113,7 +110,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     <CanonicalReleaseContextMenu
       releases={releases}
       releasesLoading={releasesLoading}
-      bundleId={fromRelease}
+      bundleId={bundleId}
       release={release}
       isVersion={isVersion}
       onDiscard={onDiscard}
@@ -129,7 +126,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
       isPublished={isPublished}
       isDiscardable={isDiscardable}
       documentId={documentId}
-      documentType={type}
+      documentType={documentType}
     />
   )
 })

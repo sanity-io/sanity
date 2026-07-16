@@ -2,8 +2,10 @@ import {Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 import {
   Chip,
+  getBaseVersionDocumentStub,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
+  getReleaseVersionDocumentStub,
   isGoingToUnpublish,
   isReleaseScheduledOrScheduling,
   type ReleaseDocument,
@@ -96,8 +98,20 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     isPublishedChipDisabled,
     isPublishSelected,
     nonReleaseVersions,
+    documentVersions,
     selectedVariantDisplay,
   } = useDocumentPerspectiveList()
+
+  const publishedVersionDocument = getBaseVersionDocumentStub(
+    documentVersions,
+    editState?.id || displayed?._id || '',
+    'published',
+  )
+  const draftVersionDocument = getBaseVersionDocumentStub(
+    documentVersions,
+    editState?.id || displayed?._id || '',
+    'draft',
+  )
 
   return (
     <>
@@ -122,12 +136,10 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         tone="positive"
         onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
         contextValues={{
-          documentId: editState?.published?._id || editState?.id || '',
+          versionDocument: publishedVersionDocument,
           releases: filteredReleases.notCurrentReleases,
           releasesLoading: loading,
           documentType,
-          bundleId: 'published',
-          isVersion: false,
           disabled: !editState?.published,
         }}
       />
@@ -167,12 +179,10 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           onClick={() => handlePerspectiveChange('drafts')}
           onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
           contextValues={{
-            documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
+            versionDocument: draftVersionDocument,
             documentType: documentType,
             releases: filteredReleases.notCurrentReleases,
             releasesLoading: loading,
-            bundleId: 'draft',
-            isVersion: false,
           }}
         />
       )}
@@ -203,13 +213,15 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               text={displayTitle}
               onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
               contextValues={{
-                documentId: displayed?._id || '',
+                versionDocument: getReleaseVersionDocumentStub(
+                  documentVersions,
+                  filteredReleases.inCreation!._id,
+                  displayed?._id || '',
+                ),
                 documentType,
                 disabled: true,
                 releases: filteredReleases.notCurrentReleases,
                 releasesLoading: loading,
-                bundleId: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation!._id),
-                isVersion: true,
                 release: filteredReleases.inCreation!,
               }}
             />
@@ -246,12 +258,14 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                 locked={isReleaseScheduledOrScheduling(release)}
                 onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
                 contextValues={{
-                  documentId: displayed?._id || '',
+                  versionDocument: getReleaseVersionDocumentStub(
+                    documentVersions,
+                    release._id,
+                    displayed?._id || '',
+                  ),
                   documentType,
                   releases: filteredReleases.notCurrentReleases,
                   releasesLoading: loading,
-                  bundleId: getReleaseIdFromReleaseDocumentId(release._id),
-                  isVersion: true,
                   release,
                   isGoingToUnpublish: editState?.version
                     ? isGoingToUnpublish(editState?.version as SanityDocumentLike)

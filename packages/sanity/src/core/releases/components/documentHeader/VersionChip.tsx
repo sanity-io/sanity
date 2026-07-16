@@ -12,6 +12,8 @@ import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesTool
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionContextMenu} from '../../hooks/useVersionContextMenu'
+import {type VersionInfoDocumentStub} from '../../store/types'
+import {getVersionContextMenuParams} from '../../util/getVersionContextMenuParams'
 import {Chip} from '../Chip'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenuDialogs} from './contextMenu/VersionContextMenuDialogs'
@@ -49,12 +51,10 @@ export const VersionChip = memo(function VersionChip(props: {
   locked?: boolean
   onCopyToDraftsNavigate: () => void
   contextValues: {
-    documentId: string
+    versionDocument: VersionInfoDocumentStub
     documentType: string
     releases: ReleaseDocument[]
     releasesLoading: boolean
-    bundleId: string
-    isVersion: boolean
     disabled?: boolean
     isGoingToUnpublish?: boolean
     release?: ReleaseDocument
@@ -71,17 +71,16 @@ export const VersionChip = memo(function VersionChip(props: {
     locked = false,
     onCopyToDraftsNavigate,
     contextValues: {
-      documentId,
+      versionDocument,
       releases,
       releasesLoading,
       documentType,
-      bundleId,
-      isVersion,
       disabled: contextMenuDisabled = false,
       isGoingToUnpublish = false,
       release,
     },
   } = props
+  const {documentId, bundleId} = getVersionContextMenuParams(versionDocument)
   const releasesToolAvailable = useReleasesToolAvailable()
   const isLinked = useVersionIsLinked(documentId, bundleId)
 
@@ -107,10 +106,8 @@ export const VersionChip = memo(function VersionChip(props: {
     scheduledDraftMenuActions,
     sourceReleasePerspective,
   } = useVersionContextMenu({
-    documentId,
+    versionDocument,
     documentType,
-    bundleId,
-    isVersion,
     disabled: contextMenuDisabled,
     release,
   })
@@ -151,10 +148,8 @@ export const VersionChip = memo(function VersionChip(props: {
         contextMenu={contextMenu}
         popoverRef={popoverRef}
         referenceElement={referenceElement}
-        documentId={documentId}
+        versionDocument={versionDocument}
         documentType={documentType}
-        bundleId={bundleId}
-        isVersion={isVersion}
         releases={releases}
         releasesLoading={releasesLoading}
         onDiscard={openDiscardDialog}
@@ -174,10 +169,8 @@ export const VersionChip = memo(function VersionChip(props: {
       <VersionContextMenuDialogs
         dialogState={dialogState}
         onClose={closeDialog}
-        documentId={documentId}
+        versionDocument={versionDocument}
         documentType={documentType}
-        bundleId={bundleId}
-        isVersion={isVersion}
         title={text}
         sourceReleasePerspective={sourceReleasePerspective}
         onCreateVersion={handleAddVersion}

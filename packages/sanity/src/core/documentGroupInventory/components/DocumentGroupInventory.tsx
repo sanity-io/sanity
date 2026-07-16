@@ -421,10 +421,8 @@ const Variant: ComponentType<{
     scheduledDraftMenuActions,
     sourceReleasePerspective,
   } = useVersionContextMenu({
-    documentId,
+    versionDocument: variant.document,
     documentType,
-    bundleId,
-    isVersion,
     disabled: isReadOnly,
     release,
   })
@@ -511,10 +509,8 @@ const Variant: ComponentType<{
           contextMenu={contextMenu}
           popoverRef={popoverRef}
           referenceElement={referenceElement}
-          documentId={documentId}
+          versionDocument={variant.document}
           documentType={documentType}
-          bundleId={bundleId}
-          isVersion={isVersion}
           releases={filteredReleases.notCurrentReleases}
           releasesLoading={releasesLoading}
           onDiscard={openDiscardDialog}
@@ -533,10 +529,8 @@ const Variant: ComponentType<{
       <VersionContextMenuDialogs
         dialogState={dialogState}
         onClose={closeDialog}
-        documentId={documentId}
+        versionDocument={variant.document}
         documentType={documentType}
-        bundleId={bundleId}
-        isVersion={isVersion}
         title={variant.name}
         sourceReleasePerspective={sourceReleasePerspective}
         onCreateVersion={handleAddVersion}
