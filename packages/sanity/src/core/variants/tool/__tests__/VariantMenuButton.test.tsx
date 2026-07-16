@@ -52,7 +52,7 @@ describe('VariantMenuButton', () => {
     await renderMenuButton({documentCount: 0})
 
     await user.click(screen.getByRole('button'))
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
     await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
@@ -66,7 +66,7 @@ describe('VariantMenuButton', () => {
     await renderMenuButton({documentCount: 0})
 
     await user.click(screen.getByRole('button'))
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
     await user.click(await screen.findByTestId('cancel-button'))
 
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
@@ -83,7 +83,7 @@ describe('VariantMenuButton', () => {
     const menuButton = screen.getByRole('button')
 
     await user.click(menuButton)
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
     await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
@@ -103,7 +103,7 @@ describe('VariantMenuButton', () => {
     await renderMenuButton({documentCount: 1})
 
     await user.click(screen.getByRole('button'))
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
 
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
   })
@@ -114,7 +114,7 @@ describe('VariantMenuButton', () => {
     await renderMenuButton()
 
     await user.click(screen.getByRole('button'))
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
 
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
   })
