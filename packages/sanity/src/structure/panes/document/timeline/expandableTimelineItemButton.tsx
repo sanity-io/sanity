@@ -5,7 +5,8 @@ import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {structureLocaleNamespace} from '../../../i18n'
-import {TIMELINE_LIST_WRAPPER_ID} from './timeline'
+
+export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
 
 /**
  * This is a hack to force the scrollbar to not appear when the list is expanding,

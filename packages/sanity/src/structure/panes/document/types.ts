@@ -1,5 +1,4 @@
 import {type Path, type SanityDocument} from '@sanity/types'
-import {type TimelineStore} from 'sanity'
 
 import {type BaseStructureToolPaneProps} from '../types'
 
@@ -13,7 +12,6 @@ export type DocumentPaneProviderProps = {
 
 /** @internal */
 export interface HistoryStoreProps {
-  store?: TimelineStore
   error: Error | null
   onOlderRevision: boolean
   revisionId: string | null

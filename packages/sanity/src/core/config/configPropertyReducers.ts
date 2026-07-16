@@ -434,7 +434,7 @@ export const internalTasksReducer = (opts: {
 export const eventsAPIReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
-  key: 'releases' | 'documents'
+  key: 'releases'
 }): boolean => {
   const {config, initialValue} = opts
   const flattenedConfig = flattenConfig(config, [])

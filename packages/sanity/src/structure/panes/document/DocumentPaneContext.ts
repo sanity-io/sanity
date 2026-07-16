@@ -19,7 +19,6 @@ import {
   type PermissionCheckResult,
   type ReleaseId,
   type StateTree,
-  type TimelineStore,
 } from 'sanity'
 
 import {type View} from '../../structureBuilder'
@@ -88,10 +87,6 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   isDocumentGroupInventoryActive: boolean
   setIsDocumentGroupInventoryActive: (active: boolean) => void
   timelineError: Error | null
-  /**
-   * Soon to be deprecated with the upcoming `releases` changes.
-   */
-  timelineStore?: TimelineStore
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike

@@ -100,7 +100,7 @@ describe('StudioTelemetryProvider', () => {
     beta: {
       variants: {enabled: false},
       documentGroupInventory: {enabled: false},
-      eventsAPI: {documents: true, releases: false},
+      eventsAPI: {releases: false},
     },
     announcements: {enabled: true},
     document: {drafts: {enabled: true}},
@@ -529,7 +529,6 @@ describe('StudioTelemetryProvider', () => {
         canvasEnabled: undefined,
         variantsEnabled: undefined,
         documentGroupInventoryEnabled: undefined,
-        eventsApiDocumentsEnabled: undefined,
         eventsApiReleasesEnabled: undefined,
         announcementsEnabled: undefined,
         partialIndexingEnabled: undefined,
@@ -577,7 +576,7 @@ describe('StudioTelemetryProvider', () => {
       beta: {
         variants: {enabled: false},
         documentGroupInventory: {enabled: true},
-        eventsAPI: {documents: true, releases: false},
+        eventsAPI: {releases: false},
       },
     } as never)
 
@@ -701,7 +700,6 @@ describe('StudioTelemetryProvider', () => {
       canvasEnabled: true,
       variantsEnabled: false,
       documentGroupInventoryEnabled: false,
-      eventsApiDocumentsEnabled: true,
       eventsApiReleasesEnabled: false,
       announcementsEnabled: true,
       draftsEnabled: true,

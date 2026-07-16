@@ -1,7 +1,5 @@
 import {
   type ArrayInput,
-  type Diff,
-  diffInput,
   type Input,
   type ObjectInput,
   type StringInput,
@@ -9,11 +7,8 @@ import {
 } from '@sanity/diff'
 import {type incremental} from 'mendoza'
 
-import {type Annotation, type Chunk} from '../../../field'
-import {type Timeline} from './Timeline'
+import {type Annotation} from '../../../field'
 import {isSameAnnotation} from './utils'
-
-export type Meta = {chunk: Chunk; transactionIndex: number} | null
 
 export type AnnotationExtractor<T> = {
   fromValue(value: incremental.Value<T>): Annotation
@@ -182,69 +177,4 @@ export function wrapValue<T>(
   }
 
   return wrap(raw, annotation)
-}
-
-function extractAnnotationForFromInput(
-  timeline: Timeline,
-  firstChunk: Chunk | null,
-  meta: Meta,
-): Annotation {
-  if (meta) {
-    // The next transaction is where it disappeared:
-    return annotationForTransactionIndex(timeline, meta.transactionIndex + 1, meta.chunk.index)
-  } else if (firstChunk) {
-    return annotationForTransactionIndex(timeline, firstChunk.start, firstChunk.index)
-  }
-
-  return null
-}
-
-function extractAnnotationForToInput(timeline: Timeline, meta: Meta): Annotation {
-  if (meta) {
-    return annotationForTransactionIndex(timeline, meta.transactionIndex, meta.chunk.index)
-  }
-
-  return null
-}
-
-function annotationForTransactionIndex(timeline: Timeline, idx: number, chunkIdx?: number) {
-  const tx = timeline.transactionByIndex(idx)
-  if (!tx) return null
-
-  const chunk = timeline.chunkByTransactionIndex(idx, chunkIdx)
-  if (!chunk) return null
-
-  return {
-    chunk,
-    timestamp: tx.timestamp,
-    author: tx.author,
-  }
-}
-
-export function diffValue(
-  timeline: Timeline,
-  firstChunk: Chunk | null,
-  from: incremental.Value<Meta>,
-  fromRaw: unknown,
-  to: incremental.Value<Meta>,
-  toRaw: unknown,
-): Diff<Annotation> {
-  const fromInput = wrapValue<Meta>(from, fromRaw, {
-    fromValue(value) {
-      return extractAnnotationForFromInput(timeline, firstChunk, value.endMeta)
-    },
-    fromMeta(meta) {
-      return extractAnnotationForFromInput(timeline, firstChunk, meta)
-    },
-  })
-
-  const toInput = wrapValue<Meta>(to, toRaw, {
-    fromValue(value) {
-      return extractAnnotationForToInput(timeline, value.startMeta)
-    },
-    fromMeta(meta) {
-      return extractAnnotationForToInput(timeline, meta)
-    },
-  })
-  return diffInput(fromInput, toInput)
 }

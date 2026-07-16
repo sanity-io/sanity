@@ -18,7 +18,6 @@ interface WorkspaceFeaturesObservedInfo {
   canvasEnabled: boolean | undefined
   variantsEnabled: boolean | undefined
   documentGroupInventoryEnabled: boolean | undefined
-  eventsApiDocumentsEnabled: boolean | undefined
   eventsApiReleasesEnabled: boolean | undefined
   announcementsEnabled: boolean | undefined
   draftsEnabled: boolean
@@ -66,7 +65,6 @@ export function collectWorkspaceFeatures(workspace: Workspace): WorkspaceFeature
     canvasEnabled: workspace.apps?.canvas?.enabled,
     variantsEnabled: workspace.beta?.variants?.enabled,
     documentGroupInventoryEnabled: workspace.beta?.documentGroupInventory?.enabled,
-    eventsApiDocumentsEnabled: workspace.beta?.eventsAPI?.documents,
     eventsApiReleasesEnabled: workspace.beta?.eventsAPI?.releases,
     announcementsEnabled: workspace.announcements?.enabled,
     draftsEnabled: workspace.document.drafts.enabled,
