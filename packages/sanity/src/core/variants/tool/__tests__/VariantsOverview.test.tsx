@@ -148,13 +148,13 @@ describe('VariantsOverview', () => {
 
     await renderOverview()
 
-    expect(screen.getByRole('heading', {level: 1, name: 'Variants'})).toBeInTheDocument()
+    expect(screen.getByRole('heading', {level: 1, name: 'Variant definitions'})).toBeInTheDocument()
     expect(
       screen.getByText(
         'Manage variant definitions that control how content is personalized for different audiences, locales, and segments.',
       ),
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Create variant definition'})).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search variant definitions…')).toBeInTheDocument()
   })
 
@@ -283,7 +283,7 @@ describe('VariantsOverview', () => {
     if (!menuButton) throw new Error('Variant actions menu button not found')
 
     await user.click(menuButton)
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
     await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
@@ -308,7 +308,7 @@ describe('VariantsOverview', () => {
     if (!menuButton) throw new Error('Variant actions menu button not found')
 
     await user.click(menuButton)
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
 
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
   })
@@ -323,9 +323,11 @@ describe('VariantsOverview', () => {
     })
 
     expect(screen.getByTestId('variant-illustration')).toBeInTheDocument()
-    expect(screen.getByTestId('no-variants-info-text')).toHaveTextContent('Variants')
+    expect(screen.getByTestId('no-variants-info-text')).toHaveTextContent('Variant definitions')
     const emptyState = screen.getByTestId('variants-empty-state')
-    expect(within(emptyState).getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+    expect(
+      within(emptyState).getByRole('button', {name: 'Create variant definition'}),
+    ).toBeInTheDocument()
     expect(within(emptyState).getByRole('link', {name: 'Documentation'})).toHaveAttribute(
       'href',
       'https://www.sanity.io/docs/content-variants',
@@ -348,9 +350,9 @@ describe('VariantsOverview', () => {
 
     await renderOverview()
 
-    await user.click(screen.getAllByRole('button', {name: 'Create variant'})[0]!)
+    await user.click(screen.getAllByRole('button', {name: 'Create variant definition'})[0]!)
 
-    expect(screen.getByRole('dialog', {name: 'Create variant'})).toBeInTheDocument()
+    expect(screen.getByRole('dialog', {name: 'Create variant definition'})).toBeInTheDocument()
 
     await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
     await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
@@ -379,7 +381,9 @@ describe('VariantsOverview', () => {
     await renderOverview()
 
     await waitFor(() => {
-      expect(screen.getAllByText('Unable to load variants').length).toBeGreaterThanOrEqual(1)
+      expect(
+        screen.getAllByText('Unable to load variant definitions').length,
+      ).toBeGreaterThanOrEqual(1)
     })
   })
 })

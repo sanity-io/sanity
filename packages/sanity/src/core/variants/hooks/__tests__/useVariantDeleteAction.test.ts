@@ -88,7 +88,7 @@ describe('useVariantDeleteAction', () => {
 
     expect(result.current.deleteDisabled).toBe(true)
     expect(result.current.deleteDisabledTooltip).toBe(
-      "This variant contains 1 document in it, it can't be removed until the documents have been removed.",
+      "This variant definition contains 1 document in it, it can't be removed until the documents have been removed.",
     )
 
     await act(async () => {
@@ -103,7 +103,7 @@ describe('useVariantDeleteAction', () => {
 
     expect(result.current.deleteDisabled).toBe(true)
     expect(result.current.deleteDisabledTooltip).toBe(
-      "This variant contains 2 documents in it, it can't be removed until the documents have been removed.",
+      "This variant definition contains 2 documents in it, it can't be removed until the documents have been removed.",
     )
   })
 
@@ -126,7 +126,7 @@ describe('useVariantDeleteAction', () => {
       expect(toastMock.push).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'error',
-          title: 'Unable to delete variant',
+          title: 'Unable to delete variant definition',
         }),
       )
     })

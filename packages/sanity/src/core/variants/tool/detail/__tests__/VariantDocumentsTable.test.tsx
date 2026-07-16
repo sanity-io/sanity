@@ -123,14 +123,14 @@ describe('VariantDocumentsTable', () => {
   it('shows an empty state when there are no documents', async () => {
     await renderTable([])
 
-    expect(screen.getByText('No documents in this variant')).toBeInTheDocument()
+    expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
   })
 
   it('shows loading skeleton rows while documents are loading', async () => {
     await renderTable([], true)
 
     expect(screen.getAllByTestId('table-row-skeleton')).toHaveLength(3)
-    expect(screen.queryByText('No documents in this variant')).not.toBeInTheDocument()
+    expect(screen.queryByText('No documents in this variant definition')).not.toBeInTheDocument()
   })
 
   it('renders document rows with bundle, title, type, and edited columns', async () => {

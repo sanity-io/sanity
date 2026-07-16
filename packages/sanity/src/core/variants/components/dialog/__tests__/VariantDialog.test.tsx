@@ -37,8 +37,8 @@ describe('VariantDialog', () => {
       <VariantDialog
         confirmDataTestId="save-variant-button"
         confirmText="Save"
-        errorTitle="Unable to update variant"
-        header="Edit variant"
+        errorTitle="Unable to update variant definition"
+        header="Edit variant definition"
         id="edit-variant-dialog"
         initialValue={props?.initialValue ?? getVariantDefaults()}
         onCancel={onCancel}
@@ -47,7 +47,7 @@ describe('VariantDialog', () => {
       />,
       {wrapper},
     )
-    await screen.findByRole('dialog', {name: 'Edit variant'})
+    await screen.findByRole('dialog', {name: 'Edit variant definition'})
     return result
   }
 
@@ -119,12 +119,12 @@ describe('VariantDialog', () => {
       expect(toastMock.push).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'error',
-          title: 'Unable to update variant',
+          title: 'Unable to update variant definition',
         }),
       )
     })
     expect(consoleError).toHaveBeenCalledWith(error)
-    expect(screen.getByRole('dialog', {name: 'Edit variant'})).toBeInTheDocument()
+    expect(screen.getByRole('dialog', {name: 'Edit variant definition'})).toBeInTheDocument()
     expect(onCancel).not.toHaveBeenCalled()
 
     consoleError.mockRestore()
