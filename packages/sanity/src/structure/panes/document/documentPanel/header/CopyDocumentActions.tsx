@@ -118,6 +118,10 @@ export function CopyDocumentActions() {
     })
   }, [contextAwareDocumentId, pushToast, t, telemetry])
 
+  if (!documentExists) {
+    return null
+  }
+
   return (
     <MenuButton
       id="copy-document-actions"
@@ -125,12 +129,7 @@ export function CopyDocumentActions() {
         <Button
           icon={ShareIcon}
           mode="bleed"
-          disabled={!documentExists}
-          tooltipProps={{
-            content: documentExists
-              ? t('action.copy-document-url.label')
-              : t('action.copy-document-url.disabled.no-document'),
-          }}
+          tooltipProps={{content: t('action.copy-document-url.label')}}
           data-testid="copy-document-actions-button"
         />
       }

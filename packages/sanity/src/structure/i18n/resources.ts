@@ -11,8 +11,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.copy-document-id.label': 'Copy document ID',
   /** Tooltip for the copy actions dropdown button in the document panel header */
   'action.copy-document-url.label': 'Copy',
-  /** Tooltip for the copy actions dropdown button when disabled because the document does not exist in the current perspective */
-  'action.copy-document-url.disabled.no-document': "This document doesn't exist yet",
   /** Label for the "Copy document URL" menu item */
   'action.copy-link-to-document.label': 'Copy document URL',
   /** Tooltip when action button is disabled because the operation is not ready   */

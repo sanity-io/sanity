@@ -299,7 +299,7 @@ describe('CopyDocumentActions', () => {
     })
   })
 
-  describe('Disabled state', () => {
+  describe('Visibility', () => {
     const pinRelease = (releaseId: string) =>
       mockUsePerspective.mockReturnValue({
         ...DEFAULT_PERSPECTIVE,
@@ -309,7 +309,7 @@ describe('CopyDocumentActions', () => {
         perspectiveStack: [releaseId, 'drafts'],
       })
 
-    it('disables the button when a release is pinned but the version does not exist', () => {
+    it('hides the button when a release is pinned but the version does not exist', () => {
       pinRelease('rMyRelease')
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
@@ -320,10 +320,10 @@ describe('CopyDocumentActions', () => {
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).toBeDisabled()
+      expect(screen.queryByTestId('copy-document-actions-button')).not.toBeInTheDocument()
     })
 
-    it('disables the button when the pinned release differs from the only existing version', () => {
+    it('hides the button when the pinned release differs from the only existing version', () => {
       pinRelease('rMyRelease')
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
@@ -342,10 +342,10 @@ describe('CopyDocumentActions', () => {
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).toBeDisabled()
+      expect(screen.queryByTestId('copy-document-actions-button')).not.toBeInTheDocument()
     })
 
-    it('stays enabled when creating a new document inside a release', () => {
+    it('stays visible when creating a new document inside a release', () => {
       pinRelease('rMyRelease')
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
@@ -356,10 +356,10 @@ describe('CopyDocumentActions', () => {
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
+      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
     })
 
-    it('enables the button when the pinned release contains the version', () => {
+    it('shows the button when the pinned release contains the version', () => {
       pinRelease('rMyRelease')
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
@@ -378,10 +378,10 @@ describe('CopyDocumentActions', () => {
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
+      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
     })
 
-    it('disables the button when the selected variant does not exist', () => {
+    it('hides the button when the selected variant does not exist', () => {
       mockUseTargetDocumentState.mockReturnValue({
         status: 'variant-missing',
         variant: {_id: 'variant-1'},
@@ -390,10 +390,10 @@ describe('CopyDocumentActions', () => {
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).toBeDisabled()
+      expect(screen.queryByTestId('copy-document-actions-button')).not.toBeInTheDocument()
     })
 
-    it('disables the button when the selected variant definition is not found', () => {
+    it('hides the button when the selected variant definition is not found', () => {
       mockUseTargetDocumentState.mockReturnValue({
         status: 'variant-definition-document-not-found',
         requestedVariantName: 'unknown-variant',
@@ -401,10 +401,10 @@ describe('CopyDocumentActions', () => {
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).toBeDisabled()
+      expect(screen.queryByTestId('copy-document-actions-button')).not.toBeInTheDocument()
     })
 
-    it('enables the button when the selected variant exists', () => {
+    it('shows the button when the selected variant exists', () => {
       mockUseTargetDocumentState.mockReturnValue({
         status: 'ready',
         targetDocument: {_id: 'versions.v1a2b3c4.doc-123'},
@@ -414,10 +414,10 @@ describe('CopyDocumentActions', () => {
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
+      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
     })
 
-    it('stays enabled on the drafts perspective when no draft exists (pseudo-draft)', () => {
+    it('stays visible on the drafts perspective when no draft exists (pseudo-draft)', () => {
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
         documentType: 'article',
@@ -427,10 +427,10 @@ describe('CopyDocumentActions', () => {
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
+      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
     })
 
-    it('stays enabled while the document versions are still loading', () => {
+    it('stays visible while the document versions are still loading', () => {
       pinRelease('rMyRelease')
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
@@ -446,18 +446,18 @@ describe('CopyDocumentActions', () => {
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
+      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
     })
 
-    it('stays enabled while the target document state is still resolving', () => {
+    it('stays visible while the target document state is still resolving', () => {
       mockUseTargetDocumentState.mockReturnValue({status: 'resolving'})
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
+      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
     })
 
-    it('stays enabled while the edit state is not yet ready', () => {
+    it('stays visible while the edit state is not yet ready', () => {
       pinRelease('rMyRelease')
       mockUseDocumentPane.mockReturnValue({
         documentId: 'doc-123',
@@ -467,7 +467,7 @@ describe('CopyDocumentActions', () => {
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
+      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
     })
   })
 })
