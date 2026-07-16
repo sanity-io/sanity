@@ -112,16 +112,24 @@ export function useUserListWithPermissions(
           })
 
           const flattenedGrants = [...grants].flat()
-          const {granted} = await grantsPermissionOn(
-            user.id,
-            flattenedGrants,
-            permission,
-            documentValue,
-          )
+          let granted = false
+          try {
+            const permissionResult = await grantsPermissionOn(
+              user.id,
+              flattenedGrants,
+              permission,
+              documentValue,
+            )
+            granted = permissionResult.granted
+          } catch {
+            // Some grants cannot be evaluated client-side, such as filters using
+            // `user::attributes()`. Fail closed for only this user so one
+            // unevaluable grant does not empty the entire mention list.
+          }
 
           return {
             ...user,
-            granted: granted,
+            granted,
           }
         })
 
