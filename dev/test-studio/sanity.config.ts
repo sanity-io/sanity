@@ -46,6 +46,7 @@ import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
+import {variantsCoffeeDemoTool} from './plugins/variants-coffee-demo'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -267,7 +268,7 @@ const defaultWorkspace = defineConfig({
   projectId: 'ppsg7ml5',
   dataset: 'test',
   ...envConfig.production,
-  plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
+  plugins: [sharedSettings({projectId: 'ppsg7ml5'}), variantsCoffeeDemoTool()],
 
   onUncaughtError: (error, errorInfo) => {
     console.log(error)
