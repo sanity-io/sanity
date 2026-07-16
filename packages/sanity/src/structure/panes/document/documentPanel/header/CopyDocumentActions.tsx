@@ -65,10 +65,10 @@ export function CopyDocumentActions() {
     targetDocumentState.status === 'variant-missing' ||
     targetDocumentState.status === 'variant-definition-document-not-found'
 
-  const documentReady = Boolean(editState?.ready) && !documentVersionsLoading
+  const existenceCheckReady = Boolean(editState?.ready) && !documentVersionsLoading
 
   const copiedVersionMissing =
-    documentReady &&
+    existenceCheckReady &&
     isVersionId(contextAwareDocumentId) &&
     !isNewDocument(editState) &&
     !existingDocumentIds.includes(contextAwareDocumentId)

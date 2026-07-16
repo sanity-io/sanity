@@ -449,6 +449,14 @@ describe('CopyDocumentActions', () => {
       expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
     })
 
+    it('stays enabled while the target document state is still resolving', () => {
+      mockUseTargetDocumentState.mockReturnValue({status: 'resolving'})
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.getByTestId('copy-document-actions-button')).not.toBeDisabled()
+    })
+
     it('stays enabled while the edit state is not yet ready', () => {
       pinRelease('rMyRelease')
       mockUseDocumentPane.mockReturnValue({
