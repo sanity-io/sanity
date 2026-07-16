@@ -8,7 +8,7 @@ import {styled} from 'styled-components'
 
 import {Button as BaseButton} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'
-import {useVersionRelease} from '../../hooks/useVersionRelease'
+import {type VersionReleaseDocument, useVersionRelease} from '../../hooks/useVersionRelease'
 import {type TFunction, useTranslation} from '../../i18n'
 import {type TargetPerspective} from '../../perspective/types'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
@@ -18,24 +18,24 @@ import {isAgentBundleName} from '../../store'
 
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
-    documentId: string
+    document: VersionReleaseDocument
     portalElementName: string
     isDocumentGroupInventoryActive: boolean
     setIsDocumentGroupInventoryActive: (active: boolean) => void
   }>
 > = ({
   children,
-  documentId,
+  document,
   portalElementName,
   isDocumentGroupInventoryActive,
   setIsDocumentGroupInventoryActive,
 }) => {
   const {t} = useTranslation()
-  const displayedRelease = useVersionRelease(documentId)
+  const displayedRelease = useVersionRelease(document)
   const buttonElement = useRef<HTMLButtonElement | null>(null)
   const popoverElement = useRef<HTMLDivElement | null>(null)
 
-  const versionState = useDocumentVersionsObservable({documentId})
+  const versionState = useDocumentVersionsObservable({documentId: document._id})
 
   const isAvailable = useObservable(
     useMemo(

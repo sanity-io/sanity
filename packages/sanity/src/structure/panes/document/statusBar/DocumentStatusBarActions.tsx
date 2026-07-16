@@ -110,7 +110,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       {__internal_tasks && __internal_tasks.footerAction}
       {hasDocumentGroupInventory && typeof displayed?._id !== 'undefined' && (
         <DocumentGroupInventoryAction
-          documentId={displayed._id}
+          document={{_id: displayed._id, _system: displayed._system}}
           portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
           isDocumentGroupInventoryActive={isDocumentGroupInventoryActive}
           setIsDocumentGroupInventoryActive={setIsDocumentGroupInventoryActive}

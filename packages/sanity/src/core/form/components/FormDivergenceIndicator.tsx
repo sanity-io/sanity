@@ -25,7 +25,9 @@ const FormDivergenceIndicatorEnabled: ComponentType<
   Props & {divergenceNavigator: DivergenceNavigator & {enabled: true}}
 > = ({divergenceNavigator, path}) => {
   const divergence = selectDivergence(divergenceNavigator.state, path)
-  const {release: upstreamBundle} = useVersionRelease(divergenceNavigator.state.upstreamId ?? '')
+  const {release: upstreamBundle} = useVersionRelease(
+    divergenceNavigator.state.upstreamId ? {_id: divergenceNavigator.state.upstreamId} : undefined,
+  )
 
   return (
     <AnimatePresence>

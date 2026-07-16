@@ -52,7 +52,7 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
   )
 
   const {release: upstreamRelease, state: upstreamReleaseState} = useVersionRelease(
-    divergence.documentId,
+    divergence.documentId ? {_id: divergence.documentId} : undefined,
   )
 
   const diff = isLoading

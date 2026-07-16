@@ -37,7 +37,9 @@ const FormNodeDivergenceCollectionIndicatorEnabled: ComponentType<
 
   const firstDescendantDivergence = selectFirstDescendantDivergence(divergenceNavigator.state, path)
 
-  const {release: upstreamBundle} = useVersionRelease(divergenceNavigator.state.upstreamId ?? '')
+  const {release: upstreamBundle} = useVersionRelease(
+    divergenceNavigator.state.upstreamId ? {_id: divergenceNavigator.state.upstreamId} : undefined,
+  )
 
   return (
     <AnimatePresence>
