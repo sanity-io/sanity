@@ -107,8 +107,9 @@ export async function runInpSession(options: {
 
     const steps = scenario.steps ?? scenario.interactions.map(toTypeStep)
     // A step scenario's sequence is an atomic choreography (e.g. open a comment
-    // composer, type, send) - breaking mid-sequence would skip its terminal
-    // step, so those run each pass to completion and check the target only at a
+    // composer, type, send) - breaking mid-sequence would skip its terminal step
+    // (and one step can cost more than the round budget left, stranding later
+    // steps), so those run each pass to completion and check the target only at a
     // pass boundary. Field-only scenarios keep the per-step break unchanged.
     const runToCompletion = scenario.steps !== undefined
 
@@ -144,6 +145,16 @@ export async function runInpSession(options: {
     if (oracles.length > 0) {
       const deadline = Date.now() + DEFAULT_SESSION_CONFIG.readbackTimeoutMs
       for (;;) {
+        if (session.pageErrors.length > 0) {
+          throw new SessionError('page-error', session.pageErrors.join('\n'))
+        }
+        if (session.consoleErrors.length > 0) {
+          throw new SessionError(
+            'console-error',
+            session.consoleErrors.join('\n'),
+            session.httpErrors,
+          )
+        }
         const allSatisfied = oracles.every((oracle) => oracle(running.mock.store))
         if (allSatisfied) break
         if (Date.now() > deadline) {

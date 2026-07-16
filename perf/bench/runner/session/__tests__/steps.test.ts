@@ -6,6 +6,7 @@ import {resolveLocator, runStep, toTypeStep} from '../steps'
 interface FakeLocator {
   selector: string
   scope?: string
+  labelOptions?: {exact?: boolean}
   first: () => FakeLocator
   locator: (inner: string) => FakeLocator
   getByLabel: (label: string, options?: {exact?: boolean}) => FakeLocator
@@ -14,13 +15,18 @@ interface FakeLocator {
   click: () => Promise<void>
 }
 
-function makeLocator(selector: string, scope?: string): FakeLocator {
+function makeLocator(
+  selector: string,
+  scope?: string,
+  labelOptions?: {exact?: boolean},
+): FakeLocator {
   const locator: FakeLocator = {
     selector,
     scope,
+    labelOptions,
     first: () => locator,
     locator: (inner) => makeLocator(inner, selector),
-    getByLabel: (label) => makeLocator(label, selector),
+    getByLabel: (label, options) => makeLocator(label, selector, options),
     waitFor: async () => {},
     hover: async () => {},
     click: async () => {},
@@ -31,7 +37,11 @@ function makeLocator(selector: string, scope?: string): FakeLocator {
 function createFakePage() {
   return {
     locator: (selector: string) => makeLocator(selector),
-    getByLabel: (label: string) => makeLocator(label),
+    getByLabel: (label: string, options?: {exact?: boolean}) =>
+      makeLocator(label, undefined, options),
+    keyboard: {type: async () => {}, press: async () => {}},
+    evaluate: async () => false,
+    waitForTimeout: async () => {},
   }
 }
 
@@ -79,6 +89,7 @@ describe('resolveLocator', () => {
     }) as unknown as FakeLocator
     expect(locator.selector).toBe('Add comment')
     expect(locator.scope).toBe('[data-testid="field-stringField"]')
+    expect(locator.labelOptions).toEqual({exact: true})
   })
 
   it('passes a raw css selector through', () => {
@@ -112,6 +123,16 @@ describe('runStep interaction counts', () => {
       drive: async () => ({interactions: 7}),
     }
     expect(await runStep(fakeContext(), step)).toEqual({interactions: 7})
+  })
+
+  it('type with text reports focus click plus one interaction per character', async () => {
+    const step: ScenarioStep = {kind: 'type', selector: {css: '.x'}, text: 'abcd'}
+    expect(await runStep(fakeContext(), step)).toEqual({interactions: 5})
+  })
+
+  it('type with keystrokes reports focus click plus the keystroke count', async () => {
+    const step: ScenarioStep = {kind: 'type', selector: {css: '.x'}, keystrokes: 5}
+    expect(await runStep(fakeContext(), step)).toEqual({interactions: 6})
   })
 })
 

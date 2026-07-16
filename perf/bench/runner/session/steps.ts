@@ -79,8 +79,10 @@ export async function runStep(context: StepContext, step: ScenarioStep): Promise
       return {interactions: 0}
     case 'raw':
       return step.drive(context)
-    default:
-      return step
+    default: {
+      const exhaustiveStep: never = step
+      throw new Error(`runStep received an unhandled step kind: ${JSON.stringify(exhaustiveStep)}`)
+    }
   }
 }
 

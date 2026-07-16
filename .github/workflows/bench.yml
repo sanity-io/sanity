@@ -182,7 +182,7 @@ jobs:
       fail-fast: false
       matrix:
         # One shard per scenario: wall-clock = slowest single scenario
-        scenario: [singleString, arrayI18n, article, recipe, synthetic, commentsField]
+        scenario: [singleString, arrayI18n, article, recipe, synthetic]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -387,7 +387,7 @@ jobs:
           # instead of rendering a clean table with a scenario silently
           # missing. Keep in sync with the bench-interaction matrix and the
           # bench-pageload --scenario flags above.
-          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic,commentsField
+          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
           BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge
         run: pnpm bench report
 
@@ -639,7 +639,7 @@ jobs:
 
       - name: Run INP benchmarks
         run: |
-          pnpm bench run --mode inp --scenario singleString --scenario article --sessions 4 \
+          pnpm bench run --mode inp --scenario singleString --scenario article --scenario commentsField --sessions 4 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__inp.json"
 
       - name: Merge report

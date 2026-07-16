@@ -251,6 +251,8 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       record('doc', handleDoc(req, res, store, docMatch[2]))
       return
     }
+    // Dataset segment is captured but ignored: one shared store serves every
+    // dataset (see DATASETS in project.ts).
     const queryMatch = path.match(/^\/data\/query\/([^/]+)/)
     if (queryMatch) {
       record('query', await handleQuery(req, res, store, url))
