@@ -9,6 +9,7 @@ import {Subscription} from 'rxjs'
 
 import {BENCH_USER} from '../constants'
 import {handleActions, handleDoc, handleDocRevision, handleMutate, handleQuery} from './data'
+import {type FeatureModule, resolveActiveModules} from './features'
 import {RequestLedger} from './ledger'
 import {AUTH_PROBE, AUTH_PROVIDERS, DATASET_ACL, DATASETS, projectData} from './project'
 import {corsHeaders, handlePreflight, json, readBody} from './respond'
@@ -33,6 +34,7 @@ export interface MockApiServer {
   store: DocumentStore
   hub: ListenHub
   ledger: RequestLedger
+  setActiveFeatures: (names: string[]) => void
 }
 
 /** Strip the `/vX.Y` API-version prefix @sanity/client puts on every path. */
@@ -54,6 +56,7 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
   const store = new DocumentStore()
   const hub = new ListenHub()
   const ledger = new RequestLedger()
+  let activeFeatures: FeatureModule[] = []
 
   async function handle(req: ProxyRequest, res: ProxyResponse): Promise<void> {
     const url = new URL(req.url ?? '/', 'http://localhost')
@@ -175,7 +178,8 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       return
     }
     if (path === '/features' || path.startsWith('/features/')) {
-      record('features', json(req, res, 200, []))
+      const flags = activeFeatures.flatMap((featureModule) => featureModule.featureFlags ?? [])
+      record('features', json(req, res, 200, flags))
       return
     }
     if (path.startsWith('/journey')) {
@@ -268,6 +272,12 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       return
     }
 
+    for (const featureModule of activeFeatures) {
+      for (const handleRoute of featureModule.routes ?? []) {
+        if (await handleRoute({req, res, method, path, rawPath, url, store, hub, record})) return
+      }
+    }
+
     // --- unknown -------------------------------------------------------------
     ledger.recordUnexpected(method, rawPath)
     record('other', json(req, res, 404, {error: `bench mock: no handler for ${method} ${rawPath}`}))
@@ -312,5 +322,9 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     store,
     hub,
     ledger,
+    setActiveFeatures: (names: string[]) => {
+      activeFeatures = resolveActiveModules(names)
+      ledger.setAllow(activeFeatures.flatMap((featureModule) => featureModule.allow ?? []))
+    },
   }
 }

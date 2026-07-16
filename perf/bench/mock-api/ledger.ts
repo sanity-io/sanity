@@ -42,13 +42,19 @@ const UNIMPLEMENTED_BUT_GRACEFUL = [
 export class RequestLedger {
   private entries: LedgerEntry[] = []
   private unexpected: UnexpectedRequest[] = []
+  private moduleAllow: RegExp[] = []
 
   record(entry: LedgerEntry): void {
     this.entries.push(entry)
   }
 
+  setAllow(patterns: RegExp[]): void {
+    this.moduleAllow = patterns
+  }
+
   recordUnexpected(method: string, path: string): void {
-    if (UNIMPLEMENTED_BUT_GRACEFUL.some((pattern) => pattern.test(path))) {
+    const allowed = [...UNIMPLEMENTED_BUT_GRACEFUL, ...this.moduleAllow]
+    if (allowed.some((pattern) => pattern.test(path))) {
       return
     }
     this.unexpected.push({method, path, at: Date.now()})
