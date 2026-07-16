@@ -38,14 +38,16 @@ describe('DeleteVariantDialog', () => {
     await renderDialog()
 
     expect(
-      screen.getByRole('dialog', {name: 'Are you sure you want to delete this variant?'}),
+      screen.getByRole('dialog', {
+        name: 'Are you sure you want to delete this variant definition?',
+      }),
     ).toBeInTheDocument()
     expect(
       screen.getByText(
         'This will permanently delete "Alpha audience". This action cannot be undone.',
       ),
     ).toBeInTheDocument()
-    expect(screen.getByTestId('confirm-button')).toHaveTextContent('Yes, delete variant')
+    expect(screen.getByTestId('confirm-button')).toHaveTextContent('Yes, delete variant definition')
   })
 
   it('calls onConfirm when the confirm button is clicked', async () => {
