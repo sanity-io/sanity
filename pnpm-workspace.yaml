@@ -25,6 +25,7 @@ catalog:
   '@sanity/pkg-utils': ^10.9.0
   '@sanity/telemetry': ^1.1.0
   '@sanity/ui': ^3.3.0
+  '@sanity/vanilla-extract-vite-plugin': ^0.2.0
   '@types/node': ^24.13.2
   '@types/react': ^19.2.17
   '@types/react-dom': ^19.2.3
@@ -32,7 +33,6 @@ catalog:
   '@typescript/native-preview': beta
   '@vanilla-extract/css': ^1.21.1
   '@vanilla-extract/dynamic': ^2.1.5
-  '@vanilla-extract/vite-plugin': ^5.2.4
   '@vitejs/plugin-react': ^6.0.3
   '@vitest/browser-playwright': ^4.1.10
   babel-plugin-react-compiler: ^1.0.0
@@ -53,9 +53,11 @@ linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
+  - '@oxc-project/*'
   - '@oxfmt/*'
   - '@oxlint/*'
   - '@oxlint-tsgolint/*'
+  - '@rolldown/*'
   - '@vitest/*'
   - '@vite/*'
   - '@vitejs/plugin-react'
@@ -77,6 +79,7 @@ minimumReleaseAgeExclude:
   - 'react-dom'
   - 'react-is'
   - 'react-rx'
+  - 'rolldown'
   - 'sanity-plugin-internationalized-array'
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'

@@ -58,11 +58,11 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
+    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vanilla-extract/css": "catalog:",
-    "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/devtools": "^0.3.3",
     "babel-plugin-react-compiler": "catalog:",
     "chokidar": "^5.0.0",

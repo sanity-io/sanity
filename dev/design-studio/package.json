@@ -39,7 +39,7 @@
     "vite": "catalog:"
   },
   "devDependencies": {
-    "@vanilla-extract/vite-plugin": "catalog:",
+    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "rimraf": "catalog:"
   }
 }

@@ -1,4 +1,4 @@
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
+import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
