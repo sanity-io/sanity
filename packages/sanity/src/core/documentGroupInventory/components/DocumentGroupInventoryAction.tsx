@@ -1,5 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
+import {type DocumentSystem, type SanityDocumentLike} from '@sanity/types'
 import {LayerProvider, useClickOutsideEvent} from '@sanity/ui'
 import {type ComponentType, type PropsWithChildren, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
@@ -8,7 +9,7 @@ import {styled} from 'styled-components'
 
 import {Button as BaseButton} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'
-import {type VersionReleaseDocument, useVersionRelease} from '../../hooks/useVersionRelease'
+import {useVersionRelease} from '../../hooks/useVersionRelease'
 import {type TFunction, useTranslation} from '../../i18n'
 import {type TargetPerspective} from '../../perspective/types'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
@@ -18,7 +19,7 @@ import {isAgentBundleName} from '../../store'
 
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
-    document: VersionReleaseDocument
+    document: Pick<SanityDocumentLike, '_id'> & {_system?: Partial<DocumentSystem>}
     portalElementName: string
     isDocumentGroupInventoryActive: boolean
     setIsDocumentGroupInventoryActive: (active: boolean) => void

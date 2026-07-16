@@ -2,7 +2,7 @@ import {describe, expect, it} from 'vitest'
 
 import {type ReleasesReducerState} from '../releases/store/reducer'
 import {type VersionInfoDocumentStub} from '../releases/store/types'
-import {resolveVersionRelease} from './useVersionRelease'
+import {resolveVersionRelease} from './resolveVersionRelease'
 
 function createVersion(
   _id: string,
