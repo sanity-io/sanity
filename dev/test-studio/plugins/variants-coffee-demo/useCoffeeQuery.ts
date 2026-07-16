@@ -1,0 +1,105 @@
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useClient} from 'sanity'
+
+import {DEMO_API_VERSION, VARIANT_QUERY_PARAM} from './constants'
+
+interface CoffeeQueryState<T> {
+  data: T | undefined
+  loading: boolean
+  error: string | undefined
+  /** The full request URL, shown in the demo's request inspector. */
+  requestUrl: string
+  refetch: () => void
+}
+
+/**
+ * Fetches published content exactly the way a frontend would: a hand-rolled `fetch` against the
+ * query API, with every query-string parameter built here.
+ *
+ * Deliberately NOT `client.fetch`/`client.request`: `@sanity/client` does not support passing a
+ * variant with queries yet, and the studio-configured client injects its own perspective — which
+ * would fight the `perspective=published` + variant combination this demo is about. The client
+ * is only used to read connection config (project id, dataset, api host, token).
+ */
+export function useCoffeeQuery<T>(options: {
+  query: string
+  params?: Record<string, unknown>
+  /** When set, the request carries the variant — the "logged-in returning visitor" case. */
+  variantName?: string
+  /** The query perspective (follows the studio's pinned perspective; `published` by default). */
+  perspective?: string
+}): CoffeeQueryState<T> {
+  const {query, params, variantName, perspective = 'published'} = options
+  const client = useClient({apiVersion: DEMO_API_VERSION})
+  const {projectId, dataset, apiHost = 'https://api.sanity.io', token} = client.config()
+
+  // The latest settled response, keyed by the url it was fetched for. `loading` is derived by
+  // comparing it against the current url (no synchronous setState in the effect).
+  const [settled, setSettled] = useState<{url: string; data?: T; error?: string} | null>(null)
+  const [refreshCount, setRefreshCount] = useState(0)
+
+  const paramsKey = JSON.stringify(params ?? {})
+
+  const requestUrl = useMemo(() => {
+    const parsedParams: Record<string, unknown> = JSON.parse(paramsKey)
+    const searchParams = new URLSearchParams()
+    searchParams.set('query', query)
+    for (const [key, value] of Object.entries(parsedParams)) {
+      searchParams.set(`$${key}`, JSON.stringify(value))
+    }
+    searchParams.set('perspective', perspective)
+    if (variantName) {
+      searchParams.set(VARIANT_QUERY_PARAM, variantName)
+    }
+    // `https://<projectId>.<api host>/v<version>/data/query/<dataset>?...`
+    const host = apiHost.replace(/^https?:\/\//, '')
+    return `https://${projectId}.${host}/v${DEMO_API_VERSION}/data/query/${dataset}?${searchParams}`
+  }, [apiHost, dataset, paramsKey, perspective, projectId, query, variantName])
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function run() {
+      try {
+        const response = await fetch(requestUrl, {
+          signal: controller.signal,
+          // Cookie-based auth, like the studio itself uses in the browser. The token fallback
+          // covers workspaces configured with token auth.
+          credentials: 'include',
+          headers: token ? {Authorization: `Bearer ${token}`} : undefined,
+        })
+        const body = await response.json()
+        if (controller.signal.aborted) return
+
+        if (!response.ok) {
+          const description = body?.error?.description || body?.message || `HTTP ${response.status}`
+          setSettled({url: requestUrl, error: description})
+          return
+        }
+
+        setSettled({url: requestUrl, data: body.result as T})
+      } catch (err) {
+        if (controller.signal.aborted) return
+        setSettled({url: requestUrl, error: err instanceof Error ? err.message : String(err)})
+      }
+    }
+
+    void run()
+
+    return () => {
+      controller.abort()
+    }
+  }, [requestUrl, token, refreshCount])
+
+  const refetch = useCallback(() => setRefreshCount((count) => count + 1), [])
+
+  const isCurrent = settled?.url === requestUrl
+
+  return {
+    data: isCurrent ? settled?.data : undefined,
+    loading: !isCurrent,
+    error: isCurrent ? settled?.error : undefined,
+    requestUrl,
+    refetch,
+  }
+}
