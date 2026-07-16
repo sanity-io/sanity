@@ -1009,24 +1009,6 @@ export {
   type HistoryStore,
   type HistoryStoreOptions,
 } from '../core/store/history/createHistoryStore'
-/* oxlint-disable no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major */
-export {
-  type ParsedTimeRef,
-  Timeline,
-  type TimelineOptions,
-} from '../core/store/history/history/Timeline'
-export {
-  type SelectionState,
-  TimelineController,
-  type TimelineControllerOptions,
-} from '../core/store/history/history/TimelineController'
-export {
-  type CombinedDocument,
-  type DocumentRemoteMutationVersionEvent,
-  type Transaction,
-} from '../core/store/history/history/types'
-export {type TimelineState, type TimelineStore} from '../core/store/history/useTimelineStore'
-/* oxlint-enable no-deprecated */
 /* oxlint-disable no-deprecated -- the key-value store types stay exported while deprecated, until their removal lands */
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 /* oxlint-enable no-deprecated */

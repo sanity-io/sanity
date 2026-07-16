@@ -10,13 +10,10 @@ import {reduce as jsonReduce} from 'json-reduce'
 import {from, type Observable} from 'rxjs'
 import {map, mergeMap} from 'rxjs/operators'
 
-import {isDev} from '../../environment'
 import {getDraftId, getPublishedId, getVersionFromId, getIdPair} from '../../util/draftUtils'
 import {isRecord} from '../../util/isRecord'
 import {type VariantVersionInfo} from '../../variants/documents/getVariantVersionInfo'
 import {actionsApiClient} from '../document/document-pair/utils/actionsApiClient'
-import {Timeline} from './history/Timeline'
-import {TimelineController} from './history/TimelineController'
 
 /**
  * Represents a document revision identifier.
@@ -49,17 +46,6 @@ export interface HistoryStore {
     rev: DocumentRevision,
     options?: RestoreOptions,
   ) => Observable<void>
-
-  /**
-   * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
-   * @internal
-   */
-  getTimelineController: (options: {
-    client: SanityClient
-    documentId: string
-    documentType: string
-    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
-  }) => TimelineController
 }
 
 interface RestoreOptions {
@@ -151,30 +137,6 @@ const getDocumentAtRevision = (
   }
 
   return entry
-}
-
-const getTimelineController = ({
-  client,
-  documentId,
-  documentType,
-}: {
-  client: SanityClient
-  documentId: string
-  documentType: string
-  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
-}): TimelineController => {
-  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
-  const timeline = new Timeline({
-    enableTrace: isDev,
-    publishedId: documentId,
-  })
-  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
-  return new TimelineController({
-    client,
-    documentId,
-    documentType,
-    timeline,
-  })
 }
 
 const getTransactions = async (
@@ -347,8 +309,5 @@ export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore 
     getTransactions: (documentIds) => getTransactions(client, documentIds),
 
     restore: (id, targetId, rev, options) => restore(client, id, targetId, rev, options),
-
-    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
-    getTimelineController,
   }
 }

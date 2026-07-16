@@ -17,6 +17,7 @@ import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../../../../../core/field/diff/com
 import {useEvents} from '../../../../../core/store/events/EventsProvider'
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'
+import {TIMELINE_MENU_PORTAL} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
 import {TimelineError} from '../TimelineError'
 import {EventsTimeline} from './EventsTimeline'
@@ -28,9 +29,6 @@ interface TimelineMenuProps {
   mode: 'rev' | 'since'
   placement?: Placement
 }
-
-const TIMELINE_MENU_PORTAL = 'timeline-menu'
-
 const formatParams = {
   timestamp: {dateStyle: 'medium', timeStyle: 'short'},
 }

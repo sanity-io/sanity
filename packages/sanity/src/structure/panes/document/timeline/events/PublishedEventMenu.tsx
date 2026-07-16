@@ -27,7 +27,7 @@ import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
+import {TIMELINE_MENU_PORTAL} from '../../constants'
 
 function VersionBadge({children, tone}: {children?: React.ReactNode; tone?: BadgeTone}) {
   return <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>

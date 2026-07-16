@@ -21,6 +21,7 @@ export const DOCUMENT_GROUP_INSPECTOR_NAME = 'sanity/structure/document-group'
 
 // timeline
 export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
+export const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
 // history / review changes inspector tabs
 const CHANGES_INSPECTOR_TABS = ['history', 'review'] as const
