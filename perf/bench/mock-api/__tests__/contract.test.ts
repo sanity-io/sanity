@@ -287,3 +287,102 @@ describe('mock Content Lake contract (real @sanity/client)', () => {
     expect(unexpected[0].path).toContain('/some/unknown/endpoint')
   })
 })
+
+describe('comments feature module (real @sanity/client)', () => {
+  const PORT = 43122
+  let mock: MockApiServer
+  let client: SanityClient
+
+  beforeAll(async () => {
+    mock = createMockApi({port: PORT, projectId: 'benchexp', dataset: 'bench'})
+    await mock.listen()
+    client = createClient({
+      projectId: 'benchexp',
+      dataset: 'bench',
+      apiHost: `http://127.0.0.1:${PORT}`,
+      useProjectHostname: false,
+      useCdn: false,
+      apiVersion: '2025-02-19',
+      token: 'bench-fake-token',
+    })
+  })
+
+  afterEach(() => {
+    mock.setActiveFeatures([])
+    mock.hub.closeAll()
+    mock.store.reset()
+    mock.ledger.reset()
+  })
+
+  afterAll(async () => {
+    await mock.close()
+  })
+
+  it('gates /features per activation', async () => {
+    expect(await client.request({uri: '/features'})).toEqual([])
+    mock.setActiveFeatures(['comments'])
+    expect(await client.request({uri: '/features'})).toEqual(['studioComments'])
+    mock.setActiveFeatures([])
+    expect(await client.request({uri: '/features'})).toEqual([])
+  })
+
+  it('resolves the comments addon-dataset handshake', async () => {
+    const datasets = await client.request<{name: string}[]>({
+      uri: '/projects/benchexp/datasets?datasetProfile=comments&addonFor=bench',
+    })
+    expect(Array.isArray(datasets)).toBe(true)
+    expect(datasets[0]?.name).toBeTruthy()
+  })
+
+  it('round-trips a comment create on the data plane', async () => {
+    mock.setActiveFeatures(['comments'])
+    const publishedId = 'comment-target'
+    const commentId = 'the-comment'
+    mock.store.seed([{_id: publishedId, _type: 'commentsField', stringField: 'x'}])
+    // The mock's mutate response carries no `document`, so the store is the round-trip oracle, not the client's return value.
+    await client.create({
+      _id: commentId,
+      _type: 'comment',
+      message: [
+        {
+          _type: 'block',
+          _key: 'b1',
+          children: [{_type: 'span', _key: 's1', text: 'nice work', marks: []}],
+          markDefs: [],
+        },
+      ],
+      target: {document: {_ref: publishedId}},
+    })
+    expect(mock.store.get(commentId)).toMatchObject({_type: 'comment'})
+  })
+
+  it('evaluates a comments GROQ query over the store', async () => {
+    const publishedId = 'comment-target'
+    mock.store.seed([
+      {_id: publishedId, _type: 'commentsField', stringField: 'x'},
+      {
+        _id: 'the-comment',
+        _type: 'comment',
+        message: [],
+        target: {document: {_ref: publishedId}},
+      },
+    ])
+    const result = await client.fetch(`*[_type == "comment" && target.document._ref == $id]{_id}`, {
+      id: publishedId,
+    })
+    expect(result).toEqual([{_id: 'the-comment'}])
+  })
+
+  it('records no unexpected endpoints while active', async () => {
+    mock.setActiveFeatures(['comments'])
+    await client.request({uri: '/features'})
+    await client.request({
+      uri: '/projects/benchexp/datasets?datasetProfile=comments&addonFor=bench',
+    })
+    expect(mock.ledger.snapshot().unexpected).toEqual([])
+  })
+
+  it('throws on an unknown feature name', () => {
+    expect(() => mock.setActiveFeatures(['bogus'])).toThrow(/bogus/)
+  })
+})
