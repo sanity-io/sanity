@@ -14,8 +14,8 @@ import {
   type ReadOnlyInterruptions,
   type SessionConfig,
   SessionError,
-  typeBurst,
 } from './interaction'
+import {runStep, toTypeStep} from './steps'
 
 export interface InpSessionResult extends InpResult {
   /**
@@ -65,6 +65,7 @@ export async function runInpSession(options: {
   const {browser, running, scenario, instrumentation} = options
   const config = {...DEFAULT_INP_CONFIG, ...options.config}
 
+  running.mock.setActiveFeatures(scenario.features ?? [])
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()
@@ -103,14 +104,14 @@ export async function runInpSession(options: {
     // web-vitals performance.interactionCount), or INP would drop when a
     // regression pushes below-floor interactions over the floor.
     let driven = 0
-    const keystrokesPerField = 4
-    let offset = 0
 
-    // Cycle through the scenario's fields, one click + short burst per field,
-    // draining after each so a single field's rendering can't be double-counted.
-    // Fail fast on page/console errors instead of burning the whole budget.
+    const steps = scenario.steps ?? scenario.interactions.map(toTypeStep)
+
+    // Cycle through the scenario's steps, draining after each so a single
+    // step's rendering can't be double-counted. Fail fast on page/console
+    // errors instead of burning the whole budget.
     for (let round = 0; round < config.maxRounds && driven < config.targetInteractions; ) {
-      for (const target of scenario.interactions) {
+      for (const step of steps) {
         if (session.pageErrors.length > 0) {
           throw new SessionError('page-error', session.pageErrors.join('\n'))
         }
@@ -121,27 +122,31 @@ export async function runInpSession(options: {
             session.httpErrors,
           )
         }
-        // The click is itself an interaction (pointerdown/up + click share an
-        // interactionId); focusField clicks the field root and the input.
-        const {clicks} = await focusField(page, target, 30_000)
-        // A short burst, isolated cadence so each keystroke is its own
-        // interaction (the Event Timing observer needs a paint between them).
-        // typeBurst gates read-only once per field, not per keystroke — a
-        // per-keystroke in-page round-trip would serialize dispatch behind
-        // the main thread and suppress INP's input-delay component.
-        await typeBurst(
-          page,
-          keystrokesPerField,
-          DEFAULT_SESSION_CONFIG.isolatedCadenceMs,
-          offset,
-          interruptions,
+        const {interactions} = await runStep(
+          {page, running, timeoutMs: 30_000, interruptions},
+          step,
         )
-        offset += keystrokesPerField
-        driven += clicks + keystrokesPerField
+        driven += interactions
         const entries: BenchEntries = await drainEntries(page)
         latencies.push(...interactionMaxDurations(entries))
         round += 1
         if (driven >= config.targetInteractions || round >= config.maxRounds) break
+      }
+    }
+
+    const oracles = steps.flatMap((step) => ('oracle' in step && step.oracle ? [step.oracle] : []))
+    if (oracles.length > 0) {
+      const deadline = Date.now() + DEFAULT_SESSION_CONFIG.readbackTimeoutMs
+      for (;;) {
+        const allSatisfied = oracles.every((oracle) => oracle(running.mock.store))
+        if (allSatisfied) break
+        if (Date.now() > deadline) {
+          throw new SessionError(
+            'readback-mismatch',
+            'step oracle(s) not satisfied before deadline',
+          )
+        }
+        await new Promise((resolve) => setTimeout(resolve, 250))
       }
     }
 
