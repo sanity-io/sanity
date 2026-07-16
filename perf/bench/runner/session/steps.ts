@@ -68,6 +68,9 @@ export async function runStep(context: StepContext, step: ScenarioStep): Promise
         timeout: context.timeoutMs,
       })
       return {interactions: 0}
+    case 'hover':
+      await resolveLocator(context.page, step.selector).hover({timeout: context.timeoutMs})
+      return {interactions: 0}
     case 'raw':
       return step.drive(context)
     default:

@@ -9,6 +9,7 @@ interface FakeLocator {
   first: () => FakeLocator
   locator: (inner: string) => FakeLocator
   waitFor: () => Promise<void>
+  hover: () => Promise<void>
   click: () => Promise<void>
 }
 
@@ -19,6 +20,7 @@ function makeLocator(selector: string, scope?: string): FakeLocator {
     first: () => locator,
     locator: (inner) => makeLocator(inner, selector),
     waitFor: async () => {},
+    hover: async () => {},
     click: async () => {},
   }
   return locator
@@ -81,6 +83,11 @@ describe('runStep interaction counts', () => {
 
   it('awaitVisible reports 0', async () => {
     const step: ScenarioStep = {kind: 'awaitVisible', selector: {css: '.x'}}
+    expect(await runStep(fakeContext(), step)).toEqual({interactions: 0})
+  })
+
+  it('hover reports 0', async () => {
+    const step: ScenarioStep = {kind: 'hover', selector: {css: '.x'}}
     expect(await runStep(fakeContext(), step)).toEqual({interactions: 0})
   })
 

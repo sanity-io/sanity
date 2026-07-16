@@ -91,6 +91,7 @@ export type ScenarioStep =
       oracle?: (store: DocumentStore) => boolean
     }
   | {kind: 'awaitVisible'; selector: StepSelector}
+  | {kind: 'hover'; selector: StepSelector}
   | {
       kind: 'raw'
       label: string

@@ -106,6 +106,11 @@ export async function runInpSession(options: {
     let driven = 0
 
     const steps = scenario.steps ?? scenario.interactions.map(toTypeStep)
+    // A step scenario's sequence is an atomic choreography (e.g. open a comment
+    // composer, type, send) — breaking mid-sequence would skip its terminal
+    // step, so those run each pass to completion and check the target only at a
+    // pass boundary. Field-only scenarios keep the per-step break unchanged.
+    const runToCompletion = scenario.steps !== undefined
 
     // Cycle through the scenario's steps, draining after each so a single
     // step's rendering can't be double-counted. Fail fast on page/console
@@ -130,6 +135,7 @@ export async function runInpSession(options: {
         const entries: BenchEntries = await drainEntries(page)
         latencies.push(...interactionMaxDurations(entries))
         round += 1
+        if (runToCompletion) continue
         if (driven >= config.targetInteractions || round >= config.maxRounds) break
       }
     }

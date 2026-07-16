@@ -14,5 +14,5 @@ export const commentsField = defineScenario({
     {_id: DOCUMENT_ID, _type: 'commentsField', stringField: ''},
   ],
   interactions: [{fieldPath: 'stringField', kind: 'string'}],
-  steps: addCommentSteps('stringField', 'looks good to me'),
+  steps: addCommentSteps('stringField'),
 })
