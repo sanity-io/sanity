@@ -6,15 +6,15 @@ import {
   getDraftId,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getTargetScopeId,
   getVersionId,
   PerspectiveProvider,
   useArchivedReleases,
-  useEditState,
+  getTargetDocument,
   useEventsStore,
   usePerspective,
   useSchema,
   useTargetDocumentState,
+  useDocumentVersions,
 } from 'sanity'
 
 import {usePaneRouter} from '../../components'
@@ -27,21 +27,20 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const options = usePaneOptions(props.pane.options, params)
   const schema = useSchema()
-  const documentType = options.type
   const schemaType = schema.get(options.type) as ObjectSchemaType | undefined
   const liveEdit = Boolean(schemaType?.liveEdit)
 
-  const {selectedPerspectiveName, selectedPerspective} = usePerspective()
+  const {selectedPerspectiveName, selectedPerspective, selectedVariantName} = usePerspective()
   const {data: archivedReleases} = useArchivedReleases()
-  // This component renders DocumentPaneProvider itself, so it sits above the pane context and
-  // resolves the target directly (same shared source as the pane).
+  const {versions} = useDocumentVersions({documentId: getPublishedId(options.id)})
   const targetDocumentState = useTargetDocumentState(getPublishedId(options.id))
-  // The scope of the document targeted by the selected perspective (undefined while the target is
-  // resolving or when the draft/published pair applies).
-  const scopeId = getTargetScopeId(targetDocumentState)
-  const editState = useEditState(getPublishedId(options.id), documentType, 'default', scopeId)
+  const draftVersion = getTargetDocument({
+    bundle: 'draft',
+    variant: selectedVariantName,
+    documentVersions: versions,
+  })
 
-  const showingPublishedOnDraft = liveEdit && selectedPerspective === 'drafts' && !editState?.draft
+  const showingPublishedOnDraft = liveEdit && selectedPerspective === 'drafts' && !draftVersion
   const {rev, since} = params
   const historyVersion = params.historyVersion
 
