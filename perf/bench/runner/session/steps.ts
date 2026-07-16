@@ -15,17 +15,19 @@ export interface StepResult {
 
 const DEFAULT_KEYSTROKES = 4
 
+function scopeFor(page: Page, within?: string): Page | Locator {
+  return within ? page.locator(`[data-testid="${within}"]`) : page
+}
+
 export function resolveLocator(page: Page, selector: StepSelector): Locator {
   if ('field' in selector) {
     return fieldInput(page, {fieldPath: selector.field, kind: selector.kind})
   }
   if ('testId' in selector) {
-    const scope = selector.within ? page.locator(`[data-testid="${selector.within}"]`) : page
-    return scope.locator(`[data-testid="${selector.testId}"]`).first()
+    return scopeFor(page, selector.within).locator(`[data-testid="${selector.testId}"]`).first()
   }
   if ('label' in selector) {
-    const scope = selector.within ? page.locator(`[data-testid="${selector.within}"]`) : page
-    return scope.getByLabel(selector.label, {exact: true}).first()
+    return scopeFor(page, selector.within).getByLabel(selector.label, {exact: true}).first()
   }
   return page.locator(selector.css).first()
 }

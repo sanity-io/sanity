@@ -101,9 +101,9 @@ A feature module is one file `mock-api/features/<name>.ts` exporting a `FeatureM
 
 The minimal case (comments) is flags-only: it rides the generic `/data/*` plane, so it only adds a `/features` flag and no routes.
 
-The `allow` allowlist is a report-only bootstrapping escape hatch — a 404'd endpoint means the feature is degrading, so never ship a benchmark whose target feature is allowlisted rather than served.
+The `allow` allowlist is a report-only bootstrapping escape hatch - a 404'd endpoint means the feature is degrading, so never ship a benchmark whose target feature is allowlisted rather than served.
 
-`bench dev --scenario <name>` seeds and opens any scenario (default `singleString`) with its features active — the interactive way to verify a feature module.
+`bench dev --scenario <name>` seeds and opens any scenario (default `singleString`) with its features active - the interactive way to verify a feature module.
 
 ## CI (`.github/workflows/bench.yml`)
 
