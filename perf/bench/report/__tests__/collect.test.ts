@@ -3,8 +3,10 @@ import process from 'node:process'
 
 import {afterEach, beforeEach, describe, expect, it} from 'vitest'
 
+import {type InpSessionResult} from '../../runner/session/inp'
 import {type PageLoadSample} from '../../runner/session/pageLoad'
-import {collectPageLoad, collectRunMetadata} from '../collect'
+import {summarize} from '../../stats/quantiles'
+import {collectInp, collectPageLoad, collectRunMetadata} from '../collect'
 
 const ENV_KEYS = [
   'GITHUB_SHA',
@@ -157,5 +159,89 @@ describe('collectPageLoad', () => {
       'boot-cold · auth round trips',
       'boot-cold · auth in flight',
     ])
+  })
+})
+
+function inpSession(
+  perLabel: InpSessionResult['perLabel'],
+  overrides: Partial<InpSessionResult> = {},
+): InpSessionResult {
+  return {
+    inpMs: 200,
+    interactionCount: 60,
+    reportable: true,
+    latencies: perLabel.flatMap((entry) => entry.latencies),
+    perLabel,
+    readOnlyInterruptions: {count: 0, totalMs: 0},
+    ...overrides,
+  }
+}
+
+describe('collectInp', () => {
+  it('leaves the INP and INP interactions rows first and unchanged', () => {
+    const report = collectInp('singleString', [
+      inpSession([{label: 'title', latencies: [20, 30]}], {inpMs: 210, interactionCount: 55}),
+    ])
+    expect(report.metrics[0].label).toBe('INP')
+    expect(report.metrics[1].label).toBe('INP interactions')
+    expect(report.metrics[0].experiment.summary.median).toBe(210)
+    expect(report.metrics[1].experiment.summary.median).toBe(55)
+  })
+
+  it('appends one component metric per label, in first-seen order', () => {
+    const sessions = [
+      inpSession([
+        {label: 'title', latencies: [20, 30]},
+        {label: 'body', latencies: [40, 50]},
+      ]),
+      inpSession([
+        {label: 'title', latencies: [25, 35]},
+        {label: 'body', latencies: [45, 55]},
+      ]),
+    ]
+    const report = collectInp('singleString', sessions)
+    const componentMetrics = report.metrics.slice(2)
+    expect(componentMetrics.map((metric) => metric.label)).toEqual([
+      'component: title',
+      'component: body',
+    ])
+
+    const titleMetric = componentMetrics[0]
+    expect(titleMetric.presentAsEfps).toBe(false)
+    expect(titleMetric.unit).toBe('ms')
+    expect(titleMetric.experiment.sessions).toEqual([
+      [20, 30],
+      [25, 35],
+    ])
+    expect(titleMetric.experiment.summary.median).toBe(summarize([20, 30, 25, 35]).median)
+
+    const bodyMetric = componentMetrics[1]
+    expect(bodyMetric.experiment.sessions).toEqual([
+      [40, 50],
+      [45, 55],
+    ])
+    expect(bodyMetric.experiment.summary.median).toBe(summarize([40, 50, 45, 55]).median)
+  })
+
+  it('reports an empty session array for a label absent from one session', () => {
+    const sessions = [
+      inpSession([{label: 'title', latencies: [20, 30]}]),
+      inpSession([{label: 'body', latencies: [40, 50]}]),
+    ]
+    const report = collectInp('singleString', sessions)
+    const componentMetrics = report.metrics.slice(2)
+    expect(componentMetrics.map((metric) => metric.label)).toEqual([
+      'component: title',
+      'component: body',
+    ])
+
+    const titleMetric = componentMetrics[0]
+    expect(titleMetric.experiment.sessions).toEqual([[20, 30], []])
+    expect(titleMetric.experiment.summary.n).toBe(2)
+    expect(titleMetric.experiment.summary.median).toBe(summarize([20, 30]).median)
+
+    const bodyMetric = componentMetrics[1]
+    expect(bodyMetric.experiment.sessions).toEqual([[], [40, 50]])
+    expect(bodyMetric.experiment.summary.n).toBe(2)
   })
 })
