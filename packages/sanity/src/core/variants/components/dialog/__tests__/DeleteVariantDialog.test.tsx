@@ -2,8 +2,8 @@ import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {variantsUsEnglishLocaleBundle} from '../../i18n'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {DeleteVariantDialog} from '../DeleteVariantDialog'
 
 describe('DeleteVariantDialog', () => {
@@ -66,11 +66,10 @@ describe('DeleteVariantDialog', () => {
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 
-  it('disables actions while deleting', async () => {
+  it('disables confirm and hides cancel while deleting', async () => {
     await renderDialog({isDeleting: true})
 
     expect(screen.getByTestId('confirm-button')).toBeDisabled()
-    expect(screen.getByTestId('cancel-button')).toBeDisabled()
-    expect(screen.getByTestId('cancel-button')).toBeInTheDocument()
+    expect(screen.queryByTestId('cancel-button')).not.toBeInTheDocument()
   })
 })
