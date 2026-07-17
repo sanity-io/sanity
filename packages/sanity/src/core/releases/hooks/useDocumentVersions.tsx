@@ -244,19 +244,12 @@ export function getOrCreateDocumentVersionsObservable(options: {
     documentPreviewStore.unstable_observeVersionDocumentIds(publishedId).pipe(
       swr(cacheKey),
       map(({value}) => value),
-      switchMap((documentIds): Observable<DocumentPerspectiveState> => {
+      switchMap((documentIds, index): Observable<DocumentPerspectiveState> => {
         if (documentIds.length === 0) {
           return of({data: [], versions: [], error: null, loading: false})
         }
 
-        const loadingState: DocumentPerspectiveState = {
-          data: documentIds,
-          versions: [],
-          error: null,
-          loading: true,
-        }
-
-        return combineLatest(
+        const versions$ = combineLatest(
           documentIds.map((id) =>
             documentPreviewStore.observePaths({_id: id}, DOCUMENT_STUB_PATHS).pipe(
               map((versionInfo) => (isRecord(versionInfo) ? versionInfo : undefined)),
@@ -279,8 +272,27 @@ export function getOrCreateDocumentVersionsObservable(options: {
             error: null,
             loading: false,
           })),
-          startWith(loadingState),
         )
+
+        // Only the pipeline's very first id-set emission is a cold start that must block
+        // with `loading: true` (it gates `useDocumentForm`'s `ready` state). Later id-set
+        // changes happen while the user is editing — e.g. the draft id appearing on the
+        // first keystroke in a new document, or publish swapping draft for published — and
+        // re-emitting `loading: true` then would flip the whole form read-only mid-typing,
+        // silently dropping keystrokes and DOM focus. Keep replaying the last loaded state
+        // until the fresh stubs arrive instead.
+        if (index > 0) {
+          return versions$
+        }
+
+        const loadingState: DocumentPerspectiveState = {
+          data: documentIds,
+          versions: [],
+          error: null,
+          loading: true,
+        }
+
+        return versions$.pipe(startWith(loadingState))
       }),
       catchError((error) => {
         return of({
