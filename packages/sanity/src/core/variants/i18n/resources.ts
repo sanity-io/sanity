@@ -211,6 +211,11 @@ const variantsLocaleStrings = {
   'dialog.create-set.action.generate_one': 'Generate {{count}} variant definition',
   /** Confirm action for the create variant set dialog (plural). */
   'dialog.create-set.action.generate_other': 'Generate {{count}} variant definitions',
+  /** Warning shown before generating an unusually large set. */
+  'dialog.create-set.large-set.warning':
+    'This creates {{count}} variant definitions, which is a lot at once. Double-check your dimensions before generating.',
+  /** Confirm action after the large-set warning has been shown. */
+  'dialog.create-set.action.generate-confirm': 'Generate anyway',
   /** Error toast title when generating a variant set fails. */
   'dialog.create-set.error.title': 'Unable to generate variant definitions',
   /** Result heading after a variant set is generated (singular). */

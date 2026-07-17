@@ -153,6 +153,41 @@ describe('CreateVariantSetDialog', () => {
     expect(screen.getByTestId('variant-set-form-name')).toHaveValue('Imported')
   })
 
+  it('requires a second confirmation before generating a very large set', async () => {
+    const user = userEvent.setup()
+    await renderDialog()
+
+    const values = Array.from({length: 11}, (_, index) => `v${index}`)
+    const file = new File(
+      [
+        JSON.stringify({
+          name: 'Big',
+          dimensions: [
+            {key: 'a', values},
+            {key: 'b', values},
+          ],
+        }),
+      ],
+      'big.json',
+      {type: 'application/json'},
+    )
+    await user.upload(screen.getByTestId('variant-set-file-input'), file)
+
+    await waitFor(() => {
+      expect(screen.getByTestId('variant-set-large-warning')).toBeInTheDocument()
+    })
+
+    const button = screen.getByTestId('generate-variant-set-button')
+    await user.click(button) // first click only arms
+    expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
+    await waitFor(() => expect(button).toHaveTextContent('Generate anyway'))
+
+    await user.click(button) // second click generates
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(121)
+    })
+  })
+
   it('keeps generate disabled until the set has a name', async () => {
     const user = userEvent.setup()
     await renderDialog()

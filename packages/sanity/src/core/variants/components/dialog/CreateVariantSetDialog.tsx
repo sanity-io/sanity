@@ -19,6 +19,10 @@ import {
 } from '../../util/variantSetPermutations'
 import {VariantSetForm} from './VariantSetForm'
 
+// Above this many permutations, generation asks for an extra confirmation so an accidental
+// combinatorial blow-up (a stray dimension) isn't created in one click.
+const LARGE_SET_THRESHOLD = 100
+
 interface CreateVariantSetDialogProps {
   onCancel: () => void
   onDone: () => void
@@ -36,6 +40,7 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
   const [showValidation, setShowValidation] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [generated, setGenerated] = useState<EditableSystemVariant[] | null>(null)
+  const [armedForLargeSet, setArmedForLargeSet] = useState(false)
   // Seed + remount key so importing a JSON file can repopulate the (locally-stateful) form.
   const [formSeed, setFormSeed] = useState<VariantSetDimension[] | undefined>(undefined)
   const [formKey, setFormKey] = useState(0)
@@ -43,6 +48,13 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
 
   const permutationCount = useMemo(() => countVariantSetPermutations(dimensions), [dimensions])
   const canGenerate = Boolean(name.trim()) && permutationCount > 0 && !dimensionsInvalid
+  const isLargeSet = permutationCount > LARGE_SET_THRESHOLD
+  const needsConfirmation = isLargeSet && !armedForLargeSet
+
+  const handleDimensionsChange = useCallback((next: VariantSetDimension[]) => {
+    setDimensions(next)
+    setArmedForLargeSet(false) // any edit re-arms the guardrail
+  }, [])
 
   const handleExport = useCallback(() => {
     const filename = `${name.trim() || 'variant-set'}.json`
@@ -68,6 +80,7 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
       }
       setDimensions(result.dimensions)
       setDimensionsInvalid(false)
+      setArmedForLargeSet(false)
       setFormSeed(result.dimensions)
       setFormKey((current) => current + 1)
     },
@@ -84,6 +97,11 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
 
       if (!canGenerate) {
         setShowValidation(true)
+        return
+      }
+
+      if (needsConfirmation) {
+        setArmedForLargeSet(true) // first click on a large set only arms; the next click generates
         return
       }
 
@@ -107,7 +125,7 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
         setIsGenerating(false)
       }
     },
-    [canGenerate, createVariant, dimensions, isGenerating, name, t, toast],
+    [canGenerate, createVariant, dimensions, isGenerating, name, needsConfirmation, t, toast],
   )
 
   if (generated) {
@@ -187,7 +205,7 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
               key={formKey}
               initialDimensions={formSeed}
               name={name}
-              onDimensionsChange={setDimensions}
+              onDimensionsChange={handleDimensionsChange}
               onDimensionsValidityChange={setDimensionsInvalid}
               onNameChange={setName}
               showValidation={showValidation}
@@ -259,6 +277,16 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
             </Text>
           </Card>
 
+          {isLargeSet && (
+            <Box paddingTop={3}>
+              <Card border padding={3} radius={2} tone="caution">
+                <Text data-testid="variant-set-large-warning" size={1}>
+                  {t('dialog.create-set.large-set.warning', {count: permutationCount})}
+                </Text>
+              </Card>
+            </Box>
+          )}
+
           <Flex gap={2} justify="flex-end" paddingTop={5}>
             <Button
               disabled={isGenerating}
@@ -272,12 +300,17 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
               disabled={!canGenerate || isGenerating}
               loading={isGenerating}
               size="large"
-              text={t(
-                permutationCount === 1
-                  ? 'dialog.create-set.action.generate_one'
-                  : 'dialog.create-set.action.generate_other',
-                {count: permutationCount},
-              )}
+              text={
+                armedForLargeSet
+                  ? t('dialog.create-set.action.generate-confirm')
+                  : t(
+                      permutationCount === 1
+                        ? 'dialog.create-set.action.generate_one'
+                        : 'dialog.create-set.action.generate_other',
+                      {count: permutationCount},
+                    )
+              }
+              tone={isLargeSet ? 'caution' : 'default'}
               type="submit"
             />
           </Flex>
