@@ -165,6 +165,7 @@ export function VariantsOverview() {
           icon={AddIcon}
           onClick={handleCreateVariant}
           text={t('overview.action.create-variant')}
+          tooltipProps={{content: t('overview.action.create-variant.tooltip')}}
         />
         <Button
           disabled={isCreateVariantSetDialogOpen}
@@ -172,6 +173,7 @@ export function VariantsOverview() {
           mode="ghost"
           onClick={handleCreateVariantSet}
           text={t('overview.action.create-variant-set')}
+          tooltipProps={{content: t('overview.action.create-variant-set.tooltip')}}
         />
       </Flex>
     ),
