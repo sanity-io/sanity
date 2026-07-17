@@ -26,6 +26,17 @@ export const PAGELOAD_THRESHOLDS: GateThresholds = {
 }
 
 /**
+ * INP: one value/session, so a per-PR A/B is coarse (see P2 doc) — kept
+ * report-only and never gates CI, so these floors are deliberately looser
+ * than pageload's to avoid reading session noise as a real regression.
+ */
+export const INP_THRESHOLDS: GateThresholds = {
+  absMs: 150,
+  rel: 0.15,
+  targetHalfWidthMs: 150,
+}
+
+/**
  * Verdict rule: a difference is real only when the CI excludes zero AND the
  * point estimate exceeds both threshold floors. `inconclusive` (CI too wide
  * to decide at these thresholds when the budget ran out) is distinct from

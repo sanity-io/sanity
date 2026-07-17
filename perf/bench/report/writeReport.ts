@@ -38,17 +38,53 @@ export function toAbsolute(run: BenchRunDocument): BenchRunDocument {
   }
 }
 
+interface ExpectedEntry {
+  missing: MissingScenario
+  /**
+   * The value a real report's `mode ?? kind` resolves to (mirrors the
+   * mergeShards dedup key). INP reports share `kind: 'pageload'` with plain
+   * pageload reports, so `kind` alone can't tell an expected INP scenario
+   * apart from an expected pageload one — this can.
+   */
+  reportKind: string
+}
+
 /**
  * CI passes the scenario sets it scheduled (comma-separated env vars, set in
  * bench.yml next to the shard matrix) so a shard that failed and uploaded no
  * result JSON is called out in the report instead of silently missing.
  */
-function expectedScenarios(value: string | undefined, kind: ScenarioReport['kind']) {
+function expectedEntries(
+  value: string | undefined,
+  kind: ScenarioReport['kind'],
+  reportKind: string = kind,
+): ExpectedEntry[] {
   return (value ?? '')
     .split(',')
     .map((name) => name.trim())
     .filter(Boolean)
-    .map((scenario): MissingScenario => ({scenario, kind}))
+    .map((scenario) => ({missing: {scenario, kind}, reportKind}))
+}
+
+function isReported(scenarios: ScenarioReport[], entry: ExpectedEntry): boolean {
+  return scenarios.some(
+    (scenario) =>
+      scenario.scenario === entry.missing.scenario &&
+      (scenario.mode ?? scenario.kind) === entry.reportKind,
+  )
+}
+
+export function computeMissingScenarios(
+  scenarios: ScenarioReport[],
+  expected: {interaction?: string; pageload?: string; inp?: string},
+): MissingScenario[] {
+  return [
+    ...expectedEntries(expected.interaction, 'interaction'),
+    ...expectedEntries(expected.pageload, 'pageload'),
+    ...expectedEntries(expected.inp, 'pageload', 'inp'),
+  ]
+    .filter((entry) => !isReported(scenarios, entry))
+    .map((entry) => entry.missing)
 }
 
 export function writeMergedReport(resultsDirArg?: string): void {
@@ -69,15 +105,11 @@ export function writeMergedReport(resultsDirArg?: string): void {
   )
   const merged = mergeShards(shards)
 
-  const missingScenarios = [
-    ...expectedScenarios(process.env.BENCH_EXPECTED_INTERACTION_SCENARIOS, 'interaction'),
-    ...expectedScenarios(process.env.BENCH_EXPECTED_PAGELOAD_SCENARIOS, 'pageload'),
-  ].filter(
-    (expected) =>
-      !merged.scenarios.some(
-        (scenario) => scenario.scenario === expected.scenario && scenario.kind === expected.kind,
-      ),
-  )
+  const missingScenarios = computeMissingScenarios(merged.scenarios, {
+    interaction: process.env.BENCH_EXPECTED_INTERACTION_SCENARIOS,
+    pageload: process.env.BENCH_EXPECTED_PAGELOAD_SCENARIOS,
+    inp: process.env.BENCH_EXPECTED_INP_SCENARIOS,
+  })
   // Marker for CI: a shard that dies without results (a job timeout
   // surfaces as "cancelled", which never turns the run red) must still fail
   // the check — but only AFTER the comment is posted, so the report job

@@ -60,6 +60,15 @@ export interface BenchScenario {
    * HEAD on both).
    */
   keystrokes?: {warmup?: number; measured?: number; burst?: number}
+  /**
+   * Declares which bench modes/schedules this scenario participates in.
+   * Absent (or a sub-field absent) means no participation — existing
+   * behaviour is unchanged until a scenario file sets this explicitly.
+   */
+  modes?: {
+    inp?: {perPr?: boolean; daily?: boolean}
+    pageload?: {sessions: number}
+  }
 }
 
 /** Where a step acts. Field selectors reuse the existing focusField/fieldInput logic. */

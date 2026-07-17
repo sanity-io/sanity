@@ -15,4 +15,5 @@ export const singleString = defineScenario({
     },
   ],
   interactions: [{fieldPath: 'stringField', kind: 'string'}],
+  modes: {inp: {perPr: true, daily: true}},
 })

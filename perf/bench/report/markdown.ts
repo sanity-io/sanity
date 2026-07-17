@@ -63,7 +63,11 @@ export function renderMarkdownReport(
   options: {missingScenarios?: MissingScenario[]} = {},
 ): string {
   const missing = options.missingScenarios ?? []
-  const regressed = run.scenarios.flatMap((scenario) =>
+  // Per-PR INP (mode `inp`) is report-only (see gate.ts's INP_THRESHOLDS) —
+  // its comparison must never feed the blocking regression/inconclusive
+  // headline, only its own informational line below.
+  const gatedScenarios = run.scenarios.filter((scenario) => scenario.mode !== 'inp')
+  const regressed = gatedScenarios.flatMap((scenario) =>
     scenario.metrics
       .filter((metric) => metric.comparison?.verdict === 'regression')
       .map((metric) => ({
@@ -74,7 +78,7 @@ export function renderMarkdownReport(
   // Inconclusive verdicts exist precisely so a too-noisy run never reads as a
   // pass — count them into the headline instead of hiding them behind
   // "no regressions"
-  const inconclusiveCount = run.scenarios.reduce(
+  const inconclusiveCount = gatedScenarios.reduce(
     (count, scenario) =>
       count +
       scenario.metrics.filter((metric) => metric.comparison?.verdict === 'inconclusive').length,
@@ -82,6 +86,17 @@ export function renderMarkdownReport(
   )
   const inconclusiveSuffix =
     inconclusiveCount > 0 ? ` (${inconclusiveCount} inconclusive — CI too wide to decide)` : ''
+
+  const inpLines = run.scenarios
+    .filter((scenario) => scenario.mode === 'inp')
+    .flatMap((scenario) =>
+      scenario.metrics
+        .filter((metric) => metric.comparison)
+        .map((metric) => {
+          const {diff, lo, hi, verdict} = metric.comparison!
+          return `- \`${scenario.scenario} · ${metric.label}\` ${formatDiff(diff)} [${formatDiff(lo)}, ${formatDiff(hi)}] (${verdict})`
+        }),
+    )
 
   const headline =
     run.mode === 'absolute'
@@ -106,6 +121,11 @@ export function renderMarkdownReport(
     '',
     headline,
     ...(regressionLines.length > 0 ? ['', ...regressionLines, '', regressionChart(regressed)] : []),
+    // Informational only — never folded into the headline/regression count
+    // above (see gatedScenarios)
+    ...(inpLines.length > 0
+      ? ['', 'ℹ️ **Per-PR INP** (report-only, not gated):', ...inpLines]
+      : []),
     // A failed shard uploads no results — say so loudly instead of staying
     // silent about a scenario that never ran
     ...(missing.length > 0
