@@ -196,6 +196,38 @@ describe('VariantDocumentsTable', () => {
     })
   })
 
+  it('groups documents into release swimlanes when toggled', async () => {
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    // Switch from the filter-tab lane to the grouped (swimlane) view.
+    await user.click(screen.getByTestId('variant-group-by-release-toggle'))
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('variant-release-lane')).not.toBeInTheDocument()
+    })
+
+    // One collapsible header per bundle (published + drafts), with document counts.
+    const headers = screen.getAllByTestId('variant-release-aggregate-toggle')
+    expect(headers).toHaveLength(2)
+    expect(screen.getByText('Published')).toBeInTheDocument()
+    expect(screen.getByText('Draft')).toBeInTheDocument()
+    expect(screen.getByText('1 document')).toBeInTheDocument()
+    expect(screen.getByText('2 documents')).toBeInTheDocument()
+
+    // Expanding the Published group reveals its one document.
+    await user.click(headers[0]!)
+
+    await waitFor(() => {
+      expect(screen.getByText('First article')).toBeInTheDocument()
+    })
+  })
+
   it('sorts grouped rows by document group id on first load', async () => {
     const rows: DocumentInVariantGroup[] = [
       {

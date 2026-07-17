@@ -1,6 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
@@ -41,10 +43,46 @@ const MemoDocumentType = memo(
   (prev, next) => prev.type === next.type,
 )
 
+function ReleaseAggregateHeader({
+  datum,
+  t,
+}: {
+  datum: DocumentInVariantGroup
+  t: TFunction<'variants'>
+}) {
+  return (
+    <Card
+      as="button"
+      data-testid="variant-release-aggregate-toggle"
+      onClick={datum.onToggleRelease}
+      padding={2}
+      radius={2}
+      tone="inherit"
+      type="button"
+    >
+      <Flex align="center" gap={2}>
+        <Text size={1}>{datum.isReleaseExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />}</Text>
+        <Text size={1} weight="medium">
+          {datum.releaseLabel}
+        </Text>
+        <Text muted size={1}>
+          {t(
+            datum.releaseCount === 1
+              ? 'detail.release-lane.group-count_one'
+              : 'detail.release-lane.group-count_other',
+            {count: datum.releaseCount ?? 0},
+          )}
+        </Text>
+      </Flex>
+    </Card>
+  )
+}
+
 export const getVariantDocumentTableColumnDefs = (
   t: TFunction<'variants'>,
   variantId: string | undefined,
   releasesById: Map<string, ReleaseDocument>,
+  grouped: boolean,
 ): Column<DocumentInVariantGroup>[] => [
   {
     id: 'documentGroup',
@@ -57,11 +95,15 @@ export const getVariantDocumentTableColumnDefs = (
     id: 'bundle',
     width: 140,
     style: {minWidth: 100, maxWidth: 140},
-    sorting: true,
+    sorting: !grouped,
     sortTransform: (row) => getRowBundleSortKey(row, releasesById),
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('detail.documents.table.appears-in')} {...props} />
+        {grouped ? (
+          <Headers.BasicHeader text={t('detail.documents.table.appears-in')} />
+        ) : (
+          <Headers.SortHeaderButton text={t('detail.documents.table.appears-in')} {...props} />
+        )}
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
@@ -71,7 +113,7 @@ export const getVariantDocumentTableColumnDefs = (
         style={{...cellProps.style, flex: '0 1 auto', minWidth: 0, overflow: 'hidden'}}
       >
         <Box flex={1} paddingX={2} style={{minWidth: 0, overflow: 'hidden'}}>
-          {!datum.isLoading && (
+          {!datum.isLoading && !datum.isReleaseAggregate && (
             <VariantDocumentBundleChips versions={datum.versions} releasesById={releasesById} />
           )}
         </Box>
@@ -82,16 +124,22 @@ export const getVariantDocumentTableColumnDefs = (
     id: 'document._type',
     width: 160,
     style: {minWidth: 120, maxWidth: 160},
-    sorting: true,
+    sorting: !grouped,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('detail.documents.table.type')} {...props} />
+        {grouped ? (
+          <Headers.BasicHeader text={t('detail.documents.table.type')} />
+        ) : (
+          <Headers.SortHeaderButton text={t('detail.documents.table.type')} {...props} />
+        )}
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
       <Flex align="center" {...cellProps}>
         <Box paddingX={2}>
-          {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
+          {!datum.isLoading && !datum.isReleaseAggregate && (
+            <MemoDocumentType type={datum.document._type} />
+          )}
         </Box>
       </Flex>
     ),
@@ -109,7 +157,9 @@ export const getVariantDocumentTableColumnDefs = (
     ),
     cell: ({cellProps, datum}) => (
       <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
-        {datum.isLoading ? (
+        {datum.isReleaseAggregate ? (
+          <ReleaseAggregateHeader datum={datum} t={t} />
+        ) : datum.isLoading ? (
           <SanityDefaultPreview isPlaceholder />
         ) : (
           <MemoVariantDocumentPreview row={datum} variantId={variantId} />
@@ -119,16 +169,20 @@ export const getVariantDocumentTableColumnDefs = (
   },
   {
     id: 'document._updatedAt',
-    sorting: true,
+    sorting: !grouped,
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('detail.documents.table.edited')} {...props} />
+        {grouped ? (
+          <Headers.BasicHeader text={t('detail.documents.table.edited')} />
+        ) : (
+          <Headers.SortHeaderButton text={t('detail.documents.table.edited')} {...props} />
+        )}
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
       <Flex {...cellProps} align="center" paddingX={2} paddingY={3} style={{minWidth: 130}}>
-        {!datum.isLoading && datum.document._updatedAt && (
+        {!datum.isLoading && !datum.isReleaseAggregate && datum.document._updatedAt && (
           <Text muted size={1}>
             <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
           </Text>
@@ -146,7 +200,7 @@ export const getVariantDocumentTableColumnDefs = (
       </Flex>
     ),
     cell: ({cellProps, datum}) => {
-      if (datum.isLoading) return null
+      if (datum.isLoading || datum.isReleaseAggregate) return null
 
       const validationErrorCount = datum.validation.validation.filter(
         (validation) => validation.level === 'error',
