@@ -65,7 +65,7 @@ switch (result.action) {
     await (await import('../runner/devServer')).startBenchDev(result.scenario)
     break
   case 'scenarios':
-    listScenarios(result.json)
+    listScenarios(result.json, result.mode, result.schedule)
     break
   case 'prepare-reference':
     prepareReference(result)

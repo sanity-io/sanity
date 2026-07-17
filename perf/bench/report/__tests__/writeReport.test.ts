@@ -3,7 +3,7 @@ import {describe, expect, it} from 'vitest'
 import {mergeShards} from '../mergeShards'
 import {documentIdForRun} from '../storeToSanity'
 import {type BenchRunDocument, type MetricReport, type ScenarioReport} from '../types'
-import {toAbsolute} from '../writeReport'
+import {computeMissingScenarios, toAbsolute} from '../writeReport'
 
 const AB_METRIC: MetricReport = {
   label: 'stringField',
@@ -134,36 +134,36 @@ describe('toAbsolute', () => {
   })
 })
 
+const scenarioReport = (
+  scenarioName: string,
+  kind: ScenarioReport['kind'],
+  mode?: ScenarioReport['mode'],
+): ScenarioReport => ({
+  scenario: scenarioName,
+  kind,
+  ...(mode ? {mode} : {}),
+  metrics: [],
+  failures: [],
+  interruptions: {experiment: {count: 0, totalMs: 0}},
+  loafAttribution: [],
+})
+
 describe('mergeShards', () => {
   const shard = (scenario: ScenarioReport): BenchRunDocument => ({
     ...AB_RUN,
     mode: 'absolute',
     scenarios: [scenario],
   })
-  const report = (
-    scenarioName: string,
-    kind: ScenarioReport['kind'],
-    mode?: ScenarioReport['mode'],
-  ): ScenarioReport => ({
-    scenario: scenarioName,
-    kind,
-    ...(mode ? {mode} : {}),
-    metrics: [],
-    failures: [],
-    interruptions: {experiment: {count: 0, totalMs: 0}},
-    loafAttribution: [],
-  })
-
   it('merges a track-main set without colliding soak/inp against interaction/pageload', () => {
     // The daily cron produces all four for the same scenario: interaction,
     // pageload, soak (kind interaction), inp (kind pageload). Before `mode`
     // disambiguated the key, soak collided with interaction and inp with
     // pageload, and the merge threw — storing nothing.
     const merged = mergeShards([
-      shard(report('singleString', 'interaction')),
-      shard(report('singleString', 'pageload')),
-      shard(report('singleString', 'interaction', 'soak')),
-      shard(report('singleString', 'pageload', 'inp')),
+      shard(scenarioReport('singleString', 'interaction')),
+      shard(scenarioReport('singleString', 'pageload')),
+      shard(scenarioReport('singleString', 'interaction', 'soak')),
+      shard(scenarioReport('singleString', 'pageload', 'inp')),
     ])
     expect(merged.scenarios).toHaveLength(4)
   })
@@ -171,8 +171,8 @@ describe('mergeShards', () => {
   it('still rejects a genuinely duplicated shard (same mode + scenario)', () => {
     expect(() =>
       mergeShards([
-        shard(report('singleString', 'interaction')),
-        shard(report('singleString', 'interaction')),
+        shard(scenarioReport('singleString', 'interaction')),
+        shard(scenarioReport('singleString', 'interaction')),
       ]),
     ).toThrow(/duplicate/)
   })
@@ -202,5 +202,46 @@ describe('documentIdForRun', () => {
       runner: {...AB_RUN.runner, runId: undefined},
     }
     expect(documentIdForRun(localRun)).toBe('benchRun-abcdef1234567890-local')
+  })
+})
+
+describe('computeMissingScenarios', () => {
+  // INP reports share `kind: 'pageload'` with plain pageload reports (see
+  // ScenarioReport.mode) — the guard must key off `mode` too, or a dead INP
+  // shard passes silently and a dead pageload shard could false-match an INP
+  // expectation.
+
+  it('reports nothing missing when the expected inp scenario is present', () => {
+    const missing = computeMissingScenarios([scenarioReport('commentsField', 'pageload', 'inp')], {
+      inp: 'commentsField',
+    })
+    expect(missing).toEqual([])
+  })
+
+  it('fails loud when an expected inp scenario is absent', () => {
+    const missing = computeMissingScenarios([], {inp: 'commentsField'})
+    expect(missing).toEqual([{scenario: 'commentsField', kind: 'pageload'}])
+  })
+
+  it('does not let a plain pageload report satisfy an inp expectation', () => {
+    const missing = computeMissingScenarios([scenarioReport('commentsField', 'pageload')], {
+      inp: 'commentsField',
+    })
+    expect(missing).toEqual([{scenario: 'commentsField', kind: 'pageload'}])
+  })
+
+  it('does not let an inp report satisfy a plain pageload expectation', () => {
+    const missing = computeMissingScenarios([scenarioReport('commentsField', 'pageload', 'inp')], {
+      pageload: 'commentsField',
+    })
+    expect(missing).toEqual([{scenario: 'commentsField', kind: 'pageload'}])
+  })
+
+  it('still guards interaction and pageload scenarios unchanged', () => {
+    const missing = computeMissingScenarios(
+      [scenarioReport('singleString', 'interaction'), scenarioReport('article', 'pageload')],
+      {interaction: 'singleString', pageload: 'article'},
+    )
+    expect(missing).toEqual([])
   })
 })

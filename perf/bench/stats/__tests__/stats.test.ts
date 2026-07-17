@@ -1,7 +1,13 @@
 import {describe, expect, it} from 'vitest'
 
 import {bootstrapDiffOfMedians, type DiffInterval} from '../bootstrap'
-import {gate, INTERACTION_THRESHOLDS, PAGELOAD_THRESHOLDS, shouldStop} from '../gate'
+import {
+  gate,
+  INP_THRESHOLDS,
+  INTERACTION_THRESHOLDS,
+  PAGELOAD_THRESHOLDS,
+  shouldStop,
+} from '../gate'
 import {median, quantile, summarize} from '../quantiles'
 import {mulberry32, type Rng} from '../rng'
 
@@ -247,6 +253,27 @@ describe('gate', () => {
         }
       }
     }
+  })
+})
+
+describe('INP_THRESHOLDS (report-only signal, never gates CI)', () => {
+  it('reads a small delta within the loose floors as not a regression', () => {
+    // referenceMedian 300: minimumEffect = max(150, 0.15·300) = 150. A 40ms
+    // delta stays well inside that even with a fairly tight CI.
+    expect(gate(interval(40, 10, 70), 300, INP_THRESHOLDS)).not.toBe('regression')
+    expect(gate(interval(40, 10, 70), 300, INP_THRESHOLDS)).toBe('neutral')
+  })
+
+  it('flags a regression only once a large delta clears both floors with a CI excluding zero', () => {
+    // Diff 200ms clears both the absolute (150) and relative (0.15·300 = 45)
+    // floors, and the CI [120, 280] excludes zero.
+    expect(gate(interval(200, 120, 280), 300, INP_THRESHOLDS)).toBe('regression')
+  })
+
+  it('is looser than PAGELOAD_THRESHOLDS, matching the report-only rationale', () => {
+    expect(INP_THRESHOLDS.absMs).toBeGreaterThan(PAGELOAD_THRESHOLDS.absMs)
+    expect(INP_THRESHOLDS.rel).toBeGreaterThan(PAGELOAD_THRESHOLDS.rel)
+    expect(INP_THRESHOLDS.targetHalfWidthMs).toBeGreaterThan(PAGELOAD_THRESHOLDS.targetHalfWidthMs)
   })
 })
 

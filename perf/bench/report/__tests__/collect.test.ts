@@ -3,8 +3,9 @@ import process from 'node:process'
 
 import {afterEach, beforeEach, describe, expect, it} from 'vitest'
 
+import {type InpSessionResult} from '../../runner/session/inp'
 import {type PageLoadSample} from '../../runner/session/pageLoad'
-import {collectPageLoad, collectRunMetadata} from '../collect'
+import {collectInp, collectPageLoad, collectRunMetadata} from '../collect'
 
 const ENV_KEYS = [
   'GITHUB_SHA',
@@ -157,5 +158,49 @@ describe('collectPageLoad', () => {
       'boot-cold · auth round trips',
       'boot-cold · auth in flight',
     ])
+  })
+})
+
+function inpSession(inpMs: number, interactionCount = 60): InpSessionResult {
+  return {
+    inpMs,
+    interactionCount,
+    reportable: true,
+    latencies: [inpMs],
+    readOnlyInterruptions: {count: 0, totalMs: 0},
+  }
+}
+
+describe('collectInp', () => {
+  it('attaches reference and comparison to the INP metric only, when both are given', () => {
+    const report = collectInp(
+      'commentsField',
+      [inpSession(300), inpSession(340)],
+      'perf/bench/scenarios/commentsField.ts',
+      [inpSession(200), inpSession(220)],
+      {
+        interval: {diff: 110, lo: 40, hi: 180, level: 0.95, iterations: 2000},
+        verdict: 'regression',
+      },
+    )
+    const inp = report.metrics.find((metric) => metric.label === 'INP')!
+    const interactions = report.metrics.find((metric) => metric.label === 'INP interactions')!
+
+    expect(inp.reference?.summary.median).toBe(210)
+    expect(inp.comparison).toMatchObject({diff: 110, lo: 40, hi: 180, verdict: 'regression'})
+    expect(interactions.reference).toBeUndefined()
+    expect(interactions.comparison).toBeUndefined()
+  })
+
+  it('carries no reference/comparison keys at all when omitted (absolute-mode run)', () => {
+    const report = collectInp(
+      'commentsField',
+      [inpSession(300), inpSession(340)],
+      'perf/bench/scenarios/commentsField.ts',
+    )
+    const inp = report.metrics.find((metric) => metric.label === 'INP')!
+    expect('reference' in inp).toBe(false)
+    expect('comparison' in inp).toBe(false)
+    expect(report.interruptions).toEqual({experiment: {count: 0, totalMs: 0}})
   })
 })

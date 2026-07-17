@@ -284,6 +284,8 @@ jobs:
             sessions: 8
           - scenario: syntheticLarge
             sessions: 3
+          - scenario: commentsField
+            sessions: 3
     steps:
       - uses: actions/checkout@v7
         with:
@@ -355,8 +357,132 @@ jobs:
           overwrite: true
           retention-days: 30
 
+  bench-inp-scenarios:
+    # Enumerates the scenarios declaring `modes.inp.perPr` (perf/bench/scenarios/*)
+    # so bench-inp's matrix and the report job's BENCH_EXPECTED_INP_SCENARIOS
+    # derive from scenario metadata instead of a hand-typed list. PR-only, like
+    # bench-inp and report - daily inp is track-main's job.
+    needs: [build]
+    if: >-
+      !cancelled() && needs.build.result == 'success' &&
+      github.event_name == 'pull_request' &&
+      needs.build.outputs.has_code_changes == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      scenarios_json: ${{ steps.list.outputs.json }}
+      scenarios_csv: ${{ steps.list.outputs.csv }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Enumerate per-PR inp scenarios
+        id: list
+        run: |
+          JSON=$(pnpm --silent bench scenarios --mode inp --json)
+          echo "json=$JSON" >> "$GITHUB_OUTPUT"
+          echo "csv=$(echo "$JSON" | jq -r 'join(",")')" >> "$GITHUB_OUTPUT"
+
+  bench-inp:
+    needs: [build, build-reference, bench-inp-scenarios]
+    # PR-only: per-PR INP is an A/B vs merge-base (build-reference runs on PRs).
+    # Daily/absolute INP is track-main's job, so running here on schedule would
+    # only duplicate it and orphan the artifacts (report is PR-only).
+    if: >-
+      !cancelled() && needs.build.result == 'success' &&
+      github.event_name == 'pull_request' &&
+      needs.build.outputs.has_code_changes == 'true'
+    runs-on: ubuntu-8core
+    # One value per session (not multiple samples like pageload), so the A/B
+    # bootstrap needs more sessions/side for power - 8/side, matrix-sharded so
+    # wall-clock per shard stays comfortably under this budget (P1 §3).
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # One shard per scenario, sourced from bench-inp-scenarios (derived
+        # from scenario `modes.inp.perPr` metadata) instead of a hand-typed list.
+        scenario: ${{ fromJSON(needs.bench-inp-scenarios.outputs.scenarios_json || '[]') }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps
+
+      # Chromium on Linux validates TLS against the NSS store; the SPKI
+      # allowlist launch flag used locally is not reliably honored here, and
+      # a bypassed-instead-of-valid cert disables the browser HTTP cache
+      # (breaking warm-load measurements) - so import the bench cert properly
+      - name: Trust the bench TLS certificate
+        run: |
+          command -v certutil >/dev/null || sudo apt-get install -y -qq libnss3-tools >/dev/null
+          CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
+          mkdir -p "$HOME/.pki/nssdb"
+          certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
+          certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: bench-dist-experiment
+          path: perf/bench/dist
+
+      - uses: actions/download-artifact@v8
+        if: needs.build-reference.outputs.comparison == 'ab'
+        with:
+          name: bench-dist-reference
+          path: perf/bench/.reference/dist
+
+      - name: Run INP benchmark
+        env:
+          SCENARIO: ${{ matrix.scenario }}
+          COMPARISON: ${{ needs.build-reference.outputs.comparison }}
+          BENCH_MERGE_BASE: ${{ needs.build-reference.outputs.merge_base }}
+        run: |
+          REFERENCE_ARGS=""
+          if [ "$COMPARISON" = "ab" ]; then
+            REFERENCE_ARGS="--reference-dist $GITHUB_WORKSPACE/perf/bench/.reference/dist"
+          fi
+          # shellcheck disable=SC2086
+          pnpm bench run --mode inp --scenario "$SCENARIO" --sessions 8 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__inp-$SCENARIO.json" \
+            $REFERENCE_ARGS
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-results-inp-${{ matrix.scenario }}
+          path: perf/bench/results/
+          overwrite: true
+          retention-days: 30
+
   report:
-    needs: [build-reference, bench-interaction, bench-pageload]
+    needs: [build-reference, bench-interaction, bench-pageload, bench-inp-scenarios, bench-inp]
     if: >-
       !cancelled() &&
       github.event_name == 'pull_request' &&
@@ -386,9 +512,12 @@ jobs:
           # A failed shard uploads no result JSON; the report must say so
           # instead of rendering a clean table with a scenario silently
           # missing. Keep in sync with the bench-interaction matrix and the
-          # bench-pageload --scenario flags above.
+          # bench-pageload --scenario flags above. INP's list is NOT
+          # hand-typed - it comes from bench-inp-scenarios (scenario
+          # `modes.inp.perPr` metadata), the same source as bench-inp's matrix.
           BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
-          BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge
+          BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge,commentsField
+          BENCH_EXPECTED_INP_SCENARIOS: ${{ needs.bench-inp-scenarios.outputs.scenarios_csv }}
         run: pnpm bench report
 
       # Always posted/updated in place - all-neutral is information, silence
@@ -637,9 +766,21 @@ jobs:
           pnpm bench run --mode soak --scenario singleString --minutes 10 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__soak.json"
 
-      - name: Run INP benchmarks
+      # singleString/commentsField come from scenario `modes.inp.daily` metadata
+      # (same source bench-inp-scenarios uses for the per-PR list) - only
+      # `article` is still hand-flagged, since it doesn't declare `modes` yet.
+      - name: Compute daily inp scenario args
+        id: inp-scenarios
         run: |
-          pnpm bench run --mode inp --scenario singleString --scenario article --scenario commentsField --sessions 4 \
+          JSON=$(pnpm --silent bench scenarios --mode inp --schedule daily --json)
+          echo "args=$(echo "$JSON" | jq -r '.[] | "--scenario " + .' | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+
+      - name: Run INP benchmarks
+        env:
+          INP_SCENARIO_ARGS: ${{ steps.inp-scenarios.outputs.args }}
+        run: |
+          # shellcheck disable=SC2086
+          pnpm bench run --mode inp $INP_SCENARIO_ARGS --scenario article --sessions 4 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__inp.json"
 
       - name: Merge report

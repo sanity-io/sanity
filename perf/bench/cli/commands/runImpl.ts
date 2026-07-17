@@ -14,6 +14,7 @@ import {
   collectInp,
   collectPageLoad,
   collectRunMetadata,
+  type InpComparison,
 } from '../../report/collect'
 import {type BenchRunDocument, type ScenarioReport} from '../../report/types'
 import {calibrateHost, launchBrowser} from '../../runner/browser'
@@ -36,7 +37,7 @@ import {
 } from '../../runner/session/pageLoad'
 import {getScenario, SCENARIOS} from '../../scenarios'
 import {bootstrapDiffOfMedians} from '../../stats/bootstrap'
-import {gate, PAGELOAD_THRESHOLDS} from '../../stats/gate'
+import {gate, INP_THRESHOLDS, PAGELOAD_THRESHOLDS} from '../../stats/gate'
 import {summarize} from '../../stats/quantiles'
 import {mulberry32} from '../../stats/rng'
 import {resolveFromInvocation} from '../benchRoot'
@@ -170,31 +171,71 @@ export async function runBench(argv: RunArgs): Promise<void> {
       }
     } else if (argv.mode === 'inp') {
       for (const scenario of scenarios) {
-        console.log(`\n${chalk.cyan(scenario.name)} — INP, ${argv.sessions} session(s)`)
-        const results: InpSessionResult[] = []
+        console.log(`\n${chalk.cyan(scenario.name)} — INP, ${argv.sessions} session(s)/side`)
+        const sides: {name: 'reference' | 'experiment'; side: typeof running}[] = reference
+          ? [
+              {name: 'reference', side: reference},
+              {name: 'experiment', side: running},
+            ]
+          : [{name: 'experiment', side: running}]
+        const bySide = new Map<string, InpSessionResult[]>()
+
         for (let i = 0; i < argv.sessions; i++) {
-          const result = await withSessionRetries(scenario.name, () =>
-            runInpSession({
-              browser,
-              running,
-              scenario,
-              instrumentation,
-              config: {cpuThrottleRate: argv.throttle},
-            }),
-          )
-          results.push(result)
-          console.log(
-            `  session ${i + 1}/${argv.sessions}: INP ${result.inpMs.toFixed(0)}ms ` +
-              `across ${result.interactionCount} interactions` +
-              `${result.reportable ? '' : chalk.yellow(' (below reportable interaction count)')}`,
-          )
+          // Alternate which side samples first each pair — same bias-control
+          // rationale as the pageLoad A/B loop below.
+          const ordered = i % 2 === 0 ? sides : sides.toReversed()
+          for (const {name, side} of ordered) {
+            const result = await withSessionRetries(`${scenario.name} ${name}`, () =>
+              runInpSession({
+                browser,
+                running: side,
+                scenario,
+                instrumentation,
+                config: {cpuThrottleRate: argv.throttle},
+              }),
+            )
+            bySide.set(name, [...(bySide.get(name) ?? []), result])
+            console.log(
+              `  session ${i + 1}/${argv.sessions} ${name}: INP ${result.inpMs.toFixed(0)}ms ` +
+                `across ${result.interactionCount} interactions` +
+                `${result.reportable ? '' : chalk.yellow(' (below reportable interaction count)')}`,
+            )
+          }
         }
-        const inpValues = results.map((result) => result.inpMs)
+
+        const experimentResults = bySide.get('experiment') ?? []
+        const inpValues = experimentResults.map((result) => result.inpMs)
         console.log(
           `  ${chalk.bold('INP')} (experiment): p50 ${summarize(inpValues).median.toFixed(0)}ms ` +
-            `across ${results.length} session(s)`,
+            `across ${experimentResults.length} session(s)`,
         )
-        scenarioReports.push(collectInp(scenario.name, results, scenario.sourceFile))
+
+        const referenceResults = bySide.get('reference')
+        let comparison: InpComparison | undefined
+        if (referenceResults && referenceResults.length > 0) {
+          const interval = bootstrapDiffOfMedians({
+            aSessions: referenceResults.map((result) => [result.inpMs]),
+            bSessions: experimentResults.map((result) => [result.inpMs]),
+            rng: mulberry32(argv.seed),
+          })
+          const referenceMedian = summarize(referenceResults.map((result) => result.inpMs)).median
+          const verdict = gate(interval, referenceMedian, INP_THRESHOLDS)
+          comparison = {interval, verdict}
+          console.log(
+            `  ${chalk.bold('INP')}: reference ${referenceMedian.toFixed(0)}ms → ` +
+              `Δ ${formatDiff(interval.diff)} [${formatDiff(interval.lo)}, ${formatDiff(interval.hi)}] ${VERDICT_ICON[verdict]}`,
+          )
+        }
+
+        scenarioReports.push(
+          collectInp(
+            scenario.name,
+            experimentResults,
+            scenario.sourceFile,
+            referenceResults,
+            comparison,
+          ),
+        )
       }
     } else if (argv.mode === 'pageload') {
       const sizes = await measureBundleSize(dist)

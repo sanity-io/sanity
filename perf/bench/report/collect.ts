@@ -212,26 +212,67 @@ export function collectAbsoluteInteraction(
   }
 }
 
+function sumReadOnlyInterruptions(sessions: InpSessionResult[]): {count: number; totalMs: number} {
+  return sessions.reduce(
+    (acc, session) => ({
+      count: acc.count + session.readOnlyInterruptions.count,
+      totalMs: acc.totalMs + session.readOnlyInterruptions.totalMs,
+    }),
+    {count: 0, totalMs: 0},
+  )
+}
+
+export interface InpComparison {
+  interval: DiffInterval
+  verdict: Verdict
+}
+
 /**
  * INP sessions → scenario report. INP is a Core Web Vital, reported (not
  * gated) during burn-in like the other vitals; each session contributes one
  * INP value. Filed under `pageload` kind so the dashboard groups it with the
  * load vitals (see the dashboard's describeSeries), and the interaction-count
  * row travels alongside so a low-confidence INP (few interactions) is visible.
+ *
+ * `referenceSessions`/`comparison` are only present for a per-PR A/B run
+ * (report-only — see gate.ts's INP_THRESHOLDS); the comparison is attached to
+ * the `INP` metric only, never to `INP interactions`, so the interaction-count
+ * context row stays silent in the PR comment either way.
  */
 export function collectInp(
   scenario: string,
   sessions: InpSessionResult[],
   sourceFile?: string,
+  referenceSessions?: InpSessionResult[],
+  comparison?: InpComparison,
 ): ScenarioReport {
   const inpValues = sessions.map((session) => [session.inpMs])
   const interactionCounts = sessions.map((session) => [session.interactionCount])
+  const referenceInpValues = referenceSessions?.map((session) => [session.inpMs])
   const metrics: MetricReport[] = [
     {
       label: 'INP',
       unit: 'ms',
       presentAsEfps: false,
       experiment: {sessions: inpValues, summary: summarize(inpValues.flat())},
+      ...(referenceInpValues && referenceInpValues.length > 0
+        ? {
+            reference: {
+              sessions: referenceInpValues,
+              summary: summarize(referenceInpValues.flat()),
+            },
+          }
+        : {}),
+      ...(comparison
+        ? {
+            comparison: {
+              diff: comparison.interval.diff,
+              lo: comparison.interval.lo,
+              hi: comparison.interval.hi,
+              verdict: comparison.verdict,
+            },
+          }
+        : {}),
     },
     {
       label: 'INP interactions',
@@ -253,13 +294,10 @@ export function collectInp(
     metrics,
     failures: [],
     interruptions: {
-      experiment: sessions.reduce(
-        (acc, session) => ({
-          count: acc.count + session.readOnlyInterruptions.count,
-          totalMs: acc.totalMs + session.readOnlyInterruptions.totalMs,
-        }),
-        {count: 0, totalMs: 0},
-      ),
+      experiment: sumReadOnlyInterruptions(sessions),
+      ...(referenceSessions && referenceSessions.length > 0
+        ? {reference: sumReadOnlyInterruptions(referenceSessions)}
+        : {}),
     },
     loafAttribution: [],
   }

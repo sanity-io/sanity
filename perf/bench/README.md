@@ -92,8 +92,19 @@ Useful `bench run` flags: `--headed`, `--throttle 1` (disable CPU throttle), `--
 
 1. Schema: `studio/schemas/<name>.ts` exporting a workspace partial; register in `sanity.config.ts`.
 2. Scenario: `scenarios/<name>.ts` via `defineScenario` — deterministic fixture (use `scenarios/fixtures/prng.ts`, never `Math.random`), `interactions` (fields to type into; `kind: 'pte'` for Portable Text; `readbackText` if the value isn't a plain string at the field path), seeded image assets if needed (`cdn.sanity.io/images/*` is served a constant PNG by the route guard).
-3. Register in `scenarios/index.ts`; add the scenario to the `bench-interaction` matrix in `.github/workflows/bench.yml`.
-4. Verify: one absolute session passes with no failures — readback, console errors, hermeticity and endpoint drift are all hard session failures.
+3. Register in `scenarios/index.ts`.
+4. Declare `modes` on the scenario to opt into CI's bench modes. This is the single source of truth, so nothing else needs hand-editing:
+   - `modes.inp.perPr`: measured per PR (A/B, 8 sessions/side, report-only).
+   - `modes.inp.daily`: measured on the daily/track-main run.
+   - `modes.pageload` (`{sessions: N}`): add the scenario to the `bench-pageload` matrix in `.github/workflows/bench.yml` with that session count - `modes.pageload` itself only declares participation, not the count CI uses.
+   - `bench scenarios --mode inp [--schedule daily] --json` derives the per-PR/daily scenario lists straight from this metadata. The CI matrix (`bench-inp-scenarios`) and the report job's expected-scenario guard (`BENCH_EXPECTED_INP_SCENARIOS`) both read it, so adding a scenario to inp is a one-line `modes` edit, never a `bench.yml` matrix edit.
+5. Verify: one absolute session passes with no failures - readback, console errors, hermeticity and endpoint drift are all hard session failures.
+
+`commentsField` is the canonical worked example: `modes: {inp: {perPr: true, daily: true}, pageload: {sessions: 3}}`. It is measured by INP (per-PR A/B plus daily) and by pageload (the other vitals), deliberately not by eFPS - its interesting behaviour is the hover-gated comment composer, a component interaction rather than steady typing (see `scenarios/commentsField.ts` and `mock-api/features/comments.ts`).
+
+Per-PR INP is report-only, never gated: it's one INP value per session, so an 8/side A/B is coarse (`stats/gate.ts`'s `INP_THRESHOLDS` are deliberately looser than the pageload floors - see the comment there for the rationale). Treat it as a signal to investigate, not a pass/fail check.
+
+eFPS (`bench-interaction`, the per-keystroke latency mode) is legacy and being retired in favor of INP + pageload. Do not add new scenarios to its matrix.
 
 ## Adding a feature module
 

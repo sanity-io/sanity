@@ -15,4 +15,5 @@ export const commentsField = defineScenario({
   ],
   interactions: [{fieldPath: 'stringField', kind: 'string'}],
   steps: addCommentSteps('stringField'),
+  modes: {inp: {perPr: true, daily: true}, pageload: {sessions: 3}},
 })

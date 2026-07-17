@@ -242,6 +242,36 @@ describe('renderMarkdownReport', () => {
     expect(renderMarkdownReport(RUN)).not.toContain('Missing results')
   })
 
+  it('renders a report-only INP comparison as informational, never as a blocking regression', () => {
+    const withInp: BenchRunDocument = {
+      ...RUN,
+      scenarios: [
+        {
+          ...RUN.scenarios[0],
+          metrics: [metric('stringField', {experiment: 32, reference: 32}, 'neutral')],
+        },
+        {
+          scenario: 'commentsField',
+          kind: 'pageload',
+          mode: 'inp',
+          metrics: [metric('INP', {experiment: 420, reference: 260}, 'regression', false)],
+          failures: [],
+          interruptions: {experiment: {count: 0, totalMs: 0}},
+          loafAttribution: [],
+        },
+      ],
+    }
+    const report = renderMarkdownReport(withInp)
+    // The headline stays clean — a report-only INP swing must never flip it
+    expect(report).toContain('✅ no regressions')
+    expect(report).not.toContain('🔴')
+    expect(report).not.toContain('regression(s)')
+    // ...but the delta still surfaces, decoupled, as informational context
+    expect(report).toContain('ℹ️ **Per-PR INP** (report-only, not gated):')
+    expect(report).toContain('`commentsField · INP` +160.0ms')
+    expect(report).toContain('(regression)')
+  })
+
   it('renders absolute mode without comparison columns', () => {
     const absolute: BenchRunDocument = {
       ...RUN,
