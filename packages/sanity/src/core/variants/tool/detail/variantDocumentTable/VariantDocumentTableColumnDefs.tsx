@@ -48,6 +48,8 @@ const MemoDocumentType = memo(
   (prev, next) => prev.type === next.type,
 )
 
+// The whole row is made clickable + toned via the table's rowProps; this is just the label content,
+// rendered in the first column and allowed to overflow so it reads as a full-width section divider.
 function ReleaseAggregateHeader({
   datum,
   t,
@@ -56,30 +58,26 @@ function ReleaseAggregateHeader({
   t: TFunction<'variants'>
 }) {
   return (
-    <Card
-      as="button"
+    <Flex
+      align="center"
       data-testid="variant-release-aggregate-toggle"
-      onClick={datum.onToggleRelease}
-      padding={2}
-      radius={2}
-      tone="inherit"
-      type="button"
+      gap={2}
+      paddingX={2}
+      style={{whiteSpace: 'nowrap'}}
     >
-      <Flex align="center" gap={2}>
-        <Text size={1}>{datum.isReleaseExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />}</Text>
-        <Text size={1} weight="medium">
-          {datum.releaseLabel}
-        </Text>
-        <Text muted size={1}>
-          {t(
-            datum.releaseCount === 1
-              ? 'detail.release-lane.group-count_one'
-              : 'detail.release-lane.group-count_other',
-            {count: datum.releaseCount ?? 0},
-          )}
-        </Text>
-      </Flex>
-    </Card>
+      <Text size={1}>{datum.isReleaseExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />}</Text>
+      <Text size={1} weight="semibold">
+        {datum.releaseLabel}
+      </Text>
+      <Text muted size={1}>
+        {t(
+          datum.releaseCount === 1
+            ? 'detail.release-lane.group-count_one'
+            : 'detail.release-lane.group-count_other',
+          {count: datum.releaseCount ?? 0},
+        )}
+      </Text>
+    </Flex>
   )
 }
 
@@ -112,19 +110,34 @@ export const getVariantDocumentTableColumnDefs = (
         )}
       </Flex>
     ),
-    cell: ({cellProps, datum}) => (
-      <Flex
-        align="center"
-        {...cellProps}
-        style={{...cellProps.style, flex: '0 1 auto', minWidth: 0, overflow: 'hidden'}}
-      >
-        <Box flex={1} paddingX={2} style={{minWidth: 0, overflow: 'hidden'}}>
-          {!datum.isLoading && !datum.isReleaseAggregate && (
-            <VariantDocumentBundleChips versions={datum.versions} releasesById={releasesById} />
-          )}
-        </Box>
-      </Flex>
-    ),
+    cell: ({cellProps, datum}) => {
+      // Aggregate header renders here (first column) and is allowed to overflow across the empty
+      // cells so the gray, full-row-clickable header reads as a section divider.
+      if (datum.isReleaseAggregate) {
+        return (
+          <Flex
+            align="center"
+            {...cellProps}
+            style={{...cellProps.style, minWidth: 0, overflow: 'visible'}}
+          >
+            <ReleaseAggregateHeader datum={datum} t={t} />
+          </Flex>
+        )
+      }
+      return (
+        <Flex
+          align="center"
+          {...cellProps}
+          style={{...cellProps.style, flex: '0 1 auto', minWidth: 0, overflow: 'hidden'}}
+        >
+          <Box style={{minWidth: 0, overflow: 'hidden'}} paddingX={2}>
+            {!datum.isLoading && (
+              <VariantDocumentBundleChips versions={datum.versions} releasesById={releasesById} />
+            )}
+          </Box>
+        </Flex>
+      )
+    },
   },
   {
     id: 'document._type',
@@ -163,9 +176,7 @@ export const getVariantDocumentTableColumnDefs = (
     ),
     cell: ({cellProps, datum}) => (
       <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
-        {datum.isReleaseAggregate ? (
-          <ReleaseAggregateHeader datum={datum} t={t} />
-        ) : datum.isLoading ? (
+        {datum.isReleaseAggregate ? null : datum.isLoading ? (
           <SanityDefaultPreview isPlaceholder />
         ) : (
           <MemoVariantDocumentPreview
