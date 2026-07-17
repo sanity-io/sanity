@@ -278,6 +278,25 @@ Tests require a build first because some tests use compiled output:
 pnpm build && pnpm test
 ```
 
+#### Vanilla-extract in jsdom tests
+
+The `sanity` and `@sanity/vision` jsdom suites import
+[`@vanilla-extract/css/disableRuntimeStyles`](https://vanilla-extract.style/documentation/test-environments/#disabling-runtime-styles)
+in their setup files (`packages/sanity/test/setup/environment.ts`,
+`packages/@sanity/vision/test/setup.ts`), so vanilla-extract skips injecting real stylesheets
+into jsdom. Class name identifiers still resolve, but computed styles are not available.
+
+Conventions that follow from this:
+
+- **Do not assert on vanilla-extract class names or computed styles in jsdom tests.** Assert on
+  `data-testid` attributes instead. Visual/style behavior belongs in the vitest browser mode
+  suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit) or the Playwright e2e tests, where
+  runtime styles stay enabled.
+- **Keep `vanillaExtractPlugin()` in the vitest configs.** The plugin's transform assigns file
+  scopes to `.css.ts` modules; without it any test that (transitively) imports a `.css.ts` file
+  throws "Styles were unable to be assigned to a file". `disableRuntimeStyles` only skips style
+  injection, not the transform.
+
 ### E2E Tests (Playwright)
 
 ```bash
