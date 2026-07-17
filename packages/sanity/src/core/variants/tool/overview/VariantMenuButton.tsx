@@ -1,3 +1,4 @@
+import {BlockElementIcon} from '@sanity/icons/BlockElement'
 import {EditIcon} from '@sanity/icons/Edit'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Menu, MenuDivider} from '@sanity/ui'
@@ -8,9 +9,11 @@ import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {useTranslation} from '../../../i18n'
 import {DeleteVariantDialog} from '../../components/dialog/DeleteVariantDialog'
 import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
+import {EditVariantSetDialog} from '../../components/dialog/EditVariantSetDialog'
 import {useVariantDeleteAction} from '../../hooks/useVariantDeleteAction'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
+import {getVariantSetReference} from '../../util/variantSet'
 import {getVariantId, getVariantTitle} from '../util'
 
 export function VariantMenuButton({
@@ -22,7 +25,9 @@ export function VariantMenuButton({
 }) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const variantTitle = getVariantTitle(variant)
+  const setReference = getVariantSetReference(variant)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isEditSetDialogOpen, setIsEditSetDialogOpen] = useState(false)
   const {
     deleteDisabled,
     deleteDisabledTooltip,
@@ -46,6 +51,13 @@ export function VariantMenuButton({
               onClick={() => setIsEditDialogOpen(true)}
               text={t('overview.action.edit-variant')}
             />
+            {setReference && (
+              <MenuItem
+                icon={BlockElementIcon}
+                onClick={() => setIsEditSetDialogOpen(true)}
+                text={t('overview.action.edit-variant-set')}
+              />
+            )}
             <MenuDivider />
             <MenuItem
               disabled={deleteDisabled}
@@ -64,6 +76,13 @@ export function VariantMenuButton({
           onCancel={() => setIsEditDialogOpen(false)}
           onSubmit={() => setIsEditDialogOpen(false)}
           variant={variant}
+        />
+      )}
+      {isEditSetDialogOpen && setReference && (
+        <EditVariantSetDialog
+          onCancel={() => setIsEditSetDialogOpen(false)}
+          onDone={() => setIsEditSetDialogOpen(false)}
+          setReference={setReference}
         />
       )}
       {isDeleteDialogOpen && (

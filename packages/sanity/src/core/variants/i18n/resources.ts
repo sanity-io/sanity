@@ -26,6 +26,8 @@ const variantsLocaleStrings = {
   'overview.action.create-variant-set': 'Create variant set',
   /** Label for the Variants overview row edit action. */
   'overview.action.edit-variant': 'Edit variant definition',
+  /** Label for the Variants overview row edit-set action (shown on set members). */
+  'overview.action.edit-variant-set': 'Edit variant set',
   /** Label for the Variants overview delete action. */
   'overview.action.delete-variant': 'Delete variant definition',
   /** Tooltip when delete is disabled because the variant contains one document. */
@@ -208,6 +210,41 @@ const variantsLocaleStrings = {
     'These are now listed under variant definitions. Editing one on its own will save it as a separate definition.',
   /** Done action to close the create variant set dialog after generation. */
   'dialog.create-set.action.done': 'Done',
+  /** Title for the edit variant set dialog. */
+  'dialog.edit-set.title': 'Edit variant set',
+  /** Description for the edit variant set dialog. */
+  'dialog.edit-set.description':
+    'Rename a value to update every definition that uses it. Removing a value deletes its definitions, unless they still contain documents.',
+  /** Add value action in the edit variant set dialog. */
+  'dialog.edit-set.add-value': 'Add value',
+  /** Remove value action in the edit variant set dialog. */
+  'dialog.edit-set.remove-value': 'Remove value',
+  /** Preview shown when a set edit has no pending changes. */
+  'dialog.edit-set.preview.none': 'No changes yet',
+  /** Preview: number of definitions a set edit will update (singular). */
+  'dialog.edit-set.preview.update_one': '{{count}} definition will be updated',
+  /** Preview: number of definitions a set edit will update (plural). */
+  'dialog.edit-set.preview.update_other': '{{count}} definitions will be updated',
+  /** Preview: number of definitions a set edit will create (singular). */
+  'dialog.edit-set.preview.create_one': '{{count}} definition will be created',
+  /** Preview: number of definitions a set edit will create (plural). */
+  'dialog.edit-set.preview.create_other': '{{count}} definitions will be created',
+  /** Preview: number of definitions a set edit will delete (singular). */
+  'dialog.edit-set.preview.delete_one': '{{count}} definition will be deleted',
+  /** Preview: number of definitions a set edit will delete (plural). */
+  'dialog.edit-set.preview.delete_other': '{{count}} definitions will be deleted',
+  /** Warning when a value removal is blocked because definitions still have documents. */
+  'dialog.edit-set.warning.blocked':
+    'Cannot remove values that still have documents: {{values}}. Move or remove those documents first.',
+  /** Warning when renames were skipped because the target value already exists. */
+  'dialog.edit-set.warning.conflict':
+    'Renames skipped because the value already exists: {{values}}',
+  /** Apply action in the edit variant set dialog. */
+  'dialog.edit-set.action.apply': 'Apply changes',
+  /** Cancel action in the edit variant set dialog. */
+  'dialog.edit-set.action.cancel': 'Cancel',
+  /** Error toast title when applying a set edit fails. */
+  'dialog.edit-set.error.title': 'Unable to update the variant set',
   /** Title for the edit variant dialog. */
   'dialog.edit.title': 'Edit variant definition',
   /** Confirm action for the edit variant dialog. */
