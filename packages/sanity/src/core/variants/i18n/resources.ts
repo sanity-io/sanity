@@ -154,14 +154,20 @@ const variantsLocaleStrings = {
     'Add each key and the list of values it can take. Every combination becomes a variant definition.',
   /** Label for the dimension key field in the create variant set dialog. */
   'dialog.create-set.dimension-key.label': 'Key',
-  /** Placeholder for the dimension key field in the create variant set dialog. */
-  'dialog.create-set.dimension-key.placeholder': 'e.g. market',
   /** Label for the dimension values field in the create variant set dialog. */
   'dialog.create-set.dimension-values.label': 'Values',
-  /** Placeholder for the dimension values field in the create variant set dialog. */
-  'dialog.create-set.dimension-values.placeholder': 'e.g. uk, us, de',
-  /** Hint explaining how to enter multiple dimension values. */
-  'dialog.create-set.dimension-values.hint': 'Separate values with commas',
+  /**
+   * Rotating example placeholders, one pair per dimension row, cycled by row index in
+   * VariantSetForm so the form doesn't imply "market" is the only kind of dimension.
+   */
+  'dialog.create-set.example.0.key': 'e.g. market',
+  'dialog.create-set.example.0.values': 'e.g. uk, us, de',
+  'dialog.create-set.example.1.key': 'e.g. segment',
+  'dialog.create-set.example.1.values': 'e.g. loyal, new, vip',
+  'dialog.create-set.example.2.key': 'e.g. brand',
+  'dialog.create-set.example.2.values': 'e.g. brand-a, brand-b',
+  'dialog.create-set.example.3.key': 'e.g. channel',
+  'dialog.create-set.example.3.values': 'e.g. web, app, email',
   /** Validation message when a dimension has a key but no values. */
   'dialog.create-set.dimension-values.required': 'Add at least one value',
   /** Add dimension action for the create variant set dialog. */

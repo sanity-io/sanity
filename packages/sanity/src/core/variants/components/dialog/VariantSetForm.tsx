@@ -79,6 +79,22 @@ function hasValidationErrors(validation: Map<number, DimensionRowValidation>): b
   return Array.from(validation.values()).some(({key, values}) => key || values)
 }
 
+// Rotating example placeholders so each dimension row hints at a different kind of dimension,
+// rather than repeating "market" and implying it's the only option. Cycled by row index.
+const EXAMPLE_KEY_PLACEHOLDERS = [
+  'dialog.create-set.example.0.key',
+  'dialog.create-set.example.1.key',
+  'dialog.create-set.example.2.key',
+  'dialog.create-set.example.3.key',
+] as const satisfies readonly VariantsLocaleResourceKeys[]
+
+const EXAMPLE_VALUES_PLACEHOLDERS = [
+  'dialog.create-set.example.0.values',
+  'dialog.create-set.example.1.values',
+  'dialog.create-set.example.2.values',
+  'dialog.create-set.example.3.values',
+] as const satisfies readonly VariantsLocaleResourceKeys[]
+
 export function VariantSetForm(props: {
   name: string
   onNameChange: (name: string) => void
@@ -200,7 +216,9 @@ export function VariantSetForm(props: {
                       data-testid="variant-set-form-dimension-key"
                       fontSize={1}
                       onChange={(event) => handleRowChange(index, 'key', event.currentTarget.value)}
-                      placeholder={t('dialog.create-set.dimension-key.placeholder')}
+                      placeholder={t(
+                        EXAMPLE_KEY_PLACEHOLDERS[index % EXAMPLE_KEY_PLACEHOLDERS.length]!,
+                      )}
                       value={row.key}
                     />
                   </Box>
@@ -213,7 +231,9 @@ export function VariantSetForm(props: {
                       onChange={(event) =>
                         handleRowChange(index, 'valuesInput', event.currentTarget.value)
                       }
-                      placeholder={t('dialog.create-set.dimension-values.placeholder')}
+                      placeholder={t(
+                        EXAMPLE_VALUES_PLACEHOLDERS[index % EXAMPLE_VALUES_PLACEHOLDERS.length]!,
+                      )}
                       value={row.valuesInput}
                     />
                   </Box>

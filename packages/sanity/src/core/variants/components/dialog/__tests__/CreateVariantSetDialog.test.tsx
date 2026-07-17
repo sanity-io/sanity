@@ -71,6 +71,19 @@ describe('CreateVariantSetDialog', () => {
     })
   })
 
+  it('varies the example placeholder per dimension row', async () => {
+    const user = userEvent.setup()
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-set-form-dimension-key'), 'market')
+    await user.type(screen.getByTestId('variant-set-form-dimension-values'), 'uk, us')
+    await user.click(screen.getByRole('button', {name: 'Add dimension'}))
+
+    const keyInputs = screen.getAllByTestId('variant-set-form-dimension-key')
+    expect(keyInputs[0]).toHaveAttribute('placeholder', 'e.g. market')
+    expect(keyInputs[1]).toHaveAttribute('placeholder', 'e.g. segment')
+  })
+
   it('keeps generate disabled until the set has a name', async () => {
     const user = userEvent.setup()
     await renderDialog()
