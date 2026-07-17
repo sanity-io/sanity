@@ -1502,23 +1502,7 @@ importers:
         specifier: ^4.1.10
         version: 4.1.10(@edge-runtime/vm@3.2.0)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(jsdom@29.1.1)(vite@8.1.4)
 
-  packages/groq:
-    devDependencies:
-      '@repo/tsconfig':
-        specifier: workspace:*
-        version: link:../@repo/tsconfig
-      '@repo/tsdown.config':
-        specifier: workspace:*
-        version: link:../@repo/tsdown.config
-      '@types/node':
-        specifier: 'catalog:'
-        version: 24.13.2
-      '@typescript/native-preview':
-        specifier: 'catalog:'
-        version: 7.0.0-dev.20260421.2
-      tsdown:
-        specifier: 'catalog:'
-        version: 0.22.9(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.3.3)(oxc-resolver@11.21.3)(publint@0.3.21)(tsx@4.22.4)(typescript@6.0.3)
+  packages/groq: {}
 
   packages/sanity:
     dependencies:

@@ -26,43 +26,30 @@
     "directory": "packages/groq"
   },
   "files": [
-    "lib"
+    "groq.cjs",
+    "groq.d.cts",
+    "groq.d.ts",
+    "groq.js"
   ],
   "type": "module",
   "sideEffects": false,
-  "types": "./lib/groq.d.ts",
+  "main": "./groq.cjs",
+  "module": "./groq.js",
+  "types": "./groq.d.ts",
   "exports": {
     ".": {
-      "monorepo": "./src/_exports.ts",
-      "default": "./lib/groq.js"
+      "require": {
+        "types": "./groq.d.cts",
+        "default": "./groq.cjs"
+      },
+      "types": "./groq.d.ts",
+      "default": "./groq.js"
     },
     "./package.json": "./package.json"
   },
-  "publishConfig": {
-    "exports": {
-      ".": "./lib/groq.js",
-      "./package.json": "./package.json"
-    }
-  },
   "scripts": {
-    "build": "tsdown",
-    "check:types": "(cd ../.. && tsgo --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",
-    "prepublishOnly": "turbo run build",
-    "pretest": "run-s build",
-    "test": "node --test",
-    "watch": "tsdown --watch"
+    "test": "node --test"
   },
-  "devDependencies": {
-    "@repo/tsconfig": "workspace:*",
-    "@repo/tsdown.config": "workspace:*",
-    "@types/node": "catalog:",
-    "@typescript/native-preview": "catalog:",
-    "tsdown": "catalog:"
-  },
-  "browserslist": [
-    "node >=22.12",
-    "baseline 2024"
-  ],
   "engines": {
     "node": ">=22.12"
   }
