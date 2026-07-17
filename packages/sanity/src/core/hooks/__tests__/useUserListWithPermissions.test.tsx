@@ -4,18 +4,16 @@ import {renderHook, waitFor} from '@testing-library/react'
 import {of} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
-import {useProjectStore, useUserStore} from '../../store'
+import {grantsPermissionOn, useProjectStore, useUserStore} from '../../store'
 import {type ProjectData, type ProjectStore} from '../../store/project'
 import {type UserStore} from '../../store/user'
 import {getSystemGroups$} from '../../util/getSystemGroups$'
 import {useClient} from '../useClient'
 import {useUserListWithPermissions} from '../useUserListWithPermissions'
 
-vi.mock('../../store', async () => {
-  const {grantsPermissionOn} = await import('../../store/grants/grantsStore')
-
+vi.mock('../../store', () => {
   return {
-    grantsPermissionOn,
+    grantsPermissionOn: vi.fn(),
     useProjectStore: vi.fn(),
     useUserStore: vi.fn(),
   }
@@ -26,6 +24,7 @@ vi.mock('../useClient', () => ({useClient: vi.fn()}))
 const users: User[] = [
   {id: 'admin-user', displayName: 'Ada Admin'},
   {id: 'regional-user', displayName: 'Riley Regional'},
+  {id: 'attribute-only-user', displayName: 'Uma Attribute Only'},
 ]
 const documentValue = {_id: 'book-1', _type: 'b2bBook', language: 'en'}
 
@@ -40,14 +39,21 @@ function setup() {
     getUsers: vi.fn().mockResolvedValue(users),
   } as unknown as UserStore)
   vi.mocked(useClient).mockReturnValue({observable: {}} as SanityClient)
+  vi.mocked(grantsPermissionOn).mockImplementation(async (_userId, grants) => {
+    if (grants.some((grant) => grant.filter.includes('user::attributes()'))) {
+      throw new Error('not implemented')
+    }
+
+    return {granted: true, reason: 'Matching grant'}
+  })
   vi.mocked(getSystemGroups$).mockReturnValue(
     of([
       {
-        members: ['admin-user'],
+        members: ['admin-user', 'regional-user'],
         grants: [{filter: '_id in path("**")', permissions: ['read']}],
       },
       {
-        members: ['regional-user'],
+        members: ['regional-user', 'attribute-only-user'],
         grants: [
           {
             filter:
@@ -72,7 +78,7 @@ afterEach(() => {
 })
 
 describe('useUserListWithPermissions', () => {
-  it('keeps evaluable users when another user has an unevaluable grant filter', async () => {
+  it('keeps successful grant results when another grant cannot be evaluated', async () => {
     const {result} = setup()
 
     await waitFor(() => expect(result.current.loading).toBe(false))
@@ -80,7 +86,8 @@ describe('useUserListWithPermissions', () => {
     expect(result.current).toEqual({
       data: [
         {id: 'admin-user', displayName: 'Ada Admin', granted: true},
-        {id: 'regional-user', displayName: 'Riley Regional', granted: false},
+        {id: 'regional-user', displayName: 'Riley Regional', granted: true},
+        {id: 'attribute-only-user', displayName: 'Uma Attribute Only', granted: false},
       ],
       error: null,
       loading: false,
