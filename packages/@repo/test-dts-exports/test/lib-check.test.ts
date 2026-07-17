@@ -67,6 +67,14 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
+  // @sanity/workbench@0.1.0-alpha.24 ships a broken dist/_internal.d.ts that declares several
+  // identifiers twice (`Canvas`, `CanvasId`, `MediaLibrary`, ... — TS2300), a bug in its d.ts
+  // bundling. It's pulled into this program via the `sanity/workbench` fixture, which re-exports
+  // `renderWorkbench` from it. Drop this filter once a workbench release fixes the duplicates.
+  if (code === 2300 && file.fileName.includes('/node_modules/@sanity/workbench/dist/')) {
+    return false
+  }
+
   return true
 })
 

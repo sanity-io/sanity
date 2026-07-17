@@ -70,6 +70,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** Tooltip when action is disabled because the studio is not ready.*/
   'action.publish.disabled.not-ready': 'Operation not ready',
+  /** Tooltip when action is disabled because the version is published as part of its release */
+  'action.publish.disabled.not-publishable': 'This version is published as part of its release',
   /** Tooltip when action is disabled because the selected release or variant does not contain this document */
   'action.publish.disabled.target-not-found':
     'The selected release or variant does not contain this document',
@@ -249,13 +251,17 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Showing the current <strong>published</strong> version:',
   /** The text that appears for the action button to add the current document to the selected variant */
   'banners.variant.action.add-to-variant': 'Add to variant',
+  /** The text for the banner that appears when the selected variant matches no variant definition */
+  'banners.variant.definition-not-found':
+    'The selected variant <VariantName>{{name}}</VariantName> could not be found.',
   /** Toast description in case an error occurs when adding a document to a variant */
   'banners.variant.error.description':
     'An error occurred when adding document to the variant: {{message}}',
   /** Toast title in case an error occurs when adding a document to a variant */
   'banners.variant.error.title': 'Error adding document to variant',
   /** The text for the banner that appears when a document is not in the selected variant */
-  'banners.variant.not-in-variant': 'Not in the <VariantBadge>{{title}}</VariantBadge> variant.',
+  'banners.variant.not-in-variant':
+    'No variant document exists for <VariantBadge>{{title}}</VariantBadge>.',
   /** Description of toast that will appear while the document is added to the variant */
   'banners.variant.waiting.description':
     'Please hold tight while the document is added to the variant. It should not take longer than a few seconds.',
@@ -686,6 +692,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-operation-results.operation-undefined-title': 'Untitled',
   /** The loading message for the document not found pane */
   'panes.document-pane.document-not-found.loading': 'Loading document…',
+  /** The loading message shown while the document targeted by the selected variant is resolving */
+  'panes.document-pane.variant-target.loading': 'Loading document…',
   /** The text of the document not found pane if the schema is known */
   'panes.document-pane.document-not-found.text':
     'The document type is not defined, and a document with the <Code>{{id}}</Code> identifier could not be found.',

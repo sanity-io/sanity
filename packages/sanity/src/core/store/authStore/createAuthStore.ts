@@ -7,7 +7,19 @@ import {
 import {type CurrentUser} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import memoize from 'lodash-es/memoize.js'
-import {concat, EMPTY, firstValueFrom, fromEvent, merge, of, ReplaySubject, skip, timer} from 'rxjs'
+import {
+  concat,
+  EMPTY,
+  firstValueFrom,
+  from,
+  fromEvent,
+  merge,
+  type Observable,
+  of,
+  ReplaySubject,
+  skip,
+  timer,
+} from 'rxjs'
 import {
   distinctUntilChanged,
   filter,
@@ -46,6 +58,10 @@ import {
   type HandleCallbackResult,
 } from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
+import {
+  observeWorkbenchToken as defaultObserveWorkbenchToken,
+  refreshWorkbenchToken as defaultRefreshWorkbenchToken,
+} from './workbenchToken'
 
 /** @internal */
 export interface AuthStoreOptions extends AuthConfig {
@@ -83,6 +99,26 @@ export interface AuthStoreOptions extends AuthConfig {
    * @internal
    */
   consumeHashToken: () => string | undefined
+  /**
+   * Observes the session token issued by the embedding workbench "OS", if the
+   * Studio is running as a federated remote inside it. While it yields a token,
+   * that token is authoritative: it takes precedence over `loginMethod` and
+   * every other mechanism, is used in-memory only (never persisted), and the
+   * auth state tracks it over time — so an OS sign-out (`null`) transitions the
+   * Studio to unauthenticated. Returns `undefined` outside the workbench, in
+   * which case the normal auth flow runs. Defaults to a no-op.
+   * @internal
+   */
+  observeWorkbenchToken?: () => Observable<string | null> | undefined
+  /**
+   * Asks the workbench "OS" to reissue its session token, called when the
+   * current one is rejected (a 401 surfaced as forced logout). In the workbench
+   * this replaces tearing down the session locally, since the OS owns it — the
+   * reissued token flows back through `observeWorkbenchToken`. Defaults to a
+   * no-op.
+   * @internal
+   */
+  refreshWorkbenchToken?: () => void
 }
 
 /**
@@ -261,11 +297,16 @@ export function _createAuthStore({
   loginMethod = 'dual',
   getSessionId,
   consumeHashToken,
+  observeWorkbenchToken = () => undefined,
+  refreshWorkbenchToken = () => {},
   getRequestErrorHandler,
   getRequestFailureDiagnostics,
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
   // Precedence when initializing auth:
+  // * if embedded in the workbench (`observeWorkbenchToken`), the OS auth state
+  //   is authoritative and overrides everything below — see the `authState$`
+  //   branch. Otherwise `loginMethod` decides:
   // * if loginMethod == 'dual':
   //    1. token in hash (if exists) – will be written as new localStorage token
   //    2. token in localStorage (if it exists)
@@ -473,7 +514,7 @@ export function _createAuthStore({
         )
       : EMPTY
 
-  const authState$ = concat(
+  const existingAuthState$ = concat(
     initial$,
     merge(workspaceClient$.pipe(skip(1)), dualCookieRecheck$, dualTokenRecheck$).pipe(
       mergeMap(async (client): Promise<AuthState> => {
@@ -493,6 +534,54 @@ export function _createAuthStore({
         }
       }),
     ),
+  )
+
+  // Outside the workbench this is `undefined` and the normal reactive graph
+  // runs unchanged. Inside, the OS auth state is authoritative: it emits the
+  // current token (or `null` when the OS is signed out) and keeps emitting as
+  // that changes, so `loginMethod` and the recheck streams are bypassed and a
+  // later OS sign-out transitions the Studio to unauthenticated. The token is
+  // never persisted (so it can't go stale in storage), which is also why it
+  // feeds the `token` output below — consumers like Bifur (realtime) read that
+  // directly and would otherwise authenticate from empty/stale storage.
+  const workbenchToken$ = observeWorkbenchToken()?.pipe(
+    shareReplay({bufferSize: 1, refCount: true}),
+  )
+
+  const authState$ = (
+    workbenchToken$
+      ? workbenchToken$.pipe(
+          switchMap((workbenchToken): Observable<AuthState> => {
+            if (!workbenchToken) {
+              return of({client: cookieClient, authenticated: false, currentUser: null})
+            }
+            const client = clientFactory({
+              ...AUTH_CLIENT_OPTIONS,
+              ...hostOptions,
+              projectId,
+              dataset,
+              token: workbenchToken,
+              ignoreBrowserTokenWarning: true,
+            })
+            return from(
+              getCurrentUser(
+                client,
+                'initial',
+                getRequestErrorHandler,
+                getRequestFailureDiagnostics?.(),
+              ),
+            ).pipe(
+              map(
+                (currentUser): AuthState => ({
+                  client,
+                  authenticated: Boolean(currentUser?.id),
+                  currentUser: currentUser || null,
+                }),
+              ),
+            )
+          }),
+        )
+      : existingAuthState$
   ).pipe(
     // Cookie state is broadcast to other tabs (and sibling workspaces for the
     // same project in this page) only on meaningful events: post-login probe
@@ -659,6 +748,15 @@ export function _createAuthStore({
   let _didLogOut = false
 
   async function logout() {
+    // In the workbench the OS owns the session, so a logout here is really a
+    // rejected/expired OS token (surfaced as a forced logout on a 401). Ask the
+    // OS to reissue rather than tearing the session down ourselves — the new
+    // token arrives via `observeWorkbenchToken` and re-drives `authState$`.
+    if (workbenchToken$) {
+      refreshWorkbenchToken()
+      return
+    }
+
     _didLogOut = true
     const tokenClient = await firstValueFrom(tokenClient$)
 
@@ -704,18 +802,22 @@ export function _createAuthStore({
   return {
     handleCallbackUrl,
     state: authState$,
-    token: tokenStorage.value.pipe(map((t) => t?.token || null)),
+    token: workbenchToken$ ?? tokenStorage.value.pipe(map((t) => t?.token || null)),
     LoginComponent,
     logout,
   }
 }
 
 /**
- * Public options for `createAuthStore`. The `getSessionId` and `consumeHashToken`
- * dependencies are wired automatically using the default implementations.
+ * Public options for `createAuthStore`. The `getSessionId`, `consumeHashToken`,
+ * `observeWorkbenchToken` and `refreshWorkbenchToken` dependencies are wired
+ * automatically using the default implementations.
  * @internal
  */
-export type CreateAuthStoreOptions = Omit<AuthStoreOptions, 'getSessionId' | 'consumeHashToken'>
+export type CreateAuthStoreOptions = Omit<
+  AuthStoreOptions,
+  'getSessionId' | 'consumeHashToken' | 'observeWorkbenchToken' | 'refreshWorkbenchToken'
+>
 
 /**
  * @internal
@@ -726,6 +828,8 @@ export const createAuthStore: (options: CreateAuthStoreOptions) => AuthStore = m
       ...options,
       getSessionId: defaultGetSessionId,
       consumeHashToken: defaultConsumeHashToken,
+      observeWorkbenchToken: defaultObserveWorkbenchToken,
+      refreshWorkbenchToken: defaultRefreshWorkbenchToken,
     }),
   // `getRequestErrorHandler` / `getRequestFailureDiagnostics` are functions
   // (not hashable, and not part of the store's identity — they just look up UI

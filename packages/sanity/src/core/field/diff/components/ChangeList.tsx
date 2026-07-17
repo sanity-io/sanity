@@ -7,8 +7,12 @@ import {DiffContext} from 'sanity/_singletons'
 
 import {Button} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  useTargetDocumentState,
+} from '../../../hooks/useTargetDocumentState'
 import {useTranslation} from '../../../i18n'
-import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store'
 import {useConditionalProperty} from '../../conditional-property'
 import {type ChangeNode, type ObjectDiff} from '../../types'
@@ -30,8 +34,17 @@ export interface ChangeListProps {
 /** @internal */
 export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.JSX.Element | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
-  const {selectedReleaseId} = usePerspective()
-  const docOperations = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
+  const targetDocumentState = useTargetDocumentState(documentId)
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, reverting is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const docOperations = useDocumentOperation(
+    documentId,
+    schemaType.name,
+    getPairTarget(targetDocumentState),
+  )
   const {path} = useContext(DiffContext)
   const isRoot = path.length === 0
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = useState(false)
@@ -62,6 +75,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
     type: schemaType.name,
+    version: scopeId,
     permission: 'update',
   })
 
@@ -134,7 +148,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
               onClick={handleRevertAllChangesClick}
               onMouseEnter={handleRevertAllChangesMouseEnter}
               onMouseLeave={handleRevertAllChangesMouseLeave}
-              disabled={isReadOnly}
+              disabled={isReadOnly || !isTargetReady}
               size="large"
               ref={setButtonElement}
             />

@@ -2,7 +2,8 @@ import {ResetIcon} from '@sanity/icons/Reset'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
-  getVersionFromId,
+  getPairTarget,
+  getTargetScopeId,
   InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
@@ -32,17 +33,28 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   version,
   draft,
 }) => {
-  const bundleId = version?._id && getVersionFromId(version._id)
-  const {discardChanges} = useDocumentOperation(id, type, bundleId)
+  const {displayed, targetDocumentState} = useDocumentPane()
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, the action is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
+  // The discard confirmation copy depends on whether a published counterpart exists ("revert to
+  // published" vs "delete document"). For variant targets that counterpart is the
+  // variant-of-published sibling, not the base published document.
+  const publishedCounterpartExists = isVariantTarget
+    ? targetDocumentState.publishedSibling !== undefined
+    : Boolean(published)
+  const {discardChanges} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: bundleId,
+    version: scopeId,
     permission: 'discardDraft',
   })
   const currentUser = useCurrentUser()
-  const {displayed} = useDocumentPane()
 
   const {t} = useTranslation(structureLocaleNamespace)
   const isPublished = displayed?._id && isPublishedId(displayed?._id)
@@ -85,7 +97,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     return {
       tone: 'critical',
       icon: ResetIcon,
-      disabled: Boolean(discardChanges.disabled) || isPermissionsLoading,
+      disabled: Boolean(discardChanges.disabled) || isPermissionsLoading || !isTargetReady,
       title: t((discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || ''),
       label: t('action.discard-changes.label'),
       onHandle: handle,
@@ -95,7 +107,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
           <ConfirmDiscardDialog
             onCancel={handleCancel}
             onConfirm={handleConfirm}
-            publishedExists={Boolean(published)}
+            publishedExists={publishedCounterpartExists}
           />
         ),
       },
@@ -106,12 +118,13 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     handleCancel,
     isConfirmDialogOpen,
     discardChanges.disabled,
-    published,
+    publishedCounterpartExists,
     version,
     draft,
     handle,
     isPermissionsLoading,
     isPublished,
+    isTargetReady,
     permissions?.granted,
     t,
   ])

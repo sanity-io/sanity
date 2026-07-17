@@ -15,6 +15,7 @@ export default defineConfig({
     'structure': './src/_exports/structure.ts',
     'media-library': './src/_exports/media-library.ts',
     'migrate': './src/_exports/migrate.ts',
+    'workbench': './src/_exports/workbench.ts',
   },
   // Also wipe legacy root-level entry artifacts from older pkg-utils layouts (a string[] replaces
   // the shared `clean: ['lib']` default, so `lib` must be listed explicitly)
@@ -29,6 +30,7 @@ export default defineConfig({
     'presentation.js',
     'router.js',
     'structure.js',
+    'workbench.js',
   ],
   reactCompiler: {target: '19'},
   styledComponents: true,

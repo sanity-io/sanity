@@ -4,7 +4,8 @@ import {useCallback, useMemo, useState} from 'react'
 import {catchError, filter, firstValueFrom, map, of, timeout} from 'rxjs'
 import {
   type DocumentActionComponent,
-  getVersionFromId,
+  getPairTarget,
+  getTargetScopeId,
   InsufficientPermissionsMessage,
   isAgentBundleName,
   isReleaseScheduledOrScheduling,
@@ -18,6 +19,7 @@ import {
 
 import {ConfirmDeleteDialog, type DeleteReferenceCounts} from '../components'
 import {structureLocaleNamespace} from '../i18n'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {DocumentDeleted} from './__telemetry__/documentActions.telemetry'
 
 const DISABLED_REASON_TITLE_KEY = {
@@ -33,10 +35,15 @@ const DELETE_OUTCOME_TIMEOUT = 30000
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const useDeleteAction: DocumentActionComponent = ({id, type, draft, version}) => {
-  const bundleId = version?._id && getVersionFromId(version._id)
-  const isAgentBundle = isAgentBundleName(bundleId)
-  const {delete: deleteOp} = useDocumentOperation(id, type, bundleId)
+export const useDeleteAction: DocumentActionComponent = ({id, type, draft}) => {
+  const {targetDocumentState} = useDocumentPane()
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, the action is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const isAgentBundle = isAgentBundleName(scopeId)
+  const {delete: deleteOp} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const documentStore = useDocumentStore()
@@ -101,7 +108,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: bundleId,
+    version: scopeId,
     permission: 'delete',
   })
 
@@ -136,7 +143,11 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
       tone: 'critical',
       icon: TrashIcon,
       disabled:
-        isDeleting || hasScheduledRelease || Boolean(deleteOp.disabled) || isPermissionsLoading,
+        isDeleting ||
+        hasScheduledRelease ||
+        Boolean(deleteOp.disabled) ||
+        isPermissionsLoading ||
+        !isTargetReady,
       title: getTitle(),
       label: isDeleting ? t('action.delete.running.label') : t('action.delete.label'),
       shortcut: 'Ctrl+Alt+D',
@@ -163,6 +174,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
     handleConfirm,
     hasScheduledRelease,
     isAgentBundle,
+    isTargetReady,
     id,
     isConfirmDialogOpen,
     isDeleting,

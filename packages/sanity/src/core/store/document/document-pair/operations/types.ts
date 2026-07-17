@@ -33,7 +33,14 @@ export interface OperationsAPI {
   delete: Operation<[versions?: string[]], 'NOTHING_TO_DELETE' | 'NOT_READY' | 'TARGET_NOT_FOUND'>
   del: Operation<[versions?: string[]], 'NOTHING_TO_DELETE' | 'TARGET_NOT_FOUND'> | GuardedOperation
   publish:
-    | Operation<[], 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES' | 'TARGET_NOT_FOUND'>
+    | Operation<
+        [],
+        | 'LIVE_EDIT_ENABLED'
+        | 'ALREADY_PUBLISHED'
+        | 'NO_CHANGES'
+        | 'NOT_PUBLISHABLE'
+        | 'TARGET_NOT_FOUND'
+      >
     | GuardedOperation
   patch: Operation<[patches: Patch[], initialDocument?: Record<string, any>]> | GuardedOperation
   discardChanges:

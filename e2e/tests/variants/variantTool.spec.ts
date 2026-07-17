@@ -148,16 +148,16 @@ function escapeRegExp(value: string): string {
 
 async function openVariantsTool(page: Page): Promise<void> {
   await page.goto('/variants')
-  await expect(page.getByRole('heading', {name: 'Variants'}).first()).toBeVisible()
+  await expect(page.getByRole('heading', {name: 'Variant definitions'}).first()).toBeVisible()
   // The heading renders before the overview has settled its data subscriptions.
   // Wait for the create button to be interactive so the first dialog-open click
   // is not dispatched while the page is still mounting and silently dropped.
-  await expect(page.getByRole('button', {name: 'Create variant'}).first()).toBeEnabled()
+  await expect(page.getByRole('button', {name: 'Create variant definition'}).first()).toBeEnabled()
 }
 
 async function openCreateVariantDialog(page: Page) {
-  const createVariantButton = page.getByRole('button', {name: 'Create variant'}).first()
-  const dialog = page.getByRole('dialog', {name: 'Create variant'})
+  const createVariantButton = page.getByRole('button', {name: 'Create variant definition'}).first()
+  const dialog = page.getByRole('dialog', {name: 'Create variant definition'})
 
   // Under parallel CI load the studio occasionally drops the first click while it
   // is still reconciling the shared variants subscription, leaving the dialog
@@ -475,8 +475,8 @@ test.describe('Variants create flow', () => {
     // Target the stable actions-menu id rather than the last button in the row,
     // which would break if the row gains more buttons. `variantId` is the short id.
     await page.locator(`#variant-actions-${variantId}`).click()
-    await page.getByRole('menuitem', {name: 'Delete variant'}).click()
-    await expect(page.getByRole('menuitem', {name: 'Delete variant'})).toBeHidden()
+    await page.getByRole('menuitem', {name: 'Delete variant definition'}).click()
+    await page.getByTestId('confirm-button').click()
 
     await expect(row).toBeHidden()
     await expect.poll(async () => sanityClient.getDocument(documentId)).toBeUndefined()
@@ -500,10 +500,10 @@ test.describe('Variants create flow', () => {
     await expect(page.getByRole('heading', {name: title})).toBeVisible()
 
     await page.locator(`#variant-detail-actions-${shortVariantId}`).click()
-    await page.getByRole('menuitem', {name: 'Delete variant'}).click()
-    await expect(page.getByRole('menuitem', {name: 'Delete variant'})).toBeHidden()
+    await page.getByRole('menuitem', {name: 'Delete variant definition'}).click()
+    await page.getByTestId('confirm-button').click()
 
-    await expect(page.getByRole('heading', {name: 'Variants'}).first()).toBeVisible()
+    await expect(page.getByRole('heading', {name: 'Variant definitions'}).first()).toBeVisible()
     await expect(getVariantRow(page, title)).toBeHidden()
     await expect.poll(async () => sanityClient.getDocument(documentId)).toBeUndefined()
   })

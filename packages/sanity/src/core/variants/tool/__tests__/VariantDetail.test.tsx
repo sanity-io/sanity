@@ -166,14 +166,14 @@ describe('VariantDetail', () => {
 
     expect(screen.getByText('Developer audience')).toBeInTheDocument()
     expect(screen.getByText('audience: "alpha", locale: "en-US"')).toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'Edit variant'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Edit variant definition'})).toBeInTheDocument()
     expect(screen.getByTestId('pin-variant-button')).toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'Back to variants'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Back to variant definitions'})).toBeInTheDocument()
     expect(screen.getByText('Bundle')).toBeInTheDocument()
     expect(screen.getByText('Type')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search documents')).toBeInTheDocument()
     expect(screen.getByText('Edited')).toBeInTheDocument()
-    expect(screen.getByText('No documents in this variant')).toBeInTheDocument()
+    expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
     expect(screen.getByText(/^Created/)).toBeInTheDocument()
     expect(screen.getByTestId('variant-detail-footer-actions')).toBeInTheDocument()
   })
@@ -197,10 +197,10 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog', {name: 'Edit variant'})).toBeInTheDocument()
+      expect(screen.getByRole('dialog', {name: 'Edit variant definition'})).toBeInTheDocument()
     })
 
     expect(screen.getByTestId('variant-form-title')).toHaveValue('Alpha audience')
@@ -215,7 +215,7 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
     await user.clear(await screen.findByTestId('variant-form-title'))
     await user.type(screen.getByTestId('variant-form-title'), 'Beta audience')
     await user.type(screen.getByTestId('variant-form-description'), 'Audience for beta users')
@@ -246,7 +246,9 @@ describe('VariantDetail', () => {
     })
 
     await waitFor(() => {
-      expect(screen.queryByRole('dialog', {name: 'Edit variant'})).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('dialog', {name: 'Edit variant definition'}),
+      ).not.toBeInTheDocument()
     })
 
     await waitFor(() => {
@@ -261,7 +263,7 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
     const conditionKeys = screen.getAllByTestId('variant-form-condition-key')
     await user.clear(conditionKeys[1]!)
     await user.type(conditionKeys[1]!, 'audience')
@@ -282,12 +284,14 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
     await user.type(await screen.findByTestId('variant-form-title'), ' updated')
     await user.click(screen.getByRole('button', {name: 'Cancel'}))
 
     await waitFor(() => {
-      expect(screen.queryByRole('dialog', {name: 'Edit variant'})).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('dialog', {name: 'Edit variant definition'}),
+      ).not.toBeInTheDocument()
     })
     expect(variantOperationsMock.updateVariant).not.toHaveBeenCalled()
   })
@@ -299,12 +303,14 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
     await user.type(await screen.findByTestId('variant-form-title'), ' updated')
     await user.click(screen.getByLabelText('Close dialog'))
 
     await waitFor(() => {
-      expect(screen.queryByRole('dialog', {name: 'Edit variant'})).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('dialog', {name: 'Edit variant definition'}),
+      ).not.toBeInTheDocument()
     })
     expect(variantOperationsMock.updateVariant).not.toHaveBeenCalled()
     expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
@@ -320,7 +326,7 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant'}))
+    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
     await user.type(await screen.findByTestId('variant-form-title'), ' updated')
     await user.click(screen.getByTestId('save-variant-button'))
 
@@ -328,12 +334,12 @@ describe('VariantDetail', () => {
       expect(toastMock.push).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'error',
-          title: 'Unable to update variant',
+          title: 'Unable to update variant definition',
         }),
       )
     })
     expect(consoleError).toHaveBeenCalledWith(error)
-    expect(screen.getByRole('dialog', {name: 'Edit variant'})).toBeInTheDocument()
+    expect(screen.getByRole('dialog', {name: 'Edit variant definition'})).toBeInTheDocument()
 
     consoleError.mockRestore()
   })
@@ -352,7 +358,8 @@ describe('VariantDetail', () => {
     if (!menuButton) throw new Error('Variant detail actions menu button not found')
 
     await user.click(menuButton)
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
@@ -377,13 +384,14 @@ describe('VariantDetail', () => {
     if (!menuButton) throw new Error('Variant detail actions menu button not found')
 
     await user.click(menuButton)
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(toastMock.push).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'error',
-          title: 'Unable to delete variant',
+          title: 'Unable to delete variant definition',
         }),
       )
     })
@@ -401,10 +409,12 @@ describe('VariantDetail', () => {
     await renderDetail()
 
     await waitFor(() => {
-      expect(screen.getByText('Variant not found')).toBeInTheDocument()
+      expect(screen.getByText('Variant definition not found')).toBeInTheDocument()
     })
 
-    expect(screen.getByText('The requested variant could not be found.')).toBeInTheDocument()
+    expect(
+      screen.getByText('The requested variant definition could not be found.'),
+    ).toBeInTheDocument()
   })
 
   it('navigates back to overview when Back is pressed', async () => {
@@ -415,10 +425,10 @@ describe('VariantDetail', () => {
     await renderDetail()
 
     await waitFor(() =>
-      expect(screen.getByRole('button', {name: 'Back to variants'})).toBeEnabled(),
+      expect(screen.getByRole('button', {name: 'Back to variant definitions'})).toBeEnabled(),
     )
 
-    await user.click(screen.getByRole('button', {name: 'Back to variants'}))
+    await user.click(screen.getByRole('button', {name: 'Back to variant definitions'}))
 
     expect(mockNavigate).toHaveBeenCalledWith({})
   })
