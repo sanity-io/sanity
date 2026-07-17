@@ -76,7 +76,7 @@ export function VariantDocumentsTable({
   return (
     <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
       {!loading && segments.length > 1 && (
-        <Box flex="none" paddingX={3} paddingTop={3}>
+        <Box flex="none" paddingTop={4} paddingX={4}>
           <VariantReleaseLane
             activeLane={resolvedActiveLane}
             onSelectLane={handleSelectLane}
@@ -85,7 +85,12 @@ export function VariantDocumentsTable({
           />
         </Box>
       )}
-      <Card flex={1} ref={setScrollContainerRef} style={TABLE_CARD_STYLE}>
+      <Card
+        flex={1}
+        id="variant-documents-table"
+        ref={setScrollContainerRef}
+        style={TABLE_CARD_STYLE}
+      >
         <Table<DocumentInVariantGroup>
           columnDefs={columnDefs}
           data={laneFilteredRows}

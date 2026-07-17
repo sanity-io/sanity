@@ -1,3 +1,4 @@
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
@@ -50,7 +51,12 @@ export function VariantDetail() {
     return (
       <Flex direction="column" flex={1} height="fill">
         <Card borderBottom flex="none" padding={3}>
-          <Button mode="bleed" onClick={() => router.navigate({})} text={t('detail.back')} />
+          <Button
+            icon={ArrowLeftIcon}
+            mode="ghost"
+            onClick={() => router.navigate({})}
+            text={t('detail.back')}
+          />
         </Card>
         <Box padding={4}>
           <Card border padding={4} radius={3}>
@@ -74,7 +80,12 @@ export function VariantDetail() {
   return (
     <Flex direction="column" flex={1} height="fill" overflow="hidden">
       <Card borderBottom flex="none" padding={3}>
-        <Button mode="bleed" onClick={() => router.navigate({})} text={t('detail.back')} />
+        <Button
+          icon={ArrowLeftIcon}
+          mode="ghost"
+          onClick={() => router.navigate({})}
+          text={t('detail.back')}
+        />
       </Card>
       <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
         <Container flex="none" width={3}>

@@ -41,10 +41,10 @@ describe('VariantReleaseLane', () => {
     // createTestProvider loads i18n asynchronously; wait for the lane to mount.
     await screen.findByTestId('variant-release-lane')
     expect(screen.getByText('Releases')).toBeInTheDocument()
-    expect(screen.getByText('All · 4')).toBeInTheDocument()
-    expect(screen.getByText('Published · 2')).toBeInTheDocument()
-    expect(screen.getByText('Draft · 1')).toBeInTheDocument()
-    expect(screen.getByText('Summer launch · 1')).toBeInTheDocument()
+    expect(screen.getByText('All (4)')).toBeInTheDocument()
+    expect(screen.getByText('Published (2)')).toBeInTheDocument()
+    expect(screen.getByText('Draft (1)')).toBeInTheDocument()
+    expect(screen.getByText('Summer launch (1)')).toBeInTheDocument()
   })
 
   it('calls onSelectLane with the segment id when a segment is clicked', async () => {
@@ -60,7 +60,8 @@ describe('VariantReleaseLane', () => {
     await renderLane({activeLane: 'published'})
 
     expect(await screen.findByTestId('variant-release-lane-segment-published')).toHaveAttribute(
-      'data-selected',
+      'aria-selected',
+      'true',
     )
   })
 

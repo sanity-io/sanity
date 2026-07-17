@@ -1,7 +1,7 @@
-import {Flex, Text} from '@sanity/ui'
-import {useCallback} from 'react'
+import {FilterIcon} from '@sanity/icons/Filter'
+import {Flex, TabList, Text} from '@sanity/ui'
 
-import {Button} from '../../../../ui-components/button'
+import {Tab} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type ReleaseLaneKind, RELEASE_LANE_ALL, type ReleaseLaneSegment} from './releaseLane'
@@ -12,39 +12,10 @@ function getSegmentTone(kind: ReleaseLaneKind): 'positive' | 'primary' | 'defaul
   return 'default'
 }
 
-function SegmentButton({
-  id,
-  label,
-  count,
-  tone,
-  selected,
-  onSelect,
-}: {
-  id: string
-  label: string
-  count: number
-  tone: 'positive' | 'primary' | 'default'
-  selected: boolean
-  onSelect: (id: string) => void
-}) {
-  const {t} = useTranslation(variantsLocaleNamespace)
-  const handleClick = useCallback(() => onSelect(id), [id, onSelect])
-
-  return (
-    <Button
-      data-testid={`variant-release-lane-segment-${id}`}
-      mode={selected ? 'default' : 'bleed'}
-      onClick={handleClick}
-      selected={selected}
-      text={t('detail.release-lane.count', {label, count})}
-      tone={tone}
-    />
-  )
-}
-
 /**
- * The release lane: a horizontal strip summarizing which bundles this variant's documents
- * participate in, each segment clickable to filter the documents table to that bundle.
+ * The release lane: a filter-tab strip summarizing which bundles this variant's documents
+ * participate in, each tab filtering the documents table to that bundle. Mirrors the Releases
+ * tool's ReleaseDocumentFilterTabs so the two document tables share one filter idiom.
  *
  * @internal
  */
@@ -70,39 +41,56 @@ export function VariantReleaseLane({
 
   return (
     <Flex align="center" gap={2} paddingBottom={3} wrap="wrap" data-testid="variant-release-lane">
-      <Text muted size={1} weight="medium">
-        {t('detail.release-lane.title')}
-      </Text>
-      <SegmentButton
-        count={totalCount}
-        id={RELEASE_LANE_ALL}
-        label={t('detail.release-lane.all')}
-        onSelect={onSelectLane}
-        selected={activeLane === RELEASE_LANE_ALL}
-        tone="default"
-      />
-      {segments.map((segment) => {
-        let label: string
-        if (segment.kind === 'published') {
-          label = tCore('release.chip.published')
-        } else if (segment.kind === 'drafts') {
-          label = tCore('release.chip.draft')
-        } else {
-          label = segment.release?.metadata?.title ?? tCore('release.placeholder-untitled-release')
-        }
+      <Flex align="center" gap={1} paddingRight={1}>
+        <Text muted size={1}>
+          <FilterIcon />
+        </Text>
+        <Text muted size={1} weight="medium">
+          {t('detail.release-lane.title')}
+        </Text>
+      </Flex>
+      <TabList space={1}>
+        {[
+          <Tab
+            key="all"
+            aria-controls="variant-documents-table"
+            data-testid="variant-release-lane-segment-all"
+            id="variant-release-lane-segment-all"
+            label={t('detail.release-lane.count', {
+              label: t('detail.release-lane.all'),
+              count: totalCount,
+            })}
+            onClick={() => onSelectLane(RELEASE_LANE_ALL)}
+            selected={activeLane === RELEASE_LANE_ALL}
+          />,
+          ...segments.map((segment) => {
+            let label: string
+            if (segment.kind === 'published') {
+              label = tCore('release.chip.published')
+            } else if (segment.kind === 'drafts') {
+              label = tCore('release.chip.draft')
+            } else {
+              label =
+                segment.release?.metadata?.title ?? tCore('release.placeholder-untitled-release')
+            }
 
-        return (
-          <SegmentButton
-            key={segment.id}
-            count={segment.count}
-            id={segment.id}
-            label={label}
-            onSelect={onSelectLane}
-            selected={activeLane === segment.id}
-            tone={getSegmentTone(segment.kind)}
-          />
-        )
-      })}
+            const isSelected = activeLane === segment.id
+
+            return (
+              <Tab
+                key={segment.id}
+                aria-controls="variant-documents-table"
+                data-testid={`variant-release-lane-segment-${segment.id}`}
+                id={`variant-release-lane-segment-${segment.id}`}
+                label={t('detail.release-lane.count', {label, count: segment.count})}
+                onClick={() => onSelectLane(segment.id)}
+                selected={isSelected}
+                tone={isSelected ? getSegmentTone(segment.kind) : 'default'}
+              />
+            )
+          }),
+        ]}
+      </TabList>
     </Flex>
   )
 }
