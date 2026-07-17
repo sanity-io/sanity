@@ -157,13 +157,8 @@ export function VariantsOverview() {
   const createButtons = useMemo(
     () => (
       <Flex gap={2}>
-        <Button
-          disabled={isCreateVariantDialogOpen}
-          icon={AddIcon}
-          onClick={handleCreateVariant}
-          text={t('overview.action.create-variant')}
-          tooltipProps={{content: t('overview.action.create-variant.tooltip')}}
-        />
+        {/* Set comes first in reading order (we want people to reach for a set), while creating a
+            single definition stays the solid primary action. */}
         <Button
           disabled={isCreateVariantSetDialogOpen}
           icon={AddIcon}
@@ -171,6 +166,13 @@ export function VariantsOverview() {
           onClick={handleCreateVariantSet}
           text={t('overview.action.create-variant-set')}
           tooltipProps={{content: t('overview.action.create-variant-set.tooltip')}}
+        />
+        <Button
+          disabled={isCreateVariantDialogOpen}
+          icon={AddIcon}
+          onClick={handleCreateVariant}
+          text={t('overview.action.create-variant')}
+          tooltipProps={{content: t('overview.action.create-variant.tooltip')}}
         />
       </Flex>
     ),
