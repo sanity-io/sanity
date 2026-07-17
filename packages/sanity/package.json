@@ -159,6 +159,7 @@
     "@sanity/diff-match-patch": "^3.2.0",
     "@sanity/diff-patch": "^5.0.0",
     "@sanity/eventsource": "^5.0.4",
+    "@sanity/generate-help-url": "^4.0.0",
     "@sanity/icons": "^5.1.0",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/image-url": "^2.1.1",
@@ -239,7 +240,6 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
     "@rolldown/plugin-babel": "catalog:",
-    "@sanity/generate-help-url": "^4.0.0",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.11",
     "@testing-library/jest-dom": "^6.9.1",
@@ -290,7 +290,6 @@
     "node": ">=22.12"
   },
   "inlinedDependencies": {
-    "@sanity/generate-help-url": "4.0.0",
     "@sanity/visual-editing-csm": "3.0.11",
     "rxjs-etc": "10.6.2",
     "valibot": "1.4.1"
