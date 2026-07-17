@@ -165,7 +165,9 @@ describe('VariantDetail', () => {
     })
 
     expect(screen.getByText('Developer audience')).toBeInTheDocument()
-    expect(screen.getByText('audience: "alpha", locale: "en-US"')).toBeInTheDocument()
+    // Conditions render as read-only pills, one per key/value.
+    expect(screen.getByText('audience: alpha')).toBeInTheDocument()
+    expect(screen.getByText('locale: en-US')).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Edit variant definition'})).toBeInTheDocument()
     expect(screen.getByTestId('pin-variant-button')).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Back to variant definitions'})).toBeInTheDocument()
