@@ -4,6 +4,7 @@ import {Badge, Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, useMemo} from 'react'
 import {StateLink} from 'sanity/router'
 
+import {Tooltip} from '../../../../ui-components'
 import {type UseTranslationResponse, useTranslation} from '../../../i18n'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
@@ -108,9 +109,18 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
             <Text size={1} weight="medium">
               {variant.setReference?.name}
             </Text>
-            <Badge fontSize={0} mode="outline" tone="primary">
-              {t('overview.badge.set')}
-            </Badge>
+            <Tooltip
+              content={
+                <Box padding={2}>
+                  <Text size={1}>{t('overview.badge.set.tooltip')}</Text>
+                </Box>
+              }
+              portal
+            >
+              <Badge fontSize={0} mode="outline" tone="primary">
+                {t('overview.badge.set')}
+              </Badge>
+            </Tooltip>
             <Text muted size={1}>
               {t(
                 variant.setChildCount === 1
@@ -150,14 +160,32 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
                   {getVariantTitle(variant)}
                 </Text>
                 {setReference && !variant.isSetChild && (
-                  <Badge fontSize={0} mode="outline" tone="primary">
-                    {t('overview.badge.set')}
-                  </Badge>
+                  <Tooltip
+                    content={
+                      <Box padding={2}>
+                        <Text size={1}>{t('overview.badge.set.tooltip')}</Text>
+                      </Box>
+                    }
+                    portal
+                  >
+                    <Badge fontSize={0} mode="outline" tone="primary">
+                      {t('overview.badge.set')}
+                    </Badge>
+                  </Tooltip>
                 )}
                 {forkedFromReference && (
-                  <Badge fontSize={0} mode="outline" tone="caution">
-                    {t('overview.badge.forked')}
-                  </Badge>
+                  <Tooltip
+                    content={
+                      <Box padding={2}>
+                        <Text size={1}>{t('overview.badge.forked.tooltip')}</Text>
+                      </Box>
+                    }
+                    portal
+                  >
+                    <Badge fontSize={0} mode="outline" tone="caution">
+                      {t('overview.badge.forked')}
+                    </Badge>
+                  </Tooltip>
                 )}
               </Flex>
               <Text muted size={1}>

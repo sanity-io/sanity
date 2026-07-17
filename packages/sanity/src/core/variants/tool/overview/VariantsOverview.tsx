@@ -9,6 +9,7 @@ import {useTranslation} from '../../../i18n'
 import {Table, type TableProps} from '../../../releases/tool/components/Table/Table'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
 import {CreateVariantSetDialog} from '../../components/dialog/CreateVariantSetDialog'
+import {VariantSetExplainer} from '../../components/VariantSetExplainer'
 import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -228,6 +229,12 @@ export function VariantsOverview() {
               value={searchQuery}
             />
           </Box>
+
+          {hasVariants && (
+            <Box flex="none" paddingBottom={4}>
+              <VariantSetExplainer />
+            </Box>
+          )}
 
           {error && (
             <Card flex="none" padding={3} tone="critical">

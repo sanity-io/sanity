@@ -84,6 +84,23 @@ const variantsLocaleStrings = {
   'overview.set-group.count_one': '{{count}} definition',
   /** Count of definitions on a collapsed set group row (plural). */
   'overview.set-group.count_other': '{{count}} definitions',
+  /** Tooltip on the "Set" badge explaining set membership. */
+  'overview.badge.set.tooltip':
+    'Generated from a variant set. Edit the set to change all its definitions at once.',
+  /** Tooltip on the "Forked" badge explaining a forked definition. */
+  'overview.badge.forked.tooltip':
+    'Generated from a variant set, then edited on its own. Set changes no longer affect it.',
+  /** Title of the "how variant sets work" explainer. */
+  'explainer.title': 'How variant sets work',
+  /** First step in the variant sets explainer. */
+  'explainer.step1': 'Define your dimensions: each key and the values it can take.',
+  /** Second step in the variant sets explainer. */
+  'explainer.step2': 'Sanity generates one variant definition for every combination.',
+  /** Third step in the variant sets explainer. */
+  'explainer.step3':
+    'Edit the set to update them all. Edit one on its own and it becomes a separate definition.',
+  /** Dismiss action for the variant sets explainer. */
+  'explainer.dismiss': 'Got it',
   /** Empty state for variant document table. */
   'detail.documents.no-documents': 'No documents in this variant definition',
   /** Edited column header for variant document table. */
