@@ -1,4 +1,5 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {ClockIcon} from '@sanity/icons/Clock'
 import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
@@ -14,7 +15,6 @@ import {getForkedFromSetReference, getVariantSetReference} from '../../util/vari
 import {VariantPinButton} from '../components/VariantPinButton'
 import {
   decodeVariantIdFromRoute,
-  getVariantConditionsText,
   getVariantDescription,
   getVariantId,
   getVariantTitle,
@@ -81,7 +81,6 @@ export function VariantDetail() {
   }
 
   const description = getVariantDescription(variant)
-  const conditionsText = getVariantConditionsText(variant.conditions)
   const setReference = getVariantSetReference(variant)
   const forkedFromReference = getForkedFromSetReference(variant)
 
@@ -107,9 +106,19 @@ export function VariantDetail() {
               </Text>
             </Flex>
             <HeaderDivider />
-            <Text muted size={1} style={{minWidth: 0}} textOverflow="ellipsis">
-              {conditionsText || t('overview.table.no-conditions')}
-            </Text>
+            {Object.keys(variant.conditions).length > 0 ? (
+              <Flex align="center" flex="none" gap={1} wrap="wrap">
+                {Object.entries(variant.conditions).map(([key, value]) => (
+                  <Badge key={key} mode="outline" radius={2} tone="default">
+                    {key}: {value}
+                  </Badge>
+                ))}
+              </Flex>
+            ) : (
+              <Text muted size={1}>
+                {t('overview.table.no-conditions')}
+              </Text>
+            )}
             {description && (
               <>
                 <HeaderDivider />
@@ -138,10 +147,16 @@ export function VariantDetail() {
             )}
           </Flex>
           <Flex align="center" data-testid="variant-detail-actions" flex="none" gap={3}>
-            <Text muted size={1}>
-              {t('detail.footer.created')}{' '}
-              <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
-            </Text>
+            <Flex align="center" gap={1}>
+              <Text muted size={1}>
+                <ClockIcon />
+              </Text>
+              <Text muted size={1}>
+                {t('detail.footer.created')}{' '}
+                <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
+              </Text>
+            </Flex>
+            <HeaderDivider />
             <Button
               onClick={() => setEditDialogOpen(true)}
               text={t('detail.action.edit-variant')}
