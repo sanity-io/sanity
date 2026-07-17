@@ -22,6 +22,8 @@ const variantsLocaleStrings = {
   'navbar.variant.clear': 'Clear variant selection',
   /** Label for the Variants overview create action. */
   'overview.action.create-variant': 'Create variant definition',
+  /** Label for the Variants overview row edit action. */
+  'overview.action.edit-variant': 'Edit variant definition',
   /** Label for the Variants overview delete action. */
   'overview.action.delete-variant': 'Delete variant definition',
   /** Tooltip when delete is disabled because the variant contains one document. */
