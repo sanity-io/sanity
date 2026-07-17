@@ -16,7 +16,16 @@ export interface BuiltVariantSet {
   definitions: EditableSystemVariant[]
 }
 
-function buildTitle(setName: string, conditions: Record<string, string>): string {
+/**
+ * Auto-title for a generated variant definition: the set name plus its combination of values,
+ * e.g. `Regional launch: uk / loyal`. Shared so set edits retitle consistently with generation.
+ *
+ * @internal
+ */
+export function buildVariantDefinitionTitle(
+  setName: string,
+  conditions: Record<string, string>,
+): string {
   const combination = Object.values(conditions).join(' / ')
   return combination ? `${setName}: ${combination}` : setName
 }
@@ -42,7 +51,7 @@ export function buildVariantSetDefinitions(input: {
       conditions,
       priority: 0,
       metadata: {
-        title: buildTitle(setReference.name, conditions),
+        title: buildVariantDefinitionTitle(setReference.name, conditions),
         description: [],
         [VARIANT_SET_METADATA_KEY]: setReference,
       },
