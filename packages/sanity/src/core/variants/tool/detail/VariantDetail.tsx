@@ -94,26 +94,26 @@ export function VariantDetail() {
                   <Text muted size={1}>
                     {description || t('detail.no-description')}
                   </Text>
-                  {setReference && (
-                    <Flex>
-                      <Badge
-                        data-testid="variant-lineage-part-of-set"
-                        mode="outline"
-                        tone="primary"
-                      >
-                        {t('detail.lineage.part-of-set', {name: setReference.name})}
-                      </Badge>
-                    </Flex>
-                  )}
-                  {forkedFromReference && (
-                    <Flex>
-                      <Badge
-                        data-testid="variant-lineage-forked-from-set"
-                        mode="outline"
-                        tone="caution"
-                      >
-                        {t('detail.lineage.forked-from-set', {name: forkedFromReference.name})}
-                      </Badge>
+                  {(setReference || forkedFromReference) && (
+                    <Flex gap={2} wrap="wrap">
+                      {setReference && (
+                        <Badge
+                          data-testid="variant-lineage-part-of-set"
+                          mode="outline"
+                          tone="primary"
+                        >
+                          {t('detail.lineage.part-of-set', {name: setReference.name})}
+                        </Badge>
+                      )}
+                      {forkedFromReference && (
+                        <Badge
+                          data-testid="variant-lineage-forked-from-set"
+                          mode="outline"
+                          tone="caution"
+                        >
+                          {t('detail.lineage.forked-from-set', {name: forkedFromReference.name})}
+                        </Badge>
+                      )}
                     </Flex>
                   )}
                 </Stack>

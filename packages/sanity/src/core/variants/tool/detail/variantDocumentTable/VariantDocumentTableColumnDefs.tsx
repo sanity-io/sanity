@@ -78,8 +78,8 @@ export const getVariantDocumentTableColumnDefs = (
   },
   {
     id: 'document._type',
-    width: null,
-    style: {minWidth: 100},
+    width: 160,
+    style: {minWidth: 120, maxWidth: 160},
     sorting: true,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">

@@ -167,6 +167,35 @@ describe('VariantDocumentsTable', () => {
     expect(screen.queryByText('First article')).not.toBeInTheDocument()
   })
 
+  it('filters documents by release lane and clears on re-click', async () => {
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    // The lane appears because the documents span more than one bundle (published + drafts).
+    expect(screen.getByTestId('variant-release-lane')).toBeInTheDocument()
+
+    // Only the first article has a published version.
+    await user.click(screen.getByTestId('variant-release-lane-segment-published'))
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+    expect(screen.getByText('First article')).toBeInTheDocument()
+    expect(screen.queryByText('Second article')).not.toBeInTheDocument()
+
+    // Clicking the active segment again clears the filter back to all documents.
+    await user.click(screen.getByTestId('variant-release-lane-segment-published'))
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+  })
+
   it('sorts grouped rows by document group id on first load', async () => {
     const rows: DocumentInVariantGroup[] = [
       {
