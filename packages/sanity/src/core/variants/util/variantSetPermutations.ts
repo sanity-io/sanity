@@ -52,3 +52,35 @@ export function countVariantSetPermutations(dimensions: VariantSetDimension[]): 
 
   return completeDimensions.reduce((total, dimension) => total * dimension.values.length, 1)
 }
+
+/**
+ * Expand a set of dimensions into the full cartesian product of conditions — one plain
+ * `{key: value}` object per permutation. Incomplete dimensions (no key, or no values) are
+ * ignored, mirroring {@link countVariantSetPermutations}, so this always returns exactly
+ * `countVariantSetPermutations(dimensions)` entries. Returns an empty list when no complete
+ * dimension exists.
+ *
+ * @internal
+ */
+export function generateVariantSetPermutations(
+  dimensions: VariantSetDimension[],
+): Array<Record<string, string>> {
+  const completeDimensions = dimensions.filter(
+    (dimension) => dimension.key.trim() && dimension.values.length > 0,
+  )
+
+  if (completeDimensions.length === 0) {
+    return []
+  }
+
+  return completeDimensions.reduce<Array<Record<string, string>>>(
+    (permutations, dimension) => {
+      const key = dimension.key.trim()
+
+      return permutations.flatMap((permutation) =>
+        dimension.values.map((value) => ({...permutation, [key]: value})),
+      )
+    },
+    [{}],
+  )
+}
