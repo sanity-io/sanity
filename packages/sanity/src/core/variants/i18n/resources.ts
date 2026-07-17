@@ -74,8 +74,8 @@ const variantsLocaleStrings = {
   'detail.documents.table.search-placeholder': 'Search documents',
   /** Type column header for variant document table. */
   'detail.documents.table.type': 'Type',
-  /** Bundle column header for variant document table. */
-  'detail.documents.table.bundle': 'Bundle',
+  /** "Appears in" column header for variant document table (which bundles each doc is in). */
+  'detail.documents.table.appears-in': 'Appears in',
   /** Label for the release lane above the variant document table. */
   'detail.release-lane.title': 'Releases',
   /** The "show all documents" segment of the release lane. */

@@ -1,10 +1,10 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
-import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {LoadingBlock} from '../../../components'
+import {LoadingBlock, RelativeTime} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
@@ -19,8 +19,13 @@ import {
   getVariantTitle,
 } from '../util'
 import {groupVariantDocumentsByGroup} from './groupVariantDocumentsByGroup'
-import {VariantDetailFooter} from './VariantDetailFooter'
+import {VariantDetailMenuButton} from './VariantDetailMenuButton'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
+
+// Thin vertical rule separating the inline metadata segments in the header lane.
+function HeaderDivider() {
+  return <Card borderLeft flex="none" style={{height: 20}} />
+}
 
 export function VariantDetail() {
   const router = useRouter()
@@ -87,59 +92,62 @@ export function VariantDetail() {
           text={t('detail.back')}
         />
       </Card>
-      <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
-        <Container flex="none" width={3}>
-          <Flex direction="column" paddingX={3}>
-            <Card paddingY={5}>
-              <Flex align="flex-start" gap={4} justify="space-between">
-                <Stack space={3}>
-                  <Flex align="center" gap={1}>
-                    <VariantPinButton variant={variant} />
-                    <Text as="h1" size={4} weight="bold">
-                      {getVariantTitle(variant)}
-                    </Text>
-                  </Flex>
-                  <Text muted size={1}>
-                    {description || t('detail.no-description')}
-                  </Text>
-                </Stack>
-              </Flex>
-
-              <Box paddingTop={4}>
-                <Stack space={2}>
-                  <Text size={1} weight="medium">
-                    {t('dialog.create.conditions.title')}
-                  </Text>
-                  <Text muted size={1}>
-                    {conditionsText || t('overview.table.no-conditions')}
-                  </Text>
-                </Stack>
-              </Box>
-            </Card>
-          </Flex>
-        </Container>
-        <Flex direction="column" flex={1} overflow="hidden" style={{minHeight: 0}}>
-          {variantDocumentsError ? (
-            <Box padding={4}>
-              <Text muted size={1}>
-                {t('detail.documents.error')}
+      {/* Slim header lane: identity + inline metadata on the left, actions on the right, so the
+          vertical space goes to the documents table below instead of a tall stacked header. */}
+      <Card borderBottom flex="none" paddingX={4} paddingY={3}>
+        <Flex align="center" gap={3}>
+          <Flex align="center" gap={3} flex={1} style={{minWidth: 0}}>
+            <Flex align="center" gap={2} flex="none">
+              <VariantPinButton variant={variant} />
+              <Text as="h1" size={2} textOverflow="ellipsis" weight="bold">
+                {getVariantTitle(variant)}
               </Text>
-            </Box>
-          ) : (
-            <VariantDocumentsTable
-              loading={documentsLoading}
-              rows={tableRows}
-              variantId={getVariantId(variant._id)}
+            </Flex>
+            <HeaderDivider />
+            <Text muted size={1} style={{minWidth: 0}} textOverflow="ellipsis">
+              {conditionsText || t('overview.table.no-conditions')}
+            </Text>
+            {description && (
+              <>
+                <HeaderDivider />
+                <Text muted size={1} style={{minWidth: 0}} textOverflow="ellipsis">
+                  {description}
+                </Text>
+              </>
+            )}
+          </Flex>
+          <Flex align="center" data-testid="variant-detail-actions" flex="none" gap={3}>
+            <Text muted size={1}>
+              {t('detail.footer.created')}{' '}
+              <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
+            </Text>
+            <Button
+              onClick={() => setEditDialogOpen(true)}
+              text={t('detail.action.edit-variant')}
             />
-          )}
+            <VariantDetailMenuButton
+              documentCount={tableRows.length}
+              documentsLoading={documentsLoading}
+              variant={variant}
+            />
+          </Flex>
         </Flex>
+      </Card>
+      <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
+        {variantDocumentsError ? (
+          <Box padding={4}>
+            <Text muted size={1}>
+              {t('detail.documents.error')}
+            </Text>
+          </Box>
+        ) : (
+          <VariantDocumentsTable
+            loading={documentsLoading}
+            rows={tableRows}
+            variantId={getVariantId(variant._id)}
+          />
+        )}
       </Flex>
-      <VariantDetailFooter
-        openEditDialog={() => setEditDialogOpen(true)}
-        documentCount={tableRows.length}
-        documentsLoading={documentsLoading}
-        variant={variant}
-      />
       {editDialogOpen && (
         <EditVariantDialog
           onCancel={() => setEditDialogOpen(false)}

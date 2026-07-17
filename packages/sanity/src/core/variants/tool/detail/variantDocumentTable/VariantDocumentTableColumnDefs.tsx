@@ -59,7 +59,7 @@ export const getVariantDocumentTableColumnDefs = (
     sorting: false,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.BasicHeader text={t('detail.documents.table.bundle')} />
+        <Headers.BasicHeader text={t('detail.documents.table.appears-in')} />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
