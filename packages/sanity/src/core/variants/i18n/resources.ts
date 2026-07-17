@@ -22,8 +22,14 @@ const variantsLocaleStrings = {
   'navbar.variant.clear': 'Clear variant selection',
   /** Label for the Variants overview create action. */
   'overview.action.create-variant': 'Create variant definition',
+  /** Tooltip for the Variants overview create action. */
+  'overview.action.create-variant.tooltip':
+    'Creates a single variant definition. To generate many at once, use Create variant set.',
   /** Label for the Variants overview create-set action. */
   'overview.action.create-variant-set': 'Create variant set',
+  /** Tooltip for the Variants overview create-set action. */
+  'overview.action.create-variant-set.tooltip':
+    'Define dimensions and generate a variant definition for every combination.',
   /** Label for the Variants overview row edit action. */
   'overview.action.edit-variant': 'Edit variant definition',
   /** Label for the Variants overview row edit-set action (shown on set members). */

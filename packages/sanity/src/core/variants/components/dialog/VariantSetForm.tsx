@@ -1,6 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
 
@@ -229,30 +229,36 @@ export function VariantSetForm(props: {
             const example = index % EXAMPLE_KEY_PLACEHOLDERS.length
 
             return (
-              <Stack key={row.id} space={2}>
-                <Flex align="center" gap={2}>
-                  <Box flex={1}>
-                    <TextInput
-                      aria-label={t('dialog.create-set.dimension-key.label')}
-                      customValidity={validation.key ? t(validation.key) : undefined}
-                      data-testid="variant-set-form-dimension-key"
-                      fontSize={1}
-                      onChange={(event) => handleKeyChange(index, event.currentTarget.value)}
-                      placeholder={t(EXAMPLE_KEY_PLACEHOLDERS[example]!)}
-                      value={row.key}
+              <Stack key={row.id} space={3}>
+                <Stack space={2}>
+                  <Flex align="center" justify="space-between">
+                    <Text muted size={0} weight="medium">
+                      {t('dialog.create-set.dimension-key.label')}
+                    </Text>
+                    <Button
+                      disabled={rows.length === 1 && !row.key.trim() && row.values.length === 0}
+                      icon={TrashIcon}
+                      mode="bleed"
+                      onClick={() => handleRemoveDimension(index)}
+                      tone="critical"
+                      tooltipProps={{content: t('dialog.create-set.remove-dimension')}}
+                      type="button"
                     />
-                  </Box>
-                  <Button
-                    disabled={rows.length === 1 && !row.key.trim() && row.values.length === 0}
-                    icon={TrashIcon}
-                    mode="bleed"
-                    onClick={() => handleRemoveDimension(index)}
-                    tone="critical"
-                    tooltipProps={{content: t('dialog.create-set.remove-dimension')}}
-                    type="button"
+                  </Flex>
+                  <TextInput
+                    aria-label={t('dialog.create-set.dimension-key.label')}
+                    customValidity={validation.key ? t(validation.key) : undefined}
+                    data-testid="variant-set-form-dimension-key"
+                    fontSize={1}
+                    onChange={(event) => handleKeyChange(index, event.currentTarget.value)}
+                    placeholder={t(EXAMPLE_KEY_PLACEHOLDERS[example]!)}
+                    value={row.key}
                   />
-                </Flex>
-                <Box paddingLeft={1}>
+                </Stack>
+                <Stack space={2}>
+                  <Text muted size={0} weight="medium">
+                    {t('dialog.create-set.dimension-values.label')}
+                  </Text>
                   <ValueChipsInput
                     addPlaceholder={t(EXAMPLE_VALUES_PLACEHOLDERS[example]!)}
                     ariaLabel={t('dialog.create-set.dimension-values.label')}
@@ -260,7 +266,7 @@ export function VariantSetForm(props: {
                     onChange={(values) => handleValuesChange(index, values)}
                     removeLabel={t('dialog.create-set.remove-value')}
                   />
-                </Box>
+                </Stack>
                 {validationError && (
                   <TextWithTone
                     data-testid="variant-set-form-dimension-error"
