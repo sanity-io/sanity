@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, useMemo} from 'react'
 import {StateLink} from 'sanity/router'
 
@@ -7,6 +7,7 @@ import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
+import {getForkedFromSetReference, getVariantSetReference} from '../../util/variantSet'
 import {getVariantId, getVariantConditionsText, getVariantTitle} from '../util'
 
 /**
@@ -73,6 +74,8 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
   }
 
   const conditionsText = getVariantConditionsText(variant.conditions)
+  const setReference = getVariantSetReference(variant)
+  const forkedFromReference = getForkedFromSetReference(variant)
 
   return (
     <Box {...cellProps} flex={1} paddingLeft={3} paddingRight={2} paddingY={1} sizing="border">
@@ -83,9 +86,21 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
         <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
           <Flex align="center" gap={3}>
             <Stack flex={1} space={2}>
-              <Text size={1} weight="medium">
-                {getVariantTitle(variant)}
-              </Text>
+              <Flex align="center" gap={2}>
+                <Text size={1} weight="medium">
+                  {getVariantTitle(variant)}
+                </Text>
+                {setReference && (
+                  <Badge fontSize={0} mode="outline" tone="primary">
+                    {t('overview.badge.set')}
+                  </Badge>
+                )}
+                {forkedFromReference && (
+                  <Badge fontSize={0} mode="outline" tone="caution">
+                    {t('overview.badge.forked')}
+                  </Badge>
+                )}
+              </Flex>
               <Text muted size={1}>
                 {conditionsText || t('overview.table.no-conditions')}
               </Text>
