@@ -4,7 +4,7 @@ import {
   type SanityClient,
 } from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
-import {firstValueFrom} from 'rxjs'
+import {BehaviorSubject, firstValueFrom, of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {promiseWithResolvers} from '../../../util/promiseWithResolvers'
@@ -1614,5 +1614,154 @@ describe('createAuthStore: currentUser attributes', () => {
 
     const state = await waitForState(store, (s) => s.authenticated)
     expect(state.currentUser?.attributes).toEqual(MOCK_USER.attributes)
+  })
+})
+
+describe('createAuthStore: workbench OS token', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+    vi.restoreAllMocks()
+  })
+
+  it('authenticates from the OS token, overriding loginMethod, without persisting it', async () => {
+    const OS_TOKEN = 'workbench-os-token'
+    // Cookie mode with an invalid cookie: without the OS token the store would be
+    // unauthenticated. Authenticating proves the OS token takes precedence and the
+    // loginMethod machinery is bypassed.
+    const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+      observeWorkbenchToken: () => of(OS_TOKEN),
+    })
+
+    const state = await waitForState(store, (s) => s.authenticated, 2000)
+    expect(state.authenticated).toBe(true)
+    expect(state.currentUser).toEqual(MOCK_USER)
+
+    // The OS token is used in-memory only and must never be written to storage.
+    expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull()
+  })
+
+  it('exposes the OS token on the token output (for Bifur/realtime), not the stored one', async () => {
+    // Bifur authenticates from `auth.token`, so it must carry the OS token —
+    // not the (unwritten/stale) storage token.
+    localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'stale-stored-token'}))
+    const OS_TOKEN = 'workbench-os-token'
+    const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+      observeWorkbenchToken: () => of(OS_TOKEN),
+    })
+
+    expect(await firstValueFrom(store.token)).toBe(OS_TOKEN)
+  })
+
+  it('is unauthenticated when the OS is signed out, ignoring a stored token', async () => {
+    // Even with a valid stored token, an OS-embedded studio must follow the OS:
+    // a `null` emission means signed out, and the loginMethod flow is bypassed.
+    localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'mock-token'}))
+    const mock = createMockClientFactory()
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'token',
+      clientFactory: mock.factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+      observeWorkbenchToken: () => of(null),
+    })
+
+    const state = await firstValueFrom(store.state)
+    expect(state.authenticated).toBe(false)
+  })
+
+  it('tracks the OS auth state over time — a later sign-out logs the studio out', async () => {
+    // Regression guard for the "auth frozen after OS token" case: the stream must
+    // keep emitting so an OS sign-out (null) transitions to unauthenticated
+    // instead of replaying the authenticated result forever.
+    const OS_TOKEN = 'workbench-os-token'
+    const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
+    const token$ = new BehaviorSubject<string | null>(OS_TOKEN)
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+      observeWorkbenchToken: () => token$,
+    })
+
+    await waitForState(store, (s) => s.authenticated, 2000)
+
+    // OS signs out.
+    token$.next(null)
+    const state = await waitForState(store, (s) => !s.authenticated, 2000)
+    expect(state.authenticated).toBe(false)
+  })
+
+  it('refreshes the OS token instead of tearing down on logout (forced 401)', async () => {
+    // In the workbench, a forced logout (rejected token) must ask the OS to
+    // reissue rather than clear local state or hit /auth/logout.
+    localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'stored-token'}))
+    const OS_TOKEN = 'workbench-os-token'
+    const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
+    const refreshWorkbenchToken = vi.fn()
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+      observeWorkbenchToken: () => of(OS_TOKEN),
+      refreshWorkbenchToken,
+    })
+
+    await waitForState(store, (s) => s.authenticated, 2000)
+    await store.logout!()
+
+    expect(refreshWorkbenchToken).toHaveBeenCalledTimes(1)
+    // Local state is left intact — the OS drives sign-out, not us.
+    expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toEqual(JSON.stringify({token: 'stored-token'}))
+  })
+
+  it('falls through to the normal flow when not embedded in the workbench', async () => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'mock-token'}))
+    const mock = createMockClientFactory()
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'token',
+      clientFactory: mock.factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+      observeWorkbenchToken: () => undefined,
+    })
+
+    const state = await waitForState(store, (s) => s.authenticated)
+    expect(state.authenticated).toBe(true)
   })
 })

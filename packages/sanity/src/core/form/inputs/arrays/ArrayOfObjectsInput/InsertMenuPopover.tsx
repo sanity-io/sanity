@@ -1,11 +1,12 @@
+import {type SchemaType} from '@sanity/types'
+import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {useCallback, useContext, useMemo, useReducer, useRef} from 'react'
+import {EditDialogOuterBoundaryContext} from 'sanity/_singletons'
+
 import {
   InsertMenu as SanityInsertMenu,
   type InsertMenuProps as SanityInsertMenuProps,
-} from '@sanity/insert-menu'
-import {type SchemaType} from '@sanity/types'
-import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {useCallback, useMemo, useReducer, useRef} from 'react'
-
+} from '../../../../../insert-menu'
 import {Popover, type PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
@@ -59,6 +60,15 @@ export function useInsertMenuPopover(props: {
     },
     [onSelect],
   )
+
+  // Edit dialogs constrain their descendant popovers to the dialog's scroll container. The
+  // insert menu is allowed to overflow the dialog, so inside a dialog it uses the boundary the
+  // dialog itself sits in (typically the document pane's scroll container, keeping the menu
+  // below the sticky pane header). Outside a dialog — or when the dialog captured no boundary —
+  // this is undefined and the ambient boundary applies as usual.
+  const editDialogOuterBoundary = useContext(EditDialogOuterBoundaryContext)
+  const floatingBoundary = editDialogOuterBoundary?.element ?? undefined
+
   const popover = useMemo(
     () => (
       <Popover
@@ -67,11 +77,12 @@ export function useInsertMenuPopover(props: {
         constrainSize
         overflow="hidden"
         portal
+        floatingBoundary={floatingBoundary}
         content={<InsertMenu {...insertMenuProps} onSelect={handleOnSelect} />}
         {...props.popoverProps}
       />
     ),
-    [handleOnSelect, insertMenuProps, props.popoverProps, state],
+    [floatingBoundary, handleOnSelect, insertMenuProps, props.popoverProps, state],
   )
 
   return {

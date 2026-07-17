@@ -12,7 +12,11 @@ import {
 import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
-import {usePerspective} from '../../../perspective/usePerspective'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  useTargetDocumentState,
+} from '../../../hooks/useTargetDocumentState'
 import {useDocumentPairPermissions} from '../../../store'
 import {pathsAreEqual} from '../../paths'
 import {type GroupChangeNode} from '../../types'
@@ -61,13 +65,23 @@ export function GroupChange(
   }
   const isRevertButtonHovered = useHover<HTMLButtonElement>(revertButtonElement)
 
-  const {selectedReleaseId} = usePerspective()
-  const docOperations = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
+  const targetDocumentState = useTargetDocumentState(documentId)
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, reverting is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const docOperations = useDocumentOperation(
+    documentId,
+    schemaType.name,
+    getPairTarget(targetDocumentState),
+  )
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
     type: schemaType.name,
+    version: scopeId,
     permission: 'update',
   })
 
@@ -116,7 +130,7 @@ export function GroupChange(
                   // oxlint-disable-next-line react/react-compiler
                   ref={setRevertButtonElement}
                   selected={confirmRevertOpen}
-                  disabled={readOnly}
+                  disabled={readOnly || !isTargetReady}
                   data-testid={`group-change-revert-button-${group.key}`}
                 />
               </Box>
@@ -142,6 +156,7 @@ export function GroupChange(
       isPermissionsLoading,
       isPortableText,
       isRevertButtonHovered,
+      isTargetReady,
       permissions?.granted,
       readOnly,
       handleRevertChanges,

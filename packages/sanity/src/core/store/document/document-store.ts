@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
-import {type Observable} from 'rxjs'
+import {type Observable, of} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../config'
@@ -35,12 +35,14 @@ import {
   type OperationSuccess,
 } from './document-pair/operationEvents'
 import {type OperationsAPI} from './document-pair/operations'
+import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
 import {validation} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
+import {getPairTargetScopeId, normalizeDocumentPairTarget} from './normalizeDocumentPairTarget'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
-import {type IdPair} from './types'
+import {type DocumentPairTarget, type IdPair} from './types'
 
 /**
  * @hidden
@@ -98,11 +100,17 @@ export interface DocumentStore {
       type: string,
       version?: string,
     ) => Observable<DocumentVersionEvent>
-    /** @internal */
+    /**
+     * @internal
+     * `version` accepts either a plain version name (release/bundle) or a
+     * {@link DocumentPairTarget}. The guarded target kinds (`unresolved`, `target-missing`) emit
+     * a disabled operations API without checking out a pair, so operations can never reach the
+     * base draft/published pair while a selected target is unresolved or has no document.
+     */
     editOperations: (
       publishedId: string,
       type: string,
-      version?: string,
+      version?: string | DocumentPairTarget,
     ) => Observable<OperationsAPI>
     editState: (publishedId: string, type: string, version?: string) => Observable<EditStateFor>
     operationEvents: (
@@ -227,7 +235,23 @@ export function createDocumentStore({
         )
       },
       editOperations(publishedId, type, version) {
-        return editOperations(ctx, getIdPairFromPublished(publishedId, version), type)
+        const target = normalizeDocumentPairTarget(version)
+
+        // Guarded targets never check out a pair. Branching here (before the memoized
+        // `editOperations`) also keeps them out of `memoizeKeyGen`, which only keys on
+        // `publishedId + versionId` and would collide these with the base pair.
+        if (target?.kind === 'unresolved') {
+          return of(GUARDED)
+        }
+        if (target?.kind === 'target-missing') {
+          return of(TARGET_NOT_FOUND_OPERATIONS)
+        }
+
+        return editOperations(
+          ctx,
+          getIdPairFromPublished(publishedId, getPairTargetScopeId(target)),
+          type,
+        )
       },
       editState(publishedId, type, version) {
         const idPair = getIdPairFromPublished(publishedId, version)

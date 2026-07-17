@@ -1,9 +1,14 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {EMPTY} from 'rxjs'
 import {and, assign, fromObservable, sendParent, setup, stateIn} from 'xstate'
+
+import {type VersionInfoDocumentStub} from '../../releases'
 
 export interface Variant {
   id: string
   name: string
+  document?: VersionInfoDocumentStub
+  releaseDocument?: ReleaseDocument
 }
 
 interface SelectionContext {

@@ -7,6 +7,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {getTargetScopeId, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
@@ -19,16 +20,22 @@ import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 export const useDiscardVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
-  const {id, type, release, version} = props
+  const {id, type, version} = props
   const currentUser = useCurrentUser()
   const {t} = useTranslation()
   const {selectedPerspective} = usePerspective()
   const willUnpublish = version ? isGoingToUnpublish(version) : false
+  const targetDocumentState = useTargetDocumentState(id)
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, the action is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
+    version: scopeId,
     permission: 'discardVersion',
   })
 
@@ -52,7 +59,7 @@ export const useDiscardVersionAction: DocumentActionComponent = (
   }
 
   return {
-    disabled: isPermissionsLoading || !permissions?.granted,
+    disabled: isPermissionsLoading || !permissions?.granted || !isTargetReady,
     dialog: dialogOpen && {
       type: 'custom',
       component: (

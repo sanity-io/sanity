@@ -133,6 +133,15 @@ export const appendRestoreDefaultItems = (options: {
 
   if (suppressRestoreDefaults) return menuItems
 
+  // Only attach a restore item to a group that already has items, so a pane
+  // that removed them (e.g. `menuItems([])`) does not get them back.
+  const hasSortItems = menuItems.some(
+    (item) => item.group === 'sorting' || item.action === 'setSortOrder',
+  )
+  const hasLayoutItems = menuItems.some(
+    (item) => item.group === 'layout' || item.action === 'setLayout',
+  )
+
   const restoreDefaultSortOrderItem: PaneMenuItem = {
     group: 'sorting',
     action: 'restoreDefaultSortOrder',
@@ -151,7 +160,11 @@ export const appendRestoreDefaultItems = (options: {
     ...(isLayoutDefault && {disabled: {reason: restoreLayoutDisabledReason}}),
   }
 
-  return [...menuItems, restoreDefaultSortOrderItem, restoreDefaultLayoutItem]
+  return [
+    ...menuItems,
+    ...(hasSortItems ? [restoreDefaultSortOrderItem] : []),
+    ...(hasLayoutItems ? [restoreDefaultLayoutItem] : []),
+  ]
 }
 
 export function useShallowUnique<ValueType>(value: ValueType): ValueType {
@@ -236,14 +249,15 @@ export const PaneContainer = memo(function PaneContainer(
     [setStoredSortOrder, schemaType, defaultSortOrder],
   )
 
-  // Write the default back so its matching menu item regains its checkmark.
+  // Clear the stored preference instead of writing the default: the key is
+  // shared per type, so writing would leak this list's default onto its siblings.
   const handleRestoreDefaultSortOrder = useCallback(async () => {
-    await setStoredSortOrder(toStaticSortOrder(defaultSortOrder))
-  }, [setStoredSortOrder, defaultSortOrder])
+    await setStoredSortOrder(null)
+  }, [setStoredSortOrder])
 
   const handleRestoreDefaultLayout = useCallback(async () => {
-    await setLayout(defaultLayout)
-  }, [setLayout, defaultLayout])
+    await setLayout(null)
+  }, [setLayout])
 
   const [customMenuItemState, setCustomMenuItemState] = useState<CustomMenuItemState>({})
 

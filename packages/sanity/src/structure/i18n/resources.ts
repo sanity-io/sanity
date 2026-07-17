@@ -18,6 +18,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when action button is disabled because the document does not exist */
   'action.delete.disabled.nothing-to-delete':
     "This document doesn't yet exist or is already deleted",
+  /** Tooltip when action button is disabled because the selected release or variant does not contain this document */
+  'action.delete.disabled.target-not-found':
+    'The selected release or variant does not contain this document',
   /** Tooltip when action button is disabled because the document exists in scheduled releases */
   'action.delete.disabled.scheduled-release':
     'This document cannot be deleted as it exists within scheduled releases',
@@ -42,6 +45,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.discard-changes.disabled.not-published': 'This document is not published',
   /** Tooltip when action button is disabled because the operation is not ready   */
   'action.discard-changes.disabled.not-ready': 'Operation not ready',
+  /** Tooltip when action is disabled because the selected release or variant does not contain this document */
+  'action.discard-changes.disabled.target-not-found':
+    'The selected release or variant does not contain this document',
   /** Label for the "Discard changes" document action */
   'action.discard-changes.label': 'Discard changes',
 
@@ -50,6 +56,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when action is disabled because the document doesn't exist */
   'action.duplicate.disabled.nothing-to-duplicate':
     "This document doesn't yet exist so there's nothing to duplicate",
+  /** Tooltip when action is disabled because the selected release or variant does not contain this document */
+  'action.duplicate.disabled.target-not-found':
+    'The selected release or variant does not contain this document',
   /** Label for the "Duplicate" document action */
   'action.duplicate.label': 'Duplicate',
   /** Label for the "Duplicate" document action while the document is being duplicated */
@@ -61,6 +70,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** Tooltip when action is disabled because the studio is not ready.*/
   'action.publish.disabled.not-ready': 'Operation not ready',
+  /** Tooltip when action is disabled because the version is published as part of its release */
+  'action.publish.disabled.not-publishable': 'This version is published as part of its release',
+  /** Tooltip when action is disabled because the selected release or variant does not contain this document */
+  'action.publish.disabled.target-not-found':
+    'The selected release or variant does not contain this document',
   /** Label for action when there are pending changes.*/
   'action.publish.draft.label': 'Publish',
   /** Label for the "Publish" document action */
@@ -106,6 +120,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.unpublish.disabled.not-published': 'This document is not published',
   /** Tooltip when action is disabled because the operation is not ready   */
   'action.unpublish.disabled.not-ready': 'Operation not ready',
+  /** Tooltip when action is disabled because the selected release or variant does not contain this document */
+  'action.unpublish.disabled.target-not-found':
+    'The selected release or variant does not contain this document',
   /** Label for the "Unpublish" document action */
   'action.unpublish.label': 'Unpublish',
   /** Fallback tooltip for the Unpublish document action when publish is invoked for a document with live edit enabled.*/
@@ -233,14 +250,18 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.unpublished-release-banner.text-with-published':
     'Showing the current <strong>published</strong> version:',
   /** The text that appears for the action button to add the current document to the selected variant */
-  'banners.variant.action.add-to-variant': 'Add to variant',
+  'banners.variant.action.add-to-variant': 'Create variant',
+  /** The text for the banner that appears when the selected variant matches no variant definition */
+  'banners.variant.definition-not-found':
+    'The selected variant <VariantName>{{name}}</VariantName> could not be found.',
   /** Toast description in case an error occurs when adding a document to a variant */
   'banners.variant.error.description':
     'An error occurred when adding document to the variant: {{message}}',
   /** Toast title in case an error occurs when adding a document to a variant */
   'banners.variant.error.title': 'Error adding document to variant',
   /** The text for the banner that appears when a document is not in the selected variant */
-  'banners.variant.not-in-variant': 'Not in the <VariantBadge>{{title}}</VariantBadge> variant.',
+  'banners.variant.not-in-variant':
+    'No variant document exists for <VariantBadge>{{title}}</VariantBadge>.',
   /** Description of toast that will appear while the document is added to the variant */
   'banners.variant.waiting.description':
     'Please hold tight while the document is added to the variant. It should not take longer than a few seconds.',
@@ -671,6 +692,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-operation-results.operation-undefined-title': 'Untitled',
   /** The loading message for the document not found pane */
   'panes.document-pane.document-not-found.loading': 'Loading document…',
+  /** The loading message shown while the document targeted by the selected variant is resolving */
+  'panes.document-pane.variant-target.loading': 'Loading document…',
   /** The text of the document not found pane if the schema is known */
   'panes.document-pane.document-not-found.text':
     'The document type is not defined, and a document with the <Code>{{id}}</Code> identifier could not be found.',

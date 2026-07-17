@@ -65,13 +65,13 @@ export function VariantsMenu(): React.JSX.Element {
   )
 
   const handleSelectDefault = useCallback(() => {
-    setVariant(undefined)
+    setVariant({variantId: undefined})
     setFilterQuery('')
   }, [setVariant])
 
   const handleSelectVariant = useCallback(
     (variant: SystemVariant) => {
-      setVariant(variant._id)
+      setVariant({variantId: variant._id})
       setFilterQuery('')
     },
     [setVariant],

@@ -3,6 +3,8 @@ import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionModalDialogProps,
+  getPairTarget,
+  getTargetScopeId,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
@@ -13,11 +15,13 @@ import {
 
 import {ConfirmDeleteDialog} from '../components'
 import {structureLocaleNamespace} from '../i18n'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_KEY = {
   NOT_PUBLISHED: 'action.unpublish.disabled.not-published',
   NOT_READY: 'action.unpublish.disabled.not-ready',
   LIVE_EDIT_ENABLED: 'action.unpublish.disabled.live-edit-enabled',
+  TARGET_NOT_FOUND: 'action.unpublish.disabled.target-not-found',
 }
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
@@ -26,14 +30,28 @@ export const useUnpublishAction: DocumentActionComponent = ({
   id,
   type,
   draft,
-  liveEdit,
+  liveEditSchemaType,
   release,
 }) => {
-  const {unpublish} = useDocumentOperation(id, type)
+  const {targetDocumentState} = useDocumentPane()
+  // The scope of the document targeted by the selected perspective, so that published variant
+  // documents can be unpublished (undefined when the target is still resolving or the
+  // draft/published pair applies). While resolving, the action is disabled below instead of
+  // silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
+  // A variant is unpublishable only when its variant-of-published sibling exists — the base
+  // `published` document says nothing about the variant's publish state.
+  const isVariantUnpublishable = isVariantTarget
+    ? targetDocumentState.publishedSibling !== undefined
+    : true
+  const {unpublish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
+    version: scopeId,
     permission: 'unpublish',
   })
   const currentUser = useCurrentUser()
@@ -77,7 +95,10 @@ export const useUnpublishAction: DocumentActionComponent = ({
       // Draft documents can't either
       return null
     }
-    if (liveEdit) {
+    // `liveEdit` is forced to true whenever a version is checked out, which includes variant
+    // targets — for those, only the schema-level live edit setting should hide the action
+    // (the variant-of-published document is unpublishable).
+    if (liveEditSchemaType) {
       return null
     }
 
@@ -93,10 +114,20 @@ export const useUnpublishAction: DocumentActionComponent = ({
       }
     }
 
+    if (!isVariantUnpublishable) {
+      return {
+        tone: 'critical',
+        icon: UnpublishIcon,
+        disabled: true,
+        label: t('action.unpublish.label'),
+        title: t(DISABLED_REASON_KEY.NOT_PUBLISHED),
+      }
+    }
+
     return {
       tone: 'critical',
       icon: UnpublishIcon,
-      disabled: Boolean(unpublish.disabled) || isPermissionsLoading,
+      disabled: Boolean(unpublish.disabled) || isPermissionsLoading || !isTargetReady,
       label: t('action.unpublish.label'),
       title: unpublish.disabled ? t(DISABLED_REASON_KEY[unpublish.disabled]) : '',
       onHandle: () => setConfirmDialogOpen(true),
@@ -105,8 +136,10 @@ export const useUnpublishAction: DocumentActionComponent = ({
   }, [
     release,
     isDraft,
-    liveEdit,
+    liveEditSchemaType,
     isPermissionsLoading,
+    isTargetReady,
+    isVariantUnpublishable,
     permissions?.granted,
     unpublish.disabled,
     t,

@@ -13,6 +13,7 @@ import {
   type RenderInputCallback,
 } from '../../../types'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
+import {stripStegaFromPasteEvent} from '../../../utils/stegaPaste'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
@@ -100,6 +101,7 @@ export function PrimitiveField(props: {
       'id': member.field.id,
       'ref': focusRef,
       'onChange': handleNativeChange,
+      'onPaste': stripStegaFromPasteEvent,
       'value': resolveNativeNumberInputValue(
         member.field.schemaType,
         member.field.value,

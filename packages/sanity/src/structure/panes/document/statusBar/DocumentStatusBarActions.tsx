@@ -6,6 +6,7 @@ import {
   DocumentGroupInventoryAction,
   type DocumentGroupInventoryProps,
   Hotkeys,
+  isGoingToUnpublish,
   isSanityDefinedAction,
   useClient,
   useDocumentStore,
@@ -23,7 +24,6 @@ import {DocTitle} from '../../../components/DocTitle'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {useHistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
-import {usePerspectiveNavigator} from '../../../hooks/usePerspectiveNavigator'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
@@ -45,13 +45,19 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, states} = props
   const {__internal_tasks, beta} = useSource()
-  const {displayed, editState, isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive} =
-    useDocumentPane()
+
+  const {
+    displayed,
+    editState,
+    isDocumentGroupInventoryActive,
+    setIsDocumentGroupInventoryActive,
+    documentId,
+    documentType,
+  } = useDocumentPane()
   const {params} = usePaneRouter()
-  const {documentId, documentType} = useDocumentPane()
+
   const showingRevision = Boolean(params?.rev)
 
-  const {navigate: navigatePerspective} = usePerspectiveNavigator()
   const perspectiveList = useDocumentPerspectiveList()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentStore = useDocumentStore()
@@ -104,21 +110,34 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       : [firstActionState, ...menuActionStates].filter(Boolean)
   }, [showFirstActionButton, firstActionState, menuActionStates])
 
+  // When a document is designated to be unpublished in a release, the published
+  // document is displayed instead.
+  //
+  // The document group inventory must always reflect the intended document id,
+  // even if the document pane decided to display a different document for some
+  // reason.
+  //
+  // In the future, this would be more robust if `DocumentPaneProvider`
+  // exposed both the displayed document and the original source document.
+  const targetDocumentId =
+    editState?.version && isGoingToUnpublish(editState?.version)
+      ? editState.version._id
+      : displayed?._id
+
   return (
     <Flex align="center" gap={3}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {hasDocumentGroupInventory && typeof displayed?._id !== 'undefined' && (
+      {hasDocumentGroupInventory && typeof targetDocumentId !== 'undefined' && (
         <DocumentGroupInventoryAction
-          documentId={displayed._id}
+          documentId={targetDocumentId}
           portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
           isDocumentGroupInventoryActive={isDocumentGroupInventoryActive}
           setIsDocumentGroupInventoryActive={setIsDocumentGroupInventoryActive}
         >
           <DocumentGroupInventory
-            documentId={displayed._id}
+            documentId={targetDocumentId}
             documentType={documentType}
             portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
-            navigatePerspective={navigatePerspective}
             perspectiveList={perspectiveList}
             referringDocuments$={referringDocuments$}
             components={documentGroupInventoryComponents}

@@ -1,6 +1,11 @@
 import {isReference, type SanityDocument} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
 
+import {
+  assertNotVariantVersion,
+  disabledForVariantVersion,
+  type VariantVersionDisabledReason,
+} from '../utils/assertNotVariantVersion'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {operationsApiClient} from '../utils/operationsApiClient'
 import {type OperationImpl} from './index'
@@ -22,10 +27,20 @@ function strengthenOnPublish<T>(obj: T): T {
   ) as T
 }
 
-type DisabledReason = 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES'
+type DisabledReason =
+  | 'LIVE_EDIT_ENABLED'
+  | 'ALREADY_PUBLISHED'
+  | 'NO_CHANGES'
+  | VariantVersionDisabledReason
 
 export const publish: OperationImpl<[], DisabledReason> = {
   disabled: ({schema, typeName, snapshots}) => {
+    // Legacy transaction publish. Variant-scoped versions are disabled here — use
+    // `serverOperations/publish.ts` instead.
+    const variantDisabled = disabledForVariantVersion(snapshots?.version)
+    if (variantDisabled) {
+      return variantDisabled
+    }
     if (isLiveEditEnabled(schema, typeName)) {
       return 'LIVE_EDIT_ENABLED'
     }
@@ -38,6 +53,7 @@ export const publish: OperationImpl<[], DisabledReason> = {
     if (!snapshots.draft && !snapshots.version) {
       throw new Error('cannot execute "publish" when draft or version is missing')
     }
+    assertNotVariantVersion(snapshots.version, 'publish')
 
     const value = strengthenOnPublish(
       omit(snapshots.draft || snapshots.version, '_updatedAt') as SanityDocument,

@@ -10,6 +10,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {getTargetScopeId, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
@@ -25,17 +26,29 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
 ): DocumentActionDescription | null => {
   const {id, type, release, published, version} = props
   const currentUser = useCurrentUser()
-  const isPublished = published !== null
   const {t} = useTranslation(releasesLocaleNamespace)
   const isAlreadyUnpublished = version ? isGoingToUnpublish(version) : false
   const {revertUnpublishVersion} = useVersionOperations()
   const toast = useToast()
   const {t: coreT} = useTranslation()
 
+  const targetDocumentState = useTargetDocumentState(id)
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, the action is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
+  // For variant release versions, "is there something published to unpublish" is answered by the
+  // variant-of-published sibling — the base `published` document says nothing about the variant.
+  const isPublished = isVariantTarget
+    ? targetDocumentState.publishedSibling !== undefined
+    : published !== null
+
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
+    version: scopeId,
     permission: 'unpublish',
   })
 
@@ -92,7 +105,7 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
       : t('action.unpublish-doc-actions'),
     icon: isAlreadyUnpublished ? RevertIcon : UnpublishIcon,
     onHandle: handleOnClick,
-    disabled: !isPublished,
+    disabled: !isPublished || !isTargetReady,
     /** @todo should be switched once we have the document actions updated */
     title: isAlreadyUnpublished
       ? t('action.revert-unpublish-actions')

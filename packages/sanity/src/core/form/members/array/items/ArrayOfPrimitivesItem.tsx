@@ -19,6 +19,7 @@ import {
   type RenderInputCallback,
 } from '../../../types'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
+import {stripStegaFromPasteEvent} from '../../../utils/stegaPaste'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
@@ -118,6 +119,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       'id': member.item.id,
       'ref': focusRef,
       'onChange': handleNativeChange,
+      'onPaste': stripStegaFromPasteEvent,
       'value': resolveNativeInputValue(member.item.schemaType, member.item.value, localValue),
       'readOnly': Boolean(member.item.readOnly),
       'placeholder': member.item.schemaType.placeholder,

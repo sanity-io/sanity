@@ -62,6 +62,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
   const {createRelease} = useReleaseOperations()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
 
+  // TODO: SAPP-4023: update this component to receive the `VersionInfoDocumentStub` instead of a plain id, and use that
+  // stub to verify permissions and run the actions on the specific version.
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: getPublishedId(documentId),
     type,

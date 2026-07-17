@@ -16,6 +16,7 @@ import {
   type ObjectSchemaType,
   ScrollContainer,
   Translate,
+  useEditState,
   useEvents,
   usePerspective,
   useTranslation,
@@ -56,18 +57,37 @@ const DIFF_INITIAL_VALUE = {
 }
 
 const CompareWithPublishedView = () => {
-  const {documentId, schemaType, editState, displayed} = useDocumentPane()
+  const {documentId, documentType, schemaType, editState, displayed, targetDocumentState} =
+    useDocumentPane()
   const {selectedPerspective, selectedPerspectiveName, selectedReleaseId} = usePerspective()
   const {t} = useTranslation(structureLocaleNamespace)
+
+  // For variant targets, "published" means the variant-of-published sibling, not the base
+  // published document. Its scope id checks out the sibling pair; the sibling document arrives
+  // in the `version` slot of that edit state.
+  const isVariantTarget =
+    targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
+  const siblingScopeId = isVariantTarget
+    ? targetDocumentState.publishedSibling?._system.scopeId
+    : undefined
+  const siblingEditState = useEditState(documentId, documentType, 'default', siblingScopeId)
+  const publishedComparisonBase = isVariantTarget
+    ? (siblingScopeId && siblingEditState.version) || null
+    : editState?.published
+
   const rootDiff = useMemo(() => {
     const diff = diffInput(
-      wrap(editState?.published ?? {}, {author: ''}),
+      wrap(publishedComparisonBase ?? {}, {author: ''}),
       wrap(displayed ?? {}, {author: ''}),
     ) as ObjectDiff
 
     return diff
-  }, [editState?.published, displayed])
+  }, [publishedComparisonBase, displayed])
 
+  if (isVariantTarget && !publishedComparisonBase) {
+    // The variant has never been published — there is nothing to compare against.
+    return null
+  }
   if (selectedReleaseId && !editState?.version) {
     return null
   }

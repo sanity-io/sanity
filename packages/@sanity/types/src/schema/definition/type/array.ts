@@ -1,5 +1,3 @@
-import {type InsertMenuOptions} from '@sanity/insert-menu'
-
 import {type FieldReference} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {
@@ -20,7 +18,37 @@ import {
   type TitledListValue,
 } from './common'
 
-export type {InsertMenuOptions}
+/**
+ * Options for the "insert menu" shown when adding items to an array with multiple member types.
+ *
+ * This is the canonical definition of these options. They are rendered by two separate
+ * implementations that integrate with one another: the Studio form input
+ * (`packages/sanity/src/insert-menu` in this repo, used by arrays in `sanity/structure`),
+ * and the app frontend via `@sanity/visual-editing` when previewing through
+ * `sanity/presentation`. `@sanity/visual-editing-types`
+ * (https://github.com/sanity-io/visual-editing/blob/main/packages/visual-editing-types/src/index.ts)
+ * re-uses this interface to derive the serialized form sent to the app frontend.
+ *
+ * @alpha This API may change
+ */
+export interface InsertMenuOptions {
+  /**
+   * @defaultValue `'auto'`
+   * `filter: 'auto'` automatically turns on filtering if there are more than 5
+   * schema types added to the menu.
+   */
+  filter?: 'auto' | boolean | undefined
+  groups?: Array<{name: string; title?: string; of?: Array<string>}> | undefined
+  /** defaultValue `true` */
+  showIcons?: boolean | undefined
+  /** @defaultValue `[{name: 'list'}]` */
+  views?:
+    | Array<
+        | {name: 'list'}
+        | {name: 'grid'; previewImageUrl?: (schemaTypeName: string) => string | undefined}
+      >
+    | undefined
+}
 
 /**
  * Types of array actions that can be performed

@@ -5,7 +5,8 @@ import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
-  getVersionFromId,
+  getPairTarget,
+  getTargetScopeId,
   InsufficientPermissionsMessage,
   isPublishedPerspective,
   type TFunction,
@@ -34,6 +35,8 @@ const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   ALREADY_PUBLISHED: 'action.publish.already-published.no-time-ago.tooltip',
   NO_CHANGES: 'action.publish.no-changes.tooltip',
   NOT_READY: 'action.publish.disabled.not-ready',
+  NOT_PUBLISHABLE: 'action.publish.disabled.not-publishable',
+  TARGET_NOT_FOUND: 'action.publish.disabled.target-not-found',
 } as const
 
 const PUBLISHED_STATE = {status: 'published'} as const
@@ -59,18 +62,27 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 /** @internal */
 export const usePublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published, release, version} = props
-  const {selectedPerspective} = usePerspective()
+  const {selectedPerspective, selectedVariantName} = usePerspective()
   const [publishState, setPublishState] = useState<
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
 
-  const bundleId = version?._id && getVersionFromId(version._id)
+  const {changesOpen, documentId, documentType, value, targetDocumentState} = useDocumentPane()
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, the action is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
+  // For variant targets, publish state (already-published timestamps, publish-completion revision
+  // tracking) lives on the variant-of-published sibling — the base `published` document says
+  // nothing about whether the *variant* is published.
+  const publishedInfo = isVariantTarget ? targetDocumentState.publishedSibling : published
 
-  const {publish} = useDocumentOperation(id, type, bundleId)
-  const {changesOpen, documentId, documentType, value} = useDocumentPane()
+  const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const validationStatus = useValidationStatus(value._id, type, !release)
-  const syncState = useSyncState(id, type)
-  const editState = useEditState(documentId, documentType, 'default', bundleId)
+  const syncState = useSyncState(id, type, scopeId)
+  const editState = useEditState(documentId, documentType, 'default', scopeId)
   const {t} = useTranslation(structureLocaleNamespace)
 
   const revision = (editState?.version || editState?.draft || editState?.published || {})._rev
@@ -84,18 +96,19 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
+    version: scopeId,
     permission: 'publish',
   })
 
   const currentUser = useCurrentUser()
 
   const title = publish.disabled
-    ? getDisabledReason(publish.disabled, (published || {})._updatedAt, t) || ''
+    ? getDisabledReason(publish.disabled, publishedInfo?._updatedAt, t) || ''
     : hasValidationErrors
       ? t('action.publish.validation-issues.tooltip')
       : ''
 
-  const currentPublishRevision = published?._rev
+  const currentPublishRevision = publishedInfo?._rev
 
   const telemetry = useTelemetry()
 
@@ -187,7 +200,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {
       publishedImmediately: !draft?._createdAt,
-      previouslyPublished: Boolean(published),
+      previouslyPublished: Boolean(publishedInfo),
     })
     if (
       syncState.isSyncing ||
@@ -201,7 +214,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   }, [
     telemetry,
     draft?._createdAt,
-    published,
+    publishedInfo,
     syncState.isSyncing,
     validationStatus.isValidating,
     validationStatus.revision,
@@ -231,8 +244,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
      * When draft is null, if not a published or version document
      * then it means the draft is yet to be saved - in this case don't disabled
      * the publish button due to ALREADY_PUBLISHED reason
+     *
+     * Skipped when a variant is selected: the base published document says nothing about the
+     * variant's publish state (the store-level disabled reasons and target guards apply instead).
      */
-    if (published && !draft && !version) {
+    if (published && !draft && !version && !selectedVariantName) {
       return {
         tone: 'default',
         icon: PublishIcon,
@@ -260,7 +276,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       publishState?.status === 'publishing' ||
       publishState?.status === 'published' ||
       hasValidationErrors ||
-      publish.disabled,
+      publish.disabled ||
+      !isTargetReady,
     )
 
     return {
@@ -287,6 +304,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
   }, [
     selectedPerspective,
+    selectedVariantName,
     release,
     liveEdit,
     version,
@@ -299,6 +317,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     publishState,
     hasValidationErrors,
     publish.disabled,
+    isTargetReady,
     t,
     title,
     handle,

@@ -4,6 +4,7 @@ import {
   CommentsEnabledProvider,
   CommentsProvider,
   useCommentsEnabled,
+  getTargetScopeId,
   usePerspective,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -38,10 +39,16 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {children, documentId, documentType} = props
 
   const {enabled} = useCommentsEnabled()
-  const {connectionState, onPathOpen, inspector, openInspector} = useDocumentPane()
-  const {selectedReleaseId} = usePerspective()
+  const {connectionState, onPathOpen, inspector, openInspector, targetDocumentState} =
+    useDocumentPane()
+  const {selectedReleaseId, selectedVariantName} = usePerspective()
   const {params, setParams} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
+
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, reverting is disabled
+  // below instead of silently operating on the base pair.
+  const scopeId = getTargetScopeId(targetDocumentState)
 
   const selectedCommentId = params?.comment
   const scheduledDraft = params?.scheduledDraft
@@ -56,6 +63,10 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
       const searchParams: [string, string][] =
         selectedReleaseId && !scheduledDraft ? [['perspective', selectedReleaseId]] : []
 
+      if (selectedVariantName) {
+        searchParams.push(['variant', selectedVariantName])
+      }
+
       const intentLink = resolveIntentLink(
         'edit',
         {
@@ -69,7 +80,14 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
       )
       return `${window.location.origin}${intentLink}`
     },
-    [documentId, documentType, resolveIntentLink, scheduledDraft, selectedReleaseId],
+    [
+      documentId,
+      documentType,
+      resolveIntentLink,
+      scheduledDraft,
+      selectedReleaseId,
+      selectedVariantName,
+    ],
   )
 
   const handleClearSelectedComment = useCallback(() => {
@@ -100,7 +118,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
       selectedCommentId={selectedCommentId}
       sortOrder="desc"
       type="field"
-      releaseId={selectedReleaseId}
+      releaseId={scopeId}
     >
       {children}
     </CommentsProvider>

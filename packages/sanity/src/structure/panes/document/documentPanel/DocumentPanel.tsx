@@ -4,8 +4,6 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   isCardinalityOneRelease,
-  isDocumentInSelectedVariant,
-  getTargetDocument,
   isDraftId,
   isGoingToUnpublish,
   isNewDocument,
@@ -18,7 +16,6 @@ import {
   type ReleaseDocument,
   ScrollContainer,
   useArchivedReleases,
-  useDocumentVersions,
   useFilteredReleases,
   usePausedScheduledDraft,
   usePerspective,
@@ -52,6 +49,7 @@ import {PausedScheduledDraftBanner} from './banners/PausedScheduledDraftBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
+import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
@@ -103,6 +101,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     permissions,
     isPermissionsLoading,
+    targetDocumentState,
   } = useDocumentPane()
 
   const {params} = usePaneRouter()
@@ -193,16 +192,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {bundle, selectedReleaseId, selectedPerspectiveName, selectedVariant, selectedPerspective} =
-    usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName, selectedPerspective} = usePerspective()
 
-  const documentVersions = useDocumentVersions({documentId})
-  const targetDocument = getTargetDocument({
-    variant: selectedVariant?._id,
-    bundle: bundle,
-    documentVersions: documentVersions.versions,
-  })
-  const hasDocumentInRelease = selectedPerspectiveName && Boolean(targetDocument)
+  const hasDocumentInRelease =
+    selectedPerspectiveName &&
+    targetDocumentState.status === 'ready' &&
+    Boolean(targetDocumentState.targetDocument)
 
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
@@ -228,15 +223,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       ),
     [archivedReleases, selectedPerspectiveName],
   )
-  const isInSelectedVariant =
-    selectedVariant && !documentVersions.loading
-      ? isDocumentInSelectedVariant({
-          selectedVariant,
-          bundle,
-          documentVersions: documentVersions.versions,
-        })
-      : true
-
   const banners = useMemo(() => {
     const archivedReleaseId =
       params?.historyVersion ??
@@ -302,8 +288,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
 
-    if (!isInSelectedVariant) {
+    if (targetDocumentState.status === 'variant-missing') {
       return <DocumentNotInVariantBanner />
+    }
+
+    if (targetDocumentState.status === 'variant-definition-document-not-found') {
+      return (
+        <VariantDefinitionNotFoundBanner
+          requestedVariantName={targetDocumentState.requestedVariantName}
+        />
+      )
     }
 
     const isCurrentVersionGoingToUnpublish =
@@ -405,7 +399,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     filteredReleases,
     workspace,
     isPausedDraft,
-    isInSelectedVariant,
+    targetDocumentState,
   ])
   const portalElements = useMemo(
     () => ({documentScrollElement: documentScrollElement}),
