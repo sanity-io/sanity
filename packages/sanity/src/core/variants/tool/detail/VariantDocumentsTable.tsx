@@ -70,12 +70,20 @@ export function VariantDocumentsTable({
     [rows, releasesById],
   )
 
-  const laneFilteredRows = useMemo(() => {
-    if (activeLane === RELEASE_LANE_ALL) {
-      return rows
-    }
-    return rows.filter((row) => rowMatchesLane(row, activeLane, releasesById))
-  }, [rows, activeLane, releasesById])
+  // If the active release lane disappears (e.g. its documents move), fall back to "All".
+  const resolvedActiveLane =
+    activeLane === RELEASE_LANE_ALL || segments.some((segment) => segment.id === activeLane)
+      ? activeLane
+      : RELEASE_LANE_ALL
+
+  const flatRows = useMemo(() => {
+    const filtered =
+      resolvedActiveLane === RELEASE_LANE_ALL
+        ? rows
+        : rows.filter((row) => rowMatchesLane(row, resolvedActiveLane, releasesById))
+    // The flat view keys rows by their real groupId.
+    return filtered.map((row) => ({...row, rowKey: row.groupId}))
+  }, [rows, resolvedActiveLane, releasesById])
 
   const getSegmentLabel = useCallback(
     (segment: ReleaseLaneSegment): string => {
@@ -104,33 +112,36 @@ export function VariantDocumentsTable({
         rows,
         releasesById,
         expanded: expandedReleases,
+        activeLane: resolvedActiveLane,
         getSegmentLabel,
         onToggle: toggleRelease,
       }),
-    [rows, releasesById, expandedReleases, getSegmentLabel, toggleRelease],
+    [rows, releasesById, expandedReleases, resolvedActiveLane, getSegmentLabel, toggleRelease],
   )
-
-  // If the active release lane disappears (e.g. its documents move), fall back to "All".
-  const resolvedActiveLane =
-    activeLane === RELEASE_LANE_ALL || segments.some((segment) => segment.id === activeLane)
-      ? activeLane
-      : RELEASE_LANE_ALL
 
   const handleSelectLane = useCallback((laneId: string) => {
     // Clicking the already-active segment clears the filter back to "All".
     setActiveLane((previous) => (previous === laneId ? RELEASE_LANE_ALL : laneId))
   }, [])
 
-  const displayRows = grouped ? swimlaneRows : laneFilteredRows
+  const displayRows = grouped ? swimlaneRows : flatRows
   const hasReleaseControls = !loading && segments.length > 1
 
   return (
     <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
       {hasReleaseControls && (
         <Box flex="none" paddingTop={4} paddingX={4}>
-          {/* Toggle sits in its own fixed top-right row so it never shifts when the filter
-              lane below it appears/disappears. */}
-          <Flex justify="flex-end">
+          {/* One persistent lane: the filter tabs always filter; the toggle only switches the
+              list/grouped view. Nothing is conditionally hidden, so the toggle never shifts. */}
+          <Flex align="center" gap={3} justify="space-between">
+            <Box flex={1} style={{minWidth: 0, overflowX: 'auto'}}>
+              <VariantReleaseLane
+                activeLane={resolvedActiveLane}
+                onSelectLane={handleSelectLane}
+                segments={segments}
+                totalCount={rows.length}
+              />
+            </Box>
             <Button
               data-testid="variant-group-by-release-toggle"
               icon={StackIcon}
@@ -140,16 +151,6 @@ export function VariantDocumentsTable({
               text={t('detail.release-lane.group-by-release')}
             />
           </Flex>
-          {!grouped && (
-            <Box paddingTop={3}>
-              <VariantReleaseLane
-                activeLane={resolvedActiveLane}
-                onSelectLane={handleSelectLane}
-                segments={segments}
-                totalCount={rows.length}
-              />
-            </Box>
-          )}
         </Box>
       )}
       <Card
@@ -165,7 +166,7 @@ export function VariantDocumentsTable({
           emptyState={t('detail.documents.no-documents')}
           loading={loading}
           // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          rowId="groupId"
+          rowId="rowKey"
           scrollContainerRef={scrollContainerRef}
           searchFilter={filterDocuments}
         />

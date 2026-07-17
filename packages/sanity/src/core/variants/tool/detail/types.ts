@@ -43,6 +43,12 @@ export interface DocumentInVariant extends BundleDocument {
 export interface DocumentInVariantGroup extends DocumentInVariant {
   groupId: string
   versions: VariantDocumentVersion[]
+  /**
+   * Unique table row id / sort key. Equals `groupId` in the flat view; in the swimlane view it is
+   * a monotonic ordering key so the same document can appear under several release groups (each with
+   * its own `rowKey`) while `groupId` stays the real document group id the preview links to.
+   */
+  rowKey?: string
   isReleaseAggregate?: boolean
   releaseLabel?: string
   releaseCount?: number

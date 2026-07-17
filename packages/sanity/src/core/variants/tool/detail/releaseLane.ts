@@ -184,26 +184,35 @@ export function buildReleaseSwimlaneRows({
   rows,
   releasesById,
   expanded,
+  activeLane = RELEASE_LANE_ALL,
   getSegmentLabel,
   onToggle,
 }: {
   rows: DocumentInVariantGroup[]
   releasesById: Map<string, ReleaseDocument>
   expanded: ReadonlySet<string>
+  activeLane?: string
   getSegmentLabel: (segment: ReleaseLaneSegment) => string
   onToggle: (segmentId: string) => void
 }): DocumentInVariantGroup[] {
-  const segments = computeReleaseLaneSegments(rows, releasesById)
+  const allSegments = computeReleaseLaneSegments(rows, releasesById)
+  // A selected filter tab scopes the swimlanes to just that release group.
+  const segments =
+    activeLane === RELEASE_LANE_ALL
+      ? allSegments
+      : allSegments.filter((segment) => segment.id === activeLane)
+
   const out: DocumentInVariantGroup[] = []
   let index = 0
-  const nextGroupId = () => String(index++).padStart(5, '0')
+  const nextRowKey = () => String(index++).padStart(5, '0')
 
   for (const segment of segments) {
     const isExpanded = expanded.has(segment.id)
 
     out.push({
       memoKey: `release-agg-${segment.id}`,
-      groupId: nextGroupId(),
+      groupId: `release-agg-${segment.id}`,
+      rowKey: nextRowKey(),
       isLoading: false,
       document: {
         _id: `release-agg-${segment.id}`,
@@ -225,7 +234,8 @@ export function buildReleaseSwimlaneRows({
     if (isExpanded) {
       for (const row of rows) {
         if (rowMatchesLane(row, segment.id, releasesById)) {
-          out.push({...row, groupId: nextGroupId()})
+          // Keep the real groupId (preview links to it); rowKey makes the duplicated row unique.
+          out.push({...row, rowKey: nextRowKey()})
         }
       }
     }
@@ -260,4 +270,33 @@ export function getRowBundleSortKey(
   }
 
   return `${bestOrder}:${bestLabel}`
+}
+
+/**
+ * The most prominent bundle a document group appears in (published → drafts → releases by title),
+ * used to badge the document preview with the shared perspective-bar iconography.
+ *
+ * @internal
+ */
+export function getPrimaryBundle(
+  row: DocumentInVariantGroup,
+  releasesById: Map<string, ReleaseDocument>,
+): ResolvedVersionBundle | undefined {
+  let best: ResolvedVersionBundle | undefined
+  let bestOrder = Number.POSITIVE_INFINITY
+  let bestLabel = ''
+
+  for (const version of row.versions) {
+    const resolved = resolveVersionBundle(version, releasesById)
+    const order = getKindOrder(resolved.kind)
+    const label = resolved.release?.metadata?.title ?? resolved.id
+
+    if (order < bestOrder || (order === bestOrder && label.localeCompare(bestLabel) < 0)) {
+      bestOrder = order
+      bestLabel = label
+      best = resolved
+    }
+  }
+
+  return best
 }

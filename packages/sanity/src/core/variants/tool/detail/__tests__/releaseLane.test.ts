@@ -215,8 +215,9 @@ describe('buildReleaseSwimlaneRows', () => {
     expect(out).toHaveLength(7)
     const children = out.filter((row) => !row.isReleaseAggregate)
     expect(children).toHaveLength(4)
-    // Row group ids are a monotonic padded index, so the default sort preserves this order.
-    expect(out.map((row) => row.groupId)).toEqual([
+    // rowKey is a monotonic padded index, so the default sort preserves this order; groupId stays
+    // the real document group id the preview links to (aggregates use a synthetic groupId).
+    expect(out.map((row) => row.rowKey)).toEqual([
       '00000',
       '00001',
       '00002',
@@ -225,6 +226,8 @@ describe('buildReleaseSwimlaneRows', () => {
       '00005',
       '00006',
     ])
+    // Children keep their real (non-index) groupId so the preview link still resolves.
+    expect(children.every((row) => !/^\d{5}$/.test(row.groupId))).toBe(true)
   })
 
   it('only expands the requested group', () => {

@@ -5,14 +5,16 @@ import {IntentLink} from 'sanity/router'
 
 import {Tooltip} from '../../../../../ui-components/tooltip'
 import {useTranslation} from '../../../../i18n'
+import {ReleaseAvatarIcon} from '../../../../releases/components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../../releases/components/ReleaseTitle'
 import {RELEASES_INTENT} from '../../../../releases/plugin'
 import {getReleaseIdFromReleaseDocumentId} from '../../../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {variantsLocaleNamespace} from '../../../i18n'
 import {type ReleaseLaneKind, resolveVersionBundle} from '../releaseLane'
 import {type VariantDocumentVersion} from '../types'
 
-// Only one chip fits comfortably in the fixed-width Bundle cell; the rest collapse into a
-// "+N" overflow badge so the row never crops or scrolls horizontally.
+// Only one chip fits comfortably in the fixed-width cell; the rest collapse into a "+N" badge
+// whose hover tooltip lists them, so the row never crops or scrolls horizontally.
 const MAX_VISIBLE_CHIPS = 1
 
 interface ResolvedChip {
@@ -37,6 +39,16 @@ function getChipTone(kind: ReleaseLaneKind): 'positive' | 'primary' | 'default' 
   return 'default'
 }
 
+// The shared perspective-bar iconography (dot / bolt / clock, tone-coloured). Used only in the
+// overflow list — the visible chips lean on their badge tone, and the document preview already
+// carries this icon per row, so repeating it on the chip would be redundant.
+function ChipIcon({chip}: {chip: ResolvedChip}) {
+  if (chip.kind === 'published') return <ReleaseAvatarIcon tone="positive" />
+  if (chip.kind === 'drafts') return <ReleaseAvatarIcon tone="caution" />
+  if (chip.release) return <ReleaseAvatarIcon release={chip.release} />
+  return <ReleaseAvatarIcon tone="default" />
+}
+
 function ReleaseBundleChip({release}: {release: ReleaseDocument}) {
   const {t} = useTranslation()
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
@@ -57,25 +69,15 @@ function ReleaseBundleChip({release}: {release: ReleaseDocument}) {
   )
 }
 
-function StaticBundleChip({
-  label,
-  tone,
-}: {
-  label: string
-  tone: 'positive' | 'primary' | 'default'
-}) {
-  return (
-    <Badge radius={2} tone={tone}>
-      {label}
-    </Badge>
-  )
-}
-
 function VisibleChip({chip, label}: {chip: ResolvedChip; label: string}) {
   if (chip.kind === 'release' && chip.release) {
     return <ReleaseBundleChip release={chip.release} />
   }
-  return <StaticBundleChip label={label} tone={getChipTone(chip.kind)} />
+  return (
+    <Badge radius={2} tone={getChipTone(chip.kind)}>
+      {label}
+    </Badge>
+  )
 }
 
 export function VariantDocumentBundleChips({
@@ -85,6 +87,7 @@ export function VariantDocumentBundleChips({
   versions: VariantDocumentVersion[]
   releasesById: Map<string, ReleaseDocument>
 }): React.JSX.Element {
+  const {t} = useTranslation(variantsLocaleNamespace)
   const getLabel = useChipLabel()
 
   // Dedupe by resolved bundle id so a document with several versions in the same bundle
@@ -104,7 +107,7 @@ export function VariantDocumentBundleChips({
   const overflow = chips.slice(MAX_VISIBLE_CHIPS)
 
   return (
-    <Flex align="center" gap={1} wrap="nowrap" style={{minWidth: 0, overflow: 'hidden'}}>
+    <Flex align="center" gap={2} style={{minWidth: 0, overflow: 'hidden'}} wrap="nowrap">
       {visible.map((chip) => (
         <Box key={chip.key} style={{minWidth: 0, overflow: 'hidden'}}>
           <VisibleChip chip={chip} label={getLabel(chip)} />
@@ -112,17 +115,25 @@ export function VariantDocumentBundleChips({
       ))}
       {overflow.length > 0 && (
         <Tooltip
-          portal
-          placement="bottom-start"
           content={
-            <Stack space={2} padding={1}>
-              {overflow.map((chip) => (
-                <Text key={chip.key} size={1}>
-                  {getLabel(chip)}
-                </Text>
-              ))}
+            <Stack space={3} padding={1}>
+              <Text muted size={0} weight="medium">
+                {t('detail.documents.appears-in.also-in')}
+              </Text>
+              <Stack space={2}>
+                {overflow.map((chip) => (
+                  <Flex align="center" gap={2} key={chip.key}>
+                    <Text size={0}>
+                      <ChipIcon chip={chip} />
+                    </Text>
+                    <Text size={1}>{getLabel(chip)}</Text>
+                  </Flex>
+                ))}
+              </Stack>
             </Stack>
           }
+          placement="bottom-start"
+          portal
         >
           <Badge
             data-testid="variant-bundle-chips-overflow"
