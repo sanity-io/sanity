@@ -9,6 +9,10 @@ export default defineCliConfig({
     projectId: 'mhfozd0z',
     dataset: 'bench',
   },
+  // Opt into Vite's experimental full-bundle mode so late-discovered lazy
+  // import() targets no longer need server.warmup.clientFiles workarounds.
+  // {@link https://vite.dev/guide/rolldown#full-bundle-mode}
+  unstable_bundledDev: true,
   reactCompiler: {
     target: '19',
     // By default the compiler is loaded up on all workspace files, even sanity/lib/structure.js which is pre-compiled with `@sanity/pkg-utils`,
@@ -30,26 +34,6 @@ export default defineCliConfig({
   vite(viteConfig: UserConfig, {command, mode}): UserConfig {
     const nextConfig = mergeConfig(viteConfig, {
       plugins: [vanillaExtractPlugin()],
-      server: {
-        warmup: {
-          clientFiles: [
-            /**
-             * With the `monorepo` condition the studio resolves `sanity` and
-             * `sanity/structure` to src files, so the default
-             * `./.sanity/runtime/app.js` warmup is not enough — pre-transform
-             * the late-discovered lazy import() targets of the structure tool
-             * to avoid the initial "waterfall of reload doom" (same list as
-             * dev/test-studio, minus the presentation tool, which this studio
-             * does not use).
-             */
-            './node_modules/sanity/src/structure/components/structureTool/StructureToolBoundary.tsx',
-            './node_modules/sanity/src/structure/panes/userComponent/UserComponentPane.tsx',
-            './node_modules/sanity/src/structure/panes/document/DocumentPane.tsx',
-            './node_modules/sanity/src/structure/panes/documentList/PaneContainer.tsx',
-            './node_modules/sanity/src/structure/panes/list/ListPane.tsx',
-          ],
-        },
-      },
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
     } satisfies UserConfig)
