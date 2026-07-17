@@ -22,6 +22,8 @@ const variantsLocaleStrings = {
   'navbar.variant.clear': 'Clear variant selection',
   /** Label for the Variants overview create action. */
   'overview.action.create-variant': 'Create variant definition',
+  /** Label for the Variants overview create-set action. */
+  'overview.action.create-variant-set': 'Create variant set',
   /** Label for the Variants overview row edit action. */
   'overview.action.edit-variant': 'Edit variant definition',
   /** Label for the Variants overview delete action. */
@@ -137,6 +139,50 @@ const variantsLocaleStrings = {
   'dialog.create.condition-value.placeholder': 'e.g. loyal-customers',
   /** Error toast title when variant creation fails. */
   'dialog.create.error.title': 'Unable to create variant definition',
+  /** Title for the create variant set dialog. */
+  'dialog.create-set.title': 'Create variant set',
+  /** Label for the set name field in the create variant set dialog. */
+  'dialog.create-set.name.label': 'Set name',
+  /** Placeholder for the set name field in the create variant set dialog. */
+  'dialog.create-set.name.placeholder': 'e.g. Regional launch',
+  /** Validation message when the set name is missing. */
+  'dialog.create-set.name.required': 'Set name is required',
+  /** Title for the dimensions section in the create variant set dialog. */
+  'dialog.create-set.dimensions.title': 'Dimensions',
+  /** Description for the dimensions section in the create variant set dialog. */
+  'dialog.create-set.dimensions.description':
+    'Add each key and the list of values it can take. Every combination becomes a variant definition.',
+  /** Label for the dimension key field in the create variant set dialog. */
+  'dialog.create-set.dimension-key.label': 'Key',
+  /** Placeholder for the dimension key field in the create variant set dialog. */
+  'dialog.create-set.dimension-key.placeholder': 'e.g. market',
+  /** Label for the dimension values field in the create variant set dialog. */
+  'dialog.create-set.dimension-values.label': 'Values',
+  /** Placeholder for the dimension values field in the create variant set dialog. */
+  'dialog.create-set.dimension-values.placeholder': 'e.g. uk, us, de',
+  /** Hint explaining how to enter multiple dimension values. */
+  'dialog.create-set.dimension-values.hint': 'Separate values with commas',
+  /** Validation message when a dimension has a key but no values. */
+  'dialog.create-set.dimension-values.required': 'Add at least one value',
+  /** Add dimension action for the create variant set dialog. */
+  'dialog.create-set.action.add-dimension': 'Add dimension',
+  /** Tooltip when add dimension is disabled because the current row is incomplete. */
+  'dialog.create-set.action.add-dimension.disabled-hint':
+    'Complete the current key and values before adding another.',
+  /** Remove dimension action for the create variant set dialog. */
+  'dialog.create-set.remove-dimension': 'Remove dimension',
+  /** Cancel action for the create variant set dialog. */
+  'dialog.create-set.action.cancel': 'Cancel',
+  /** Preview shown before any complete dimension exists in the create variant set dialog. */
+  'dialog.create-set.preview.empty': 'Add at least one key and value to preview the combinations',
+  /** Preview of the number of variant definitions a set will generate (singular). */
+  'dialog.create-set.preview.count_one': '{{count}} variant definition will be generated',
+  /** Preview of the number of variant definitions a set will generate (plural). */
+  'dialog.create-set.preview.count_other': '{{count}} variant definitions will be generated',
+  /** Confirm action for the create variant set dialog (singular). */
+  'dialog.create-set.action.generate_one': 'Generate {{count}} variant definition',
+  /** Confirm action for the create variant set dialog (plural). */
+  'dialog.create-set.action.generate_other': 'Generate {{count}} variant definitions',
   /** Title for the edit variant dialog. */
   'dialog.edit.title': 'Edit variant definition',
   /** Confirm action for the edit variant dialog. */
