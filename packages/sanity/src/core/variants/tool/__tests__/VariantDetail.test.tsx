@@ -169,13 +169,13 @@ describe('VariantDetail', () => {
     expect(screen.getByRole('button', {name: 'Edit variant definition'})).toBeInTheDocument()
     expect(screen.getByTestId('pin-variant-button')).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Back to variant definitions'})).toBeInTheDocument()
-    expect(screen.getByText('Bundle')).toBeInTheDocument()
+    expect(screen.getByText('Appears in')).toBeInTheDocument()
     expect(screen.getByText('Type')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search documents')).toBeInTheDocument()
     expect(screen.getByText('Edited')).toBeInTheDocument()
     expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
     expect(screen.getByText(/^Created/)).toBeInTheDocument()
-    expect(screen.getByTestId('variant-detail-footer-actions')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-detail-actions')).toBeInTheDocument()
   })
 
   it('pins a variant from the detail page', async () => {

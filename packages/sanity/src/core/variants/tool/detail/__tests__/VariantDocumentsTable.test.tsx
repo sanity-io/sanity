@@ -145,7 +145,7 @@ describe('VariantDocumentsTable', () => {
     expect(screen.getAllByText('article')).toHaveLength(2)
     expect(screen.getByText('published,drafts')).toBeInTheDocument()
     expect(screen.getByText('drafts')).toBeInTheDocument()
-    expect(screen.getByText('Bundle')).toBeInTheDocument()
+    expect(screen.getByText('Appears in')).toBeInTheDocument()
   })
 
   it('filters documents when searching by title or name', async () => {
