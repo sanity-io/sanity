@@ -855,6 +855,8 @@ exports[`exports snapshot 1`] = `
     "defineCliConfig": "function",
     "getCliClient": "function",
     "getStudioEnvironmentVariables": "function",
+    "unstable_defineApp": "function",
+    "unstable_defineMediaLibrary": "function",
   },
   "./desk": {
     "ComponentBuilder": "function",
@@ -1037,6 +1039,11 @@ exports[`exports snapshot 1`] = `
     "usePaneOptions": "function",
     "usePaneRouter": "function",
     "useStructureTool": "function",
+  },
+  "./workbench": {
+    "renderWorkbench": "function",
+    "unstable_defineService": "function",
+    "unstable_defineView": "function",
   },
 }
 `;
