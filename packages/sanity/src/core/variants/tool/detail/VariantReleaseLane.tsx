@@ -45,12 +45,14 @@ export function VariantReleaseLane({
 
   return (
     <Flex align="center" gap={2} wrap="nowrap" data-testid="variant-release-lane">
-      <Text muted size={1}>
-        <FilterIcon />
-      </Text>
-      <Text muted size={0} style={LABEL_STYLE} weight="semibold">
-        {t('detail.release-lane.title')}
-      </Text>
+      <Flex align="center" flex="none" gap={1}>
+        <Text muted size={0}>
+          <FilterIcon />
+        </Text>
+        <Text muted size={0} style={LABEL_STYLE} weight="semibold">
+          {t('detail.release-lane.title')}
+        </Text>
+      </Flex>
       <Card borderLeft flex="none" style={{height: 16}} />
       <TabList space={1}>
         {[

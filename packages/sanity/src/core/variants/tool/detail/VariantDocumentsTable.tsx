@@ -140,7 +140,7 @@ export function VariantDocumentsTable({
     <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
       {hasReleaseControls && (
         // Bordered so the filter lane is visually distinct from the table's column-header row below.
-        <Card flex="none" borderBottom paddingBottom={3} paddingTop={4} paddingX={4}>
+        <Card flex="none" borderBottom paddingX={4} paddingY={3}>
           {/* One persistent lane: the filter tabs always filter; the toggle only switches the
               list/grouped view. Nothing is conditionally hidden, so the toggle never shifts. */}
           <Flex align="center" gap={3} justify="space-between">
