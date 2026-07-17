@@ -73,6 +73,26 @@ export function getForkedFromSetReference(
   return readReference(variant, VARIANT_SET_FORKED_FROM_METADATA_KEY)
 }
 
+/**
+ * Detach a definition from its set: drop the active membership reference, leaving a clean
+ * standalone definition. Used when a set is deleted but some members carry documents and must be
+ * kept — stripping the reference removes them from the (now gone) set's overview group.
+ *
+ * @internal
+ */
+export function detachVariantFromSet(variant: SystemVariant): EditableSystemVariant {
+  const nextMetadata = {...variant.metadata}
+  delete nextMetadata[VARIANT_SET_METADATA_KEY]
+
+  return {
+    _id: variant._id,
+    _type: variant._type,
+    conditions: variant.conditions,
+    priority: variant.priority,
+    metadata: nextMetadata,
+  }
+}
+
 function conditionsEqual(a: Record<string, string>, b: Record<string, string>): boolean {
   const aKeys = Object.keys(a)
   const bKeys = Object.keys(b)

@@ -18,6 +18,7 @@ import {getVariantSetReference, type VariantSetReference} from '../../util/varia
 import {filterVariantsForSearch, getVariantId} from '../util'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
+import {VariantSetMenuButton} from './VariantSetMenuButton'
 import {type TableVariant, variantsOverviewColumnDefs} from './VariantsOverviewColumnDefs'
 
 const VARIANT_TABLE_ROW_ID = '_id'
@@ -64,16 +65,12 @@ export function VariantsOverview() {
   const renderRowActions = useCallback<
     NonNullable<TableProps<TableVariant, undefined>['rowActions']>
   >(({datum}) => {
-    // Set aggregate (group header) rows have no per-definition actions.
-    if ((datum as TableVariant).isSetAggregate) {
-      return null
+    const row = datum as TableVariant
+    // Set aggregate (group header) rows carry set-scoped actions (edit / delete the whole set).
+    if (row.isSetAggregate) {
+      return row.setReference ? <VariantSetMenuButton setReference={row.setReference} /> : null
     }
-    return (
-      <VariantMenuButton
-        documentCount={(datum as TableVariant).documentCount}
-        variant={datum as SystemVariant}
-      />
-    )
+    return <VariantMenuButton documentCount={row.documentCount} variant={datum as SystemVariant} />
   }, [])
 
   const variantsList = useMemo(() => variants ?? [], [variants])
