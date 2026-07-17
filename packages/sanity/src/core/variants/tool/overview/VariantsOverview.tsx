@@ -8,6 +8,7 @@ import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n'
 import {Table, type TableProps} from '../../../releases/tool/components/Table/Table'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
+import {CreateVariantSetDialog} from '../../components/dialog/CreateVariantSetDialog'
 import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -26,9 +27,14 @@ export function VariantsOverview() {
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateVariantDialogOpen, setIsCreateVariantDialogOpen] = useState(false)
+  const [isCreateVariantSetDialogOpen, setIsCreateVariantSetDialogOpen] = useState(false)
 
   const handleCreateVariant = useCallback(() => {
     setIsCreateVariantDialogOpen(true)
+  }, [])
+
+  const handleCreateVariantSet = useCallback(() => {
+    setIsCreateVariantSetDialogOpen(true)
   }, [])
 
   const handleOnCreateVariant = useCallback(
@@ -69,16 +75,31 @@ export function VariantsOverview() {
 
   const hasVariants = variantsList.length > 0
 
-  const createVariantButton = useMemo(
+  const createButtons = useMemo(
     () => (
-      <Button
-        disabled={isCreateVariantDialogOpen}
-        icon={AddIcon}
-        onClick={handleCreateVariant}
-        text={t('overview.action.create-variant')}
-      />
+      <Flex gap={2}>
+        <Button
+          disabled={isCreateVariantDialogOpen}
+          icon={AddIcon}
+          onClick={handleCreateVariant}
+          text={t('overview.action.create-variant')}
+        />
+        <Button
+          disabled={isCreateVariantSetDialogOpen}
+          icon={AddIcon}
+          mode="ghost"
+          onClick={handleCreateVariantSet}
+          text={t('overview.action.create-variant-set')}
+        />
+      </Flex>
     ),
-    [handleCreateVariant, isCreateVariantDialogOpen, t],
+    [
+      handleCreateVariant,
+      handleCreateVariantSet,
+      isCreateVariantDialogOpen,
+      isCreateVariantSetDialogOpen,
+      t,
+    ],
   )
 
   const tableEmptyState = useCallback(() => {
@@ -92,8 +113,8 @@ export function VariantsOverview() {
       )
     }
 
-    return <VariantsEmptyState createVariantButton={createVariantButton} />
-  }, [createVariantButton, error, hasVariants, t])
+    return <VariantsEmptyState createVariantButton={createButtons} />
+  }, [createButtons, error, hasVariants, t])
 
   return (
     <Flex direction="column" flex={1} height="fill">
@@ -110,7 +131,7 @@ export function VariantsOverview() {
                   {t('overview.description')}
                 </Text>
               </Stack>
-              {createVariantButton}
+              {createButtons}
             </Flex>
           </Card>
 
@@ -152,6 +173,15 @@ export function VariantsOverview() {
         <CreateVariantDialog
           onCancel={() => setIsCreateVariantDialogOpen(false)}
           onSubmit={handleOnCreateVariant}
+        />
+      )}
+
+      {isCreateVariantSetDialogOpen && (
+        <CreateVariantSetDialog
+          onCancel={() => setIsCreateVariantSetDialogOpen(false)}
+          // Step 2 delivers the key/value input and live preview only. Persisting the generated
+          // variant definitions is step 3; for now, submitting simply closes the dialog.
+          onSubmit={() => setIsCreateVariantSetDialogOpen(false)}
         />
       )}
     </Flex>
