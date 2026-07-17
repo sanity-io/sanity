@@ -1,5 +1,5 @@
 import babel from '@rolldown/plugin-babel'
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
+import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
 import {esmExternalRequirePlugin, type Plugin, type UserConfig} from 'vite'
