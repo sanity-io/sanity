@@ -80,6 +80,10 @@ const variantsLocaleStrings = {
   'overview.badge.set': 'Set',
   /** Badge on the overview row for a variant definition forked from a generated set. */
   'overview.badge.forked': 'Forked',
+  /** Count of definitions on a collapsed set group row (singular). */
+  'overview.set-group.count_one': '{{count}} definition',
+  /** Count of definitions on a collapsed set group row (plural). */
+  'overview.set-group.count_other': '{{count}} definitions',
   /** Empty state for variant document table. */
   'detail.documents.no-documents': 'No documents in this variant definition',
   /** Edited column header for variant document table. */
