@@ -84,6 +84,49 @@ describe('CreateVariantSetDialog', () => {
     expect(keyInputs[1]).toHaveAttribute('placeholder', 'e.g. segment')
   })
 
+  it('enables JSON export only once there is a complete dimension', async () => {
+    const user = userEvent.setup()
+    await renderDialog()
+
+    expect(screen.getByTestId('export-json-button')).toBeDisabled()
+
+    await user.type(screen.getByTestId('variant-set-form-dimension-key'), 'market')
+    await user.type(screen.getByTestId('variant-set-form-dimension-values'), 'uk, us')
+
+    await waitFor(() => expect(screen.getByTestId('export-json-button')).toBeEnabled())
+  })
+
+  it('offers CDP import and sync as not-yet-available actions', async () => {
+    await renderDialog()
+
+    expect(screen.getByTestId('import-cdp-button')).toBeDisabled()
+    expect(screen.getByTestId('sync-cdp-button')).toBeDisabled()
+  })
+
+  it('imports a JSON file and previews the resulting count', async () => {
+    const user = userEvent.setup()
+    await renderDialog()
+
+    const file = new File(
+      [
+        JSON.stringify({
+          name: 'Imported',
+          dimensions: [{key: 'market', values: ['uk', 'us', 'de']}],
+        }),
+      ],
+      'set.json',
+      {type: 'application/json'},
+    )
+    await user.upload(screen.getByTestId('variant-set-file-input'), file)
+
+    await waitFor(() => {
+      expect(screen.getByTestId('variant-set-preview')).toHaveTextContent(
+        '3 variant definitions will be generated',
+      )
+    })
+    expect(screen.getByTestId('variant-set-form-name')).toHaveValue('Imported')
+  })
+
   it('keeps generate disabled until the set has a name', async () => {
     const user = userEvent.setup()
     await renderDialog()

@@ -1,5 +1,8 @@
+import {DownloadIcon} from '@sanity/icons/Download'
+import {SyncIcon} from '@sanity/icons/Sync'
+import {UploadIcon} from '@sanity/icons/Upload'
 import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
-import {type FormEvent, useCallback, useMemo, useState} from 'react'
+import {type ChangeEvent, type FormEvent, useCallback, useMemo, useRef, useState} from 'react'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -8,6 +11,8 @@ import {useVariantOperations} from '../../store/useVariantOperations'
 import {getVariantConditionsText} from '../../tool/util'
 import {type EditableSystemVariant} from '../../types'
 import {buildVariantSetDefinitions} from '../../util/buildVariantSetDefinitions'
+import {downloadTextFile} from '../../util/downloadTextFile'
+import {parseVariantSetJson, serializeVariantSet} from '../../util/variantSetJson'
 import {
   countVariantSetPermutations,
   type VariantSetDimension,
@@ -31,9 +36,43 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
   const [showValidation, setShowValidation] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [generated, setGenerated] = useState<EditableSystemVariant[] | null>(null)
+  // Seed + remount key so importing a JSON file can repopulate the (locally-stateful) form.
+  const [formSeed, setFormSeed] = useState<VariantSetDimension[] | undefined>(undefined)
+  const [formKey, setFormKey] = useState(0)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const permutationCount = useMemo(() => countVariantSetPermutations(dimensions), [dimensions])
   const canGenerate = Boolean(name.trim()) && permutationCount > 0 && !dimensionsInvalid
+
+  const handleExport = useCallback(() => {
+    const filename = `${name.trim() || 'variant-set'}.json`
+    downloadTextFile(filename, serializeVariantSet({name, dimensions}))
+  }, [dimensions, name])
+
+  const handleImportFile = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.currentTarget.files?.[0]
+      event.currentTarget.value = '' // allow re-importing the same file
+      if (!file) {
+        return
+      }
+
+      const result = parseVariantSetJson(await file.text())
+      if (!result.ok) {
+        toast.push({closable: true, status: 'error', title: t('dialog.create-set.import.error')})
+        return
+      }
+
+      if (result.name) {
+        setName(result.name)
+      }
+      setDimensions(result.dimensions)
+      setDimensionsInvalid(false)
+      setFormSeed(result.dimensions)
+      setFormKey((current) => current + 1)
+    },
+    [t, toast],
+  )
 
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -145,6 +184,8 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
         <form onSubmit={handleSubmit}>
           <Box paddingBottom={4}>
             <VariantSetForm
+              key={formKey}
+              initialDimensions={formSeed}
               name={name}
               onDimensionsChange={setDimensions}
               onDimensionsValidityChange={setDimensionsInvalid}
@@ -152,6 +193,53 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
               showValidation={showValidation}
             />
           </Box>
+
+          <input
+            accept="application/json,.json"
+            data-testid="variant-set-file-input"
+            onChange={handleImportFile}
+            ref={fileInputRef}
+            style={{display: 'none'}}
+            type="file"
+          />
+
+          <Flex gap={2} paddingBottom={4} wrap="wrap">
+            <Button
+              data-testid="import-json-button"
+              icon={UploadIcon}
+              mode="ghost"
+              onClick={() => fileInputRef.current?.click()}
+              text={t('dialog.create-set.action.import-json')}
+              type="button"
+            />
+            <Button
+              data-testid="export-json-button"
+              disabled={permutationCount === 0}
+              icon={DownloadIcon}
+              mode="ghost"
+              onClick={handleExport}
+              text={t('dialog.create-set.action.export-json')}
+              type="button"
+            />
+            <Button
+              data-testid="import-cdp-button"
+              disabled
+              icon={UploadIcon}
+              mode="ghost"
+              text={t('dialog.create-set.action.import-cdp')}
+              tooltipProps={{content: t('dialog.create-set.cdp.coming-soon')}}
+              type="button"
+            />
+            <Button
+              data-testid="sync-cdp-button"
+              disabled
+              icon={SyncIcon}
+              mode="ghost"
+              text={t('dialog.create-set.action.sync-cdp')}
+              tooltipProps={{content: t('dialog.create-set.cdp.coming-soon')}}
+              type="button"
+            />
+          </Flex>
 
           <Card
             border

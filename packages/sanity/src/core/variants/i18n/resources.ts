@@ -187,6 +187,18 @@ const variantsLocaleStrings = {
     'Complete the current key and values before adding another.',
   /** Remove dimension action for the create variant set dialog. */
   'dialog.create-set.remove-dimension': 'Remove dimension',
+  /** Import-from-JSON action in the create variant set dialog. */
+  'dialog.create-set.action.import-json': 'Import JSON',
+  /** Export-to-JSON action in the create variant set dialog. */
+  'dialog.create-set.action.export-json': 'Export JSON',
+  /** Import-from-CDP action (not yet available) in the create variant set dialog. */
+  'dialog.create-set.action.import-cdp': 'Import from CDP',
+  /** Sync-from-CDP action (not yet available) in the create variant set dialog. */
+  'dialog.create-set.action.sync-cdp': 'Sync from CDP',
+  /** Tooltip on the not-yet-available CDP actions. */
+  'dialog.create-set.cdp.coming-soon': 'Coming soon',
+  /** Error toast when an imported file cannot be read as a variant set. */
+  'dialog.create-set.import.error': 'Could not read that file as a variant set',
   /** Cancel action for the create variant set dialog. */
   'dialog.create-set.action.cancel': 'Cancel',
   /** Preview shown before any complete dimension exists in the create variant set dialog. */

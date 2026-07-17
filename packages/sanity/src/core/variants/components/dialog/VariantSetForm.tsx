@@ -29,6 +29,18 @@ function createEmptyRow(): DimensionRow {
   return {id: randomKey(12), key: '', valuesInput: ''}
 }
 
+function seedRows(initialDimensions?: VariantSetDimension[]): DimensionRow[] {
+  if (!initialDimensions || initialDimensions.length === 0) {
+    return [createEmptyRow()]
+  }
+
+  return initialDimensions.map((dimension) => ({
+    id: randomKey(12),
+    key: dimension.key,
+    valuesInput: dimension.values.join(', '),
+  }))
+}
+
 function isRowEmpty(row: DimensionRow): boolean {
   return !row.key.trim() && !row.valuesInput.trim()
 }
@@ -101,6 +113,7 @@ export function VariantSetForm(props: {
   onDimensionsChange: (dimensions: VariantSetDimension[]) => void
   onDimensionsValidityChange?: (invalid: boolean) => void
   showValidation?: boolean
+  initialDimensions?: VariantSetDimension[]
 }) {
   const {
     name,
@@ -108,10 +121,11 @@ export function VariantSetForm(props: {
     onDimensionsChange,
     onDimensionsValidityChange,
     showValidation = false,
+    initialDimensions,
   } = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const nameId = useId()
-  const [rows, setRows] = useState<DimensionRow[]>(() => [createEmptyRow()])
+  const [rows, setRows] = useState<DimensionRow[]>(() => seedRows(initialDimensions))
   const rowsValidation = useMemo(() => getRowsValidation(rows), [rows])
 
   const showNameError = showValidation && !name.trim()
