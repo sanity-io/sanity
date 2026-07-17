@@ -124,6 +124,15 @@ export function VariantDocumentsTable({
     setActiveLane((previous) => (previous === laneId ? RELEASE_LANE_ALL : laneId))
   }, [])
 
+  const handleToggleGrouped = useCallback(() => {
+    const next = !grouped
+    setGrouped(next)
+    // Open every group by default so grouping just inserts headers rather than collapsing content.
+    if (next) {
+      setExpandedReleases(new Set(segments.map((segment) => segment.id)))
+    }
+  }, [grouped, segments])
+
   const displayRows = grouped ? swimlaneRows : flatRows
   const hasReleaseControls = !loading && segments.length > 1
 
@@ -145,10 +154,10 @@ export function VariantDocumentsTable({
             <Button
               data-testid="variant-group-by-release-toggle"
               icon={StackIcon}
-              mode={grouped ? 'default' : 'ghost'}
-              onClick={() => setGrouped((previous) => !previous)}
+              mode="bleed"
+              onClick={handleToggleGrouped}
               selected={grouped}
-              text={t('detail.release-lane.group-by-release')}
+              tooltipProps={{content: t('detail.release-lane.group-by-release')}}
             />
           </Flex>
         </Box>
@@ -167,6 +176,19 @@ export function VariantDocumentsTable({
           loading={loading}
           // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
           rowId="rowKey"
+          // The release aggregate row is a full-width, tinted, clickable section divider. The
+          // tint is a subtle mix of the foreground colour so it reads in both light and dark.
+          rowProps={(datum) =>
+            datum.isReleaseAggregate
+              ? {
+                  onClick: datum.onToggleRelease,
+                  style: {
+                    cursor: 'pointer',
+                    backgroundColor: 'color-mix(in srgb, var(--card-fg-color) 8%, transparent)',
+                  },
+                }
+              : {}
+          }
           scrollContainerRef={scrollContainerRef}
           searchFilter={filterDocuments}
         />

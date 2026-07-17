@@ -221,11 +221,14 @@ describe('VariantDocumentsTable', () => {
     expect(screen.getByText('1 document')).toBeInTheDocument()
     expect(screen.getByText('2 documents')).toBeInTheDocument()
 
-    // Expanding the Published group reveals its one document.
+    // Groups open by default: First article rides both published and drafts, so it shows twice.
+    expect(screen.getAllByText('First article')).toHaveLength(2)
+
+    // Collapsing the Published group removes its copy, leaving the one under Drafts.
     await user.click(headers[0]!)
 
     await waitFor(() => {
-      expect(screen.getByText('First article')).toBeInTheDocument()
+      expect(screen.getAllByText('First article')).toHaveLength(1)
     })
   })
 
