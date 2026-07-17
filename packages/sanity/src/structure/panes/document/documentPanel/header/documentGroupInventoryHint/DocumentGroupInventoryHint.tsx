@@ -30,7 +30,7 @@ export const DocumentGroupInventoryHint: ComponentType = () => {
       }}
     >
       <Text size={1} weight="medium">
-        <Flex gap={2} align="center" justify="flex-end">
+        <Flex gap={2} align="center" flex="none" justify="flex-end">
           <InfoOutlineIcon /> {t('document-group-inventory.onboarding-hint')}
         </Flex>
       </Text>
@@ -48,6 +48,8 @@ const TextButton = styled.button(({theme}) => {
     padding: 0;
     outline: none;
     all: unset;
+    flex: none;
+    white-space: nowrap;
     color: var(--card-badge-suggest-fg-color);
     cursor: pointer;
 
