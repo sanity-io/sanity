@@ -243,6 +243,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
             <Select
               machine={selectionRef}
               inventoryRef={inventoryRef}
+              documentId={documentId}
               documentType={documentType}
               menuPortalElement={menuPortalElement}
               perspectiveList={perspectiveList}
@@ -288,6 +289,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
 const Select: ComponentType<{
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
+  documentId: string
   documentType: string
   onPrimaryAction: SetVariant
   menuPortalElement: HTMLElement | null
@@ -295,6 +297,7 @@ const Select: ComponentType<{
 }> = ({
   machine,
   inventoryRef,
+  documentId,
   documentType,
   onPrimaryAction,
   menuPortalElement,
@@ -349,6 +352,7 @@ const Select: ComponentType<{
                 inventoryRef={inventoryRef}
                 documentType={documentType}
                 onPrimaryAction={onPrimaryAction}
+                isActive={documentId === variant.id}
                 isSelectable={isSelectable}
                 menuPortalElement={menuPortalElement}
                 perspectiveList={perspectiveList}
@@ -366,6 +370,7 @@ const Variant: ComponentType<{
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
   documentType: string
   onPrimaryAction: SetVariant
+  isActive: boolean
   isSelectable: boolean
   menuPortalElement: HTMLElement | null
   perspectiveList: DocumentGroupInventoryPerspectiveList
@@ -375,6 +380,7 @@ const Variant: ComponentType<{
   inventoryRef,
   documentType,
   onPrimaryAction,
+  isActive: isSelected,
   isSelectable,
   menuPortalElement,
   perspectiveList,
@@ -389,22 +395,11 @@ const Variant: ComponentType<{
   const versionName = getVersionFromId(variant.id)
   const bundleId = isPublishedVersion ? 'published' : isDraftVersion ? 'draft' : (versionName ?? '')
 
-  const isReadOnly = useSelector(machine, (s) => s.matches('readonly'))
+  const isReadOnly = useSelector(machine, (snapshot) => snapshot.matches('readonly'))
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
 
-  const {
-    filteredReleases,
-    getReleaseChipState,
-    handleCopyToDraftsNavigate,
-    isDraftSelected,
-    isPublishSelected,
-  } = perspectiveList
-
-  const isSelected =
-    (isPublishedVersion && isPublishSelected) ||
-    (isDraftVersion && isDraftSelected) ||
-    (isVersion && getReleaseChipState(getVersionFromId(variant.id) ?? '').selected)
+  const {filteredReleases, handleCopyToDraftsNavigate} = perspectiveList
 
   const release = versionName
     ? releases.get(getReleaseDocumentIdFromReleaseId(versionName))

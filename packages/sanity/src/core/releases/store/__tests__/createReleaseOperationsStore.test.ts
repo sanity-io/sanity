@@ -32,6 +32,7 @@ describe('createReleaseOperationsStore', () => {
         delete: vi.fn().mockResolvedValue(undefined),
       },
       getDocument: vi.fn(),
+      fetch: vi.fn().mockResolvedValue([]),
       createVersion: vi.fn().mockResolvedValue(undefined),
       discardVersion: vi.fn().mockResolvedValue(undefined),
       unpublishVersion: vi.fn().mockResolvedValue(undefined),
@@ -488,6 +489,79 @@ describe('createReleaseOperationsStore', () => {
       },
       opts,
     )
+  })
+
+  describe('discardDrafts', () => {
+    let store: ReturnType<typeof createStore>
+
+    beforeEach(() => {
+      store = createStore()
+    })
+
+    it('should discard the existing drafts of the given documents', async () => {
+      mockClient.fetch.mockResolvedValue(['drafts.doc1', 'drafts.doc2'])
+
+      await store.discardDrafts(['versions.release-id.doc1', 'versions.release-id.doc2'])
+
+      expect(mockClient.fetch).toHaveBeenCalledWith(
+        '*[_id in $draftIds]._id',
+        {draftIds: ['drafts.doc1', 'drafts.doc2']},
+        {perspective: 'raw', tag: 'release.discard-drafts'},
+      )
+      expect(mockClient.action).toHaveBeenCalledWith(
+        [
+          {
+            actionType: 'sanity.action.document.version.discard',
+            versionId: 'drafts.doc1',
+          },
+          {
+            actionType: 'sanity.action.document.version.discard',
+            versionId: 'drafts.doc2',
+          },
+        ],
+        {tag: 'release.discard-drafts'},
+      )
+    })
+
+    it('should only discard the drafts that exist', async () => {
+      mockClient.fetch.mockResolvedValue(['drafts.doc2'])
+
+      await store.discardDrafts(['versions.release-id.doc1', 'versions.release-id.doc2'])
+
+      expect(mockClient.action).toHaveBeenCalledWith(
+        [
+          {
+            actionType: 'sanity.action.document.version.discard',
+            versionId: 'drafts.doc2',
+          },
+        ],
+        {tag: 'release.discard-drafts'},
+      )
+    })
+
+    it('should not discard anything when no drafts exist', async () => {
+      mockClient.fetch.mockResolvedValue([])
+
+      await expect(store.discardDrafts(['versions.release-id.doc1'])).resolves.toBeUndefined()
+
+      expect(mockClient.action).not.toHaveBeenCalled()
+    })
+
+    it('should not fetch or discard anything when no documents are given', async () => {
+      await expect(store.discardDrafts([])).resolves.toBeUndefined()
+
+      expect(mockClient.fetch).not.toHaveBeenCalled()
+      expect(mockClient.action).not.toHaveBeenCalled()
+    })
+
+    it('should propagate errors from the discard action', async () => {
+      mockClient.fetch.mockResolvedValue(['drafts.doc1'])
+      mockClient.action.mockRejectedValueOnce(new Error('Failed to discard drafts'))
+
+      await expect(store.discardDrafts(['versions.release-id.doc1'])).rejects.toThrow(
+        'Failed to discard drafts',
+      )
+    })
   })
 
   describe('duplicateRelease', () => {

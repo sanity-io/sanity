@@ -16,11 +16,26 @@ beforeEach(() => {
   mockHistoryStore.restore.mockClear()
 })
 
+const EMPTY_SNAPSHOTS = {draft: null, published: null, version: null}
+
 describe('restore operation', () => {
   describe('disabled', () => {
-    it('is never disabled', () => {
-      const args = {} as unknown as OperationArgs
+    it('is not disabled for non-variant documents', () => {
+      const args = {snapshots: EMPTY_SNAPSHOTS} as unknown as OperationArgs
       expect(restore.disabled(args)).toBe(false)
+    })
+
+    it('is disabled for variant-scoped versions', () => {
+      const args = {
+        snapshots: {
+          ...EMPTY_SNAPSHOTS,
+          version: {
+            _id: 'versions.varscope.doc-1',
+            _system: {variant: {_ref: '_.variants.french', _weak: true}},
+          },
+        },
+      } as unknown as OperationArgs
+      expect(restore.disabled(args)).toBe('VARIANT_VERSION')
     })
   })
 
@@ -33,6 +48,7 @@ describe('restore operation', () => {
         schema: {},
         idPair: {publishedId: 'pub-id', draftId: 'drafts.pub-id'},
         typeName: 'testType',
+        snapshots: EMPTY_SNAPSHOTS,
       } as unknown as OperationArgs
 
       restore.execute(args, 'lastRevision' as DocumentRevision)
@@ -48,6 +64,7 @@ describe('restore operation', () => {
         schema: {},
         idPair: {publishedId: 'pub-id', draftId: 'drafts.pub-id'},
         typeName: 'testType',
+        snapshots: EMPTY_SNAPSHOTS,
       } as unknown as OperationArgs
 
       restore.execute(args, 'specific-revision-123' as DocumentRevision)
@@ -67,6 +84,7 @@ describe('restore operation', () => {
         schema: {},
         idPair: {publishedId: 'test-doc', draftId: 'drafts.test-doc'},
         typeName: 'testType',
+        snapshots: EMPTY_SNAPSHOTS,
       } as unknown as OperationArgs
 
       restore.execute(args, 'lastRevision' as DocumentRevision)

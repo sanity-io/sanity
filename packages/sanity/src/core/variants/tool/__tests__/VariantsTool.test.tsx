@@ -90,7 +90,9 @@ describe('VariantsTool', () => {
     await renderTool()
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', {level: 1, name: 'Variants'})).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', {level: 1, name: 'Variant definitions'}),
+      ).toBeInTheDocument()
     })
   })
 

@@ -2,8 +2,8 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
@@ -16,6 +16,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {type DocumentInRelease} from '../../detail/types'
 
 interface ReleasePublishAllButtonProps {
@@ -36,7 +37,7 @@ export const ReleasePublishAllButton = ({
   onConfirmDialogClose,
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
-  const {publishRelease} = useReleaseOperations()
+  const {publishRelease, discardDrafts} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
@@ -51,8 +52,26 @@ export const ReleasePublishAllButton = ({
   const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
     'idle',
   )
+  const [shouldUpdateDrafts, setShouldUpdateDrafts] = useState(false)
 
   const [publishPermission, setPublishPermission] = useState<boolean>(false)
+
+  // documents that also have an existing draft, which would become outdated once the release
+  // is published (documents set to be unpublished are excluded, since publishing intentionally
+  // keeps or creates a draft for them so that their content is not lost)
+  const draftDocumentIds = useMemo(
+    () =>
+      documents
+        .filter(
+          (releaseDocument) =>
+            releaseDocument.document.draftDocumentExists &&
+            !isGoingToUnpublish(releaseDocument.document),
+        )
+        .map((releaseDocument) => releaseDocument.document._id),
+    [documents],
+  )
+  const draftDocumentsCount = draftDocumentIds.length
+  const showUpdateDraftsOption = isDraftModelEnabled && draftDocumentsCount > 0
 
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
@@ -81,6 +100,25 @@ export const ReleasePublishAllButton = ({
       setPublishBundleStatus('publishing')
       await publishRelease(release._id)
       telemetry.log(PublishedRelease)
+      if (showUpdateDraftsOption && shouldUpdateDrafts) {
+        // the release has been published at this point, so a failure to update the drafts should
+        // not surface as a failure to publish the release
+        await discardDrafts(draftDocumentIds).catch((updateDraftsError) => {
+          toast.push({
+            status: 'warning',
+            title: (
+              <Text muted size={1}>
+                <Translate
+                  t={t}
+                  i18nKey="toast.publish.update-drafts-error"
+                  values={{error: updateDraftsError.message}}
+                />
+              </Text>
+            ),
+          })
+          console.error(updateDraftsError)
+        })
+      }
       if (
         isReleaseDocument(perspective.selectedPerspective) &&
         perspective.selectedPerspective?._id === release._id
@@ -114,6 +152,10 @@ export const ReleasePublishAllButton = ({
     release,
     publishRelease,
     telemetry,
+    showUpdateDraftsOption,
+    shouldUpdateDrafts,
+    discardDrafts,
+    draftDocumentIds,
     perspective.selectedPerspective,
     setPerspective,
     isDraftModelEnabled,
@@ -145,19 +187,41 @@ export const ReleasePublishAllButton = ({
           },
         }}
       >
-        <Text muted size={1}>
-          {
-            <Translate
-              t={t}
-              i18nKey="publish-dialog.confirm-publish-description"
-              values={{
-                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
-                releaseDocumentsLength: documents.length,
-                count: documents.length,
-              }}
-            />
-          }
-        </Text>
+        <Stack space={4}>
+          <Text muted size={1}>
+            {
+              <Translate
+                t={t}
+                i18nKey="publish-dialog.confirm-publish-description"
+                values={{
+                  title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+                  releaseDocumentsLength: documents.length,
+                  count: documents.length,
+                }}
+              />
+            }
+          </Text>
+          {showUpdateDraftsOption && (
+            <Stack space={3}>
+              <Flex align="center" gap={3} as="label">
+                <Checkbox
+                  checked={shouldUpdateDrafts}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                    setShouldUpdateDrafts(event.currentTarget.checked)
+                  }
+                  data-testid="update-drafts-checkbox"
+                />
+                <Text size={1}>{t('publish-dialog.confirm-publish.update-drafts-checkbox')}</Text>
+              </Flex>
+              <Text muted size={1}>
+                {t('publish-dialog.confirm-publish.update-drafts-description', {
+                  count: draftDocumentsCount,
+                  draftDocumentsLength: draftDocumentsCount,
+                })}
+              </Text>
+            </Stack>
+          )}
+        </Stack>
       </Dialog>
     )
   }, [
@@ -167,6 +231,9 @@ export const ReleasePublishAllButton = ({
     release.metadata.title,
     tCore,
     documents.length,
+    showUpdateDraftsOption,
+    shouldUpdateDrafts,
+    draftDocumentsCount,
     onConfirmDialogClose,
   ])
 
@@ -205,6 +272,7 @@ export const ReleasePublishAllButton = ({
   }, [documents.length, hasDocumentValidationErrors, isValidatingDocuments, publishPermission, t])
 
   const handleInitialPublish = useCallback(() => {
+    setShouldUpdateDrafts(false)
     setPublishBundleStatus('confirm')
     onConfirmDialogOpen?.()
   }, [onConfirmDialogOpen])

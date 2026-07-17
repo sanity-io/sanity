@@ -31,6 +31,9 @@ const DocumentActionsInner = memo(
 
     const publishedId = getPublishedId(document.document._id)
     const type = document.document._type
+    // No `getTargetScopeId(useTargetDocumentState())` here: the version is derived from the table row's own
+    // document id (the release being viewed), in a variant release version this will also work because the scopeId
+    // is the same as the version from id.
     const version = getVersionFromId(document.document._id)
 
     const [discardVersionPermission, isDiscardVersionPermissionsLoading] =
