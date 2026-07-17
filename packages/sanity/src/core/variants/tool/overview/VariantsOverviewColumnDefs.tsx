@@ -1,3 +1,4 @@
+import {BlockElementIcon} from '@sanity/icons/BlockElement'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Badge, Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
@@ -106,9 +107,7 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
             <Text size={1}>
               {variant.isSetExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
             </Text>
-            <Text size={1} weight="medium">
-              {variant.setReference?.name}
-            </Text>
+            {/* A set icon prefix (instead of a "Set" text badge) keeps the label short. */}
             <Tooltip
               content={
                 <Box padding={2}>
@@ -117,10 +116,13 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
               }
               portal
             >
-              <Badge fontSize={0} mode="outline" tone="primary">
-                {t('overview.badge.set')}
-              </Badge>
+              <Text size={1}>
+                <BlockElementIcon />
+              </Text>
             </Tooltip>
+            <Text size={1} weight="medium">
+              {variant.setReference?.name}
+            </Text>
             <Text muted size={1}>
               {t(
                 variant.setChildCount === 1
