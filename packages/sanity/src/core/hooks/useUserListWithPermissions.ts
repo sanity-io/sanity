@@ -6,6 +6,7 @@ import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switc
 
 import {
   type DocumentValuePermission,
+  type Grant,
   grantsPermissionOn,
   type ProjectData,
   useProjectStore,
@@ -52,6 +53,32 @@ const INITIAL_STATE: UserListWithPermissionsHookValue = {
 export interface UserListWithPermissionsOptions {
   documentValue: SanityDocument | null
   permission: DocumentValuePermission
+}
+
+async function hasPermissionFromAnyGrant(
+  userId: string,
+  grants: Grant[],
+  permission: DocumentValuePermission,
+  documentValue: SanityDocument | null,
+): Promise<boolean> {
+  if (!documentValue) {
+    return true
+  }
+
+  const results = await Promise.all(
+    grants.map(async (grant) => {
+      try {
+        const {granted} = await grantsPermissionOn(userId, [grant], permission, documentValue)
+        return granted
+      } catch {
+        // Some grants cannot be evaluated client-side, such as filters using
+        // `user::attributes()`. Fail closed for only the unevaluable grant.
+        return false
+      }
+    }),
+  )
+
+  return results.some(Boolean)
 }
 
 /**
@@ -112,7 +139,7 @@ export function useUserListWithPermissions(
           })
 
           const flattenedGrants = [...grants].flat()
-          const {granted} = await grantsPermissionOn(
+          const granted = await hasPermissionFromAnyGrant(
             user.id,
             flattenedGrants,
             permission,
@@ -121,7 +148,7 @@ export function useUserListWithPermissions(
 
           return {
             ...user,
-            granted: granted,
+            granted,
           }
         })
 
