@@ -3,10 +3,11 @@ import {Menu} from '@sanity/ui'
 import {MenuButton, MenuItem} from '../../../../ui-components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {useTranslation} from '../../../i18n'
+import {DeleteVariantDialog} from '../../components/dialog/DeleteVariantDialog'
 import {useVariantDeleteAction} from '../../hooks/useVariantDeleteAction'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
-import {getVariantId} from '../util'
+import {getVariantId, getVariantTitle} from '../util'
 
 export function VariantMenuButton({
   documentCount,
@@ -16,27 +17,44 @@ export function VariantMenuButton({
   variant: SystemVariant
 }) {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const {deleteDisabled, deleteDisabledTooltip, handleDelete, isDeleting} = useVariantDeleteAction(
-    variant._id,
-    {documentCount},
-  )
+  const variantTitle = getVariantTitle(variant)
+  const {
+    deleteDisabled,
+    deleteDisabledTooltip,
+    handleCloseDeleteDialog,
+    handleConfirmDelete,
+    handleDelete,
+    isDeleteDialogOpen,
+    isDeleting,
+    variantTitle: dialogVariantTitle,
+  } = useVariantDeleteAction(variant._id, {documentCount, variantTitle})
 
   return (
-    <MenuButton
-      button={<ContextMenuButton disabled={isDeleting} loading={isDeleting} />}
-      id={`variant-actions-${getVariantId(variant._id)}`}
-      menu={
-        <Menu>
-          <MenuItem
-            disabled={deleteDisabled}
-            onClick={handleDelete}
-            text={t('overview.action.delete-variant')}
-            tone="critical"
-            tooltipProps={deleteDisabledTooltip ? {content: deleteDisabledTooltip} : undefined}
-          />
-        </Menu>
-      }
-      popover={{placement: 'bottom-end', portal: true}}
-    />
+    <>
+      <MenuButton
+        button={<ContextMenuButton disabled={isDeleting} loading={isDeleting} />}
+        id={`variant-actions-${getVariantId(variant._id)}`}
+        menu={
+          <Menu>
+            <MenuItem
+              disabled={deleteDisabled}
+              onClick={handleDelete}
+              text={t('overview.action.delete-variant')}
+              tone="critical"
+              tooltipProps={deleteDisabledTooltip ? {content: deleteDisabledTooltip} : undefined}
+            />
+          </Menu>
+        }
+        popover={{placement: 'bottom-end', portal: true}}
+      />
+      {isDeleteDialogOpen && (
+        <DeleteVariantDialog
+          isDeleting={isDeleting}
+          onClose={handleCloseDeleteDialog}
+          onConfirm={handleConfirmDelete}
+          variantTitle={dialogVariantTitle}
+        />
+      )}
+    </>
   )
 }

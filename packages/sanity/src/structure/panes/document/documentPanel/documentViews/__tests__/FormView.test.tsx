@@ -78,6 +78,13 @@ function buildDocumentPaneValue(overrides: Partial<DocumentPaneValue> = {}): Doc
     compareValue: null,
     hasUpstreamVersion: false,
     focusPath: [],
+    targetDocumentState: {
+      status: 'ready',
+      targetDocument: undefined,
+      scopeId: undefined,
+      variant: undefined,
+      publishedSibling: undefined,
+    },
     ...overrides,
   } as unknown as DocumentPaneValue
 }

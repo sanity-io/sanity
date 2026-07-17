@@ -42,7 +42,7 @@ export interface DocumentValidationStatus extends ValidationStatus {
 export interface BundleDocument {
   memoKey: string
   isPending?: boolean
-  document: SanityDocument & {publishedDocumentExists: boolean}
+  document: SanityDocument & {publishedDocumentExists: boolean; draftDocumentExists?: boolean}
   validation: DocumentValidationStatus
 }
 
@@ -131,6 +131,7 @@ const buildBundleDocumentsObservable = ({
             map((availability) => ({
               ...doc,
               publishedDocumentExists: availability.published.available,
+              draftDocumentExists: availability.draft.available,
             })),
           )
         }),

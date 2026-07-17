@@ -268,7 +268,10 @@ function restore(
         }
         return actionsApiClient(
           client,
-          getIdPair(documentId, {version: getVersionFromId(documentId)}),
+          // The pair derives from the *target* id: `documentId` is always the published group id
+          // (its bundle segment is always undefined), while the target may be a version document
+          // (release or variant scoped) whose actions require the versioned API client.
+          getIdPair(documentId, {version: getVersionFromId(targetDocumentId)}),
         ).observable.action(
           options.fromDeleted
             ? [

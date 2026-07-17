@@ -67,6 +67,7 @@ minimumReleaseAgeExclude:
   - '@typescript/*'
   - '@vanilla-extract/*'
   - '@vercel/stega'
+  - '@yuku-parser/*'
   - 'csstype'
   - 'data-uri-to-buffer@7.0.0'
   - 'get-it'
@@ -86,6 +87,7 @@ minimumReleaseAgeExclude:
   - 'sanity-plugin-utils'
   - 'vitest'
   - 'vite'
+  - 'yuku-parser'
 
 overrides:
   vitest: 'catalog:'

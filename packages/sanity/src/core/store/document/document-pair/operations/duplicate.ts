@@ -6,7 +6,10 @@ import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {operationsApiClient} from '../utils/operationsApiClient'
 import {type MapDocument, type OperationImpl} from './types'
 
-const omitProps = ['_createdAt', '_updatedAt']
+// `_system` is authoritative, server-managed metadata (`group`/`scopeId`/`release`/`variant`
+// references of the SOURCE document): copying it onto the duplicate would attach the new
+// document to the source's group and scope.
+const omitProps = ['_createdAt', '_updatedAt', '_system']
 
 const getDocumentToDuplicateId = ({
   versionSnapshot,
@@ -17,9 +20,12 @@ const getDocumentToDuplicateId = ({
   dupeId: string
   liveEdit: boolean
 }) => {
-  if (versionSnapshot) {
-    // When duplicating a version document we need to create it with a version id.
-    // We get the version from the snapshot id and create a new version id for the duplicate.
+  // When duplicating a version document we need to create it with a version id.
+  // We get the version from the snapshot id and create a new version id for the duplicate.
+  // Variant-scoped versions are the exception: their scope ids are opaque, server-generated
+  // hashes that must never be fabricated client-side, so variant content duplicates into a new
+  // base draft instead (product decision).
+  if (versionSnapshot && !versionSnapshot._system?.variant?._ref) {
     const versionId = getVersionFromId(versionSnapshot._id)
     if (versionId) return getVersionId(dupeId, versionId)
   }
