@@ -87,7 +87,6 @@
       "project": ["src/**/*.ts"],
     },
     "packages/groq": {
-      "entry": ["groq.js", "groq.cjs"],
       "project": ["*.js", "*.cjs"],
     },
     "packages/@repo/bundle-manager": {
