@@ -237,10 +237,24 @@ export const DocumentPanelHeader = memo(
                 </HorizontalScroller>
               )}
               {hasDocumentGroupInventory && (
-                <Flex paddingX={3} gap={2} align={'center'}>
-                  <DocumentTargetBadges />
-                  <DocumentGroupInventoryHint />
-                </Flex>
+                <HorizontalScroller $showGradient={false}>
+                  <Flex
+                    flex={1}
+                    gap={2}
+                    align="center"
+                    overflow="auto"
+                    paddingX={3}
+                    data-testid="document-target-badges"
+                    style={{minWidth: 0}}
+                  >
+                    <Box flex="none">
+                      <DocumentTargetBadges />
+                    </Box>
+                    <Box flex="none">
+                      <DocumentGroupInventoryHint />
+                    </Box>
+                  </Flex>
+                </HorizontalScroller>
               )}
 
               <Box flex="none" paddingRight={3}>

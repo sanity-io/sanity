@@ -53,13 +53,11 @@ const RhombusIcon: ForwardRefExoticComponent<
 const TargetBadge = styled(Card)`
   display: inline-flex;
   align-items: center;
+  flex: none;
 `
 const BadgeContainer = styled(Flex)`
   user-select: none;
-  overflow: hidden;
-  max-width: 300px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  flex: none;
 `
 
 function getPerspectiveBadgeTone(selectedPerspective: TargetPerspective): BadgeTone {
@@ -80,7 +78,7 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
   if (isPublishedPerspective(selectedPerspective) || isDraftPerspective(selectedPerspective)) {
     return (
       <BadgeContainer padding={2}>
-        <Text size={1} textOverflow="ellipsis" weight="medium">
+        <Text size={1} weight="medium">
           {isPublishedPerspective(selectedPerspective)
             ? t('release.chip.published')
             : t('release.chip.global.drafts')}
@@ -98,7 +96,7 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
           title={selectedPerspective.metadata?.title}
           fallback={t('release.placeholder-untitled-release')}
           enableTooltip={false}
-          textProps={{size: 1, weight: 'medium', textOverflow: 'ellipsis'}}
+          textProps={{size: 1, weight: 'medium'}}
         />
       </BadgeContainer>
     )
@@ -120,7 +118,7 @@ const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: S
         <Text size={0}>
           <RhombusIcon />
         </Text>
-        <Text size={1} textOverflow="ellipsis" weight="medium">
+        <Text size={1} weight="medium">
           {getVariantTitle(variant)}
         </Text>
       </Flex>
@@ -143,7 +141,7 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
     targetDocumentState.status === 'ready' ? targetDocumentState.variant : undefined
 
   return (
-    <Flex align="center" gap={2} paddingRight={1}>
+    <Flex align="center" flex="none" gap={2} paddingRight={1}>
       <TargetBadge
         tone={getPerspectiveBadgeTone(selectedPerspective)}
         border
