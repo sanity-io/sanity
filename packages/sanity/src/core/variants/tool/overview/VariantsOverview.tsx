@@ -13,6 +13,7 @@ import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant} from '../../types'
+import {getVariantSetReference, type VariantSetReference} from '../../util/variantSet'
 import {filterVariantsForSearch, getVariantId} from '../util'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
@@ -28,6 +29,19 @@ export function VariantsOverview() {
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateVariantDialogOpen, setIsCreateVariantDialogOpen] = useState(false)
   const [isCreateVariantSetDialogOpen, setIsCreateVariantSetDialogOpen] = useState(false)
+  const [expandedSets, setExpandedSets] = useState<ReadonlySet<string>>(() => new Set())
+
+  const toggleSet = useCallback((setId: string) => {
+    setExpandedSets((previous) => {
+      const next = new Set(previous)
+      if (next.has(setId)) {
+        next.delete(setId)
+      } else {
+        next.add(setId)
+      }
+      return next
+    })
+  }, [])
 
   const handleCreateVariant = useCallback(() => {
     setIsCreateVariantDialogOpen(true)
@@ -48,15 +62,18 @@ export function VariantsOverview() {
   const columnDefs = useMemo(() => variantsOverviewColumnDefs(t), [t])
   const renderRowActions = useCallback<
     NonNullable<TableProps<TableVariant, undefined>['rowActions']>
-  >(
-    ({datum}) => (
+  >(({datum}) => {
+    // Set aggregate (group header) rows have no per-definition actions.
+    if ((datum as TableVariant).isSetAggregate) {
+      return null
+    }
+    return (
       <VariantMenuButton
         documentCount={(datum as TableVariant).documentCount}
         variant={datum as SystemVariant}
       />
-    ),
-    [],
-  )
+    )
+  }, [])
 
   const variantsList = useMemo(() => variants ?? [], [variants])
 
@@ -72,6 +89,70 @@ export function VariantsOverview() {
       ),
     [variantsList, searchQuery, documentCounts, documentCountsError],
   )
+
+  // Collapse each set's generated members under one aggregate header row so a large set doesn't
+  // flood the table. Skipped while searching (grouping would hide matches) and for singleton sets.
+  const displayRows = useMemo<TableVariant[]>(() => {
+    if (searchQuery.trim()) {
+      return filteredVariants
+    }
+
+    const membersBySet = new Map<string, {ref: VariantSetReference; children: TableVariant[]}>()
+    const standalone: TableVariant[] = []
+
+    for (const variant of filteredVariants) {
+      const ref = getVariantSetReference(variant)
+      if (ref) {
+        const group = membersBySet.get(ref.id) ?? {ref, children: []}
+        group.children.push(variant)
+        membersBySet.set(ref.id, group)
+      } else {
+        standalone.push(variant)
+      }
+    }
+
+    const rows: TableVariant[] = []
+    for (const [setId, {ref, children}] of membersBySet) {
+      if (children.length < 2) {
+        rows.push(...children)
+        continue
+      }
+
+      const documentTotal = children.reduce(
+        (sum, child) => sum + (typeof child.documentCount === 'number' ? child.documentCount : 0),
+        0,
+      )
+      const isSetExpanded = expandedSets.has(setId)
+
+      rows.push({
+        // Synthetic id that satisfies the variant id template while staying distinct from any real
+        // variant document id; only used as the table row key (never navigated to).
+        _id: `_.variants.set-${setId}`,
+        _type: 'system.variant',
+        _rev: '',
+        _createdAt: '',
+        _updatedAt: '',
+        conditions: {},
+        priority: 0,
+        metadata: {title: ref.name},
+        documentCount: documentTotal,
+        isSetAggregate: true,
+        setReference: ref,
+        setChildCount: children.length,
+        isSetExpanded,
+        onToggleSet: () => toggleSet(setId),
+      })
+
+      if (isSetExpanded) {
+        for (const child of children) {
+          rows.push({...child, isSetChild: true})
+        }
+      }
+    }
+
+    rows.push(...standalone)
+    return rows
+  }, [filteredVariants, searchQuery, expandedSets, toggleSet])
 
   const hasVariants = variantsList.length > 0
 
@@ -160,7 +241,7 @@ export function VariantsOverview() {
       <Box flex={1} overflow="auto" ref={setScrollContainerRef}>
         <Table<TableVariant>
           columnDefs={columnDefs}
-          data={filteredVariants}
+          data={displayRows}
           emptyState={tableEmptyState}
           loading={loading}
           rowId={VARIANT_TABLE_ROW_ID}
