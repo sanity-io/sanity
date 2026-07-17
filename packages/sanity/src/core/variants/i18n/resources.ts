@@ -34,6 +34,8 @@ const variantsLocaleStrings = {
   'overview.action.edit-variant': 'Edit variant definition',
   /** Label for the Variants overview row edit-set action (shown on set members). */
   'overview.action.edit-variant-set': 'Edit variant set',
+  /** Label for the Variants overview delete-set action (on a set aggregate row). */
+  'overview.action.delete-variant-set': 'Delete variant set',
   /** Label for the Variants overview delete action. */
   'overview.action.delete-variant': 'Delete variant definition',
   /** Tooltip when delete is disabled because the variant contains one document. */
@@ -289,6 +291,25 @@ const variantsLocaleStrings = {
   'dialog.edit-set.action.cancel': 'Cancel',
   /** Error toast title when applying a set edit fails. */
   'dialog.edit-set.error.title': 'Unable to update the variant set',
+  /** Title of the delete variant set dialog. */
+  'dialog.delete-set.title': 'Delete variant set',
+  /** Description of the delete variant set dialog. */
+  'dialog.delete-set.description':
+    'Delete the set "{{name}}" and its generated definitions? This cannot be undone.',
+  /** Confirm action in the delete variant set dialog. */
+  'dialog.delete-set.action.confirm': 'Delete set',
+  /** Summary line: how many definitions the delete removes (singular). */
+  'dialog.delete-set.summary.delete_one': '{{count}} definition will be deleted.',
+  /** Summary line: how many definitions the delete removes (plural). */
+  'dialog.delete-set.summary.delete_other': '{{count}} definitions will be deleted.',
+  /** Caution when a member definition has documents and is kept as standalone (singular). */
+  'dialog.delete-set.warning.retained_one':
+    '{{count}} definition has documents and will be kept as a standalone definition.',
+  /** Caution when member definitions have documents and are kept as standalone (plural). */
+  'dialog.delete-set.warning.retained_other':
+    '{{count}} definitions have documents and will be kept as standalone definitions.',
+  /** Error toast title when deleting a set fails. */
+  'dialog.delete-set.error.title': 'Unable to delete the variant set',
   /** Title for the edit variant dialog. */
   'dialog.edit.title': 'Edit variant definition',
   /** Confirm action for the edit variant dialog. */
