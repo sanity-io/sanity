@@ -17,6 +17,7 @@ import {
   countVariantSetPermutations,
   type VariantSetDimension,
 } from '../../util/variantSetPermutations'
+import {VariantSetExplainer} from '../VariantSetExplainer'
 import {VariantSetForm} from './VariantSetForm'
 
 // Above this many permutations, generation asks for an extra confirmation so an accidental
@@ -200,6 +201,9 @@ export function CreateVariantSetDialog(props: CreateVariantSetDialogProps): Reac
     >
       <Card borderTop padding={4}>
         <form onSubmit={handleSubmit}>
+          <Box paddingBottom={4}>
+            <VariantSetExplainer />
+          </Box>
           <Box paddingBottom={4}>
             <VariantSetForm
               key={formKey}
