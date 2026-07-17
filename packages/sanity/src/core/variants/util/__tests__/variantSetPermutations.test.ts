@@ -1,6 +1,10 @@
 import {describe, expect, it} from 'vitest'
 
-import {countVariantSetPermutations, parseVariantSetValues} from '../variantSetPermutations'
+import {
+  countVariantSetPermutations,
+  generateVariantSetPermutations,
+  parseVariantSetValues,
+} from '../variantSetPermutations'
 
 describe('parseVariantSetValues', () => {
   it('splits on commas and trims surrounding whitespace', () => {
@@ -57,5 +61,54 @@ describe('countVariantSetPermutations', () => {
         {key: 'segment', values: []},
       ]),
     ).toBe(3)
+  })
+})
+
+describe('generateVariantSetPermutations', () => {
+  it('returns an empty list when there are no complete dimensions', () => {
+    expect(generateVariantSetPermutations([])).toEqual([])
+    expect(generateVariantSetPermutations([{key: 'market', values: []}])).toEqual([])
+  })
+
+  it('expands a single dimension into one condition object per value', () => {
+    expect(generateVariantSetPermutations([{key: 'market', values: ['uk', 'us']}])).toEqual([
+      {market: 'uk'},
+      {market: 'us'},
+    ])
+  })
+
+  it('produces the cartesian product across dimensions', () => {
+    expect(
+      generateVariantSetPermutations([
+        {key: 'market', values: ['uk', 'us']},
+        {key: 'segment', values: ['loyal', 'new']},
+      ]),
+    ).toEqual([
+      {market: 'uk', segment: 'loyal'},
+      {market: 'uk', segment: 'new'},
+      {market: 'us', segment: 'loyal'},
+      {market: 'us', segment: 'new'},
+    ])
+  })
+
+  it('always returns exactly countVariantSetPermutations entries', () => {
+    const dimensions = [
+      {key: 'brand', values: ['bk', 'th', 'popeyes']},
+      {key: 'market', values: ['uk', 'us', 'de']},
+      {key: 'segment', values: ['loyal', 'new', 'vip']},
+    ]
+
+    expect(generateVariantSetPermutations(dimensions)).toHaveLength(
+      countVariantSetPermutations(dimensions),
+    )
+  })
+
+  it('trims dimension keys and ignores incomplete dimensions', () => {
+    expect(
+      generateVariantSetPermutations([
+        {key: ' market ', values: ['uk']},
+        {key: '', values: ['ignored']},
+      ]),
+    ).toEqual([{market: 'uk'}])
   })
 })

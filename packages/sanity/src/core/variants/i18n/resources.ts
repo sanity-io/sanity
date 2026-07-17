@@ -183,6 +183,17 @@ const variantsLocaleStrings = {
   'dialog.create-set.action.generate_one': 'Generate {{count}} variant definition',
   /** Confirm action for the create variant set dialog (plural). */
   'dialog.create-set.action.generate_other': 'Generate {{count}} variant definitions',
+  /** Error toast title when generating a variant set fails. */
+  'dialog.create-set.error.title': 'Unable to generate variant definitions',
+  /** Result heading after a variant set is generated (singular). */
+  'dialog.create-set.result.title_one': '{{count}} variant definition generated',
+  /** Result heading after a variant set is generated (plural). */
+  'dialog.create-set.result.title_other': '{{count}} variant definitions generated',
+  /** Result description after a variant set is generated. */
+  'dialog.create-set.result.description':
+    'These are now listed under variant definitions. Editing one on its own will save it as a separate definition.',
+  /** Done action to close the create variant set dialog after generation. */
+  'dialog.create-set.action.done': 'Done',
   /** Title for the edit variant dialog. */
   'dialog.edit.title': 'Edit variant definition',
   /** Confirm action for the edit variant dialog. */

@@ -179,9 +179,9 @@ export function VariantsOverview() {
       {isCreateVariantSetDialogOpen && (
         <CreateVariantSetDialog
           onCancel={() => setIsCreateVariantSetDialogOpen(false)}
-          // Step 2 delivers the key/value input and live preview only. Persisting the generated
-          // variant definitions is step 3; for now, submitting simply closes the dialog.
-          onSubmit={() => setIsCreateVariantSetDialogOpen(false)}
+          // The generated definitions surface in this table automatically via the live
+          // useAllVariants query, so closing the dialog is all that's needed on done.
+          onDone={() => setIsCreateVariantSetDialogOpen(false)}
         />
       )}
     </Flex>
