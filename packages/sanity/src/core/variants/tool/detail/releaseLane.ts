@@ -172,6 +172,69 @@ export function rowMatchesLane(
 }
 
 /**
+ * Builds the rows for the "group by release" (swimlane) view: one collapsible aggregate header
+ * per bundle (ordered like the release lane), each followed — when expanded — by the document
+ * groups that appear in that bundle. A document that rides several bundles appears under each,
+ * matching the lane's counts. Row `groupId`s are a monotonic padded index so the table's default
+ * `documentGroup` sort preserves this exact order.
+ *
+ * @internal
+ */
+export function buildReleaseSwimlaneRows({
+  rows,
+  releasesById,
+  expanded,
+  getSegmentLabel,
+  onToggle,
+}: {
+  rows: DocumentInVariantGroup[]
+  releasesById: Map<string, ReleaseDocument>
+  expanded: ReadonlySet<string>
+  getSegmentLabel: (segment: ReleaseLaneSegment) => string
+  onToggle: (segmentId: string) => void
+}): DocumentInVariantGroup[] {
+  const segments = computeReleaseLaneSegments(rows, releasesById)
+  const out: DocumentInVariantGroup[] = []
+  let index = 0
+  const nextGroupId = () => String(index++).padStart(5, '0')
+
+  for (const segment of segments) {
+    const isExpanded = expanded.has(segment.id)
+
+    out.push({
+      memoKey: `release-agg-${segment.id}`,
+      groupId: nextGroupId(),
+      isLoading: false,
+      document: {
+        _id: `release-agg-${segment.id}`,
+        _type: '',
+        _rev: '',
+        _createdAt: '',
+        _updatedAt: '',
+      },
+      validation: {hasError: false, isValidating: false, validation: [], revision: undefined},
+      version: {documentId: '', releaseRef: null, updatedAt: ''},
+      versions: [],
+      isReleaseAggregate: true,
+      releaseLabel: getSegmentLabel(segment),
+      releaseCount: segment.count,
+      isReleaseExpanded: isExpanded,
+      onToggleRelease: () => onToggle(segment.id),
+    } as unknown as DocumentInVariantGroup)
+
+    if (isExpanded) {
+      for (const row of rows) {
+        if (rowMatchesLane(row, segment.id, releasesById)) {
+          out.push({...row, groupId: nextGroupId()})
+        }
+      }
+    }
+  }
+
+  return out
+}
+
+/**
  * A stable sort key for the "Appears in" column: orders rows by the most prominent bundle they
  * appear in (published → drafts → releases), then by release title, so sorting the column groups
  * documents by bundle the same way the release lane orders its segments.

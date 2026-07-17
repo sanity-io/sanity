@@ -2,9 +2,11 @@ import {type ReleaseDocument} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
 import {
+  buildReleaseSwimlaneRows,
   computeReleaseLaneSegments,
   getRowBundleSortKey,
   RELEASE_LANE_ALL,
+  type ReleaseLaneSegment,
   resolveVersionBundle,
   rowMatchesLane,
   UNRESOLVED_RELEASE_ID,
@@ -172,5 +174,70 @@ describe('getRowBundleSortKey', () => {
     const summerKey = getRowBundleSortKey(makeRow([summer]), releasesById)
     // "Fall campaign" sorts before "Summer launch".
     expect(fallKey < summerKey).toBe(true)
+  })
+})
+
+describe('buildReleaseSwimlaneRows', () => {
+  const label = (segment: ReleaseLaneSegment): string =>
+    segment.kind === 'release' ? (segment.release?.metadata?.title ?? segment.id) : segment.kind
+
+  const rows = [
+    makeRow([published, draft]), // in published + drafts
+    makeRow([draft]), // drafts only
+    makeRow([summer]), // a release only
+  ]
+
+  it('emits an ordered aggregate header per bundle with matching counts', () => {
+    const out = buildReleaseSwimlaneRows({
+      rows,
+      releasesById,
+      expanded: new Set(),
+      getSegmentLabel: label,
+      onToggle: () => {},
+    })
+
+    // Collapsed: headers only, ordered published -> drafts -> release.
+    expect(out.every((row) => row.isReleaseAggregate)).toBe(true)
+    expect(out.map((row) => row.releaseLabel)).toEqual(['published', 'drafts', 'Summer launch'])
+    expect(out.map((row) => row.releaseCount)).toEqual([1, 2, 1])
+  })
+
+  it('nests matching documents under expanded groups, listing multi-bundle docs in each', () => {
+    const out = buildReleaseSwimlaneRows({
+      rows,
+      releasesById,
+      expanded: new Set(['published', 'drafts', summerRelease._id]),
+      getSegmentLabel: label,
+      onToggle: () => {},
+    })
+
+    // 3 headers + published(1) + drafts(2) + release(1) children = 7 rows.
+    expect(out).toHaveLength(7)
+    const children = out.filter((row) => !row.isReleaseAggregate)
+    expect(children).toHaveLength(4)
+    // Row group ids are a monotonic padded index, so the default sort preserves this order.
+    expect(out.map((row) => row.groupId)).toEqual([
+      '00000',
+      '00001',
+      '00002',
+      '00003',
+      '00004',
+      '00005',
+      '00006',
+    ])
+  })
+
+  it('only expands the requested group', () => {
+    const out = buildReleaseSwimlaneRows({
+      rows,
+      releasesById,
+      expanded: new Set(['drafts']),
+      getSegmentLabel: label,
+      onToggle: () => {},
+    })
+
+    // 3 headers + 2 drafts children.
+    expect(out).toHaveLength(5)
+    expect(out.filter((row) => !row.isReleaseAggregate)).toHaveLength(2)
   })
 })
