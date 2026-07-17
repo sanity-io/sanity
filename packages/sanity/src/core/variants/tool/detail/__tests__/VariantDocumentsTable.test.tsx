@@ -205,12 +205,13 @@ describe('VariantDocumentsTable', () => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(2)
     })
 
-    // Switch from the filter-tab lane to the grouped (swimlane) view.
+    // Switch to the grouped (swimlane) view; the filter lane stays put (one persistent lane).
     await user.click(screen.getByTestId('variant-group-by-release-toggle'))
 
     await waitFor(() => {
-      expect(screen.queryByTestId('variant-release-lane')).not.toBeInTheDocument()
+      expect(screen.getAllByTestId('variant-release-aggregate-toggle')).toHaveLength(2)
     })
+    expect(screen.getByTestId('variant-release-lane')).toBeInTheDocument()
 
     // One collapsible header per bundle (published + drafts), with document counts.
     const headers = screen.getAllByTestId('variant-release-aggregate-toggle')

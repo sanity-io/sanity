@@ -1,5 +1,6 @@
 import {FilterIcon} from '@sanity/icons/Filter'
-import {Flex, TabList, Text} from '@sanity/ui'
+import {Card, Flex, TabList, Text} from '@sanity/ui'
+import {type CSSProperties} from 'react'
 
 import {Tab} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -11,6 +12,9 @@ function getSegmentTone(kind: ReleaseLaneKind): 'positive' | 'primary' | 'defaul
   if (kind === 'release') return 'primary'
   return 'default'
 }
+
+// Uppercase micro-label styling so "Releases" reads as a section header, not a peer of the tabs.
+const LABEL_STYLE: CSSProperties = {textTransform: 'uppercase', letterSpacing: '0.04em'}
 
 /**
  * The release lane: a filter-tab strip summarizing which bundles this variant's documents
@@ -40,15 +44,14 @@ export function VariantReleaseLane({
   }
 
   return (
-    <Flex align="center" gap={2} paddingBottom={3} wrap="wrap" data-testid="variant-release-lane">
-      <Flex align="center" gap={1} paddingRight={1}>
-        <Text muted size={1}>
-          <FilterIcon />
-        </Text>
-        <Text muted size={1} weight="medium">
-          {t('detail.release-lane.title')}
-        </Text>
-      </Flex>
+    <Flex align="center" gap={2} wrap="nowrap" data-testid="variant-release-lane">
+      <Text muted size={1}>
+        <FilterIcon />
+      </Text>
+      <Text muted size={0} style={LABEL_STYLE} weight="semibold">
+        {t('detail.release-lane.title')}
+      </Text>
+      <Card borderLeft flex="none" style={{height: 16}} />
       <TabList space={1}>
         {[
           <Tab

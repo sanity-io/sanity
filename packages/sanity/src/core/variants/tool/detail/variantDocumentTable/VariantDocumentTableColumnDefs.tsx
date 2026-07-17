@@ -23,14 +23,19 @@ import {VariantDocumentPreview} from './VariantDocumentPreview'
 const MemoVariantDocumentPreview = memo(
   function MemoVariantDocumentPreview({
     row,
+    releasesById,
     variantId,
   }: {
     row: DocumentInVariantGroup
+    releasesById: Map<string, ReleaseDocument>
     variantId?: string
   }) {
-    return <VariantDocumentPreview row={row} variantId={variantId} />
+    return <VariantDocumentPreview releasesById={releasesById} row={row} variantId={variantId} />
   },
-  (prev, next) => prev.row.memoKey === next.row.memoKey && prev.variantId === next.variantId,
+  (prev, next) =>
+    prev.row.memoKey === next.row.memoKey &&
+    prev.variantId === next.variantId &&
+    prev.releasesById === next.releasesById,
 )
 
 const MemoDocumentType = memo(
@@ -89,7 +94,8 @@ export const getVariantDocumentTableColumnDefs = (
     hidden: true,
     width: null,
     sorting: true,
-    sortTransform: (row) => row.groupId,
+    // In the swimlane view rowKey encodes the group order; flat rows set rowKey = groupId.
+    sortTransform: (row) => row.rowKey ?? row.groupId,
   },
   {
     id: 'bundle',
@@ -162,7 +168,11 @@ export const getVariantDocumentTableColumnDefs = (
         ) : datum.isLoading ? (
           <SanityDefaultPreview isPlaceholder />
         ) : (
-          <MemoVariantDocumentPreview row={datum} variantId={variantId} />
+          <MemoVariantDocumentPreview
+            releasesById={releasesById}
+            row={datum}
+            variantId={variantId}
+          />
         )}
       </Box>
     ),

@@ -76,6 +76,8 @@ const variantsLocaleStrings = {
   'detail.documents.table.type': 'Type',
   /** "Appears in" column header for variant document table (which bundles each doc is in). */
   'detail.documents.table.appears-in': 'Appears in',
+  /** Header of the popover listing the bundles a document appears in beyond the first chip. */
+  'detail.documents.appears-in.also-in': 'Also in',
   /** Label for the release lane above the variant document table. */
   'detail.release-lane.title': 'Releases',
   /** The "show all documents" segment of the release lane. */
