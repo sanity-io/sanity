@@ -170,3 +170,31 @@ export function rowMatchesLane(
   }
   return getRowBundleIds(row, releasesById).has(laneId)
 }
+
+/**
+ * A stable sort key for the "Appears in" column: orders rows by the most prominent bundle they
+ * appear in (published → drafts → releases), then by release title, so sorting the column groups
+ * documents by bundle the same way the release lane orders its segments.
+ *
+ * @internal
+ */
+export function getRowBundleSortKey(
+  row: DocumentInVariantGroup,
+  releasesById: Map<string, ReleaseDocument>,
+): string {
+  let bestOrder = Number.POSITIVE_INFINITY
+  let bestLabel = ''
+
+  for (const version of row.versions) {
+    const resolved = resolveVersionBundle(version, releasesById)
+    const order = getKindOrder(resolved.kind)
+    const label = resolved.release?.metadata?.title ?? resolved.id
+
+    if (order < bestOrder || (order === bestOrder && label.localeCompare(bestLabel) < 0)) {
+      bestOrder = order
+      bestLabel = label
+    }
+  }
+
+  return `${bestOrder}:${bestLabel}`
+}

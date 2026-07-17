@@ -3,6 +3,7 @@ import {describe, expect, it} from 'vitest'
 
 import {
   computeReleaseLaneSegments,
+  getRowBundleSortKey,
   RELEASE_LANE_ALL,
   resolveVersionBundle,
   rowMatchesLane,
@@ -147,5 +148,29 @@ describe('rowMatchesLane', () => {
   it('does not match a row without a version in the lane', () => {
     expect(rowMatchesLane(row, 'drafts', releasesById)).toBe(false)
     expect(rowMatchesLane(row, fallRelease._id, releasesById)).toBe(false)
+  })
+})
+
+describe('getRowBundleSortKey', () => {
+  it('orders published before drafts before releases', () => {
+    const publishedKey = getRowBundleSortKey(makeRow([published]), releasesById)
+    const draftKey = getRowBundleSortKey(makeRow([draft]), releasesById)
+    const releaseKey = getRowBundleSortKey(makeRow([summer]), releasesById)
+
+    expect(publishedKey < draftKey).toBe(true)
+    expect(draftKey < releaseKey).toBe(true)
+  })
+
+  it('keys a multi-bundle row by its most prominent bundle', () => {
+    // A row in both a release and published sorts as published (the most prominent bundle).
+    const key = getRowBundleSortKey(makeRow([summer, published]), releasesById)
+    expect(key).toBe(getRowBundleSortKey(makeRow([published]), releasesById))
+  })
+
+  it('breaks ties between releases by title', () => {
+    const fallKey = getRowBundleSortKey(makeRow([fall]), releasesById)
+    const summerKey = getRowBundleSortKey(makeRow([summer]), releasesById)
+    // "Fall campaign" sorts before "Summer launch".
+    expect(fallKey < summerKey).toBe(true)
   })
 })

@@ -12,6 +12,7 @@ import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {Headers} from '../../../../releases/tool/components/Table/TableHeader'
 import {type Column} from '../../../../releases/tool/components/Table/types'
+import {getRowBundleSortKey} from '../releaseLane'
 import {type DocumentInVariantGroup} from '../types'
 import {getDocumentPreviewTitle} from './getDocumentPreviewTitle'
 import {VariantDocumentBundleChips} from './VariantDocumentBundleChips'
@@ -56,10 +57,11 @@ export const getVariantDocumentTableColumnDefs = (
     id: 'bundle',
     width: 140,
     style: {minWidth: 100, maxWidth: 140},
-    sorting: false,
+    sorting: true,
+    sortTransform: (row) => getRowBundleSortKey(row, releasesById),
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.BasicHeader text={t('detail.documents.table.appears-in')} />
+        <Headers.SortHeaderButton text={t('detail.documents.table.appears-in')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
