@@ -76,6 +76,12 @@ const variantsLocaleStrings = {
   'detail.documents.table.type': 'Type',
   /** Bundle column header for variant document table. */
   'detail.documents.table.bundle': 'Bundle',
+  /** Label for the release lane above the variant document table. */
+  'detail.release-lane.title': 'Releases',
+  /** The "show all documents" segment of the release lane. */
+  'detail.release-lane.all': 'All',
+  /** A single release lane segment: a bundle label followed by its document count. */
+  'detail.release-lane.count': '{{label}} · {{count}}',
   /** Validation error tooltip for a single error in the variant document table. */
   'detail.documents.table.validation.error_one': '{{count}} validation error',
   /** Validation error tooltip for multiple errors in the variant document table. */
