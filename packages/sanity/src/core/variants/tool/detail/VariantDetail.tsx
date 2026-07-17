@@ -1,4 +1,4 @@
-import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
@@ -9,6 +9,7 @@ import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
+import {getForkedFromSetReference, getVariantSetReference} from '../../util/variantSet'
 import {VariantPinButton} from '../components/VariantPinButton'
 import {
   decodeVariantIdFromRoute,
@@ -70,6 +71,8 @@ export function VariantDetail() {
 
   const description = getVariantDescription(variant)
   const conditionsText = getVariantConditionsText(variant.conditions)
+  const setReference = getVariantSetReference(variant)
+  const forkedFromReference = getForkedFromSetReference(variant)
 
   return (
     <Flex direction="column" flex={1} height="fill" overflow="hidden">
@@ -91,6 +94,28 @@ export function VariantDetail() {
                   <Text muted size={1}>
                     {description || t('detail.no-description')}
                   </Text>
+                  {setReference && (
+                    <Flex>
+                      <Badge
+                        data-testid="variant-lineage-part-of-set"
+                        mode="outline"
+                        tone="primary"
+                      >
+                        {t('detail.lineage.part-of-set', {name: setReference.name})}
+                      </Badge>
+                    </Flex>
+                  )}
+                  {forkedFromReference && (
+                    <Flex>
+                      <Badge
+                        data-testid="variant-lineage-forked-from-set"
+                        mode="outline"
+                        tone="caution"
+                      >
+                        {t('detail.lineage.forked-from-set', {name: forkedFromReference.name})}
+                      </Badge>
+                    </Flex>
+                  )}
                 </Stack>
               </Flex>
 
