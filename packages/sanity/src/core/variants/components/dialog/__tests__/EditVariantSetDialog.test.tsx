@@ -110,9 +110,9 @@ describe('EditVariantSetDialog', () => {
     const user = userEvent.setup()
     await renderDialog()
 
-    // Value inputs render in order: market[uk, us], segment[loyal, new], so the second remove
+    // Value chips render in order: market[uk, us], segment[loyal, new], so the second remove
     // button removes "us" from market (affecting c3 and c4). c3 has documents → removal blocked.
-    await user.click(screen.getAllByTestId('edit-set-remove-value')[1]!)
+    await user.click(screen.getAllByTestId('value-chip-remove')[1]!)
 
     await waitFor(() => {
       expect(screen.getByTestId('edit-set-blocked-warning')).toBeInTheDocument()

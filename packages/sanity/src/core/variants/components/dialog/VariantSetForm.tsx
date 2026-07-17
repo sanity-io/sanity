@@ -1,6 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Badge, Box, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Box, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
 
@@ -12,12 +12,13 @@ import {
   getConditionKeyValidationError,
   getConditionValueValidationError,
 } from '../../util/conditionValidation'
-import {parseVariantSetValues, type VariantSetDimension} from '../../util/variantSetPermutations'
+import {type VariantSetDimension} from '../../util/variantSetPermutations'
+import {type ValueChip, ValueChipsInput} from './ValueChipsInput'
 
 interface DimensionRow {
   id: string
   key: string
-  valuesInput: string
+  values: ValueChip[]
 }
 
 interface DimensionRowValidation {
@@ -26,7 +27,7 @@ interface DimensionRowValidation {
 }
 
 function createEmptyRow(): DimensionRow {
-  return {id: randomKey(12), key: '', valuesInput: ''}
+  return {id: randomKey(12), key: '', values: []}
 }
 
 function seedRows(initialDimensions?: VariantSetDimension[]): DimensionRow[] {
@@ -37,16 +38,25 @@ function seedRows(initialDimensions?: VariantSetDimension[]): DimensionRow[] {
   return initialDimensions.map((dimension) => ({
     id: randomKey(12),
     key: dimension.key,
-    valuesInput: dimension.values.join(', '),
+    values: dimension.values.map((value) => ({id: randomKey(12), value})),
   }))
 }
 
-function isRowEmpty(row: DimensionRow): boolean {
-  return !row.key.trim() && !row.valuesInput.trim()
+function dedupeValues(chips: ValueChip[]): string[] {
+  const seen = new Set<string>()
+  const values: string[] = []
+  for (const chip of chips) {
+    const value = chip.value.trim()
+    if (value && !seen.has(value)) {
+      seen.add(value)
+      values.push(value)
+    }
+  }
+  return values
 }
 
 function getDimensionsFromRows(rows: DimensionRow[]): VariantSetDimension[] {
-  return rows.map((row) => ({key: row.key.trim(), values: parseVariantSetValues(row.valuesInput)}))
+  return rows.map((row) => ({key: row.key.trim(), values: dedupeValues(row.values)}))
 }
 
 function getRowsValidation(rows: DimensionRow[]): Map<number, DimensionRowValidation> {
@@ -56,7 +66,7 @@ function getRowsValidation(rows: DimensionRow[]): Map<number, DimensionRowValida
   rows.forEach((row, index) => {
     const validation: DimensionRowValidation = {key: null, values: null}
     const key = row.key.trim()
-    const values = parseVariantSetValues(row.valuesInput)
+    const values = dedupeValues(row.values)
 
     if (key) {
       if (seenKeys.has(key)) {
@@ -64,7 +74,6 @@ function getRowsValidation(rows: DimensionRow[]): Map<number, DimensionRowValida
       } else {
         seenKeys.add(key)
         const keyError = getConditionKeyValidationError(key)
-
         if (keyError === 'reserved') {
           validation.key = 'dialog.create.condition-key.reserved'
         } else if (keyError === 'invalid') {
@@ -132,16 +141,14 @@ export function VariantSetForm(props: {
   const lastRow = rows[rows.length - 1]
   const canAddDimension = Boolean(
     lastRow &&
-    !isRowEmpty(lastRow) &&
     lastRow.key.trim() &&
-    parseVariantSetValues(lastRow.valuesInput).length > 0 &&
+    dedupeValues(lastRow.values).length > 0 &&
     !hasValidationErrors(rowsValidation),
   )
 
   const updateRows = useCallback(
     (nextRows: DimensionRow[]) => {
       const rowsToApply = nextRows.length ? nextRows : [createEmptyRow()]
-
       setRows(rowsToApply)
       onDimensionsChange(getDimensionsFromRows(rowsToApply))
       onDimensionsValidityChange?.(hasValidationErrors(getRowsValidation(rowsToApply)))
@@ -150,27 +157,28 @@ export function VariantSetForm(props: {
   )
 
   const handleNameChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      onNameChange(event.currentTarget.value)
-    },
+    (event: ChangeEvent<HTMLInputElement>) => onNameChange(event.currentTarget.value),
     [onNameChange],
   )
 
-  const handleRowChange = useCallback(
-    (index: number, field: 'key' | 'valuesInput', nextValue: string) => {
-      updateRows(
-        rows.map((row, rowIndex) => (rowIndex === index ? {...row, [field]: nextValue} : row)),
-      )
+  const handleKeyChange = useCallback(
+    (index: number, nextKey: string) => {
+      updateRows(rows.map((row, rowIndex) => (rowIndex === index ? {...row, key: nextKey} : row)))
+    },
+    [rows, updateRows],
+  )
+
+  const handleValuesChange = useCallback(
+    (index: number, values: ValueChip[]) => {
+      updateRows(rows.map((row, rowIndex) => (rowIndex === index ? {...row, values} : row)))
     },
     [rows, updateRows],
   )
 
   const handleAddDimension = useCallback(() => {
-    if (!canAddDimension) {
-      return
+    if (canAddDimension) {
+      updateRows([...rows, createEmptyRow()])
     }
-
-    updateRows([...rows, createEmptyRow()])
   }, [canAddDimension, rows, updateRows])
 
   const handleRemoveDimension = useCallback(
@@ -214,45 +222,28 @@ export function VariantSetForm(props: {
           </Text>
         </Stack>
 
-        <Stack space={3}>
+        <Stack space={4}>
           {rows.map((row, index) => {
             const validation = rowsValidation.get(index) ?? {key: null, values: null}
             const validationError = validation.key || validation.values
-            const parsedValues = parseVariantSetValues(row.valuesInput)
+            const example = index % EXAMPLE_KEY_PLACEHOLDERS.length
 
             return (
               <Stack key={row.id} space={2}>
-                <Flex align="flex-start" gap={2}>
+                <Flex align="center" gap={2}>
                   <Box flex={1}>
                     <TextInput
                       aria-label={t('dialog.create-set.dimension-key.label')}
                       customValidity={validation.key ? t(validation.key) : undefined}
                       data-testid="variant-set-form-dimension-key"
                       fontSize={1}
-                      onChange={(event) => handleRowChange(index, 'key', event.currentTarget.value)}
-                      placeholder={t(
-                        EXAMPLE_KEY_PLACEHOLDERS[index % EXAMPLE_KEY_PLACEHOLDERS.length]!,
-                      )}
+                      onChange={(event) => handleKeyChange(index, event.currentTarget.value)}
+                      placeholder={t(EXAMPLE_KEY_PLACEHOLDERS[example]!)}
                       value={row.key}
                     />
                   </Box>
-                  <Box flex={2}>
-                    <TextInput
-                      aria-label={t('dialog.create-set.dimension-values.label')}
-                      customValidity={validation.values ? t(validation.values) : undefined}
-                      data-testid="variant-set-form-dimension-values"
-                      fontSize={1}
-                      onChange={(event) =>
-                        handleRowChange(index, 'valuesInput', event.currentTarget.value)
-                      }
-                      placeholder={t(
-                        EXAMPLE_VALUES_PLACEHOLDERS[index % EXAMPLE_VALUES_PLACEHOLDERS.length]!,
-                      )}
-                      value={row.valuesInput}
-                    />
-                  </Box>
                   <Button
-                    disabled={isRowEmpty(row) && rows.length === 1}
+                    disabled={rows.length === 1 && !row.key.trim() && row.values.length === 0}
                     icon={TrashIcon}
                     mode="bleed"
                     onClick={() => handleRemoveDimension(index)}
@@ -261,15 +252,15 @@ export function VariantSetForm(props: {
                     type="button"
                   />
                 </Flex>
-                {parsedValues.length > 0 && (
-                  <Flex gap={1} paddingLeft={1} wrap="wrap">
-                    {parsedValues.map((value) => (
-                      <Badge key={value} fontSize={0} mode="outline" tone="primary">
-                        {value}
-                      </Badge>
-                    ))}
-                  </Flex>
-                )}
+                <Box paddingLeft={1}>
+                  <ValueChipsInput
+                    addPlaceholder={t(EXAMPLE_VALUES_PLACEHOLDERS[example]!)}
+                    ariaLabel={t('dialog.create-set.dimension-values.label')}
+                    chips={row.values}
+                    onChange={(values) => handleValuesChange(index, values)}
+                    removeLabel={t('dialog.create-set.remove-value')}
+                  />
+                </Box>
                 {validationError && (
                   <TextWithTone
                     data-testid="variant-set-form-dimension-error"

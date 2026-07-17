@@ -43,16 +43,26 @@ describe('CreateVariantSetDialog', () => {
     return {onCancel, onDone}
   }
 
+  // Enter values through the chip add-field of a given dimension row; a trailing Enter commits the
+  // final value so nothing is left uncommitted in the draft field.
+  const addValues = async (
+    user: ReturnType<typeof userEvent.setup>,
+    rowIndex: number,
+    values: string,
+  ) => {
+    const addFields = screen.getAllByTestId('value-chip-add')
+    await user.type(addFields[rowIndex]!, `${values}{Enter}`)
+  }
+
   const buildTwoByTwoSet = async (user: ReturnType<typeof userEvent.setup>) => {
     await user.type(screen.getByTestId('variant-set-form-name'), 'Regional launch')
     await user.type(screen.getByTestId('variant-set-form-dimension-key'), 'market')
-    await user.type(screen.getByTestId('variant-set-form-dimension-values'), 'uk, us')
+    await addValues(user, 0, 'uk, us')
     await user.click(screen.getByRole('button', {name: 'Add dimension'}))
 
     const keyInputs = screen.getAllByTestId('variant-set-form-dimension-key')
-    const valueInputs = screen.getAllByTestId('variant-set-form-dimension-values')
     await user.type(keyInputs[1]!, 'segment')
-    await user.type(valueInputs[1]!, 'loyal, new')
+    await addValues(user, 1, 'loyal, new')
   }
 
   it('previews the permutation count as a dimension is entered', async () => {
@@ -62,7 +72,7 @@ describe('CreateVariantSetDialog', () => {
     expect(screen.getByTestId('generate-variant-set-button')).toBeDisabled()
 
     await user.type(screen.getByTestId('variant-set-form-dimension-key'), 'market')
-    await user.type(screen.getByTestId('variant-set-form-dimension-values'), 'uk, us, de')
+    await addValues(user, 0, 'uk, us, de')
 
     await waitFor(() => {
       expect(screen.getByTestId('variant-set-preview')).toHaveTextContent(
@@ -71,12 +81,28 @@ describe('CreateVariantSetDialog', () => {
     })
   })
 
+  it('splits comma-separated input into individual value chips', async () => {
+    const user = userEvent.setup()
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-set-form-dimension-key'), 'market')
+    await addValues(user, 0, 'uk, us, de')
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('value-chip-input')).toHaveLength(3)
+    })
+    const chipValues = screen
+      .getAllByTestId('value-chip-input')
+      .map((input) => (input as HTMLInputElement).value)
+    expect(chipValues).toEqual(['uk', 'us', 'de'])
+  })
+
   it('varies the example placeholder per dimension row', async () => {
     const user = userEvent.setup()
     await renderDialog()
 
     await user.type(screen.getByTestId('variant-set-form-dimension-key'), 'market')
-    await user.type(screen.getByTestId('variant-set-form-dimension-values'), 'uk, us')
+    await addValues(user, 0, 'uk, us')
     await user.click(screen.getByRole('button', {name: 'Add dimension'}))
 
     const keyInputs = screen.getAllByTestId('variant-set-form-dimension-key')
@@ -91,7 +117,7 @@ describe('CreateVariantSetDialog', () => {
     expect(screen.getByTestId('export-json-button')).toBeDisabled()
 
     await user.type(screen.getByTestId('variant-set-form-dimension-key'), 'market')
-    await user.type(screen.getByTestId('variant-set-form-dimension-values'), 'uk, us')
+    await addValues(user, 0, 'uk, us')
 
     await waitFor(() => expect(screen.getByTestId('export-json-button')).toBeEnabled())
   })
@@ -132,7 +158,7 @@ describe('CreateVariantSetDialog', () => {
     await renderDialog()
 
     await user.type(screen.getByTestId('variant-set-form-dimension-key'), 'market')
-    await user.type(screen.getByTestId('variant-set-form-dimension-values'), 'uk, us, de')
+    await addValues(user, 0, 'uk, us, de')
 
     expect(screen.getByTestId('generate-variant-set-button')).toBeDisabled()
     expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
