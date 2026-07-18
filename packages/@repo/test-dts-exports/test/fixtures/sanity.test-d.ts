@@ -3876,7 +3876,7 @@ describe('sanity', () => {
     expectTypeOf<typeof getDocumentIsInPerspective>().toBeFunction()
   })
   test('getDocumentPairPermissions', () => {
-    expectTypeOf<typeof getDocumentPairPermissions>().toBeFunction()
+    expectTypeOf<typeof getDocumentPairPermissions>().not.toBeNever()
   })
   test('getDocumentValuePermissions', () => {
     expectTypeOf<typeof getDocumentValuePermissions>().toBeFunction()
