@@ -1,6 +1,6 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {ClockIcon} from '@sanity/icons/Clock'
-import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
@@ -11,7 +11,6 @@ import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
-import {VariantPinButton} from '../components/VariantPinButton'
 import {
   decodeVariantIdFromRoute,
   getVariantDescription,
@@ -96,19 +95,38 @@ export function VariantDetail() {
       <Card borderBottom flex="none" paddingX={4} paddingY={3}>
         <Flex align="center" gap={3}>
           <Flex align="center" gap={3} flex={1} style={{minWidth: 0}}>
-            <Flex align="center" gap={2} flex="none">
-              <VariantPinButton variant={variant} />
+            {/* The variant "pin" (adopt-this-perspective) control was removed here deliberately:
+                selecting a variant is a *global authoring mode* (it re-targets every document edit
+                to the variant version — see useDocumentForm/useTargetDocumentState), which belongs in
+                global perspective-bar chrome, not on this definition-management surface. The correct
+                icon + behavior return once the perspective-bar initiative lands (FH tracked). */}
+            <Flex align="center" flex="none">
               <Text as="h1" size={2} textOverflow="ellipsis" weight="bold">
                 {getVariantTitle(variant)}
               </Text>
             </Flex>
             <HeaderDivider />
             {Object.keys(variant.conditions).length > 0 ? (
-              <Flex align="center" flex="none" gap={1} wrap="wrap">
-                {Object.entries(variant.conditions).map(([key, value]) => (
-                  <Badge key={key} mode="outline" radius={2} tone="default">
-                    {key}: {value}
-                  </Badge>
+              // Conditions are read-only facts, not interactive chips — render them as quiet
+              // key/value metadata (muted key, solid value, dot-separated) so they're visually
+              // distinct from the lineage *status* badges further along the lane.
+              <Flex align="center" flex="none" gap={3} wrap="wrap">
+                {Object.entries(variant.conditions).map(([key, value], index) => (
+                  <Flex align="center" gap={2} key={key}>
+                    {index > 0 && (
+                      <Text aria-hidden muted size={1}>
+                        ·
+                      </Text>
+                    )}
+                    <Flex align="center" gap={1}>
+                      <Text muted size={1}>
+                        {key}
+                      </Text>
+                      <Text size={1} weight="medium">
+                        {typeof value === 'string' ? value : JSON.stringify(value)}
+                      </Text>
+                    </Flex>
+                  </Flex>
                 ))}
               </Flex>
             ) : (
@@ -126,7 +144,7 @@ export function VariantDetail() {
             )}
           </Flex>
           <Flex align="center" data-testid="variant-detail-actions" flex="none" gap={3}>
-            <Flex align="center" gap={1}>
+            <Flex align="center" gap={2}>
               <Text muted size={1}>
                 <ClockIcon />
               </Text>

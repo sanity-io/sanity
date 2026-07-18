@@ -60,7 +60,19 @@ function ReleaseBundleChip({release}: {release: ReleaseDocument}) {
     >
       {({displayTitle}) => (
         <IntentLink intent={RELEASES_INTENT} params={{id: releaseId}}>
-          <Badge radius={2} tone="primary">
+          {/* Constrain to a single line so a long release name truncates with an ellipsis instead
+              of wrapping into a tall, heavy two-line filled badge that dominates the row. */}
+          <Badge
+            radius={2}
+            style={{
+              maxWidth: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+            title={displayTitle}
+            tone="primary"
+          >
             {displayTitle}
           </Badge>
         </IntentLink>
