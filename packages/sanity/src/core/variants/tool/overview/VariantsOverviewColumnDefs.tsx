@@ -16,7 +16,6 @@ import {
   getVariantSetReference,
   type VariantSetReference,
 } from '../../util/variantSet'
-import {VariantPinButton} from '../components/VariantPinButton'
 import {getVariantId, getVariantConditionsText, getVariantTitle} from '../util'
 
 /**
@@ -151,8 +150,10 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
       paddingY={1}
       sizing="border"
     >
+      {/* The perspective "pin" was removed here to match the detail page: adopting a variant is a
+          global authoring mode that belongs in perspective-bar chrome, not this list. Returns with
+          the perspective-bar work. */}
       <Flex align="center" gap={3}>
-        <VariantPinButton variant={variant} />
         <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
           <Flex align="center" gap={3}>
             <Stack flex={1} space={2}>
