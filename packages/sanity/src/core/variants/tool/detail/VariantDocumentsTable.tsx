@@ -23,6 +23,11 @@ import {VariantReleaseLane} from './VariantReleaseLane'
 const TABLE_CARD_STYLE: CSSProperties = {
   height: '100%',
   overflow: 'auto',
+  // Reserve the vertical scrollbar gutter permanently. The shared Table centers its rows in a
+  // fixed-width Container, so when a filter (e.g. All → Published) drops the row count below the
+  // overflow threshold, the scrollbar vanishes, the content box widens, and the centered table
+  // jumps horizontally. A stable gutter keeps the content-box width constant across filters.
+  scrollbarGutter: 'stable',
 }
 
 function filterDocuments(
