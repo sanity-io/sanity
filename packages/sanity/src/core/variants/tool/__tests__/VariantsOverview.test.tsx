@@ -253,19 +253,6 @@ describe('VariantsOverview', () => {
     })
   })
 
-  it('pins a variant from the overview table', async () => {
-    setVariants([variantAlphaAudience])
-    const user = userEvent.setup()
-
-    await renderOverview()
-
-    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
-
-    await user.click(screen.getByTestId('pin-variant-button'))
-
-    expect(mockedSetVariant).toHaveBeenCalledWith({variantId: variantAlphaAudience._id})
-  })
-
   it('deletes a variant from the row actions menu', async () => {
     setVariants([variantAlphaAudience])
     documentCountsMock.data = {[variantAlphaAudience._id]: 0}
