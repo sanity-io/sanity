@@ -52,4 +52,6 @@ export function projectData(projectId: string): Record<string, unknown> {
   }
 }
 
+// One dataset-agnostic store backs every dataset (incl. the comments addon
+// dataset), so a single entry is enough here and for the /datasets handshake.
 export const DATASETS = [{name: DATASET, aclMode: 'public'}]

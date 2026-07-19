@@ -1,5 +1,6 @@
 import {arrayI18n} from './arrayI18n'
 import {article} from './article'
+import {commentsField} from './commentsField'
 import {recipe} from './recipe'
 import {singleString} from './singleString'
 import {synthetic, syntheticLarge} from './synthetic'
@@ -12,6 +13,7 @@ export const SCENARIOS: BenchScenario[] = [
   recipe,
   synthetic,
   syntheticLarge,
+  commentsField,
 ]
 
 export function getScenario(name: string): BenchScenario {

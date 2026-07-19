@@ -202,7 +202,7 @@ function toLatencies(
   }
 }
 
-function fieldInput(page: Page, target: InteractionTarget): Locator {
+export function fieldInput(page: Page, target: InteractionTarget): Locator {
   if (target.kind === 'pte') {
     return page
       .locator(`[data-testid="field-${target.fieldPath}"] [contenteditable="true"]`)
@@ -389,6 +389,7 @@ export async function runInteractionSession(options: {
   const draftId = `drafts.${scenario.documentId}`
 
   // Fresh state, in-process — no HTTP round-trips to our own mock
+  running.mock.setActiveFeatures(scenario.features ?? [])
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()
@@ -720,6 +721,7 @@ export async function runSoakSession(options: {
   const config = {...DEFAULT_SESSION_CONFIG, ...options.config}
   const log = options.log ?? (() => {})
 
+  running.mock.setActiveFeatures(scenario.features ?? [])
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()

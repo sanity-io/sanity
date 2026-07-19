@@ -62,7 +62,7 @@ switch (result.action) {
     ).storeRun(result.file ? resolveFromInvocation(result.file) : undefined)
     break
   case 'dev':
-    await (await import('../runner/devServer')).startBenchDev()
+    await (await import('../runner/devServer')).startBenchDev(result.scenario)
     break
   case 'scenarios':
     listScenarios(result.json)

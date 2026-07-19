@@ -238,6 +238,7 @@ export async function runPageLoadSample(options: {
   const {browser, running, scenario, instrumentation} = options
   const config = {...DEFAULT_PAGELOAD_CONFIG, ...options.config}
 
+  running.mock.setActiveFeatures(scenario.features ?? [])
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()

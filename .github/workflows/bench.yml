@@ -639,7 +639,7 @@ jobs:
 
       - name: Run INP benchmarks
         run: |
-          pnpm bench run --mode inp --scenario singleString --scenario article --sessions 4 \
+          pnpm bench run --mode inp --scenario singleString --scenario article --scenario commentsField --sessions 4 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__inp.json"
 
       - name: Merge report

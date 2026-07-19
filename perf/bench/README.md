@@ -95,6 +95,16 @@ Useful `bench run` flags: `--headed`, `--throttle 1` (disable CPU throttle), `--
 3. Register in `scenarios/index.ts`; add the scenario to the `bench-interaction` matrix in `.github/workflows/bench.yml`.
 4. Verify: one absolute session passes with no failures — readback, console errors, hermeticity and endpoint drift are all hard session failures.
 
+## Adding a feature module
+
+A feature module is one file `mock-api/features/<name>.ts` exporting a `FeatureModule` (`name`, optional `featureFlags`, optional `routes`, optional `allow`), registered in `mock-api/features/index.ts`. A scenario opts in via `features: ['<name>']`.
+
+The minimal case (comments) is flags-only: it rides the generic `/data/*` plane, so it only adds a `/features` flag and no routes.
+
+The `allow` allowlist is a report-only bootstrapping escape hatch - a 404'd endpoint means the feature is degrading, so never ship a benchmark whose target feature is allowlisted rather than served.
+
+`bench dev --scenario <name>` seeds and opens any scenario (default `singleString`) with its features active - the interactive way to verify a feature module.
+
 ## CI (`.github/workflows/bench.yml`)
 
 - **Label-gated during burn-in**: PR jobs run only with the `trigger:perf-bench` label. The all-code-PRs gate is wired and one condition away.

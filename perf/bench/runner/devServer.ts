@@ -14,12 +14,12 @@ import {fileURLToPath} from 'node:url'
 import {DATASET, EXPERIMENT} from '../constants'
 import {createMockApi} from '../mock-api/createServer'
 import {getBenchTls} from '../mock-api/tls'
+import {getScenario} from '../scenarios'
 
 const benchRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 
-const SEED_DOCUMENT_ID = 'bench-dev-doc'
-
-export async function startBenchDev(): Promise<void> {
+export async function startBenchDev(scenarioName: string): Promise<void> {
+  const scenario = getScenario(scenarioName)
   const mock = createMockApi({
     port: EXPERIMENT.apiPort,
     projectId: EXPERIMENT.projectId,
@@ -27,10 +27,8 @@ export async function startBenchDev(): Promise<void> {
     tls: await getBenchTls(),
   })
   await mock.listen()
-  mock.store.seed([
-    {_id: SEED_DOCUMENT_ID, _type: 'singleString', stringField: 'type here'},
-    {_id: `drafts.${SEED_DOCUMENT_ID}`, _type: 'singleString', stringField: 'type here'},
-  ])
+  mock.setActiveFeatures(scenario.features ?? [])
+  mock.store.seed(scenario.fixture())
 
   console.log(`[bench] mock API listening on ${mock.url} (project ${EXPERIMENT.projectId})`)
 
@@ -44,7 +42,7 @@ export async function startBenchDev(): Promise<void> {
     [
       '',
       `[bench] once the studio is up, open:`,
-      `[bench]   http://localhost:${EXPERIMENT.studioPort}/singleString/intent/edit/id=${SEED_DOCUMENT_ID};type=singleString`,
+      `[bench]   http://localhost:${EXPERIMENT.studioPort}/${scenario.workspace ?? scenario.name}/intent/edit/id=${scenario.documentId};type=${scenario.documentType}`,
       '',
     ].join('\n'),
   )
