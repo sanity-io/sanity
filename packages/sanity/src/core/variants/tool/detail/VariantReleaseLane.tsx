@@ -1,6 +1,4 @@
-import {FilterIcon} from '@sanity/icons/Filter'
-import {Card, Flex, TabList, Text} from '@sanity/ui'
-import {type CSSProperties} from 'react'
+import {Flex, TabList} from '@sanity/ui'
 
 import {Tab} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -12,9 +10,6 @@ function getSegmentTone(kind: ReleaseLaneKind): 'positive' | 'primary' | 'defaul
   if (kind === 'release') return 'primary'
   return 'default'
 }
-
-// Uppercase micro-label styling so "Releases" reads as a section header, not a peer of the tabs.
-const LABEL_STYLE: CSSProperties = {textTransform: 'uppercase', letterSpacing: '0.04em'}
 
 /**
  * The release lane: a filter-tab strip summarizing which bundles this variant's documents
@@ -44,16 +39,9 @@ export function VariantReleaseLane({
   }
 
   return (
-    <Flex align="center" gap={2} wrap="nowrap" data-testid="variant-release-lane">
-      <Flex align="center" flex="none" gap={1}>
-        <Text muted size={0}>
-          <FilterIcon />
-        </Text>
-        <Text muted size={0} style={LABEL_STYLE} weight="semibold">
-          {t('detail.release-lane.title')}
-        </Text>
-      </Flex>
-      <Card borderLeft flex="none" style={{height: 16}} />
+    <Flex align="center" wrap="nowrap" data-testid="variant-release-lane">
+      {/* No leading icon/label: the tabs (All, Published, Drafts, release names) are self-evidently
+          bundle filters. A filter icon here read as a clickable control that wasn't one. */}
       <TabList space={1}>
         {[
           <Tab

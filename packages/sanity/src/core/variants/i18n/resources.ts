@@ -70,7 +70,9 @@ const variantsLocaleStrings = {
   'detail.documents.no-documents': 'No documents in this variant definition',
   /** Edited column header for variant document table. */
   'detail.documents.table.edited': 'Edited',
-  /** Search placeholder for variant document table. */
+  /** Document (title/preview) column header for variant document table. */
+  'detail.documents.table.document': 'Document',
+  /** Search placeholder for the variant document table search input in the command lane. */
   'detail.documents.table.search-placeholder': 'Search documents',
   /** Type column header for variant document table. */
   'detail.documents.table.type': 'Type',
@@ -78,8 +80,6 @@ const variantsLocaleStrings = {
   'detail.documents.table.appears-in': 'Appears in',
   /** Header of the popover listing the bundles a document appears in beyond the first chip. */
   'detail.documents.appears-in.also-in': 'Also in',
-  /** Label for the release lane above the variant document table. */
-  'detail.release-lane.title': 'Releases',
   /** The "show all documents" segment of the release lane. */
   'detail.release-lane.all': 'All',
   /** A single release lane filter tab: a bundle label followed by its document count. */
@@ -88,6 +88,24 @@ const variantsLocaleStrings = {
   'detail.documents.table.validation.error_one': '{{count}} validation error',
   /** Validation error tooltip for multiple errors in the variant document table. */
   'detail.documents.table.validation.error_other': '{{count}} validation errors',
+  /** Accessible label for the command-lane select-all checkbox. */
+  'detail.documents.bulk.select-all': 'Select all documents',
+  /** Accessible label for a per-row selection checkbox. */
+  'detail.documents.bulk.select-row': 'Select document',
+  /** Count of selected documents in the bulk-action bar (singular). */
+  'detail.documents.bulk.selected_one': '{{count}} selected',
+  /** Count of selected documents in the bulk-action bar (plural). */
+  'detail.documents.bulk.selected_other': '{{count}} selected',
+  /** Primary bulk action: publish the selected documents. */
+  'detail.documents.bulk.publish': 'Publish',
+  /** Primary bulk action: delete the selected documents. */
+  'detail.documents.bulk.delete': 'Delete',
+  /** Overflow menu of secondary bulk actions. */
+  'detail.documents.bulk.more': 'More bulk actions',
+  /** Secondary bulk action: unpublish the selected documents. */
+  'detail.documents.bulk.unpublish': 'Unpublish',
+  /** Secondary bulk action: add the selected documents to a release. */
+  'detail.documents.bulk.add-to-release': 'Add to release',
   /** Error message when variant documents fail to load. */
   'detail.documents.error': 'Unable to load documents for this variant definition',
   /** Description for the missing Variant detail page. */

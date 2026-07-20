@@ -40,7 +40,6 @@ describe('VariantReleaseLane', () => {
 
     // createTestProvider loads i18n asynchronously; wait for the lane to mount.
     await screen.findByTestId('variant-release-lane')
-    expect(screen.getByText('Releases')).toBeInTheDocument()
     expect(screen.getByText('All (4)')).toBeInTheDocument()
     expect(screen.getByText('Published (2)')).toBeInTheDocument()
     expect(screen.getByText('Draft (1)')).toBeInTheDocument()
