@@ -324,7 +324,7 @@ const Select: ComponentType<{
       {sets.map((set) => (
         <VariantSet key={set.key} data-variant-set={set.name}>
           <VariantSetHeader as="header">
-            <Text size={1} weight="bold">
+            <Text size={1} weight="medium">
               {set.name}
             </Text>
             <TextButton
@@ -482,7 +482,7 @@ const Variant: ComponentType<{
               }}
             />
           )}
-          <Text size={1} weight="bold" className="inert">
+          <Text size={1} weight="medium" className="inert">
             {variant.name}
           </Text>
         </div>
