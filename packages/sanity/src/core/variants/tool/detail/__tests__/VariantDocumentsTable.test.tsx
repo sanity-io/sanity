@@ -252,7 +252,7 @@ describe('VariantDocumentsTable', () => {
     expect(screen.getByTestId('variant-bulk-actions-menu')).toBeInTheDocument()
   })
 
-  it('reveals select-all in the selection bar (not the column header) and clear resets', async () => {
+  it('has a persistent command-lane select-all (not in the column header); clear resets', async () => {
     const user = userEvent.setup()
 
     await renderTable()
@@ -261,13 +261,11 @@ describe('VariantDocumentsTable', () => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(2)
     })
 
-    // Select-all is not in the column header; it appears in the bar once a row is picked.
-    expect(screen.queryByRole('checkbox', {name: 'Select all documents'})).not.toBeInTheDocument()
+    // Select-all lives in the command lane and is present from a cold state (discoverable, not
+    // reveal-on-selection); there is exactly one (it is not also in the column header).
+    const selectAll = screen.getByRole('checkbox', {name: 'Select all documents'})
 
-    await user.click(screen.getAllByRole('checkbox', {name: 'Select document'})[0]!)
-
-    // The select-all now appears in the bar; clicking it selects the rest.
-    await user.click(screen.getByRole('checkbox', {name: 'Select all documents'}))
+    await user.click(selectAll)
     expect(screen.getByText('2 selected')).toBeInTheDocument()
 
     await user.click(screen.getByTestId('variant-bulk-clear'))
