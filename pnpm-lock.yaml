@@ -12988,8 +12988,8 @@ packages:
       sanity: ^5 || ^6.0.0-0
       styled-components: ^6.1
 
-  sanity-plugin-utils@2.0.10:
-    resolution: {integrity: sha512-hoTVMWpnPEdlwyBZeWLbzjmRKi1CpPtUm28+e4VxecT/nDegZHZ2zZaVn1ZUIZ6RIuyU3E1BQvOu+CbXbaM81Q==}
+  sanity-plugin-utils@2.0.11:
+    resolution: {integrity: sha512-fRTgzdDy7LchdVaGKH+eA5kRdqFqw77/+2dP0LQio10MtmShWksoKB9EzlYNpmtzzmcDvrWyrQ/Y8McXsu3vWg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
@@ -19210,7 +19210,7 @@ snapshots:
       rxjs: 7.8.2
       sanity: link:packages/sanity
       sanity-plugin-internationalized-array: 5.1.22(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.1.15)(@sanity/language-filter@5.0.11)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
-      sanity-plugin-utils: 2.0.10(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
+      sanity-plugin-utils: 2.0.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
       - react-is
@@ -26624,7 +26624,7 @@ snapshots:
       - react-is
       - supports-color
 
-  sanity-plugin-utils@2.0.10(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity):
+  sanity-plugin-utils@2.0.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity):
     dependencies:
       '@sanity/asset-utils': 2.3.0
       '@sanity/icons': 5.1.0(react@19.2.7)
