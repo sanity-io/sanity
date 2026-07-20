@@ -28,7 +28,7 @@ catalog:
   '@rolldown/plugin-babel': ^0.2.3
   '@sanity/client': ^7.24.0
   '@sanity/migrate': ^7.0.3
-  '@sanity/pkg-utils': ^10.9.0
+  '@sanity/pkg-utils': ^11.0.13
   '@sanity/telemetry': ^1.1.0
   '@sanity/ui': ^3.3.5
   '@types/node': ^24.13.2
@@ -76,6 +76,8 @@ minimumReleaseAgeExclude:
   - 'get-it'
   - 'get-uri@7.0.0'
   - 'groq-js'
+  - 'lightningcss'
+  - 'lightningcss-*'
   - 'oxfmt'
   - 'oxlint'
   - 'oxlint-tsgolint'
@@ -83,12 +85,19 @@ minimumReleaseAgeExclude:
   - 'react-dom'
   - 'react-is'
   - 'react-rx'
+  - 'rolldown-plugin-dts'
   - 'sanity-plugin-internationalized-array'
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
   - 'vitest'
   - 'vite'
+  - 'yuku-ast'
+  - 'yuku-codegen'
+  - 'yuku-parser'
+  - '@yuku-codegen/*'
+  - '@yuku-parser/*'
+  - '@yuku-toolchain/*'
 
 overrides:
   vitest: 'catalog:'
