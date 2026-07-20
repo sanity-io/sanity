@@ -26,7 +26,7 @@
     "@sanity/color": "^3.0.6",
     "@sanity/debug-preview-url-secret-plugin": "^2.0.13",
     "@sanity/document-internationalization": "^6.2.11",
-    "@sanity/google-maps-input": "^6.1.1",
+    "@sanity/google-maps-input": "^6.1.7",
     "@sanity/icons": "^5.0.0",
     "@sanity/image-url": "^2.1.1",
     "@sanity/logos": "^2.2.2",
