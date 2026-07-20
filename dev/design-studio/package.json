@@ -30,7 +30,7 @@
     "start": "sanity preview --port 4000"
   },
   "dependencies": {
-    "@sanity/icons": "^5.0.0",
+    "@sanity/icons": "^5.1.0",
     "@sanity/ui": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

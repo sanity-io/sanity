@@ -1209,6 +1209,28 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.style.normal': 'Normal',
   /** Title of the "quote" block style */
   'inputs.portable-text.style.quote': 'Quote',
+  /** Label for the table lane that appends a column */
+  'inputs.portable-text.table.add-column': 'Add column at end',
+  /** Label for the table lane that appends a row */
+  'inputs.portable-text.table.add-row': 'Add row at end',
+  /** Aria label for a table column's drag/select handle */
+  'inputs.portable-text.table.column-handle': 'Column handle',
+  /** Label for the trash chip that deletes the selected column */
+  'inputs.portable-text.table.delete-column': 'Delete column',
+  /** Label for the trash chip that deletes the selected row */
+  'inputs.portable-text.table.delete-row': 'Delete row',
+  /** Label for the table menu item that deletes the table */
+  'inputs.portable-text.table.delete-table': 'Delete table',
+  /** Label for the table menu's header row toggle */
+  'inputs.portable-text.table.header-row': 'Header row',
+  /** Aria label for the dots that insert a row or column at a boundary */
+  'inputs.portable-text.table.insert-here': 'Insert here',
+  /** Aria label for the table menu button */
+  'inputs.portable-text.table.menu-aria-label': 'Table options',
+  /** Aria label for a table row's drag/select handle */
+  'inputs.portable-text.table.row-handle': 'Row handle',
+  /** Label for the table menu item that selects the whole table */
+  'inputs.portable-text.table.select-table': 'Select table',
   /** Label for action to clear the current value of the reference field */
   'inputs.reference.action.clear': 'Clear',
   /** Label for action to copy the current item (used within arrays) */

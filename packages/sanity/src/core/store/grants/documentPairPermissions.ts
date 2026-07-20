@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema, type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
+import {map, shareReplay, switchMap} from 'rxjs/operators'
 
 import {useClient, useSchema} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -15,7 +15,13 @@ import {
 } from '../../util'
 import {useGrantsStore} from '../datastores'
 import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
+import {memoize} from '../document/utils/createMemoizer'
+import {useCurrentUser} from '../user'
 import {type GrantsStore, type PermissionCheckResult} from './types'
+
+function shareLatestWithRefCount<T>() {
+  return shareReplay<T>({bufferSize: 1, refCount: true})
+}
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
   const type = schema.get(typeName)
@@ -180,6 +186,12 @@ export interface DocumentPairPermissionsOptions {
   version?: string
   permission: DocumentPermission
   /**
+   * Identity of the current user. Included in the memoization key so that an
+   * in-place user switch (same project, no reload) does not replay a previous
+   * user's grants from the module-level memo cache.
+   */
+  userId?: string
+  /**
    * @deprecated Does nothing. Preserved to avoid breaking changes.
    * Will be removed in the next major version.
    */
@@ -194,7 +206,7 @@ export interface DocumentPairPermissionsOptions {
  *
  * @internal
  */
-export function getDocumentPairPermissions({
+function getDocumentPairPermissionsUncached({
   client,
   grantsStore,
   schema,
@@ -267,6 +279,40 @@ export function getDocumentPairPermissions({
   )
 }
 
+export const getDocumentPairPermissions = memoize(
+  (options: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> =>
+    getDocumentPairPermissionsUncached(options).pipe(shareLatestWithRefCount()),
+  ({
+    client,
+    schema,
+    id,
+    type,
+    version,
+    permission,
+    userId,
+  }: DocumentPairPermissionsOptions): string => {
+    const {dataset = '', projectId = ''} = client.config()
+    // `liveEdit` is derived from the schema and branches the resulting permission
+    // observable, so it must be part of the key: workspaces sharing a
+    // project/dataset can define the same `type` with a different `liveEdit`.
+    const liveEdit = type === '*' ? false : Boolean(schema.get(type)?.liveEdit)
+    // `id` is normalized to its published id because the underlying chain reduces
+    // (id, version) to `getIdPair(id, {version})`, a pure function of
+    // (getPublishedId(id), version). The raw `version` string is kept as-is;
+    // never call getIdPair here (it throws on version 'drafts'|'published').
+    return [
+      dataset,
+      projectId,
+      getPublishedId(id),
+      version ?? '',
+      userId ?? '',
+      type,
+      permission,
+      liveEdit,
+    ].join('-')
+  },
+)
+
 /**
  * Gets document pair permissions based on a document ID and a type.
  *
@@ -311,6 +357,7 @@ export function useDocumentPairPermissions({
   const defaultClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const defaultSchema = useSchema()
   const defaultGrantsStore = useGrantsStore()
+  const currentUser = useCurrentUser()
 
   const client = useMemo(() => overrideClient || defaultClient, [defaultClient, overrideClient])
   const schema = useMemo(() => overrideSchema || defaultSchema, [defaultSchema, overrideSchema])
@@ -318,6 +365,7 @@ export function useDocumentPairPermissions({
     () => overrideGrantsStore || defaultGrantsStore,
     [defaultGrantsStore, overrideGrantsStore],
   )
+  const userId = currentUser?.id
 
   return useDocumentPairPermissionsFromHookFactory(
     useMemo(
@@ -330,8 +378,9 @@ export function useDocumentPairPermissions({
         type,
         pairListenerOptions,
         version,
+        userId,
       }),
-      [client, schema, grantsStore, id, permission, type, pairListenerOptions, version],
+      [client, schema, grantsStore, id, permission, type, pairListenerOptions, version, userId],
     ),
   )
 }

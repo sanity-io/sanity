@@ -103,6 +103,10 @@ export const validation = memoize(
         : validationTarget === 'version'
           ? idPair.versionId
           : idPair.publishedId
-    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}`
+    // Include the user id so an in-place user switch gets its own cache entry;
+    // the module-level memo cache is never cleared, so without this a new user
+    // would replay the previous user's validation result.
+    const userId = ctx.currentUser?.id ?? ''
+    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}-${userId}`
   },
 )
