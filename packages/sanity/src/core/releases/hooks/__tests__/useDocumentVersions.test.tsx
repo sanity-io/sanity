@@ -2,18 +2,19 @@ import {type ReleaseDocument} from '@sanity/client'
 import {getPublishedId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {renderHook, waitFor} from '@testing-library/react'
-import {concat, NEVER, of} from 'rxjs'
+import {BehaviorSubject, concat, NEVER, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
-import {useActiveReleasesMockReturn} from '../../store/__tests__/__mocks/useActiveReleases.mock'
+import {type ReleasesReducerState} from '../../store/reducer'
 import {
   type DocumentPerspectiveState,
   getOrCreateDocumentVersionsObservable,
   observableCache,
   useDocumentVersions,
+  withSystemCache,
 } from '../useDocumentVersions'
 
 vi.mock('../../../hooks/useDataset', () => ({
@@ -28,8 +29,15 @@ vi.mock('../../../store', () => ({
   useDocumentPreviewStore: vi.fn(),
 }))
 
-vi.mock('../../store/useActiveReleases', () => ({
-  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
+const initialReleasesState: ReleasesReducerState = {
+  releases: new Map(),
+  state: 'loaded',
+}
+const mockReleasesState$ = new BehaviorSubject<ReleasesReducerState>(initialReleasesState)
+const mockDispatch = vi.fn()
+
+vi.mock('../../store/useReleasesStore', () => ({
+  useReleasesStore: () => ({state$: mockReleasesState$, dispatch: mockDispatch}),
 }))
 
 async function setupMocks({
@@ -42,7 +50,7 @@ async function setupMocks({
   versionIds: string[]
   /**
    * When `false`, versions are returned without `_system`, so the hook
-   * falls back to `temporarilyBuildDocumentSystem`.
+   * falls back to `buildDocumentSystem`.
    */
   observeSystem?: boolean
   /** When `true`, the version document ids observable never emits (initial loading state). */
@@ -81,16 +89,17 @@ async function setupMocks({
       }),
   } as unknown as DocumentPreviewStore)
 
-  const {useActiveReleases} = await import('../../store/useActiveReleases')
-  vi.mocked(useActiveReleases).mockReturnValue({
-    ...useActiveReleasesMockReturn,
-    data: releases,
+  mockReleasesState$.next({
+    releases: new Map(releases.map((release) => [release._id, release])),
+    state: 'loaded',
   })
 }
 
 describe('useDocumentVersions', () => {
   beforeEach(() => {
     observableCache.clear()
+    withSystemCache.clear()
+    mockReleasesState$.next(initialReleasesState)
   })
 
   it('should return initial state', async () => {
@@ -235,9 +244,11 @@ describe('getOrCreateDocumentVersionsObservable — subscriber churn', () => {
     } as unknown as DocumentPreviewStore
   }
 
-  const options = (documentPreviewStore: DocumentPreviewStore) => ({
+  // The module-level swr cache is keyed by `projectId-dataset-publishedId` and survives across
+  // tests, so each test uses its own publishedId to avoid replaying another test's cached id set.
+  const options = (documentPreviewStore: DocumentPreviewStore, publishedId: string) => ({
     documentPreviewStore,
-    publishedId: 'document-1',
+    publishedId,
     projectId: 'test-project',
     dataset: 'test',
   })
@@ -245,7 +256,7 @@ describe('getOrCreateDocumentVersionsObservable — subscriber churn', () => {
   it('does not re-emit loading: true to a subscriber arriving right after a zero-subscriber gap', () => {
     vi.useFakeTimers()
     const previewStore = createPreviewStore()
-    const state$ = getOrCreateDocumentVersionsObservable(options(previewStore))
+    const state$ = getOrCreateDocumentVersionsObservable(options(previewStore, 'churn-1'))
 
     const first: DocumentPerspectiveState[] = []
     const firstSub = state$.subscribe((value) => first.push(value))
@@ -272,12 +283,66 @@ describe('getOrCreateDocumentVersionsObservable — subscriber churn', () => {
   it('tears down and evicts the cache entry after the grace period', () => {
     vi.useFakeTimers()
     const previewStore = createPreviewStore()
-    const state$ = getOrCreateDocumentVersionsObservable(options(previewStore))
+    const state$ = getOrCreateDocumentVersionsObservable(options(previewStore, 'churn-2'))
 
     const sub = state$.subscribe()
     sub.unsubscribe()
     vi.advanceTimersByTime(2_000)
 
     expect(observableCache.size).toBe(0)
+  })
+
+  /**
+   * Regression test for SAPP-4053: on a brand-new document the version id set
+   * changes as soon as the first keystroke creates the draft (`[]` →
+   * `['drafts.<id>']`). Re-emitting `loading: true` for that change flips the
+   * form read-only mid-typing, dropping DOM focus from the editor (which in
+   * turn caused the PTE caret to jump to the start of the block).
+   */
+  it('does not re-emit loading: true when the version id set changes after the initial load', () => {
+    const ids$ = new Subject<string[]>()
+    const observePaths = vi.fn((value: unknown) =>
+      concat(
+        of({
+          _id: (value as {_id: string})._id,
+          _rev: '',
+          _createdAt: '',
+          _updatedAt: '',
+        }),
+        NEVER,
+      ),
+    )
+    const previewStore = {
+      unstable_observeVersionDocumentIds: vi.fn(() => ids$),
+      observePaths,
+    } as unknown as DocumentPreviewStore
+
+    const state$ = getOrCreateDocumentVersionsObservable(options(previewStore, 'id-set-change'))
+    const emissions: DocumentPerspectiveState[] = []
+    const sub = state$.subscribe((value) => emissions.push(value))
+
+    // Cold start: a non-empty initial id set must still block with loading: true.
+    ids$.next(['drafts.document-1'])
+    expect(emissions.map((e) => e.loading)).toEqual([true, false])
+
+    // First keystroke on a new document: the draft id appears while the user
+    // is typing. The pipeline must go straight to the loaded state.
+    ids$.next(['drafts.document-1', 'versions.rASAP.document-1'])
+    expect(emissions.map((e) => e.loading)).toEqual([true, false, false])
+    expect(emissions.at(-1)?.data).toEqual(['drafts.document-1', 'versions.rASAP.document-1'])
+
+    sub.unsubscribe()
+  })
+
+  it('still emits loading: true for a cold start whose first id set is non-empty', () => {
+    const previewStore = createPreviewStore()
+    const state$ = getOrCreateDocumentVersionsObservable(options(previewStore, 'cold-start'))
+
+    const emissions: DocumentPerspectiveState[] = []
+    const sub = state$.subscribe((value) => emissions.push(value))
+
+    expect(emissions.map((e) => e.loading)).toEqual([true, false])
+
+    sub.unsubscribe()
   })
 })
