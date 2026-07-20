@@ -44,7 +44,7 @@ catalog:
   rimraf: ^6.1.3
   styled-components: npm:@sanity/styled-components@^6.1.24
   tsdown: ^0.22.12
-  vite: ^8.1.4
+  vite: ^8.1.5
   vitest: ^4.1.10
   vitest-browser-react: ^2.2.0
 

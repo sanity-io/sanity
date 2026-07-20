@@ -250,7 +250,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.unpublished-release-banner.text-with-published':
     'Showing the current <strong>published</strong> version:',
   /** The text that appears for the action button to add the current document to the selected variant */
-  'banners.variant.action.add-to-variant': 'Add to variant',
+  'banners.variant.action.add-to-variant': 'Create variant',
   /** The text for the banner that appears when the selected variant matches no variant definition */
   'banners.variant.definition-not-found':
     'The selected variant <VariantName>{{name}}</VariantName> could not be found.',

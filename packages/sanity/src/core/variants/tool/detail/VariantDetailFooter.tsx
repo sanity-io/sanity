@@ -1,6 +1,7 @@
 import {DiamondIcon} from '@sanity/icons/Diamond'
 import {Card, Flex, Text} from '@sanity/ui'
 
+import {Button} from '../../../../ui-components/button'
 import {RelativeTime} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {variantsLocaleNamespace} from '../../i18n'
@@ -8,10 +9,12 @@ import {type SystemVariant} from '../../types'
 import {VariantDetailMenuButton} from './VariantDetailMenuButton'
 
 export function VariantDetailFooter({
+  openEditDialog,
   documentCount,
   documentsLoading = false,
   variant,
 }: {
+  openEditDialog: () => void
   documentCount: number
   documentsLoading?: boolean
   variant: SystemVariant
@@ -38,6 +41,7 @@ export function VariantDetailFooter({
         </Flex>
 
         <Flex flex="none" gap={1} data-testid="variant-detail-footer-actions">
+          <Button onClick={openEditDialog} text={t('detail.action.edit-variant')} />
           <VariantDetailMenuButton
             documentCount={documentCount}
             documentsLoading={documentsLoading}

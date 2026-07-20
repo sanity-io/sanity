@@ -67,11 +67,12 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
-  // @sanity/workbench@0.1.0-alpha.24 ships a broken dist/_internal.d.ts that declares several
-  // identifiers twice (`Canvas`, `CanvasId`, `MediaLibrary`, ... — TS2300), a bug in its d.ts
-  // bundling. It's pulled into this program via the `sanity/workbench` fixture, which re-exports
-  // `renderWorkbench` from it. Drop this filter once a workbench release fixes the duplicates.
-  if (code === 2300 && file.fileName.includes('/node_modules/@sanity/workbench/dist/')) {
+  // Temporary workaround for broken d.ts output in @sanity/workbench (reproduced with
+  // 0.1.0-alpha.24 and 0.1.0-alpha.25). The bundled declarations emit the same type alias twice
+  // (e.g. Canvas, Workspace), which fails TS2300 under skipLibCheck: false. This only affects type
+  // checking in node_modules and does not impact runtime behavior. Remove once @sanity/workbench
+  // ships a release without duplicate identifiers in its generated .d.ts files.
+  if (code === 2300 && file.fileName.includes('/node_modules/@sanity/workbench/')) {
     return false
   }
 
