@@ -69,7 +69,8 @@ const filteredErrors = errors.filter((d) => {
   // Temporary workaround for quick-lru's TS2416 declarations with TypeScript's new iterator helper
   // types in lib.esnext.iterator.d.ts. quick-lru's methods currently return IterableIterator while
   // Map now expects MapIterator. This originates from node_modules and does not affect runtime
-  // behavior in this repository. Remove once quick-lru ships declarations compatible with TS 7.
+  // behavior in this repository. Remove once quick-lru ships declarations compatible with
+  // TypeScript versions that include Iterator helper methods on MapIterator.
   if (code === 2416 && file.fileName.includes('/node_modules/quick-lru/')) {
     return false
   }
