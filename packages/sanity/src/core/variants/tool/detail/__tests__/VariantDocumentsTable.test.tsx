@@ -116,7 +116,9 @@ describe('VariantDocumentsTable', () => {
       resources: [variantsUsEnglishLocaleBundle],
     })
     const result = render(<VariantDocumentsTable rows={rows} loading={loading} />, {wrapper})
-    await screen.findByPlaceholderText('Search documents')
+    // Search now lives in the command lane (only shown with documents), so settle on the table
+    // container, which is always present regardless of rows/loading.
+    await screen.findByTestId('variant-documents-table')
     return result
   }
 
@@ -250,7 +252,7 @@ describe('VariantDocumentsTable', () => {
     expect(screen.getByTestId('variant-bulk-actions-menu')).toBeInTheDocument()
   })
 
-  it('select-all selects every document and clear resets the selection', async () => {
+  it('reveals select-all in the selection bar (not the column header) and clear resets', async () => {
     const user = userEvent.setup()
 
     await renderTable()
@@ -259,8 +261,13 @@ describe('VariantDocumentsTable', () => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(2)
     })
 
-    await user.click(screen.getByRole('checkbox', {name: 'Select all documents'}))
+    // Select-all is not in the column header; it appears in the bar once a row is picked.
+    expect(screen.queryByRole('checkbox', {name: 'Select all documents'})).not.toBeInTheDocument()
 
+    await user.click(screen.getAllByRole('checkbox', {name: 'Select document'})[0]!)
+
+    // The select-all now appears in the bar; clicking it selects the rest.
+    await user.click(screen.getByRole('checkbox', {name: 'Select all documents'}))
     expect(screen.getByText('2 selected')).toBeInTheDocument()
 
     await user.click(screen.getByTestId('variant-bulk-clear'))
@@ -279,11 +286,24 @@ describe('VariantDocumentsTable', () => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(2)
     })
 
-    await user.click(screen.getByRole('checkbox', {name: 'Select all documents'}))
+    await user.click(screen.getAllByRole('checkbox', {name: 'Select document'})[0]!)
     await user.click(screen.getByTestId('variant-bulk-actions-menu'))
 
     expect(await screen.findByText('Publish selected')).toBeInTheDocument()
     expect(screen.getByText('Delete selected')).toBeInTheDocument()
+  })
+
+  it('puts search in the command lane, not the column header', async () => {
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    // Search moved out of the column-header row into the command lane; the preview column is now
+    // a plain sortable "Document" label.
+    expect(screen.getByTestId('variant-documents-search')).toBeInTheDocument()
+    expect(screen.getByText('Document')).toBeInTheDocument()
   })
 
   it('finds documents by name when title is missing', async () => {

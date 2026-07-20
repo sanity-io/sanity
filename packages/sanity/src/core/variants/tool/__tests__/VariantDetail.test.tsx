@@ -177,7 +177,11 @@ describe('VariantDetail', () => {
     expect(screen.getByRole('button', {name: 'Back to variant definitions'})).toBeInTheDocument()
     expect(screen.getByText('Appears in')).toBeInTheDocument()
     expect(screen.getByText('Type')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('Search documents')).toBeInTheDocument()
+    // Search moved out of the column header into the command lane; the preview column is now a
+    // plain "Document" label. The command lane (and its search) is hidden for a variant with no
+    // documents, so the search box is absent here.
+    expect(screen.getByText('Document')).toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('Search documents')).not.toBeInTheDocument()
     expect(screen.getByText('Edited')).toBeInTheDocument()
     expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
     expect(screen.getByText(/^Created/)).toBeInTheDocument()

@@ -120,16 +120,10 @@ export const getVariantDocumentTableColumnDefs = (
           width: 44,
           style: {minWidth: 44, maxWidth: 44},
           sorting: false,
+          // Empty header: select-all lives in the command-lane selection bar, not here. The
+          // column-header row is column labels + sort only (three-zone header spec).
           header: ({headerProps}) => (
-            <Flex {...headerProps} align="center" justify="center" paddingY={3} sizing="border">
-              <Checkbox
-                aria-label={t('detail.documents.bulk.select-all')}
-                checked={selection.allSelected}
-                data-testid="variant-bulk-select-all"
-                indeterminate={selection.someSelected && !selection.allSelected}
-                onChange={selection.onToggleAll}
-              />
-            </Flex>
+            <Flex {...headerProps} align="center" justify="center" paddingY={3} sizing="border" />
           ),
           cell: ({cellProps, datum}) => (
             <Flex {...cellProps} align="center" justify="center" paddingX={2} sizing="border">
@@ -195,15 +189,17 @@ export const getVariantDocumentTableColumnDefs = (
     ),
   },
   {
+    // The document preview / title column. Search moved out of this header into the command lane
+    // (three-zone header spec); the header is now a plain sortable "Document" label.
     id: 'search',
     width: null,
     style: {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
+    sorting: true,
     sortTransform: ({document}) => getDocumentPreviewTitle(document).toLowerCase(),
     header: (props) => (
-      <Headers.TableHeaderSearch
-        {...props}
-        placeholder={t('detail.documents.table.search-placeholder')}
-      />
+      <Flex {...props.headerProps} paddingY={3} sizing="border">
+        <Headers.SortHeaderButton text={t('detail.documents.table.document')} {...props} />
+      </Flex>
     ),
     cell: ({cellProps, datum}) => (
       <Flex

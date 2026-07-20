@@ -1,7 +1,8 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {PublishIcon} from '@sanity/icons/Publish'
+import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box, Card, Flex, Menu, Text} from '@sanity/ui'
+import {Box, Card, Checkbox, Flex, Menu, Text, TextInput} from '@sanity/ui'
 import {type CSSProperties, useCallback, useMemo, useState} from 'react'
 
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
@@ -29,6 +30,9 @@ const TABLE_CARD_STYLE: CSSProperties = {
   scrollbarGutter: 'stable',
 }
 
+// The command-lane search input is a fixed leading control; the filter tabs fill the rest.
+const SEARCH_INPUT_STYLE: CSSProperties = {maxWidth: 280}
+
 function filterDocuments(
   rows: DocumentInVariantGroup[],
   searchTerm: string,
@@ -52,6 +56,7 @@ export function VariantDocumentsTable({
   const {t} = useTranslation(variantsLocaleNamespace)
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
   const [activeLane, setActiveLane] = useState<string>(RELEASE_LANE_ALL)
+  const [searchTerm, setSearchTerm] = useState('')
   const [selectedGroupIds, setSelectedGroupIds] = useState<ReadonlySet<string>>(() => new Set())
   const {data: releases} = useActiveReleases()
   const releasesById = useMemo(
@@ -72,7 +77,7 @@ export function VariantDocumentsTable({
 
   // Filter tabs are the one way to scope by bundle (grouping was removed: filtering preserves
   // column sorting, which grouping cannot). A selected tab filters the flat, always-sortable list.
-  const displayRows = useMemo(() => {
+  const laneRows = useMemo(() => {
     const filtered =
       resolvedActiveLane === RELEASE_LANE_ALL
         ? rows
@@ -80,12 +85,18 @@ export function VariantDocumentsTable({
     return filtered.map((row) => ({...row, rowKey: row.groupId}))
   }, [rows, resolvedActiveLane, releasesById])
 
+  // Search is owned by this composition (not the low-level Table, whose search context is internal),
+  // so it can live in the command lane rather than the column-header row. Applied on top of the lane
+  // filter; the Table then sorts whatever it receives.
+  const displayRows = useMemo(() => filterDocuments(laneRows, searchTerm), [laneRows, searchTerm])
+
   const handleSelectLane = useCallback((laneId: string) => {
     // Clicking the already-active segment clears the filter back to "All".
     setActiveLane((previous) => (previous === laneId ? RELEASE_LANE_ALL : laneId))
   }, [])
 
-  const hasReleaseControls = !loading && segments.length > 1
+  const hasDocuments = !loading && rows.length > 0
+  const hasReleaseControls = hasDocuments && segments.length > 1
 
   // Bulk selection. Keyed by the document groupId. Selection persists across lane/search filters;
   // the count reflects what's currently visible so a filtered-out selection never inflates the bar.
@@ -151,26 +162,51 @@ export function VariantDocumentsTable({
 
   return (
     <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
-      {hasReleaseControls && (
-        // Bordered so the filter lane is visually distinct from the table's column-header row below.
+      {/* Command lane (three-zone header, zone 1): table-scoped controls — search + filter tabs —
+          kept out of the column-header row below. Bordered so it reads as distinct chrome. */}
+      {hasDocuments && (
         <Card flex="none" borderBottom paddingX={4} paddingY={3}>
-          <Box style={{minWidth: 0, overflowX: 'auto'}}>
-            <VariantReleaseLane
-              activeLane={resolvedActiveLane}
-              onSelectLane={handleSelectLane}
-              segments={segments}
-              totalCount={rows.length}
-            />
-          </Box>
+          <Flex align="center" gap={3}>
+            <Box flex="none" style={SEARCH_INPUT_STYLE}>
+              <TextInput
+                aria-label={t('detail.documents.table.search-placeholder')}
+                clearButton={Boolean(searchTerm)}
+                data-testid="variant-documents-search"
+                fontSize={1}
+                icon={SearchIcon}
+                onChange={(event) => setSearchTerm(event.currentTarget.value)}
+                onClear={() => setSearchTerm('')}
+                placeholder={t('detail.documents.table.search-placeholder')}
+                value={searchTerm}
+              />
+            </Box>
+            {hasReleaseControls && (
+              <Box flex={1} style={{minWidth: 0, overflowX: 'auto'}}>
+                <VariantReleaseLane
+                  activeLane={resolvedActiveLane}
+                  onSelectLane={handleSelectLane}
+                  segments={segments}
+                  totalCount={rows.length}
+                />
+              </Box>
+            )}
+          </Flex>
         </Card>
       )}
       {selectedVisibleCount > 0 && (
-        // Contextual bulk-action bar. Appears only while a selection exists. The publish/delete
-        // actions are prototyped-but-not-wired (stubbed disabled) pending the real document
-        // operations; the selection UX itself is the point of this first pass.
+        // Contextual selection bar (three-zone header): select-all lives here, not the column
+        // header. The publish/delete actions are prototyped-but-not-wired (stubbed disabled)
+        // pending the real document operations.
         <Card flex="none" borderBottom paddingX={4} paddingY={2} tone="primary">
           <Flex align="center" gap={3} justify="space-between">
             <Flex align="center" gap={3} style={{minWidth: 0}}>
+              <Checkbox
+                aria-label={t('detail.documents.bulk.select-all')}
+                checked={allSelected}
+                data-testid="variant-bulk-select-all"
+                indeterminate={someSelected && !allSelected}
+                onChange={handleToggleAll}
+              />
               <Text size={1} weight="medium">
                 {t('detail.documents.bulk.selected', {count: selectedVisibleCount})}
               </Text>
@@ -218,6 +254,7 @@ export function VariantDocumentsTable({
       )}
       <Card
         flex={1}
+        data-testid="variant-documents-table"
         id="variant-documents-table"
         ref={setScrollContainerRef}
         style={TABLE_CARD_STYLE}
@@ -231,7 +268,6 @@ export function VariantDocumentsTable({
           // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
           rowId="rowKey"
           scrollContainerRef={scrollContainerRef}
-          searchFilter={filterDocuments}
         />
       </Card>
     </Flex>

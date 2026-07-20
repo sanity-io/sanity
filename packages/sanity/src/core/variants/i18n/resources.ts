@@ -70,7 +70,9 @@ const variantsLocaleStrings = {
   'detail.documents.no-documents': 'No documents in this variant definition',
   /** Edited column header for variant document table. */
   'detail.documents.table.edited': 'Edited',
-  /** Search placeholder for variant document table. */
+  /** Document (title/preview) column header for variant document table. */
+  'detail.documents.table.document': 'Document',
+  /** Search placeholder for the variant document table search input in the command lane. */
   'detail.documents.table.search-placeholder': 'Search documents',
   /** Type column header for variant document table. */
   'detail.documents.table.type': 'Type',
