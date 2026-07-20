@@ -58,7 +58,7 @@ const filteredErrors = errors.filter((d) => {
   }
 
   // Temporary workaround for broken d.ts output in @sanity/workbench (reproduced with
-  // 0.1.0-alpha.24 and 0.1.0-alpha.25). The bundled declarations emit the same type alias twice
+  // 0.1.0-alpha.24 through 0.1.0-alpha.26). The bundled declarations emit the same type alias twice
   // (e.g. Canvas, Workspace), which fails TS2300 under skipLibCheck: false. This only affects type
   // checking in node_modules and does not impact runtime behavior. Remove once @sanity/workbench
   // ships a release without duplicate identifiers in its generated .d.ts files.
