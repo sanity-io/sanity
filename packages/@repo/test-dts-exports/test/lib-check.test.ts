@@ -57,15 +57,6 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
-  // Temporary workaround for broken d.ts output in @sanity/workbench (still reproduced with
-  // 0.1.0-alpha.26). The bundled declarations emit the same type alias twice (e.g. Canvas,
-  // Workspace), which fails TS2300 under skipLibCheck: false. This only affects type checking in
-  // node_modules and does not impact runtime behavior. Remove once @sanity/workbench ships a
-  // release without duplicate identifiers in its generated .d.ts files.
-  if (code === 2300 && file.fileName.includes('/node_modules/@sanity/workbench/')) {
-    return false
-  }
-
   // Temporary workaround for quick-lru's TS2416 declarations with TypeScript's new iterator helper
   // types in lib.esnext.iterator.d.ts. quick-lru's methods currently return IterableIterator while
   // Map now expects MapIterator. This originates from node_modules and does not affect runtime
