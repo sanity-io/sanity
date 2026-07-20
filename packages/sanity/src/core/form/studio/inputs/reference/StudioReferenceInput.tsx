@@ -259,14 +259,15 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
       adapter.getReferenceInfo(documentPreviewStore, id, _type, perspectiveStack),
     [documentPreviewStore, perspectiveStack],
   )
-  // TODO(oxlint): remove this suppression in a follow-up once useEffectEvent support is fixed
-  // oxlint-disable-next-line react-hooks/rules-of-hooks
-  const onSearch = handleSearch
 
   return (
     <ReferenceInput
       {...props}
-      onSearch={onSearch}
+      onSearch={
+        // TODO(oxlint): remove this suppression in a follow-up once useEffectEvent support is fixed
+        // oxlint-disable-next-line react-hooks/rules-of-hooks
+        handleSearch
+      }
       liveEdit={isDocumentLiveEdit}
       getReferenceInfo={getReferenceInfo}
       selectedState={selectedState}
