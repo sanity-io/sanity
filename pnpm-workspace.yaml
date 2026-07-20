@@ -11,8 +11,14 @@ packages:
   - packages/sanity/fixtures/examples/*
 
 allowBuilds:
+  '@playwright/browser-chromium': false
+  '@swc/core': false
+  better-sqlite3: false
   esbuild: false
   lefthook: true
+  onnxruntime-node: false
+  protobufjs: false
+  sharp: false
   unrs-resolver: false
 
 catalog:
@@ -20,7 +26,7 @@ catalog:
   '@optique/run': ^1.1.1
   '@playwright/test': 1.61.1
   '@rolldown/plugin-babel': ^0.2.3
-  '@sanity/client': ^7.23.2
+  '@sanity/client': ^7.24.0
   '@sanity/migrate': ^7.0.3
   '@sanity/pkg-utils': ^10.9.0
   '@sanity/telemetry': ^1.1.0
