@@ -237,6 +237,7 @@ exports[`exports snapshot 1`] = `
     "UrlInput": "function",
     "UserAvatar": "function",
     "UserColorManagerProvider": "function",
+    "VARIANTS_STUDIO_CLIENT_OPTIONS": "object",
     "VERSION_FOLDER": "string",
     "ValueError": "function",
     "VersionChip": "object",
