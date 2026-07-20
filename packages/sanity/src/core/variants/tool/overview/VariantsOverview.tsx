@@ -16,6 +16,7 @@ import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant} from '../../types'
 import {getVariantSetReference, type VariantSetReference} from '../../util/variantSet'
 import {filterVariantsForSearch, getVariantId} from '../util'
+import {VariantDimensionMap} from './VariantDimensionMap'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
 import {VariantSetMenuButton} from './VariantSetMenuButton'
@@ -234,6 +235,12 @@ export function VariantsOverview() {
           {hasVariants && (
             <Box flex="none" paddingBottom={4}>
               <VariantSetExplainer />
+            </Box>
+          )}
+
+          {hasVariants && (
+            <Box flex="none" paddingBottom={4}>
+              <VariantDimensionMap variants={variantsList} />
             </Box>
           )}
 

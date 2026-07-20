@@ -19,6 +19,7 @@ import {
 } from '../../util/conditionValidation'
 import {getVariantTitleValue} from '../../util/getIsVariantInvalid'
 import {createPortableTextDescription} from '../../util/variantDefaults'
+import {getStubVariantDimensionMap} from '../../util/variantDimensionMap'
 import {ConditionAutocompleteInput} from './ConditionAutocompleteInput'
 import {
   buildConditionSuggestionIndex,
@@ -134,7 +135,13 @@ export function VariantForm(props: {
   const {onChange, onConditionValidityChange, showValidation = false, value} = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const {data: variants} = useAllVariants()
-  const suggestionIndex = useMemo(() => buildConditionSuggestionIndex(variants), [variants])
+  // Feed the suggestion index from the external targeting map (CDP / experiment /
+  // flag / locale) as well as the existing variants, so authoring filters against the
+  // real lay of the land rather than only what's already been authored here. FH-116.
+  const suggestionIndex = useMemo(
+    () => buildConditionSuggestionIndex(variants, getStubVariantDimensionMap()),
+    [variants],
+  )
   const titleId = useId()
   const descriptionId = useId()
   // `conditions` is stored as an object, but object keys are awkward to edit live:
