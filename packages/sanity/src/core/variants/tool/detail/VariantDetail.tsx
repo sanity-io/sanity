@@ -82,19 +82,19 @@ export function VariantDetail() {
 
   return (
     <Flex direction="column" flex={1} height="fill" overflow="hidden">
-      <Card borderBottom flex="none" padding={3}>
-        <Button
-          icon={ArrowLeftIcon}
-          mode="ghost"
-          onClick={() => router.navigate({})}
-          text={t('detail.back')}
-        />
-      </Card>
-      {/* Slim header lane: identity + inline metadata on the left, actions on the right, so the
-          vertical space goes to the documents table below instead of a tall stacked header. */}
+      {/* Slim header lane: back control + identity + inline metadata on the left, actions on the
+          right. The back arrow is merged in here (a leading icon button) rather than sitting in its
+          own full-width lane, so all the vertical space goes to the documents table below. */}
       <Card borderBottom flex="none" paddingX={4} paddingY={3}>
         <Flex align="center" gap={3}>
           <Flex align="center" gap={3} flex={1} style={{minWidth: 0}}>
+            <Button
+              aria-label={t('detail.back')}
+              icon={ArrowLeftIcon}
+              mode="bleed"
+              onClick={() => router.navigate({})}
+              tooltipProps={{content: t('detail.back')}}
+            />
             {/* The variant "pin" (adopt-this-perspective) control was removed here deliberately:
                 selecting a variant is a *global authoring mode* (it re-targets every document edit
                 to the variant version — see useDocumentForm/useTargetDocumentState), which belongs in
