@@ -706,7 +706,16 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const applyInitialFocusPath = useEffectEvent(() => {
     if (!initialFocusPath || initialFocusPath.length === 0) return
-    handleProgrammaticFocus(resolveKeyedPath(formStateRef.current?.value, initialFocusPath))
+    const resolvedPath = resolveKeyedPath(formStateRef.current?.value, initialFocusPath)
+
+    // Apply unconditionally rather than through `handleProgrammaticFocus`: its change
+    // detection compares against `focusPathRef`, which may already match the target path
+    // (the state was seeded from `initialFocusPath`, and e.g. dialog autofocus can align
+    // the ref before the form is ready) — and the expand operations must still run.
+    setFocusPath(resolvedPath)
+    handleSetOpenPath(resolvedPath)
+    onFocusPath?.(resolvedPath)
+    focusPathRef.current = resolvedPath
   })
 
   // Seeding `focusPath`/`openPath` state from `initialFocusPath` (on mount, above) is not
