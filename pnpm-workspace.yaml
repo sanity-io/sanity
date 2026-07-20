@@ -92,7 +92,6 @@ minimumReleaseAgeExclude:
   - 'vite'
 
 overrides:
-  sanity-plugin-utils: 2.0.11
   vitest: 'catalog:'
 
 preferWorkspacePackages: true
