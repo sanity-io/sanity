@@ -8,7 +8,7 @@ import {type Column} from '../../../releases/tool/components/Table/types'
 import {searchDocumentRelease} from '../../../releases/tool/detail/documentTable/searchDocumentRelease'
 import {variantsLocaleNamespace} from '../../i18n'
 import {computeReleaseLaneSegments, RELEASE_LANE_ALL, rowMatchesLane} from './releaseLane'
-import {type DocumentInVariantGroup} from './types'
+import {DETAIL_CONTENT_CENTER_STYLE, type DocumentInVariantGroup} from './types'
 import {getVariantDocumentTableColumnDefs} from './variantDocumentTable/VariantDocumentTableColumnDefs'
 import {VariantReleaseLane} from './VariantReleaseLane'
 
@@ -89,7 +89,9 @@ export function VariantDocumentsTable({
       {hasReleaseControls && (
         // Bordered so the filter lane is visually distinct from the table's column-header row below.
         <Card flex="none" borderBottom paddingX={4} paddingY={3}>
-          <Box style={{minWidth: 0, overflowX: 'auto'}}>
+          {/* Centered at the shared content width so the lane lines up with the table and header
+              and doesn't bleed on wide screens; still scrolls horizontally if the tabs overflow. */}
+          <Box style={{...DETAIL_CONTENT_CENTER_STYLE, minWidth: 0, overflowX: 'auto'}}>
             <VariantReleaseLane
               activeLane={resolvedActiveLane}
               onSelectLane={handleSelectLane}
@@ -105,17 +107,19 @@ export function VariantDocumentsTable({
         ref={setScrollContainerRef}
         style={TABLE_CARD_STYLE}
       >
-        <Table<DocumentInVariantGroup>
-          columnDefs={columnDefs}
-          data={displayRows}
-          defaultSort={{column: 'documentGroup', direction: 'asc'}}
-          emptyState={t('detail.documents.no-documents')}
-          loading={loading}
-          // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          rowId="rowKey"
-          scrollContainerRef={scrollContainerRef}
-          searchFilter={filterDocuments}
-        />
+        <Box style={{...DETAIL_CONTENT_CENTER_STYLE, height: '100%'}}>
+          <Table<DocumentInVariantGroup>
+            columnDefs={columnDefs}
+            data={displayRows}
+            defaultSort={{column: 'documentGroup', direction: 'asc'}}
+            emptyState={t('detail.documents.no-documents')}
+            loading={loading}
+            // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+            rowId="rowKey"
+            scrollContainerRef={scrollContainerRef}
+            searchFilter={filterDocuments}
+          />
+        </Box>
       </Card>
     </Flex>
   )

@@ -18,6 +18,7 @@ import {
   getVariantTitle,
 } from '../util'
 import {groupVariantDocumentsByGroup} from './groupVariantDocumentsByGroup'
+import {DETAIL_CONTENT_CENTER_STYLE} from './types'
 import {VariantDetailMenuButton} from './VariantDetailMenuButton'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
 
@@ -86,85 +87,89 @@ export function VariantDetail() {
           right. The back arrow is merged in here (a leading icon button) rather than sitting in its
           own full-width lane, so all the vertical space goes to the documents table below. */}
       <Card borderBottom flex="none" paddingX={4} paddingY={3}>
-        <Flex align="center" gap={3}>
-          <Flex align="center" gap={3} flex={1} style={{minWidth: 0}}>
-            <Button
-              aria-label={t('detail.back')}
-              icon={ArrowLeftIcon}
-              mode="bleed"
-              onClick={() => router.navigate({})}
-              tooltipProps={{content: t('detail.back')}}
-            />
-            {/* The variant "pin" (adopt-this-perspective) control was removed here deliberately:
+        {/* Centered at the shared content width so the header lines up with the table below and
+            doesn't spread edge-to-edge on wide screens (which reads as too wide / hard to scan). */}
+        <Box style={DETAIL_CONTENT_CENTER_STYLE}>
+          <Flex align="center" gap={3}>
+            <Flex align="center" gap={3} flex={1} style={{minWidth: 0}}>
+              <Button
+                aria-label={t('detail.back')}
+                icon={ArrowLeftIcon}
+                mode="bleed"
+                onClick={() => router.navigate({})}
+                tooltipProps={{content: t('detail.back')}}
+              />
+              {/* The variant "pin" (adopt-this-perspective) control was removed here deliberately:
                 selecting a variant is a *global authoring mode* (it re-targets every document edit
                 to the variant version — see useDocumentForm/useTargetDocumentState), which belongs in
                 global perspective-bar chrome, not on this definition-management surface. The correct
                 icon + behavior return once the perspective-bar initiative lands (FH tracked). */}
-            <Flex align="center" flex="none">
-              <Text as="h1" size={2} textOverflow="ellipsis" weight="bold">
-                {getVariantTitle(variant)}
-              </Text>
-            </Flex>
-            <HeaderDivider />
-            {Object.keys(variant.conditions).length > 0 ? (
-              // Conditions are read-only facts, not interactive chips — render them as quiet
-              // key/value metadata (muted key, solid value, dot-separated) so they're visually
-              // distinct from the lineage *status* badges further along the lane.
-              <Flex align="center" flex="none" gap={3} wrap="wrap">
-                {Object.entries(variant.conditions).map(([key, value], index) => (
-                  <Flex align="center" gap={2} key={key}>
-                    {index > 0 && (
-                      <Text aria-hidden muted size={1}>
-                        ·
-                      </Text>
-                    )}
-                    <Flex align="center" gap={1}>
-                      <Text muted size={1}>
-                        {key}
-                      </Text>
-                      <Text size={1} weight="medium">
-                        {typeof value === 'string' ? value : JSON.stringify(value)}
-                      </Text>
-                    </Flex>
-                  </Flex>
-                ))}
-              </Flex>
-            ) : (
-              <Text muted size={1}>
-                {t('overview.table.no-conditions')}
-              </Text>
-            )}
-            {description && (
-              <>
-                <HeaderDivider />
-                <Text muted size={1} style={{minWidth: 0}} textOverflow="ellipsis">
-                  {description}
+              <Flex align="center" flex="none">
+                <Text as="h1" size={2} textOverflow="ellipsis" weight="bold">
+                  {getVariantTitle(variant)}
                 </Text>
-              </>
-            )}
-          </Flex>
-          <Flex align="center" data-testid="variant-detail-actions" flex="none" gap={3}>
-            <Flex align="center" gap={2}>
-              <Text muted size={1}>
-                <ClockIcon />
-              </Text>
-              <Text muted size={1}>
-                {t('detail.footer.created')}{' '}
-                <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
-              </Text>
+              </Flex>
+              <HeaderDivider />
+              {Object.keys(variant.conditions).length > 0 ? (
+                // Conditions are read-only facts, not interactive chips — render them as quiet
+                // key/value metadata (muted key, solid value, dot-separated) so they're visually
+                // distinct from the lineage *status* badges further along the lane.
+                <Flex align="center" flex="none" gap={3} wrap="wrap">
+                  {Object.entries(variant.conditions).map(([key, value], index) => (
+                    <Flex align="center" gap={2} key={key}>
+                      {index > 0 && (
+                        <Text aria-hidden muted size={1}>
+                          ·
+                        </Text>
+                      )}
+                      <Flex align="center" gap={1}>
+                        <Text muted size={1}>
+                          {key}
+                        </Text>
+                        <Text size={1} weight="medium">
+                          {typeof value === 'string' ? value : JSON.stringify(value)}
+                        </Text>
+                      </Flex>
+                    </Flex>
+                  ))}
+                </Flex>
+              ) : (
+                <Text muted size={1}>
+                  {t('overview.table.no-conditions')}
+                </Text>
+              )}
+              {description && (
+                <>
+                  <HeaderDivider />
+                  <Text muted size={1} style={{minWidth: 0}} textOverflow="ellipsis">
+                    {description}
+                  </Text>
+                </>
+              )}
             </Flex>
-            <HeaderDivider />
-            <Button
-              onClick={() => setEditDialogOpen(true)}
-              text={t('detail.action.edit-variant')}
-            />
-            <VariantDetailMenuButton
-              documentCount={tableRows.length}
-              documentsLoading={documentsLoading}
-              variant={variant}
-            />
+            <Flex align="center" data-testid="variant-detail-actions" flex="none" gap={3}>
+              <Flex align="center" gap={2}>
+                <Text muted size={1}>
+                  <ClockIcon />
+                </Text>
+                <Text muted size={1}>
+                  {t('detail.footer.created')}{' '}
+                  <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
+                </Text>
+              </Flex>
+              <HeaderDivider />
+              <Button
+                onClick={() => setEditDialogOpen(true)}
+                text={t('detail.action.edit-variant')}
+              />
+              <VariantDetailMenuButton
+                documentCount={tableRows.length}
+                documentsLoading={documentsLoading}
+                variant={variant}
+              />
+            </Flex>
           </Flex>
-        </Flex>
+        </Box>
       </Card>
       <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
         {variantDocumentsError ? (
