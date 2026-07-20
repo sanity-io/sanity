@@ -61,16 +61,7 @@ describe('getIsVariantInvalid', () => {
         createVariant({
           metadata: {title: 'Audience', description: []},
           conditions: {audience: 'loyal'},
-          priority: 101,
-        }),
-      ),
-    ).toBe(true)
-    expect(
-      getIsVariantInvalid(
-        createVariant({
-          metadata: {title: 'Audience', description: []},
-          conditions: {audience: 'loyal'},
-          priority: -1,
+          priority: Number.NaN,
         }),
       ),
     ).toBe(true)

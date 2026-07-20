@@ -98,7 +98,7 @@ describe('VariantDialog', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
-  it('shows priority validation when editing an invalid value', async () => {
+  it('shows priority validation when the field is cleared', async () => {
     const user = userEvent.setup()
 
     await renderDialog({
@@ -112,11 +112,10 @@ describe('VariantDialog', () => {
     })
 
     await user.clear(screen.getByTestId('variant-form-priority'))
-    await user.type(screen.getByTestId('variant-form-priority'), '-5')
     await user.click(screen.getByTestId('save-variant-button'))
 
     expect(screen.getByTestId('variant-form-priority-error')).toHaveTextContent(
-      'Priority must be between 0 and 100',
+      'Priority must be a number',
     )
     expect(onSubmit).not.toHaveBeenCalled()
   })

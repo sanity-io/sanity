@@ -287,9 +287,8 @@ export function VariantForm(props: {
           data-testid="variant-form-priority"
           fontSize={2}
           id={priorityId}
-          inputMode="numeric"
+          inputMode="decimal"
           onChange={handlePriorityChange}
-          step={1}
           type="number"
           value={Number.isFinite(value.priority) ? value.priority : ''}
         />

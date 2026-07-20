@@ -280,7 +280,7 @@ describe('CreateVariantDialog', () => {
     expect(screen.getByTestId('variant-form-priority-help')).toBeInTheDocument()
   })
 
-  it('rejects priority values outside 0 to 100', async () => {
+  it('rejects an empty priority value', async () => {
     const user = userEvent.setup()
 
     await renderDialog()
@@ -289,11 +289,10 @@ describe('CreateVariantDialog', () => {
     await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
     await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal-customers')
     await user.clear(screen.getByTestId('variant-form-priority'))
-    await user.type(screen.getByTestId('variant-form-priority'), '101')
     await user.click(screen.getByTestId('submit-variant-button'))
 
     expect(screen.getByTestId('variant-form-priority-error')).toHaveTextContent(
-      'Priority must be between 0 and 100',
+      'Priority must be a number',
     )
     expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
   })
@@ -307,7 +306,7 @@ describe('CreateVariantDialog', () => {
     await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
     await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal-customers')
     await user.clear(screen.getByTestId('variant-form-priority'))
-    await user.type(screen.getByTestId('variant-form-priority'), '75')
+    await user.type(screen.getByTestId('variant-form-priority'), '75.5')
     await user.click(screen.getByTestId('submit-variant-button'))
 
     await waitFor(() => {
@@ -316,7 +315,7 @@ describe('CreateVariantDialog', () => {
 
     const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
 
-    expect(createdVariant.priority).toBe(75)
+    expect(createdVariant.priority).toBe(75.5)
   })
 
   it('creates a variant and calls submit with the generated id', async () => {

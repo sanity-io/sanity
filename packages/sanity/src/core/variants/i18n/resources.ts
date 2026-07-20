@@ -112,10 +112,8 @@ const variantsLocaleStrings = {
   /** Tooltip explaining how priority affects variant matching. */
   'dialog.create.priority.tooltip':
     'When multiple variant definitions match with the same specificity, the one with the higher priority wins.',
-  /** Validation message when priority is not a whole number. */
-  'dialog.create.priority.invalid': 'Priority must be a whole number',
-  /** Validation message when priority is outside the allowed range. */
-  'dialog.create.priority.out-of-range': 'Priority must be between 0 and 100',
+  /** Validation message when priority is not a valid number. */
+  'dialog.create.priority.invalid': 'Priority must be a number',
   /** Title for the conditions section in the create variant dialog. */
   'dialog.create.conditions.title': 'Conditions',
   /** Description for the conditions section in the create variant dialog. */
