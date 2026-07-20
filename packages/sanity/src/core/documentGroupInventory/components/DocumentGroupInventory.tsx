@@ -1,3 +1,4 @@
+import CloseIcon from '@sanity/icons/Close'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {SearchIcon} from '@sanity/icons/Search'
@@ -221,13 +222,24 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
       <Container ref={setContainerElement} data-testid="document-group-inventory">
         <Header>
           <Stack gap={4}>
-            <TextButton onClick={() => inventoryRef.send({type: 'feedback.begin'})}>
-              <Text size={1}>
-                <Flex gap={2} align="center" justify="flex-end">
-                  <FeedbackIcon /> {feedbackT('feedback.menu-item')}
-                </Flex>
-              </Text>
-            </TextButton>
+            <Flex gap={4} align="center" justify="flex-end">
+              <TextButton onClick={() => inventoryRef.send({type: 'feedback.begin'})}>
+                <Text size={1}>
+                  <Flex gap={2} align="center" justify="flex-end">
+                    <FeedbackIcon /> {feedbackT('feedback.menu-item')}
+                  </Flex>
+                </Text>
+              </TextButton>
+              <TextButton
+                onClick={requestClose}
+                title={t('document-group-inventory.action.cancel')}
+                aria-label={t('document-group-inventory.action.cancel')}
+              >
+                <Text size={1}>
+                  <CloseIcon />
+                </Text>
+              </TextButton>
+            </Flex>
             <search>
               <TextInput
                 name={t('document-group-inventory.filter-string.label', {
