@@ -89,6 +89,10 @@ export interface DocumentGroupInventoryProps {
    */
   referringDocuments$: Observable<ReferringDocuments>
   /**
+   * Request the parent to close the document group inventory.
+   */
+  requestClose?: () => void
+  /**
    * Pane-coupled presentational components injected by the consumer.
    */
   components: {
