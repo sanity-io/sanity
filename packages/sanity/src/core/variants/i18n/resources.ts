@@ -80,10 +80,6 @@ const variantsLocaleStrings = {
   'detail.loading': 'Loading variant definition',
   /** Fallback text when a variant has no description. */
   'detail.no-description': 'No description yet.',
-  /** Lineage label shown when a variant definition is a member of a generated set. */
-  'detail.lineage.part-of-set': 'Part of set: {{name}}',
-  /** Lineage label shown when a variant definition was forked from a generated set. */
-  'detail.lineage.forked-from-set': 'Forked from set: {{name}}',
   /** Badge on the overview row for a variant definition that belongs to a generated set. */
   'overview.badge.set': 'Set',
   /** Badge on the overview row for a variant definition forked from a generated set. */
