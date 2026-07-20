@@ -1790,8 +1790,8 @@ importers:
         specifier: ^2.13.7
         version: 2.13.7(@types/react@19.2.17)(react@19.2.7)
       react-i18next:
-        specifier: ^17.0.8
-        version: 17.0.8(i18next@26.3.6)(react-dom@19.2.7)(react@19.2.7)(typescript@6.0.3)
+        specifier: ^17.0.10
+        version: 17.0.10(i18next@26.3.6)(react-dom@19.2.7)(react@19.2.7)(typescript@6.0.3)
       react-is:
         specifier: 'catalog:'
         version: 19.2.7
@@ -10117,14 +10117,14 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
 
-  react-i18next@17.0.8:
-    resolution: {integrity: sha512-0ooKbGLU8JXhe1zwpQUWIeXSgLPOfwJmgheWRIUpcoA0CpyabpGhayjdG+/eA5esC1AQ8h2jWpXjJfzQzeDOCw==}
+  react-i18next@17.0.10:
+    resolution: {integrity: sha512-XneHftyYA774MJkkccSkZ5oKrUpCnXIPmxio3wemqrVzCRLWiGXOMbIzObrer03fNDEnm8g8R5yYls4HcE+esg==}
     peerDependencies:
       i18next: '>= 26.2.0'
       react: '>= 16.8.0'
       react-dom: '*'
       react-native: '*'
-      typescript: ^5 || ^6
+      typescript: ^5 || ^6 || ^7
     peerDependenciesMeta:
       react-dom:
         optional: true
@@ -14755,7 +14755,7 @@ snapshots:
       '@sanity/color': 3.0.6
       '@sanity/icons': 4.1.0(react@19.2.7)
       '@sanity/mutator': link:packages/@sanity/mutator
-      '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
+      '@sanity/ui': 3.3.5(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       date-fns: 4.4.0
       lodash-es: 4.18.1
       react: 19.2.7
@@ -15200,8 +15200,8 @@ snapshots:
 
   '@sanity/language-filter@5.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)':
     dependencies:
-      '@sanity/icons': 3.7.6(react@19.2.7)
-      '@sanity/ui': 3.3.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
+      '@sanity/icons': 3.8.0(react@19.2.7)
+      '@sanity/ui': 3.3.5(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       react-rx: 4.2.3(react@19.2.7)(rxjs@7.8.2)
@@ -20153,7 +20153,7 @@ snapshots:
     dependencies:
       react: 19.2.7
 
-  react-i18next@17.0.8(i18next@26.3.6)(react-dom@19.2.7)(react@19.2.7)(typescript@6.0.3):
+  react-i18next@17.0.10(i18next@26.3.6)(react-dom@19.2.7)(react@19.2.7)(typescript@6.0.3):
     dependencies:
       '@babel/runtime': 7.29.7
       html-parse-stringify: 3.0.1
