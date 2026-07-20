@@ -10,9 +10,6 @@ export const Footer = styled.div(({theme}) => {
     padding-block-start: calc(${space[5]}px * 0.5);
     padding-block-end: ${space[4]}px;
     gap: ${space[3]}px;
-
-    & > * {
-      flex-grow: 1;
-    }
+    justify-content: end;
   `
 })

@@ -111,6 +111,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   portalElementName,
   perspectiveList,
   referringDocuments$,
+  requestClose,
   components,
 }) => {
   const {beta} = useWorkspace()
@@ -257,13 +258,21 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
         </Body>
         <Footer>
           <Button
-            text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
-            onClick={() => deletionRef.send({type: 'delete.request'})}
-            disabled={!canRequestDeletion}
-            tone="critical"
+            text={t('document-group-inventory.action.cancel')}
             size="large"
-            icon={TrashIcon}
+            mode="bleed"
+            onClick={requestClose}
           />
+          {canRequestDeletion && (
+            <Button
+              text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
+              onClick={() => deletionRef.send({type: 'delete.request'})}
+              disabled={!canRequestDeletion}
+              tone="critical"
+              size="large"
+              icon={TrashIcon}
+            />
+          )}
         </Footer>
       </Container>
       <div ref={setMenuPortalElement} />
