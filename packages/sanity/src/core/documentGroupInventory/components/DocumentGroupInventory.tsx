@@ -629,7 +629,7 @@ const TextButton = styled.button(({theme}) => {
     padding: 0;
     outline: none;
     all: unset;
-    color: ${color.link.fg};
+    color: ${color.button.ghost.neutral.enabled.fg};
 
     * {
       color: inherit;
