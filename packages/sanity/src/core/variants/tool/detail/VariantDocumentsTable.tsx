@@ -1,4 +1,4 @@
-import {Box, Card, Flex} from '@sanity/ui'
+import {Box, Card, Container, Flex} from '@sanity/ui'
 import {type CSSProperties, useCallback, useMemo, useState} from 'react'
 
 import {useTranslation} from '../../../i18n'
@@ -8,7 +8,7 @@ import {type Column} from '../../../releases/tool/components/Table/types'
 import {searchDocumentRelease} from '../../../releases/tool/detail/documentTable/searchDocumentRelease'
 import {variantsLocaleNamespace} from '../../i18n'
 import {computeReleaseLaneSegments, RELEASE_LANE_ALL, rowMatchesLane} from './releaseLane'
-import {DETAIL_CONTENT_CENTER_STYLE, type DocumentInVariantGroup} from './types'
+import {type DocumentInVariantGroup} from './types'
 import {getVariantDocumentTableColumnDefs} from './variantDocumentTable/VariantDocumentTableColumnDefs'
 import {VariantReleaseLane} from './VariantReleaseLane'
 
@@ -88,38 +88,40 @@ export function VariantDocumentsTable({
     <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
       {hasReleaseControls && (
         // Bordered so the filter lane is visually distinct from the table's column-header row below.
-        <Card flex="none" borderBottom paddingX={4} paddingY={3}>
-          {/* Centered at the shared content width so the lane lines up with the table and header
-              and doesn't bleed on wide screens; still scrolls horizontally if the tabs overflow. */}
-          <Box style={{...DETAIL_CONTENT_CENTER_STYLE, minWidth: 0, overflowX: 'auto'}}>
-            <VariantReleaseLane
-              activeLane={resolvedActiveLane}
-              onSelectLane={handleSelectLane}
-              segments={segments}
-              totalCount={rows.length}
-            />
-          </Box>
+        <Card flex="none" borderBottom paddingY={3}>
+          {/* container[3] chrome so the lane aligns with the table's row content (which the shared
+              Table centers at container[3]); the inner box still scrolls if the tabs overflow. */}
+          <Container flex="none" width={3}>
+            <Box paddingX={3} style={{minWidth: 0, overflowX: 'auto'}}>
+              <VariantReleaseLane
+                activeLane={resolvedActiveLane}
+                onSelectLane={handleSelectLane}
+                segments={segments}
+                totalCount={rows.length}
+              />
+            </Box>
+          </Container>
         </Card>
       )}
+      {/* Full-width scroll region so the table borders span the pane; the shared Table centers its
+          rows at container[3], matching the chrome above. */}
       <Card
         flex={1}
         id="variant-documents-table"
         ref={setScrollContainerRef}
         style={TABLE_CARD_STYLE}
       >
-        <Box style={{...DETAIL_CONTENT_CENTER_STYLE, height: '100%'}}>
-          <Table<DocumentInVariantGroup>
-            columnDefs={columnDefs}
-            data={displayRows}
-            defaultSort={{column: 'documentGroup', direction: 'asc'}}
-            emptyState={t('detail.documents.no-documents')}
-            loading={loading}
-            // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
-            rowId="rowKey"
-            scrollContainerRef={scrollContainerRef}
-            searchFilter={filterDocuments}
-          />
-        </Box>
+        <Table<DocumentInVariantGroup>
+          columnDefs={columnDefs}
+          data={displayRows}
+          defaultSort={{column: 'documentGroup', direction: 'asc'}}
+          emptyState={t('detail.documents.no-documents')}
+          loading={loading}
+          // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+          rowId="rowKey"
+          scrollContainerRef={scrollContainerRef}
+          searchFilter={filterDocuments}
+        />
       </Card>
     </Flex>
   )
