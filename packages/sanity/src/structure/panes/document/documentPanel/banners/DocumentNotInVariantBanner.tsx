@@ -67,6 +67,7 @@ export function DocumentNotInVariantBanner() {
     description: t('banners.variant.waiting.description'),
   })
 
+  // TODO: Use machine.
   const isActionAllowed = selectedPerspective === defaultPerspective || selectedReleaseId
   return (
     <Banner
