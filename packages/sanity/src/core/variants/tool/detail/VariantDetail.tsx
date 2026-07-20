@@ -5,6 +5,7 @@ import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components/tooltip'
 import {LoadingBlock, RelativeTime} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
@@ -162,15 +163,23 @@ export function VariantDetail() {
                 </Flex>
               </Flex>
               <Flex align="center" data-testid="variant-detail-actions" flex="none" gap={3}>
-                <Flex align="center" gap={2}>
-                  <Text muted size={1}>
+                {/* Created status collapses to a clock icon; the full "Created <when>" shows on
+                    hover. Keeps the header compact and gives the metadata on the left more room. */}
+                <Tooltip
+                  content={
+                    <Box padding={2}>
+                      <Text size={1}>
+                        {t('detail.footer.created')}{' '}
+                        <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
+                      </Text>
+                    </Box>
+                  }
+                  portal
+                >
+                  <Text aria-label={t('detail.footer.created')} muted size={1}>
                     <ClockIcon />
                   </Text>
-                  <Text muted size={1}>
-                    {t('detail.footer.created')}{' '}
-                    <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
-                  </Text>
-                </Flex>
+                </Tooltip>
                 <HeaderDivider />
                 <Button
                   onClick={() => setEditDialogOpen(true)}

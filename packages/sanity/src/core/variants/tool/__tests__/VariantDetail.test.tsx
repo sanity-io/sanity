@@ -180,7 +180,8 @@ describe('VariantDetail', () => {
     expect(screen.getByPlaceholderText('Search documents')).toBeInTheDocument()
     expect(screen.getByText('Edited')).toBeInTheDocument()
     expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
-    expect(screen.getByText(/^Created/)).toBeInTheDocument()
+    // Created status is a compact clock icon (full "Created <when>" in a hover tooltip).
+    expect(screen.getByLabelText('Created')).toBeInTheDocument()
     expect(screen.getByTestId('variant-detail-actions')).toBeInTheDocument()
   })
 
