@@ -1,4 +1,5 @@
 import {type EditableSystemVariant} from '../types'
+import {getPriorityValidationError} from './priorityValidation'
 
 /**
  * @internal
@@ -13,7 +14,11 @@ export function getVariantTitleValue(variant: EditableSystemVariant): string {
  * @internal
  */
 export function getIsVariantInvalid(variant: EditableSystemVariant): boolean {
-  return !getVariantTitleValue(variant) || !getHasValidConditions(variant.conditions)
+  return (
+    !getVariantTitleValue(variant) ||
+    !getHasValidConditions(variant.conditions) ||
+    Boolean(getPriorityValidationError(variant.priority))
+  )
 }
 
 function getHasValidConditions(conditions: EditableSystemVariant['conditions']): boolean {

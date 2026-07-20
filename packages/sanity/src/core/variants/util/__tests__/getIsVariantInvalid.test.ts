@@ -56,6 +56,24 @@ describe('getIsVariantInvalid', () => {
         }),
       ),
     ).toBe(false)
+    expect(
+      getIsVariantInvalid(
+        createVariant({
+          metadata: {title: 'Audience', description: []},
+          conditions: {audience: 'loyal'},
+          priority: 101,
+        }),
+      ),
+    ).toBe(true)
+    expect(
+      getIsVariantInvalid(
+        createVariant({
+          metadata: {title: 'Audience', description: []},
+          conditions: {audience: 'loyal'},
+          priority: -1,
+        }),
+      ),
+    ).toBe(true)
   })
 
   it('trims whitespace from the title', () => {
