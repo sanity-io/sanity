@@ -1,10 +1,10 @@
 // oxlint-disable-next-line no-unassigned-import -- imported for its side effects
 import '@portabletext/plugin-table/ui/styles.css'
 
-import {defineContainer, type ContainerRenderProps} from '@portabletext/editor'
+import {type Container, type ContainerRenderProps} from '@portabletext/editor'
 import {defineBehavior, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
-import {defineTable} from '@portabletext/plugin-table'
+import {defineTable, type TableContainers, type TableDefinition} from '@portabletext/plugin-table'
 import {
   referenceContainers,
   Table,
@@ -23,41 +23,73 @@ import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
 import {useColorSchemeValue} from '../../../../studio/colorScheme'
 
-const table = defineTable({
-  containers: {
-    ...referenceContainers,
-    table: defineContainer({
-      type: 'table',
-      arrayField: 'rows',
-      render: (props) => <StudioTable {...props} />,
-    }),
-  },
-})
+const studioTableRender = (props: ContainerRenderProps) => <StudioTable {...props} />
+
+/**
+ * Merge consumer containers with the studio's defaults per role: consumer
+ * type and field names win, omitted renders fall back to the studio's
+ * table render (table role) or the reference renders (row and cell, which
+ * resolve their table definition from the node they render, so they work
+ * under renamed types).
+ */
+function resolveContainers(containers: TableContainers | undefined): TableContainers {
+  const tableRole: Container = containers?.table ?? {
+    kind: 'container',
+    type: 'table',
+    arrayField: 'rows',
+  }
+  return {
+    table: {...tableRole, render: tableRole.render ?? studioTableRender},
+    row: containers?.row
+      ? {...containers.row, render: containers.row.render ?? referenceContainers.row?.render}
+      : referenceContainers.row,
+    cell: containers?.cell
+      ? {...containers.cell, render: containers.cell.render ?? referenceContainers.cell?.render}
+      : referenceContainers.cell,
+  }
+}
 
 // Tables inserted from the insert menu have no rows yet. The guard also
 // makes sure the raise below doesn't loop.
-const scaffoldBehaviors = [
-  defineBehavior({
-    on: 'insert.block',
-    guard: ({event}) => {
-      if (event.block._type !== 'table') {
-        return false
-      }
-      const rows = 'rows' in event.block ? event.block.rows : undefined
-      return !(Array.isArray(rows) && rows.length > 0)
-    },
-    actions: [
-      ({event}) => [
-        raise({
-          ...event,
-          block: {...event.block, ...table.createBlock({headerRows: 1})},
-        }),
+function createScaffoldBehaviors(table: TableDefinition, tableType: string, rowsField: string) {
+  return [
+    defineBehavior({
+      on: 'insert.block',
+      guard: ({event}) => {
+        if (event.block._type !== tableType) {
+          return false
+        }
+        const rows =
+          rowsField in event.block ? (event.block as Record<string, unknown>)[rowsField] : undefined
+        return !(Array.isArray(rows) && rows.length > 0)
+      },
+      actions: [
+        ({event}) => [
+          raise({
+            ...event,
+            block: {...event.block, ...table.createBlock({headerRows: 1})},
+          }),
+        ],
       ],
-    ],
-  }),
-]
+    }),
+  ]
+}
 
-export function PortableTextTablePlugin(): React.JSX.Element {
+export function PortableTextTablePlugin(props: {containers?: TableContainers}): React.JSX.Element {
+  const {containers} = props
+  const {table, scaffoldBehaviors} = useMemo(() => {
+    const resolved = resolveContainers(containers)
+    const tableDefinition = defineTable({containers: resolved})
+    return {
+      table: tableDefinition,
+      scaffoldBehaviors: createScaffoldBehaviors(
+        tableDefinition,
+        resolved.table!.type,
+        resolved.table!.arrayField,
+      ),
+    }
+  }, [containers])
+
   return (
     <>
       <HeaderCellWeight />

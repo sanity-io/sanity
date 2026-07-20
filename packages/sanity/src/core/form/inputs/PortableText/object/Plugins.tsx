@@ -178,7 +178,7 @@ function DefaultTablePlugin(props: PortableTextPluginsProps['plugins']['table'])
     return null
   }
 
-  return <PortableTextTablePlugin />
+  return <PortableTextTablePlugin containers={props.containers} />
 }
 
 function DefaultPasteLinkPlugin(props: PortableTextPluginsProps['plugins']['pasteLink']) {
