@@ -76,9 +76,6 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
 
   return (
     <Box {...cellProps} flex={1} paddingLeft={3} paddingRight={2} paddingY={1} sizing="border">
-      {/* The perspective "pin" was removed here to match the detail page: adopting a variant is a
-          global authoring mode that belongs in perspective-bar chrome, not this list. Returns with
-          the perspective-bar work. */}
       <Flex align="center" gap={3}>
         <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
           <Flex align="center" gap={3}>
