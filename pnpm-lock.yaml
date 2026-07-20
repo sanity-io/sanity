@@ -796,7 +796,7 @@ importers:
         version: link:../tsconfig
       '@sanity/ailf':
         specifier: ^7.28.0
-        version: 7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.2)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)
+        version: 7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.2)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
@@ -1706,8 +1706,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       '@sanity/workbench':
-        specifier: 0.1.0-alpha.24
-        version: 0.1.0-alpha.24(@sanity/sdk@2.15.0)(react@19.2.7)(xstate@5.32.4)
+        specifier: 0.1.0-alpha.26
+        version: 0.1.0-alpha.26(@sanity/sdk@2.15.0)(react@19.2.7)(xstate@5.32.4)
       '@sentry/react':
         specifier: ^10.62.0
         version: 10.62.0(react@19.2.7)
@@ -7017,8 +7017,8 @@ packages:
     resolution: {integrity: sha512-n2ABuylzZd6VwuhiDa23OZEgPoaBb8ImUpZM0pAr/IFsmNtJCG9a3QBHzgSpB7uqKVNdPYskA6p2NyDCCDD6iQ==}
     engines: {node: '>=22.12'}
 
-  '@sanity/workbench@0.1.0-alpha.24':
-    resolution: {integrity: sha512-235mR37+z8eg9OQqhUwgkQ4dZnveFHczUTgW2jk81qm1pP6vMlTdEAiKpz1Tq4zU9zRfg2xck51DP1VlkVzdWA==}
+  '@sanity/workbench@0.1.0-alpha.26':
+    resolution: {integrity: sha512-jERkSQyTo1/PwxGAVybqe7JRGCo9QAEnM+T6Jj5uQvZz7X7FokD3hUas2Pht5iEkc1jECzTwhhd1P50SPd0G7A==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     peerDependencies:
       '@sanity/sdk': ^2.9.0
@@ -18624,7 +18624,7 @@ snapshots:
 
   '@sanity-labs/design-tokens@0.0.2-alpha.4': {}
 
-  '@sanity/ailf@7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.2)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)':
+  '@sanity/ailf@7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.2)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)':
     dependencies:
       '@google-cloud/bigquery': 8.3.1
       '@google-cloud/storage': 7.21.0
@@ -18642,7 +18642,7 @@ snapshots:
       jiti: 2.7.0
       js-yaml: 4.3.0
       oxc-parser: 0.129.0
-      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.2)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)
+      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.2)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)
       zod: 4.4.3
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
@@ -19526,10 +19526,9 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/workbench@0.1.0-alpha.24(@sanity/sdk@2.15.0)(react@19.2.7)(xstate@5.32.4)':
+  '@sanity/workbench@0.1.0-alpha.26(@sanity/sdk@2.15.0)(react@19.2.7)(xstate@5.32.4)':
     dependencies:
       '@module-federation/runtime': 2.7.0
-      '@sanity/message-protocol': 0.23.0
       '@sanity/sdk': 2.15.0(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.4)
       '@sanity/telemetry': 1.1.0(react@19.2.7)
       rxjs: 7.8.2
@@ -19623,13 +19622,13 @@ snapshots:
   '@slack/types@2.22.0':
     optional: true
 
-  '@slack/web-api@7.19.0':
+  '@slack/web-api@7.19.0(debug@4.3.4)':
     dependencies:
       '@slack/logger': 4.0.1
       '@slack/types': 2.22.0
       '@types/node': 24.13.2
       '@types/retry': 0.12.0
-      axios: 1.18.1
+      axios: 1.18.1(debug@4.3.4)
       eventemitter3: 5.0.4
       form-data: 4.0.6
       is-electron: 2.2.2
@@ -21348,7 +21347,7 @@ snapshots:
       - supports-color
     optional: true
 
-  axios@1.18.1:
+  axios@1.18.1(debug@4.3.4):
     dependencies:
       follow-redirects: 1.16.0(debug@4.3.4)
       form-data: 4.0.6
@@ -25363,7 +25362,7 @@ snapshots:
 
   promisepipe@3.0.0: {}
 
-  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.2)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9):
+  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.2)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9):
     dependencies:
       '@anthropic-ai/sdk': 0.78.0(zod@4.4.3)
       '@apidevtools/json-schema-ref-parser': 15.5.0(@types/json-schema@7.0.15)
@@ -25467,7 +25466,7 @@ snapshots:
       '@openai/codex-sdk': 0.110.0
       '@playwright/browser-chromium': 1.61.1
       '@rollup/rollup-linux-x64-gnu': 4.62.2
-      '@slack/web-api': 7.19.0
+      '@slack/web-api': 7.19.0(debug@4.3.4)
       '@smithy/node-http-handler': 4.9.7
       '@swc/core': 1.15.43
       '@swc/core-darwin-arm64': 1.15.43
